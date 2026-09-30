@@ -11,6 +11,26 @@ export interface LayoutProps {
 }
 
 /**
+ * Props for a `studio.components.providers` component: a middleware that wraps the studio in
+ * the providers a plugin needs everywhere (contexts, stores, subscriptions, data that is started
+ * once and read in many places), with no layout of its own. It renders under every studio
+ * provider (workspace, source, router, i18n, perspective) and *above* the Suspense boundary that
+ * shows the studio's loading screen while `studio.components.layout` and the active tool load.
+ *
+ * That placement is the point: a promise created here (for example with react-rx's
+ * `useObservablePromise`) and passed down through a context can be read with `use()` inside a
+ * `layout`, `navbar` or tool, which then suspends up to the studio's own loading screen and
+ * renders once with the settled value, with no `<Suspense>` and fallback of its own. The request
+ * starts when this component commits, alongside the lazy layout chunks. Keep components in this
+ * slot small and synchronous (not `lazy()`): they render before the loading screen does.
+ *
+ * @hidden
+ * @beta */
+export interface ProvidersProps {
+  renderDefault: (props: ProvidersProps) => React.JSX.Element
+}
+
+/**
  * @hidden
  * @beta */
 export interface LogoProps {
@@ -101,5 +121,10 @@ export interface StudioComponentsPluginOptions {
    */
   logo?: ComponentType<LogoProps>
   navbar?: ComponentType<NavbarProps>
+  /**
+   * Providers to wrap the studio in, rendered above the studio's loading screen boundary.
+   * See {@link ProvidersProps}.
+   */
+  providers?: ComponentType<ProvidersProps>
   toolMenu?: ComponentType<ToolMenuProps>
 }

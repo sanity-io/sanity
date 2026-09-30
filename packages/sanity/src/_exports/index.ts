@@ -311,6 +311,7 @@ export {
   type LogoProps,
   type NavbarAction,
   type NavbarProps,
+  type ProvidersProps,
   type StudioComponents,
   type StudioComponentsPluginOptions,
   type ToolMenuProps,

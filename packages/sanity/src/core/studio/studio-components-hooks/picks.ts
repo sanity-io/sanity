@@ -1,4 +1,4 @@
-import {type ComponentType} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 
 import {
   type ActiveToolLayoutProps,
@@ -21,6 +21,13 @@ export function pickNavbarComponent(
 
 export function pickLayoutComponent(plugin: PluginOptions): ComponentType {
   return plugin.studio?.components?.layout as ComponentType
+}
+
+export function pickProvidersComponent(
+  plugin: PluginOptions,
+): ComponentType<{children: ReactNode}> {
+  // The chain is rendered with `children`; a plugin's component only sees `renderDefault`.
+  return plugin.studio?.components?.providers as unknown as ComponentType<{children: ReactNode}>
 }
 
 export function pickActiveToolLayoutComponent(
