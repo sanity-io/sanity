@@ -85,8 +85,12 @@ export function usePreloadFeatures(): void {
   const {projectId} = useSource()
   useEffect(() => {
     // `shareReplay()` without refCount keeps the request alive and replays it after this
-    // subscription is gone.
-    const subscription = getFeatures({projectId, versionedClient}).subscribe()
+    // subscription is gone. The error handler keeps a failed request from reaching RxJS's
+    // unhandled-error reporter, which would rethrow it outside React; the consumers of the
+    // replayed error settle it as disabled themselves.
+    const subscription = getFeatures({projectId, versionedClient}).subscribe({
+      error: () => undefined,
+    })
     return () => subscription.unsubscribe()
   }, [projectId, versionedClient])
 }

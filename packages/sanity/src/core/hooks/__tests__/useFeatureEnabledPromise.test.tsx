@@ -131,6 +131,25 @@ describe('useFeatureEnabledPromise', () => {
     expect(requestCount).toBe(1)
   })
 
+  it('usePreloadFeatures does not rethrow a failed request as an uncaught error', async () => {
+    function Preloader() {
+      usePreloadFeatures()
+      return null
+    }
+
+    await mount(<Preloader />)
+
+    // RxJS hands an error that no subscriber handles to its unhandled-error reporter, which
+    // rethrows it on a timeout - outside React, where only global error handlers see it.
+    vi.useFakeTimers()
+    try {
+      response$.error(new Error('offline'))
+      expect(() => vi.runAllTimers()).not.toThrow()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('shares one request with useFeatureEnabled', async () => {
     await mount(
       <>
