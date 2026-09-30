@@ -32,6 +32,7 @@ import {
   type DocumentInspectorContext,
   type DocumentLanguageFilterComponent,
   type DocumentLanguageFilterContext,
+  type FederatedAssetSourcesConfig,
   type NewDocumentOptionsContext,
   type PluginOptions,
   type ResolveProductionUrlContext,
@@ -886,6 +887,56 @@ export const mediaLibraryFrontendHostReducer = (opts: {
   }, initialValue)
 
   return result
+}
+
+export const mediaLibraryFederatedAssetSourceReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.__internal?.federatedAssetSource
+
+    if (resolver === undefined) return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.__internal.federatedAssetSource\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+}
+
+export const federatedAssetSourcesReducer = (opts: {
+  config: PluginOptions
+  initialValue: FederatedAssetSourcesConfig | undefined
+}): FederatedAssetSourcesConfig | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const value = innerConfig.federatedAssetSources
+    if (value === undefined) return acc
+
+    if (value.enabled !== undefined && typeof value.enabled !== 'boolean') {
+      throw new Error(
+        `Expected \`federatedAssetSources.enabled\` to be a boolean, but received ${getPrintableType(
+          value.enabled,
+        )}`,
+      )
+    }
+    if (value.filter !== undefined && typeof value.filter !== 'function') {
+      throw new Error(
+        `Expected \`federatedAssetSources.filter\` to be a function, but received ${getPrintableType(
+          value.filter,
+        )}`,
+      )
+    }
+    return {...acc, ...value}
+  }, initialValue)
 }
 
 export const scheduledDraftsEnabledReducer = (opts: {

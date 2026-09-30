@@ -15,6 +15,7 @@ import {
   documentLanguageFilterReducer,
   draftsEnabledReducer,
   eventsAPIReducer,
+  federatedAssetSourcesReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
   internalTasksReducer,
@@ -529,6 +530,49 @@ describe('mediaLibraryEnabledReducer', () => {
         initialValue: false,
       }),
     ).toThrow('Expected `mediaLibrary.enabled` to be a boolean, but received string')
+  })
+})
+
+describe('federatedAssetSourcesReducer', () => {
+  it('returns undefined when no config sets federatedAssetSources', () => {
+    expect(
+      federatedAssetSourcesReducer({
+        config: {name: 'root'},
+        initialValue: undefined,
+      }),
+    ).toBeUndefined()
+  })
+
+  it('merges configs with the root config winning', () => {
+    const filter = () => true
+    expect(
+      federatedAssetSourcesReducer({
+        config: {
+          name: 'root',
+          federatedAssetSources: {enabled: true},
+          plugins: [{name: 'plugin', federatedAssetSources: {enabled: false, filter}}],
+        },
+        initialValue: undefined,
+      }),
+    ).toEqual({enabled: true, filter})
+  })
+
+  it('throws when enabled is not a boolean', () => {
+    expect(() =>
+      federatedAssetSourcesReducer({
+        config: {name: 'test', federatedAssetSources: {enabled: 'yes' as never}},
+        initialValue: undefined,
+      }),
+    ).toThrow('Expected `federatedAssetSources.enabled` to be a boolean, but received string')
+  })
+
+  it('throws when filter is not a function', () => {
+    expect(() =>
+      federatedAssetSourcesReducer({
+        config: {name: 'test', federatedAssetSources: {filter: 'nope' as never}},
+        initialValue: undefined,
+      }),
+    ).toThrow('Expected `federatedAssetSources.filter` to be a function, but received string')
   })
 })
 
