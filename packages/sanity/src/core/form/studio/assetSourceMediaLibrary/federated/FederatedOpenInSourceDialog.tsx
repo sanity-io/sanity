@@ -6,7 +6,7 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../../studio/colorScheme'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
-import {AppDialog} from '../shared/Dialog'
+import {FullSurfaceAppDialog} from '../shared/Dialog'
 import {FederatedViewMount} from './FederatedViewMount'
 import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
 
@@ -69,7 +69,7 @@ export function FederatedOpenInSourceDialog(props: FederatedOpenInSourceDialogPr
   }
 
   return (
-    <AppDialog
+    <FullSurfaceAppDialog
       header={dialogHeaderTitle}
       id="media-library-federated-dialog-open-in-source"
       onClose={onClose}
@@ -77,9 +77,9 @@ export function FederatedOpenInSourceDialog(props: FederatedOpenInSourceDialogPr
       open
       ref={ref ?? null}
       data-testid="media-library-federated-dialog-open-in-source"
-      // Wider than the iframe dialog (width 3): the federated view mounts the
-      // full asset detail page (preview, aspects sidebar), which needs the
-      // room. Capped by the viewport below 1920px.
+      // Fills the studio surface (see FullSurfaceAppDialog); the width prop
+      // only serves as a fallback cap should the styled override ever stop
+      // matching the Dialog's DOM.
       width={5}
       footer={
         <Card
@@ -128,6 +128,6 @@ export function FederatedOpenInSourceDialog(props: FederatedOpenInSourceDialogPr
       >
         <FederatedViewMount onUnavailable={onUnavailable} view={view} viewProps={viewProps} />
       </Box>
-    </AppDialog>
+    </FullSurfaceAppDialog>
   )
 }
