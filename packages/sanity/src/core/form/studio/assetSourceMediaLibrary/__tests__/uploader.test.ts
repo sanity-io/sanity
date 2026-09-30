@@ -48,35 +48,8 @@ describe('MediaLibraryUploader', () => {
     })
   })
 
-  describe('deferred terminal statuses', () => {
-    it('updateFile with complete status is deferred and does NOT emit all-complete immediately', () => {
-      const uploader = new MediaLibraryUploader()
-      const [file] = uploader.upload([createFile('a.png')])
-      const events: {type?: string}[] = []
-      uploader.subscribe((e) => events.push(e as {type?: string}))
-
-      uploader.updateFile(file.id, {status: 'complete', progress: 1})
-
-      // Status should still be pending (deferred)
-      expect(uploader.getFiles()[0].status).toBe('pending')
-      const allComplete = events.filter((e) => e.type === 'all-complete')
-      expect(allComplete).toHaveLength(0)
-    })
-
-    it('updateFile with alreadyExists status is deferred', () => {
-      const uploader = new MediaLibraryUploader()
-      const [file] = uploader.upload([createFile('a.png')])
-      const events: {type?: string}[] = []
-      uploader.subscribe((e) => events.push(e as {type?: string}))
-
-      uploader.updateFile(file.id, {status: 'alreadyExists'})
-
-      expect(uploader.getFiles()[0].status).toBe('pending')
-      const allComplete = events.filter((e) => e.type === 'all-complete')
-      expect(allComplete).toHaveLength(0)
-    })
-
-    it('signalCompletion applies deferred updates and emits all-complete', () => {
+  describe('terminal statuses', () => {
+    it('updateFile with complete status applies immediately and emits all-complete', () => {
       const uploader = new MediaLibraryUploader()
       const [file] = uploader.upload([createFile('a.png')])
       const events: {
@@ -86,30 +59,29 @@ describe('MediaLibraryUploader', () => {
       uploader.subscribe((e) => events.push(e))
 
       uploader.updateFile(file.id, {status: 'complete', progress: 1})
-      expect(uploader.getFiles()[0].status).toBe('pending')
-
-      uploader.signalCompletion()
 
       const allComplete = events.filter((e) => e.type === 'all-complete')
       expect(allComplete).toHaveLength(1)
       expect(allComplete[0].files?.[0].status).toBe('complete')
       expect(allComplete[0].files?.[0].progress).toBe(1)
+      // reset() clears files after all-complete
+      expect(uploader.getFiles()).toHaveLength(0)
     })
 
-    it('signalCompletion with alreadyExists applies status correctly', () => {
+    it('updateFile with alreadyExists status applies immediately', () => {
       const uploader = new MediaLibraryUploader()
       const [file] = uploader.upload([createFile('duplicate.png')])
       const events: {type?: string; files?: {status: string}[]}[] = []
       uploader.subscribe((e) => events.push(e))
 
       uploader.updateFile(file.id, {status: 'alreadyExists'})
-      uploader.signalCompletion()
 
       const allComplete = events.filter((e) => e.type === 'all-complete')
+      expect(allComplete).toHaveLength(1)
       expect(allComplete[0].files?.[0].status).toBe('alreadyExists')
     })
 
-    it('signalCompletion with multiple deferred files applies all', () => {
+    it('all-complete fires only once every file has a terminal status', () => {
       const uploader = new MediaLibraryUploader()
       const files = uploader.upload([createFile('a.png'), createFile('b.png'), createFile('c.png')])
       const events: {type?: string; files?: {status: string}[]}[] = []
@@ -117,11 +89,9 @@ describe('MediaLibraryUploader', () => {
 
       uploader.updateFile(files[0].id, {status: 'complete', progress: 1})
       uploader.updateFile(files[1].id, {status: 'alreadyExists'})
+      expect(events.filter((e) => e.type === 'all-complete')).toHaveLength(0)
+
       uploader.updateFile(files[2].id, {status: 'complete', progress: 1})
-
-      expect(uploader.getFiles().every((f) => f.status === 'pending')).toBe(true)
-
-      uploader.signalCompletion()
 
       const allComplete = events.filter((e) => e.type === 'all-complete')
       expect(allComplete).toHaveLength(1)
@@ -130,33 +100,15 @@ describe('MediaLibraryUploader', () => {
       expect(allComplete[0].files?.[1].status).toBe('alreadyExists')
       expect(allComplete[0].files?.[2].status).toBe('complete')
     })
-
-    it('signalCompletion is no-op when no deferred updates', () => {
-      const uploader = new MediaLibraryUploader()
-      const [file] = uploader.upload([createFile('a.png')])
-      const events: {type?: string}[] = []
-      uploader.subscribe((e) => events.push(e as {type?: string}))
-
-      // Use error which is not deferred
-      uploader.updateFile(file.id, {status: 'error'})
-      expect(uploader.getFiles()).toHaveLength(0) // reset clears on all-complete
-
-      // signalCompletion on empty uploader should not throw
-      expect(() => uploader.signalCompletion()).not.toThrow()
-    })
   })
 
   describe('reset', () => {
-    it('reset clears files and deferred updates', () => {
+    it('reset clears files', () => {
       const uploader = new MediaLibraryUploader()
-      const [file] = uploader.upload([createFile('a.png')])
-      uploader.updateFile(file.id, {status: 'complete'})
+      uploader.upload([createFile('a.png'), createFile('b.png')])
 
       uploader.reset()
 
-      expect(uploader.getFiles()).toHaveLength(0)
-      // signalCompletion after reset should not apply any deferred updates
-      uploader.signalCompletion()
       expect(uploader.getFiles()).toHaveLength(0)
     })
   })
@@ -190,43 +142,14 @@ describe('MediaLibraryUploader', () => {
   })
 
   describe('Media Library integration flow (ImageInput/FileInput)', () => {
-    it('simulates uploadResponse flow: deferred progress then signalCompletion after select', () => {
-      // Simulates the flow used by ImageInput and FileInput with Media Library asset source:
-      // 1. User selects file → handleSelectFileToUpload creates MediaLibraryUploader
-      // 2. Plugin sends uploadProgress(complete) → deferred (no all-complete yet)
-      // 3. Plugin sends uploadResponse → handleUploaded (onSelect) → signalCompletion
-      // 4. all-complete fires → input resets (setSelectedAssetSource(null), setIsUploading(false))
+    it('simulates the picker-mode ordering contract: writer holds the terminal status until its work is done', () => {
+      // Simulates the flow used by ImageInput and FileInput with the Media
+      // Library asset source. The writer (federated view, or the iframe
+      // UploadAssetDialog's own buffering) does its source-side work — link,
+      // onSelect — and only then writes the terminal status, because the last
+      // terminal status fires all-complete and the input tears the flow down.
       const uploader = new MediaLibraryUploader()
       const file = createFile('photo.jpg')
-      const files = uploader.upload([file])
-      const [uploadFile] = files
-
-      const allCompleteEvents: {
-        type?: string
-        files?: {status: string}[]
-      }[] = []
-      uploader.subscribe((e) => {
-        if (e.type === 'all-complete') {
-          allCompleteEvents.push(e)
-        }
-      })
-
-      // 1. Plugin sends uploadProgress with complete (deferred in uploader)
-      uploader.updateFile(uploadFile.id, {status: 'complete', progress: 1})
-      expect(allCompleteEvents).toHaveLength(0)
-
-      // 2. Plugin sends uploadResponse; UploadAssetDialog calls handleUploaded then signalCompletion
-      uploader.signalCompletion()
-
-      expect(allCompleteEvents).toHaveLength(1)
-      expect(allCompleteEvents[0].files?.[0].status).toBe('complete')
-    })
-
-    it('simulates alreadyExists flow: deferred then signalCompletion', () => {
-      // When file already exists in Media Library: uploadProgress(alreadyExists) → deferred
-      // → uploadResponse → handleUploaded → signalCompletion → all-complete with alreadyExists
-      const uploader = new MediaLibraryUploader()
-      const file = createFile('duplicate.jpg')
       const [uploadFile] = uploader.upload([file])
 
       const allCompleteEvents: {
@@ -239,13 +162,15 @@ describe('MediaLibraryUploader', () => {
         }
       })
 
-      uploader.updateFile(uploadFile.id, {status: 'alreadyExists'})
+      // 1. Upload progresses; no terminal status written yet.
+      uploader.updateFile(uploadFile.id, {status: 'uploading', progress: 0.5})
       expect(allCompleteEvents).toHaveLength(0)
 
-      uploader.signalCompletion()
+      // 2. Writer finishes linking + onSelect, then writes the terminal status.
+      uploader.updateFile(uploadFile.id, {status: 'complete', progress: 1})
 
       expect(allCompleteEvents).toHaveLength(1)
-      expect(allCompleteEvents[0].files?.[0].status).toBe('alreadyExists')
+      expect(allCompleteEvents[0].files?.[0].status).toBe('complete')
     })
   })
 
