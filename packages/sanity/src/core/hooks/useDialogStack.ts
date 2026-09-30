@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {useContext, useEffect, useId, useRef} from 'react'
+import {use, useEffect, useId, useRef} from 'react'
 import {DialogStackContext} from 'sanity/_singletons'
 
 const noop = (): void => {
@@ -12,7 +12,7 @@ const noop = (): void => {
  * @beta
  */
 export function useDialogStack({path}: {path?: Path} = {}) {
-  const context = useContext(DialogStackContext)
+  const context = use(DialogStackContext)
   const id = useId()
   const hasRegistered = useRef(false)
 

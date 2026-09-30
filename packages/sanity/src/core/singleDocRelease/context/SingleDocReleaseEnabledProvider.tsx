@@ -1,4 +1,4 @@
-import {useContext, useMemo} from 'react'
+import {use, useMemo} from 'react'
 import {
   SingleDocReleaseEnabledContext,
   type SingleDocReleaseEnabledContextValue,
@@ -45,6 +45,6 @@ export function SingleDocReleaseEnabledProvider({children}: SingleDocReleaseEnab
  * @internal
  */
 export function useSingleDocReleaseEnabled(): SingleDocReleaseEnabledContextValue {
-  const context = useContext(SingleDocReleaseEnabledContext)
+  const context = use(SingleDocReleaseEnabledContext)
   return context
 }

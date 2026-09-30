@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {TasksUpsellContext} from 'sanity/_singletons'
 
 import {type TasksUpsellContextValue} from './types'
@@ -8,7 +8,7 @@ import {type TasksUpsellContextValue} from './types'
  * @hidden
  */
 export function useTasksUpsell(): TasksUpsellContextValue {
-  const value = useContext(TasksUpsellContext)
+  const value = use(TasksUpsellContext)
 
   if (!value) {
     // Instead of throwing, we return a dummy value to avoid breaking the tasks create action implementation, given the context is optional.

@@ -1,5 +1,5 @@
 import {usePortal} from '@sanity/ui'
-import {useContext} from 'react'
+import {use} from 'react'
 import {PortalBoundaryContext} from 'sanity/_singletons'
 
 /**
@@ -13,7 +13,7 @@ import {PortalBoundaryContext} from 'sanity/_singletons'
  * @internal
  */
 export function usePortalBoundary(): HTMLElement | null {
-  const declared = useContext(PortalBoundaryContext)
+  const declared = use(PortalBoundaryContext)
   const {element: portalElement} = usePortal()
 
   if (!declared?.portalElement || declared.portalElement !== portalElement) {
