@@ -18,6 +18,7 @@ import {
   type ScannerWindow,
 } from './domPropLeaks/scanner'
 import {loadDomPropVocabulary} from './domPropLeaks/vocabulary'
+import {isForeignDocument, isFromForeignFrame, type PageFrameUrls} from './foreignFrames'
 
 /**
  * Selector that matches any Studio error screen — both the React error
@@ -85,15 +86,18 @@ export function studioErrorLocator(page: Page): Locator {
   return page.locator(STUDIO_ERROR_SELECTOR)
 }
 
-/** Everything the watcher has seen of props that reached DOM elements although they should not. */
+/**
+ * Everything the watcher has seen of props that reached DOM elements although they should not, in
+ * the documents that have the origin of their page (see {@link watchForStudioErrors}).
+ */
 export interface DomPropLeakReport {
-  /** Found by the scanner, in any document of the context, including ones navigated away from. */
+  /** Found by the scanner, including in documents that were navigated away from. */
   findings: DomPropLeakFinding[]
   /** react-dom and styled-components development-build warnings. */
   warnings: string[]
   /** Scans that cannot be trusted: the scanner failed, or it found no React props to check. */
   problems: string[]
-  /** The final scan of every frame that had the scanner installed. */
+  /** The final scan of every such frame that had the scanner installed. */
   scans: (DomPropLeakScan & {frameUrl: string})[]
 }
 
@@ -120,6 +124,17 @@ function describeError(error: unknown): string {
 
 function findingKey(finding: DomPropLeakFinding): string {
   return [finding.rule, finding.tag, finding.prop, finding.components.join('>')].join('|')
+}
+
+function frameUrlsOf(page: Page): PageFrameUrls {
+  const main = page.mainFrame()
+  return {
+    main: main.url(),
+    children: page
+      .frames()
+      .filter((frame) => frame !== main)
+      .map((frame) => frame.url()),
+  }
 }
 
 async function scanFrame(frame: Frame): Promise<DomPropLeakScan | null> {
@@ -194,6 +209,10 @@ async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
   context.on('weberror', (webError) => {
     const message = describeError(webError.error())
     if (message.includes('ResizeObserver')) return
+    const page = webError.page()
+    if (page && isFromForeignFrame({url: webError.location().url, message}, frameUrlsOf(page))) {
+      return
+    }
     handleError({source: 'pageerror', message})
   })
 
@@ -201,18 +220,23 @@ async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
     const type = msg.type()
     if (type !== 'debug' && type !== 'warning' && type !== 'error') return
     const text = msg.text()
+    const page = msg.page()
     if (type === 'debug') {
       if (text.startsWith(DOM_PROP_LEAK_MARKER)) {
-        addFinding(JSON.parse(text.slice(DOM_PROP_LEAK_MARKER.length)) as DomPropLeakFinding)
+        const finding = JSON.parse(text.slice(DOM_PROP_LEAK_MARKER.length)) as DomPropLeakFinding
+        if (!page || !isForeignDocument(finding.url, page.url())) addFinding(finding)
       }
+      return
+    }
+    if (type === 'error' && text.startsWith(ERROR_SCREEN_MARKER)) {
+      handleError({source: 'error-screen', message: text.slice(ERROR_SCREEN_MARKER.length)})
+      return
+    }
+    if (page && isFromForeignFrame({url: msg.location().url, message: text}, frameUrlsOf(page))) {
       return
     }
     if (type === 'warning') {
       if (STYLED_COMPONENTS_UNKNOWN_PROP_WARNING.test(text)) warnings.add(text)
-      return
-    }
-    if (text.startsWith(ERROR_SCREEN_MARKER)) {
-      handleError({source: 'error-screen', message: text.slice(ERROR_SCREEN_MARKER.length)})
       return
     }
     if (REACT_DOM_PROP_WARNING.test(text)) warnings.add(text)
@@ -237,7 +261,11 @@ async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
   await context.addInitScript({content: buildDomPropLeakScannerScript(loadDomPropVocabulary())})
 
   async function collectDomPropLeaks(): Promise<DomPropLeakReport> {
-    const frames = context.pages().flatMap((page) => page.frames())
+    const frames = context
+      .pages()
+      .flatMap((page) =>
+        page.frames().filter((frame) => !isForeignDocument(frame.url(), page.url())),
+      )
     const scans: DomPropLeakReport['scans'] = []
     const problems: string[] = []
     await Promise.all(
@@ -286,6 +314,10 @@ const watchers = new WeakMap<BrowserContext, Promise<StudioErrorWatcher>>()
  * Attach Studio error detection to a browser context, once per context: every call for the same
  * context returns the same watcher. Every page of the context, including ones created before the
  * call, fails the running test on Studio error screens and uncaught exceptions.
+ *
+ * Child frames of another origin than their page, such as the Presentation preview, are other
+ * apps: their uncaught exceptions, warnings and DOM prop leaks are left out
+ * (`helpers/foreignFrames.ts`).
  *
  * Every document loaded afterwards also runs the DOM prop leak scanner
  * (`helpers/domPropLeaks/scanner.ts`), which checks the props React gives each element against
