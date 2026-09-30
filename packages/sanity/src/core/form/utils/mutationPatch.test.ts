@@ -1,15 +1,6 @@
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {
-  dec,
-  diffMatchPatch,
-  inc,
-  insert,
-  SANITY_PATCH_TYPE,
-  set,
-  setIfMissing,
-  unset,
-} from '../patch/patch'
+import {diffMatchPatch, insert, SANITY_PATCH_TYPE, set, setIfMissing, unset} from '../patch/patch'
 import {type FormPatch} from '../patch/types'
 import {fromMutationPatches, toMutationPatches} from './mutationPatch'
 
@@ -30,20 +21,16 @@ describe('toMutationPatches', () => {
     expect(toMutationPatches([set({title: 'Hello'})])).toEqual([{set: {title: 'Hello'}}])
   })
 
-  test('maps unset, setIfMissing, inc, dec and diffMatchPatch', () => {
+  test('maps unset, setIfMissing and diffMatchPatch', () => {
     expect(
       toMutationPatches([
         unset(['title']),
         setIfMissing('x', ['slug']),
-        inc(2, ['count']) as unknown as FormPatch,
-        dec(1, ['count']) as unknown as FormPatch,
         diffMatchPatch('@@ -1,1 +1,2 @@\n+hi\n', ['body']),
       ]),
     ).toEqual([
       {unset: ['title']},
       {setIfMissing: {slug: 'x'}},
-      {inc: {count: 2}},
-      {dec: {count: 1}},
       {diffMatchPatch: {body: '@@ -1,1 +1,2 @@\n+hi\n'}},
     ])
   })
@@ -172,7 +159,6 @@ describe('roundtrip', () => {
       setIfMissing([], ['tags']),
       insert([{_key: 'n', title: 'New'}], 'after', ['items', {_key: 'a'}]),
       diffMatchPatch('@@ -1,1 +1,2 @@\n+x\n', ['body']),
-      inc(3, ['count']) as unknown as FormPatch,
     ]
 
     expect(fromMutationPatches('remote', toMutationPatches(patches))).toEqual([
@@ -187,7 +173,6 @@ describe('roundtrip', () => {
         origin: 'remote',
       },
       {type: 'diffMatchPatch', path: ['body'], value: '@@ -1,1 +1,2 @@\n+x\n', origin: 'remote'},
-      {type: 'inc', path: ['count'], value: 3, origin: 'remote'},
     ])
   })
 
