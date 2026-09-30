@@ -1,8 +1,8 @@
 /**
  * The studio error watcher in `helpers/studioErrors.ts` leaves out child frames of another origin
  * than their page, such as the Presentation preview, which the e2e studio loads from its own
- * deployment. This checks that it does, and that the errors of the studio itself still reach it
- * while such a frame is open.
+ * deployment. This checks that it does, and that the page errors of the studio itself still reach
+ * it while such a frame is open.
  */
 import {expect} from '@playwright/test'
 
@@ -72,12 +72,14 @@ test('leaves out child frames of another origin, but not the errors of the studi
   expect(report.scans.map((scan) => scan.frameUrl)).not.toContain(FOREIGN_URL)
   expect(report.scans.some((scan) => scan.studioRendered)).toBe(true)
 
+  // The studio handles the uncaught exceptions of its own document (see `StudioErrorSource`), so its
+  // error is a rejection.
   const studioErrorThrown = page.waitForEvent('pageerror', (error) =>
     STUDIO_ERROR.test(error.message),
   )
   await page.evaluate((src) => {
     const frame = document.querySelector<HTMLIFrameElement>(`iframe[src="${src}"]`)
-    setTimeout(() => frame?.contentWindow?.document)
+    void (async () => frame?.contentWindow?.document)()
   }, FOREIGN_URL)
   await studioErrorThrown
 

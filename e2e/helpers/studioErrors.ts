@@ -31,7 +31,11 @@ const ERROR_SCREEN_MARKER = '__STUDIO_ERROR__'
 
 /**
  * Source of a detected studio error.
- * - `pageerror`: an uncaught exception propagated to `window.onerror`
+ * - `pageerror`: an uncaught exception or promise rejection that its document left unhandled. The
+ *   `GlobalErrorHandler` script that `sanity build` and `sanity dev` put in the studio's HTML
+ *   handles the uncaught exceptions of the studio's own document (its `window.onerror` returns
+ *   `true`), and the studio shows them as an error screen or an "Uncaught error" toast, so from
+ *   that document only rejections are page errors.
  * - `error-screen`: a rendered studio error screen (React boundary or pre-React overlay)
  */
 export type StudioErrorSource = 'pageerror' | 'error-screen'
@@ -313,7 +317,7 @@ const watchers = new WeakMap<BrowserContext, Promise<StudioErrorWatcher>>()
 /**
  * Attach Studio error detection to a browser context, once per context: every call for the same
  * context returns the same watcher. Every page of the context, including ones created before the
- * call, fails the running test on Studio error screens and uncaught exceptions.
+ * call, fails the running test on Studio error screens and page errors ({@link StudioErrorSource}).
  *
  * Child frames of another origin than their page, such as the Presentation preview, are other
  * apps: their uncaught exceptions, warnings and DOM prop leaks are left out
