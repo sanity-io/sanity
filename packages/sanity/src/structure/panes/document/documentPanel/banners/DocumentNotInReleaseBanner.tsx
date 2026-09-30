@@ -147,7 +147,7 @@ export function DocumentNotInReleaseBanner({
 }
 
 function useCurrentTime(updateIntervalMs: number): Date {
-  const [currentTime, setCurrentTime] = useState(new Date())
+  const [currentTime, setCurrentTime] = useState(() => new Date())
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentTime(new Date())

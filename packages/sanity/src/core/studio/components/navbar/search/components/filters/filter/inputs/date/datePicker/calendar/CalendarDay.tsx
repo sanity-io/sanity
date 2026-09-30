@@ -65,6 +65,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
 
   const isCurrentMonth = isSameMonth(date, focusedDate)
   const isFocused = focusedDate && isSameDay(date, focusedDate)
+  // oxlint-disable-next-line react/purity -- the today marker follows the current date
   const isToday = isSameDay(date, new Date())
 
   const isWithinRange =

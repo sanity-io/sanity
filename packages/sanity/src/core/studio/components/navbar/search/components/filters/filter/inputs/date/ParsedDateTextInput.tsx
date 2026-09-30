@@ -77,6 +77,7 @@ export function ParsedDateTextInput({
    * Conditionally create placeholder text
    */
   const formattedPlaceholder = useMemo(() => {
+    // oxlint-disable-next-line react/purity -- the example placeholder shows the current date
     const date = placeholderDate || new Date()
     return format(date, dateFormat)
   }, [dateFormat, placeholderDate])
