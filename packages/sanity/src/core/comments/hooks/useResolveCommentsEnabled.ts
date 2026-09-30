@@ -27,7 +27,12 @@ export function useResolveCommentsEnabled(
   // Whether the project's plan has the feature, as settled by `CommentsStudioProvider` above the
   // studio's loading screen. Read synchronously by the time a document opens, so the comments UI
   // is in its final state on the document's first paint instead of a pass later.
-  const {enabled: featureEnabled, error} = use(use(CommentsFeaturesPromiseContext))
+  const featuresPromise = use(CommentsFeaturesPromiseContext)
+  // Unlike the studio layout, this runs from the document layout middleware, which also mounts in
+  // studios composed without `StudioLayout` — there no `CommentsStudioProvider` ran. The check
+  // itself never rejects, so a rejected promise only ever means that missing provider: comments
+  // are off there instead of the document failing to render.
+  const features = featuresPromise.status === 'rejected' ? null : use(featuresPromise)
 
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled} = useSource().document.comments
@@ -39,17 +44,18 @@ export function useResolveCommentsEnabled(
 
   const value: ResolveCommentsEnabled = useMemo(() => {
     // The feature is not enabled if:
+    // - there is no feature check to read (`features` is null)
     // - the feature is not enabled in the project (`enabledFromConfig` is false)
-    // - there's an error when fetching the list of enabled features (`error` is set)
-    if (!enabledFromConfig || error) {
+    // - there's an error when fetching the list of enabled features (`features.error` is set)
+    if (!features || !enabledFromConfig || features.error) {
       return {enabled: false, mode: null}
     }
 
     return {
       enabled: true,
-      mode: featureEnabled ? 'default' : 'upsell',
+      mode: features.enabled ? 'default' : 'upsell',
     }
-  }, [enabledFromConfig, error, featureEnabled])
+  }, [enabledFromConfig, features])
 
   return value
 }
