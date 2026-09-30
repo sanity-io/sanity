@@ -125,8 +125,8 @@ describe('useFeatureEnabledPromise', () => {
     })
 
     await mount(<Parent featureKey={FEATURES.sanityTasks} />)
-    await act(async () => {})
 
+    // The replayed answer resolves the promise on a microtask, inside the awaited mount.
     expect(screen.getByTestId('settled')).toHaveTextContent('enabled')
     expect(requestCount).toBe(1)
   })

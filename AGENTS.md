@@ -586,6 +586,18 @@ revealed. Two consequences for Suspense code:
 - For content inside a closed popover or any other hidden `<Activity>` tree, call the hook in a
   visible ancestor and pass the promise down, as `WorkspaceMenuButton` does for `ManageMenu`.
   The fetch then starts when the ancestor commits, and the data is settled before the reveal.
+- A `studio.components.layout` middleware whose tree shape depends on an async check (which
+  providers wrap `renderDefault`, whether a navbar button or tool exists) must settle that check
+  before rendering, or the answer arriving after the first paint remounts the whole studio below
+  it. `TasksStudioLayout`, `SchedulePublishingStudioLayout` and `CommentsStudioLayout` do this
+  with `useFeatureEnabledPromise` in the middleware, a `<Suspense fallback={<LoadingBlock />}>`
+  (the same screen `StudioLayout` shows for the lazy chunk), and `use()` in the provider below;
+  `StudioLayout` calls `usePreloadFeatures()` so the `/features` request runs alongside the chunk
+  downloads instead of after them.
+- To unit test a component that takes such a promise as a prop, hand it an already settled one:
+  `Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value})` satisfies
+  `ObservablePromise<T>` and `use()` reads it synchronously, so `renderHook` works without a
+  Suspense boundary or an async `act` (see `TasksEnabledProvider.test.tsx`).
 
 `useObservable` and `useSyncObservable` require an `initialValue` in v7 and render it on the first
 pass regardless of synchronous emissions, so do not rely on a replayed value winning the first
