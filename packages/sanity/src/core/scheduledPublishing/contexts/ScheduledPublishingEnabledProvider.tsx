@@ -1,36 +1,45 @@
-import {useContext, useMemo} from 'react'
+import {use, useContext, useMemo} from 'react'
+import {type ObservablePromise} from 'react-rx'
 import {
   ScheduledPublishingEnabledContext,
   type ScheduledPublishingEnabledContextValue,
 } from 'sanity/_singletons'
 
-import {useFeatureEnabled, FEATURES} from '../../hooks/useFeatureEnabled'
+import {type SettledFeatures} from '../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../studio/workspace'
-import {useHasUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
+import {type HasUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 
 interface ScheduledPublishingEnabledProviderProps {
   children: React.ReactNode
+  /** From `useFeatureEnabledPromise(FEATURES.scheduledPublishing)` in a parent above the boundary */
+  featureEnabledPromise: ObservablePromise<SettledFeatures>
+  /** From `useHasUsedScheduledPublishingPromise()` in a parent above the boundary */
+  hasUsedScheduledPublishingPromise: ObservablePromise<HasUsedScheduledPublishing>
 }
 
 /**
+ * Decides whether scheduled publishing is available before anything below it renders. The answer
+ * controls whether the Schedules tool shows up in the navbar and whether the layout is wrapped in
+ * the upsell provider, so both checks it depends on (the project's feature list and the "has this
+ * dataset ever scheduled anything" probe) are awaited here instead of flipping the layout after
+ * the first paint.
+ *
  * @internal
  */
-
 export function ScheduledPublishingEnabledProvider({
   children,
+  featureEnabledPromise,
+  hasUsedScheduledPublishingPromise,
 }: ScheduledPublishingEnabledProviderProps) {
-  const {enabled, isLoading, error} = useFeatureEnabled(FEATURES.scheduledPublishing)
+  const {enabled, error} = use(featureEnabledPromise)
+  const hasUsedScheduledPublishing = use(hasUsedScheduledPublishingPromise)
   const {scheduledPublishing} = useWorkspace()
 
   const isWorkspaceEnabled = scheduledPublishing.enabled
   const explicitEnabled = scheduledPublishing.__internal__workspaceEnabled
-  const hasUsedScheduledPublishing = useHasUsedScheduledPublishing({
-    explicitEnabled,
-    isWorkspaceEnabled,
-  })
 
   const value: ScheduledPublishingEnabledContextValue = useMemo(() => {
-    if (!isWorkspaceEnabled || isLoading || error) {
+    if (!isWorkspaceEnabled || error) {
       return {
         enabled: false,
         mode: null,
@@ -56,7 +65,7 @@ export function ScheduledPublishingEnabledProvider({
       mode: enabled ? 'default' : 'upsell',
       hasUsedScheduledPublishing,
     }
-  }, [enabled, isLoading, isWorkspaceEnabled, error, hasUsedScheduledPublishing, explicitEnabled])
+  }, [enabled, isWorkspaceEnabled, error, hasUsedScheduledPublishing, explicitEnabled])
 
   return (
     <ScheduledPublishingEnabledContext.Provider value={value}>

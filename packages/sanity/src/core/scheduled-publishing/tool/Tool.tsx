@@ -5,7 +5,6 @@ import {Link, type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Container, Box, Flex} from 'ui5'
 
-import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -65,7 +64,7 @@ export default function Tool() {
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
   const {t} = useTranslation()
-  const {enabled, hasUsedScheduledPublishing} = useScheduledPublishingEnabled()
+  const {enabled} = useScheduledPublishingEnabled()
 
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
@@ -125,7 +124,7 @@ export default function Tool() {
     return (
       <Container size={1} paddingTop={4}>
         <Box paddingTop={4} paddingX={4}>
-          {hasUsedScheduledPublishing.loading ? <LoadingBlock /> : <InfoCallout />}
+          <InfoCallout />
         </Box>
       </Container>
     )
