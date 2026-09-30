@@ -6,13 +6,16 @@ import {encodeJsonParams} from 'sanity/router'
 import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../studio/workspace'
+import {
+  type FederatedAssetSourceView,
+  type FederatedAssetSourceViewProps,
+} from '../../federatedAssetSource/types'
 import {DEFAULT_API_VERSION} from '../constants'
 import {MediaLibraryAssetSource, useRootPortalElement} from '../shared/MediaLibraryAssetSource'
 import {MediaLibraryProvider} from '../shared/MediaLibraryProvider'
 import {FederatedOpenInSourceDialog} from './FederatedOpenInSourceDialog'
 import {FederatedSelectAssetsDialog} from './FederatedSelectAssetsDialog'
 import {FederatedUploadDialog} from './FederatedUploadDialog'
-import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
 
 /**
  * The built-in Media Library asset source, fully federated: every action —

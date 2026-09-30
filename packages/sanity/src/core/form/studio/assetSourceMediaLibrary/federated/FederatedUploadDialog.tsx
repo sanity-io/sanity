@@ -4,11 +4,14 @@ import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../../studio/colorScheme'
+import {FederatedViewMount} from '../../federatedAssetSource/FederatedViewMount'
+import {
+  type FederatedAssetSourceView,
+  type FederatedAssetSourceViewProps,
+} from '../../federatedAssetSource/types'
 import {useLinkAssets} from '../hooks/useLinkAssets'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
 import {type AssetSelectionItem} from '../types'
-import {FederatedViewMount} from './FederatedViewMount'
-import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
 
 export interface FederatedUploadDialogProps {
   onClose: () => void
