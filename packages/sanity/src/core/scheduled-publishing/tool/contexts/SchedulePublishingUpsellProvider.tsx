@@ -1,4 +1,4 @@
-import {Suspense, use, useContext} from 'react'
+import {Suspense, use} from 'react'
 import {
   ScheduledPublishingModePromiseContext,
   SchedulePublishUpsellContext,
@@ -40,6 +40,6 @@ function SchedulePublishingUpsellDialog({contextValue}: {contextValue: UpsellCon
 }
 
 export function useSchedulePublishingUpsell(): SchedulePublishUpsellContextValue {
-  const context = useContext(SchedulePublishUpsellContext)
+  const context = use(SchedulePublishUpsellContext)
   return context
 }

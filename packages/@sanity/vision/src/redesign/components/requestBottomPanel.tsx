@@ -3,7 +3,7 @@ import {
   type Dispatch,
   type ReactNode,
   type SetStateAction,
-  useContext,
+  use,
   useMemo,
   useState,
 } from 'react'
@@ -34,7 +34,7 @@ export function RequestBottomPanelProvider({children}: {children: ReactNode}) {
 }
 
 export function useRequestBottomPanel(): RequestBottomPanelContextValue {
-  const value = useContext(RequestBottomPanelContext)
+  const value = use(RequestBottomPanelContext)
   if (!value) {
     throw new Error('useRequestBottomPanel must be used within a RequestBottomPanelProvider')
   }

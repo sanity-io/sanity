@@ -1,7 +1,7 @@
 import {AvatarCounter, type AvatarPosition} from '@sanity/ui'
 import sortBy from 'lodash-es/sortBy.js'
 import uniqBy from 'lodash-es/uniqBy.js'
-import {memo, useCallback, useContext, useId, useMemo, useState} from 'react'
+import {memo, useCallback, use, useId, useMemo, useState} from 'react'
 import {FormFieldPresenceContext} from 'sanity/_singletons'
 
 import {UserAvatar} from '../components/userAvatar/UserAvatar'
@@ -97,7 +97,7 @@ export interface FieldPresenceProps {
 
 /** @internal */
 export function FieldPresence(props: FieldPresenceProps) {
-  const contextPresence = useContext(FormFieldPresenceContext)
+  const contextPresence = use(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
   const [element, setElement] = useState<HTMLDivElement | null>(null)
 

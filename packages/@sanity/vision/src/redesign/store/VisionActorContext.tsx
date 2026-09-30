@@ -1,5 +1,5 @@
 import {useSelector} from '@xstate/react'
-import {createContext, useContext, useLayoutEffect} from 'react'
+import {createContext, use, useLayoutEffect} from 'react'
 
 import {type useSavedQueries} from '../../hooks/useSavedQueries'
 import {onLocalStorageCleared} from '../../util/localStorage'
@@ -11,7 +11,7 @@ const PERSIST_DEBOUNCE_MS = 200
 export const VisionActorContext = createContext<VisionActorRef | null>(null)
 
 export function useVisionActor(): VisionActorRef {
-  const actorRef = useContext(VisionActorContext)
+  const actorRef = use(VisionActorContext)
   if (!actorRef) {
     throw new Error('useVisionActor must be used within a VisionActorContext provider')
   }
@@ -40,7 +40,7 @@ export interface VisionExperience {
 export const VisionExperienceContext = createContext<VisionExperience | null>(null)
 
 export function useVisionExperience(): VisionExperience {
-  const experience = useContext(VisionExperienceContext)
+  const experience = use(VisionExperienceContext)
   if (!experience) {
     throw new Error('useVisionExperience must be used within a VisionExperienceContext provider')
   }
@@ -78,7 +78,7 @@ export function createPendingEdits(): PendingEdits {
 export const PendingEditsContext = createContext<PendingEdits | null>(null)
 
 export function usePendingEdits(): PendingEdits {
-  const pendingEdits = useContext(PendingEditsContext)
+  const pendingEdits = use(PendingEditsContext)
   if (!pendingEdits) {
     throw new Error('usePendingEdits must be used within a PendingEditsContext provider')
   }
@@ -91,7 +91,7 @@ export type SavedQueriesApi = ReturnType<typeof useSavedQueries>
 export const SavedQueriesContext = createContext<SavedQueriesApi | null>(null)
 
 export function useSavedQueriesApi(): SavedQueriesApi {
-  const api = useContext(SavedQueriesContext)
+  const api = use(SavedQueriesContext)
   if (!api) {
     throw new Error('useSavedQueriesApi must be used within a SavedQueriesContext provider')
   }
@@ -110,7 +110,7 @@ export interface TabDrawerSlot {
 export const TabDrawerSlotContext = createContext<TabDrawerSlot | null>(null)
 
 export function useTabDrawerSlot(): TabDrawerSlot {
-  const slot = useContext(TabDrawerSlotContext)
+  const slot = use(TabDrawerSlotContext)
   if (!slot) {
     throw new Error('useTabDrawerSlot must be used within a TabDrawerSlotContext provider')
   }

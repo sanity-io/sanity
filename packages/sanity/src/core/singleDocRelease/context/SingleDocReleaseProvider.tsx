@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {SingleDocReleaseContext, type SingleDocReleaseContextValue} from 'sanity/_singletons'
 
 interface SingleDocReleaseProviderProps {
@@ -26,7 +26,7 @@ export function SingleDocReleaseProvider({
  * @internal
  */
 export function useSingleDocRelease(): SingleDocReleaseContextValue {
-  const context = useContext(SingleDocReleaseContext)
+  const context = use(SingleDocReleaseContext)
   if (!context) {
     throw new Error('SingleDocReleaseContext not found')
   }

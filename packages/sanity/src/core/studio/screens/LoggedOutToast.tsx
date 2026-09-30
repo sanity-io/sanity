@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {LoggedOutReasonContext} from 'sanity/_singletons'
 
 import {useConditionalToast} from '../../hooks/useConditionalToast'
@@ -18,7 +18,7 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
  * @internal
  */
 export function LoggedOutToast() {
-  const reason = useContext(LoggedOutReasonContext)
+  const reason = use(LoggedOutReasonContext)
   const {t} = useTranslation()
 
   useConditionalToast({

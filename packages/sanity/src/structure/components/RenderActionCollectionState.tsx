@@ -1,4 +1,4 @@
-import {memo, useContext} from 'react'
+import {memo, use} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -19,7 +19,7 @@ export interface RenderActionCollectionProps {
 /** @internal */
 export const RenderActionCollectionState = memo((props: RenderActionCollectionProps) => {
   const {children, group} = props
-  const states = useContext(DocumentActionsStateContext)
+  const states = use(DocumentActionsStateContext)
 
   if (states === null) {
     throw new Error('DocumentActionsStateContext is not set. This should not happen.')

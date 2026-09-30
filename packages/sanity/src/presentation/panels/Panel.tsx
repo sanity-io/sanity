@@ -1,4 +1,4 @@
-import {type FunctionComponent, type PropsWithChildren, useContext, useLayoutEffect} from 'react'
+import {type FunctionComponent, type PropsWithChildren, use, useLayoutEffect} from 'react'
 import {PresentationPanelsContext} from 'sanity/_singletons'
 
 import {root} from './Panel.css'
@@ -26,7 +26,7 @@ export const Panel: FunctionComponent<PanelProps> = function ({
   order = 0,
   hidden = false,
 }) {
-  const context = useContext(PresentationPanelsContext)
+  const context = use(PresentationPanelsContext)
 
   if (context === null) {
     throw Error(`Panel components must be rendered within a PanelGroup container`)
