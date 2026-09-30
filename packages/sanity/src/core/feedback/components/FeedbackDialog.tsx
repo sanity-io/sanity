@@ -2,14 +2,7 @@ import {FaceHappyIcon} from '@sanity/icons/FaceHappy'
 import {FaceIndifferentIcon} from '@sanity/icons/FaceIndifferent'
 import {FaceSadIcon} from '@sanity/icons/FaceSad'
 import {Card, Switch, TextArea} from '@sanity/ui'
-import {
-  type ChangeEvent,
-  type ClipboardEvent,
-  useCallback,
-  useContext,
-  useId,
-  useState,
-} from 'react'
+import {type ChangeEvent, type ClipboardEvent, useCallback, use, useId, useState} from 'react'
 import {FeedbackContext} from 'sanity/_singletons'
 import {Text, Flex, VStack} from 'ui5'
 
@@ -83,7 +76,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
     userName: contextUserName,
     userEmail: contextUserEmail,
     tags,
-  } = useContext(FeedbackContext)
+  } = use(FeedbackContext)
   const resolvedName = userNameProp ?? contextUserName
   const resolvedEmail = userEmailProp ?? contextUserEmail
 

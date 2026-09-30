@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {PaneRouterContext} from 'sanity/_singletons'
 
 import {type PaneRouterContextValue} from './types'
@@ -13,5 +13,5 @@ export {PaneRouterContext}
  * @beta
  */
 export function usePaneRouter(): PaneRouterContextValue {
-  return useContext(PaneRouterContext)
+  return use(PaneRouterContext)
 }

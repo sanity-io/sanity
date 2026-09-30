@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {ResolvedPanesContext} from 'sanity/_singletons'
 
 import {type Panes} from './useResolvedPanes'
@@ -13,7 +13,7 @@ const DEFAULT_VALUE: Panes = {
   },
 }
 export function useResolvedPanesList(): Panes {
-  const context = useContext(ResolvedPanesContext)
+  const context = use(ResolvedPanesContext)
 
   // This allows components to be used outside of ResolvedPanesProvider
   // Such as Presensation which doesn't need to be concerned about the structure of the panes
