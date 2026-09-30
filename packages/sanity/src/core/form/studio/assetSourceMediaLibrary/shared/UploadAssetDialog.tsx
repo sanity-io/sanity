@@ -49,6 +49,15 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
     unsubscribe: () => void
   } | null>(null)
 
+  // Terminal statuses (`complete`, `alreadyExists`) from `uploadProgress`
+  // messages, held back until the `uploadResponse` message has been handled:
+  // writing the last terminal status fires `all-complete`, which makes the
+  // Studio input tear this (hidden) iframe down — before the response
+  // postMessage carrying the uploaded assets could arrive.
+  const pendingTerminalStatusesRef = useRef(
+    new Map<string, {status: string; progress?: number; error?: Error}>(),
+  )
+
   const [pageReadyForUploads, setPageReadyForUploads] = useState(false)
 
   const handleUploaded = useCallback(
@@ -101,6 +110,11 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
               })
             }
           }
+          if (status === 'complete' || status === 'alreadyExists') {
+            pendingTerminalStatusesRef.current.set(id, {status, progress, error})
+            uploader.updateFile(id, {progress})
+            return
+          }
           uploader.updateFile(id, {
             status,
             progress,
@@ -108,12 +122,13 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
           })
         })
       }
-      // The upload has completed inside the iframe
+      // The upload has completed inside the iframe. Link the assets first
+      // (success or failure), then flush the held-back terminal statuses so
+      // `all-complete` fires only after the data has landed.
       if (message.type === 'uploadResponse' && uploader) {
         void handleUploaded(message.assets).then(() => {
-          if ('signalCompletion' in uploader && typeof uploader.signalCompletion === 'function') {
-            uploader.signalCompletion()
-          }
+          pendingTerminalStatusesRef.current.forEach((data, id) => uploader.updateFile(id, data))
+          pendingTerminalStatusesRef.current.clear()
         })
       }
     },

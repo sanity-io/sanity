@@ -93,7 +93,8 @@ export function observeVideoAssetStub(id: string): Observable<VideoAsset> {
 
 /**
  * Creates a mock asset source that auto-completes on both upload and browse actions.
- * Uses MediaLibraryUploader for upload mode (which has signalCompletion).
+ * Uses MediaLibraryUploader for upload mode, following the picker-mode ordering
+ * contract (onSelect before the final terminal status).
  * Reusable across File, Image, and Video input tests.
  */
 export function createMockAssetSourceWithMediaLibraryUploader(
@@ -124,9 +125,10 @@ export function createMockAssetSourceWithMediaLibraryUploader(
         }
         onSelect([assetFromSource])
         onClose?.()
-        if ('signalCompletion' in uploader && typeof uploader.signalCompletion === 'function') {
-          uploader.signalCompletion()
-        }
+        // New-world ordering: source-side work and onSelect first, then the
+        // terminal statuses — the last one fires all-complete, which resets
+        // the input for the next upload.
+        files.forEach((f) => uploader.updateFile(f.id, {status: 'complete'}))
       } else {
         // Component mode: no file picker, source handles selection internally - auto-select
         const assetFromSource: AssetFromSource = {
