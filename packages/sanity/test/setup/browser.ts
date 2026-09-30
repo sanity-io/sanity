@@ -9,6 +9,10 @@
 // two stylesheets overlap (resets, tokens, `prefers-reduced-motion` rules).
 import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
+// Fail any test during which react-dom reports a prop leaking onto a DOM element (see the module
+// for the matched diagnostics). Installed before the console overrides below so those wrap it.
+// oxlint-disable-next-line no-unassigned-import
+import '@repo/test-config/vitest/failOnReactDomPropWarnings'
 
 import {afterEach, beforeEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'
