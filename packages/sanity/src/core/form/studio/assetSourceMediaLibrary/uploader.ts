@@ -6,12 +6,18 @@ import {
 } from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 
-const DEFERRED_TERMINAL_STATUSES = ['complete', 'alreadyExists'] as const
-
+/**
+ * A plain picker-mode uploader: statuses apply when written and
+ * `all-complete` fires as soon as every file carries a terminal status. The
+ * writer owns the ordering — anything that must happen before the host tears
+ * the flow down on `all-complete` (linking, `onSelect`) has to finish before
+ * the last terminal status is written. The federated view does exactly that;
+ * the iframe `UploadAssetsDialog` buffers terminal statuses itself until the
+ * `uploadResponse` message lands.
+ */
 export class MediaLibraryUploader implements AssetSourceUploader {
   private files: AssetSourceUploadFile[] = []
   private subscribers = new Set<AssetSourceUploadSubscriber>()
-  private deferredUpdates = new Map<string, {status: string; progress?: number; error?: Error}>()
 
   private checkAllComplete(): void {
     const isDone =
@@ -34,24 +40,6 @@ export class MediaLibraryUploader implements AssetSourceUploader {
 
   private emit(event: AssetSourceUploadEvent): void {
     this.subscribers.forEach((fn) => fn(event))
-  }
-
-  /**
-   * Emit all-complete after applying any deferred terminal status updates.
-   * Call this when uploadResponse is received so all-complete fires after the
-   * asset source has the data it needs, avoiding unmount before postMessage arrives.
-   */
-  signalCompletion(): void {
-    this.deferredUpdates.forEach(({status, progress, error}, fileId) => {
-      const target = this.files.find((f) => f.id === fileId)
-      if (target) {
-        if (error) target.error = error
-        if (progress !== undefined) target.progress = progress
-        target.status = status as AssetSourceUploadFile['status']
-      }
-    })
-    this.deferredUpdates.clear()
-    this.checkAllComplete()
   }
 
   upload(files: globalThis.File[]): AssetSourceUploadFile[] {
@@ -96,18 +84,6 @@ export class MediaLibraryUploader implements AssetSourceUploader {
       this.emit({type: 'progress', file: target, progress: target.progress * 100})
     }
     if (data.status && data.status !== target.status) {
-      if (
-        DEFERRED_TERMINAL_STATUSES.includes(
-          data.status as (typeof DEFERRED_TERMINAL_STATUSES)[number],
-        )
-      ) {
-        this.deferredUpdates.set(fileId, {
-          status: data.status,
-          progress: data.progress,
-          error: data.error,
-        })
-        return
-      }
       target.status = data.status as AssetSourceUploadFile['status']
       this.emit({type: 'status', file: target, status: target.status})
     }
@@ -135,6 +111,5 @@ export class MediaLibraryUploader implements AssetSourceUploader {
 
   reset(): void {
     this.files = []
-    this.deferredUpdates.clear()
   }
 }
