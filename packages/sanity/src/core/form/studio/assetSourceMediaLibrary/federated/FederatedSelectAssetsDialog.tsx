@@ -23,7 +23,7 @@ import {useFormValue} from '../../../contexts/FormValue'
 import {useLinkAssets} from '../hooks/useLinkAssets'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
-import {AppDialog} from '../shared/Dialog'
+import {FullSurfaceAppDialog} from '../shared/Dialog'
 import {filterMediaValidationMarkers} from '../shared/validation'
 import {type AssetSelectionItem} from '../types'
 import {FederatedViewMount} from './FederatedViewMount'
@@ -179,7 +179,7 @@ export function FederatedSelectAssetsDialog(props: {
   )
 
   return (
-    <AppDialog
+    <FullSurfaceAppDialog
       header={dialogHeaderTitle}
       id="media-library-federated-dialog-select-assets"
       onClose={onClose}
@@ -187,9 +187,9 @@ export function FederatedSelectAssetsDialog(props: {
       open
       ref={ref ?? null}
       data-testid="media-library-federated-dialog-select-assets"
-      // Wider than the iframe select dialog (width 3): the federated view
-      // mounts the full Media Library app (folder nav, grid, detail sidebar),
-      // which needs the room. Capped by the viewport below 1920px.
+      // Fills the studio surface (see FullSurfaceAppDialog); the width prop
+      // only serves as a fallback cap should the styled override ever stop
+      // matching the Dialog's DOM.
       width={5}
       footer={
         <Card
@@ -240,6 +240,6 @@ export function FederatedSelectAssetsDialog(props: {
       >
         <FederatedViewMount onUnavailable={onUnavailable} view={view} viewProps={viewProps} />
       </Box>
-    </AppDialog>
+    </FullSurfaceAppDialog>
   )
 }
