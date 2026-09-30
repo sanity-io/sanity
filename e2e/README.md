@@ -47,6 +47,12 @@ Other useful helper commands
 
 For more useful commands, see the [Playwright Command Line](https://playwright.dev/docs/test-cli) documentation.
 
+### Studio error watcher
+
+Every spec that uses the `test` fixture from `studio-test.ts` runs under `watchForStudioErrors` (`helpers/studioErrors.ts`). It fails the test on an uncaught page error, on a rendered studio error screen, and on a react-dom DOM prop warning (`React does not recognize the ... prop on a DOM element`, `Invalid DOM property`, `Received true for a non-boolean attribute`, unknown event handler or ARIA attribute names) and on styled-components' `it looks like an unknown prop "..." is being sent through to the DOM` warning, which also covers all-lowercase props (`intent`, `params`) that react-dom renders as attributes without a word. Use `expectError(matcher)` when a spec deliberately triggers one of these.
+
+The DOM prop warnings are only emitted by the development builds of react-dom and styled-components, so that part of the watcher is live when the suite runs against `sanity dev` (the default local `webServer`) and inert against the production build CI deploys. The vitest unit and browser-mode suites carry the same check in CI (`@repo/test-config/vitest/failOnReactDomPropWarnings`), so run a spec locally against the dev server when you want to see one of these warnings fail.
+
 ### Running tests from your code editor
 
 You can run your tests in your editor with the help of some useful editor plugins/extensions. For example, you can download `Playwright Test for VSCode` from Microsoft to show and run your tests in VSCode.
