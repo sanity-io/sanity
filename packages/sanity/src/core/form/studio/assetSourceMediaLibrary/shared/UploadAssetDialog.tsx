@@ -91,25 +91,14 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
         setPageReadyForUploads(false)
       }
 
-      // The upload is progressing in the iframe, update the uploader files
+      // The upload is progressing in the iframe, update the uploader files.
+      // Already-exists warning toasts are NOT pushed here: they're pushed
+      // centrally by `useAssetSourceUploader` in the input when the flushed
+      // `alreadyExists` statuses fire `all-complete` (this dialog can be
+      // unmounted by then, and a second site would double-toast when it
+      // isn't).
       if (message.type === 'uploadProgress' && uploader) {
         message.files.forEach(({id, status, progress, error}) => {
-          if (status === 'alreadyExists') {
-            const file = uploader.getFiles().find((f) => f.id === id)
-            if (file) {
-              toast.push({
-                status: 'warning',
-                title: t('asset-sources.media-library.warning.file-already-exist.title', {
-                  filename: file.file.name,
-                }),
-                description: t(
-                  'asset-sources.media-library.warning.file-already-exist.description',
-                ),
-                closable: true,
-                duration: 10000,
-              })
-            }
-          }
           if (status === 'complete' || status === 'alreadyExists') {
             pendingTerminalStatusesRef.current.set(id, {status, progress, error})
             uploader.updateFile(id, {progress})
@@ -132,7 +121,7 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
         })
       }
     },
-    [handleUploaded, open, toast, t, uploader],
+    [handleUploaded, open, uploader],
   )
 
   const {postMessage, setIframe} = usePluginPostMessage(appHost, handlePluginMessage)
@@ -154,22 +143,11 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
       }
       const subscribe = () => {
         return uploader.subscribe((event) => {
-          if (event.type === 'all-complete') {
-            const existingFiles = event.files.filter((file) => file.status === 'alreadyExists')
-            existingFiles.forEach((file) => {
-              toast.push({
-                status: 'warning',
-                title: t('asset-sources.media-library.warning.file-already-exist.title', {
-                  filename: file.file.name,
-                }),
-                description: t(
-                  'asset-sources.media-library.warning.file-already-exist.description',
-                ),
-                closable: true,
-                duration: 10000,
-              })
-            })
-          }
+          // No already-exists toast handling here: the warning toasts are
+          // pushed centrally by `useAssetSourceUploader` in the input (this
+          // dialog can be unmounted by the `onSelect` reset before the
+          // terminal statuses flush, and a second subscription would
+          // double-toast when it isn't).
           if (event.type === 'status' && event.status === 'aborted') {
             postMessage({
               type: 'abortUploadRequest',
@@ -189,7 +167,7 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
       return uploaderRef.current.unsubscribe
     }
     return uploaderRef.current?.unsubscribe()
-  }, [open, pageReadyForUploads, postMessage, t, toast, uploader, uploaderRef])
+  }, [open, pageReadyForUploads, postMessage, uploader, uploaderRef])
 
   if (!open) {
     return null

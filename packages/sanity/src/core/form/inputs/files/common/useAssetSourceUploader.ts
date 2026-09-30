@@ -98,6 +98,26 @@ export function useAssetSourceUploader(options: UseAssetSourceUploaderOptions) {
                   )
                   if (hasAssetLimitError) onAssetLimitError()
                 }
+                // Duplicate-detection warnings ("file already exists, using
+                // the existing one") must be pushed from here: the source's
+                // own components are unmounted by the `onSelect` reset before
+                // the terminal statuses land, so a subscription there never
+                // sees this event.
+                event.files
+                  ?.filter((file) => file.status === 'alreadyExists')
+                  .forEach((file) => {
+                    push({
+                      status: 'warning',
+                      title: t('asset-sources.media-library.warning.file-already-exist.title', {
+                        filename: file.file.name,
+                      }),
+                      description: t(
+                        'asset-sources.media-library.warning.file-already-exist.description',
+                      ),
+                      closable: true,
+                      duration: 10000,
+                    })
+                  })
                 onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
                 onAllComplete?.()
                 handleAssetSourceResetOnComplete()
