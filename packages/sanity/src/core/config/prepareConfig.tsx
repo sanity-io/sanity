@@ -15,14 +15,16 @@ import {
   createDatasetImageAssetSource,
 } from '../form/studio/assetSourceDataset'
 import {
-  createFederatedAssetSource,
   createFederatedSanityMediaLibraryFileSource,
   createFederatedSanityMediaLibraryImageSource,
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
+} from '../form/studio/assetSourceMediaLibrary'
+import {
+  createFederatedAssetSource,
   getCurrentFederatedAssetSourceViews,
   isMediaLibraryView,
-} from '../form/studio/assetSourceMediaLibrary'
+} from '../form/studio/federatedAssetSource'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {createSchema} from '../schema/createSchema'

@@ -2,9 +2,9 @@ import {type AssetSourceComponentProps} from '@sanity/types'
 import {type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
 import {Box, Text} from 'ui5'
 
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {useColorSchemeValue} from '../../../../studio/colorScheme'
-import {AppDialog} from '../shared/Dialog'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useColorSchemeValue} from '../../../studio/colorScheme'
+import {AppDialog} from './Dialog'
 import {FederatedViewMount} from './FederatedViewMount'
 import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
 

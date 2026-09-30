@@ -7,8 +7,8 @@ import {
   type AssetSourceOpenInSourceResult,
 } from '@sanity/types'
 
+import {type FederatedAssetSourceView} from '../federatedAssetSource/types'
 import {FederatedMediaLibraryAssetSource} from './federated/FederatedMediaLibraryAssetSource'
-import {type FederatedAssetSourceView} from './federated/types'
 import {MediaLibraryAssetSource} from './shared/MediaLibraryAssetSource'
 import {MediaLibraryUploader} from './uploader'
 

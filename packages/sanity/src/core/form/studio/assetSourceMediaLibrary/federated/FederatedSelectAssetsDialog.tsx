@@ -20,14 +20,17 @@ import {useColorSchemeValue} from '../../../../studio/colorScheme'
 import {useWorkspace} from '../../../../studio/workspace'
 import {FormFieldValidationStatus} from '../../../components/formField/FormFieldValidationStatus'
 import {useFormValue} from '../../../contexts/FormValue'
+import {FullSurfaceAppDialog} from '../../federatedAssetSource/Dialog'
+import {FederatedViewMount} from '../../federatedAssetSource/FederatedViewMount'
+import {
+  type FederatedAssetSourceView,
+  type FederatedAssetSourceViewProps,
+} from '../../federatedAssetSource/types'
 import {useLinkAssets} from '../hooks/useLinkAssets'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
-import {FullSurfaceAppDialog} from '../shared/Dialog'
 import {filterMediaValidationMarkers} from '../shared/validation'
 import {type AssetSelectionItem} from '../types'
-import {FederatedViewMount} from './FederatedViewMount'
-import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
 
 /**
  * The Media Library select dialog with the brokered federated view as its
