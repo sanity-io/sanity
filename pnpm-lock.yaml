@@ -695,11 +695,11 @@ importers:
   dev/sdk-app:
     dependencies:
       '@sanity/sdk':
-        specifier: ^3.6.0
-        version: 3.6.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
+        specifier: ^3.7.0
+        version: 3.7.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
       '@sanity/sdk-react':
-        specifier: ^3.6.0
-        version: 3.6.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
+        specifier: ^3.7.0
+        version: 3.7.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
       react:
         specifier: 'catalog:'
         version: 19.3.0
@@ -2174,11 +2174,11 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/schema
       '@sanity/sdk':
-        specifier: ^3.6.0
-        version: 3.6.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
+        specifier: ^3.7.0
+        version: 3.7.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
       '@sanity/sdk-react':
-        specifier: ^3.6.0
-        version: 3.6.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
+        specifier: ^3.7.0
+        version: 3.7.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
       '@sanity/telemetry':
         specifier: 'catalog:'
         version: 1.1.0(react@19.3.0)
@@ -7592,14 +7592,14 @@ packages:
     engines: {node: '>=22.12'}
     hasBin: true
 
-  '@sanity/sdk-react@3.6.0':
-    resolution: {integrity: sha512-fxUPOHGVQ3/2c4HFKO20R7wpALrqQ7SpMq2r2+GSCEHc7axUWuwrxjGcNGx55pWOU/HxEFrtB4ngMg/V3Aswug==}
+  '@sanity/sdk-react@3.7.0':
+    resolution: {integrity: sha512-jkCwXNTzzxtBEWkXrsobYiWZ/YRyAlr/XgtyzAwkVAx7Wo3uhq1sLPMuk0jt/aJ2Q1NlK3fwWqVsa3/G+n9whw==}
     peerDependencies:
       react: ^19.2.0
       react-dom: ^19.2.0
 
-  '@sanity/sdk@3.6.0':
-    resolution: {integrity: sha512-IPU6fIeO7oIKHxiPogGX6k1ofFcps+bYzaziQR5WR9OmboxJeQMBREwL2ybevF8lmTlBL159Ry+V4M9lMFYDrg==}
+  '@sanity/sdk@3.7.0':
+    resolution: {integrity: sha512-lQ4dk2/pAF8f1TpDw7oP/9oIKsa1zByqXF3yS0m2UKRMmdrpE0kZ39VH3ANtKUcSdOpABRwyjMcRtMPwPK24rQ==}
 
   '@sanity/signed-urls@2.0.5':
     resolution: {integrity: sha512-kg+LrXyk8tYNuCZnXrSRpTKR6dkbjkfBimGhqUs93VlfhSr56NkbS9N6zXqYRTg2mwbPYd/CAQHNX3SsXJgPcg==}
@@ -20512,12 +20512,12 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/sdk-react@3.6.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)':
+  '@sanity/sdk-react@3.7.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)':
     dependencies:
       '@module-federation/runtime': 2.9.1
       '@sanity/client': 8.7.0(vitest@5.0.1)
       '@sanity/message-protocol': 0.24.0
-      '@sanity/sdk': 3.6.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
+      '@sanity/sdk': 3.7.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
       '@sanity/types': link:packages/@sanity/types
       react: 19.3.0
       react-compiler-runtime: 1.0.0(react@19.3.0)
@@ -20531,7 +20531,7 @@ snapshots:
       - vitest
       - xstate
 
-  '@sanity/sdk@3.6.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)':
+  '@sanity/sdk@3.7.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
       '@sanity/client': 8.7.0(vitest@5.0.1)
