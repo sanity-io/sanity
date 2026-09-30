@@ -1,4 +1,4 @@
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouterState} from 'sanity/router'
 import {
@@ -7,6 +7,7 @@ import {
   PaneLayout,
   StructureToolProvider,
 } from 'sanity/structure'
+import {Box, Flex} from 'ui5'
 
 import {MinimalPaneRouterProvider} from './MinimalPaneRouterProvider'
 
@@ -17,7 +18,6 @@ export function EditorTool(): React.JSX.Element {
   const documentId = useRouterState((state) =>
     typeof state.id === 'string' ? state.id : undefined,
   )
-
   const pane: DocumentPaneNode | undefined = useMemo(
     () =>
       documentId && documentType
@@ -33,21 +33,31 @@ export function EditorTool(): React.JSX.Element {
 
   if (!pane) {
     return (
-      <Flex align="center" justify="center" height="fill" padding={4}>
+      <Flex alignItems="center" justifyContent="center" height="100%" padding={4}>
         <Text muted size={1}>
-          Search for an article to start editing
+          Pick a story from the dashboard to start editing
         </Text>
       </Flex>
     )
   }
 
   return (
-    <StructureToolProvider documentChrome={false}>
-      <PaneLayout style={{height: '100%'}}>
-        <MinimalPaneRouterProvider>
-          <DocumentPane paneKey={pane.id} index={0} itemId={pane.id} pane={pane} />
-        </MinimalPaneRouterProvider>
-      </PaneLayout>
+    <StructureToolProvider>
+      <MinimalPaneRouterProvider>
+        <Flex flexDirection="column" height="100%">
+          <Box flexGrow={1} style={{minHeight: 0}}>
+            <PaneLayout style={{height: '100%'}}>
+              <DocumentPane
+                paneKey={pane.id}
+                index={0}
+                itemId={pane.id}
+                pane={pane}
+                actionsPlacement="top"
+              />
+            </PaneLayout>
+          </Box>
+        </Flex>
+      </MinimalPaneRouterProvider>
     </StructureToolProvider>
   )
 }

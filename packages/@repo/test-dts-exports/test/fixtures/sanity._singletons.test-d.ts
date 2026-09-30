@@ -39,6 +39,8 @@ import type {
   DialogStackEntry,
   DiffContext,
   DocumentActionPropsContext,
+  DocumentActionsPlacement,
+  DocumentActionsPlacementContext,
   DocumentActionsStateContext,
   DocumentChangeContext,
   DocumentDivergencesContext,
@@ -51,6 +53,7 @@ import type {
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentPaneInfoContext,
+  DocumentToolsContext,
   EditDialogOuterBoundaryContext,
   EnhancedObjectDialogContext,
   EventsContext,
@@ -263,6 +266,12 @@ describe('sanity/_singletons', () => {
   test('DocumentActionPropsContext', () => {
     expectTypeOf<typeof DocumentActionPropsContext>().not.toBeNever()
   })
+  test('DocumentActionsPlacement', () => {
+    expectTypeOf<DocumentActionsPlacement>().not.toBeNever()
+  })
+  test('DocumentActionsPlacementContext', () => {
+    expectTypeOf<typeof DocumentActionsPlacementContext>().not.toBeNever()
+  })
   test('DocumentActionsStateContext', () => {
     expectTypeOf<typeof DocumentActionsStateContext>().not.toBeNever()
   })
@@ -298,6 +307,9 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentPaneInfoContext', () => {
     expectTypeOf<typeof DocumentPaneInfoContext>().not.toBeNever()
+  })
+  test('DocumentToolsContext', () => {
+    expectTypeOf<typeof DocumentToolsContext>().not.toBeNever()
   })
   test('EditDialogOuterBoundaryContext', () => {
     expectTypeOf<typeof EditDialogOuterBoundaryContext>().not.toBeNever()

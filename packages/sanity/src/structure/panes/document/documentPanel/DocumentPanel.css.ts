@@ -14,3 +14,9 @@ export const scrollerEnabled = style({
   scrollBehavior: 'smooth',
   outline: 'none',
 })
+
+export const stickyTopBlock = style({
+  position: 'sticky',
+  top: 0,
+  zIndex: 1,
+})

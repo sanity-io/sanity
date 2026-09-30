@@ -29,12 +29,16 @@ export function ElementWithChangeBar(props: {
     isInteractive = true,
   } = props
 
-  const {onOpenReviewChanges, isReviewChangesOpen} = useContext(ReviewChangesContext)
+  const {
+    onOpenReviewChanges,
+    isReviewChangesOpen,
+    isReviewChangesEnabled = true,
+  } = useContext(ReviewChangesContext)
   const {zIndex} = useLayer()
   const {t} = useTranslation()
 
   const changeBar = useMemo(() => {
-    if (disabled || !isChanged) return null
+    if (disabled || !isChanged || !isReviewChangesEnabled) return null
 
     return (
       <ChangeBar data-testid="change-bar" zIndex={zIndex}>
@@ -59,6 +63,7 @@ export function ElementWithChangeBar(props: {
     disabled,
     isChanged,
     isInteractive,
+    isReviewChangesEnabled,
     isReviewChangesOpen,
     onOpenReviewChanges,
     t,

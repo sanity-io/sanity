@@ -6,10 +6,13 @@ import {
   ChangeConnectorRoot,
   type DocumentFieldActionNode,
   type DocumentInspectorMenuItem,
+  type DocumentLayoutProps,
   FieldActionsProvider,
   FieldActionsResolver,
   GetFormValueProvider,
   type Path,
+  getPublishedId,
+  useSource,
   useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
   useTranslation,
@@ -36,10 +39,14 @@ import {DocumentPanel} from '../documentPanel/DocumentPanel'
 import {DocumentPanelHeader} from '../documentPanel/header/DocumentPanelHeader'
 import {DocumentActionShortcuts} from '../keyboardShortcuts/DocumentActionShortcuts'
 import {getMenuItems} from '../menuItems'
+import {DocumentActionsPlacementProvider} from '../statusBar/documentActionsPlacement'
+import {useStructureTools} from '../structureTools'
 import {useDocumentPane} from '../useDocumentPane'
+import {DocumentToolsProvider} from '../useDocumentTools'
 import {changeConnectorRoot} from './DocumentLayout.css'
 import {DocumentLayoutError} from './DocumentLayoutError'
-import {DocumentLayoutFooter} from './DocumentLayoutFooter'
+import {DocumentToolbar} from './DocumentToolbar'
+import {type DocumentActionsBarOptions} from './documentToolbarSlots'
 
 const EMPTY_ARRAY: [] = []
 
@@ -57,7 +64,11 @@ function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorR
   return <ChangeConnectorRoot {...restProps} className={clsx(changeConnectorRoot, className)} />
 }
 
-export function DocumentLayout() {
+export interface DocumentLayoutOptions
+  extends Omit<DocumentLayoutProps, 'renderDefault'>, DocumentActionsBarOptions {}
+
+export function DocumentLayout(props: DocumentLayoutOptions) {
+  const {actionsPlacement = 'bottom', actionsSlots} = props
   const {
     changesOpen,
     displayed,
@@ -83,13 +94,16 @@ export function DocumentLayout() {
   const {stickyParams} = useRouter()
   const {params: paneParams} = usePaneRouter()
   const {features} = useStructureTool()
+  // `document.tools` is a Source-level key, read the way every other `document.*` resolver is.
+  // oxlint-disable-next-line no-deprecated -- matches DocumentPaneProvider's read of the same key
+  const {document: documentConfig} = useSource()
   const {t} = useTranslation(structureLocaleNamespace)
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   const zOffsets = useZIndex()
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
+  const [toolbarElement, setToolbarElement] = useState<HTMLDivElement | null>(null)
   const [headerElement, setHeaderElement] = useState<HTMLDivElement | null>(null)
 
   const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
@@ -106,9 +120,9 @@ export function DocumentLayout() {
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
-  const footerSize = useElementSize(footerElement)
+  const toolbarSize = useElementSize(toolbarElement)
   const headerSize = useElementSize(headerElement)
-  const footerHeight = footerSize?.border.height
+  const toolbarHeight = toolbarSize?.border.height
   const headerHeight = headerSize?.border.height
   const currentMinWidth =
     DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
@@ -119,19 +133,29 @@ export function DocumentLayout() {
     [inspectors, inspector?.name],
   )
 
-  // Without the pane header's inspector menu, change bars are the only way to open review changes.
-  const reviewChangesAvailable =
-    features.reviewChanges && inspectors.some(({name}) => name === HISTORY_INSPECTOR_NAME)
+  const reviewChangesEnabled = inspectors.some(({name}) => name === HISTORY_INSPECTOR_NAME)
 
   const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
 
   const hasValue = Boolean(value)
 
+  const {tools: resolveDocumentTools} = documentConfig
+  const contributedTools = useStructureTools()
+  const documentTools = useMemo(
+    () =>
+      resolveDocumentTools({
+        schemaType: documentType,
+        documentId: getPublishedId(documentId),
+        contributed: contributedTools,
+      }),
+    [contributedTools, documentId, documentType, resolveDocumentTools],
+  )
+
   const menuItems = useMemo(
     () =>
       getMenuItems({
         currentInspector,
-        features,
+        tools: documentTools,
         hasValue,
         inspectorMenuItems,
         inspectors,
@@ -142,8 +166,8 @@ export function DocumentLayout() {
       }),
     [
       currentInspector,
+      documentTools,
       documentIdStack,
-      features,
       hasValue,
       inspectorMenuItems,
       inspectors,
@@ -213,53 +237,65 @@ export function DocumentLayout() {
 
       <DocumentActionsProvider>
         <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
-          <DocumentActionShortcuts
-            actionsBoxElement={actionsBoxElement}
-            as={Pane}
-            currentMinWidth={currentMinWidth}
-            data-testid="document-pane"
-            flex={2.5}
-            id={paneKey}
-            minWidth={minWidth}
-            onKeyUp={handleKeyUp}
-            rootRef={setRootElement}
-          >
-            {features.documentChrome && (
-              <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
-            )}
-            <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
-              <Flex
-                flexDirection="column"
-                flexBasis="0%"
-                flexGrow={1}
-                height={layoutCollapsed ? undefined : '100%'}
+          {/* Also wraps the shortcuts responder, whose hotkey-opened dialogs would otherwise
+              read the default placement and open the wrong way for a top-placed bar. */}
+          <DocumentActionsPlacementProvider placement={actionsPlacement}>
+            <DocumentToolsProvider tools={documentTools}>
+              <DocumentActionShortcuts
+                // A suppressed actions slot never sets the actions box, and a Popover with a null
+                // reference anchors nothing — fall back to the pane so the dialog stays on screen.
+                actionsBoxElement={actionsBoxElement ?? rootElement}
+                as={Pane}
+                currentMinWidth={currentMinWidth}
+                data-testid="document-pane"
+                flex={2.5}
+                id={paneKey}
+                minWidth={minWidth}
+                onKeyUp={handleKeyUp}
+                rootRef={setRootElement}
               >
-                <StyledChangeConnectorRoot
-                  data-testid="change-connector-root"
-                  isInteractive={reviewChangesAvailable}
-                  isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
-                  onOpenReviewChanges={onHistoryOpen}
-                  onSetFocus={onConnectorSetFocus}
-                >
-                  <DocumentPanel
-                    footerHeight={footerHeight || null}
-                    headerHeight={headerHeight || null}
-                    isInspectOpen={inspectOpen}
-                    rootElement={rootElement}
-                    setDocumentPanelPortalElement={setDocumentPanelPortalElement}
-                    footer={
-                      <DocumentLayoutFooter
-                        documentPanelPortalElement={documentPanelPortalElement}
-                        setFooterElement={setFooterElement}
-                        setActionsBoxElement={setActionsBoxElement}
+                <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
+                <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
+                  <Flex
+                    flexDirection="column"
+                    flexBasis="0%"
+                    flexGrow={1}
+                    height={layoutCollapsed ? undefined : '100%'}
+                  >
+                    <StyledChangeConnectorRoot
+                      data-testid="change-connector-root"
+                      isReviewChangesEnabled={reviewChangesEnabled}
+                      isInteractive={features.reviewChanges}
+                      isReviewChangesOpen={
+                        changesOpen && paneParams?.changesInspectorTab === 'review'
+                      }
+                      onOpenReviewChanges={onHistoryOpen}
+                      onSetFocus={onConnectorSetFocus}
+                    >
+                      <DocumentPanel
+                        headerHeight={headerHeight || null}
+                        isInspectOpen={inspectOpen}
+                        rootElement={rootElement}
+                        setDocumentPanelPortalElement={setDocumentPanelPortalElement}
+                        toolbarHeight={toolbarHeight || null}
+                        toolbarPlacement={actionsPlacement}
+                        toolbar={
+                          <DocumentToolbar
+                            documentPanelPortalElement={documentPanelPortalElement}
+                            placement={actionsPlacement}
+                            ref={setToolbarElement}
+                            setActionsBoxElement={setActionsBoxElement}
+                            slots={actionsSlots}
+                          />
+                        }
                       />
-                    }
-                  />
-                </StyledChangeConnectorRoot>
-              </Flex>
-            </DialogProvider>
-            <DocumentOperationResults />
-          </DocumentActionShortcuts>
+                    </StyledChangeConnectorRoot>
+                  </Flex>
+                </DialogProvider>
+                <DocumentOperationResults />
+              </DocumentActionShortcuts>
+            </DocumentToolsProvider>
+          </DocumentActionsPlacementProvider>
         </FieldActionsProvider>
       </DocumentActionsProvider>
     </GetFormValueProvider>

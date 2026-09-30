@@ -16,6 +16,10 @@ export interface ChangeConnectorRootProps {
    * non-interactive markers rather than buttons.
    */
   isInteractive?: boolean
+  /**
+   * Whether this studio has review changes at all. When false, change bars render nothing.
+   */
+  isReviewChangesEnabled?: boolean
   onOpenReviewChanges: () => void
   onSetFocus: (path: Path) => void
 }
@@ -25,6 +29,7 @@ export function ChangeConnectorRoot({
   children,
   className,
   isInteractive = true,
+  isReviewChangesEnabled = true,
   isReviewChangesOpen,
   onOpenReviewChanges,
   onSetFocus,
@@ -35,11 +40,12 @@ export function ChangeConnectorRoot({
   const contextValue = useMemo(
     () => ({
       isInteractive,
+      isReviewChangesEnabled,
       isReviewChangesOpen,
       onOpenReviewChanges,
       onSetFocus,
     }),
-    [isInteractive, isReviewChangesOpen, onOpenReviewChanges, onSetFocus],
+    [isInteractive, isReviewChangesEnabled, isReviewChangesOpen, onOpenReviewChanges, onSetFocus],
   )
 
   return (

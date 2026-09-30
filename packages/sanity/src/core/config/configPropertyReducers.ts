@@ -19,6 +19,7 @@ import {assertOnlyVariantType} from '../variants/util/variantType'
 import {type DocumentActionComponent} from './document/actions'
 import {type DocumentBadgeComponent} from './document/badges'
 import {type DocumentInspector} from './document/inspector'
+import {type DocumentTool} from './document/tools'
 import {flattenConfig} from './flattenConfig'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {
@@ -32,6 +33,7 @@ import {
   type DocumentInspectorContext,
   type DocumentLanguageFilterComponent,
   type DocumentLanguageFilterContext,
+  type DocumentToolContext,
   type NewDocumentOptionsContext,
   type PluginOptions,
   type ResolveProductionUrlContext,
@@ -465,6 +467,24 @@ export const documentAskToEditEnabledReducer = (opts: {
   }, initialValue)
 
   return result
+}
+
+export const documentToolsReducer: ConfigPropertyReducer<DocumentTool[], DocumentToolContext> = (
+  prev,
+  {document},
+  context,
+) => {
+  const documentTools = document?.tools
+  if (!documentTools) return prev
+
+  if (typeof documentTools === 'function') return documentTools(prev, context)
+  if (Array.isArray(documentTools)) return [...prev, ...documentTools]
+
+  throw new Error(
+    `Expected \`document.tools\` to be an array or a function, but received ${getPrintableType(
+      documentTools,
+    )}`,
+  )
 }
 
 export const onUncaughtErrorResolver = (opts: {

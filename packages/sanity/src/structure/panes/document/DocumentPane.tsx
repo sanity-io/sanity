@@ -28,7 +28,7 @@ import {LoadingPane} from '../loading'
 import {CommentsWrapper} from './comments/CommentsWrapper'
 import {useDocumentLayoutComponent} from './document-layout/useDocumentLayoutComponent'
 import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
-import {type DocumentPaneProviderProps} from './types'
+import {type DocumentPaneProps} from './types'
 import {usePaneOptions} from './usePaneOptions'
 import {useResetHistoryParams} from './useResetHistoryParams'
 
@@ -37,7 +37,7 @@ type DocumentPaneOptions = DocumentPaneNode['options']
 /**
  * @internal
  */
-export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
+export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProps) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {name: parentSourceName} = useSource()
 
@@ -50,8 +50,8 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   )
 })
 
-function DocumentPaneInner(props: DocumentPaneProviderProps) {
-  const {pane, paneKey} = props
+function DocumentPaneInner(props: DocumentPaneProps) {
+  const {actionsPlacement, actionsSlots, pane, paneKey} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {resolveNewDocumentOptions} = useSource().document
   const {selectedPerspectiveName, selectedVariantNames} = usePerspective()
@@ -201,7 +201,12 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
               }
             >
               {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
-              <DocumentLayout documentId={options.id} documentType={options.type} />
+              <DocumentLayout
+                actionsPlacement={actionsPlacement}
+                actionsSlots={actionsSlots}
+                documentId={options.id}
+                documentType={options.type}
+              />
             </Suspense>
           </CommentsWrapper>
         </DiffViewDocumentLayout>
@@ -211,10 +216,10 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
 }
 
 function mergeDocumentType(
-  props: DocumentPaneProviderProps,
+  props: DocumentPaneProps,
   options: DocumentPaneOptions,
   documentType: string,
-): DocumentPaneProviderProps {
+): DocumentPaneProps {
   return {
     ...props,
     pane: {

@@ -48,6 +48,7 @@ import {
   documentGroupInventoryEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
+  documentToolsReducer,
   draftsEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
@@ -77,6 +78,7 @@ import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
+import {resolveDocumentTools, SANITY_DEFINED_TOOLS} from './document/resolveDocumentTools'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -848,6 +850,16 @@ function resolveSource({
           })
         },
       },
+      tools: ({contributed = [], ...partialContext}) =>
+        resolveDocumentTools(
+          resolveConfigProperty({
+            config,
+            context: {...context, ...partialContext},
+            initialValue: [...SANITY_DEFINED_TOOLS, ...contributed],
+            propertyName: 'document.tools',
+            reducer: documentToolsReducer,
+          }),
+        ),
     },
 
     form: {

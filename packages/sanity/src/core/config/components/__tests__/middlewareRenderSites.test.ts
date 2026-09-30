@@ -81,10 +81,12 @@ function read(file: string) {
 
 function middlewareHooks(files: string[]): string[] {
   const hooks = new Set([MIDDLEWARE_HOOK])
+  // A hook may pass a type argument, so the call can open with `<` as well as `(`.
+  const callsMiddlewareHook = new RegExp(`${MIDDLEWARE_HOOK}\\s*[<(]`)
   for (const file of files) {
     const source = read(file)
     const match = /export function (use\w+Component)\b/.exec(source)
-    if (match && source.includes(`${MIDDLEWARE_HOOK}(`)) {
+    if (match && callsMiddlewareHook.test(source)) {
       hooks.add(match[1])
     }
   }

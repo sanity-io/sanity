@@ -1,3 +1,4 @@
+import {type ButtonTone} from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 import {type I18nTextRecord} from 'sanity'
 
@@ -90,7 +91,7 @@ export interface _PaneMenuItem {
   selected?: boolean
   title?: string
   i18n?: I18nTextRecord<'title'>
-  tone?: 'primary' | 'critical' | 'caution' | 'positive'
+  tone?: ButtonTone
 }
 
 export interface _PaneMenuGroup {

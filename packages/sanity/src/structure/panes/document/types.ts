@@ -2,6 +2,7 @@ import {type Path, type SanityDocument} from '@sanity/types'
 import {type TimelineStore} from 'sanity'
 
 import {type BaseStructureToolPaneProps} from '../types'
+import {type DocumentActionsBarOptions} from './document-layout/documentToolbarSlots'
 
 /** @internal */
 export type DocumentPaneProviderProps = {
@@ -10,6 +11,9 @@ export type DocumentPaneProviderProps = {
   onSetMaximizedPane?: () => void
   maximized?: boolean
 } & BaseStructureToolPaneProps<'document'>
+
+/** @internal */
+export interface DocumentPaneProps extends DocumentPaneProviderProps, DocumentActionsBarOptions {}
 
 /** @internal */
 export interface HistoryStoreProps {

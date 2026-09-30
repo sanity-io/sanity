@@ -2,7 +2,11 @@ import {type DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
 
 import {ConfirmPopover} from '../../../../../ui-components/confirmPopover/ConfirmPopover'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
+import {
+  getMirroredFallbackPlacements,
+  getMirroredPlacement,
+  useDocumentActionsPlacement,
+} from '../documentActionsPlacement'
 
 export function ConfirmDialog(props: {
   dialog: DocumentActionConfirmDialogProps
@@ -10,6 +14,7 @@ export function ConfirmDialog(props: {
 }) {
   const {dialog, referenceElement} = props
   const {t} = useTranslation(structureLocaleNamespace)
+  const barPlacement = useDocumentActionsPlacement()
 
   const {
     cancelButtonIcon,
@@ -34,8 +39,8 @@ export function ConfirmDialog(props: {
       open
       referenceElement={referenceElement}
       tone={tone}
-      placement="top"
-      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      placement={getMirroredPlacement(barPlacement)}
+      fallbackPlacements={getMirroredFallbackPlacements(barPlacement)}
     />
   )
 }

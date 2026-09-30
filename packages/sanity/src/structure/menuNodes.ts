@@ -9,6 +9,16 @@ export function isMenuNodeButton(node: _PaneMenuNode): node is _PaneMenuItem | _
 
 export const isNotMenuNodeButton = negate(isMenuNodeButton)
 
+/**
+ * Whether a node would draw anything. `resolveMenuNodes` emits a group for every configured
+ * menu item group, so a menu can hold nodes and still render empty.
+ */
+export function hasMenuNodeContent(node: _PaneMenuNode): boolean {
+  if (node.type === 'item') return true
+  if (node.type === 'group') return node.children.some(hasMenuNodeContent)
+  return false
+}
+
 export function resolveMenuNodes(params: {
   actionHandler: (item: PaneMenuItem) => void
   fieldActions?: DocumentFieldMenuActionNode[]

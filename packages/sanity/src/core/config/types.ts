@@ -36,6 +36,11 @@ import {
   type DocumentFieldActionsResolverContext,
 } from './document/fieldActions/types'
 import {type DocumentInspector} from './document/inspector'
+import {
+  type DocumentTool,
+  type DocumentToolsResolver,
+  type ResolvedDocumentTools,
+} from './document/tools'
 import {type FormComponents} from './form/types'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio/types'
@@ -335,7 +340,14 @@ export interface DocumentPluginOptions {
 
   /** @internal */
   unstable_fieldActions?: DocumentFieldAction[] | DocumentFieldActionsResolver
-  /** @hidden @beta */
+  /**
+   * Document inspectors. Pass a function to filter the inspectors contributed by plugins, eg
+   * `(prev) => prev.filter((inspector) => inspector.name !== 'sanity/structure/incoming-references')`
+   * to drop the structure tool's incoming references inspector.
+   *
+   * @hidden
+   * @beta
+   */
   inspectors?: DocumentInspector[] | DocumentInspectorsResolver
   /**
    * @hidden
@@ -380,6 +392,50 @@ export interface DocumentPluginOptions {
      */
     enabled: boolean | ((context: DocumentAskToEditEnabledContext) => boolean)
   }
+
+  /**
+   * The tools the document form's chrome offers. Composes across plugins and hosts in the same
+   * way as `document.actions` and `document.badges`, and applies wherever the form renders: the
+   * structure tool, Presentation, and custom tools.
+   *
+   * Removing a tool removes its chrome entry and its keyboard shortcut. It does not disable the
+   * underlying capability. `inspect`, `inlineChanges` and `compareVersions` are driven by router
+   * state, and a URL still carries that state after the tool is gone: the inspect dialog opens,
+   * inline changes render in every field, and the compare-versions route stays navigable. Those
+   * search params are scoped to the enclosing tool's name, so the query string differs per
+   * surface. Do not use this key as a permission or access-control boundary.
+   *
+   * An array appends to the built-ins and cannot remove one. Use the resolver form to remove or
+   * reorder, where `tools: []` is a no-op.
+   *
+   * A resolver applies to every surface the document form is embedded in, including surfaces
+   * added in a later release. An allowlist fails closed, so a surface whose tools were never
+   * named loses them with nothing to warn you; a denylist fails open, so that surface keeps its
+   * tools and somebody sees the extra button. Prefer a denylist while the resolver has no way to
+   * tell which surface it is running in.
+   *
+   * ```ts
+   * tools: (prev) => prev.filter((tool) => !DENY.has(tool.id))
+   * ```
+   *
+   * Filter by id, never by index or length. The membership of `prev` varies by surface, by
+   * document and by window width, so `findIndex` returns `-1` in a narrow pane, in Presentation
+   * and in a standalone form.
+   *
+   * Ordering is honoured for contributed tools and ignored for built-ins, which the form draws
+   * at fixed sites ahead of the render loop. `tools: (prev) => [myTool, ...prev]` does not put
+   * `myTool` first.
+   *
+   * The overflow menu button is derived rather than configured: it renders whenever it has
+   * contents. Removing every overflow tool leaves it in place while `document.actions` still
+   * resolves an action into the `paneActions` group.
+   *
+   * `SANITY_DEFINED_TOOL_IDS` holds the built-in ids.
+   *
+   * @hidden
+   * @beta
+   */
+  tools?: DocumentTool[] | DocumentToolsResolver
 
   drafts?: {
     /**
@@ -771,6 +827,15 @@ export interface DocumentBadgesContext extends ConfigContext {
   schemaType: string
 }
 
+/**
+ * @hidden
+ * @beta
+ */
+export interface DocumentToolContext extends ConfigContext {
+  documentId?: string
+  schemaType: string
+}
+
 /** @hidden @beta */
 export interface DocumentInspectorContext extends ConfigContext {
   documentId?: string
@@ -943,6 +1008,20 @@ export interface Source {
     askToEdit: {
       enabled: (props: DocumentAskToEditEnabledContext) => boolean
     }
+
+    /**
+     * Resolve the document form's tools for one document.
+     *
+     * `contributed` carries what the host offers at render time, after its own capability
+     * gating. Config vetoes what it is given and never grants, so a tool the host did not
+     * contribute stays absent however it is configured.
+     *
+     * @hidden
+     * @beta
+     */
+    tools: (
+      props: PartialContext<DocumentToolContext> & {contributed?: readonly DocumentTool[]},
+    ) => ResolvedDocumentTools
   }
 
   /** @internal */

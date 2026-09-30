@@ -12,6 +12,7 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {type PopoverProps} from '../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../i18n'
 import {ActionStateDialog} from './ActionStateDialog'
+import {getMirroredEndPlacement, useDocumentActionsPlacement} from './documentActionsPlacement'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]
@@ -73,13 +74,14 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
 
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null)
 
+  const placement = getMirroredEndPlacement(useDocumentActionsPlacement())
   const popoverProps: PopoverProps = useMemo(
     () => ({
-      placement: 'top-end',
+      placement,
       portal: true,
       preventOverflow: true,
     }),
-    [],
+    [placement],
   )
 
   const {t} = useTranslation(structureLocaleNamespace)

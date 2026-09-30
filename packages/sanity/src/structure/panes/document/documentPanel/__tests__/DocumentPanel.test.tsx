@@ -1,13 +1,18 @@
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {type ComponentProps} from 'react'
+import {type SingleWorkspace} from 'sanity'
 import {PerspectiveContext} from 'sanity/_singletons'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {perspectiveContextValueMock} from '../../../../__mocks__/usePerspective.mock'
+import {usePaneLayout} from '../../../../components/pane/usePaneLayout'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {useStructureTool} from '../../../../useStructureTool'
+import {buildResolvedTools} from '../../__tests__/toolsFixture'
 import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentTools} from '../../useDocumentTools'
 import {DocumentPanel} from '../DocumentPanel'
 
 vi.mock('../../../../components/pane/usePane', () => ({
@@ -23,11 +28,20 @@ vi.mock('../../../../components/paneRouter/usePaneRouter', () => ({
 }))
 
 vi.mock('../../../../useStructureTool', () => ({
-  useStructureTool: vi.fn(() => ({features: {resizablePanes: true, splitPanes: true}})),
+  useStructureTool: vi.fn(() => ({
+    features: {
+      resizablePanes: true,
+      splitPanes: true,
+    },
+  })),
 }))
 
 vi.mock('../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),
+}))
+
+vi.mock('../../useDocumentTools', () => ({
+  useDocumentTools: vi.fn(),
 }))
 
 vi.mock('../../../../hasObsoleteDraft', () => ({
@@ -35,10 +49,11 @@ vi.mock('../../../../hasObsoleteDraft', () => ({
 }))
 
 vi.mock('../header/DocumentPanelSubHeader', () => ({
-  DocumentPanelSubHeader: () => null,
+  DocumentPanelSubHeader: () => <div data-testid="mock-document-panel-sub-header" />,
 }))
 
 const portalBoundaryCapture = vi.hoisted(() => ({current: null as HTMLElement | null}))
+const marginsCapture = vi.hoisted(() => ({current: null as number[] | null}))
 
 vi.mock('../documentViews/FormView', async () => {
   const {useState} = await import('react')
@@ -47,10 +62,11 @@ vi.mock('../documentViews/FormView', async () => {
   const {usePortalBoundary} = await import('sanity')
 
   return {
-    FormView: function MockFormView() {
+    FormView: function MockFormView(formViewProps: {margins: number[]}) {
       const [count, setCount] = useState(0)
       const portal = usePortal()
       portalBoundaryCapture.current = usePortalBoundary()
+      marginsCapture.current = formViewProps.margins
       return (
         <div data-testid="document-panel-scroller">
           <button
@@ -81,7 +97,14 @@ vi.mock('sanity', async (importOriginal) => ({
 }))
 
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
+const mockUseDocumentTools = vi.mocked(useDocumentTools)
 const mockUseStructureTool = vi.mocked(useStructureTool)
+
+let hasTitleBar = true
+
+function setTitleBar(present: boolean) {
+  hasTitleBar = present
+}
 
 const publishedPerspectiveContextValue = {
   ...perspectiveContextValueMock,
@@ -96,6 +119,7 @@ function documentPaneValue() {
     activeViewId: 'form',
     displayed: {_id: 'doc-1', _type: 'simpleBlock'},
     documentId: 'doc-1',
+    documentType: 'simpleBlock',
     editState: {ready: true, draft: null, published: null, version: undefined},
     inspector: {name: 'sanity/comments', component: () => null},
     value: {_id: 'doc-1', _type: 'simpleBlock', _createdAt: '2020-01-01T00:00:00Z'},
@@ -108,23 +132,30 @@ function documentPaneValue() {
   } as unknown as ReturnType<typeof useDocumentPane>
 }
 
-function renderDocumentPanel() {
+function renderDocumentPanel(overrides: Partial<ComponentProps<typeof DocumentPanel>> = {}) {
   return (
     <DocumentPanel
-      footerHeight={0}
       headerHeight={0}
       isInspectOpen={false}
       rootElement={null}
       setDocumentPanelPortalElement={vi.fn()}
-      footer={<div />}
+      toolbar={<div data-testid="document-toolbar" />}
+      toolbarHeight={0}
+      {...overrides}
     />
   )
 }
 
-async function renderPanel() {
+async function renderPanel(
+  overrides?: Partial<ComponentProps<typeof DocumentPanel>>,
+  config?: Partial<SingleWorkspace>,
+) {
   mockUseDocumentPane.mockReturnValue(documentPaneValue())
-  const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
-  return render(renderDocumentPanel(), {wrapper})
+  mockUseDocumentTools.mockImplementation(() =>
+    buildResolvedTools({without: hasTitleBar ? [] : ['titleBar']}),
+  )
+  const wrapper = await createTestProvider({config, resources: [structureUsEnglishLocaleBundle]})
+  return render(renderDocumentPanel(overrides), {wrapper})
 }
 
 describe('DocumentPanel form persistence', () => {
@@ -229,5 +260,89 @@ describe('DocumentPanel banners', () => {
 
     expect(screen.getByTestId('choose-new-document-destination-banner')).toBeInTheDocument()
     expect(screen.queryByTestId('deleted-document-banner')).toBeNull()
+  })
+})
+
+describe('DocumentPanel toolbar placement', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    marginsCapture.current = null
+    mockUseStructureTool.mockReturnValue({
+      features: splitPanesFeatures,
+    } as ReturnType<typeof useStructureTool>)
+  })
+
+  afterEach(() => {
+    vi.mocked(usePaneLayout).mockReturnValue({collapsed: false} as ReturnType<typeof usePaneLayout>)
+  })
+
+  function toolbarPrecedesScroller() {
+    // The mocked form view reuses the scroller test id, so the real scroll container is first.
+    const [scroller] = screen.getAllByTestId('document-panel-scroller')
+    const toolbar = screen.getByTestId('document-toolbar')
+    return Boolean(toolbar.compareDocumentPosition(scroller) & Node.DOCUMENT_POSITION_FOLLOWING)
+  }
+
+  it('renders the toolbar above the scroll container when placed at the top', async () => {
+    await renderPanel({toolbarPlacement: 'top'})
+
+    expect(toolbarPrecedesScroller()).toBe(true)
+    expect(screen.getAllByTestId('document-toolbar')).toHaveLength(1)
+  })
+
+  it('renders the toolbar below the scroll container when placed at the bottom', async () => {
+    await renderPanel({toolbarPlacement: 'bottom'})
+
+    expect(toolbarPrecedesScroller()).toBe(false)
+    expect(screen.getAllByTestId('document-toolbar')).toHaveLength(1)
+  })
+
+  it('defaults to the bottom placement', async () => {
+    await renderPanel()
+
+    expect(toolbarPrecedesScroller()).toBe(false)
+  })
+
+  it('keeps the toolbar height clear at the top of the presence overlay when placed at the top', async () => {
+    vi.mocked(usePaneLayout).mockReturnValue({collapsed: true} as ReturnType<typeof usePaneLayout>)
+
+    await renderPanel({headerHeight: 10, toolbarHeight: 30, toolbarPlacement: 'top'})
+
+    expect(marginsCapture.current).toEqual([42, 0, 2, 0])
+  })
+
+  it('keeps the toolbar height clear at the bottom of the presence overlay when placed at the bottom', async () => {
+    vi.mocked(usePaneLayout).mockReturnValue({collapsed: true} as ReturnType<typeof usePaneLayout>)
+
+    await renderPanel({headerHeight: 10, toolbarHeight: 30, toolbarPlacement: 'bottom'})
+
+    expect(marginsCapture.current).toEqual([10, 0, 32, 0])
+  })
+})
+
+describe('DocumentPanel sub-header', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseStructureTool.mockReturnValue({
+      features: splitPanesFeatures,
+    } as ReturnType<typeof useStructureTool>)
+  })
+
+  afterEach(() => {
+    setTitleBar(true)
+  })
+
+  it('renders the sub-header when titleBar is in the tools resolution', async () => {
+    setTitleBar(true)
+    await renderPanel()
+
+    expect(screen.getByTestId('mock-document-panel-sub-header')).toBeInTheDocument()
+  })
+
+  it('omits the sub-header when titleBar is not in the tools resolution', async () => {
+    setTitleBar(false)
+    await renderPanel()
+
+    expect(screen.queryByTestId('mock-document-panel-sub-header')).toBeNull()
   })
 })

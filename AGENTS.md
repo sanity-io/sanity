@@ -473,6 +473,16 @@ For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLPr
 `ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`
 19 it is a deprecated identity alias and trips `typescript/no-deprecated`.
 
+### ui5 (`@sanity/ui` v5): `height`/`width` are raw CSS strings, not enums
+
+`height`, `width`, `minHeight`, `minWidth`, `maxHeight` and `maxWidth` are typed `Responsive<string>`
+and passed straight through to a CSS custom property (`height: var(--height)`, etc). `height="fill"`
+was a valid v4 enum value; on ui5 it type-checks, sets `--height: fill`, and the browser silently
+drops the resulting `height: fill` declaration, so the element falls back to sizing to its content
+instead of filling its parent — no type error, no render error, no console warning. Use `height="100%"`.
+Also unlike v4, ui5's `Flex` takes `flexDirection` / `alignItems` / `justifyContent`, not
+`direction` / `align` / `justify` — those old names do fail type-check, so they're at least caught.
+
 ## Testing
 
 ### Unit Tests (Vitest)
@@ -508,6 +518,16 @@ the symlink; using a canonical temporary path keeps its expected and actual path
   Vitest 4 substring, case-insensitive matching (`browser.locators.exact: false` in
   `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
   matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
+
+#### A mock that renders nothing can hide the gate a test exists to check
+
+Mocking a gated child component to `() => null` removes the component entirely, including
+whatever it would have used to prove the gate works. If every test fixture also hardcodes the
+gate flag to the "on" state, a deleted or broken gate and a working one produce the same (empty)
+output, and the test suite stays green either way. Give the mock a `data-testid` placeholder
+instead (`() => <div data-testid="mock-thing" />`) so a test can assert on its presence, and
+write at least one case where the gate is off and assert the mock is absent — a green suite that
+can't fail when the gate breaks is proving nothing.
 
 #### Test Timeouts
 
@@ -1023,6 +1043,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
   - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
 - **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
 - **Seeding releases for the `/test` workspace via API.** Releases and document versions are created through the actions endpoint (`POST https://ppsg7ml5.api.sanity.io/v2025-02-19/data/actions/test` with `{"actions": [...]}`, same Bearer token). Useful action types: `sanity.action.release.create`, `sanity.action.document.version.create` (pass `publishedId` plus a `document` with `_id: versions.<releaseId>.<publishedId>`), `sanity.action.document.version.unpublish`, `sanity.action.document.version.discard`, `sanity.action.release.archive`, `sanity.action.release.delete`. Note that a version created by the unpublish action alone is an empty tombstone carrying only `_system.delete: true` — to get a version with content, create the version first and then unpublish it. `/test` is a shared dataset, so archive and delete any release you seed once you are done.
+- **Seeding demo content for the `/test` workspace from the browser, without an injected env var.** When driving a real logged-in browser session (e.g. via the Playwright MCP) rather than the Cloud VM, the studio's own auth token is already sitting in `localStorage['__studio_auth_token_<projectId>']`. A `browser_evaluate` call can read it in-page and `fetch()` a mutate request directly from the browser — `https://<projectId>.api.sanity.io/v2024-01-01/data/mutate/<dataset>` — so the token never has to leave the browser or enter the agent's own context.
 - **Vitest browser mode (`*.browser.test.tsx`) needs a Playwright browser install first.** The VM has no browsers preinstalled: run `pnpm --filter sanity exec playwright install chromium`, then run a single file with `SANITY_VITEST_BROWSER=chromium pnpm --filter sanity exec vitest run -c vitest.browser.config.mts <path>`. Without `SANITY_VITEST_BROWSER` the config tries chromium, firefox, and webkit. No package build is required for these tests (they resolve monorepo sources).
   - **Use the suite's failure screenshots for before/after walkthrough artifacts** when the change is only observable in browser mode. Vitest writes a full-viewport PNG of the failing state to the gitignored `src/**/__tests__/__screenshots__/<test file>/` and prints the paths, so running the new (red) test on a stashed fix and again on the applied fix yields a matched pair with no extra tooling. Delete the directory afterwards.
   - **Firefox and WebKit (the other two CI shards) need host libraries the image lacks.** Worth setting up for a change whose behavior depends on layout or scrolling, since CI runs all three browsers. Install the libraries with `sudo env "PATH=$PATH" node_modules/.bin/playwright install-deps` (passwordless `sudo` is available; a few minutes of apt), then download the browsers with `pnpm --filter sanity exec playwright install firefox webkit`, and run each engine with `SANITY_VITEST_BROWSER=firefox` / `SANITY_VITEST_BROWSER=webkit`. Call the CLI shim directly as shown: `pnpm … exec` under `sudo` re-runs the workspace install as root and leaves hundreds of root-owned files behind in `node_modules` (`sudo chown -R ubuntu:ubuntu node_modules` if that already happened). Firefox launches without the libraries; WebKit does not.

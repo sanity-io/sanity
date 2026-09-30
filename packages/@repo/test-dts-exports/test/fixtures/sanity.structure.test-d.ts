@@ -36,6 +36,8 @@ import type {
   defaultIntentChecker,
   defineIncomingReferenceDecoration,
   Divider,
+  DocumentActionsBarOptions,
+  DocumentActionsPlacement,
   DocumentBuilder,
   DocumentFieldMenuActionNode,
   documentFromEditor,
@@ -55,8 +57,12 @@ import type {
   DocumentOptions,
   DocumentPane,
   DocumentPaneNode,
+  DocumentPaneProps,
   DocumentPaneProvider,
   DocumentPaneProviderProps,
+  DocumentToolbarSlotComponent,
+  DocumentToolbarSlotProps,
+  DocumentToolbarSlots,
   DocumentTypeListBuilder,
   DocumentTypeListInput,
   EditorNode,
@@ -72,6 +78,8 @@ import type {
   getOrderingMenuItemsForSchemaType,
   getTypeNamesFromFilter,
   HELP_URL,
+  HISTORY_INSPECTOR_NAME,
+  INCOMING_REFERENCES_INSPECTOR_NAME,
   IncomingReferenceAction,
   IncomingReferencesOptions,
   InitialValueTemplateItemBuilder,
@@ -163,6 +171,7 @@ import type {
   UserComponent,
   UserViewComponent,
   useStructureTool,
+  VALIDATION_INSPECTOR_NAME,
   View,
   ViewBuilder,
 } from 'sanity/structure'
@@ -268,6 +277,12 @@ describe('sanity/structure', () => {
   test('Divider', () => {
     expectTypeOf<Divider>().toBeObject()
   })
+  test('DocumentActionsBarOptions', () => {
+    expectTypeOf<DocumentActionsBarOptions>().toBeObject()
+  })
+  test('DocumentActionsPlacement', () => {
+    expectTypeOf<DocumentActionsPlacement>().not.toBeNever()
+  })
   test('DocumentBuilder', () => {
     expectTypeOf<DocumentBuilder>().not.toBeNever()
   })
@@ -325,11 +340,23 @@ describe('sanity/structure', () => {
   test('DocumentPaneNode', () => {
     expectTypeOf<DocumentPaneNode>().toBeObject()
   })
+  test('DocumentPaneProps', () => {
+    expectTypeOf<DocumentPaneProps>().toBeObject()
+  })
   test('DocumentPaneProvider', () => {
     expectTypeOf<typeof DocumentPaneProvider>().not.toBeNever()
   })
   test('DocumentPaneProviderProps', () => {
     expectTypeOf<DocumentPaneProviderProps>().not.toBeNever()
+  })
+  test('DocumentToolbarSlotComponent', () => {
+    expectTypeOf<DocumentToolbarSlotComponent>().not.toBeNever()
+  })
+  test('DocumentToolbarSlotProps', () => {
+    expectTypeOf<DocumentToolbarSlotProps>().toBeObject()
+  })
+  test('DocumentToolbarSlots', () => {
+    expectTypeOf<DocumentToolbarSlots>().toBeObject()
   })
   test('DocumentTypeListBuilder', () => {
     expectTypeOf<DocumentTypeListBuilder>().not.toBeNever()
@@ -375,6 +402,12 @@ describe('sanity/structure', () => {
   })
   test('HELP_URL', () => {
     expectTypeOf<typeof HELP_URL>().not.toBeNever()
+  })
+  test('HISTORY_INSPECTOR_NAME', () => {
+    expectTypeOf<typeof HISTORY_INSPECTOR_NAME>().not.toBeNever()
+  })
+  test('INCOMING_REFERENCES_INSPECTOR_NAME', () => {
+    expectTypeOf<typeof INCOMING_REFERENCES_INSPECTOR_NAME>().not.toBeNever()
   })
   test('IncomingReferenceAction', () => {
     expectTypeOf<IncomingReferenceAction>().not.toBeNever()
@@ -648,6 +681,9 @@ describe('sanity/structure', () => {
   })
   test('useStructureTool', () => {
     expectTypeOf<typeof useStructureTool>().toBeFunction()
+  })
+  test('VALIDATION_INSPECTOR_NAME', () => {
+    expectTypeOf<typeof VALIDATION_INSPECTOR_NAME>().not.toBeNever()
   })
   test('View', () => {
     expectTypeOf<View>().not.toBeNever()

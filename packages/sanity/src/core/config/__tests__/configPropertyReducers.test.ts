@@ -13,6 +13,7 @@ import {
   documentGroupInventoryEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
+  documentToolsReducer,
   draftsEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
@@ -91,6 +92,12 @@ const arrayReducers: ArrayReducerExample[] = [
     reduce: documentActionsReducer as ArrayReducerExample['reduce'],
     set: (value) => ({name: 'test', document: {actions: value as never}}),
     expectedError: 'Expected `document.actions` to be an array or a function, but received number',
+  },
+  {
+    name: 'document.tools',
+    reduce: documentToolsReducer as ArrayReducerExample['reduce'],
+    set: (value) => ({name: 'test', document: {tools: value as never}}),
+    expectedError: 'Expected `document.tools` to be an array or a function, but received number',
   },
   {
     name: 'releases.actions',
