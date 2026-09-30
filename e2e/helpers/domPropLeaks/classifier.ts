@@ -58,6 +58,7 @@ export function createDomPropClassifier(vocabulary: DomPropVocabulary): DomPropC
   const ariaAttributes = new Set(vocabulary.ariaAttributes)
   const eventProps = new Set(vocabulary.eventProps)
   const extraAttributes = new Set(vocabulary.extraAttributes)
+  const deliberateAttributes = vocabulary.deliberateAttributes
   const validAttributeName = toRegExp(vocabulary.patterns.validAttributeName)
   const aria = toRegExp(vocabulary.patterns.aria)
   const ariaCamel = toRegExp(vocabulary.patterns.ariaCamel)
@@ -173,6 +174,8 @@ export function createDomPropClassifier(vocabulary: DomPropVocabulary): DomPropC
   const isPropValid = (name: string) =>
     reactPropsRegex.test(name) ||
     (name.charCodeAt(0) === 111 && name.charCodeAt(1) === 110 && name.charCodeAt(2) < 91)
+  const isDeliberate = (name: string, props: Record<string, unknown>) =>
+    hasOwn(deliberateAttributes, name) && props[deliberateAttributes[name]] !== undefined
 
   function ariaMessage(type: string, name: string): string | null {
     if (ariaCamel.test(name)) {
@@ -323,6 +326,7 @@ export function createDomPropClassifier(vocabulary: DomPropVocabulary): DomPropC
         !hasOwn(standardNames, name) &&
         !isPropValid(name) &&
         !extraAttributes.has(name) &&
+        !isDeliberate(name, props) &&
         !host.reflects?.(name)
       if (!objectValue && !unknownAttribute) continue
 

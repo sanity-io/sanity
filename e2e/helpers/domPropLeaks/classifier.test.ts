@@ -225,6 +225,18 @@ describe('createDomPropClassifier', () => {
     ])
   })
 
+  test('accepts a deliberate attribute only on the element its marker prop identifies', () => {
+    expect(classify({type: 'div', props: {'data-pt-editor': true, 'zindex': -1}})).toEqual([])
+    expect(classify({type: 'div', props: {zindex: -1}})).toEqual([
+      {
+        rule: 'unknown-attribute',
+        prop: 'zindex',
+        message:
+          '`zindex` is not an HTML or SVG attribute, but React writes it to the DOM as zindex="-1".',
+      },
+    ])
+  })
+
   test('does not report React-only props, event handlers or custom element props', () => {
     expect(
       classify({

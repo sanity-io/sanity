@@ -36,6 +36,8 @@ export interface DomPropVocabulary {
   }
   /** See {@link EXTRA_ATTRIBUTES}. */
   extraAttributes: string[]
+  /** See {@link DELIBERATE_ATTRIBUTES}. */
+  deliberateAttributes: Record<string, string>
 }
 
 /**
@@ -56,6 +58,16 @@ export const EXTRA_ATTRIBUTES = [
   'precedence',
   'writingsuggestions',
 ] as const
+
+/**
+ * Names that are not attributes but that a dependency writes on purpose, each mapped to a prop
+ * that marks the element it writes the name on, so the same name anywhere else is still
+ * reported. The Portable Text editor sets `zindex="-1"` on its editable root, a Slate hack that
+ * keeps a decoration from selecting a whole text node when only part of it is selected.
+ */
+export const DELIBERATE_ATTRIBUTES: Readonly<Record<string, string>> = {
+  zindex: 'data-pt-editor',
+}
 
 export interface IsPropValid {
   version: string
@@ -133,6 +145,7 @@ export function loadDomPropVocabulary(): DomPropVocabulary {
       isPropValid: isPropValid.pattern,
     },
     extraAttributes: [...EXTRA_ATTRIBUTES],
+    deliberateAttributes: {...DELIBERATE_ATTRIBUTES},
   }
   return cachedVocabulary
 }

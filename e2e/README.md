@@ -71,7 +71,7 @@ A failure lists each prop with the element, the components that rendered it (out
   url: http://localhost:3339/chromium/content/input-debug;manyViews
 ```
 
-Fix the component closest to the element that receives the prop but does not use it: destructure the prop before spreading the rest onto the element, or make it a transient `$prop` when it is only for a styled tag's CSS. If the guard reports a name that is a real attribute, add it to `EXTRA_ATTRIBUTES` in `helpers/domPropLeaks/vocabulary.ts`. `tests/studio-errors/domPropLeakGuard.spec.ts` checks that the guard works against the build under test.
+Fix the component closest to the element that receives the prop but does not use it: destructure the prop before spreading the rest onto the element, or make it a transient `$prop` when it is only for a styled tag's CSS. If the guard reports a name that is a real attribute, add it to `EXTRA_ATTRIBUTES` in `helpers/domPropLeaks/vocabulary.ts`. A name that a dependency writes on purpose, like the `zindex="-1"` the Portable Text editor sets on its editable root, goes in `DELIBERATE_ATTRIBUTES` in the same file, together with a prop that marks the element it is written on. Names that React lists as an attribute of any element are only reported for objects and for values React warns about, so `axis="y"` on a `<div>` (an attribute of table cells) passes. `tests/studio-errors/domPropLeakGuard.spec.ts` checks that the guard works against the build under test.
 
 ### Running tests from your code editor
 
