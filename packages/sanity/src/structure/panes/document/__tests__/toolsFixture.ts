@@ -1,6 +1,6 @@
 import {
-  type ContributedHeaderTool,
-  type ContributedMenuTool,
+  type DocumentHeaderTool,
+  type DocumentMenuTool,
   type DocumentTool,
   type DocumentToolId,
   type ResolvedDocumentTools,
@@ -23,10 +23,10 @@ export const SEEDED_TOOLS: readonly DocumentTool[] = [
 interface BuildResolvedToolsOptions {
   /** Ids the config resolver filtered out of `prev`. */
   without?: readonly DocumentToolId[]
-  /** Contributed header tools, in the order the resolver left them. */
-  header?: readonly ContributedHeaderTool[]
-  /** Contributed menu tools, in the order the resolver left them. */
-  menu?: readonly ContributedMenuTool[]
+  /** Header tools, in the order the resolver left them. */
+  header?: readonly DocumentHeaderTool[]
+  /** Menu tools, in the order the resolver left them. */
+  menu?: readonly DocumentMenuTool[]
 }
 
 /**

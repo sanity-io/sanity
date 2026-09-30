@@ -4,7 +4,7 @@ import {ExpandIcon} from '@sanity/icons/Expand'
 import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
-import {type ContributedHeaderTool, useTranslation} from 'sanity'
+import {type DocumentHeaderTool, useTranslation} from 'sanity'
 
 import {Button} from '../../../ui-components/button/Button'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
@@ -112,7 +112,7 @@ function ClosePaneGroupButton() {
  *
  * @internal
  */
-export function useStructureTools(): ContributedHeaderTool[] {
+export function useStructureTools(): DocumentHeaderTool[] {
   const {features} = useStructureTool()
   const {onPaneSplit, onSetMaximizedPane, views} = useDocumentPane()
   const {index, BackLink, hasGroupSiblings} = usePaneRouter()
@@ -127,7 +127,7 @@ export function useStructureTools(): ContributedHeaderTool[] {
   const showFocusModeButton = Boolean(onSetMaximizedPane)
 
   return useMemo(() => {
-    const tools: ContributedHeaderTool[] = []
+    const tools: DocumentHeaderTool[] = []
 
     if (showSplitPaneButton) {
       tools.push({id: 'splitPane', placement: 'header', render: SplitPaneButton})

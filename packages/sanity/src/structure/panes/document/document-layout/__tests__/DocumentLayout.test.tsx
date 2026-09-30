@@ -1,6 +1,6 @@
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ComponentProps, type ReactNode, useContext} from 'react'
-import {type ContributedMenuTool, type SingleWorkspace} from 'sanity'
+import {type DocumentMenuTool, type SingleWorkspace} from 'sanity'
 import {ReviewChangesContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -146,7 +146,7 @@ function documentPaneValue() {
 
 const bookmark = vi.fn()
 
-function bookmarkTool(shortcut = 'Ctrl+Alt+L'): ContributedMenuTool {
+function bookmarkTool(shortcut = 'Ctrl+Alt+L'): DocumentMenuTool {
   return {
     id: 'closePane',
     placement: 'menu',

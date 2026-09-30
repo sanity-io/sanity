@@ -274,9 +274,6 @@ import type {
   ConnectionStatusStoreOptions,
   ConnectorContextValue,
   ContextMenuButton,
-  ContributedDocumentTool,
-  ContributedHeaderTool,
-  ContributedMenuTool,
   CookielessCompatibleLoginMethod,
   CopyOptions,
   CopyPasteContextType,
@@ -472,6 +469,7 @@ import type {
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
   DocumentGroupInventoryReferencePreviewLinkProps,
+  DocumentHeaderTool,
   documentIdEquals,
   DocumentIdStack,
   DocumentInspector,
@@ -485,6 +483,7 @@ import type {
   DocumentLanguageFilterContext,
   DocumentLanguageFilterResolver,
   DocumentLayoutProps,
+  DocumentMenuTool,
   DocumentMeta,
   DocumentMutationEvent,
   DocumentOptions,
@@ -2690,15 +2689,6 @@ describe('sanity', () => {
   test('ContextMenuButton', () => {
     expectTypeOf<typeof ContextMenuButton>().toBeFunction()
   })
-  test('ContributedDocumentTool', () => {
-    expectTypeOf<ContributedDocumentTool>().not.toBeNever()
-  })
-  test('ContributedHeaderTool', () => {
-    expectTypeOf<ContributedHeaderTool>().toBeObject()
-  })
-  test('ContributedMenuTool', () => {
-    expectTypeOf<ContributedMenuTool>().toBeObject()
-  })
   test('CookielessCompatibleLoginMethod', () => {
     expectTypeOf<CookielessCompatibleLoginMethod>().not.toBeNever()
   })
@@ -3289,6 +3279,9 @@ describe('sanity', () => {
   test('DocumentGroupInventoryReferencePreviewLinkProps', () => {
     expectTypeOf<DocumentGroupInventoryReferencePreviewLinkProps>().toBeObject()
   })
+  test('DocumentHeaderTool', () => {
+    expectTypeOf<DocumentHeaderTool>().toBeObject()
+  })
   test('documentIdEquals', () => {
     expectTypeOf<typeof documentIdEquals>().toBeFunction()
   })
@@ -3327,6 +3320,9 @@ describe('sanity', () => {
   })
   test('DocumentLayoutProps', () => {
     expectTypeOf<DocumentLayoutProps>().toBeObject()
+  })
+  test('DocumentMenuTool', () => {
+    expectTypeOf<DocumentMenuTool>().toBeObject()
   })
   test('DocumentMeta', () => {
     expectTypeOf<DocumentMeta>().toBeObject()

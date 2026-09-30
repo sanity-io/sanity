@@ -1,7 +1,7 @@
 import {render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type ReactNode} from 'react'
-import {type ContributedHeaderTool, type ContributedMenuTool, type SingleWorkspace} from 'sanity'
+import {type DocumentHeaderTool, type DocumentMenuTool, type SingleWorkspace} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getAllByDataUi} from '../../../../../../../test/setup/customQueries'
@@ -98,12 +98,12 @@ function Flag() {
   return <button data-testid="tool-flag" type="button" />
 }
 
-const PIN: ContributedHeaderTool = {id: 'splitPane', placement: 'header', render: Pin}
-const FLAG: ContributedHeaderTool = {id: 'focusMode', placement: 'header', render: Flag}
+const PIN: DocumentHeaderTool = {id: 'splitPane', placement: 'header', render: Pin}
+const FLAG: DocumentHeaderTool = {id: 'focusMode', placement: 'header', render: Flag}
 
 const bookmark = vi.fn()
 
-const BOOKMARK: ContributedMenuTool = {
+const BOOKMARK: DocumentMenuTool = {
   id: 'closePane',
   placement: 'menu',
   title: 'Bookmark',

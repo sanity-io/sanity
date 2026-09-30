@@ -1,8 +1,8 @@
 import {isDev} from '../../environment'
 import {
   type BuiltInDocumentTool,
-  type ContributedHeaderTool,
-  type ContributedMenuTool,
+  type DocumentHeaderTool,
+  type DocumentMenuTool,
   type DocumentTool,
   type ResolvedDocumentTools,
 } from './tools'
@@ -27,11 +27,11 @@ export const SANITY_DEFINED_TOOLS: readonly BuiltInDocumentTool[] = [
   {id: 'productionPreview', shortcut: 'Ctrl+Alt+O'},
 ]
 
-function isHeaderTool(tool: DocumentTool): tool is ContributedHeaderTool {
+function isHeaderTool(tool: DocumentTool): tool is DocumentHeaderTool {
   return 'placement' in tool && tool.placement === 'header'
 }
 
-function isMenuTool(tool: DocumentTool): tool is ContributedMenuTool {
+function isMenuTool(tool: DocumentTool): tool is DocumentMenuTool {
   return 'placement' in tool && tool.placement === 'menu'
 }
 

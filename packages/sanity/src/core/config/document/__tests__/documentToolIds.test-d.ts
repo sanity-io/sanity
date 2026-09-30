@@ -1,9 +1,9 @@
 import {describe, expectTypeOf, test} from 'vitest'
 
 import {
-  type ContributedDocumentTool,
-  type ContributedHeaderTool,
-  type ContributedMenuTool,
+  type DocumentHeaderTool,
+  type DocumentMenuTool,
+  type DocumentTool,
   type DocumentToolId,
   type SanityDefinedToolId,
 } from '../tools'
@@ -34,18 +34,18 @@ describe('DocumentToolIds', () => {
       id: 'acmeRibbon'
       placement: 'header'
       render: () => null
-    }>().toExtend<ContributedDocumentTool>()
+    }>().toExtend<DocumentTool>()
   })
 
   test('an id nobody registered is not a DocumentToolId', () => {
     expectTypeOf<'neverRegistered'>().not.toExtend<DocumentToolId>()
-    const tool: ContributedDocumentTool = {
+    const tool: DocumentHeaderTool = {
       // @ts-expect-error `neverRegistered` was never merged into `DocumentToolIds`
       id: 'neverRegistered',
       placement: 'header',
       render: () => null,
     }
-    expectTypeOf(tool).toExtend<ContributedDocumentTool>()
+    expectTypeOf(tool).toExtend<DocumentTool>()
   })
 
   test('every Sanity-defined id stays a DocumentToolId', () => {
@@ -57,18 +57,18 @@ describe('DocumentToolIds', () => {
   })
 })
 
-describe('ContributedDocumentTool', () => {
-  test('a menu tool is a ContributedDocumentTool', () => {
+describe('DocumentTool placements', () => {
+  test('a menu tool is a DocumentTool', () => {
     expectTypeOf<{
       id: 'acmeRibbon'
       placement: 'menu'
       title: string
       onAction: () => void
-    }>().toExtend<ContributedDocumentTool>()
+    }>().toExtend<DocumentTool>()
   })
 
   test('a menu tool cannot carry a render component', () => {
-    const tool: ContributedMenuTool = {
+    const tool: DocumentMenuTool = {
       id: 'acmeRibbon',
       placement: 'menu',
       title: 'Ribbon',
@@ -76,29 +76,29 @@ describe('ContributedDocumentTool', () => {
       // @ts-expect-error a menu tool is data; the overflow menu renders no contributed component
       render: () => null,
     }
-    expectTypeOf(tool).toExtend<ContributedDocumentTool>()
+    expectTypeOf(tool).toExtend<DocumentTool>()
   })
 
   test('a header tool cannot carry an onAction callback', () => {
-    const tool: ContributedHeaderTool = {
+    const tool: DocumentHeaderTool = {
       id: 'acmeRibbon',
       placement: 'header',
       render: () => null,
       // @ts-expect-error a header tool wires its own behaviour inside `render`
       onAction: () => {},
     }
-    expectTypeOf(tool).toExtend<ContributedDocumentTool>()
+    expectTypeOf(tool).toExtend<DocumentTool>()
   })
 
   test('a header tool cannot carry a shortcut', () => {
-    const tool: ContributedHeaderTool = {
+    const tool: DocumentHeaderTool = {
       id: 'acmeRibbon',
       placement: 'header',
       render: () => null,
       // @ts-expect-error nothing fires a header tool's shortcut; it wires its own hotkey
       shortcut: 'Ctrl+Alt+R',
     }
-    expectTypeOf(tool).toExtend<ContributedDocumentTool>()
+    expectTypeOf(tool).toExtend<DocumentTool>()
   })
 })
 

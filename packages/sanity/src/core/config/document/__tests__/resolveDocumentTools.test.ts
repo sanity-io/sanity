@@ -2,9 +2,9 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {resolveDocumentTools, SANITY_DEFINED_TOOLS} from '../resolveDocumentTools'
 import {
-  type ContributedDocumentTool,
-  type ContributedHeaderTool,
-  type ContributedMenuTool,
+  type DocumentHeaderTool,
+  type DocumentMenuTool,
+  type DocumentToolId,
   type DocumentTool,
   SANITY_DEFINED_TOOL_IDS,
 } from '../tools'
@@ -17,26 +17,26 @@ function OtherRenderer() {
   return null
 }
 
-const SPLIT_PANE: ContributedHeaderTool = {
+const SPLIT_PANE: DocumentHeaderTool = {
   id: 'splitPane',
   placement: 'header',
   render: Renderer,
 }
 
-const FOCUS_MODE: ContributedHeaderTool = {
+const FOCUS_MODE: DocumentHeaderTool = {
   id: 'focusMode',
   placement: 'header',
   render: Renderer,
 }
 
-const CLOSE_PANE: ContributedMenuTool = {
+const CLOSE_PANE: DocumentMenuTool = {
   id: 'closePane',
   placement: 'menu',
   title: 'Close pane',
   onAction: () => {},
 }
 
-const CLOSE_PANE_GROUP: ContributedMenuTool = {
+const CLOSE_PANE_GROUP: DocumentMenuTool = {
   id: 'closePaneGroup',
   placement: 'menu',
   title: 'Close pane group',
@@ -157,10 +157,10 @@ describe('resolveDocumentTools', () => {
 
   it('keeps an id it does not recognise', () => {
     const contributed = {
-      id: 'myPluginPin' as ContributedDocumentTool['id'],
+      id: 'myPluginPin' as DocumentToolId,
       placement: 'header',
       render: Renderer,
-    } satisfies ContributedDocumentTool
+    } satisfies DocumentHeaderTool
 
     const {byId, header} = resolve([...SANITY_DEFINED_TOOLS, contributed])
 

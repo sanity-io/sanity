@@ -1,5 +1,5 @@
 import negate from 'lodash-es/negate.js'
-import {type ContributedMenuTool} from 'sanity'
+import {type DocumentMenuTool} from 'sanity'
 
 import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'
 import {type DocumentFieldMenuActionNode, type PaneMenuItem, type PaneMenuItemGroup} from './types'
@@ -22,7 +22,7 @@ export function resolveMenuNodes(params: {
   fieldActions?: DocumentFieldMenuActionNode[]
   menuItems: PaneMenuItem[]
   menuItemGroups: PaneMenuItemGroup[]
-  menuTools?: readonly ContributedMenuTool[]
+  menuTools?: readonly DocumentMenuTool[]
 }): _PaneMenuNode[] {
   const {fieldActions = [], menuItems, menuItemGroups, menuTools = []} = params
 
@@ -119,7 +119,7 @@ export function resolveMenuNodes(params: {
   return [...ungroupedItems, ...groups, ...nodes, ...menuTools.map(mapMenuToolToPaneMenuNode)]
 }
 
-function mapMenuToolToPaneMenuNode(tool: ContributedMenuTool): _PaneMenuItem {
+function mapMenuToolToPaneMenuNode(tool: DocumentMenuTool): _PaneMenuItem {
   return {
     type: 'item',
     key: `tool-${tool.id}`,

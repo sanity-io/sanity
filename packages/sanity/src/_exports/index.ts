@@ -259,9 +259,8 @@ export {
 } from '../core/config/document/actions'
 export {
   type BuiltInDocumentTool,
-  type ContributedDocumentTool,
-  type ContributedHeaderTool,
-  type ContributedMenuTool,
+  type DocumentHeaderTool,
+  type DocumentMenuTool,
   type DocumentTool,
   type DocumentToolId,
   type DocumentToolIds,

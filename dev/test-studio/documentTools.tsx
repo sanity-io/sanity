@@ -2,11 +2,7 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Button, Card, Dialog, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {
-  type ContributedHeaderTool,
-  type ContributedMenuTool,
-  type DocumentToolsResolver,
-} from 'sanity'
+import {type DocumentHeaderTool, type DocumentMenuTool, type DocumentToolsResolver} from 'sanity'
 
 declare module 'sanity' {
   interface DocumentToolIds {
@@ -34,13 +30,13 @@ function SpeciesFactSheetButton() {
   )
 }
 
-const SPECIES_FACT_SHEET: ContributedHeaderTool = {
+const SPECIES_FACT_SHEET: DocumentHeaderTool = {
   id: 'speciesFactSheet',
   placement: 'header',
   render: SpeciesFactSheetButton,
 }
 
-const SPECIES_WIKIPEDIA: ContributedMenuTool = {
+const SPECIES_WIKIPEDIA: DocumentMenuTool = {
   id: 'speciesWikipedia',
   placement: 'menu',
   title: 'Look up on Wikipedia',

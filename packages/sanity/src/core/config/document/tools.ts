@@ -88,7 +88,7 @@ export interface BuiltInDocumentTool {
  * @hidden
  * @beta
  */
-export interface ContributedHeaderTool {
+export interface DocumentHeaderTool {
   /** Stable identifier. `document.tools` addresses this. */
   id: DocumentToolId
   placement: 'header'
@@ -107,7 +107,7 @@ export interface ContributedHeaderTool {
  * @hidden
  * @beta
  */
-export interface ContributedMenuTool {
+export interface DocumentMenuTool {
   /** Stable identifier. `document.tools` addresses this. */
   id: DocumentToolId
   placement: 'menu'
@@ -119,18 +119,10 @@ export interface ContributedMenuTool {
 }
 
 /**
- * A tool contributed by a host or a plugin.
- *
  * @hidden
  * @beta
  */
-export type ContributedDocumentTool = ContributedHeaderTool | ContributedMenuTool
-
-/**
- * @hidden
- * @beta
- */
-export type DocumentTool = BuiltInDocumentTool | ContributedDocumentTool
+export type DocumentTool = BuiltInDocumentTool | DocumentHeaderTool | DocumentMenuTool
 
 /**
  * @hidden
@@ -148,10 +140,10 @@ export type DocumentToolsResolver = (
  * @beta
  */
 export interface ResolvedDocumentTools {
-  /** Contributed header tools, in the order the resolver left them. */
-  readonly header: readonly ContributedHeaderTool[]
-  /** Contributed menu tools, in the order the resolver left them. */
-  readonly menu: readonly ContributedMenuTool[]
+  /** Header tools, in the order the resolver left them. */
+  readonly header: readonly DocumentHeaderTool[]
+  /** Menu tools, in the order the resolver left them. */
+  readonly menu: readonly DocumentMenuTool[]
   /** Every resolved tool, keyed by id. Duplicate ids resolve to the last one. */
   readonly byId: ReadonlyMap<DocumentToolId, DocumentTool>
 }
