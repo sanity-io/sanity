@@ -58,6 +58,7 @@ Prefer these over hand-rolled setup. Paths are relative to `packages/sanity/`.
 - Query by role, label or `data-testid`.
 - Prefer behavioural assertions to snapshots. Snapshots live in `__snapshots__/` and are updated with `pnpm test -- -u`. Review every snapshot change.
 - Name tests as statements of behaviour, not restatements of the function name.
+- Do not use `as unknown as T` to force a value into a narrower public type. If a helper's return type is not in the union the function accepts, cover that behaviour through a surface that already accepts the value, or drop that case from the typed call. Do not widen a public union solely so a test type-checks. A single `as T` on a deliberately incomplete object is fine when the test is the error path for a missing field.
 
 ## Determinism
 

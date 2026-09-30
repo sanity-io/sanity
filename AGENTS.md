@@ -829,7 +829,7 @@ Notes:
 2. Use existing test patterns from similar files
 3. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
 
-For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories the test helpers (`createTestProvider`, the `test/form` input harnesses, the client and router mocks) and the determinism rules for that package.
+For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories the test helpers (`createTestProvider`, the `test/form` input harnesses, the client and router mocks), the determinism rules, and how to type fixtures without `as unknown as`.
 
 ### Updating Snapshots
 
