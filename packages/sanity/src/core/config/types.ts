@@ -558,6 +558,13 @@ export interface PluginOptions {
   mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
 
   /**
+   * Config for asset sources provided by federated `asset_source` views
+   * brokered from the hosting workbench.
+   * @beta
+   */
+  federatedAssetSources?: FederatedAssetSourcesConfig
+
+  /**
    * Advanced version control provides features such as inline content diffs in Studio to make
    * resolving conflicts across document versions easier.
    *
@@ -682,6 +689,12 @@ export interface WorkspaceOptions extends SourceOptions {
    * @internal
    */
   mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
+  /**
+   * Config for asset sources provided by federated `asset_source` views
+   * brokered from the hosting workbench.
+   * @beta
+   */
+  federatedAssetSources?: FederatedAssetSourcesConfig
   apps?: AppsOptions
 
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
@@ -1335,6 +1348,53 @@ export interface MediaLibraryConfig {
      */
     federatedAssetSource?: boolean
   }
+}
+
+/**
+ * Identity of a federated `asset_source` view brokered from the hosting
+ * workbench — an organization application (SDK app) exposing a view built
+ * with `defineAssetSourceView`.
+ *
+ * @beta
+ */
+export interface FederatedAssetSourceViewInfo {
+  /** The publishing application's id. */
+  applicationId: string
+  /** Stable, immutable application identity (`ApplicationBase.name`). */
+  applicationName: string
+  /** Human-readable application title. */
+  applicationTitle: string
+  /** The view's name, unique within its application. */
+  name: string
+  /** Human-readable view title. */
+  title: string
+}
+
+/**
+ * Config for asset sources provided by federated `asset_source` views:
+ * organization applications published through the hosting workbench (SDK
+ * apps exposing views built with `defineAssetSourceView`). Each brokered
+ * view becomes its own Studio asset source on image and file fields.
+ *
+ * Only effective when the Studio runs inside the workbench shell — outside
+ * it no views are brokered and the config is inert. The Media Library's own
+ * view is not governed by this config: it replaces the built-in Media
+ * Library source's dialog and is gated by
+ * `mediaLibrary.__internal.federatedAssetSource`.
+ *
+ * @beta
+ */
+export interface FederatedAssetSourcesConfig {
+  /**
+   * Whether brokered `asset_source` views become Studio asset sources.
+   * Defaults to `false`.
+   */
+  enabled?: boolean
+  /**
+   * Choose which brokered views become asset sources (defaults to all when
+   * omitted).
+   */
+  filter?: (view: FederatedAssetSourceViewInfo) => boolean
 }
 
 /**
