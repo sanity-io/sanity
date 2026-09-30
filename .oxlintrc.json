@@ -59,6 +59,10 @@
     ],
     "boundaries/files": [
       {"category": "sanity", "pattern": "src/_exports/index.ts"},
+      {
+        "category": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver",
+        "pattern": "src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts"
+      },
       {"category": "sanity/_internal", "pattern": "src/_exports/_internal.ts"},
       {"category": "sanity/cli", "pattern": "src/_exports/cli.ts"},
       {"category": "sanity/desk", "pattern": "src/_exports/desk.ts"},
@@ -611,6 +615,27 @@
                     {"file": {"categories": "sanity"}},
                     {"element": {"type": "sanity/_internal__contents"}}
                   ]
+                }
+              },
+              {
+                // The internals entry re-exports @internal declarations from every area. Nothing
+                // inside the package imports it: src/core, src/structure and src/router keep
+                // using relative imports, so the entry never becomes part of an import cycle.
+                "from": {
+                  "file": {
+                    "categories": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"
+                  }
+                },
+                "allow": {
+                  "to": {
+                    "element": {
+                      "type": [
+                        "sanity__contents",
+                        "sanity/structure__contents",
+                        "sanity/router__contents"
+                      ]
+                    }
+                  }
                 }
               },
               {

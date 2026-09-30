@@ -10,6 +10,7 @@ import {
 } from '../../../config/document/actions'
 import {useValidationStatus} from '../../../hooks/useValidationStatus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
@@ -55,7 +56,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
 
   // Scheduling operates on the base draft, so it is not available while a variant is selected —
   // it would silently schedule the base document instead of the variant (SAPP-3986).
-  const isVariantSelected = Boolean(perspective.selectedVariantName)
+  const isVariantSelected = Boolean(getDefaultVariant(perspective.selectedVariantNames))
 
   const currentRelease = useMemo(
     () =>

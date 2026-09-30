@@ -52,15 +52,15 @@ const releaseVariant = versionStub('versions.alpha.article-1', {
 const agentDefault = versionStub('versions.agent-abc123.article-1', {bundleId: AGENT_BUNDLE_ID})
 
 const VARIANT_SELECTED: Partial<PerspectiveContextValue> = {
-  selectedVariant: variantAlphaAudience,
-  selectedVariantName: 'alpha-audience',
+  selectedVariants: [variantAlphaAudience],
+  selectedVariantNames: ['alpha-audience'],
 }
 
 // The variants store has not resolved the selected variant yet, which degrades to the default
 // variant.
 const VARIANT_RESOLVING: Partial<PerspectiveContextValue> = {
-  selectedVariant: undefined,
-  selectedVariantName: 'alpha-audience',
+  selectedVariants: [undefined],
+  selectedVariantNames: ['alpha-audience'],
 }
 
 const RELEASE_PERSPECTIVE: Partial<PerspectiveContextValue> = {

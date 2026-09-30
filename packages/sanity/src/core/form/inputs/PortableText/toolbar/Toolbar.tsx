@@ -17,13 +17,13 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
 import {useActionGroups} from './hooks'
 import {InsertMenu} from './InsertMenu'
 import {type BlockItem, type BlockStyleItem, type PTEToolbarActionGroup} from './types'
+import {useToolbarSchemaTypes} from './useToolbarSchemaTypes'
 
 interface ToolbarProps {
   /** Whether annotation and block menu buttons should fully collapse at smaller element widths */
@@ -176,7 +176,7 @@ export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
-  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const schemaTypes = useToolbarSchemaTypes()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()

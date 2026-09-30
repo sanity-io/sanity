@@ -11,6 +11,7 @@ import {useSyncObservable} from 'react-rx'
 import {BehaviorSubject, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 
+import {getDefaultVariant} from '../perspective/getDefaultVariant'
 import {type PerspectiveStack} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
@@ -183,7 +184,8 @@ export function useValuePreview(props: {
     variant: chosenVariant,
   } = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const perspective = chosenPerspectiveStack ?? perspectiveStack
   // The variant follows the perspective: only inherited from the context when the perspective is too.

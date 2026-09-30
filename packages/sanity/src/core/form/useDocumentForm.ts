@@ -38,6 +38,7 @@ import {
 } from '../hooks/useTargetDocumentState'
 import {useTargetScopeId} from '../hooks/useTargetScopeId'
 import {useValidationStatus} from '../hooks/useValidationStatus'
+import {getDefaultVariant} from '../perspective/getDefaultVariant'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
@@ -175,7 +176,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {versions: documentVersionStubs, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const {selectedVariantName, bundle} = usePerspective()
+  const {selectedVariantNames, bundle} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const targetDocumentState = useTargetDocumentState(documentId)
   const creatableVariantTarget = getCreatableVariantTarget(targetDocumentState)
   const canCreateVariantDraft = Boolean(creatableVariantTarget && initialValue?.value)

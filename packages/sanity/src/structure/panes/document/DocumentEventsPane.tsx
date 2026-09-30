@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 import {
   EMPTY_ARRAY,
   EventsProvider,
+  getDefaultVariant,
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
@@ -30,7 +31,8 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const schemaType = schema.get(options.type) as ObjectSchemaType | undefined
   const liveEdit = Boolean(schemaType?.liveEdit)
 
-  const {selectedPerspectiveName, selectedPerspective, selectedVariant} = usePerspective()
+  const {selectedPerspectiveName, selectedPerspective, selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {data: archivedReleases} = useArchivedReleases()
   const {versions} = useDocumentVersions({documentId: getPublishedId(options.id)})
   const targetDocumentState = useTargetDocumentState(getPublishedId(options.id))

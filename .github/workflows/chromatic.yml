@@ -1,14 +1,24 @@
 name: Chromatic
 permissions: {}
 
+# PR runs are label-gated: the Storybook build and the browser-mode capture run
+# each cost a full `pnpm build` on an 8-core runner plus Chromatic snapshots, so
+# a PR only pays for them once someone asks for a visual diff with the
+# `trigger:chromatic` label. Pushes to main are never gated — that is what keeps
+# the auto-accepted baselines current for the labeled PRs to diff against.
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
   push:
     branches: [main]
 
+# Adding an unrelated label must not cancel an in-flight Chromatic run: the new
+# run's jobs all skip via their label guards, so the cancelled build would never
+# be replaced. Only cancel when the trigger is a real Chromatic trigger: any
+# non-label event, or the `trigger:chromatic` label itself.
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event.action != 'labeled' || github.event.label.name == 'trigger:chromatic' }}
 
 jobs:
   storybook:
@@ -17,7 +27,15 @@ jobs:
     runs-on: ubuntu-8core
     permissions:
       contents: read
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
+    # Fork PRs never run (the Chromatic token is a repository secret). Same-repo
+    # PRs need the `trigger:chromatic` label; the labeled-event guard keeps
+    # unrelated label additions from re-running the build (the label set still
+    # gates via contains(), so later pushes re-run while the label is on).
+    if: >-
+      github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.fork == false &&
+       contains(github.event.pull_request.labels.*.name, 'trigger:chromatic') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'trigger:chromatic'))
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -43,7 +61,7 @@ jobs:
 
       - name: Run Chromatic
         if: steps.changes.outputs.has_changes == 'true'
-        uses: chromaui/action@bb3b582719a93c1828c5e520e62992b2937d7889 # v18.9.4
+        uses: chromaui/action@6b3c2820222d23bad770d57a4ad5e2d1c91f92e9 # v18.9.5
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_STORYBOOK }}
           workingDir: dev/storybook
@@ -58,7 +76,15 @@ jobs:
     runs-on: ubuntu-8core
     permissions:
       contents: read
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
+    # Fork PRs never run (the Chromatic token is a repository secret). Same-repo
+    # PRs need the `trigger:chromatic` label; the labeled-event guard keeps
+    # unrelated label additions from re-running the build (the label set still
+    # gates via contains(), so later pushes re-run while the label is on).
+    if: >-
+      github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.fork == false &&
+       contains(github.event.pull_request.labels.*.name, 'trigger:chromatic') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'trigger:chromatic'))
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -126,7 +152,7 @@ jobs:
 
       - name: Upload archives to Chromatic
         if: steps.changes.outputs.has_changes == 'true'
-        uses: chromaui/action@bb3b582719a93c1828c5e520e62992b2937d7889 # v18.9.4
+        uses: chromaui/action@6b3c2820222d23bad770d57a4ad5e2d1c91f92e9 # v18.9.5
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
           workingDir: packages/sanity

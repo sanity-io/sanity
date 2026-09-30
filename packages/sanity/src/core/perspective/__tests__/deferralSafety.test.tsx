@@ -16,6 +16,7 @@ import {ARCHIVED_RELEASE_STATES} from '../../releases/util/const'
 import {variantAlphaAudience} from '../../variants/__fixtures__/variants.fixture'
 import {type VariantStoreState} from '../../variants/store/reducer'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
+import {getDefaultVariant} from '../getDefaultVariant'
 import {getSelectedReleaseId} from '../getSelectedReleaseId'
 import {getSelectedVariant} from '../getSelectedVariant'
 import {PerspectiveProvider} from '../PerspectiveProvider'
@@ -89,8 +90,11 @@ function SyncReleaseHarness() {
 }
 
 function VariantProbe() {
-  const {selectedVariantName, selectedVariant} = usePerspective()
-  variantFrames.push({name: selectedVariantName, variantId: selectedVariant?._id})
+  const {selectedVariantNames, selectedVariants} = usePerspective()
+  variantFrames.push({
+    name: getDefaultVariant(selectedVariantNames),
+    variantId: getDefaultVariant(selectedVariants)?._id,
+  })
   return null
 }
 

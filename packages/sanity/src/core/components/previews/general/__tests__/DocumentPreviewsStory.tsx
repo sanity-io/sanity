@@ -1,6 +1,7 @@
 import {DocumentIcon} from '@sanity/icons/Document'
 import {EditIcon} from '@sanity/icons/Edit'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {CompactPreview} from '../CompactPreview'
@@ -18,14 +19,14 @@ export function DocumentPreviewsStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 420}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               default / title only
             </Text>
             <DefaultPreview title="Summer launch" />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               default / media subtitle status
             </Text>
@@ -35,26 +36,26 @@ export function DocumentPreviewsStory() {
               subtitle="Article"
               title="Summer launch"
             />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               default / fallback title
             </Text>
             <DefaultPreview media={<DocumentIcon />} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               compact / media
             </Text>
             <CompactPreview media={<DocumentIcon />} status={<EditIcon />} title="Summer launch" />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               compact / no media
             </Text>
             <CompactPreview title="Summer launch" />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               detail
             </Text>
@@ -66,8 +67,8 @@ export function DocumentPreviewsStory() {
               subtitle="Article"
               title="Summer launch"
             />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

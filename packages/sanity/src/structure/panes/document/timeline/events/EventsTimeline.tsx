@@ -1,4 +1,4 @@
-import {Spinner, Stack, Text} from '@sanity/ui'
+import {Spinner, Text} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -256,14 +256,14 @@ export const EventsTimeline = ({
           />
         </ListWrapper>
       ) : (
-        <Stack padding={3} gap={3}>
+        <Flex padding={3} gap={3} flexDirection="column">
           <Text size={1} weight="medium">
             {t('timeline.error.no-document-history-title')}
           </Text>
           <Text muted size={1}>
             {t('timeline.error.no-document-history-description')}
           </Text>
-        </Stack>
+        </Flex>
       )}
     </Root>
   )

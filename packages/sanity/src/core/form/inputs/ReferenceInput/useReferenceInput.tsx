@@ -4,6 +4,7 @@ import {type ComponentProps, useCallback, useMemo, type RefAttributes} from 'rea
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks/useSchema'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewStore} from '../../../store/datastores'
 import {isNonNullable} from '../../../util/isNonNullable'
@@ -110,13 +111,13 @@ export function useReferenceInput(options: Options) {
         id,
         schemaType,
         perspective.perspectiveStack,
-        perspective.selectedVariantName,
+        getDefaultVariant(perspective.selectedVariantNames),
       ),
     [
       documentPreviewStore,
       schemaType,
       perspective.perspectiveStack,
-      perspective.selectedVariantName,
+      perspective.selectedVariantNames,
     ],
   )
 

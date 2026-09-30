@@ -63,6 +63,7 @@ import {useAllowPatterns} from './useAllowPatterns'
 import {useDocumentsOnPage} from './useDocumentsOnPage'
 import {useMainDocument} from './useMainDocument'
 import {useNavigatePreviewFrame} from './useNavigatePreviewFrame'
+import {useOpenPreviewUrlActorRef} from './useOpenPreviewUrlActorRef'
 import {useParams} from './useParams'
 import {usePopups} from './usePopups'
 import {usePresentationPerspective} from './usePresentationPerspective'
@@ -108,6 +109,7 @@ export default function PresentationTool(props: {
 
   const allowOrigins = useAllowPatterns(previewUrlRef)
   const targetOrigin = useTargetOrigin(previewUrlRef)
+  const openPreviewUrlRef = useOpenPreviewUrlActorRef(tool.options?.previewUrl, targetOrigin)
 
   const components = tool.options?.components
   const name = tool.name || DEFAULT_TOOL_NAME
@@ -585,6 +587,7 @@ export default function PresentationTool(props: {
                             onPathChange={handlePreviewPath}
                             onRefresh={handleRefresh}
                             openPopup={handleOpenPopup}
+                            openPreviewUrlRef={openPreviewUrlRef}
                             overlaysConnection={overlaysConnection}
                             previewUrl={params.preview}
                             perspective={perspective}

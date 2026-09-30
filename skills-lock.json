@@ -59,6 +59,12 @@
       "sourceType": "github",
       "computedHash": "139717d9d0f9f128d83ea8b4bf1f26c6ff1f2b13df8b7c55e8877635127e1266"
     },
+    "sanity-tsdown-config": {
+      "source": "sanity-io/pkg-utils",
+      "sourceType": "github",
+      "skillPath": "skills/sanity-tsdown-config/SKILL.md",
+      "computedHash": "d38ce61157a0612f03c2e1fca63e05cbde69e30ba281889b6141f52ae83c6729"
+    },
     "stories": {
       "source": "storybookjs/mcp",
       "sourceType": "github",

@@ -16,7 +16,7 @@ interface PreviewHookOptions {
   /**
    * The variant to resolve the preview values in, as a bare variant id. Like `perspectiveStack`,
    * this is explicit: callers that want the variant currently selected in the studio pass
-   * `usePerspective().selectedVariantName`.
+   * `getDefaultVariant(usePerspective().selectedVariantNames)`.
    */
   variant?: string
 }

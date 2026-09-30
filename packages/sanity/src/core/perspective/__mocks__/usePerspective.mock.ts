@@ -9,7 +9,11 @@ export const perspectiveContextValueMock: Mocked<PerspectiveContextValue> = {
   selectedPerspective: 'drafts',
   perspectiveStack: ['drafts'],
   excludedPerspectives: [],
+  selectedVariantNames: [],
+  selectedVariants: [],
+  // oxlint-disable-next-line typescript/no-deprecated -- mock still fills the deprecated single-variant fields
   selectedVariantName: undefined,
+  // oxlint-disable-next-line typescript/no-deprecated -- mock still fills the deprecated single-variant fields
   selectedVariant: undefined,
   bundle: 'drafts',
 }

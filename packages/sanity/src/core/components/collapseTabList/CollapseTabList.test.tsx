@@ -24,9 +24,8 @@ it('merges consumer style with required layout styles', () => {
   const root = screen.getByTestId('collapse-tab-list')
 
   expect(root.style.position).toBe('relative')
-  // ui5 Flex defaults minWidth to 0 via CSS variable, not inline style
-  expect(root.style.getPropertyValue('--min-width')).toBe('0')
-  expect(root.className).toContain('sui-min-width')
+  // ui5 Flex defaults minWidth to 0 in its stylesheet, not as an inline style
+  expect(root.className).toContain('sui-Flex')
   expect(root.style.width).toBe('200px')
   expect(root.style.color).toBe('red')
 })

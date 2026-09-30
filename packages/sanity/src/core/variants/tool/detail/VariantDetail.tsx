@@ -2,10 +2,10 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
-import {Card, Container, Skeleton, Text} from '@sanity/ui'
+import {Card, Skeleton, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
-import {Flex, Box, VStack} from 'ui5'
+import {Container, Flex, Box, VStack} from 'ui5'
 
 import {
   DetailBackButton,
@@ -16,9 +16,12 @@ import {
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
+import {useVariantConditionMismatches, useVariantTypes} from '../../hooks/useVariantConditions'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
+import {getVariantType} from '../../util/variantType'
 import {
   decodeVariantIdFromRoute,
   getVariantDescription,
@@ -33,12 +36,18 @@ import {VariantDocumentsTable} from './VariantDocumentsTable'
 export function VariantDetail() {
   const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
+  const variantTypes = useVariantTypes()
+  const showVariantType = variantTypes.status === 'ready' && variantTypes.types.length > 1
   const variantIdRaw =
     typeof router.state.variantId === 'string' ? router.state.variantId : undefined
   const variantId = decodeVariantIdFromRoute(variantIdRaw)
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
+  const conditionMismatches = useVariantConditionMismatches(
+    variant?.conditions ?? {},
+    getVariantType(variant),
+  )
   const {
     loading: documentsLoading,
     results: variantDocuments,
@@ -74,6 +83,7 @@ export function VariantDetail() {
             // Each targeting dimension gets a recognizable glyph (audience → people, location →
             // pin, …) so a multi-dimension definition reads at a glance.
             const DimensionIcon = getVariantConditionIcon(key)
+            const mismatch = conditionMismatches.find((item) => item.key === key)
             return {
               icon: (
                 <Text muted size={1}>
@@ -81,7 +91,14 @@ export function VariantDetail() {
                 </Text>
               ),
               label: key,
-              value,
+              value: mismatch ? (
+                <Flex alignItems="center" gap={2}>
+                  <Text size={1}>{value}</Text>
+                  <ConditionMismatchIndicator mismatches={[mismatch]} />
+                </Flex>
+              ) : (
+                value
+              ),
             }
           })
         : [
@@ -106,7 +123,7 @@ export function VariantDetail() {
         rows: conditionRows,
       },
     ]
-  }, [t, variant])
+  }, [conditionMismatches, t, variant])
 
   const documentSections = useMemo<DetailPropertiesSection[]>(() => {
     // While documents are still streaming in, show a skeleton rather than "0" — a literal 0
@@ -143,6 +160,16 @@ export function VariantDetail() {
             label: t('detail.metadata.unpublished-changes'),
             value: countValue(unpublishedCount),
           },
+          variant &&
+            showVariantType && {
+              icon: (
+                <Text muted size={1}>
+                  <DocumentsIcon />
+                </Text>
+              ),
+              label: t('detail.metadata.type'),
+              value: getVariantType(variant),
+            },
           variant && {
             // Resolution priority — the tiebreaker when several definitions match. Shown here (it is
             // authored in the create/edit dialog) so the detail page reflects the full definition.
@@ -173,7 +200,7 @@ export function VariantDetail() {
         ],
       },
     ]
-  }, [documentsLoading, t, tableRows.length, unpublishedCount, variant])
+  }, [documentsLoading, showVariantType, t, tableRows.length, unpublishedCount, variant])
 
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />
@@ -213,7 +240,7 @@ export function VariantDetail() {
       <Card flex="none" paddingY={3}>
         {/* container[3] so the header aligns with the table's row content below (the shared Table
             centers rows at container[3]) instead of spreading edge-to-edge on wide screens. */}
-        <Container flex="none" width={3}>
+        <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
           {/* paddingX={2} (8px) matches the table's first-column content inset so the back button and
               actions line up with the row content below. */}
           <Box paddingX={2}>

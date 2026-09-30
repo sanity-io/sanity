@@ -7,9 +7,9 @@ import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {UserIcon} from '@sanity/icons/User'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Container, Skeleton, Text} from '@sanity/ui'
+import {Card, Skeleton, Text} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Container, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
@@ -76,7 +76,7 @@ function ReleaseDashboardDetailsProduction({
   }, [isDraftModelEnabled, isSelected, releaseId, setPerspective])
 
   return (
-    <Container width={3}>
+    <Container size={3}>
       <Flex padding={3} paddingY={[3, 3, 4, 5]} flexDirection="column">
         <Flex gap={1} alignItems="center">
           {isReleaseOpen && (
@@ -263,7 +263,7 @@ export function ReleaseDashboardDetails({
   }
 
   return (
-    <Container width={3}>
+    <Container size={3}>
       {/* Tight top padding: the header above already pads its bottom, so the title sits close under
           the breadcrumb instead of floating in a doubled gap. */}
       <Flex paddingX={3} paddingBottom={3} paddingTop={1} gap={4} flexDirection="column">

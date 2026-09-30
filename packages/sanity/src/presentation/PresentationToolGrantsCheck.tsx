@@ -1,7 +1,6 @@
 import {useSelector} from '@xstate/react'
-import {type Tool} from 'sanity'
+import {LoadingBlock, type Tool} from 'sanity'
 
-import {PresentationSpinner} from './PresentationSpinner'
 import PresentationTool from './PresentationTool'
 import {type PresentationPluginOptions} from './types'
 import {usePreviewUrlActorRef} from './usePreviewUrlActorRef'
@@ -48,7 +47,7 @@ export default function PresentationToolGrantsCheck({
     typeof previewAccessSharingReadPermission.granted === 'undefined' ||
     typeof previewUrlSecretPermission.granted === 'undefined'
   ) {
-    return <PresentationSpinner />
+    return <LoadingBlock showText />
   }
 
   return (

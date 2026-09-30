@@ -640,13 +640,33 @@ export function testHelpers() {
     /**
      * Drag and drop using mouse events
      */
-    dragAndDrop: async (sourceSelector: string, targetSelector: string) => {
+    dragAndDrop: async (
+      sourceSelector: string,
+      targetSelector: string,
+      options?: {
+        /**
+         * Which half of the target to release on. Playwright drops on the target's center by
+         * default, which for a block sits exactly on the line the Portable Text editor uses to
+         * decide between dropping before or after it; pick a half when that matters.
+         */
+        dropAt?: 'top' | 'bottom'
+      },
+    ) => {
       const source = await waitForElement(sourceSelector)
       const target = await waitForElement(targetSelector)
+      const targetRect = target.getBoundingClientRect()
+      const targetPosition = options?.dropAt
+        ? {
+            x: targetRect.width / 2,
+            y: targetRect.height * (options.dropAt === 'top' ? 0.25 : 0.75),
+          }
+        : undefined
       // Use the provider's real pointer-driven drag (Playwright under the hood),
       // which dispatches the full hover/move/up sequence the PTE drag tracking
       // relies on. Synthetic MouseEvents don't drive it.
-      await userEvent.dragAndDrop(page.elementLocator(source), page.elementLocator(target))
+      await userEvent.dragAndDrop(page.elementLocator(source), page.elementLocator(target), {
+        targetPosition,
+      })
     },
 
     /**

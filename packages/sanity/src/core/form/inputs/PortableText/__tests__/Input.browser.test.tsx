@@ -74,7 +74,7 @@ describe('Portable Text Input', () => {
 
       // Assertion: Show correct text on keyboard focus
       await $activeOverlay.element().focus()
-      await expect.element($activeOverlay).toHaveTextContent('Click or press space to activate')
+      await expect.element($activeOverlay).toMatchTextContent('Click or press space to activate')
     })
 
     it('Show call to action on hover', async () => {
@@ -84,7 +84,7 @@ describe('Portable Text Input', () => {
 
       // Assertion: Show correct text on pointer hover
       await userEvent.hover($activeOverlay)
-      await expect.element($activeOverlay).toHaveTextContent('Click to activate')
+      await expect.element($activeOverlay).toMatchTextContent('Click to activate')
     })
 
     it("Immediately activate on mount when 'initialActive' is true", async () => {
@@ -116,12 +116,12 @@ describe('Portable Text Input', () => {
       const $placeholder = page.getByTestId('field-body').getByTestId('pt-input-placeholder')
       // Assertion: placeholder is there
       await expect.element($placeholder).toBeVisible()
-      await expect.element($placeholder).toHaveTextContent('Empty')
+      await expect.element($placeholder).toMatchTextContent('Empty')
       // Write some text
       await insertPortableText('Hello there', $pte)
       // Assertion: placeholder was removed
       await expect.element($placeholder).not.toBeInTheDocument()
-      await expect.element($pte).toHaveTextContent('Hello there')
+      await expect.element($pte).toMatchTextContent('Hello there')
       // Keep focus and force Normal — blurring flipped Normal ↔ No style between
       // identical-code Chromatic captures (focus-ring avoidance is handled by
       // settle parking the pointer instead).

@@ -234,7 +234,7 @@ describe('Portable Text Input', () => {
       // Re-assert presence markers for a settled Chromatic end state.
       await expect.element($cursorA).toBeVisible()
       await expect.element($cursorB).toBeVisible()
-      await expect.element(editor$).toHaveTextContent(`INSERTED TEXT. ${TEXT}`)
+      await expect.element(editor$).toMatchTextContent(`INSERTED TEXT. ${TEXT}`)
       // Presence pin geometry can shift by a sub-pixel while the caret settles;
       // wait until both markers report a stable left offset.
       const presenceSig = () => {

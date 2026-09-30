@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
-import {useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
+import {getDefaultVariant, useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -24,7 +24,8 @@ export function DocumentHeaderBreadcrumbItem({
   const telemetry = useTelemetry()
   const routerPanes = useMemo(() => (routerState?.panes || []) as RouterPanes, [routerState?.panes])
 
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   // In case if it's a pane with a title, use the title
   const staticTitle = pane !== LOADING_PANE && 'title' in pane ? pane.title : null
 

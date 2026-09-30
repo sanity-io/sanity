@@ -1,18 +1,21 @@
 import {type SanityClient} from '@sanity/client'
 import {defineType, type ObjectSchemaType} from '@sanity/types'
-import {render, screen, waitFor} from '@testing-library/react'
-import {useMemo, useState} from 'react'
+import {act, render, type RenderResult, screen, waitFor} from '@testing-library/react'
+import {type ComponentType, lazy, type ReactNode, Suspense, useMemo, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {defineDocumentFieldAction} from '../../config/document/fieldActions/define'
+import {type SingleWorkspace} from '../../config/types'
 import {useWorkspace} from '../../studio/workspace'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {usePublishedId} from '../contexts/DocumentIdProvider'
 import {createPatchChannel} from '../patch/PatchChannel'
 import {useFormState} from '../store/useFormState'
+import {type FieldProps} from '../types/fieldProps'
 import {type FormDocumentValue} from '../types/formDocumentValue'
+import {type InputProps} from '../types/inputProps'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
 import {FormProvider} from './FormProvider'
 import {useEnhancedObjectDialog} from './tree-editing/context/enabled/useEnhancedObjectDialog'
@@ -42,9 +45,12 @@ interface RenderFormBuilderOptions {
   fieldActions?: FormBuilderProps['__internal_fieldActions']
   documentValue?: FormDocumentValue | undefined
   formNodeId?: string
+  config?: Partial<SingleWorkspace>
+  /** Mounts the form inside {@link PaneStandIn} instead of directly under the provider. */
+  pane?: boolean
 }
 
-async function createFormBuilderTestProvider() {
+async function createFormBuilderTestProvider(config?: Partial<SingleWorkspace>) {
   const client = createMockSanityClient() as unknown as SanityClient
   return createTestProvider({
     client,
@@ -53,8 +59,44 @@ async function createFormBuilderTestProvider() {
       projectId: 'test',
       dataset: 'test',
       schema: {types: schemaTypes},
+      ...config,
     },
   })
+}
+
+function deferredComponent<Props>() {
+  let resolve!: (component: ComponentType<Props>) => void
+  const loaded = new Promise<{default: ComponentType<Props>}>((resolveModule) => {
+    resolve = (component) => resolveModule({default: component})
+  })
+  return {Lazy: lazy(() => loaded), resolve}
+}
+
+function PassThroughField(props: FieldProps) {
+  return props.renderDefault(props)
+}
+
+function PassThroughInput(props: InputProps) {
+  return props.renderDefault(props)
+}
+
+/**
+ * The pane the form mounts into, reduced to what matters: a Suspense boundary above the form and
+ * an element kept in state that gates the form, the way `DocumentPanel` gates on its portal and
+ * scroll elements. The form mounts here on an update, after the pane has committed. If a lazy form
+ * component suspended up to this boundary, React would hide the committed pane and detach its
+ * refs, the gate would drop the form, the boundary would re-show the pane, and the form would
+ * remount and suspend again, until "Maximum update depth exceeded".
+ */
+function PaneStandIn(props: {children: ReactNode}) {
+  const [element, setElement] = useState<HTMLDivElement | null>(null)
+  return (
+    <Suspense fallback={<div data-testid="pane-fallback" />}>
+      <div ref={setElement} data-testid="pane">
+        {element ? props.children : null}
+      </div>
+    </Suspense>
+  )
 }
 
 function FormBuilderHarness(props: RenderFormBuilderOptions) {
@@ -122,21 +164,28 @@ function FormBuilderHarness(props: RenderFormBuilderOptions) {
 }
 
 async function renderFormBuilder(options: RenderFormBuilderOptions = {}) {
-  const TestProvider = await createFormBuilderTestProvider()
-  const view = render(
+  const TestProvider = await createFormBuilderTestProvider(options.config)
+  const tree = (next: RenderFormBuilderOptions) => (
     <TestProvider>
-      <FormBuilderHarness {...options} />
-    </TestProvider>,
+      {next.pane ? (
+        <PaneStandIn>
+          <FormBuilderHarness {...next} />
+        </PaneStandIn>
+      ) : (
+        <FormBuilderHarness {...next} />
+      )}
+    </TestProvider>
   )
+  let view!: RenderResult
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- lazy form components suspend during mount, and React only resumes work that suspended inside an awaited async `act`
+  await act(async () => {
+    view = render(tree(options))
+  })
 
   return {
     ...view,
     rerenderFormBuilder(next: RenderFormBuilderOptions) {
-      view.rerender(
-        <TestProvider>
-          <FormBuilderHarness {...next} />
-        </TestProvider>,
-      )
+      view.rerender(tree(next))
     },
   }
 }
@@ -286,6 +335,58 @@ describe('FormBuilder', () => {
     const inputAfterId = await screen.findByTestId('string-input')
     expect(inputAfterId).toBe(input)
     expect(inputAfterId).toHaveFocus()
+  })
+
+  it('suspends the form, not the pane, while a lazy input component loads', async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const input = deferredComponent<InputProps>()
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {form: {components: {input: input.Lazy}}},
+      pane: true,
+    })
+
+    // The form's own boundary shows its loading block; the pane above it stays committed, and
+    // the generic per-node middleware skeleton is gone.
+    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.getByTestId('pane')).toBeInTheDocument()
+    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+    expect(document.querySelector('[data-ui="Skeleton"]')).toBeNull()
+    expect(screen.queryByTestId('field-title')).not.toBeInTheDocument()
+
+    await act(async () => {
+      input.resolve(PassThroughInput)
+    })
+
+    expect(await screen.findByTestId('string-input', {}, {timeout: 10_000})).toBeInTheDocument()
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+  })
+
+  it('suspends the form, not the pane, while a lazy field component loads', async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const field = deferredComponent<FieldProps>()
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {form: {components: {field: field.Lazy}}},
+      pane: true,
+    })
+
+    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.getByTestId('pane')).toBeInTheDocument()
+    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+    expect(document.querySelector('[data-ui="Skeleton"]')).toBeNull()
+    expect(screen.queryByTestId('field-title')).not.toBeInTheDocument()
+
+    await act(async () => {
+      field.resolve(PassThroughField)
+    })
+
+    expect(await screen.findByTestId('field-title', {}, {timeout: 10_000})).toHaveTextContent(
+      'Title',
+    )
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
   })
 })
 

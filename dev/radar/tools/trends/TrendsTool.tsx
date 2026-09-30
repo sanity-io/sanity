@@ -19,12 +19,10 @@ import {
   Badge,
   Button,
   Card,
-  Container,
   Dialog,
   PortalProvider,
   Select,
   Spinner,
-  Stack,
   Tab,
   TabList,
   TabPanel,
@@ -38,7 +36,7 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Box, Flex, Grid} from 'ui5'
+import {Container, Box, Flex, Grid, VStack} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
@@ -213,7 +211,7 @@ function InfoButton(props: {
       constrainSize
       content={
         <Box ref={setContentEl} padding={3} style={{maxWidth: 260}}>
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Text size={1} muted>
               {props.text}
             </Text>
@@ -223,7 +221,7 @@ function InfoButton(props: {
               </Text>
             )}
             {(props.vitalDoc || props.sourceFile) && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 {/* Reference doc for the Web Vital itself (web.dev) */}
                 {props.vitalDoc && (
                   <Box
@@ -253,9 +251,9 @@ function InfoButton(props: {
                     </Flex>
                   </Box>
                 )}
-              </Stack>
+              </VStack>
             )}
-          </Stack>
+          </VStack>
         </Box>
       }
     >
@@ -305,7 +303,7 @@ function BranchPicker(props: {
       constrainSize
       content={
         <Box ref={setContentEl} padding={2} style={{maxWidth: 280}}>
-          <Stack gap={1}>
+          <VStack gap={1}>
             <Box paddingX={2} paddingY={1}>
               <Text size={0} muted>
                 Compare up to {MAX_COMPARE_BRANCHES} branches
@@ -327,7 +325,7 @@ function BranchPicker(props: {
                 />
               )
             })}
-          </Stack>
+          </VStack>
         </Box>
       }
     >
@@ -471,7 +469,7 @@ function SeriesCard(props: {
       // A short pulsing ring when jumped-to / deep-linked (see FOCUS_PULSE_CSS)
       className={focused ? 'chart-focus-pulse' : undefined}
     >
-      <Stack gap={3}>
+      <VStack gap={3}>
         {/* Two header rows: the title owns the first (with the menu/info
             controls right-aligned), and the stat row beneath pairs the drift
             badge with the latest value — the number sits next to the
@@ -601,7 +599,7 @@ function SeriesCard(props: {
           )}
         </ParentSize>
         <ChartLegend series={series} drift={overlay} layers={layers} tags={tags} />
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -728,7 +726,7 @@ function SoakPanel(props: {
   }
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <TabList gap={1}>
         {views.map((v) => (
           <Tab
@@ -742,7 +740,7 @@ function SoakPanel(props: {
         ))}
       </TabList>
       <TabPanel id={`soak-panel-${active.id}`} aria-labelledby={`soak-tab-${active.id}`}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Text size={1} muted>
             {active.hint}
           </Text>
@@ -752,9 +750,9 @@ function SoakPanel(props: {
             tags={props.tags}
             onExpand={props.onExpand}
           />
-        </Stack>
+        </VStack>
       </TabPanel>
-    </Stack>
+    </VStack>
   )
 }
 
@@ -805,7 +803,7 @@ function SettlePanel(props: {
   }
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <TabList gap={1}>
         {views.map((v) => (
           <Tab
@@ -826,7 +824,7 @@ function SettlePanel(props: {
         ))}
       </TabList>
       <TabPanel id={`settle-panel-${active.id}`} aria-labelledby={`settle-tab-${active.id}`}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Text size={1} muted>
             {active.hint}
           </Text>
@@ -842,9 +840,9 @@ function SettlePanel(props: {
             tags={props.tags}
             onExpand={props.onExpand}
           />
-        </Stack>
+        </VStack>
       </TabPanel>
-    </Stack>
+    </VStack>
   )
 }
 
@@ -893,12 +891,13 @@ function StylesPanel(props: {
     ...(scenarios.length > 0 ? [{id: 'weekly', label: 'Per week'}] : []),
   ]
   // The all-scenarios cards each view leads with: the adoption overview score
-  // on the UI view, and for styled-components one summed card per metric the
-  // view has a section for, in section order — so the top of the page answers
-  // "how is the escape hatch doing overall?" before the per-scenario breakdown.
+  // on the UI view, and for styled-components and CSS weight one summed card
+  // per metric the view has a section for, in section order — so the top of
+  // the page answers "how is it doing overall?" before the per-scenario
+  // breakdown.
   // Declared before the sub-tab resolution below, which reads them.
   const overview = props.aggregate.find((entry) => entry.key === UI_OVERVIEW_KEY)
-  const styledTotals = (view: StyleView) =>
+  const viewTotals = (view: StyleView) =>
     view.sections.flatMap((section) =>
       props.aggregate.filter((entry) => styleLabel(entry) === section.id),
     )
@@ -909,7 +908,7 @@ function StylesPanel(props: {
     const view = views.find((candidate) => candidate.id === viewId)
     if (!view) return false
     if (viewId === 'ui5' && key === UI_OVERVIEW_KEY) return true
-    if (styledTotals(view).some((entry) => entry.key === key)) return true
+    if (viewTotals(view).some((entry) => entry.key === key)) return true
     return view.sections.some((section) => section.series.some((entry) => entry.key === key))
   }
   const activeId =
@@ -956,7 +955,7 @@ function StylesPanel(props: {
   const activeView = views.find((view) => view.id === activeId)
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <TabList gap={1}>
         {tabs.map((tab) => (
           <Tab
@@ -974,11 +973,11 @@ function StylesPanel(props: {
       </TabList>
       <TabPanel id={`styles-panel-${activeId}`} aria-labelledby={`styles-tab-${activeId}`}>
         {activeView ? (
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Text size={1} muted>
               {activeView.hint}
             </Text>
-            <Stack gap={6} paddingTop={3}>
+            <Flex gap={6} paddingTop={3} flexDirection="column">
               {/* The adoption overview score leads the UI view: every scenario's
                   v5 and v4 counts summed per commit, then divided — one number
                   for the whole migration, drawn full width because it is the
@@ -986,7 +985,7 @@ function StylesPanel(props: {
                   SeriesCard as the grid, so it drifts, acks, maximizes and
                   opens runs like every other chart. */}
               {activeView.id === 'ui5' && overview && (
-                <Stack gap={4}>
+                <VStack gap={4}>
                   <Flex alignItems="baseline" gap={2}>
                     <Text size={1} weight="semibold">
                       Overall adoption
@@ -1015,24 +1014,26 @@ function StylesPanel(props: {
                     tags={props.tags}
                     onExpand={() => props.onExpand(overview.key)}
                   />
-                </Stack>
+                </VStack>
               )}
-              {/* The styled-components totals lead their view the same way:
-                  every scenario page summed per commit, one card per metric,
-                  so the whole escape hatch is readable before the breakdown */}
-              {activeView.id === 'styled' && styledTotals(activeView).length > 0 && (
-                <Stack gap={4}>
+              {/* The styled-components and CSS weight totals lead their view
+                  the same way: every scenario page summed per commit, one card
+                  per metric, so the whole picture is readable before the
+                  breakdown */}
+              {activeView.id !== 'ui5' && viewTotals(activeView).length > 0 && (
+                <VStack gap={4}>
                   <Flex alignItems="baseline" gap={2}>
                     <Text size={1} weight="semibold">
                       All scenarios
                     </Text>
                     <Text size={1} muted>
-                      summed over every scenario page per commit; the rule share weighted by rules ·
-                      lower is better
+                      {activeView.id === 'styled'
+                        ? 'summed over every scenario page per commit; the rule share weighted by rules · lower is better'
+                        : 'summed over every scenario page per commit · lower is better'}
                     </Text>
                   </Flex>
                   <ChartGrid
-                    series={styledTotals(activeView)}
+                    series={viewTotals(activeView)}
                     driftBySeries={props.driftBySeries}
                     silencedBySeries={props.silencedBySeries}
                     baselineBySeries={props.baselineBySeries}
@@ -1043,10 +1044,10 @@ function StylesPanel(props: {
                     tags={props.tags}
                     onExpand={props.onExpand}
                   />
-                </Stack>
+                </VStack>
               )}
               {activeView.sections.map((section) => (
-                <Stack key={section.id} gap={4}>
+                <VStack key={section.id} gap={4}>
                   <Flex alignItems="baseline" gap={2}>
                     <Text size={1} weight="semibold">
                       {section.label}
@@ -1067,20 +1068,20 @@ function StylesPanel(props: {
                     tags={props.tags}
                     onExpand={props.onExpand}
                   />
-                </Stack>
+                </VStack>
               ))}
-            </Stack>
-          </Stack>
+            </Flex>
+          </VStack>
         ) : (
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Text size={1} muted>
               The migration week by week: each bar is the median of that week&apos;s runs, an empty
               week had no run. Every scenario summed first, then each scenario on its own. Click a
               bar to open the week&apos;s newest run.
             </Text>
-            <Stack gap={6} paddingTop={3}>
+            <Flex gap={6} paddingTop={3} flexDirection="column">
               {weeklySections.map((section) => (
-                <Stack key={section.id} gap={4}>
+                <VStack key={section.id} gap={4}>
                   <Flex alignItems="baseline" gap={2}>
                     <Text size={1} weight="semibold">
                       {section.title}
@@ -1107,13 +1108,13 @@ function StylesPanel(props: {
                       />
                     ))}
                   </Grid>
-                </Stack>
+                </VStack>
               ))}
-            </Stack>
-          </Stack>
+            </Flex>
+          </VStack>
         )}
       </TabPanel>
-    </Stack>
+    </VStack>
   )
 }
 
@@ -1474,8 +1475,8 @@ export function TrendsTool() {
     <PortalProvider element={portalElement}>
       <style dangerouslySetInnerHTML={{__html: FOCUS_PULSE_CSS}} />
       <Card ref={setPortalElement} height="fill" overflow="auto">
-        <Container width={3} padding={4}>
-          <Stack gap={4}>
+        <Container size={3} padding={4}>
+          <VStack gap={4}>
             <Flex alignItems="flex-start" justifyContent="space-between" gap={3}>
               <Flex alignItems="center" gap={2}>
                 <Text size={2} weight="semibold">
@@ -1537,7 +1538,7 @@ export function TrendsTool() {
                 of text, first-timers are one click away */}
             {showHelp && (
               <Card tone="primary" border padding={3} radius={2}>
-                <Stack gap={3}>
+                <VStack gap={3}>
                   <Text size={1} muted>
                     One benchmark run per day of the studio built from <code>main</code>, measured
                     against a local API mock (no network, no real project); see{' '}
@@ -1550,7 +1551,7 @@ export function TrendsTool() {
                     it spikes on the same day, suspect the runner, not the studio. Flat lines are
                     the goal; the ⓘ on each chart explains what it measures.
                   </Text>
-                </Stack>
+                </VStack>
               </Card>
             )}
 
@@ -1583,7 +1584,7 @@ export function TrendsTool() {
                 Each tab badges its count of active regressions (same drift
                 state as the feed, so they always agree). */}
             {activeTab && (
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <TabList gap={1}>
                   {tabs.map((tab) => {
                     const count = regressionsByGroup.get(tab.id) ?? 0
@@ -1622,7 +1623,7 @@ export function TrendsTool() {
                   id={`group-panel-${activeTab.id}`}
                   aria-labelledby={`group-tab-${activeTab.id}`}
                 >
-                  <Stack gap={3}>
+                  <VStack gap={3}>
                     <Text size={1} muted>
                       {activeTab.description}
                     </Text>
@@ -1680,9 +1681,9 @@ export function TrendsTool() {
                         // ("how is LCP doing, everywhere?") — see vitalSections.
                         // The extra top padding separates the first section
                         // header from the tab description it would otherwise hug.
-                        <Stack gap={6} paddingTop={3}>
+                        <Flex gap={6} paddingTop={3} flexDirection="column">
                           {vitalGroups.map((section) => (
-                            <Stack key={section.vital} gap={4}>
+                            <VStack key={section.vital} gap={4}>
                               <Flex alignItems="baseline" gap={2}>
                                 <Text size={1} weight="semibold">
                                   {section.vital}
@@ -1705,9 +1706,9 @@ export function TrendsTool() {
                                 tags={tags}
                                 onExpand={expandMetric}
                               />
-                            </Stack>
+                            </VStack>
                           ))}
-                        </Stack>
+                        </Flex>
                       )
                     ) : (
                       <ChartGrid
@@ -1730,11 +1731,11 @@ export function TrendsTool() {
                         onExpand={expandMetric}
                       />
                     )}
-                  </Stack>
+                  </VStack>
                 </TabPanel>
-              </Stack>
+              </VStack>
             )}
-          </Stack>
+          </VStack>
         </Container>
       </Card>
       {/* The maximized chart. Rendered last, outside the scroll container: it's

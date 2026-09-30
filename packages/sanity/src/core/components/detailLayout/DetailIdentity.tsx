@@ -1,8 +1,8 @@
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ElementType} from 'react'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 
@@ -51,7 +51,7 @@ export function DetailIdentity(props: {
   const {title, titlePlaceholder, description, titleAs, titleTestId, descriptionTestId} = props
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Flex alignItems="center" gap={2}>
         {/* Box flex={1} lets the title shrink and truncate instead of overflowing its
             zone; the full title is available on hover. */}
@@ -84,6 +84,6 @@ export function DetailIdentity(props: {
           <ClampedDescription data-testid={descriptionTestId}>{description}</ClampedDescription>
         </Tooltip>
       )}
-    </Stack>
+    </VStack>
   )
 }

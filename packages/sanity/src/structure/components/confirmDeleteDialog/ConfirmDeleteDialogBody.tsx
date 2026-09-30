@@ -3,11 +3,11 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -96,7 +96,7 @@ export function ConfirmDeleteDialogBody({
   )
   const confirmationMessage = useCallback(
     () => (
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Text as="p" size={1}>
           <Translate
             t={t}
@@ -110,7 +110,7 @@ export function ConfirmDeleteDialogBody({
         {action === 'delete' && (
           <VersionsPreviewList documentType={documentType} documentVersions={documentVersions} />
         )}
-      </Stack>
+      </VStack>
     ),
     [t, action, documentTitle, documentType, documentVersions],
   )
@@ -173,7 +173,7 @@ export function ConfirmDeleteDialogBody({
       <Card radius={2} shadow={1} flex="auto" padding={1}>
         <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" gap={2} data-testid="internal-references">
+            <VStack as="ul" gap={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
@@ -185,7 +185,7 @@ export function ConfirmDeleteDialogBody({
                   <OtherReferenceCount {...internalReferences} />
                 </Box>
               )}
-            </Stack>
+            </VStack>
           )}
 
           {crossDatasetReferences.totalCount > 0 && (
@@ -211,7 +211,7 @@ export function ConfirmDeleteDialogBody({
                     <Text size={1}>
                       <DocumentsIcon />
                     </Text>
-                    <Stack gap={2}>
+                    <VStack gap={2}>
                       <Text textOverflow="ellipsis" size={1}>
                         {t('confirm-delete-dialog.cdr-summary.title', {
                           count: normalizedDatasetNames.length,
@@ -223,7 +223,7 @@ export function ConfirmDeleteDialogBody({
                       <Text title={datasetSubtitle} textOverflow="ellipsis" size={1} muted>
                         {datasetSubtitle}
                       </Text>
-                    </Stack>
+                    </VStack>
                     <ChevronWrapper>
                       <Text muted size={1}>
                         <ChevronDownIcon />

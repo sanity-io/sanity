@@ -4,12 +4,11 @@ import {RestoreIcon} from '@sanity/icons/Restore'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button, // Custom button with a different textWeight, consider adding textWeight to the shared
-  Container,
   Text,
 } from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box, Flex} from 'ui5'
+import {Container, Box, Flex} from 'ui5'
 
 import {DetailBackButton} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -137,5 +136,5 @@ export function ReleaseDashboardHeader(props: {
   // path, so the header must too — otherwise a centered/constrained header sits over a full-width
   // table, the hybrid layout flagged in review. Production padding is preserved by the inner Box
   // (on main the parent Card supplied padding={3}; the redesign moved it here).
-  return variantsEnabled ? <Container width={3}>{headerContent}</Container> : headerContent
+  return variantsEnabled ? <Container size={3}>{headerContent}</Container> : headerContent
 }

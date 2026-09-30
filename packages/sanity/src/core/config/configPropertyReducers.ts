@@ -15,6 +15,7 @@ import {
 import {type Template, type TemplateItem} from '../templates/types'
 import {getPrintableType} from '../util/getPrintableType'
 import {isRecord} from '../util/isRecord'
+import {assertOnlyVariantType} from '../variants/util/variantType'
 import {type DocumentActionComponent} from './document/actions'
 import {type DocumentBadgeComponent} from './document/badges'
 import {type DocumentInspector} from './document/inspector'
@@ -34,7 +35,10 @@ import {
   type NewDocumentOptionsContext,
   type PluginOptions,
   type ResolveProductionUrlContext,
+  type SingletonDefinition,
   type Tool,
+  type UnresolvedSingletonDefinition,
+  type VariantTypesConfig,
 } from './types'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
@@ -113,6 +117,64 @@ export const searchOperatorsReducer: ConfigPropertyReducer<
     `Expected \`operators\` to be be an array or a function, but received ${getPrintableType(operators)}`
   )
 }*/
+
+function isSingletonDefinition(
+  maybeSingletonDefinition: unknown,
+): maybeSingletonDefinition is SingletonDefinition {
+  return (
+    isRecord(maybeSingletonDefinition) &&
+    typeof maybeSingletonDefinition.id === 'string' &&
+    typeof maybeSingletonDefinition.documentId === 'string' &&
+    typeof maybeSingletonDefinition.schemaType === 'string'
+  )
+}
+
+function normalizeSingletonDefinition(
+  definition: UnresolvedSingletonDefinition,
+): SingletonDefinition {
+  if (typeof definition === 'string') {
+    return {
+      id: definition,
+      documentId: definition,
+      schemaType: definition,
+    }
+  }
+
+  if (isSingletonDefinition(definition)) {
+    return definition
+  }
+
+  return {
+    ...definition,
+    id: definition.documentId,
+  }
+}
+
+export const singletonsReducer: ConfigPropertyReducer<SingletonDefinition[], ConfigContext> = (
+  prev,
+  {document},
+  context,
+) => {
+  const singletons = document?.singletons
+
+  if (!singletons) {
+    return prev
+  }
+
+  if (typeof singletons === 'function') {
+    return singletons(prev, context).map(normalizeSingletonDefinition)
+  }
+
+  if (Array.isArray(singletons)) {
+    return [...prev, ...singletons.map(normalizeSingletonDefinition)]
+  }
+
+  throw new Error(
+    `Expected \`document.singletons\` to be an array or a function, but received ${getPrintableType(
+      singletons,
+    )}`,
+  )
+}
 
 export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigContext> = (
   prev,
@@ -576,6 +638,75 @@ export const variantsEnabledReducer = (opts: {
   return result
 }
 
+const VARIANT_TYPE_KEY_PATTERN = /^[a-z][a-z0-9_-]{0,63}$/
+
+function isVariantConditions(value: unknown): boolean {
+  return Array.isArray(value) || typeof value === 'function'
+}
+
+function assertVariantTypeEntry(key: string, value: unknown): void {
+  if (!VARIANT_TYPE_KEY_PATTERN.test(key) || key.includes(':')) {
+    throw new Error(
+      `Expected \`beta.variants.types\` keys to match ${VARIANT_TYPE_KEY_PATTERN}, but received ${JSON.stringify(key)}`,
+    )
+  }
+
+  // Single variant only accepts the `variant` type. Delete this function to allow multi variants.
+  assertOnlyVariantType(key)
+
+  if (!isRecord(value)) {
+    throw new Error(
+      `Expected \`beta.variants.types.${key}\` to be an object, but received ${getPrintableType(value)}`,
+    )
+  }
+
+  if (typeof value.conditions !== 'undefined' && !isVariantConditions(value.conditions)) {
+    throw new Error(
+      `Expected \`beta.variants.types.${key}.conditions\` to be an array or a function, but received ${getPrintableType(
+        value.conditions,
+      )}`,
+    )
+  }
+}
+
+export const variantsTypesReducer = (opts: {
+  config: PluginOptions
+  initialValue: VariantTypesConfig | undefined
+}): VariantTypesConfig | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<VariantTypesConfig | undefined>((acc, {config: innerConfig}) => {
+    const variants: unknown = innerConfig.beta?.variants
+
+    if (typeof variants === 'undefined') return acc
+    if (!isRecord(variants)) {
+      throw new Error(
+        `Expected \`beta.variants\` to be an object, but received ${getPrintableType(variants)}`,
+      )
+    }
+
+    const types = variants.types
+
+    if (typeof types === 'undefined') return acc
+    if (typeof types === 'function') return types as VariantTypesConfig
+
+    if (!isRecord(types)) {
+      throw new Error(
+        `Expected \`beta.variants.types\` to be an object or a function, but received ${getPrintableType(
+          types,
+        )}`,
+      )
+    }
+
+    for (const [key, value] of Object.entries(types)) {
+      assertVariantTypeEntry(key, value)
+    }
+
+    return types as VariantTypesConfig
+  }, initialValue)
+}
+
 export const commentsV2EnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
@@ -640,6 +771,48 @@ export const documentGroupInventoryEnabledReducer = ({
 
     throw new Error(
       `Expected \`beta.documentGroupInventory.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+}
+
+export const reactActivityModeEnabledReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
+    const reactActivityMode: unknown = innerConfig.beta?.reactActivityMode
+
+    if (typeof reactActivityMode === 'undefined') {
+      return value
+    }
+
+    if (!isRecord(reactActivityMode)) {
+      throw new Error(
+        `Expected \`beta.reactActivityMode\` to be an object, but received ${getPrintableType(
+          reactActivityMode,
+        )}`,
+      )
+    }
+
+    const enabled = reactActivityMode.enabled
+
+    if (typeof enabled === 'undefined') {
+      return value
+    }
+
+    if (typeof enabled === 'boolean') {
+      return enabled
+    }
+
+    throw new Error(
+      `Expected \`beta.reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
         enabled,
       )}`,
     )

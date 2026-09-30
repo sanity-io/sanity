@@ -1,6 +1,6 @@
-import {Box, Button, Card, Dialog, Select, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Select, Text, TextArea, TextInput} from '@sanity/ui'
 import {useMemo, useState} from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {type BisectCommit, buildChain} from '../bisect/bisect'
 import {type TagSlice} from '../bisect/data'
@@ -81,14 +81,14 @@ export function AddRegressionDialog(props: {
   return (
     <Dialog id="releases-add-regression" header="Add regression" width={1} onClose={onClose}>
       <Box padding={4}>
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Text size={1} muted>
             Pin a regression on the release that introduced it — for issues found outside a bisect
             (user reports, support tickets). It is recorded as a concluded bisect session, so it
             counts in the regression badge and can be drilled into later.
           </Text>
 
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text size={1} weight="medium">
               Introduced in
             </Text>
@@ -105,7 +105,7 @@ export function AddRegressionDialog(props: {
                 </option>
               ))}
             </Select>
-          </Stack>
+          </VStack>
 
           {selected && encoded && !encoded.ok && (
             <Card padding={3} radius={2} tone="caution">
@@ -125,7 +125,7 @@ export function AddRegressionDialog(props: {
             </Text>
           )}
 
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text size={1} weight="medium">
               What broke
             </Text>
@@ -136,9 +136,9 @@ export function AddRegressionDialog(props: {
               value={description}
               onChange={(event) => setDescription(event.currentTarget.value)}
             />
-          </Stack>
+          </VStack>
 
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text size={1} weight="medium">
               Severity (optional)
             </Text>
@@ -155,9 +155,9 @@ export function AddRegressionDialog(props: {
                 </option>
               ))}
             </Select>
-          </Stack>
+          </VStack>
 
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text size={1} weight="medium">
               Linear issue (optional)
             </Text>
@@ -167,9 +167,9 @@ export function AddRegressionDialog(props: {
               value={linearIssue}
               onChange={(event) => setLinearIssue(event.currentTarget.value)}
             />
-          </Stack>
+          </VStack>
 
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text size={1} weight="medium">
               Fixed in (optional)
             </Text>
@@ -187,7 +187,7 @@ export function AddRegressionDialog(props: {
                 </option>
               ))}
             </Select>
-          </Stack>
+          </VStack>
 
           <Flex gap={2} justifyContent="flex-end">
             <Button mode="ghost" text="Cancel" onClick={onClose} />
@@ -213,7 +213,7 @@ export function AddRegressionDialog(props: {
               }}
             />
           </Flex>
-        </Stack>
+        </VStack>
       </Box>
     </Dialog>
   )

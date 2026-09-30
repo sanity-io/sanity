@@ -1,13 +1,14 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Card, Container, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Flex, VStack} from 'ui5'
+import {Container, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
+import {useVariantTypes} from '../../hooks/useVariantConditions'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -47,7 +48,12 @@ export function VariantsOverview(): React.JSX.Element {
     [router],
   )
 
-  const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
+  const variantTypes = useVariantTypes()
+  const showTypeColumn = variantTypes.status === 'ready' && variantTypes.types.length > 1
+  const columnDefs = useMemo(
+    () => variantsOverviewColumnDefs(t, showTypeColumn),
+    [showTypeColumn, t],
+  )
 
   const renderRowActions = useCallback(
     ({datum}: {datum: unknown}) => (
@@ -136,7 +142,7 @@ export function VariantsOverview(): React.JSX.Element {
     <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
       {/* Same container width as the releases document table (`container[3]`), so the page header
           aligns with the table's row content below. */}
-      <Container flex="none" width={3}>
+      <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
         <Flex flexDirection="column" paddingX={3}>
           <Card flex="none" paddingBottom={4} paddingTop={5}>
             <Flex alignItems="flex-start" gap={4} justifyContent="space-between">

@@ -9,6 +9,7 @@ import {useFormValue} from '../../../../form/contexts/FormValue'
 import {set} from '../../../../form/patch/patch'
 import {type ObjectFieldProps} from '../../../../form/types/fieldProps'
 import {useClient} from '../../../../hooks/useClient'
+import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
@@ -50,7 +51,8 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   const documentId = target?.document?._ref ?? ''
   const documentType = target?.documentType ?? ''
 
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {isLoading: previewValuesLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,

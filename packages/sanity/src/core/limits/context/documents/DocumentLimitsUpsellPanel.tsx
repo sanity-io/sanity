@@ -1,7 +1,6 @@
-import {Container} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback} from 'react'
-import {Flex} from 'ui5'
+import {Container, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
@@ -29,7 +28,7 @@ export function DocumentLimitsUpsellPanel() {
         animate={{opacity: 1, scale: 1}}
         transition={{duration: 0.2}}
       >
-        <Container width={0}>
+        <Container size={0}>
           <UpsellPanel
             data={upsellData}
             onPrimaryClick={handlePrimaryButtonClick}

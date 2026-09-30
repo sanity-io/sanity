@@ -1,4 +1,4 @@
-import {rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
@@ -67,6 +67,11 @@ export function DefaultPreview(props: DefaultPreviewProps) {
   )
 
   if (isPlaceholder) {
+    // `subtitle` is `undefined` while the value is still loading (both rows), `null` when the
+    // resolved value has none (a lazy preview component loading in front of it), so the
+    // placeholder has the rows the preview will have.
+    const showSubtitleSkeleton = subtitle === undefined || Boolean(subtitle)
+
     return (
       <Root
         alignItems="center"
@@ -87,10 +92,16 @@ export function DefaultPreview(props: DefaultPreviewProps) {
             </Box>
           )}
 
-          <Stack data-testid="default-preview__heading" flex={1} gap={2}>
+          <Flex
+            data-testid="default-preview__heading"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={2}
+            flexDirection="column"
+          >
             <TitleSkeleton delay={SKELETON_DELAY} />
-            <SubtitleSkeleton delay={SKELETON_DELAY} />
-          </Stack>
+            {showSubtitleSkeleton && <SubtitleSkeleton delay={SKELETON_DELAY} />}
+          </Flex>
 
           <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
             {statusNode}
@@ -120,7 +131,14 @@ export function DefaultPreview(props: DefaultPreviewProps) {
           </Box>
         )}
 
-        <Stack className={styles?.heading} data-testid="default-preview__header" flex={1} gap={2}>
+        <Flex
+          className={styles?.heading}
+          data-testid="default-preview__header"
+          flexBasis="0%"
+          flexGrow={1}
+          gap={2}
+          flexDirection="column"
+        >
           {isUploading && <LinearProgress value={progress} />}
           {!isUploading && (
             <>
@@ -146,7 +164,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
               )}
             </>
           )}
-        </Stack>
+        </Flex>
 
         <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
           {statusNode}

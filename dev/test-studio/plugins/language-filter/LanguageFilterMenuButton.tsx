@@ -1,5 +1,5 @@
 import {TranslateIcon} from '@sanity/icons/Translate'
-import {Button, Card, Checkbox, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Button, Card, Checkbox, Text, useClickOutsideEvent} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {type FormEvent, useCallback, useRef, useState} from 'react'
 import {type ObjectSchemaType} from 'sanity'
@@ -55,7 +55,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
     <Box overflow="auto" padding={1}>
       {defaultLanguages.length > 0 && (
         <Card radius={2} tone="primary">
-          <Stack padding={2} gap={3}>
+          <Flex padding={2} gap={3} flexDirection="column">
             <Text size={1} weight="semibold">
               Default language{defaultLanguages.length > 1 && <>s</>}
             </Text>
@@ -63,11 +63,11 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
             {defaultLanguages.map((l) => (
               <Text key={l.id}>{l.title}</Text>
             ))}
-          </Stack>
+          </Flex>
         </Card>
       )}
 
-      <Stack marginTop={3} padding={2} gap={2}>
+      <Flex marginTop={3} padding={2} gap={2} flexDirection="column">
         <Box paddingBottom={1}>
           <Text size={1} weight="semibold">
             Show translations
@@ -94,7 +94,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
             title={lang.title}
           />
         ))}
-      </Stack>
+      </Flex>
     </Box>
   )
 

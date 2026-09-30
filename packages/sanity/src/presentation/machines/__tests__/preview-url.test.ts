@@ -1119,5 +1119,42 @@ describe('Preview URL machine', () => {
       snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
       expect(snapshot.context.previewUrl?.origin).toBe('http://localhost:5173')
     })
+
+    test('clears preview mode and its secret when switching to an origin without preview mode', async () => {
+      const actor = createActor(
+        previewUrlMachine.provide({
+          actors: mockActors({
+            allowOption: ['http://localhost:*'],
+            previewUrlOption: {
+              initial: 'http://localhost:3000',
+              previewMode: ({targetOrigin}) =>
+                targetOrigin === 'http://localhost:3000'
+                  ? {enable: '/api/draft-mode/enable', shareAccess: false}
+                  : false,
+            },
+          }),
+        }),
+        {input: {previewSearchParam: null}},
+      ).start()
+
+      let snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+      expect(snapshot.context.previewMode).toEqual({
+        enable: '/api/draft-mode/enable',
+        shareAccess: false,
+      })
+      expect(snapshot.context.previewUrlSecret?.secret).toBe('abc123')
+
+      /**
+       * The share menu reads `shareAccess` from here, so the previous origin's value must not linger
+       */
+      actor.send({
+        type: 'set preview search param',
+        previewSearchParam: 'http://localhost:3333/blog',
+      })
+      snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+      expect(snapshot.value).toBe('success')
+      expect(snapshot.context.previewUrl?.toString()).toBe('http://localhost:3333/blog')
+      expect(snapshot.context).toMatchObject({previewMode: null, previewUrlSecret: null})
+    })
   })
 })

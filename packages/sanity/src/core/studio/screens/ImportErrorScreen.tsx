@@ -1,12 +1,12 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Card, Container, Heading, Inline, Text} from '@sanity/ui'
+import {Card, Heading, Inline, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useEffect, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {VStack, Flex} from 'ui5'
+import {Container, VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
@@ -50,7 +50,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
       sizing="border"
     >
       <Flex alignItems="center" height="100%">
-        <Container width={3}>
+        <Container size={3}>
           <VStack gap={6}>
             <VStack gap={4}>
               <Heading>Import error</Heading>

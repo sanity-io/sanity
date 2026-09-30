@@ -1,5 +1,5 @@
 import {UserIcon} from '@sanity/icons/User'
-import {Badge, Container, Text, TextInput, VirtualList} from '@sanity/ui'
+import {Badge, Text, TextInput, VirtualList} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -7,7 +7,7 @@ import {
 } from '@sanity/ui/menu'
 import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {Flex, Box} from 'ui5'
+import {Container, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
@@ -130,7 +130,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
 
   if (mentionOptions.loading) {
     return (
-      <Container width={0}>
+      <Container size={0}>
         <LoadingBlock showText />
       </Container>
     )

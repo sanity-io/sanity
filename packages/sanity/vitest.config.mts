@@ -2,6 +2,9 @@ import {defineConfig} from '@repo/test-config/vitest'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact from '@vitejs/plugin-react'
 
+/** Slow fuzz tests. Left out here and run with `vitest.fuzz.config.mts` instead. */
+export const FUZZ_TESTS = '**/*.fuzz.test.*'
+
 // The vanilla-extract plugin is still required in jsdom: `.css.ts` modules need its transform
 // for file scoping (they throw "Styles were unable to be assigned to a file" without it). Style
 // *injection* is skipped via `disableRuntimeStyles` in `test/setup/environment.ts`, since no
@@ -18,7 +21,7 @@ export default defineConfig({
     env: {SC_DISABLE_SPEEDY: 'false'},
     globalSetup: ['./test/setup/global.ts'],
     setupFiles: ['./test/setup/environment.ts'],
-    exclude: ['./src/_internal/cli', '**/*.browser.test.*'],
+    exclude: ['./src/_internal/cli', '**/*.browser.test.*', FUZZ_TESTS],
     server: {
       deps: {inline: ['vitest-package-exports']},
     },

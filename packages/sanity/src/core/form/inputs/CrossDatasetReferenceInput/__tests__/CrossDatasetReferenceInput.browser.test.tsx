@@ -5,10 +5,11 @@ import {
   defineType,
   type ObjectSchemaType,
 } from '@sanity/types'
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ComponentProps} from 'react'
 import {of} from 'rxjs'
+import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -102,7 +103,7 @@ function CrossDatasetReferencePreviews() {
 
   return (
     <Card padding={4} style={{maxWidth: 480}}>
-      <Stack gap={5}>
+      <VStack gap={5}>
         <OptionPreview
           document={{_id: 'book-1', _type: 'book'}}
           getReferenceInfo={getCrossDatasetReferenceInfo}
@@ -118,7 +119,7 @@ function CrossDatasetReferencePreviews() {
             _projectId: 'abc123',
           }}
         />
-      </Stack>
+      </VStack>
     </Card>
   )
 }

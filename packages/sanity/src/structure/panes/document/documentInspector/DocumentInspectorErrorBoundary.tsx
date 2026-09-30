@@ -1,9 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../ui-components/errorBoundary/ErrorBoundary'
@@ -46,19 +46,19 @@ export function DocumentInspectorErrorBoundary(props: DocumentInspectorErrorBoun
         />
 
         <Card flex={1} overflow="auto" padding={3}>
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Card padding={3} radius={2} tone="critical">
               <Flex gap={3}>
                 <Text size={1}>
                   <ErrorOutlineIcon />
                 </Text>
 
-                <Stack flex={1} gap={3}>
+                <Flex flexBasis="0%" flexGrow={1} gap={3} flexDirection="column">
                   <Text size={1}>{t('document-inspector.error.description')}</Text>
                   <Text muted size={1}>
                     {error.message}
                   </Text>
-                </Stack>
+                </Flex>
               </Flex>
             </Card>
 
@@ -70,7 +70,7 @@ export function DocumentInspectorErrorBoundary(props: DocumentInspectorErrorBoun
                 text={t('document-inspector.error.retry-button.text')}
               />
             </Box>
-          </Stack>
+          </VStack>
         </Card>
       </Flex>
     )

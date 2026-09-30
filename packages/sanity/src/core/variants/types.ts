@@ -16,6 +16,8 @@ export interface SystemVariant extends SanityDocument {
   metadata?: {
     title?: string
     description?: PortableTextBlock[]
+    /** Variant type key. Missing values are read as `variant`. */
+    type?: string
     [key: string]: unknown // <-- Here we can store anything useful for the UI
   }
 }

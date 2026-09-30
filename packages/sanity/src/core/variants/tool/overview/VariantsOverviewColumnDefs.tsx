@@ -6,8 +6,11 @@ import {Flex, Box, VStack} from 'ui5'
 import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
+import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
+import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
+import {getVariantType} from '../../util/variantType'
 import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
 
 /**
@@ -44,6 +47,10 @@ const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, d
 
 const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum: variant}) => {
   const {t} = useTranslation(variantsLocaleNamespace)
+  const mismatches = useVariantConditionMismatches(
+    variant.conditions ?? {},
+    getVariantType(variant),
+  )
 
   const encodedVariantId = getVariantId(variant._id)
 
@@ -92,6 +99,11 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
             </Flex>
           </Flex>
         </Card>
+        {mismatches.length > 0 ? (
+          <Box paddingTop={2}>
+            <ConditionMismatchIndicator mismatches={mismatches} />
+          </Box>
+        ) : null}
       </Flex>
     </Box>
   )
@@ -99,6 +111,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
 export function variantsOverviewColumnDefs(
   t: UseTranslationResponse<'variants', undefined>['t'],
+  showTypeColumn: boolean,
 ): Column<TableVariant>[] {
   return [
     {
@@ -121,6 +134,28 @@ export function variantsOverviewColumnDefs(
       cell: VariantTitleCell,
       sortTransform: (variant) => getVariantTitle(variant),
     },
+    ...(showTypeColumn
+      ? [
+          {
+            id: 'metadata.type',
+            sorting: true,
+            width: 140,
+            header: ({headerProps}) => (
+              <Flex {...headerProps} paddingY={3}>
+                <Headers.BasicHeader text={t('overview.table.type')} />
+              </Flex>
+            ),
+            cell: ({cellProps, datum: variant}) => (
+              <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
+                <Text muted size={1}>
+                  {variant.isLoading ? '' : getVariantType(variant)}
+                </Text>
+              </Flex>
+            ),
+            sortTransform: (variant) => getVariantType(variant),
+          } satisfies Column<TableVariant>,
+        ]
+      : []),
     {
       id: 'documentCount',
       sorting: false,

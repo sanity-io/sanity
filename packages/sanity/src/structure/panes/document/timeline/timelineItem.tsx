@@ -1,4 +1,4 @@
-import {Card, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton, Text} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
@@ -12,7 +12,7 @@ import {
   useUser,
 } from 'sanity'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
@@ -94,7 +94,7 @@ const UserLine = ({userId}: {userId: string}) => {
 const TooltipContent = ({collaborators}: {collaborators: string[]}) => {
   const {t} = useTranslation('studio')
   return (
-    <Stack paddingBottom={1}>
+    <Flex paddingBottom={1} flexDirection="column">
       <Box padding={1} paddingBottom={2}>
         <Text size={1} weight="medium">
           {t('timeline.changes.title')}
@@ -103,7 +103,7 @@ const TooltipContent = ({collaborators}: {collaborators: string[]}) => {
       {collaborators.map((userId) => (
         <UserLine key={userId} userId={userId} />
       ))}
-    </Stack>
+    </Flex>
   )
 }
 export function TimelineItem({
@@ -167,7 +167,7 @@ export function TimelineItem({
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
             </IconBox>
           </div>
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text size={1} weight="medium">
               {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type]) || <code>{type}</code>}
             </Text>
@@ -175,7 +175,7 @@ export function TimelineItem({
             <Text as="time" size={1} muted dateTime={timestamp} title={formattedTimestamp}>
               {updatedTimeAgo}
             </Text>
-          </Stack>
+          </VStack>
 
           {collaboratorsUsersIds.length > 0 && (
             <Flex flexBasis="0%" flexGrow={1} justifyContent="flex-end" alignItems="center">

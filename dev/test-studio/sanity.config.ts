@@ -56,6 +56,7 @@ import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {newDocumentOptions} from './structure/resolveNewDocumentOptions'
+import {singletons} from './structure/resolveSingletons'
 import {structure} from './structure/resolveStructure'
 import {defaultDocumentNode} from './structure/resolveStructureDocumentNode'
 
@@ -156,6 +157,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         return defaultActions
       },
       newDocumentOptions,
+      singletons,
       comments: {
         enabled: true,
       },
@@ -343,6 +345,42 @@ const defaultWorkspace = defineConfig({
   },
   beta: {
     variants: {
+      enabled: true,
+      types: {
+        variant: {
+          conditions: async () => {
+            // Mimics an api call to get the conditions
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+            return [
+              {
+                name: 'audience',
+                title: 'Audience',
+                description: 'The group of visitors this content targets.',
+                values: [
+                  {
+                    value: 'loyal',
+                    title: 'Loyal customers',
+                    description: 'Repeat purchasers and members.',
+                  },
+                  {
+                    value: 'new',
+                    title: 'New visitors',
+                    description: 'First-time visitors to the site.',
+                  },
+                ],
+              },
+              {
+                name: 'locale',
+                title: 'Locale',
+                description: 'The visitor language and region.',
+                values: ['en-US', 'nb-NO', 'de-DE'],
+              },
+            ]
+          },
+        },
+      },
+    },
+    reactActivityMode: {
       enabled: true,
     },
   },
