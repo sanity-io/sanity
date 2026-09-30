@@ -1,4 +1,5 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
+import {PortalProvider} from '@sanity/ui'
 import {type ReactNode, type RefAttributes, useState} from 'react'
 import {encodeJsonParams} from 'sanity/router'
 
@@ -6,7 +7,7 @@ import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_API_VERSION} from '../constants'
-import {MediaLibraryAssetSource} from '../shared/MediaLibraryAssetSource'
+import {MediaLibraryAssetSource, useRootPortalElement} from '../shared/MediaLibraryAssetSource'
 import {MediaLibraryProvider} from '../shared/MediaLibraryProvider'
 import {FederatedOpenInSourceDialog} from './FederatedOpenInSourceDialog'
 import {FederatedSelectAssetsDialog} from './FederatedSelectAssetsDialog'
@@ -34,6 +35,9 @@ export function FederatedMediaLibraryAssetSource(
   const projectId = client.config().projectId
   const workspace = useWorkspace()
   const [unavailable, setUnavailable] = useState(false)
+  // Body-level portal target so the dialogs escape the document pane's portal
+  // and fill the whole studio surface, exactly like the iframe asset source.
+  const portalElement = useRootPortalElement()
 
   // The React Compiler memoizes these; identities are stable across renders.
   const handleUnavailable = () => setUnavailable(true)
@@ -89,38 +93,40 @@ export function FederatedMediaLibraryAssetSource(
         sourceProps={viewSourceProps}
         view={view}
       />
-      {action === 'select' && (
-        <FederatedSelectAssetsDialog
-          dialogHeaderTitle={selectDialogHeaderTitle}
-          onClose={onClose}
-          onSelect={onSelect}
-          onUnavailable={handleUnavailable}
-          ref={ref}
-          schemaType={schemaType}
-          sourceProps={viewSourceProps}
-          view={view}
-        />
-      )}
-      {action === 'openInSource' && assetToOpen && (
-        <FederatedOpenInSourceDialog
-          dialogHeaderTitle={t('asset-sources.media-library.open-in-source-dialog.title')}
-          selectNewAssetButtonLabel={
-            schemaType?.title
-              ? t('asset-sources.media-library.open-in-source-dialog.button.select-new-asset', {
-                  targetTitle: schemaType.title,
-                })
-              : t(
-                  'asset-sources.media-library.open-in-source-dialog.button.select-new-asset-fallback',
-                )
-          }
-          onClose={onClose}
-          onSelectNewAsset={handleSelectNewAsset}
-          onUnavailable={handleUnavailable}
-          ref={ref}
-          sourceProps={viewSourceProps}
-          view={view}
-        />
-      )}
+      <PortalProvider element={portalElement}>
+        {action === 'select' && (
+          <FederatedSelectAssetsDialog
+            dialogHeaderTitle={selectDialogHeaderTitle}
+            onClose={onClose}
+            onSelect={onSelect}
+            onUnavailable={handleUnavailable}
+            ref={ref}
+            schemaType={schemaType}
+            sourceProps={viewSourceProps}
+            view={view}
+          />
+        )}
+        {action === 'openInSource' && assetToOpen && (
+          <FederatedOpenInSourceDialog
+            dialogHeaderTitle={t('asset-sources.media-library.open-in-source-dialog.title')}
+            selectNewAssetButtonLabel={
+              schemaType?.title
+                ? t('asset-sources.media-library.open-in-source-dialog.button.select-new-asset', {
+                    targetTitle: schemaType.title,
+                  })
+                : t(
+                    'asset-sources.media-library.open-in-source-dialog.button.select-new-asset-fallback',
+                  )
+            }
+            onClose={onClose}
+            onSelectNewAsset={handleSelectNewAsset}
+            onUnavailable={handleUnavailable}
+            ref={ref}
+            sourceProps={viewSourceProps}
+            view={view}
+          />
+        )}
+      </PortalProvider>
     </MediaLibraryProvider>
   )
 }
