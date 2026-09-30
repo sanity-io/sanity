@@ -28,13 +28,8 @@ catalog:
   '@sanity/client': ^8.7.0
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
-<<<<<<< HEAD
-  '@sanity/tsdown-config': ^0.28.2
-  '@sanity/ui': ^4.3.0
-=======
   '@sanity/tsdown-config': ^0.28.3
-  '@sanity/ui': ^4.2.7
->>>>>>> 821dfa577df6f5e3291cc606cf89c158ce57b7e3
+  '@sanity/ui': ^4.3.0
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
