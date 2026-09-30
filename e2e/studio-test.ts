@@ -77,7 +77,7 @@ export const test = baseTest.extend<SanityFixtures>({
   // Extends the goto function to preserve the base pathname if it exists in the baseURL
   // This is used to ensure the navigation goes to the correct workspace.
   async page({page, context, baseURL}, _use) {
-    await watchForStudioErrors(context)
+    const studioErrors = await watchForStudioErrors(context)
 
     const originalGoto = page.goto.bind(page)
     const baseUrl = new URL(baseURL || '')
@@ -111,6 +111,8 @@ export const test = baseTest.extend<SanityFixtures>({
     )
 
     await _use(page)
+
+    await studioErrors.flush()
   },
   async createDraftDocument({page, _testContext}, _use) {
     async function createDraftDocument(navigationPath: string) {

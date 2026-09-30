@@ -545,9 +545,17 @@ sent through to the DOM` warning, and any `setAttribute` call that writes an obj
 prop; fix the component rather than the test: strip the prop before the `{...rest}` spread, or
 make it a transient `$prop` on a `styled.<tag>`. Every `@sanity/ui` primitive forwards unknown
 props to a `styled.<tag>`, so `<Button {...props} as="a">` leaks whatever `props` carries that the
-component never consumed. The same detection runs in the e2e suite's `watchForStudioErrors`
-(`e2e/helpers/studioErrors.ts`) when the specs run against `sanity dev`; a production `sanity
-build` — what CI's e2e job deploys — strips these warnings, so the vitest suites are the CI gate.
+component never consumed.
+
+The e2e suite has its own guard in `watchForStudioErrors` (`e2e/helpers/studioErrors.ts`), which
+fails a spec at its end when a leak happened during it. CI runs the specs against a production
+`sanity build`, where react-dom and styled-components do not warn, so an init script
+(`e2e/helpers/domPropLeaks/scanner.ts`) reads the props React keeps on every element
+(`__reactProps$…`, kept in production) and checks them with a port of react-dom's development
+validation and styled-components' `@emotion/is-prop-valid` check, plus the object and
+lowercase-name cases React is silent about. The report names the components above the element;
+see "DOM prop leak guard" in `e2e/README.md`. When `react-dom` or `@emotion/is-prop-valid` is
+upgraded, `pnpm vitest run --project=e2e` checks the port against the new versions.
 
 #### Test Timeouts
 

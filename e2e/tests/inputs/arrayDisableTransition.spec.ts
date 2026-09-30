@@ -6,11 +6,10 @@
  * to the ListItem component when sortable=false, causing React warnings about
  * unrecognized DOM attributes.
  *
- * The assertion lives in the shared `watchForStudioErrors` watcher (e2e/helpers/studioErrors.ts),
- * which fails any test during which react-dom reports a DOM prop warning. This spec drives the
- * scenario that used to trigger it. Like every react-dom warning, it is only emitted by the
- * development build, so the check is live against `sanity dev` and inert against a production
- * build.
+ * The assertion lives in the DOM prop leak guard of the shared `watchForStudioErrors` watcher
+ * (e2e/helpers/studioErrors.ts), which fails any test during which a prop such as
+ * `disableTransition` reached a DOM element, against development and production builds alike.
+ * This spec drives the scenario that used to leak it.
  */
 
 import {expect} from '@playwright/test'
@@ -63,7 +62,7 @@ test.describe('PR #11775 - disableTransition prop leak', () => {
     await expect(insertDialog).not.toBeVisible()
 
     // Wait for item to be rendered; the studio error watcher fails the test if
-    // react-dom reported a leaked prop along the way.
+    // a prop leaked onto a DOM element along the way.
     const bookItem = field.getByText('Test Book')
     await expect(bookItem).toBeVisible()
   })

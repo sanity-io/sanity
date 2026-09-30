@@ -49,9 +49,29 @@ For more useful commands, see the [Playwright Command Line](https://playwright.d
 
 ### Studio error watcher
 
-Every spec that uses the `test` fixture from `studio-test.ts` runs under `watchForStudioErrors` (`helpers/studioErrors.ts`). It fails the test on an uncaught page error, on a rendered studio error screen, and on a react-dom DOM prop warning (`React does not recognize the ... prop on a DOM element`, `Invalid DOM property`, `Received true for a non-boolean attribute`, unknown event handler or ARIA attribute names) and on styled-components' `it looks like an unknown prop "..." is being sent through to the DOM` warning, which also covers all-lowercase props (`intent`, `params`) that react-dom renders as attributes without a word. Use `expectError(matcher)` when a spec deliberately triggers one of these.
+Every spec that uses the `test` fixture from `studio-test.ts` runs under `watchForStudioErrors` (`helpers/studioErrors.ts`), which watches every page of the test's browser context. It fails the test on an uncaught page error and on a rendered studio error screen as soon as they happen. Use `expectError(matcher)` when a spec deliberately triggers one. Specs that import `test` from `@playwright/test` directly (the auth specs) get the same watcher by calling `watchEachTestForStudioErrors(test)`.
 
-The DOM prop warnings are only emitted by the development builds of react-dom and styled-components, so that part of the watcher is live when the suite runs against `sanity dev` (the default local `webServer`) and inert against the production build CI deploys. The vitest unit and browser-mode suites carry the same check in CI (`@repo/test-config/vitest/failOnReactDomPropWarnings`), so run a spec locally against the dev server when you want to see one of these warnings fail.
+#### DOM prop leak guard
+
+The watcher also fails a test, at its end, when a prop that is not a DOM attribute reached a DOM element during it: `<Button {...props} as="a">` forwarding `intent` and `params` to the `<a>`, a styled tag forwarding `isOpen`, and so on. react-dom and styled-components only warn about these in their development builds, and CI runs the suite against a production `sanity build`, so the watcher does not rely on the warnings. It installs a scanner (`helpers/domPropLeaks/scanner.ts`) in every document, which reads the props React keeps on each element (`__reactProps$…`, present in production builds too) and checks them against:
+
+- react-dom's development-build prop validation (`React does not recognize the ... prop on a DOM element`, `Received true for a non-boolean attribute`, invalid event handler, ARIA and attribute names), ported with the same messages. The rules and name tables are read from the studio's installed `react-dom`, and unit tests check the port against react-dom itself;
+- styled-components' check for elements a styled tag rendered, with the `@emotion/is-prop-valid` it warns with;
+- objects, which React writes as `[object Object]`, and plain lowercase names that are not HTML or SVG attributes (`intent="edit"`), which React writes without any warning.
+
+Against `sanity dev`, the watcher also collects the react-dom and styled-components warnings themselves, which cover a few things the scanner does not look at, such as `style` values.
+
+A failure lists each prop with the element, the components that rendered it (outermost first) and the URL:
+
+```
+- `intent` on <a> [styled-components]
+  styled-components: it looks like an unknown prop "intent" is being sent through to the DOM, which will likely trigger a React console error.
+  rendered by: PaneHeaderActions > IntentButton > Button > StyledButton
+  element: <a data-ui="Button" class="..." ...>
+  url: http://localhost:3339/chromium/content/author
+```
+
+Fix the component closest to the element that receives the prop but does not use it: destructure the prop before spreading the rest onto the element, or make it a transient `$prop` when it is only for a styled tag's CSS. If the guard reports a name that is a real attribute, add it to `EXTRA_ATTRIBUTES` in `helpers/domPropLeaks/vocabulary.ts`. `tests/studio-errors/domPropLeakGuard.spec.ts` checks that the guard works against the build under test.
 
 ### Running tests from your code editor
 
