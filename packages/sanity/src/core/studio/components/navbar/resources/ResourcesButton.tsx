@@ -29,7 +29,8 @@ const StyledMenu = styled(Menu)`
 export function ResourcesButton() {
   const {t} = useTranslation()
   const renderingContext = useRenderingContext()
-  const isInDashboard = renderingContext?.name === 'coreUi'
+  const isInDashboard =
+    renderingContext?.name === 'coreUi' || renderingContext?.name === 'messageBus'
   const feedbackAvailable = useFeedbackAvailable({dsn: STUDIO_DSN, skip: isInDashboard})
   const {userApplication, isLoading: isLoadingUserApplication} = useLiveUserApplication()
 
