@@ -247,6 +247,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const hasReactions = Boolean(reactions?.length)
 
+  // oxlint-disable-next-line react/purity -- falls back to the current time while the comment has no `_createdAt` yet
   const createdDate = _createdAt ? new Date(_createdAt) : new Date()
   const editedDate = lastEditedAt ? new Date(lastEditedAt) : null
   const createdTimeAgo = useRelativeTime(createdDate, RELATIVE_TIME_OPTIONS)
