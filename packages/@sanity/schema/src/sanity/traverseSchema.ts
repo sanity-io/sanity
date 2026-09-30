@@ -4,8 +4,8 @@ import {type _FIXME_} from './typedefs'
 
 export function traverseSanitySchema(
   schemaTypes: _FIXME_[],
+  parentTypes: _FIXME_[],
   visitor: Visitor,
-  parentTypes: _FIXME_[] = [],
 ) {
   return traverseSchema(schemaTypes, coreTypes as _FIXME_, visitor, parentTypes)
 }

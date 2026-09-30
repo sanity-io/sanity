@@ -64,24 +64,20 @@ export function validateSchema(
     transformCommonVisitors = (visitors) => visitors,
   }: Options = {},
 ) {
-  return traverseSanitySchema(
-    schemaTypes,
-    (schemaDef, visitorContext) => {
-      const typeVisitor =
-        (schemaDef &&
-          schemaDef.type &&
-          (transformTypeVisitors(typeVisitors) as any)[schemaDef.type]) ||
-        getNoopVisitor(visitorContext)
+  return traverseSanitySchema(schemaTypes, parentTypes, (schemaDef, visitorContext) => {
+    const typeVisitor =
+      (schemaDef &&
+        schemaDef.type &&
+        (transformTypeVisitors(typeVisitors) as any)[schemaDef.type]) ||
+      getNoopVisitor(visitorContext)
 
-      // Transform common visitors for extensibility
-      const commonVisitors = transformCommonVisitors([common])
+    // Transform common visitors for extensibility
+    const commonVisitors = transformCommonVisitors([common])
 
-      if (visitorContext.isRoot) {
-        return combine(rootType, ...commonVisitors, typeVisitor)(schemaDef, visitorContext)
-      }
+    if (visitorContext.isRoot) {
+      return combine(rootType, ...commonVisitors, typeVisitor)(schemaDef, visitorContext)
+    }
 
-      return combine(...commonVisitors, typeVisitor)(schemaDef, visitorContext)
-    },
-    parentTypes,
-  )
+    return combine(...commonVisitors, typeVisitor)(schemaDef, visitorContext)
+  })
 }
