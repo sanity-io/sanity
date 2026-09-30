@@ -22,6 +22,22 @@ export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps
   pluginFilters?: PluginFilter[]
   /** The Studio's resolved color scheme, so the view matches the host theme. */
   scheme?: 'light' | 'dark'
+  /**
+   * Reports the uploaded assets once an `upload` mount's batch settles; the
+   * host links them and closes the flow. Uploads are driven directly through
+   * the inherited `uploader` prop — the view reads the pending files with
+   * `uploader.getFiles()` and writes progress/terminal statuses back with
+   * `uploader.updateFile()`, per the `AssetSourceUploader` picker-mode
+   * contract. No postMessage protocol: that exists only for the iframe
+   * integration, where the uploader object is unreachable across the window
+   * boundary.
+   */
+  onUploadComplete?: (assets: AssetSelectionItem[]) => void
+  /**
+   * Opaque key partitioning picker-location persistence per hosting
+   * workspace, same as the iframe payload's `pickerPersistenceKey`.
+   */
+  pickerPersistenceKey?: string
 }
 
 /**

@@ -107,7 +107,9 @@ export function FederatedSelectAssetsDialog(props: {
 
   // The federated equivalent of the iframe's `assetSelection` message handler.
   // Unlike the iframe dialog, markers are cleared when a re-selection is
-  // valid, so a previous error cannot keep the button disabled.
+  // valid, so a previous error cannot keep the button disabled — and every
+  // selected asset is validated (the picker allows multi-select when the
+  // host passes `selectionType: 'multiple'`), not just the first.
   const handleSelectionChange = useCallback(
     (selection: AssetSelectionItem[]) => {
       setAssetSelection(selection)
@@ -115,10 +117,11 @@ export function FederatedSelectAssetsDialog(props: {
         setValidation([])
         return
       }
-      validateSelection(selection[0])
-        .then((validationResult) => {
-          const hasErrors = validationResult.some((marker) => marker.level === 'error')
-          setValidation(hasErrors ? validationResult : [])
+      Promise.all(selection.map((item) => validateSelection(item)))
+        .then((validationResults) => {
+          const markers = validationResults.flat()
+          const hasErrors = markers.some((marker) => marker.level === 'error')
+          setValidation(hasErrors ? markers : [])
         })
         .catch((error: unknown) => {
           // Fail open (selection stays allowed), matching the iframe dialog,
@@ -135,8 +138,10 @@ export function FederatedSelectAssetsDialog(props: {
   const handleSelect = useCallback(async () => {
     try {
       setDidSelect(true)
-      // Note: for now we only support selecting a single asset
-      const assets = await onLinkAssets([assetSelection[0]])
+      // Links every selected asset — one for `selectionType: 'single'` hosts,
+      // the whole selection for `'multiple'` (unlike the iframe dialog, which
+      // only ever linked the first).
+      const assets = await onLinkAssets(assetSelection)
       onSelect(assets)
       onClose()
     } catch (error) {
