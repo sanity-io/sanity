@@ -41,15 +41,15 @@ const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 /**
  * Conditionally render a focus ring overlay over the command list, with adjustable offset
  */
-const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
+const FocusOverlayDiv = styled.div<{$offset: number}>(({theme, $offset}) => {
   return css`
-    bottom: ${-offset}px;
+    bottom: ${-$offset}px;
     border-radius: ${rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    left: ${-offset}px;
+    left: ${-$offset}px;
     pointer-events: none;
     position: absolute;
-    right: ${-offset}px;
-    top: ${-offset}px;
+    right: ${-$offset}px;
+    top: ${-$offset}px;
     z-index: 2;
 
     ${VirtualListBox}:focus-visible & {
@@ -579,7 +579,7 @@ function CommandListComponent({
       data-testid={testId}
       {...paddingProps}
     >
-      {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
+      {canReceiveFocus && <FocusOverlayDiv $offset={focusRingOffset} />}
       <PointerOverlayDiv aria-hidden="true" data-enabled="false" ref={setPointerOverlayElement} />
       {virtualizer && (
         <VirtualListChildBox
