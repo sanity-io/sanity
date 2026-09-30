@@ -1,43 +1,55 @@
-import {type PluginFilter} from '@sanity/media-library-types'
 import {type FederationRemote} from '@sanity/sdk-react/dashboard'
-import {type AssetSourceComponentProps} from '@sanity/types'
-
-import {type AssetSelectionItem} from '../assetSourceMediaLibrary/types'
+import {
+  type AssetFromSource,
+  type AssetSourceComponentProps,
+  type ValidationMarker,
+} from '@sanity/types'
 
 /**
  * The props the host passes to a mounted federated view: Studio's asset-source
- * component props plus the host-provided extras the iframe used to receive as
- * payload params. Selection flows back through `onSelectionChange` (the
- * federated equivalent of the iframe's `assetSelection` postMessage stream);
- * the host owns the footer, validation and the final link + `onSelect`.
+ * component props plus source-agnostic host context. The view owns the whole
+ * dialog body — browsing, selection state, its own confirm/cancel footer and
+ * validation display — and completes a flow through the inherited
+ * asset-source callbacks: `onSelect` with the final `AssetFromSource[]` (after
+ * doing any source-side work such as linking, using its own credentials) and
+ * `onClose`.
+ *
+ * Upload mode (`action: 'upload'`): the mount is headless (the Studio input
+ * owns progress presentation) and the view drives the inherited `uploader`
+ * prop directly per the `AssetSourceUploader` picker-mode contract — pending
+ * files from `uploader.getFiles()`, progress and terminal statuses back
+ * through `uploader.updateFile()`, aborts via `uploader.subscribe()`.
+ * Ordering matters: once every file carries a terminal status the host fires
+ * `all-complete` and tears the flow down, so the view must finish its
+ * source-side work and call `onSelect` *before* writing the last terminal
+ * status.
+ *
+ * Sources that need extra host context (e.g. the Media Library's `libraryId`
+ * and plugin filters) extend this interface and pass the extras through the
+ * hosting dialog's `extraViewProps`.
  *
  * @internal
  */
 export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps {
-  /** The Media Library the picker should browse. */
-  libraryId?: string | null
-  /** Streams the current in-picker selection to the host on every change. */
-  onSelectionChange?: (selection: AssetSelectionItem[]) => void
-  /** Read-only GROQ filters from the schema (`options.mediaLibrary.filters`). */
-  pluginFilters?: PluginFilter[]
   /** The Studio's resolved color scheme, so the view matches the host theme. */
   scheme?: 'light' | 'dark'
+  /** The hosting workspace's project id, for project-scoped source APIs. */
+  projectId?: string
+  /** The hosting workspace's dataset, for project-scoped source APIs. */
+  dataset?: string
   /**
-   * Reports the uploaded assets once an `upload` mount's batch settles; the
-   * host links them and closes the flow. Uploads are driven directly through
-   * the inherited `uploader` prop — the view reads the pending files with
-   * `uploader.getFiles()` and writes progress/terminal statuses back with
-   * `uploader.updateFile()`, per the `AssetSourceUploader` picker-mode
-   * contract. No postMessage protocol: that exists only for the iframe
-   * integration, where the uploader object is unreachable across the window
-   * boundary.
-   */
-  onUploadComplete?: (assets: AssetSelectionItem[]) => void
-  /**
-   * Opaque key partitioning picker-location persistence per hosting
-   * workspace, same as the iframe payload's `pickerPersistenceKey`.
+   * Opaque key partitioning view-side persistence (e.g. picker location) per
+   * hosting workspace.
    */
   pickerPersistenceKey?: string
+  /**
+   * Validates the field value a candidate selection would produce against the
+   * hosting field's schema rules. The view calls this on selection changes,
+   * renders the returned markers and gates its own confirm control on
+   * `level: 'error'` markers. A rejected promise means validation itself
+   * failed — the view should fail open (keep the selection allowed) but log.
+   */
+  validateCandidate?: (selection: AssetFromSource[]) => Promise<ValidationMarker[]>
 }
 
 /**
