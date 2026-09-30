@@ -1,94 +1,93 @@
-import {Schema} from '@sanity/schema'
-import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {describe, expect, test} from 'vitest'
+import {
+  defineField,
+  defineType,
+  type FieldDefinition,
+  type ObjectSchemaType,
+  type Path,
+} from '@sanity/types'
+import {beforeEach, describe, expect, test} from 'vitest'
 
 import {pathToString} from '../../../field/paths/helpers'
+import {createSchema} from '../../../schema/createSchema'
 import {MAX_FIELD_DEPTH} from '../constants'
-import {createPrepareFormState, type RootFormStateOptions} from '../formState'
+import {
+  createPrepareFormState,
+  type PrepareFormState,
+  type RootFormStateOptions,
+} from '../formState'
 import {isObjectFormNode} from '../types/asserters'
 import {type FieldError} from '../types/memberErrors'
 import {type FieldMember} from '../types/members'
 import {type ObjectFormNode} from '../types/nodes'
 import {DEFAULT_PROPS} from './shared'
 
-type NestedObjectField = {
-  name: string
-  type: 'object'
-  fields: Array<{name: string; type: 'string'} | NestedObjectField>
-}
-
-function getBookType(): ObjectSchemaType {
-  return Schema.compile({
-    name: 'test',
-    types: [
-      {
-        name: 'book',
-        type: 'document',
-        fields: [
-          {name: 'title', type: 'string'},
-          {
-            name: 'quotes',
-            type: 'array',
-            of: [
-              {
-                type: 'object',
-                fields: [
-                  {name: 'quoteText', type: 'string'},
-                  {name: 'pageNumber', type: 'number'},
-                ],
-              },
-            ],
-          },
-          {
-            name: 'author',
-            type: 'object',
-            fields: [
-              {name: 'firstName', type: 'string'},
-              {name: 'lastName', type: 'string'},
-            ],
-          },
-        ],
-      },
-    ],
-  }).get('book')
-}
-
-function nestObjectFields(remaining: number): NestedObjectField {
+function nestObjectField(remaining: number): FieldDefinition {
   if (remaining === 1) {
-    return {
+    return defineField({
       name: 'n1',
       type: 'object',
-      fields: [{name: 'label', type: 'string'}],
-    }
+      fields: [defineField({name: 'label', type: 'string'})],
+    })
   }
 
-  return {
+  return defineField({
     name: `n${remaining}`,
     type: 'object',
-    fields: [{name: 'label', type: 'string'}, nestObjectFields(remaining - 1)],
-  }
+    fields: [defineField({name: 'label', type: 'string'}), nestObjectField(remaining - 1)],
+  })
 }
 
-function getDeepObjectType(): ObjectSchemaType {
-  return Schema.compile({
-    name: 'test',
-    types: [
-      {
-        name: 'deepDoc',
-        type: 'document',
-        fields: [nestObjectFields(MAX_FIELD_DEPTH)],
-      },
-    ],
-  }).get('deepDoc')
-}
+const schema = createSchema({
+  name: 'default',
+  types: [
+    defineType({
+      name: 'book',
+      type: 'document',
+      fields: [
+        defineField({name: 'title', type: 'string'}),
+        defineField({
+          name: 'quotes',
+          type: 'array',
+          of: [
+            {
+              type: 'object',
+              fields: [
+                defineField({name: 'quoteText', type: 'string'}),
+                defineField({name: 'pageNumber', type: 'number'}),
+              ],
+            },
+          ],
+        }),
+        defineField({
+          name: 'author',
+          type: 'object',
+          fields: [
+            defineField({name: 'firstName', type: 'string'}),
+            defineField({name: 'lastName', type: 'string'}),
+          ],
+        }),
+        nestObjectField(MAX_FIELD_DEPTH),
+      ],
+    }),
+  ],
+})
 
-function prepare(
-  documentValue: Record<string, unknown>,
-  schemaType: ObjectSchemaType = getBookType(),
-): ObjectFormNode {
+const compiledBook = schema.get('book')
+if (!compiledBook || compiledBook.jsonType !== 'object') {
+  throw new Error('Expected the compiled book document type')
+}
+const bookType: ObjectSchemaType = compiledBook
+
+let prepareFormState!: PrepareFormState
+
+beforeEach(() => {
+  prepareFormState = createPrepareFormState()
+})
+
+function prepare(documentValue: Record<string, unknown>): ObjectFormNode {
   const options: RootFormStateOptions = {
     ...DEFAULT_PROPS,
-    schemaType,
+    schemaType: bookType,
     documentValue,
     comparisonValue: documentValue,
     baseVariantValue: documentValue,
@@ -98,7 +97,7 @@ function prepare(
     changesOpen: false,
   }
 
-  const state = createPrepareFormState()(options)
+  const state = prepareFormState(options)
   if (state === null) {
     throw new Error('Expected form state')
   }
@@ -317,8 +316,7 @@ describe('object member errors', () => {
 
 describe('MAX_FIELD_DEPTH', () => {
   test('omits the object field once the prepared level reaches MAX_FIELD_DEPTH', () => {
-    const schemaType = getDeepObjectType()
-    const state = prepare({_id: 'deep-1', _type: 'deepDoc'}, schemaType)
+    const state = prepare({_id: 'book-1', _type: 'book'})
     const pathToLastVisible = Array.from({length: MAX_FIELD_DEPTH - 1}, (_, index) => {
       return `n${MAX_FIELD_DEPTH - index}`
     })
