@@ -1,21 +1,24 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {type ReactNode, type RefAttributes, useState} from 'react'
+import {encodeJsonParams} from 'sanity/router'
 
 import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_API_VERSION} from '../constants'
 import {MediaLibraryAssetSource} from '../shared/MediaLibraryAssetSource'
 import {MediaLibraryProvider} from '../shared/MediaLibraryProvider'
+import {FederatedOpenInSourceDialog} from './FederatedOpenInSourceDialog'
 import {FederatedSelectAssetsDialog} from './FederatedSelectAssetsDialog'
-import {type FederatedAssetSourceView} from './types'
+import {FederatedUploadDialog} from './FederatedUploadDialog'
+import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
 
 /**
- * The built-in Media Library asset source with a federated select flow: the
- * select dialog mounts the Media Library's brokered `asset_source` view, while
- * every other action (upload, open-in-source) keeps the iframe machinery in
- * `MediaLibraryAssetSource` until the view reaches parity. When loading or
- * mounting the view fails, the select flow also falls back to the iframe
- * dialog — never a dead field.
+ * The built-in Media Library asset source, fully federated: every action —
+ * select, upload, open-in-source — mounts the Media Library's brokered
+ * `asset_source` view instead of the iframe machinery. When loading or
+ * mounting the view fails, the source falls back to the iframe
+ * `MediaLibraryAssetSource` for all actions — never a dead field.
  *
  * @internal
  */
@@ -29,13 +32,16 @@ export function FederatedMediaLibraryAssetSource(
   const {t} = useTranslation()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const projectId = client.config().projectId
+  const workspace = useWorkspace()
   const [unavailable, setUnavailable] = useState(false)
 
-  // The React Compiler memoizes this; identity is stable across renders.
+  // The React Compiler memoizes these; identities are stable across renders.
   const handleUnavailable = () => setUnavailable(true)
+  const handleSelectNewAsset = () => sourceProps.onChangeAction?.('select')
 
   const {
     action = 'select',
+    assetToOpen,
     assetType = 'image',
     dialogHeaderTitle,
     onClose,
@@ -44,7 +50,7 @@ export function FederatedMediaLibraryAssetSource(
     schemaType,
   } = sourceProps
 
-  if (action !== 'select' || unavailable) {
+  if (unavailable) {
     return <MediaLibraryAssetSource {...sourceProps} libraryId={libraryId} />
   }
 
@@ -61,18 +67,60 @@ export function FederatedMediaLibraryAssetSource(
       targetTitle: schemaType?.title,
     })
 
+  // The same workspace-scoped persistence partition the iframe integration
+  // computes, so the picker remembers its location per hosting workspace.
+  const pickerPersistenceKey =
+    encodeJsonParams({
+      projectId: workspace.projectId,
+      dataset: workspace.dataset,
+      workspaceName: workspace.name,
+    }) || undefined
+
+  const viewSourceProps: FederatedAssetSourceViewProps = {...sourceProps, pickerPersistenceKey}
+
   return (
     <MediaLibraryProvider projectId={projectId} libraryId={libraryId}>
-      <FederatedSelectAssetsDialog
-        dialogHeaderTitle={selectDialogHeaderTitle}
+      <FederatedUploadDialog
+        open={action === 'upload'}
         onClose={onClose}
         onSelect={onSelect}
         onUnavailable={handleUnavailable}
-        ref={ref}
         schemaType={schemaType}
-        sourceProps={sourceProps}
+        sourceProps={viewSourceProps}
         view={view}
       />
+      {action === 'select' && (
+        <FederatedSelectAssetsDialog
+          dialogHeaderTitle={selectDialogHeaderTitle}
+          onClose={onClose}
+          onSelect={onSelect}
+          onUnavailable={handleUnavailable}
+          ref={ref}
+          schemaType={schemaType}
+          sourceProps={viewSourceProps}
+          view={view}
+        />
+      )}
+      {action === 'openInSource' && assetToOpen && (
+        <FederatedOpenInSourceDialog
+          dialogHeaderTitle={t('asset-sources.media-library.open-in-source-dialog.title')}
+          selectNewAssetButtonLabel={
+            schemaType?.title
+              ? t('asset-sources.media-library.open-in-source-dialog.button.select-new-asset', {
+                  targetTitle: schemaType.title,
+                })
+              : t(
+                  'asset-sources.media-library.open-in-source-dialog.button.select-new-asset-fallback',
+                )
+          }
+          onClose={onClose}
+          onSelectNewAsset={handleSelectNewAsset}
+          onUnavailable={handleUnavailable}
+          ref={ref}
+          sourceProps={viewSourceProps}
+          view={view}
+        />
+      )}
     </MediaLibraryProvider>
   )
 }
