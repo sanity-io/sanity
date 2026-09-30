@@ -48,7 +48,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
         tooltip={{description: t('changes.added-label')}}
         as={RoundedCard}
       >
-        <ChangeSegment forwardedAs="ins" style={{textDecoration: 'none'}} trim={true}>
+        <ChangeSegment forwardedAs="ins" style={{textDecoration: 'none'}}>
           {text}
         </ChangeSegment>
       </DiffCard>
@@ -63,9 +63,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
         disableHoverEffect
         tooltip={{description: t('changes.removed-label')}}
       >
-        <ChangeSegment forwardedAs="del" trim={true}>
-          {text}
-        </ChangeSegment>
+        <ChangeSegment forwardedAs="del">{text}</ChangeSegment>
       </DiffCard>
     )
   }

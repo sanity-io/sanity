@@ -2,7 +2,7 @@ import {type AvatarSize, AvatarStack, Skeleton} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
-import {Text, Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
@@ -192,9 +192,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             justifyContent="center"
             $color={TIMELINE_ITEM_EVENT_TONE[type]}
           >
-            <Text size={0} as="div" trim={true}>
-              {IconComponent && <IconComponent />}
-            </Text>
+            {IconComponent && <Icon icon={IconComponent} size={0} />}
           </IconBox>
         </div>
         <VStack gap={2}>
