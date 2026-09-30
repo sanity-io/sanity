@@ -1,6 +1,6 @@
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
-import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {loadFederatedAssetSourceModule} from './loadModule'
 import {
   type FederatedAssetSourceModule,

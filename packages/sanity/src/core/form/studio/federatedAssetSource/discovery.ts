@@ -1,7 +1,7 @@
 import {getApplicationOrigin} from '@sanity/sdk/_internal'
 import {type DashboardTopics, type ValueOf} from '@sanity/sdk/dashboard'
 
-import {getMessageBusConnection} from '../../../../store/messageBus/getMessageBusConnection'
+import {getMessageBusConnection} from '../../../store/messageBus/getMessageBusConnection'
 import {type FederatedAssetSourceView} from './types'
 
 /**
