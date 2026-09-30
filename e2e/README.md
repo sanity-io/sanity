@@ -61,14 +61,14 @@ The watcher also fails a test, at its end, when a prop that is not a DOM attribu
 
 Against `sanity dev`, the watcher also collects the react-dom and styled-components warnings themselves, which cover a few things the scanner does not look at, such as `style` values.
 
-A failure lists each prop with the element, the components that rendered it (outermost first) and the URL:
+A failure lists each prop with the element, the components that rendered it (outermost first) and the URL. This one is from `tests/desk/defaultPanes.spec.ts` against a production build, for a leak that `IntentButton` used to have while the permissions of a pane's create button loaded:
 
 ```
 - `intent` on <a> [styled-components]
   styled-components: it looks like an unknown prop "intent" is being sent through to the DOM, which will likely trigger a React console error.
-  rendered by: PaneHeaderActions > IntentButton > Button > StyledButton
-  element: <a data-ui="Button" class="..." ...>
-  url: http://localhost:3339/chromium/content/author
+  rendered by: PaneHeaderCreateButton > InsufficientPermissionsMessageTooltip > Tooltip > IntentButton > Button > Tooltip > ButtonComponent > StyledButton
+  element: <a data-ui="Button" intent="create" params="[object Object]" aria-label="Many views" data-testid="action-intent-button" role="link" aria-disabled="true" ...>
+  url: http://localhost:3339/chromium/content/input-debug;manyViews
 ```
 
 Fix the component closest to the element that receives the prop but does not use it: destructure the prop before spreading the rest onto the element, or make it a transient `$prop` when it is only for a styled tag's CSS. If the guard reports a name that is a real attribute, add it to `EXTRA_ATTRIBUTES` in `helpers/domPropLeaks/vocabulary.ts`. `tests/studio-errors/domPropLeakGuard.spec.ts` checks that the guard works against the build under test.

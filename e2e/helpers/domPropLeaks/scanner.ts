@@ -123,11 +123,17 @@ function installDomPropLeakScanner(
     return names.has(name)
   }
 
+  // A bundler renames a component whose name clashes with another one in the same chunk to
+  // `Name$1`. Report the name as it reads in the source, as a development build does.
+  const BUNDLER_SUFFIX = /\$\d+$/
+
   function nameOf(value: unknown): string | null {
     if ((typeof value !== 'function' && typeof value !== 'object') || value === null) return null
     const {displayName, name} = value as Named
-    if (typeof displayName === 'string' && displayName) return displayName
-    return typeof name === 'string' && name ? name : null
+    let found: string | null = null
+    if (typeof displayName === 'string' && displayName) found = displayName
+    else if (typeof name === 'string' && name) found = name
+    return found && (found.replace(BUNDLER_SUFFIX, '') || found)
   }
 
   function componentName(fiber: Fiber): string | null {

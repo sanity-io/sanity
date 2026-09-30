@@ -276,6 +276,19 @@ describe('DOM prop leak scanner', () => {
     expect(page.scan().findings[0].components).toEqual(['DocumentPane', 'PaneItem', 'Named'])
   })
 
+  test('names components as the source does, without the suffix of a bundler rename', () => {
+    const page = createDocument()
+    function Tooltip() {}
+    const renamedTooltip = Object.defineProperty(() => {}, 'name', {value: 'Tooltip$1'})
+    const renamedButton = {displayName: 'Button$12', render() {}}
+    const outerTooltipFiber = componentFiber(0, renamedTooltip, null)
+    const tooltipFiber = componentFiber(0, Tooltip, outerTooltipFiber)
+    const buttonFiber = componentFiber(11, renamedButton, tooltipFiber)
+    page.add(render(new FakeElement('div'), {intent: 'edit'}, buttonFiber))
+
+    expect(page.scan().findings[0].components).toEqual(['Tooltip', 'Button'])
+  })
+
   test('stops, and says why, when it throws', () => {
     const page = createDocument()
     const props = {}
