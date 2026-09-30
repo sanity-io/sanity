@@ -12,7 +12,7 @@ type UpdateRangeOperationProps = {
 /**
  * Re-anchors an inline comment after its text has moved. Applies
  * `optimisticUpdate` to the local comment; the API resolves the stored
- * selection from `range` + `fieldValue` (or clears it when `range` is null).
+ * selection from `anchor` (or clears it when `anchor` is null).
  */
 export async function updateRangeOperation({
   client,
@@ -20,15 +20,9 @@ export async function updateRangeOperation({
   onUpdate,
   transactionId,
   optimisticUpdate,
-  ...selection
+  anchor,
 }: UpdateRangeOperationProps): Promise<void> {
   onUpdate?.(id, optimisticUpdate)
 
-  await client.collaboration.comments.update(
-    id,
-    selection.range === null
-      ? {range: null}
-      : {range: selection.range, fieldValue: selection.fieldValue},
-    {transactionId},
-  )
+  await client.collaboration.comments.update(id, {anchor}, {transactionId})
 }
