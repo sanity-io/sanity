@@ -1,8 +1,7 @@
 import {type PluginFilter} from '@sanity/media-library-types'
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
-import {useToast} from '@sanity/ui/toast'
-import {type ReactNode, type RefAttributes, useEffect, useMemo, useState} from 'react'
+import {type ReactNode, type RefAttributes, useMemo, useState} from 'react'
 
 import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -85,8 +84,7 @@ export function FederatedMediaLibraryAssetSource(
  * Inner half of the federated Media Library source, rendered inside
  * `MediaLibraryProvider` so the ML hooks (library ids, candidate validation)
  * have their context. Computes the ML view extras and the per-action dialog
- * title, and keeps the already-exists upload warning toasts that the iframe
- * integration shows.
+ * title.
  */
 function FederatedMediaLibraryDialog(props: {
   onUnavailable: (reason: unknown) => void
@@ -95,7 +93,6 @@ function FederatedMediaLibraryDialog(props: {
 }): ReactNode {
   const {onUnavailable, sourceProps, view} = props
   const {t} = useTranslation()
-  const toast = useToast()
   const mediaLibraryIds = useMediaLibraryIds()
 
   const {
@@ -105,33 +102,15 @@ function FederatedMediaLibraryDialog(props: {
     dialogHeaderTitle,
     ref,
     schemaType,
-    uploader,
   } = sourceProps
 
   const validateCandidate = useValidateAssetCandidate({schemaType})
 
-  // The already-exists warning toasts: the view links duplicates like any
-  // other upload and reports them with the `alreadyExists` terminal status,
-  // which surfaces on the `all-complete` event.
-  useEffect(() => {
-    if (action !== 'upload' || !uploader) return undefined
-    return uploader.subscribe((event) => {
-      if (event.type === 'all-complete') {
-        const existingFiles = event.files.filter((file) => file.status === 'alreadyExists')
-        existingFiles.forEach((file) => {
-          toast.push({
-            status: 'warning',
-            title: t('asset-sources.media-library.warning.file-already-exist.title', {
-              filename: file.file.name,
-            }),
-            description: t('asset-sources.media-library.warning.file-already-exist.description'),
-            closable: true,
-            duration: 10000,
-          })
-        })
-      }
-    })
-  }, [action, t, toast, uploader])
+  // No already-exists toast subscription here: `onSelect` resets the asset
+  // source, unmounting this component before the view flushes the terminal
+  // statuses, so a subscription here never sees the `all-complete` event.
+  // The warning toasts are pushed by `useAssetSourceUploader` in the input,
+  // which outlives the teardown.
 
   // Read-only GROQ filters from the schema, same source as the iframe payload.
   const pluginFilters = useMemo<PluginFilter[]>(
