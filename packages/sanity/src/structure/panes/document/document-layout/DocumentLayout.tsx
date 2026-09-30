@@ -94,8 +94,7 @@ export function DocumentLayout(props: DocumentLayoutOptions) {
   const {stickyParams} = useRouter()
   const {params: paneParams} = usePaneRouter()
   const {features} = useStructureTool()
-  // `document.tools` is a Source-level key, read the way every other `document.*` resolver is.
-  // oxlint-disable-next-line no-deprecated -- matches DocumentPaneProvider's read of the same key
+  // oxlint-disable-next-line no-deprecated -- `document.tools` is a Source-level key, read the way DocumentPaneProvider reads the same key
   const {document: documentConfig} = useSource()
   const {t} = useTranslation(structureLocaleNamespace)
   const {collapsed: layoutCollapsed} = usePaneLayout()
@@ -189,8 +188,18 @@ export function DocumentLayout(props: DocumentLayoutOptions) {
           }
         }
       }
+
+      const menuTool = documentTools.menu.find(
+        (tool) => typeof tool.shortcut === 'string' && isHotkey(tool.shortcut, event),
+      )
+
+      if (menuTool) {
+        event.preventDefault()
+        event.stopPropagation()
+        menuTool.onAction()
+      }
     },
-    [onMenuAction, menuItems],
+    [onMenuAction, menuItems, documentTools],
   )
 
   const onConnectorSetFocus = useCallback(

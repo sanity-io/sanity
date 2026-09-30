@@ -1,6 +1,6 @@
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ComponentProps, type ReactNode, useContext} from 'react'
-import {type SingleWorkspace} from 'sanity'
+import {type ContributedMenuTool, type SingleWorkspace} from 'sanity'
 import {ReviewChangesContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -10,6 +10,7 @@ import {useStructureTool} from '../../../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
 import {useDocumentActionsPlacement} from '../../statusBar/documentActionsPlacement'
 import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentTools} from '../../useDocumentTools'
 import {DocumentLayout} from '../DocumentLayout'
 
 vi.mock('../../useDocumentPane', () => ({
@@ -32,8 +33,10 @@ vi.mock('../../../../useStructureTool', () => ({
   useStructureTool: vi.fn(() => ({features: {reviewChanges: true, resizablePanes: true}})),
 }))
 
+// A placeholder rather than `() => null`: the menu tools the header would put in the overflow
+// menu are only observable here through what the resolution hands it.
 vi.mock('../../documentPanel/header/DocumentPanelHeader', () => ({
-  DocumentPanelHeader: () => <div data-testid="mock-document-panel-header" />,
+  DocumentPanelHeader: () => <MenuToolsProbe />,
 }))
 
 vi.mock('../../../../DocumentActionsProvider', () => ({
@@ -73,6 +76,18 @@ vi.mock('../../keyboardShortcuts/DocumentActionShortcuts', () => ({
     </div>
   ),
 }))
+
+function MenuToolsProbe() {
+  const {menu} = useDocumentTools()
+
+  return (
+    <div data-testid="mock-document-panel-header">
+      {menu.map((tool) => (
+        <div key={tool.id} data-testid={`menu-tool-${tool.id}`} />
+      ))}
+    </div>
+  )
+}
 
 function ShortcutsPlacementProbe() {
   return <div data-testid="shortcuts-placement">{useDocumentActionsPlacement()}</div>
@@ -127,6 +142,18 @@ function documentPaneValue() {
     ready: true,
     previewUrl: undefined,
   } as unknown as ReturnType<typeof useDocumentPane>
+}
+
+const bookmark = vi.fn()
+
+function bookmarkTool(shortcut = 'Ctrl+Alt+L'): ContributedMenuTool {
+  return {
+    id: 'closePane',
+    placement: 'menu',
+    title: 'Bookmark',
+    shortcut,
+    onAction: bookmark,
+  }
 }
 
 async function renderDocumentLayout(
@@ -234,31 +261,46 @@ describe('DocumentLayout review changes', () => {
   })
 })
 
+describe('DocumentLayout contributed menu tools', () => {
+  it('hands a menu tool configured through document.tools to the overflow menu', async () => {
+    await renderDocumentLayout(undefined, {
+      document: {tools: (prev) => [...prev, bookmarkTool()]},
+    })
+
+    expect(await screen.findByTestId('menu-tool-closePane')).toBeInTheDocument()
+  })
+
+  it('hands none to the overflow menu when the config contributes none', async () => {
+    await renderDocumentLayout()
+
+    expect(await screen.findByTestId('mock-document-panel-header')).toBeInTheDocument()
+    expect(screen.queryByTestId('menu-tool-closePane')).toBeNull()
+  })
+})
+
 describe('DocumentLayout keyboard shortcuts', () => {
-  function pressInspectShortcut() {
+  const INSPECT_SHORTCUT = {key: 'i', code: 'KeyI', keyCode: 73}
+  const BOOKMARK_SHORTCUT = {key: 'l', code: 'KeyL', keyCode: 76}
+
+  function pressShortcut(shortcut: typeof INSPECT_SHORTCUT) {
     // oxlint-disable-next-line testing-library/prefer-user-event -- the subject is a container's raw onKeyUp, which userEvent dispatches past
     fireEvent.keyUp(screen.getByTestId('mock-pane-root'), {
-      key: 'i',
-      code: 'KeyI',
-      keyCode: 73,
+      ...shortcut,
       ctrlKey: true,
       altKey: true,
     })
   }
 
-  // F
   it('fires the inspect action on its shortcut by default', async () => {
     const pane = documentPaneValue()
     mockUseDocumentPane.mockReturnValue(pane)
 
     await renderDocumentLayout()
-    pressInspectShortcut()
+    pressShortcut(INSPECT_SHORTCUT)
 
     expect(pane.onMenuAction).toHaveBeenCalledWith(expect.objectContaining({action: 'inspect'}))
   })
 
-  // F
-  // F
   it('withdraws the inspect shortcut when the tool is filtered out entirely', async () => {
     const pane = documentPaneValue()
     mockUseDocumentPane.mockReturnValue(pane)
@@ -266,8 +308,32 @@ describe('DocumentLayout keyboard shortcuts', () => {
     await renderDocumentLayout(undefined, {
       document: {tools: (prev) => prev.filter((tool) => tool.id !== 'inspect')},
     })
-    pressInspectShortcut()
+    pressShortcut(INSPECT_SHORTCUT)
 
     expect(pane.onMenuAction).not.toHaveBeenCalled()
+  })
+
+  it("fires a menu tool's onAction on its shortcut", async () => {
+    mockUseDocumentPane.mockReturnValue(documentPaneValue())
+
+    await renderDocumentLayout(undefined, {
+      document: {tools: (prev) => [...prev, bookmarkTool()]},
+    })
+    pressShortcut(BOOKMARK_SHORTCUT)
+
+    expect(bookmark).toHaveBeenCalledTimes(1)
+  })
+
+  it('leaves the built-in winning when a menu tool declares the same shortcut', async () => {
+    const pane = documentPaneValue()
+    mockUseDocumentPane.mockReturnValue(pane)
+
+    await renderDocumentLayout(undefined, {
+      document: {tools: (prev) => [...prev, bookmarkTool('Ctrl+Alt+I')]},
+    })
+    pressShortcut(INSPECT_SHORTCUT)
+
+    expect(pane.onMenuAction).toHaveBeenCalledWith(expect.objectContaining({action: 'inspect'}))
+    expect(bookmark).not.toHaveBeenCalled()
   })
 })

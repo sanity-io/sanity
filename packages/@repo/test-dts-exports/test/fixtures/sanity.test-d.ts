@@ -275,6 +275,8 @@ import type {
   ConnectorContextValue,
   ContextMenuButton,
   ContributedDocumentTool,
+  ContributedHeaderTool,
+  ContributedMenuTool,
   CookielessCompatibleLoginMethod,
   CopyOptions,
   CopyPasteContextType,
@@ -2689,7 +2691,13 @@ describe('sanity', () => {
     expectTypeOf<typeof ContextMenuButton>().toBeFunction()
   })
   test('ContributedDocumentTool', () => {
-    expectTypeOf<ContributedDocumentTool>().toBeObject()
+    expectTypeOf<ContributedDocumentTool>().not.toBeNever()
+  })
+  test('ContributedHeaderTool', () => {
+    expectTypeOf<ContributedHeaderTool>().toBeObject()
+  })
+  test('ContributedMenuTool', () => {
+    expectTypeOf<ContributedMenuTool>().toBeObject()
   })
   test('CookielessCompatibleLoginMethod', () => {
     expectTypeOf<CookielessCompatibleLoginMethod>().not.toBeNever()

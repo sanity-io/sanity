@@ -1,15 +1,17 @@
-import {render, screen} from '@testing-library/react'
+import {render, screen, within} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import {type ReactNode} from 'react'
-import {type ContributedDocumentTool, type SingleWorkspace} from 'sanity'
+import {type ContributedHeaderTool, type ContributedMenuTool, type SingleWorkspace} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {getAllByDataUi} from '../../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {useHistoryRestoreAction} from '../../../../../documentActions/HistoryRestoreAction'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {type PaneMenuItem} from '../../../../../types'
 import {useStructureTool} from '../../../../../useStructureTool'
-import {buildEmptyTools, buildResolvedTools} from '../../../__tests__/toolsFixture'
+import {buildResolvedTools, EMPTY_TOOLS} from '../../../__tests__/toolsFixture'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {useDocumentTools} from '../../../useDocumentTools'
 import {DocumentPanelHeader} from '../DocumentPanelHeader'
@@ -96,8 +98,30 @@ function Flag() {
   return <button data-testid="tool-flag" type="button" />
 }
 
-const PIN: ContributedDocumentTool = {id: 'splitPane', placement: 'header', render: Pin}
-const FLAG: ContributedDocumentTool = {id: 'focusMode', placement: 'header', render: Flag}
+const PIN: ContributedHeaderTool = {id: 'splitPane', placement: 'header', render: Pin}
+const FLAG: ContributedHeaderTool = {id: 'focusMode', placement: 'header', render: Flag}
+
+const bookmark = vi.fn()
+
+const BOOKMARK: ContributedMenuTool = {
+  id: 'closePane',
+  placement: 'menu',
+  title: 'Bookmark',
+  onAction: bookmark,
+}
+
+/**
+ * Closed `@sanity/ui` menus stay mounted and hidden with `display: none`. Runtime styles are
+ * disabled in jsdom, so the open menu does not read as visible either, which is why it is picked
+ * by the absence of that hidden style.
+ */
+function getOpenContextMenu() {
+  const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+    (popover) => popover.style.display !== 'none',
+  )
+
+  return openMenu
+}
 
 /** Keeps the bordered bar alive so a case can isolate the gate it is about. */
 const COPY_ACTIONS_ONLY = {without: ['versionPicker', 'titleBar'] as const}
@@ -173,7 +197,7 @@ function queryHeaderCard(container: HTMLElement) {
 
 describe('DocumentPanelHeader', () => {
   beforeEach(async () => {
-    setTools(buildEmptyTools())
+    setTools(EMPTY_TOOLS)
     setPaneActions([])
     setPaneRouter()
     setStructureTool()
@@ -207,6 +231,20 @@ describe('DocumentPanelHeader', () => {
 
       expect(queryHeaderCard(container)).not.toBeNull()
       expect(screen.getByTestId('tool-pin')).toBeInTheDocument()
+    })
+
+    it('renders the bar when a menu tool is the only thing in it', async () => {
+      setTools(
+        buildResolvedTools({
+          without: ['versionPicker', 'copyActions', 'titleBar'],
+          menu: [BOOKMARK],
+        }),
+      )
+
+      const {container} = await renderHeader()
+
+      expect(queryHeaderCard(container)).not.toBeNull()
+      expect(screen.getByTestId('pane-context-menu-button')).toBeInTheDocument()
     })
 
     it('renders the bar when the version picker is the only thing in it', async () => {
@@ -288,9 +326,11 @@ describe('DocumentPanelHeader', () => {
   })
 
   describe('the overflow button', () => {
-    it('is absent when there are no overflow nodes and no pane actions', async () => {
+    beforeEach(() => {
       setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
+    })
 
+    it('is absent when there are no overflow nodes and no pane actions', async () => {
       await renderHeader()
 
       expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
@@ -298,15 +338,12 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('renders when one overflow node is present', async () => {
-      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
-
       await renderHeader({menuItems: [OVERFLOW_MENU_ITEM]})
 
       expect(screen.getByTestId('pane-context-menu-button')).toBeInTheDocument()
     })
 
     it('renders when one pane action is present and nothing else would fill the menu', async () => {
-      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
       setPaneActions([{label: 'Publish', onHandle: () => {}}])
 
       await renderHeader()
@@ -315,7 +352,6 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('stays absent when the only pane action is the one the header always drops', async () => {
-      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
       setPaneActions([
         {label: 'Restore', action: useHistoryRestoreAction.action, onHandle: () => {}},
       ])
@@ -325,8 +361,15 @@ describe('DocumentPanelHeader', () => {
       expect(screen.queryByTestId('pane-context-menu-button')).toBeNull()
     })
 
+    it('renders when a menu tool is its only content', async () => {
+      setTools(buildResolvedTools({...COPY_ACTIONS_ONLY, menu: [BOOKMARK]}))
+
+      await renderHeader()
+
+      expect(screen.getByTestId('pane-context-menu-button')).toBeInTheDocument()
+    })
+
     it('is absent when the only menu nodes are empty groups', async () => {
-      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
       setDocumentPane({menuItemGroups: [{id: 'inspectors'}, {id: 'paneActions'}]})
 
       await renderHeader()
@@ -335,7 +378,6 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('renders when a group holds an item', async () => {
-      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
       setDocumentPane({menuItemGroups: [{id: 'inspectors'}]})
 
       await renderHeader({menuItems: [{...OVERFLOW_MENU_ITEM, group: 'inspectors'}]})
@@ -344,8 +386,6 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('is absent when a showAsAction item is the only menu item, because it is its own button', async () => {
-      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
-
       await renderHeader({menuItems: [HEADER_BUTTON_MENU_ITEM]})
 
       expect(screen.getByRole('button', {name: 'Validation'})).toBeInTheDocument()
@@ -428,6 +468,42 @@ describe('DocumentPanelHeader', () => {
       await renderHeader()
 
       expect(screen.queryByTestId('document-level-presence')).toBeNull()
+    })
+  })
+
+  describe('contributed menu tools', () => {
+    it('renders one as a menu item that fires its onAction on click', async () => {
+      setTools(buildResolvedTools({...COPY_ACTIONS_ONLY, menu: [BOOKMARK]}))
+
+      await renderHeader()
+      await userEvent.click(screen.getByTestId('pane-context-menu-button'))
+
+      const item = within(getOpenContextMenu()).getByTestId('action-bookmark')
+      await userEvent.click(item)
+
+      expect(bookmark).toHaveBeenCalledTimes(1)
+    })
+
+    it('renders them after the built-in items', async () => {
+      setTools(buildResolvedTools({...COPY_ACTIONS_ONLY, menu: [BOOKMARK]}))
+
+      await renderHeader({menuItems: [OVERFLOW_MENU_ITEM]})
+      await userEvent.click(screen.getByTestId('pane-context-menu-button'))
+
+      const openMenu = within(getOpenContextMenu())
+      const inspect = openMenu.getByTestId('action-inspect')
+      const bookmarkItem = openMenu.getByTestId('action-bookmark')
+
+      expect(inspect.compareDocumentPosition(bookmarkItem)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    })
+
+    it('renders none when the resolution contributes none', async () => {
+      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
+
+      await renderHeader({menuItems: [OVERFLOW_MENU_ITEM]})
+      await userEvent.click(screen.getByTestId('pane-context-menu-button'))
+
+      expect(within(getOpenContextMenu()).queryByTestId('action-bookmark')).toBeNull()
     })
   })
 

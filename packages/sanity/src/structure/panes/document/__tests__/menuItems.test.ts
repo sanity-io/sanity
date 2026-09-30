@@ -7,7 +7,7 @@ import {
 import {describe, expect, it} from 'vitest'
 
 import {getMenuItems} from '../menuItems'
-import {buildEmptyTools, buildResolvedTools} from './toolsFixture'
+import {buildResolvedTools, EMPTY_TOOLS} from './toolsFixture'
 
 const t = ((key: string) => key) as unknown as TFunction
 
@@ -57,7 +57,7 @@ describe('getMenuItems', () => {
   it('returns no menu items when the resolution kept none of them', () => {
     const items = getMenuItems(
       getParams({
-        tools: buildEmptyTools(),
+        tools: EMPTY_TOOLS,
         previewUrl: 'https://example.com',
         documentIdStack,
       }),
@@ -151,7 +151,7 @@ describe('getMenuItems', () => {
     })
 
     it('leaves inspector items alone when the resolution kept no built-in overflow tool', () => {
-      const items = getMenuItems(getInspectorParams({tools: buildEmptyTools()}))
+      const items = getMenuItems(getInspectorParams({tools: EMPTY_TOOLS}))
 
       expect(items.map((item) => item.action)).toEqual(['inspect:validation', 'inspect:json'])
       expect(items.find((item) => item.action === 'inspect:validation')).toMatchObject({

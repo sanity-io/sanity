@@ -394,40 +394,45 @@ export interface DocumentPluginOptions {
   }
 
   /**
-   * The tools the document form's chrome offers. Composes across plugins and hosts in the same
-   * way as `document.actions` and `document.badges`, and applies wherever the form renders: the
+   * The tools the document form's chrome offers. Composes across plugins and hosts like
+   * `document.actions` and `document.badges`, and applies wherever the form renders: the
    * structure tool, Presentation, and custom tools.
    *
-   * Removing a tool removes its chrome entry and its keyboard shortcut. It does not disable the
-   * underlying capability. `inspect`, `inlineChanges` and `compareVersions` are driven by router
-   * state, and a URL still carries that state after the tool is gone: the inspect dialog opens,
-   * inline changes render in every field, and the compare-versions route stays navigable. Those
-   * search params are scoped to the enclosing tool's name, so the query string differs per
-   * surface. Do not use this key as a permission or access-control boundary.
+   * Removing a tool removes its chrome entry and its keyboard shortcut, not the underlying
+   * capability. `inspect`, `inlineChanges` and `compareVersions` are driven by router state, and
+   * a URL still carries that state after the tool is gone: the inspect dialog opens, inline
+   * changes render in every field, and the compare-versions route stays navigable. This is not a
+   * permission or access-control boundary.
    *
    * An array appends to the built-ins and cannot remove one. Use the resolver form to remove or
    * reorder, where `tools: []` is a no-op.
    *
    * A resolver applies to every surface the document form is embedded in, including surfaces
    * added in a later release. An allowlist fails closed, so a surface whose tools were never
-   * named loses them with nothing to warn you; a denylist fails open, so that surface keeps its
-   * tools and somebody sees the extra button. Prefer a denylist while the resolver has no way to
-   * tell which surface it is running in.
+   * named loses them silently; a denylist fails open, so that surface keeps its tools and
+   * somebody sees the extra button. Prefer a denylist while the resolver has no way to tell which
+   * surface it is running in.
    *
    * ```ts
    * tools: (prev) => prev.filter((tool) => !DENY.has(tool.id))
    * ```
    *
-   * Filter by id, never by index or length. The membership of `prev` varies by surface, by
-   * document and by window width, so `findIndex` returns `-1` in a narrow pane, in Presentation
-   * and in a standalone form.
+   * Filter by id, never by index or length: the membership of `prev` varies by surface, by
+   * document and by window width.
    *
-   * Ordering is honoured for contributed tools and ignored for built-ins, which the form draws
-   * at fixed sites ahead of the render loop. `tools: (prev) => [myTool, ...prev]` does not put
+   * Ordering is honoured for contributed tools and ignored for built-ins, which the form draws at
+   * fixed sites ahead of the render loop, so `tools: (prev) => [myTool, ...prev]` does not put
    * `myTool` first.
    *
+   * A contributed tool declares its `placement`. A `'header'` tool supplies a `render` component
+   * and is drawn as a button in the header bar. A `'menu'` tool supplies a `title`, an optional
+   * `icon` and an `onAction` callback, and is drawn as an ungrouped entry after every built-in
+   * entry of the overflow menu, in resolver order. An entry that needs React state, the
+   * document's edit state or a dialog is a `document.actions` action with
+   * `group: ['paneActions']`, which lands in the same menu.
+   *
    * The overflow menu button is derived rather than configured: it renders whenever it has
-   * contents. Removing every overflow tool leaves it in place while `document.actions` still
+   * contents, so removing every overflow tool leaves it in place while `document.actions` still
    * resolves an action into the `paneActions` group.
    *
    * `SANITY_DEFINED_TOOL_IDS` holds the built-in ids.
@@ -1012,9 +1017,9 @@ export interface Source {
     /**
      * Resolve the document form's tools for one document.
      *
-     * `contributed` carries what the host offers at render time, after its own capability
-     * gating. Config vetoes what it is given and never grants, so a tool the host did not
-     * contribute stays absent however it is configured.
+     * `contributed` carries what the host offers at render time, after its own capability gating.
+     * Config vetoes what it is given and never grants: a tool the host did not contribute stays
+     * absent however it is configured.
      *
      * @hidden
      * @beta

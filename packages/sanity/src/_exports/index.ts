@@ -260,6 +260,8 @@ export {
 export {
   type BuiltInDocumentTool,
   type ContributedDocumentTool,
+  type ContributedHeaderTool,
+  type ContributedMenuTool,
   type DocumentTool,
   type DocumentToolId,
   type DocumentToolIds,

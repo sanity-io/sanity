@@ -1,7 +1,13 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {resolveDocumentTools, SANITY_DEFINED_TOOLS} from '../resolveDocumentTools'
-import {type ContributedDocumentTool, type DocumentTool, SANITY_DEFINED_TOOL_IDS} from '../tools'
+import {
+  type ContributedDocumentTool,
+  type ContributedHeaderTool,
+  type ContributedMenuTool,
+  type DocumentTool,
+  SANITY_DEFINED_TOOL_IDS,
+} from '../tools'
 
 function Renderer() {
   return null
@@ -11,16 +17,30 @@ function OtherRenderer() {
   return null
 }
 
-const SPLIT_PANE: ContributedDocumentTool = {
+const SPLIT_PANE: ContributedHeaderTool = {
   id: 'splitPane',
   placement: 'header',
   render: Renderer,
 }
 
-const FOCUS_MODE: ContributedDocumentTool = {
+const FOCUS_MODE: ContributedHeaderTool = {
   id: 'focusMode',
   placement: 'header',
   render: Renderer,
+}
+
+const CLOSE_PANE: ContributedMenuTool = {
+  id: 'closePane',
+  placement: 'menu',
+  title: 'Close pane',
+  onAction: () => {},
+}
+
+const CLOSE_PANE_GROUP: ContributedMenuTool = {
+  id: 'closePaneGroup',
+  placement: 'menu',
+  title: 'Close pane group',
+  onAction: () => {},
 }
 
 function resolve(tools: readonly DocumentTool[] = SANITY_DEFINED_TOOLS) {
@@ -39,7 +59,7 @@ describe('resolveDocumentTools', () => {
   })
 
   it('seeds only the tools the form draws itself', () => {
-    const {byId, header} = resolve()
+    const {byId, header, menu} = resolve()
 
     expect([...byId.keys()]).toEqual([
       'titleBar',
@@ -51,6 +71,7 @@ describe('resolveDocumentTools', () => {
       'productionPreview',
     ])
     expect(header).toEqual([])
+    expect(menu).toEqual([])
   })
 
   it('leaves the structure ids out of the seed, so they resolve absent where nothing contributes them', () => {
@@ -94,6 +115,26 @@ describe('resolveDocumentTools', () => {
     expect(header).toEqual([])
   })
 
+  it('places a contributed menu tool into the menu and not the header', () => {
+    const {header, menu, byId} = resolve([...SANITY_DEFINED_TOOLS, CLOSE_PANE])
+
+    expect(menu).toEqual([CLOSE_PANE])
+    expect(header).toEqual([])
+    expect(byId.get('closePane')).toEqual(CLOSE_PANE)
+  })
+
+  it('keeps menu tools in the order the resolver left them', () => {
+    const {menu} = resolve([CLOSE_PANE_GROUP, ...SANITY_DEFINED_TOOLS, CLOSE_PANE])
+
+    expect(menu.map((tool) => tool.id)).toEqual(['closePaneGroup', 'closePane'])
+  })
+
+  it('never puts a built-in or a header tool in the menu', () => {
+    const {menu} = resolve([...SANITY_DEFINED_TOOLS, SPLIT_PANE, {id: 'copyActions'}])
+
+    expect(menu).toEqual([])
+  })
+
   it('leaves the shortcut of an enabled tool alone', () => {
     const {byId} = resolve()
 
@@ -123,7 +164,7 @@ describe('resolveDocumentTools', () => {
 
     const {byId, header} = resolve([...SANITY_DEFINED_TOOLS, contributed])
 
-    expect(byId.get('myPluginPin' as ContributedDocumentTool['id'])).toEqual(contributed)
+    expect(byId.get(contributed.id)).toEqual(contributed)
     expect(header).toEqual([contributed])
   })
 })

@@ -1,4 +1,5 @@
 import negate from 'lodash-es/negate.js'
+import {type ContributedMenuTool} from 'sanity'
 
 import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'
 import {type DocumentFieldMenuActionNode, type PaneMenuItem, type PaneMenuItemGroup} from './types'
@@ -9,10 +10,7 @@ export function isMenuNodeButton(node: _PaneMenuNode): node is _PaneMenuItem | _
 
 export const isNotMenuNodeButton = negate(isMenuNodeButton)
 
-/**
- * Whether a node would draw anything. `resolveMenuNodes` emits a group for every configured
- * menu item group, so a menu can hold nodes and still render empty.
- */
+/** `resolveMenuNodes` emits a group per configured group, so a menu can hold nodes and draw nothing. */
 export function hasMenuNodeContent(node: _PaneMenuNode): boolean {
   if (node.type === 'item') return true
   if (node.type === 'group') return node.children.some(hasMenuNodeContent)
@@ -24,8 +22,9 @@ export function resolveMenuNodes(params: {
   fieldActions?: DocumentFieldMenuActionNode[]
   menuItems: PaneMenuItem[]
   menuItemGroups: PaneMenuItemGroup[]
+  menuTools?: readonly ContributedMenuTool[]
 }): _PaneMenuNode[] {
-  const {fieldActions = [], menuItems, menuItemGroups} = params
+  const {fieldActions = [], menuItems, menuItemGroups, menuTools = []} = params
 
   const nodes: _PaneMenuNode[] = []
 
@@ -117,7 +116,19 @@ export function resolveMenuNodes(params: {
     }
   }
 
-  return [...ungroupedItems, ...groups, ...nodes]
+  return [...ungroupedItems, ...groups, ...nodes, ...menuTools.map(mapMenuToolToPaneMenuNode)]
+}
+
+function mapMenuToolToPaneMenuNode(tool: ContributedMenuTool): _PaneMenuItem {
+  return {
+    type: 'item',
+    key: `tool-${tool.id}`,
+    hotkey: tool.shortcut,
+    icon: tool.icon,
+    onAction: tool.onAction,
+    renderAsButton: false,
+    title: tool.title,
+  }
 }
 
 function mapFieldActionToPaneMenuNode(a: DocumentFieldMenuActionNode, key: string): _PaneMenuNode {

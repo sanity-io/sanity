@@ -8,20 +8,12 @@ import {
   useMemo,
   useRef,
   useState,
-  type Dispatch,
-  type ReactNode,
   type RefAttributes,
-  type RefObject,
-  type SetStateAction,
 } from 'react'
 import {
+  EMPTY_ARRAY,
   FieldPresenceInner,
   type DocumentActionDescription,
-  type DocumentLanguageFilterComponent,
-  type DocumentPresence,
-  type EditStateFor,
-  type ObjectSchemaType,
-  type ResolvedDocumentTools,
   useDocumentPresence,
   useFieldActions,
   useTranslation,
@@ -36,11 +28,7 @@ import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDel
 import {PaneContextMenuButton} from '../../../../components/pane/PaneContextMenuButton'
 import {PaneHeader} from '../../../../components/pane/PaneHeader'
 import {PaneHeaderActionButton} from '../../../../components/pane/PaneHeaderActionButton'
-import {
-  type _PaneMenuGroup,
-  type _PaneMenuItem,
-  type _PaneMenuNode,
-} from '../../../../components/pane/types'
+import {type _PaneMenuNode} from '../../../../components/pane/types'
 import {usePane} from '../../../../components/pane/usePane'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {
@@ -106,12 +94,30 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
   `
 })
 
-const EMPTY_PANE_ACTION_STATES: ResolvedAction[] = []
-
 export const DocumentPanelHeader = memo(function DocumentPanelHeader(
-  _props: DocumentPanelHeaderProps & RefAttributes<HTMLDivElement>,
+  props: DocumentPanelHeaderProps & RefAttributes<HTMLDivElement>,
 ) {
-  const {ref, menuItems} = _props
+  const {ref, menuItems} = props
+  const {editState} = useDocumentPane()
+
+  if (editState) {
+    return (
+      <RenderActionCollectionState group="paneActions">
+        {({states}) => <DocumentPanelHeaderBar ref={ref} menuItems={menuItems} states={states} />}
+      </RenderActionCollectionState>
+    )
+  }
+
+  return <DocumentPanelHeaderBar ref={ref} menuItems={menuItems} states={EMPTY_ARRAY} />
+})
+
+const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
+  props: {
+    menuItems: PaneMenuItem[]
+    states: ResolvedAction[]
+  } & RefAttributes<HTMLDivElement>,
+) {
+  const {ref, menuItems, states} = props
   const {
     editState,
     onMenuAction,
@@ -122,13 +128,12 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     documentId,
   } = useDocumentPane()
   const {beta} = useWorkspace()
-  const {byId: toolsById, header: headerTools} = useDocumentTools()
+  const {byId: toolsById, header: headerTools, menu: menuTools} = useDocumentTools()
   const showVersionPicker = toolsById.has('versionPicker')
   const showCopyActions = toolsById.has('copyActions')
   const {features} = useStructureTool()
   const {BackLink, index} = usePaneRouter()
   const {actions: fieldActions} = useFieldActions()
-  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const showGradient = useChipScrollPosition(scrollContainerRef)
   const zIndex = useZIndex()
@@ -137,16 +142,19 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     : zIndex.paneHeader
 
   const menuNodes = useMemo(
-    () => resolveMenuNodes({actionHandler: onMenuAction, fieldActions, menuItems, menuItemGroups}),
-    [onMenuAction, fieldActions, menuItemGroups, menuItems],
+    () =>
+      resolveMenuNodes({
+        actionHandler: onMenuAction,
+        fieldActions,
+        menuItems,
+        menuItemGroups,
+        menuTools,
+      }),
+    [onMenuAction, fieldActions, menuItemGroups, menuItems, menuTools],
   )
 
   const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
   const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
-  const hasContextMenuContent = useMemo(
-    () => contextMenuNodes.some(hasMenuNodeContent),
-    [contextMenuNodes],
-  )
   const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
   const {collapsed, isLast} = usePane()
@@ -159,8 +167,6 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     () => presence.filter((p) => p.path.length === 0),
     [presence],
   )
-  // show the back button if both the feature is enabled and the current pane
-  // is not the first
   const showBackButton = features.backButton && index > 0
 
   const title = useMemo(() => <DocumentHeaderTitle />, [])
@@ -178,97 +184,8 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     [BackLink, showBackButton, t],
   )
 
-  const barProps = {
-    ref,
-    collapsed,
-    connectionState,
-    editState,
-    title,
-    tabIndex,
-    backButtonNode,
-    paneHeaderZIndex,
-    showVersionPicker,
-    hasDocumentGroupInventory,
-    showGradient,
-    scrollContainerRef,
-    documentLevelPresence,
-    unstable_languageFilter,
-    schemaType,
-    showCopyActions,
-    menuButtonNodes,
-    contextMenuNodes,
-    hasContextMenuContent,
-    headerTools,
-    referenceElement,
-    setReferenceElement,
-  }
-
-  if (editState) {
-    return (
-      <RenderActionCollectionState group="paneActions">
-        {({states}) => <DocumentPanelHeaderBar {...barProps} states={states} />}
-      </RenderActionCollectionState>
-    )
-  }
-
-  return <DocumentPanelHeaderBar {...barProps} states={EMPTY_PANE_ACTION_STATES} />
-})
-
-const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
-  props: {
-    collapsed: boolean
-    connectionState: 'connecting' | 'reconnecting' | 'connected'
-    editState: EditStateFor | null
-    title: ReactNode
-    tabIndex: number
-    backButtonNode: ReactNode
-    paneHeaderZIndex: number | undefined
-    showVersionPicker: boolean
-    hasDocumentGroupInventory: boolean
-    showGradient: boolean
-    scrollContainerRef: RefObject<HTMLDivElement | null>
-    documentLevelPresence: DocumentPresence[]
-    unstable_languageFilter: DocumentLanguageFilterComponent[]
-    schemaType: ObjectSchemaType
-    showCopyActions: boolean
-    menuButtonNodes: (_PaneMenuItem | _PaneMenuGroup)[]
-    contextMenuNodes: _PaneMenuNode[]
-    hasContextMenuContent: boolean
-    headerTools: ResolvedDocumentTools['header']
-    states: ResolvedAction[]
-    referenceElement: HTMLElement | null
-    setReferenceElement: Dispatch<SetStateAction<HTMLElement | null>>
-  } & RefAttributes<HTMLDivElement>,
-) {
-  const {
-    ref,
-    collapsed,
-    connectionState,
-    editState,
-    title,
-    tabIndex,
-    backButtonNode,
-    paneHeaderZIndex,
-    showVersionPicker,
-    hasDocumentGroupInventory,
-    showGradient,
-    scrollContainerRef,
-    documentLevelPresence,
-    unstable_languageFilter,
-    schemaType,
-    showCopyActions,
-    menuButtonNodes,
-    contextMenuNodes,
-    hasContextMenuContent,
-    headerTools,
-    states,
-    referenceElement,
-    setReferenceElement,
-  } = props
-
-  // an empty bordered bar is worse than no bar, so drop the header once nothing is left in it.
-  // Pane-action states are read here too now, so this Card subtree re-renders on every action
-  // state change; previously only the dialog child did.
+  const hasContextMenuContent = contextMenuNodes.some(hasMenuNodeContent)
+  // An empty bordered bar is worse than no bar, so the header is dropped once nothing fills it.
   const hasHeaderContent =
     headerTools.length > 0 ||
     menuButtonNodes.length > 0 ||
@@ -362,8 +279,6 @@ const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
                 {editState && (
                   <DocumentPanelHeaderActionDialogDeferred
                     contextMenuNodes={contextMenuNodes}
-                    setReferenceElement={setReferenceElement}
-                    referenceElement={referenceElement}
                     states={states}
                   />
                 )}
@@ -382,11 +297,9 @@ const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
 const DocumentPanelHeaderActionDialogDeferred = memo(
   function DocumentPanelHeaderActionDialogDeferred(props: {
     states: ResolvedAction[]
-    setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
-    referenceElement: HTMLElement | null
     contextMenuNodes: _PaneMenuNode[]
   }) {
-    const {setReferenceElement, referenceElement, contextMenuNodes} = props
+    const {contextMenuNodes} = props
     /**
      * The purpose of this component is to allow deferring the rendering of document action hook states if the main thread becomes very busy.
      * The `useDeferredValue` doesn't have an effect unless it's used to delay rendering a component that has `React.memo` to prevent unnecessary re-renders.
@@ -395,8 +308,6 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
 
     return (
       <DocumentPanelHeaderActionDialog
-        setReferenceElement={setReferenceElement}
-        referenceElement={referenceElement}
         contextMenuNodes={contextMenuNodes}
         // The restore action has a dedicated place in the UI; it's only visible when the user is
         // viewing a different document revision. It must be omitted from this collection.
@@ -410,11 +321,10 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
 
 const DocumentPanelHeaderActionDialog = memo(function DocumentPanelHeaderActionDialog(props: {
   states: DocumentActionDescription[]
-  setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
-  referenceElement: HTMLElement | null
   contextMenuNodes: _PaneMenuNode[]
 }) {
-  const {states, setReferenceElement, contextMenuNodes, referenceElement} = props
+  const {states, contextMenuNodes} = props
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
 
   const renderActionDialog = useCallback<
     ({handleAction}: {handleAction: (idx: number) => void}) => React.ReactNode

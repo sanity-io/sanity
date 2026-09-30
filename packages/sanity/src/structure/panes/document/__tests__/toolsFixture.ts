@@ -1,5 +1,6 @@
 import {
-  type ContributedDocumentTool,
+  type ContributedHeaderTool,
+  type ContributedMenuTool,
   type DocumentTool,
   type DocumentToolId,
   type ResolvedDocumentTools,
@@ -22,8 +23,10 @@ export const SEEDED_TOOLS: readonly DocumentTool[] = [
 interface BuildResolvedToolsOptions {
   /** Ids the config resolver filtered out of `prev`. */
   without?: readonly DocumentToolId[]
-  /** Contributed tools, in the order the resolver left them. */
-  header?: readonly ContributedDocumentTool[]
+  /** Contributed header tools, in the order the resolver left them. */
+  header?: readonly ContributedHeaderTool[]
+  /** Contributed menu tools, in the order the resolver left them. */
+  menu?: readonly ContributedMenuTool[]
 }
 
 /**
@@ -31,19 +34,23 @@ interface BuildResolvedToolsOptions {
  * only what its case changes.
  */
 export function buildResolvedTools(options: BuildResolvedToolsOptions = {}): ResolvedDocumentTools {
-  const {without = [], header = []} = options
+  const {without = [], header = [], menu = []} = options
   const removed = new Set<DocumentToolId>(without)
 
   const builtIns = SEEDED_TOOLS.filter((tool) => !removed.has(tool.id))
-  const contributed = header.filter((tool) => !removed.has(tool.id))
+  const headerTools = header.filter((tool) => !removed.has(tool.id))
+  const menuTools = menu.filter((tool) => !removed.has(tool.id))
 
   return {
-    header: contributed,
-    byId: new Map([...builtIns, ...contributed].map((tool) => [tool.id, tool])),
+    header: headerTools,
+    menu: menuTools,
+    byId: new Map([...builtIns, ...headerTools, ...menuTools].map((tool) => [tool.id, tool])),
   }
 }
 
 /** A `ResolvedDocumentTools` with nothing in it: every gate off, nothing contributed. */
-export function buildEmptyTools(): ResolvedDocumentTools {
-  return {header: [], byId: new Map()}
-}
+export const EMPTY_TOOLS: ResolvedDocumentTools = Object.freeze({
+  header: [],
+  menu: [],
+  byId: new Map(),
+})

@@ -1,6 +1,12 @@
 import {describe, expectTypeOf, test} from 'vitest'
 
-import {type ContributedDocumentTool, type DocumentToolId, type SanityDefinedToolId} from '../tools'
+import {
+  type ContributedDocumentTool,
+  type ContributedHeaderTool,
+  type ContributedMenuTool,
+  type DocumentToolId,
+  type SanityDefinedToolId,
+} from '../tools'
 
 declare module '../tools' {
   interface DocumentToolIds {
@@ -48,6 +54,51 @@ describe('DocumentToolIds', () => {
 
   test('merging widens DocumentToolId beyond the Sanity-defined ids', () => {
     expectTypeOf<DocumentToolId>().not.toEqualTypeOf<SanityDefinedToolId>()
+  })
+})
+
+describe('ContributedDocumentTool', () => {
+  test('a menu tool is a ContributedDocumentTool', () => {
+    expectTypeOf<{
+      id: 'acmeRibbon'
+      placement: 'menu'
+      title: string
+      onAction: () => void
+    }>().toExtend<ContributedDocumentTool>()
+  })
+
+  test('a menu tool cannot carry a render component', () => {
+    const tool: ContributedMenuTool = {
+      id: 'acmeRibbon',
+      placement: 'menu',
+      title: 'Ribbon',
+      onAction: () => {},
+      // @ts-expect-error a menu tool is data; the overflow menu renders no contributed component
+      render: () => null,
+    }
+    expectTypeOf(tool).toExtend<ContributedDocumentTool>()
+  })
+
+  test('a header tool cannot carry an onAction callback', () => {
+    const tool: ContributedHeaderTool = {
+      id: 'acmeRibbon',
+      placement: 'header',
+      render: () => null,
+      // @ts-expect-error a header tool wires its own behaviour inside `render`
+      onAction: () => {},
+    }
+    expectTypeOf(tool).toExtend<ContributedDocumentTool>()
+  })
+
+  test('a header tool cannot carry a shortcut', () => {
+    const tool: ContributedHeaderTool = {
+      id: 'acmeRibbon',
+      placement: 'header',
+      render: () => null,
+      // @ts-expect-error nothing fires a header tool's shortcut; it wires its own hotkey
+      shortcut: 'Ctrl+Alt+R',
+    }
+    expectTypeOf(tool).toExtend<ContributedDocumentTool>()
   })
 })
 

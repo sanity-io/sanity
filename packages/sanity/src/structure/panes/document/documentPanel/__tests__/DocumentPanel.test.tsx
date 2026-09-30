@@ -1,7 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type ComponentProps} from 'react'
-import {type SingleWorkspace} from 'sanity'
 import {PerspectiveContext} from 'sanity/_singletons'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -100,12 +99,6 @@ const mockUseDocumentPane = vi.mocked(useDocumentPane)
 const mockUseDocumentTools = vi.mocked(useDocumentTools)
 const mockUseStructureTool = vi.mocked(useStructureTool)
 
-let hasTitleBar = true
-
-function setTitleBar(present: boolean) {
-  hasTitleBar = present
-}
-
 const publishedPerspectiveContextValue = {
   ...perspectiveContextValueMock,
   selectedPerspective: 'published' as const,
@@ -148,13 +141,11 @@ function renderDocumentPanel(overrides: Partial<ComponentProps<typeof DocumentPa
 
 async function renderPanel(
   overrides?: Partial<ComponentProps<typeof DocumentPanel>>,
-  config?: Partial<SingleWorkspace>,
+  tools: ReturnType<typeof buildResolvedTools> = buildResolvedTools(),
 ) {
   mockUseDocumentPane.mockReturnValue(documentPaneValue())
-  mockUseDocumentTools.mockImplementation(() =>
-    buildResolvedTools({without: hasTitleBar ? [] : ['titleBar']}),
-  )
-  const wrapper = await createTestProvider({config, resources: [structureUsEnglishLocaleBundle]})
+  mockUseDocumentTools.mockReturnValue(tools)
+  const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
   return render(renderDocumentPanel(overrides), {wrapper})
 }
 
@@ -328,20 +319,14 @@ describe('DocumentPanel sub-header', () => {
     } as ReturnType<typeof useStructureTool>)
   })
 
-  afterEach(() => {
-    setTitleBar(true)
-  })
-
   it('renders the sub-header when titleBar is in the tools resolution', async () => {
-    setTitleBar(true)
     await renderPanel()
 
     expect(screen.getByTestId('mock-document-panel-sub-header')).toBeInTheDocument()
   })
 
   it('omits the sub-header when titleBar is not in the tools resolution', async () => {
-    setTitleBar(false)
-    await renderPanel()
+    await renderPanel(undefined, buildResolvedTools({without: ['titleBar']}))
 
     expect(screen.queryByTestId('mock-document-panel-sub-header')).toBeNull()
   })

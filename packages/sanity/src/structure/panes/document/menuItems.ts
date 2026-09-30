@@ -6,6 +6,7 @@ import {
   type DocumentIdStack,
   type DocumentInspector,
   type DocumentInspectorMenuItem,
+  type DocumentTool,
   type ResolvedDocumentTools,
   type TFunction,
 } from 'sanity'
@@ -24,6 +25,10 @@ interface GetMenuItemsParams {
   inspectorMenuItems: DocumentInspectorMenuItem[]
   t: TFunction
   displayInlineChanges: boolean
+}
+
+function getShortcut(tool: DocumentTool): string | undefined {
+  return 'shortcut' in tool ? tool.shortcut : undefined
 }
 
 function getInspectorItems({
@@ -53,7 +58,6 @@ function getInspectorItems({
 
 function getInspectItem({tools, hasValue, t}: GetMenuItemsParams): PaneMenuItem | null {
   const tool = tools.byId.get('inspect')
-
   if (!tool) return null
 
   return {
@@ -62,7 +66,7 @@ function getInspectItem({tools, hasValue, t}: GetMenuItemsParams): PaneMenuItem 
     title: t('document-inspector.menu-item.title'),
     icon: JsonIcon,
     disabled: !hasValue,
-    shortcut: tool.shortcut,
+    shortcut: getShortcut(tool),
   }
 }
 
@@ -72,7 +76,6 @@ function getCompareVersionsItem({
   t,
 }: GetMenuItemsParams): PaneMenuItem | null {
   const tool = tools.byId.get('compareVersions')
-
   if (!tool) return null
 
   const disabled = typeof documentIdStack?.previousId === 'undefined' && {
@@ -94,7 +97,6 @@ function getInlineChangesItem({
   t,
 }: GetMenuItemsParams): PaneMenuItem | null {
   const tool = tools.byId.get('inlineChanges')
-
   if (!tool) return null
 
   return {
@@ -111,7 +113,6 @@ function getProductionPreviewItem({tools, previewUrl, t}: GetMenuItemsParams): P
   if (!previewUrl) return null
 
   const tool = tools.byId.get('productionPreview')
-
   if (!tool) return null
 
   return {
@@ -119,7 +120,7 @@ function getProductionPreviewItem({tools, previewUrl, t}: GetMenuItemsParams): P
     group: 'links',
     title: t('production-preview.menu-item.title'),
     icon: EarthAmericasIcon,
-    shortcut: tool.shortcut,
+    shortcut: getShortcut(tool),
   }
 }
 

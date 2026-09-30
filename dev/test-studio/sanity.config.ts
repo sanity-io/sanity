@@ -9,18 +9,12 @@ import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
 import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
-import {
-  defineConfig,
-  definePlugin,
-  type AuthProvider,
-  type DocumentToolId,
-  type WorkspaceOptions,
-} from 'sanity'
+import {defineConfig, definePlugin, type AuthProvider, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
-import {INCOMING_REFERENCES_INSPECTOR_NAME, structureTool} from 'sanity/structure'
+import {structureTool} from 'sanity/structure'
 
 import {imageAssetSource} from './assetSources/imageAssetSource'
 import {
@@ -43,11 +37,11 @@ import {
 } from './components/studioComponents'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {useTestVersionAction} from './documentActions/actions/TestVersionAction'
+import {documentTools} from './documentTools'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
-import {eden} from './plugins/eden'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
@@ -104,19 +98,6 @@ const sanitySandboxAuth = {
       ? prev
       : [...prev, sanitySandboxSsoProvider],
 }
-
-const EDEN_REMOVED_TOOL_IDS = new Set<DocumentToolId>([
-  'titleBar',
-  'versionPicker',
-  'copyActions',
-  'compareVersions',
-  'inlineChanges',
-  'splitPane',
-  'focusMode',
-  'closePane',
-  'closePaneGroup',
-  'inspect',
-])
 
 const envConfig = {
   // use this for production workspaces
@@ -352,6 +333,7 @@ const defaultWorkspace = defineConfig({
 
       return prev
     },
+    tools: documentTools,
   },
   releases: {
     actions: (prev, ctx) => {
@@ -411,62 +393,6 @@ export default defineConfig([
     hidden: true,
   },
   defaultWorkspace,
-  {
-    name: 'eden',
-    title: 'Eden',
-    subtitle: 'Newsroom dashboard and a chrome-free document form',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    basePath: '/eden',
-    auth: sanitySandboxAuth,
-    // The structure tool is what contributes the document actions and the history inspector, so it
-    // stays in `plugins` and is filtered out of `tools` instead of being left out altogether.
-    plugins: [eden(), structureTool()],
-    tools: (prev) => prev.filter((tool) => tool.name !== 'structure'),
-    // Studio surfaces the editors never asked for.
-    tasks: {enabled: false},
-    releases: {enabled: false},
-    scheduledDrafts: {enabled: false},
-    scheduledPublishing: {enabled: false},
-    beta: {variants: {enabled: false}},
-    document: {
-      comments: {enabled: false},
-      unstable_fieldActions: () => [],
-      badges: () => [],
-      inspectors: (prev) => prev.filter(({name}) => name !== INCOMING_REFERENCES_INSPECTOR_NAME),
-      actions: (prev) => prev.filter((action) => action.action === 'publish'),
-      tools: (prev) => prev.filter((tool) => !EDEN_REMOVED_TOOL_IDS.has(tool.id)),
-    },
-  },
-  {
-    name: 'eden-stripped',
-    title: 'Eden (every tool removed)',
-    subtitle: 'Verification fixture: the document form with an empty chrome resolution',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    basePath: '/eden-stripped',
-    auth: sanitySandboxAuth,
-    plugins: [eden(), structureTool()],
-    tools: (prev) => prev.filter((tool) => tool.name !== 'structure'),
-    tasks: {enabled: false},
-    releases: {enabled: false},
-    scheduledDrafts: {enabled: false},
-    scheduledPublishing: {enabled: false},
-    beta: {variants: {enabled: false}},
-    document: {
-      comments: {enabled: false},
-      unstable_fieldActions: () => [],
-      badges: () => [],
-      inspectors: () => [],
-      actions: (prev) => prev.filter((action) => action.action === 'publish'),
-      // Empty, so the overflow button and the bordered bar both have to derive themselves away.
-      // `/eden` keeps `inspect` for a user with raw document access, so the two workspaces differ
-      // in exactly the thing under test.
-      tools: () => [],
-    },
-  },
   {
     ...defaultWorkspace,
     title: 'Test Studio (variants disabled)',
