@@ -2,7 +2,7 @@ import {type PluginFilter} from '@sanity/media-library-types'
 import {type FederationRemote} from '@sanity/sdk-react/dashboard'
 import {type AssetSourceComponentProps} from '@sanity/types'
 
-import {type AssetSelectionItem} from '../types'
+import {type AssetSelectionItem} from '../assetSourceMediaLibrary/types'
 
 /**
  * The props the host passes to a mounted federated view: Studio's asset-source

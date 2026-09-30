@@ -5,10 +5,13 @@ import {Box, Flex} from 'ui5'
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../../studio/colorScheme'
+import {FullSurfaceAppDialog} from '../../federatedAssetSource/Dialog'
+import {FederatedViewMount} from '../../federatedAssetSource/FederatedViewMount'
+import {
+  type FederatedAssetSourceView,
+  type FederatedAssetSourceViewProps,
+} from '../../federatedAssetSource/types'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
-import {FullSurfaceAppDialog} from '../shared/Dialog'
-import {FederatedViewMount} from './FederatedViewMount'
-import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
 
 export interface FederatedOpenInSourceDialogProps {
   dialogHeaderTitle: ReactNode
