@@ -1,5 +1,6 @@
 import {renderHook} from '@testing-library/react'
 import {type ObservablePromise} from 'react-rx'
+import {TasksFeaturesPromiseContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type SettledFeatures} from '../../../hooks/useFeatureEnabled'
@@ -13,18 +14,18 @@ vi.mock('../../../studio/workspace', () => ({
 
 const useWorkspaceMock = useWorkspace as ReturnType<typeof vi.fn>
 
-/** A settled feature check, the way `useFeatureEnabledPromise` hands it over once resolved */
+/** A settled feature check, the way `TasksStudioProviders` hands it over once resolved */
 function settled(value: Partial<SettledFeatures>): ObservablePromise<SettledFeatures> {
   const features: SettledFeatures = {enabled: false, features: [], error: null, ...value}
   return Object.assign(Promise.resolve(features), {status: 'fulfilled' as const, value: features})
 }
 
-function renderTasksEnabled(featureEnabledPromise: ObservablePromise<SettledFeatures>) {
+function renderTasksEnabled(featuresPromise: ObservablePromise<SettledFeatures>) {
   return renderHook(useTasksEnabled, {
     wrapper: ({children}) => (
-      <TasksEnabledProvider featureEnabledPromise={featureEnabledPromise}>
-        {children}
-      </TasksEnabledProvider>
+      <TasksFeaturesPromiseContext.Provider value={featuresPromise}>
+        <TasksEnabledProvider>{children}</TasksEnabledProvider>
+      </TasksFeaturesPromiseContext.Provider>
     ),
   })
 }
@@ -73,5 +74,16 @@ describe('TasksEnabledProvider', () => {
     )
 
     expect(value.result.current).toEqual({enabled: false, mode: null})
+  })
+
+  it('should fail loudly when rendered without the providers slot that starts the check', () => {
+    useWorkspaceMock.mockReturnValue({tasks: {enabled: true}})
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    expect(() => renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})).toThrow(
+      /no TasksFeaturesPromiseContext/,
+    )
+
+    consoleError.mockRestore()
   })
 })

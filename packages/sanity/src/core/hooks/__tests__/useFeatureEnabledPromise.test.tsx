@@ -12,7 +12,6 @@ import {
   type SettledFeatures,
   useFeatureEnabled,
   useFeatureEnabledPromise,
-  usePreloadFeatures,
 } from '../useFeatureEnabled'
 
 vi.mock('../useClient', () => ({useClient: vi.fn()}))
@@ -109,26 +108,6 @@ describe('useFeatureEnabledPromise', () => {
     })
 
     expect(screen.getByTestId('settled')).toHaveTextContent('disabled error:offline')
-  })
-
-  it('usePreloadFeatures starts the request early and the promise reuses it', async () => {
-    function Preloader() {
-      usePreloadFeatures()
-      return null
-    }
-
-    await mount(<Preloader />)
-    expect(requestCount).toBe(1)
-    await act(async () => {
-      response$.next(['sanityTasks'])
-      response$.complete()
-    })
-
-    await mount(<Parent featureKey={FEATURES.sanityTasks} />)
-
-    // The replayed answer resolves the promise on a microtask, inside the awaited mount.
-    expect(screen.getByTestId('settled')).toHaveTextContent('enabled')
-    expect(requestCount).toBe(1)
   })
 
   it('shares one request with useFeatureEnabled', async () => {

@@ -1,5 +1,6 @@
 import {renderHook} from '@testing-library/react'
 import {type ObservablePromise} from 'react-rx'
+import {ScheduledPublishingPromisesContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type SettledFeatures} from '../../hooks/useFeatureEnabled'
@@ -34,12 +35,14 @@ function renderEnabled(
 ) {
   return renderHook(useScheduledPublishingEnabled, {
     wrapper: ({children}) => (
-      <ScheduledPublishingEnabledProvider
-        featureEnabledPromise={featureEnabledPromise}
-        hasUsedScheduledPublishingPromise={settled(hasUsed)}
+      <ScheduledPublishingPromisesContext.Provider
+        value={{
+          featureEnabled: featureEnabledPromise,
+          hasUsedScheduledPublishing: settled(hasUsed),
+        }}
       >
-        {children}
-      </ScheduledPublishingEnabledProvider>
+        <ScheduledPublishingEnabledProvider>{children}</ScheduledPublishingEnabledProvider>
+      </ScheduledPublishingPromisesContext.Provider>
     ),
   })
 }

@@ -6,6 +6,7 @@ import {definePlugin} from '../../config/definePlugin'
 import {SCHEDULED_PUBLISHING_TOOL_NAME, TOOL_TITLE} from '../constants'
 import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
+import {SchedulePublishingStudioProviders} from './SchedulePublishingStudioProviders'
 
 const Tool = lazy(() => import('../tool/Tool'))
 const DocumentBannerInput = lazy(() =>
@@ -41,6 +42,9 @@ export const scheduledPublishing = definePlugin({
   },
   studio: {
     components: {
+      // Not lazy: it renders above the studio's loading screen and starts the checks the lazy
+      // layout suspends on.
+      providers: SchedulePublishingStudioProviders,
       layout: SchedulePublishingStudioLayout,
     },
   },

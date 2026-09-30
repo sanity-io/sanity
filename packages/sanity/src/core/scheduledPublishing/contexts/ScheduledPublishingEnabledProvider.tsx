@@ -1,38 +1,38 @@
 import {use, useContext, useMemo} from 'react'
-import {type ObservablePromise} from 'react-rx'
 import {
   ScheduledPublishingEnabledContext,
   type ScheduledPublishingEnabledContextValue,
+  ScheduledPublishingPromisesContext,
 } from 'sanity/_singletons'
 
-import {type SettledFeatures} from '../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../studio/workspace'
-import {type HasUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 
 interface ScheduledPublishingEnabledProviderProps {
   children: React.ReactNode
-  /** From `useFeatureEnabledPromise(FEATURES.scheduledPublishing)` in a parent above the boundary */
-  featureEnabledPromise: ObservablePromise<SettledFeatures>
-  /** From `useHasUsedScheduledPublishingPromise()` in a parent above the boundary */
-  hasUsedScheduledPublishingPromise: ObservablePromise<HasUsedScheduledPublishing>
 }
 
 /**
  * Decides whether scheduled publishing is available before anything below it renders. The answer
  * controls whether the Schedules tool shows up in the navbar and whether the layout is wrapped in
  * the upsell provider, so both checks it depends on (the project's feature list and the "has this
- * dataset ever scheduled anything" probe) are awaited here instead of flipping the layout after
+ * dataset ever scheduled anything" probe) are read as promises started by
+ * `SchedulePublishingStudioProviders` above the studio's loading screen boundary; reading them
+ * here suspends up to that screen until they are settled, instead of flipping the layout after
  * the first paint.
  *
  * @internal
  */
 export function ScheduledPublishingEnabledProvider({
   children,
-  featureEnabledPromise,
-  hasUsedScheduledPublishingPromise,
 }: ScheduledPublishingEnabledProviderProps) {
-  const {enabled, error} = use(featureEnabledPromise)
-  const hasUsedScheduledPublishing = use(hasUsedScheduledPublishingPromise)
+  const promises = useContext(ScheduledPublishingPromisesContext)
+  if (!promises) {
+    throw new Error(
+      'ScheduledPublishingEnabledProvider: no ScheduledPublishingPromisesContext above it. The scheduled publishing plugin registers `SchedulePublishingStudioProviders` as `studio.components.providers` to provide it.',
+    )
+  }
+  const {enabled, error} = use(promises.featureEnabled)
+  const hasUsedScheduledPublishing = use(promises.hasUsedScheduledPublishing)
   const {scheduledPublishing} = useWorkspace()
 
   const isWorkspaceEnabled = scheduledPublishing.enabled

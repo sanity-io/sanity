@@ -3,6 +3,7 @@ import {uuid} from '@sanity/uuid'
 import {render, screen} from '@testing-library/react'
 import {act} from 'react'
 import {type ObservablePromise} from 'react-rx'
+import {TasksFeaturesPromiseContext} from 'sanity/_singletons'
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type SettledFeatures} from '../../hooks/useFeatureEnabled'
@@ -95,9 +96,9 @@ const createTaskMock = ({
   status,
 })
 
-// The tasks feature check, already settled the way `useFeatureEnabledPromise` hands it over
+// The tasks feature check, already settled the way `TasksStudioProviders` hands it over
 const tasksFeatureEnabled: SettledFeatures = {enabled: true, features: ['sanityTasks'], error: null}
-const featureEnabledPromise: ObservablePromise<SettledFeatures> = Object.assign(
+const featuresPromise: ObservablePromise<SettledFeatures> = Object.assign(
   Promise.resolve(tasksFeatureEnabled),
   {status: 'fulfilled' as const, value: tasksFeatureEnabled},
 )
@@ -108,11 +109,13 @@ describe('TasksFooterOpenTasks', () => {
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
         <LayerProvider>
-          <TasksEnabledProvider featureEnabledPromise={featureEnabledPromise}>
-            <TasksProvider>
-              <TasksNavigationProvider>{children}</TasksNavigationProvider>
-            </TasksProvider>
-          </TasksEnabledProvider>
+          <TasksFeaturesPromiseContext.Provider value={featuresPromise}>
+            <TasksEnabledProvider>
+              <TasksProvider>
+                <TasksNavigationProvider>{children}</TasksNavigationProvider>
+              </TasksProvider>
+            </TasksEnabledProvider>
+          </TasksFeaturesPromiseContext.Provider>
         </LayerProvider>
       </ThemeProvider>
     )

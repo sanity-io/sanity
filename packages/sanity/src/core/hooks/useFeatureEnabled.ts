@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {useEffect, useMemo} from 'react'
+import {useMemo} from 'react'
 import {type ObservablePromise, useObservable, useObservablePromise} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
@@ -71,27 +71,6 @@ function getFeatures({
 }
 
 /**
- * Starts the project's feature request as soon as the caller commits. The layout middlewares that
- * suspend on it ({@link useFeatureEnabledPromise}) live in lazy chunks and load one after the
- * other, so without this the request only goes out once the first of them has arrived and sits
- * in that waterfall; started here it runs alongside the chunk downloads and is usually replayed
- * by the time they ask. The request is shared through {@link getFeatures}, so this never adds one.
- *
- * @internal
- */
-export function usePreloadFeatures(): void {
-  const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {projectId} = useSource()
-  useEffect(() => {
-    // `shareReplay()` without refCount keeps the request alive and replays it after this
-    // subscription is gone.
-    const subscription = getFeatures({projectId, versionedClient}).subscribe()
-    return () => subscription.unsubscribe()
-  }, [projectId, versionedClient])
-}
-
-/**
  * The settled answer for one feature key, over the project's cached feature request. A failed
  * request settles as `enabled: false` with `error` set rather than erroring the stream.
  */
@@ -143,9 +122,12 @@ export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
  * answer decides the shape of the tree (which providers wrap the layout, which navbar buttons
  * and tools exist): a late answer there means a remount of everything below, or a layout shift.
  *
- * Call this in the parent above the boundary, not in the component that calls `use()`: the
- * request starts when this hook's caller commits, and a component that suspends never commits.
- * The promise never rejects; a failed request settles as `enabled: false` with `error` set.
+ * Call this above the boundary, not in the component that calls `use()`: the request starts
+ * when this hook's caller commits, and a component that suspends never commits. A
+ * `studio.components.providers` component is the natural place: it renders above the studio's
+ * loading screen boundary, so a layout, navbar or tool below can `use()` the promise from a
+ * context and suspend up to that screen. The promise never rejects; a failed request settles as
+ * `enabled: false` with `error` set.
  *
  * @internal
  */
