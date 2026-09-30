@@ -1,6 +1,6 @@
 // oxlint-disable-next-line no-restricted-imports
 import {expect, test as baseTest} from '@playwright/test'
-import {createClient, type MultipleMutationResult, type SanityClient} from '@sanity/client'
+import {createClient, type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
 import {captureStudioDiagnosticsOnFailure} from './helpers/failureDiagnostics'
@@ -26,8 +26,10 @@ class _TestSanityContext {
   }
 
   // TODO: confirm we want this teardown, datasets are at the end, deleted (not in main), persisting the document could help us debug
-  teardown(sanityClient: SanityClient): Promise<MultipleMutationResult> {
-    return sanityClient.delete({
+  async teardown(sanityClient: SanityClient): Promise<void> {
+    // The `context` fixture sets this up for every test, and most tests create no document.
+    if (this.documentIds.size === 0) return
+    await sanityClient.delete({
       query: '*[_id in $ids]',
       params: {ids: [...this.documentIds].map((id) => `drafts.${id}`)},
     })
@@ -74,6 +76,12 @@ interface SanityFixtures {
 }
 
 export const test = baseTest.extend<SanityFixtures>({
+  // `_testContext` comes first so that it is set up before the browser context and deletes the
+  // drafts of the test only after the context has closed every page: a studio that still shows a
+  // draft reacts to its deletion, and edits it has not saved yet fail to rebase onto it.
+  async context({_testContext, context}, _use) {
+    await _use(context)
+  },
   // Extends the goto function to preserve the base pathname if it exists in the baseURL
   // This is used to ensure the navigation goes to the correct workspace.
   async page({page, context, baseURL}, _use) {
