@@ -1,10 +1,10 @@
 import {type Serializable} from '@sanity/presentation-comlink'
-import {useContext, useEffect} from 'react'
+import {use, useEffect} from 'react'
 import {PresentationSharedStateContext} from 'sanity/_singletons'
 
 /** @public */
 export const useSharedState = (key: string, value: Serializable): undefined => {
-  const context = useContext(PresentationSharedStateContext)
+  const context = use(PresentationSharedStateContext)
 
   if (!context) {
     throw new Error('Preview Snapshots context is missing')

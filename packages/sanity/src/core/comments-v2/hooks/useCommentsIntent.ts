@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {CommentsIntentContext} from 'sanity/_singletons'
 
 import {type CommentIntentGetter} from '../types'
@@ -8,5 +8,5 @@ import {type CommentIntentGetter} from '../types'
  * @hidden
  */
 export function useCommentsIntent(): CommentIntentGetter | undefined {
-  return useContext(CommentsIntentContext)
+  return use(CommentsIntentContext)
 }
