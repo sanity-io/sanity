@@ -1,6 +1,7 @@
 import {Suspense} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
+import {usePreloadFeatures} from '../hooks/useFeatureEnabled'
 import {useLayoutComponent} from './studio-components-hooks/useLayoutComponent'
 
 /** @internal */
@@ -37,6 +38,11 @@ export function StudioLayout() {
   // Use the layout component that is resolved by the Components API (`studio.components.layout`).
   // The default component is `StudioLayoutComponent`.
   const Layout = useLayoutComponent()
+
+  // The default layout middlewares (tasks, comments, scheduled publishing) suspend on the
+  // project's feature list to settle the layout's shape before it paints. Their chunks are lazy
+  // and load in sequence, so start that request here, alongside the chunk downloads.
+  usePreloadFeatures()
 
   // Same loading screen `WorkspaceLoader` shows right before this mounts, so a lazy layout
   // continues it instead of flashing a different placeholder.

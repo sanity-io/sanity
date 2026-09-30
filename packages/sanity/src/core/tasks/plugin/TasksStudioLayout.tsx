@@ -1,4 +1,8 @@
+import {Suspense} from 'react'
+
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {type LayoutProps} from '../../config/studio/types'
+import {FEATURES, useFeatureEnabledPromise} from '../../hooks/useFeatureEnabled'
 import {AddonDatasetProvider} from '../../studio/addonDataset/AddonDatasetProvider'
 import {TasksEnabledProvider} from '../context/enabled/TasksEnabledProvider'
 import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
@@ -31,9 +35,17 @@ const TasksStudioLayoutInner = (props: LayoutProps) => {
 }
 
 export function TasksStudioLayout(props: LayoutProps) {
+  const featureEnabledPromise = useFeatureEnabledPromise(FEATURES.sanityTasks)
+
+  // The provider suspends on the feature check so the layout renders once, in its final shape.
+  // The boundary sits here, between the hook and the `use()`, so this component commits and the
+  // request starts; its fallback is the same loading screen `StudioLayout` shows for the lazy
+  // layout chunk, so the loading state simply lasts until the answer is in.
   return (
-    <TasksEnabledProvider>
-      <TasksStudioLayoutInner {...props} />
-    </TasksEnabledProvider>
+    <Suspense fallback={<LoadingBlock />}>
+      <TasksEnabledProvider featureEnabledPromise={featureEnabledPromise}>
+        <TasksStudioLayoutInner {...props} />
+      </TasksEnabledProvider>
+    </Suspense>
   )
 }
