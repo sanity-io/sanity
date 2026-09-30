@@ -74,6 +74,7 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
+  federatedAssetSourcesReducer,
   internalTasksReducer,
   mediaLibraryEnabledReducer,
   mediaLibraryFederatedAssetSourceReducer,
@@ -269,6 +270,10 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
   const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
   const federated = mediaLibraryFederatedAssetSourceReducer({config, initialValue: false})
+  // Third-party brokered views have their own gate (`federatedAssetSources`),
+  // decoupled from the Media Library's internal rollout flag.
+  const federatedSourcesConfig = federatedAssetSourcesReducer({config, initialValue: undefined})
+  const brokeredSourcesEnabled = federatedSourcesConfig?.enabled === true
 
   // The `asset_source` views brokered over the workbench message bus, read
   // synchronously since sources are resolved once here. `undefined` outside
@@ -276,12 +281,13 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
   // its application list yet, `[]` — either way every brokered source is
   // simply absent and the Media Library keeps its iframe select dialog, so
   // the race can never cost the Media Library source itself.
-  const viewsFromBus = federated ? getCurrentFederatedAssetSourceViews() : undefined
+  const viewsFromBus =
+    federated || brokeredSourcesEnabled ? getCurrentFederatedAssetSourceViews() : undefined
   const brokeredViews = viewsFromBus ?? []
 
   // The Media Library's own view replaces the select dialog of the built-in
   // source below; views from other applications become their own sources.
-  const mediaLibraryView = brokeredViews.find(isMediaLibraryView)
+  const mediaLibraryView = federated ? brokeredViews.find(isMediaLibraryView) : undefined
 
   if (federated && enabled && !mediaLibraryView) {
     notifyFederatedFallbackOnce(
@@ -290,9 +296,23 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
         : 'no Media Library asset_source view in the brokered application list',
     )
   }
-  const federatedSources = brokeredViews
-    .filter((view) => !isMediaLibraryView(view))
-    .map(createFederatedAssetSource)
+  const viewFilter = federatedSourcesConfig?.filter
+  const federatedSources = brokeredSourcesEnabled
+    ? brokeredViews
+        .filter((view) => !isMediaLibraryView(view))
+        .filter((view) =>
+          viewFilter
+            ? viewFilter({
+                applicationId: view.applicationId,
+                applicationName: view.applicationName,
+                applicationTitle: view.applicationTitle,
+                name: view.name,
+                title: view.title,
+              })
+            : true,
+        )
+        .map(createFederatedAssetSource)
+    : []
 
   // Only create Media Library sources if the media library is enabled
   if (!enabled) {
