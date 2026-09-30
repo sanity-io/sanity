@@ -30,13 +30,25 @@ export const STUDIO_ERROR_SELECTOR = '[data-testid="studio-error-screen"], #__sa
 const ERROR_SCREEN_MARKER = '__STUDIO_ERROR__'
 
 /**
+ * How long after `beforeunload` a document that renders an error screen must still be there for the
+ * error screen to be reported (see {@link StudioErrorSource}).
+ */
+const LEAVE_TIMEOUT = 10_000
+
+/**
  * Source of a detected studio error.
  * - `pageerror`: an uncaught exception or promise rejection that its document left unhandled. The
  *   `GlobalErrorHandler` script that `sanity build` and `sanity dev` put in the studio's HTML
  *   handles the uncaught exceptions of the studio's own document (its `window.onerror` returns
  *   `true`), and the studio shows them as an error screen or an "Uncaught error" toast, so from
  *   that document only rejections are page errors.
- * - `error-screen`: a rendered studio error screen (React boundary or pre-React overlay)
+ * - `error-screen`: a rendered studio error screen (React boundary or pre-React overlay). One that
+ *   renders once a navigation away from its document has started is only reported if the document
+ *   is still there {@link LEAVE_TIMEOUT} ms after `beforeunload`, as when the navigation turned out
+ *   to be a download or was cancelled. Firefox aborts the requests of a document as soon as a
+ *   navigation away from it starts, but runs its scripts until the next document replaces it, so
+ *   a lazy import in flight fails and the studio renders its import error screen in the document
+ *   that a `page.reload()` or `page.goto()` is leaving.
  */
 export type StudioErrorSource = 'pageerror' | 'error-screen'
 
@@ -247,8 +259,18 @@ async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
   })
 
   await context.addInitScript(
-    ({selector, marker}) => {
+    ({selector, marker, leaveTimeout}) => {
       let fired = false
+      let leaving: ReturnType<typeof setTimeout> | undefined
+      let unreported: string | undefined
+      addEventListener('beforeunload', () => {
+        clearTimeout(leaving)
+        leaving = setTimeout(() => {
+          leaving = undefined
+          if (unreported) console.error(unreported)
+          unreported = undefined
+        }, leaveTimeout)
+      })
       new MutationObserver(() => {
         if (fired) return
         const el = document.querySelector(selector)
@@ -256,11 +278,12 @@ async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
           fired = true
           const detail =
             el.getAttribute('data-error') || el.textContent?.trim().slice(0, 200) || 'Unknown error'
-          console.error(`${marker}${detail}`)
+          if (leaving) unreported = `${marker}${detail}`
+          else console.error(`${marker}${detail}`)
         }
       }).observe(document, {childList: true, subtree: true})
     },
-    {selector: STUDIO_ERROR_SELECTOR, marker: ERROR_SCREEN_MARKER},
+    {selector: STUDIO_ERROR_SELECTOR, marker: ERROR_SCREEN_MARKER, leaveTimeout: LEAVE_TIMEOUT},
   )
   await context.addInitScript({content: buildDomPropLeakScannerScript(loadDomPropVocabulary())})
 
