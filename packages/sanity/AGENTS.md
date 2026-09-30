@@ -7,6 +7,7 @@ Read these root sections before writing a test. They are the authority on their 
 | Root section                                                                        | Covers                                                                           |
 | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | Testing > Unit Tests (Vitest)                                                       | The commands, and why a build comes first                                        |
+| Testing > Types in tests                                                            | No `as unknown as T` to squeeze a value into a narrower public type              |
 | Testing > Test Timeouts                                                             | The options-object form, not the deprecated third argument                       |
 | Testing > Vanilla-extract in jsdom tests                                            | Why computed styles are unavailable, and asserting on `data-testid` instead      |
 | Testing > @sanity/ui overlays stay mounted when closed                              | Closed overlays matching your queries, and the intent routes a test router needs |
