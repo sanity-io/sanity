@@ -124,10 +124,13 @@ export function createMockAssetSourceWithMediaLibraryUploader(
           value: uploadAssetId,
         }
         onSelect([assetFromSource])
-        onClose?.()
         // New-world ordering: source-side work and onSelect first, then the
-        // terminal statuses — the last one fires all-complete, which resets
-        // the input for the next upload.
+        // terminal statuses — the last one fires all-complete, which both
+        // feeds host-side subscribers (e.g. already-exists toasts) and
+        // resets the input for the next upload. No onClose in upload mode:
+        // the all-complete teardown performs the same reset, and closing
+        // first would unmount the host's subscribers before the statuses
+        // land.
         files.forEach((f) => uploader.updateFile(f.id, {status: 'complete'}))
       } else {
         // Component mode: no file picker, source handles selection internally - auto-select

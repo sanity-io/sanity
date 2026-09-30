@@ -22,7 +22,11 @@ import {
  * Ordering matters: once every file carries a terminal status the host fires
  * `all-complete` and tears the flow down, so the view must finish its
  * source-side work and call `onSelect` *before* writing the last terminal
- * status.
+ * status — and must NOT call `onClose` in upload mode. The `all-complete`
+ * teardown performs the same reset as `onClose`, and host-side subscribers
+ * (e.g. the Media Library's "asset already exists" warning toasts, fed by
+ * `alreadyExists` statuses on the `all-complete` event) must stay mounted
+ * until the terminal statuses land; closing first silently drops them.
  *
  * Sources that need extra host context (e.g. the Media Library's `libraryId`
  * and plugin filters) extend this interface and pass the extras through the
