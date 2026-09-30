@@ -1,4 +1,4 @@
-import {type PropsWithChildren, useContext} from 'react'
+import {type PropsWithChildren, use} from 'react'
 import {AssetLimitUpsellContext, type AssetLimitUpsellContextValue} from 'sanity/_singletons'
 
 import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
@@ -22,7 +22,7 @@ export function AssetLimitUpsellProvider({children}: PropsWithChildren) {
  * @internal
  */
 export const useAssetLimitsUpsellContext = (): AssetLimitUpsellContextValue => {
-  const context = useContext(AssetLimitUpsellContext)
+  const context = use(AssetLimitUpsellContext)
   if (!context) {
     throw new Error('useAssetLimitsUpsellContext must be used within a AssetLimitUpsellProvider')
   }

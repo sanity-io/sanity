@@ -1,10 +1,10 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {TasksNavigationContext} from 'sanity/_singletons'
 
 import {type TasksNavigationContextValue} from './types'
 
 export function useTasksNavigation(): TasksNavigationContextValue {
-  const context = useContext(TasksNavigationContext)
+  const context = use(TasksNavigationContext)
 
   if (!context) {
     // Providers are not mounted when tasks enabled is disabled, but we still need to provide a

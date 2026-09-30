@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {isEqual, pathFor} from '@sanity/util/paths'
-import {type ReactNode, type RefObject, useContext, useMemo, useRef} from 'react'
+import {type ReactNode, type RefObject, use, useMemo, useRef} from 'react'
 import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../field/paths/helpers'
@@ -16,7 +16,7 @@ import {isArrayOfObjectsFieldMember, isBlockType} from '../_helpers'
 import {type PortableTextMemberItem} from '../PortableTextInput'
 
 export function usePortableTextMemberItem(key: string): PortableTextMemberItem | undefined {
-  const ctx = useContext(PortableTextMemberItemsContext)
+  const ctx = use(PortableTextMemberItemsContext)
   if (!ctx) {
     throw new Error('Form context not provided')
   }
@@ -24,7 +24,7 @@ export function usePortableTextMemberItem(key: string): PortableTextMemberItem |
 }
 
 export function usePortableTextMemberItems(): PortableTextMemberItem[] {
-  const ctx = useContext(PortableTextMemberItemsContext)
+  const ctx = use(PortableTextMemberItemsContext)
   if (!ctx) {
     throw new Error('Form context not provided')
   }

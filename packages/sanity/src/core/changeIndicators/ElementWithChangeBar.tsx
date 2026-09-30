@@ -1,5 +1,5 @@
 import {useLayer} from '@sanity/ui'
-import {type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, use, useMemo} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
@@ -29,7 +29,7 @@ export function ElementWithChangeBar(props: {
     isInteractive = true,
   } = props
 
-  const {onOpenReviewChanges, isReviewChangesOpen} = useContext(ReviewChangesContext)
+  const {onOpenReviewChanges, isReviewChangesOpen} = use(ReviewChangesContext)
   const {zIndex} = useLayer()
   const {t} = useTranslation()
 

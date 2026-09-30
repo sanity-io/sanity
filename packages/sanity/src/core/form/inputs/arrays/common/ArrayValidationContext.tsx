@@ -1,5 +1,5 @@
 import {type ArraySchemaType} from '@sanity/types'
-import {type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, use, useMemo} from 'react'
 import {ArrayValidationContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -40,5 +40,5 @@ export function ArrayValidationProvider(props: ArrayValidationProviderProps) {
 
 /** @internal */
 export function useArrayValidation(): ArrayValidationState | null {
-  return useContext(ArrayValidationContext)
+  return use(ArrayValidationContext)
 }

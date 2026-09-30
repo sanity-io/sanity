@@ -1,4 +1,4 @@
-import {type PropsWithChildren, useContext} from 'react'
+import {type PropsWithChildren, use} from 'react'
 import {DocumentLimitUpsellContext, type DocumentLimitUpsellContextValue} from 'sanity/_singletons'
 
 import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
@@ -22,7 +22,7 @@ export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {
  * @internal
  */
 export const useDocumentLimitsUpsellContext = (): DocumentLimitUpsellContextValue => {
-  const context = useContext(DocumentLimitUpsellContext)
+  const context = use(DocumentLimitUpsellContext)
   if (!context) {
     throw new Error(
       'useDocumentLimitsUpsellContext must be used within a DocumentLimitUpsellProvider',

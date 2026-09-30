@@ -6,7 +6,7 @@ import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} fr
 import {
   type ComponentType,
   type ReactNode,
-  useContext,
+  use,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -198,7 +198,7 @@ export function useColorSchemeSetValue():
   | false
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   | ((nextScheme: StudioThemeColorSchemeKey) => void) {
-  const setValue = useContext(ColorSchemeSetValueContext)
+  const setValue = use(ColorSchemeSetValueContext)
   if (setValue === null) throw new Error('Could not find `ColorSchemeSetValueContext` context')
   return setValue
 }
@@ -206,7 +206,7 @@ export function useColorSchemeSetValue():
 /** @internal */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
-  const value = useContext(ColorSchemeValueContext)
+  const value = use(ColorSchemeValueContext)
   if (value === null) throw new Error('Could not find `ColorSchemeValueContext` context')
   return value
 }
