@@ -3,13 +3,14 @@ import {type SchemaType} from '@sanity/types'
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {act, render, screen} from '@testing-library/react'
-import {type ComponentType, lazy} from 'react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {type ComponentType, isValidElement, lazy} from 'react'
+import {assert, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type PreviewProps} from '../../../components/previews/types'
 import {useValuePreview} from '../../useValuePreview'
 import {useVisibility} from '../../useVisibility'
 import {PreviewLoader} from '../PreviewLoader'
+import {SanityDefaultPreview} from '../SanityDefaultPreview'
 
 // Mock dependencies
 vi.mock('../../useValuePreview')
@@ -34,6 +35,14 @@ const MockPreviewComponent = vi.fn((props: {media?: unknown}) => {
   capturedMedia = props.media
   return null
 })
+
+// Previews render media components with `dimensions` and `layout`, so a component schema icon
+// has to arrive as an element without props.
+function expectSchemaIconElement(media: unknown, Icon: ComponentType) {
+  assert(isValidElement(media), 'expected the schema icon as an element')
+  expect(media.type).toBe(Icon)
+  expect(media.props).toEqual({})
+}
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -69,7 +78,7 @@ describe('PreviewLoader', () => {
       )
 
       // Verify the component was called with the schema icon as media
-      expect(capturedMedia).toBe(DocumentIcon)
+      expectSchemaIconElement(capturedMedia, DocumentIcon)
     })
 
     it('should show schema icon when prepare function exists but returns no media key', () => {
@@ -98,7 +107,7 @@ describe('PreviewLoader', () => {
       )
 
       // media key is absent, so fall back to schema icon
-      expect(capturedMedia).toBe(DocumentIcon)
+      expectSchemaIconElement(capturedMedia, DocumentIcon)
     })
 
     it('should show returned media when prepare function returns media', () => {
@@ -215,7 +224,7 @@ describe('PreviewLoader', () => {
       )
 
       // media: undefined is not an explicit opt-out, fall back to schema icon
-      expect(capturedMedia).toBe(DocumentIcon)
+      expectSchemaIconElement(capturedMedia, DocumentIcon)
     })
 
     it('should show schema icon when no preview config at all', () => {
@@ -241,7 +250,48 @@ describe('PreviewLoader', () => {
       )
 
       // No preview config means no prepare function, so fallback to schema icon
-      expect(capturedMedia).toBe(DocumentIcon)
+      expectSchemaIconElement(capturedMedia, DocumentIcon)
+    })
+
+    it('renders a component schema icon without the media props of the preview', () => {
+      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
+      vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
+
+      render(
+        <ThemeProvider theme={theme}>
+          <PreviewLoader
+            component={SanityDefaultPreview}
+            schemaType={schemaType}
+            value={{_id: 'test', _type: 'testDoc'}}
+            skipVisibilityCheck
+          />
+        </ThemeProvider>,
+      )
+
+      // oxlint-disable-next-line testing-library/no-node-access -- the icon is an <svg> without a role or test id
+      const icon = screen.getByTestId('Media').querySelector('svg')
+      expect(icon).toHaveAttribute('data-sanity-icon', 'document')
+      expect(icon).not.toHaveAttribute('dimensions')
+      expect(icon).not.toHaveAttribute('layout')
+    })
+
+    it.each([
+      ['string', '📄'],
+      ['element', <span key="icon" data-testid="element-icon" />],
+    ])('passes %s schema icons through unchanged', (_kind, icon) => {
+      const schemaType = {name: 'testDoc', icon} as unknown as SchemaType
+      vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
+
+      render(
+        <PreviewLoader
+          component={MockPreviewComponent}
+          schemaType={schemaType}
+          value={{_id: 'test', _type: 'testDoc'}}
+          skipVisibilityCheck
+        />,
+      )
+
+      expect(capturedMedia).toBe(icon)
     })
   })
 
