@@ -96,7 +96,7 @@ const createTaskMock = ({
   status,
 })
 
-// The tasks feature check, already settled the way `TasksStudioProviders` hands it over
+// The tasks feature check, already settled the way `TasksStudioProvider` hands it over
 const tasksFeatureEnabled: SettledFeatures = {enabled: true, features: ['sanityTasks'], error: null}
 const featuresPromise: ObservablePromise<SettledFeatures> = Object.assign(
   Promise.resolve(tasksFeatureEnabled),

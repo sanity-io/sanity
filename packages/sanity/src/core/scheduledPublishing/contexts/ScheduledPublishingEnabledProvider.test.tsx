@@ -139,7 +139,7 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
     })
 
-    // Opted in: the "used" probe is skipped and reports used, see useHasUsedScheduledPublishingPromise
+    // Opted in: the "used" probe is skipped and reports used, see useHasUsedScheduledPublishingObservable
     const value = renderEnabled(feature({enabled: true}), USED)
 
     expect(value.result.current).toEqual({

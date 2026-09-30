@@ -589,13 +589,15 @@ revealed. Two consequences for Suspense code:
 - A `studio.components.layout` middleware whose tree shape depends on an async check (which
   providers wrap `renderDefault`, whether a navbar button or tool exists) must settle that check
   before rendering, or the answer arriving after the first paint remounts the whole studio below
-  it. The place to start such a check is `studio.components.providers`: `StudioLayout` renders
-  that chain around the Suspense boundary of the studio's loading screen, so a providers
-  component (small, never `lazy()`) can call `useObservablePromise` — for feature flags,
-  `useFeatureEnabledPromise` — and publish the promise through a context; the layout, navbar or
-  tool below reads it with `use()` and suspends up to the studio's own loading screen, with no
-  boundary of its own, and the request goes out alongside the lazy layout chunks. The tasks,
-  scheduled publishing and comments plugins do exactly this (`TasksStudioProviders` →
+  it. The place to start such a check is `studio.components.provider`: `StudioLayout` renders
+  that chain around the Suspense boundary of the studio's loading screen, so a provider
+  component (small, never `lazy()`) can turn an observable into a promise with
+  `useObservablePromise` (for feature flags: `useFeatureEnabledObservable`), start it on commit
+  with `preloadObservablePromise` in an effect so several checks load in parallel, and publish
+  the promise through a context whose default is `missingProviderPromise(...)`; the layout, navbar
+  or tool below reads it with `use(use(Context))` and suspends up to the studio's own loading
+  screen, with no boundary of its own, and the request goes out alongside the lazy layout chunks.
+  The tasks, scheduled publishing and comments plugins do exactly this (`TasksStudioProvider` →
   `TasksFeaturesPromiseContext` → `TasksEnabledProvider`).
 - To unit test a component that reads such a promise from a context, provide an already settled
   one: `Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value})` satisfies

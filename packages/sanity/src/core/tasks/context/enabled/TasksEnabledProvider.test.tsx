@@ -14,7 +14,7 @@ vi.mock('../../../studio/workspace', () => ({
 
 const useWorkspaceMock = useWorkspace as ReturnType<typeof vi.fn>
 
-/** A settled feature check, the way `TasksStudioProviders` hands it over once resolved */
+/** A settled feature check, the way `TasksStudioProvider` hands it over once resolved */
 function settled(value: Partial<SettledFeatures>): ObservablePromise<SettledFeatures> {
   const features: SettledFeatures = {enabled: false, features: [], error: null, ...value}
   return Object.assign(Promise.resolve(features), {status: 'fulfilled' as const, value: features})
@@ -81,7 +81,7 @@ describe('TasksEnabledProvider', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     expect(() => renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})).toThrow(
-      /no TasksFeaturesPromiseContext/,
+      /no parent TasksStudioProvider/,
     )
 
     consoleError.mockRestore()

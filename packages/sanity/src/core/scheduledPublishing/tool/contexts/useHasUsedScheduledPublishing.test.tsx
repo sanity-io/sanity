@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {act, render, screen} from '@testing-library/react'
 import {type ReactNode, Suspense, use} from 'react'
-import {type ObservablePromise} from 'react-rx'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -10,7 +10,7 @@ import {useWorkspace} from '../../../studio/workspace'
 import {
   cachedUsedScheduledPublishing,
   type HasUsedScheduledPublishing,
-  useHasUsedScheduledPublishingPromise,
+  useHasUsedScheduledPublishingObservable,
 } from './useHasUsedScheduledPublishing'
 
 vi.mock('../../../hooks/useClient', () => ({useClient: vi.fn()}))
@@ -39,7 +39,7 @@ function Leaf({promise}: {promise: ObservablePromise<HasUsedScheduledPublishing>
 }
 
 function Parent(props: {explicitEnabled?: boolean; isWorkspaceEnabled?: boolean}) {
-  const promise = useHasUsedScheduledPublishingPromise(props)
+  const promise = useObservablePromise(useHasUsedScheduledPublishingObservable(props))
   return (
     <Suspense fallback={<div data-testid="fallback" />}>
       <Leaf promise={promise} />
@@ -56,7 +56,7 @@ async function mount(ui: ReactNode) {
   })
 }
 
-describe('useHasUsedScheduledPublishingPromise', () => {
+describe('useHasUsedScheduledPublishingObservable', () => {
   it('reports used without probing when the workspace opted in explicitly', async () => {
     await mount(<Parent explicitEnabled isWorkspaceEnabled />)
 

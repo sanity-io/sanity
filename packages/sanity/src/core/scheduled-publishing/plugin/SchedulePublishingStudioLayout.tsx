@@ -19,7 +19,7 @@ function SchedulePublishingStudioLayoutInner(props: LayoutProps) {
 }
 
 export function SchedulePublishingStudioLayout(props: LayoutProps) {
-  // `ScheduledPublishingEnabledProvider` suspends on the checks `SchedulePublishingStudioProviders`
+  // `ScheduledPublishingEnabledProvider` suspends on the checks `SchedulePublishingStudioProvider`
   // started, up to `StudioLayout`'s loading screen, so the layout renders once, in its final shape.
   return (
     <ScheduledPublishingEnabledProvider>

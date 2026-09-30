@@ -31,7 +31,7 @@ const TasksStudioLayoutInner = (props: LayoutProps) => {
 }
 
 export function TasksStudioLayout(props: LayoutProps) {
-  // `TasksEnabledProvider` suspends on the feature check `TasksStudioProviders` started, up to
+  // `TasksEnabledProvider` suspends on the feature check `TasksStudioProvider` started, up to
   // `StudioLayout`'s loading screen, so the layout renders once, in its final shape.
   return (
     <TasksEnabledProvider>

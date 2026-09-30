@@ -22,7 +22,7 @@ const MIDDLEWARE_HOOK = 'useMiddlewareComponents'
  * around each top-level block (block, inline object and annotation components), or the single
  * boundary `FormBuilder` keeps around its root input (input, field and item components). The
  * navbar and its tool menu suspend up to `StudioLayout`'s loading screen, since the navbar's
- * height depends on what it renders. `StudioLayout` renders the `studio.components.providers`
+ * height depends on what it renders. `StudioLayout` renders the `studio.components.provider`
  * chain around that loading screen's boundary on purpose, so a promise a provider starts can be
  * `use()`d below it; providers are meant to be small and synchronous, and one that does suspend
  * reaches the `ResourceProvider` boundary in `WorkspaceLoader`, which shows the same
@@ -43,7 +43,7 @@ const DEFERS_TO_ANCESTOR = [
   'core/form/studio/FormProvider.tsx <InlineBlock>',
   'core/form/studio/FormProvider.tsx <Input>',
   'core/form/studio/FormProvider.tsx <Item>',
-  'core/studio/StudioLayout.tsx <Providers>',
+  'core/studio/StudioLayout.tsx <Provider>',
   'core/studio/StudioLayoutComponent.tsx <Navbar>',
   'core/studio/components/navbar/StudioNavbar.tsx <ToolMenu>',
   'core/studio/components/navbar/navDrawer/NavDrawer.tsx <ToolMenu>',

@@ -2,7 +2,7 @@ import {Suspense} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {useLayoutComponent} from './studio-components-hooks/useLayoutComponent'
-import {useProvidersComponent} from './studio-components-hooks/useProvidersComponent'
+import {useProviderComponent} from './studio-components-hooks/useProviderComponent'
 
 /** @internal */
 export interface NavbarContextValue {
@@ -38,21 +38,21 @@ export function StudioLayout() {
   // Use the layout component that is resolved by the Components API (`studio.components.layout`).
   // The default component is `StudioLayoutComponent`.
   const Layout = useLayoutComponent()
-  // Plugin providers (`studio.components.providers`) wrap the boundary rather than sit inside it,
+  // Plugin providers (`studio.components.provider`) wrap the boundary rather than sit inside it,
   // so a promise they start can be `use()`d by the layout, navbar or a tool, which then suspends
   // up to this loading screen instead of needing a boundary of its own. Rendering them outside
   // the boundary also means the requests they start go out alongside the lazy layout chunks.
-  const Providers = useProvidersComponent()
+  const Provider = useProviderComponent()
 
   // Same loading screen `WorkspaceLoader` shows right before this mounts, so a lazy layout
   // continues it instead of flashing a different placeholder.
   return (
     // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
-    <Providers>
+    <Provider>
       <Suspense fallback={<LoadingBlock />}>
         {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
         <Layout />
       </Suspense>
-    </Providers>
+    </Provider>
   )
 }

@@ -8,12 +8,12 @@ import {describe, expect, it} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {type LayoutProps, type ProvidersProps} from '../../config/studio/types'
+import {type LayoutProps, type ProviderProps} from '../../config/studio/types'
 import {type SingleWorkspace} from '../../config/types'
 import {StudioLayout} from '../StudioLayout'
 
 /**
- * The contract of `studio.components.providers`: it renders under the studio providers and
+ * The contract of `studio.components.provider`: it renders under the studio providers and
  * above the loading screen's Suspense boundary, so a promise it starts can be `use()`d by
  * `studio.components.layout`, which suspends up to that screen and renders once, settled.
  */
@@ -26,7 +26,7 @@ const AnswerPromiseContext = createContext<Promise<string> | null>(
 const answer$ = new Subject<string>()
 const log: string[] = []
 
-function AnswerProviders(props: ProvidersProps) {
+function AnswerProvider(props: ProviderProps) {
   const promise = useObservablePromise(useMemo(() => answer$.asObservable(), []))
   log.push('providers rendered')
   return (
@@ -58,7 +58,7 @@ async function renderStudioLayout() {
     projectId: 'test',
     dataset: 'test',
     schema: {types: []},
-    studio: {components: {providers: AnswerProviders, layout: LazyAnswerLayout}},
+    studio: {components: {provider: AnswerProvider, layout: LazyAnswerLayout}},
   }
   const TestProvider = await createTestProvider({
     client: createMockSanityClient() as unknown as SanityClient,
@@ -74,7 +74,7 @@ async function renderStudioLayout() {
   })
 }
 
-describe('StudioLayout with studio.components.providers', () => {
+describe('StudioLayout with studio.components.provider', () => {
   it(
     'commits the providers above the loading screen and lets the layout use() their promise',
     {timeout: 30_000},

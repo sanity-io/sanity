@@ -16,7 +16,7 @@ interface ScheduledPublishingEnabledProviderProps {
  * controls whether the Schedules tool shows up in the navbar and whether the layout is wrapped in
  * the upsell provider, so both checks it depends on (the project's feature list and the "has this
  * dataset ever scheduled anything" probe) are read as promises started by
- * `SchedulePublishingStudioProviders` above the studio's loading screen boundary; reading them
+ * `SchedulePublishingStudioProvider` above the studio's loading screen boundary; reading them
  * here suspends up to that screen until they are settled, instead of flipping the layout after
  * the first paint.
  *
@@ -25,12 +25,7 @@ interface ScheduledPublishingEnabledProviderProps {
 export function ScheduledPublishingEnabledProvider({
   children,
 }: ScheduledPublishingEnabledProviderProps) {
-  const promises = useContext(ScheduledPublishingPromisesContext)
-  if (!promises) {
-    throw new Error(
-      'ScheduledPublishingEnabledProvider: no ScheduledPublishingPromisesContext above it. The scheduled publishing plugin registers `SchedulePublishingStudioProviders` as `studio.components.providers` to provide it.',
-    )
-  }
+  const promises = use(ScheduledPublishingPromisesContext)
   const {enabled, error} = use(promises.featureEnabled)
   const hasUsedScheduledPublishing = use(promises.hasUsedScheduledPublishing)
   const {scheduledPublishing} = useWorkspace()

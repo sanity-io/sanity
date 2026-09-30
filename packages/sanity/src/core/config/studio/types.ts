@@ -11,7 +11,7 @@ export interface LayoutProps {
 }
 
 /**
- * Props for a `studio.components.providers` component: a middleware that wraps the studio in
+ * Props for a `studio.components.provider` component: a middleware that wraps the studio in
  * the providers a plugin needs everywhere (contexts, stores, subscriptions, data that is started
  * once and read in many places), with no layout of its own. It renders under every studio
  * provider (workspace, source, router, i18n, perspective) and *above* the Suspense boundary that
@@ -26,8 +26,8 @@ export interface LayoutProps {
  *
  * @hidden
  * @beta */
-export interface ProvidersProps {
-  renderDefault: (props: ProvidersProps) => React.JSX.Element
+export interface ProviderProps {
+  renderDefault: (props: ProviderProps) => React.JSX.Element
 }
 
 /**
@@ -122,9 +122,9 @@ export interface StudioComponentsPluginOptions {
   logo?: ComponentType<LogoProps>
   navbar?: ComponentType<NavbarProps>
   /**
-   * Providers to wrap the studio in, rendered above the studio's loading screen boundary.
-   * See {@link ProvidersProps}.
+   * A provider to wrap the studio in, rendered above the studio's loading screen boundary.
+   * See {@link ProviderProps}.
    */
-  providers?: ComponentType<ProvidersProps>
+  provider?: ComponentType<ProviderProps>
   toolMenu?: ComponentType<ToolMenuProps>
 }

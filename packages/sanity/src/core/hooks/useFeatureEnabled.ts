@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {type ObservablePromise, useObservable, useObservablePromise} from 'react-rx'
+import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
@@ -19,7 +19,7 @@ interface Features {
 
 /**
  * A feature check that has settled: the feature list has loaded, or failed to and `error` says
- * why. What {@link useFeatureEnabledPromise} resolves to.
+ * why. What {@link useFeatureEnabledObservable} emits.
  * @internal
  */
 export type SettledFeatures = Omit<Features, 'isLoading'>
@@ -71,10 +71,25 @@ function getFeatures({
 }
 
 /**
- * The settled answer for one feature key, over the project's cached feature request. A failed
- * request settles as `enabled: false` with `error` set rather than erroring the stream.
+ * The same check as {@link useFeatureEnabled}, as an observable of the settled answer, meant for
+ * react-rx's `useObservablePromise` and React's `use()`: a child that reads the promise under a
+ * `<Suspense>` boundary renders once, with the settled answer, instead of once for the loading
+ * state and again for the answer. That matters wherever the answer decides the shape of the tree
+ * (which providers wrap the layout, which navbar buttons and tools exist): a late answer there
+ * means a remount of everything below, or a layout shift.
+ *
+ * Turn it into a promise above the boundary, not in the component that calls `use()`: the
+ * request starts when the `useObservablePromise` caller commits, and a component that suspends
+ * never commits. A `studio.components.provider` component is the natural place, since it
+ * renders above the studio's loading screen boundary; there, `preloadObservablePromise` in an
+ * effect starts the request the moment the provider commits, in parallel with any other checks
+ * being preloaded, so a chain of `use()` calls below waits for the slowest answer rather than
+ * for each in turn. The observable never errors: a failed request settles as `enabled: false`
+ * with `error` set. Its identity is stable per feature key, as `useObservablePromise` requires.
+ *
+ * @internal
  */
-function useFeatureEnabledObservable(
+export function useFeatureEnabledObservable(
   featureKey: keyof typeof FEATURES,
 ): Observable<SettledFeatures> {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -113,26 +128,4 @@ export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
   )
 
   return useObservable(featureInfoObservable, INITIAL_LOADING_STATE)
-}
-
-/**
- * The same check as {@link useFeatureEnabled}, as a promise for React's `use()`: read it in a
- * child under a `<Suspense>` boundary and that child renders once, with the settled answer,
- * instead of once for the loading state and again for the answer. That matters wherever the
- * answer decides the shape of the tree (which providers wrap the layout, which navbar buttons
- * and tools exist): a late answer there means a remount of everything below, or a layout shift.
- *
- * Call this above the boundary, not in the component that calls `use()`: the request starts
- * when this hook's caller commits, and a component that suspends never commits. A
- * `studio.components.providers` component is the natural place: it renders above the studio's
- * loading screen boundary, so a layout, navbar or tool below can `use()` the promise from a
- * context and suspend up to that screen. The promise never rejects; a failed request settles as
- * `enabled: false` with `error` set.
- *
- * @internal
- */
-export function useFeatureEnabledPromise(
-  featureKey: keyof typeof FEATURES,
-): ObservablePromise<SettledFeatures> {
-  return useObservablePromise(useFeatureEnabledObservable(featureKey))
 }

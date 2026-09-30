@@ -1,4 +1,4 @@
-import {use, useContext} from 'react'
+import {use} from 'react'
 import {CommentsFeaturesPromiseContext} from 'sanity/_singletons'
 
 import {type LayoutProps} from '../../../config/studio/types'
@@ -7,16 +7,10 @@ import {CommentsOnboardingProvider} from '../../context/onboarding/CommentsOnboa
 import {CommentsUpsellProvider} from '../../context/upsell/CommentsUpsellProvider'
 
 export function CommentsStudioLayout(props: LayoutProps) {
-  const featuresPromise = useContext(CommentsFeaturesPromiseContext)
-  if (!featuresPromise) {
-    throw new Error(
-      'CommentsStudioLayout: no CommentsFeaturesPromiseContext above it. The comments plugin registers `CommentsStudioProviders` as `studio.components.providers` to provide it.',
-    )
-  }
-  // Suspends up to `StudioLayout`'s loading screen until the feature check is settled: whether the
-  // upsell provider wraps the layout is decided once, so the studio below is never remounted by a
-  // late answer.
-  const {enabled} = use(featuresPromise)
+  // Started by `CommentsStudioProvider` above the studio's loading screen; suspends up to that
+  // screen until the feature check is settled, so whether the upsell provider wraps the layout is
+  // decided once and the studio below is never remounted by a late answer.
+  const {enabled} = use(use(CommentsFeaturesPromiseContext))
   const children = props.renderDefault(props)
 
   return (

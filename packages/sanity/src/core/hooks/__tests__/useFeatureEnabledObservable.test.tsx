@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {act, render, screen} from '@testing-library/react'
 import {type ReactNode, Suspense, use} from 'react'
-import {type ObservablePromise} from 'react-rx'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -11,7 +11,7 @@ import {
   FEATURES,
   type SettledFeatures,
   useFeatureEnabled,
-  useFeatureEnabledPromise,
+  useFeatureEnabledObservable,
 } from '../useFeatureEnabled'
 
 vi.mock('../useClient', () => ({useClient: vi.fn()}))
@@ -64,9 +64,9 @@ function Leaf({promise}: {promise: ObservablePromise<SettledFeatures>}) {
   )
 }
 
-/** The shape of the fix: hook in the parent, boundary in between, `use()` in the child. */
+/** The shape of the fix: promise made in the parent, boundary in between, `use()` in the child. */
 function Parent({featureKey}: {featureKey: string}) {
-  const promise = useFeatureEnabledPromise(featureKey)
+  const promise = useObservablePromise(useFeatureEnabledObservable(featureKey))
   return (
     <Suspense fallback={<div data-testid="fallback" />}>
       <Leaf promise={promise} />
@@ -79,7 +79,7 @@ function LoadingConsumer({featureKey}: {featureKey: string}) {
   return <div data-testid="loading-hook">{isLoading ? 'loading' : enabled ? 'on' : 'off'}</div>
 }
 
-describe('useFeatureEnabledPromise', () => {
+describe('useFeatureEnabledObservable', () => {
   it('suspends the child until the feature list arrives, then commits the settled answer once', async () => {
     await mount(<Parent featureKey={FEATURES.sanityTasks} />)
 

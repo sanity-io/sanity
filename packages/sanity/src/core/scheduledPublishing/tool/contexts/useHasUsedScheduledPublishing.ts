@@ -1,6 +1,5 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'
@@ -32,22 +31,23 @@ function fetchUsedScheduledPublishing(
 }
 
 /**
- * Whether scheduled publishing counts as "used" for this workspace, as a promise for `use()`.
- * The answer decides whether the Schedules tool exists in the navbar and which providers wrap the
- * layout, so `ScheduledPublishingEnabledProvider` suspends on it rather than flipping the layout
- * when the probe returns. Call this in the parent above that Suspense boundary.
+ * Whether scheduled publishing counts as "used" for this workspace, as an observable of the
+ * settled answer for `useObservablePromise` and `use()`. The answer decides whether the Schedules
+ * tool exists in the navbar and which providers wrap the layout, so
+ * `ScheduledPublishingEnabledProvider` suspends on it rather than flipping the layout when the
+ * probe returns; `SchedulePublishingStudioProvider` turns it into a promise above that boundary.
  */
-export function useHasUsedScheduledPublishingPromise({
+export function useHasUsedScheduledPublishingObservable({
   explicitEnabled,
   isWorkspaceEnabled,
 }: {
   explicitEnabled?: boolean
   isWorkspaceEnabled?: boolean
-}): ObservablePromise<HasUsedScheduledPublishing> {
+}): Observable<HasUsedScheduledPublishing> {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {projectId, dataset} = useWorkspace()
   const key = `${projectId}-${dataset}`
-  const hasUsedScheduledPublishing$ = useMemo(() => {
+  return useMemo(() => {
     // If the feature is explicitly enabled, we don't need to check if it has been used
     if (explicitEnabled) {
       return of(USED)
@@ -64,6 +64,4 @@ export function useHasUsedScheduledPublishingPromise({
     }
     return hasUsed
   }, [client, key, explicitEnabled, isWorkspaceEnabled])
-
-  return useObservablePromise(hasUsedScheduledPublishing$)
 }

@@ -1,6 +1,6 @@
-import {useMemo} from 'react'
+import {use, useMemo} from 'react'
+import {CommentsFeaturesPromiseContext} from 'sanity/_singletons'
 
-import {useFeatureEnabled, FEATURES} from '../../hooks/useFeatureEnabled'
 import {useSource} from '../../studio/source'
 import {getPublishedId} from '../../util/draftUtils'
 import {type CommentsUIMode} from '../types'
@@ -24,8 +24,10 @@ export function useResolveCommentsEnabled(
   documentId: string,
   documentType: string,
 ): ResolveCommentsEnabled {
-  // Check if the projects plan has the feature enabled
-  const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled(FEATURES.studioComments)
+  // Whether the project's plan has the feature, as settled by `CommentsStudioProvider` above the
+  // studio's loading screen. Read synchronously by the time a document opens, so the comments UI
+  // is in its final state on the document's first paint instead of a pass later.
+  const {enabled: featureEnabled, error} = use(use(CommentsFeaturesPromiseContext))
 
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled} = useSource().document.comments
@@ -37,10 +39,9 @@ export function useResolveCommentsEnabled(
 
   const value: ResolveCommentsEnabled = useMemo(() => {
     // The feature is not enabled if:
-    // - the feature is loading (`isLoading` is true)
     // - the feature is not enabled in the project (`enabledFromConfig` is false)
     // - there's an error when fetching the list of enabled features (`error` is set)
-    if (isLoading || !enabledFromConfig || error) {
+    if (!enabledFromConfig || error) {
       return {enabled: false, mode: null}
     }
 
@@ -48,7 +49,7 @@ export function useResolveCommentsEnabled(
       enabled: true,
       mode: featureEnabled ? 'default' : 'upsell',
     }
-  }, [isLoading, enabledFromConfig, error, featureEnabled])
+  }, [enabledFromConfig, error, featureEnabled])
 
   return value
 }
