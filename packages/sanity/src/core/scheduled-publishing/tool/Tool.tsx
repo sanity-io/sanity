@@ -70,7 +70,7 @@ export default function Tool() {
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
   const scheduleState: ScheduleState = router.state.state as ScheduleState
-  // oxlint-disable react/purity -- date-fns `parse` fills missing date parts from the reference date, which must stay "now"
+  // oxlint-disable react/purity -- `new Date()` is only date-fns `parse`'s reference date; kept as-is rather than changing the parser input
   const selectedDate = router.state.date
     ? parse(router.state.date as string, DATE_SLUG_FORMAT, new Date())
     : undefined
