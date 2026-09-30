@@ -527,6 +527,25 @@ union solely so a test type-checks. A single `as T` on a deliberately incomplete
 fine when the test is the error path for a missing field. This rule does not apply to
 production source.
 
+#### Prefer real implementations over test-file doubles
+
+Drive the unit through its production API and the same factories production uses.
+Do not add mock functions, stub components, or a parallel compiler to the test file
+just to reach a branch.
+
+- Compile schemas with Studio `createSchema` plus `defineType` / `defineField`
+  (`packages/sanity/src/core/schema/createSchema.ts`). That path validates, parents
+  the builtin schema, and runs `inferValidation`. Do not hand-roll
+  `@sanity/schema` `Schema.compile({types: [...]})` unless the test is about that
+  compiler.
+- Call the production function (`createPrepareFormState()`, an exported mapper)
+  without `vi.fn` decorator spies unless the suite is about call counts.
+- Typed lookups of a production union (`fieldMember`, `errorMember`) are accessors,
+  not doubles. A schema-construction helper for a depth fixture is fine. A second
+  fake form tree, or a local `vi.mock` of the module under test, is not.
+- A harness that needs a mock client and a page of `vi.fn` callbacks is the wrong
+  seam when the unit is a pure function. Prefer the smaller call.
+
 #### Vitest 5 specifics
 
 - Every Vitest artifact lives under `.vitest/` (gitignored): sharded blob reports in
@@ -836,10 +855,11 @@ Notes:
 ### Creating a New Test
 
 1. Place the test next to its source (`MyComponent.test.tsx`) or in a `__tests__/` directory beside it — both conventions are in use, so match the sibling files
-2. Use existing test patterns from similar files
-3. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
+2. Drive the unit through its production API and the same factories production uses (see Testing > Prefer real implementations over test-file doubles). Do not copy a sibling's `vi.fn` decorator suite or `Schema.compile` factory if a real `createSchema` path exists
+3. Use existing test patterns from similar files when those patterns already do that
+4. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
 
-For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories the test helpers (`createTestProvider`, the `test/form` input harnesses, the client and router mocks) and the determinism rules for that package.
+For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories when `createTestProvider` and the `test/form` input harnesses are the right seam (Studio React context), and when to call `createSchema` plus the production function instead.
 
 ### Updating Snapshots
 
