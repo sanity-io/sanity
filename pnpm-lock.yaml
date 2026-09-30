@@ -2544,7 +2544,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
-        specifier: ^5.3.1
+        specifier: ^5.3.2
         version: 5.3.2(@sanity/assist@6.2.2)(@sanity/language-filter@5.0.19)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       styled-components:
         specifier: 'catalog:'
