@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {act, render, screen, waitFor} from '@testing-library/react'
-import {type ComponentType, lazy, use, useContext, useMemo} from 'react'
+import {act, render, screen} from '@testing-library/react'
+import {use, useContext, useMemo} from 'react'
 import {useObservablePromise} from 'react-rx'
 import {Subject} from 'rxjs'
 import {createContext} from 'sanity/_createContext'
@@ -28,24 +28,19 @@ const log: string[] = []
 
 function AnswerProvider(props: ProviderProps) {
   const promise = useObservablePromise(useMemo(() => answer$.asObservable(), []))
-  log.push('providers rendered')
+  log.push('provider rendered')
   return <AnswerPromiseContext value={promise}>{props.renderDefault(props)}</AnswerPromiseContext>
 }
 
-function AnswerLayout() {
+// Never calls `renderDefault`, so the default studio layout stays out of the test
+function AnswerLayout(_props: LayoutProps) {
   const promise = useContext(AnswerPromiseContext)
-  if (!promise) throw new Error('no providers above the layout')
+  if (!promise) throw new Error('no provider above the layout')
+  log.push('layout attempted')
   const answer = use(promise)
   log.push(`layout rendered with ${answer}`)
   return <div data-testid="layout">{answer}</div>
 }
-
-// Never calls `renderDefault`, so the default studio layout stays out of the test. The default
-// plugins' lazy layouts wrap it, so it is reached once those have loaded.
-const LazyAnswerLayout = lazy(() => {
-  log.push('layout chunk requested')
-  return Promise.resolve({default: AnswerLayout as ComponentType<LayoutProps>})
-})
 
 async function renderStudioLayout() {
   const config: Partial<SingleWorkspace> = {
@@ -53,7 +48,7 @@ async function renderStudioLayout() {
     projectId: 'test',
     dataset: 'test',
     schema: {types: []},
-    studio: {components: {provider: AnswerProvider, layout: LazyAnswerLayout}},
+    studio: {components: {provider: AnswerProvider, layout: AnswerLayout}},
   }
   const TestProvider = await createTestProvider({
     client: createMockSanityClient() as unknown as SanityClient,
@@ -72,34 +67,27 @@ async function renderStudioLayout() {
 }
 
 describe('StudioLayout with studio.components.provider', () => {
-  it(
-    'commits the providers above the loading screen and lets the layout use() their promise',
-    {timeout: 30_000},
-    async () => {
-      await renderStudioLayout()
+  it('commits the provider above the loading screen and lets the layout use() its promise', async () => {
+    await renderStudioLayout()
 
-      // The provider committed while the layout chain is still loading behind the loading screen
-      expect(screen.getByTestId('loading-block')).toBeInTheDocument()
-      expect(log).toContain('providers rendered')
+    // The provider committed; the layout suspended on the unanswered promise behind the studio's
+    // loading screen, with no boundary of its own
+    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(log).toContain('provider rendered')
+    expect(log).toContain('layout attempted')
+    expect(screen.queryByTestId('layout')).not.toBeInTheDocument()
+    expect(log.filter((entry) => entry.startsWith('layout rendered'))).toHaveLength(0)
 
-      // The lazy chain loads outside `act`; once it reaches this layout, that suspends on the
-      // unanswered promise behind the same loading screen
-      await waitFor(() => expect(log).toContain('layout chunk requested'), {timeout: 15_000})
-      expect(screen.getByTestId('loading-block')).toBeInTheDocument()
-      expect(screen.queryByTestId('layout')).not.toBeInTheDocument()
-      expect(log.filter((entry) => entry.startsWith('layout rendered'))).toHaveLength(0)
+    await act(async () => {
+      answer$.next('42')
+      answer$.complete()
+    })
 
-      await act(async () => {
-        answer$.next('42')
-        answer$.complete()
-      })
-
-      // One committed layout render, with the answer
-      expect(await screen.findByTestId('layout')).toHaveTextContent('42')
-      expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
-      expect(log.filter((entry) => entry.startsWith('layout rendered'))).toEqual([
-        'layout rendered with 42',
-      ])
-    },
-  )
+    // One committed layout render, with the answer
+    expect(await screen.findByTestId('layout')).toHaveTextContent('42')
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+    expect(log.filter((entry) => entry.startsWith('layout rendered'))).toEqual([
+      'layout rendered with 42',
+    ])
+  })
 })
