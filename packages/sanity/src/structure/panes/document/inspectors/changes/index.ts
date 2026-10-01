@@ -1,5 +1,5 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
-import {type DocumentInspector, useTranslation} from 'sanity'
+import {type DocumentFeature, type DocumentInspector, useTranslation} from 'sanity'
 
 import {useStructureTool} from '../../../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
@@ -29,3 +29,5 @@ export const changesInspector: DocumentInspector = {
   }),
   onOpen: ({params}) => ({params: {...params, since: '@lastPublished'}}),
 }
+
+export const historyFeature: DocumentFeature = {name: 'history', inspector: changesInspector}

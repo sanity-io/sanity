@@ -11,9 +11,9 @@ import {useUnpublishAction} from './documentActions/UnpublishAction'
 import {useLiveEditBadge} from './documentBadges/LiveEditBadge'
 import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
-import {changesInspector} from './panes/document/inspectors/changes'
-import {incomingReferencesInspector} from './panes/document/inspectors/incomingReferences'
-import {validationInspector} from './panes/document/inspectors/validation'
+import {historyFeature} from './panes/document/inspectors/changes'
+import {incomingReferencesFeature} from './panes/document/inspectors/incomingReferences'
+import {validationFeature} from './panes/document/inspectors/validation'
 import {router} from './router'
 import {type RouterPanes, type StructureToolOptions} from './types'
 
@@ -29,8 +29,6 @@ const documentActions = [
 const destructiveActionNames: DocumentActionComponent['action'][] = ['delete', 'discardChanges']
 
 const documentBadges = [useLiveEditBadge]
-
-const inspectors = [validationInspector, changesInspector, incomingReferencesInspector]
 
 /**
  * The structureTool is a studio plugin which adds the “structure tool” – a tool within
@@ -114,11 +112,7 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         // we need to check whether the document badges already exist in the Studio config
         return Array.from(new Set([...prevBadges, ...documentBadges]))
       },
-      inspectors: (prevInspectors) => {
-        // NOTE: since it's possible to have several structure tools in one Studio,
-        // we need to check whether the inspectors already exist in the Studio config
-        return Array.from(new Set([...prevInspectors, ...inspectors]))
-      },
+      features: [validationFeature, historyFeature, incomingReferencesFeature],
     },
 
     tools: [

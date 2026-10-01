@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {type DocumentInspector, useSource} from 'sanity'
+import {type DocumentInspector} from 'sanity'
 
 import {type PaneRouterContextValue} from '../../components/paneRouter/types'
 import {type PaneMenuItem} from '../../types'
@@ -7,25 +7,15 @@ import {useStructureTool} from '../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME, INSPECT_ACTION_PREFIX} from './constants'
 
 export function useDocumentPaneInspector({
-  documentId,
-  documentType,
+  inspectors,
   params,
   setParams,
 }: {
+  inspectors: DocumentInspector[]
   params: NonNullable<PaneRouterContextValue['params']>
-  documentId: string
-  documentType: string
   setParams: (params: Record<string, string | undefined>) => void
 }) {
-  const {features} = useStructureTool()
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const source = useSource()
-  const inspectorsResolver = source.document.inspectors
-
-  const inspectors: DocumentInspector[] = useMemo(
-    () => inspectorsResolver({documentId, documentType}),
-    [documentId, documentType, inspectorsResolver],
-  )
+  const {features: structureFeatures} = useStructureTool()
 
   const [inspectorName, setInspectorName] = useState<string | null>(() => params.inspect || null)
 
@@ -126,14 +116,14 @@ export function useDocumentPaneInspector({
   }, [closeInspector, historyInspector])
 
   const handleHistoryOpen = useCallback(() => {
-    if (!features.reviewChanges) {
+    if (!structureFeatures.reviewChanges) {
       return
     }
 
     if (historyInspector) {
       openInspector(historyInspector.name, {changesInspectorTab: 'review'})
     }
-  }, [features.reviewChanges, openInspector, historyInspector])
+  }, [structureFeatures.reviewChanges, openInspector, historyInspector])
 
   const inspectOpen = params.inspect === 'on'
 

@@ -46,8 +46,8 @@ import {
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
+import {useDocumentFeatures} from '../../useDocumentFeatures'
 import {useDocumentPane} from '../../useDocumentPane'
-import {useDocumentTools} from '../../useDocumentTools'
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -128,10 +128,10 @@ const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
     documentId,
   } = useDocumentPane()
   const {beta} = useWorkspace()
-  const {byId: toolsById, header: headerTools, menu: menuTools} = useDocumentTools()
-  const showVersionPicker = toolsById.has('versionPicker')
-  const showCopyActions = toolsById.has('copyActions')
-  const {features} = useStructureTool()
+  const {byName, header: headerFeatures, menu: menuFeatures} = useDocumentFeatures()
+  const showVersionPicker = byName.has('versionPicker')
+  const showCopyActions = byName.has('copyActions')
+  const {features: structureFeatures} = useStructureTool()
   const {BackLink, index} = usePaneRouter()
   const {actions: fieldActions} = useFieldActions()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -148,9 +148,9 @@ const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
         fieldActions,
         menuItems,
         menuItemGroups,
-        menuTools,
+        menuFeatures,
       }),
-    [onMenuAction, fieldActions, menuItemGroups, menuItems, menuTools],
+    [onMenuAction, fieldActions, menuItemGroups, menuItems, menuFeatures],
   )
 
   const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
@@ -167,7 +167,7 @@ const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
     () => presence.filter((p) => p.path.length === 0),
     [presence],
   )
-  const showBackButton = features.backButton && index > 0
+  const showBackButton = structureFeatures.backButton && index > 0
 
   const title = useMemo(() => <DocumentHeaderTitle />, [])
   const backButtonNode = useMemo(
@@ -187,7 +187,7 @@ const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
   const hasContextMenuContent = contextMenuNodes.some(hasMenuNodeContent)
   // An empty bordered bar is worse than no bar, so the header is dropped once nothing fills it.
   const hasHeaderContent =
-    headerTools.length > 0 ||
+    headerFeatures.length > 0 ||
     menuButtonNodes.length > 0 ||
     unstable_languageFilter.length > 0 ||
     documentLevelPresence.length > 0 ||
@@ -282,8 +282,8 @@ const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
                     states={states}
                   />
                 )}
-                {headerTools.map(({id, render: Tool}) => (
-                  <Tool key={id} />
+                {headerFeatures.map(({name, toolbar: {render: Entry}}) => (
+                  <Entry key={name} />
                 ))}
               </Flex>
             </Box>

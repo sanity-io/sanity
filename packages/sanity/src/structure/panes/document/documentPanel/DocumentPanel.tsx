@@ -36,8 +36,8 @@ import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
 import {InspectDialog} from '../inspectDialog/InspectDialog'
 import {type DocumentActionsPlacement} from '../statusBar/documentActionsPlacement'
+import {useDocumentFeatures} from '../useDocumentFeatures'
 import {useDocumentPane} from '../useDocumentPane'
-import {useDocumentTools} from '../useDocumentTools'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
@@ -99,12 +99,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
-  const {features} = useStructureTool()
+  const {features: structureFeatures} = useStructureTool()
   const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLFormElement | null>(null)
   const workspace = useWorkspace()
-  const {byId: toolsById} = useDocumentTools()
+  const {byName} = useDocumentFeatures()
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
@@ -117,12 +117,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   // Keep the form mounted when the inspector takes over a collapsed layout.
   // Unmounting FormBuilder resets FullscreenPTEProvider, so a PTE that was in
   // full-pane mode comes back inline after the window is widened again.
-  const showFormView = features.resizablePanes || !showInspector
+  const showFormView = structureFeatures.resizablePanes || !showInspector
 
   // Fullscreen PTE portals to this element. When the form is hidden, keep that
   // target inside the hidden subtree so the editor cannot cover the inspector.
   const portalElement: HTMLElement | null =
-    features.splitPanes || !showFormView
+    structureFeatures.splitPanes || !showFormView
       ? _portalElement || parentPortal.element
       : parentPortal.element
 
@@ -417,7 +417,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [documentScrollElement],
   )
 
-  const subHeader = toolsById.has('titleBar') ? <DocumentPanelSubHeader /> : null
+  const subHeader = byName.has('titleBar') ? <DocumentPanelSubHeader /> : null
 
   return (
     <PaneContent>

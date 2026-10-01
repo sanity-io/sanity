@@ -11,8 +11,6 @@ import {
   FieldActionsResolver,
   GetFormValueProvider,
   type Path,
-  getPublishedId,
-  useSource,
   useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
   useTranslation,
@@ -40,9 +38,8 @@ import {DocumentPanelHeader} from '../documentPanel/header/DocumentPanelHeader'
 import {DocumentActionShortcuts} from '../keyboardShortcuts/DocumentActionShortcuts'
 import {getMenuItems} from '../menuItems'
 import {DocumentActionsPlacementProvider} from '../statusBar/documentActionsPlacement'
-import {useStructureTools} from '../structureTools'
+import {useDocumentFeatures} from '../useDocumentFeatures'
 import {useDocumentPane} from '../useDocumentPane'
-import {DocumentToolsProvider} from '../useDocumentTools'
 import {changeConnectorRoot} from './DocumentLayout.css'
 import {DocumentLayoutError} from './DocumentLayoutError'
 import {DocumentToolbar} from './DocumentToolbar'
@@ -93,9 +90,8 @@ export function DocumentLayout(props: DocumentLayoutOptions) {
   } = useDocumentPane()
   const {stickyParams} = useRouter()
   const {params: paneParams} = usePaneRouter()
-  const {features} = useStructureTool()
-  // oxlint-disable-next-line no-deprecated -- `document.tools` is a Source-level key, read the way DocumentPaneProvider reads the same key
-  const {document: documentConfig} = useSource()
+  const {features: structureFeatures} = useStructureTool()
+  const documentFeatures = useDocumentFeatures()
   const {t} = useTranslation(structureLocaleNamespace)
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
@@ -116,7 +112,9 @@ export function DocumentLayout(props: DocumentLayoutOptions) {
     value,
   })
 
-  const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
+  const [inspectorMenuItems, setInspectorMenuItems] = useState<
+    (DocumentInspectorMenuItem | undefined)[]
+  >([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
   const toolbarSize = useElementSize(toolbarElement)
@@ -138,23 +136,11 @@ export function DocumentLayout(props: DocumentLayoutOptions) {
 
   const hasValue = Boolean(value)
 
-  const {tools: resolveDocumentTools} = documentConfig
-  const contributedTools = useStructureTools()
-  const documentTools = useMemo(
-    () =>
-      resolveDocumentTools({
-        schemaType: documentType,
-        documentId: getPublishedId(documentId),
-        contributed: contributedTools,
-      }),
-    [contributedTools, documentId, documentType, resolveDocumentTools],
-  )
-
   const menuItems = useMemo(
     () =>
       getMenuItems({
         currentInspector,
-        tools: documentTools,
+        features: documentFeatures,
         hasValue,
         inspectorMenuItems,
         inspectors,
@@ -165,7 +151,7 @@ export function DocumentLayout(props: DocumentLayoutOptions) {
       }),
     [
       currentInspector,
-      documentTools,
+      documentFeatures,
       documentIdStack,
       hasValue,
       inspectorMenuItems,
@@ -189,17 +175,18 @@ export function DocumentLayout(props: DocumentLayoutOptions) {
         }
       }
 
-      const menuTool = documentTools.menu.find(
-        (tool) => typeof tool.shortcut === 'string' && isHotkey(tool.shortcut, event),
+      const menuFeature = documentFeatures.menu.find(
+        (feature) =>
+          typeof feature.toolbar.shortcut === 'string' && isHotkey(feature.toolbar.shortcut, event),
       )
 
-      if (menuTool) {
+      if (menuFeature) {
         event.preventDefault()
         event.stopPropagation()
-        menuTool.onAction()
+        menuFeature.toolbar.onAction()
       }
     },
-    [onMenuAction, menuItems, documentTools],
+    [onMenuAction, menuItems, documentFeatures],
   )
 
   const onConnectorSetFocus = useCallback(
@@ -249,61 +236,59 @@ export function DocumentLayout(props: DocumentLayoutOptions) {
           {/* Also wraps the shortcuts responder, whose hotkey-opened dialogs would otherwise
               read the default placement and open the wrong way for a top-placed bar. */}
           <DocumentActionsPlacementProvider placement={actionsPlacement}>
-            <DocumentToolsProvider tools={documentTools}>
-              <DocumentActionShortcuts
-                // A suppressed actions slot never sets the actions box, and a Popover with a null
-                // reference anchors nothing — fall back to the pane so the dialog stays on screen.
-                actionsBoxElement={actionsBoxElement ?? rootElement}
-                as={Pane}
-                currentMinWidth={currentMinWidth}
-                data-testid="document-pane"
-                flex={2.5}
-                id={paneKey}
-                minWidth={minWidth}
-                onKeyUp={handleKeyUp}
-                rootRef={setRootElement}
-              >
-                <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
-                <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
-                  <Flex
-                    flexDirection="column"
-                    flexBasis="0%"
-                    flexGrow={1}
-                    height={layoutCollapsed ? undefined : '100%'}
+            <DocumentActionShortcuts
+              // A suppressed actions slot never sets the actions box, and a Popover with a null
+              // reference anchors nothing — fall back to the pane so the dialog stays on screen.
+              actionsBoxElement={actionsBoxElement ?? rootElement}
+              as={Pane}
+              currentMinWidth={currentMinWidth}
+              data-testid="document-pane"
+              flex={2.5}
+              id={paneKey}
+              minWidth={minWidth}
+              onKeyUp={handleKeyUp}
+              rootRef={setRootElement}
+            >
+              <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
+              <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
+                <Flex
+                  flexDirection="column"
+                  flexBasis="0%"
+                  flexGrow={1}
+                  height={layoutCollapsed ? undefined : '100%'}
+                >
+                  <StyledChangeConnectorRoot
+                    data-testid="change-connector-root"
+                    isReviewChangesEnabled={reviewChangesEnabled}
+                    isInteractive={structureFeatures.reviewChanges}
+                    isReviewChangesOpen={
+                      changesOpen && paneParams?.changesInspectorTab === 'review'
+                    }
+                    onOpenReviewChanges={onHistoryOpen}
+                    onSetFocus={onConnectorSetFocus}
                   >
-                    <StyledChangeConnectorRoot
-                      data-testid="change-connector-root"
-                      isReviewChangesEnabled={reviewChangesEnabled}
-                      isInteractive={features.reviewChanges}
-                      isReviewChangesOpen={
-                        changesOpen && paneParams?.changesInspectorTab === 'review'
+                    <DocumentPanel
+                      headerHeight={headerHeight || null}
+                      isInspectOpen={inspectOpen}
+                      rootElement={rootElement}
+                      setDocumentPanelPortalElement={setDocumentPanelPortalElement}
+                      toolbarHeight={toolbarHeight || null}
+                      toolbarPlacement={actionsPlacement}
+                      toolbar={
+                        <DocumentToolbar
+                          documentPanelPortalElement={documentPanelPortalElement}
+                          placement={actionsPlacement}
+                          ref={setToolbarElement}
+                          setActionsBoxElement={setActionsBoxElement}
+                          slots={actionsSlots}
+                        />
                       }
-                      onOpenReviewChanges={onHistoryOpen}
-                      onSetFocus={onConnectorSetFocus}
-                    >
-                      <DocumentPanel
-                        headerHeight={headerHeight || null}
-                        isInspectOpen={inspectOpen}
-                        rootElement={rootElement}
-                        setDocumentPanelPortalElement={setDocumentPanelPortalElement}
-                        toolbarHeight={toolbarHeight || null}
-                        toolbarPlacement={actionsPlacement}
-                        toolbar={
-                          <DocumentToolbar
-                            documentPanelPortalElement={documentPanelPortalElement}
-                            placement={actionsPlacement}
-                            ref={setToolbarElement}
-                            setActionsBoxElement={setActionsBoxElement}
-                            slots={actionsSlots}
-                          />
-                        }
-                      />
-                    </StyledChangeConnectorRoot>
-                  </Flex>
-                </DialogProvider>
-                <DocumentOperationResults />
-              </DocumentActionShortcuts>
-            </DocumentToolsProvider>
+                    />
+                  </StyledChangeConnectorRoot>
+                </Flex>
+              </DialogProvider>
+              <DocumentOperationResults />
+            </DocumentActionShortcuts>
           </DocumentActionsPlacementProvider>
         </FieldActionsProvider>
       </DocumentActionsProvider>

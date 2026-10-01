@@ -3,9 +3,9 @@ import {type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {type View} from '../../../structureBuilder/types'
 import {useStructureTool} from '../../../useStructureTool'
-import {useStructureTools} from '../structureTools'
-import {useDocumentPane} from '../useDocumentPane'
+import {useStructureFeatures} from '../structureFeatures'
 
 vi.mock('../../../components/paneRouter/usePaneRouter', () => ({
   usePaneRouter: vi.fn(),
@@ -15,13 +15,8 @@ vi.mock('../../../useStructureTool', () => ({
   useStructureTool: vi.fn(),
 }))
 
-vi.mock('../useDocumentPane', () => ({
-  useDocumentPane: vi.fn(),
-}))
-
 const mockUsePaneRouter = vi.mocked(usePaneRouter)
 const mockUseStructureTool = vi.mocked(useStructureTool)
-const mockUseDocumentPane = vi.mocked(useDocumentPane)
 
 function BackLink({children}: {children?: ReactNode}) {
   return <a href="#close">{children ?? 'close'}</a>
@@ -30,12 +25,16 @@ function BackLink({children}: {children?: ReactNode}) {
 const TWO_VIEWS = [
   {id: 'form', type: 'form'},
   {id: 'preview', type: 'component'},
-]
+] as unknown as View[]
+
+type PaneOptions = Parameters<typeof useStructureFeatures>[0]
+
+let paneOptions: PaneOptions = {views: TWO_VIEWS}
 
 function setHost(options: {
   features?: Partial<ReturnType<typeof useStructureTool>['features']>
   paneRouter?: Partial<ReturnType<typeof usePaneRouter>>
-  documentPane?: Partial<ReturnType<typeof useDocumentPane>>
+  pane?: Partial<PaneOptions>
 }) {
   mockUseStructureTool.mockReturnValue({
     features: {backButton: false, splitViews: true, ...options.features},
@@ -47,22 +46,18 @@ function setHost(options: {
     ...options.paneRouter,
   } as ReturnType<typeof usePaneRouter>)
 
-  mockUseDocumentPane.mockReturnValue({
-    documentId: 'doc-1',
-    views: TWO_VIEWS,
-    ...options.documentPane,
-  } as unknown as ReturnType<typeof useDocumentPane>)
+  paneOptions = {views: TWO_VIEWS, ...options.pane}
 }
 
-function contributedTools() {
-  return renderHook(() => useStructureTools()).result.current
+function contributedFeatures() {
+  return renderHook(() => useStructureFeatures(paneOptions)).result.current
 }
 
-function contributedIds() {
-  return contributedTools().map((tool) => tool.id)
+function contributedNames() {
+  return contributedFeatures().map((feature) => feature.name)
 }
 
-describe('useStructureTools', () => {
+describe('useStructureFeatures', () => {
   beforeEach(() => {
     setHost({})
   })
@@ -70,66 +65,71 @@ describe('useStructureTools', () => {
   it('contributes only the close-pane-group button under a Presentation-shaped host', () => {
     setHost({paneRouter: {BackLink}})
 
-    expect(contributedIds()).toEqual(['closePaneGroup'])
+    expect(contributedNames()).toEqual(['closePaneGroup'])
   })
 
   it('contributes nothing when the host supplies no back link either', () => {
     setHost({paneRouter: {BackLink: undefined}})
 
-    expect(contributedIds()).toEqual([])
+    expect(contributedNames()).toEqual([])
   })
 
   it('contributes the split pane button only when the host can split and the document has more than one view', () => {
-    setHost({documentPane: {onPaneSplit: vi.fn()}})
-    expect(contributedIds()).toEqual(['splitPane'])
+    setHost({pane: {onPaneSplit: vi.fn()}})
+    expect(contributedNames()).toEqual(['splitPane'])
 
-    setHost({documentPane: {onPaneSplit: vi.fn(), views: [{id: 'form', type: 'form'}]} as never})
-    expect(contributedIds()).toEqual([])
+    setHost({pane: {onPaneSplit: vi.fn(), views: [{id: 'form', type: 'form'}] as never}})
+    expect(contributedNames()).toEqual([])
   })
 
   it('withholds the split pane button when the host cannot split views', () => {
-    setHost({features: {splitViews: false}, documentPane: {onPaneSplit: vi.fn()}})
+    setHost({features: {splitViews: false}, pane: {onPaneSplit: vi.fn()}})
 
-    expect(contributedIds()).toEqual([])
+    expect(contributedNames()).toEqual([])
   })
 
   it('contributes the focus mode button only when the host lays panes out', () => {
-    expect(contributedIds()).toEqual([])
+    expect(contributedNames()).toEqual([])
 
-    setHost({documentPane: {onSetMaximizedPane: vi.fn()}})
-    expect(contributedIds()).toEqual(['focusMode'])
+    setHost({pane: {onSetMaximizedPane: vi.fn()}})
+    expect(contributedNames()).toEqual(['focusMode'])
   })
 
   it('contributes the close pane button only when the split pane has siblings', () => {
-    setHost({documentPane: {onPaneSplit: vi.fn()}, paneRouter: {hasGroupSiblings: true}})
+    setHost({pane: {onPaneSplit: vi.fn()}, paneRouter: {hasGroupSiblings: true}})
 
-    expect(contributedIds()).toEqual(['splitPane', 'closePane'])
+    expect(contributedNames()).toEqual(['splitPane', 'closePane'])
   })
 
   it('withholds the close-pane-group button while the back button is showing', () => {
     setHost({features: {backButton: true}, paneRouter: {index: 1, BackLink}})
-    expect(contributedIds()).toEqual([])
+    expect(contributedNames()).toEqual([])
 
     setHost({features: {backButton: true}, paneRouter: {index: 0, BackLink}})
-    expect(contributedIds()).toEqual(['closePaneGroup'])
+    expect(contributedNames()).toEqual(['closePaneGroup'])
   })
 
   it('contributes no back button, which the structure header reads from the router itself', () => {
     setHost({features: {backButton: true}, paneRouter: {index: 1}})
 
-    expect(contributedIds()).toEqual([])
+    expect(contributedNames()).toEqual([])
   })
 
   it('places every contribution in the header, with a renderer', () => {
     setHost({
-      documentPane: {onPaneSplit: vi.fn(), onSetMaximizedPane: vi.fn()},
+      pane: {onPaneSplit: vi.fn(), onSetMaximizedPane: vi.fn()},
       paneRouter: {hasGroupSiblings: true},
     })
 
-    const tools = contributedTools()
+    const features = contributedFeatures()
 
-    expect(tools.map((tool) => tool.id)).toEqual(['splitPane', 'focusMode', 'closePane'])
-    expect(tools.every((tool) => tool.placement === 'header')).toBe(true)
-    expect(tools.every((tool) => typeof tool.render === 'function')).toBe(true)
+    expect(features.map((feature) => feature.name)).toEqual(['splitPane', 'focusMode', 'closePane'])
+    expect(features.every((feature) => feature.toolbar?.placement === 'header')).toBe(true)
+    expect(
+      features.every(
+        (feature) =>
+          feature.toolbar?.placement === 'header' && typeof feature.toolbar.render === 'function',
+      ),
+    ).toBe(true)
   })
 })

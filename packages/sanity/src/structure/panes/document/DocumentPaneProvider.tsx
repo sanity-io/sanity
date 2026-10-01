@@ -18,7 +18,6 @@ import {
 import {
   DivergencesProvider,
   type DocumentActionsContext,
-  type DocumentFieldAction,
   type EditStateFor,
   EMPTY_ARRAY,
   getCreatableVariantTarget,
@@ -66,10 +65,12 @@ import {
   type DocumentPaneContextValue,
   type DocumentPaneInfoContextValue,
 } from './DocumentPaneContext'
+import {useStructureFeatures} from './structureFeatures'
 import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {DocumentFeaturesProvider} from './useDocumentFeatures'
 import {useDocumentInitialLoadTelemetry} from './useDocumentInitialLoadTelemetry'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
 import {useDocumentPaneInspector} from './useDocumentPaneInspector'
@@ -114,7 +115,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     document: {
       actions: documentActions,
       badges: documentBadges,
-      unstable_fieldActions: fieldActionsResolver,
+      features: resolveDocumentFeatures,
       unstable_languageFilter: languageFilterResolver,
       drafts: {enabled: draftsEnabled},
     },
@@ -185,10 +186,27 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const initialValue = useCreatableVariantInitialValue(targetDocumentState, templateInitialValue)
 
   const isInitialValueLoading = initialValue.loading
+
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  const views = useUnique(viewsProp)
+
+  const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
+
+  const contributed = useStructureFeatures({
+    onPaneSplit: handlePaneSplit,
+    onSetMaximizedPane,
+    views,
+  })
+
+  const documentFeatures = useMemo(
+    () => resolveDocumentFeatures({documentId, schemaType: documentType, contributed}),
+    [contributed, documentId, documentType, resolveDocumentFeatures],
+  )
+  const {inspectors, fieldActions} = documentFeatures
+
   const {
     changesOpen,
     currentInspector,
-    inspectors,
     closeInspector,
     openInspector,
     handleHistoryClose,
@@ -196,7 +214,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     handleInspectorAction,
     inspectOpen,
     handleLegacyInspectClose,
-  } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
+  } = useDocumentPaneInspector({inspectors, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
   const [isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive] = useState(false)
@@ -398,19 +416,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [documentId, documentType, languageFilterResolver],
   )
 
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const views = useUnique(viewsProp)
-
   const activeViewId = params.view || (views[0] && views[0].id) || null
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
   const previewUrl = usePreviewUrl(value)
-
-  const fieldActions: DocumentFieldAction[] = useMemo(
-    () => (schemaType ? fieldActionsResolver({documentId, documentType, schemaType}) : []),
-    [documentId, documentType, fieldActionsResolver, schemaType],
-  )
 
   /**
    * Note that in addition to connection and edit state, we also wait for a valid document timeline
@@ -459,8 +469,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   )
 
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
-
-  const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
   const toggleInlineChanges = useCallback(() => {
     const nextState = router.stickyParams.displayInlineChanges !== 'true'
@@ -780,7 +788,9 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
             ready={ready}
             schemaType={schemaType}
           />
-          <ParseErrorsProvider>{children}</ParseErrorsProvider>
+          <DocumentFeaturesProvider features={documentFeatures}>
+            <ParseErrorsProvider>{children}</ParseErrorsProvider>
+          </DocumentFeaturesProvider>
         </DivergencesProvider>
       </DocumentPaneContext.Provider>
     </DocumentPaneInfoContext.Provider>

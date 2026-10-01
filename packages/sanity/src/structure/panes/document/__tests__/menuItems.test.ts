@@ -7,7 +7,7 @@ import {
 import {describe, expect, it} from 'vitest'
 
 import {getMenuItems} from '../menuItems'
-import {buildResolvedTools, EMPTY_TOOLS} from './toolsFixture'
+import {buildResolvedFeatures, EMPTY_FEATURES} from './featuresFixture'
 
 const t = ((key: string) => key) as unknown as TFunction
 
@@ -19,7 +19,7 @@ const documentIdStack: DocumentIdStack = {
 
 function getParams(overrides: Partial<Parameters<typeof getMenuItems>[0]> = {}) {
   return {
-    tools: buildResolvedTools(),
+    features: buildResolvedFeatures(),
     hasValue: true,
     inspectors: [],
     inspectorMenuItems: [],
@@ -30,7 +30,7 @@ function getParams(overrides: Partial<Parameters<typeof getMenuItems>[0]> = {}) 
 }
 
 describe('getMenuItems', () => {
-  it('returns the overflow items the tools resolution kept', () => {
+  it('returns the overflow items the features resolution kept', () => {
     const items = getMenuItems(getParams({previewUrl: 'https://example.com', documentIdStack}))
 
     expect(items.map((item) => item.action)).toEqual([
@@ -57,7 +57,7 @@ describe('getMenuItems', () => {
   it('returns no menu items when the resolution kept none of them', () => {
     const items = getMenuItems(
       getParams({
-        tools: EMPTY_TOOLS,
+        features: EMPTY_FEATURES,
         previewUrl: 'https://example.com',
         documentIdStack,
       }),
@@ -66,26 +66,35 @@ describe('getMenuItems', () => {
     expect(items).toEqual([])
   })
 
-  const REMOVAL_CASES = [
-    {id: 'inspect', action: 'inspect', shortcut: 'Ctrl+Alt+I'},
-    {id: 'productionPreview', action: 'production-preview', shortcut: 'Ctrl+Alt+O'},
-    {id: 'compareVersions', action: 'compareVersions', shortcut: undefined},
-    {id: 'inlineChanges', action: 'toggleInlineChanges', shortcut: undefined},
+  const GATE_CASES = [
+    {name: 'inspect', action: 'inspect', shortcut: 'Ctrl+Alt+I'},
+    {name: 'productionPreview', action: 'production-preview', shortcut: 'Ctrl+Alt+O'},
+    {name: 'compareVersions', action: 'compareVersions', shortcut: undefined},
+    {name: 'inlineChanges', action: 'toggleInlineChanges', shortcut: undefined},
   ] as const
 
-  it.each(REMOVAL_CASES)(
-    'drops $action when $id is not in the resolution, keeping the rest',
-    ({id, action, shortcut}) => {
+  it.each(GATE_CASES)('renders $action when $name is in the resolution', ({action, shortcut}) => {
+    const items = getMenuItems(getParams({previewUrl: 'https://example.com', documentIdStack}))
+
+    const item = items.find((candidate) => candidate.action === action)
+
+    expect(item).toBeDefined()
+    expect(item?.shortcut).toBe(shortcut)
+  })
+
+  it.each(GATE_CASES)(
+    'drops $action when $name is not in the resolution, keeping the rest',
+    ({name, action, shortcut}) => {
       const items = getMenuItems(
         getParams({
-          tools: buildResolvedTools({without: [id]}),
+          features: buildResolvedFeatures({without: [name]}),
           previewUrl: 'https://example.com',
           documentIdStack,
         }),
       )
 
       expect(items.find((item) => item.action === action)).toBeUndefined()
-      expect(items).toHaveLength(REMOVAL_CASES.length - 1)
+      expect(items).toHaveLength(GATE_CASES.length - 1)
 
       if (shortcut) {
         expect(items.find((item) => item.shortcut === shortcut)).toBeUndefined()
@@ -150,8 +159,8 @@ describe('getMenuItems', () => {
       ])
     })
 
-    it('leaves inspector items alone when the resolution kept no built-in overflow tool', () => {
-      const items = getMenuItems(getInspectorParams({tools: EMPTY_TOOLS}))
+    it('leaves inspector items alone when the resolution kept no built-in overflow feature', () => {
+      const items = getMenuItems(getInspectorParams({features: EMPTY_FEATURES}))
 
       expect(items.map((item) => item.action)).toEqual(['inspect:validation', 'inspect:json'])
       expect(items.find((item) => item.action === 'inspect:validation')).toMatchObject({

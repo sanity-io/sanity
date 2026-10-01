@@ -4,11 +4,12 @@ import {ExpandIcon} from '@sanity/icons/Expand'
 import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
-import {type DocumentHeaderTool, useTranslation} from 'sanity'
+import {type DocumentFeature, useTranslation} from 'sanity'
 
 import {Button} from '../../../ui-components/button/Button'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../i18n'
+import {type View} from '../../structureBuilder/types'
 import {useResolvedPanesList} from '../../structureResolvers/useResolvedPanesList'
 import {useStructureTool} from '../../useStructureTool'
 import {
@@ -106,20 +107,26 @@ function ClosePaneGroupButton() {
 }
 
 /**
- * The header tools the structure tool contributes to the document form, gated by what this host
- * can actually do. Capability gating happens here, before config sees the tool: `document.tools`
- * vetoes what a host contributes, it never grants what a host cannot offer.
+ * The header features the structure tool contributes to the document form, gated by what this host
+ * can actually do. Capability gating happens here, before config sees the feature:
+ * `document.features` vetoes what a host contributes, it never grants what a host cannot offer.
  *
  * @internal
  */
-export function useStructureTools(): DocumentHeaderTool[] {
-  const {features} = useStructureTool()
-  const {onPaneSplit, onSetMaximizedPane, views} = useDocumentPane()
+export function useStructureFeatures(options: {
+  onPaneSplit?: () => void
+  onSetMaximizedPane?: () => void
+  views: View[]
+}): DocumentFeature[] {
+  const {onPaneSplit, onSetMaximizedPane, views} = options
+  const {features: structureFeatures} = useStructureTool()
   const {index, BackLink, hasGroupSiblings} = usePaneRouter()
 
-  const showSplitPaneButton = features.splitViews && onPaneSplit && views.length > 1
+  const showSplitPaneButton = Boolean(
+    structureFeatures.splitViews && onPaneSplit && views.length > 1,
+  )
   const showSplitPaneCloseButton = showSplitPaneButton && hasGroupSiblings
-  const showBackButton = features.backButton && index > 0
+  const showBackButton = structureFeatures.backButton && index > 0
   // The split pane close button replaces the group close button, and the back button already does
   // what the group close button does, so either one showing withholds it.
   const showPaneGroupCloseButton = !showSplitPaneCloseButton && !showBackButton && Boolean(BackLink)
@@ -127,21 +134,24 @@ export function useStructureTools(): DocumentHeaderTool[] {
   const showFocusModeButton = Boolean(onSetMaximizedPane)
 
   return useMemo(() => {
-    const tools: DocumentHeaderTool[] = []
+    const features: DocumentFeature[] = []
 
     if (showSplitPaneButton) {
-      tools.push({id: 'splitPane', placement: 'header', render: SplitPaneButton})
+      features.push({name: 'splitPane', toolbar: {placement: 'header', render: SplitPaneButton}})
     }
     if (showFocusModeButton) {
-      tools.push({id: 'focusMode', placement: 'header', render: FocusModeButton})
+      features.push({name: 'focusMode', toolbar: {placement: 'header', render: FocusModeButton}})
     }
     if (showSplitPaneCloseButton) {
-      tools.push({id: 'closePane', placement: 'header', render: ClosePaneButton})
+      features.push({name: 'closePane', toolbar: {placement: 'header', render: ClosePaneButton}})
     }
     if (showPaneGroupCloseButton) {
-      tools.push({id: 'closePaneGroup', placement: 'header', render: ClosePaneGroupButton})
+      features.push({
+        name: 'closePaneGroup',
+        toolbar: {placement: 'header', render: ClosePaneGroupButton},
+      })
     }
 
-    return tools
+    return features
   }, [showSplitPaneButton, showFocusModeButton, showSplitPaneCloseButton, showPaneGroupCloseButton])
 }

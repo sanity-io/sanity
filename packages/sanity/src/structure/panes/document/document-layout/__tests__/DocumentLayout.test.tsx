@@ -1,20 +1,25 @@
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ComponentProps, type ReactNode, useContext} from 'react'
-import {type DocumentMenuTool, type SingleWorkspace} from 'sanity'
+import {type DocumentMenuFeature, type SingleWorkspace} from 'sanity'
 import {ReviewChangesContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {useStructureTool} from '../../../../useStructureTool'
+import {buildResolvedFeatures, EMPTY_FEATURES} from '../../__tests__/featuresFixture'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
 import {useDocumentActionsPlacement} from '../../statusBar/documentActionsPlacement'
+import {useDocumentFeatures} from '../../useDocumentFeatures'
 import {useDocumentPane} from '../../useDocumentPane'
-import {useDocumentTools} from '../../useDocumentTools'
 import {DocumentLayout} from '../DocumentLayout'
 
 vi.mock('../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),
+}))
+
+vi.mock('../../useDocumentFeatures', () => ({
+  useDocumentFeatures: vi.fn(),
 }))
 
 vi.mock('../../../../components/pane/usePane', () => ({
@@ -33,10 +38,10 @@ vi.mock('../../../../useStructureTool', () => ({
   useStructureTool: vi.fn(() => ({features: {reviewChanges: true, resizablePanes: true}})),
 }))
 
-// A placeholder rather than `() => null`: the menu tools the header would put in the overflow
+// A placeholder rather than `() => null`: the menu features the header would put in the overflow
 // menu are only observable here through what the resolution hands it.
 vi.mock('../../documentPanel/header/DocumentPanelHeader', () => ({
-  DocumentPanelHeader: () => <MenuToolsProbe />,
+  DocumentPanelHeader: () => <MenuFeaturesProbe />,
 }))
 
 vi.mock('../../../../DocumentActionsProvider', () => ({
@@ -77,13 +82,13 @@ vi.mock('../../keyboardShortcuts/DocumentActionShortcuts', () => ({
   ),
 }))
 
-function MenuToolsProbe() {
-  const {menu} = useDocumentTools()
+function MenuFeaturesProbe() {
+  const {menu} = useDocumentFeatures()
 
   return (
     <div data-testid="mock-document-panel-header">
-      {menu.map((tool) => (
-        <div key={tool.id} data-testid={`menu-tool-${tool.id}`} />
+      {menu.map((feature) => (
+        <div key={feature.name} data-testid={`menu-tool-${feature.name}`} />
       ))}
     </div>
   )
@@ -106,6 +111,7 @@ function ReviewChangesProbe() {
 }
 
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
+const mockUseDocumentFeatures = vi.mocked(useDocumentFeatures)
 const mockUseStructureTool = vi.mocked(useStructureTool)
 
 const DEFAULT_STRUCTURE_TOOL_FEATURES = {
@@ -146,14 +152,15 @@ function documentPaneValue() {
 
 const bookmark = vi.fn()
 
-function bookmarkTool(shortcut = 'Ctrl+Alt+L'): DocumentMenuTool {
+function bookmarkFeature(shortcut = 'Ctrl+Alt+L'): DocumentMenuFeature {
   return {
-    id: 'closePane',
-    placement: 'menu',
-    title: 'Bookmark',
-    shortcut,
-    onAction: bookmark,
+    name: 'bookmark',
+    toolbar: {placement: 'menu', title: 'Bookmark', shortcut, onAction: bookmark},
   }
+}
+
+function setFeatures(features: ReturnType<typeof buildResolvedFeatures>) {
+  mockUseDocumentFeatures.mockReturnValue(features)
 }
 
 async function renderDocumentLayout(
@@ -171,6 +178,10 @@ async function renderDocumentLayout(
     </TestProvider>,
   )
 }
+
+beforeEach(() => {
+  setFeatures(buildResolvedFeatures())
+})
 
 describe('DocumentLayout', () => {
   beforeEach(() => {
@@ -237,10 +248,11 @@ describe('DocumentLayout review changes', () => {
     expect(probe).toHaveAttribute('data-interactive', 'true')
   })
 
-  it('keeps the change bar enabled when document.tools removes every tool from the toolbar', async () => {
+  it('keeps the change bar enabled when features removes every toolbar entry but history', async () => {
     mockUseDocumentPane.mockReturnValue(withHistoryInspector())
+    setFeatures(EMPTY_FEATURES)
 
-    await renderDocumentLayout(undefined, {document: {tools: () => []}})
+    await renderDocumentLayout()
 
     const probe = await screen.findByTestId('review-changes-probe')
     expect(probe).toHaveAttribute('data-review-changes-enabled', 'true')
@@ -261,20 +273,20 @@ describe('DocumentLayout review changes', () => {
   })
 })
 
-describe('DocumentLayout contributed menu tools', () => {
-  it('hands a menu tool configured through document.tools to the overflow menu', async () => {
-    await renderDocumentLayout(undefined, {
-      document: {tools: (prev) => [...prev, bookmarkTool()]},
-    })
+describe('DocumentLayout contributed menu features', () => {
+  it('hands a menu feature the resolution kept to the overflow menu', async () => {
+    setFeatures(buildResolvedFeatures({menu: [bookmarkFeature()]}))
 
-    expect(await screen.findByTestId('menu-tool-closePane')).toBeInTheDocument()
+    await renderDocumentLayout()
+
+    expect(await screen.findByTestId('menu-tool-bookmark')).toBeInTheDocument()
   })
 
-  it('hands none to the overflow menu when the config contributes none', async () => {
+  it('hands none to the overflow menu when the resolution contributes none', async () => {
     await renderDocumentLayout()
 
     expect(await screen.findByTestId('mock-document-panel-header')).toBeInTheDocument()
-    expect(screen.queryByTestId('menu-tool-closePane')).toBeNull()
+    expect(screen.queryByTestId('menu-tool-bookmark')).toBeNull()
   })
 })
 
@@ -301,36 +313,34 @@ describe('DocumentLayout keyboard shortcuts', () => {
     expect(pane.onMenuAction).toHaveBeenCalledWith(expect.objectContaining({action: 'inspect'}))
   })
 
-  it('withdraws the inspect shortcut when the tool is filtered out entirely', async () => {
+  it('withdraws the inspect shortcut when the feature is filtered out entirely', async () => {
     const pane = documentPaneValue()
     mockUseDocumentPane.mockReturnValue(pane)
 
-    await renderDocumentLayout(undefined, {
-      document: {tools: (prev) => prev.filter((tool) => tool.id !== 'inspect')},
-    })
+    setFeatures(buildResolvedFeatures({without: ['inspect']}))
+
+    await renderDocumentLayout()
     pressShortcut(INSPECT_SHORTCUT)
 
     expect(pane.onMenuAction).not.toHaveBeenCalled()
   })
 
-  it("fires a menu tool's onAction on its shortcut", async () => {
+  it("fires a menu feature's onAction on its shortcut", async () => {
     mockUseDocumentPane.mockReturnValue(documentPaneValue())
+    setFeatures(buildResolvedFeatures({menu: [bookmarkFeature()]}))
 
-    await renderDocumentLayout(undefined, {
-      document: {tools: (prev) => [...prev, bookmarkTool()]},
-    })
+    await renderDocumentLayout()
     pressShortcut(BOOKMARK_SHORTCUT)
 
     expect(bookmark).toHaveBeenCalledTimes(1)
   })
 
-  it('leaves the built-in winning when a menu tool declares the same shortcut', async () => {
+  it('leaves the built-in winning when a menu feature declares the same shortcut', async () => {
     const pane = documentPaneValue()
     mockUseDocumentPane.mockReturnValue(pane)
+    setFeatures(buildResolvedFeatures({menu: [bookmarkFeature('Ctrl+Alt+I')]}))
 
-    await renderDocumentLayout(undefined, {
-      document: {tools: (prev) => [...prev, bookmarkTool('Ctrl+Alt+I')]},
-    })
+    await renderDocumentLayout()
     pressShortcut(INSPECT_SHORTCUT)
 
     expect(pane.onMenuAction).toHaveBeenCalledWith(expect.objectContaining({action: 'inspect'}))

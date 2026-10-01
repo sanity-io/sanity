@@ -25,7 +25,7 @@ export const comments = definePlugin({
   name: 'sanity/comments',
 
   document: {
-    inspectors: [commentsInspector],
+    features: [{name: 'comments', inspector: commentsInspector}],
     components: {
       unstable_layout: CommentsDocumentLayout,
     },

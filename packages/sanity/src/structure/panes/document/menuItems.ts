@@ -6,8 +6,7 @@ import {
   type DocumentIdStack,
   type DocumentInspector,
   type DocumentInspectorMenuItem,
-  type DocumentTool,
-  type ResolvedDocumentTools,
+  type ResolvedDocumentFeatures,
   type TFunction,
 } from 'sanity'
 
@@ -17,19 +16,18 @@ import {INSPECT_ACTION_PREFIX} from './constants'
 
 interface GetMenuItemsParams {
   currentInspector?: DocumentInspector
-  tools: ResolvedDocumentTools
+  features: ResolvedDocumentFeatures
   hasValue: boolean
   inspectors: DocumentInspector[]
   previewUrl?: string | null
   documentIdStack?: DocumentIdStack
-  inspectorMenuItems: DocumentInspectorMenuItem[]
+  inspectorMenuItems: (DocumentInspectorMenuItem | undefined)[]
   t: TFunction
   displayInlineChanges: boolean
 }
 
-function getShortcut(tool: DocumentTool): string | undefined {
-  return 'shortcut' in tool ? tool.shortcut : undefined
-}
+const INSPECT_SHORTCUT = 'Ctrl+Alt+I'
+const PRODUCTION_PREVIEW_SHORTCUT = 'Ctrl+Alt+O'
 
 function getInspectorItems({
   currentInspector,
@@ -56,9 +54,8 @@ function getInspectorItems({
   })
 }
 
-function getInspectItem({tools, hasValue, t}: GetMenuItemsParams): PaneMenuItem | null {
-  const tool = tools.byId.get('inspect')
-  if (!tool) return null
+function getInspectItem({features, hasValue, t}: GetMenuItemsParams): PaneMenuItem | null {
+  if (!features.byName.has('inspect')) return null
 
   return {
     action: 'inspect',
@@ -66,17 +63,16 @@ function getInspectItem({tools, hasValue, t}: GetMenuItemsParams): PaneMenuItem 
     title: t('document-inspector.menu-item.title'),
     icon: JsonIcon,
     disabled: !hasValue,
-    shortcut: getShortcut(tool),
+    shortcut: INSPECT_SHORTCUT,
   }
 }
 
 function getCompareVersionsItem({
-  tools,
+  features,
   documentIdStack,
   t,
 }: GetMenuItemsParams): PaneMenuItem | null {
-  const tool = tools.byId.get('compareVersions')
-  if (!tool) return null
+  if (!features.byName.has('compareVersions')) return null
 
   const disabled = typeof documentIdStack?.previousId === 'undefined' && {
     reason: t('compare-versions.menu-item.disabled-reason'),
@@ -92,12 +88,11 @@ function getCompareVersionsItem({
 }
 
 function getInlineChangesItem({
-  tools,
+  features,
   displayInlineChanges,
   t,
 }: GetMenuItemsParams): PaneMenuItem | null {
-  const tool = tools.byId.get('inlineChanges')
-  if (!tool) return null
+  if (!features.byName.has('inlineChanges')) return null
 
   return {
     action: 'toggleInlineChanges',
@@ -109,18 +104,21 @@ function getInlineChangesItem({
   }
 }
 
-function getProductionPreviewItem({tools, previewUrl, t}: GetMenuItemsParams): PaneMenuItem | null {
+function getProductionPreviewItem({
+  features,
+  previewUrl,
+  t,
+}: GetMenuItemsParams): PaneMenuItem | null {
   if (!previewUrl) return null
 
-  const tool = tools.byId.get('productionPreview')
-  if (!tool) return null
+  if (!features.byName.has('productionPreview')) return null
 
   return {
     action: 'production-preview',
     group: 'links',
     title: t('production-preview.menu-item.title'),
     icon: EarthAmericasIcon,
-    shortcut: getShortcut(tool),
+    shortcut: PRODUCTION_PREVIEW_SHORTCUT,
   }
 }
 

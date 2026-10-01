@@ -9,9 +9,9 @@ import {perspectiveContextValueMock} from '../../../../__mocks__/usePerspective.
 import {usePaneLayout} from '../../../../components/pane/usePaneLayout'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {useStructureTool} from '../../../../useStructureTool'
-import {buildResolvedTools} from '../../__tests__/toolsFixture'
+import {buildResolvedFeatures} from '../../__tests__/featuresFixture'
+import {useDocumentFeatures} from '../../useDocumentFeatures'
 import {useDocumentPane} from '../../useDocumentPane'
-import {useDocumentTools} from '../../useDocumentTools'
 import {DocumentPanel} from '../DocumentPanel'
 
 vi.mock('../../../../components/pane/usePane', () => ({
@@ -39,8 +39,8 @@ vi.mock('../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),
 }))
 
-vi.mock('../../useDocumentTools', () => ({
-  useDocumentTools: vi.fn(),
+vi.mock('../../useDocumentFeatures', () => ({
+  useDocumentFeatures: vi.fn(),
 }))
 
 vi.mock('../../../../hasObsoleteDraft', () => ({
@@ -96,7 +96,7 @@ vi.mock('sanity', async (importOriginal) => ({
 }))
 
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
-const mockUseDocumentTools = vi.mocked(useDocumentTools)
+const mockUseDocumentFeatures = vi.mocked(useDocumentFeatures)
 const mockUseStructureTool = vi.mocked(useStructureTool)
 
 const publishedPerspectiveContextValue = {
@@ -141,10 +141,10 @@ function renderDocumentPanel(overrides: Partial<ComponentProps<typeof DocumentPa
 
 async function renderPanel(
   overrides?: Partial<ComponentProps<typeof DocumentPanel>>,
-  tools: ReturnType<typeof buildResolvedTools> = buildResolvedTools(),
+  features: ReturnType<typeof buildResolvedFeatures> = buildResolvedFeatures(),
 ) {
   mockUseDocumentPane.mockReturnValue(documentPaneValue())
-  mockUseDocumentTools.mockReturnValue(tools)
+  mockUseDocumentFeatures.mockReturnValue(features)
   const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
   return render(renderDocumentPanel(overrides), {wrapper})
 }
@@ -319,14 +319,14 @@ describe('DocumentPanel sub-header', () => {
     } as ReturnType<typeof useStructureTool>)
   })
 
-  it('renders the sub-header when titleBar is in the tools resolution', async () => {
+  it('renders the sub-header when titleBar is in the features resolution', async () => {
     await renderPanel()
 
     expect(screen.getByTestId('mock-document-panel-sub-header')).toBeInTheDocument()
   })
 
-  it('omits the sub-header when titleBar is not in the tools resolution', async () => {
-    await renderPanel(undefined, buildResolvedTools({without: ['titleBar']}))
+  it('omits the sub-header when titleBar is not in the features resolution', async () => {
+    await renderPanel(undefined, buildResolvedFeatures({without: ['titleBar']}))
 
     expect(screen.queryByTestId('mock-document-panel-sub-header')).toBeNull()
   })

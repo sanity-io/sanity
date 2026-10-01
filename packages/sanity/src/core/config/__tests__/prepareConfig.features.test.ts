@@ -1,11 +1,9 @@
-import {createClient} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
-import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
+import {createTestSource} from '../../../../test/testUtils/createTestSource'
 import {type DocumentFeature} from '../document/features'
 import {type DocumentFieldAction} from '../document/fieldActions/types'
 import {type DocumentInspector} from '../document/inspector'
-import {createSourceFromConfig} from '../resolveConfig'
 import {type PluginOptions, type SingleWorkspace, type Source} from '../types'
 
 function Panel() {
@@ -61,24 +59,13 @@ const assistShapedPlugin: PluginOptions = {
 }
 
 function createSource(overrides: Partial<SingleWorkspace>): Promise<Source> {
-  const projectId = `features-${Math.random().toString(36).slice(2)}`
-  const dataset = 'test'
-
-  return createSourceFromConfig({
-    name: 'test',
-    basePath: '/',
-    projectId,
-    dataset,
+  return createTestSource({
     schema: {
       types: [
         {name: 'author', type: 'document', fields: [{name: 'title', type: 'string'}]},
         {name: 'book', type: 'document', fields: [{name: 'title', type: 'string'}]},
       ],
     },
-    auth: createMockAuthStore({
-      client: createClient({projectId, dataset, apiVersion: '2021-06-07', useCdn: false}),
-      currentUser: null,
-    }),
     ...overrides,
   })
 }

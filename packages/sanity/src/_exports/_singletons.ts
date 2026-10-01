@@ -48,11 +48,11 @@ export {
   DocumentDivergencesContext,
   type DocumentDivergencesContextValue,
 } from '../_singletons/context/DocumentDivergencesContext'
+export {DocumentFeaturesContext} from '../_singletons/context/DocumentFeaturesContext'
 export {
   DocumentFieldActionsContext,
   type DocumentFieldActionsContextValue,
 } from '../_singletons/context/DocumentFieldActionsContext'
-export {DocumentToolsContext} from '../_singletons/context/DocumentToolsContext'
 export {
   DocumentIdContext,
   type DocumentIdContextValue,

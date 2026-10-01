@@ -1,7 +1,7 @@
 import {render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type ReactNode} from 'react'
-import {type DocumentHeaderTool, type DocumentMenuTool, type SingleWorkspace} from 'sanity'
+import {type DocumentHeaderFeature, type DocumentMenuFeature, type SingleWorkspace} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getAllByDataUi} from '../../../../../../../test/setup/customQueries'
@@ -11,9 +11,9 @@ import {useHistoryRestoreAction} from '../../../../../documentActions/HistoryRes
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {type PaneMenuItem} from '../../../../../types'
 import {useStructureTool} from '../../../../../useStructureTool'
-import {buildResolvedTools, EMPTY_TOOLS} from '../../../__tests__/toolsFixture'
+import {buildResolvedFeatures, EMPTY_FEATURES} from '../../../__tests__/featuresFixture'
+import {useDocumentFeatures} from '../../../useDocumentFeatures'
 import {useDocumentPane} from '../../../useDocumentPane'
-import {useDocumentTools} from '../../../useDocumentTools'
 import {DocumentPanelHeader} from '../DocumentPanelHeader'
 
 vi.mock('sanity', async (importOriginal) => ({
@@ -36,8 +36,8 @@ vi.mock('../../../../../useStructureTool', () => ({
   useStructureTool: vi.fn(),
 }))
 
-vi.mock('../../../useDocumentTools', () => ({
-  useDocumentTools: vi.fn(),
+vi.mock('../../../useDocumentFeatures', () => ({
+  useDocumentFeatures: vi.fn(),
 }))
 
 vi.mock('../../../useDocumentPane', () => ({
@@ -79,7 +79,7 @@ vi.mock('../documentGroupInventoryHint/DocumentGroupInventoryHint', () => ({
   DocumentGroupInventoryHint: () => <div data-testid="mock-document-group-inventory-hint" />,
 }))
 
-const mockUseDocumentTools = vi.mocked(useDocumentTools)
+const mockUseDocumentFeatures = vi.mocked(useDocumentFeatures)
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
 const mockUsePaneRouter = vi.mocked(usePaneRouter)
 const mockUseStructureTool = vi.mocked(useStructureTool)
@@ -98,16 +98,17 @@ function Flag() {
   return <button data-testid="tool-flag" type="button" />
 }
 
-const PIN: DocumentHeaderTool = {id: 'splitPane', placement: 'header', render: Pin}
-const FLAG: DocumentHeaderTool = {id: 'focusMode', placement: 'header', render: Flag}
+const PIN: DocumentHeaderFeature = {name: 'splitPane', toolbar: {placement: 'header', render: Pin}}
+const FLAG: DocumentHeaderFeature = {
+  name: 'focusMode',
+  toolbar: {placement: 'header', render: Flag},
+}
 
 const bookmark = vi.fn()
 
-const BOOKMARK: DocumentMenuTool = {
-  id: 'closePane',
-  placement: 'menu',
-  title: 'Bookmark',
-  onAction: bookmark,
+const BOOKMARK: DocumentMenuFeature = {
+  name: 'closePane',
+  toolbar: {placement: 'menu', title: 'Bookmark', onAction: bookmark},
 }
 
 /**
@@ -126,8 +127,8 @@ function getOpenContextMenu() {
 /** Keeps the bordered bar alive so a case can isolate the gate it is about. */
 const COPY_ACTIONS_ONLY = {without: ['versionPicker', 'titleBar'] as const}
 
-function setTools(tools: ReturnType<typeof buildResolvedTools>) {
-  mockUseDocumentTools.mockReturnValue(tools)
+function setFeatures(features: ReturnType<typeof buildResolvedFeatures>) {
+  mockUseDocumentFeatures.mockReturnValue(features)
 }
 
 async function setPresence(sessionCount: number) {
@@ -197,7 +198,7 @@ function queryHeaderCard(container: HTMLElement) {
 
 describe('DocumentPanelHeader', () => {
   beforeEach(async () => {
-    setTools(EMPTY_TOOLS)
+    setFeatures(EMPTY_FEATURES)
     setPaneActions([])
     setPaneRouter()
     setStructureTool()
@@ -224,8 +225,8 @@ describe('DocumentPanelHeader', () => {
       expect(queryHeaderCard(container)).toBeNull()
     })
 
-    it('renders the bar when a contributed tool is the only thing in it', async () => {
-      setTools(buildResolvedTools({without: ['versionPicker', 'copyActions'], header: [PIN]}))
+    it('renders the bar when a contributed header feature is the only thing in it', async () => {
+      setFeatures(buildResolvedFeatures({without: ['versionPicker', 'copyActions'], header: [PIN]}))
 
       const {container} = await renderHeader()
 
@@ -233,9 +234,19 @@ describe('DocumentPanelHeader', () => {
       expect(screen.getByTestId('tool-pin')).toBeInTheDocument()
     })
 
-    it('renders the bar when a menu tool is the only thing in it', async () => {
-      setTools(
-        buildResolvedTools({
+    it('renders nothing when the contributed header feature is the only thing taken away', async () => {
+      setFeatures(buildResolvedFeatures({without: ['versionPicker', 'copyActions']}))
+      setDocumentPane({menuItemGroups: [{id: 'inspectors'}]})
+
+      const {container} = await renderHeader()
+
+      expect(queryHeaderCard(container)).toBeNull()
+      expect(screen.queryByTestId('tool-pin')).toBeNull()
+    })
+
+    it('renders the bar when a menu feature is the only thing in it', async () => {
+      setFeatures(
+        buildResolvedFeatures({
           without: ['versionPicker', 'copyActions', 'titleBar'],
           menu: [BOOKMARK],
         }),
@@ -248,7 +259,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('renders the bar when the version picker is the only thing in it', async () => {
-      setTools(buildResolvedTools({without: ['copyActions']}))
+      setFeatures(buildResolvedFeatures({without: ['copyActions']}))
 
       const {container} = await renderHeader()
 
@@ -256,7 +267,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('renders the bar when the copy actions are the only thing in it', async () => {
-      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
+      setFeatures(buildResolvedFeatures(COPY_ACTIONS_ONLY))
 
       const {container} = await renderHeader()
 
@@ -327,7 +338,7 @@ describe('DocumentPanelHeader', () => {
 
   describe('the overflow button', () => {
     beforeEach(() => {
-      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
+      setFeatures(buildResolvedFeatures(COPY_ACTIONS_ONLY))
     })
 
     it('is absent when there are no overflow nodes and no pane actions', async () => {
@@ -361,8 +372,8 @@ describe('DocumentPanelHeader', () => {
       expect(screen.queryByTestId('pane-context-menu-button')).toBeNull()
     })
 
-    it('renders when a menu tool is its only content', async () => {
-      setTools(buildResolvedTools({...COPY_ACTIONS_ONLY, menu: [BOOKMARK]}))
+    it('renders when a menu feature is its only content', async () => {
+      setFeatures(buildResolvedFeatures({...COPY_ACTIONS_ONLY, menu: [BOOKMARK]}))
 
       await renderHeader()
 
@@ -395,7 +406,7 @@ describe('DocumentPanelHeader', () => {
 
   describe('the version picker', () => {
     it('renders the perspective list when versionPicker is in the resolution', async () => {
-      setTools(buildResolvedTools())
+      setFeatures(buildResolvedFeatures())
 
       await renderHeader()
 
@@ -404,7 +415,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('omits the perspective list when versionPicker is not in the resolution', async () => {
-      setTools(buildResolvedTools({without: ['versionPicker']}))
+      setFeatures(buildResolvedFeatures({without: ['versionPicker']}))
 
       await renderHeader()
 
@@ -413,7 +424,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('renders the target badges when versionPicker is in the resolution', async () => {
-      setTools(buildResolvedTools())
+      setFeatures(buildResolvedFeatures())
 
       await renderHeader({config: DOCUMENT_GROUP_INVENTORY})
 
@@ -422,7 +433,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('omits the target badges when versionPicker is not in the resolution', async () => {
-      setTools(buildResolvedTools({without: ['versionPicker']}))
+      setFeatures(buildResolvedFeatures({without: ['versionPicker']}))
 
       await renderHeader({config: DOCUMENT_GROUP_INVENTORY})
 
@@ -433,7 +444,7 @@ describe('DocumentPanelHeader', () => {
 
   describe('the copy actions', () => {
     it('renders one copy button when copyActions is in the resolution', async () => {
-      setTools(buildResolvedTools())
+      setFeatures(buildResolvedFeatures())
 
       await renderHeader()
 
@@ -443,7 +454,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('omits the copy button when copyActions is not in the resolution', async () => {
-      setTools(buildResolvedTools({without: ['copyActions']}))
+      setFeatures(buildResolvedFeatures({without: ['copyActions']}))
 
       await renderHeader()
 
@@ -453,7 +464,7 @@ describe('DocumentPanelHeader', () => {
 
   describe('presence', () => {
     it('renders the avatars whenever somebody else is in the document', async () => {
-      setTools(buildResolvedTools())
+      setFeatures(buildResolvedFeatures())
       await setPresence(2)
 
       await renderHeader()
@@ -463,7 +474,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('omits the avatars when nobody is in the document', async () => {
-      setTools(buildResolvedTools())
+      setFeatures(buildResolvedFeatures())
 
       await renderHeader()
 
@@ -471,9 +482,9 @@ describe('DocumentPanelHeader', () => {
     })
   })
 
-  describe('contributed menu tools', () => {
+  describe('contributed menu features', () => {
     it('renders one as a menu item that fires its onAction on click', async () => {
-      setTools(buildResolvedTools({...COPY_ACTIONS_ONLY, menu: [BOOKMARK]}))
+      setFeatures(buildResolvedFeatures({...COPY_ACTIONS_ONLY, menu: [BOOKMARK]}))
 
       await renderHeader()
       await userEvent.click(screen.getByTestId('pane-context-menu-button'))
@@ -485,7 +496,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('renders them after the built-in items', async () => {
-      setTools(buildResolvedTools({...COPY_ACTIONS_ONLY, menu: [BOOKMARK]}))
+      setFeatures(buildResolvedFeatures({...COPY_ACTIONS_ONLY, menu: [BOOKMARK]}))
 
       await renderHeader({menuItems: [OVERFLOW_MENU_ITEM]})
       await userEvent.click(screen.getByTestId('pane-context-menu-button'))
@@ -498,7 +509,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('renders none when the resolution contributes none', async () => {
-      setTools(buildResolvedTools(COPY_ACTIONS_ONLY))
+      setFeatures(buildResolvedFeatures(COPY_ACTIONS_ONLY))
 
       await renderHeader({menuItems: [OVERFLOW_MENU_ITEM]})
       await userEvent.click(screen.getByTestId('pane-context-menu-button'))
@@ -507,9 +518,9 @@ describe('DocumentPanelHeader', () => {
     })
   })
 
-  describe('contributed tools', () => {
+  describe('contributed header features', () => {
     it('renders them in the order the resolution left them', async () => {
-      setTools(buildResolvedTools({header: [PIN, FLAG]}))
+      setFeatures(buildResolvedFeatures({header: [PIN, FLAG]}))
 
       await renderHeader()
 
@@ -519,8 +530,8 @@ describe('DocumentPanelHeader', () => {
       expect(pin.compareDocumentPosition(flag)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
     })
 
-    it('renders an enabled tool enabled', async () => {
-      setTools(buildResolvedTools({header: [PIN]}))
+    it('renders an enabled feature enabled', async () => {
+      setFeatures(buildResolvedFeatures({header: [PIN]}))
 
       await renderHeader()
 
@@ -528,7 +539,7 @@ describe('DocumentPanelHeader', () => {
     })
 
     it('renders none when the resolution contributes none', async () => {
-      setTools(buildResolvedTools())
+      setFeatures(buildResolvedFeatures())
 
       await renderHeader()
 
@@ -538,7 +549,7 @@ describe('DocumentPanelHeader', () => {
   })
 
   it('leaves a default resolution with everything in it', async () => {
-    setTools(buildResolvedTools({header: [PIN]}))
+    setFeatures(buildResolvedFeatures({header: [PIN]}))
     await setPresence(2)
 
     await renderHeader({menuItems: [OVERFLOW_MENU_ITEM]})

@@ -1,5 +1,5 @@
 import negate from 'lodash-es/negate.js'
-import {type DocumentMenuTool} from 'sanity'
+import {type DocumentMenuFeature} from 'sanity'
 
 import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'
 import {type DocumentFieldMenuActionNode, type PaneMenuItem, type PaneMenuItemGroup} from './types'
@@ -22,9 +22,9 @@ export function resolveMenuNodes(params: {
   fieldActions?: DocumentFieldMenuActionNode[]
   menuItems: PaneMenuItem[]
   menuItemGroups: PaneMenuItemGroup[]
-  menuTools?: readonly DocumentMenuTool[]
+  menuFeatures?: readonly DocumentMenuFeature[]
 }): _PaneMenuNode[] {
-  const {fieldActions = [], menuItems, menuItemGroups, menuTools = []} = params
+  const {fieldActions = [], menuItems, menuItemGroups, menuFeatures = []} = params
 
   const nodes: _PaneMenuNode[] = []
 
@@ -116,18 +116,18 @@ export function resolveMenuNodes(params: {
     }
   }
 
-  return [...ungroupedItems, ...groups, ...nodes, ...menuTools.map(mapMenuToolToPaneMenuNode)]
+  return [...ungroupedItems, ...groups, ...nodes, ...menuFeatures.map(mapMenuFeatureToPaneMenuNode)]
 }
 
-function mapMenuToolToPaneMenuNode(tool: DocumentMenuTool): _PaneMenuItem {
+function mapMenuFeatureToPaneMenuNode(feature: DocumentMenuFeature): _PaneMenuItem {
   return {
     type: 'item',
-    key: `tool-${tool.id}`,
-    hotkey: tool.shortcut,
-    icon: tool.icon,
-    onAction: tool.onAction,
+    key: `feature-${feature.name}`,
+    hotkey: feature.toolbar.shortcut,
+    icon: feature.toolbar.icon,
+    onAction: feature.toolbar.onAction,
     renderAsButton: false,
-    title: tool.title,
+    title: feature.toolbar.title,
   }
 }
 
