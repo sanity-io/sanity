@@ -23,7 +23,7 @@ export function MetaInfo(props: MetaInfoProps) {
     <Flex padding={2} alignItems="center">
       {IconComponent && (
         <Box padding={2} as={markRemoved ? 'del' : 'div'}>
-          <Icon icon={IconComponent as IconProps['icon']} size={4} />
+          <Icon icon={IconComponent as IconProps['icon']} size={4} style={{color: 'inherit'}} />
         </Box>
       )}
 
