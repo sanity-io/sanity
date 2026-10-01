@@ -609,6 +609,11 @@ revealed. Two consequences for Suspense code:
   loading screen, with no boundary of its own, and the request goes out alongside the lazy layout
   chunks. The tasks, scheduled publishing and comments plugins do this (`TasksStudioProvider` →
   `TasksFeaturesPromiseContext` → `useTasksFeaturesPromise` → `TasksEnabledProvider`).
+- Never `lazy()` a `studio.components.layout` or `studio.components.provider` component, and do
+  not put a `<Suspense>` at its top level: both render before the studio's first paint, under
+  `StudioLayout`'s own boundary, so a lazy chunk only delays the loading screen's replacement and
+  a second boundary flips between fallbacks. `pickLayoutComponent` / `pickProviderComponent` warn
+  about both in development (`warnIfSuspendsOnCriticalPath`).
 - To unit test a component that reads such a promise from a context, provide an already settled
   one: `Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value})` satisfies
   `ObservablePromise<T>` and `use()` reads it synchronously, so `renderHook` works without a
