@@ -30,7 +30,7 @@ class UnknownType {
 
 const TYPE_TYPE = {name: 'type', type: null}
 
-const FUTURE_RESERVED = ['any', 'time', 'date']
+const FUTURE_RESERVED = ['any', 'time']
 
 export function traverseSchema(
   types: SchemaTypeDef[] = [],
