@@ -1,6 +1,20 @@
-import {expect} from '@playwright/test'
+import {expect, type Page} from '@playwright/test'
 
 import {test} from '../../studio-test'
+
+/**
+ * Waits for the navbar to finish its feature-gated startup render.
+ *
+ * `TasksStudioLayout` renders the layout without its providers until the startup `/features`
+ * request resolves and with them afterwards, which remounts the whole layout, navbar included,
+ * up to about a second after first paint. A help menu opened before that point is torn down
+ * with the layout and nothing reopens it. The tasks toolbar button is rendered by that same
+ * enabled tree, so once it is on screen the navbar is settled. sanity-io/sanity#15111 removes
+ * the remount itself.
+ */
+async function waitForNavbarToSettle(page: Page) {
+  await expect(page.getByTestId('tasks-toolbar')).toBeVisible({timeout: 30_000})
+}
 
 test.describe('auto-updating studio behavior', () => {
   test('should facilitate reload if in auto-updating studio, and version is higher than minversion from importmap', async ({
@@ -30,7 +44,8 @@ test.describe('auto-updating studio behavior', () => {
 
     await page.goto(baseURL ?? '', {waitUntil: 'domcontentloaded'})
 
-    // Inject a script tag with importmap into the page
+    // Inject a script tag with importmap into the page. The studio reads the import map once,
+    // on the layout's first render, so this has to happen before the startup wait below.
     await page.evaluate(() => {
       const importMap = {
         imports: {
@@ -42,6 +57,8 @@ test.describe('auto-updating studio behavior', () => {
       script.textContent = JSON.stringify(importMap)
       document.head.appendChild(script)
     })
+
+    await waitForNavbarToSettle(page)
 
     // Wait for the resources menu button to be ready
     const resourcesMenuButton = page.getByTestId('button-resources-menu')
@@ -83,6 +100,7 @@ test.describe('deprecated studio version', () => {
     })
 
     await page.goto(baseURL ?? '', {waitUntil: 'domcontentloaded'})
+    await waitForNavbarToSettle(page)
 
     const resourcesMenuButton = page.getByTestId('button-resources-menu')
     await expect(resourcesMenuButton).toBeVisible()
