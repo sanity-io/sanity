@@ -83,6 +83,17 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // Temporary workaround for @module-federation/runtime-core declarations referencing the
+  // undeclared type name 'ResourceLoadContext' (dist/remote/index.d.ts). This originates in
+  // node_modules and does not affect runtime behavior. Remove once @module-federation/runtime-core
+  // ships declarations that declare (or stop referencing) that name.
+  if (
+    code === 2304 &&
+    file.fileName.includes('/node_modules/@module-federation/runtime-core/dist/')
+  ) {
+    return false
+  }
+
   // Temporary workaround for @sanity/cli-core declarations importing optional React compiler plugin
   // peer types from "babel-plugin-react-compiler". This originates in node_modules and does not
   // affect runtime behavior.
