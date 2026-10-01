@@ -21,7 +21,7 @@ index 65d609878f6ffff59fd27566fd0d70cedeeaec47..b0ebed9bd6bc82f4bd591a7f31f5d987
     * Invalidates every non-`node_modules` module in the compiler's module graph and runner
     * cache, forcing the next {@link Compiler.processVanillaFile} to re-evaluate. The extracted
 diff --git a/dist/index.mjs b/dist/index.mjs
-index 9ad2ccc99b2d596b89d0cc5a8362e08017249dd4..6f8d6082aafb6b8ff58e23098e86c0f62d31cda6 100644
+index 9ad2ccc99b2d596b89d0cc5a8362e08017249dd4..fd6721a0537b02fae070b1cb7ab4802c349afc07 100644
 --- a/dist/index.mjs
 +++ b/dist/index.mjs
 @@ -109,6 +109,10 @@ async function createCompilerServer({ root, identifiers, viteConfig, enableFileW
@@ -69,7 +69,12 @@ index 9ad2ccc99b2d596b89d0cc5a8362e08017249dd4..6f8d6082aafb6b8ff58e23098e86c0f6
  		async invalidateAllModules() {
  			let { server, runner } = await serverPromise;
  			for (let [id, node] of runner.evaluatedModules.idToModuleMap) id.includes("node_modules") || runner.evaluatedModules.invalidateModule(node);
-@@ -373,7 +381,21 @@ function vanillaExtractPlugin({ identifiers, pluginFilter, mode = "emitCss" } =
+@@ -369,11 +377,25 @@ function vanillaExtractPlugin({ identifiers, pluginFilter, mode = "emitCss" } =
+ 			identifiers: getIdentOption(),
+ 			cssImportSpecifier: fileIdToVirtualId,
+ 			viteConfig,
+-			enableFileWatcher: !isBuild
++			enableFileWatcher: !1
  		});
  	}, ensureCompiler = () => (compilerReady ??= initializeCompiler(), compilerReady), ensureCssForVirtualId = async (absoluteVirtualId) => {
  		let fileId = virtualIdToFileId(absoluteVirtualId);
