@@ -41,6 +41,7 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
+import {documentFormOnly} from './plugins/document-form-only/plugin'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
@@ -822,5 +823,16 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+  },
+  {
+    name: 'document-form-only',
+    title: 'Document form only',
+    subtitle: 'A single document form: no navbar, no structure tool, no document form toolbar',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    auth: sanitySandboxAuth,
+    basePath: '/document-form-only',
+    plugins: [documentFormOnly()],
   },
 ]) as WorkspaceOptions[]
