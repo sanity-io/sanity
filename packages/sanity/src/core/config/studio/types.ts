@@ -21,6 +21,9 @@ export interface LayoutProps {
  * @hidden
  * @beta */
 export interface ProviderProps {
+  /** The rest of the studio. Render it through `renderDefault(props)`, which also lets the other
+   * providers in the chain wrap it; rendering it directly skips them. */
+  children: React.ReactNode
   renderDefault: (props: ProviderProps) => React.JSX.Element
 }
 
