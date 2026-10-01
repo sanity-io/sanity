@@ -321,6 +321,9 @@ const defaultWorkspace = defineConfig({
   },
   document: {
     actions: (prev, ctx) => {
+      if (ctx.schemaType === 'house') {
+        return prev.filter(({action}) => action === 'publish')
+      }
       if (ctx.schemaType === 'restrictedVersionActionsTest') {
         return prev.filter(({action}) => action === 'publish')
       }
@@ -334,6 +337,8 @@ const defaultWorkspace = defineConfig({
       return prev
     },
     tools: documentTools,
+    inspectors: (prev, ctx) => (ctx.documentType === 'house' ? [] : prev),
+    unstable_fieldActions: (prev, ctx) => (ctx.documentType === 'house' ? [] : prev),
   },
   releases: {
     actions: (prev, ctx) => {
