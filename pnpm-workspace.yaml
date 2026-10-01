@@ -150,6 +150,13 @@ overrides:
   'vite@8.3.1>rolldown': '1.2.9'
   vitest: 'catalog:'
 
+# Applies https://github.com/sanity-io/pkg-utils/pull/3536 so editing a `.css.ts` file under
+# `sanity dev` with `unstable_bundledDev` hot-updates its styles instead of serving the CSS
+# compiled at startup until the dev server restarts. Delete this entry and `patches/` when
+# bumping `@sanity/vanilla-extract-vite-plugin` to the release that includes the fix.
+patchedDependencies:
+  '@sanity/vanilla-extract-vite-plugin@0.2.21': patches/@sanity__vanilla-extract-vite-plugin@0.2.21.patch
+
 preferWorkspacePackages: true
 
 trustPolicy: no-downgrade

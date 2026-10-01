@@ -1,0 +1,125 @@
+diff --git a/dist/index.d.mts b/dist/index.d.mts
+index 65d609878f6ffff59fd27566fd0d70cedeeaec47..b0ebed9bd6bc82f4bd591a7f31f5d987ef95e70d 100644
+--- a/dist/index.d.mts
++++ b/dist/index.d.mts
+@@ -42,6 +42,17 @@ interface Compiler {
+    * original chain). Stops at processed vanilla-extract module boundaries.
+    */
+   findImporterTree(filePath: string, transformedVanillaModules: ReadonlySet<string>): Promise<Set<EnvironmentModuleNode>>;
++  /**
++   * Invalidates a changed file and everything importing it in the compiler's module graph and
++   * runner cache, so the next {@link Compiler.processVanillaFile} re-evaluates the edited code;
++   * a deleted file's extracted CSS is dropped as well. The compiler's file watcher does the
++   * same, but asynchronously: call this from a `watchChange` hook when the consuming bundler
++   * re-runs transforms on a watcher of its own (Rolldown's dev engine in Vite's bundled dev
++   * mode, watch-mode builds), which would otherwise race it.
++   */
++  invalidateFile(filePath: string, options?: {
++    deleted?: boolean;
++  }): Promise<void>;
+   /**
+    * Invalidates every non-`node_modules` module in the compiler's module graph and runner
+    * cache, forcing the next {@link Compiler.processVanillaFile} to re-evaluate. The extracted
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 9ad2ccc99b2d596b89d0cc5a8362e08017249dd4..6f8d6082aafb6b8ff58e23098e86c0f62d31cda6 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -109,6 +109,10 @@ async function createCompilerServer({ root, identifiers, viteConfig, enableFileW
+ 		base: void 0,
+ 		configFile: !1,
+ 		root,
++		experimental: {
++			...viteConfig.experimental,
++			bundledDev: !1
++		},
+ 		appType: "custom",
+ 		server: {
+ 			...viteConfig.server,
+@@ -176,16 +180,16 @@ async function createCompilerServer({ root, identifiers, viteConfig, enableFileW
+ }
+ /** @public */
+ function createCompiler({ root, identifiers = "debug", cssImportSpecifier = (filePath) => `${filePath}.vanilla.css`, viteConfig = {}, enableFileWatcher = !0 }) {
+-	let processVanillaFileCache = /* @__PURE__ */ new Map(), cssCache = new NormalizedMap(root), classRegistrationsByModuleId = new NormalizedMap(root), serverPromise = createCompilerServer({
++	let processVanillaFileCache = /* @__PURE__ */ new Map(), cssCache = new NormalizedMap(root), classRegistrationsByModuleId = new NormalizedMap(root), pruneFile = (filePath) => {
++		cssCache.delete(filePath), classRegistrationsByModuleId.delete(filePath);
++		let moduleId = normalizePath(filePath);
++		for (let cacheKey of processVanillaFileCache.keys()) cacheKey.startsWith(`${moduleId}|`) && processVanillaFileCache.delete(cacheKey);
++	}, serverPromise = createCompilerServer({
+ 		root,
+ 		identifiers,
+ 		viteConfig,
+ 		enableFileWatcher,
+-		onFileRemoved(filePath) {
+-			cssCache.delete(filePath), classRegistrationsByModuleId.delete(filePath);
+-			let moduleId = normalizePath(filePath);
+-			for (let cacheKey of processVanillaFileCache.keys()) cacheKey.startsWith(`${moduleId}|`) && processVanillaFileCache.delete(cacheKey);
+-		}
++		onFileRemoved: pruneFile
+ 	});
+ 	return {
+ 		async processVanillaFile(filePath, options = {}) {
+@@ -282,6 +286,10 @@ function createCompiler({ root, identifiers = "debug", cssImportSpecifier = (fil
+ 			let { server } = await serverPromise, moduleNode = server.environments.ssr.moduleGraph.getModuleById(normalizePath(filePath));
+ 			return moduleNode ? findImporterTree(moduleNode, transformedVanillaModules) : /* @__PURE__ */ new Set();
+ 		},
++		async invalidateFile(filePath, { deleted = !1 } = {}) {
++			let { server, runner } = await serverPromise;
++			filePath = normalizePath(isAbsolute(filePath) ? filePath : join(root, filePath)), server.environments.ssr.moduleGraph.onFileChange(filePath), invalidateRunnerFile(runner, filePath), deleted && pruneFile(filePath);
++		},
+ 		async invalidateAllModules() {
+ 			let { server, runner } = await serverPromise;
+ 			for (let [id, node] of runner.evaluatedModules.idToModuleMap) id.includes("node_modules") || runner.evaluatedModules.invalidateModule(node);
+@@ -373,7 +381,21 @@ function vanillaExtractPlugin({ identifiers, pluginFilter, mode = "emitCss" } =
+ 		});
+ 	}, ensureCompiler = () => (compilerReady ??= initializeCompiler(), compilerReady), ensureCssForVirtualId = async (absoluteVirtualId) => {
+ 		let fileId = virtualIdToFileId(absoluteVirtualId);
+-		return cssFileFilter.test(fileId) ? (await ensureCompiler(), compiler ? (await compiler.processVanillaFile(fileId, { outputCss: !0 }), transformedModules.add(fileId), compiler.getCssForFile(fileId)?.css || null) : null) : compiler && compiler.getCssForFile(fileId)?.css || null;
++		if (!cssFileFilter.test(fileId)) {
++			let css = compiler?.getCssForFile(fileId)?.css;
++			return css ? {
++				css,
++				watchFiles: []
++			} : null;
++		}
++		if (await ensureCompiler(), !compiler) return null;
++		let { watchFiles } = await compiler.processVanillaFile(fileId, { outputCss: !0 });
++		transformedModules.add(fileId);
++		let css = compiler.getCssForFile(fileId)?.css;
++		return css ? {
++			css,
++			watchFiles: [.../* @__PURE__ */ new Set([fileId, ...watchFiles])].filter((file) => !file.includes("node_modules"))
++		} : null;
+ 	};
+ 	return [{
+ 		name: `${PLUGIN_NAMESPACE}-inline-dev-css`,
+@@ -419,6 +441,9 @@ function vanillaExtractPlugin({ identifiers, pluginFilter, mode = "emitCss" } =
+ 		closeWatcher() {
+ 			return compiler?.close();
+ 		},
++		async watchChange(id, { event }) {
++			await compiler?.invalidateFile(id, { deleted: event === "delete" });
++		},
+ 		transform: {
+ 			filter: { id: CSS_FILE_ID_FILTER },
+ 			async handler(_code, id, options) {
+@@ -465,14 +490,17 @@ function vanillaExtractPlugin({ identifiers, pluginFilter, mode = "emitCss" } =
+ 		},
+ 		load: {
+ 			filter: { id: VIRTUAL_CSS_ID_FILTER },
+-			async handler(id) {
++			async handler(id, options) {
+ 				let [validId = id] = id.split("?");
+ 				if (!isVirtualId(validId)) return;
+ 				let absoluteId = getAbsoluteId({
+ 					filePath: validId,
+ 					root: config.root
+-				}), css = await ensureCssForVirtualId(absoluteId);
+-				if (css) return css;
++				}), result = await ensureCssForVirtualId(absoluteId);
++				if (result) {
++					if (!isBuild && !options?.ssr) for (let file of result.watchFiles) this.addWatchFile(file);
++					return result.css;
++				}
+ 			}
+ 		}
+ 	}];
