@@ -39,6 +39,9 @@ const FILTER_TABS_STYLE: CSSProperties = {
  * gains a leading checkbox column (select-all in the header row, per-row checkboxes) and the command
  * lane swaps to a bulk toolbar while a selection exists.
  *
+ * Bulk actions that honour `document.actions` follow the rule documented under "Bulk selections"
+ * in `docs/CORE_CONCEPTS.md`.
+ *
  * @internal
  */
 export interface DocumentTableSelection<Row = unknown> {
