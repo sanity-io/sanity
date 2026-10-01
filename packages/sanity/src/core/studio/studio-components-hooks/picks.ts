@@ -27,7 +27,9 @@ export function pickLayoutComponent(plugin: PluginOptions): ComponentType {
 }
 
 export function pickProviderComponent(plugin: PluginOptions): ComponentType<{children: ReactNode}> {
-  return plugin.studio?.components?.provider as unknown as ComponentType<{children: ReactNode}>
+  const provider = plugin.studio?.components?.provider
+  warnIfSuspendsOnCriticalPath('studio.components.provider', plugin.name, provider)
+  return provider as unknown as ComponentType<{children: ReactNode}>
 }
 
 export function pickActiveToolLayoutComponent(
