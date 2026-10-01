@@ -1,10 +1,9 @@
-import {type SanityClient} from '@sanity/client'
 import {act, render, screen} from '@testing-library/react'
 import {type ReactNode, Suspense, use} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
-import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../test/mocks/mockSanityClient'
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspace} from '../../../studio/workspace'
 import {
@@ -20,18 +19,15 @@ vi.mock('../../../studio/workspace', () => ({useWorkspace: vi.fn()}))
 const useClientMock = vi.mocked(useClient)
 const useWorkspaceMock = vi.mocked(useWorkspace)
 
-const requestMock = vi.fn()
+const requestCallback = vi.fn()
 
 beforeEach(() => {
   cachedUsedScheduledPublishing.clear()
   useWorkspaceMock.mockReturnValue({
-    projectId: 'projectId',
-    dataset: 'dataset',
+    projectId: 'mock-project-id',
+    dataset: 'mock-data-set',
   } as ReturnType<typeof useWorkspace>)
-  useClientMock.mockReturnValue({
-    config: () => ({dataset: 'dataset', projectId: 'projectId'}),
-    observable: {request: requestMock},
-  } as unknown as SanityClient)
+  useClientMock.mockReturnValue(createMockSanityClientAsClient({requestCallback}))
 })
 
 function Leaf({promise}: {promise: ObservablePromise<HasUsedScheduledPublishing>}) {
@@ -60,29 +56,29 @@ describe('useHasUsedScheduledPublishingObservable', () => {
     await mount(<Parent explicitEnabled isWorkspaceEnabled />)
 
     expect(screen.getByTestId('used')).toHaveTextContent('used')
-    expect(requestMock).not.toHaveBeenCalled()
+    expect(requestCallback).not.toHaveBeenCalled()
   })
 
   it('reports not used without probing when the workspace disabled the feature', async () => {
     await mount(<Parent isWorkspaceEnabled={false} />)
 
     expect(screen.getByTestId('used')).toHaveTextContent('not-used')
-    expect(requestMock).not.toHaveBeenCalled()
+    expect(requestCallback).not.toHaveBeenCalled()
   })
 
   it('probes for existing schedules otherwise and reports the answer', async () => {
-    requestMock.mockReturnValue(of({schedules: [{id: 'sch-1'}]}))
+    requestCallback.mockReturnValue({statusCode: 200, data: {schedules: [{id: 'sch-1'}]}})
 
     await mount(<Parent isWorkspaceEnabled />)
 
     expect(screen.getByTestId('used')).toHaveTextContent('used')
-    expect(requestMock).toHaveBeenCalledWith(
-      expect.objectContaining({url: '/schedules/projectId/dataset?limit=1'}),
+    expect(requestCallback).toHaveBeenCalledWith(
+      expect.objectContaining({url: '/schedules/mock-project-id/mock-data-set?limit=1'}),
     )
   })
 
   it('reports not used when the probe finds nothing', async () => {
-    requestMock.mockReturnValue(of({schedules: []}))
+    requestCallback.mockReturnValue({statusCode: 200, data: {schedules: []}})
 
     await mount(<Parent isWorkspaceEnabled />)
 

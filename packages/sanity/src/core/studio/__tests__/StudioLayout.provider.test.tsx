@@ -1,4 +1,3 @@
-import {type SanityClient} from '@sanity/client'
 import {act, render, screen} from '@testing-library/react'
 import {use, useContext, useMemo} from 'react'
 import {useObservablePromise} from 'react-rx'
@@ -6,7 +5,6 @@ import {Subject} from 'rxjs'
 import {createContext} from 'sanity/_createContext'
 import {describe, expect, it} from 'vitest'
 
-import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {type LayoutProps, type ProviderProps} from '../../config/studio/types'
 import {type SingleWorkspace} from '../../config/types'
@@ -50,10 +48,7 @@ async function renderStudioLayout() {
     schema: {types: []},
     studio: {components: {provider: AnswerProvider, layout: AnswerLayout}},
   }
-  const TestProvider = await createTestProvider({
-    client: createMockSanityClient() as unknown as SanityClient,
-    config,
-  })
+  const TestProvider = await createTestProvider({config})
   // oxlint-disable-next-line testing-library/no-unnecessary-act -- the layout suspends during mount, and React only resumes work that suspended inside an awaited async `act`
   await act(async () => {
     render(

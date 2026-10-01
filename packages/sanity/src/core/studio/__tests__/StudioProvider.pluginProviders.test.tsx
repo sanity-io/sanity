@@ -1,10 +1,9 @@
-import {type SanityClient} from '@sanity/client'
 import {act, render, screen, waitFor} from '@testing-library/react'
 import {type ComponentType, lazy, use} from 'react'
 import {createContext} from 'sanity/_createContext'
 import {describe, expect, it, vi} from 'vitest'
 
-import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
+import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
 import {type LayoutProps, type ProviderProps} from '../../config/studio/types'
 import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
 import {StudioLayout} from '../StudioLayout'
@@ -53,7 +52,7 @@ const LazyAnswerLayout = lazy(() => {
 
 describe('StudioProvider with studio.components.provider', () => {
   it('wraps StudioLayout in the configured provider', {timeout: 30_000}, async () => {
-    const client = createMockSanityClient() as unknown as SanityClient
+    const client = createMockSanityClientAsClient()
     const config = {
       projectId: 'test',
       dataset: 'test',

@@ -24,6 +24,8 @@ import type {
   CommentsContextV2,
   CommentsEnabledContext,
   CommentsEnabledContextV2,
+  CommentsFeaturesPromiseContext,
+  CommentsFeaturesPromiseContextV2,
   CommentsIntentContext,
   CommentsOnboardingContext,
   CommentsOnboardingContextV2,
@@ -45,6 +47,7 @@ import type {
   DocumentDivergencesContextValue,
   DocumentFieldActionsContext,
   DocumentFieldActionsContextValue,
+  DocumentHistoryContext,
   DocumentIdContext,
   DocumentIdContextValue,
   DocumentLimitUpsellContext,
@@ -66,6 +69,7 @@ import type {
   FullscreenPTEContext,
   GetFormValueContext,
   GetFormValueContextValue,
+  HasUsedScheduledPublishingPromiseContext,
   HoveredFieldContext,
   HoveredFieldContextValue,
   IsLastPaneContext,
@@ -117,6 +121,7 @@ import type {
   RouterHistoryContext,
   ScheduledPublishingEnabledContext,
   ScheduledPublishingEnabledContextValue,
+  ScheduledPublishingFeaturePromiseContext,
   SchedulePublishUpsellContext,
   SchedulePublishUpsellContextValue,
   SchedulesContext,
@@ -139,6 +144,7 @@ import type {
   TableContext,
   TasksContext,
   TasksEnabledContext,
+  TasksFeaturesPromiseContext,
   TasksNavigationContext,
   TasksUpsellContext,
   UnclaimedProjectContext,
@@ -219,6 +225,12 @@ describe('sanity/_singletons', () => {
   test('CommentsEnabledContextV2', () => {
     expectTypeOf<typeof CommentsEnabledContextV2>().not.toBeNever()
   })
+  test('CommentsFeaturesPromiseContext', () => {
+    expectTypeOf<typeof CommentsFeaturesPromiseContext>().not.toBeNever()
+  })
+  test('CommentsFeaturesPromiseContextV2', () => {
+    expectTypeOf<typeof CommentsFeaturesPromiseContextV2>().not.toBeNever()
+  })
   test('CommentsIntentContext', () => {
     expectTypeOf<typeof CommentsIntentContext>().not.toBeNever()
   })
@@ -282,6 +294,9 @@ describe('sanity/_singletons', () => {
   test('DocumentFieldActionsContextValue', () => {
     expectTypeOf<DocumentFieldActionsContextValue>().toBeObject()
   })
+  test('DocumentHistoryContext', () => {
+    expectTypeOf<typeof DocumentHistoryContext>().not.toBeNever()
+  })
   test('DocumentIdContext', () => {
     expectTypeOf<typeof DocumentIdContext>().not.toBeNever()
   })
@@ -344,6 +359,9 @@ describe('sanity/_singletons', () => {
   })
   test('GetFormValueContextValue', () => {
     expectTypeOf<GetFormValueContextValue>().not.toBeNever()
+  })
+  test('HasUsedScheduledPublishingPromiseContext', () => {
+    expectTypeOf<typeof HasUsedScheduledPublishingPromiseContext>().not.toBeNever()
   })
   test('HoveredFieldContext', () => {
     expectTypeOf<typeof HoveredFieldContext>().not.toBeNever()
@@ -498,6 +516,9 @@ describe('sanity/_singletons', () => {
   test('ScheduledPublishingEnabledContextValue', () => {
     expectTypeOf<ScheduledPublishingEnabledContextValue>().not.toBeNever()
   })
+  test('ScheduledPublishingFeaturePromiseContext', () => {
+    expectTypeOf<typeof ScheduledPublishingFeaturePromiseContext>().not.toBeNever()
+  })
   test('SchedulePublishUpsellContext', () => {
     expectTypeOf<typeof SchedulePublishUpsellContext>().not.toBeNever()
   })
@@ -563,6 +584,9 @@ describe('sanity/_singletons', () => {
   })
   test('TasksEnabledContext', () => {
     expectTypeOf<typeof TasksEnabledContext>().not.toBeNever()
+  })
+  test('TasksFeaturesPromiseContext', () => {
+    expectTypeOf<typeof TasksFeaturesPromiseContext>().not.toBeNever()
   })
   test('TasksNavigationContext', () => {
     expectTypeOf<typeof TasksNavigationContext>().not.toBeNever()

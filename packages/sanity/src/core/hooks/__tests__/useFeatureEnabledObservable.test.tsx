@@ -1,10 +1,10 @@
-import {type SanityClient} from '@sanity/client'
 import {act, render, screen} from '@testing-library/react'
 import {type ReactNode, Suspense, use} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
 import {useSource} from '../../studio/source'
 import {useClient} from '../useClient'
 import {
@@ -32,14 +32,12 @@ beforeEach(() => {
   const projectId = `project-${Math.random().toString(36).slice(2)}`
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useSourceMock.mockReturnValue({projectId} as ReturnType<typeof useSource>)
-  useClientMock.mockReturnValue({
-    observable: {
-      request: () => {
-        requestCount++
-        return response$.asObservable()
-      },
-    },
-  } as unknown as SanityClient)
+  const client = createMockSanityClientAsClient()
+  vi.spyOn(client.observable, 'request').mockImplementation(() => {
+    requestCount++
+    return response$.asObservable()
+  })
+  useClientMock.mockReturnValue(client)
 })
 
 // A mount that suspends must happen inside an awaited async `act` (see AGENTS.md)
