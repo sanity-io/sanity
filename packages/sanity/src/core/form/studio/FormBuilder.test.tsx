@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {defineType, type ObjectSchemaType} from '@sanity/types'
 import {act, render, type RenderResult, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type ComponentType, lazy, type ReactNode, Suspense, useMemo, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -275,14 +276,13 @@ describe('FormBuilder', () => {
 
     await screen.findByTestId('field-title', {}, {timeout: 10_000})
 
-    await waitFor(
-      () => {
-        expect(captured.documentId).toBe('doc-1')
-        expect(screen.getByText('doc-1')).toBeInTheDocument()
-      },
-      {timeout: 10_000},
-    )
+    await waitFor(() => expect(captured.documentId).toBe('doc-1'), {timeout: 10_000})
     expect(captured.documentId).not.toBe('root')
+
+    // The action's title is a menu item, and the menu is mounted only once its trigger is pressed.
+    await userEvent.click(await screen.findByTestId('field-actions-trigger'))
+
+    expect(await screen.findByText('doc-1')).toBeInTheDocument()
     expect(screen.queryByText('root')).not.toBeInTheDocument()
   })
 

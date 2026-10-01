@@ -49,9 +49,21 @@ function ProjectNameProbe({promise}: {promise: ObservablePromise<string | null>}
 }
 
 async function renderButton() {
-  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the probe reads the promise with use() during the hidden menu's yielding pre-render, which React's sync act reports as an unflushed suspension
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the probe reads the promise with use() during the hidden menu's yielding pre-render once it mounts, which React's sync act reports as an unflushed suspension
   await act(async () => {
     render(<WorkspaceMenuButton />, {wrapper})
+  })
+}
+
+/**
+ * Presses the button without the hover that `userEvent.pointer` adds (hover triggers the
+ * preload). The Studio `MenuButton` mounts the closed menu on pointer down.
+ */
+async function pressButton() {
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the press mounts the hidden menu, whose probe reads the promise with use(); see renderButton
+  await act(async () => {
+    // oxlint-disable-next-line testing-library/prefer-user-event -- the pointer down alone is the case under test
+    fireEvent.pointerDown(screen.getByRole('button', {name: /Workspace A/}))
   })
 }
 
@@ -101,16 +113,29 @@ describe('WorkspaceMenuButton', () => {
     )
   })
 
-  it('keeps the closed menu content mounted without subscribing any auth probe', async () => {
+  it('does not mount the closed menu content, so no auth probe exists at boot', async () => {
     await renderButton()
 
-    // Closed popovers keep children mounted (`<Activity>`, @sanity/ui v4).
+    // The Studio `MenuButton` leaves `menu` out until the button is pressed, focused or
+    // opened, so the closed menu is not in the DOM and no probe observable is created.
+    expect(screen.getByRole('button', {name: /Workspace A/})).toBeInTheDocument()
+    expect(screen.queryByTestId('manage-menu')).not.toBeInTheDocument()
+    expect(screen.queryByText('Workspace B')).not.toBeInTheDocument()
+    expect(mockProbeWorkspaceAuth).not.toHaveBeenCalled()
+    expect(probeSubscriptions.count).toBe(0)
+  })
+
+  it('mounts the menu on pointer down without subscribing any auth probe', async () => {
+    await renderButton()
+    await pressButton()
+
+    // The menu is now pre-rendered in the closed popover (`<Activity>`, @sanity/ui v4).
     // So: content is in the DOM, probe observables got created…
     expect(await screen.findByTestId('manage-menu')).toBeInTheDocument()
     expect(screen.getByText('Workspace B')).toBeInTheDocument()
     expect(mockProbeWorkspaceAuth).toHaveBeenCalledTimes(2)
 
-    // …but zero subscriptions = zero requests at boot.
+    // …but zero subscriptions = zero requests before the menu opens.
     // Why: with an initialValue, react-rx skips its render-phase warm-up
     // (react-rx#506). The subscription waits for commit, and hidden
     // Activity defers commit until the menu opens.
@@ -128,8 +153,13 @@ describe('WorkspaceMenuButton', () => {
     await waitFor(() => expect(probeSubscriptions.count).toBe(2))
   })
 
-  it('settles the project name from the visible button while the menu is still closed', async () => {
+  it('settles the project name from the visible button before the menu is mounted', async () => {
     await renderButton()
+
+    // The visible button owns the subscription, so the name is settled before any menu exists.
+    expect(projectNameSubscriptions.count).toBe(1)
+
+    await pressButton()
 
     expect(await screen.findByTestId('project-name')).toHaveTextContent('Sanity Studio Test Data')
     expect(screen.queryByTestId('project-name-pending')).not.toBeInTheDocument()

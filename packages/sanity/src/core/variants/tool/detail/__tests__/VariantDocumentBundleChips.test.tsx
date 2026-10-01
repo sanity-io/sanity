@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -96,9 +97,14 @@ describe('VariantDocumentBundleChips', () => {
     // Only the first bundle (published) renders inline; the fixed-width cell never crops.
     expect(screen.getByText('Published')).toBeInTheDocument()
     expect(screen.getByTestId('variant-bundle-chips-overflow')).toHaveTextContent('+2')
-    // Tooltip content stays mounted while closed, but the overflowed bundles are not visible.
-    expect(screen.getByText('Draft')).not.toBeVisible()
-    expect(screen.getByText('Summer launch')).not.toBeVisible()
+    // The overflowed bundles live in the badge's tooltip, whose content is mounted on hover.
+    expect(screen.queryByText('Draft')).not.toBeInTheDocument()
+    expect(screen.queryByText('Summer launch')).not.toBeInTheDocument()
+
+    await userEvent.hover(screen.getByTestId('variant-bundle-chips-overflow'))
+
+    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(screen.getByText('Summer launch')).toBeInTheDocument()
   })
 
   it('renders a single release chip with an intent link and no overflow badge', async () => {
@@ -140,6 +146,10 @@ describe('VariantDocumentBundleChips', () => {
 
     expect(screen.getByText('Fall campaign')).toBeInTheDocument()
     expect(screen.getByTestId('variant-bundle-chips-overflow')).toHaveTextContent('+1')
-    expect(screen.getByText('Summer launch')).not.toBeVisible()
+    expect(screen.queryByText('Summer launch')).not.toBeInTheDocument()
+
+    await userEvent.hover(screen.getByTestId('variant-bundle-chips-overflow'))
+
+    expect(screen.getByText('Summer launch')).toBeInTheDocument()
   })
 })
