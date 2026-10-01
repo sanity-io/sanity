@@ -37,7 +37,7 @@ import {
 } from './components/studioComponents'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {useTestVersionAction} from './documentActions/actions/TestVersionAction'
-import {documentTools} from './documentTools'
+import {documentFeatures} from './documentFeatures'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
@@ -336,9 +336,7 @@ const defaultWorkspace = defineConfig({
 
       return prev
     },
-    tools: documentTools,
-    inspectors: (prev, ctx) => (ctx.documentType === 'house' ? [] : prev),
-    unstable_fieldActions: (prev, ctx) => (ctx.documentType === 'house' ? [] : prev),
+    features: documentFeatures,
   },
   releases: {
     actions: (prev, ctx) => {
