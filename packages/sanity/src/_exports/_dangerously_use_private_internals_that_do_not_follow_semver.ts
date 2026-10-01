@@ -161,7 +161,7 @@ export {
   resolveConfig,
 } from '../core/config/resolveConfig'
 export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
-export {SchemaError} from '../core/config/SchemaError'
+export {SchemaError, type SchemaErrorContext} from '../core/config/SchemaError'
 export {type NavbarAction} from '../core/config/studio/types'
 export {
   type AsyncConfigPropertyReducer,

@@ -1,23 +1,17 @@
 import {useEffect, useRef} from 'react'
 import {useSyncObservable} from 'react-rx'
 
-import {useRecordDocumentHistoryEvent} from '../hooks/useRecordDocumentHistoryEvent'
+import {useDocumentHistoryRecorder} from '../hooks/useDocumentHistoryRecorder'
 import {useRenderingContextStore} from '../store/datastores'
 import {type EditStateFor} from '../store/document/document-pair/editState'
 import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWorkspace'
 
 /**
- * Capture Comlink `viewed` event.
- *
- * Event capture only occurs when Comlink is available.
- *
  * @internal
  */
-export function useComlinkViewHistory({editState}: {editState: EditStateFor}): void {
+export function useDocumentViewHistory({editState}: {editState: EditStateFor}): void {
   const renderingContextStore = useRenderingContextStore()
-  // Kept synchronous: capabilities emit once at boot and gate the history
-  // recording effect below; deferring only delays it. The store has already
-  // resolved them, so the effect can record on the mounting commit.
+  // Synchronous, so the effect can record on the mounting commit.
   const capabilities = useSyncObservable(
     renderingContextStore.capabilities,
     renderingContextStore.getCapabilities,
@@ -25,7 +19,7 @@ export function useComlinkViewHistory({editState}: {editState: EditStateFor}): v
   const {activeWorkspace} = useActiveWorkspace()
   const displayed = editState.version ?? editState.draft ?? editState.published
 
-  const {recordEvent} = useRecordDocumentHistoryEvent({
+  const {recordEvent} = useDocumentHistoryRecorder({
     resourceType: 'studio',
     documentId: displayed?._id ?? editState.id,
     documentType: editState.type,
@@ -40,9 +34,9 @@ export function useComlinkViewHistory({editState}: {editState: EditStateFor}): v
   useEffect(() => {
     const documentExists = editState.ready && displayed !== null
 
-    if (capabilities?.comlink && documentExists && !hasRecordedView.current) {
+    if (capabilities?.dashboard && documentExists && !hasRecordedView.current) {
       hasRecordedView.current = true
       recordEvent('viewed')
     }
-  }, [capabilities?.comlink, displayed, editState.ready, recordEvent])
+  }, [capabilities?.dashboard, displayed, editState.ready, recordEvent])
 }

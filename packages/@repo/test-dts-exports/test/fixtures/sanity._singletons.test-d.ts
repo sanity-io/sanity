@@ -80,6 +80,7 @@ import type {
   LoggedOutReasonContext,
   MediaLibraryIdsContext,
   MentionUserContext,
+  MountedToolsContext,
   NavbarContext,
   PackageVersionInfoContext,
   PackageVersionInfoContextValue,
@@ -388,6 +389,9 @@ describe('sanity/_singletons', () => {
   })
   test('MentionUserContext', () => {
     expectTypeOf<typeof MentionUserContext>().not.toBeNever()
+  })
+  test('MountedToolsContext', () => {
+    expectTypeOf<typeof MountedToolsContext>().not.toBeNever()
   })
   test('NavbarContext', () => {
     expectTypeOf<typeof NavbarContext>().not.toBeNever()

@@ -28,21 +28,21 @@ catalog:
   '@sanity/client': ^8.7.0
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.28.1
-  '@sanity/ui': ^4.2.7
+  '@sanity/tsdown-config': ^0.28.3
+  '@sanity/ui': ^4.3.0
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
   '@types/react-is': ^19.3.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.2.19
+  '@sanity/vanilla-extract-vite-plugin': ^0.2.21
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.1
   '@vitest/browser-playwright': ^5.0.1
   dequal: ^2.0.3
-  get-it: ^9.6.0
+  get-it: ^9.6.1
   jsdom: ^29.1.1
-  oxc-transform-react: ^0.151.0
+  oxc-transform-react: ^0.152.0
   playwright: 1.63.0
   react: ^19.3.0
   react-dom: ^19.3.0
@@ -53,10 +53,10 @@ catalog:
   styled-components: ^6.5.3
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
-  ui5: npm:@sanity/ui@5.0.0-alpha.11
+  ui5: npm:@sanity/ui@5.0.0-alpha.12
   tsdown: ^0.23.0
   typescript: ^7.0.2
-  vite: ^8.3.0
+  vite: ^8.3.1
   vitest: ^5.0.1
   vitest-browser-react: ^2.3.0
 
@@ -141,14 +141,13 @@ minimumReleaseAgeExclude:
   - 'yuku-*'
 
 overrides:
-  # Vite 8.3.0's bundled-dev client predates rolldown 1.2.9's requestLazy runtime API.
-  # Keep Vite's compiler and inlined browser runtime paired until Vite ships the updated client.
-  # Matching upstream fix: https://github.com/vitejs/vite/commit/9aecbbfa5fb5da4b9981c099cb9746a9fd210806
-  # (vite#23483). It is on Vite main but not in a published release yet (npm still at 8.3.0).
-  # Counter-pin tsdown so the package compiler stays on 1.2.9; `vite>rolldown` would otherwise
-  # hoist one 1.2.8 copy into tsdown as well.
-  'tsdown>rolldown': '~1.2.9'
-  'vite>rolldown': '1.2.8'
+  # Vite 8.3.1's bundled-dev client inlines rolldown 1.2.9's browser runtime, but its
+  # `rolldown: ~1.2.9` range resolves 1.2.10+, whose compiler emits `registerFactory(id, fn)`
+  # (rolldown#10915) against the inlined `registerFactory(id, kind, fn)`: every lazy `import()`
+  # and HMR update then fails with `factory.fn is not a function`. Scoped to 8.3.1 because the
+  # next Vite release serves the runtime from the installed rolldown instead
+  # (https://github.com/vitejs/vite/pull/23568), so delete this entry when bumping past 8.3.1.
+  'vite@8.3.1>rolldown': '1.2.9'
   vitest: 'catalog:'
 
 preferWorkspacePackages: true
@@ -158,8 +157,6 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 trustPolicyExclude:
   - '@sanity/cli'
-  - '@sanity/sdk@3.5.0'
-  - '@sanity/sdk-react@3.5.0'
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0

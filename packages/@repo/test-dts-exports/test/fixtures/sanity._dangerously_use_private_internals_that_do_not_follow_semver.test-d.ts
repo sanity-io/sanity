@@ -609,6 +609,7 @@ import type {
   SanityDefaultPreviewProps,
   SchedulesContext,
   SchemaError,
+  SchemaErrorContext,
   ScrollContainer,
   ScrollContainerProps,
   ScrollContextValue,
@@ -2715,6 +2716,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('SchemaError', () => {
     expectTypeOf<SchemaError>().not.toBeNever()
+  })
+  test('SchemaErrorContext', () => {
+    expectTypeOf<SchemaErrorContext>().toBeObject()
   })
   test('ScrollContainer', () => {
     expectTypeOf<typeof ScrollContainer>().not.toBeNever()

@@ -241,6 +241,7 @@ export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {createConfig, defineConfig} from '../core/config/defineConfig'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {createPlugin, definePlugin, type PluginFactory} from '../core/config/definePlugin'
+export {defineSingleton} from '../core/config/defineSingleton'
 export {
   type DocumentActionComponent,
   type DocumentActionConfirmDialogProps,
@@ -317,7 +318,7 @@ export {
   resolveConfig,
 } from '../core/config/resolveConfig'
 export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
-export {SchemaError} from '../core/config/SchemaError'
+export {SchemaError, type SchemaErrorContext} from '../core/config/SchemaError'
 export {
   type ActiveToolLayoutProps,
   type LayoutProps,
@@ -372,12 +373,15 @@ export {
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,
   type SchemaPluginOptions,
+  type SingletonDefinition,
+  type SingletonsResolver,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
   type SourceOptions,
   type TemplateResolver,
   type Tool,
+  type UnresolvedSingletonDefinition,
   type VariantConditionMap,
   type VariantConditions,
   type VariantConditionsContext,
@@ -1685,6 +1689,7 @@ export {
 } from '../core/templates/resolve'
 export {
   type InitialValueTemplateItem,
+  type ResolvedTemplate,
   type Template,
   type TemplateArrayFieldDefinition,
   type TemplateFieldDefinition,

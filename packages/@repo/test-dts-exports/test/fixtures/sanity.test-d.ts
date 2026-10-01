@@ -388,6 +388,7 @@ import type {
   defineSearchFilterOperators,
   defineSearchMachine,
   defineSearchOperator,
+  defineSingleton,
   defineType,
   Delay,
   DeleteDocumentGroupEvent,
@@ -1313,6 +1314,7 @@ import type {
   resolveConfig,
   ResolvedDocumentFeatures,
   resolveDiffComponent,
+  ResolvedTemplate,
   ResolvedUploader,
   resolveInitialObjectValue,
   resolveInitialValue,
@@ -1355,6 +1357,7 @@ import type {
   SchedulesContext,
   Schema,
   SchemaError,
+  SchemaErrorContext,
   SchemaPluginOptions,
   SchemaType,
   SchemaTypeDefinition,
@@ -1414,6 +1417,8 @@ import type {
   SingleDocReleaseProvider,
   SingleFieldSet,
   SingleMutationResult,
+  SingletonDefinition,
+  SingletonsResolver,
   SingleWorkspace,
   Size,
   sliceString,
@@ -1574,6 +1579,7 @@ import type {
   UnitFormatter,
   UniversalArrayInput,
   UnpublishDocumentEvent,
+  UnresolvedSingletonDefinition,
   UnscheduleDocumentVersionEvent,
   unset,
   unstable_useObserveDocument,
@@ -3034,6 +3040,9 @@ describe('sanity', () => {
   })
   test('defineSearchOperator', () => {
     expectTypeOf<typeof defineSearchOperator>().toBeFunction()
+  })
+  test('defineSingleton', () => {
+    expectTypeOf<typeof defineSingleton>().toBeFunction()
   })
   test('defineType', () => {
     expectTypeOf<typeof defineType>().toBeFunction()
@@ -5822,6 +5831,9 @@ describe('sanity', () => {
   test('resolveDiffComponent', () => {
     expectTypeOf<typeof resolveDiffComponent>().toBeFunction()
   })
+  test('ResolvedTemplate', () => {
+    expectTypeOf<ResolvedTemplate>().not.toBeNever()
+  })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()
   })
@@ -5947,6 +5959,9 @@ describe('sanity', () => {
   })
   test('SchemaError', () => {
     expectTypeOf<SchemaError>().not.toBeNever()
+  })
+  test('SchemaErrorContext', () => {
+    expectTypeOf<SchemaErrorContext>().toBeObject()
   })
   test('SchemaPluginOptions', () => {
     expectTypeOf<SchemaPluginOptions>().toBeObject()
@@ -6124,6 +6139,12 @@ describe('sanity', () => {
   })
   test('SingleMutationResult', () => {
     expectTypeOf<SingleMutationResult>().toBeObject()
+  })
+  test('SingletonDefinition', () => {
+    expectTypeOf<SingletonDefinition>().toBeObject()
+  })
+  test('SingletonsResolver', () => {
+    expectTypeOf<SingletonsResolver>().not.toBeNever()
   })
   test('SingleWorkspace', () => {
     expectTypeOf<SingleWorkspace>().not.toBeNever()
@@ -6607,6 +6628,9 @@ describe('sanity', () => {
   })
   test('UnpublishDocumentEvent', () => {
     expectTypeOf<UnpublishDocumentEvent>().toBeObject()
+  })
+  test('UnresolvedSingletonDefinition', () => {
+    expectTypeOf<UnresolvedSingletonDefinition>().not.toBeNever()
   })
   test('UnscheduleDocumentVersionEvent', () => {
     expectTypeOf<UnscheduleDocumentVersionEvent>().toBeObject()

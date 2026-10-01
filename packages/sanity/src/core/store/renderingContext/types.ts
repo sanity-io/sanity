@@ -1,3 +1,4 @@
+import {capabilities as hostCapabilities, type MessageBusConnection} from '@sanity/sdk/dashboard'
 import {type Observable} from 'rxjs'
 
 /**
@@ -29,12 +30,31 @@ export type CoreUiRenderingContext = BaseStudioRenderingContext<
 /**
  * @internal
  */
-export type StudioRenderingContext = DefaultRenderingContext | CoreUiRenderingContext
+export type MessageBusRenderingContext = BaseStudioRenderingContext<
+  'messageBus',
+  {
+    connection: MessageBusConnection
+  }
+>
 
 /**
  * @internal
  */
-export const capabilities = ['globalUserMenu', 'globalWorkspaceControl', 'comlink'] as const
+export type StudioRenderingContext =
+  | DefaultRenderingContext
+  | CoreUiRenderingContext
+  | MessageBusRenderingContext
+
+/**
+ * @internal
+ */
+export const capabilities = [
+  ...hostCapabilities,
+  'globalWorkspaceControl',
+  'comlink',
+  'messageBus',
+  'dashboard',
+] as const
 
 /**
  * @internal
@@ -63,6 +83,8 @@ export type RenderingContextStore = {
    * during render, on the same terms as `getRenderingContext`.
    */
   getCapabilities: () => CapabilityRecord | undefined
+  /** The connection to a message bus host, or `undefined` for any other rendering context. */
+  getMessageBusConnection: () => MessageBusConnection | undefined
 }
 
 /**

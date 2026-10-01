@@ -1656,7 +1656,7 @@ export interface StyleSection {
 }
 
 export interface StyleView {
-  id: 'ui5' | 'styled'
+  id: 'ui5' | 'styled' | 'css'
   label: string
   /** One-line reading guide shown above the view's sections. */
   hint: string
@@ -1680,7 +1680,8 @@ export const ALL_SCENARIOS = 'all'
  * The style-migration tab's sub-views, one per migration. UI v5 adoption is
  * the paired v5/v4 share chart per scenario (see `UI_PAIRS`; the panel puts
  * the all-scenarios adoption score above it, see UI_OVERVIEW_KEY);
- * styled-components is one section per registry metric, in registry order.
+ * styled-components and CSS weight are one section per registry metric, in
+ * registry order.
  * Within a section, one card per scenario — the Vitals layout, since the
  * question is the same: "how is this number doing, everywhere?" Views without
  * data are dropped, like the soak and settle ones. There is no "Other": a
@@ -1698,6 +1699,10 @@ export function styleViews(list: TrendSeries[]): StyleView[] {
     goal,
     series: perScenario.filter((entry) => styleLabel(entry) === id).sort(byTitle),
   })
+  const trackSections = (track: 'styled' | 'css') =>
+    STYLE_METRICS.filter((metric) => metric.track === track && metric.charted !== false).map(
+      (metric) => section(metric.label, metric.label, metric.goal),
+    )
   const views: StyleView[] = [
     {
       id: 'ui5',
@@ -1709,9 +1714,13 @@ export function styleViews(list: TrendSeries[]): StyleView[] {
       id: 'styled',
       label: 'styled-components',
       hint: 'The runtime-styling escape hatch on each scenario\u2019s page: rendered styled-components nodes, the distinct components behind them, and the CSS the library inserted at runtime (rules, bytes, share of all rules). Lower is better; every row applies to studio v5-era builds too.',
-      sections: STYLE_METRICS.filter(
-        (metric) => metric.track === 'styled' && metric.charted !== false,
-      ).map((metric) => section(metric.label, metric.label, metric.goal)),
+      sections: trackSections('styled'),
+    },
+    {
+      id: 'css',
+      label: 'CSS weight',
+      hint: 'All the CSS each scenario\u2019s page holds, whatever wrote it: linked stylesheets, <style> tags (styled-components included) and constructed sheets, as bytes and rules, then the part held by <style> tags on its own. Lower is better. Compare the login screen (loginReady), a tool with no document (toolReady, emptyToolReady) and a settled document form (synthetic) to see what each step adds.',
+      sections: trackSections('css'),
     },
   ]
   return views
@@ -1725,7 +1734,8 @@ export function styleViews(list: TrendSeries[]): StyleView[] {
  * styled-components nodes, inserted CSS bytes), with the shares recomputed
  * from the summed counts rather than averaged (Σ v5 ÷ Σ (v5 + v4); Σ inserted
  * rules ÷ Σ readable rules, the totals recovered from each scenario's rule
- * count and rule share). Sums count shared studio chrome once per scenario
+ * count and rule share); the CSS weight rows sum the same way. Sums count
+ * shared studio chrome once per scenario
  * page, so the number is "across the benchmark's pages", not "in the studio";
  * a shard that failed leaves its commit's sum short, which the weekly median
  * over that week's commits absorbs. Each point keeps the identity of the
@@ -1844,7 +1854,7 @@ export function aggregateStyleSeries(list: TrendSeries[]): TrendSeries[] {
   }
 
   for (const metric of STYLE_METRICS) {
-    if (metric.track !== 'styled' || metric.charted === false) continue
+    if (metric.track === 'ui5' || metric.charted === false) continue
     if (metric.unit === 'percent') {
       // The rule share is Σ inserted rules ÷ Σ readable rules, both read off
       // the `CSS rules` points (each carries its page's readable total, see

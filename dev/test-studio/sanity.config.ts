@@ -57,6 +57,7 @@ import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {newDocumentOptions} from './structure/resolveNewDocumentOptions'
+import {singletons} from './structure/resolveSingletons'
 import {structure} from './structure/resolveStructure'
 import {defaultDocumentNode} from './structure/resolveStructureDocumentNode'
 
@@ -157,6 +158,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         return defaultActions
       },
       newDocumentOptions,
+      singletons,
       comments: {
         enabled: true,
       },
@@ -382,6 +384,9 @@ const defaultWorkspace = defineConfig({
           },
         },
       },
+    },
+    reactActivityMode: {
+      enabled: true,
     },
   },
 })
