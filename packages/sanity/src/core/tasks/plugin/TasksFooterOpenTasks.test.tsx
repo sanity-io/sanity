@@ -2,8 +2,11 @@ import {LayerProvider, studioTheme, ThemeProvider, useMediaIndex} from '@sanity/
 import {uuid} from '@sanity/uuid'
 import {render, screen} from '@testing-library/react'
 import {act} from 'react'
+import {type ObservablePromise} from 'react-rx'
+import {TasksFeaturesPromiseContext} from 'sanity/_singletons'
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type SettledFeatures} from '../../hooks/useFeatureEnabled'
 import {TasksEnabledProvider} from '../context/enabled/TasksEnabledProvider'
 import {TasksNavigationProvider} from '../context/navigation/TasksNavigationProvider'
 import {TasksProvider} from '../context/tasks/TasksProvider'
@@ -17,10 +20,6 @@ vi.mock('react-i18next', async (importOriginal) => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
-vi.mock('../../hooks/useFeatureEnabled', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
-}))
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({tasks: {enabled: true}}),
 }))
@@ -97,17 +96,26 @@ const createTaskMock = ({
   status,
 })
 
+// The tasks feature check, already settled
+const tasksFeatureEnabled: SettledFeatures = {enabled: true, features: ['sanityTasks'], error: null}
+const featuresPromise: ObservablePromise<SettledFeatures> = Object.assign(
+  Promise.resolve(tasksFeatureEnabled),
+  {status: 'fulfilled' as const, value: tasksFeatureEnabled},
+)
+
 describe('TasksFooterOpenTasks', () => {
   const wrapper = ({children}: {children?: React.ReactNode}) => {
     return (
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
         <LayerProvider>
-          <TasksEnabledProvider>
-            <TasksProvider>
-              <TasksNavigationProvider>{children}</TasksNavigationProvider>
-            </TasksProvider>
-          </TasksEnabledProvider>
+          <TasksFeaturesPromiseContext value={featuresPromise}>
+            <TasksEnabledProvider>
+              <TasksProvider>
+                <TasksNavigationProvider>{children}</TasksNavigationProvider>
+              </TasksProvider>
+            </TasksEnabledProvider>
+          </TasksFeaturesPromiseContext>
         </LayerProvider>
       </ThemeProvider>
     )

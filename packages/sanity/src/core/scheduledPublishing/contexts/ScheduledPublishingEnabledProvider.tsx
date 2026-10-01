@@ -1,12 +1,13 @@
-import {useContext, useMemo} from 'react'
+import {use, useContext, useMemo} from 'react'
 import {
   ScheduledPublishingEnabledContext,
   type ScheduledPublishingEnabledContextValue,
 } from 'sanity/_singletons'
 
-import {useFeatureEnabled, FEATURES} from '../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../studio/workspace'
-import {useHasUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
+import {NOT_USED} from '../tool/contexts/useHasUsedScheduledPublishing'
+import {useHasUsedScheduledPublishingPromise} from './useHasUsedScheduledPublishingPromise'
+import {useScheduledPublishingFeaturePromise} from './useScheduledPublishingFeaturePromise'
 
 interface ScheduledPublishingEnabledProviderProps {
   children: React.ReactNode
@@ -15,22 +16,21 @@ interface ScheduledPublishingEnabledProviderProps {
 /**
  * @internal
  */
-
 export function ScheduledPublishingEnabledProvider({
   children,
 }: ScheduledPublishingEnabledProviderProps) {
-  const {enabled, isLoading, error} = useFeatureEnabled(FEATURES.scheduledPublishing)
+  const featurePromise = useScheduledPublishingFeaturePromise()
+  const hasUsedScheduledPublishingPromise = useHasUsedScheduledPublishingPromise()
+  const {enabled, error} = use(featurePromise)
+  // A failed feature check disables the feature on its own; don't wait for the usage probe too
+  const hasUsedScheduledPublishing = error ? NOT_USED : use(hasUsedScheduledPublishingPromise)
   const {scheduledPublishing} = useWorkspace()
 
   const isWorkspaceEnabled = scheduledPublishing.enabled
   const explicitEnabled = scheduledPublishing.__internal__workspaceEnabled
-  const hasUsedScheduledPublishing = useHasUsedScheduledPublishing({
-    explicitEnabled,
-    isWorkspaceEnabled,
-  })
 
   const value: ScheduledPublishingEnabledContextValue = useMemo(() => {
-    if (!isWorkspaceEnabled || isLoading || error) {
+    if (!isWorkspaceEnabled || error) {
       return {
         enabled: false,
         mode: null,
@@ -56,7 +56,7 @@ export function ScheduledPublishingEnabledProvider({
       mode: enabled ? 'default' : 'upsell',
       hasUsedScheduledPublishing,
     }
-  }, [enabled, isLoading, isWorkspaceEnabled, error, hasUsedScheduledPublishing, explicitEnabled])
+  }, [enabled, isWorkspaceEnabled, error, hasUsedScheduledPublishing, explicitEnabled])
 
   return (
     <ScheduledPublishingEnabledContext.Provider value={value}>
