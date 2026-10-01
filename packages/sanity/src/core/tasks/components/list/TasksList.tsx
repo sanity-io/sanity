@@ -1,9 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Text} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import {Fragment, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {TASK_STATUS} from '../../constants/TaskStatus'
 import {type TaskDocument, type TaskStatus} from '../../types'
@@ -46,13 +45,16 @@ function TaskList(props: TaskListProps) {
     <DetailsFlex forwardedAs="details" flexDirection="column" open={status === 'open'}>
       <SummaryBox forwardedAs="summary" paddingY={1}>
         <Flex alignItems="center" gap={1} paddingY={1}>
-          <Text size={1} weight="medium" muted>
+          <Text size={1} weight="medium" muted as="div" trim={true}>
             {getLabelForStatus(status)}
           </Text>
-
-          <Text muted size={1}>
-            <ChevronDownIcon data-ui="summary-icon" />
-          </Text>
+          <Icon
+            icon={ChevronDownIcon}
+            muted
+            size={1}
+            data-ui="summary-icon"
+            style={{margin: '-0.375rem'}}
+          />
         </Flex>
       </SummaryBox>
 

@@ -1,8 +1,9 @@
 import {UserIcon} from '@sanity/icons/User'
 import {type User} from '@sanity/types'
-import {type AvatarSize, Text} from '@sanity/ui'
+import {type AvatarSize} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
+import {Icon, Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {AvatarSkeleton, UserAvatar} from '../../components/userAvatar/UserAvatar'
@@ -20,6 +21,9 @@ const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?:
       border-radius: 50%;
       ${props.$border ? 'box-shadow: inset 0 0 0 1px var(--card-border-color);' : ''};
       ${props.$removeBg ? '--card-avatar-gray-bg-color: transparent;' : ''}
+      [data-as='button'][data-selected] & [data-ui='Icon'] {
+        --icon-color: light-dark(var(--blue-200), var(--blue-800));
+      }
     `
   },
 )
@@ -40,9 +44,7 @@ export function TasksUserAvatar(props: {
   if (!user || !loadedUser) {
     return (
       <AvatarRoot $size={size} $border={border}>
-        <Text size={size}>
-          <UserIcon />
-        </Text>
+        <Icon icon={UserIcon} size={size} />
       </AvatarRoot>
     )
   }

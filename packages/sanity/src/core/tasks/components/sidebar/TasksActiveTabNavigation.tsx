@@ -1,10 +1,9 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -65,7 +64,7 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
         />
         <Tooltip content={t('panel.navigation.tooltip')}>
           <Box paddingY={2}>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               {currentItemIndex + 1} / {items.length}
             </Text>
           </Box>
