@@ -45,6 +45,7 @@ import type {
   DocumentChangeContext,
   DocumentDivergencesContext,
   DocumentDivergencesContextValue,
+  DocumentFeaturesContext,
   DocumentFieldActionsContext,
   DocumentFieldActionsContextValue,
   DocumentIdContext,
@@ -53,7 +54,6 @@ import type {
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentPaneInfoContext,
-  DocumentToolsContext,
   EditDialogOuterBoundaryContext,
   EnhancedObjectDialogContext,
   EventsContext,
@@ -284,6 +284,9 @@ describe('sanity/_singletons', () => {
   test('DocumentDivergencesContextValue', () => {
     expectTypeOf<DocumentDivergencesContextValue>().not.toBeNever()
   })
+  test('DocumentFeaturesContext', () => {
+    expectTypeOf<typeof DocumentFeaturesContext>().not.toBeNever()
+  })
   test('DocumentFieldActionsContext', () => {
     expectTypeOf<typeof DocumentFieldActionsContext>().not.toBeNever()
   })
@@ -307,9 +310,6 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentPaneInfoContext', () => {
     expectTypeOf<typeof DocumentPaneInfoContext>().not.toBeNever()
-  })
-  test('DocumentToolsContext', () => {
-    expectTypeOf<typeof DocumentToolsContext>().not.toBeNever()
   })
   test('EditDialogOuterBoundaryContext', () => {
     expectTypeOf<typeof EditDialogOuterBoundaryContext>().not.toBeNever()
