@@ -31,16 +31,16 @@ import {type AuthConfig} from './auth/types'
 import {type DocumentActionComponent} from './document/actions'
 import {type DocumentBadgeComponent} from './document/badges'
 import {
+  type DocumentFeature,
+  type DocumentFeaturesResolver,
+  type ResolvedDocumentFeatures,
+} from './document/features'
+import {
   type DocumentFieldAction,
   type DocumentFieldActionsResolver,
   type DocumentFieldActionsResolverContext,
 } from './document/fieldActions/types'
 import {type DocumentInspector} from './document/inspector'
-import {
-  type DocumentTool,
-  type DocumentToolsResolver,
-  type ResolvedDocumentTools,
-} from './document/tools'
 import {type FormComponents} from './form/types'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio/types'
@@ -394,53 +394,73 @@ export interface DocumentPluginOptions {
   }
 
   /**
-   * The tools the document form's chrome offers. Composes across plugins and hosts like
-   * `document.actions` and `document.badges`, and applies wherever the form renders: the
-   * structure tool, Presentation, and custom tools.
+   * The features of the document form. A feature is a named unit of the form: an inspector, a
+   * field action, a toolbar entry, or several of those registered together. A feature present in
+   * the resolved list exists in full - its inspector is registered and reachable by URL, its field
+   * action renders in every field menu and at the document level, its toolbar entry is drawn. A
+   * feature absent from the list brings none of it. Presence is the whole model: there is no
+   * hidden and no disabled axis. Composes across plugins and hosts like `document.actions` and
+   * `document.badges`, and applies wherever the form renders: the structure tool, Presentation,
+   * and custom tools.
    *
-   * Removing a tool removes its chrome entry and its keyboard shortcut, not the underlying
-   * capability. `inspect`, `inlineChanges` and `compareVersions` are driven by router state, and
-   * a URL still carries that state after the tool is gone: the inspect dialog opens, inline
-   * changes render in every field, and the compare-versions route stays navigable. This is not a
-   * permission or access-control boundary.
+   * Removing a feature removes its inspector from the resolution, so a URL carrying
+   * `?inspect=<name>` no longer opens it. For inspectors this is a capability boundary. It is
+   * still not a permission or access-control boundary: `inspect`, `inlineChanges` and
+   * `compareVersions` are driven by router state, and a URL still carries that state after the
+   * feature is gone, so the inspect dialog opens, inline changes render in every field, and the
+   * compare-versions route stays navigable.
    *
-   * An array appends to the built-ins and cannot remove one. Use the resolver form to remove or
-   * reorder, where `tools: []` is a no-op.
+   * An array appends and cannot remove. Use the resolver form to remove or reorder, where
+   * `features: []` is a no-op.
+   *
+   * Every registration arriving through `document.inspectors` or
+   * `document.unstable_fieldActions` appears here as one feature, named by the registration's own
+   * `name`. A plugin that registers several should have its features removed together:
+   * `@sanity/assist` contributes `ai-assistance` and `sanity-assist-actions`, and dropping only
+   * the inspector leaves a field action that warns and does nothing when clicked.
    *
    * A resolver applies to every surface the document form is embedded in, including surfaces
-   * added in a later release. An allowlist fails closed, so a surface whose tools were never
-   * named loses them silently; a denylist fails open, so that surface keeps its tools and
+   * added in a later release. An allowlist fails closed, so a surface whose features were never
+   * named loses them silently; a denylist fails open, so that surface keeps its features and
    * somebody sees the extra button. Prefer a denylist while the resolver has no way to tell which
    * surface it is running in.
    *
    * ```ts
-   * tools: (prev) => prev.filter((tool) => !DENY.has(tool.id))
+   * features: (prev) => prev.filter((feature) => DENY.has(feature.name) === false)
    * ```
    *
-   * Filter by id, never by index or length: the membership of `prev` varies by surface, by
+   * Filter by name, never by index or length: the membership of `prev` varies by surface, by
    * document and by window width.
    *
-   * Ordering is honoured for contributed tools and ignored for built-ins, which the form draws at
-   * fixed sites ahead of the render loop, so `tools: (prev) => [myTool, ...prev]` does not put
-   * `myTool` first.
+   * Ordering is honoured for toolbar entries and ignored for built-ins, which the form draws at
+   * fixed sites ahead of the render loop, so `features: (prev) => [myFeature, ...prev]` does not
+   * put `myFeature` first.
    *
-   * A contributed tool declares its `placement`. A `'header'` tool supplies a `render` component
-   * and is drawn as a button in the header bar. A `'menu'` tool supplies a `title`, an optional
-   * `icon` and an `onAction` callback, and is drawn as an ungrouped entry after every built-in
-   * entry of the overflow menu, in resolver order. An entry that needs React state, the
+   * A feature's `toolbar` entry declares its `placement`. A `'header'` entry supplies a `render`
+   * component and is drawn as a button in the header bar. A `'menu'` entry supplies a `title`, an
+   * optional `icon` and an `onAction` callback, and is drawn as an ungrouped entry after every
+   * built-in entry of the overflow menu, in resolver order. An entry that needs React state, the
    * document's edit state or a dialog is a `document.actions` action with
    * `group: ['paneActions']`, which lands in the same menu.
    *
+   * `document.actions` - including the `paneActions` group - and `document.badges` are not
+   * features and are unaffected by this key. Neither are the plugin switches:
+   * `document.comments.enabled`, `tasks.enabled` and their siblings keep their own configuration.
+   *
    * The overflow menu button is derived rather than configured: it renders whenever it has
-   * contents, so removing every overflow tool leaves it in place while `document.actions` still
+   * contents, so removing every menu feature leaves it in place while `document.actions` still
    * resolves an action into the `paneActions` group.
    *
-   * `SANITY_DEFINED_TOOL_IDS` holds the built-in ids.
+   * `SANITY_DEFINED_FEATURE_NAMES` holds the built-in names. Assert on it in a test to be told
+   * when an upgrade adds one.
+   *
+   * Unrelated to `StructureToolFeatures` (the structure tool's own capability flags) and to plan
+   * features (`useFeatureEnabled`), which share the word and nothing else.
    *
    * @hidden
    * @beta
    */
-  tools?: DocumentTool[] | DocumentToolsResolver
+  features?: DocumentFeature[] | DocumentFeaturesResolver
 
   drafts?: {
     /**
@@ -836,7 +856,7 @@ export interface DocumentBadgesContext extends ConfigContext {
  * @hidden
  * @beta
  */
-export interface DocumentToolContext extends ConfigContext {
+export interface DocumentFeatureContext extends ConfigContext {
   documentId?: string
   schemaType: string
 }
@@ -967,7 +987,11 @@ export interface Source {
       enabled: boolean
     }
 
-    /** @internal */
+    /**
+     * Returns the field actions before `features` gating; the document pane reads `features`.
+     *
+     * @internal
+     */
     unstable_fieldActions: (
       props: PartialContext<DocumentFieldActionsResolverContext>,
     ) => DocumentFieldAction[]
@@ -994,6 +1018,8 @@ export interface Source {
     ) => DocumentLanguageFilterComponent[]
 
     /**
+     * Returns the inspectors before `features` gating; the document pane reads `features`.
+     *
      * @hidden
      * @beta
      */
@@ -1015,18 +1041,21 @@ export interface Source {
     }
 
     /**
-     * Resolve the document form's tools for one document.
+     * Resolve the document form's features for one document. Runs the `document.inspectors` and
+     * `document.unstable_fieldActions` chains, seeds one feature per registration, runs the
+     * `document.features` chain over that, and projects the result for the form: the inspectors
+     * and field actions the surviving features carry, plus their toolbar entries.
      *
      * `contributed` carries what the host offers at render time, after its own capability gating.
-     * Config vetoes what it is given and never grants: a tool the host did not contribute stays
-     * absent however it is configured.
+     * Config vetoes what it is given and never grants: a feature the host did not contribute
+     * stays absent however it is configured.
      *
      * @hidden
      * @beta
      */
-    tools: (
-      props: PartialContext<DocumentToolContext> & {contributed?: readonly DocumentTool[]},
-    ) => ResolvedDocumentTools
+    features: (
+      props: PartialContext<DocumentFeatureContext> & {contributed?: readonly DocumentFeature[]},
+    ) => ResolvedDocumentFeatures
   }
 
   /** @internal */

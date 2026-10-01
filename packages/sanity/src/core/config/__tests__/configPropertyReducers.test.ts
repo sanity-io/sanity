@@ -6,6 +6,7 @@ import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
   commentsV2EnabledReducer,
+  createDocumentFeaturesReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -13,7 +14,6 @@ import {
   documentGroupInventoryEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
-  documentToolsReducer,
   draftsEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
@@ -36,6 +36,9 @@ import {
   toolsReducer,
   variantsEnabledReducer,
 } from '../configPropertyReducers'
+import {documentFieldActionsReducer} from '../document/fieldActions/reducer'
+import {type DocumentFieldAction} from '../document/fieldActions/types'
+import {type DocumentInspector} from '../document/inspector'
 import {type PluginOptions} from '../types'
 
 const context = {} as never
@@ -94,10 +97,13 @@ const arrayReducers: ArrayReducerExample[] = [
     expectedError: 'Expected `document.actions` to be an array or a function, but received number',
   },
   {
-    name: 'document.tools',
-    reduce: documentToolsReducer as ArrayReducerExample['reduce'],
-    set: (value) => ({name: 'test', document: {tools: value as never}}),
-    expectedError: 'Expected `document.tools` to be an array or a function, but received number',
+    name: 'document.features',
+    reduce: createDocumentFeaturesReducer({
+      inspectors: [],
+      fieldActions: [],
+    }) as ArrayReducerExample['reduce'],
+    set: (value) => ({name: 'test', document: {features: value as never}}),
+    expectedError: 'Expected `document.features` to be an array or a function, but received number',
   },
   {
     name: 'releases.actions',
@@ -845,5 +851,89 @@ describe('schemaTypesReducer', () => {
     )
 
     expect(fromRoot).toEqual([typeA, typeB])
+  })
+})
+
+describe('declared feature seeding', () => {
+  function Panel() {
+    return null
+  }
+
+  const historyInspector: DocumentInspector = {name: 'sanity/structure/history', component: Panel}
+  const validationInspector: DocumentInspector = {
+    name: 'sanity/structure/validation',
+    component: Panel,
+  }
+  const pluginInspector: DocumentInspector = {name: 'plugin/inspector', component: Panel}
+
+  const copyField: DocumentFieldAction = {name: 'copyField', useAction: () => ({}) as never}
+  const pasteField: DocumentFieldAction = {name: 'pasteField', useAction: () => ({}) as never}
+
+  it('appends declared inspectors for a node before its own `inspectors` key runs', () => {
+    const resolver = vi.fn((prev: DocumentInspector[]) => prev)
+
+    documentInspectorsReducer(
+      [pluginInspector],
+      {
+        name: 'test',
+        document: {
+          features: [
+            {name: 'validation', inspector: validationInspector},
+            {name: 'history', inspector: historyInspector},
+          ],
+          inspectors: resolver,
+        },
+      },
+      context,
+    )
+
+    expect(resolver).toHaveBeenCalledWith(
+      [pluginInspector, validationInspector, historyInspector],
+      context,
+    )
+  })
+
+  it('does not append a declared inspector already in the previous value', () => {
+    expect(
+      documentInspectorsReducer(
+        [historyInspector],
+        {
+          name: 'test',
+          document: {features: [{name: 'history', inspector: historyInspector}]},
+        },
+        context,
+      ),
+    ).toEqual([historyInspector])
+  })
+
+  it('appends declared field actions for a node before its own `unstable_fieldActions` key runs', () => {
+    const resolver = vi.fn((prev: DocumentFieldAction[]) => prev)
+
+    documentFieldActionsReducer(
+      [copyField],
+      {
+        name: 'test',
+        document: {
+          features: [{name: 'pasteField', fieldAction: pasteField}],
+          unstable_fieldActions: resolver,
+        },
+      },
+      context,
+    )
+
+    expect(resolver).toHaveBeenCalledWith([copyField, pasteField], context)
+  })
+
+  it('does not append a declared field action already in the previous value', () => {
+    expect(
+      documentFieldActionsReducer(
+        [copyField],
+        {
+          name: 'test',
+          document: {features: [{name: 'copyField', fieldAction: copyField}]},
+        },
+        context,
+      ),
+    ).toEqual([copyField])
   })
 })

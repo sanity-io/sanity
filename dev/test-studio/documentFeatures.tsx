@@ -2,14 +2,7 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Button, Card, Dialog, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type DocumentHeaderTool, type DocumentMenuTool, type DocumentToolsResolver} from 'sanity'
-
-declare module 'sanity' {
-  interface DocumentToolIds {
-    speciesFactSheet: never
-    speciesWikipedia: never
-  }
-}
+import {type DocumentFeature, type DocumentFeaturesResolver} from 'sanity'
 
 function SpeciesFactSheetButton() {
   const [open, setOpen] = useState(false)
@@ -22,7 +15,7 @@ function SpeciesFactSheetButton() {
       {open && (
         <Dialog header="Fact sheet" id="species-fact-sheet" onClose={handleClose} width={1}>
           <Card padding={5}>
-            <Text>A header tool that owns its own dialog state.</Text>
+            <Text>A header feature that owns its own dialog state.</Text>
           </Card>
         </Dialog>
       )}
@@ -30,28 +23,31 @@ function SpeciesFactSheetButton() {
   )
 }
 
-const SPECIES_FACT_SHEET: DocumentHeaderTool = {
-  id: 'speciesFactSheet',
-  placement: 'header',
-  render: SpeciesFactSheetButton,
+const SPECIES_FACT_SHEET: DocumentFeature = {
+  name: 'speciesFactSheet',
+  toolbar: {placement: 'header', render: SpeciesFactSheetButton},
 }
 
-const SPECIES_WIKIPEDIA: DocumentMenuTool = {
-  id: 'speciesWikipedia',
-  placement: 'menu',
-  title: 'Look up on Wikipedia',
-  icon: LaunchIcon,
-  shortcut: 'Ctrl+Alt+L',
-  onAction: () => {
-    window.open('https://en.wikipedia.org/wiki/Species', '_blank', 'noopener')
+const SPECIES_WIKIPEDIA: DocumentFeature = {
+  name: 'speciesWikipedia',
+  toolbar: {
+    placement: 'menu',
+    title: 'Look up on Wikipedia',
+    icon: LaunchIcon,
+    shortcut: 'Ctrl+Alt+L',
+    onAction: () => {
+      window.open('https://en.wikipedia.org/wiki/Species', '_blank', 'noopener')
+    },
   },
 }
 
-export const documentTools: DocumentToolsResolver = (prev, context) => {
+const SPECIES_KEPT = new Set<string>(['compareVersions', 'history'])
+
+export const documentFeatures: DocumentFeaturesResolver = (prev, context) => {
   switch (context.schemaType) {
     case 'species':
       return [
-        ...prev.filter((tool) => tool.id === 'compareVersions'),
+        ...prev.filter((feature) => SPECIES_KEPT.has(feature.name)),
         SPECIES_FACT_SHEET,
         SPECIES_WIKIPEDIA,
       ]

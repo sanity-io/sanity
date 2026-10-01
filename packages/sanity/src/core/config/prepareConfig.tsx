@@ -40,6 +40,7 @@ import {
   announcementsEnabledReducer,
   collapseArrayItemsReducer,
   commentsV2EnabledReducer,
+  createDocumentFeaturesReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentAskToEditEnabledReducer,
@@ -48,7 +49,6 @@ import {
   documentGroupInventoryEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
-  documentToolsReducer,
   draftsEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
@@ -78,7 +78,13 @@ import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
-import {resolveDocumentTools, SANITY_DEFINED_TOOLS} from './document/resolveDocumentTools'
+import {
+  type DocumentFieldAction,
+  type DocumentFieldActionsResolverContext,
+} from './document/fieldActions/types'
+import {type DocumentInspector} from './document/inspector'
+import {finalizeDocumentFeatures, seedDocumentFeatures} from './document/resolveDocumentFeatures'
+import {flattenConfig} from './flattenConfig'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -86,7 +92,9 @@ import {SchemaError} from './SchemaError'
 import {
   type Config,
   type ConfigContext,
+  type DocumentInspectorContext,
   type MissingConfigFile,
+  type PartialContext,
   type PluginOptions,
   type PreparedConfig,
   type SingleWorkspace,
@@ -745,6 +753,34 @@ function resolveSource({
       })
     : Promise.resolve(undefined)
 
+  function resolveDocumentInspectors(
+    partialContext: PartialContext<DocumentInspectorContext>,
+  ): DocumentInspector[] {
+    return resolveConfigProperty({
+      config,
+      context: {...context, ...partialContext},
+      initialValue: EMPTY_ARRAY,
+      propertyName: 'document.inspectors',
+      reducer: documentInspectorsReducer,
+    })
+  }
+
+  function resolveDocumentFieldActions(
+    partialContext: PartialContext<DocumentFieldActionsResolverContext>,
+  ): DocumentFieldAction[] {
+    return resolveConfigProperty({
+      config,
+      context: {...context, ...partialContext},
+      initialValue: initialDocumentFieldActions,
+      propertyName: 'document.unstable_fieldActions',
+      reducer: documentFieldActionsReducer,
+    })
+  }
+
+  const declaredFeatures = flattenConfig(config, []).flatMap(({config: node}) =>
+    Array.isArray(node.document?.features) ? node.document.features : [],
+  )
+
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -788,22 +824,8 @@ function resolveSource({
           initialValue: true,
         }),
       },
-      unstable_fieldActions: (partialContext) =>
-        resolveConfigProperty({
-          config,
-          context: {...context, ...partialContext},
-          initialValue: initialDocumentFieldActions,
-          propertyName: 'document.unstable_fieldActions',
-          reducer: documentFieldActionsReducer,
-        }),
-      inspectors: (partialContext) =>
-        resolveConfigProperty({
-          config,
-          context: {...context, ...partialContext},
-          initialValue: EMPTY_ARRAY,
-          propertyName: 'document.inspectors',
-          reducer: documentInspectorsReducer,
-        }),
+      unstable_fieldActions: resolveDocumentFieldActions,
+      inspectors: resolveDocumentInspectors,
       resolveProductionUrl: (partialContext) =>
         resolveConfigProperty({
           config,
@@ -850,16 +872,34 @@ function resolveSource({
           })
         },
       },
-      tools: ({contributed = [], ...partialContext}) =>
-        resolveDocumentTools(
+      features: ({contributed = [], ...partialContext}) => {
+        const {documentId, schemaType} = partialContext
+        const inspectors = resolveDocumentInspectors({documentId, documentType: schemaType})
+        const resolvedSchemaType = context.schema.get(schemaType)
+        const fieldActions =
+          documentId && resolvedSchemaType
+            ? resolveDocumentFieldActions({
+                documentId,
+                documentType: schemaType,
+                schemaType: resolvedSchemaType,
+              })
+            : []
+
+        return finalizeDocumentFeatures(
           resolveConfigProperty({
             config,
             context: {...context, ...partialContext},
-            initialValue: [...SANITY_DEFINED_TOOLS, ...contributed],
-            propertyName: 'document.tools',
-            reducer: documentToolsReducer,
+            initialValue: seedDocumentFeatures({
+              inspectors,
+              fieldActions,
+              declared: declaredFeatures,
+              contributed,
+            }),
+            propertyName: 'document.features',
+            reducer: createDocumentFeaturesReducer({inspectors, fieldActions}),
           }),
-        ),
+        )
+      },
     },
 
     form: {
