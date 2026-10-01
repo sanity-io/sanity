@@ -1,10 +1,9 @@
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
-  Text,
 } from '@sanity/ui'
 import {useStateLink} from 'sanity/router'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {SCHEDULE_STATE_DICTIONARY} from '../../constants'
 import {useFilteredSchedules} from '../../hooks/useFilteredSchedules'
@@ -40,10 +39,14 @@ const ScheduleFilter = (props: Props) => {
       padding={2}
     >
       <Flex gap={2} alignItems={'center'}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {SCHEDULE_STATE_DICTIONARY[state].title}
         </Text>
-        {hasItems && <Text size={0}>{count}</Text>}
+        {hasItems && (
+          <Text size={0} as="div" trim={true}>
+            {count}
+          </Text>
+        )}
       </Flex>
     </Button>
   )

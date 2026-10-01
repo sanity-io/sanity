@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Container, Flex, Box} from 'ui5'
+import {Text, Container, Flex, Box, Icon} from 'ui5'
 
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
@@ -40,10 +40,8 @@ export const Schedules = () => {
           {showWarning && (
             <Card margin={4} marginBottom={2} padding={3} tone="caution" radius={3} shadow={1}>
               <Flex gap={3} alignItems={'center'}>
-                <Text size={1}>
-                  <WarningOutlineIcon />
-                </Text>
-                <Text size={1}>
+                <Icon icon={WarningOutlineIcon} size={1} tone="caution" />
+                <Text size={1} as="div" trim={true} tone="caution">
                   Your scheduled documents won't be published automatically unless you upgrade your
                   plan. You can still publish them manually.
                 </Text>

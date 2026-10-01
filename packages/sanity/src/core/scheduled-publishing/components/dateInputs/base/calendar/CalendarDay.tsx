@@ -1,6 +1,11 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {endOfDay} from 'date-fns/endOfDay'
-import {useCallback, useMemo} from 'react'
+import {type CSSProperties, useCallback, useMemo} from 'react'
+import {Text} from 'ui5'
+
+const PRIMARY_TEXT_STYLE: CSSProperties & {'--text-color': string} = {
+  '--text-color': 'light-dark(var(--blue-600), var(--blue-400))',
+}
 
 interface CalendarDayProps {
   date: Date
@@ -50,8 +55,13 @@ export function CalendarDay(props: CalendarDayProps) {
       >
         <Text
           muted={!selected && !isCurrentMonth}
-          style={{textAlign: 'center'}}
+          style={({
+	textAlign: 'center',
+	...(isToday || selected) && PRIMARY_TEXT_STYLE
+})}
           weight={isCurrentMonth ? 'medium' : 'regular'}
+          as="div"
+          trim={true}
         >
           {date.getDate()}
         </Text>

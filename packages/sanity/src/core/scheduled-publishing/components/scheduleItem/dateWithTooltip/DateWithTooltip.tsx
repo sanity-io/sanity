@@ -1,5 +1,5 @@
-import {Text} from '@sanity/ui'
 import {formatDistance} from 'date-fns/formatDistance'
+import {Text} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTimeZone} from '../../../../hooks/useTimeZone'
@@ -30,8 +30,8 @@ const DateWithTooltip = (props: Props) => {
   const dateTimeSmall = formatDateTz({date, format: DATE_FORMAT.SMALL})
 
   return (
-    <Text size={1} textOverflow="ellipsis">
-      <Tooltip content={distance} portal>
+    <Tooltip content={distance} portal>
+      <Text size={1} truncate={1} as="div" trim={true}>
         <span>
           {useElementQueries ? (
             <>
@@ -43,8 +43,8 @@ const DateWithTooltip = (props: Props) => {
             dateTimeLarge
           )}
         </span>
-      </Tooltip>
-    </Text>
+      </Text>
+    </Tooltip>
   )
 }
 

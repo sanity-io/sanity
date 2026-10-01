@@ -2,11 +2,11 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Path, type ValidationMarker} from '@sanity/types'
-import {type ButtonTone, Text} from '@sanity/ui'
+import {type ButtonTone} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {MenuItem} from '@sanity/ui/menu'
 import {useCallback} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {wrappingText} from './ValidationListItem.css'
 
@@ -44,16 +44,14 @@ export function ValidationListItem(props: ValidationListItemProps) {
   const children = (
     <Flex>
       <Box>
-        <Text size={1}>
-          {marker.level === 'error' && <ErrorOutlineIcon />}
-          {marker.level === 'warning' && <WarningOutlineIcon />}
-          {marker.level === 'info' && <InfoOutlineIcon />}
-        </Text>
+        {marker.level === 'error' && <Icon icon={ErrorOutlineIcon} size={1} />}
+        {marker.level === 'warning' && <Icon icon={WarningOutlineIcon} size={1} />}
+        {marker.level === 'info' && <Icon icon={InfoOutlineIcon} size={1} />}
       </Box>
 
       <Flex gap={2} flexBasis="0%" flexGrow={1} paddingLeft={3} flexDirection="column">
         {path && (
-          <Text className={wrappingText} size={1} weight="semibold">
+          <Text className={wrappingText} size={1} weight="semibold" as="div" trim={true}>
             {path}
           </Text>
         )}
@@ -62,7 +60,9 @@ export function ValidationListItem(props: ValidationListItemProps) {
             className={wrappingText}
             muted
             size={1}
-            textOverflow={truncate ? 'ellipsis' : undefined}
+            truncate={truncate ? 1 : undefined}
+            as="div"
+            trim={true}
           >
             {message}
           </Text>
