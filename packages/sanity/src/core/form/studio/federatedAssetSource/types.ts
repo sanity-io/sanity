@@ -28,6 +28,14 @@ import {
  * `alreadyExists` statuses on the `all-complete` event) must stay mounted
  * until the terminal statuses land; closing first silently drops them.
  *
+ * Open-in-source mode (`action: 'openInSource'`): the host offers "Open in
+ * source" on assets whose `source.name` matches the view's application name
+ * (or the qualified `{applicationId}:{viewName}` source name) — so a view
+ * that wants this flow must stamp `assetDocumentProps.source.name` with its
+ * application name when inserting. The mount then receives the claimed asset
+ * as `assetToOpen`; the view renders its own surface for it and finishes via
+ * `onClose` (or switches to a fresh selection via `onChangeAction('select')`).
+ *
  * Sources that need extra host context (e.g. the Media Library's `libraryId`
  * and plugin filters) extend this interface and pass the extras through the
  * hosting dialog's `extraViewProps`.
