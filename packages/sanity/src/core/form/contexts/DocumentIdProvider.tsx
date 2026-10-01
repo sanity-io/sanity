@@ -1,4 +1,4 @@
-import {type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, use, useMemo} from 'react'
 import {DocumentIdContext} from 'sanity/_singletons'
 
 import {getPublishedId} from '../../util/draftUtils'
@@ -9,7 +9,7 @@ export function DocumentIdProvider(props: {id: string; children: ReactNode}) {
 }
 
 function useGivenDocumentId(): string {
-  const ctx = useContext(DocumentIdContext)
+  const ctx = use(DocumentIdContext)
   if (!ctx) {
     throw new Error('useDocumentId must be used within a DocumentIdProvider')
   }

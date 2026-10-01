@@ -5,7 +5,7 @@ import {
   type HTMLAttributes,
   startTransition,
   useCallback,
-  useContext,
+  use,
   useEffect,
   useMemo,
   useState,
@@ -106,7 +106,7 @@ export function GroupChange(
 ): React.JSX.Element | null {
   const {change: group, readOnly, hidden, ...restProps} = props
   const {titlePath, changes, path: groupPath} = group
-  const {path: diffPath} = useContext(DiffContext)
+  const {path: diffPath} = use(DiffContext)
   const {
     documentId,
     schemaType,

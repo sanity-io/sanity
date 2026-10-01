@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
-import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, use, useEffect, useMemo, useState} from 'react'
 import {ParseErrorsContext, type SetParseError} from 'sanity/_singletons'
 
 import {type ParseError} from '../../store/utils/mergeParseErrors'
@@ -44,7 +44,7 @@ export function ParseErrorsProvider(props: {children: ReactNode}) {
  * @internal
  */
 export function useParseErrors(): Record<string, ParseError> {
-  return useContext(ParseErrorsContext).errors
+  return use(ParseErrorsContext).errors
 }
 
 /**
@@ -56,7 +56,7 @@ export function useParseErrors(): Record<string, ParseError> {
  */
 export function useParseErrorForPath(path: Path): string | undefined {
   const pathKey = pathToString(path)
-  return useContext(ParseErrorsContext).errors[pathKey]?.message
+  return use(ParseErrorsContext).errors[pathKey]?.message
 }
 
 /**
@@ -72,7 +72,7 @@ export function useParseErrorForPath(path: Path): string | undefined {
  * @internal
  */
 export function useReportParseError(path: Path, error: string | null): void {
-  const {set} = useContext(ParseErrorsContext)
+  const {set} = use(ParseErrorsContext)
   const pathKey = pathToString(path)
 
   useEffect(() => {

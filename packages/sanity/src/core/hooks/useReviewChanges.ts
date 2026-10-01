@@ -1,4 +1,4 @@
-import {useContext, useMemo} from 'react'
+import {use, useMemo} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {type ConnectorContextValue} from '../changeIndicators/ConnectorContext'
@@ -14,7 +14,7 @@ interface ReviewChangesContextValue extends ConnectorContextValue {
  * @internal
  */
 export function useReviewChanges(): ReviewChangesContextValue {
-  const context = useContext(ReviewChangesContext)
+  const context = use(ReviewChangesContext)
 
   return useMemo(() => {
     return {

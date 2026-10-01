@@ -1,11 +1,11 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {type ReferenceItemRef, ReferenceItemRefContext} from 'sanity/_singletons'
 
 /**
  * @internal
  */
 export function useReferenceItemRef(): ReferenceItemRef {
-  const ref = useContext(ReferenceItemRefContext)
+  const ref = use(ReferenceItemRefContext)
   if (!ref) {
     // The input may not always be wrapped in a reference item.
     // For example in the case of a singular reference input.

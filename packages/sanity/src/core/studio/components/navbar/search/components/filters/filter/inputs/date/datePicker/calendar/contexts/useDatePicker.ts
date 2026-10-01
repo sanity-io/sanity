@@ -1,10 +1,10 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {CalendarContext} from 'sanity/_singletons'
 
 import {type CalendarContextValue} from './CalendarContext'
 
 export function useCalendar(): CalendarContextValue {
-  const context = useContext(CalendarContext)
+  const context = use(CalendarContext)
   if (context === undefined) {
     throw new Error('useCalendar must be used within an CalendarContext.Provider')
   }

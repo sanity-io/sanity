@@ -7,7 +7,7 @@ import {
   PortalProvider,
   useMediaIndex,
 } from '@sanity/ui'
-import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, use, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -78,7 +78,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchFullscreenOpen,
     searchFullscreenPortalEl,
     searchOpen,
-  } = useContext(NavbarContext)
+  } = use(NavbarContext)
 
   const {selectedPerspective, perspectiveStack, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)

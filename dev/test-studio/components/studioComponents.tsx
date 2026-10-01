@@ -1,5 +1,5 @@
 import {Card, Text} from '@sanity/ui'
-import {createContext, useContext} from 'react'
+import {createContext, use} from 'react'
 import {
   definePlugin,
   type LayoutProps,
@@ -30,7 +30,7 @@ export const studioComponentsPlugin = definePlugin({
 
 // Layout
 const TitleContext = createContext<string>('')
-const useTitleContext = () => useContext(TitleContext)
+const useTitleContext = () => use(TitleContext)
 
 export function CustomLayout(props: LayoutProps) {
   const {renderDefault} = props

@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {StudioErrorHandlerContext} from 'sanity/_singletons'
 
 import {passthroughErrorHandler} from './createRequestErrorChannel'
@@ -53,5 +53,5 @@ import {type StudioErrorHandler} from './types'
  * @beta
  */
 export function useStudioErrorHandler(): StudioErrorHandler {
-  return useContext(StudioErrorHandlerContext) ?? passthroughErrorHandler
+  return use(StudioErrorHandlerContext) ?? passthroughErrorHandler
 }
