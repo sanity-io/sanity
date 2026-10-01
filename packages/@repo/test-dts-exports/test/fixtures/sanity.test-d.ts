@@ -5832,7 +5832,7 @@ describe('sanity', () => {
     expectTypeOf<typeof resolveDiffComponent>().toBeFunction()
   })
   test('ResolvedTemplate', () => {
-    expectTypeOf<ResolvedTemplate>().not.toBeNever()
+    expectTypeOf<ResolvedTemplate<any, any>>().toBeObject()
   })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()

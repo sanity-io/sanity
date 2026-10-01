@@ -48,6 +48,7 @@ import type {
   DocumentFeaturesContext,
   DocumentFieldActionsContext,
   DocumentFieldActionsContextValue,
+  DocumentHistoryContext,
   DocumentIdContext,
   DocumentIdContextValue,
   DocumentLimitUpsellContext,
@@ -293,6 +294,9 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentFieldActionsContextValue', () => {
     expectTypeOf<DocumentFieldActionsContextValue>().toBeObject()
+  })
+  test('DocumentHistoryContext', () => {
+    expectTypeOf<typeof DocumentHistoryContext>().not.toBeNever()
   })
   test('DocumentIdContext', () => {
     expectTypeOf<typeof DocumentIdContext>().not.toBeNever()
