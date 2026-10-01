@@ -46,7 +46,7 @@ export function traverseSchema(
 
   const parentTypeNames = parentTypes.map((typeDef) => typeDef.name)
 
-  const reservedTypeNames = FUTURE_RESERVED.concat(coreTypeNames)
+  const reservedTypeNames = FUTURE_RESERVED.concat(coreTypeNames, parentTypeNames)
 
   const typeNames = types.map((typeDef) => typeDef && typeDef.name).filter(Boolean)
 

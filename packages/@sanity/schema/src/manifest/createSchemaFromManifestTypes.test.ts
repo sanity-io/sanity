@@ -57,12 +57,15 @@ describe('createSchemaFromManifestTypes', () => {
     ).toThrow(ValidationError)
   })
 
-  test('rejects local definitions with reserved core names', () => {
-    expect(() =>
-      createSchemaFromManifestTypes({
-        name: 'invalid',
-        types: [{name: 'string', type: 'object', fields: [{name: 'value', type: 'string'}]}],
-      }),
-    ).toThrow(ValidationError)
-  })
+  test.each(['string', 'sanity.imageAsset', 'sanity.fileAsset'])(
+    'rejects local definitions with the reserved name %s',
+    (name) => {
+      expect(() =>
+        createSchemaFromManifestTypes({
+          name: 'invalid',
+          types: [{name, type: 'object', fields: [{name: 'value', type: 'string'}]}],
+        }),
+      ).toThrow(ValidationError)
+    },
+  )
 })
