@@ -1,5 +1,5 @@
-import {Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Text} from 'ui5'
 
 import {VariantSet} from './VariantSet/VariantSet'
 import {VariantSetHeader} from './VariantSet/VariantSetHeader'
@@ -22,7 +22,7 @@ export function DocumentGroupSet({
   return (
     <VariantSet data-variant-set={name}>
       <VariantSetHeader as="header">
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {name}
         </Text>
         {headerActions}
