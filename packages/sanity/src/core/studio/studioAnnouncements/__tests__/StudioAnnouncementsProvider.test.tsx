@@ -71,6 +71,13 @@ async function createAnnouncementWrapper(configOverride: Partial<Config> = {}) {
     wrapper({children: <StudioAnnouncementsProvider>{children}</StudioAnnouncementsProvider>})
 }
 
+// The card renders in a popover that unmounts its content shortly after it closes, so a closed
+// card's text is either still mounted but hidden (during the exit grace) or gone.
+function expectCardTextHidden(text: string) {
+  const element = screen.queryByText(text)
+  if (element) expect(element).not.toBeVisible()
+}
+
 const mockAnnouncements: StudioAnnouncementDocument[] = [
   {
     _id: 'studioAnnouncement-1',
@@ -272,11 +279,8 @@ describe('StudioAnnouncementsProvider', () => {
       expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const closeButton = screen.getByLabelText('Dismiss announcements')
       await userEvent.click(closeButton)
-      // The card renders in a popover, which keeps its content mounted (hidden) while closed.
-      await waitFor(() => {
-        expect(screen.getByText("What's new")).not.toBeVisible()
-      })
-      expect(screen.getByText(mockAnnouncements[1].title)).not.toBeVisible()
+      await waitFor(() => expectCardTextHidden("What's new"))
+      expectCardTextHidden(mockAnnouncements[1].title)
 
       // Dismissing the card calls telemetry with the seen and dismiss logs
       expect(mockLog).toHaveBeenCalledTimes(2)
@@ -307,17 +311,14 @@ describe('StudioAnnouncementsProvider', () => {
       expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const cardButton = screen.getByLabelText('Open announcements')
       await userEvent.click(cardButton)
-      // The card renders in a popover, which keeps its content mounted (hidden) while closed.
-      await waitFor(() => {
-        expect(screen.getByText("What's new")).not.toBeVisible()
-      })
-      // The dismissed card keeps its own copy of the title mounted, so look inside the dialog.
+      await waitFor(() => expectCardTextHidden("What's new"))
+      // The dismissed card may still hold its own copy of the title, so look inside the dialog.
       expect(within(screen.getByRole('dialog')).getByText(mockAnnouncements[1].title)).toBeVisible()
 
       const closeButton = screen.getByLabelText('Close dialog')
       await userEvent.click(closeButton)
-      expect(screen.getByText("What's new")).not.toBeVisible()
-      expect(screen.getByText(mockAnnouncements[1].title)).not.toBeVisible()
+      expectCardTextHidden("What's new")
+      expectCardTextHidden(mockAnnouncements[1].title)
 
       expect(mockLog).toHaveBeenCalledTimes(4)
       expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardSeen, {
@@ -370,12 +371,9 @@ describe('StudioAnnouncementsProvider', () => {
       const openDialogButton = screen.getByRole('button', {name: 'Open dialog'})
       await userEvent.click(openDialogButton)
 
-      // The card closes even if we open it from somewhere else. Its popover keeps the content
-      // mounted (hidden) while closed.
-      await waitFor(() => {
-        expect(screen.getByText("What's new")).not.toBeVisible()
-      })
-      // The dismissed card keeps its own copy of the titles mounted, so look inside the dialog.
+      // The card closes even if we open it from somewhere else.
+      await waitFor(() => expectCardTextHidden("What's new"))
+      // The dismissed card may still hold its own copy of the titles, so look inside the dialog.
       const dialog = within(screen.getByRole('dialog'))
       // The first announcement is seen, it's rendered because it's showing all
       expect(dialog.getByText(mockAnnouncements[0].title)).toBeVisible()
