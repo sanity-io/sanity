@@ -524,8 +524,9 @@ const mappedConditions = [
 ]
 
 /**
- * Menus stay mounted while closed (`<Activity>`, @sanity/ui v4), so the list is resolved through
- * the trigger it labels rather than by looking it up on the page.
+ * Several menus share the dialog (one per condition row), so the list is resolved through the
+ * trigger it labels rather than by looking it up on the page. Only an open menu, or one closed
+ * within the last `OVERLAY_EXIT_GRACE_MS`, has its content mounted — open the menu first.
  */
 function getMenuFor(trigger: HTMLElement): HTMLElement {
   const menu = screen
@@ -732,6 +733,11 @@ describe('CreateVariantDialog mapped conditions', () => {
       within(secondKeyMenu).getByTestId('variant-form-condition-key-option-locale'),
     ).toBeInTheDocument()
 
+    // The first row keeps offering its own key. Its menu content only exists while that menu is
+    // open, so open it (which also dismisses the second menu) before reading it.
+    await user.click(keyMenuButtons[0]!)
+
+    expect(keyMenuButtons[0]).toHaveAttribute('aria-expanded', 'true')
     const firstKeyMenu = getMenuFor(keyMenuButtons[0]!)
     expect(
       within(firstKeyMenu).getByTestId('variant-form-condition-key-option-audience'),
