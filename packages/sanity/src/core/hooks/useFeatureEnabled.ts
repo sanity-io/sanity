@@ -1,14 +1,17 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {type Observable, of} from 'rxjs'
-import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
+import {type Observable, of, throwError} from 'rxjs'
+import {catchError, map, shareReplay, startWith, timeout} from 'rxjs/operators'
 
 import {useSource} from '../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
 
 const EMPTY_ARRAY: [] = []
+
+/** A `/features` request that has not answered after this long counts as failed */
+const FEATURES_TIMEOUT = 10_000
 
 interface Features {
   enabled: boolean
@@ -42,10 +45,23 @@ export const FEATURES: Record<string, string> = {
  * fetches all the enabled features for this project
  */
 function fetchFeatures({versionedClient}: {versionedClient: SanityClient}): Observable<string[]> {
-  return versionedClient.observable.request<string[]>({
-    url: `/features`,
-    tag: 'features',
-  })
+  return versionedClient.observable
+    .request<string[]>({
+      url: `/features`,
+      tag: 'features',
+    })
+    .pipe(
+      timeout({
+        first: FEATURES_TIMEOUT,
+        with: () =>
+          throwError(
+            () =>
+              new Error(
+                `Timed out after ${FEATURES_TIMEOUT / 1000}s waiting for the project's feature list (/features)`,
+              ),
+          ),
+      }),
+    )
 }
 
 const cachedFeatureRequest = new Map<string, Observable<string[]>>()

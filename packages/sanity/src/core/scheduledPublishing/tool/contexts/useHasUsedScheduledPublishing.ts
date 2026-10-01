@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
+import {catchError, map, type Observable, of, shareReplay, timeout} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspace} from '../../../studio/workspace'
@@ -12,6 +12,9 @@ export interface HasUsedScheduledPublishing {
 
 const USED: HasUsedScheduledPublishing = {used: true}
 export const NOT_USED: HasUsedScheduledPublishing = {used: false}
+
+/** A probe that has not answered after this long counts as failed, and so as not used */
+const PROBE_TIMEOUT = 10_000
 
 export const cachedUsedScheduledPublishing = new Map<
   string,
@@ -25,6 +28,7 @@ function fetchUsedScheduledPublishing(
   return client.observable
     .request({url: `/schedules/${projectId}/${dataset}?limit=1`, tag: 'scheduled-publishing-used'})
     .pipe(
+      timeout({first: PROBE_TIMEOUT}),
       map((res) => (res.schedules?.length > 0 ? USED : NOT_USED)),
       catchError(() => of(NOT_USED)),
     )

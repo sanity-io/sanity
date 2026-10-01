@@ -1,7 +1,8 @@
 import {act, render, screen} from '@testing-library/react'
 import {type ReactNode, Suspense, use} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {NEVER} from 'rxjs'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../../../test/mocks/mockSanityClient'
 import {useClient} from '../../../hooks/useClient'
@@ -52,6 +53,10 @@ async function mount(ui: ReactNode) {
 }
 
 describe('useHasUsedScheduledPublishingObservable', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('reports used without probing when the workspace opted in explicitly', async () => {
     await mount(<Parent explicitEnabled isWorkspaceEnabled />)
 
@@ -75,6 +80,21 @@ describe('useHasUsedScheduledPublishingObservable', () => {
     expect(requestCallback).toHaveBeenCalledWith(
       expect.objectContaining({url: '/schedules/mock-project-id/mock-data-set?limit=1'}),
     )
+  })
+
+  it('reports not used when the probe has not answered after 10 seconds', async () => {
+    vi.useFakeTimers()
+    const client = createMockSanityClientAsClient()
+    vi.spyOn(client.observable, 'request').mockReturnValue(NEVER)
+    useClientMock.mockReturnValue(client)
+
+    await mount(<Parent isWorkspaceEnabled />)
+    expect(screen.getByTestId('fallback')).toBeInTheDocument()
+
+    await act(async () => {
+      vi.advanceTimersByTime(10_000)
+    })
+    expect(screen.getByTestId('used')).toHaveTextContent('not-used')
   })
 
   it('reports not used when the probe finds nothing', async () => {

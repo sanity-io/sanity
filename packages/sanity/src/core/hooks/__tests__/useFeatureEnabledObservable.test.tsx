@@ -2,7 +2,7 @@ import {act, render, screen} from '@testing-library/react'
 import {type ReactNode, Suspense, use} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {Subject} from 'rxjs'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
 import {useSource} from '../../studio/source'
@@ -76,6 +76,10 @@ function LoadingConsumer({featureKey}: {featureKey: string}) {
 }
 
 describe('useFeatureEnabledObservable', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('suspends the child until the feature list arrives, then commits the settled answer once', async () => {
     await mount(<Parent featureKey={FEATURES.sanityTasks} />)
 
@@ -93,6 +97,25 @@ describe('useFeatureEnabledObservable', () => {
     expect(screen.queryByTestId('fallback')).not.toBeInTheDocument()
     // One committed render, with the answer
     expect(onLeafRender.mock.calls.length - rendersWhileSuspended).toBe(1)
+  })
+
+  it('settles a request that never answers as a timeout error after 10 seconds', async () => {
+    vi.useFakeTimers()
+
+    await mount(<Parent featureKey={FEATURES.sanityTasks} />)
+    expect(screen.getByTestId('fallback')).toBeInTheDocument()
+
+    await act(async () => {
+      vi.advanceTimersByTime(9_999)
+    })
+    expect(screen.getByTestId('fallback')).toBeInTheDocument()
+
+    await act(async () => {
+      vi.advanceTimersByTime(1)
+    })
+    expect(screen.getByTestId('settled')).toHaveTextContent(
+      "disabled error:Timed out after 10s waiting for the project's feature list (/features)",
+    )
   })
 
   it('settles a failed request as disabled with the error instead of rejecting', async () => {
