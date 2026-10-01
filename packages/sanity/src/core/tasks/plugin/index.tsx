@@ -4,6 +4,7 @@ import {definePlugin} from '../../config/definePlugin'
 import {type ObjectInputProps} from '../../form/types/inputProps'
 import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
+import {TasksStudioProvider} from './TasksStudioProvider'
 
 const TasksDocumentInputLayout = lazy(() =>
   import('./TasksDocumentInputLayout').then((module) => ({
@@ -56,6 +57,7 @@ export const tasks = definePlugin({
   },
   studio: {
     components: {
+      provider: TasksStudioProvider,
       layout: TasksStudioLayout,
       navbar: TasksStudioNavbar,
       activeToolLayout: TasksStudioActiveToolLayout,

@@ -3,6 +3,7 @@ import {lazy} from 'react'
 import {definePlugin} from '../../config/definePlugin'
 import {commentsUsEnglishLocaleBundle} from '../i18n'
 import {commentsInspector} from './inspector'
+import {CommentsStudioProvider} from './studio-provider/CommentsStudioProvider'
 
 const CommentsDocumentLayout = lazy(() =>
   import('./document-layout/CommentsDocumentLayout').then((module) => ({
@@ -40,6 +41,7 @@ export const comments = definePlugin({
 
   studio: {
     components: {
+      provider: CommentsStudioProvider,
       layout: CommentsStudioLayout,
     },
   },

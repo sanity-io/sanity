@@ -17,6 +17,12 @@ interface Features {
   isLoading: boolean
 }
 
+/**
+ * A feature check that has settled: loaded, or failed with `error` set.
+ * @internal
+ */
+export type SettledFeatures = Omit<Features, 'isLoading'>
+
 const INITIAL_LOADING_STATE: Features = {
   enabled: true,
   error: null,
@@ -63,31 +69,51 @@ function getFeatures({
   return features
 }
 
-/** @internal */
-export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
+/**
+ * The same check as {@link useFeatureEnabled}, as an observable of the settled answer for
+ * `useObservablePromise` and `use()`, so a component that decides the shape of the tree can
+ * suspend until the answer is in instead of rendering a loading state first. Never errors: a
+ * failed request settles as `enabled: false` with `error` set. Stable identity per feature key.
+ *
+ * @internal
+ */
+export function useFeatureEnabledObservable(
+  featureKey: keyof typeof FEATURES,
+): Observable<SettledFeatures> {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {projectId} = useSource()
 
   const req = getFeatures({projectId, versionedClient})
 
-  const featureInfoObservable = useMemo(
+  return useMemo(
     () =>
       req.pipe(
-        map((features = []) => ({
-          isLoading: false,
+        map((features = []): SettledFeatures => ({
           enabled: Boolean(features?.includes(featureKey)),
           features,
           error: null,
         })),
-        startWith(INITIAL_LOADING_STATE),
-        catchError((error: Error) => {
-          return of({isLoading: false, enabled: false, features: EMPTY_ARRAY, error})
-        }),
+        catchError((error: Error) =>
+          of<SettledFeatures>({enabled: false, features: EMPTY_ARRAY, error}),
+        ),
       ),
     [featureKey, req],
   )
-  const featureInfo = useObservable(featureInfoObservable, INITIAL_LOADING_STATE)
+}
 
-  return featureInfo
+/** @internal */
+export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
+  const settled$ = useFeatureEnabledObservable(featureKey)
+
+  const featureInfoObservable = useMemo(
+    () =>
+      settled$.pipe(
+        map((settled): Features => ({...settled, isLoading: false})),
+        startWith(INITIAL_LOADING_STATE),
+      ),
+    [settled$],
+  )
+
+  return useObservable(featureInfoObservable, INITIAL_LOADING_STATE)
 }

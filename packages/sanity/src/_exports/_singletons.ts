@@ -22,6 +22,8 @@ export {CommentsContext} from '../_singletons/context/CommentsContext'
 export {CommentsContextV2} from '../_singletons/context/CommentsContextV2'
 export {CommentsEnabledContext} from '../_singletons/context/CommentsEnabledContext'
 export {CommentsEnabledContextV2} from '../_singletons/context/CommentsEnabledContextV2'
+export {CommentsFeaturesPromiseContext} from '../_singletons/context/CommentsFeaturesPromiseContext'
+export {CommentsFeaturesPromiseContextV2} from '../_singletons/context/CommentsFeaturesPromiseContextV2'
 export {CommentsIntentContext} from '../_singletons/context/CommentsIntentContext'
 export {CommentsOnboardingContext} from '../_singletons/context/CommentsOnboardingContext'
 export {CommentsOnboardingContextV2} from '../_singletons/context/CommentsOnboardingContextV2'
@@ -79,6 +81,7 @@ export {
   GetFormValueContext,
   type GetFormValueContextValue,
 } from '../_singletons/context/GetFormValueContext'
+export {HasUsedScheduledPublishingPromiseContext} from '../_singletons/context/HasUsedScheduledPublishingPromiseContext'
 export {
   HoveredFieldContext,
   type HoveredFieldContextValue,
@@ -150,6 +153,7 @@ export {
   ScheduledPublishingEnabledContext,
   type ScheduledPublishingEnabledContextValue,
 } from '../_singletons/context/ScheduledPublishingEnabledContext'
+export {ScheduledPublishingFeaturePromiseContext} from '../_singletons/context/ScheduledPublishingFeaturePromiseContext'
 export {
   SchedulePublishUpsellContext,
   type SchedulePublishUpsellContextValue,
@@ -182,6 +186,7 @@ export {StudioAnnouncementContext} from '../_singletons/context/StudioAnnounceme
 export {StudioErrorHandlerContext} from '../_singletons/context/StudioErrorHandlerContext'
 export {TasksContext} from '../_singletons/context/TasksContext'
 export {TasksEnabledContext} from '../_singletons/context/TasksEnabledContext'
+export {TasksFeaturesPromiseContext} from '../_singletons/context/TasksFeaturesPromiseContext'
 export {TasksNavigationContext} from '../_singletons/context/TasksNavigationContext'
 export {TasksUpsellContext} from '../_singletons/context/TasksUpsellContext'
 export {UserApplicationCacheContext} from '../_singletons/context/UserApplicationCacheContext'

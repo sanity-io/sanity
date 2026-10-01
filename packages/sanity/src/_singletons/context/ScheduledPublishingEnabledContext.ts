@@ -22,7 +22,6 @@ const DEFAULT: ScheduledPublishingEnabledContextValue = {
   mode: null,
   hasUsedScheduledPublishing: {
     used: false,
-    loading: false,
   },
 }
 
