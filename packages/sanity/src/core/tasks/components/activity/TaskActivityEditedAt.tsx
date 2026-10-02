@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {memo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getChangeDetails, NoWrap, UserName, useUpdatedTimeAgo} from './helpers'
@@ -20,10 +19,10 @@ export const EditedAt = memo(
       <Flex gap={1}>
         <Box marginTop={1} marginLeft={1} marginRight={3}>
           <Box marginRight={1}>
-            <Text>{icon}</Text>
+            <Icon icon={icon} />
           </Box>
         </Box>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           <UserName userId={activity.author} /> {text} {changeTo} •{' '}
           <Tooltip content={formattedDate} placement="top-end">
             <NoWrap>

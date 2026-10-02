@@ -1,9 +1,8 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback} from 'react'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
@@ -86,7 +85,7 @@ export function TasksHeaderDraftsMenu() {
       menu={
         <Menu className={styledMenu}>
           <Box padding={3}>
-            <Text size={1} weight="semibold">
+            <Text size={1} weight="semibold" as="div" trim={true}>
               {t('panel.drafts.title')}
             </Text>
           </Box>
