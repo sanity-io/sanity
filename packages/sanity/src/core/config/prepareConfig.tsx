@@ -284,21 +284,24 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
     )
   }
   const viewFilter = federatedSourcesConfig?.filter
+  const viewUploads = federatedSourcesConfig?.uploads
   const federatedSources = brokeredSourcesEnabled
     ? brokeredViews
         .filter((view) => !isMediaLibraryView(view))
-        .filter((view) =>
-          viewFilter
-            ? viewFilter({
-                applicationId: view.applicationId,
-                applicationName: view.applicationName,
-                applicationTitle: view.applicationTitle,
-                name: view.name,
-                title: view.title,
-              })
-            : true,
+        .map((view) => ({
+          view,
+          info: {
+            applicationId: view.applicationId,
+            applicationName: view.applicationName,
+            applicationTitle: view.applicationTitle,
+            name: view.name,
+            title: view.title,
+          },
+        }))
+        .filter(({info}) => (viewFilter ? viewFilter(info) : true))
+        .map(({view, info}) =>
+          createFederatedAssetSource(view, {uploads: viewUploads ? viewUploads(info) : false}),
         )
-        .map(createFederatedAssetSource)
     : []
 
   // Only create Media Library sources if the media library is enabled

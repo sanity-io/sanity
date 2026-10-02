@@ -1395,6 +1395,15 @@ export interface FederatedAssetSourcesConfig {
    * omitted).
    */
   filter?: (view: FederatedAssetSourceViewInfo) => boolean
+  /**
+   * Choose which brokered views accept Studio field uploads (defaults to
+   * none when omitted). A view opted in here receives the dropped/picked
+   * files on a headless upload mount and owns the transport to its service;
+   * views without an upload transport should not be opted in — they would
+   * appear as upload destinations only to fail the files. This predicate
+   * stands in until view declarations can carry an upload capability flag.
+   */
+  uploads?: (view: FederatedAssetSourceViewInfo) => boolean
 }
 
 /**
