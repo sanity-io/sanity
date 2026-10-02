@@ -87,6 +87,16 @@ export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps
    * renders the returned markers and gates its own confirm control on
    * `level: 'error'` markers. A rejected promise means validation itself
    * failed — the view should fail open (keep the selection allowed) but log.
+   *
+   * Only provided for the Media Library view — a deliberate decision, not a
+   * gap. Schema `media` rules validate the field's Media Library
+   * global-document-reference (the validator fetches the library asset and
+   * explicitly rejects values without that reference), so candidates from
+   * third-party brokered sources have nothing those rules can resolve, and
+   * documents they produce would fail such rules post-insert regardless.
+   * Third-party views own their candidate gating themselves (e.g. the
+   * `assetType`-based filtering); `undefined` here simply means no
+   * host-side validation applies.
    */
   validateCandidate?: (selection: AssetFromSource[]) => Promise<ValidationMarker[]>
 }
