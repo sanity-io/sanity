@@ -53,6 +53,16 @@ import {
  * asset as `assetToOpen`, renders its own surface for it and finishes via
  * `onClose` (or switches to a fresh selection via `onChangeAction('select')`).
  *
+ * Claim resolution happens on the dataset's asset document, which is
+ * content-addressed (`image-{sha1}-…`) and therefore shared: uploading bytes
+ * that already exist in the dataset returns the existing document, and the
+ * `source` stamp only applies at creation. Provenance is first-writer-wins —
+ * inserting an image via a brokered view when the identical bytes earlier
+ * arrived via the Media Library (or any other source) reuses that document,
+ * so "Open in source" keeps pointing at the original source. This is
+ * intended: the reused document genuinely is that source's asset, and other
+ * documents referencing it rely on its provenance staying put.
+ *
  * Sources that need extra host context (e.g. the Media Library's `libraryId`
  * and plugin filters) extend this interface and pass the extras through the
  * hosting dialog's `extraViewProps`.
