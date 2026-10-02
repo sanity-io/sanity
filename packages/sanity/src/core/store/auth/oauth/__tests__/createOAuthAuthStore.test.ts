@@ -1472,4 +1472,98 @@ describe('createOAuthAuthStore', () => {
       expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
     })
   })
+
+  describe('origin check', () => {
+    const CORS_CHECK_URL = `https://${PROJECT_ID}.api.sanity.io/v1/check/cors`
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    /** Stubs `fetch` (which the origin check uses directly) with a `/check/cors` answer. */
+    function mockCorsCheck(result: {allowed: boolean; withCredentials: boolean}) {
+      const fetchMock = vi.fn(async () => new Response(JSON.stringify({result}), {status: 200}))
+      vi.stubGlobal('fetch', fetchMock)
+      return fetchMock
+    }
+
+    /** Like `createMockClientFactory`, with a client config the origin check can build a URL from. */
+    function createCorsClientFactory(validTokens: Set<string>) {
+      const {factory} = createMockClientFactory(validTokens)
+      return (config: SanityClientConfig) =>
+        factory({...config, url: `https://${PROJECT_ID}.api.sanity.io/v1`})
+    }
+
+    function createStore(onRequestFailure = vi.fn(), validTokens = new Set<string>()) {
+      return _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: createCorsClientFactory(validTokens),
+        endpoints: createMockEndpoints(),
+        getRequestFailureDiagnostics: () => ({
+          diagnose: vi.fn(async () => ({type: 'unknown'}) as const),
+          onRequestFailure,
+        }),
+        ...createEnvironment(),
+      })
+    }
+
+    it('reports a missing CORS entry before anyone signs in', async () => {
+      // Bearer requests can pass the gateway from localhost without a CORS entry, so nothing
+      // else would tell the user that the origin is not set up before they go through sign-in.
+      const fetchMock = mockCorsCheck({allowed: false, withCredentials: false})
+      const onRequestFailure = vi.fn()
+      const store = createStore(onRequestFailure)
+
+      const sub = store.state.subscribe()
+      await vi.waitFor(() =>
+        expect(onRequestFailure).toHaveBeenCalledWith(
+          {type: 'cors', allowed: false, withCredentials: false},
+          expect.anything(),
+        ),
+      )
+      expect(fetchMock).toHaveBeenCalledWith(CORS_CHECK_URL, expect.anything())
+      sub.unsubscribe()
+    })
+
+    it('reports a missing CORS entry when signed in, even though /users/me succeeds', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      mockCorsCheck({allowed: false, withCredentials: false})
+      const onRequestFailure = vi.fn()
+      const store = createStore(onRequestFailure, new Set(['access-1']))
+
+      await authenticatedState(store.state)
+      await vi.waitFor(() =>
+        expect(onRequestFailure).toHaveBeenCalledWith(
+          {type: 'cors', allowed: false, withCredentials: false},
+          expect.anything(),
+        ),
+      )
+    })
+
+    it('does not ask for the credentials allowance, since it sends no cookie', async () => {
+      const fetchMock = mockCorsCheck({allowed: true, withCredentials: false})
+      const onRequestFailure = vi.fn()
+      const store = createStore(onRequestFailure)
+
+      await firstValueFrom(store.state)
+      await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled())
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(onRequestFailure).not.toHaveBeenCalled()
+    })
+
+    it('checks once per store', async () => {
+      const fetchMock = mockCorsCheck({allowed: true, withCredentials: true})
+      const store = createStore()
+
+      await firstValueFrom(store.state)
+      await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+      // Past the state's grace window, so the next subscriber starts it over.
+      await new Promise((resolve) => setTimeout(resolve, 1100))
+      await firstValueFrom(store.state)
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+  })
 })
