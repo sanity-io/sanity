@@ -20,16 +20,19 @@ export function useAccessPolicy(params: {
   const {client, source} = params
 
   const ref = getMediaLibraryRef(source)
-
-  // If the client doesn't have a token (i.e. cookie auth), set the requestKey
-  // to null to bypass the cdnAccessPolicy check as it will always fail.
-  const canCheck = Boolean(ref && client.config().token)
-  const requestKey = canCheck ? ref : null
+  const requestKey = ref ?? null
 
   // useSWR gives us synchronous access to the cached policy values so the UI
   // can render without a flash of loading state while
   // enqueueAssetAccessPolicyFetch (which always returns a promise) settles.
-  const fetcher = async (key: MediaLibraryRef) => enqueueAssetAccessPolicyFetch(key, client)
+  const fetcher = async (key: MediaLibraryRef): Promise<AssetAccessPolicy | undefined> => {
+    // Without a bearer token (cookie auth) the cdnAccessPolicy check always fails, so it is
+    // skipped. The credential is read through `getAuth()`: under a reactive `auth` it is
+    // settled asynchronously and `config().token` may be unset or stale.
+    const {token} = await client.getAuth()
+    if (!token) return 'unknown'
+    return enqueueAssetAccessPolicyFetch(key, client)
+  }
   const options = {
     dedupingInterval: 0,
     revalidateOnFocus: false,
@@ -40,9 +43,7 @@ export function useAccessPolicy(params: {
 
   // Non-Media Library assets are always 'public'
   if (!ref) return 'public'
-  // If we can't check for an access policy (no token)
-  if (!canCheck) return 'unknown'
-  // If we can check AND a check is in progress
+  // A check is in progress
   if (isLoading) return 'checking'
   // The actual fetched policy, default to 'unknown' if undefined
   return cdnAccessPolicy ?? 'unknown'

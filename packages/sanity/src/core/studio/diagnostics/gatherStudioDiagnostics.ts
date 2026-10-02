@@ -457,14 +457,17 @@ async function requestConstantQuery(
   url.searchParams.set('returnQuery', 'false')
   url.searchParams.set('tag', tag)
 
+  // The probe bypasses the client, so the credential is read the way the client would send it:
+  // under a reactive `auth`, `config().token` is unset or stale.
+  const {token, withCredentials} = await client.getAuth({signal})
   const headers = new Headers(config.headers)
-  if (config.token) headers.set('Authorization', `Bearer ${config.token}`)
+  if (token) headers.set('Authorization', `Bearer ${token}`)
   if (!config.useProjectHostname && config.projectId) {
     headers.set('X-Sanity-Project-ID', config.projectId)
   }
 
   const response = await fetch(url, {
-    credentials: config.withCredentials ? 'include' : undefined,
+    credentials: withCredentials ? 'include' : undefined,
     headers,
     signal,
   })

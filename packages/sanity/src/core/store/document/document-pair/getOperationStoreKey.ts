@@ -1,22 +1,28 @@
 import {type SanityClient} from '@sanity/client'
 
-import {createMemoKey} from '../utils/memoKey'
+import {createMemoKey, getClientCredentialSegments} from '../utils/memoKey'
 
+/**
+ * Routes an emitted operation to the `operationEvents` pipeline built on the same credential.
+ * The pipeline computes it once; each `OperationsAPI` computes it when it is created, and an
+ * operation whose key matches no live pipeline is dropped. So the two must agree for as long as
+ * the credential source lives, and differ across a re-login: without that, one emitted operation
+ * would match both the fresh and the stale pipeline while both are briefly subscribed and run
+ * the mutation twice.
+ *
+ * It is built from the credential *source* ({@link getClientCredentialSegments}), never from
+ * `config().token`: under a reactive `auth` that is the token the client last resolved, which
+ * changes at every rotation, and an `OperationsAPI` created after a rotation (a document pane
+ * reopened after one) would key differently from the pipeline and every edit would be silently
+ * dropped, with the form still editable.
+ */
 export function getOperationStoreKey(client: SanityClient): string {
-  const config = client.config()
-  const {projectId, dataset, token} = config
+  const [credential, dataset, projectId] = getClientCredentialSegments(client)
   if (!projectId) {
     throw new Error('Client is missing projectId')
   }
   if (!dataset) {
     throw new Error('Client is missing dataset')
   }
-  // Include the token so an operation is routed to the pipeline built on the
-  // same credential. This key only needs to agree between the emitter and the
-  // pipeline (both call this function) — it does not have to equal the
-  // operationEvents memo key. Once operationEvents is memoized per token, a
-  // re-login runs a second pipeline; without the token here one emitted
-  // operation would match both the fresh and the stale-token pipeline while
-  // both are briefly subscribed and execute the mutation twice.
-  return createMemoKey([projectId, dataset, token])
+  return createMemoKey([projectId, dataset, credential])
 }

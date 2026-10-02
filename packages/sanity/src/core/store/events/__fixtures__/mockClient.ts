@@ -39,6 +39,7 @@ export function createMockClient(options: MockClientOptions = {}): MockClient {
 
   const client = {
     config: () => ({dataset, projectId, token}),
+    getAuth: async () => ({token}),
     getUrl: (uri: string) => `https://${projectId}.api.sanity.test/v1${uri}`,
     observable: {
       request: (request: RecordedRequest): Observable<unknown> => {

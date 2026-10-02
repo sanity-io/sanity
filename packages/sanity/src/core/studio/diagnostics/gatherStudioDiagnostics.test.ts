@@ -224,6 +224,10 @@ describe('gatherStudioDiagnostics', () => {
     expect(queryProbeUrl.pathname).toBe('/v2025-02-19/data/query/production')
     expect(queryProbeUrl.searchParams.get('query')).toBe('1')
     expect(queryProbeUrl.searchParams.get('tag')).toBe('sanity.studio.diagnostics.query-constant')
+    // The probe bypasses the client, so it reads the credential through `getAuth()`: under a
+    // reactive `auth`, `config().token` is unset or stale.
+    const queryProbeInit = vi.mocked(fetch).mock.calls[0]?.[1]
+    expect(new Headers(queryProbeInit?.headers).get('authorization')).toBe('Bearer current-token')
     expect(client.fetch).toHaveBeenCalledWith(
       '*[0]._id',
       {},
@@ -420,6 +424,7 @@ function createClient(
     fetch: vi.fn(async (query: string) => (query === '1' ? 1 : 'document-id')),
     getDataUrl: vi.fn((operation: string) => `/data/${operation}/production`),
     getDocument: vi.fn(async () => undefined),
+    getAuth: vi.fn(async () => ({token: 'current-token'})),
     getUrl: vi.fn((path: string) => `https://api.sanity.test/v2025-02-19${path}`),
     listen: vi.fn(
       () =>
