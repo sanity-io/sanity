@@ -3,8 +3,12 @@ import {endOfDay} from 'date-fns/endOfDay'
 import {type CSSProperties, useCallback, useMemo} from 'react'
 import {Text} from 'ui5'
 
-const PRIMARY_TEXT_STYLE: CSSProperties & {'--text-color': string} = {
-  '--text-color': 'light-dark(var(--blue-600), var(--blue-400))',
+const PRIMARY_FOREGROUND_STYLE = {
+  '--text-color': 'var(--card-fg-color)',
+  '--text-color-muted': 'var(--card-muted-fg-color)',
+} as CSSProperties & {
+  '--text-color': string
+  '--text-color-muted': string
 }
 
 interface CalendarDayProps {
@@ -55,10 +59,10 @@ export function CalendarDay(props: CalendarDayProps) {
       >
         <Text
           muted={!selected && !isCurrentMonth}
-          style={({
-	textAlign: 'center',
-	...(isToday || selected) && PRIMARY_TEXT_STYLE
-})}
+          style={{
+            textAlign: 'center',
+            ...((isToday || selected) && PRIMARY_FOREGROUND_STYLE),
+          }}
           weight={isCurrentMonth ? 'medium' : 'regular'}
           as="div"
           trim={true}

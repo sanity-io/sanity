@@ -2,6 +2,7 @@ import {red} from '@sanity/color'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {type CardTone} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {type CSSProperties} from 'react'
 import {Text, Container, Flex, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -19,6 +20,11 @@ const POPOVER_PROPS = {
   tone: 'default' as CardTone,
   width: 0,
 }
+
+const FAILED_FOREGROUND_STYLE = {
+  '--icon-color': red[700].hex,
+  '--text-color': red[700].hex,
+} as CSSProperties & {'--icon-color': string; '--text-color': string}
 
 const StateReasonFailedInfo = (props: Props) => {
   const {stateReason} = props
@@ -42,8 +48,8 @@ const StateReasonFailedInfo = (props: Props) => {
               {SCHEDULE_FAILED_TEXT}
             </Text>
             <Flex gap={3} marginTop={4} padding={1}>
-              <Icon icon={ErrorOutlineIcon} size={1} style={{color: red[700].hex}} />
-              <Text size={1} style={{color: red[700].hex}} weight="medium" as="div" trim={true}>
+              <Icon icon={ErrorOutlineIcon} size={1} style={FAILED_FOREGROUND_STYLE} />
+              <Text size={1} style={FAILED_FOREGROUND_STYLE} weight="medium" as="div" trim={true}>
                 {stateReason}
               </Text>
             </Flex>

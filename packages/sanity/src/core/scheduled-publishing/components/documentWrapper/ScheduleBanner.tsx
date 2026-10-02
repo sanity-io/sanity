@@ -13,12 +13,16 @@ import usePollSchedules from '../../hooks/usePollSchedules'
 import {usePublishedId} from '../../hooks/usePublishedId'
 import {useValidationState} from '../../utils/validationUtils'
 
-const PRIMARY_TEXT_STYLE: CSSProperties & {'--text-color': string} = {
-  '--text-color': 'light-dark(var(--blue-600), var(--blue-400))',
-}
-
-const PRIMARY_ICON_STYLE: CSSProperties & {'--icon-color': string} = {
-  '--icon-color': 'light-dark(var(--blue-600), var(--blue-400))',
+const PRIMARY_FOREGROUND_STYLE = {
+  '--text-color': 'var(--card-fg-color)',
+  '--text-color-muted': 'var(--card-muted-fg-color)',
+  '--icon-color': 'var(--card-fg-color)',
+  '--icon-color-muted': 'var(--card-muted-fg-color)',
+} as CSSProperties & {
+  '--text-color': string
+  '--text-color-muted': string
+  '--icon-color': string
+  '--icon-color-muted': string
 }
 
 interface Props {
@@ -64,7 +68,7 @@ export function ScheduleBanner(props: Props) {
               muted
               size={1}
               tone={hasError ? 'critical' : undefined}
-              style={hasError ? undefined : PRIMARY_ICON_STYLE}
+              style={hasError ? undefined : PRIMARY_FOREGROUND_STYLE}
             />
             <Text
               muted
@@ -72,7 +76,7 @@ export function ScheduleBanner(props: Props) {
               as="div"
               trim={true}
               tone={hasError ? 'critical' : undefined}
-              style={hasError ? undefined : PRIMARY_TEXT_STYLE}
+              style={hasError ? undefined : PRIMARY_FOREGROUND_STYLE}
             >
               <span style={{fontWeight: 600}}>Upcoming schedule</span> (local time)
             </Text>
@@ -92,7 +96,7 @@ export function ScheduleBanner(props: Props) {
                     as="div"
                     trim={true}
                     tone={hasError ? 'critical' : undefined}
-                    style={hasError ? undefined : PRIMARY_TEXT_STYLE}
+                    style={hasError ? undefined : PRIMARY_FOREGROUND_STYLE}
                   >
                     {formattedDateTime}
                   </Text>

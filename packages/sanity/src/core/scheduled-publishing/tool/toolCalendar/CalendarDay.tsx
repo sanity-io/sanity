@@ -13,12 +13,16 @@ import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {useSchedules} from '../contexts/schedules'
 import Pip from './Pip'
 
-const PRIMARY_TEXT_STYLE: CSSProperties & {'--text-color': string} = {
-  '--text-color': 'light-dark(var(--blue-800), var(--blue-200))',
-}
-
-const PRIMARY_ICON_STYLE: CSSProperties & {'--icon-color': string} = {
-  '--icon-color': 'light-dark(var(--blue-100), var(--blue-900))',
+const PRIMARY_FOREGROUND_STYLE = {
+  '--text-color': 'var(--card-fg-color)',
+  '--text-color-muted': 'var(--card-muted-fg-color)',
+  '--icon-color': 'var(--card-fg-color)',
+  '--icon-color-muted': 'var(--card-muted-fg-color)',
+} as CSSProperties & {
+  '--text-color': string
+  '--text-color-muted': string
+  '--icon-color': string
+  '--icon-color-muted': string
 }
 
 interface CalendarDayProps {
@@ -95,19 +99,19 @@ export function CalendarDay(props: CalendarDayProps) {
               <Icon
                 icon={CloseIcon}
                 size={1}
-                style={({
-	margin: '-0.375rem',
-	display: 'block',
-	...tone === 'primary' && PRIMARY_ICON_STYLE
-})}
+                style={{
+                  margin: '-0.375rem',
+                  display: 'block',
+                  ...(tone === 'primary' && PRIMARY_FOREGROUND_STYLE),
+                }}
               />
             ) : (
               <Text
                 size={1}
-                style={({
-	opacity: !isCurrentMonth ? .35 : 1,
-	...tone === 'primary' && PRIMARY_TEXT_STYLE
-})}
+                style={{
+                  opacity: !isCurrentMonth ? 0.35 : 1,
+                  ...(tone === 'primary' && PRIMARY_FOREGROUND_STYLE),
+                }}
                 as="div"
                 trim={true}
               >

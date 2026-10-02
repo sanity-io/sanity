@@ -10,7 +10,7 @@ const InfoCallout = () => {
   return (
     <Card overflow="hidden" padding={4} radius={2} shadow={1} tone="suggest">
       <Flex alignItems="center" gap={4}>
-        <Icon icon={InfoOutlineIcon} size={2} tone="suggest" />
+        <Icon icon={InfoOutlineIcon} size={2} tone="suggest" style={{flexShrink: 0}} />
         <VStack gap={4}>
           <Text size={1} weight="semibold" as="div" trim={true} tone="suggest">
             Schedule Publishing is not enabled

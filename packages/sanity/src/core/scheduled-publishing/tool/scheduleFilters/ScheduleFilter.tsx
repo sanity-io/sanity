@@ -39,11 +39,17 @@ const ScheduleFilter = (props: Props) => {
       padding={2}
     >
       <Flex gap={2} alignItems={'center'}>
-        <Text size={1} weight="medium" as="div" trim={true}>
+        <Text
+          size={1}
+          weight="medium"
+          as="div"
+          trim={true}
+          tone={critical ? 'critical' : undefined}
+        >
           {SCHEDULE_STATE_DICTIONARY[state].title}
         </Text>
         {hasItems && (
-          <Text size={0} as="div" trim={true}>
+          <Text size={0} as="div" trim={true} tone={critical ? 'critical' : undefined}>
             {count}
           </Text>
         )}
