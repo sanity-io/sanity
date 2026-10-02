@@ -37,3 +37,24 @@ export const SessionTokenExchangeCompleted = defineEvent<{
   version: 2,
   description: 'Result of the auth exchange flow in handleCallbackUrl',
 })
+
+/**
+ * Fired when handleCallbackUrl completes in the OAuth auth store
+ * (`auth.experimental_oauth`): the authorization code exchange, or a load
+ * without an authorization response (`already-authenticated`). Same meaning
+ * of the shared fields as `SessionTokenExchangeCompleted`; `failureReason` is
+ * the RFC 6749 error code or a fixed category, never server-provided text.
+ */
+export const OAuthCodeExchangeCompleted = defineEvent<{
+  flow: 'already-authenticated' | 'exchange'
+  success: boolean
+  durationMs: number
+  exchangeDurationMs?: number
+  failureReason?: string
+  stateSettleDurationMs?: number
+  stateSettleTimedOut?: boolean
+}>({
+  name: 'OAuth Code Exchange Completed',
+  version: 1,
+  description: 'Result of the OAuth authorization code exchange in handleCallbackUrl',
+})

@@ -224,9 +224,11 @@ export {ZIndexProvider} from '../core/components/zOffsets/ZIndexProvider'
 export {
   type AuthConfig,
   type AuthProvider,
-  type ClassicAuthConfig,
   type CookielessCompatibleLoginMethod,
   type LoginMethod,
+  type OAuthAuthConfig,
+  type OAuthConfig,
+  type ClassicAuthConfig,
 } from '../core/config/auth/types'
 export {useMiddlewareComponents} from '../core/config/components/useMiddlewareComponents'
 export {
@@ -1212,6 +1214,8 @@ export {
   type AuthStore,
   type HandleCallbackResult,
   type LoginComponentProps,
+  type OAuthCallbackResult,
+  type ClassicCallbackResult,
 } from '../core/store/auth/types'
 export {isCookielessCompatibleLoginMethod} from '../core/store/auth/classic/asserters'
 export {isAuthStore} from '../core/store/auth/utils/asserters'

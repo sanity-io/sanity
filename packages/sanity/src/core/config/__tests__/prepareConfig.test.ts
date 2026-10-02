@@ -299,3 +299,46 @@ describe('prepareConfig — schema error context', () => {
     })
   })
 })
+
+describe('prepareConfig — auth.experimental_oauth', () => {
+  it('uses the OAuth auth store for a workspace that sets it', () => {
+    const {workspaces} = prepareConfig(
+      createWorkspace({auth: {experimental_oauth: {clientId: 'oc-test-client'}}}),
+    )
+
+    expect(workspaces[0].auth.LoginComponent?.name).toBe('OAuthLoginComponent')
+  })
+
+  it('keeps the provider login for a workspace that does not', () => {
+    const {workspaces} = prepareConfig(createWorkspace({auth: {loginMethod: 'token'}}))
+
+    expect(workspaces[0].auth.LoginComponent?.name).not.toBe('OAuthLoginComponent')
+  })
+
+  it('does not warn about divergent auth for an OAuth workspace of the same project', () => {
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const projectId = `oauth-${Math.random().toString(36).slice(2)}`
+    const warningsBefore = getCollectedConfigWarnings().length
+
+    prepareConfig([
+      createWorkspace({
+        name: 'token-workspace',
+        projectId,
+        basePath: '/token',
+        auth: {loginMethod: 'token'},
+      }),
+      createWorkspace({
+        name: 'oauth-workspace',
+        projectId,
+        basePath: '/oauth',
+        auth: {experimental_oauth: {clientId: 'oc-test-client'}},
+      }),
+    ])
+
+    const newWarnings = getCollectedConfigWarnings().slice(warningsBefore)
+    expect(
+      newWarnings.find((w) => w.type === 'project-auth-divergence' && w.projectId === projectId),
+    ).toBeUndefined()
+    consoleWarnSpy.mockRestore()
+  })
+})

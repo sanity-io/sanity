@@ -662,7 +662,11 @@ export {
   createMockAuthStore,
   type MockAuthStoreOptions,
 } from '../core/store/auth/mock/createMockAuthStore'
-export {type HandleCallbackResult} from '../core/store/auth/types'
+export {
+  type ClassicCallbackResult,
+  type HandleCallbackResult,
+  type OAuthCallbackResult,
+} from '../core/store/auth/types'
 export {isCookielessCompatibleLoginMethod} from '../core/store/auth/classic/asserters'
 export {isAuthStore} from '../core/store/auth/utils/asserters'
 export {

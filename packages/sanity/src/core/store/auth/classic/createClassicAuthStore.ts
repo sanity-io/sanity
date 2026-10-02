@@ -1,7 +1,8 @@
 // The classic auth store: the way Studio has always signed in. Users pick one of the project's
 // login providers, and the session ID they come back with is exchanged for a Sanity API session,
 // held as the API cookie or as a session token in localStorage (`loginMethod`). It also takes a
-// token handed over in the URL hash or by the embedding workbench.
+// token handed over in the URL hash or by the embedding workbench. Compare `../oauth/`, which
+// signs in with OAuth and renews short-lived tokens in the background.
 
 import {
   type ClientConfig as SanityClientConfig,
@@ -42,12 +43,7 @@ import {isStaging} from '../../../environment/isStaging'
 import {type RequestFailureDiagnostics} from '../../../studio/requestErrors/diagnoseRequestFailure'
 import {type StudioErrorHandler} from '../../../studio/requestErrors/types'
 import {canonicalHash} from '../../../util/canonicalHash'
-import {
-  type AuthProbeResult,
-  type AuthState,
-  type AuthStore,
-  type HandleCallbackResult,
-} from '../types'
+import {type AuthProbeResult, type AuthState, type AuthStore} from '../types'
 import {createBroadcastState} from '../utils/createBroadcastState'
 import {getCurrentUser, withoutRequestHandler} from '../utils/getCurrentUser'
 import {isCookielessCompatibleLoginMethod} from './asserters'
@@ -64,6 +60,7 @@ import {consumeHashClaim} from './hashClaim'
 import {consumeHashToken as defaultConsumeHashToken} from './hashToken'
 import {probeClassicAuth} from './probeClassicAuth'
 import {clearHashSessionId, getHashSessionId as defaultGetSessionId} from './sessionId'
+import {type ClassicCallbackResult} from './types'
 import {recordHashClaimUrl} from './unclaimedProjectStorage'
 import {
   observeWorkbenchToken as defaultObserveWorkbenchToken,
@@ -608,9 +605,9 @@ export function _createClassicAuthStore({
   // so later calls are ordinary loads again — no replayed results
   // double-logging telemetry, and no cached rejection blocking recovery
   // until a page reload.
-  let _inflightCallback: Promise<HandleCallbackResult> | undefined
+  let _inflightCallback: Promise<ClassicCallbackResult> | undefined
 
-  async function handleCallbackUrl(): Promise<HandleCallbackResult> {
+  async function handleCallbackUrl(): Promise<ClassicCallbackResult> {
     const startTime = performance.now()
     const sessionId = getSessionId()
     // workaround for https://github.com/vercel/next.js/issues/91819
@@ -648,7 +645,7 @@ export function _createClassicAuthStore({
   async function processCallback(
     sessionId: string,
     startTime: number,
-  ): Promise<HandleCallbackResult> {
+  ): Promise<ClassicCallbackResult> {
     // Client used to exchange SID (Session ID) for a token (and a cookie as a side effect)
     const exchangeClient = clientFactory({
       ...AUTH_CLIENT_OPTIONS,
