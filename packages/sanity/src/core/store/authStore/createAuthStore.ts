@@ -155,7 +155,13 @@ function withoutRequestHandler(client: SanityClient): SanityClient {
     : client
 }
 
-const getCurrentUser = async (
+/**
+ * Fetches the current user for `client`, resolving `undefined` when the credentials are rejected.
+ * Shared with `createOAuthAuthStore`, whose state is built on the same probe.
+ *
+ * @internal
+ */
+export const getCurrentUser = async (
   client: SanityClient,
   tag: string,
   getRequestErrorHandler?: () => StudioErrorHandler | undefined,
