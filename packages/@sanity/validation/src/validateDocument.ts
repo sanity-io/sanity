@@ -811,6 +811,16 @@ function validateItemObservable({
     )
   }
 
+  // A single leaf rule already emits one marker array. Keep the idle yield,
+  // but avoid constructing the merge/collection pipeline for this common case.
+  if (
+    selfChecks.length === 1 &&
+    nestedChecks.length === 0 &&
+    !rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)
+  ) {
+    return concat(idle(), selfChecks[0])
+  }
+
   return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
     mergeMap((validateNode) => concat(idle(), validateNode), 40),
     mergeAll(),
