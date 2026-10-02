@@ -4,7 +4,7 @@ import {ClockIcon} from '@sanity/icons/Clock'
 import {DotIcon} from '@sanity/icons/Dot'
 import {type BadgeTone} from '@sanity/ui'
 import {type CSSProperties} from 'react'
-import {Box, Icon, type IconProps as UIIconProps, type Space} from 'ui5'
+import {Flex, Icon, type IconProps as UIIconProps, type Space} from 'ui5'
 
 import {BoltSmallIcon} from '../../components/temporary-icons/BoltSmall'
 import {CircleSmallIcon} from '../../components/temporary-icons/CircleSmall'
@@ -19,9 +19,11 @@ import {isReleaseDocument} from '../store/types'
 import {RELEASE_TYPES_TONES} from '../util/const'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {isDraftPerspective} from '../util/util'
+import {releaseAvatarIcon} from './ReleaseAvatar.css'
 
 interface IconProps {
   'data-testid': string
+  'className': string
   'style': CSSProperties & {'--card-icon-color': string; '--icon-color': string}
   'size': UIIconProps['size']
 }
@@ -107,11 +109,11 @@ export const ReleaseAvatarIcon = ({
 
   const iconProps: IconProps = {
     'data-testid': `release-avatar-${resolvedTone}`,
+    'className': releaseAvatarIcon,
     'style': {
       '--card-icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
       '--icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
       'margin': fontSize === 2 ? '-0.4375rem' : '-0.375rem',
-      'display': 'block',
     },
     'size': fontSize,
   }
@@ -154,9 +156,11 @@ export function ReleaseAvatar({
 }: ReleaseAvatarIconProps & {
   padding?: Space
 }): React.JSX.Element {
+  // A flex container blockifies the glyph even when a v4 `Text` ancestor makes it inline (see
+  // `ReleaseAvatar.css.ts`), so the padded box keeps the same size in both contexts.
   return (
-    <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={padding} style={{borderRadius: 3}}>
+    <Flex flexBasis="auto" flexGrow={0} flexShrink={0} padding={padding} style={{borderRadius: 3}}>
       <ReleaseAvatarIcon {...iconProps} />
-    </Box>
+    </Flex>
   )
 }
