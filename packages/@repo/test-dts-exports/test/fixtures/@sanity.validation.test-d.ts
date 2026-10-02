@@ -8,6 +8,8 @@ import type {
   DocumentValidationResult,
   validateDocument,
   ValidateDocumentOptions,
+  validateDocuments,
+  ValidateDocumentsOptions,
   validateDocumentWithWorkspace,
   ValidateDocumentWorkspaceOptions,
   ValidationClient,
@@ -33,6 +35,12 @@ describe('@sanity/validation', () => {
   })
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().not.toBeNever()
+  })
+  test('validateDocuments', () => {
+    expectTypeOf<typeof validateDocuments>().toBeFunction()
+  })
+  test('ValidateDocumentsOptions', () => {
+    expectTypeOf<ValidateDocumentsOptions>().not.toBeNever()
   })
   test('validateDocumentWithWorkspace', () => {
     expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()
