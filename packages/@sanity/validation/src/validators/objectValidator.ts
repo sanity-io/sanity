@@ -2,6 +2,7 @@ import {type DocumentId, getPublishedId} from '@sanity/id-utils'
 import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
 
 import {validationMarkerCodes} from '../codes'
+import {type InternalValidationContext} from '../types'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
 import {typeString} from '../util/typeString'
@@ -47,6 +48,10 @@ export const objectValidators: Validators = {
         details: {actualType: typeString(value)},
         message: message || i18n.t('validation:object.not-reference'),
       }
+    }
+
+    if ((context as InternalValidationContext).__internal?.validationMode === 'structural') {
+      return true
     }
 
     if (!type) {
@@ -95,17 +100,6 @@ export const objectValidators: Validators = {
   },
 
   media: async (fn, value, message, context) => {
-    const slowTimer = setTimeout(() => {
-      // only show this warning in the studio
-      if (context.environment !== 'studio') return
-
-      console.warn(
-        `Media validator at ${pathToString(
-          context.path,
-        )} has taken more than ${SLOW_VALIDATOR_TIMEOUT}ms to respond`,
-      )
-    }, SLOW_VALIDATOR_TIMEOUT)
-
     // If no value is provided, we assume the validation passes. This should be handled by the 'isRequired' validator.
     if (!value) {
       return true
@@ -119,6 +113,21 @@ export const objectValidators: Validators = {
         message: context.i18n.t('validation:object.not-media-library-asset'),
       }
     }
+
+    if ((context as InternalValidationContext).__internal?.validationMode === 'structural') {
+      return true
+    }
+
+    const slowTimer = setTimeout(() => {
+      // only show this warning in the studio
+      if (context.environment !== 'studio') return
+
+      console.warn(
+        `Media validator at ${pathToString(
+          context.path,
+        )} has taken more than ${SLOW_VALIDATOR_TIMEOUT}ms to respond`,
+      )
+    }, SLOW_VALIDATOR_TIMEOUT)
 
     let result: CustomValidatorResult = true
 

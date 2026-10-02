@@ -36,6 +36,9 @@ When a check cannot run, `result.status` is `notEvaluated`. Omitting `client` di
 callbacks and skips network checks. Pass `customValidation: false` to disable custom callbacks while
 still providing a client.
 
+`validationMode: 'structural'` checks types, unknown fields, and reference shapes, skipping content rules,
+custom callbacks, and network requests. Defaults to `full`; `status` covers only the selected checks.
+
 Pass one `AbortSignal` to cancel validation and its pending network work. Built-in checks and client
 requests made through a custom validator's `context.getClient()` inherit this signal. A custom
 `getDocumentExists` callback receives it as an argument; custom work using another API should pass

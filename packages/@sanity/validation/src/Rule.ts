@@ -12,7 +12,7 @@ import get from 'lodash-es/get.js'
 
 import {ClientUnavailableError} from './clientUnavailable'
 import {validationMarkerCodes} from './codes'
-import {isInternalValidator} from './internalValidators'
+import {isInternalValidator, isStructuralValidator} from './internalValidators'
 import {type InternalValidationContext} from './types'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
@@ -100,6 +100,8 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
     const {__internal = {}, ...context} = options as InternalValidationContext
     const {customValidation = true, customValidationConcurrencyLimiter, markIncomplete} = __internal
 
+    const structural = __internal.validationMode === 'structural'
+
     const valueIsEmpty = value === null || value === undefined
 
     // Short-circuit on optional, empty fields
@@ -107,11 +109,21 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
       return EMPTY_ARRAY as ValidationMarker[]
     }
 
-    const rules =
+    let rules =
       // Run only the _custom_ functions if the rule is not set to required or optional
       this._required === undefined && valueIsEmpty
         ? this._rules.filter((curr) => curr.flag === 'custom')
         : this._rules
+
+    if (structural) {
+      rules = rules.filter(
+        (rule) =>
+          rule.flag === 'type' ||
+          rule.flag === 'reference' ||
+          rule.flag === 'media' ||
+          (rule.flag === 'custom' && isStructuralValidator(rule.constraint)),
+      )
+    }
 
     const validators = (this._type && typeValidators[this._type]) || genericValidators
 
@@ -132,7 +144,7 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           specConstraint = get(context.parent, specConstraint.path)
         }
 
-        if (curr.flag === 'custom' || curr.flag === 'media') {
+        if (curr.flag === 'custom' || (curr.flag === 'media' && !structural)) {
           // Slug rules can be inherited from a compiled base type, so classify the
           // callback using the actual field's options at validation time.
           const usesCustomSlugUniqueness =
@@ -162,7 +174,10 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           : this._message
 
         try {
-          const result = await validator(specConstraint, value, message, context)
+          const validationContext: InternalValidationContext = structural
+            ? {...context, __internal: {validationMode: 'structural'}}
+            : context
+          const result = await validator(specConstraint, value, message, validationContext)
           return convertToValidationMarker(result, this._level, context, {
             code: fallbackCodeForRule(curr.flag),
           })

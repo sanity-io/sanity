@@ -115,6 +115,14 @@ interface ValidateDocumentBaseOptions {
   /** The compiled schema to validate against. */
   schema: ValidationSchema
 
+  /**
+   * Checks to run. Defaults to `full`.
+   * `structural` checks value types, unknown fields, and reference shapes without
+   * running content constraints, custom callbacks, or network checks.
+   * Completion status describes only the selected checks.
+   */
+  validationMode?: 'full' | 'structural'
+
   /** Signal used to cancel validation and any work it starts. */
   signal?: AbortSignal
 
@@ -277,11 +285,13 @@ export function validateDocumentWithWorkspace({
   maxFetchConcurrency,
   currentUser,
   customValidation,
+  validationMode,
   signal,
 }: ValidateDocumentWorkspaceOptions): Promise<DocumentValidationMarker[]> {
   return validateDocumentInternal({
     currentUser,
     customValidation,
+    validationMode,
     document,
     environment,
     getClient,
@@ -359,6 +369,7 @@ export interface ValidateDocumentInternalOptions {
   maxFetchConcurrency?: number
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
+  validationMode?: 'full' | 'structural'
   signal?: AbortSignal
 }
 
@@ -409,6 +420,7 @@ function evaluateDocumentsInternal({
   maxFetchConcurrency,
   currentUser,
   customValidation = true,
+  validationMode = 'full',
   signal,
 }: Omit<ValidateDocumentInternalOptions, 'document'> & {
   documents: SanityDocument[]
@@ -439,6 +451,7 @@ function evaluateDocumentsInternal({
           maxCustomValidationConcurrency,
           currentUser,
           customValidation,
+          validationMode,
           signal,
         }),
       ),
@@ -460,6 +473,7 @@ export interface ValidateDocumentObservableOptions extends Pick<
   maxCustomValidationConcurrency?: number
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
+  validationMode?: 'full' | 'structural'
 }
 
 const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
@@ -498,6 +512,7 @@ function evaluateDocumentObservableWithoutCancellation({
   maxCustomValidationConcurrency,
   currentUser,
   customValidation = true,
+  validationMode = 'full',
   signal,
 }: ValidateDocumentObservableOptions): Observable<DocumentValidationResult> {
   if (typeof document?._type !== 'string') {
@@ -559,6 +574,7 @@ function evaluateDocumentObservableWithoutCancellation({
       customValidation,
       signal,
       __internal: {
+        validationMode,
         markIncomplete: () => {
           complete = false
         },
@@ -678,7 +694,7 @@ function validateItemObservable({
     ) {
       // then add the validator for unknown fields
       return rule
-        .custom(markInternalValidator(unknownFieldsValidator(type)), {
+        .custom(markInternalValidator(unknownFieldsValidator(type), {structural: true}), {
           bypassConcurrencyLimit: true,
         })
         .warning()
