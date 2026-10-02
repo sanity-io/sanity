@@ -378,7 +378,7 @@ export function _createOAuthAuthStore({
   // The authorization server's issuer identifier is the API origin it is served from, without a
   // trailing slash. Canonicalized once here, so the callback can compare `iss` exactly.
   const issuer = (hostOptions.apiHost ?? 'https://api.sanity.io').replace(/\/+$/, '')
-  const endpoints = endpointsOption ?? createOAuthEndpoints(issuer)
+  const endpoints = endpointsOption ?? createOAuthEndpoints({issuer, projectId})
   const clientFactory = clientFactoryOption ?? createSanityClient
   const flowStorageKey = getOAuthFlowStorageKey(projectId)
 

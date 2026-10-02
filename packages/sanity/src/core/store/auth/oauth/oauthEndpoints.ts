@@ -133,18 +133,33 @@ export interface OAuthEndpoints {
  */
 const OAUTH_REQUEST_TIMEOUT_MS = 30_000
 
+/** @internal */
+export interface OAuthHosts {
+  /** The authorization server's issuer identifier, the API origin, e.g. `https://api.sanity.io`. */
+  issuer: string
+  projectId: string
+}
+
 /**
- * @param apiHost - The API origin, e.g. `https://api.sanity.io`
+ * The user authorizes on the issuer. The token and revocation requests, which the studio makes
+ * with `fetch`, go to the project's API host instead: that host checks the origin against the
+ * project's CORS settings, while the issuer's own host only allows a fixed list of origins
+ * (localhost and sanity.studio), so a studio hosted anywhere else could not complete a sign-in.
+ *
  * @param fetchImpl - `fetch`, injectable for tests
  * @param timeoutMs - Request timeout, injectable for tests
  * @internal
  */
 export function createOAuthEndpoints(
-  apiHost: string,
+  {issuer, projectId}: OAuthHosts,
   fetchImpl: typeof fetch = (...args) => fetch(...args),
   timeoutMs: number = OAUTH_REQUEST_TIMEOUT_MS,
 ): OAuthEndpoints {
-  const endpoint = (name: 'authorize' | 'token' | 'revoke') => `${apiHost}/v1/auth/oauth/${name}`
+  // The project host, the way the client derives it from `apiHost`.
+  const [protocol, host] = issuer.split('://', 2)
+  const projectHost = `${protocol}://${projectId}.${host}`
+  const endpoint = (name: 'authorize' | 'token' | 'revoke') =>
+    `${name === 'authorize' ? issuer : projectHost}/v1/auth/oauth/${name}`
 
   async function postForm<T>(url: string, fields: Record<string, string>): Promise<T> {
     const controller = new AbortController()
