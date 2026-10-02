@@ -66,7 +66,7 @@ switch (result.action) {
   case 'dev':
     await (
       await import('../runner/devServer')
-    ).startBenchDev({customizations: result.customizations})
+    ).startBenchDev({customizations: result.customizations, scenario: result.scenario})
     break
   case 'scenarios':
     listScenarios(result.json)
