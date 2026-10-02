@@ -51,6 +51,25 @@ export function isAuthFetchEndpoint(): RouteMatcher {
 }
 
 /**
+ * Match the OAuth 2.1 endpoints (`/auth/oauth/authorize`, `/auth/oauth/token`,
+ * `/auth/oauth/revoke`) an OAuth studio (`auth.experimental_oauth`) signs in and
+ * renews its tokens with. None of them is called with the session they manage,
+ * so an invalid-session scenario must not answer them with a 401.
+ */
+export function isOAuthEndpoint(): RouteMatcher {
+  return urlIncludes('/auth/oauth/')
+}
+
+/**
+ * Match the OAuth token endpoint (`/auth/oauth/token`). Both the code exchange
+ * after a sign-in and every refresh token redemption land here, so a request is
+ * the proxy's signal that the studio obtained a new access token.
+ */
+export function isOAuthTokenEndpoint(): RouteMatcher {
+  return urlIncludes('/auth/oauth/token')
+}
+
+/**
  * Match auth endpoints that don't require an authenticated session. The login
  * screen fetches `/auth/providers` to render the list of login options, so it
  * must keep working even when the session has expired — answering it with a 401

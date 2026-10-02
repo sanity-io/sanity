@@ -612,6 +612,31 @@ export default defineConfig([
     },
   },
   {
+    name: 'oauth',
+    title: 'OAuth 2.1 (staging)',
+    subtitle: 'Signs in with an OAuth application',
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    ...envConfig.staging,
+    plugins: [sharedSettings({projectId: 'exx11uqh'})],
+    basePath: '/oauth',
+    auth: {
+      experimental_oauth: {
+        // OAuth 2.1 (`auth.experimental_oauth`): the `/oauth` workspace is mounted only when this is set to
+        // the client id of an OAuth application registered in Manage for the staging project `exx11uqh`,
+        // with this workspace's URL (`http://localhost:3333/oauth`) among its redirect URLs. Put it in
+        clientId: 'oc-3f7b8ef7fb70'
+      }
+    },
+    tasks: {
+      enabled: true,
+    },
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+
+  {
     name: 'growth',
     title: 'Growth (staging)',
 

@@ -3,7 +3,12 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["ENABLE_VITE_DEVTOOLS", "REACT_PRODUCTION_PROFILING", "SANITY_STUDIO_STYLE_OUTLINE"],
+      "env": [
+        "ENABLE_VITE_DEVTOOLS",
+        "REACT_PRODUCTION_PROFILING",
+        "SANITY_STUDIO_OAUTH_CLIENT_ID",
+        "SANITY_STUDIO_STYLE_OUTLINE"
+      ],
       "outputs": [".sanity/**", "dist/**"]
     },
     "start": {

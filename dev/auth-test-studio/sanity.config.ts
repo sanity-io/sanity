@@ -48,6 +48,12 @@ const github = {
   url: 'https://api.sanity.io/v1/auth/login/github',
 }
 
+// ── OAuth application ───────────────────────────────────────────────────────
+// Client ID of an OAuth application registered for the project in Manage, with
+// this Studio's `/oauth-workspace` URL (e.g. http://localhost:3340/oauth-workspace) as a
+// redirect URL. The `oauth-workspace` workspace is only added when it is set.
+const OAUTH_CLIENT_ID = process.env.SANITY_STUDIO_OAUTH_CLIENT_ID
+
 // ── Workspace definitions ───────────────────────────────────────────────────
 // All basePaths must have the same number of segments (Sanity requirement).
 // The e2e tests expect:
@@ -86,6 +92,20 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       basePath: `${pathPrefix}/token`,
       auth: {loginMethod: 'token'},
     },
+
+    // OAuth 2.1 — signs in with an OAuth application instead of the login providers
+    ...(OAUTH_CLIENT_ID
+      ? [
+          {
+            ...shared,
+            ...env,
+            name: `${prefix}oauth-workspace`,
+            title: `OAuth 2.1${titleSuffix}`,
+            basePath: `${pathPrefix}/oauth-workspace`,
+            auth: {experimental_oauth: {clientId: OAUTH_CLIENT_ID}},
+          },
+        ]
+      : []),
 
     // redirectOnSingle — skips the provider chooser when only one provider is configured
     {
