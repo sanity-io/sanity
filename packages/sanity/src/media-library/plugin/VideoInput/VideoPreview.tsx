@@ -79,7 +79,10 @@ export function VideoPreview(props: VideoAssetInputProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const asset = value?.asset
   const mediaRef = value?.media?._ref
-  const sourcesFromSchema = schemaType.options?.sources
+  // Legacy `options.sources: []` hides browsing entirely. Only the array form
+  // can mean this — `.length` on the predicate form would be arity.
+  const browseDisabledFromSchema =
+    Array.isArray(schemaType.options?.sources) && schemaType.options.sources.length === 0
   const accept = get(
     schemaType,
     'options.accept',
@@ -219,7 +222,7 @@ export function VideoPreview(props: VideoAssetInputProps) {
     // Legacy support for setting asset sources to an empty array through schema
     // Will still allow for uploading videos through the default studio asset source,
     // but not selecting existing assets
-    if (sourcesFromSchema?.length === 0) {
+    if (browseDisabledFromSchema) {
       return null
     }
     if (assetSources.length === 0) {
@@ -254,7 +257,7 @@ export function VideoPreview(props: VideoAssetInputProps) {
     dataTestIdPrefix,
     handleSelectAssetSourceForBrowse,
     readOnly,
-    sourcesFromSchema?.length,
+    browseDisabledFromSchema,
     t,
   ])
 
