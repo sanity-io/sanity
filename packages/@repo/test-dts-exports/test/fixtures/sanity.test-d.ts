@@ -990,6 +990,8 @@ import type {
   LatencyReportEvent,
   LATEST,
   LayoutProps,
+  LegacyAuthConfig,
+  LegacyCallbackResult,
   LegacyLayerProvider,
   LegacyThemeProps,
   LegacyThemeTints,
@@ -1102,6 +1104,9 @@ import type {
   NumberOptions,
   NumberRule,
   NumberSchemaType,
+  OAuthAuthConfig,
+  OAuthCallbackResult,
+  OAuthConfig,
   ObjectArrayFormNode,
   ObjectComponents,
   ObjectDefinition,
@@ -2135,7 +2140,7 @@ describe('sanity', () => {
     expectTypeOf<AsyncConfigPropertyReducer<any, any>>().not.toBeNever()
   })
   test('AuthConfig', () => {
-    expectTypeOf<AuthConfig>().toBeObject()
+    expectTypeOf<AuthConfig>().not.toBeNever()
   })
   test('AuthProbeResult', () => {
     expectTypeOf<AuthProbeResult>().not.toBeNever()
@@ -4863,6 +4868,12 @@ describe('sanity', () => {
   test('LayoutProps', () => {
     expectTypeOf<LayoutProps>().toBeObject()
   })
+  test('LegacyAuthConfig', () => {
+    expectTypeOf<LegacyAuthConfig>().toBeObject()
+  })
+  test('LegacyCallbackResult', () => {
+    expectTypeOf<LegacyCallbackResult>().toBeObject()
+  })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
   })
@@ -5200,6 +5211,15 @@ describe('sanity', () => {
   })
   test('NumberSchemaType', () => {
     expectTypeOf<NumberSchemaType>().toBeObject()
+  })
+  test('OAuthAuthConfig', () => {
+    expectTypeOf<OAuthAuthConfig>().toBeObject()
+  })
+  test('OAuthCallbackResult', () => {
+    expectTypeOf<OAuthCallbackResult>().toBeObject()
+  })
+  test('OAuthConfig', () => {
+    expectTypeOf<OAuthConfig>().toBeObject()
   })
   test('ObjectArrayFormNode', () => {
     expectTypeOf<ObjectArrayFormNode<any, any>>().toBeObject()
