@@ -10,7 +10,6 @@ import {Box, Flex, VStack} from 'ui5'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {probeWorkspaceAuth} from '../../../../store/auth/classic/probeClassicAuth'
 import {useProjectStore} from '../../../../store/datastores'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useVisibleWorkspaces} from '../../../workspaces/useVisibleWorkspaces'
@@ -47,13 +46,7 @@ export function WorkspaceMenuButton() {
   // alive across the transient subscribe/unsubscribe cycle from `take(1)`.
   const handlePreload = useCallback(() => {
     visibleWorkspaces.forEach((workspace) => {
-      probeWorkspaceAuth({
-        projectId: workspace.projectId,
-        dataset: workspace.dataset,
-        apiHost: workspace.apiHost,
-      })
-        .pipe(take(1))
-        .subscribe()
+      workspace.auth.currentUserId?.pipe(take(1)).subscribe()
     })
   }, [visibleWorkspaces])
 

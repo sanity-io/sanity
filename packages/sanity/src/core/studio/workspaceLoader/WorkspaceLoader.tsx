@@ -113,7 +113,7 @@ function WorkspaceLoader({
         dataset={workspace.dataset}
         // Without an effective apiHost the SDK builds `https://<projectId>.api.sanity.io`
         // for every request — a studio on another host (staging, custom CNAMEs)
-        // would leak its SDK traffic to production. Mirrors createAuthStore's
+        // would leak its SDK traffic to production. Mirrors createClassicAuthStore's
         // resolution: explicit workspace config wins, then the staging
         // environment default. The staging arm matters because the SDK's own
         // detection only sees the build-time flag, while isStaging also covers

@@ -1,11 +1,11 @@
 import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom, take, toArray} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getAuthTokenStorageKey, getCookieAuthStateKey} from '../constants'
-import {_probeWorkspaceAuthForTest, _resetProbeWorkspaceAuthCache} from '../probeClassicAuth'
+import {probeClassicAuth} from '../probeClassicAuth'
 
-// Match the convention from createAuthStore.test.ts: ensure localStorage is
+// Match the convention from createClassicAuthStore.test.ts: ensure localStorage is
 // considered supported in the test environment so the token-attribution code
 // path is exercised.
 vi.mock('../../../../util/supportsLocalStorage', () => ({
@@ -61,101 +61,97 @@ function createMockFactory({
   }
 }
 
-describe('probeWorkspaceAuth', () => {
+describe('probeClassicAuth', () => {
   beforeEach(() => {
-    _resetProbeWorkspaceAuthCache()
     if (typeof localStorage !== 'undefined') localStorage.clear()
   })
 
-  afterEach(() => {
-    _resetProbeWorkspaceAuthCache()
-  })
-
-  it('emits {authenticated: true} on a 200 response', async () => {
+  it('emits the user id on a 200 response', async () => {
     const mock = createMockFactory({authenticated: true})
     const result = await firstValueFrom(
-      _probeWorkspaceAuthForTest({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
+      probeClassicAuth({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
     )
-    expect(result).toEqual({authenticated: true})
+    expect(result).toBe('mock-id')
   })
 
-  it('emits {authenticated: false} on a 401 response', async () => {
+  it('emits undefined on a 401 response', async () => {
     const mock = createMockFactory({authenticated: false})
     const result = await firstValueFrom(
-      _probeWorkspaceAuthForTest({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
+      probeClassicAuth({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
     )
-    expect(result).toEqual({authenticated: false})
+    expect(result).toBeUndefined()
   })
 
   it('treats non-401 errors as unauthenticated (fails open)', async () => {
     // A transient failure (network blip, 5xx, CORS misconfig) should not
     // tear down the studio via React's error boundary. The probe degrades
-    // to `{authenticated: false}` and logs a warning.
+    // to `undefined` and logs a warning.
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const mock = createMockFactory({
       authIdImpl: () => Promise.reject(new Error('boom')),
     })
 
     const result = await firstValueFrom(
-      _probeWorkspaceAuthForTest({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
+      probeClassicAuth({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
     )
 
-    expect(result).toEqual({authenticated: false})
+    expect(result).toBeUndefined()
     expect(warnSpy).toHaveBeenCalledOnce()
     warnSpy.mockRestore()
   })
 
-  it('dedups probes for the same project/apiHost/token tuple', async () => {
+  it('shares one request between workspaces of a project checked at the same time', async () => {
     const mock = createMockFactory({authenticated: true})
-    const a = _probeWorkspaceAuthForTest(
-      {projectId: 'p1', dataset: 'd1'},
-      {clientFactory: mock.factory},
-    )
-    const b = _probeWorkspaceAuthForTest(
-      {projectId: 'p1', dataset: 'd2'}, // different dataset, same project
-      {clientFactory: mock.factory},
-    )
-    expect(a).toBe(b)
+    const answers = await Promise.all([
+      firstValueFrom(
+        probeClassicAuth({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
+      ),
+      firstValueFrom(
+        probeClassicAuth({projectId: 'p1', dataset: 'd2'}, {clientFactory: mock.factory}),
+      ),
+    ])
 
-    await firstValueFrom(a)
+    expect(answers).toEqual(['mock-id', 'mock-id'])
     expect(mock.callCount()).toBe(1)
   })
 
-  it('does not dedup probes for different projects', async () => {
+  it('does not share requests between projects', async () => {
     const mock = createMockFactory({authenticated: true})
-    const a = _probeWorkspaceAuthForTest(
-      {projectId: 'p1', dataset: 'd1'},
-      {clientFactory: mock.factory},
-    )
-    const b = _probeWorkspaceAuthForTest(
-      {projectId: 'p2', dataset: 'd1'},
-      {clientFactory: mock.factory},
-    )
-    expect(a).not.toBe(b)
+    await Promise.all([
+      firstValueFrom(
+        probeClassicAuth({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
+      ),
+      firstValueFrom(
+        probeClassicAuth({projectId: 'p2', dataset: 'd1'}, {clientFactory: mock.factory}),
+      ),
+    ])
 
-    await Promise.all([firstValueFrom(a), firstValueFrom(b)])
     expect(mock.callCount()).toBe(2)
   })
 
-  it('does not dedup probes for different apiHosts', async () => {
+  it('does not reuse an answer for a later ask', async () => {
     const mock = createMockFactory({authenticated: true})
-    const a = _probeWorkspaceAuthForTest(
-      {projectId: 'p1', dataset: 'd1', apiHost: 'https://api.sanity.io'},
-      {clientFactory: mock.factory},
+    await firstValueFrom(
+      probeClassicAuth({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
     )
-    const b = _probeWorkspaceAuthForTest(
-      {projectId: 'p1', dataset: 'd1', apiHost: 'https://api.sanity.work'},
-      {clientFactory: mock.factory},
+    await firstValueFrom(
+      probeClassicAuth({projectId: 'p1', dataset: 'd2'}, {clientFactory: mock.factory}),
     )
-    expect(a).not.toBe(b)
+
+    expect(mock.callCount()).toBe(2)
+  })
+
+  it('does not retry a failed request', async () => {
+    const mock = createMockFactory({authenticated: true})
+    await firstValueFrom(
+      probeClassicAuth({projectId: 'p-no-retry', dataset: 'd1'}, {clientFactory: mock.factory}),
+    )
+    expect(mock.configs()[0].maxRetries).toBe(0)
   })
 
   it('uses cookie auth (withCredentials) when no token is in localStorage', async () => {
     const mock = createMockFactory({authenticated: true})
-    const probe$ = _probeWorkspaceAuthForTest(
-      {projectId: 'p1', dataset: 'd1'},
-      {clientFactory: mock.factory},
-    )
+    const probe$ = probeClassicAuth({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory})
     await firstValueFrom(probe$)
 
     const config = mock.configs()[0]
@@ -167,10 +163,7 @@ describe('probeWorkspaceAuth', () => {
     localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'mock-token-abc'}))
 
     const mock = createMockFactory({authenticated: true})
-    const probe$ = _probeWorkspaceAuthForTest(
-      {projectId: 'p1', dataset: 'd1'},
-      {clientFactory: mock.factory},
-    )
+    const probe$ = probeClassicAuth({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory})
     await firstValueFrom(probe$)
 
     const config = mock.configs()[0]
@@ -183,7 +176,7 @@ describe('probeWorkspaceAuth', () => {
     const mock = createMockFactory({authenticated: true})
 
     await firstValueFrom(
-      _probeWorkspaceAuthForTest({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
+      probeClassicAuth({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
     )
 
     // The probe is independent of the full AuthStore: it only reads
@@ -192,26 +185,26 @@ describe('probeWorkspaceAuth', () => {
     writeSpy.mockRestore()
   })
 
-  it('keys differently per token so concurrent token + cookie probes for the same project resolve independently', async () => {
-    // Project A: no token (cookie probe).
-    // Project A again: token in localStorage (token probe).
-    // These should be two different cache entries.
+  it('asks with the token stored at the time of asking', async () => {
+    // A project of its own: probes from earlier tests stay subscribed through their grace window
+    // and would share this test's requests.
     const mock = createMockFactory({authenticated: true})
-
-    const cookieProbe$ = _probeWorkspaceAuthForTest(
-      {projectId: 'p1', dataset: 'd1'},
+    const probe$ = probeClassicAuth(
+      {projectId: 'p-token-switch', dataset: 'd1'},
       {clientFactory: mock.factory},
     )
-    await firstValueFrom(cookieProbe$)
+    const subscription = probe$.subscribe()
+    await vi.waitFor(() => expect(mock.callCount()).toBe(1))
+    expect(mock.configs()[0].withCredentials).toBe(true)
 
-    localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'tok'}))
+    // Another tab signs in with a token.
+    const key = getAuthTokenStorageKey('p-token-switch')
+    localStorage.setItem(key, JSON.stringify({token: 'tok'}))
+    window.dispatchEvent(new StorageEvent('storage', {key}))
 
-    const tokenProbe$ = _probeWorkspaceAuthForTest(
-      {projectId: 'p1', dataset: 'd1'},
-      {clientFactory: mock.factory},
-    )
-
-    expect(cookieProbe$).not.toBe(tokenProbe$)
+    await vi.waitFor(() => expect(mock.callCount()).toBe(2))
+    expect(mock.configs()[1].token).toBe('tok')
+    subscription.unsubscribe()
   })
 
   it('re-probes a cookie probe when the cookie auth broadcast emits', async () => {
@@ -224,7 +217,7 @@ describe('probeWorkspaceAuth', () => {
         authed ? Promise.resolve({id: 'mock-id', expiry: 0}) : Promise.reject(create401Error()),
     })
 
-    const probe$ = _probeWorkspaceAuthForTest(
+    const probe$ = probeClassicAuth(
       {projectId: 'p-cookie', dataset: 'd1'},
       {clientFactory: mock.factory},
     )
@@ -241,13 +234,13 @@ describe('probeWorkspaceAuth', () => {
 
     // A sibling tab broadcasts on the per-project channel.
     const channel = new BroadcastChannel(getCookieAuthStateKey('p-cookie'))
-    channel.postMessage(JSON.stringify({authenticated: false}))
+    channel.postMessage(JSON.stringify(undefined))
     channel.close()
 
     const emissions = await collected
     // One initial probe + one re-probe triggered by the broadcast.
     expect(mock.callCount()).toBe(2)
-    expect(emissions).toEqual([{authenticated: true}, {authenticated: false}])
+    expect(emissions).toEqual(['mock-id', undefined])
   })
 
   it('does not re-probe a token probe when the cookie auth broadcast emits', async () => {
@@ -256,7 +249,7 @@ describe('probeWorkspaceAuth', () => {
     localStorage.setItem(getAuthTokenStorageKey('p-token'), JSON.stringify({token: 'tok'}))
 
     const mock = createMockFactory({authenticated: true})
-    const probe$ = _probeWorkspaceAuthForTest(
+    const probe$ = probeClassicAuth(
       {projectId: 'p-token', dataset: 'd1'},
       {clientFactory: mock.factory},
     )
@@ -267,7 +260,7 @@ describe('probeWorkspaceAuth', () => {
     expect(mock.callCount()).toBe(1)
 
     const channel = new BroadcastChannel(getCookieAuthStateKey('p-token'))
-    channel.postMessage(JSON.stringify({authenticated: true}))
+    channel.postMessage(JSON.stringify('mock-id'))
     channel.close()
     await new Promise((resolve) => setTimeout(resolve, 0))
 

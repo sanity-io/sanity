@@ -3,7 +3,7 @@ import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
-import {createAuthStore as _createAuthStorePublic} from '../core/store/auth/classic/createClassicAuthStore'
+import {createClassicAuthStore as _createAuthStorePublic} from '../core/store/auth/classic/createClassicAuthStore'
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
@@ -224,6 +224,7 @@ export {ZIndexProvider} from '../core/components/zOffsets/ZIndexProvider'
 export {
   type AuthConfig,
   type AuthProvider,
+  type ClassicAuthConfig,
   type CookielessCompatibleLoginMethod,
   type LoginMethod,
 } from '../core/config/auth/types'
@@ -1190,11 +1191,11 @@ export {
   useAgentVersionDisplay,
 } from '../core/store/agent/useAgentVersionDisplay'
 export {
-  _createAuthStore,
+  _createClassicAuthStore as _createAuthStore,
   type AuthStoreOptions,
   type CreateAuthStoreOptions,
-  type RequestFailureDiagnostics,
 } from '../core/store/auth/classic/createClassicAuthStore'
+export {type RequestFailureDiagnostics} from '../core/studio/requestErrors/diagnoseRequestFailure'
 /**
  * @internal
  * @deprecated Use the `auth` config key with an `AuthConfig` object instead. Deprecated since Studio v3.15.0.
@@ -1212,7 +1213,8 @@ export {
   type HandleCallbackResult,
   type LoginComponentProps,
 } from '../core/store/auth/types'
-export {isAuthStore, isCookielessCompatibleLoginMethod} from '../core/store/auth/utils/asserters'
+export {isCookielessCompatibleLoginMethod} from '../core/store/auth/classic/asserters'
+export {isAuthStore} from '../core/store/auth/utils/asserters'
 export {
   type ConnectedStatus,
   CONNECTING,

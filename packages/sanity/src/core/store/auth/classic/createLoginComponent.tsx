@@ -10,14 +10,14 @@ import {Box, Flex, VStack} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
-import {type AuthConfig} from '../../../config/auth/types'
+import {type ClassicAuthConfig} from '../../../config/auth/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type LoginComponentProps} from '../types'
 import {CustomLogo, providerLogos} from './providerLogos'
 
 const SANITY_LAST_USED_PROVIDER_KEY = 'sanity:last_used_provider'
 
-interface GetProvidersOptions extends AuthConfig {
+interface GetProvidersOptions extends ClassicAuthConfig {
   client: SanityClient
 }
 
@@ -49,7 +49,7 @@ export async function getProviders({
     : providers
 }
 
-interface CreateLoginComponentOptions extends AuthConfig {
+interface CreateLoginComponentOptions extends ClassicAuthConfig {
   client$: Observable<SanityClient>
   /**
    * Returns true if the user explicitly logged out in this session.
@@ -70,7 +70,7 @@ interface CreateLoginComponentOptions extends AuthConfig {
 
 interface CreateHrefForProviderOptions {
   redirectPath: string
-  loginMethod: AuthConfig['loginMethod']
+  loginMethod: ClassicAuthConfig['loginMethod']
   projectId: string
   url: string
 }

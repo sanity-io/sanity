@@ -18,7 +18,14 @@ export type CookielessCompatibleLoginMethod = Extract<LoginMethod, 'dual' | 'tok
  *
  * @public
  */
-export interface AuthConfig {
+export type AuthConfig = ClassicAuthConfig
+
+/**
+ * Authentication options for signing in with the project's login providers.
+ *
+ * @public
+ */
+export interface ClassicAuthConfig {
   /**
    * Login method to use for the studio. Can be one of:
    * - `dual` (default) - attempt to use cookies where possible, falling back to

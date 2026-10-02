@@ -1,12 +1,12 @@
 import {type RequestHandler, type RequestHandlerOptions, type SanityClient} from '@sanity/client'
 
-import {type RequestFailureDiagnostics} from '../../store/auth/classic/createClassicAuthStore'
 import {
   getRequestBucket,
   studioRequestPerformance,
   type RequestPerformanceTracker,
 } from '../diagnostics/requestPerformance'
 import {isInvalidSessionError} from './classify'
+import {type RequestFailureDiagnostics} from './diagnoseRequestFailure'
 import {type RequestErrorChannel} from './types'
 
 interface StudioRequestHandlerOptions {

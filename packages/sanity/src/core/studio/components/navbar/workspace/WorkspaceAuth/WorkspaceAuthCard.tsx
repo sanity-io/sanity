@@ -1,43 +1,23 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Card} from '@sanity/ui'
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 
 import {type WorkspaceSummary} from '../../../../../config/types'
-import {probeWorkspaceAuth} from '../../../../../store/auth/classic/probeClassicAuth'
+import {useWorkspaceAuthState, type WorkspaceAuthState} from '../useWorkspaceAuthState'
 import {WorkspacePreview} from '../WorkspacePreview'
 
 interface WorkspaceAuthCardProps {
   workspace: WorkspaceSummary
-  onSelect: (state: 'loading' | 'logged-in' | 'logged-out' | 'no-access') => void
+  onSelect: (state: WorkspaceAuthState) => void
 }
 
 /**
- * A single workspace card on the login screen. Probes `/auth/id`
- * independently so the list renders immediately and each row resolves
- * its state per-workspace.
+ * A single workspace card on the login screen. Each card asks its workspace's auth store
+ * independently, so the list renders immediately and each row resolves its state on its own.
  *
  * @internal
  */
 export function WorkspaceAuthCard({workspace, onSelect}: WorkspaceAuthCardProps) {
-  const probe$ = useMemo(
-    () =>
-      probeWorkspaceAuth({
-        projectId: workspace.projectId,
-        dataset: workspace.dataset,
-        apiHost: workspace.apiHost,
-      }),
-    [workspace.apiHost, workspace.dataset, workspace.projectId],
-  )
-  const probe = useObservable(probe$, undefined)
-
-  const state: 'loading' | 'logged-in' | 'logged-out' | 'no-access' = !probe
-    ? 'loading'
-    : probe.authenticated
-      ? 'logged-in'
-      : workspace.auth.LoginComponent
-        ? 'logged-out'
-        : 'no-access'
+  const state = useWorkspaceAuthState(workspace)
 
   return (
     <Card as="button" radius={2} padding={2} onClick={() => onSelect(state)}>

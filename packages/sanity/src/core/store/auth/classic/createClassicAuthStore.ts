@@ -1,10 +1,14 @@
+// The classic auth store: the way Studio has always signed in. Users pick one of the project's
+// login providers, and the session ID they come back with is exchanged for a Sanity API session,
+// held as the API cookie or as a session token in localStorage (`loginMethod`). It also takes a
+// token handed over in the URL hash or by the embedding workbench.
+
 import {
   type ClientConfig as SanityClientConfig,
   ClientError,
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
-import {type CurrentUser} from '@sanity/types'
 import {dequal as isEqual} from 'dequal/lite'
 import memoize from 'lodash-es/memoize.js'
 import {
@@ -33,13 +37,9 @@ import {
   tap,
 } from 'rxjs/operators'
 
-import {type AuthConfig} from '../../../config/auth/types'
+import {type ClassicAuthConfig} from '../../../config/auth/types'
 import {isStaging} from '../../../environment/isStaging'
-import {isNetworkError, isUnauthorizedError} from '../../../studio/requestErrors/classify'
-import {
-  type RequestFailureProbe,
-  type RequestFailureResult,
-} from '../../../studio/requestErrors/diagnoseRequestFailure'
+import {type RequestFailureDiagnostics} from '../../../studio/requestErrors/diagnoseRequestFailure'
 import {type StudioErrorHandler} from '../../../studio/requestErrors/types'
 import {canonicalHash} from '../../../util/canonicalHash'
 import {
@@ -48,8 +48,9 @@ import {
   type AuthStore,
   type HandleCallbackResult,
 } from '../types'
-import {isCookielessCompatibleLoginMethod} from '../utils/asserters'
 import {createBroadcastState} from '../utils/createBroadcastState'
+import {getCurrentUser, withoutRequestHandler} from '../utils/getCurrentUser'
+import {isCookielessCompatibleLoginMethod} from './asserters'
 import {
   AUTH_CLIENT_OPTIONS,
   AUTH_STATE_SETTLE_TIMEOUT_MS,
@@ -61,6 +62,7 @@ import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
 import {consumeHashClaim} from './hashClaim'
 import {consumeHashToken as defaultConsumeHashToken} from './hashToken'
+import {probeClassicAuth} from './probeClassicAuth'
 import {clearHashSessionId, getHashSessionId as defaultGetSessionId} from './sessionId'
 import {recordHashClaimUrl} from './unclaimedProjectStorage'
 import {
@@ -69,7 +71,7 @@ import {
 } from './workbenchToken'
 
 /** @internal */
-export interface AuthStoreOptions extends AuthConfig {
+export interface AuthStoreOptions extends ClassicAuthConfig {
   clientFactory?: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string
@@ -124,117 +126,6 @@ export interface AuthStoreOptions extends AuthConfig {
    * @internal
    */
   refreshWorkbenchToken?: () => void
-}
-
-/**
- * Lets the auth store's `/users/me` probe diagnose and report the failures the
- * studio request handler would normally catch — but can't here, because the
- * probe runs on a client with that handler stripped (see {@link getCurrentUser}).
- *
- * - `diagnose` — the shared classifier. The client is passed per call rather
- *   than bound up front, because the auth store builds its own clients
- *   internally (so there's no single client to bind the probe to).
- * - `onRequestFailure` — reports a non-`unknown` result to the studio so it
- *   can take over the screen (CORS / missing project or dataset). Must be
- *   idempotent: the probe runs inside a retryable thunk, so a recurring
- *   failure can report the same result more than once.
- *
- * @internal
- */
-export interface RequestFailureDiagnostics {
-  diagnose: (err: unknown, client: SanityClient) => ReturnType<RequestFailureProbe>
-  onRequestFailure: (
-    result: Exclude<RequestFailureResult, {type: 'unknown'}>,
-    client: SanityClient,
-  ) => void
-}
-
-function withoutRequestHandler(client: SanityClient): SanityClient {
-  return typeof client.withConfig === 'function'
-    ? client.withConfig({requestHandler: undefined})
-    : client
-}
-
-const getCurrentUser = async (
-  client: SanityClient,
-  tag: string,
-  getRequestErrorHandler?: () => StudioErrorHandler | undefined,
-  diagnostics?: RequestFailureDiagnostics,
-): Promise<CurrentUser | undefined> => {
-  // Probe with the forced-logout middleware stripped off. That middleware
-  // (installed on every studio client) parks 401s forever to drive forced
-  // logout — but this probe IS the auth-state source of truth and handles its
-  // own 401 below. If the middleware parked this request, `fetchUser` would
-  // never settle, so the auth state could never transition to logged-out and
-  // the studio would freeze instead of showing the login screen. The 401 must
-  // reach the `.catch` here, not the channel.
-  //
-  // Guarded for custom `unstable_clientFactory` clients that may not implement
-  // `withConfig` — those don't carry the middleware anyway.
-  const probeClient = withoutRequestHandler(client)
-  const fetchUser = () =>
-    probeClient
-      .request({
-        url: '/users/me',
-        tag: `users.get-current${tag ? `.${tag}` : ''}`,
-      })
-      .catch(async (err) => {
-        // 401 means the user had some kind of credentials but failed to
-        // authenticate — treat it as logged out. Resolved inside the thunk
-        // so the request-error channel never sees the 401: at boot this is
-        // the normal logged-out state (AuthBoundary shows the login
-        // screen), not a session-expiry event to verify and tear down.
-        if (isUnauthorizedError(err)) return undefined
-
-        // This probe runs on a client with the studio request handler stripped
-        // (so its 401 reaches the branch above), which means it bypasses the
-        // handler's CORS / missing-project-or-dataset detection. Diagnose those
-        // here instead: when the studio can't reach the project because the
-        // origin isn't allowed (CORS — which can change at any time) or the
-        // project/dataset doesn't exist, report it so the studio takes over the
-        // screen, and resolve as logged-out rather than surfacing a generic
-        // network error.
-        if (diagnostics) {
-          const result = await diagnostics.diagnose(err, probeClient)
-          if (result.type !== 'unknown') {
-            // `attempt` (below) may re-run this thunk on a recurring failure, so
-            // this can fire more than once — `onRequestFailure` is idempotent.
-            diagnostics.onRequestFailure(result, probeClient)
-            return undefined
-          }
-        }
-        throw err
-      })
-
-  try {
-    // Network errors / 5xx on this boot-critical read leave the studio
-    // unable to start — there is no local recovery. Delegate them to the
-    // studio's request-error dialog (retryable: it's an idempotent GET)
-    // instead of crashing the boot sequence. Resolved lazily: the channel
-    // may not exist yet when the store is constructed.
-    const requestErrorChannel = getRequestErrorHandler?.()
-    const user = requestErrorChannel
-      ? await requestErrorChannel.attempt(fetchUser, {retryable: true})
-      : await fetchUser()
-
-    // if the user came back with an id, assume it's a full CurrentUser
-    return typeof user?.id === 'string' ? user : undefined
-  } catch (err) {
-    // Reached only in the no-channel fallback path, or for errors the
-    // channel declined to claim. Guarded: a thrown value can be anything,
-    // so don't touch properties until it's confirmed to be a network error.
-    if (isNetworkError(err) && !err.message) {
-      const url = (err as Error & {request?: {url?: string}}).request?.url
-      if (url) {
-        throw new Error(`Unknown network error attempting to reach ${new URL(url).host}`, {
-          cause: err,
-        })
-      }
-    }
-
-    // Some other error, just throw it
-    throw err
-  }
 }
 
 /**
@@ -294,7 +185,7 @@ async function exchangeSessionForToken(client: SanityClient, sessionId: string):
 /**
  * @internal
  */
-export function _createAuthStore({
+export function _createClassicAuthStore({
   clientFactory: clientFactoryOption,
   projectId,
   dataset,
@@ -697,7 +588,7 @@ export function _createAuthStore({
     // that's what makes "the state reflects the exchange before the callback
     // resolves" hold. This is scheduling-sensitive: don't insert awaits
     // between `update()` and this race. The "resolves only after the state
-    // reflects…" tests in createAuthStore.test.ts pin the ordering.
+    // reflects…" tests in createClassicAuthStore.test.ts pin the ordering.
     return Promise.race([callbackState, timeout])
       .finally(() => clearTimeout(timeoutId))
       .then((state) => ({
@@ -995,11 +886,12 @@ export function _createAuthStore({
     token: workbenchToken$ ?? tokenStorage.value.pipe(map((t) => t?.token || null)),
     LoginComponent,
     logout,
+    currentUserId: probeClassicAuth({projectId, dataset, apiHost}),
   }
 }
 
 /**
- * Public options for `createAuthStore`. The `getSessionId`, `consumeHashToken`,
+ * Public options for `createClassicAuthStore`. The `getSessionId`, `consumeHashToken`,
  * `observeWorkbenchToken` and `refreshWorkbenchToken` dependencies are wired
  * automatically using the default implementations.
  * @internal
@@ -1012,9 +904,9 @@ export type CreateAuthStoreOptions = Omit<
 /**
  * @internal
  */
-export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = memoize(
+export const createClassicAuthStore: (options: CreateAuthStoreOptions) => AuthStore = memoize(
   (options: CreateAuthStoreOptions): AuthStore =>
-    _createAuthStore({
+    _createClassicAuthStore({
       ...options,
       getSessionId: defaultGetSessionId,
       consumeHashToken: defaultConsumeHashToken,

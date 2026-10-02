@@ -654,16 +654,17 @@ export {
   useAgentVersionDisplay,
 } from '../core/store/agent/useAgentVersionDisplay'
 export {
-  _createAuthStore,
+  _createClassicAuthStore as _createAuthStore,
   type AuthStoreOptions,
-  type RequestFailureDiagnostics,
 } from '../core/store/auth/classic/createClassicAuthStore'
+export {type RequestFailureDiagnostics} from '../core/studio/requestErrors/diagnoseRequestFailure'
 export {
   createMockAuthStore,
   type MockAuthStoreOptions,
 } from '../core/store/auth/mock/createMockAuthStore'
 export {type HandleCallbackResult} from '../core/store/auth/types'
-export {isAuthStore, isCookielessCompatibleLoginMethod} from '../core/store/auth/utils/asserters'
+export {isCookielessCompatibleLoginMethod} from '../core/store/auth/classic/asserters'
+export {isAuthStore} from '../core/store/auth/utils/asserters'
 export {
   type ConnectedStatus,
   CONNECTING,

@@ -1,10 +1,8 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {type WorkspaceSummary} from '../../../../config/types'
-import {probeWorkspaceAuth} from '../../../../store/auth/classic/probeClassicAuth'
+import {useWorkspaceAuthState} from './useWorkspaceAuthState'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
 interface WorkspaceMenuItemProps {
@@ -14,38 +12,14 @@ interface WorkspaceMenuItemProps {
 }
 
 /**
- * A single row in the workspace switcher menu. Each row probes `/auth/id`
- * on its own: the list renders instantly on open, badges fill in as the
- * probes settle.
- *
- * The `null` initial value is load-bearing:
- * - Closed menus keep their items mounted (`<Activity>`, @sanity/ui v4).
- * - Without an initial value, react-rx subscribes during that hidden
- *   render — putting the `/auth/id` probes on the studio boot path.
- * - With it, the probe first fires on reveal (or via the hover/focus
- *   preload on the menu button).
+ * A single row in the workspace switcher menu. Each row asks its workspace's auth store on its
+ * own: the list renders instantly on open, badges fill in as the answers arrive. No request goes
+ * out while the menu is closed (see `useWorkspaceAuthState`).
  *
  * @internal
  */
 export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: WorkspaceMenuItemProps) {
-  const probe$ = useMemo(
-    () =>
-      probeWorkspaceAuth({
-        projectId: workspace.projectId,
-        dataset: workspace.dataset,
-        apiHost: workspace.apiHost,
-      }),
-    [workspace.apiHost, workspace.dataset, workspace.projectId],
-  )
-  const probe = useObservable(probe$, null)
-
-  const state: keyof typeof STATE_TITLES = !probe
-    ? 'loading'
-    : probe.authenticated
-      ? 'logged-in'
-      : workspace.auth.LoginComponent
-        ? 'logged-out'
-        : 'no-access'
+  const state = useWorkspaceAuthState(workspace)
 
   return (
     <MenuItem

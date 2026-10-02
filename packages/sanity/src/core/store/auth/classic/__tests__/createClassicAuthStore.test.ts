@@ -11,7 +11,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {promiseWithResolvers} from '../../../../util/promiseWithResolvers'
 import {type AuthStore} from '../../types'
 import {AUTH_STATE_SETTLE_TIMEOUT_MS} from '../constants'
-import {_createAuthStore} from '../createClassicAuthStore'
+import {_createClassicAuthStore} from '../createClassicAuthStore'
 
 // Mock supportsLocalStorage to return true so createBroadcastStorage uses localStorage.
 // In jsdom/Node.js it returns false because process.versions.node is defined.
@@ -104,7 +104,7 @@ function createMockClientFactory(): MockClientFactoryResult {
 
 /**
  * Mock factory that decides auth by *how the client was built*, mirroring
- * createAuthStore: a client configured with `{token}` authenticates via the
+ * createClassicAuthStore: a client configured with `{token}` authenticates via the
  * Authorization header; one with `{withCredentials: true}` authenticates via
  * the cookie.
  *
@@ -166,7 +166,7 @@ function waitForState(
   ])
 }
 
-describe('createAuthStore: cross-tab sync', () => {
+describe('createClassicAuthStore: cross-tab sync', () => {
   beforeEach(() => {
     localStorage.clear()
     window.location.hash = ''
@@ -183,7 +183,7 @@ describe('createAuthStore: cross-tab sync', () => {
       const mock1 = createMockClientFactory()
       const mock2 = createMockClientFactory()
 
-      const store1 = _createAuthStore({
+      const store1 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'cookie',
@@ -191,7 +191,7 @@ describe('createAuthStore: cross-tab sync', () => {
         getSessionId: () => undefined,
         consumeHashToken: () => undefined,
       })
-      const store2 = _createAuthStore({
+      const store2 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'cookie',
@@ -226,7 +226,7 @@ describe('createAuthStore: cross-tab sync', () => {
       const mock2 = createMockClientFactory()
       mock2.setAuthenticated(false)
 
-      const store1 = _createAuthStore({
+      const store1 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'cookie',
@@ -234,7 +234,7 @@ describe('createAuthStore: cross-tab sync', () => {
         getSessionId: () => undefined,
         consumeHashToken: () => undefined,
       })
-      const store2 = _createAuthStore({
+      const store2 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'cookie',
@@ -270,7 +270,7 @@ describe('createAuthStore: cross-tab sync', () => {
     it('single store logout transitions to unauthenticated', async () => {
       const mock = createMockClientFactory()
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'cookie',
@@ -302,7 +302,7 @@ describe('createAuthStore: cross-tab sync', () => {
       const mock1 = createMockClientFactory()
       const mock2 = createMockClientFactory()
 
-      const store1 = _createAuthStore({
+      const store1 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'token',
@@ -310,7 +310,7 @@ describe('createAuthStore: cross-tab sync', () => {
         getSessionId: () => undefined,
         consumeHashToken: () => undefined,
       })
-      const store2 = _createAuthStore({
+      const store2 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'token',
@@ -357,7 +357,7 @@ describe('createAuthStore: cross-tab sync', () => {
         return 'mock-session-id-12345678'
       }
 
-      const store1 = _createAuthStore({
+      const store1 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'token',
@@ -365,7 +365,7 @@ describe('createAuthStore: cross-tab sync', () => {
         getSessionId,
         consumeHashToken: () => undefined,
       })
-      const store2 = _createAuthStore({
+      const store2 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'token',
@@ -409,7 +409,7 @@ describe('createAuthStore: cross-tab sync', () => {
 
       const mock = createMockClientFactory()
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'token',
@@ -438,7 +438,7 @@ describe('createAuthStore: cross-tab sync', () => {
       const mock1 = createMockClientFactory()
       const mock2 = createMockClientFactory()
 
-      const store1 = _createAuthStore({
+      const store1 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -446,7 +446,7 @@ describe('createAuthStore: cross-tab sync', () => {
         getSessionId: () => undefined,
         consumeHashToken: () => undefined,
       })
-      const store2 = _createAuthStore({
+      const store2 = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -479,7 +479,7 @@ describe('createAuthStore: cross-tab sync', () => {
         return 'mock-session-id-12345678'
       }
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -502,7 +502,7 @@ describe('createAuthStore: cross-tab sync', () => {
     it('single store logout transitions to unauthenticated', async () => {
       const mock = createMockClientFactory()
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -530,12 +530,12 @@ describe('createAuthStore: cross-tab sync', () => {
     it('exposes a `token` observable so bifur (real-time) can authenticate', async () => {
       // The AuthStore interface declares `token?: Observable<string | null>`, and
       // prepareConfig.tsx wires it into the bifur WebSocket for real-time updates.
-      // If createAuthStore stops emitting `token`, bifur silently runs unauthenticated
+      // If createClassicAuthStore stops emitting `token`, bifur silently runs unauthenticated
       // in token-mode studios.
       localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'persisted-token'}))
 
       const mock = createMockClientFactory()
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'token',
@@ -578,7 +578,7 @@ describe('createAuthStore: cross-tab sync', () => {
       // Record every emission from the cookie store
       const cookieEmissions: Array<{authenticated: boolean}> = []
 
-      const cookieStore = _createAuthStore({
+      const cookieStore = _createClassicAuthStore({
         projectId: isolatedProjectId,
         dataset: DATASET,
         loginMethod: 'cookie',
@@ -594,7 +594,7 @@ describe('createAuthStore: cross-tab sync', () => {
       // Mount a sibling workspace for the SAME project after the cookie
       // store is already running. This simulates useWorkspaceAuthStates
       // subscribing to every workspace's auth state.
-      const tokenStore = _createAuthStore({
+      const tokenStore = _createClassicAuthStore({
         projectId: isolatedProjectId,
         dataset: DATASET,
         loginMethod: 'token',
@@ -642,7 +642,7 @@ describe('createAuthStore: cross-tab sync', () => {
       const mockA = createMockClientFactory()
       const mockB = createMockClientFactory()
 
-      const storeA = _createAuthStore({
+      const storeA = _createClassicAuthStore({
         projectId: isolatedProjectId,
         dataset: DATASET,
         loginMethod: 'cookie',
@@ -650,7 +650,7 @@ describe('createAuthStore: cross-tab sync', () => {
         getSessionId: () => undefined,
         consumeHashToken: () => undefined,
       })
-      const storeB = _createAuthStore({
+      const storeB = _createClassicAuthStore({
         projectId: isolatedProjectId,
         dataset: DATASET,
         loginMethod: 'cookie',
@@ -704,7 +704,7 @@ describe('createAuthStore: cross-tab sync', () => {
         return 'mock-session-id-12345678'
       }
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -750,7 +750,7 @@ describe('createAuthStore: cross-tab sync', () => {
           }),
         }) as unknown as SanityClient
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -812,7 +812,7 @@ describe('createAuthStore: cross-tab sync', () => {
       const factory = (options: SanityClientConfig): SanityClient =>
         makeClient({...options, requestHandler: parkingRequestHandler})
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -889,7 +889,7 @@ describe('createAuthStore: cross-tab sync', () => {
       const factory = (options: SanityClientConfig): SanityClient =>
         makeClient({...options, requestHandler: parkingRequestHandler})
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -964,7 +964,7 @@ describe('createAuthStore: cross-tab sync', () => {
         return 'mock-session-id-12345678'
       }
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -1003,7 +1003,7 @@ describe('createAuthStore: cross-tab sync', () => {
       const onRequestFailure = vi.fn()
       const diagnose = vi.fn(async () => ({type: 'project-not-found'}) as const)
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'cookie',
@@ -1021,7 +1021,7 @@ describe('createAuthStore: cross-tab sync', () => {
   })
 })
 
-describe('createAuthStore: handleCallbackUrl settle contract', () => {
+describe('createClassicAuthStore: handleCallbackUrl settle contract', () => {
   // handleCallbackUrl must not resolve until authState$ has emitted a state
   // computed with the exchanged credential. AuthBoundary holds its loading
   // screen until the promise settles; resolving while the stale pre-exchange
@@ -1054,7 +1054,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
       const TOKEN = 'valid-exchanged-token'
       const factory = createCredentialAwareClientFactory({token: TOKEN, cookieValid: false})
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod,
@@ -1090,7 +1090,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     const TOKEN = 'valid-exchanged-token'
     const factory = createCredentialAwareClientFactory({token: TOKEN, cookieValid: false})
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'token',
@@ -1113,7 +1113,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     const opts = {token: 'token-unused-in-cookie-mode', cookieValid: false}
     const factory = createCredentialAwareClientFactory(opts)
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
@@ -1151,7 +1151,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
         }),
       }) as unknown as SanityClient
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'dual',
@@ -1185,7 +1185,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
           }),
         }) as unknown as SanityClient
 
-      const store = _createAuthStore({
+      const store = _createClassicAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         loginMethod: 'dual',
@@ -1231,7 +1231,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
         }),
       }) as unknown as SanityClient
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'dual',
@@ -1259,7 +1259,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     const TOKEN = 'valid-exchanged-token'
     const factory = createCredentialAwareClientFactory({token: TOKEN, cookieValid: false})
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'dual',
@@ -1296,7 +1296,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
         }),
       }) as unknown as SanityClient
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'dual',
@@ -1327,7 +1327,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
         }),
       }) as unknown as SanityClient
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'dual',
@@ -1364,7 +1364,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
         }),
       }) as unknown as SanityClient
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'token',
@@ -1397,7 +1397,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     const TOKEN = 'valid-exchanged-token'
     const factory = createCredentialAwareClientFactory({token: TOKEN, cookieValid: false})
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'dual',
@@ -1446,7 +1446,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
         }),
       }) as unknown as SanityClient
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
@@ -1502,7 +1502,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
         }),
       }) as unknown as SanityClient
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
@@ -1559,7 +1559,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
         }),
       }) as unknown as SanityClient
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
@@ -1594,7 +1594,7 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
   })
 })
 
-describe('createAuthStore: currentUser attributes', () => {
+describe('createClassicAuthStore: currentUser attributes', () => {
   beforeEach(() => {
     localStorage.clear()
     window.location.hash = ''
@@ -1609,7 +1609,7 @@ describe('createAuthStore: currentUser attributes', () => {
   it('preserves attributes from /users/me response', async () => {
     const mock = createMockClientFactory()
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
@@ -1623,7 +1623,7 @@ describe('createAuthStore: currentUser attributes', () => {
   })
 })
 
-describe('createAuthStore: workbench OS token', () => {
+describe('createClassicAuthStore: workbench OS token', () => {
   beforeEach(() => {
     localStorage.clear()
     window.location.hash = ''
@@ -1642,7 +1642,7 @@ describe('createAuthStore: workbench OS token', () => {
     // loginMethod machinery is bypassed.
     const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
@@ -1667,7 +1667,7 @@ describe('createAuthStore: workbench OS token', () => {
     const OS_TOKEN = 'workbench-os-token'
     const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
@@ -1687,7 +1687,7 @@ describe('createAuthStore: workbench OS token', () => {
     localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'mock-token'}))
     const mock = createMockClientFactory()
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'token',
@@ -1709,7 +1709,7 @@ describe('createAuthStore: workbench OS token', () => {
     const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
     const token$ = new BehaviorSubject<string | null>(OS_TOKEN)
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
@@ -1735,7 +1735,7 @@ describe('createAuthStore: workbench OS token', () => {
     const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
     const refreshWorkbenchToken = vi.fn()
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
@@ -1758,7 +1758,7 @@ describe('createAuthStore: workbench OS token', () => {
     localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'mock-token'}))
     const mock = createMockClientFactory()
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'token',
@@ -1773,7 +1773,7 @@ describe('createAuthStore: workbench OS token', () => {
   })
 })
 
-describe('createAuthStore: hash claim intake', () => {
+describe('createClassicAuthStore: hash claim intake', () => {
   const CLAIM_URL = 'https://www.sanity.io/manage/claim/some-claim-token'
   const CLAIM_STORAGE_KEY = `__studio_unclaimed_${PROJECT_ID}`
 
@@ -1791,7 +1791,7 @@ describe('createAuthStore: hash claim intake', () => {
     window.location.hash = `#claim=${encodeURIComponent(CLAIM_URL)}`
     const mock = createMockClientFactory()
 
-    _createAuthStore({
+    _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'token',
@@ -1807,7 +1807,7 @@ describe('createAuthStore: hash claim intake', () => {
   it('consumes a #claim= fragment pasted into an open tab', async () => {
     const mock = createMockClientFactory()
 
-    const store = _createAuthStore({
+    const store = _createClassicAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'token',

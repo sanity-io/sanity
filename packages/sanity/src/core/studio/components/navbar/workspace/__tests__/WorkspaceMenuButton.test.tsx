@@ -10,17 +10,12 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {type WorkspaceSummary} from '../../../../../config/types'
 import {WorkspaceMenuButton} from '../WorkspaceMenuButton'
 
-const {mockProbeWorkspaceAuth, probeSubscriptions, projectName$, projectNameSubscriptions} =
-  vi.hoisted(() => ({
-    mockProbeWorkspaceAuth: vi.fn(),
-    probeSubscriptions: {count: 0},
-    projectName$: {current: null as null | Observable<string | null>},
-    projectNameSubscriptions: {count: 0},
-  }))
-
-vi.mock('../../../../../store/auth/classic/probeClassicAuth', () => ({
-  probeWorkspaceAuth: mockProbeWorkspaceAuth,
+const {probeSubscriptions, projectName$, projectNameSubscriptions} = vi.hoisted(() => ({
+  probeSubscriptions: {count: 0},
+  projectName$: {current: null as null | Observable<string | null>},
+  projectNameSubscriptions: {count: 0},
 }))
+
 vi.mock('../../../../../store/datastores', () => {
   const projectStore = {
     getProjectName: () =>
@@ -55,14 +50,28 @@ async function renderButton() {
   })
 }
 
+// One subscription = one would-be `/auth/id` request. Creating the observable is free; only
+// subscribing fires the request. So: count subscriptions.
+// Each workspace has its own auth store.
+function createAuth() {
+  return {
+    state: NEVER,
+    currentUserId: defer(() => {
+      probeSubscriptions.count += 1
+      return NEVER
+    }),
+  }
+}
 const workspaceA = {
   name: 'workspace-a',
+  auth: createAuth(),
   title: 'Workspace A',
   projectId: 'project-a',
   dataset: 'production',
 } as unknown as WorkspaceSummary
 const workspaceB = {
   name: 'workspace-b',
+  auth: createAuth(),
   title: 'Workspace B',
   projectId: 'project-b',
   dataset: 'production',
@@ -90,25 +99,15 @@ describe('WorkspaceMenuButton', () => {
     const held$ = new ReplaySubject<string | null>(1)
     held$.next('Sanity Studio Test Data')
     projectName$.current = held$
-    // One subscription = one would-be `/auth/id` request.
-    // Creating the observable is free and happens during render;
-    // only subscribing fires the request. So: count subscriptions.
-    mockProbeWorkspaceAuth.mockImplementation(() =>
-      defer(() => {
-        probeSubscriptions.count += 1
-        return NEVER
-      }),
-    )
   })
 
   it('keeps the closed menu content mounted without subscribing any auth probe', async () => {
     await renderButton()
 
     // Closed popovers keep children mounted (`<Activity>`, @sanity/ui v4).
-    // So: content is in the DOM, probe observables got created…
+    // So: content is in the DOM…
     expect(await screen.findByTestId('manage-menu')).toBeInTheDocument()
     expect(screen.getByText('Workspace B')).toBeInTheDocument()
-    expect(mockProbeWorkspaceAuth).toHaveBeenCalledTimes(2)
 
     // …but zero subscriptions = zero requests at boot.
     // Why: with an initialValue, react-rx skips its render-phase warm-up
