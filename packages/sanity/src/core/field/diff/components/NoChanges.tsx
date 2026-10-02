@@ -1,5 +1,4 @@
-import {Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
@@ -8,10 +7,10 @@ export function NoChanges() {
   const {t} = useTranslation()
   return (
     <Flex gap={3} paddingTop={2} flexDirection="column" flexShrink={0}>
-      <Text size={1} weight="medium" as="h3">
+      <Text size={1} weight="medium" as="h3" trim={true}>
         {t('changes.no-changes-title')}
       </Text>
-      <Text as="p" size={1} muted>
+      <Text as="p" size={1} muted trim={true}>
         {t('changes.no-changes-description')}
       </Text>
     </Flex>
