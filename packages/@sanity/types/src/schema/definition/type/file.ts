@@ -15,11 +15,33 @@ export interface MediaLibraryOptions {
   filters?: MediaLibraryFilter[]
 }
 
+/**
+ * Per-field selection of asset sources (`options.sources` on file, image and
+ * video fields). When set, it replaces the asset sources configured on the
+ * Studio for this field:
+ *
+ * - `AssetSource` entries are used as-is (the classic pattern of importing a
+ *   source from a plugin).
+ * - `string` entries name a configured source by its `AssetSource.name`
+ *   (e.g. `'sanity-default'`, `'sanity-media-library'`); names that match no
+ *   configured source are dropped with a console warning.
+ * - A predicate function filters the configured list. Useful when the full
+ *   name is not statically known — federated asset source names are
+ *   `{applicationId}:{viewName}` with a runtime application id, so e.g.
+ *   `(source) => source.name.endsWith(':dropbox')`.
+ *
+ * An empty array (or a predicate that rejects every source) disables
+ * browsing for the field while uploads keep working.
+ *
+ * @public
+ */
+export type SchemaAssetSources = (AssetSource | string)[] | ((source: AssetSource) => boolean)
+
 /** @public */
 export interface FileOptions extends ObjectOptions {
   storeOriginalFilename?: boolean
   accept?: string
-  sources?: AssetSource[]
+  sources?: SchemaAssetSources
   mediaLibrary?: MediaLibraryOptions
   /**
    * When set to `true`, hides the upload UI, only allowing selection of existing assets from the media library.
