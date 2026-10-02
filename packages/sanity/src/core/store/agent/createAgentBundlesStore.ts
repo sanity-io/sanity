@@ -98,40 +98,49 @@ function listenToBundles(
   client: SanityClient,
   organizationId: string,
 ): Observable<AgentBundlesState> {
-  const {token, withCredentials} = client.config()
   const url = client.getUrl(`/agent/${organizationId}/bundles/mine/listen`)
 
-  const esOptions: PolyfillEventSourceInit = {}
-  if (token || withCredentials) esOptions.withCredentials = true
-  if (token) esOptions.headers = {Authorization: `Bearer ${token}`}
+  // The credential is read through `getAuth()`, which waits for a renewal in progress; under
+  // a reactive `auth`, `config().token` may be unset or stale. It is still copied once per
+  // connection: this EventSource is not the client's, so a rotation does not reach it
+  // (SAGE-1303 moves the listener into the client).
+  return defer(() => client.getAuth()).pipe(
+    switchMap(({token, withCredentials}) => {
+      const esOptions: PolyfillEventSourceInit = {}
+      // Credentials only for cookie auth. A bearer token needs none, and asking for them makes
+      // the browser require `Access-Control-Allow-Credentials` on an origin that may not allow it.
+      if (withCredentials) esOptions.withCredentials = true
+      if (token) esOptions.headers = {Authorization: `Bearer ${token}`}
 
-  // Use polyfill when headers are needed (token auth), native EventSource otherwise
-  const es$: Observable<EventSource> = (
-    esOptions.headers ? eventSourcePolyfill$ : of(EventSource)
-  ).pipe(map((ES) => new ES(url, esOptions)))
+      // Use polyfill when headers are needed (token auth), native EventSource otherwise
+      const es$: Observable<EventSource> = (
+        esOptions.headers ? eventSourcePolyfill$ : of(EventSource)
+      ).pipe(map((ES) => new ES(url, esOptions)))
 
-  return es$.pipe(
-    switchMap(
-      (es) =>
-        new Observable<AgentBundlesState>((subscriber) => {
-          es.addEventListener('bundles', ((event: MessageEvent) => {
-            try {
-              const data = JSON.parse(event.data) as {bundles: AgentBundle[]}
-              subscriber.next({bundles: data.bundles, loading: false})
-            } catch {
-              // Ignore malformed messages
-            }
-          }) as EventListener)
+      return es$.pipe(
+        switchMap(
+          (es) =>
+            new Observable<AgentBundlesState>((subscriber) => {
+              es.addEventListener('bundles', ((event: MessageEvent) => {
+                try {
+                  const data = JSON.parse(event.data) as {bundles: AgentBundle[]}
+                  subscriber.next({bundles: data.bundles, loading: false})
+                } catch {
+                  // Ignore malformed messages
+                }
+              }) as EventListener)
 
-          es.addEventListener('error', (() => {
-            // EventSource auto-reconnects on transient errors.
-          }) as EventListener)
+              es.addEventListener('error', (() => {
+                // EventSource auto-reconnects on transient errors.
+              }) as EventListener)
 
-          return () => {
-            es.close()
-          }
-        }),
-    ),
+              return () => {
+                es.close()
+              }
+            }),
+        ),
+      )
+    }),
     catchError(() => of(EMPTY_STATE)),
   )
 }

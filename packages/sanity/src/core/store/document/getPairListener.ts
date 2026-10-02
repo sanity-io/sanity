@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
-import {defer, EMPTY, merge, type Observable, of, throwError} from 'rxjs'
+import {concat, defer, EMPTY, merge, type Observable, of, throwError} from 'rxjs'
 import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
@@ -21,6 +21,9 @@ import {
 } from './types'
 import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
 import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentializeListenerEvents'
+
+/** See the 401 branch of the listener's `catchError`. */
+const MAX_CREDENTIAL_CHECKS = 3
 
 interface Snapshots {
   draft: SanityDocument | null
@@ -260,6 +263,12 @@ export function getPairListener(
     sequentializeListenerEvents(),
   )
 
+  // How many times a listener refused with a 401 is reconnected after the client's credential
+  // was checked, before the stream gives up. Each attempt renews at most once through the auth
+  // store, so a session that is really over ends the retries by itself; the bound covers a
+  // server that keeps refusing a credential the store keeps accepting.
+  let credentialChecks = 0
+
   return merge(draftEvents$, publishedEvents$, versionEvents$).pipe(
     catchError((err, caught$) => {
       if (err instanceof OutOfSyncError) {
@@ -273,16 +282,42 @@ export function getPairListener(
         return caught$
       }
 
-      // A listener 401 is a dead session (see isConnectionSessionError), so
-      // complete the stream rather than rethrow — an errored stream is rethrown
-      // by `useSyncObservable` during render and crashes the tool. Forced logout
-      // is not triggered here; it's owned by the request handler, which 401s on
-      // the ordinary HTTP requests a mounted pane also fires (users, grants, …).
-      // The pane keeps its last value (or stays loading if it never got a
-      // snapshot) until that logout lands.
+      // The listener's credential was refused (see isConnectionSessionError). Under a
+      // rotating credential that is usually a token a renewal just replaced, presented by a
+      // reconnect that went out before the new pair landed; it can also be a token the auth
+      // store still believes valid. The stream has no policy of its own: one ordinary request
+      // through the client hands the question to the store's request handler, which renews
+      // once or ends the session, and the listener then reconnects with whatever credential
+      // the client holds. A stream that just died must not complete quietly: the last event the
+      // form saw was `reconnect`, and a completed stream would leave the editor read-only.
+      //
+      // When the credential cannot be restored (the session is over, or the check keeps
+      // failing), complete rather than rethrow: an errored stream is rethrown by
+      // `useSyncObservable` during render and crashes the tool. Ending the session is the auth
+      // store's job, and the studio's request handler has already seen the same 401.
       if (isConnectionSessionError(err)) {
-        debug('Listener connection rejected (HTTP 401), terminating (invalid session)')
-        return EMPTY
+        credentialChecks += 1
+        if (credentialChecks > MAX_CREDENTIAL_CHECKS) {
+          debug('Listener connection rejected (HTTP 401) %d times, giving up', credentialChecks - 1)
+          return EMPTY
+        }
+        debug(
+          'Listener connection rejected (HTTP 401), checking the credential before reconnecting',
+        )
+        return concat(
+          of({type: 'reconnect'} as ReconnectEvent),
+          client.observable
+            .request({url: '/users/me', tag: 'document.pair.reauthorize'})
+            .pipe(mergeMap(() => caught$)),
+        ).pipe(
+          catchError((checkError: unknown) => {
+            debug(
+              'Listener credential could not be restored, terminating: %s',
+              checkError instanceof Error ? checkError.message : checkError,
+            )
+            return EMPTY
+          }),
+        )
       }
 
       return throwError(() => err)
