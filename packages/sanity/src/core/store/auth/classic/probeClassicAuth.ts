@@ -16,8 +16,9 @@ import {
 } from 'rxjs'
 import {distinctUntilChanged, filter, skip, startWith, switchMap} from 'rxjs/operators'
 
-import {isStaging} from '../../environment/isStaging'
-import {supportsLocalStorage} from '../../util/supportsLocalStorage'
+import {isStaging} from '../../../environment/isStaging'
+import {supportsLocalStorage} from '../../../util/supportsLocalStorage'
+import {createBroadcastState} from '../utils/createBroadcastState'
 import {
   AUTH_CLIENT_OPTIONS,
   AUTHENTICATED,
@@ -25,7 +26,6 @@ import {
   getCookieAuthStateKey,
   UNAUTHENTICATED,
 } from './constants'
-import {createBroadcastState} from './createBroadcastState'
 
 /** @internal */
 export interface WorkspaceAuthProbeInput {

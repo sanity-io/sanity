@@ -2,14 +2,14 @@ import {useEffect, useRef, useState} from 'react'
 import {exhaustMap, filter, fromEvent, merge, of, Subject, takeUntil, tap, timer} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
-import {getAuthTokenStorageKey} from '../../store/authStore/constants'
+import {getAuthTokenStorageKey} from '../../store/auth/classic/constants'
 import {
   clearUnclaimedProjectRecord,
   clearUnclaimedProjectSnooze,
   readUnclaimedProjectRecord,
   type UnclaimedProjectRecord,
   writeUnclaimedProjectRecord,
-} from '../../store/authStore/unclaimedProjectStorage'
+} from '../../store/auth/classic/unclaimedProjectStorage'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {useWorkspace} from '../workspace'
 

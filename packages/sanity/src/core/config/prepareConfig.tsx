@@ -22,9 +22,12 @@ import {
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {createSchema} from '../schema/createSchema'
-import {createAuthStore, type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
-import {type AuthStore} from '../store/authStore/types'
-import {isAuthStore} from '../store/authStore/utils/asserters'
+import {
+  createAuthStore,
+  type RequestFailureDiagnostics,
+} from '../store/auth/classic/createClassicAuthStore'
+import {type AuthStore} from '../store/auth/types'
+import {isAuthStore} from '../store/auth/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'

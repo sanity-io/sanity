@@ -6,7 +6,7 @@ import {VisibleWorkspacesContext, WorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type WorkspaceSummary} from '../../../config/types'
-import {type AuthState} from '../../../store/authStore/types'
+import {type AuthState} from '../../../store/auth/types'
 import {evaluateWorkspaceHidden} from '../../workspaces/useVisibleWorkspaces'
 import {type VisibleWorkspacesContextValue} from '../../workspaces/VisibleWorkspacesProvider'
 import {ActiveWorkspaceMatcher} from '../ActiveWorkspaceMatcher'

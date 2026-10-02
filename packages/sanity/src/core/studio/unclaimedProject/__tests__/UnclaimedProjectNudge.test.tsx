@@ -5,7 +5,7 @@ import {userEvent} from '@testing-library/user-event'
 import {type ReactNode, useState} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {writeUnclaimedProjectSnoozedAt} from '../../../store/authStore/unclaimedProjectStorage'
+import {writeUnclaimedProjectSnoozedAt} from '../../../store/auth/classic/unclaimedProjectStorage'
 import {
   formatCountdown,
   UnclaimedProjectCountdown,
@@ -31,7 +31,7 @@ const {
   mockUseWorkspace: vi.fn(),
 }))
 
-vi.mock('../../../store/authStore/unclaimedProjectStorage', async (importOriginal) => ({
+vi.mock('../../../store/auth/classic/unclaimedProjectStorage', async (importOriginal) => ({
   ...(await importOriginal()),
   clearUnclaimedProjectRecord: mockClearUnclaimedProjectRecord,
 }))

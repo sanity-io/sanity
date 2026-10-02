@@ -2,13 +2,13 @@ import {act, renderHook, waitFor} from '@testing-library/react'
 import {StrictMode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getAuthTokenStorageKey} from '../../../store/authStore/constants'
+import {getAuthTokenStorageKey} from '../../../store/auth/classic/constants'
 import {
   readUnclaimedProjectRecord,
   readUnclaimedProjectSnoozedAt,
   writeUnclaimedProjectRecord,
   writeUnclaimedProjectSnoozedAt,
-} from '../../../store/authStore/unclaimedProjectStorage'
+} from '../../../store/auth/classic/unclaimedProjectStorage'
 import {useUnclaimedProject} from '../useUnclaimedProject'
 
 const {mockLogout, mockRequest, mockUseWorkspace} = vi.hoisted(() => ({

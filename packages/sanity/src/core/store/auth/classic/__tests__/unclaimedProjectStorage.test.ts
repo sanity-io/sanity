@@ -12,7 +12,7 @@ import {
 } from '../unclaimedProjectStorage'
 
 // In jsdom/Node.js supportsLocalStorage is false because process.versions.node is defined.
-vi.mock('../../../util/supportsLocalStorage', () => ({
+vi.mock('../../../../util/supportsLocalStorage', () => ({
   supportsLocalStorage: true,
 }))
 

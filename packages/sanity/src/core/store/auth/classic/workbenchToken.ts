@@ -1,7 +1,7 @@
 import {type Observable, of} from 'rxjs'
 import {catchError} from 'rxjs/operators'
 
-import {getMessageBusConnection} from '../messageBus/getMessageBusConnection'
+import {getMessageBusConnection} from '../../messageBus/getMessageBusConnection'
 
 /**
  * Observes the session token issued by the workbench "OS", tracking the OS auth

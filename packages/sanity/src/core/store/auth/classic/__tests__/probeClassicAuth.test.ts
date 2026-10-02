@@ -3,12 +3,12 @@ import {firstValueFrom, lastValueFrom, take, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getAuthTokenStorageKey, getCookieAuthStateKey} from '../constants'
-import {_probeWorkspaceAuthForTest, _resetProbeWorkspaceAuthCache} from '../probeWorkspaceAuth'
+import {_probeWorkspaceAuthForTest, _resetProbeWorkspaceAuthCache} from '../probeClassicAuth'
 
 // Match the convention from createAuthStore.test.ts: ensure localStorage is
 // considered supported in the test environment so the token-attribution code
 // path is exercised.
-vi.mock('../../../util/supportsLocalStorage', () => ({
+vi.mock('../../../../util/supportsLocalStorage', () => ({
   supportsLocalStorage: true,
 }))
 

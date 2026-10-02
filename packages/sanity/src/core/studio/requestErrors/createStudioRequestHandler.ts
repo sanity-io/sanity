@@ -1,6 +1,6 @@
 import {type RequestHandler, type RequestHandlerOptions, type SanityClient} from '@sanity/client'
 
-import {type RequestFailureDiagnostics} from '../../store/authStore/createAuthStore'
+import {type RequestFailureDiagnostics} from '../../store/auth/classic/createClassicAuthStore'
 import {
   getRequestBucket,
   studioRequestPerformance,

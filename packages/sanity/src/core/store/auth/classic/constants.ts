@@ -1,4 +1,4 @@
-import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../studioClient'
+import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 
 // Shared constants and key construction for the auth store.
 //

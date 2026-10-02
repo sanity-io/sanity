@@ -33,15 +33,23 @@ import {
   tap,
 } from 'rxjs/operators'
 
-import {type AuthConfig} from '../../config/auth/types'
-import {isStaging} from '../../environment/isStaging'
-import {isNetworkError, isUnauthorizedError} from '../../studio/requestErrors/classify'
+import {type AuthConfig} from '../../../config/auth/types'
+import {isStaging} from '../../../environment/isStaging'
+import {isNetworkError, isUnauthorizedError} from '../../../studio/requestErrors/classify'
 import {
   type RequestFailureProbe,
   type RequestFailureResult,
-} from '../../studio/requestErrors/diagnoseRequestFailure'
-import {type StudioErrorHandler} from '../../studio/requestErrors/types'
-import {canonicalHash} from '../../util/canonicalHash'
+} from '../../../studio/requestErrors/diagnoseRequestFailure'
+import {type StudioErrorHandler} from '../../../studio/requestErrors/types'
+import {canonicalHash} from '../../../util/canonicalHash'
+import {
+  type AuthProbeResult,
+  type AuthState,
+  type AuthStore,
+  type HandleCallbackResult,
+} from '../types'
+import {isCookielessCompatibleLoginMethod} from '../utils/asserters'
+import {createBroadcastState} from '../utils/createBroadcastState'
 import {
   AUTH_CLIENT_OPTIONS,
   AUTH_STATE_SETTLE_TIMEOUT_MS,
@@ -49,20 +57,12 @@ import {
   getCookieAuthStateKey,
   UNAUTHENTICATED,
 } from './constants'
-import {createBroadcastState} from './createBroadcastState'
 import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
 import {consumeHashClaim} from './hashClaim'
 import {consumeHashToken as defaultConsumeHashToken} from './hashToken'
 import {clearHashSessionId, getHashSessionId as defaultGetSessionId} from './sessionId'
-import {
-  type AuthProbeResult,
-  type AuthState,
-  type AuthStore,
-  type HandleCallbackResult,
-} from './types'
 import {recordHashClaimUrl} from './unclaimedProjectStorage'
-import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 import {
   observeWorkbenchToken as defaultObserveWorkbenchToken,
   refreshWorkbenchToken as defaultRefreshWorkbenchToken,

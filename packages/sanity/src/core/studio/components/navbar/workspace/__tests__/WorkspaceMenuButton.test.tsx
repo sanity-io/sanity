@@ -18,7 +18,7 @@ const {mockProbeWorkspaceAuth, probeSubscriptions, projectName$, projectNameSubs
     projectNameSubscriptions: {count: 0},
   }))
 
-vi.mock('../../../../../store/authStore/probeWorkspaceAuth', () => ({
+vi.mock('../../../../../store/auth/classic/probeClassicAuth', () => ({
   probeWorkspaceAuth: mockProbeWorkspaceAuth,
 }))
 vi.mock('../../../../../store/datastores', () => {

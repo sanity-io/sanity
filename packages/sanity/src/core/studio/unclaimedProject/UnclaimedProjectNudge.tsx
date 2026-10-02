@@ -13,7 +13,7 @@ import {
   clearUnclaimedProjectRecord,
   readUnclaimedProjectSnoozedAt,
   writeUnclaimedProjectSnoozedAt,
-} from '../../store/authStore/unclaimedProjectStorage'
+} from '../../store/auth/classic/unclaimedProjectStorage'
 import {interpolateTemplate} from '../../util/interpolateTemplate'
 import {useWorkspace} from '../workspace'
 import {useUnclaimedProjectContext} from './UnclaimedProjectProvider'

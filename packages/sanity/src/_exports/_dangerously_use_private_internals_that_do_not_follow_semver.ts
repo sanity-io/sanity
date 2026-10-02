@@ -657,16 +657,13 @@ export {
   _createAuthStore,
   type AuthStoreOptions,
   type RequestFailureDiagnostics,
-} from '../core/store/authStore/createAuthStore'
+} from '../core/store/auth/classic/createClassicAuthStore'
 export {
   createMockAuthStore,
   type MockAuthStoreOptions,
-} from '../core/store/authStore/createMockAuthStore'
-export {type HandleCallbackResult} from '../core/store/authStore/types'
-export {
-  isAuthStore,
-  isCookielessCompatibleLoginMethod,
-} from '../core/store/authStore/utils/asserters'
+} from '../core/store/auth/mock/createMockAuthStore'
+export {type HandleCallbackResult} from '../core/store/auth/types'
+export {isAuthStore, isCookielessCompatibleLoginMethod} from '../core/store/auth/utils/asserters'
 export {
   type ConnectedStatus,
   CONNECTING,

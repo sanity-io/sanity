@@ -4,7 +4,7 @@ import {useObservable} from 'react-rx'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {type WorkspaceSummary} from '../../../../config/types'
-import {probeWorkspaceAuth} from '../../../../store/authStore/probeWorkspaceAuth'
+import {probeWorkspaceAuth} from '../../../../store/auth/classic/probeClassicAuth'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
 interface WorkspaceMenuItemProps {

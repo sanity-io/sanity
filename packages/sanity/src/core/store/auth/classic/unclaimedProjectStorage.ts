@@ -1,4 +1,4 @@
-import {supportsLocalStorage} from '../../util/supportsLocalStorage'
+import {supportsLocalStorage} from '../../../util/supportsLocalStorage'
 import {getUnclaimedProjectStorageKey} from './constants'
 import {isValidClaimUrl} from './hashClaim'
 

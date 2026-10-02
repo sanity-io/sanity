@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {type WorkspaceSummary} from '../../../../../config/types'
-import {probeWorkspaceAuth} from '../../../../../store/authStore/probeWorkspaceAuth'
+import {probeWorkspaceAuth} from '../../../../../store/auth/classic/probeClassicAuth'
 import {WorkspacePreview} from '../WorkspacePreview'
 
 interface WorkspaceAuthCardProps {

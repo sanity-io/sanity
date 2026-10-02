@@ -8,14 +8,14 @@ import {type CurrentUser} from '@sanity/types'
 import {BehaviorSubject, firstValueFrom, of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {promiseWithResolvers} from '../../../util/promiseWithResolvers'
+import {promiseWithResolvers} from '../../../../util/promiseWithResolvers'
+import {type AuthStore} from '../../types'
 import {AUTH_STATE_SETTLE_TIMEOUT_MS} from '../constants'
-import {_createAuthStore} from '../createAuthStore'
-import {type AuthStore} from '../types'
+import {_createAuthStore} from '../createClassicAuthStore'
 
 // Mock supportsLocalStorage to return true so createBroadcastStorage uses localStorage.
 // In jsdom/Node.js it returns false because process.versions.node is defined.
-vi.mock('../../../util/supportsLocalStorage', () => ({
+vi.mock('../../../../util/supportsLocalStorage', () => ({
   supportsLocalStorage: true,
 }))
 
