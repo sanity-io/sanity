@@ -8,6 +8,7 @@ import {
   expiredToken,
   invalidSession,
   randomLatency,
+  refusedRefreshToken,
   sendReset,
 } from './scenarios'
 
@@ -110,6 +111,104 @@ describe('invalidSession', () => {
 
     expect(captured.head?.status).toBe(401)
     expect(JSON.parse(captured.body ?? '{}')).toMatchObject({errorCode: 'SIO-401-AEX'})
+  })
+
+  test('answers with an RFC 6750 bearer challenge, without a Sanity error code, when so configured', () => {
+    const handler = invalidSession(
+      () => ({unsubscribe: () => {}}) as never,
+      () => true,
+      {errorCode: 'invalid_token'},
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET'), res, target)
+
+    expect(captured.head?.status).toBe(401)
+    expect(captured.head?.headers['www-authenticate']).toBe('Bearer error="invalid_token"')
+    const body = JSON.parse(captured.body ?? '{}')
+    expect(body).toMatchObject({error: 'invalid_token'})
+    expect(body).not.toHaveProperty('errorCode')
+  })
+
+  test('forwards the OAuth endpoints while invalid, and re-arms on a token endpoint request', () => {
+    // An OAuth studio renews through /auth/oauth/token with its refresh token, never
+    // with the access token the scenario invalidates. Answering the token endpoint with
+    // a 401 would keep it from renewing at all, and its revoke calls on sign-out
+    // would fail too.
+    let forwarded: string[] = []
+    let reauthenticated = 0
+    const handler = invalidSession(
+      (req) => {
+        forwarded.push(req.url ?? '')
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+      {onReauthenticated: () => (reauthenticated += 1)},
+    )
+
+    handler(fakeReq('GET', '/v1/auth/oauth/authorize?client_id=x'), fakeRes().res, target)
+    handler(fakeReq('POST', '/v1/auth/oauth/token'), fakeRes().res, target)
+    handler(fakeReq('POST', '/v1/auth/oauth/revoke'), fakeRes().res, target)
+    expect(forwarded).toEqual([
+      '/v1/auth/oauth/authorize?client_id=x',
+      '/v1/auth/oauth/token',
+      '/v1/auth/oauth/revoke',
+    ])
+    expect(reauthenticated).toBe(1)
+
+    forwarded = []
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET', '/v1/users/me'), res, target)
+    expect(forwarded).toEqual([])
+    expect(captured.head?.status).toBe(401)
+  })
+})
+
+describe('refusedRefreshToken', () => {
+  const target = {url: new URL('https://example.localhost/v1/auth/oauth/token')}
+
+  test('answers a POST to the OAuth token endpoint with invalid_grant once refused', () => {
+    let forwarded = false
+    const handler = refusedRefreshToken(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('POST', '/v1/auth/oauth/token'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(400)
+    expect(captured.head?.headers['cache-control']).toBe('no-store')
+    expect(JSON.parse(captured.body ?? '{}')).toMatchObject({error: 'invalid_grant'})
+  })
+
+  test('forwards everything else: preflights, API requests, and the token endpoint before the deadline', () => {
+    const forwarded: string[] = []
+    let refused = false
+    const handler = refusedRefreshToken(
+      (req) => {
+        forwarded.push(`${req.method} ${req.url}`)
+        return {unsubscribe: () => {}} as never
+      },
+      () => refused,
+    )
+
+    handler(fakeReq('POST', '/v1/auth/oauth/token'), fakeRes().res, target)
+    refused = true
+    handler(fakeReq('OPTIONS', '/v1/auth/oauth/token'), fakeRes().res, target)
+    handler(fakeReq('GET', '/v1/users/me'), fakeRes().res, target)
+    handler(fakeReq('POST', '/v1/auth/oauth/revoke'), fakeRes().res, target)
+
+    expect(forwarded).toEqual([
+      'POST /v1/auth/oauth/token',
+      'OPTIONS /v1/auth/oauth/token',
+      'GET /v1/users/me',
+      'POST /v1/auth/oauth/revoke',
+    ])
   })
 })
 
