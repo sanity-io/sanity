@@ -8,6 +8,8 @@ function respond(status: number, body: unknown) {
   )
 }
 
+const HOSTS = {issuer: 'https://api.sanity.io', projectId: 'p1'}
+
 const EXCHANGE = {
   clientId: 'oc-1',
   redirectUri: 'http://localhost:3333',
@@ -18,10 +20,10 @@ const EXCHANGE = {
 describe('oauthEndpoints', () => {
   it('posts the code exchange as a form without credentials', async () => {
     const fetchImpl = respond(200, {access_token: 'a', token_type: 'bearer', expires_in: 3600})
-    await createOAuthEndpoints('https://api.sanity.io', fetchImpl).exchangeCode(EXCHANGE)
+    await createOAuthEndpoints(HOSTS, fetchImpl).exchangeCode(EXCHANGE)
 
     const [url, init] = fetchImpl.mock.calls[0]
-    expect(url).toBe('https://api.sanity.io/v1/auth/oauth/token')
+    expect(url).toBe('https://p1.api.sanity.io/v1/auth/oauth/token')
     expect(init).toMatchObject({method: 'POST', credentials: 'omit'})
     expect(Object.fromEntries(new URLSearchParams(String(init?.body)))).toEqual({
       grant_type: 'authorization_code',
@@ -30,6 +32,37 @@ describe('oauthEndpoints', () => {
       code: 'c',
       code_verifier: 'v',
     })
+  })
+
+  it('sends token and revoke requests to the project host, which applies its CORS origins', async () => {
+    // The issuer's own host only allows a fixed list of origins (localhost, sanity.studio), so a
+    // studio anywhere else could never exchange its code there, whatever the project allows.
+    const fetchImpl = respond(200, {access_token: 'a', token_type: 'bearer', expires_in: 3600})
+    const endpoints = createOAuthEndpoints(
+      {issuer: 'https://api.sanity.work', projectId: 'p1'},
+      fetchImpl,
+    )
+    await endpoints.exchangeCode(EXCHANGE)
+    await endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'})
+    await endpoints.revoke({clientId: 'oc-1', token: 't'})
+
+    expect(fetchImpl.mock.calls.map(([url]) => url)).toEqual([
+      'https://p1.api.sanity.work/v1/auth/oauth/token',
+      'https://p1.api.sanity.work/v1/auth/oauth/token',
+      'https://p1.api.sanity.work/v1/auth/oauth/revoke',
+    ])
+  })
+
+  it('sends the user to the issuer to authorize', () => {
+    const url = new URL(
+      createOAuthEndpoints({issuer: 'https://api.sanity.work', projectId: 'p1'}).authorizeUrl({
+        clientId: 'oc-1',
+        redirectUri: 'http://localhost:3333',
+        codeChallenge: 'c',
+        state: 's',
+      }),
+    )
+    expect(`${url.origin}${url.pathname}`).toBe('https://api.sanity.work/v1/auth/oauth/authorize')
   })
 
   it.each([
@@ -43,7 +76,7 @@ describe('oauthEndpoints', () => {
       {access_token: 'a', token_type: 'Bearer', expires_in: 60, refresh_token: ''},
     ],
   ])('rejects a successful response with %s', async (_label, body) => {
-    const endpoints = createOAuthEndpoints('https://api.sanity.io', respond(200, body))
+    const endpoints = createOAuthEndpoints(HOSTS, respond(200, body))
     await expect(endpoints.exchangeCode(EXCHANGE)).rejects.toThrow('malformed token response')
     await expect(endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'})).rejects.toThrow(
       'malformed token response',
@@ -52,7 +85,7 @@ describe('oauthEndpoints', () => {
 
   it('reports the OAuth error code of a failed request', async () => {
     const endpoints = createOAuthEndpoints(
-      'https://api.sanity.io',
+      HOSTS,
       respond(400, {error: 'invalid_grant', error_description: 'used'}),
     )
     const error = await endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'}).catch((e) => e)
@@ -71,7 +104,7 @@ describe('oauthEndpoints', () => {
       error: 'Bad Request',
       message: 'Invalid grant: refresh token is invalid',
     })
-    const err = await createOAuthEndpoints('https://api.sanity.io', fetchImpl)
+    const err = await createOAuthEndpoints(HOSTS, fetchImpl)
       .refresh({clientId: 'oc-1', refreshToken: 'r'})
       .catch((e: unknown) => e)
 
@@ -87,7 +120,7 @@ describe('oauthEndpoints', () => {
           init?.signal?.addEventListener('abort', () => reject(new DOMException('', 'AbortError')))
         }),
     )
-    const endpoints = createOAuthEndpoints('https://api.sanity.io', hanging, 10)
+    const endpoints = createOAuthEndpoints(HOSTS, hanging, 10)
 
     const error = await endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'}).catch((e) => e)
 
