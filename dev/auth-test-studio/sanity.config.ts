@@ -202,6 +202,16 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
 
 export default defineConfig([
   ...envs.flatMap(createWorkspaces),
+  // OAuth 2.1 — signs in with an OAuth application instead of the login providers. Always against
+  // staging, since that is where the OAuth application is registered.
+  {
+    ...shared,
+    ...staging,
+    name: envs.length > 1 ? `${staging.projectId}-oauth-workspace` : 'oauth-workspace',
+    title: envs.length > 1 ? `OAuth 2.1 (${staging.projectId}, staging)` : 'OAuth 2.1',
+    basePath: envs.length > 1 ? `/${staging.projectId}/oauth-workspace` : '/oauth-workspace',
+    auth: {experimental_oauth: {clientId: 'oc-3f7b8ef7fb70'}},
+  } satisfies WorkspaceOptions,
   {
     ...shared,
     ...production.ppsg7ml5,
