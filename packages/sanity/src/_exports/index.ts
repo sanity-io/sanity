@@ -230,6 +230,9 @@ export {
   type AuthProvider,
   type CookielessCompatibleLoginMethod,
   type LoginMethod,
+  type OAuthAuthConfig,
+  type OAuthConfig,
+  type LegacyAuthConfig,
 } from '../core/config/auth/types'
 export {useMiddlewareComponents} from '../core/config/components/useMiddlewareComponents'
 export {
@@ -1217,6 +1220,8 @@ export {
   type AuthStore,
   type HandleCallbackResult,
   type LoginComponentProps,
+  type OAuthCallbackResult,
+  type LegacyCallbackResult,
 } from '../core/store/auth/types'
 export {isCookielessCompatibleLoginMethod} from '../core/store/auth/legacy/asserters'
 export {isAuthStore} from '../core/store/auth/utils/asserters'

@@ -392,7 +392,7 @@ describe('createLegacyAuthStore: cross-tab sync', () => {
       // 3. For token mode, calls tokenStorage.update({token}) which broadcasts to other tabs
       const result = await store1.handleCallbackUrl!()
       expect(result.success).toBe(true)
-      expect(result.authMethod).toBe('token')
+      expect(result).toMatchObject({authMethod: 'token'})
 
       // Store2 should receive the token broadcast and become authenticated
       const state2 = await store2Auth
@@ -497,7 +497,7 @@ describe('createLegacyAuthStore: cross-tab sync', () => {
       // /auth/id. Since the probe succeeds, it uses cookie auth (no token fallback).
       const result = await store.handleCallbackUrl!()
       expect(result.success).toBe(true)
-      expect(result.authMethod).toBe('cookie')
+      expect(result).toMatchObject({authMethod: 'cookie'})
     })
 
     it('single store logout transitions to unauthenticated', async () => {
@@ -1133,7 +1133,7 @@ describe('createLegacyAuthStore: handleCallbackUrl settle contract', () => {
 
     const result = await store.handleCallbackUrl!()
     expect(result.success).toBe(true)
-    expect(result.authMethod).toBe('cookie')
+    expect(result).toMatchObject({authMethod: 'cookie'})
     expect(result.stateSettleTimedOut).toBe(false)
     expect(emissions[emissions.length - 1]).toBe(true)
 

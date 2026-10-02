@@ -14,11 +14,19 @@ export type LoginMethod = 'dual' | 'cookie' | 'token'
 export type CookielessCompatibleLoginMethod = Extract<LoginMethod, 'dual' | 'token'>
 
 /**
- * Authentication options
+ * Authentication options: sign in with the project's login providers (the default), or with
+ * OAuth (`experimental_oauth`). The two cannot be combined.
  *
  * @public
  */
-export interface AuthConfig {
+export type AuthConfig = LegacyAuthConfig | OAuthAuthConfig
+
+/**
+ * Authentication options for signing in with the project's login providers.
+ *
+ * @public
+ */
+export interface LegacyAuthConfig {
   /**
    * Login method to use for the studio. Can be one of:
    * - `dual` (default) - attempt to use cookies where possible, falling back to
@@ -54,6 +62,76 @@ export interface AuthConfig {
    * but can be set if using custom cname for API domain.
    */
   apiHost?: string
+
+  /** Only on {@link OAuthAuthConfig}. */
+  experimental_oauth?: undefined
+}
+
+/**
+ * Authentication options for signing in with OAuth.
+ *
+ * @beta
+ */
+export interface OAuthAuthConfig {
+  /**
+   * Sign in with OAuth 2.1 (authorization code with PKCE), using an OAuth application registered
+   * for this Studio in Manage, instead of the login providers. Users get short-lived access tokens
+   * that the Studio renews in the background, and refresh tokens that rotate on every use.
+   *
+   * @beta
+   */
+  experimental_oauth: OAuthConfig
+
+  /**
+   * The API hostname for requests. Should usually be left undefined,
+   * but can be set if using custom cname for API domain.
+   */
+  apiHost?: string
+
+  /** Not used with OAuth: the OAuth application decides how users sign in. */
+  loginMethod?: never
+  /** Not used with OAuth: the OAuth application decides how users sign in. */
+  providers?: never
+  /** Not used with OAuth: the OAuth application decides how users sign in. */
+  redirectOnSingle?: never
+}
+
+/**
+ * Options for signing in to the Studio with OAuth 2.1.
+ *
+ * @beta
+ */
+export interface OAuthConfig {
+  /**
+   * Client ID of the OAuth application registered for this Studio in Manage.
+   */
+  clientId: string
+
+  /**
+   * The URL the user returns to after signing in. Must match one of the application's registered
+   * redirect URLs exactly, and be on the origin the Studio is served from, which is where the
+   * sign-in request is kept until the user returns. Defaults to the Studio URL: that origin,
+   * followed by the workspace base path.
+   */
+  redirectUri?: string
+
+  /**
+   * URL of a redirect relay registered as the application's redirect URL, for Studios whose URL
+   * isn't known ahead of time, such as branch deploys. The authorization server sends the user to
+   * the relay, which reads the Studio URL (`redirectUri`, or its default) from `state` and
+   * redirects there. The code is redeemed with the relay URL as the redirect URL, and PKCE keeps
+   * it useless anywhere but the Studio that started the sign-in. Must be an absolute `https` URL
+   * without a fragment, and the relay must only redirect to Studios of this application.
+   */
+  redirectRelay?: string
+
+  /**
+   * How long before the access token expires the Studio renews it, in milliseconds. Defaults to
+   * 60 seconds, which covers request latency and clock skew. The renewal is never scheduled
+   * earlier than halfway through the token's lifetime, so a margin longer than a short-lived
+   * token cannot make the Studio renew continuously.
+   */
+  renewBeforeExpiryMs?: number
 }
 
 /**

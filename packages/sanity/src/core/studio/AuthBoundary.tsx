@@ -11,6 +11,7 @@ import {useComlinkStore, useRenderingContextStore} from '../store/datastores'
 import {ResourceCacheProvider} from '../store/ResourceCacheProvider'
 import {
   AuthBoundaryResolved,
+  OAuthCodeExchangeCompleted,
   SessionTokenExchangeCompleted,
 } from './__telemetry__/authBoundary.telemetry'
 import {StudioAuthReadyMeasured} from './__telemetry__/bootstrap.telemetry'
@@ -144,7 +145,8 @@ export function AuthBoundary({
     auth
       .handleCallbackUrl?.()
       .then((result) => {
-        telemetry.log(SessionTokenExchangeCompleted, result)
+        if (result.loginMethod === 'oauth') telemetry.log(OAuthCodeExchangeCompleted, result)
+        else telemetry.log(SessionTokenExchangeCompleted, result)
       })
       .catch(handleError)
       .finally(() => {
