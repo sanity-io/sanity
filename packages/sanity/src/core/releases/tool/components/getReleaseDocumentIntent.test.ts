@@ -1,3 +1,6 @@
+import {readFileSync} from 'node:fs'
+import {join} from 'node:path'
+
 import {describe, expect, it} from 'vitest'
 
 import {getPublishedId} from '../../../util/draftUtils'
@@ -10,6 +13,22 @@ const DOC_ID = 'versions.rTest.doc1'
 const PUBLISHED_ID = getPublishedId(DOC_ID)
 
 const base = {documentId: DOC_ID, documentTypeName: 'post', releaseId: RELEASE_ID}
+
+// core can't import structure's HISTORY_INSPECTOR_NAME (module boundary), so the intent literal
+// below is compared against the source text of the constant it must stay in sync with.
+const STRUCTURE_DOCUMENT_CONSTANTS_PATH = join(
+  import.meta.dirname,
+  '../../../../structure/panes/document/constants.ts',
+)
+
+function readHistoryInspectorName(): string {
+  const source = readFileSync(STRUCTURE_DOCUMENT_CONSTANTS_PATH, 'utf8')
+  const match = source.match(/export const HISTORY_INSPECTOR_NAME = '([^']+)'/)
+  if (!match) {
+    throw new Error(`Could not find HISTORY_INSPECTOR_NAME in ${STRUCTURE_DOCUMENT_CONSTANTS_PATH}`)
+  }
+  return match[1]
+}
 
 describe('getReleaseDocumentIntent', () => {
   it('targets the release perspective for an active release', () => {
@@ -83,5 +102,17 @@ describe('getReleaseDocumentIntent', () => {
       ['variant', 'variant:alpha-audience'],
       ['perspective', 'published'],
     ])
+  })
+
+  it('keeps the inspect intent literal in sync with structure/HISTORY_INSPECTOR_NAME', () => {
+    const historyInspectorName = readHistoryInspectorName()
+    const published = getReleaseDocumentIntent({...base, releaseState: 'published'})
+    const archived = getReleaseDocumentIntent({
+      ...base,
+      releaseState: 'archived',
+      documentRevision: 'rev1',
+    })
+    expect(published.params.inspect).toBe(historyInspectorName)
+    expect(archived.params.inspect).toBe(historyInspectorName)
   })
 })

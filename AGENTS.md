@@ -496,6 +496,16 @@ For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLPr
 `ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`
 19 it is a deprecated identity alias and trips `typescript/no-deprecated`.
 
+### ui5 (`@sanity/ui` v5): `height`/`width` are raw CSS strings, not enums
+
+`height`, `width`, `minHeight`, `minWidth`, `maxHeight` and `maxWidth` are typed `Responsive<string>`
+and passed straight through to a CSS custom property (`height: var(--height)`, etc). `height="fill"`
+was a valid v4 enum value; on ui5 it type-checks, sets `--height: fill`, and the browser silently
+drops the resulting `height: fill` declaration, so the element falls back to sizing to its content
+instead of filling its parent — no type error, no render error, no console warning. Use `height="100%"`.
+Also unlike v4, ui5's `Flex` takes `flexDirection` / `alignItems` / `justifyContent`, not
+`direction` / `align` / `justify` — those old names do fail type-check, so they're at least caught.
+
 ## Testing
 
 ### Unit Tests (Vitest)
@@ -541,6 +551,16 @@ production source.
   Vitest 4 substring, case-insensitive matching (`browser.locators.exact: false` in
   `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
   matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
+
+#### A mock that renders nothing can hide the gate a test exists to check
+
+Mocking a gated child component to `() => null` removes the component entirely, including
+whatever it would have used to prove the gate works. If every test fixture also hardcodes the
+gate flag to the "on" state, a deleted or broken gate and a working one produce the same (empty)
+output, and the test suite stays green either way. Give the mock a `data-testid` placeholder
+instead (`() => <div data-testid="mock-thing" />`) so a test can assert on its presence, and
+write at least one case where the gate is off and assert the mock is absent — a green suite that
+can't fail when the gate breaks is proving nothing.
 
 #### Test Timeouts
 

@@ -1,5 +1,5 @@
 import {SyncIcon} from '@sanity/icons/Sync'
-import {type DocumentInspector, useTranslation} from 'sanity'
+import {type DocumentFeature, type DocumentInspector, useTranslation} from 'sanity'
 
 import {INCOMING_REFERENCES_INSPECTOR_NAME} from '../../constants'
 import {IncomingReferencesInspector} from './IncomingReferencesInspector'
@@ -15,4 +15,9 @@ export const incomingReferencesInspector: DocumentInspector = {
     }
   },
   component: IncomingReferencesInspector,
+}
+
+export const incomingReferencesFeature: DocumentFeature = {
+  name: 'incomingReferences',
+  inspector: incomingReferencesInspector,
 }

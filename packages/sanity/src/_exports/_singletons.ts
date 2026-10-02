@@ -39,11 +39,16 @@ export {
 export {DiffContext} from '../_singletons/context/DiffContext'
 export {DocumentActionPropsContext} from '../_singletons/context/DocumentActionPropsContext'
 export {DocumentActionsStateContext} from '../_singletons/context/DocumentActionsStateContext'
+export {
+  DocumentActionsPlacementContext,
+  type DocumentActionsPlacement,
+} from '../_singletons/context/DocumentActionsPlacementContext'
 export {DocumentChangeContext} from '../_singletons/context/DocumentChangeContext'
 export {
   DocumentDivergencesContext,
   type DocumentDivergencesContextValue,
 } from '../_singletons/context/DocumentDivergencesContext'
+export {DocumentFeaturesContext} from '../_singletons/context/DocumentFeaturesContext'
 export {
   DocumentFieldActionsContext,
   type DocumentFieldActionsContextValue,

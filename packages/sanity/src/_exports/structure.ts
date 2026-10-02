@@ -1,6 +1,11 @@
 export {ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog'
 export {type ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
 export {defineIncomingReferenceDecoration} from '../structure/components/incomingReferencesDecoration/defineIncomingReferenceDecoration'
+export {
+  HISTORY_INSPECTOR_NAME,
+  INCOMING_REFERENCES_INSPECTOR_NAME,
+  VALIDATION_INSPECTOR_NAME,
+} from '../structure/panes/document/constants'
 export {isIncomingReferenceCreation} from '../structure/components/incomingReferencesDecoration/isIncomingReferenceCreation'
 export {
   type IncomingReferenceAction,
@@ -20,10 +25,20 @@ export {
 export {PaneRouterContext, usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
 export {structureLocaleNamespace} from '../structure/i18n'
 export {type StructureLocaleResourceKeys} from '../structure/i18n/resources'
+export {
+  type DocumentActionsBarOptions,
+  type DocumentToolbarSlotComponent,
+  type DocumentToolbarSlotProps,
+  type DocumentToolbarSlots,
+} from '../structure/panes/document/document-layout/documentToolbarSlots'
 export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
 export {DocumentPane} from '../structure/panes/document/DocumentPane'
 export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
-export {type DocumentPaneProviderProps} from '../structure/panes/document/types'
+export {type DocumentActionsPlacement} from '../structure/panes/document/statusBar/documentActionsPlacement'
+export {
+  type DocumentPaneProps,
+  type DocumentPaneProviderProps,
+} from '../structure/panes/document/types'
 export {useDocumentPane} from '../structure/panes/document/useDocumentPane'
 export {useDocumentTitle, type UseDocumentTitle} from '../structure/panes/document/useDocumentTitle'
 export {usePaneOptions} from '../structure/panes/document/usePaneOptions'

@@ -1069,10 +1069,20 @@ export {ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog'
 export {type ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
 export {Pane} from '../structure/components/pane/Pane'
 export {PaneContent} from '../structure/components/pane/PaneContent'
+export {
+  type DocumentActionsBarOptions,
+  type DocumentToolbarSlotComponent,
+  type DocumentToolbarSlotProps,
+  type DocumentToolbarSlots,
+} from '../structure/panes/document/document-layout/documentToolbarSlots'
 export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
 export {DocumentPane} from '../structure/panes/document/DocumentPane'
 export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
-export {type DocumentPaneProviderProps} from '../structure/panes/document/types'
+export {type DocumentActionsPlacement} from '../structure/panes/document/statusBar/documentActionsPlacement'
+export {
+  type DocumentPaneProps,
+  type DocumentPaneProviderProps,
+} from '../structure/panes/document/types'
 export {useDocumentPane} from '../structure/panes/document/useDocumentPane'
 export {usePaneOptions} from '../structure/panes/document/usePaneOptions'
 export {type DocumentListPaneProps} from '../structure/panes/documentList'

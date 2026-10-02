@@ -448,6 +448,13 @@ import type {
   DocumentCommentsEnabledContext,
   DocumentComponents,
   DocumentDefinition,
+  DocumentFeature,
+  DocumentFeatureContext,
+  DocumentFeatureHeaderEntry,
+  DocumentFeatureMenuEntry,
+  DocumentFeatureName,
+  DocumentFeaturesResolver,
+  DocumentFeatureToolbarEntry,
   DocumentField,
   DocumentFieldAction,
   DocumentFieldActionDivider,
@@ -469,6 +476,7 @@ import type {
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
   DocumentGroupInventoryReferencePreviewLinkProps,
+  DocumentHeaderFeature,
   documentIdEquals,
   DocumentIdStack,
   DocumentInspector,
@@ -482,6 +490,7 @@ import type {
   DocumentLanguageFilterContext,
   DocumentLanguageFilterResolver,
   DocumentLayoutProps,
+  DocumentMenuFeature,
   DocumentMeta,
   DocumentMutationEvent,
   DocumentOptions,
@@ -937,6 +946,7 @@ import type {
   isReleaseVersion,
   isRemovedItemDiff,
   isSanityDefinedAction,
+  isSanityDefinedFeatureName,
   isSanityDocument,
   isScheduleDocumentVersionEvent,
   isSearchStrategy,
@@ -1302,6 +1312,7 @@ import type {
   RESOLVE_INITIAL_VALUE_TIMEOUT_MS,
   resolveConditionalProperty,
   resolveConfig,
+  ResolvedDocumentFeatures,
   resolveDiffComponent,
   ResolvedTemplate,
   ResolvedUploader,
@@ -1326,6 +1337,7 @@ import type {
   RuleSpec,
   RuleSpecConstraint,
   RuleTypeConstraint,
+  SANITY_DEFINED_FEATURE_NAMES,
   SANITY_PATCH_TYPE,
   SANITY_VERSION,
   SanityClient,
@@ -1334,6 +1346,7 @@ import type {
   SanityDefaultPreview,
   SanityDefaultPreviewProps,
   SanityDefinedAction,
+  SanityDefinedFeatureName,
   SanityDocument,
   SanityDocumentLike,
   SanityFormConfig,
@@ -3209,6 +3222,27 @@ describe('sanity', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<DocumentDefinition>().toBeObject()
   })
+  test('DocumentFeature', () => {
+    expectTypeOf<DocumentFeature>().toBeObject()
+  })
+  test('DocumentFeatureContext', () => {
+    expectTypeOf<DocumentFeatureContext>().toBeObject()
+  })
+  test('DocumentFeatureHeaderEntry', () => {
+    expectTypeOf<DocumentFeatureHeaderEntry>().toBeObject()
+  })
+  test('DocumentFeatureMenuEntry', () => {
+    expectTypeOf<DocumentFeatureMenuEntry>().toBeObject()
+  })
+  test('DocumentFeatureName', () => {
+    expectTypeOf<DocumentFeatureName>().not.toBeNever()
+  })
+  test('DocumentFeaturesResolver', () => {
+    expectTypeOf<DocumentFeaturesResolver>().not.toBeNever()
+  })
+  test('DocumentFeatureToolbarEntry', () => {
+    expectTypeOf<DocumentFeatureToolbarEntry>().not.toBeNever()
+  })
   test('DocumentField', () => {
     expectTypeOf<DocumentField>().not.toBeNever()
   })
@@ -3272,6 +3306,9 @@ describe('sanity', () => {
   test('DocumentGroupInventoryReferencePreviewLinkProps', () => {
     expectTypeOf<DocumentGroupInventoryReferencePreviewLinkProps>().toBeObject()
   })
+  test('DocumentHeaderFeature', () => {
+    expectTypeOf<DocumentHeaderFeature>().toBeObject()
+  })
   test('documentIdEquals', () => {
     expectTypeOf<typeof documentIdEquals>().toBeFunction()
   })
@@ -3310,6 +3347,9 @@ describe('sanity', () => {
   })
   test('DocumentLayoutProps', () => {
     expectTypeOf<DocumentLayoutProps>().toBeObject()
+  })
+  test('DocumentMenuFeature', () => {
+    expectTypeOf<DocumentMenuFeature>().toBeObject()
   })
   test('DocumentMeta', () => {
     expectTypeOf<DocumentMeta>().toBeObject()
@@ -4682,6 +4722,9 @@ describe('sanity', () => {
   test('isSanityDefinedAction', () => {
     expectTypeOf<typeof isSanityDefinedAction>().not.toBeNever()
   })
+  test('isSanityDefinedFeatureName', () => {
+    expectTypeOf<typeof isSanityDefinedFeatureName>().toBeFunction()
+  })
   test('isSanityDocument', () => {
     expectTypeOf<typeof isSanityDocument>().toBeFunction()
   })
@@ -5782,11 +5825,14 @@ describe('sanity', () => {
   test('resolveConfig', () => {
     expectTypeOf<typeof resolveConfig>().toBeFunction()
   })
+  test('ResolvedDocumentFeatures', () => {
+    expectTypeOf<ResolvedDocumentFeatures>().toBeObject()
+  })
   test('resolveDiffComponent', () => {
     expectTypeOf<typeof resolveDiffComponent>().toBeFunction()
   })
   test('ResolvedTemplate', () => {
-    expectTypeOf<ResolvedTemplate>().not.toBeNever()
+    expectTypeOf<ResolvedTemplate<any, any>>().toBeObject()
   })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()
@@ -5854,6 +5900,9 @@ describe('sanity', () => {
   test('RuleTypeConstraint', () => {
     expectTypeOf<RuleTypeConstraint>().not.toBeNever()
   })
+  test('SANITY_DEFINED_FEATURE_NAMES', () => {
+    expectTypeOf<typeof SANITY_DEFINED_FEATURE_NAMES>().not.toBeNever()
+  })
   test('SANITY_PATCH_TYPE', () => {
     expectTypeOf<typeof SANITY_PATCH_TYPE>().not.toBeNever()
   })
@@ -5877,6 +5926,9 @@ describe('sanity', () => {
   })
   test('SanityDefinedAction', () => {
     expectTypeOf<SanityDefinedAction>().not.toBeNever()
+  })
+  test('SanityDefinedFeatureName', () => {
+    expectTypeOf<SanityDefinedFeatureName>().not.toBeNever()
   })
   test('SanityDocument', () => {
     expectTypeOf<SanityDocument>().toBeObject()

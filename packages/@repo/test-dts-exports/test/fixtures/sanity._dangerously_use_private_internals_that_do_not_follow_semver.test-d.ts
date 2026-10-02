@@ -189,6 +189,8 @@ import type {
   DiffTooltipWithAnnotationsProps,
   DiffVisitor,
   DivergencesProvider,
+  DocumentActionsBarOptions,
+  DocumentActionsPlacement,
   DocumentChangeContextInstance,
   documentFieldActionsReducer,
   DocumentFormNode,
@@ -210,6 +212,7 @@ import type {
   DocumentPairTarget,
   DocumentPane,
   DocumentPaneNode,
+  DocumentPaneProps,
   DocumentPaneProvider,
   DocumentPaneProviderProps,
   DocumentPermission,
@@ -221,6 +224,9 @@ import type {
   DocumentStoreExtraOptions,
   DocumentStoreOptions,
   DocumentSyncState,
+  DocumentToolbarSlotComponent,
+  DocumentToolbarSlotProps,
+  DocumentToolbarSlots,
   DocumentTypeResolveState,
   DocumentValuePermissionsOptions,
   DocumentVersionEventType,
@@ -1449,6 +1455,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DivergencesProvider', () => {
     expectTypeOf<typeof DivergencesProvider>().not.toBeNever()
   })
+  test('DocumentActionsBarOptions', () => {
+    expectTypeOf<DocumentActionsBarOptions>().toBeObject()
+  })
+  test('DocumentActionsPlacement', () => {
+    expectTypeOf<DocumentActionsPlacement>().not.toBeNever()
+  })
   test('DocumentChangeContextInstance', () => {
     expectTypeOf<DocumentChangeContextInstance>().not.toBeNever()
   })
@@ -1512,6 +1524,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DocumentPaneNode', () => {
     expectTypeOf<DocumentPaneNode>().toBeObject()
   })
+  test('DocumentPaneProps', () => {
+    expectTypeOf<DocumentPaneProps>().toBeObject()
+  })
   test('DocumentPaneProvider', () => {
     expectTypeOf<typeof DocumentPaneProvider>().not.toBeNever()
   })
@@ -1544,6 +1559,15 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('DocumentSyncState', () => {
     expectTypeOf<DocumentSyncState>().not.toBeNever()
+  })
+  test('DocumentToolbarSlotComponent', () => {
+    expectTypeOf<DocumentToolbarSlotComponent>().not.toBeNever()
+  })
+  test('DocumentToolbarSlotProps', () => {
+    expectTypeOf<DocumentToolbarSlotProps>().toBeObject()
+  })
+  test('DocumentToolbarSlots', () => {
+    expectTypeOf<DocumentToolbarSlots>().toBeObject()
   })
   test('DocumentTypeResolveState', () => {
     expectTypeOf<DocumentTypeResolveState>().toBeObject()

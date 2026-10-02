@@ -1,4 +1,5 @@
 import {type SchemaType} from '@sanity/types'
+import {type ButtonTone} from '@sanity/ui'
 import {type Observable} from 'rxjs'
 import {
   type ConfigContext,
@@ -299,7 +300,8 @@ export interface PaneMenuItem extends StructureToolMenuItem {
   disabled?: _PaneMenuItem['disabled']
   shortcut?: string
   selected?: boolean
-  tone?: 'primary' | 'positive' | 'caution' | 'critical'
+  // Inspector menu items supply a full ButtonTone, and every renderer downstream accepts one.
+  tone?: ButtonTone
 }
 
 /** @internal */

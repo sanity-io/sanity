@@ -5,7 +5,7 @@ interface DocumentInspectorMenuItemsResolverProps {
   documentId: string
   documentType: string
   inspectors: DocumentInspector[]
-  onMenuItems: (items: DocumentInspectorMenuItem[]) => void
+  onMenuItems: (items: (DocumentInspectorMenuItem | undefined)[]) => void
 }
 
 // The menu item in a document inspector are resolved in a React hook (`useMenuItem`).
@@ -44,7 +44,7 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
   }, [])
 
   useEffect(() => {
-    onMenuItems(menuItems.filter(Boolean))
+    onMenuItems(menuItems)
   }, [menuItems, onMenuItems])
 
   const InspectorMenuItems = useMemo(() => {

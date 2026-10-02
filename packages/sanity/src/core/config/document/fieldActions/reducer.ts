@@ -1,4 +1,5 @@
 import {type ConfigPropertyReducer} from '../../types'
+import {appendUnique, declaredRegistrations} from '../resolveDocumentFeatures'
 import {type DocumentFieldAction, type DocumentFieldActionsResolverContext} from './types'
 
 /** @internal */
@@ -6,11 +7,13 @@ export const documentFieldActionsReducer: ConfigPropertyReducer<
   DocumentFieldAction[],
   DocumentFieldActionsResolverContext
 > = (prev, {document}, context) => {
-  const documentFieldActions = document?.unstable_fieldActions
-  if (!documentFieldActions) return prev
+  const seeded = appendUnique(prev, declaredRegistrations(document, 'fieldAction'))
 
-  if (typeof documentFieldActions === 'function') return documentFieldActions(prev, context)
-  if (Array.isArray(documentFieldActions)) return [...prev, ...documentFieldActions]
+  const documentFieldActions = document?.unstable_fieldActions
+  if (!documentFieldActions) return seeded
+
+  if (typeof documentFieldActions === 'function') return documentFieldActions(seeded, context)
+  if (Array.isArray(documentFieldActions)) return [...seeded, ...documentFieldActions]
 
   throw new Error(
     `Expected \`document.unstable_fieldActions\` to be an array or a function, but received ${typeof documentFieldActions}`,

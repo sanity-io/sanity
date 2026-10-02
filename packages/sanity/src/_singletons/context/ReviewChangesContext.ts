@@ -10,5 +10,6 @@ export const ReviewChangesContext = createContext<ConnectorContextValue>(
     onSetFocus: () => undefined,
     isReviewChangesOpen: false,
     isInteractive: true,
+    isReviewChangesEnabled: true,
   },
 )

@@ -35,6 +35,8 @@ import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDe
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
 import {InspectDialog} from '../inspectDialog/InspectDialog'
+import {type DocumentActionsPlacement} from '../statusBar/documentActionsPlacement'
+import {useDocumentFeatures} from '../useDocumentFeatures'
 import {useDocumentPane} from '../useDocumentPane'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
@@ -53,28 +55,31 @@ import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBann
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
-import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
+import {documentBox, scroller, scrollerEnabled, stickyTopBlock} from './DocumentPanel.css'
 import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
-  footerHeight: number | null
   headerHeight: number | null
   isInspectOpen: boolean
   rootElement: HTMLDivElement | null
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
-  footer: React.ReactNode
+  toolbar: React.ReactNode
+  toolbarHeight: number | null
+  toolbarPlacement?: DocumentActionsPlacement
 }
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {
-    footerHeight,
     headerHeight,
     isInspectOpen,
     rootElement,
     setDocumentPanelPortalElement,
-    footer,
+    toolbar,
+    toolbarHeight,
+    toolbarPlacement = 'bottom',
   } = props
+  const toolbarAtTop = toolbarPlacement === 'top'
   const {
     activeViewId,
     displayed,
@@ -94,11 +99,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
-  const {features} = useStructureTool()
+  const {features: structureFeatures} = useStructureTool()
   const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLFormElement | null>(null)
   const workspace = useWorkspace()
+  const {byName} = useDocumentFeatures()
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
@@ -111,23 +117,31 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   // Keep the form mounted when the inspector takes over a collapsed layout.
   // Unmounting FormBuilder resets FullscreenPTEProvider, so a PTE that was in
   // full-pane mode comes back inline after the window is widened again.
-  const showFormView = features.resizablePanes || !showInspector
+  const showFormView = structureFeatures.resizablePanes || !showInspector
 
   // Fullscreen PTE portals to this element. When the form is hidden, keep that
   // target inside the hidden subtree so the editor cannot cover the inspector.
   const portalElement: HTMLElement | null =
-    features.splitPanes || !showFormView
+    structureFeatures.splitPanes || !showFormView
       ? _portalElement || parentPortal.element
       : parentPortal.element
 
-  // Calculate the height of the header
+  // Presence docks inside the scroll container. On desktop the toolbar sits outside it at either
+  // placement, so only the collapsed layout — where the toolbar sticks over the scrolling content —
+  // needs the toolbar's height kept clear.
   const margins: [number, number, number, number] = useMemo(() => {
     if (layoutCollapsed) {
-      return [headerHeight || 0, 0, footerHeight ? footerHeight + 2 : 2, 0]
+      const clearance = toolbarHeight ? toolbarHeight + 2 : 2
+
+      if (toolbarAtTop) {
+        return [(headerHeight || 0) + clearance, 0, 2, 0]
+      }
+
+      return [headerHeight || 0, 0, clearance, 0]
     }
 
     return [0, 0, 2, 0]
-  }, [layoutCollapsed, footerHeight, headerHeight])
+  }, [layoutCollapsed, toolbarAtTop, toolbarHeight, headerHeight])
 
   const formViewHidden = activeView.type !== 'form'
 
@@ -402,6 +416,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     () => ({documentScrollElement: documentScrollElement}),
     [documentScrollElement],
   )
+
+  const subHeader = byName.has('titleBar') ? <DocumentPanelSubHeader /> : null
+
   return (
     <PaneContent>
       <Flex height="100%">
@@ -413,7 +430,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           <Flex height="100%" flexDirection="column" flexBasis="0%" flexGrow={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
-              <DocumentPanelSubHeader />
+              {toolbarAtTop ? (
+                // One sticky block: a second sticky sibling would collide with the sub-header's own
+                // `top: 0` in the collapsed layout.
+                <div className={stickyTopBlock}>
+                  {subHeader}
+                  {toolbar}
+                </div>
+              ) : (
+                subHeader
+              )}
             </LegacyLayerProvider>
             <Box className={documentBox} flexBasis="0%" flexGrow={2}>
               {/* The scroll container is the visible region for everything portaled into the pane
@@ -448,7 +474,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               </PortalBoundaryProvider>
             </Box>
 
-            {footer}
+            {toolbarAtTop ? null : toolbar}
           </Flex>
         </div>
         {showInspector && (

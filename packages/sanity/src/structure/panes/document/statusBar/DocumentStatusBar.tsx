@@ -13,7 +13,12 @@ import {Flex} from 'ui5'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'
+import {
+  DocumentToolbarSlotContent,
+  type DocumentToolbarSlots,
+} from '../document-layout/documentToolbarSlots'
 import {useDocumentPane} from '../useDocumentPane'
+import {type DocumentActionsPlacement} from './documentActionsPlacement'
 import {DocumentBadges} from './DocumentBadges'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentStatusLine} from './DocumentStatusLine'
@@ -22,6 +27,8 @@ import {useResizeObserver} from './useResizeObserver'
 
 export interface DocumentStatusBarProps {
   actionsBoxRef?: Ref<HTMLDivElement>
+  placement?: DocumentActionsPlacement
+  slots?: DocumentToolbarSlots
 }
 
 const CONTAINER_BREAKPOINT = 480 // px
@@ -29,7 +36,8 @@ const CONTAINER_BREAKPOINT = 480 // px
 const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
-  const {actionsBoxRef} = props
+  const {actionsBoxRef, placement = 'bottom', slots} = props
+  const atTop = placement === 'top'
   const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const {selectedPerspective, selectedVariantNames} = usePerspective()
@@ -98,7 +106,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
       initial={{opacity: 0.2}}
       animate={{opacity: 1, transition: {duration: 0.3}}}
       tone={showingRevision ? 'caution' : undefined}
-      radius={3}
+      radius={atTop ? 0 : 3}
+      borderBottom={atTop}
       ref={setRootElement}
       sizing="border"
       padding={2}
@@ -120,10 +129,14 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             paddingRight={3}
           >
             <Flex alignItems="center">
-              {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
+              <DocumentToolbarSlotContent slot={slots?.documentStatus}>
+                {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
+              </DocumentToolbarSlotContent>
               <SpacerButton />
             </Flex>
-            <DocumentBadges />
+            <DocumentToolbarSlotContent slot={slots?.documentBadges}>
+              <DocumentBadges />
+            </DocumentToolbarSlotContent>
           </Flex>
 
           <Flex
@@ -133,7 +146,9 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             style={{flexShrink: 0, marginLeft: 'auto'}}
           >
             <SpacerButton />
-            {actions}
+            <DocumentToolbarSlotContent slot={slots?.documentActions}>
+              {actions}
+            </DocumentToolbarSlotContent>
           </Flex>
         </Flex>
       )}

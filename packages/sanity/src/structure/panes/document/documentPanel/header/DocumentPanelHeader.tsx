@@ -1,9 +1,4 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {CloseIcon} from '@sanity/icons/Close'
-import {CollapseIcon} from '@sanity/icons/Collapse'
-import {ExpandIcon} from '@sanity/icons/Expand'
-import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
-import {useTelemetry} from '@sanity/telemetry/react'
 import {Card} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {
@@ -16,6 +11,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {
+  EMPTY_ARRAY,
   FieldPresenceInner,
   type DocumentActionDescription,
   useDocumentPresence,
@@ -41,13 +37,17 @@ import {
 } from '../../../../components/RenderActionCollectionState'
 import {useHistoryRestoreAction} from '../../../../documentActions/HistoryRestoreAction'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
-import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
+import {
+  hasMenuNodeContent,
+  isMenuNodeButton,
+  isNotMenuNodeButton,
+  resolveMenuNodes,
+} from '../../../../menuNodes'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
+import {useDocumentFeatures} from '../../useDocumentFeatures'
 import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -95,39 +95,62 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
 })
 
 export const DocumentPanelHeader = memo(function DocumentPanelHeader(
-  _props: DocumentPanelHeaderProps & RefAttributes<HTMLDivElement>,
+  props: DocumentPanelHeaderProps & RefAttributes<HTMLDivElement>,
 ) {
-  const {ref, menuItems} = _props
+  const {ref, menuItems} = props
+  const {editState} = useDocumentPane()
+
+  if (editState) {
+    return (
+      <RenderActionCollectionState group="paneActions">
+        {({states}) => <DocumentPanelHeaderBar ref={ref} menuItems={menuItems} states={states} />}
+      </RenderActionCollectionState>
+    )
+  }
+
+  return <DocumentPanelHeaderBar ref={ref} menuItems={menuItems} states={EMPTY_ARRAY} />
+})
+
+const DocumentPanelHeaderBar = memo(function DocumentPanelHeaderBar(
+  props: {
+    menuItems: PaneMenuItem[]
+    states: ResolvedAction[]
+  } & RefAttributes<HTMLDivElement>,
+) {
+  const {ref, menuItems, states} = props
   const {
     editState,
     onMenuAction,
-    onPaneClose,
-    onPaneSplit,
-    onSetMaximizedPane,
     menuItemGroups,
     schemaType,
     connectionState,
-    views,
     unstable_languageFilter,
     documentId,
   } = useDocumentPane()
-  const {features} = useStructureTool()
   const {beta} = useWorkspace()
-  const {index, BackLink, hasGroupSiblings} = usePaneRouter()
-  const {maximizedPane} = useResolvedPanesList()
+  const {byName, header: headerFeatures, menu: menuFeatures} = useDocumentFeatures()
+  const showVersionPicker = byName.has('versionPicker')
+  const showCopyActions = byName.has('copyActions')
+  const {features: structureFeatures} = useStructureTool()
+  const {BackLink, index} = usePaneRouter()
   const {actions: fieldActions} = useFieldActions()
-  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const showGradient = useChipScrollPosition(scrollContainerRef)
-  const telemetry = useTelemetry()
   const zIndex = useZIndex()
   const paneHeaderZIndex = Array.isArray(zIndex.paneHeader)
     ? zIndex.paneHeader[1]
     : zIndex.paneHeader
 
   const menuNodes = useMemo(
-    () => resolveMenuNodes({actionHandler: onMenuAction, fieldActions, menuItems, menuItemGroups}),
-    [onMenuAction, fieldActions, menuItemGroups, menuItems],
+    () =>
+      resolveMenuNodes({
+        actionHandler: onMenuAction,
+        fieldActions,
+        menuItems,
+        menuItemGroups,
+        menuFeatures,
+      }),
+    [onMenuAction, fieldActions, menuItemGroups, menuItems, menuFeatures],
   )
 
   const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
@@ -138,59 +161,16 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
   // Prevent focus if this is the last (non-collapsed) pane.
   const tabIndex = isLast && !collapsed ? -1 : 0
 
-  // there are three kinds of buttons possible:
-  //
-  // 1. split pane - creates a new split pane
-  // 2. close split pane — closes the current split pane
-  // 3. close pane group — closes the current pane group
-
-  // show the split pane button if they're enabled and there is more than one
-  // view available to use to create a split view
-  const showSplitPaneButton = features.splitViews && onPaneSplit && views.length > 1
-
-  // show the split pane button close button if the split button is showing
-  // and there is more than one split pane open (aka has-siblings)
-  const showSplitPaneCloseButton = showSplitPaneButton && hasGroupSiblings
-
-  // show the back button if both the feature is enabled and the current pane
-  // is not the first
-  const showBackButton = features.backButton && index > 0
-
-  // show the pane group close button if the `showSplitPaneCloseButton` is
-  // _not_ showing (the split pane button replaces the group close button)
-  // and if the back button is not showing (the back button and the close
-  // button do the same thing and shouldn't be shown at the same time)
-  // and if a BackLink component was provided
-  const showPaneGroupCloseButton = !showSplitPaneCloseButton && !showBackButton && !!BackLink
-
   const {t} = useTranslation(structureLocaleNamespace)
   const presence = useDocumentPresence(documentId)
   const documentLevelPresence = useMemo(
     () => presence.filter((p) => p.path.length === 0),
     [presence],
   )
-
-  const isMaximizedPane = useMemo(() => {
-    return (
-      maximizedPane?.pane &&
-      typeof maximizedPane.pane === 'object' &&
-      maximizedPane.pane.type === 'document' &&
-      maximizedPane.pane.options.id === documentId
-    )
-  }, [maximizedPane, documentId])
-
-  const handleFocusPane = useCallback(() => {
-    onSetMaximizedPane?.()
-
-    if (isMaximizedPane) {
-      telemetry.log(DocumentPaneCollapsed)
-    } else {
-      telemetry.log(DocumentPaneMaximized)
-    }
-  }, [onSetMaximizedPane, isMaximizedPane, telemetry])
+  const showBackButton = structureFeatures.backButton && index > 0
 
   const title = useMemo(() => <DocumentHeaderTitle />, [])
-  const backButton = useMemo(
+  const backButtonNode = useMemo(
     () =>
       showBackButton && (
         <Button
@@ -204,6 +184,19 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     [BackLink, showBackButton, t],
   )
 
+  const hasContextMenuContent = contextMenuNodes.some(hasMenuNodeContent)
+  // An empty bordered bar is worse than no bar, so the header is dropped once nothing fills it.
+  const hasHeaderContent =
+    headerFeatures.length > 0 ||
+    menuButtonNodes.length > 0 ||
+    unstable_languageFilter.length > 0 ||
+    documentLevelPresence.length > 0 ||
+    showVersionPicker ||
+    showCopyActions ||
+    (Boolean(editState) && (hasContextMenuContent || states.length > 0))
+
+  if (!hasHeaderContent) return null
+
   return (
     <TooltipDelayGroupProvider>
       {collapsed ? (
@@ -213,7 +206,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
           loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
           title={title}
           tabIndex={tabIndex}
-          backButton={backButton}
+          backButton={backButtonNode}
         />
       ) : (
         <Card
@@ -221,8 +214,8 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
           style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
           borderBottom
         >
-          <Flex gap={3} paddingY={3} justifyContent="space-between" alignItems="center">
-            {!hasDocumentGroupInventory && (
+          <Flex gap={3} paddingY={3} justifyContent="flex-end" alignItems="center">
+            {showVersionPicker && !hasDocumentGroupInventory && (
               <HorizontalScroller $showGradient={showGradient}>
                 <Flex
                   flexBasis="0%"
@@ -237,7 +230,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                 </Flex>
               </HorizontalScroller>
             )}
-            {hasDocumentGroupInventory && (
+            {showVersionPicker && hasDocumentGroupInventory && (
               <HorizontalScroller $showGradient={false}>
                 <Flex
                   flexBasis="0%"
@@ -279,75 +272,19 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                   </>
                 )}
 
-                <CopyDocumentActions />
+                {showCopyActions && <CopyDocumentActions />}
                 {menuButtonNodes.map((item) => (
                   <PaneHeaderActionButton key={item.key} node={item} />
                 ))}
                 {editState && (
-                  <RenderActionCollectionState group="paneActions">
-                    {({states}) => (
-                      <DocumentPanelHeaderActionDialogDeferred
-                        contextMenuNodes={contextMenuNodes}
-                        setReferenceElement={setReferenceElement}
-                        referenceElement={referenceElement}
-                        states={states}
-                      />
-                    )}
-                  </RenderActionCollectionState>
-                )}
-
-                {showSplitPaneButton && (
-                  <Button
-                    key="split-pane-button"
-                    aria-label={t('buttons.split-pane-button.aria-label')}
-                    icon={SplitVerticalIcon}
-                    mode="bleed"
-                    onClick={onPaneSplit}
-                    tooltipProps={{content: t('buttons.split-pane-button.tooltip')}}
+                  <DocumentPanelHeaderActionDialogDeferred
+                    contextMenuNodes={contextMenuNodes}
+                    states={states}
                   />
                 )}
-
-                {onSetMaximizedPane && (
-                  <Button
-                    key="focus-pane-button"
-                    aria-label={
-                      isMaximizedPane
-                        ? t('buttons.focus-pane-button.aria-label.collapse')
-                        : t('buttons.focus-pane-button.aria-label.focus')
-                    }
-                    icon={isMaximizedPane ? CollapseIcon : ExpandIcon}
-                    mode="bleed"
-                    onClick={handleFocusPane}
-                    tooltipProps={{
-                      content: isMaximizedPane
-                        ? t('buttons.focus-pane-button.tooltip.collapse')
-                        : t('buttons.focus-pane-button.tooltip.focus'),
-                    }}
-                    data-testid={
-                      isMaximizedPane ? 'focus-pane-button-collapse' : 'focus-pane-button-focus'
-                    }
-                  />
-                )}
-
-                {showSplitPaneCloseButton && (
-                  <Button
-                    key="close-view-button"
-                    icon={CloseIcon}
-                    mode="bleed"
-                    onClick={onPaneClose}
-                    tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
-                  />
-                )}
-
-                {showPaneGroupCloseButton && (
-                  <Button
-                    key="close-view-button"
-                    icon={CloseIcon}
-                    mode="bleed"
-                    tooltipProps={{content: t('buttons.split-pane-close-group-button.title')}}
-                    as={BackLink}
-                  />
-                )}
+                {headerFeatures.map(({name, toolbar: {render: Entry}}) => (
+                  <Entry key={name} />
+                ))}
               </Flex>
             </Box>
           </Flex>
@@ -360,11 +297,9 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
 const DocumentPanelHeaderActionDialogDeferred = memo(
   function DocumentPanelHeaderActionDialogDeferred(props: {
     states: ResolvedAction[]
-    setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
-    referenceElement: HTMLElement | null
     contextMenuNodes: _PaneMenuNode[]
   }) {
-    const {setReferenceElement, referenceElement, contextMenuNodes} = props
+    const {contextMenuNodes} = props
     /**
      * The purpose of this component is to allow deferring the rendering of document action hook states if the main thread becomes very busy.
      * The `useDeferredValue` doesn't have an effect unless it's used to delay rendering a component that has `React.memo` to prevent unnecessary re-renders.
@@ -373,8 +308,6 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
 
     return (
       <DocumentPanelHeaderActionDialog
-        setReferenceElement={setReferenceElement}
-        referenceElement={referenceElement}
         contextMenuNodes={contextMenuNodes}
         // The restore action has a dedicated place in the UI; it's only visible when the user is
         // viewing a different document revision. It must be omitted from this collection.
@@ -388,11 +321,10 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
 
 const DocumentPanelHeaderActionDialog = memo(function DocumentPanelHeaderActionDialog(props: {
   states: DocumentActionDescription[]
-  setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
-  referenceElement: HTMLElement | null
   contextMenuNodes: _PaneMenuNode[]
 }) {
-  const {states, setReferenceElement, contextMenuNodes, referenceElement} = props
+  const {states, contextMenuNodes} = props
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
 
   const renderActionDialog = useCallback<
     ({handleAction}: {handleAction: (idx: number) => void}) => React.ReactNode
@@ -420,6 +352,10 @@ const DocumentPanelHeaderActionDialog = memo(function DocumentPanelHeaderActionD
     ),
     [contextMenuNodes, setReferenceElement, states],
   )
+
+  // An overflow button with an empty menu is a dead affordance, so it is derived from its own
+  // contents rather than configured.
+  if (states.length === 0 && !contextMenuNodes.some(hasMenuNodeContent)) return null
 
   return (
     <ActionDialogWrapper actionStates={states} referenceElement={referenceElement}>

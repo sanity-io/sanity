@@ -6,24 +6,28 @@ import {
   type DocumentIdStack,
   type DocumentInspector,
   type DocumentInspectorMenuItem,
+  type ResolvedDocumentFeatures,
   type TFunction,
 } from 'sanity'
 
-import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
+import {type PaneMenuItem} from '../../types'
 import {HiddenCheckmarkIcon} from './components/HiddenCheckmarkIcon'
 import {INSPECT_ACTION_PREFIX} from './constants'
 
 interface GetMenuItemsParams {
   currentInspector?: DocumentInspector
-  features: StructureToolFeatures
+  features: ResolvedDocumentFeatures
   hasValue: boolean
   inspectors: DocumentInspector[]
   previewUrl?: string | null
   documentIdStack?: DocumentIdStack
-  inspectorMenuItems: DocumentInspectorMenuItem[]
+  inspectorMenuItems: (DocumentInspectorMenuItem | undefined)[]
   t: TFunction
   displayInlineChanges: boolean
 }
+
+const INSPECT_SHORTCUT = 'Ctrl+Alt+I'
+const PRODUCTION_PREVIEW_SHORTCUT = 'Ctrl+Alt+O'
 
 function getInspectorItems({
   currentInspector,
@@ -31,39 +35,45 @@ function getInspectorItems({
   inspectors,
   inspectorMenuItems,
 }: GetMenuItemsParams): PaneMenuItem[] {
-  return inspectors
-    .map((inspector, index) => {
-      const menuItem = inspectorMenuItems[index]
+  return inspectors.flatMap((inspector, index) => {
+    const menuItem = inspectorMenuItems[index]
 
-      if (!menuItem || menuItem.hidden) return null
+    if (!menuItem || menuItem.hidden) return []
 
-      return {
-        action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
-        group: menuItem.showAsAction ? undefined : 'inspectors',
-        icon: menuItem.icon,
-        disabled: !hasValue,
-        selected: currentInspector?.name === inspector.name,
-        shortcut: menuItem.hotkeys?.join('+'),
-        showAsAction: menuItem.showAsAction,
-        title: menuItem.title,
-        tone: menuItem.tone,
-      }
-    })
-    .filter(Boolean) as PaneMenuItem[]
+    return {
+      action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
+      group: menuItem.showAsAction ? undefined : 'inspectors',
+      icon: menuItem.icon,
+      disabled: !hasValue,
+      selected: currentInspector?.name === inspector.name,
+      shortcut: menuItem.hotkeys?.join('+'),
+      showAsAction: menuItem.showAsAction,
+      title: menuItem.title,
+      tone: menuItem.tone,
+    }
+  })
 }
 
-function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
+function getInspectItem({features, hasValue, t}: GetMenuItemsParams): PaneMenuItem | null {
+  if (!features.byName.has('inspect')) return null
+
   return {
     action: 'inspect',
     group: 'inspectors',
     title: t('document-inspector.menu-item.title'),
     icon: JsonIcon,
     disabled: !hasValue,
-    shortcut: 'Ctrl+Alt+I',
+    shortcut: INSPECT_SHORTCUT,
   }
 }
 
-function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneMenuItem | null {
+function getCompareVersionsItem({
+  features,
+  documentIdStack,
+  t,
+}: GetMenuItemsParams): PaneMenuItem | null {
+  if (!features.byName.has('compareVersions')) return null
+
   const disabled = typeof documentIdStack?.previousId === 'undefined' && {
     reason: t('compare-versions.menu-item.disabled-reason'),
   }
@@ -77,7 +87,13 @@ function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneM
   }
 }
 
-function getInlineChangesItem({displayInlineChanges, t}: GetMenuItemsParams): PaneMenuItem {
+function getInlineChangesItem({
+  features,
+  displayInlineChanges,
+  t,
+}: GetMenuItemsParams): PaneMenuItem | null {
+  if (!features.byName.has('inlineChanges')) return null
+
   return {
     action: 'toggleInlineChanges',
     group: 'inspectors',
@@ -88,33 +104,32 @@ function getInlineChangesItem({displayInlineChanges, t}: GetMenuItemsParams): Pa
   }
 }
 
-function getProductionPreviewItem({previewUrl, t}: GetMenuItemsParams): PaneMenuItem | null {
+function getProductionPreviewItem({
+  features,
+  previewUrl,
+  t,
+}: GetMenuItemsParams): PaneMenuItem | null {
   if (!previewUrl) return null
+
+  if (!features.byName.has('productionPreview')) return null
 
   return {
     action: 'production-preview',
     group: 'links',
     title: t('production-preview.menu-item.title'),
     icon: EarthAmericasIcon,
-    shortcut: 'Ctrl+Alt+O',
+    shortcut: PRODUCTION_PREVIEW_SHORTCUT,
   }
 }
 
 export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
-  const inspectorItems = getInspectorItems(params)
   const items = [
-    // Get production preview item
+    // TODO: convert to inspector or document view?
+    getInspectItem(params),
     getProductionPreviewItem(params),
     getCompareVersionsItem(params),
     getInlineChangesItem(params),
-  ].filter(Boolean) as PaneMenuItem[]
+  ].filter((item) => item !== null)
 
-  return [
-    ...inspectorItems,
-
-    // TODO: convert to inspector or document view?
-    getInspectItem(params),
-
-    ...items,
-  ]
+  return [...getInspectorItems(params), ...items]
 }

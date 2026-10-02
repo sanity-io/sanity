@@ -18,7 +18,14 @@ import {isRecord} from '../util/isRecord'
 import {assertOnlyVariantType} from '../variants/util/variantType'
 import {type DocumentActionComponent} from './document/actions'
 import {type DocumentBadgeComponent} from './document/badges'
+import {type DocumentFeature} from './document/features'
 import {type DocumentInspector} from './document/inspector'
+import {
+  appendUnique,
+  declaredRegistrations,
+  type DocumentFeatureRegistrations,
+  stripToRegistered,
+} from './document/resolveDocumentFeatures'
 import {flattenConfig} from './flattenConfig'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {
@@ -29,6 +36,7 @@ import {
   type DocumentAskToEditEnabledContext,
   type DocumentBadgesContext,
   type DocumentCommentsEnabledContext,
+  type DocumentFeatureContext,
   type DocumentInspectorContext,
   type DocumentLanguageFilterComponent,
   type DocumentLanguageFilterContext,
@@ -458,12 +466,14 @@ export const documentInspectorsReducer: ConfigPropertyReducer<
   DocumentInspector[],
   DocumentInspectorContext
 > = (prev, {document}, context) => {
+  const seeded = appendUnique(prev, declaredRegistrations(document, 'inspector'))
+
   const resolveInspectorsFilter = document?.inspectors
-  if (!resolveInspectorsFilter) return prev
+  if (!resolveInspectorsFilter) return seeded
 
-  if (typeof resolveInspectorsFilter === 'function') return resolveInspectorsFilter(prev, context)
+  if (typeof resolveInspectorsFilter === 'function') return resolveInspectorsFilter(seeded, context)
 
-  if (Array.isArray(resolveInspectorsFilter)) return [...prev, ...resolveInspectorsFilter]
+  if (Array.isArray(resolveInspectorsFilter)) return [...seeded, ...resolveInspectorsFilter]
 
   throw new Error(
     `Expected \`document.inspectors\` to be an array or a function, but received ${getPrintableType(
@@ -525,6 +535,33 @@ export const documentAskToEditEnabledReducer = (opts: {
   }, initialValue)
 
   return result
+}
+
+export function createDocumentFeaturesReducer(
+  registrations: DocumentFeatureRegistrations,
+): ConfigPropertyReducer<DocumentFeature[], DocumentFeatureContext> {
+  return (prev, {document}, context) => {
+    const documentFeatures = document?.features
+    if (!documentFeatures) return prev
+
+    if (typeof documentFeatures === 'function') return documentFeatures(prev, context)
+
+    if (Array.isArray(documentFeatures)) {
+      const appended = documentFeatures
+        .filter((feature) => !prev.includes(feature))
+        .flatMap((feature) => {
+          const stripped = stripToRegistered(feature, registrations)
+          return stripped ? [stripped] : []
+        })
+      return [...prev, ...appended]
+    }
+
+    throw new Error(
+      `Expected \`document.features\` to be an array or a function, but received ${getPrintableType(
+        documentFeatures,
+      )}`,
+    )
+  }
 }
 
 export const onUncaughtErrorResolver = (opts: {

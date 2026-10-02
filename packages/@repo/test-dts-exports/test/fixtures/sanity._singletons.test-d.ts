@@ -39,12 +39,16 @@ import type {
   DialogStackEntry,
   DiffContext,
   DocumentActionPropsContext,
+  DocumentActionsPlacement,
+  DocumentActionsPlacementContext,
   DocumentActionsStateContext,
   DocumentChangeContext,
   DocumentDivergencesContext,
   DocumentDivergencesContextValue,
+  DocumentFeaturesContext,
   DocumentFieldActionsContext,
   DocumentFieldActionsContextValue,
+  DocumentHistoryContext,
   DocumentIdContext,
   DocumentIdContextValue,
   DocumentLimitUpsellContext,
@@ -264,6 +268,12 @@ describe('sanity/_singletons', () => {
   test('DocumentActionPropsContext', () => {
     expectTypeOf<typeof DocumentActionPropsContext>().not.toBeNever()
   })
+  test('DocumentActionsPlacement', () => {
+    expectTypeOf<DocumentActionsPlacement>().not.toBeNever()
+  })
+  test('DocumentActionsPlacementContext', () => {
+    expectTypeOf<typeof DocumentActionsPlacementContext>().not.toBeNever()
+  })
   test('DocumentActionsStateContext', () => {
     expectTypeOf<typeof DocumentActionsStateContext>().not.toBeNever()
   })
@@ -276,11 +286,17 @@ describe('sanity/_singletons', () => {
   test('DocumentDivergencesContextValue', () => {
     expectTypeOf<DocumentDivergencesContextValue>().not.toBeNever()
   })
+  test('DocumentFeaturesContext', () => {
+    expectTypeOf<typeof DocumentFeaturesContext>().not.toBeNever()
+  })
   test('DocumentFieldActionsContext', () => {
     expectTypeOf<typeof DocumentFieldActionsContext>().not.toBeNever()
   })
   test('DocumentFieldActionsContextValue', () => {
     expectTypeOf<DocumentFieldActionsContextValue>().toBeObject()
+  })
+  test('DocumentHistoryContext', () => {
+    expectTypeOf<typeof DocumentHistoryContext>().not.toBeNever()
   })
   test('DocumentIdContext', () => {
     expectTypeOf<typeof DocumentIdContext>().not.toBeNever()

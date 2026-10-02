@@ -258,6 +258,20 @@ export {
   isSanityDefinedAction,
   type SanityDefinedAction,
 } from '../core/config/document/actions'
+export {
+  type DocumentFeature,
+  type DocumentFeatureHeaderEntry,
+  type DocumentFeatureMenuEntry,
+  type DocumentFeatureName,
+  type DocumentFeaturesResolver,
+  type DocumentFeatureToolbarEntry,
+  type DocumentHeaderFeature,
+  type DocumentMenuFeature,
+  isSanityDefinedFeatureName,
+  type ResolvedDocumentFeatures,
+  SANITY_DEFINED_FEATURE_NAMES,
+  type SanityDefinedFeatureName,
+} from '../core/config/document/features'
 export {getDocumentVersionType} from '../core/config/document/useConfiguredDocumentActionIds'
 export {
   type DocumentBadgeComponent,
@@ -342,6 +356,7 @@ export {
   type DocumentLanguageFilterResolver,
   type DocumentLayoutProps,
   type DocumentPluginOptions,
+  type DocumentFeatureContext,
   type FormBuilderComponentResolverContext,
   type GroupableActionDescription,
   type MediaLibraryConfig,

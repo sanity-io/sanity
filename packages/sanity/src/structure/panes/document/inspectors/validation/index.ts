@@ -3,6 +3,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {useMemo} from 'react'
 import {
+  type DocumentFeature,
   type DocumentInspector,
   type DocumentInspectorMenuItem,
   type DocumentInspectorUseMenuItemProps,
@@ -67,4 +68,9 @@ export const validationInspector: DocumentInspector = {
   name: VALIDATION_INSPECTOR_NAME,
   component: ValidationInspector,
   useMenuItem,
+}
+
+export const validationFeature: DocumentFeature = {
+  name: 'validation',
+  inspector: validationInspector,
 }

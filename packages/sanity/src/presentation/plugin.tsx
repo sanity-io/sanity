@@ -120,12 +120,7 @@ export const presentationTool = definePlugin<PresentationPluginOptions>((options
       bundles: [presentationUsEnglishLocaleBundle],
     },
     document: {
-      unstable_fieldActions: (prev) => {
-        return [
-          ...prev.filter((a) => a.name !== openInStructure.name), // prevent duplication
-          openInStructure,
-        ]
-      },
+      features: [{name: 'openInStructure', fieldAction: openInStructure}],
     },
 
     form: {

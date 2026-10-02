@@ -37,6 +37,7 @@ import {
 } from './components/studioComponents'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {useTestVersionAction} from './documentActions/actions/TestVersionAction'
+import {documentFeatures} from './documentFeatures'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
@@ -322,6 +323,9 @@ const defaultWorkspace = defineConfig({
   },
   document: {
     actions: (prev, ctx) => {
+      if (ctx.schemaType === 'house') {
+        return prev.filter(({action}) => action === 'publish')
+      }
       if (ctx.schemaType === 'restrictedVersionActionsTest') {
         return prev.filter(({action}) => action === 'publish')
       }
@@ -334,6 +338,7 @@ const defaultWorkspace = defineConfig({
 
       return prev
     },
+    features: documentFeatures,
   },
   releases: {
     actions: (prev, ctx) => {

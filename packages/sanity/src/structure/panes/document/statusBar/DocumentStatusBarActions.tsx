@@ -39,6 +39,7 @@ import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
+import {getMirroredPlacement, useDocumentActionsPlacement} from './documentActionsPlacement'
 
 const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   DocTitle,
@@ -55,6 +56,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, states} = props
+  const tooltipPlacement = getMirroredPlacement(useDocumentActionsPlacement())
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {__internal_tasks, beta} = useSource()
 
@@ -194,7 +196,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       )}
       {showFirstActionButton && (
         <LayerProvider zOffset={200}>
-          <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
+          <Tooltip disabled={!tooltipContent} content={tooltipContent} placement={tooltipPlacement}>
             <VStack>
               <Button
                 data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}

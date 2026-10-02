@@ -4,20 +4,25 @@ import {Popover} from '@sanity/ui/popover'
 import {useCallback, useRef} from 'react'
 import {type DocumentActionPopoverDialogProps} from 'sanity'
 
-import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
+import {
+  getMirroredFallbackPlacements,
+  getMirroredPlacement,
+  useDocumentActionsPlacement,
+} from '../documentActionsPlacement'
 
 export function PopoverDialog(props: {
   dialog: DocumentActionPopoverDialogProps
   referenceElement: HTMLElement | null
 }) {
   const {dialog, referenceElement} = props
+  const barPlacement = useDocumentActionsPlacement()
 
   return (
     <Popover
       content={<PopoverDialogContent dialog={dialog} />}
-      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      fallbackPlacements={getMirroredFallbackPlacements(barPlacement)}
       open
-      placement="top"
+      placement={getMirroredPlacement(barPlacement)}
       portal
       preventOverflow
       referenceElement={referenceElement}

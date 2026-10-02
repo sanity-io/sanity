@@ -5,6 +5,7 @@ import {type DocumentBadgeDescription} from 'sanity'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RenderBadgeCollectionState} from '../../../components/RenderBadgeCollectionState'
 import {useDocumentPane} from '../useDocumentPane'
+import {getMirroredPlacement, useDocumentActionsPlacement} from './documentActionsPlacement'
 
 interface DocumentBadgesInnerProps {
   states: DocumentBadgeDescription[]
@@ -18,6 +19,8 @@ const BADGE_TONES: Record<string, BadgeTone | undefined> = {
 }
 
 const DocumentBadgesInner = memo(function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
+  const placement = getMirroredPlacement(useDocumentActionsPlacement())
+
   if (states.length === 0) {
     return null
   }
@@ -28,7 +31,7 @@ const DocumentBadgesInner = memo(function DocumentBadgesInner({states}: Document
           key={`${badge.label}-${index}`}
           content={badge.title}
           disabled={!badge.title}
-          placement="top"
+          placement={placement}
           portal
         >
           <Badge
