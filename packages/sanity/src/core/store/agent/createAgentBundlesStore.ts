@@ -13,6 +13,8 @@ import {
   switchMap,
 } from 'rxjs'
 
+import {clientAuth} from '../../util/clientAuth'
+
 const AGENT_BUNDLE_PREFIX = 'agent-'
 
 /**
@@ -98,40 +100,54 @@ function listenToBundles(
   client: SanityClient,
   organizationId: string,
 ): Observable<AgentBundlesState> {
-  const {token, withCredentials} = client.config()
   const url = client.getUrl(`/agent/${organizationId}/bundles/mine/listen`)
 
-  const esOptions: PolyfillEventSourceInit = {}
-  if (token || withCredentials) esOptions.withCredentials = true
-  if (token) esOptions.headers = {Authorization: `Bearer ${token}`}
-
-  // Use polyfill when headers are needed (token auth), native EventSource otherwise
-  const es$: Observable<EventSource> = (
-    esOptions.headers ? eventSourcePolyfill$ : of(EventSource)
-  ).pipe(map((ES) => new ES(url, esOptions)))
-
-  return es$.pipe(
-    switchMap(
-      (es) =>
-        new Observable<AgentBundlesState>((subscriber) => {
-          es.addEventListener('bundles', ((event: MessageEvent) => {
-            try {
-              const data = JSON.parse(event.data) as {bundles: AgentBundle[]}
-              subscriber.next({bundles: data.bundles, loading: false})
-            } catch {
-              // Ignore malformed messages
-            }
-          }) as EventListener)
-
-          es.addEventListener('error', (() => {
-            // EventSource auto-reconnects on transient errors.
-          }) as EventListener)
-
-          return () => {
-            es.close()
-          }
-        }),
+  // The EventSource is not the client's, so it keeps the credential it was opened with. Follow
+  // the client's credential and reopen the stream when it changes: after a rotation the old
+  // access token is revoked, and the stream's own reconnects would fail with it. SAGE-1303
+  // moves the listener into the client.
+  const [auth$] = clientAuth(client)
+  return auth$.pipe(
+    distinctUntilChanged(
+      (previous, next) =>
+        previous.token === next.token && previous.withCredentials === next.withCredentials,
     ),
+    switchMap(({token, withCredentials}) => {
+      const esOptions: PolyfillEventSourceInit = {}
+      // Credentials only for cookie auth. A bearer token needs none, and asking for them makes
+      // the browser require `Access-Control-Allow-Credentials` on an origin that may not allow it.
+      if (withCredentials) esOptions.withCredentials = true
+      if (token) esOptions.headers = {Authorization: `Bearer ${token}`}
+
+      // Use polyfill when headers are needed (token auth), native EventSource otherwise
+      const es$: Observable<EventSource> = (
+        esOptions.headers ? eventSourcePolyfill$ : of(EventSource)
+      ).pipe(map((ES) => new ES(url, esOptions)))
+
+      return es$.pipe(
+        switchMap(
+          (es) =>
+            new Observable<AgentBundlesState>((subscriber) => {
+              es.addEventListener('bundles', ((event: MessageEvent) => {
+                try {
+                  const data = JSON.parse(event.data) as {bundles: AgentBundle[]}
+                  subscriber.next({bundles: data.bundles, loading: false})
+                } catch {
+                  // Ignore malformed messages
+                }
+              }) as EventListener)
+
+              es.addEventListener('error', (() => {
+                // EventSource auto-reconnects on transient errors.
+              }) as EventListener)
+
+              return () => {
+                es.close()
+              }
+            }),
+        ),
+      )
+    }),
     catchError(() => of(EMPTY_STATE)),
   )
 }

@@ -300,7 +300,8 @@ export class TimelineController {
     const transactionsUrl = this.client.getUrl(
       `/data/history/${clientConfig.dataset}/transactions/${publishedId},${draftId}?${queryParams}`,
     )
-    const stream = await getJsonStream(transactionsUrl, clientConfig.token)
+    const {token} = await this.client.getAuth()
+    const stream = await getJsonStream(transactionsUrl, token)
     const reader = stream.getReader()
     let count = 0
 
