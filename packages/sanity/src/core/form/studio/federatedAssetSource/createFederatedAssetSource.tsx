@@ -30,18 +30,25 @@ import {PickerModeUploader} from './uploader'
  * own page for the asset, e.g. Dropbox); without one the view is remounted
  * with `action: 'openInSource'` and `assetToOpen`.
  *
- * Uploads: brokered sources advertise picker-mode upload support so files
- * dragged onto (or picked from) a Studio field can be routed to them. The
- * host queues the files on a {@link PickerModeUploader} and mounts the view
- * hidden with `action: 'upload'` — the view owns the transport and the
- * `onSelect`-before-terminal-status ordering (see the contract notes on the
- * view props type). The view declarations carry no upload-capability flag
- * (yet), so a view that cannot receive uploads must immediately fail the
- * queued files with an explanatory error.
+ * Uploads: a brokered source advertises picker-mode upload support only when
+ * the hosting config opts the view in (`federatedAssetSources.uploads`) —
+ * the view declarations carry no upload-capability flag (yet), and a source
+ * without a transport must not appear as an upload destination. For an
+ * opted-in view the host queues the files on a {@link PickerModeUploader}
+ * and mounts the view hidden with `action: 'upload'` — the view owns the
+ * transport and the `onSelect`/terminal-status ordering (see the contract
+ * notes on the view props type); should it still be unable to upload, it
+ * must immediately fail the queued files with an explanatory error.
  *
  * @internal
  */
-export function createFederatedAssetSource(view: FederatedAssetSourceView): AssetSource {
+export function createFederatedAssetSource(
+  view: FederatedAssetSourceView,
+  options?: {
+    /** Advertise upload support (`federatedAssetSources.uploads` opt-in). */
+    uploads?: boolean
+  },
+): AssetSource {
   const qualifiedName = `${view.applicationId}:${view.name}`
 
   function openInSource(asset: Asset): AssetSourceOpenInSourceResult {
@@ -63,7 +70,7 @@ export function createFederatedAssetSource(view: FederatedAssetSourceView): Asse
     component: (sourceProps: AssetSourceComponentProps) => (
       <FederatedAssetSourceDialog sourceProps={sourceProps} view={view} />
     ),
-    Uploader: PickerModeUploader,
+    ...(options?.uploads ? {Uploader: PickerModeUploader} : {}),
     openInSource,
   }
 }

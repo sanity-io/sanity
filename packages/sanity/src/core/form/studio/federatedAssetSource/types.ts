@@ -14,11 +14,14 @@ import {
  * doing any source-side work such as linking, using its own credentials) and
  * `onClose`.
  *
- * Upload mode (`action: 'upload'`): the mount is headless (the Studio input
- * owns progress presentation) and the view drives the inherited `uploader`
- * prop directly per the `AssetSourceUploader` picker-mode contract — pending
- * files from `uploader.getFiles()`, progress and terminal statuses back
- * through `uploader.updateFile()`, aborts via `uploader.subscribe()`.
+ * Upload mode (`action: 'upload'`): only reached when the hosting config
+ * opted the view in (`federatedAssetSources.uploads` — the stand-in for an
+ * upload capability flag on the view declaration). The mount is headless
+ * (the Studio input owns progress presentation) and the view drives the
+ * inherited `uploader` prop directly per the `AssetSourceUploader`
+ * picker-mode contract — pending files from `uploader.getFiles()`, progress
+ * and terminal statuses back through `uploader.updateFile()`, aborts via
+ * `uploader.subscribe()`.
  * Ordering matters: once every file carries a terminal status the host fires
  * `all-complete`, which (synchronously, from the last status write) unsets
  * the field's `_upload` placeholder and tears the flow down. Where `onSelect`
