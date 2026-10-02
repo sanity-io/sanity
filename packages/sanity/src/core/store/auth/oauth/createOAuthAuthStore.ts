@@ -9,6 +9,7 @@ import {
 import memoize from 'lodash-es/memoize.js'
 import {
   BehaviorSubject,
+  connectable,
   defer,
   EMPTY,
   firstValueFrom,
@@ -29,8 +30,8 @@ import {
   filter,
   ignoreElements,
   map,
+  mergeMap,
   share,
-  shareReplay,
   skip,
   switchMap,
   tap,
@@ -400,7 +401,6 @@ export function _createOAuthAuthStore({
     : createTabState<OAuthTokens>()
 
   debug('store created for project %s, client %s, issuer %s', projectId, clientId, issuer)
-  tokenStorage.value.subscribe((tokens) => debug('tokens now: %s', describeTokens(tokens)))
 
   const startingTokens = tokenStorage.get()
   const cappedTokens = startingTokens && capStoredLifetime(startingTokens, renewBeforeExpiryMs)
@@ -415,6 +415,12 @@ export function _createOAuthAuthStore({
    */
   const latestTokens = (): OAuthTokens | undefined =>
     supportsLocalStorage ? persistedTokens.load() : tokenStorage.get()
+
+  /** The access token this tab holds, once per change. */
+  const accessToken$ = tokenStorage.value.pipe(
+    map((tokens) => tokens?.accessToken),
+    distinctUntilChanged(),
+  )
 
   let inflightRefresh: Promise<OAuthTokens | undefined> | undefined
   /**
@@ -598,6 +604,7 @@ export function _createOAuthAuthStore({
    * an anonymous client while signed out.
    */
   const stored$ = tokenStorage.value.pipe(
+    tap((tokens) => debug('tokens now: %s', describeTokens(tokens))),
     distinctUntilChanged((a, b) => a?.accessToken === b?.accessToken),
     map((tokens): Promise<ClientAuthState> => {
       if (!tokens) return Promise.resolve(undefined)
@@ -611,11 +618,14 @@ export function _createOAuthAuthStore({
   const renewing$ = renewalStarted$.pipe(
     map(({rejected, renewal}) => credentialAfter(renewal, rejected)),
   )
-  const auth$ = merge(stored$, renewing$).pipe(shareReplay({bufferSize: 1, refCount: false}))
   // Connected now, ahead of everything else that reads `tokenStorage`, so a request made in the
   // same tick a new pair lands (the probe `authState$` starts for it) resolves the new token and
   // not the one being replaced. Lives as long as the store.
-  auth$.subscribe()
+  const auth$ = connectable(merge(stored$, renewing$), {
+    connector: () => new ReplaySubject<Promise<ClientAuthState>>(1),
+    resetOnDisconnect: false,
+  })
+  auth$.connect()
 
   /**
    * The credential a renewal yields: the new token; `undefined` when the renewal ended the
@@ -729,24 +739,18 @@ export function _createOAuthAuthStore({
     ),
   )
 
-  /** Every probe result, in order, before the state dedupes it. See `waitForAuthenticatedState`. */
-  let probeCount = 0
-  const probed$ = new ReplaySubject<{sequence: number; state: AuthState}>(1)
   let everAuthenticated = false
 
   // Every access token is probed once: a sign-in, a renewal, or a pair another tab wrote, which
-  // may belong to a different user. The state emits only when what the studio builds its
-  // workspace from changes, the signed-in user and their roles, so a rotation that keeps both
-  // changes nothing above the store, while a re-login as someone else, or a role change seen at
-  // a renewal, does. A probe that fails for a reason other than a rejected token, after the
-  // store has once been authenticated, keeps the current state: a steady session must not land
-  // on the login screen because one renewal's probe hit a network error.
-  const authState$ = tokenStorage.value.pipe(
-    map((tokens) => tokens?.accessToken),
-    distinctUntilChanged(),
-    switchMap((accessToken): Observable<AuthState> => {
-      if (!accessToken) return of(unauthenticated)
+  // may belong to a different user. A probe that fails for a reason other than a rejected token,
+  // after the store has once been authenticated, is skipped: a steady session must not land on
+  // the login screen because one renewal's probe hit a network error. Shared by the state and by
+  // the callback's settle wait, which needs every probe, not only those that change the state.
+  const probes$ = accessToken$.pipe(
+    switchMap((accessToken): Observable<{accessToken?: string; state: AuthState}> => {
+      if (!accessToken) return of({accessToken, state: unauthenticated})
       return from(probeToken(accessToken)).pipe(
+        map((probed) => ({accessToken, state: probed})),
         catchError((err: unknown) => {
           if (!everAuthenticated) throw err
           debug(
@@ -757,13 +761,38 @@ export function _createOAuthAuthStore({
         }),
       )
     }),
-    tap((state) => {
-      if (state.authenticated) everAuthenticated = true
-      probed$.next({sequence: ++probeCount, state})
+    tap(({state: probed}) => {
+      if (probed.authenticated) everAuthenticated = true
     }),
-    distinctUntilChanged(isSameAuthState),
-    map((state) => (state.authenticated ? {...state, client: sessionClient()} : state)),
+    share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
   )
+
+  // Emits only when what the studio builds its workspace from changes, the signed-in user and
+  // their roles, so a rotation that keeps both changes nothing above the store, while a re-login
+  // as someone else, or a role change seen at a renewal, does.
+  const authState$ = probes$.pipe(
+    map(({state: probed}) => probed),
+    distinctUntilChanged(isSameAuthState),
+    map((probed) => (probed.authenticated ? {...probed, client: sessionClient()} : probed)),
+  )
+
+  /**
+   * Renews `tokens` in the background. A failure keeps the pair and is left to the invalid-session
+   * handler, which renews again on the next rejected request.
+   */
+  function renewQuietly(tokens: OAuthTokens, reason: string): Observable<never> {
+    return defer(() => refresh(tokens)).pipe(
+      ignoreElements(),
+      catchError((err: unknown) => {
+        debug(
+          '%s renewal failed, next request will retry: %s',
+          reason,
+          err instanceof Error ? err.message : err,
+        )
+        return EMPTY
+      }),
+    )
+  }
 
   // Renews ahead of expiry while anything is subscribed to the state. Failures are left to the
   // invalid-session handler above, which retries on the next rejected request.
@@ -773,18 +802,8 @@ export function _createOAuthAuthStore({
       const delay = Math.max(tokens.refreshAt - Date.now(), 0)
       debug('scheduling renewal in %ds', Math.round(delay / 1000))
       const renewal$ = timer(delay).pipe(
-        switchMap(() => {
-          debug('scheduled renewal due')
-          return from(refresh(tokens)).pipe(
-            catchError((err: unknown) => {
-              debug(
-                'scheduled renewal failed, next request will retry: %s',
-                err instanceof Error ? err.message : err,
-              )
-              return EMPTY
-            }),
-          )
-        }),
+        tap(() => debug('scheduled renewal due')),
+        switchMap(() => renewQuietly(tokens, 'scheduled')),
       )
       // Debugging aid: a countdown to the renewal and the expiry, while debug logging is on.
       const countdown$ = debug.enabled
@@ -801,19 +820,16 @@ export function _createOAuthAuthStore({
   // starts the moment the tab is shown, so the requests the UI makes on wake wait for the new
   // token instead of going out with the expired one and earning a 401 each. Nothing to do when
   // the renewal is not due; the schedule covers that.
+  // `refresh` joins a renewal already in flight, so overlapping wakes start one.
   const wake$ = (visible$ ?? EMPTY).pipe(
-    tap(() => {
-      const tokens = tokenStorage.get()
-      if (!tokens?.refreshToken || Date.now() < tokens.refreshAt) return
-      debug('tab visible with a renewal overdue, renewing %s', describeTokens(tokens))
-      refresh(tokens).catch((err: unknown) => {
-        debug(
-          'renewal on wake failed, next request will retry: %s',
-          err instanceof Error ? err.message : err,
-        )
-      })
-    }),
-    ignoreElements(),
+    map(() => tokenStorage.get()),
+    filter((tokens): tokens is OAuthTokens =>
+      Boolean(tokens?.refreshToken && Date.now() >= tokens.refreshAt),
+    ),
+    tap((tokens) =>
+      debug('tab visible with a renewal overdue, renewing %s', describeTokens(tokens)),
+    ),
+    mergeMap((tokens) => renewQuietly(tokens, 'on wake')),
   )
 
   const state = merge(authState$, scheduledRefresh$, wake$).pipe(
@@ -982,7 +998,6 @@ export function _createOAuthAuthStore({
 
     // Under the refresh lock, so a logout or refresh in another tab finishes before this pair
     // lands, and cannot clear or overwrite it halfway.
-    const probesBeforeExchange = probeCount
     const published = await withLock(refreshLockName, async () => {
       if (epoch !== sessionEpoch()) return false
       const replaced = latestTokens()
@@ -999,7 +1014,7 @@ export function _createOAuthAuthStore({
       await revokeTokens(tokens)
       return fail('logged out during sign-in', exchangeDurationMs)
     }
-    const settle = await waitForAuthenticatedState(probesBeforeExchange)
+    const settle = await waitForAuthenticatedState()
     debug(
       'callback: state %s after %dms, returning to %s',
       settle.stateSettleTimedOut ? 'did not settle' : 'settled',
@@ -1019,15 +1034,16 @@ export function _createOAuthAuthStore({
   }
 
   /**
-   * Waits until the exchanged pair has been probed and found authenticated, so the AuthBoundary
+   * Waits until the stored pair has been probed and found authenticated, so the AuthBoundary
    * does not open onto a stale logged-out state. Bounded like the callback settle wait in
    * `createClassicAuthStore`.
    *
-   * Matched on a probe made after the exchange, not on `state`: the state replays its last
-   * value and does not emit when the same user signs in again, so a user who was already signed
-   * in would otherwise settle on the previous probe, or never.
+   * Matched on a probe of the token now stored, not on `state`: the state replays its last value
+   * and does not emit when the same user signs in again, so a user who was already signed in
+   * would otherwise settle on the previous probe, or never. The token now stored is the exchanged
+   * one, or the one a renewal replaced it with when the API rejected it.
    */
-  async function waitForAuthenticatedState(probesBefore: number): Promise<{
+  async function waitForAuthenticatedState(): Promise<{
     stateSettleDurationMs: number
     stateSettleTimedOut: boolean
   }> {
@@ -1038,10 +1054,10 @@ export function _createOAuthAuthStore({
     const result = await firstValueFrom(
       race(
         merge(
-          probed$.pipe(
+          probes$.pipe(
             filter(
-              ({sequence, state: probedState}) =>
-                sequence > probesBefore && probedState.authenticated,
+              (probe) =>
+                probe.state.authenticated && probe.accessToken === tokenStorage.get()?.accessToken,
             ),
           ),
           state.pipe(ignoreElements()),
@@ -1108,21 +1124,13 @@ export function _createOAuthAuthStore({
           }
         : undefined
     },
-    changes: () =>
-      tokenStorage.value.pipe(
-        map((tokens) => tokens?.accessToken),
-        distinctUntilChanged(),
-        skip(1),
-      ),
+    changes: () => accessToken$.pipe(skip(1)),
   })
 
   return {
     handleCallbackUrl,
     state,
-    token: tokenStorage.value.pipe(
-      map((tokens) => tokens?.accessToken ?? null),
-      distinctUntilChanged(),
-    ),
+    token: accessToken$.pipe(map((accessToken) => accessToken ?? null)),
     LoginComponent: createOAuthLoginComponent({login, callbackError$}),
     logout,
     currentUserId,
