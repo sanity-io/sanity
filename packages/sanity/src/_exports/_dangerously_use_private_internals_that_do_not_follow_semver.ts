@@ -57,6 +57,7 @@ export {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils
 export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
+export {DashboardLink} from '../core/components/DashboardLink'
 export {
   AutoCollapseMenu,
   CollapseMenu,
