@@ -37,7 +37,10 @@ export function FilePreview(props: FileAssetProps) {
   const {t} = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const asset = value?.asset
-  const sourcesFromSchema = schemaType.options?.sources
+  // Legacy `options.sources: []` hides browsing entirely. Only the array form
+  // can mean this — `.length` on the predicate form would be arity.
+  const browseDisabledFromSchema =
+    Array.isArray(schemaType.options?.sources) && schemaType.options.sources.length === 0
 
   const accept = get(schemaType, 'options.accept', '')
 
@@ -95,7 +98,7 @@ export function FilePreview(props: FileAssetProps) {
     // Legacy support for setting asset sources to an empty array through schema
     // Will still allow for uploading files through the default studio asset source,
     // but not selecting existing assets
-    if (sourcesFromSchema?.length === 0) {
+    if (browseDisabledFromSchema) {
       return null
     }
     if (assetSources.length === 0) {
@@ -133,7 +136,7 @@ export function FilePreview(props: FileAssetProps) {
     handleSelectFileMenuItemClicked,
     readOnly,
     schemaType,
-    sourcesFromSchema?.length,
+    browseDisabledFromSchema,
     t,
   ])
 

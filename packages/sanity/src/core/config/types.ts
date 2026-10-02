@@ -1392,7 +1392,10 @@ export interface FederatedAssetSourcesConfig {
   enabled?: boolean
   /**
    * Choose which brokered views become asset sources (defaults to all when
-   * omitted).
+   * omitted). This is a Studio-wide gate — to scope a source to individual
+   * fields instead, use `options.sources` on the schema field (the predicate
+   * form matches federated sources without knowing their application id,
+   * e.g. `(source) => source.name.endsWith(':dropbox')`).
    */
   filter?: (view: FederatedAssetSourceViewInfo) => boolean
   /**
