@@ -16,11 +16,11 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {dequal as isEqual} from 'dequal/lite'
-import isObject from 'lodash-es/isObject.js'
 
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
 import {isType} from '../manifest/manifestTypeHelpers'
+import {isObject} from '../utils/isObject'
 import {IdleScheduler, type Scheduler, SYNC_SCHEDULER} from './scheduler'
 import {
   type ArrayElement,

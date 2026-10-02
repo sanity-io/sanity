@@ -1,6 +1,3 @@
-import flatten from 'lodash-es/flatten.js'
-import uniq from 'lodash-es/uniq.js'
-
 import {getDupes} from '../sanity/validation/utils/getDupes'
 
 type SchemaType = Record<string, any>
@@ -61,10 +58,10 @@ export function traverseSchema(
       : coreTypesRegistry[typeName] || registry[typeName] || null
   }
 
-  const duplicateNames = uniq(flatten(getDupes(typeNames)))
+  const duplicateNames = new Set(getDupes(typeNames).flat())
 
   function isDuplicate(typeName: any) {
-    return duplicateNames.includes(typeName)
+    return duplicateNames.has(typeName)
   }
   function getTypeNames() {
     return typeNames.concat(coreTypeNames)

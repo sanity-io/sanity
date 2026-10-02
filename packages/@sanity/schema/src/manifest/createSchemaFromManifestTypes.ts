@@ -6,7 +6,6 @@ import {
   type UriValidationOptions,
 } from '@sanity/types'
 import cloneDeep from 'lodash-es/cloneDeep.js'
-import isObject from 'lodash-es/isObject.js'
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
@@ -14,6 +13,7 @@ import {groupProblems} from '../sanity/groupProblems'
 import {type SchemaValidationResult} from '../sanity/typedefs'
 import {validateSchema} from '../sanity/validateSchema'
 import {ValidationError} from '../sanity/validation/ValidationError'
+import {isObject} from '../utils/isObject'
 
 const builtinSchema = Schema.compile({
   name: 'studio',
