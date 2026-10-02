@@ -7,6 +7,7 @@ import {
   type SanityClient,
 } from '@sanity/client'
 import memoize from 'lodash-es/memoize.js'
+import QuickLRU from 'quick-lru'
 import {
   BehaviorSubject,
   connectable,
@@ -42,6 +43,7 @@ import {type OAuthConfig} from '../../../config/auth/types'
 import {isStaging} from '../../../environment/isStaging'
 import {type RequestFailureDiagnostics} from '../../../studio/requestErrors/diagnoseRequestFailure'
 import {type StudioErrorHandler} from '../../../studio/requestErrors/types'
+import {checkCors} from '../../../studio/workspaces/corsCheck'
 import {isInvalidSessionError} from '../../../util/apiErrors'
 import {canonicalHash} from '../../../util/canonicalHash'
 import {supportsLocalStorage} from '../../../util/supportsLocalStorage'
@@ -832,7 +834,34 @@ export function _createOAuthAuthStore({
     mergeMap((tokens) => renewQuietly(tokens, 'on wake')),
   )
 
-  const state = merge(authState$, scheduledRefresh$, wake$).pipe(
+  // Every request this store makes carries a bearer token, which the API gateway accepts from
+  // localhost without a CORS entry, so nothing else would tell the user that the origin is not
+  // set up, whether they are signed in or about to sign in. Checked once per store, without
+  // holding up the boot: a missing entry takes over the screen through `onRequestFailure`. A
+  // bearer studio sends no cookie, so it does not need the credentials allowance.
+  const originCheck$ = defer(() => {
+    const diagnostics = getRequestFailureDiagnostics?.()
+    if (!diagnostics) return EMPTY
+    return from(checkCors(client, new QuickLRU({maxSize: 1}))).pipe(
+      tap((cors) => {
+        if (cors === 'project-not-found') {
+          diagnostics.onRequestFailure({type: 'project-not-found'}, client)
+        } else if (cors && !cors.allowed) {
+          diagnostics.onRequestFailure(
+            {type: 'cors', allowed: cors.allowed, withCredentials: cors.withCredentials},
+            client,
+          )
+        }
+      }),
+    )
+  }).pipe(
+    ignoreElements(),
+    // Once per store: a later subscriber finds it done, and one that leaves while it is out does
+    // not start it over.
+    share({resetOnComplete: false, resetOnError: false, resetOnRefCountZero: false}),
+  )
+
+  const state = merge(originCheck$, authState$, scheduledRefresh$, wake$).pipe(
     share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
   )
 
