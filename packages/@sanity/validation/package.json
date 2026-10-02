@@ -53,6 +53,7 @@
     "access": "public"
   },
   "scripts": {
+    "bench": "vitest bench --run --config vitest.bench.config.mts",
     "build": "tsdown",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",

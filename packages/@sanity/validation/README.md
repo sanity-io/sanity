@@ -96,3 +96,9 @@ Call sites that also import `ValidateDocumentOptions` from `sanity` should use
 `ValidateDocumentWorkspaceOptions` for the workspace-shaped options.
 
 Prefer `validateDocument({document, schema, client})` for new code.
+
+## Benchmarks
+
+After building the package, run `pnpm --filter @sanity/validation bench`. These local-only
+benchmarks reuse the article and synthetic fixtures in `perf/bench`, print timings, and write
+JSON results to `.vitest/benchmarks/` in the package. Client-dependent checks are skipped.
