@@ -13,7 +13,13 @@ import {
 
 import {type ProxyHandler} from './createDebugProxy'
 import {type SSEEvent, writeResponseHead} from './proxy'
-import {isAuthFetchEndpoint, isLogoutEndpoint, isPublicEndpoint} from './routes'
+import {
+  isAuthFetchEndpoint,
+  isLogoutEndpoint,
+  isOAuthEndpoint,
+  isOAuthTokenEndpoint,
+  isPublicEndpoint,
+} from './routes'
 
 /**
  * Delay each event by a random duration in [min, max] ms. Uses `mergeMap` so
@@ -89,8 +95,17 @@ export function shuffleEventDelivery<T extends SSEEvent>(
  *  - `SIO-401-AEX` — the session has expired
  *  - `SIO-401-ANF` — the session was not found (revoked on another device,
  *    purged after expiry, or a stale/bogus stored token)
+ *
+ * The third variant is a hypothesis, not a recording: the RFC 6750 bearer token
+ * error a resource server answers an expired OAuth access token with, without
+ * any Sanity error code. The studio's OAuth store only renews on the two codes
+ * above, so this variant shows what happens when the API does not send them.
  */
 const INVALID_SESSION_BODIES = {
+  'invalid_token': JSON.stringify({
+    error: 'invalid_token',
+    error_description: 'The access token expired',
+  }),
   'SIO-401-AEX': JSON.stringify({
     error: 'Unauthorized',
     statusCode: 401,
@@ -148,6 +163,8 @@ export function invalidSession(
   const isLogout = isLogoutEndpoint()
   const isPublic = isPublicEndpoint()
   const isAuthFetch = isAuthFetchEndpoint()
+  const isOAuth = isOAuthEndpoint()
+  const isOAuthToken = isOAuthTokenEndpoint()
   return (req, res, target) => {
     const corsHeaders = {
       'access-control-allow-origin': req.headers.origin ?? '*',
@@ -170,14 +187,63 @@ export function invalidSession(
       onReauthenticated?.()
       return handler(req, res, target)
     }
+    // An OAuth studio never sends its session to the OAuth endpoints: the code
+    // exchange and every refresh go to the token endpoint with a code or a
+    // refresh token, and revocation carries the token being revoked. All of
+    // them are forwarded, and a token endpoint request re-arms the deadline
+    // like `/auth/fetch` does — the studio holds a new access token afterwards.
+    if (req.method !== 'OPTIONS' && isOAuth(req)) {
+      if (isOAuthToken(req)) onReauthenticated?.()
+      return handler(req, res, target)
+    }
     if (req.method === 'OPTIONS' || isPublic(req) || !isInvalid()) {
       return handler(req, res, target)
     }
     writeResponseHead(res, 401, 'Unauthorized', {
       'content-type': 'application/json',
       ...corsHeaders,
+      // RFC 6750 section 3: a bearer challenge names the error in the header.
+      ...(errorCode === 'invalid_token'
+        ? {'www-authenticate': 'Bearer error="invalid_token"'}
+        : {}),
     })
     res.end(INVALID_SESSION_BODIES[errorCode])
+    return new Subscription()
+  }
+}
+
+/**
+ * Wrap a handler so that, once `isRefused()` returns true, every `POST` to the
+ * OAuth token endpoint is answered with the RFC 6749 `invalid_grant` error
+ * instead of being forwarded — what the authorization server answers when the
+ * refresh token expired, was already redeemed, or its session was revoked in
+ * Manage. Everything else, including the API requests the current access token
+ * still authenticates, passes through. This is the one failure the studio's
+ * OAuth store treats as the end of the session, so it exercises the forced
+ * sign-out path; a code exchange after a fresh sign-in is refused too while
+ * `isRefused()` holds, so pair it with a deadline, or restart the proxy to sign
+ * in again. CORS preflights always pass through so the browser can read the 400.
+ */
+export function refusedRefreshToken(
+  handler: ProxyHandler,
+  isRefused: () => boolean = () => true,
+): ProxyHandler {
+  const isOAuthToken = isOAuthTokenEndpoint()
+  return (req, res, target) => {
+    if (req.method !== 'POST' || !isOAuthToken(req) || !isRefused()) {
+      return handler(req, res, target)
+    }
+    writeResponseHead(res, 400, 'Bad Request', {
+      'content-type': 'application/json',
+      'cache-control': 'no-store',
+      'access-control-allow-origin': req.headers.origin ?? '*',
+    })
+    res.end(
+      JSON.stringify({
+        error: 'invalid_grant',
+        error_description: 'The refresh token is invalid, expired or revoked',
+      }),
+    )
     return new Subscription()
   }
 }
