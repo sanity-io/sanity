@@ -97,11 +97,11 @@ describe('tasks list', () => {
     void render(<TasksListHarness />)
 
     await expect
-      .element(page.getByRole('button', {name: 'Proofread the launch notes'}))
+      .element(page.getByRole('button', {name: 'Proofread the launch notes'}).first())
       .toBeVisible()
     await expect.element(page.getByText('No completed tasks')).toBeVisible()
     await expect.element(page.getByText("You haven't been assigned any tasks")).toBeVisible()
-    await expect.element(page.getByText('Jun 15')).toBeVisible()
+    await expect.element(page.getByText('Jun 15').first()).toBeVisible()
     await expect.poll(() => document.querySelectorAll('[data-ui="Skeleton"]').length).toBe(0)
     await expect.element(page.getByText('Untitled').first()).toBeVisible()
     await settleChromaticEndState()
