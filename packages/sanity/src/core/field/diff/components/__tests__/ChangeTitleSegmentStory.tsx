@@ -3,6 +3,7 @@ import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {ChangeBreadcrumb} from '../ChangeBreadcrumb'
+import {ChangeTitleSegment} from '../ChangeTitleSegment'
 
 /**
  * Chromatic sentinel for array index segments in review-changes breadcrumbs:
@@ -14,6 +15,12 @@ export function ChangeTitleSegmentStory() {
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 480}}>
         <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium">
+              string segment
+            </Text>
+            <ChangeTitleSegment segment="Authors" />
+          </VStack>
           <VStack gap={2}>
             <Text muted size={1} weight="medium">
               unchanged index
