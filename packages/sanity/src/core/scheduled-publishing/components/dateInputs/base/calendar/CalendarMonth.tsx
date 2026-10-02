@@ -1,7 +1,6 @@
-import {Text} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
-import {Grid, Box} from 'ui5'
+import {Text, Grid, Box} from 'ui5'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
 import {CalendarDay} from './CalendarDay'
@@ -26,7 +25,7 @@ export function CalendarMonth(props: CalendarMonthProps) {
       <Grid gap={1} style={{gridTemplateColumns: 'repeat(7, minmax(44px, 46px))'}}>
         {WEEK_DAY_NAMES.map((weekday) => (
           <Box key={weekday} paddingY={2}>
-            <Text size={1} weight="medium" style={{textAlign: 'center'}}>
+            <Text size={1} weight="medium" style={{textAlign: 'center'}} as="div" trim={true}>
               {weekday}
             </Text>
           </Box>
