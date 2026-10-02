@@ -1,6 +1,6 @@
 import {Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {describe, expect, test} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
@@ -19,6 +19,13 @@ import {TasksList} from '../TasksList'
 import {TasksListItem} from '../TasksListItem'
 
 const {settleChromaticEndState} = testHelpers()
+
+vi.mock('../../../hooks/useDocumentPreviewValues', () => ({
+  useDocumentPreviewValues: () => ({
+    isLoading: false,
+    value: {title: 'Ada Lovelace'},
+  }),
+}))
 
 const OPEN_TASK = taskDocument({
   _id: 'task-open',
@@ -97,13 +104,14 @@ describe('tasks list', () => {
     void render(<TasksListHarness />)
 
     await expect
-      .element(page.getByRole('button', {name: 'Proofread the launch notes'}))
+      .element(page.getByRole('button', {name: 'Proofread the launch notes'}).first())
       .toBeVisible()
+    await page.getByText('Done', {exact: true}).click()
     await expect.element(page.getByText('No completed tasks')).toBeVisible()
     await expect.element(page.getByText("You haven't been assigned any tasks")).toBeVisible()
-    await expect.element(page.getByText('Jun 15')).toBeVisible()
+    await expect.element(page.getByText('Jun 15').first()).toBeVisible()
     await expect.poll(() => document.querySelectorAll('[data-ui="Skeleton"]').length).toBe(0)
-    await expect.element(page.getByText('Untitled').first()).toBeVisible()
+    await expect.element(page.getByText('Ada Lovelace').first()).toBeVisible()
     await settleChromaticEndState()
   })
 })
