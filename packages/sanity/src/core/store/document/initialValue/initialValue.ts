@@ -63,10 +63,13 @@ export function getInitialValueStream(
     // Wait until we know the state of both draft and published
     filter((res) => 'draft' in res && 'published' in res),
     map((res: any) => res.draft || res.published),
-    // Only update if we didn't previously have a document but we now do
-    distinctUntilChanged((prev, next) => Boolean(prev) !== Boolean(next)),
-    // Prevent rapid re-resolving when transitioning between different templates
+    // Collapse snapshots that arrive together (a publish deletes the draft and
+    // creates the published document in one transaction) so an existence flip
+    // that reverts within the window never re-resolves the template.
     debounceTime(25),
+    // Only the existence of the document matters downstream: a snapshot that
+    // leaves the document present or missing as before is not a change.
+    distinctUntilChanged((prev, next) => Boolean(prev) === Boolean(next)),
   )
 
   return value$.pipe(
