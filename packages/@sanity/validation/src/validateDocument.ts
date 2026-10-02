@@ -847,6 +847,16 @@ function validateItemObservable({
     )
   }
 
+  // A single leaf rule already emits one marker array. Keep the run's pacing,
+  // but avoid constructing the merge/collection pipeline for this common case.
+  if (
+    selfChecks.length === 1 &&
+    nestedChecks.length === 0 &&
+    !rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)
+  ) {
+    return concat(pace(), selfChecks[0])
+  }
+
   // Every check waits for its turn as the run's pacer sees fit (see `ValidationScheduling`).
   return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
     mergeMap((validateNode) => concat(pace(), validateNode), 40),
