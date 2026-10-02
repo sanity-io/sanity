@@ -366,6 +366,16 @@ export interface ValidationError {
   message: string
 
   /**
+   * Corrections the editor can apply with one click. Each fix replaces the
+   * value at the path this error points to (including `path`, if set). Fixes
+   * are only suggestions: they are never applied automatically. Fixes on an
+   * error that points to the document root are ignored.
+   *
+   * @beta
+   */
+  suggestedFixes?: ValidationSuggestedFix[]
+
+  /**
    * If writing a custom validator, you can return validation messages to
    * specific path inside of the current value (object or array) by populating
    * this `path` prop.
@@ -407,6 +417,37 @@ export interface ValidationError {
    */
   cloneWithMessage?(message: string): ValidationError
 }
+
+/**
+ * Replaces the value at the validation marker's path with `value`.
+ *
+ * @beta
+ */
+export interface ValidationSetFix {
+  type: 'set'
+  /** Short label for the action, e.g. "Remove trailing slash". */
+  title: string
+  /** Must be JSON-serializable: markers are also produced by headless validation (CLI). */
+  value: unknown
+}
+
+/**
+ * Removes the value at the validation marker's path.
+ *
+ * @beta
+ */
+export interface ValidationUnsetFix {
+  type: 'unset'
+  /** Short label for the action, e.g. "Clear value". */
+  title: string
+}
+
+/**
+ * A correction a validator suggests for the value it rejected.
+ *
+ * @beta
+ */
+export type ValidationSuggestedFix = ValidationSetFix | ValidationUnsetFix
 
 /** @public */
 export type CustomValidatorResult =
@@ -468,4 +509,6 @@ export interface FormNodeValidation {
   level: 'error' | 'warning' | 'info'
   message: string
   path: Path
+  /** @beta */
+  suggestedFixes?: ValidationSuggestedFix[]
 }
