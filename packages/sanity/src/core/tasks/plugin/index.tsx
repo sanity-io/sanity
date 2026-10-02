@@ -4,6 +4,8 @@ import {definePlugin} from '../../config/definePlugin'
 import {type ObjectInputProps} from '../../form/types/inputProps'
 import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
+import {TasksStudioLayout} from './TasksStudioLayout'
+import {TasksStudioProvider} from './TasksStudioProvider'
 
 const TasksDocumentInputLayout = lazy(() =>
   import('./TasksDocumentInputLayout').then((module) => ({
@@ -17,9 +19,6 @@ const TasksStudioActiveToolLayout = lazy(() =>
   import('./TasksStudioActiveToolLayout').then((module) => ({
     default: module.TasksStudioActiveToolLayout,
   })),
-)
-const TasksStudioLayout = lazy(() =>
-  import('./TasksStudioLayout').then((module) => ({default: module.TasksStudioLayout})),
 )
 const TasksStudioNavbar = lazy(() =>
   import('./TasksStudioNavbar').then((module) => ({default: module.TasksStudioNavbar})),
@@ -56,6 +55,7 @@ export const tasks = definePlugin({
   },
   studio: {
     components: {
+      provider: TasksStudioProvider,
       layout: TasksStudioLayout,
       navbar: TasksStudioNavbar,
       activeToolLayout: TasksStudioActiveToolLayout,

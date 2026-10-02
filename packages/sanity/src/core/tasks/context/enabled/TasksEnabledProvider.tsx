@@ -1,9 +1,9 @@
-import {useMemo} from 'react'
+import {use, useMemo} from 'react'
 import {TasksEnabledContext} from 'sanity/_singletons'
 
-import {useFeatureEnabled, FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../../studio/workspace'
 import {type TasksEnabledContextValue} from './types'
+import {useTasksFeaturesPromise} from './useTasksFeaturesPromise'
 
 interface TaksEnabledProviderProps {
   children: React.ReactNode
@@ -13,12 +13,13 @@ interface TaksEnabledProviderProps {
  * @internal
  */
 export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
-  const {enabled, isLoading, error} = useFeatureEnabled(FEATURES.sanityTasks)
+  const tasksFeaturesPromise = useTasksFeaturesPromise()
+  const {enabled, error} = use(tasksFeaturesPromise)
 
   const isWorkspaceEnabled = useWorkspace().tasks?.enabled
 
   const value: TasksEnabledContextValue = useMemo(() => {
-    if (!isWorkspaceEnabled || isLoading || error) {
+    if (!isWorkspaceEnabled || error) {
       return {
         enabled: false,
         mode: null,
@@ -28,7 +29,7 @@ export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
       enabled: true,
       mode: enabled ? 'default' : 'upsell',
     }
-  }, [enabled, isLoading, isWorkspaceEnabled, error])
+  }, [enabled, isWorkspaceEnabled, error])
 
   return <TasksEnabledContext.Provider value={value}>{children}</TasksEnabledContext.Provider>
 }

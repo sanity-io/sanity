@@ -1,12 +1,7 @@
-import {lazy} from 'react'
-
 import {definePlugin} from '../../config/definePlugin'
 import {singleDocReleaseUsEnglishLocaleBundle} from '../i18n'
 import resolveDocumentActions from './documentActions'
-
-const SingleDocReleaseLayout = lazy(() =>
-  import('./SingleDocReleaseLayout').then((module) => ({default: module.SingleDocReleaseLayout})),
-)
+import {SingleDocReleaseLayout} from './SingleDocReleaseLayout'
 
 /**
  * @internal
