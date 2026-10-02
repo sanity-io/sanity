@@ -1,7 +1,10 @@
+import {type SanityClient} from '@sanity/client'
+import {type PayloadOf} from '@sanity/sdk/dashboard'
 import {act, render, screen, waitFor} from '@testing-library/react'
-import {Subject} from 'rxjs'
+import {of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {stubMessageBusHost} from '../../../../test/testUtils/stubMessageBusHost'
 import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {type StudioAuthReadyMeasured as StudioAuthReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
@@ -54,10 +57,10 @@ describe('AuthBoundary login flash gate', () => {
     vi.clearAllMocks()
   })
 
-  async function mockWorkspaceAuth(auth: Record<string, unknown>) {
+  async function mockWorkspaceAuth(auth: Record<string, unknown>, projectId = 'project-1') {
     const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
     ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
-      activeWorkspace: {auth: {state: authState$, ...auth}},
+      activeWorkspace: {projectId, auth: {state: authState$, ...auth}},
     })
   }
 
@@ -280,6 +283,134 @@ describe('AuthBoundary login flash gate', () => {
     })
     expect(screen.getByTestId('authenticate-screen')).toBeTruthy()
     expect(screen.queryByTestId('loading-block')).toBeNull()
+  })
+
+  describe('for a user without access to the project', () => {
+    const WITHOUT_ROLES: AuthState = {
+      authenticated: true,
+      currentUser: {roles: [], provider: 'google'},
+    }
+
+    // A store whose session the message bus host owns, for a user without roles on the project.
+    async function mockDashboardWorkspace(projectId = 'project-1') {
+      const {_createAuthStore} = await import('../../store/authStore/createAuthStore')
+      const client = createMockSanityClient({
+        requests: {'/users/me': {id: 'user', roles: [], provider: 'google'}},
+      }) as unknown as SanityClient
+      const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
+      ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
+        activeWorkspace: {
+          projectId,
+          auth: _createAuthStore({
+            projectId,
+            dataset: 'production',
+            clientFactory: () => client,
+            getSessionId: () => undefined,
+            consumeHashToken: () => undefined,
+            observeWorkbenchToken: () => of('token'),
+          }),
+        },
+      })
+    }
+
+    function renderBoundary() {
+      return render(
+        <AuthBoundary>
+          <div data-testid="content" />
+        </AuthBoundary>,
+      )
+    }
+
+    it('asks a message bus host to show its access request prompt', async () => {
+      const host = stubMessageBusHost()
+      const requests: PayloadOf<'access.request'>[] = []
+      const replies: Array<() => void> = []
+      host.respond('access.request', (message) => {
+        requests.push(message.payload)
+        replies.push(() => message.reply({ok: true}))
+      })
+      await mockDashboardWorkspace()
+
+      renderBoundary()
+
+      await waitFor(() =>
+        expect(requests).toEqual([{resourceType: 'project', resourceId: 'project-1'}]),
+      )
+      expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+      expect(screen.queryByTestId('request-access-screen')).toBeNull()
+
+      // The host shows its prompt, so Studio keeps waiting behind it.
+      await act(async () => replies.forEach((reply) => reply()))
+      expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+      expect(screen.queryByTestId('request-access-screen')).toBeNull()
+    })
+
+    it('asks for the project of another workspace once that workspace has no access', async () => {
+      const host = stubMessageBusHost()
+      const requests: PayloadOf<'access.request'>[] = []
+      host.respond('access.request', (message) => {
+        requests.push(message.payload)
+        message.reply({ok: true})
+      })
+      await mockDashboardWorkspace('project-1')
+      const {rerender} = renderBoundary()
+      await waitFor(() => expect(requests).toHaveLength(1))
+
+      await mockDashboardWorkspace('project-2')
+      rerender(
+        <AuthBoundary>
+          <div data-testid="content" />
+        </AuthBoundary>,
+      )
+
+      await waitFor(() =>
+        expect(requests.map(({resourceId}) => resourceId)).toEqual(['project-1', 'project-2']),
+      )
+    })
+
+    it("shows Studio's request access screen when the message bus host declines", async () => {
+      const host = stubMessageBusHost()
+      host.respond('access.request', (message) => message.reply({ok: false, reason: 'unsupported'}))
+      await mockDashboardWorkspace()
+
+      renderBoundary()
+
+      expect(await screen.findByTestId('request-access-screen')).toBeInTheDocument()
+    })
+
+    it("shows Studio's request access screen when nothing on the bus handles access requests", async () => {
+      stubMessageBusHost()
+      await mockDashboardWorkspace()
+
+      renderBoundary()
+
+      expect(await screen.findByTestId('request-access-screen')).toBeInTheDocument()
+    })
+
+    it("shows a custom auth store's request access screen under a message bus host", async () => {
+      const host = stubMessageBusHost()
+      const requests: PayloadOf<'access.request'>[] = []
+      host.respond('access.request', (message) => {
+        requests.push(message.payload)
+        message.reply({ok: true})
+      })
+      await mockWorkspaceAuth({})
+
+      renderBoundary()
+      act(() => authState$.next(WITHOUT_ROLES))
+
+      expect(screen.getByTestId('request-access-screen')).toBeInTheDocument()
+      expect(requests).toEqual([])
+    })
+
+    it("shows Studio's request access screen without a message bus host", async () => {
+      await mockWorkspaceAuth({})
+
+      renderBoundary()
+      act(() => authState$.next(WITHOUT_ROLES))
+
+      expect(screen.getByTestId('request-access-screen')).toBeInTheDocument()
+    })
   })
 })
 
