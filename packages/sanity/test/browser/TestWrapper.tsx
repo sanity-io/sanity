@@ -50,6 +50,13 @@ interface TestWrapperProps {
    * (`form.components`, `studio.components`) the test wants exercised.
    */
   plugins?: PluginOptions[]
+  /**
+   * Mock client for the workspace, e.g. `createMockSanityClient({requests})` from
+   * `test/mocks/mockSanityClient` with canned responses for the HTTP endpoints the component
+   * under test reads — mirrors `createTestProvider({client})`. Defaults to a client that
+   * resolves every request with `null`.
+   */
+  client?: SanityClient
 }
 const studioThemeConfig: RootTheme = buildTheme()
 
@@ -94,8 +101,10 @@ const getCachedMockWorkspace = memoize(
  * Sanity client and a mock workspace.
  */
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures, i18nBundles, plugins} = props
-  const [client] = useState(() => createMockSanityClient() as unknown as SanityClient)
+  const {children, schemaTypes, betaFeatures, i18nBundles, plugins, client: providedClient} = props
+  const [client] = useState(
+    () => providedClient ?? (createMockSanityClient() as unknown as SanityClient),
+  )
 
   return (
     <Suspense fallback={null}>
