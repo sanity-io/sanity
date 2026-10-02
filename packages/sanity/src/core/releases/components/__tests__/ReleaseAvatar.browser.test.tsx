@@ -64,6 +64,13 @@ function centerY(element: Element): number {
   return rect.top + rect.height / 2
 }
 
+// Firefox and WebKit report the centred chip glyph half a device pixel off, which
+// `toBeCloseTo(0, 0)` rejects (its tolerance is strictly under 0.5). The regression this
+// guards was a full pixel or more, so half a pixel is the allowance.
+function expectVerticallyCentered(glyph: Element, host: Element) {
+  expect(Math.abs(centerY(glyph) - centerY(host))).toBeLessThanOrEqual(0.5)
+}
+
 function glyphIn(hostTestId: string): SVGElement {
   const host = document.querySelector(`[data-testid="${hostTestId}"]`)!
   return host.querySelector('svg')!
@@ -78,8 +85,8 @@ describe('ReleaseAvatarIcon', () => {
     const iconButton = document.querySelector('[data-testid="icon-button"]')!
     const chip = document.querySelector('[data-testid="chip"]')!
 
-    expect(centerY(glyphIn('icon-button')) - centerY(iconButton)).toBeCloseTo(0, 0)
-    expect(centerY(glyphIn('chip')) - centerY(chip)).toBeCloseTo(0, 0)
+    expectVerticallyCentered(glyphIn('icon-button'), iconButton)
+    expectVerticallyCentered(glyphIn('chip'), chip)
     expect(getComputedStyle(glyphIn('icon-button')).display).toBe('inline')
 
     await settleChromaticEndState()
@@ -104,7 +111,7 @@ describe('ReleaseAvatarIcon', () => {
     await expect.element(page.getByTestId('standalone')).toBeVisible()
 
     const text = document.querySelector('[data-testid="standalone-text"]')!
-    expect(centerY(glyphIn('standalone')) - centerY(text)).toBeCloseTo(0, 0)
+    expectVerticallyCentered(glyphIn('standalone'), text)
 
     const blockGlyph = glyphIn('block-host')
     expect(getComputedStyle(blockGlyph).display).toBe('block')
