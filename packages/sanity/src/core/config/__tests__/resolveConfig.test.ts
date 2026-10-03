@@ -555,23 +555,24 @@ describe('beta variants config', () => {
     expect(source.beta?.variants?.types).toEqual(types)
   })
 
-  it('rejects a type other than variant', async () => {
-    await expect(
-      createSourceFromConfig({
-        projectId,
-        dataset,
-        beta: {
-          variants: {
-            enabled: true,
-            types: {
-              variant: {conditions: [{name: 'audience', values: ['loyal']}]},
-              // @ts-expect-error language is not in the public types map yet
-              language: {label: 'Language', conditions: [{name: 'locale', values: ['en']}]},
-            },
+  it('keeps a type key other than variant at runtime', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {
+        variants: {
+          enabled: true,
+          types: {
+            variant: {conditions: [{name: 'audience', values: ['loyal']}]},
+            language: {label: 'Language', conditions: [{name: 'locale', values: ['en']}]},
           },
         },
-      }),
-    ).rejects.toThrow('Expected `beta.variants.types` to only include "variant"')
+      },
+    })
+
+    expect(source.beta?.variants?.types).toMatchObject({
+      language: {label: 'Language'},
+    })
   })
 
   it('resolves types from plugin config', async () => {
@@ -615,7 +616,6 @@ describe('beta variants config', () => {
         beta: {
           variants: {
             types: {
-              // @ts-expect-error invalid type key
               'Not a key': {label: 'Nope'},
             },
           },
