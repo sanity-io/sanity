@@ -5,6 +5,11 @@
  * The Item component in list.tsx was spreading all props including `disableTransition`
  * to the ListItem component when sortable=false, causing React warnings about
  * unrecognized DOM attributes.
+ *
+ * The assertion lives in the DOM prop leak guard of the shared `watchForStudioErrors` watcher
+ * (e2e/helpers/studioErrors.ts), which fails any test during which a prop such as
+ * `disableTransition` reached a DOM element, against development and production builds alike.
+ * This spec drives the scenario that used to leak it.
  */
 
 import {expect} from '@playwright/test'
@@ -16,14 +21,6 @@ test.describe('PR #11775 - disableTransition prop leak', () => {
     page,
     createDraftDocument,
   }) => {
-    // Collect console warnings
-    const consoleWarnings: string[] = []
-    page.on('console', (msg) => {
-      if (msg.type() === 'warning' || msg.type() === 'error') {
-        consoleWarnings.push(msg.text())
-      }
-    })
-
     // Navigate to a document with array fields
     await createDraftDocument('/content/input-standard;arraysTest')
 
@@ -64,16 +61,9 @@ test.describe('PR #11775 - disableTransition prop leak', () => {
     }
     await expect(insertDialog).not.toBeVisible()
 
-    // Wait for item to be rendered
+    // Wait for item to be rendered; the studio error watcher fails the test if
+    // a prop leaked onto a DOM element along the way.
     const bookItem = field.getByText('Test Book')
     await expect(bookItem).toBeVisible()
-
-    // Check that no React warning about disableTransition was logged
-    const disableTransitionWarning = consoleWarnings.find(
-      (warning) =>
-        warning.includes('disableTransition') && warning.includes('React does not recognize'),
-    )
-
-    expect(disableTransitionWarning).toBeUndefined()
   })
 })

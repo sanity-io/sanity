@@ -9,7 +9,11 @@ import viteReact from '@vitejs/plugin-react'
 export default defineConfig({
   test: {
     environment: 'jsdom',
-    setupFiles: ['@vanilla-extract/css/disableRuntimeStyles'],
+    setupFiles: [
+      '@vanilla-extract/css/disableRuntimeStyles',
+      // Fail tests during which react-dom reports a prop leaking onto a DOM element
+      '@repo/test-config/vitest/failOnReactDomPropWarnings',
+    ],
   },
   plugins: [
     vanillaExtractPlugin(),
