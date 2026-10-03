@@ -14,7 +14,7 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import {concat, defer, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
+import {defer, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
@@ -811,8 +811,18 @@ function validateItemObservable({
     )
   }
 
+  // A single leaf rule already emits one marker array. Keep the idle yield,
+  // but avoid constructing the merge/collection pipeline for this common case.
+  if (
+    selfChecks.length === 1 &&
+    nestedChecks.length === 0 &&
+    !rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)
+  ) {
+    return idle().pipe(switchMap(() => selfChecks[0]))
+  }
+
   return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
-    mergeMap((validateNode) => concat(idle(), validateNode), 40),
+    mergeMap((validateNode) => idle().pipe(switchMap(() => validateNode)), 40),
     mergeAll(),
     toArray(),
     map(flatten),
@@ -858,10 +868,11 @@ function toDocumentValidationMarker(marker: ValidationMarker): DocumentValidatio
   }
 }
 
-function idle(timeout?: number): Observable<never> {
-  return new Observable<never>((observer) => {
+function idle(timeout?: number): Observable<void> {
+  return new Observable<void>((observer) => {
     const handle = requestIdleCallback(
       () => {
+        observer.next()
         observer.complete()
       },
       timeout ? {timeout} : undefined,
