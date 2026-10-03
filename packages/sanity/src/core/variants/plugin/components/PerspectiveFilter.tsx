@@ -1,6 +1,6 @@
 import {RemoveIcon} from '@sanity/icons/Remove'
 import {Card, Text, type CardTone} from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {type ReactNode, useId} from 'react'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -37,8 +37,10 @@ export function PerspectiveFilter({
   removeLabel,
   label,
 }: PerspectiveFilterProps): React.JSX.Element {
+  const viewTransitionName = useId()
+
   return (
-    <Flex alignItems="center" data-ui="PerspectiveFilter">
+    <Flex alignItems="center" data-ui="PerspectiveFilter" style={{viewTransitionName}}>
       <Box paddingX={2}>
         <Text size={1}>{prefix}</Text>
       </Box>

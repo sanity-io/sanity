@@ -1,5 +1,5 @@
 import startCase from 'lodash-es/startCase.js'
-import {useMemo, useState, type RefAttributes} from 'react'
+import {useMemo, useState, type RefAttributes, useId, use, ViewTransition} from 'react'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -15,6 +15,21 @@ const TOOL_COLLAPSE_MENU_STYLE = {minWidth: 0} as const
 interface ToolCollapseMenuProps {
   activeToolName?: string
   tools: Tool[]
+}
+
+function ToolLinkButton({tool, selected}: {tool: Tool; selected: boolean}) {
+  const title = tool?.title || startCase(tool.name)
+
+  return (
+    <Button
+      as={ToolLink}
+      data-as="a"
+      mode="bleed"
+      name={tool.name}
+      selected={selected}
+      text={title}
+    />
+  )
 }
 
 export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
@@ -43,23 +58,11 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
       tools.map((tool, index) => {
         const title = tool?.title || startCase(tool.name)
 
-        function Link(linkProps: ToolLinkProps & RefAttributes<HTMLAnchorElement>) {
-          const {ref, ...rest} = linkProps
-          return (
-            <ToolLink {...rest} ref={ref} name={tool.name}>
-              {linkProps.children}
-            </ToolLink>
-          )
-        }
-
         return (
-          <Button
-            key={`${tool.name}-${index}`}
-            as={Link}
-            data-as="a"
-            mode="bleed"
+          <ToolLinkButton
+            key={`${tool.name}-${title}`}
+            tool={tool}
             selected={activeToolName === tool.name}
-            text={title}
           />
         )
       }),
