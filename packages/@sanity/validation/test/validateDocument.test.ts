@@ -761,7 +761,9 @@ describe('validateDocument', () => {
   it.each([false, true])(
     'preserves custom marker arrays in keyed items (compiled: %s)',
     async (compiled) => {
-      const schema = createSchema([
+      const parent = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
+      if (compiled) inferFromSchema(parent)
+      const types: SchemaTypeDefinition[] = [
         {
           name: 'article',
           type: 'document',
@@ -790,7 +792,8 @@ describe('validateDocument', () => {
             },
           ],
         },
-      ])
+      ]
+      const schema = SchemaBuilder.compile({name: 'test', parent, types})
       if (compiled) inferFromSchema(schema)
       const document = createDocument({
         _type: 'article',
