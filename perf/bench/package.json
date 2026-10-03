@@ -43,6 +43,8 @@
   "devDependencies": {
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@sanity/schema": "workspace:*",
+    "@sanity/validation": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "vite": "catalog:",
