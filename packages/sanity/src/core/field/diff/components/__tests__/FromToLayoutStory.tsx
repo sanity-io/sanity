@@ -2,6 +2,7 @@ import {Card, Text} from '@sanity/ui'
 import {VStack} from 'ui5'
 
 import {FromTo} from '../FromTo'
+import {FromToArrow} from '../FromToArrow'
 
 function DiffSide({label, detail}: {label: string; detail?: string}) {
   return (
@@ -28,9 +29,10 @@ const SHORT_TO = <DiffSide label="Current file" />
 /**
  * Chromatic sentinel for the review-changes FromTo layout after the ui5 Flex
  * migration: inline vs grid column templates, the arrow slot for from+to vs
- * to-only, and `align` (top vs center) on uneven column heights — including
- * the `align="center" layout="grid"` call ImageFieldDiff makes. Labels are
- * fixtures (no document values, no timestamps).
+ * to-only, `align` (top vs center) on uneven column heights — including
+ * the `align="center" layout="grid"` call ImageFieldDiff makes — and the
+ * muted FromToArrow icon for both directions. Labels are fixtures (no
+ * document values, no timestamps).
  */
 export function FromToLayoutStory() {
   return (
@@ -65,6 +67,13 @@ export function FromToLayoutStory() {
             to only
           </Text>
           <FromTo to={<DiffSide label="Added" />} />
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium">
+            arrow directions
+          </Text>
+          <FromToArrow direction="right" />
+          <FromToArrow align="center" direction="down" />
         </VStack>
       </VStack>
     </Card>
