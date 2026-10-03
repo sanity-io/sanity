@@ -11,7 +11,7 @@ import {Translate} from '../../../../i18n/Translate'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField/FormField'
-import {setIfMissing} from '../../../patch/patch'
+import {set} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
 import {type MissingKeysError} from '../../../store/types/memberErrors'
 
@@ -25,7 +25,14 @@ export function MissingKeysAlert(props: Props) {
   const {error, onChange, path} = props
   const handleFixMissingKeys = useCallback(() => {
     onChange(
-      PatchEvent.from((error.value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key']))),
+      PatchEvent.from(
+        (error.value || []).flatMap((val, i) => {
+          if (typeof val._key === 'string' && val._key.length > 0) {
+            return []
+          }
+          return [set(randomKey(), [i, '_key'])]
+        }),
+      ),
     )
   }, [error, onChange])
 
