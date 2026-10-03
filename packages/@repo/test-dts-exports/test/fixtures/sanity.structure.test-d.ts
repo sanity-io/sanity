@@ -43,6 +43,7 @@ import type {
   DocumentInspectorHeader,
   DocumentList,
   DocumentListBuilder,
+  DocumentListFilterOption,
   DocumentListInput,
   DocumentListItem,
   DocumentListItemBuilder,
@@ -290,6 +291,9 @@ describe('sanity/structure', () => {
   })
   test('DocumentListBuilder', () => {
     expectTypeOf<DocumentListBuilder>().not.toBeNever()
+  })
+  test('DocumentListFilterOption', () => {
+    expectTypeOf<DocumentListFilterOption>().toBeObject()
   })
   test('DocumentListInput', () => {
     expectTypeOf<DocumentListInput>().toBeObject()

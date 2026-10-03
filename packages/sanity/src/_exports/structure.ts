@@ -56,6 +56,7 @@ export {
 export {
   type DocumentList,
   DocumentListBuilder,
+  type DocumentListFilterOption,
   type DocumentListInput,
   type DocumentListOptions,
   getTypeNamesFromFilter,
