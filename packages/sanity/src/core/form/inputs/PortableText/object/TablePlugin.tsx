@@ -101,8 +101,9 @@ export function PortableTextTablePlugin(props: {containers?: TableContainers}): 
   )
 }
 
-// The trash button and table menu are portaled into the
-// `document-panel-portal`, the same place the input's own popovers render.
+// From the root portal the trash chips lose to any host layer wrapping
+// the editor (a dialog) and paint beneath the table's own chrome, so they
+// portal into the editor's stacking context instead.
 function StudioTable(props: ContainerRenderProps): React.JSX.Element {
   const portal = usePortal()
   const {t} = useTranslation()
@@ -111,7 +112,7 @@ function StudioTable(props: ContainerRenderProps): React.JSX.Element {
     <Table
       {...props}
       icons={tableIcons}
-      portalElement={portal.element}
+      portalElement={portal.elements?.editor ?? portal.element}
       tokens={tokens}
       labels={{
         'add-column': t('inputs.portable-text.table.add-column'),
