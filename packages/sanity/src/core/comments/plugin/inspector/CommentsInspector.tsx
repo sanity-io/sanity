@@ -2,7 +2,6 @@ import {Layer, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {type DocumentInspectorProps} from '../../../config/document/inspector'
@@ -30,6 +29,7 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
+import {rootLayer} from './CommentsInspector.css'
 import {CommentsInspectorError} from './CommentsInspectorError'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 
@@ -37,13 +37,6 @@ interface CommentToDelete {
   commentId: string
   isParent: boolean
 }
-
-const RootLayer = styled(Layer)`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-`
 
 export function CommentsInspector(props: DocumentInspectorProps) {
   const {enabled, mode} = useCommentsEnabled()
@@ -54,9 +47,9 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   // is the top layer (that is, if there is e.g. a popover open). This is used to determine
   // if we should deselect the selected path when clicking outside the comments inspector.
   return (
-    <RootLayer>
+    <Layer className={rootLayer}>
       <CommentsInspectorInner {...props} mode={mode} />
-    </RootLayer>
+    </Layer>
   )
 }
 
