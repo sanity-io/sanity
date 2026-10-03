@@ -16,9 +16,7 @@ export function AddFilterButton() {
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const {t} = useTranslation()
 
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
 
   const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])

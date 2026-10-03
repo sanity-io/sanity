@@ -5,7 +5,7 @@ import {
 import {memo, useCallback} from 'react'
 import {Box, type MarginProps, type PaddingProps} from 'ui5'
 
-import {useSearchState} from '../../../../contexts/search/useSearchState'
+import {useSearchSelector, useSearchState} from '../../../../contexts/search/useSearchState'
 import {type FilterMenuItemFilter} from '../../../../types'
 import {getFilterKey} from '../../../../utils/filterUtils'
 import {FilterDetails} from '../../common/FilterDetails'
@@ -21,17 +21,16 @@ export const MenuItemFilter = memo(function MenuItemFilter({
   onClose,
   ...rest
 }: FilterMenuItemProps) {
-  const {
-    dispatch,
-    state: {filters},
-  } = useSearchState()
+  const {searchActorRef} = useSearchState()
+  const filterKey = getFilterKey(item.filter)
+  const isAlreadyActive = useSearchSelector((snapshot) =>
+    snapshot.context.filters.some((filter) => getFilterKey(filter) === filterKey),
+  )
 
   const handleClick = useCallback(() => {
-    dispatch({filter: item.filter, type: 'TERMS_FILTERS_ADD'})
+    searchActorRef.send({filter: item.filter, type: 'TERMS_FILTERS_ADD'})
     onClose?.()
-  }, [dispatch, item.filter, onClose])
-
-  const isAlreadyActive = !!filters.find((f) => getFilterKey(f) === getFilterKey(item.filter))
+  }, [item.filter, onClose, searchActorRef])
 
   // Only enable tooltips if an associated field definition exists, or the filter has a valid description
   const tooltipEnabled = !!(item.fieldDefinition || item.filterDefinition.description)

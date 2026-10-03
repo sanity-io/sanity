@@ -2,14 +2,10 @@ import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {VStack} from 'ui5'
 
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {useSearchSelector} from '../../../contexts/search/useSearchState'
 
 export function DebugFilterQuery() {
-  const {
-    state: {
-      terms: {filter},
-    },
-  } = useSearchState()
+  const filter = useSearchSelector((snapshot) => snapshot.context.terms.filter)
 
   if (!filter) {
     return null

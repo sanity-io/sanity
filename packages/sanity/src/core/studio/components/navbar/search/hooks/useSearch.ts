@@ -1,62 +1,29 @@
 import {type Schema} from '@sanity/types'
 import {useActorRef, useSelector} from '@xstate/react'
 import {dequal} from 'dequal/lite'
-import {
-  useCallback,
-  useEffect,
-  // oxlint-disable-next-line no-restricted-imports -- useSearch is only called from plain function components (SearchProvider and the search filter ReferenceAutocomplete), so facebook/react#34818 does not apply
-  useEffectEvent,
-  useMemo,
-  useState,
-} from 'react'
+import {useCallback, useEffect, useState} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 import {fromObservable} from 'xstate'
 
-import {useClient} from '../../../../../hooks/useClient'
 import {isEqualSearchTerms} from '../../../../../search/common/isEqualSearchTerms'
 import {
   type Groq2024SearchResults,
   type SearchHit,
-  type SearchOptions,
-  type SearchTerms,
   type WeightedSearchResults,
 } from '../../../../../search/common/types'
-import {createSearch} from '../../../../../search/search'
 import {defineSearchMachine} from '../../../../../search/searchMachine'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
-import {getSearchableOmnisearchTypes} from '../utils/selectors'
-import {useSearchMaxFieldDepth} from './useSearchMaxFieldDepth'
-
-interface SearchRequest {
-  debounceTime?: number
-  options?: SearchOptions
-  terms: SearchTerms
-}
+import {
+  isEqualSearchRequest,
+  sanitizeSearchRequest,
+  type SearchRequest,
+} from '../utils/searchRequest'
+import {useGlobalSearchFunction} from './useGlobalSearchFunction'
 
 type SearchResults = WeightedSearchResults | Groq2024SearchResults
 
 const DEFAULT_DEBOUNCE_TIME = 300 // ms
-
-function sanitizeRequest(request: SearchRequest) {
-  return {
-    ...request,
-    terms: {
-      ...request.terms,
-      filter: request.terms.filter?.trim(),
-      query: request.terms.query.trim(),
-    },
-  }
-}
-
-function isEqualSearchRequest(a: SearchRequest | null, b: SearchRequest | null): boolean {
-  if (a === b) return true
-  if (!a || !b) return false
-  const {terms: aTerms, ...aRest} = a
-  const {terms: bTerms, ...bRest} = b
-  return isEqualSearchTerms(aTerms, bTerms) && dequal(aRest, bRest)
-}
 
 function isEqualSearchState(a: SearchState, b: SearchState): boolean {
   if (a === b) return true
@@ -89,20 +56,7 @@ export function useSearch({
   handleSearch: (request: SearchRequest) => void
   searchState: SearchState
 } {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const maxFieldDepth = useSearchMaxFieldDepth()
-  const {strategy} = useWorkspace().search
-
-  const search = useMemo(
-    () =>
-      createSearch(getSearchableOmnisearchTypes(schema), client, {
-        tag: 'search.global',
-        unique: true,
-        strategy,
-        maxDepth: maxFieldDepth,
-      }),
-    [schema, client, strategy, maxFieldDepth],
-  )
+  const search = useGlobalSearchFunction(schema)
 
   const [machine] = useState(() => defineSearchMachine<SearchRequest, SearchResults>())
   const actorRef = useActorRef(
@@ -138,10 +92,11 @@ export function useSearch({
       actorRef.on('search failed', (event) => handleSearchFailed(event.error)),
     ]
     return () => subscriptions.forEach((subscription) => subscription.unsubscribe())
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- use-effect-event functions are stable, and react-hooks/exhaustive-deps forbids listing them
   }, [actorRef])
 
-  // Captured once to mirror the useState mirror this replaces: both callers
-  // rebuild the object every render.
+  // Captured once to mirror the useState mirror this replaces: the caller
+  // rebuilds the object every render.
   const [initialSearchState] = useState(initialState)
   const searchState = useSelector(
     actorRef,
@@ -175,7 +130,8 @@ export function useSearch({
   )
 
   const handleSearch = useCallback(
-    (request: SearchRequest) => actorRef.send({type: 'search', query: sanitizeRequest(request)}),
+    (request: SearchRequest) =>
+      actorRef.send({type: 'search', query: sanitizeSearchRequest(request)}),
     [actorRef],
   )
 

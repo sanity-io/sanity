@@ -17,9 +17,7 @@ export function CommonDateEqualInput({
 }: OperatorInputComponentProps<OperatorDateEqualValue> & {
   isDateTime: boolean
 }) {
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
   const {t} = useTranslation()
 
   const handleDatePickerChange = useCallback(
