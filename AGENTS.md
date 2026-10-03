@@ -210,6 +210,8 @@ How it works:
 
 The test studio can register with a local [agent-react-devtools](https://github.com/callstackincubator/agent-react-devtools) daemon, which exposes the React component tree and render profiling over a CLI — made for AI agents to inspect props/state/hooks and hunt unnecessary re-renders. The `react-devtools` skill (`.agents/skills/react-devtools/SKILL.md`) documents the CLI; read it before profiling.
 
+Chrome DevTools MCP can inspect the same running studio through [`react-devtools-cdt-mcp`](https://github.com/facebook/react/tree/main/packages/react-devtools-cdt-mcp). That path is the `react-devtools-cdt` skill (`.agents/skills/react-devtools-cdt/SKILL.md`). It needs `@sanity/cli-build` >= 6.4.2 so `sanity dev` loads the user module before React, and a first-line `import 'react-devtools-cdt-mcp/register'` in `sanity.config.ts` for the debugging session only.
+
 For `useObservable`, `useSyncObservable` and `useObservablePromise` call sites whose observable identity churns, the `react-rx-hook-audit` skill (`.agents/skills/react-rx-hook-audit/SKILL.md`) covers finding them, counting renders and subscriptions at runtime, and the `useValuePreview` refactor and test pattern.
 
 ```bash
