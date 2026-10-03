@@ -265,15 +265,15 @@ describe('Portable Text Input', () => {
       await new Promise((r) => setTimeout(r, 1000))
       await userEvent.keyboard('{Escape}')
       await new Promise((r) => setTimeout(r, 1000))
-      // Assertion: escape closes the toolbar popover. Popovers keep their content mounted while
-      // closed, so this asserts on visibility rather than on the element being removed.
-      await expect.element($toolbarPopover).not.toBeVisible()
+      // Assertion: escape closes the toolbar popover. The popover content is unmounted shortly
+      // after it closes, so this accepts either a hidden or a removed element.
+      await expectPopoverAbsentOrHidden()
 
       // End state for the archive: pointer parked (not on the toolbar Link
       // button clicked earlier), editor still focused, popover still closed.
       await settleChromaticEndState()
       await expect.element($pte).toHaveFocus()
-      await expect.element($toolbarPopover).not.toBeVisible()
+      await expectPopoverAbsentOrHidden()
     })
 
     it(

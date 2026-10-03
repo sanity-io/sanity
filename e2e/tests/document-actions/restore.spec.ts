@@ -202,12 +202,15 @@ test(`user defined restore actions should not appear in any other document actio
 }) => {
   const actionMenuButton = page.getByTestId('action-menu-button')
   const customRestoreButton = page.getByTestId('action-Customrestore')
-  const paneContextMenu = page.locator('[data-ui="MenuButton__popover"]')
+  // Closed menus stay in the DOM (`@sanity/ui` v4 keeps them in a hidden `<Activity>`), so a
+  // generic `[data-ui="MenuButton__popover"]` locator also matches every field action menu on
+  // the page. The document actions menu is labelled by its trigger button.
+  const documentActionsMenu = page.getByRole('menu', {name: 'Open document actions'})
 
   await createDraftDocument('/content/input-debug;documentActionsTest')
 
   await actionMenuButton.click()
 
-  await expect(paneContextMenu).toBeVisible()
+  await expect(documentActionsMenu).toBeVisible()
   await expect(customRestoreButton).not.toBeVisible()
 })

@@ -696,10 +696,18 @@ describe('ReleasesOverview', () => {
         expect(dialog).toBeInTheDocument()
       })
 
-      it('hides the timezone text and shows only the icon', () => {
-        // Narrow viewports move the label into a tooltip, and tooltip content stays mounted
-        // (hidden) while the tooltip is closed.
-        expect(screen.getByText('SCT (Sanity/Oslo)')).not.toBeVisible()
+      it('hides the timezone text and shows only the icon', async () => {
+        // Narrow viewports move the label into a tooltip, whose content is mounted only while
+        // the button is hovered or focused.
+        expect(screen.queryByText('SCT (Sanity/Oslo)')).not.toBeInTheDocument()
+
+        const timeZoneButton = document
+          .querySelector('[data-sanity-icon="earth-globe"]')
+          ?.closest('button') as HTMLButtonElement
+        expect(timeZoneButton).toBeInTheDocument()
+        await userEvent.hover(timeZoneButton)
+
+        expect(screen.getByText('SCT (Sanity/Oslo)')).toBeInTheDocument()
       })
     })
 

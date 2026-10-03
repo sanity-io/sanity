@@ -1,4 +1,5 @@
 import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {useDocumentPairPermissionsMockReturn} from '../../../../../../../test/mocks/useDocumentPairPermissions.mock'
@@ -29,6 +30,11 @@ const documentRow = {
 
 const localeResources = [studioDefaultLocaleResources, releasesUsEnglishLocaleBundle]
 
+// The menu is mounted only once its button is pressed, so the items are asserted with it open.
+async function openMenu() {
+  await userEvent.click(screen.getByRole('button'))
+}
+
 describe('DocumentActions', () => {
   it('renders discard version and unpublish when document.actions is unfiltered', async () => {
     const wrapper = await createTestProvider({resources: localeResources})
@@ -43,6 +49,7 @@ describe('DocumentActions', () => {
       {wrapper},
     )
     await flushMicrotasksThisIsACodeSmell()
+    await openMenu()
 
     expect(screen.getByText('Discard version')).toBeInTheDocument()
     expect(screen.getByText('Unpublish')).toBeInTheDocument()
@@ -88,6 +95,7 @@ describe('DocumentActions', () => {
       {wrapper},
     )
     await flushMicrotasksThisIsACodeSmell()
+    await openMenu()
 
     expect(screen.getByText('Discard version')).toBeInTheDocument()
     expect(screen.queryByText('Unpublish')).not.toBeInTheDocument()
@@ -113,6 +121,7 @@ describe('DocumentActions', () => {
       {wrapper},
     )
     await flushMicrotasksThisIsACodeSmell()
+    await openMenu()
 
     expect(screen.queryByText('Discard version')).not.toBeInTheDocument()
     expect(screen.getByText('Unpublish')).toBeInTheDocument()
