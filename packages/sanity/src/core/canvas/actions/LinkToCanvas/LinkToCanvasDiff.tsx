@@ -2,11 +2,11 @@ import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Card, Text} from '@sanity/ui'
+import {type BadgeTone, Card} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {motion} from 'motion/react'
 import {css, styled} from 'styled-components'
-import {VStack, Box, Flex} from 'ui5'
+import {Text, VStack, Box, Flex, Icon} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
@@ -29,17 +29,18 @@ const VersionChip = ({id, showSparkles}: {id: string; showSparkles?: boolean}) =
   return (
     <ChipCard tone={badgeTone} padding={2} paddingRight={3} radius={'full'}>
       <Flex gap={2} alignItems="center">
-        <Text size={1}>
-          {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
-          <ReleaseAvatarIcon tone={documentVariantType === 'published' ? 'positive' : 'caution'} />
-        </Text>
-        <Text size={1} weight="medium">
+        {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
+        <ReleaseAvatarIcon tone={documentVariantType === 'published' ? 'positive' : 'caution'} />
+        <Text size={1} weight="medium" as="div" trim={true} tone={badgeTone}>
           {badgeTitle}
         </Text>
         {showSparkles && (
-          <Text size={1}>
-            <ComposeSparklesIcon />
-          </Text>
+          <Icon
+            icon={ComposeSparklesIcon}
+            size={1}
+            tone={badgeTone}
+            style={{margin: '-0.375rem'}}
+          />
         )}
       </Flex>
     </ChipCard>
@@ -65,18 +66,21 @@ export function LinkToCanvasDiff({
       <Card tone="critical" padding={2} radius={3}>
         <Flex gap={2} alignItems="flex-start">
           <Box padding={1}>
-            <Text size={2}>
-              <WarningOutlineIcon />
-            </Text>
+            <Icon
+              icon={WarningOutlineIcon}
+              size={2}
+              tone="critical"
+              style={{margin: '-0.4375rem'}}
+            />
           </Box>
           <VStack gap={2}>
             <Box padding={1}>
-              <Text size={1} weight="semibold">
+              <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
                 {t('dialog.confirm-document-changes.title')}
               </Text>
             </Box>
             <Box padding={1}>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                 {t('dialog.confirm-document-changes.description')}
               </Text>
             </Box>
@@ -87,9 +91,7 @@ export function LinkToCanvasDiff({
         <Box padding={3}>
           <Flex gap={2} alignItems="center">
             <VersionChip id={originalDocument?._id || ''} />
-            <Text size={2}>
-              <ArrowRightIcon />
-            </Text>
+            <Icon icon={ArrowRightIcon} size={2} style={{margin: '-0.4375rem'}} />
             <VersionChip id={mappedDocument?._id || ''} showSparkles />
           </Flex>
         </Box>

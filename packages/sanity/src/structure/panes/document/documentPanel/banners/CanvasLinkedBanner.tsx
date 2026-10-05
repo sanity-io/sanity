@@ -6,6 +6,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   getDocumentVariantType,
   useCanvasCompanionDoc,
+  useCanvasNavigate,
   useNavigateToCanvasDoc,
   useTranslation,
 } from 'sanity'
@@ -134,6 +135,7 @@ export function CanvasLinkedBanner() {
   const id = displayed?._id || documentId
   const {companionDoc} = useCanvasCompanionDoc(id)
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'banner')
+  const {isAvailable} = useCanvasNavigate()
 
   if (!companionDoc) return null
 
@@ -143,11 +145,15 @@ export function CanvasLinkedBanner() {
       data-test-id="canvas-linked-banner"
       paddingY={0}
       content={<CanvasLinkedBannerContent documentId={id} />}
-      action={{
-        mode: 'ghost',
-        text: t('canvas.banner.edit-in-canvas-action'),
-        onClick: navigateToCanvas,
-      }}
+      action={
+        isAvailable
+          ? {
+              mode: 'ghost',
+              text: t('canvas.banner.edit-in-canvas-action'),
+              onClick: navigateToCanvas,
+            }
+          : undefined
+      }
     />
   )
 }

@@ -9,6 +9,7 @@ import {ConfigResolutionError} from '../../config/ConfigResolutionError'
 import {type Source, type Workspace, type WorkspaceSummary} from '../../config/types'
 import {isStaging} from '../../environment/isStaging'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
+import {DocumentHistoryProvider} from '../DocumentHistoryProvider'
 import {SourceProvider} from '../source'
 import {WorkspaceProvider} from '../workspace'
 import {WorkspaceRouterProvider} from './WorkspaceRouterProvider'
@@ -128,14 +129,16 @@ function WorkspaceLoader({
         }}
         fallback={<LoadingComponent />}
       >
-        <SourceProvider
-          // the first source is always the root source and is always present
-          source={workspace.unstable_sources[0]}
-        >
-          <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
-            {children}
-          </WorkspaceRouterProvider>
-        </SourceProvider>
+        <DocumentHistoryProvider>
+          <SourceProvider
+            // the first source is always the root source and is always present
+            source={workspace.unstable_sources[0]}
+          >
+            <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
+              {children}
+            </WorkspaceRouterProvider>
+          </SourceProvider>
+        </DocumentHistoryProvider>
       </ResourceProvider>
     </WorkspaceProvider>
   )

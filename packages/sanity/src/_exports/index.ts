@@ -6,6 +6,7 @@ import '../core/form/types/definitionExtensions'
 import {createAuthStore as _createAuthStorePublic} from '../core/store/authStore/createAuthStore'
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
+export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
@@ -84,6 +85,7 @@ export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comm
 export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
+export {DashboardLink} from '../core/components/DashboardLink'
 export {
   AutoCollapseMenu,
   CollapseMenu,

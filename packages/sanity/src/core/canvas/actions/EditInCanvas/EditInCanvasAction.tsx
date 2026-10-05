@@ -6,6 +6,7 @@ import {
 } from '../../../config/document/actions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {canvasLocaleNamespace} from '../../i18n'
+import {useCanvasNavigate} from '../../useCanvasNavigate'
 import {useNavigateToCanvasDoc} from '../../useNavigateToCanvasDoc'
 import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
@@ -15,8 +16,9 @@ export const useEditInCanvasAction: DocumentActionComponent = (props: DocumentAc
   const {t} = useTranslation(canvasLocaleNamespace)
   const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(getDocumentIdForCanvasLink(props))
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'action')
+  const {isAvailable} = useCanvasNavigate()
 
-  if (!isLinked || loading) return null
+  if (!isLinked || loading || !isAvailable) return null
 
   return {
     icon: ComposeSparklesIcon,

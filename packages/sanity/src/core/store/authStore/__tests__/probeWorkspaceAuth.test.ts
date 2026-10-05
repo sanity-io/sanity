@@ -1,7 +1,8 @@
 import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom, take, toArray} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
+import {stubMessageBusHost} from '../../../../../test/testUtils/stubMessageBusHost'
 import {getAuthTokenStorageKey, getCookieAuthStateKey, getOAuthTokensStorageKey} from '../constants'
 import {_probeWorkspaceAuthForTest, _resetProbeWorkspaceAuthCache} from '../probeWorkspaceAuth'
 
@@ -79,6 +80,53 @@ describe('probeWorkspaceAuth', () => {
     expect(result).toEqual({authenticated: true})
   })
 
+  it('probes with the dashboard token over the message bus, and follows it', async () => {
+    const host = stubMessageBusHost()
+    host.publish('auth.token', 'dashboard-token')
+    const mock = createMockFactory({authenticated: true})
+    const results: unknown[] = []
+    const sub = _probeWorkspaceAuthForTest(
+      {projectId: 'p1', dataset: 'd1'},
+      {clientFactory: mock.factory},
+    ).subscribe((result) => results.push(result))
+    onTestFinished(() => sub.unsubscribe())
+    await vi.waitFor(() => expect(results).toEqual([{authenticated: true}]))
+
+    host.publish('auth.token', null)
+
+    expect(results).toEqual([{authenticated: true}, {authenticated: false}])
+    expect(mock.configs()).toEqual([expect.objectContaining({token: 'dashboard-token'})])
+  })
+
+  it('probes a project once per dashboard token, across its workspaces', async () => {
+    const host = stubMessageBusHost()
+    host.publish('auth.token', 'first-token')
+    const mock = createMockFactory({authenticated: true})
+    for (const dataset of ['d1', 'd2']) {
+      const sub = _probeWorkspaceAuthForTest(
+        {projectId: 'p1', dataset},
+        {clientFactory: mock.factory},
+      ).subscribe()
+      onTestFinished(() => sub.unsubscribe())
+    }
+    expect(mock.configs().map((config) => config.token)).toEqual(['first-token'])
+
+    host.publish('auth.token', 'second-token')
+
+    expect(mock.configs().map((config) => config.token)).toEqual(['first-token', 'second-token'])
+  })
+
+  it('reports a dashboard token the project rejects as unauthenticated', async () => {
+    stubMessageBusHost().publish('auth.token', 'dashboard-token')
+    const mock = createMockFactory({authenticated: false})
+
+    const result = await firstValueFrom(
+      _probeWorkspaceAuthForTest({projectId: 'p1', dataset: 'd1'}, {clientFactory: mock.factory}),
+    )
+
+    expect(result).toEqual({authenticated: false})
+  })
+
   it('emits {authenticated: false} on a 401 response', async () => {
     const mock = createMockFactory({authenticated: false})
     const result = await firstValueFrom(
@@ -119,6 +167,26 @@ describe('probeWorkspaceAuth', () => {
 
     await firstValueFrom(a)
     expect(mock.callCount()).toBe(1)
+  })
+
+  it('keeps the result warm for a short grace window after the last unsubscribe', async () => {
+    vi.useFakeTimers()
+    onTestFinished(() => {
+      vi.useRealTimers()
+    })
+    const mock = createMockFactory({authenticated: true})
+    const probe$ = _probeWorkspaceAuthForTest(
+      {projectId: 'p1', dataset: 'd1'},
+      {clientFactory: mock.factory},
+    )
+
+    await firstValueFrom(probe$)
+    await firstValueFrom(probe$)
+    expect(mock.callCount()).toBe(1)
+
+    await vi.advanceTimersByTimeAsync(1500)
+    await firstValueFrom(probe$)
+    expect(mock.callCount()).toBe(2)
   })
 
   it('does not dedup probes for different projects', async () => {
