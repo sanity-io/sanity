@@ -7,6 +7,8 @@ import {
   type AssetSourceOpenInSourceResult,
 } from '@sanity/types'
 
+import {FederatedMediaLibraryAssetSource} from './federated/FederatedMediaLibraryAssetSource'
+import {type FederatedAssetSourceView} from './federated/types'
 import {MediaLibraryAssetSource} from './shared/MediaLibraryAssetSource'
 import {MediaLibraryUploader} from './uploader'
 
@@ -67,6 +69,69 @@ export function createSanityMediaLibraryFileSource(
     i18nKey: props.i18nKey || 'asset-sources.media-library.file.title',
     component: (sourceProps: AssetSourceComponentProps) => (
       <MediaLibraryAssetSource {...sourceProps} libraryId={props.libraryId} />
+    ),
+    icon: props.icon || DocumentIcon,
+    Uploader: MediaLibraryUploader,
+    openInSource,
+  }
+}
+
+/**
+ * Props for the federated Media Library source factories: the iframe factory
+ * props plus the brokered view that renders the select dialog.
+ *
+ * @internal
+ */
+export interface CreateFederatedSanityMediaLibrarySourceProps extends CreateSanityMediaLibrarySourceProps {
+  view: FederatedAssetSourceView
+}
+
+/**
+ * The Media Library image source with a federated select dialog (the
+ * organization's brokered `asset_source` view). Identical to
+ * {@link createSanityMediaLibraryImageSource} — same `name`, uploader and
+ * open-in-source behavior — except that selecting mounts the federated view,
+ * falling back to the iframe dialog when the view fails to load.
+ *
+ * @internal
+ */
+export function createFederatedSanityMediaLibraryImageSource(
+  props: CreateFederatedSanityMediaLibrarySourceProps,
+): AssetSource {
+  return {
+    name: props.name || sourceName,
+    i18nKey: props.i18nKey || 'asset-sources.media-library.image.title',
+    component: (sourceProps: AssetSourceComponentProps) => (
+      <FederatedMediaLibraryAssetSource
+        {...sourceProps}
+        libraryId={props.libraryId}
+        view={props.view}
+      />
+    ),
+    icon: props.icon || ImageIcon,
+    Uploader: MediaLibraryUploader,
+    openInSource,
+  }
+}
+
+/**
+ * The Media Library file source with a federated select dialog. See
+ * {@link createFederatedSanityMediaLibraryImageSource}.
+ *
+ * @internal
+ */
+export function createFederatedSanityMediaLibraryFileSource(
+  props: CreateFederatedSanityMediaLibrarySourceProps,
+): AssetSource {
+  return {
+    name: props.name || sourceName,
+    i18nKey: props.i18nKey || 'asset-sources.media-library.file.title',
+    component: (sourceProps: AssetSourceComponentProps) => (
+      <FederatedMediaLibraryAssetSource
+        {...sourceProps}
+        libraryId={props.libraryId}
+        view={props.view}
+      />
     ),
     icon: props.icon || DocumentIcon,
     Uploader: MediaLibraryUploader,

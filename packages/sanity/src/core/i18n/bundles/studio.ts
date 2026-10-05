@@ -225,6 +225,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.dataset.file.title': 'Workspace files',
   'asset-sources.dataset.image.title': 'Workspace images',
 
+  /** Error message shown when a federated (workbench-brokered) asset source view fails to load */
+  'asset-sources.federated.error.unavailable':
+    'This asset source failed to load. Close the dialog and try again.',
+
   /** Error messages for the Media Library Asset Source  */
   'asset-sources.media-library.error.library-could-not-be-resolved':
     'Something went wrong trying to resolve the Media Library for this project.',
