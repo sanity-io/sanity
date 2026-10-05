@@ -188,6 +188,7 @@ export type CommentsType = 'field' | 'task'
  */
 export type CommentUpdateRangePayload =
   | {
+      // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
       range: CollaborationCommentRange
       fieldValue: CollaborationCommentFieldValue
       optimisticUpdate: CommentUpdatePayload
@@ -311,6 +312,7 @@ export type CommentFieldCreatePayload = CommentBaseCreatePayload & {
 } & (
     | {
         /** Comments API range for an inline selection */
+        // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
         range: CollaborationCommentRange
         /** Editor Portable Text covering `range` */
         fieldValue: CollaborationCommentFieldValue
