@@ -157,6 +157,8 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 trustPolicyExclude:
   - '@sanity/cli'
+  # @sanity/sdk-react 2.x pins this experimental build, published without provenance
+  - groq@3.88.1-typegen-experimental.0
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0

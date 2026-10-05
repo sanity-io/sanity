@@ -1,0 +1,33 @@
+/* `!important` beats the styled-components Card's equal-specificity `:not([hidden])` display rule, injected later. */
+.collection-entries-pane [data-sanity-document-toolbar] {
+  display: none !important;
+}
+
+.collection-entry-body {
+  outline: none;
+  min-height: 3em;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.collection-entry-body p {
+  margin: 0;
+}
+
+.collection-entry-body p + p {
+  margin-top: 0.75em;
+}
+
+.collection-entry-body-placeholder {
+  opacity: 0.5;
+}
+
+.collection-entry-comment-highlight {
+  background-color: rgb(255 200 0 / 0.25);
+  border-bottom: 2px solid rgb(240 180 0 / 0.8);
+}
+
+.collection-entry-comment-draft {
+  background-color: rgb(34 118 252 / 0.2);
+  border-bottom: 2px solid rgb(34 118 252 / 0.7);
+}
