@@ -7138,8 +7138,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@rolldown/debug@1.2.11':
-    resolution: {integrity: sha512-OvUTQnIwuT+nW56U1JwiYkYZeVx04RqWZYrWNRNWQk6Np5hAasLbw9UCNWvwhLdE/FZxgUI/YAml0Y39nj5N8Q==}
+  '@rolldown/debug@1.2.12':
+    resolution: {integrity: sha512-eRR714EM46yVr8LqtJHh0UEvaw+ccHrrm+t+hvd2HKmNc48utxr+KyWG0TdFx22bHcFTV/FcAQnSLinYfWnnpQ==}
 
   '@rolldown/plugin-babel@0.2.4':
     resolution: {integrity: sha512-ygmm2j/mN+aCvstHo0x3IOu4uc6LqXT9SJ3q4kpfG/+Yhfz0B+E47FITcC0FljZADwUFARP6E2kiE+Lc26D8wg==}
@@ -19648,7 +19648,7 @@ snapshots:
   '@rolldown/binding-win32-x64-msvc@1.2.12':
     optional: true
 
-  '@rolldown/debug@1.2.11': {}
+  '@rolldown/debug@1.2.12': {}
 
   '@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.12)(vite@8.3.2)':
     dependencies:
@@ -21878,7 +21878,7 @@ snapshots:
 
   '@vitejs/devtools-rolldown@0.7.6(@devframes/agentic@1.0.0)(cac@7.0.0)(crossws@0.4.12)(srvx@1.0.5)(vite@8.3.2)':
     dependencies:
-      '@rolldown/debug': 1.2.11
+      '@rolldown/debug': 1.2.12
       '@vitejs/devtools-kit': 0.7.6(@devframes/agentic@1.0.0)(cac@7.0.0)(crossws@0.4.12)(srvx@1.0.5)(vite@8.3.2)
       diff: 9.0.0
       nostics: 1.3.0
