@@ -19,7 +19,7 @@ export const EditedAt = memo(
       <Flex gap={1}>
         <Box marginTop={1} marginLeft={1} marginRight={3}>
           <Box marginRight={1}>
-            <Icon icon={icon} style={{margin: '-0.375rem'}} muted />
+            <Icon icon={icon} style={{margin: '-0.4375rem'}} muted />
           </Box>
         </Box>
         <Text muted size={1} as="div" trim={true}>
