@@ -4,7 +4,7 @@ import {afterEach, describe, expect, it, vi} from 'vitest'
 import {resolveSchemaAssetSources} from '../resolveSchemaAssetSources'
 
 function source(name: string): AssetSource {
-  return {name, i18nKey: '', component: () => null} as unknown as AssetSource
+  return {name, i18nKey: '', component: () => null}
 }
 
 const configured = [
