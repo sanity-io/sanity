@@ -41,6 +41,8 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
+import {ENTRY_TYPE} from './plugins/collection-entries/constants'
+import {collectionEntries} from './plugins/collection-entries/plugin'
 import {documentFormOnly} from './plugins/document-form-only/plugin'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
@@ -834,5 +836,21 @@ export default defineConfig([
     auth: sanitySandboxAuth,
     basePath: '/document-form-only',
     plugins: [documentFormOnly()],
+  },
+  {
+    name: 'collection-entries',
+    title: 'Collection entries',
+    subtitle:
+      'A collection whose entries are separate documents, edited inline through the App SDK',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    auth: sanitySandboxAuth,
+    basePath: '/collection-entries',
+    document: {
+      // The collection page lists entry comments in its own column, so Studio's comments stay on entries only.
+      comments: {enabled: ({documentType}) => documentType === ENTRY_TYPE},
+    },
+    plugins: [collectionEntries()],
   },
 ]) as WorkspaceOptions[]

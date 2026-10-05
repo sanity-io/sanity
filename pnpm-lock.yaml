@@ -937,6 +937,9 @@ importers:
       '@portabletext/plugin-character-pair-decorator':
         specifier: ^9.0.17
         version: 9.0.17(@portabletext/editor@8.2.3)(@types/react@19.3.0)(react@19.3.0)
+      '@portabletext/plugin-sdk-value':
+        specifier: ^8.1.11
+        version: 8.1.11(@portabletext/editor@8.2.3)(@sanity/sdk-react@2.21.0)(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)
       '@portabletext/react':
         specifier: ^8.0.1
         version: 8.0.1(react@19.3.0)
@@ -982,6 +985,9 @@ importers:
       '@sanity/react-loader':
         specifier: ^2.2.2
         version: 2.2.2(@sanity/types@packages+@sanity+types)(react@19.3.0)(typescript@7.0.2)
+      '@sanity/sdk-react':
+        specifier: ^2.21.0
+        version: 2.21.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
       '@sanity/themer':
         specifier: ^0.9.0
         version: 0.9.0(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(typescript@7.0.2)
@@ -6892,6 +6898,15 @@ packages:
       '@portabletext/editor': ^8.2.3
       react: ^19.2
 
+  '@portabletext/plugin-sdk-value@8.1.11':
+    resolution: {integrity: sha512-9TU0fuiw0fWsbeQEvimgnKKgzMoNnSKOzdwjLVE7dZxV4Fo5FPPrUHIqi+OCdEpsl1ABwdVCOXhkubuPzEhs5g==}
+    engines: {node: '>=22.12'}
+    peerDependencies:
+      '@portabletext/editor': ^8.2.3
+      '@sanity/sdk-react': ^2.20.1 || ^3
+      react: ^19.2
+      react-dom: ^19.2
+
   '@portabletext/plugin-table@2.0.16':
     resolution: {integrity: sha512-XC+1wkJWhEh9d5EptHjin0glaXQKwmRAaVTJWQ9BmxJFwOqqzXAzFTTaXdixrD6RrUfu1KFEud54ojxMziDZuw==}
     engines: {node: '>=22.12'}
@@ -7583,11 +7598,20 @@ packages:
     engines: {node: '>=22.12'}
     hasBin: true
 
+  '@sanity/sdk-react@2.21.0':
+    resolution: {integrity: sha512-hLXL2siVpQxiF/xIJxpdW34xvrLN1i3GtvTH+Eu+nHdEUoF9e37liV/2lwma8bKFTezVx/NrpvlfXRQO/yt1Yg==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
   '@sanity/sdk-react@3.7.0':
     resolution: {integrity: sha512-jkCwXNTzzxtBEWkXrsobYiWZ/YRyAlr/XgtyzAwkVAx7Wo3uhq1sLPMuk0jt/aJ2Q1NlK3fwWqVsa3/G+n9whw==}
     peerDependencies:
       react: ^19.2.0
       react-dom: ^19.2.0
+
+  '@sanity/sdk@2.21.0':
+    resolution: {integrity: sha512-93IFPoMnMei32PE4MMoMQ5nj1mfiyb0sVLdRj/11vOGtnNftisqTXf5s82QIYmvsXDYrqLqX0D3TCjwGYgYEow==}
 
   '@sanity/sdk@3.7.0':
     resolution: {integrity: sha512-lQ4dk2/pAF8f1TpDw7oP/9oIKsa1zByqXF3yS0m2UKRMmdrpE0kZ39VH3ANtKUcSdOpABRwyjMcRtMPwPK24rQ==}
@@ -11355,6 +11379,10 @@ packages:
   groq-js@2.0.0:
     resolution: {integrity: sha512-kj56ZjnOFbgDt91zYwQ10jsVUtVGJqAKfRbAir0EvTK84O5ZsSyc0rDEm2P3jmAJkxs4X1DOG8vtaYJQIA/XCA==}
     engines: {node: '>=22.12'}
+
+  groq@3.88.1-typegen-experimental.0:
+    resolution: {integrity: sha512-6TZD6H1y3P7zk0BQharjFa7BOivV9nFL6KKVZbRZRH0yOSSyu2xHglTO48b1/2mCEdYoBQpvE7rjCDUf6XmQYQ==}
+    engines: {node: '>=18'}
 
   gtoken@7.1.0:
     resolution: {integrity: sha512-pCcEwRi+TKpMlxAQObHDQ56KawURgyAf6jtIY046fJ5tIv3zDe/LEIubckAO8fj6JnAxLdmWkUfNyulQ2iKdEw==}
@@ -19549,6 +19577,22 @@ snapshots:
       '@portabletext/editor': 8.2.3(@types/react@19.3.0)(react@19.3.0)
       react: 19.3.0
 
+  '@portabletext/plugin-sdk-value@8.1.11(@portabletext/editor@8.2.3)(@sanity/sdk-react@2.21.0)(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)':
+    dependencies:
+      '@portabletext/editor': 8.2.3(@types/react@19.3.0)(react@19.3.0)
+      '@portabletext/patches': 3.0.1
+      '@sanity/diff-match-patch': 3.2.1
+      '@sanity/diff-patch': 6.0.0
+      '@sanity/json-match': 1.0.5
+      '@sanity/sdk-react': 2.21.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
+      '@xstate/react': 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)
+      obug: 3.0.0
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+      xstate: 5.33.2
+    transitivePeerDependencies:
+      - '@types/react'
+
   '@portabletext/plugin-table@2.0.16(@portabletext/editor@8.2.3)(react-dom@19.3.0)(react@19.3.0)':
     dependencies:
       '@floating-ui/dom': 1.8.0
@@ -20507,6 +20551,25 @@ snapshots:
       - vue-tsc
       - yaml
 
+  '@sanity/sdk-react@2.21.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)':
+    dependencies:
+      '@sanity/client': 7.27.0
+      '@sanity/message-protocol': 0.24.0
+      '@sanity/sdk': 2.21.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)
+      '@sanity/types': link:packages/@sanity/types
+      groq: 3.88.1-typegen-experimental.0
+      react: 19.3.0
+      react-compiler-runtime: 1.0.0(react@19.3.0)
+      react-dom: 19.3.0(react@19.3.0)
+      react-error-boundary: 6.1.6(@types/react@19.3.0)(react@19.3.0)
+      rxjs: 7.8.2
+    transitivePeerDependencies:
+      - '@types/react'
+      - immer
+      - use-sync-external-store
+      - vitest
+      - xstate
+
   '@sanity/sdk-react@3.7.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)':
     dependencies:
       '@module-federation/runtime': 2.9.1
@@ -20522,6 +20585,33 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
       - immer
+      - use-sync-external-store
+      - vitest
+      - xstate
+
+  '@sanity/sdk@2.21.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.1)(xstate@5.33.2)':
+    dependencies:
+      '@sanity/bifur-client': 1.0.0
+      '@sanity/client': 7.27.0
+      '@sanity/comlink': 4.0.3
+      '@sanity/diff-match-patch': 3.2.1
+      '@sanity/diff-patch': 6.0.0
+      '@sanity/id-utils': 1.1.0
+      '@sanity/image-url': 2.1.1
+      '@sanity/json-match': 1.0.5
+      '@sanity/message-protocol': 0.24.0
+      '@sanity/mutate': 0.18.2(vitest@5.0.1)(xstate@5.33.2)
+      '@sanity/telemetry': 1.1.0(react@19.3.0)
+      '@sanity/types': link:packages/@sanity/types
+      groq: 3.88.1-typegen-experimental.0
+      groq-js: 2.0.0
+      reselect: 5.3.0
+      rxjs: 7.8.2
+      zustand: 5.0.15(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - immer
+      - react
       - use-sync-external-store
       - vitest
       - xstate
@@ -22148,6 +22238,20 @@ snapshots:
       - msw
       - utf-8-validate
       - vite
+
+  '@vitest/coverage-v8@5.0.1(@vitest/browser@4.1.11)(vitest@5.0.1)':
+    dependencies:
+      '@bcoe/v8-coverage': 1.0.2
+      '@vitest/istanbul-lib-coverage': 1.0.1
+      '@vitest/istanbul-lib-report': 1.0.1
+      ast-v8-to-istanbul: 1.0.6
+      magicast: 0.5.5
+      obug: 2.2.1
+      std-env: 4.2.0
+      tinyrainbow: 3.1.1
+      vitest: 5.0.1(@opentelemetry/api@1.9.1)(@types/node@24.13.6)(@vitest/browser-playwright@5.0.1)(@vitest/coverage-v8@5.0.1)(@vitest/ui@5.0.1)(jsdom@29.1.1)(vite@8.3.1)
+    optionalDependencies:
+      '@vitest/browser': 4.1.11(vite@8.3.1)(vitest@5.0.1)
 
   '@vitest/coverage-v8@5.0.1(@vitest/browser@5.0.1)(vitest@5.0.1)':
     dependencies:
@@ -24525,6 +24629,8 @@ snapshots:
   groq-js@2.0.0:
     dependencies:
       obug: 2.2.1
+
+  groq@3.88.1-typegen-experimental.0: {}
 
   gtoken@7.1.0(supports-color@8.1.1):
     dependencies:
