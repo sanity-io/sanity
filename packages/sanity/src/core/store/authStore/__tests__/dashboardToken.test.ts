@@ -14,29 +14,29 @@ function fakeBus(token$: BehaviorSubject<string | null>) {
 // The module keeps one connection for its lifetime, so each test gets a fresh copy.
 async function load() {
   vi.resetModules()
-  return import('../workbenchToken')
+  return import('../dashboardToken')
 }
 
-describe('workbenchToken', () => {
+describe('dashboardToken', () => {
   afterEach(() => {
     connectMessageBus.mockReset()
   })
 
   it('is undefined and a no-op outside the workbench', async () => {
     connectMessageBus.mockReturnValue(undefined)
-    const {observeWorkbenchToken, refreshWorkbenchToken} = await load()
+    const {observeDashboardToken, refreshDashboardToken} = await load()
 
-    expect(observeWorkbenchToken()).toBeUndefined()
-    expect(() => refreshWorkbenchToken()).not.toThrow()
+    expect(observeDashboardToken()).toBeUndefined()
+    expect(() => refreshDashboardToken()).not.toThrow()
   })
 
   it('emits the `auth.token` state as it changes', async () => {
     const token$ = new BehaviorSubject<string | null>('first')
     const bus = fakeBus(token$)
     connectMessageBus.mockReturnValue(bus)
-    const {observeWorkbenchToken} = await load()
+    const {observeDashboardToken} = await load()
 
-    const tokens = firstValueFrom(observeWorkbenchToken()!.pipe(toArray()))
+    const tokens = firstValueFrom(observeDashboardToken()!.pipe(toArray()))
     expect(bus.subscribe).toHaveBeenCalledWith('auth.token')
     token$.next(null)
     token$.next('second')
@@ -48,11 +48,11 @@ describe('workbenchToken', () => {
   it('shares one connection between observing and refreshing', async () => {
     const bus = fakeBus(new BehaviorSubject<string | null>('token'))
     connectMessageBus.mockReturnValue(bus)
-    const {observeWorkbenchToken, refreshWorkbenchToken} = await load()
+    const {observeDashboardToken, refreshDashboardToken} = await load()
 
-    observeWorkbenchToken()
-    observeWorkbenchToken()
-    refreshWorkbenchToken()
+    observeDashboardToken()
+    observeDashboardToken()
+    refreshDashboardToken()
 
     expect(bus.emit).toHaveBeenCalledWith('auth.token.refresh')
     expect(connectMessageBus).toHaveBeenCalledTimes(1)
@@ -62,9 +62,9 @@ describe('workbenchToken', () => {
     const bus = fakeBus(new BehaviorSubject<string | null>('token'))
     bus.emit.mockReturnValue(Promise.reject(new Error('NO_RESPONDER')))
     connectMessageBus.mockReturnValue(bus)
-    const {refreshWorkbenchToken} = await load()
+    const {refreshDashboardToken} = await load()
 
-    refreshWorkbenchToken()
+    refreshDashboardToken()
     // Flush the rejection; an unhandled one would fail the run.
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(bus.emit).toHaveBeenCalled()

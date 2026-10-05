@@ -52,6 +52,10 @@ import {
 import {createBroadcastState} from './createBroadcastState'
 import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
+import {
+  observeDashboardToken as defaultObserveDashboardToken,
+  refreshDashboardToken as defaultRefreshDashboardToken,
+} from './dashboardToken'
 import {consumeHashClaim} from './hashClaim'
 import {consumeHashToken as defaultConsumeHashToken} from './hashToken'
 import {clearHashSessionId, getHashSessionId as defaultGetSessionId} from './sessionId'
@@ -63,10 +67,6 @@ import {
 } from './types'
 import {recordHashClaimUrl} from './unclaimedProjectStorage'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
-import {
-  observeWorkbenchToken as defaultObserveWorkbenchToken,
-  refreshWorkbenchToken as defaultRefreshWorkbenchToken,
-} from './workbenchToken'
 
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {
@@ -160,6 +160,7 @@ const getCurrentUser = async (
   tag: string,
   getRequestErrorHandler?: () => StudioErrorHandler | undefined,
   diagnostics?: RequestFailureDiagnostics,
+  onUnauthorized?: () => void,
 ): Promise<CurrentUser | undefined> => {
   // Probe with the forced-logout middleware stripped off. That middleware
   // (installed on every studio client) parks 401s forever to drive forced
@@ -184,7 +185,10 @@ const getCurrentUser = async (
         // so the request-error channel never sees the 401: at boot this is
         // the normal logged-out state (AuthBoundary shows the login
         // screen), not a session-expiry event to verify and tear down.
-        if (isUnauthorizedError(err)) return undefined
+        if (isUnauthorizedError(err)) {
+          onUnauthorized?.()
+          return undefined
+        }
 
         // This probe runs on a client with the studio request handler stripped
         // (so its 401 reaches the branch above), which means it bypasses the
@@ -291,10 +295,147 @@ async function exchangeSessionForToken(client: SanityClient, sessionId: string):
   return token
 }
 
+function getHostOptions(apiHost: string | undefined): {apiHost?: string} {
+  if (apiHost) return {apiHost}
+  return isStaging ? {apiHost: 'https://api.sanity.work'} : {}
+}
+
+// A `#claim=` fragment rides beside `#token=` (see hashClaim.ts) and is consumed at the same
+// lifecycle points, claim first, so both always land on the same project.
+function consumeHashClaimUrl(projectId: string) {
+  const claimUrl = consumeHashClaim()
+  if (claimUrl) recordHashClaimUrl(projectId, claimUrl)
+}
+
+type StandaloneAuthStoreOptions = Omit<
+  AuthStoreOptions,
+  'observeWorkbenchToken' | 'refreshWorkbenchToken'
+>
+
+interface DashboardAuthStoreOptions extends Omit<
+  StandaloneAuthStoreOptions,
+  'getSessionId' | 'consumeHashToken'
+> {
+  dashboardToken$: Observable<string | null>
+  refreshDashboardToken: () => void
+}
+
+// The stores whose session a message bus dashboard owns, unlike a custom `auth` store.
+const dashboardAuthStores = new WeakSet<AuthStore>()
+
+/**
+ * @internal
+ */
+export function isDashboardAuthStore(store: AuthStore): boolean {
+  return dashboardAuthStores.has(store)
+}
+
 /**
  * @internal
  */
 export function _createAuthStore({
+  observeWorkbenchToken = () => undefined,
+  refreshWorkbenchToken = () => {},
+  ...options
+}: AuthStoreOptions): AuthStore {
+  const dashboardToken$ = observeWorkbenchToken()
+  if (!dashboardToken$) return createStandaloneAuthStore(options)
+
+  const {
+    getSessionId: _getSessionId,
+    consumeHashToken: _consumeHashToken,
+    ...dashboardOptions
+  } = options
+  return createDashboardAuthStore({
+    ...dashboardOptions,
+    dashboardToken$,
+    refreshDashboardToken: refreshWorkbenchToken,
+  })
+}
+
+function createDashboardAuthStore({
+  dashboardToken$,
+  refreshDashboardToken,
+  clientFactory = createSanityClient,
+  projectId,
+  dataset,
+  apiHost,
+  loginMethod = 'dual',
+  getRequestErrorHandler,
+  getRequestFailureDiagnostics,
+  ...providerOptions
+}: DashboardAuthStoreOptions): AuthStore {
+  consumeHashClaimUrl(projectId)
+
+  const hostOptions = getHostOptions(apiHost)
+  const cookieClient = clientFactory({
+    ...AUTH_CLIENT_OPTIONS,
+    ...hostOptions,
+    projectId,
+    dataset,
+    withCredentials: true,
+  })
+
+  // Also the `token` output: consumers like Bifur (realtime) read it directly.
+  const token$ = dashboardToken$.pipe(shareReplay({bufferSize: 1, refCount: true}))
+  let refreshedToken: string | undefined
+
+  const state$ = token$.pipe(
+    switchMap((dashboardToken): Observable<AuthState> => {
+      if (!dashboardToken) {
+        return of({client: cookieClient, authenticated: false, currentUser: null})
+      }
+      const client = clientFactory({
+        ...AUTH_CLIENT_OPTIONS,
+        ...hostOptions,
+        projectId,
+        dataset,
+        token: dashboardToken,
+        ignoreBrowserTokenWarning: true,
+      })
+      // The project rejected the token, so ask the dashboard for a new one, once per token.
+      const refreshRejectedToken = () => {
+        if (refreshedToken === dashboardToken) return
+        refreshedToken = dashboardToken
+        refreshDashboardToken()
+      }
+      return from(
+        getCurrentUser(
+          client,
+          'initial',
+          getRequestErrorHandler,
+          getRequestFailureDiagnostics?.(),
+          refreshRejectedToken,
+        ),
+      ).pipe(
+        map((currentUser): AuthState => ({
+          client,
+          authenticated: Boolean(currentUser?.id),
+          currentUser: currentUser || null,
+        })),
+      )
+    }),
+    share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
+  )
+
+  const store: AuthStore = {
+    state: state$,
+    token: token$,
+    LoginComponent: createLoginComponent({
+      ...providerOptions,
+      client$: state$.pipe(map((state) => state.client)),
+      loginMethod,
+      wasLogout: () => false,
+      isHandlingCallback: () => false,
+    }),
+    // Only reached on a forced logout (401): ask the dashboard to reissue its token.
+    logout: async () => refreshDashboardToken(),
+  }
+  dashboardAuthStores.add(store)
+  return store
+}
+
+function createStandaloneAuthStore({
   clientFactory: clientFactoryOption,
   projectId,
   dataset,
@@ -302,16 +443,11 @@ export function _createAuthStore({
   loginMethod = 'dual',
   getSessionId,
   consumeHashToken,
-  observeWorkbenchToken = () => undefined,
-  refreshWorkbenchToken = () => {},
   getRequestErrorHandler,
   getRequestFailureDiagnostics,
   ...providerOptions
-}: AuthStoreOptions): AuthStore {
+}: StandaloneAuthStoreOptions): AuthStore {
   // Precedence when initializing auth:
-  // * if embedded in the workbench (`observeWorkbenchToken`), the OS auth state
-  //   is authoritative and overrides everything below — see the `authState$`
-  //   branch. Otherwise `loginMethod` decides:
   // * if loginMethod == 'dual':
   //    1. token in hash (if exists) – will be written as new localStorage token
   //    2. token in localStorage (if it exists)
@@ -321,13 +457,6 @@ export function _createAuthStore({
   //    2. token in localStorage (if it exists)
   // * if loginMethod == "cookie"
   //    1. HTTP cookie
-
-  // A `#claim=` fragment rides beside `#token=` (see hashClaim.ts) and is consumed at the same
-  // two lifecycle points, claim first, so both always land on the same project.
-  const consumeHashClaimUrl = () => {
-    const claimUrl = consumeHashClaim()
-    if (claimUrl) recordHashClaimUrl(projectId, claimUrl)
-  }
 
   const tokenStorage = createBroadcastStorage<{token?: string}>(
     getAuthTokenStorageKey(projectId),
@@ -339,7 +468,7 @@ export function _createAuthStore({
         // store will log you out. Need to find a better way to deal with this
         // return undefined
       }
-      consumeHashClaimUrl()
+      consumeHashClaimUrl(projectId)
       const hashToken = consumeHashToken()
       // use hash token if it exists, assume authenticated
       return hashToken ? {token: hashToken, authenticated: true} : currentTokenValue
@@ -358,13 +487,7 @@ export function _createAuthStore({
 
   const clientFactory = clientFactoryOption ?? createSanityClient
 
-  // Allow configuration of `apiHost` through source configuration
-  const hostOptions: {apiHost?: string} = {}
-  if (apiHost) {
-    hostOptions.apiHost = apiHost
-  } else if (isStaging) {
-    hostOptions.apiHost = 'https://api.sanity.work'
-  }
+  const hostOptions = getHostOptions(apiHost)
 
   const cookieClient = clientFactory({
     ...AUTH_CLIENT_OPTIONS,
@@ -474,7 +597,7 @@ export function _createAuthStore({
       ? EMPTY
       : fromEvent(window, 'hashchange').pipe(
           tap(() => {
-            consumeHashClaimUrl()
+            consumeHashClaimUrl(projectId)
             const hashToken = consumeHashToken()
             if (hashToken) {
               tokenStorage.update({token: hashToken})
@@ -604,51 +727,7 @@ export function _createAuthStore({
     ),
   )
 
-  // Outside the workbench this is `undefined` and the normal reactive graph
-  // runs unchanged. Inside, the OS auth state is authoritative: it emits the
-  // current token (or `null` when the OS is signed out) and keeps emitting as
-  // that changes, so `loginMethod` and the recheck streams are bypassed and a
-  // later OS sign-out transitions the Studio to unauthenticated. The token is
-  // never persisted (so it can't go stale in storage), which is also why it
-  // feeds the `token` output below — consumers like Bifur (realtime) read that
-  // directly and would otherwise authenticate from empty/stale storage.
-  const workbenchToken$ = observeWorkbenchToken()?.pipe(
-    shareReplay({bufferSize: 1, refCount: true}),
-  )
-
-  const authState$ = (
-    workbenchToken$
-      ? workbenchToken$.pipe(
-          switchMap((workbenchToken): Observable<AuthState> => {
-            if (!workbenchToken) {
-              return of({client: cookieClient, authenticated: false, currentUser: null})
-            }
-            const client = clientFactory({
-              ...AUTH_CLIENT_OPTIONS,
-              ...hostOptions,
-              projectId,
-              dataset,
-              token: workbenchToken,
-              ignoreBrowserTokenWarning: true,
-            })
-            return from(
-              getCurrentUser(
-                client,
-                'initial',
-                getRequestErrorHandler,
-                getRequestFailureDiagnostics?.(),
-              ),
-            ).pipe(
-              map((currentUser): AuthState => ({
-                client,
-                authenticated: Boolean(currentUser?.id),
-                currentUser: currentUser || null,
-              })),
-            )
-          }),
-        )
-      : existingAuthState$
-  ).pipe(
+  const authState$ = existingAuthState$.pipe(
     // Cookie state is broadcast to other tabs (and sibling workspaces for the
     // same project in this page) only on meaningful events: post-login probe
     // in handleCallbackUrl, and logout. Broadcasting on every authState$
@@ -931,15 +1010,6 @@ export function _createAuthStore({
   let _didLogOut = false
 
   async function logout() {
-    // In the workbench the OS owns the session, so a logout here is really a
-    // rejected/expired OS token (surfaced as a forced logout on a 401). Ask the
-    // OS to reissue rather than tearing the session down ourselves — the new
-    // token arrives via `observeWorkbenchToken` and re-drives `authState$`.
-    if (workbenchToken$) {
-      refreshWorkbenchToken()
-      return
-    }
-
     _didLogOut = true
     // An unconsumed state from a callback exchange is stale the moment
     // credentials are torn down — the chain must not emit it later.
@@ -992,7 +1062,7 @@ export function _createAuthStore({
   return {
     handleCallbackUrl,
     state: authState$,
-    token: workbenchToken$ ?? tokenStorage.value.pipe(map((t) => t?.token || null)),
+    token: tokenStorage.value.pipe(map((t) => t?.token || null)),
     LoginComponent,
     logout,
   }
@@ -1018,8 +1088,8 @@ export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = m
       ...options,
       getSessionId: defaultGetSessionId,
       consumeHashToken: defaultConsumeHashToken,
-      observeWorkbenchToken: defaultObserveWorkbenchToken,
-      refreshWorkbenchToken: defaultRefreshWorkbenchToken,
+      observeWorkbenchToken: defaultObserveDashboardToken,
+      refreshWorkbenchToken: defaultRefreshDashboardToken,
     }),
   // `getRequestErrorHandler` / `getRequestFailureDiagnostics` are functions
   // (not hashable, and not part of the store's identity — they just look up UI
