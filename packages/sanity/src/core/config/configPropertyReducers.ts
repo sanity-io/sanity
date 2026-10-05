@@ -888,6 +888,27 @@ export const mediaLibraryFrontendHostReducer = (opts: {
   return result
 }
 
+export const mediaLibraryFederatedAssetSourceReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.__internal?.federatedAssetSource
+
+    if (resolver === undefined) return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.__internal.federatedAssetSource\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+}
+
 export const scheduledDraftsEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean

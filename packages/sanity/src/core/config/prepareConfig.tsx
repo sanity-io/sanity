@@ -16,8 +16,13 @@ import {
   createDatasetImageAssetSource,
 } from '../form/studio/assetSourceDataset'
 import {
+  createFederatedAssetSource,
+  createFederatedSanityMediaLibraryFileSource,
+  createFederatedSanityMediaLibraryImageSource,
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
+  getCurrentFederatedAssetSourceViews,
+  isMediaLibraryView,
 } from '../form/studio/assetSourceMediaLibrary'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
@@ -69,6 +74,7 @@ import {
   initialLanguageFilter,
   internalTasksReducer,
   mediaLibraryEnabledReducer,
+  mediaLibraryFederatedAssetSourceReducer,
   mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
@@ -239,25 +245,77 @@ function getObjectId(value: object): number {
   return id
 }
 
+// The iframe fallback is legitimate (cold start, non-dashboard studio, org
+// without a brokered view) but easy to mistake for the federated view since
+// both render the full Media Library UI. Announce it once so a dev session
+// that silently degraded is diagnosable from the console.
+let notifiedFederatedFallback = false
+const notifyFederatedFallbackOnce = (reason: string) => {
+  if (notifiedFederatedFallback) return
+  notifiedFederatedFallback = true
+  // oxlint-disable-next-line no-console -- intentional one-shot diagnostic
+  console.info(
+    `[sanity] Media Library federated asset source unavailable (${reason}); ` +
+      'falling back to the iframe select dialog. In a dashboard dev session ' +
+      'this usually means the studio booted before the Media Library dev ' +
+      'server registered — reload once all dev servers are up.',
+  )
+}
+
 // Create media library sources with configuration
 const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
   const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
+  const federated = mediaLibraryFederatedAssetSourceReducer({config, initialValue: false})
 
-  // Only create sources if media library is enabled
+  // The `asset_source` views brokered over the workbench message bus, read
+  // synchronously since sources are resolved once here. `undefined` outside
+  // the workbench; on a cold start in which the workbench has not published
+  // its application list yet, `[]` — either way every brokered source is
+  // simply absent and the Media Library keeps its iframe select dialog, so
+  // the race can never cost the Media Library source itself.
+  const viewsFromBus = federated ? getCurrentFederatedAssetSourceViews() : undefined
+  const brokeredViews = viewsFromBus ?? []
+
+  // The Media Library's own view replaces the select dialog of the built-in
+  // source below; views from other applications become their own sources.
+  const mediaLibraryView = brokeredViews.find(isMediaLibraryView)
+
+  if (federated && enabled && !mediaLibraryView) {
+    notifyFederatedFallbackOnce(
+      viewsFromBus === undefined
+        ? 'no workbench message bus'
+        : 'no Media Library asset_source view in the brokered application list',
+    )
+  }
+  const federatedSources = brokeredViews
+    .filter((view) => !isMediaLibraryView(view))
+    .map(createFederatedAssetSource)
+
+  // Only create Media Library sources if the media library is enabled
   if (!enabled) {
-    return {fileSource: null, imageSource: null}
+    return {fileSource: null, imageSource: null, federatedSources}
   }
 
-  const fileSource = createSanityMediaLibraryFileSource({
-    libraryId: libraryId || null,
-  })
+  const fileSource = mediaLibraryView
+    ? createFederatedSanityMediaLibraryFileSource({
+        libraryId: libraryId || null,
+        view: mediaLibraryView,
+      })
+    : createSanityMediaLibraryFileSource({
+        libraryId: libraryId || null,
+      })
 
-  const imageSource = createSanityMediaLibraryImageSource({
-    libraryId: libraryId || null,
-  })
+  const imageSource = mediaLibraryView
+    ? createFederatedSanityMediaLibraryImageSource({
+        libraryId: libraryId || null,
+        view: mediaLibraryView,
+      })
+    : createSanityMediaLibraryImageSource({
+        libraryId: libraryId || null,
+      })
 
-  return {fileSource, imageSource}
+  return {fileSource, imageSource, federatedSources}
 }
 
 // Create default asset sources with configuration
@@ -999,9 +1057,11 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: mediaLibraryAssetSources.fileSource
-            ? [mediaLibraryAssetSources.fileSource, defaultAssetSources.fileSource]
-            : [defaultAssetSources.fileSource],
+          initialValue: [
+            ...(mediaLibraryAssetSources.fileSource ? [mediaLibraryAssetSources.fileSource] : []),
+            defaultAssetSources.fileSource,
+            ...mediaLibraryAssetSources.federatedSources,
+          ],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
@@ -1011,9 +1071,11 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: mediaLibraryAssetSources.imageSource
-            ? [mediaLibraryAssetSources.imageSource, defaultAssetSources.imageSource]
-            : [defaultAssetSources.imageSource],
+          initialValue: [
+            ...(mediaLibraryAssetSources.imageSource ? [mediaLibraryAssetSources.imageSource] : []),
+            defaultAssetSources.imageSource,
+            ...mediaLibraryAssetSources.federatedSources,
+          ],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
@@ -1101,6 +1163,10 @@ function resolveSource({
       libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
       __internal: {
         frontendHost: mediaLibraryFrontendHostReducer({config, initialValue: undefined}),
+        federatedAssetSource: mediaLibraryFederatedAssetSourceReducer({
+          config,
+          initialValue: false,
+        }),
       },
     },
 
