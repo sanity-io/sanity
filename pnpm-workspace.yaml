@@ -56,7 +56,7 @@ catalog:
   ui5: npm:@sanity/ui@5.0.0-alpha.12
   tsdown: ^0.23.0
   typescript: ^7.0.2
-  vite: ^8.3.1
+  vite: ^8.3.2
   vitest: ^5.0.1
   vitest-browser-react: ^2.3.0
 
@@ -141,13 +141,6 @@ minimumReleaseAgeExclude:
   - 'yuku-*'
 
 overrides:
-  # Vite 8.3.1's bundled-dev client inlines rolldown 1.2.9's browser runtime, but its
-  # `rolldown: ~1.2.9` range resolves 1.2.10+, whose compiler emits `registerFactory(id, fn)`
-  # (rolldown#10915) against the inlined `registerFactory(id, kind, fn)`: every lazy `import()`
-  # and HMR update then fails with `factory.fn is not a function`. Scoped to 8.3.1 because the
-  # next Vite release serves the runtime from the installed rolldown instead
-  # (https://github.com/vitejs/vite/pull/23568), so delete this entry when bumping past 8.3.1.
-  'vite@8.3.1>rolldown': '1.2.9'
   vitest: 'catalog:'
 
 preferWorkspacePackages: true
