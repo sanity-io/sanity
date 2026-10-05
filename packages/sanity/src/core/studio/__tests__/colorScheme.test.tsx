@@ -1,11 +1,28 @@
-import {render, screen} from '@testing-library/react'
+import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
-import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, onTestFinished, test, vi} from 'vitest'
 
+import {stubMessageBusHost} from '../../../../test/testUtils/stubMessageBusHost'
 import {Button} from '../../../ui-components/button/Button'
 import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
 import {setSnapshot} from '../colorSchemeStore'
+
+function SchemeProbe() {
+  return (
+    <ColorSchemeSetValueContext.Consumer>
+      {(setValue) => (
+        <ColorSchemeValueContext.Consumer>
+          {(value) => (
+            <div data-testid="scheme" data-can-change={String(Boolean(setValue))}>
+              {value}
+            </div>
+          )}
+        </ColorSchemeValueContext.Consumer>
+      )}
+    </ColorSchemeSetValueContext.Consumer>
+  )
+}
 
 describe('ColorScheme', () => {
   const mockLocalStorage = {
@@ -178,6 +195,73 @@ describe('ColorScheme', () => {
       )
 
       expect(document.documentElement.style.colorScheme).toBe('')
+    })
+  })
+
+  describe('ColorSchemeProvider with a message bus host', () => {
+    test('follows the scheme the host publishes and offers no way to change it', () => {
+      const host = stubMessageBusHost()
+      host.publish('preferences.color-scheme', 'dark')
+      const onSchemeChange = vi.fn()
+
+      render(
+        <ColorSchemeProvider onSchemeChange={onSchemeChange}>
+          <SchemeProbe />
+        </ColorSchemeProvider>,
+      )
+      expect(screen.getByTestId('scheme')).toHaveTextContent('dark')
+      expect(screen.getByTestId('scheme')).toHaveAttribute('data-can-change', 'false')
+
+      act(() => host.publish('preferences.color-scheme', 'light'))
+
+      expect(screen.getByTestId('scheme')).toHaveTextContent('light')
+      expect(onSchemeChange.mock.calls).toEqual([['dark'], ['light']])
+      expect(mockLocalStorage.setItem).not.toHaveBeenCalled()
+    })
+
+    test('leaves the document scheme to the host', () => {
+      const host = stubMessageBusHost()
+      host.publish('preferences.color-scheme', 'dark')
+      document.documentElement.style.colorScheme = 'dark'
+      onTestFinished(() => document.documentElement.removeAttribute('style'))
+      const {unmount} = render(
+        <ColorSchemeProvider>
+          <SchemeProbe />
+        </ColorSchemeProvider>,
+      )
+
+      // The host pins the document to its new scheme as it publishes it.
+      act(() => {
+        host.publish('preferences.color-scheme', 'light')
+        document.documentElement.style.colorScheme = 'light'
+      })
+      unmount()
+
+      expect(document.documentElement.style.colorScheme).toBe('light')
+    })
+
+    test('follows the system scheme until the host publishes one', () => {
+      stubMessageBusHost()
+
+      render(
+        <ColorSchemeProvider>
+          <SchemeProbe />
+        </ColorSchemeProvider>,
+      )
+
+      expect(screen.getByTestId('scheme')).toHaveTextContent('system')
+    })
+
+    test('a scheme prop still wins over the host', () => {
+      stubMessageBusHost().publish('preferences.color-scheme', 'dark')
+
+      render(
+        <ColorSchemeProvider scheme="light">
+          <SchemeProbe />
+        </ColorSchemeProvider>,
+      )
+
+      expect(screen.getByTestId('scheme')).toHaveTextContent('light')
     })
   })
 })
