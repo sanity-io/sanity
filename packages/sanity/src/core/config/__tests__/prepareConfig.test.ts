@@ -234,6 +234,30 @@ describe('prepareConfig — auth.unstable_oauth', () => {
     expect(workspaces[0].oauthClientId).toBe('oc-test-client')
   })
 
+  it("exposes the OAuth workspace's sign-in host for auth probes", () => {
+    const {workspaces} = prepareConfig([
+      createWorkspace({
+        name: 'auth-host',
+        basePath: '/auth-host',
+        apiHost: 'https://api.example.com',
+        auth: {apiHost: 'https://auth.example.com', unstable_oauth: {clientId: 'oc-test-client'}},
+      }),
+      createWorkspace({
+        name: 'workspace-host',
+        basePath: '/workspace-host',
+        apiHost: 'https://api.example.com',
+        auth: {unstable_oauth: {clientId: 'oc-test-client'}},
+      }),
+      createWorkspace({name: 'token', basePath: '/token', auth: {loginMethod: 'token'}}),
+    ])
+
+    expect(workspaces.map((workspace) => workspace.oauthApiHost)).toEqual([
+      'https://auth.example.com',
+      'https://api.example.com',
+      undefined,
+    ])
+  })
+
   it('does not warn about divergent auth for an OAuth workspace of the same project', () => {
     const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const projectId = `oauth-${Math.random().toString(36).slice(2)}`

@@ -131,6 +131,7 @@ function buildProbe(
   input: WorkspaceAuthProbeInput,
   options: CreateProbeOptions,
   token: string | undefined,
+  readStoredToken?: () => string | undefined,
 ): Observable<WorkspaceAuthProbeResult> {
   const apiHost = resolveApiHost(input.apiHost)
   const {oauthClientId} = input
@@ -140,21 +141,35 @@ function buildProbe(
   const existing = cache.get(key)
   if (existing) return existing
 
-  const clientConfig: SanityClientConfig = {
-    ...AUTH_CLIENT_OPTIONS,
-    projectId: input.projectId,
-    dataset: input.dataset,
-    ...(apiHost ? {apiHost} : {}),
-    ...(token ? {token, ignoreBrowserTokenWarning: true} : {withCredentials: true}),
-  }
+  const clientFor = (credential: string | undefined): SanityClient =>
+    factory({
+      ...AUTH_CLIENT_OPTIONS,
+      projectId: input.projectId,
+      dataset: input.dataset,
+      ...(apiHost ? {apiHost} : {}),
+      ...(credential
+        ? {token: credential, ignoreBrowserTokenWarning: true}
+        : {withCredentials: true}),
+    })
 
-  const client = factory(clientConfig)
+  let currentToken = token
+  let client = clientFor(currentToken)
 
   const tokenKey = getTokenStorageKey(input.projectId, oauthClientId)
-  // An OAuth workspace is signed in only with its own tokens. The API cookie belongs to the
-  // other workspaces of the project, so it is not probed.
-  const probe = (): Promise<WorkspaceAuthProbeResult> =>
-    oauthClientId && !token ? Promise.resolve(UNAUTHENTICATED) : callAuthId(client)
+  const probe = (): Promise<WorkspaceAuthProbeResult> => {
+    // A stored token can be replaced while the probe is open, e.g. when another tab rotates an
+    // OAuth pair. Re-read it on every probe, so the probe never checks a token that was replaced.
+    if (readStoredToken) {
+      const latest = readStoredToken()
+      if (latest !== currentToken) {
+        currentToken = latest
+        client = clientFor(currentToken)
+      }
+    }
+    // An OAuth workspace is signed in only with its own tokens. The API cookie belongs to the
+    // other workspaces of the project, so it is not probed.
+    return oauthClientId && !currentToken ? Promise.resolve(UNAUTHENTICATED) : callAuthId(client)
+  }
   const cookieKey = getCookieAuthStateKey(input.projectId)
 
   // Re-probe when an external signal indicates auth state may have changed.
@@ -253,7 +268,8 @@ function probe(
       switchMap((token) => (token ? buildProbe(input, options, token) : of(UNAUTHENTICATED))),
     )
   }
-  return buildProbe(input, options, getStoredToken(input.projectId, input.oauthClientId))
+  const readStoredToken = () => getStoredToken(input.projectId, input.oauthClientId)
+  return buildProbe(input, options, readStoredToken(), readStoredToken)
 }
 
 /**

@@ -265,6 +265,32 @@ describe('probeWorkspaceAuth', () => {
     expect(mock.configs()[0].token).toBe('oauth-access-token')
   })
 
+  it('probes the replacement token after another tab rotates the OAuth pair', async () => {
+    const tokensKey = getOAuthTokensStorageKey('p-rotate', 'oc-1')
+    localStorage.setItem(tokensKey, JSON.stringify({accessToken: 'access-1', refreshToken: 'r-1'}))
+    // Only the rotated token is accepted, as after access-1 expired.
+    const mock = createMockFactory({
+      authIdImpl: (config) =>
+        config.token === 'access-2'
+          ? Promise.resolve({id: 'mock-id', expiry: 0})
+          : Promise.reject(create401Error()),
+    })
+
+    const probe$ = _probeWorkspaceAuthForTest(
+      {projectId: 'p-rotate', dataset: 'd1', oauthClientId: 'oc-1'},
+      {clientFactory: mock.factory},
+    )
+    const collected = lastValueFrom(probe$.pipe(take(2), toArray()))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    // Another tab rotates the pair; the storage event reaches this tab.
+    localStorage.setItem(tokensKey, JSON.stringify({accessToken: 'access-2', refreshToken: 'r-2'}))
+    window.dispatchEvent(new StorageEvent('storage', {key: tokensKey}))
+
+    expect(await collected).toEqual([{authenticated: false}, {authenticated: true}])
+    expect(mock.configs().at(-1)?.token).toBe('access-2')
+  })
+
   it('reports an OAuth workspace without tokens as signed out, without probing the cookie', async () => {
     localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'provider-token'}))
 

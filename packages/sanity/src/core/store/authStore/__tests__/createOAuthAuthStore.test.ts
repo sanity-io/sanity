@@ -528,6 +528,42 @@ describe('createOAuthAuthStore', () => {
       expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-1'})
     })
 
+    it('revokes the access token of an access-only pair a new access-only sign-in replaces', async () => {
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({
+          accessToken: 'access-A',
+          expiresAt: Date.now() + 3_600_000,
+          refreshAt: Date.now() + 2_880_000,
+        }),
+      )
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      const {factory} = createMockClientFactory(new Set(['access-A', 'access-B']))
+      const endpoints = createMockEndpoints({
+        exchangeCode: vi.fn(async () => ({
+          access_token: 'access-B',
+          token_type: 'bearer',
+          expires_in: 3600,
+        })),
+      })
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment('?code=the-code&state=expected-state'),
+      })
+
+      await expect(store.handleCallbackUrl!()).resolves.toMatchObject({success: true})
+
+      expect(endpoints.revoke).toHaveBeenCalledTimes(1)
+      expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'access-A'})
+    })
+
     it('rejects a response with another state, and leaves the URL and the flow alone', async () => {
       const flow = {codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}
       sessionStorage.setItem(FLOW_KEY, JSON.stringify(flow))
@@ -663,6 +699,43 @@ describe('createOAuthAuthStore', () => {
 
       expect(state.currentUser).toBeNull()
       expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+    })
+
+    it('adopts an access-only pair another tab stored instead of signing out', async () => {
+      const accessOnly = (accessToken: string) => ({
+        accessToken,
+        expiresAt: Date.now() + 3_600_000,
+        refreshAt: Date.now() + 2_880_000,
+      })
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(accessOnly('access-A')))
+      const {factory, configs} = createMockClientFactory(new Set(['access-A', 'access-B']))
+      const endpoints = createMockEndpoints()
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment(),
+      })
+      await authenticatedState(store.state)
+      const requestHandler = configs.find((config) => config.token === 'access-A')
+        ?.requestHandler as RequestHandler
+
+      // Another tab signed in again, also without a refresh token. Its broadcast hasn't arrived,
+      // so this tab still holds access-A when a request with it is rejected.
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(accessOnly('access-B')))
+      const next = vi
+        .fn()
+        .mockRejectedValueOnce(createExpiredSessionError())
+        .mockResolvedValue({ok: true})
+      await requestHandler({url: '/data/query', headers: {Authorization: 'Bearer access-A'}}, next)
+
+      expect(next).toHaveBeenLastCalledWith(
+        expect.objectContaining({headers: {Authorization: 'Bearer access-B'}}),
+      )
+      expect(JSON.parse(localStorage.getItem(TOKENS_KEY)!)).toMatchObject({accessToken: 'access-B'})
+      expect(endpoints.refresh).not.toHaveBeenCalled()
     })
 
     it('adopts a pair another tab rotated instead of redeeming a used refresh token', async () => {

@@ -225,6 +225,16 @@ function getOAuthClientId(auth: unknown): string | undefined {
   return (auth as AuthConfig).unstable_oauth?.clientId
 }
 
+/**
+ * The API host an OAuth workspace signs in against: `auth.apiHost`, else the workspace's. The
+ * OAuth store uses the same, so the workspace's auth probe has to as well, or a token issued on
+ * one host is checked against another.
+ */
+function getOAuthApiHost(auth: unknown, apiHost: string | undefined): string | undefined {
+  if (!getOAuthClientId(auth)) return undefined
+  return (auth as AuthConfig).apiHost ?? apiHost
+}
+
 function fingerprintAuth(auth: unknown): string {
   if (auth === null || typeof auth !== 'object') return String(auth)
 
@@ -449,6 +459,7 @@ export function prepareConfig(
       dataset: rootSource.dataset,
       apiHost: rootSource.apiHost,
       oauthClientId: getOAuthClientId(rootSource.auth),
+      oauthApiHost: getOAuthApiHost(rootSource.auth, rootSource.apiHost),
       schema: resolvedSources[0].schema,
       i18n: resolvedSources[0].i18n,
       customIcon: !!rootSource.icon,

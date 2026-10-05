@@ -50,7 +50,7 @@ export function WorkspaceMenuButton() {
       probeWorkspaceAuth({
         projectId: workspace.projectId,
         dataset: workspace.dataset,
-        apiHost: workspace.apiHost,
+        apiHost: workspace.oauthApiHost ?? workspace.apiHost,
         oauthClientId: workspace.oauthClientId,
       })
         .pipe(take(1))

@@ -130,7 +130,12 @@ describe('OAuth login component', () => {
   it.each([
     ['on another origin', 'https://elsewhere.example.com', 'must be on the Studio origin'],
     ['that is relative', '/callback', 'must be an absolute URL'],
-    ['with a fragment', `${ORIGIN}/callback#done`, 'must not have a fragment'],
+    ['with a fragment', `${ORIGIN}/oauth/callback#done`, 'must not have a fragment'],
+    [
+      "outside the workspace's base path",
+      `${ORIGIN}/other-workspace`,
+      "must be inside the workspace's base path",
+    ],
   ])('refuses a redirect URL %s', async (_case, redirectUri, message) => {
     const navigate = vi.fn()
     const {LoginComponent} = _createOAuthAuthStore({
@@ -138,6 +143,7 @@ describe('OAuth login component', () => {
       dataset: 'test-dataset',
       clientId: 'oc-test-client',
       redirectUri,
+      basePath: '/oauth',
       clientFactory: createAnonymousClient,
       endpoints: createOAuthEndpoints('https://api.sanity.io'),
       getLocation: () => ({origin: ORIGIN, pathname: '/', search: ''}),

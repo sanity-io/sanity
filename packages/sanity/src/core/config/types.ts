@@ -1305,6 +1305,12 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
    * @internal
    */
   oauthClientId?: string
+  /**
+   * The API host the OAuth workspace signs in against (`auth.apiHost`, else `apiHost`), when
+   * `auth.unstable_oauth` is set. Auth probes use it instead of `apiHost`.
+   * @internal
+   */
+  oauthApiHost?: string
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: StudioTheme
   schema: Schema

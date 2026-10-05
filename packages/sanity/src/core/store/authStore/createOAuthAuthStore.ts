@@ -168,9 +168,11 @@ function createTabState<T>(): Pick<BroadcastedState<T>, 'value' | 'get' | 'updat
  * Refuses a redirect URI the authorization server would reject, before the flow is stored: it has
  * to be absolute and without a fragment (RFC 6749 section 3.1.2). It also has to be on the Studio
  * origin, because the verifier and `state` live in this origin's sessionStorage and the response
- * has to come back here to be exchanged.
+ * has to come back here to be exchanged. And it has to be inside this workspace's base path: only
+ * the active workspace's store handles the callback, so a response landing on another workspace's
+ * route would never reach the store that started the flow.
  */
-function assertRedirectUri(redirectUri: string, origin: string): void {
+function assertRedirectUri(redirectUri: string, origin: string, basePath: string): void {
   let url: URL
   try {
     url = new URL(redirectUri)
@@ -185,6 +187,21 @@ function assertRedirectUri(redirectUri: string, origin: string): void {
       `auth.unstable_oauth.redirectUri must be on the Studio origin (${origin}), got ${redirectUri}`,
     )
   }
+  const workspacePath = basePath.replace(/\/+$/, '')
+  if (
+    workspacePath &&
+    url.pathname !== workspacePath &&
+    !url.pathname.startsWith(`${workspacePath}/`)
+  ) {
+    throw new Error(
+      `auth.unstable_oauth.redirectUri must be inside the workspace's base path (${workspacePath}), got ${redirectUri}`,
+    )
+  }
+}
+
+/** Whether two token pairs are the same pair. A pair may have no refresh token. */
+function isSamePair(a: OAuthTokens | undefined, b: OAuthTokens | undefined): boolean {
+  return a?.accessToken === b?.accessToken && a?.refreshToken === b?.refreshToken
 }
 
 function bearerTokenOf(request: RequestHandlerOptions): string | undefined {
@@ -335,7 +352,9 @@ export function _createOAuthAuthStore({
         tokenStorage.update(undefined)
         return undefined
       }
-      if (stored.refreshToken !== rejected.refreshToken) {
+      // Compared as a whole pair: a pair can lack a refresh token, so two different access-only
+      // pairs would otherwise look the same.
+      if (!isSamePair(stored, rejected)) {
         if (stored.accessToken !== tokenStorage.get()?.accessToken) tokenStorage.update(stored)
         return stored
       }
@@ -350,7 +369,7 @@ export function _createOAuthAuthStore({
         // obtained is valid on the server and known only here, so revoke it rather than drop it
         // or publish it over the current one. The check and the write below are synchronous, so
         // nothing in this tab can slip in between.
-        if (epoch !== sessionEpoch() || latestTokens()?.refreshToken !== stored.refreshToken) {
+        if (epoch !== sessionEpoch() || !isSamePair(latestTokens(), stored)) {
           await revokeTokens(toTokens(response))
           return epoch === sessionEpoch() ? latestTokens() : undefined
         }
@@ -475,7 +494,7 @@ export function _createOAuthAuthStore({
     const oauthState = createState()
     const {origin} = getLocation()
     const redirectUri = redirectUriOption ?? `${origin}${basePath.replace(/\/+$/, '')}`
-    assertRedirectUri(redirectUri, origin)
+    assertRedirectUri(redirectUri, origin, basePath)
     writeFlow(flowStorageKey, {codeVerifier, state: oauthState, redirectUri, redirectPath})
     navigate(
       endpoints.authorizeUrl({
@@ -603,9 +622,9 @@ export function _createOAuthAuthStore({
       if (epoch !== sessionEpoch()) return false
       const replaced = latestTokens()
       tokenStorage.update(tokens)
-      // The pair this sign-in replaces is no longer used by any tab. Revoked in the background,
-      // so the sign-in does not wait for it.
-      if (replaced && replaced.refreshToken !== tokens.refreshToken) void revokeTokens(replaced)
+      // The tokens of the pair this sign-in replaces are no longer used by any tab. Revoked in the
+      // background, so the sign-in does not wait for it. Only those the new pair doesn't reuse.
+      if (replaced) void revokeTokens(replaced, tokens)
       return true
     })
     if (!published) {
@@ -661,11 +680,15 @@ export function _createOAuthAuthStore({
     }
   }
 
-  /** Best-effort revocation of both tokens (RFC 7009 answers 200 whatever happened). */
-  function revokeTokens(tokens: OAuthTokens): Promise<unknown> {
+  /**
+   * Best-effort revocation of both tokens (RFC 7009 answers 200 whatever happened), except those
+   * `keep` still uses.
+   */
+  function revokeTokens(tokens: OAuthTokens, keep?: OAuthTokens): Promise<unknown> {
+    const kept = new Set([keep?.accessToken, keep?.refreshToken])
     return Promise.allSettled(
       [tokens.accessToken, tokens.refreshToken]
-        .filter((token): token is string => Boolean(token))
+        .filter((token): token is string => Boolean(token) && !kept.has(token))
         .map((token) => endpoints.revoke({clientId, token})),
     )
   }
