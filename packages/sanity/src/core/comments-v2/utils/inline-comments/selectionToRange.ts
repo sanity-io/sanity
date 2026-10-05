@@ -15,6 +15,7 @@ import {
 function resolvePoint(
   point: EditorSelectionPoint,
   value: PortableTextBlock[],
+  // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
 ): CollaborationCommentRange['start'] | null {
   const blockSegment = point.path[0]
   const spanSegment = point.path[point.path.length - 1]
@@ -42,6 +43,7 @@ function resolvePoint(
 export function selectionToRange(
   selection: NonNullable<EditorSelection>,
   value: PortableTextBlock[],
+  // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
 ): CollaborationCommentRange | null {
   const normalized = selection.backward
     ? {anchor: selection.focus, focus: selection.anchor}
@@ -64,6 +66,7 @@ export function selectionToRange(
 export function selectionsToRange(
   selections: Array<EditorSelection | null>,
   value: PortableTextBlock[],
+  // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
 ): CollaborationCommentRange | null {
   const ranges = selections.flatMap((selection) => {
     if (selection === null) return []
@@ -75,7 +78,9 @@ export function selectionsToRange(
 
   const blockOrder = new Map(value.map((block, index) => [block._key, index]))
   const comparePoints = (
+    // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
     a: CollaborationCommentRange['start'],
+    // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
     b: CollaborationCommentRange['start'],
   ): number => {
     const blockDifference = (blockOrder.get(a._key) ?? -1) - (blockOrder.get(b._key) ?? -1)
