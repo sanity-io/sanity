@@ -10,6 +10,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {getOAuthFlowStorageKey} from '../constants'
 import {_createOAuthAuthStore} from '../createOAuthAuthStore'
 import {type OAuthEndpoints} from '../oauth/oauthEndpoints'
+import {_probeWorkspaceAuthForTest} from '../probeWorkspaceAuth'
 
 // Without localStorage the token pair lives in this tab's memory and is not shared with other
 // tabs. (jsdom reports no localStorage support to the store, so this is the default here.)
@@ -38,7 +39,7 @@ function createClientFactory(validTokens: Set<string>) {
           url: `https://${PROJECT_ID}.api.sanity.io/v1/users/me`,
         })
       }),
-    }) as unknown as SanityClient
+    }) as SanityClient
 }
 
 describe('createOAuthAuthStore without localStorage', () => {
@@ -104,5 +105,24 @@ describe('createOAuthAuthStore without localStorage', () => {
     expect(otherTabStates).toEqual([false])
     expect(endpoints.refresh).not.toHaveBeenCalled()
     subscription.unsubscribe()
+
+    // The workspace auth probe can't read the pair from storage, so it reads it from the store.
+    const probeConfigs: SanityClientConfig[] = []
+    const probe = await firstValueFrom(
+      _probeWorkspaceAuthForTest(
+        {projectId: PROJECT_ID, dataset: 'test-dataset', oauthClientId: clientId},
+        {
+          clientFactory: (config) => {
+            probeConfigs.push(config)
+            return {
+              config: () => config,
+              request: vi.fn(async () => ({id: 'user'})),
+            } as SanityClient
+          },
+        },
+      ),
+    )
+    expect(probe).toEqual({authenticated: true})
+    expect(probeConfigs.at(-1)?.token).toBe('access-1')
   })
 })

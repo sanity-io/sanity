@@ -291,6 +291,19 @@ describe('probeWorkspaceAuth', () => {
     expect(mock.configs().at(-1)?.token).toBe('access-2')
   })
 
+  it('keeps one cached OAuth probe per client across token rotations', () => {
+    const tokensKey = getOAuthTokensStorageKey('p-cache', 'oc-1')
+    const mock = createMockFactory({authenticated: true})
+    const input = {projectId: 'p-cache', dataset: 'd1', oauthClientId: 'oc-1'}
+
+    localStorage.setItem(tokensKey, JSON.stringify({accessToken: 'access-1'}))
+    const first = _probeWorkspaceAuthForTest(input, {clientFactory: mock.factory})
+    localStorage.setItem(tokensKey, JSON.stringify({accessToken: 'access-2'}))
+    const second = _probeWorkspaceAuthForTest(input, {clientFactory: mock.factory})
+
+    expect(second).toBe(first)
+  })
+
   it('reports an OAuth workspace without tokens as signed out, without probing the cookie', async () => {
     localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'provider-token'}))
 

@@ -31,7 +31,7 @@ import {
 import {type OAuthConfig} from '../../config/auth/types'
 import {isStaging} from '../../environment/isStaging'
 import {type StudioErrorHandler} from '../../studio/requestErrors/types'
-import {isInvalidSessionError} from '../../util/apiErrors'
+import {isInvalidSessionError, setInvalidSessionOwner} from '../../util/apiErrors'
 import {canonicalHash} from '../../util/canonicalHash'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {
@@ -55,6 +55,7 @@ import {
   type OAuthTokenResponse,
 } from './oauth/oauthEndpoints'
 import {createCodeChallenge, createCodeVerifier, createState} from './oauth/pkce'
+import {registerTabAccessToken} from './oauth/tabTokens'
 import {type AuthState, type AuthStore, type HandleCallbackResult} from './types'
 
 /** Parameters of an authorization response (RFC 6749 section 4.1.2, RFC 9207 `iss`). */
@@ -308,6 +309,9 @@ export function _createOAuthAuthStore({
         persistedTokens,
       )
     : createTabState<OAuthTokens>()
+  if (!supportsLocalStorage) {
+    registerTabAccessToken(tokensStorageKey, () => tokenStorage.get()?.accessToken)
+  }
 
   /**
    * The latest pair any tab wrote. localStorage is shared, so it can be ahead of this tab's
@@ -403,13 +407,22 @@ export function _createOAuthAuthStore({
     } catch (err) {
       if (!isInvalidSessionError(err)) throw err
       const current = tokenStorage.get()
-      if (!current) throw err
       // A request that went out before a renewal only needs the pair that replaced its token.
       const tokens =
-        bearerTokenOf(request) === current.accessToken ? await refresh(current) : current
-      if (!tokens) throw err
-      return next(withBearerToken(request, tokens.accessToken))
+        current && bearerTokenOf(request) === current.accessToken ? await refresh(current) : current
+      if (!tokens) throw ownedByThisStore(err)
+      try {
+        return await next(withBearerToken(request, tokens.accessToken))
+      } catch (retryErr) {
+        throw isInvalidSessionError(retryErr) ? ownedByThisStore(retryErr) : retryErr
+      }
     }
+  }
+
+  /** Marks a final invalid-session error as this store's, so the forced logout signs it out. */
+  function ownedByThisStore(err: unknown): unknown {
+    setInvalidSessionOwner(err, logout)
+    return err
   }
 
   function createClient(tokens: OAuthTokens | undefined): SanityClient {

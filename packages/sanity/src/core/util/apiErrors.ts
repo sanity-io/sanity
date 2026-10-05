@@ -78,3 +78,26 @@ function readErrorCode(value: unknown): string | undefined {
   const code = value.errorCode
   return typeof code === 'string' ? code : undefined
 }
+
+const invalidSessionOwners = new WeakMap<object, () => Promise<void>>()
+
+/**
+ * Records which auth store's session an invalid-session error belongs to, so the forced logout
+ * that follows signs out that store. Without it the logout is routed by project ID only, which
+ * picks the wrong store when two workspaces of a project sign in separately (OAuth tokens are
+ * stored per project and client).
+ *
+ * @internal
+ */
+export function setInvalidSessionOwner(err: unknown, logout: () => Promise<void>): void {
+  if (typeof err === 'object' && err !== null) invalidSessionOwners.set(err, logout)
+}
+
+/**
+ * The logout of the auth store an invalid-session error belongs to, when one was recorded.
+ *
+ * @internal
+ */
+export function getInvalidSessionOwner(err: unknown): (() => Promise<void>) | undefined {
+  return typeof err === 'object' && err !== null ? invalidSessionOwners.get(err) : undefined
+}

@@ -29,6 +29,7 @@ import {
 } from './constants'
 import {createBroadcastState} from './createBroadcastState'
 import {observeDashboardToken} from './dashboardToken'
+import {readTabAccessToken} from './oauth/tabTokens'
 
 /** @internal */
 export interface WorkspaceAuthProbeInput {
@@ -51,7 +52,12 @@ function getTokenStorageKey(projectId: string, oauthClientId: string | undefined
 }
 
 function getStoredToken(projectId: string, oauthClientId: string | undefined): string | undefined {
-  if (!supportsLocalStorage) return undefined
+  // Without localStorage an OAuth pair lives in the store's tab memory, which it registers.
+  if (!supportsLocalStorage) {
+    return oauthClientId
+      ? readTabAccessToken(getOAuthTokensStorageKey(projectId, oauthClientId))
+      : undefined
+  }
   try {
     const raw = localStorage.getItem(getTokenStorageKey(projectId, oauthClientId))
     if (!raw) return undefined
@@ -137,7 +143,16 @@ function buildProbe(
   const {oauthClientId} = input
   const factory = options.clientFactory ?? createSanityClient
 
-  const key = cacheKey({apiHost, projectId: input.projectId, token, oauthClientId})
+  // An OAuth probe that reads its token from storage follows every rotation itself (see `probe`
+  // below), so it is keyed by client, not by token: a key per access token would add a cache
+  // entry for every rotation.
+  const followsStoredToken = Boolean(oauthClientId && readStoredToken)
+  const key = cacheKey({
+    apiHost,
+    projectId: input.projectId,
+    token: followsStoredToken ? undefined : token,
+    oauthClientId,
+  })
   const existing = cache.get(key)
   if (existing) return existing
 

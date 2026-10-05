@@ -9,6 +9,7 @@ import {firstValueFrom} from 'rxjs'
 import {filter} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {getInvalidSessionOwner} from '../../../util/apiErrors'
 import {getOAuthFlowStorageKey, getOAuthTokensStorageKey} from '../constants'
 import {
   _createOAuthAuthStore,
@@ -99,7 +100,7 @@ function createMockClientFactory(validTokens: Set<string>) {
         }
         return Promise.resolve({})
       }),
-    } as unknown as SanityClient
+    } as SanityClient
   }
   return {factory, configs}
 }
@@ -271,7 +272,7 @@ describe('createOAuthAuthStore', () => {
             }
             throw createExpiredSessionError()
           }),
-        }) as unknown as SanityClient
+        }) as SanityClient
       const store = _createOAuthAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
@@ -919,10 +920,19 @@ describe('createOAuthAuthStore', () => {
 
       const next = vi.fn().mockRejectedValue(createExpiredSessionError())
 
-      await expect(
-        requestHandler({url: '/data/query', headers: {Authorization: 'Bearer access-1'}}, next),
-      ).rejects.toThrow()
+      const err = await requestHandler(
+        {url: '/data/query', headers: {Authorization: 'Bearer access-1'}},
+        next,
+      ).catch((e: unknown) => e)
+      expect(err).toBeInstanceOf(ClientError)
       expect(next).toHaveBeenCalledTimes(2)
+
+      // The error names this store's logout, so the forced logout signs out this store rather
+      // than whichever workspace of the project comes first.
+      const owner = getInvalidSessionOwner(err)
+      expect(owner).toBeDefined()
+      await owner!()
+      expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
     })
   })
 

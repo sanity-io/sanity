@@ -3,6 +3,7 @@ import {act, renderHook} from '@testing-library/react'
 import {firstValueFrom, of, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {setInvalidSessionOwner} from '../../../util/apiErrors'
 import {
   classifyConfigError,
   classifyRequestError,
@@ -417,6 +418,16 @@ describe('createRequestErrorChannel', () => {
         type: 'unauthorized',
         projectId: 'abc123',
       })
+    })
+
+    it('carries the logout of the auth store the session belongs to, when the error records one', async () => {
+      const channel = createRequestErrorChannel()
+      const err = expiredSessionError()
+      const logout = vi.fn(async () => {})
+      setInvalidSessionOwner(err, logout)
+      void channel.attempt(() => Promise.reject(err))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(await latestClaim(channel)).toMatchObject({type: 'unauthorized', logout})
     })
 
     it('claims a session-not-found 401 (SIO-401-ANF) as unauthorized', async () => {

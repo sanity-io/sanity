@@ -12,7 +12,7 @@ const PROJECT_ID = 'test-project'
 const ORIGIN = 'http://localhost:3333'
 
 function createAnonymousClient(config: SanityClientConfig): SanityClient {
-  return {config: () => config, request: vi.fn()} as unknown as SanityClient
+  return {config: () => config, request: vi.fn()} as SanityClient
 }
 
 describe('OAuth login component', () => {
