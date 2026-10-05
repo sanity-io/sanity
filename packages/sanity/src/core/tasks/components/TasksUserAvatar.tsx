@@ -3,7 +3,7 @@ import {type User} from '@sanity/types'
 import {type AvatarSize} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
-import {Icon} from 'ui5'
+import {Icon, Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {AvatarSkeleton, UserAvatar} from '../../components/userAvatar/UserAvatar'
@@ -44,7 +44,7 @@ export function TasksUserAvatar(props: {
   if (!user || !loadedUser) {
     return (
       <AvatarRoot $size={size} $border={border}>
-        <Icon icon={UserIcon} size={size} />
+        <Icon icon={UserIcon} size={size} muted />
       </AvatarRoot>
     )
   }
