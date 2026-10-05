@@ -3,7 +3,7 @@ import {type User} from '@sanity/types'
 import {type AvatarSize} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
-import {Icon, Text} from 'ui5'
+import {Icon} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {AvatarSkeleton, UserAvatar} from '../../components/userAvatar/UserAvatar'

@@ -236,7 +236,7 @@ export function TargetField(
                       <Box paddingX={1}>
                         <Icon icon={DocumentIcon} size={1} style={{margin: '-0.375rem'}} />
                       </Box>
-                      <Placeholder size={1} as="div" trim={true}>
+                      <Placeholder size={1} forwardedAs="div" trim={true}>
                         {t('form.input.target.search.placeholder')}
                       </Placeholder>
                     </Flex>
