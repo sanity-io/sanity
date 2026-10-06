@@ -53,25 +53,41 @@ interface Options {
 
 const ALLOWED_PROTOCOLS = new Set(['http:', 'https:'])
 
-/** Parses the url to open; anything that is not an absolute http(s) url is rejected up front. */
+/** A raw url argument safe to echo in an error: any `user:password@` segment is redacted. */
+function redactUserinfo(value: string): string {
+  return value.replace(/[^/\s@]+:[^/\s@]+@/g, '<redacted>@')
+}
+
+/**
+ * Parses the url to open. Anything that is not an absolute http(s) url is rejected up front, and
+ * so is a url with embedded credentials, which would otherwise travel with it everywhere.
+ */
 function parseUrl(value: string): URL {
   let url: URL
   try {
     url = new URL(value)
   } catch {
-    throw new Error(`Invalid url "${value}": expected an absolute http(s) url`)
+    throw new Error(`Invalid url "${redactUserinfo(value)}": expected an absolute http(s) url`)
   }
   // WHATWG parsing also accepts file:, data:, mailto: and the like, none of which may ever be
   // handed the token
   if (!ALLOWED_PROTOCOLS.has(url.protocol)) {
-    throw new Error(`Invalid url "${value}": expected an absolute http(s) url`)
+    throw new Error(`Invalid url "${redactUserinfo(value)}": expected an absolute http(s) url`)
+  }
+  if (url.username !== '' || url.password !== '') {
+    throw new Error(
+      `Invalid url for ${url.origin}: credentials in the url (user:password@) are not supported`,
+    )
   }
   return url
 }
 
-/** The url without its fragment, for messages: a caller-supplied `#token=` must not be echoed. */
+/**
+ * The url for messages, rebuilt from origin, path and query so that neither a caller-supplied
+ * fragment (`#token=`) nor anything else outside those parts can be echoed.
+ */
 function describeUrl(url: URL): string {
-  return url.hash === '' ? url.href : `${url.origin}${url.pathname}${url.search}#…`
+  return `${url.origin}${url.pathname}${url.search}${url.hash === '' ? '' : '#…'}`
 }
 
 function parsePort(value: string): number {
