@@ -255,7 +255,7 @@
     "@repo/tsdown.config": "workspace:*",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.18",
-    "@storybook/react-vite": "^10.6.0",
+    "@storybook/react-vite": "^10.6.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
