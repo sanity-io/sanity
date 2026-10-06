@@ -44,12 +44,22 @@ interface Options {
   chromeArgs: string[]
 }
 
+const ALLOWED_PROTOCOLS = new Set(['http:', 'https:'])
+
+/** Parses the url to open; anything that is not an absolute http(s) url is rejected up front. */
 function parseUrl(value: string): URL {
+  let url: URL
   try {
-    return new URL(value)
+    url = new URL(value)
   } catch {
     throw new Error(`Invalid url "${value}": expected an absolute http(s) url`)
   }
+  // WHATWG parsing also accepts file:, data:, mailto: and the like, none of which may ever be
+  // handed the token
+  if (!ALLOWED_PROTOCOLS.has(url.protocol)) {
+    throw new Error(`Invalid url "${value}": expected an absolute http(s) url`)
+  }
+  return url
 }
 
 function parsePort(value: string): number {
@@ -108,8 +118,7 @@ function resolveTarget(options: Options): Target {
     return {url: options.url.href, signIn: false}
   }
   const isLoopback =
-    (options.url.protocol === 'http:' || options.url.protocol === 'https:') &&
-    LOOPBACK_HOSTS.has(options.url.hostname)
+    ALLOWED_PROTOCOLS.has(options.url.protocol) && LOOPBACK_HOSTS.has(options.url.hostname)
   if (!isLoopback && !options.injectToken) {
     return {
       url: options.url.href,
