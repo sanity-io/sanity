@@ -259,8 +259,8 @@ catalogs:
       specifier: ^7.0.2
       version: 7.0.2
     ui5:
-      specifier: npm:@sanity/ui@5.0.0-alpha.12
-      version: 5.0.0-alpha.12
+      specifier: npm:@sanity/ui@5.0.0-alpha.14
+      version: 5.0.0-alpha.14
     vite:
       specifier: ^8.3.3
       version: 8.3.3
@@ -434,7 +434,7 @@ importers:
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
       vite:
         specifier: 'catalog:'
         version: 8.3.3(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -502,7 +502,7 @@ importers:
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -594,7 +594,7 @@ importers:
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -667,7 +667,7 @@ importers:
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
       vite:
         specifier: 'catalog:'
         version: 8.3.3(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -763,7 +763,7 @@ importers:
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.4.0
@@ -830,7 +830,7 @@ importers:
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
@@ -897,7 +897,7 @@ importers:
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -1061,7 +1061,7 @@ importers:
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1549,7 +1549,7 @@ importers:
         version: 4.3.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1958,7 +1958,7 @@ importers:
         version: 7.8.2
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
       use-effect-event:
         specifier: ^2.0.4
         version: 2.0.4(react@19.3.0)
@@ -2330,7 +2330,7 @@ importers:
         version: 2.5.1(react@19.3.0)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)'
+        version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -7192,8 +7192,8 @@ packages:
     resolution: {integrity: sha512-k1L7MQQEuQ1v0rsQ8pRzoZ3NRsrvSifBguWlLnl2a5iWGTTW9E0/G/B39291eAf3zF45wheybuJ2onwB/PPsfA==}
     engines: {node: '>=20.9.0'}
 
-  '@sanity-labs/design-tokens@0.0.2-alpha.5':
-    resolution: {integrity: sha512-RwbH9JYJTfXm/h/pgH80CeF8B94EA7+oI4K84iNVtZFNhNAsFsjLP3OFiY3jQsmKwUZIIzJJPyuY6zYQEF7h2A==}
+  '@sanity-labs/design-tokens@0.0.2-alpha.6':
+    resolution: {integrity: sha512-4JMs6p0uUJjtU7hbHDZxCpx/4xEnbEpuBR/0vccE+BlOZYBZaH3MvV7+llV6+OYH5ANh3pvvMM+CEy5BPdf2KA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity-labs/oclif-plugin-skills-flag@0.2.1':
@@ -7555,8 +7555,8 @@ packages:
       react-dom: ^19.2
       styled-components: ^6.1
 
-  '@sanity/ui@5.0.0-alpha.12':
-    resolution: {integrity: sha512-IFeFl9tRSN93GlNdrLVSb0MFMq+TjIpR5kwqWHT3VbJK4mP3vmJqcbJDQ2jHqYN/lUerTZX1GVyHPyMoqSYeTA==}
+  '@sanity/ui@5.0.0-alpha.14':
+    resolution: {integrity: sha512-h+IdfVMoDpnwYxk1Z+RFal7yRKgukWHY3QQtf2P9dKTIFCSzKr4CIGyKuBfFFTe58cUBRMfHllRU2b/hlhHF6A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
     peerDependencies:
@@ -19566,7 +19566,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@sanity-labs/design-tokens@0.0.2-alpha.5': {}
+  '@sanity-labs/design-tokens@0.0.2-alpha.6': {}
 
   '@sanity-labs/oclif-plugin-skills-flag@0.2.1(@oclif/core@4.14.0)':
     dependencies:
@@ -20385,9 +20385,9 @@ snapshots:
       styled-components: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       use-effect-event: 2.0.4(react@19.3.0)
 
-  '@sanity/ui@5.0.0-alpha.12(react-dom@19.3.0)(react@19.3.0)':
+  '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)':
     dependencies:
-      '@sanity-labs/design-tokens': 0.0.2-alpha.5
+      '@sanity-labs/design-tokens': 0.0.2-alpha.6
       '@sanity/icons': 5.2.3(react@19.3.0)
       clsx: 2.1.1
       comment-json: 5.0.0
