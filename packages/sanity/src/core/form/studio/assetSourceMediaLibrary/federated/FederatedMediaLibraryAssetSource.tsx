@@ -1,6 +1,5 @@
 import {type PluginFilter} from '@sanity/media-library-types'
 import {type AssetSourceComponentProps} from '@sanity/types'
-import {PortalProvider} from '@sanity/ui'
 import {type ReactNode, type RefAttributes, useMemo, useState} from 'react'
 
 import {useClient} from '../../../../hooks/useClient'
@@ -13,7 +12,7 @@ import {
 import {DEFAULT_API_VERSION} from '../constants'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
 import {useValidateAssetCandidate} from '../hooks/useValidateAssetCandidate'
-import {MediaLibraryAssetSource, useRootPortalElement} from '../shared/MediaLibraryAssetSource'
+import {MediaLibraryAssetSource} from '../shared/MediaLibraryAssetSource'
 import {MediaLibraryProvider} from '../shared/MediaLibraryProvider'
 
 /**
@@ -52,9 +51,6 @@ export function FederatedMediaLibraryAssetSource(
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const projectId = client.config().projectId
   const [unavailable, setUnavailable] = useState(false)
-  // Body-level portal target so the dialog escapes the document pane's portal
-  // and fills the whole studio surface, exactly like the iframe asset source.
-  const portalElement = useRootPortalElement()
 
   // The React Compiler memoizes this; identity is stable across renders.
   const handleUnavailable = () => setUnavailable(true)
@@ -69,13 +65,13 @@ export function FederatedMediaLibraryAssetSource(
 
   return (
     <MediaLibraryProvider projectId={projectId} libraryId={libraryId}>
-      <PortalProvider element={portalElement}>
-        <FederatedMediaLibraryDialog
-          onUnavailable={handleUnavailable}
-          sourceProps={sourceProps}
-          view={view}
-        />
-      </PortalProvider>
+      {/* The body-level portal escape lives in FederatedAssetSourceDialog,
+          shared with third-party brokered views. */}
+      <FederatedMediaLibraryDialog
+        onUnavailable={handleUnavailable}
+        sourceProps={sourceProps}
+        view={view}
+      />
     </MediaLibraryProvider>
   )
 }

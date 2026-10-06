@@ -13,7 +13,7 @@ type ListedApplication = Extract<ListedEntry, {type: 'studio' | 'coreApp'}>
 type ListedInstallation = Exclude<ListedEntry, {type: 'studio' | 'coreApp'}>
 
 type Deployment = NonNullable<ListedApplication['activeDeployment']>
-type InterfaceRecord = Deployment['interfaces'][number]
+type InterfaceRecord = NonNullable<Deployment['interfaces']>[number]
 
 function assetSourceInterface(fields: {name: string; moduleId: string}): InterfaceRecord {
   return {
