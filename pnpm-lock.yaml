@@ -184,7 +184,7 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     '@sanity/tsdown-config':
-      specifier: ^0.28.3
+      specifier: ^0.28.5
       version: 0.28.5
     '@sanity/ui':
       specifier: ^4.3.0
