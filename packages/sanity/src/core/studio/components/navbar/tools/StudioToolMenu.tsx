@@ -1,8 +1,8 @@
-import {useMemo} from 'react'
+import {use, useMemo} from 'react'
 
 import {type ToolMenuProps} from '../../../../config/studio/types'
 import {SCHEDULED_PUBLISHING_TOOL_NAME} from '../../../../scheduledPublishing/constants'
-import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/useScheduledPublishingEnabled'
 import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
 
@@ -11,7 +11,9 @@ import {ToolVerticalMenu} from './ToolVerticalMenu'
  * @beta */
 export function StudioToolMenu(props: ToolMenuProps) {
   const {context, isSidebarOpen, tools, ...restProps} = props
-  const {enabled: scheduledPublishingEnabled} = useScheduledPublishingEnabled()
+  // Suspends until the scheduled publishing plugin has settled whether its tool is enabled, so the
+  // tool list is painted once; settled synchronously when the plugin is not loaded
+  const scheduledPublishingEnabled = use(useScheduledPublishingEnabled())
 
   const visibleTools = useMemo(
     () =>

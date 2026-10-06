@@ -1,7 +1,11 @@
-import {lazy, useEffect} from 'react'
+import {lazy, useEffect, useMemo} from 'react'
+import {preloadObservablePromise, useObservablePromise} from 'react-rx'
+import {CommentsModePromiseContext} from 'sanity/_singletons'
 
 import {definePlugin} from '../../config/definePlugin'
 import {type ProviderProps} from '../../config/studio/types'
+import {FEATURES, useFeatureEnabledObservable} from '../../hooks/useFeatureEnabled'
+import {type CommentsMode} from '../context/enabled/types'
 import {commentsUsEnglishLocaleBundle} from '../i18n'
 import {commentsInspector} from './inspector'
 import {CommentsStudioLayout} from './studio-layout/CommentsStudioLayout'
@@ -41,6 +45,11 @@ export const comments = definePlugin({
 })
 
 function CommentsStudioProvider(props: ProviderProps) {
+  const features$ = useFeatureEnabledObservable(FEATURES.studioComments)
+  const featuresPromise = useObservablePromise(features$)
+  useEffect(() => {
+    void preloadObservablePromise(features$)
+  }, [features$])
   useEffect(() => {
     // Preload lazy components (fire-and-forget: the lazy() render reports a failed import)
     void lazyCommentsDocumentLayout()
@@ -48,5 +57,18 @@ function CommentsStudioProvider(props: ProviderProps) {
     void lazyCommentsInput()
   }, [])
 
-  return props.renderDefault(props)
+  const modePromise = useMemo(
+    () =>
+      featuresPromise.then(({enabled, error}): CommentsMode => {
+        if (error) return null
+        return enabled ? 'default' : 'upsell'
+      }),
+    [featuresPromise],
+  )
+
+  return (
+    <CommentsModePromiseContext value={modePromise}>
+      {props.renderDefault(props)}
+    </CommentsModePromiseContext>
+  )
 }

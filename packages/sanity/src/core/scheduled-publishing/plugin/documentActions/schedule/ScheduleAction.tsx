@@ -1,7 +1,7 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {use, useCallback, useState} from 'react'
 import {Box} from 'ui5'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
@@ -12,7 +12,8 @@ import {
 } from '../../../../config/document/actions'
 import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
-import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/useScheduledPublishingEnabled'
+import {useScheduledPublishingMode} from '../../../../scheduledPublishing/contexts/useScheduledPublishingMode'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {debugWithName} from '../../../../studio/timezones/utils/debug'
@@ -63,7 +64,8 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
     permission: 'publish',
   })
   const {createSchedule} = useScheduleOperation()
-  const {enabled, mode} = useScheduledPublishingEnabled()
+  const enabled = use(useScheduledPublishingEnabled())
+  const mode = use(useScheduledPublishingMode())
   const {handleOpenDialog} = useSchedulePublishingUpsell()
   // Scheduling operates on the base draft, so it is not available while a variant is selected —
   // it would silently schedule the base document instead of the variant (SAPP-3986).

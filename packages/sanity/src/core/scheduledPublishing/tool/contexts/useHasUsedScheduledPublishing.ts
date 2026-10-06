@@ -1,7 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
+import {catchError, map, type Observable, of, shareReplay, timeout} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspace} from '../../../studio/workspace'
@@ -9,10 +8,13 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 
 export interface HasUsedScheduledPublishing {
   used: boolean
-  loading: boolean
 }
 
-const HAS_USED_SCHEDULED_PUBLISHING: HasUsedScheduledPublishing = {used: false, loading: true}
+const USED: HasUsedScheduledPublishing = {used: true}
+const NOT_USED: HasUsedScheduledPublishing = {used: false}
+
+/** A probe that has not answered after this long counts as failed, and so as not used */
+const PROBE_TIMEOUT = 10_000
 
 export const cachedUsedScheduledPublishing = new Map<
   string,
@@ -26,39 +28,36 @@ function fetchUsedScheduledPublishing(
   return client.observable
     .request({url: `/schedules/${projectId}/${dataset}?limit=1`, tag: 'scheduled-publishing-used'})
     .pipe(
-      map((res) => {
-        return {used: res.schedules?.length > 0, loading: false}
-      }),
-      catchError(() => of({used: false, loading: false})),
+      timeout({first: PROBE_TIMEOUT}),
+      map((res) => (res.schedules?.length > 0 ? USED : NOT_USED)),
+      catchError(() => of(NOT_USED)),
     )
 }
 
-export function useHasUsedScheduledPublishing({
+/**
+ * Whether scheduled publishing counts as "used" for this workspace, as an observable of the
+ * settled answer. Only called from the scheduled publishing plugin, which `getDefaultPlugins`
+ * includes only when the workspace has the feature enabled.
+ */
+export function useHasUsedScheduledPublishingObservable({
   explicitEnabled,
-  isWorkspaceEnabled,
 }: {
   explicitEnabled?: boolean
-  isWorkspaceEnabled?: boolean
-}) {
+}): Observable<HasUsedScheduledPublishing> {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {projectId, dataset} = useWorkspace()
   const key = `${projectId}-${dataset}`
-  if (!cachedUsedScheduledPublishing.get(key)) {
-    const hasUsed = fetchUsedScheduledPublishing(client).pipe(shareReplay())
-    cachedUsedScheduledPublishing.set(key, hasUsed)
-  }
-  const hasUsedScheduledPublishing$ = useMemo(() => {
+  return useMemo(() => {
     // If the feature is explicitly enabled, we don't need to check if it has been used
     if (explicitEnabled) {
-      return of({used: true, loading: false})
-    }
-    // If the workspace has turned off the feature is explicitly enabled, we don't need to check if it has been used
-    if (!isWorkspaceEnabled) {
-      return of({used: false, loading: false})
+      return of(USED)
     }
 
-    return cachedUsedScheduledPublishing.get(key) || of(HAS_USED_SCHEDULED_PUBLISHING)
-  }, [key, explicitEnabled, isWorkspaceEnabled])
-
-  return useObservable(hasUsedScheduledPublishing$, HAS_USED_SCHEDULED_PUBLISHING)
+    let hasUsed = cachedUsedScheduledPublishing.get(key)
+    if (!hasUsed) {
+      hasUsed = fetchUsedScheduledPublishing(client).pipe(shareReplay())
+      cachedUsedScheduledPublishing.set(key, hasUsed)
+    }
+    return hasUsed
+  }, [client, key, explicitEnabled])
 }

@@ -1,7 +1,8 @@
+import type {ObservablePromise} from 'react-rx'
 import {createContext} from 'sanity/_createContext'
 
 import type {UpsellDialogViewedInfo} from '../../core/studio/upsell/__telemetry__/upsell.telemetry'
-import type {UpsellData} from '../../core/studio/upsell/types'
+import type {UpsellDataResult} from '../../core/studio/upsell/types'
 
 /**
  * @internal
@@ -10,7 +11,7 @@ export interface SchedulePublishUpsellContextValue {
   upsellDialogOpen: boolean
   handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
   handleClose: () => void
-  upsellData: UpsellData | null
+  upsellDataPromise: ObservablePromise<UpsellDataResult>
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
@@ -22,22 +23,11 @@ export interface SchedulePublishUpsellContextValue {
 }
 
 /**
+ * `null` outside `SchedulePublishingUpsellProvider`; `useSchedulePublishingUpsell` substitutes an
+ * inert value there.
  * @internal
  */
-export const SchedulePublishUpsellContext = createContext<SchedulePublishUpsellContextValue>(
+export const SchedulePublishUpsellContext = createContext<SchedulePublishUpsellContextValue | null>(
   'sanity/_singletons/context/schedule-publish-upsell',
-  {
-    upsellData: null,
-    handleOpenDialog: () => null,
-    handleClose: () => null,
-    upsellDialogOpen: false,
-    telemetryLogs: {
-      dialogSecondaryClicked: () => null,
-      dialogPrimaryClicked: () => null,
-      panelViewed: () => null,
-      panelDismissed: () => null,
-      panelPrimaryClicked: () => null,
-      panelSecondaryClicked: () => null,
-    },
-  },
+  null,
 )

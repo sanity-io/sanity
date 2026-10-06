@@ -32,6 +32,7 @@ import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineH
 import {isTextSelectionComment, parseCommentFieldPath} from '../../../helpers'
 import {useComments} from '../../../hooks/useComments'
 import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
+import {useCommentsMode} from '../../../hooks/useCommentsMode'
 import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
 import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
 import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
@@ -39,7 +40,6 @@ import {
   type CommentDocument,
   type CommentFieldCreatePayload,
   type CommentMessage,
-  type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../../types'
 import {buildCommentRangeDecorations} from '../../../utils/inline-comments/buildCommentRangeDecorations'
@@ -58,7 +58,7 @@ const EMPTY_ARRAY: [] = []
 const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
-  const {enabled, mode} = useCommentsEnabled()
+  const enabled = useCommentsEnabled()
   const fieldActions = useFieldActions()
 
   // This is a workaround solution to disable comments for the AI assist type.
@@ -77,13 +77,16 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     return props.renderDefault(props)
   }
 
-  return <CommentsPortableTextInputInner {...props} mode={mode} />
+  return <CommentsPortableTextInputInner {...props} />
 }
 
 const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
-  props: PortableTextInputProps & {mode: CommentsUIMode},
+  props: PortableTextInputProps,
 ) {
-  const {mode, onItemClose, onItemOpen} = props
+  const {onItemClose, onItemOpen} = props
+  // Only the floating button's click handler tells upsell from default, so the input never waits
+  // for the mode
+  const modePromise = useCommentsMode()
   const currentUser = useCurrentUser()
   const portal = usePortal()
 
@@ -163,16 +166,23 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   // Set the next comment selection to the current selection so that we can
   // render the comment input popover on the current selection using a range decoration.
   const handleSelectCurrentSelection = useCallback(() => {
-    // When trying to add a comment in "upsell" mode, we want to
-    // display the upsell dialog instead of the comment input popover.
-    if (mode === 'upsell') {
-      handleOpenDialog('pte')
-      return
-    }
-    const currentFragment = getFragment() || null
-    setFragment(currentFragment)
-    setNextCommentSelection(currentSelection)
-  }, [currentSelection, getFragment, handleOpenDialog, mode])
+    void modePromise.then((mode) => {
+      if (mode === null) {
+        // The feature check failed: the inspector explains that comments are unavailable
+        onCommentsOpen?.()
+        return
+      }
+      // When trying to add a comment in "upsell" mode, we want to
+      // display the upsell dialog instead of the comment input popover.
+      if (mode === 'upsell') {
+        handleOpenDialog('pte')
+        return
+      }
+      const currentFragment = getFragment() || null
+      setFragment(currentFragment)
+      setNextCommentSelection(currentSelection)
+    })
+  }, [currentSelection, getFragment, handleOpenDialog, modePromise, onCommentsOpen])
 
   // Clear the selection and close the popover when discarding the comment
   const handleCommentDiscardConfirm = useCallback(() => {
