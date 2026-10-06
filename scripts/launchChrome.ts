@@ -4,13 +4,16 @@
  * and expose the React DevTools tools registered by `react-devtools-cdt-mcp`
  * (`ENABLE_REACT_DEVTOOLS_MCP=true`, see dev/test-studio/sanity.cli.ts).
  *
- * Usage: `pnpm react-devtools-mcp:chrome [url] [--headless] [--port=9222] [-- <extra chrome args>]`
+ * Usage: `pnpm react-devtools-mcp:chrome [url] [--headless] [--port=9222] [--inject-token] [-- <extra chrome args>]`
  *
  * - `url` defaults to the test studio's `/test` workspace. When `STUDIO_AUTH_TOKEN` is set and
  *   the url has no hash, the studio is opened with `#token=<token>` so it signs in on load (the
  *   studio consumes the token and strips it from the address bar). The token never appears in
  *   Chrome's argv or in this script's output: Chrome is started on a one-time redirect served
  *   from an ephemeral loopback server, which forwards it to the tokenized url.
+ * - The token is only injected automatically for loopback origins (`http://localhost:<port>`,
+ *   `http://127.0.0.1:<port>`), where a local studio runs. Any other origin would receive the
+ *   production token through `location.hash`, so it requires the explicit `--inject-token` flag.
  * - `CHROME_PATH` overrides the Chrome executable that is used.
  * - The profile lives in `node_modules/.cache/react-devtools-mcp/chrome-profile` and is reused
  *   across runs. Chrome stays open after this script exits; stop it with `kill <pid>`.
@@ -31,11 +34,22 @@ const STARTUP_TIMEOUT_MS = 30_000
 const PROBE_TIMEOUT_MS = 2_000
 const REPO_ROOT = path.resolve(import.meta.dirname, '..')
 
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
+
 interface Options {
-  url: string
+  url: URL
   port: number
   headless: boolean
+  injectToken: boolean
   chromeArgs: string[]
+}
+
+function parseUrl(value: string): URL {
+  try {
+    return new URL(value)
+  } catch {
+    throw new Error(`Invalid url "${value}": expected an absolute http(s) url`)
+  }
 }
 
 function parsePort(value: string): number {
@@ -55,8 +69,9 @@ function parseOptions(argv: string[]): Options {
     args: ownArgs,
     allowPositionals: true,
     options: {
-      headless: {type: 'boolean', default: false},
-      port: {type: 'string', default: String(DEFAULT_PORT)},
+      'headless': {type: 'boolean', default: false},
+      'port': {type: 'string', default: String(DEFAULT_PORT)},
+      'inject-token': {type: 'boolean', default: false},
     },
   })
 
@@ -65,11 +80,46 @@ function parseOptions(argv: string[]): Options {
   }
 
   return {
-    url: positionals[0] ?? DEFAULT_URL,
+    url: parseUrl(positionals[0] ?? DEFAULT_URL),
     port: parsePort(values.port),
     headless: values.headless,
+    injectToken: values['inject-token'],
     chromeArgs,
   }
+}
+
+interface Target {
+  /** The url Chrome ends up on. */
+  url: string
+  /** Whether `#token=` was appended. */
+  signIn: boolean
+  /** Why the token was left out even though one is set. */
+  notice?: string
+}
+
+/**
+ * Appends `#token=<STUDIO_AUTH_TOKEN>` so the studio signs in on load. Only loopback origins get
+ * it automatically: the fragment is readable by the page's JavaScript, so handing the production
+ * token to a mistyped or non-studio origin needs the explicit `--inject-token` opt-in.
+ */
+function resolveTarget(options: Options): Target {
+  const token = process.env.STUDIO_AUTH_TOKEN
+  if (!token || options.url.hash !== '') {
+    return {url: options.url.href, signIn: false}
+  }
+  const isLoopback =
+    (options.url.protocol === 'http:' || options.url.protocol === 'https:') &&
+    LOOPBACK_HOSTS.has(options.url.hostname)
+  if (!isLoopback && !options.injectToken) {
+    return {
+      url: options.url.href,
+      signIn: false,
+      notice:
+        `STUDIO_AUTH_TOKEN was not injected: ${options.url.origin} is not a loopback origin. ` +
+        'Pass --inject-token to sign in there anyway.',
+    }
+  }
+  return {url: `${options.url.href}#token=${encodeURIComponent(token)}`, signIn: true}
 }
 
 function isExecutable(file: string): boolean {
@@ -309,10 +359,11 @@ async function main(): Promise<void> {
   options.headless ||= process.platform === 'linux' && !hasDisplay
   const browserUrl = `http://127.0.0.1:${options.port}`
 
-  const token = process.env.STUDIO_AUTH_TOKEN
-  const signIn = token !== undefined && token !== '' && !options.url.includes('#')
-  const targetUrl = signIn ? `${options.url}#token=${encodeURIComponent(token)}` : options.url
-  const redirect = await startRedirect(targetUrl)
+  const target = resolveTarget(options)
+  if (target.notice) {
+    console.warn(target.notice)
+  }
+  const redirect = await startRedirect(target.url)
 
   try {
     // A browser already serving the port gets the url as a new tab; a second Chrome on the
@@ -328,7 +379,9 @@ async function main(): Promise<void> {
     console.log(
       `${browserName} is listening on ${browserUrl}${options.headless ? ' (headless)' : ''}`,
     )
-    console.log(`Opened ${options.url}${signIn ? ' (signed in with STUDIO_AUTH_TOKEN)' : ''}`)
+    console.log(
+      `Opened ${options.url.href}${target.signIn ? ' (signed in with STUDIO_AUTH_TOKEN)' : ''}`,
+    )
     console.log(
       pid === undefined
         ? `Reused the browser that was already listening on ${browserUrl}`

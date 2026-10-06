@@ -34,12 +34,16 @@ pnpm react-devtools-mcp:test-studio
 # 2. Chrome with the remote debugging port open, on the studio. With STUDIO_AUTH_TOKEN set
 #    (cloud agents have it) the studio is signed in on load. The token is never printed and
 #    never put on Chrome's command line: Chrome opens a one-time loopback redirect that
-#    forwards to the #token= url. Re-running the command opens a new tab in the Chrome that
-#    is already listening on the port instead of starting a second one.
+#    forwards to the #token= url. Only loopback origins (localhost, 127.0.0.1, [::1]) get the
+#    token automatically; any other origin would read it from location.hash, so it needs
+#    --inject-token (otherwise a notice is printed and the url opens signed out). Re-running
+#    the command opens a new tab in the Chrome that is already listening on the port instead
+#    of starting a second one.
 pnpm react-devtools-mcp:chrome                       # http://localhost:3333/test
 pnpm react-devtools-mcp:chrome http://localhost:3333/test/structure/author
 pnpm react-devtools-mcp:chrome --headless            # no display
 pnpm react-devtools-mcp:chrome --port=9333           # 1-65535; also change --browserUrl below
+pnpm react-devtools-mcp:chrome https://my-studio.sanity.studio/ --inject-token   # deployed studio, explicit opt-in
 
 # 3. chrome-devtools-mcp attached to that Chrome — pick ONE of:
 #    a) Cursor: .cursor/mcp.json defines the `chrome-devtools` server (the workspace-installed,
