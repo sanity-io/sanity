@@ -321,7 +321,7 @@ importers:
         specifier: ^6.39.0
         version: 6.39.0
       lefthook:
-        specifier: ^2.1.14
+        specifier: ^2.1.17
         version: 2.1.17
       npm-run-all2:
         specifier: ^9.0.3
