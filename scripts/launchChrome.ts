@@ -7,14 +7,19 @@
  * Usage: `pnpm react-devtools-mcp:chrome [url] [--headless] [--port=9222] [-- <extra chrome args>]`
  *
  * - `url` defaults to the test studio's `/test` workspace. When `STUDIO_AUTH_TOKEN` is set and
- *   the url has no hash, `#token=<token>` is appended so the studio signs in on load (the studio
- *   consumes it and strips it from the address bar). The token is never printed.
+ *   the url has no hash, the studio is opened with `#token=<token>` so it signs in on load (the
+ *   studio consumes the token and strips it from the address bar). The token never appears in
+ *   Chrome's argv or in this script's output: Chrome is started on a one-time redirect served
+ *   from an ephemeral loopback server, which forwards it to the tokenized url.
  * - `CHROME_PATH` overrides the Chrome executable that is used.
  * - The profile lives in `node_modules/.cache/react-devtools-mcp/chrome-profile` and is reused
  *   across runs. Chrome stays open after this script exits; stop it with `kill <pid>`.
  */
 import {spawn} from 'node:child_process'
+import {randomBytes} from 'node:crypto'
+import {once} from 'node:events'
 import {accessSync, constants, mkdirSync} from 'node:fs'
+import {createServer} from 'node:http'
 import path from 'node:path'
 import process from 'node:process'
 import {setTimeout as sleep} from 'node:timers/promises'
@@ -32,6 +37,14 @@ interface Options {
   chromeArgs: string[]
 }
 
+function parsePort(value: string): number {
+  const port = /^\d+$/.test(value) ? Number(value) : Number.NaN
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error(`Invalid --port "${value}": expected an integer between 1 and 65535`)
+  }
+  return port
+}
+
 function parseOptions(argv: string[]): Options {
   const passthroughIndex = argv.indexOf('--')
   const ownArgs = passthroughIndex === -1 ? argv : argv.slice(0, passthroughIndex)
@@ -46,15 +59,16 @@ function parseOptions(argv: string[]): Options {
     },
   })
 
-  const port = Number(values.port)
-  if (!Number.isInteger(port) || port <= 0) {
-    throw new Error(`Invalid --port value "${values.port}"`)
-  }
   if (positionals.length > 1) {
     throw new Error(`Expected at most one url argument, got ${positionals.length}`)
   }
 
-  return {url: positionals[0] ?? DEFAULT_URL, port, headless: values.headless, chromeArgs}
+  return {
+    url: positionals[0] ?? DEFAULT_URL,
+    port: parsePort(values.port),
+    headless: values.headless,
+    chromeArgs,
+  }
 }
 
 function isExecutable(file: string): boolean {
@@ -120,40 +134,109 @@ function getBrowserName(versionInfo: unknown): string {
   return 'Chrome'
 }
 
+/** The browser name when a DevTools endpoint answers on `port`, `null` otherwise. */
+async function probeDevTools(port: number): Promise<string | null> {
+  try {
+    const response = await fetch(`http://127.0.0.1:${port}/json/version`)
+    return response.ok ? getBrowserName(await response.json()) : null
+  } catch {
+    return null
+  }
+}
+
 // oxlint-disable no-await-in-loop -- sequential polling of Chrome's debugging endpoint is intentional
-async function waitForDevTools(port: number): Promise<string> {
+async function waitForDevTools(port: number, chromeExited: () => boolean): Promise<string> {
   const deadline = Date.now() + STARTUP_TIMEOUT_MS
-  let lastError = 'no response yet'
   while (Date.now() < deadline) {
-    try {
-      const response = await fetch(`http://127.0.0.1:${port}/json/version`)
-      if (response.ok) {
-        return getBrowserName(await response.json())
-      }
-      lastError = `HTTP ${response.status}`
-    } catch (error) {
-      lastError = error instanceof Error ? error.message : String(error)
+    const browserName = await probeDevTools(port)
+    if (browserName !== null) {
+      return browserName
+    }
+    if (chromeExited()) {
+      throw new Error(
+        'Chrome exited before opening its debugging port. A Chrome using the react-devtools-mcp ' +
+          'profile is probably already running without one; close it and retry.',
+      )
     }
     await sleep(250)
   }
   throw new Error(
-    `Chrome did not open http://127.0.0.1:${port} within ${STARTUP_TIMEOUT_MS / 1000}s (${lastError})`,
+    `Chrome did not open http://127.0.0.1:${port} within ${STARTUP_TIMEOUT_MS / 1000}s`,
   )
 }
 // oxlint-enable no-await-in-loop
 
-/** Appends `#token=<STUDIO_AUTH_TOKEN>` so the studio signs in on load. */
-function withAuthToken(url: string): {url: string; usedToken: boolean} {
-  const token = process.env.STUDIO_AUTH_TOKEN
-  if (!token || url.includes('#')) {
-    return {url, usedToken: false}
-  }
-  return {url: `${url}#token=${encodeURIComponent(token)}`, usedToken: true}
+interface Redirect {
+  /** Loopback url for Chrome to open; it carries no part of the target url. */
+  url: string
+  /** Resolves once Chrome has fetched the redirect. */
+  served: Promise<void>
+  close: () => void
 }
 
-async function main(): Promise<void> {
-  const options = parseOptions(process.argv.slice(2))
-  const chrome = findChrome()
+/**
+ * Serves a one-time `302` to the target url from an ephemeral loopback server. Chrome opens the
+ * loopback url instead of the target itself, which keeps `#token=` out of Chrome's command line
+ * (readable through `ps` and `/proc/<pid>/cmdline` for the browser's lifetime) and lets the
+ * fragment survive `/json/new`, which drops it like any HTTP request.
+ */
+async function startRedirect(targetUrl: string): Promise<Redirect> {
+  const secretPath = `/${randomBytes(16).toString('hex')}`
+  const server = createServer()
+  const served = new Promise<void>((resolve) => {
+    server.on('request', (request, response) => {
+      if (request.method !== 'GET' || request.url !== secretPath) {
+        response.writeHead(404, {Connection: 'close'}).end()
+        return
+      }
+      response
+        .writeHead(302, {'Location': targetUrl, 'Cache-Control': 'no-store', 'Connection': 'close'})
+        .end()
+      resolve()
+    })
+  })
+  server.listen(0, '127.0.0.1')
+  await once(server, 'listening')
+  // Never keep the process alive on this server's account
+  server.unref()
+
+  const address = server.address()
+  if (address === null || typeof address === 'string') {
+    throw new Error('Could not start the loopback redirect')
+  }
+  return {
+    url: `http://127.0.0.1:${address.port}${secretPath}`,
+    served,
+    close: () => {
+      server.close()
+      server.closeAllConnections()
+    },
+  }
+}
+
+interface Launched {
+  browserName: string
+  /** Undefined when the url was opened in a browser that was already running. */
+  pid?: number
+}
+
+/** Opens `url` in a new tab of the browser already serving `browserUrl`. */
+async function openInRunningBrowser(
+  browserUrl: string,
+  browserName: string,
+  url: string,
+): Promise<Launched> {
+  const response = await fetch(`${browserUrl}/json/new?${url}`, {method: 'PUT'})
+  if (!response.ok) {
+    throw new Error(
+      `The browser listening on ${browserUrl} refused to open a new tab (HTTP ${response.status})`,
+    )
+  }
+  return {browserName}
+}
+
+/** Starts Chrome on `url` and resolves once its debugging port answers. */
+async function launchChrome(chrome: string, options: Options, url: string): Promise<Launched> {
   const userDataDir = path.join(
     REPO_ROOT,
     'node_modules',
@@ -163,10 +246,6 @@ async function main(): Promise<void> {
   )
   mkdirSync(userDataDir, {recursive: true})
 
-  const hasDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY)
-  const headless = options.headless || (process.platform === 'linux' && !hasDisplay)
-  const {url, usedToken} = withAuthToken(options.url)
-
   const args = [
     `--remote-debugging-port=${options.port}`,
     '--remote-debugging-address=127.0.0.1',
@@ -174,7 +253,7 @@ async function main(): Promise<void> {
     '--no-first-run',
     '--no-default-browser-check',
     '--window-size=1440,900',
-    ...(headless ? ['--headless=new'] : []),
+    ...(options.headless ? ['--headless=new'] : []),
     // Chrome refuses to run its sandbox as root (containers, some CI runners)
     ...(process.platform === 'linux' && process.getuid?.() === 0 ? ['--no-sandbox'] : []),
     ...options.chromeArgs,
@@ -183,26 +262,68 @@ async function main(): Promise<void> {
 
   const child = spawn(chrome, args, {detached: true, stdio: 'ignore'})
   child.unref()
-  // When Chrome is already running with this profile, the new process hands the URL over to
-  // it and exits; the running instance keeps serving the debugging port.
-  let handedOver = false
+  let chromeExited = false
   child.once('exit', () => {
-    handedOver = true
+    chromeExited = true
   })
 
-  const browserName = await waitForDevTools(options.port)
+  const browserName = await waitForDevTools(options.port, () => chromeExited)
+  return {browserName, pid: child.pid}
+}
+
+async function waitForRedirect(redirect: Redirect): Promise<void> {
+  // Exiting before Chrome has fetched the redirect would leave it on a dead loopback url
+  const abortTimeout = new AbortController()
+  const timeout = sleep(STARTUP_TIMEOUT_MS, undefined, {signal: abortTimeout.signal}).then(() => {
+    throw new Error(`Chrome did not open the url within ${STARTUP_TIMEOUT_MS / 1000}s`)
+  })
+  try {
+    await Promise.race([redirect.served, timeout])
+  } finally {
+    abortTimeout.abort()
+  }
+}
+
+async function main(): Promise<void> {
+  const options = parseOptions(process.argv.slice(2))
+  const chrome = findChrome()
+  const hasDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY)
+  options.headless ||= process.platform === 'linux' && !hasDisplay
   const browserUrl = `http://127.0.0.1:${options.port}`
 
-  console.log(`${browserName} is listening on ${browserUrl}${headless ? ' (headless)' : ''}`)
-  console.log(`Opened ${options.url}${usedToken ? ' (signed in with STUDIO_AUTH_TOKEN)' : ''}`)
-  console.log(
-    handedOver ? 'Reused the Chrome instance that was already running' : `Chrome pid: ${child.pid}`,
-  )
-  console.log('')
-  console.log('Attach chrome-devtools-mcp to it with:')
-  console.log(
-    `  pnpm --filter sanity-test-studio exec chrome-devtools start --categoryExperimentalThirdParty=true --browserUrl=${browserUrl}`,
-  )
+  const token = process.env.STUDIO_AUTH_TOKEN
+  const signIn = token !== undefined && token !== '' && !options.url.includes('#')
+  const targetUrl = signIn ? `${options.url}#token=${encodeURIComponent(token)}` : options.url
+  const redirect = await startRedirect(targetUrl)
+
+  try {
+    // A browser already serving the port gets the url as a new tab; a second Chrome on the
+    // same profile would only hand the url over to it (headed) or exit without opening it
+    // (headless), and its short-lived pid would be meaningless to report.
+    const runningBrowser = await probeDevTools(options.port)
+    const {browserName, pid} =
+      runningBrowser === null
+        ? await launchChrome(chrome, options, redirect.url)
+        : await openInRunningBrowser(browserUrl, runningBrowser, redirect.url)
+    await waitForRedirect(redirect)
+
+    console.log(
+      `${browserName} is listening on ${browserUrl}${options.headless ? ' (headless)' : ''}`,
+    )
+    console.log(`Opened ${options.url}${signIn ? ' (signed in with STUDIO_AUTH_TOKEN)' : ''}`)
+    console.log(
+      pid === undefined
+        ? `Reused the browser that was already listening on ${browserUrl}`
+        : `Chrome pid: ${pid}`,
+    )
+    console.log('')
+    console.log('Attach chrome-devtools-mcp to it with:')
+    console.log(
+      `  pnpm --filter sanity-test-studio exec chrome-devtools start --categoryExperimentalThirdParty=true --browserUrl=${browserUrl}`,
+    )
+  } finally {
+    redirect.close()
+  }
 }
 
 main().catch((error: unknown) => {
