@@ -37,7 +37,7 @@ catalog:
   '@sanity/vanilla-extract-vite-plugin': ^0.2.22
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
-  '@vitejs/plugin-react': ^6.1.1
+  '@vitejs/plugin-react': ^6.1.2
   '@vitest/browser-playwright': ^5.0.3
   dequal: ^2.0.3
   get-it: ^9.6.1
