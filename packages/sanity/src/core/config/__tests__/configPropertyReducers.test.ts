@@ -574,6 +574,27 @@ describe('federatedAssetSourcesReducer', () => {
       }),
     ).toThrow('Expected `federatedAssetSources.filter` to be a function, but received string')
   })
+
+  it('throws when uploads is not a function', () => {
+    expect(() =>
+      federatedAssetSourcesReducer({
+        config: {name: 'test', federatedAssetSources: {uploads: true as never}},
+        initialValue: undefined,
+      }),
+    ).toThrow('Expected `federatedAssetSources.uploads` to be a function, but received boolean')
+  })
+
+  it.each([
+    {label: 'a boolean', value: true, received: 'boolean'},
+    {label: 'null', value: null, received: 'null'},
+  ])('throws when the namespace itself is $label (raw JavaScript config)', ({value, received}) => {
+    expect(() =>
+      federatedAssetSourcesReducer({
+        config: {name: 'test', federatedAssetSources: value as never},
+        initialValue: undefined,
+      }),
+    ).toThrow(`Expected \`federatedAssetSources\` to be an object, but received ${received}`)
+  })
 })
 
 describe('mediaLibraryLibraryIdReducer', () => {

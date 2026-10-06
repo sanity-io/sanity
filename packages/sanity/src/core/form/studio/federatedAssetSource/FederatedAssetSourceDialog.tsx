@@ -92,11 +92,23 @@ export function FederatedAssetSourceDialog(props: {
     (reason: unknown) => {
       if (onUnavailable) {
         onUnavailable(reason)
-      } else {
-        setFailed(true)
+        return
+      }
+      setFailed(true)
+      // In upload mode there is no visible dialog to surface the failure
+      // state: fail the queued files so the host's uploader subscription
+      // pushes the error toast and `all-complete` releases the field from
+      // its upload state instead of leaving it pending forever.
+      if (sourceProps.action === 'upload' && sourceProps.uploader) {
+        const error = reason instanceof Error ? reason : new Error(String(reason))
+        for (const file of sourceProps.uploader.getFiles()) {
+          if (file.status === 'pending' || file.status === 'uploading') {
+            sourceProps.uploader.updateFile(file.id, {status: 'error', error})
+          }
+        }
       }
     },
-    [onUnavailable],
+    [onUnavailable, sourceProps.action, sourceProps.uploader],
   )
 
   // Headless upload orchestration — the federated equivalent of the hidden
@@ -104,7 +116,9 @@ export function FederatedAssetSourceDialog(props: {
   // our window, so it drives `uploader` directly and calls `onSelect` itself
   // once its batch is linked (see the ordering note on the view props type).
   if (sourceProps.action === 'upload') {
-    if (!sourceProps.uploader) return null
+    // On failure the queued files have been failed over to the host (see
+    // handleUnavailable); don't keep mounting the broken view.
+    if (!sourceProps.uploader || failed) return null
     return (
       <div hidden>
         <FederatedViewMount onUnavailable={handleUnavailable} view={view} viewProps={viewProps} />

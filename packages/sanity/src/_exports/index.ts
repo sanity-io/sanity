@@ -344,6 +344,8 @@ export {
   type DocumentLanguageFilterResolver,
   type DocumentLayoutProps,
   type DocumentPluginOptions,
+  type FederatedAssetSourcesConfig,
+  type FederatedAssetSourceViewInfo,
   type FormBuilderComponentResolverContext,
   type GroupableActionDescription,
   type MediaLibraryConfig,

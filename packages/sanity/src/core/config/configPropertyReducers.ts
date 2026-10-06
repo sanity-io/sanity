@@ -921,6 +921,16 @@ export const federatedAssetSourcesReducer = (opts: {
     const value = innerConfig.federatedAssetSources
     if (value === undefined) return acc
 
+    // Raw JavaScript configs can assign anything here; a non-object must fail
+    // loudly instead of silently spreading to an empty object (or throwing an
+    // unhelpful property-access error on null).
+    if (value === null || typeof value !== 'object') {
+      throw new Error(
+        `Expected \`federatedAssetSources\` to be an object, but received ${getPrintableType(
+          value,
+        )}`,
+      )
+    }
     if (value.enabled !== undefined && typeof value.enabled !== 'boolean') {
       throw new Error(
         `Expected \`federatedAssetSources.enabled\` to be a boolean, but received ${getPrintableType(
@@ -932,6 +942,13 @@ export const federatedAssetSourcesReducer = (opts: {
       throw new Error(
         `Expected \`federatedAssetSources.filter\` to be a function, but received ${getPrintableType(
           value.filter,
+        )}`,
+      )
+    }
+    if (value.uploads !== undefined && typeof value.uploads !== 'function') {
+      throw new Error(
+        `Expected \`federatedAssetSources.uploads\` to be a function, but received ${getPrintableType(
+          value.uploads,
         )}`,
       )
     }
