@@ -599,7 +599,7 @@ describe('useVariantConditions', () => {
     })
   })
 
-  it('rejects a resolved type other than variant', async () => {
+  it('resolves a type other than variant', async () => {
     const wrapper = await createTestProvider({
       config: {
         beta: {
@@ -618,11 +618,11 @@ describe('useVariantConditions', () => {
 
     await waitFor(() => {
       expect(result.current).toMatchObject({
-        status: 'error',
-        error: expect.objectContaining({
-          message:
-            'Expected `beta.variants.types` to only include "variant", but received "language"',
-        }),
+        status: 'ready',
+        types: expect.arrayContaining([
+          expect.objectContaining({key: 'variant'}),
+          expect.objectContaining({key: 'language', label: 'Language'}),
+        ]),
       })
     })
   })
