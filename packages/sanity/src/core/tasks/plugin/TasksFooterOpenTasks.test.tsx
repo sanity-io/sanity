@@ -2,9 +2,10 @@ import {LayerProvider, studioTheme, ThemeProvider, useMediaIndex} from '@sanity/
 import {uuid} from '@sanity/uuid'
 import {render, screen} from '@testing-library/react'
 import {act} from 'react'
+import {TasksModePromiseContext} from 'sanity/_singletons'
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {TasksEnabledProvider} from '../context/enabled/TasksEnabledProvider'
+import {type TasksMode} from '../context/enabled/types'
 import {TasksNavigationProvider} from '../context/navigation/TasksNavigationProvider'
 import {TasksProvider} from '../context/tasks/TasksProvider'
 import {useTasksStore} from '../store/useTasksStore'
@@ -17,10 +18,6 @@ vi.mock('react-i18next', async (importOriginal) => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
-vi.mock('../../hooks/useFeatureEnabled', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
-}))
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({tasks: {enabled: true}}),
 }))
@@ -97,17 +94,20 @@ const createTaskMock = ({
   status,
 })
 
+// The tasks mode, as `TasksStudioProvider` provides it once the feature check has answered
+const modePromise = Promise.resolve<TasksMode>('default')
+
 describe('TasksFooterOpenTasks', () => {
   const wrapper = ({children}: {children?: React.ReactNode}) => {
     return (
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
         <LayerProvider>
-          <TasksEnabledProvider>
+          <TasksModePromiseContext value={modePromise}>
             <TasksProvider>
               <TasksNavigationProvider>{children}</TasksNavigationProvider>
             </TasksProvider>
-          </TasksEnabledProvider>
+          </TasksModePromiseContext>
         </LayerProvider>
       </ThemeProvider>
     )
