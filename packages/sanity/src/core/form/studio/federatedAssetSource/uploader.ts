@@ -62,37 +62,40 @@ export class PickerModeUploader implements AssetSourceUploader {
   }
 
   abort(file?: AssetSourceUploadFile): void {
-    if (file) {
-      const target = this.files.find((f) => f.id === file.id)
-      if (target && ['pending', 'uploading'].includes(target.status)) {
-        this.updateFile(target.id, {status: 'aborted'})
-      }
-    } else {
-      for (const target of this.files) {
-        if (['pending', 'uploading'].includes(target.status)) {
-          this.updateFile(target.id, {status: 'aborted'})
-        }
-      }
+    // Capture the targets before any status write: aborting the last active
+    // file makes checkAllComplete() emit `all-complete` and reset the file
+    // list, which would leave the abort event without its targets.
+    const targets = (file ? this.files.filter((f) => f.id === file.id) : this.files).filter(
+      (target) => ['pending', 'uploading'].includes(target.status),
+    )
+    for (const target of targets) {
+      this.applyUpdate(target, {status: 'aborted'})
     }
-    this.emit({
-      type: 'abort',
-      files: this.files.filter((abortedFile) => abortedFile.status === 'aborted'),
-    })
+    this.emit({type: 'abort', files: targets})
     this.checkAllComplete()
   }
-  updateFile(fileId: string, data: {progress?: number; status?: string; error?: Error}): void {
-    const target = this.files.find((f) => f.id === fileId)
-    if (!target) return
 
+  private applyUpdate(
+    target: AssetSourceUploadFile,
+    data: {progress?: number; status?: string; error?: Error},
+  ): void {
     if (data.error) target.error = data.error
     if (data.progress !== undefined && data.progress !== target.progress) {
+      // `AssetSourceUploadFile.progress` is documented as 0-100; store and
+      // emit the writer's value unchanged.
       target.progress = data.progress
-      this.emit({type: 'progress', file: target, progress: target.progress * 100})
+      this.emit({type: 'progress', file: target, progress: target.progress})
     }
     if (data.status && data.status !== target.status) {
       target.status = data.status as AssetSourceUploadFile['status']
       this.emit({type: 'status', file: target, status: target.status})
     }
+  }
+
+  updateFile(fileId: string, data: {progress?: number; status?: string; error?: Error}): void {
+    const target = this.files.find((f) => f.id === fileId)
+    if (!target) return
+    this.applyUpdate(target, data)
     this.checkAllComplete()
   }
 

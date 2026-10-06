@@ -69,7 +69,13 @@ export function FederatedViewMount(props: {
       return undefined
     }
     return () => {
-      handleRef.current?.dispose()
+      try {
+        handleRef.current?.dispose()
+      } catch (error) {
+        // A remote throwing during cleanup must degrade, not propagate out of
+        // the effect cleanup and take down the hosting Studio subtree.
+        console.error('Federated asset source view failed to dispose', error)
+      }
       handleRef.current = null
     }
   }, [module, mountElement, fail])
