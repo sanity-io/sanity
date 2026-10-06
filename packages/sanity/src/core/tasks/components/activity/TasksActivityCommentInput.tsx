@@ -18,7 +18,7 @@ import {hasCommentMessageValue} from '../../../comments/helpers'
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../studio/workspace'
-import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {useTasksMode} from '../../context/enabled/useTasksMode'
 import {tasksLocaleNamespace} from '../../i18n'
 import {ActivityItem} from './TasksActivityItem'
 
@@ -52,7 +52,7 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
  */
 function TasksActivityCommentInputV1(props: TasksCommentActivityInputProps) {
   const {mentionOptions, currentUser, onSubmit} = props
-  const {mode} = useTasksEnabled()
+  const mode = useTasksMode()
   const [value, setValue] = useState<CommentInputProps['value']>(null)
   const editorRef = useRef<CommentInputHandle>(null)
 
@@ -122,7 +122,7 @@ function TasksActivityCommentInputV1(props: TasksCommentActivityInputProps) {
  */
 function TasksActivityCommentInputV2(props: TasksCommentActivityInputProps) {
   const {mentionOptions, currentUser, onSubmit} = props
-  const {mode} = useTasksEnabled()
+  const mode = useTasksMode()
   const {readOnly} = useCommentsV2()
   const [value, setValue] = useState<CommentInputPropsV2['value']>(null)
   const editorRef = useRef<CommentInputHandleV2>(null)

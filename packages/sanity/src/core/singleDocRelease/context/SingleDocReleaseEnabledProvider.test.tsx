@@ -2,7 +2,6 @@ import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
-import {useSource} from '../../studio/source'
 import {
   SingleDocReleaseEnabledProvider,
   useSingleDocReleaseEnabled,
@@ -10,42 +9,19 @@ import {
 
 vi.mock('../../hooks/useFeatureEnabled')
 
-vi.mock('../../studio/source', () => ({
-  useSource: vi.fn().mockReturnValue({}),
-}))
-
 const useFeatureEnabledMock = useFeatureEnabled as ReturnType<typeof vi.fn>
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const useSourceMock = useSource as ReturnType<typeof vi.fn>
 
 const featureFlagName = 'singleDocRelease'
+
+// The provider only renders inside the plugin, which is only loaded when the workspace has
+// scheduled drafts enabled, so there is no opted-out case to cover here
 describe('SingleDocReleaseEnabledProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('should not show single doc releases if user opt out and the feature is not enabled (any plan)', () => {
-    useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: false}})
-
-    const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
-
-    expect(useFeatureEnabled).toHaveBeenCalledWith(featureFlagName)
-    expect(value.result.current).toEqual({enabled: false, mode: null})
-  })
-  it('should not show single doc releases if user opt out and the feature is enabled (any plan)', () => {
+  it('should show default mode if the feature flag is enabled (growth or above)', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: false}})
-
-    const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
-
-    expect(useFeatureEnabled).toHaveBeenCalledWith(featureFlagName)
-    expect(value.result.current).toEqual({enabled: false, mode: null})
-  })
-
-  it('should show default mode if user hasnt opted out and the feature flag is enabled (growth or above)', () => {
-    useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: true}})
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 
@@ -53,9 +29,8 @@ describe('SingleDocReleaseEnabledProvider', () => {
     expect(value.result.current).toEqual({enabled: true, mode: 'default'})
   })
 
-  it('should show upsell mode if user has not opt out and the feature is not enabled (free plans)', () => {
+  it('should show upsell mode if the feature is not enabled (free plans)', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: true}})
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 
@@ -65,7 +40,6 @@ describe('SingleDocReleaseEnabledProvider', () => {
 
   it('should not show single doc releases if it is loading the feature', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: true})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: true}})
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 
@@ -79,7 +53,6 @@ describe('SingleDocReleaseEnabledProvider', () => {
       isLoading: true,
       error: new Error('Something went wrong'),
     })
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: true}})
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 

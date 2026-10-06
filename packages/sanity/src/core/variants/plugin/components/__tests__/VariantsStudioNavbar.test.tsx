@@ -10,7 +10,7 @@ import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
 import * as variantConditions from '../../../hooks/useVariantConditions'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {getVariantId} from '../../../tool/util'
-import {VariantsStudioNavbar} from '../VariantsStudioNavbar'
+import VariantsStudioNavbarLayout from '../VariantsStudioNavbarLayout'
 
 const mockNavigate = vi.fn()
 
@@ -51,7 +51,7 @@ function getFilter(prefix: string) {
   return filter as HTMLElement
 }
 
-describe('VariantsStudioNavbar', () => {
+describe('VariantsStudioNavbarLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     routerMock.stickyParams = {}
@@ -60,12 +60,13 @@ describe('VariantsStudioNavbar', () => {
     usePerspectiveMockReturn.selectedVariantNames = []
   })
 
+  // The layout lazy-loads the filters behind a Suspense fallback, so wait for them to appear
   const renderNavbar = async () => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    // @ts-expect-error -- pre-existing, fix later
-    const view = render(<VariantsStudioNavbar renderDefault={() => null} />, {wrapper})
+    const view = render(<VariantsStudioNavbarLayout renderDefault={() => <span />} />, {wrapper})
+    await screen.findByText('Version')
     await flushMicrotasksThisIsACodeSmell()
     return view
   }

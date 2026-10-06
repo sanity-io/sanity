@@ -23,7 +23,7 @@ import {TransformPatches} from '../../../../form/utils/TransformPatches'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {TaskDuplicated, TaskRemoved} from '../../../__telemetry__/tasks.telemetry'
-import {useTasksEnabled} from '../../../context/enabled/useTasksEnabled'
+import {useTasksMode} from '../../../context/enabled/useTasksMode'
 import {useTasksNavigation} from '../../../context/navigation/useTasksNavigation'
 import {useActivityLog} from '../../../hooks/useActivityLog'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
@@ -48,7 +48,7 @@ const FirstRow = styled(Flex)((props) => {
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
-  const {mode} = useTasksEnabled()
+  const mode = useTasksMode()
   const telemetry = useTelemetry()
 
   const onTaskRemoved = useCallback(() => {

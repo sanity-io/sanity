@@ -5,7 +5,6 @@ import {
 } from 'sanity/_singletons'
 
 import {useFeatureEnabled, FEATURES} from '../../hooks/useFeatureEnabled'
-import {useScheduledDraftsEnabled} from '../hooks/useScheduledDraftsEnabled'
 
 interface SingleDocReleaseEnabledProviderProps {
   children: React.ReactNode
@@ -16,11 +15,12 @@ interface SingleDocReleaseEnabledProviderProps {
  */
 
 export function SingleDocReleaseEnabledProvider({children}: SingleDocReleaseEnabledProviderProps) {
+  // Rendered by the plugin's layout only, and `getDefaultPlugins` includes the plugin only when
+  // the workspace has scheduled drafts enabled, so that flag needs no check here
   const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled(FEATURES.singleDocRelease)
-  const isWorkspaceEnabled = useScheduledDraftsEnabled()
 
   const value: SingleDocReleaseEnabledContextValue = useMemo(() => {
-    if (!isWorkspaceEnabled || isLoading || error) {
+    if (isLoading || error) {
       return {
         enabled: false,
         mode: null,
@@ -31,7 +31,7 @@ export function SingleDocReleaseEnabledProvider({children}: SingleDocReleaseEnab
       enabled: true,
       mode: featureEnabled ? 'default' : 'upsell',
     }
-  }, [featureEnabled, isLoading, isWorkspaceEnabled, error])
+  }, [featureEnabled, isLoading, error])
 
   return (
     <SingleDocReleaseEnabledContext.Provider value={value}>

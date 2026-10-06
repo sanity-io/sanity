@@ -8,7 +8,7 @@ import {CommentsListItem} from '../../../comments/components/list/CommentsListIt
 import {useComments} from '../../../comments/hooks/useComments'
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useWorkspace} from '../../../studio/workspace'
-import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {useTasksMode} from '../../context/enabled/useTasksMode'
 import {ActivityItem} from './TasksActivityItem'
 import {type TaskCommentReply} from './types'
 
@@ -64,7 +64,7 @@ export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
  */
 function TasksActivityCommentItemV1(props: TasksActivityCommentItemProps) {
   const {commentId, currentUser, mentionOptions, onCreateRetry, onDelete, onReply} = props
-  const {mode} = useTasksEnabled()
+  const mode = useTasksMode()
   const {comments, operation} = useComments()
 
   const thread = comments.data.open.find((item) => item.parentComment._id === commentId)
@@ -99,7 +99,7 @@ function TasksActivityCommentItemV1(props: TasksActivityCommentItemProps) {
  */
 function TasksActivityCommentItemV2(props: TasksActivityCommentItemProps) {
   const {commentId, currentUser, mentionOptions, onCreateRetry, onDelete, onReply} = props
-  const {mode} = useTasksEnabled()
+  const mode = useTasksMode()
   const {comments, operation, readOnly} = useCommentsV2()
 
   const thread = comments.data.open.find((item) => item.parentComment._id === commentId)

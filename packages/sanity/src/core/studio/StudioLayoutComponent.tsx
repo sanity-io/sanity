@@ -40,11 +40,7 @@ import {ToolMountTimer} from './ToolMountTimer'
 import {UnclaimedProjectNudge} from './unclaimedProject/UnclaimedProjectNudge'
 import {useWorkspace} from './workspace'
 
-const DetectViteDevServerStopped = lazy(() =>
-  import('./ViteDevServerStopped').then((DevServerStopped) => ({
-    default: DevServerStopped.DetectViteDevServerStopped,
-  })),
-)
+const DetectViteDevServerStopped = lazy(() => import('./ViteDevServerStopped'))
 
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
 
@@ -260,7 +256,11 @@ export function StudioLayoutComponent() {
         )}
         {reactActivityMode ? (
           <StudioErrorBoundary>
-            {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+            {detectViteDevServerStopped && (
+              <Suspense>
+                <DetectViteDevServerStopped />
+              </Suspense>
+            )}
             <Card flex={1} hidden={searchFullscreenOpen}>
               {mountedTools.map(({tool, router: toolRouter}) => (
                 // Each tool keeps the root router context it last rendered with while active, so
@@ -294,7 +294,11 @@ export function StudioLayoutComponent() {
             heading={`The ${activeTool?.name} tool crashed`}
             getErrorScreen={getErrorScreen}
           >
-            {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+            {detectViteDevServerStopped && (
+              <Suspense>
+                <DetectViteDevServerStopped />
+              </Suspense>
+            )}
             <Card flex={1} hidden={searchFullscreenOpen}>
               {activeTool && (
                 <RenderTool
