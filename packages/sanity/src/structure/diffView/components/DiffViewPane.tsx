@@ -226,12 +226,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
   return isLoading ? (
     <LoadingBlock showText />
   ) : (
-    <CommentsEnabledContext.Provider
-      value={{
-        enabled: false,
-        mode: null,
-      }}
-    >
+    <CommentsEnabledContext value={false}>
       <FormBuilder
         __internal_patchChannel={patchChannel}
         id={`diffView-pane-${role}`}
@@ -261,7 +256,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         value={value}
         compareValue={compareValue}
       />
-    </CommentsEnabledContext.Provider>
+    </CommentsEnabledContext>
   )
 }
 

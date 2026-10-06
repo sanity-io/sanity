@@ -15,7 +15,6 @@ import {
   type CommentOperationsHookOptions,
   useCommentOperations,
 } from '../../hooks/use-comment-operations/useCommentOperations'
-import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 import {useCommentsStore} from '../../store/useCommentsStore'
 import {
   type CommentPostPayload,
@@ -91,7 +90,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     releaseId: scopeId,
     mentionsDisabled,
   } = props
-  const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
   const publishedId = getPublishedId(documentId)
@@ -144,17 +142,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       transactionsIdMap.set(commentDocumentId, transactionId)
     },
     [transactionsIdMap],
-  )
-
-  const handleSetStatus = useCallback(
-    (newStatus: CommentStatus) => {
-      // Avoids going to "resolved" when using links to comments
-      if (commentsEnabled.mode === 'upsell' && newStatus === 'resolved') {
-        return null
-      }
-      return setStatus(newStatus)
-    },
-    [setStatus, commentsEnabled],
   )
 
   const mentionOptions = useUserListWithPermissions(
@@ -308,7 +295,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
       isCreatingDataset,
       status,
-      setStatus: handleSetStatus,
+      setStatus,
       getComment,
       getCommentLink,
       onClearSelectedComment,
@@ -343,7 +330,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       documentType,
       isCreatingDataset,
       status,
-      handleSetStatus,
+      setStatus,
       getComment,
       getCommentLink,
       onClearSelectedComment,

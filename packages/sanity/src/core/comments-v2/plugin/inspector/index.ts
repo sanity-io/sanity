@@ -14,7 +14,7 @@ const CommentsInspector = lazy(() => import('./CommentsInspector'))
 
 function useMenuItem(): DocumentInspectorMenuItem {
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {enabled} = useCommentsEnabled()
+  const enabled = useCommentsEnabled()
 
   return {
     hidden: !enabled,

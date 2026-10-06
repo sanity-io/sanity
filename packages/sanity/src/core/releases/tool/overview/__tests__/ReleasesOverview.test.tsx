@@ -17,6 +17,7 @@ import {
   usePerspectiveMockReturn,
 } from '../../../../perspective/__mocks__/usePerspective.mock'
 import {useScheduledDraftsEnabled} from '../../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {type UpsellDataResult} from '../../../../studio/upsell/types'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -217,8 +218,8 @@ const TestComponent = () => {
 }
 
 async function mountAndFlush(...args: Parameters<typeof render>) {
-  const view = render(...args)
-  await act(() => Promise.resolve())
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the upsell panels read their settled promise with `use()`; a sync act stops flushing at that read and React warns that the act was not awaited
+  const view = await act(async () => render(...args))
   return view
 }
 
@@ -235,7 +236,7 @@ describe('ReleasesOverview', () => {
       onReleaseLimitReached: vi.fn(),
       upsellDialogOpen: false,
       handleOpenDialog: vi.fn(),
-      upsellData: null,
+      upsellDataPromise: null,
       telemetryLogs: {
         dialogSecondaryClicked: vi.fn(),
         dialogPrimaryClicked: vi.fn(),
@@ -252,7 +253,7 @@ describe('ReleasesOverview', () => {
     })
 
     mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
-      upsellData: null,
+      upsellDataPromise: null,
       telemetryLogs: {
         panelViewed: vi.fn(),
         panelDismissed: vi.fn(),
@@ -1217,6 +1218,12 @@ describe('ReleasesOverview', () => {
       _rev: '1',
       id: 'test-upsell',
     }
+    const mockUpsellDataValue: UpsellDataResult = {upsellData: mockUpsellData, hasError: false}
+    // Already settled, so `use()` reads it without suspending
+    const mockUpsellDataPromise = Object.assign(Promise.resolve(mockUpsellDataValue), {
+      status: 'fulfilled' as const,
+      value: mockUpsellDataValue,
+    })
 
     const setupEmptyState = () => {
       mockUseActiveReleases.mockReturnValue({
@@ -1236,7 +1243,7 @@ describe('ReleasesOverview', () => {
         onReleaseLimitReached: vi.fn(),
         upsellDialogOpen: false,
         handleOpenDialog: vi.fn(),
-        upsellData: mockUpsellData,
+        upsellDataPromise: mockUpsellDataPromise,
         telemetryLogs: {
           dialogSecondaryClicked: vi.fn(),
           dialogPrimaryClicked: vi.fn(),
@@ -1332,7 +1339,7 @@ describe('ReleasesOverview', () => {
             mode: 'upsell',
           })
           mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
-            upsellData: mockUpsellData,
+            upsellDataPromise: mockUpsellDataPromise,
             telemetryLogs: {
               panelViewed: vi.fn(),
               panelDismissed: vi.fn(),

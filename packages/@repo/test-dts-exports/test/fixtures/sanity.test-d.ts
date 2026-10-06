@@ -1618,6 +1618,8 @@ import type {
   useComments,
   useCommentsEnabled,
   useCommentsEnabledV2,
+  useCommentsMode,
+  useCommentsModeV2,
   useCommentsSelectedPath,
   useCommentsTelemetry,
   useConditionalToast,
@@ -6737,6 +6739,12 @@ describe('sanity', () => {
   })
   test('useCommentsEnabledV2', () => {
     expectTypeOf<typeof useCommentsEnabledV2>().toBeFunction()
+  })
+  test('useCommentsMode', () => {
+    expectTypeOf<typeof useCommentsMode>().toBeFunction()
+  })
+  test('useCommentsModeV2', () => {
+    expectTypeOf<typeof useCommentsModeV2>().toBeFunction()
   })
   test('useCommentsSelectedPath', () => {
     expectTypeOf<typeof useCommentsSelectedPath>().toBeFunction()
