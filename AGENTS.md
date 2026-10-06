@@ -601,22 +601,49 @@ revealed. Two consequences for Suspense code:
   it. The place to start such a check is `studio.components.provider`: `StudioProvider` renders
   that chain (`PluginProviders`) above `StudioLayout` and its loading screen boundary, so a provider
   component (small, never `lazy()`) can turn an observable into a promise with
-  `useObservablePromise`, start it on commit with `preloadObservablePromise` in an effect so
-  several checks load in parallel, and publish the promise through a context (default `null`,
-  read through a hook that throws when missing); the layout, navbar or tool below reads it with
-  `use()` and suspends up to the studio's own loading screen, with no boundary of its own
-  (`StudioLayout.provider.test.tsx` pins the contract).
+  `useObservablePromise` (for feature flags: `useFeatureEnabledObservable`), start it on commit
+  with `preloadObservablePromise` in an effect so several checks load in parallel, and publish
+  the promise through a context (default `null`, read through a hook that throws when missing);
+  the layout, navbar or tool below reads it with `use()` and suspends up to the studio's own
+  loading screen, with no boundary of its own. Scheduled publishing does this where it cannot
+  avoid it: `enabled` there is itself async (feature check plus a "has this dataset ever
+  scheduled anything" probe, unless the workspace opted in explicitly), and the navbar's
+  `StudioToolMenu` must know it before painting to leave the tool out, so
+  `SchedulePublishingStudioProvider` combines both promises into
+  `ScheduledPublishingEnabledPromiseContext` and `useScheduledPublishingEnabled()` is
+  `use(use(Context))` (disabled, without suspending, where the plugin is not loaded).
+- Better still, keep the critical path free of the check altogether and read it only where some
+  UI needs the answer. The tasks plugin publishes the feature check as a promise in
+  `TasksModePromiseContext` (`useTasksMode()` = `use(use(Context))`, `'default' | 'upsell' |
+  null`), read only inside the sidebar under its own `<Suspense>` in
+  `TasksStudioActiveToolLayout`, or awaited in an event handler (`TaskCreateAction`). Comments
+  does the same with `CommentsModePromiseContext`, and keeps a synchronous boolean
+  `CommentsEnabledContext` per document because `document.comments.enabled` is a config API that
+  can turn comments off per document; `useCommentsEnabled()` combines the two (`enabled` first,
+  so a disabled document never waits, then `use(modePromise)` under the document pane's
+  boundary). A provider whose presence would depend on the mode is mounted in both modes
+  instead, so the tree never changes shape (`TasksUpsellProvider` under `TasksStudioLayout`,
+  `CommentsUpsellProvider` under `CommentsStudioLayout`, like `ReleasesUpsellProvider`); the UI
+  that consults it already knows it is in upsell mode.
+- A default plugin's components never check the workspace flag that enables the plugin:
+  `getDefaultPlugins` (`core/config/resolveDefaultPlugins.ts`) only includes `tasks()`,
+  `scheduledPublishing()`, `releases()`, `singleDocRelease()`, `variants()`, `mediaLibrary()`
+  and `canvasIntegration()` when that flag is on, and the workspace carries the same resolved
+  options, so inside the plugin `useWorkspace().tasks.enabled` is always `true`. Only code that
+  renders outside the plugin needs the flag (`StudioToolMenu` reading
+  `useScheduledPublishingEnabled()`, `DocumentGroupInventory` through `useVariantsStore`), which
+  is also why those contexts keep a disabled default value. The comments plugin is the
+  exception: one of its two versions is always included.
 - The provider is declared in the plugin's `index.tsx`, below the `definePlugin` call, and it is
   also where the plugin's lazy components are preloaded. `navbar` and `toolMenu` render under
   `StudioLayout` with no boundary of their own and `activeToolLayout` wraps the tool under the
   tool's own boundary, so a `lazy()` component there that React discovers on render holds the
   layout or the tool for a chunk round trip. Keep them lazy, but hold the import function and
-  call it from the provider's effect:
+  call it from the provider's effect, next to `preloadObservablePromise`:
   `const lazyTasksStudioNavbar = () => import('./TasksStudioNavbar')`,
   `const TasksStudioNavbar = lazy(lazyTasksStudioNavbar)`, `useEffect(() => { void
-  lazyTasksStudioNavbar() }, [])`. The chunk then loads as soon as the studio's providers commit,
-  before anything below could ask for it (see `core/tasks/plugin/index.tsx` and
-  `core/variants/plugin/index.tsx`).
+  lazyTasksStudioNavbar() }, [])`. The chunk then loads in parallel with the feature checks the
+  layout suspends on (see `core/tasks/plugin/index.tsx` and `core/variants/plugin/index.tsx`).
 - Never `lazy()` a `studio.components.provider` or `layout` component, and do not put a
   `<Suspense>` at its top level. Both render in the studio's first render pass, before any effect
   could preload them: a provider renders above `StudioLayout`'s boundary, so a lazy one suspends
@@ -626,6 +653,10 @@ revealed. Two consequences for Suspense code:
   checked, since a bare `import()` preload leaves nothing the check could read.
 - A module that is only ever loaded through `lazy()` uses `export default`, so the call site is
   `lazy(() => import('./TasksStudioNavbar'))` with no `.then` remapping.
+- To unit test a component that reads such a promise from a context, provide an already settled
+  one: `Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value})` satisfies
+  `ObservablePromise<T>` and `use()` reads it synchronously, so `renderHook` works without a
+  Suspense boundary or an async `act` (see `TasksEnabledProvider.test.tsx`).
 
 `useObservable` and `useSyncObservable` require an `initialValue` in v7 and render it on the first
 pass regardless of synchronous emissions, so do not rely on a replayed value winning the first

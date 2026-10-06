@@ -3,7 +3,7 @@ import {Card, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 import {Container, Flex, Box} from 'ui5'
 
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/useScheduledPublishingEnabled'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useSchedulePublishingUpsell} from '../contexts/SchedulePublishingUpsellProvider'
 import {useSchedules} from '../contexts/schedules'

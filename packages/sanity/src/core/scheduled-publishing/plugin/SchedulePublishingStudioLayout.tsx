@@ -1,27 +1,12 @@
 import {type LayoutProps} from '../../config/studio/types'
-import {
-  ScheduledPublishingEnabledProvider,
-  useScheduledPublishingEnabled,
-} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {SchedulePublishingUpsellProvider} from '../tool/contexts/SchedulePublishingUpsellProvider'
 
-function SchedulePublishingStudioLayoutInner(props: LayoutProps) {
-  const {enabled, mode} = useScheduledPublishingEnabled()
-  if (!enabled) {
-    return props.renderDefault(props)
-  }
-
-  const children = props.renderDefault(props)
-  if (mode === 'upsell') {
-    return <SchedulePublishingUpsellProvider>{children}</SchedulePublishingUpsellProvider>
-  }
-  return children
-}
-
 export function SchedulePublishingStudioLayout(props: LayoutProps) {
+  // Same tree in both modes, so the layout never waits for the feature check or the usage probe;
+  // the upsell provider is only consulted by UI that already knows it is in upsell mode.
   return (
-    <ScheduledPublishingEnabledProvider>
-      <SchedulePublishingStudioLayoutInner {...props} />
-    </ScheduledPublishingEnabledProvider>
+    <SchedulePublishingUpsellProvider>
+      {props.renderDefault(props)}
+    </SchedulePublishingUpsellProvider>
   )
 }

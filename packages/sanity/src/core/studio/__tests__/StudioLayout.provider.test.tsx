@@ -78,12 +78,11 @@ describe('StudioLayout with studio.components.provider', () => {
       answer$.complete()
     })
 
-    // Every committed layout render carries the answer. The default plugins' layouts around it
-    // still re-render when their own feature checks settle, so there may be more than one.
+    // One committed layout render, with the answer
     expect(await screen.findByTestId('layout')).toHaveTextContent('42')
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
-    const layoutRenders = log.filter((entry) => entry.startsWith('layout rendered'))
-    expect(layoutRenders.length).toBeGreaterThanOrEqual(1)
-    expect(new Set(layoutRenders)).toEqual(new Set(['layout rendered with 42']))
+    expect(log.filter((entry) => entry.startsWith('layout rendered'))).toEqual([
+      'layout rendered with 42',
+    ])
   })
 })
