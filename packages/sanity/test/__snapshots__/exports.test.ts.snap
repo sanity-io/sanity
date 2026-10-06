@@ -473,6 +473,7 @@ exports[`exports snapshot 1`] = `
     "isNetworkError": "function",
     "isNewDocument": "function",
     "isNonNullable": "function",
+    "isNonSelectableTerminalEvent": "function",
     "isNumberInputProps": "function",
     "isNumberSchemaType": "function",
     "isObjectInputProps": "function",
