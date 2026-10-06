@@ -4,12 +4,14 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
+import {PortalProvider} from '@sanity/ui'
 import {encodeJsonParams} from 'sanity/router'
 import {Box, Text} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../studio/colorScheme'
 import {useWorkspace} from '../../../studio/workspace'
+import {useRootPortalElement} from '../assetSourceMediaLibrary/shared/MediaLibraryAssetSource'
 import {FullSurfaceAppDialog} from './Dialog'
 import {FederatedViewMount} from './FederatedViewMount'
 import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
@@ -55,6 +57,11 @@ export function FederatedAssetSourceDialog(props: {
   const {t} = useTranslation()
   const scheme = useColorSchemeValue()
   const workspace = useWorkspace()
+  // Body-level portal target so the dialog escapes the document pane's own
+  // portal (which, with the pane's absolute DialogProvider, would confine
+  // this full-surface dialog to the pane) — same treatment as the Media
+  // Library and iframe asset sources.
+  const portalElement = useRootPortalElement()
 
   const [failed, setFailed] = useState(false)
 
@@ -127,39 +134,45 @@ export function FederatedAssetSourceDialog(props: {
   }
 
   return (
-    <FullSurfaceAppDialog
-      header={dialogHeaderTitle ?? view.title}
-      id="federated-asset-source-dialog"
-      onClose={sourceProps.onClose}
-      onClickOutside={sourceProps.onClose}
-      open
-      ref={ref ?? null}
-      data-testid="federated-asset-source-dialog"
-      // Fills the studio surface (see FullSurfaceAppDialog); the width prop
-      // only serves as a fallback cap should the styled override ever stop
-      // matching the Dialog's DOM.
-      width={5}
-    >
-      <Box
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderTop: '1px solid',
-          borderColor: 'var(--card-border-color)',
-          overflow: 'hidden',
-          display: 'flex',
-        }}
+    <PortalProvider element={portalElement}>
+      <FullSurfaceAppDialog
+        header={dialogHeaderTitle ?? view.title}
+        id="federated-asset-source-dialog"
+        onClose={sourceProps.onClose}
+        onClickOutside={sourceProps.onClose}
+        open
+        ref={ref ?? null}
+        data-testid="federated-asset-source-dialog"
+        // Fills the studio surface (see FullSurfaceAppDialog); the width prop
+        // only serves as a fallback cap should the styled override ever stop
+        // matching the Dialog's DOM.
+        width={5}
       >
-        {failed ? (
-          <Box padding={4}>
-            <Text muted size={1}>
-              {t('asset-sources.federated.error.unavailable')}
-            </Text>
-          </Box>
-        ) : (
-          <FederatedViewMount onUnavailable={handleUnavailable} view={view} viewProps={viewProps} />
-        )}
-      </Box>
-    </FullSurfaceAppDialog>
+        <Box
+          style={{
+            position: 'absolute',
+            inset: 0,
+            borderTop: '1px solid',
+            borderColor: 'var(--card-border-color)',
+            overflow: 'hidden',
+            display: 'flex',
+          }}
+        >
+          {failed ? (
+            <Box padding={4}>
+              <Text muted size={1}>
+                {t('asset-sources.federated.error.unavailable')}
+              </Text>
+            </Box>
+          ) : (
+            <FederatedViewMount
+              onUnavailable={handleUnavailable}
+              view={view}
+              viewProps={viewProps}
+            />
+          )}
+        </Box>
+      </FullSurfaceAppDialog>
+    </PortalProvider>
   )
 }
