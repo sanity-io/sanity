@@ -80,7 +80,7 @@ function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
   )
 }
 
-export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
+export default function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
   const {enabled} = useTasksEnabled()
   if (!enabled) {
     return props.renderDefault(props)

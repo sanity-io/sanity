@@ -45,7 +45,7 @@ const RootLayer = styled(Layer)`
   overflow: hidden;
 `
 
-export function CommentsInspector(props: DocumentInspectorProps) {
+export default function CommentsInspector(props: DocumentInspectorProps) {
   const {enabled, mode} = useCommentsEnabled()
 
   if (!enabled) return null
