@@ -9,6 +9,8 @@ import {useUpsellData} from './useUpsellData'
 interface UseUpsellContextOptions {
   dataUri: string
   feature: string
+  /** Set to `false` to skip the request, for a provider that is mounted before it is needed */
+  enabled?: boolean
 }
 
 export interface UpsellContextValue {
@@ -52,11 +54,16 @@ export function getDialogPropsFromContext(contextValue: UpsellContextValue) {
  *
  * @internal
  */
-export function useUpsellContext({dataUri, feature}: UseUpsellContextOptions): UpsellContextValue {
+export function useUpsellContext({
+  dataUri,
+  feature,
+  enabled,
+}: UseUpsellContextOptions): UpsellContextValue {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {upsellData, telemetryLogs, hasError} = useUpsellData({
     dataUri,
     feature,
+    enabled,
   })
   const toast = useToast()
   const {t} = useTranslation()
