@@ -28,6 +28,7 @@ import {parseArgs} from 'node:util'
 const DEFAULT_URL = 'http://localhost:3333/test'
 const DEFAULT_PORT = 9222
 const STARTUP_TIMEOUT_MS = 30_000
+const PROBE_TIMEOUT_MS = 2_000
 const REPO_ROOT = path.resolve(import.meta.dirname, '..')
 
 interface Options {
@@ -137,7 +138,10 @@ function getBrowserName(versionInfo: unknown): string {
 /** The browser name when a DevTools endpoint answers on `port`, `null` otherwise. */
 async function probeDevTools(port: number): Promise<string | null> {
   try {
-    const response = await fetch(`http://127.0.0.1:${port}/json/version`)
+    // A port that accepts the connection but never answers must not stall the startup timeout
+    const response = await fetch(`http://127.0.0.1:${port}/json/version`, {
+      signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+    })
     return response.ok ? getBrowserName(await response.json()) : null
   } catch {
     return null
@@ -145,18 +149,17 @@ async function probeDevTools(port: number): Promise<string | null> {
 }
 
 // oxlint-disable no-await-in-loop -- sequential polling of Chrome's debugging endpoint is intentional
-async function waitForDevTools(port: number, chromeExited: () => boolean): Promise<string> {
+/** Polls the debugging port until it answers, Chrome fails (`getFailure`) or the timeout passes. */
+async function waitForDevTools(port: number, getFailure: () => Error | null): Promise<string> {
   const deadline = Date.now() + STARTUP_TIMEOUT_MS
   while (Date.now() < deadline) {
     const browserName = await probeDevTools(port)
     if (browserName !== null) {
       return browserName
     }
-    if (chromeExited()) {
-      throw new Error(
-        'Chrome exited before opening its debugging port. A Chrome using the react-devtools-mcp ' +
-          'profile is probably already running without one; close it and retry.',
-      )
+    const failure = getFailure()
+    if (failure !== null) {
+      throw failure
     }
     await sleep(250)
   }
@@ -191,8 +194,9 @@ async function startRedirect(targetUrl: string): Promise<Redirect> {
       }
       response
         .writeHead(302, {'Location': targetUrl, 'Cache-Control': 'no-store', 'Connection': 'close'})
-        .end()
-      resolve()
+        // Resolve only once the response has been flushed, so closing the server afterwards
+        // cannot cut the socket before Chrome has the redirect
+        .end(() => resolve())
     })
   })
   server.listen(0, '127.0.0.1')
@@ -230,6 +234,7 @@ async function openInRunningBrowser(
   // `?` and `#` inside `url` intact
   const response = await fetch(`${browserUrl}/json/new?${encodeURIComponent(url)}`, {
     method: 'PUT',
+    signal: AbortSignal.timeout(STARTUP_TIMEOUT_MS),
   })
   if (!response.ok) {
     throw new Error(
@@ -266,12 +271,20 @@ async function launchChrome(chrome: string, options: Options, url: string): Prom
 
   const child = spawn(chrome, args, {detached: true, stdio: 'ignore'})
   child.unref()
-  let chromeExited = false
+  let failure: Error | null = null
+  // A spawn that fails (stale CHROME_PATH, missing binary) emits `error` and no `exit`; without a
+  // listener Node would terminate on it instead of reaching main().catch
+  child.once('error', (error) => {
+    failure ??= new Error(`Could not start Chrome at ${chrome}: ${error.message}`)
+  })
   child.once('exit', () => {
-    chromeExited = true
+    failure ??= new Error(
+      'Chrome exited before opening its debugging port. A Chrome using the react-devtools-mcp ' +
+        'profile is probably already running without one; close it and retry.',
+    )
   })
 
-  const browserName = await waitForDevTools(options.port, () => chromeExited)
+  const browserName = await waitForDevTools(options.port, () => failure)
   return {browserName, pid: child.pid}
 }
 
