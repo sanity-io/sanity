@@ -241,7 +241,7 @@ An alternative to the daemon above that works over the Chrome DevTools Protocol 
 
 ```bash
 pnpm react-devtools-mcp:test-studio   # sanity dev with the hook and StrictMode off (build the packages first); SANITY_STUDIO_REACT_STRICT_MODE=true overrides
-pnpm react-devtools-mcp:chrome        # Chrome on http://localhost:3333/test with --remote-debugging-port=9222, signed in via STUDIO_AUTH_TOKEN when set (handed over through a one-time loopback redirect, never on Chrome's command line; loopback origins only unless --inject-token is passed)
+pnpm react-devtools-mcp:chrome        # Chrome on http://localhost:3333/test with --remote-debugging-port=9222, signed in via STUDIO_AUTH_TOKEN when set (handed over through a one-shot loopback redirect, never in Chrome's argv or environment; loopback origins only unless --inject-token (https) or --inject-token-insecure-http (plaintext http) is passed)
 # Cursor: the chrome-devtools server in .cursor/mcp.json (the lockfile-pinned chrome-devtools-mcp under dev/test-studio/node_modules) attaches to that Chrome via --browserUrl.
 # Terminal / cloud agents: the same daemon through its CLI
 pnpm --filter sanity-test-studio exec chrome-devtools start --categoryExperimentalThirdParty=true --browserUrl=http://127.0.0.1:9222

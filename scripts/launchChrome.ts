@@ -9,11 +9,13 @@
  * - `url` defaults to the test studio's `/test` workspace. When `STUDIO_AUTH_TOKEN` is set and
  *   the url has no hash, the studio is opened with `#token=<token>` so it signs in on load (the
  *   studio consumes the token and strips it from the address bar). The token never appears in
- *   Chrome's argv or in this script's output: Chrome is started on a one-time redirect served
- *   from an ephemeral loopback server, which forwards it to the tokenized url.
- * - The token is only injected automatically for loopback origins (`http://localhost:<port>`,
- *   `http://127.0.0.1:<port>`), where a local studio runs. Any other origin would receive the
- *   production token through `location.hash`, so it requires the explicit `--inject-token` flag.
+ *   Chrome's argv, in Chrome's environment or in this script's output: Chrome is started on a
+ *   one-shot redirect served from an ephemeral loopback server, which forwards it to the
+ *   tokenized url, and with every secret-looking variable removed from its environment.
+ * - The token is only injected automatically for loopback origins (`localhost`, `127.0.0.1`,
+ *   `[::1]`), where a local studio runs. Any other origin would receive the production token
+ *   through `location.hash`, so an `https:` origin requires the explicit `--inject-token` flag
+ *   and a plaintext `http:` origin the separately named `--inject-token-insecure-http`.
  * - `CHROME_PATH` overrides the Chrome executable that is used.
  * - The profile lives in `node_modules/.cache/react-devtools-mcp/chrome-profile` and is reused
  *   across runs. Chrome stays open after this script exits; stop it with `kill <pid>`.
@@ -35,12 +37,17 @@ const PROBE_TIMEOUT_MS = 2_000
 const REPO_ROOT = path.resolve(import.meta.dirname, '..')
 
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
+// Environment variables Chrome must not inherit: it would expose them through
+// /proc/<pid>/environ for its whole lifetime, and it needs none of them
+const SECRET_ENV_PATTERN =
+  /TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|API_?KEY|PRIVATE_KEY|ACCESS_KEY/i
 
 interface Options {
   url: URL
   port: number
   headless: boolean
   injectToken: boolean
+  injectTokenInsecureHttp: boolean
   chromeArgs: string[]
 }
 
@@ -60,6 +67,11 @@ function parseUrl(value: string): URL {
     throw new Error(`Invalid url "${value}": expected an absolute http(s) url`)
   }
   return url
+}
+
+/** The url without its fragment, for messages: a caller-supplied `#token=` must not be echoed. */
+function describeUrl(url: URL): string {
+  return url.hash === '' ? url.href : `${url.origin}${url.pathname}${url.search}#…`
 }
 
 function parsePort(value: string): number {
@@ -82,6 +94,7 @@ function parseOptions(argv: string[]): Options {
       'headless': {type: 'boolean', default: false},
       'port': {type: 'string', default: String(DEFAULT_PORT)},
       'inject-token': {type: 'boolean', default: false},
+      'inject-token-insecure-http': {type: 'boolean', default: false},
     },
   })
 
@@ -93,7 +106,8 @@ function parseOptions(argv: string[]): Options {
     url: parseUrl(positionals[0] ?? DEFAULT_URL),
     port: parsePort(values.port),
     headless: values.headless,
-    injectToken: values['inject-token'],
+    injectToken: values['inject-token'] || values['inject-token-insecure-http'],
+    injectTokenInsecureHttp: values['inject-token-insecure-http'],
     chromeArgs,
   }
 }
@@ -110,25 +124,60 @@ interface Target {
 /**
  * Appends `#token=<STUDIO_AUTH_TOKEN>` so the studio signs in on load. Only loopback origins get
  * it automatically: the fragment is readable by the page's JavaScript, so handing the production
- * token to a mistyped or non-studio origin needs the explicit `--inject-token` opt-in.
+ * token to a mistyped or non-studio origin needs the explicit `--inject-token` opt-in, and a
+ * non-loopback plaintext `http:` origin (token on the wire) the separately named
+ * `--inject-token-insecure-http`.
  */
 function resolveTarget(options: Options): Target {
+  const {url} = options
   const token = process.env.STUDIO_AUTH_TOKEN
-  if (!token || options.url.hash !== '') {
-    return {url: options.url.href, signIn: false}
+  if (!token) {
+    return {url: url.href, signIn: false}
   }
-  const isLoopback =
-    ALLOWED_PROTOCOLS.has(options.url.protocol) && LOOPBACK_HOSTS.has(options.url.hostname)
-  if (!isLoopback && !options.injectToken) {
+  if (url.hash !== '') {
     return {
-      url: options.url.href,
+      url: url.href,
+      signIn: false,
+      notice: 'STUDIO_AUTH_TOKEN was not injected: the url already has a fragment.',
+    }
+  }
+  const signedIn = {url: `${url.href}#token=${encodeURIComponent(token)}`, signIn: true}
+  if (ALLOWED_PROTOCOLS.has(url.protocol) && LOOPBACK_HOSTS.has(url.hostname)) {
+    return signedIn
+  }
+  if (url.protocol === 'https:') {
+    if (options.injectToken) {
+      return signedIn
+    }
+    return {
+      url: url.href,
       signIn: false,
       notice:
-        `STUDIO_AUTH_TOKEN was not injected: ${options.url.origin} is not a loopback origin. ` +
+        `STUDIO_AUTH_TOKEN was not injected: ${url.origin} is not a loopback origin. ` +
         'Pass --inject-token to sign in there anyway.',
     }
   }
-  return {url: `${options.url.href}#token=${encodeURIComponent(token)}`, signIn: true}
+  if (options.injectTokenInsecureHttp) {
+    return signedIn
+  }
+  if (options.injectToken) {
+    throw new Error(
+      `Refusing to send STUDIO_AUTH_TOKEN to ${url.origin} over plaintext http. Use an https url, ` +
+        'or pass --inject-token-insecure-http instead of --inject-token if you really must.',
+    )
+  }
+  return {
+    url: url.href,
+    signIn: false,
+    notice:
+      `STUDIO_AUTH_TOKEN was not injected: ${url.origin} is not a loopback origin and uses ` +
+      'plaintext http. Pass --inject-token-insecure-http to sign in there anyway.',
+  }
+}
+
+/** `process.env` without the variables that look like secrets. */
+function withoutSecrets(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  return Object.fromEntries(Object.entries(env).filter(([name]) => !SECRET_ENV_PATTERN.test(name)))
 }
 
 function isExecutable(file: string): boolean {
@@ -237,20 +286,24 @@ interface Redirect {
 }
 
 /**
- * Serves a one-time `302` to the target url from an ephemeral loopback server. Chrome opens the
+ * Serves a one-shot `302` to the target url from an ephemeral loopback server. Chrome opens the
  * loopback url instead of the target itself, which keeps `#token=` out of Chrome's command line
  * (readable through `ps` and `/proc/<pid>/cmdline` for the browser's lifetime) and out of the
- * `/json/new` request that the reuse path sends to the running browser.
+ * `/json/new` request that the reuse path sends to the running browser. The server is bound to
+ * 127.0.0.1, answers the redirect exactly once (a 128-bit random path, `404` for everything
+ * else, no body), and lives only until that first fetch or the startup timeout.
  */
 async function startRedirect(targetUrl: string): Promise<Redirect> {
   const secretPath = `/${randomBytes(16).toString('hex')}`
   const server = createServer()
+  let redirected = false
   const served = new Promise<void>((resolve) => {
     server.on('request', (request, response) => {
-      if (request.method !== 'GET' || request.url !== secretPath) {
+      if (redirected || request.method !== 'GET' || request.url !== secretPath) {
         response.writeHead(404, {Connection: 'close'}).end()
         return
       }
+      redirected = true
       response
         .writeHead(302, {'Location': targetUrl, 'Cache-Control': 'no-store', 'Connection': 'close'})
         // Resolve only once the response has been flushed, so closing the server afterwards
@@ -330,7 +383,11 @@ async function launchChrome(options: Options, url: string): Promise<Launched> {
     url,
   ]
 
-  const child = spawn(chrome, args, {detached: true, stdio: 'ignore'})
+  const child = spawn(chrome, args, {
+    detached: true,
+    stdio: 'ignore',
+    env: withoutSecrets(process.env),
+  })
   child.unref()
   let failure: Error | null = null
   // A spawn that fails (stale CHROME_PATH, missing binary) emits `error` and no `exit`; without a
@@ -389,7 +446,7 @@ async function main(): Promise<void> {
       `${browserName} is listening on ${browserUrl}${options.headless ? ' (headless)' : ''}`,
     )
     console.log(
-      `Opened ${options.url.href}${target.signIn ? ' (signed in with STUDIO_AUTH_TOKEN)' : ''}`,
+      `Opened ${describeUrl(options.url)}${target.signIn ? ' (signed in with STUDIO_AUTH_TOKEN)' : ''}`,
     )
     console.log(
       pid === undefined

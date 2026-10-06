@@ -34,11 +34,14 @@ pnpm react-devtools-mcp:test-studio
 # 2. Chrome with the remote debugging port open, on the studio. With STUDIO_AUTH_TOKEN set
 #    (cloud agents have it) the studio is signed in on load. The token is never printed and
 #    never put on Chrome's command line: Chrome opens a one-time loopback redirect that
-#    forwards to the #token= url. Only loopback origins (localhost, 127.0.0.1, [::1]) get the
-#    token automatically; any other origin would read it from location.hash, so it needs
-#    --inject-token (otherwise a notice is printed and the url opens signed out). Re-running
-#    the command opens a new tab in the Chrome that is already listening on the port instead
-#    of starting a second one.
+#    forwards to the #token= url, and Chrome's environment is scrubbed of secret-looking
+#    variables (*TOKEN*, *SECRET*, *PASSWORD*, *KEY*...). Only loopback origins (localhost,
+#    127.0.0.1, [::1]) get the token automatically; any other origin would read it from
+#    location.hash, so an https origin needs --inject-token and a plaintext http origin the
+#    separately named --inject-token-insecure-http (token on the wire). Without the flag a
+#    notice is printed and the url opens signed out; --inject-token on plaintext http fails.
+#    Re-running the command opens a new tab in the Chrome that is already listening on the
+#    port instead of starting a second one.
 pnpm react-devtools-mcp:chrome                       # http://localhost:3333/test
 pnpm react-devtools-mcp:chrome http://localhost:3333/test/structure/author
 pnpm react-devtools-mcp:chrome --headless            # no display
@@ -146,6 +149,12 @@ resolve to a `/node_modules/.sanity/vite/deps/...` chunk.
   anywhere.
 - "Chrome exited before opening its debugging port": a Chrome using the profile is already
   running without `--remote-debugging-port` (for example started by hand). Close it and retry.
+- Where the token can still be seen, by design: in the page url (`/json/list`, `list_pages`,
+  Chrome's session files) from the redirect until the studio strips the fragment, and through
+  the debugging port itself, which can run JavaScript in the signed-in page. Both are limited to
+  processes on this machine that can reach 127.0.0.1:9222; the redirect server is loopback-only,
+  one-shot and gone after the first fetch. It is never in Chrome's argv, Chrome's environment,
+  this script's output or its error messages (a caller-supplied fragment is printed as `#…`).
 - Set `CHROME_PATH` if Chrome is not found; the script turns on headless automatically when
   `DISPLAY` is unset on Linux.
 - To let `chrome-devtools-mcp` launch its own Chrome instead, drop `--browserUrl` (and skip step 2);
