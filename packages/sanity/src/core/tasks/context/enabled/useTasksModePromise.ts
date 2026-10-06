@@ -1,4 +1,5 @@
 import {use} from 'react'
+import {type ObservablePromise} from 'react-rx'
 import {TasksModePromiseContext} from 'sanity/_singletons'
 
 import {type TasksMode} from './types'
@@ -8,7 +9,7 @@ import {type TasksMode} from './types'
  * event handler.
  * @internal
  */
-export function useTasksModePromise(): Promise<TasksMode> {
+export function useTasksModePromise(): ObservablePromise<TasksMode> {
   const promise = use(TasksModePromiseContext)
   if (!promise) throw new TypeError('TasksModePromise: missing context value')
   return promise

@@ -45,23 +45,10 @@ export const FEATURES: Record<string, string> = {
  * fetches all the enabled features for this project
  */
 function fetchFeatures({versionedClient}: {versionedClient: SanityClient}): Observable<string[]> {
-  return versionedClient.observable
-    .request<string[]>({
-      url: `/features`,
-      tag: 'features',
-    })
-    .pipe(
-      timeout({
-        first: FEATURES_TIMEOUT,
-        with: () =>
-          throwError(
-            () =>
-              new Error(
-                `Timed out after ${FEATURES_TIMEOUT / 1000}s waiting for the project's feature list (/features)`,
-              ),
-          ),
-      }),
-    )
+  return versionedClient.observable.request<string[]>({
+    url: `/features`,
+    tag: 'features',
+  })
 }
 
 const cachedFeatureRequest = new Map<string, Observable<string[]>>()
@@ -105,6 +92,18 @@ export function useFeatureEnabledObservable(
   return useMemo(
     () =>
       req.pipe(
+        // The bound is per subscriber, outside the cached request: a late answer still lands in
+        // the cache for the next reader instead of being replayed as a failure for the session
+        timeout({
+          first: FEATURES_TIMEOUT,
+          with: () =>
+            throwError(
+              () =>
+                new Error(
+                  `Timed out after ${FEATURES_TIMEOUT / 1000}s waiting for the project's feature list (/features)`,
+                ),
+            ),
+        }),
         map((features = []): SettledFeatures => ({
           enabled: Boolean(features?.includes(featureKey)),
           features,

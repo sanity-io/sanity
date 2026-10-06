@@ -118,6 +118,27 @@ describe('useFeatureEnabledObservable', () => {
     )
   })
 
+  it('does not cache a subscriber timeout, so a late answer still reaches the next reader', async () => {
+    vi.useFakeTimers()
+
+    await mount(<Parent featureKey={FEATURES.sanityTasks} />)
+
+    await act(async () => {
+      vi.advanceTimersByTime(10_000)
+    })
+    expect(screen.getByTestId('settled')).toHaveTextContent('disabled error:Timed out')
+
+    // The request was never aborted, so the answer it eventually gives is the cached one
+    await act(async () => {
+      response$.next(['sanityTasks'])
+      response$.complete()
+    })
+    await mount(<Parent featureKey={FEATURES.sanityTasks} />)
+
+    expect(screen.getByText('enabled')).toBeInTheDocument()
+    expect(requestCount).toBe(1)
+  })
+
   it('settles a failed request as disabled with the error instead of rejecting', async () => {
     await mount(<Parent featureKey={FEATURES.sanityTasks} />)
 

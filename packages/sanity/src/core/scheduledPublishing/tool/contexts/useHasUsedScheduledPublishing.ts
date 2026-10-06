@@ -27,11 +27,7 @@ function fetchUsedScheduledPublishing(
   const {dataset, projectId} = client.config()
   return client.observable
     .request({url: `/schedules/${projectId}/${dataset}?limit=1`, tag: 'scheduled-publishing-used'})
-    .pipe(
-      timeout({first: PROBE_TIMEOUT}),
-      map((res) => (res.schedules?.length > 0 ? USED : NOT_USED)),
-      catchError(() => of(NOT_USED)),
-    )
+    .pipe(map((res) => (res.schedules?.length > 0 ? USED : NOT_USED)))
 }
 
 /** Whether scheduled publishing counts as "used" for this workspace, as an observable of the settled answer */
@@ -60,6 +56,11 @@ export function useHasUsedScheduledPublishingObservable({
       hasUsed = fetchUsedScheduledPublishing(client).pipe(shareReplay())
       cachedUsedScheduledPublishing.set(key, hasUsed)
     }
-    return hasUsed
+    // The bound is per subscriber, outside the cached probe: a late answer still lands in the
+    // cache for the next reader instead of being replayed as "not used" for the session
+    return hasUsed.pipe(
+      timeout({first: PROBE_TIMEOUT}),
+      catchError(() => of(NOT_USED)),
+    )
   }, [client, key, explicitEnabled, isWorkspaceEnabled])
 }

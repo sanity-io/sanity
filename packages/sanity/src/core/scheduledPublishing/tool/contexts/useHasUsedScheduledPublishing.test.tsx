@@ -1,7 +1,7 @@
 import {act, render, screen} from '@testing-library/react'
 import {type ReactNode, Suspense, use} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
-import {NEVER} from 'rxjs'
+import {NEVER, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../../../test/mocks/mockSanityClient'
@@ -95,6 +95,30 @@ describe('useHasUsedScheduledPublishingObservable', () => {
       vi.advanceTimersByTime(10_000)
     })
     expect(screen.getByTestId('used')).toHaveTextContent('not-used')
+  })
+
+  it('does not cache a subscriber timeout, so a late answer still reaches the next reader', async () => {
+    vi.useFakeTimers()
+    const response$ = new Subject<{schedules: {id: string}[]}>()
+    const client = createMockSanityClientAsClient()
+    vi.spyOn(client.observable, 'request').mockReturnValue(response$.asObservable())
+    useClientMock.mockReturnValue(client)
+
+    await mount(<Parent isWorkspaceEnabled />)
+    await act(async () => {
+      vi.advanceTimersByTime(10_000)
+    })
+    expect(screen.getByTestId('used')).toHaveTextContent('not-used')
+
+    // The probe was never aborted, so the answer it eventually gives is the cached one
+    await act(async () => {
+      response$.next({schedules: [{id: 'sch-1'}]})
+      response$.complete()
+    })
+    await mount(<Parent isWorkspaceEnabled />)
+
+    // `getByText` is an exact match, so the first probe's `not-used` does not satisfy it
+    expect(screen.getByText('used')).toBeInTheDocument()
   })
 
   it('reports not used when the probe finds nothing', async () => {

@@ -1,5 +1,6 @@
 import {lazy, Suspense, useEffect, useMemo} from 'react'
 import {preloadObservablePromise, useObservablePromise} from 'react-rx'
+import {map} from 'rxjs'
 import {TasksEnabledContext, TasksModePromiseContext} from 'sanity/_singletons'
 
 import {definePlugin} from '../../config/definePlugin'
@@ -73,24 +74,27 @@ export const tasks = definePlugin({
 function TasksStudioProvider(props: ProviderProps) {
   const isWorkspaceEnabled = useWorkspace().tasks?.enabled !== false
   const features$ = useFeatureEnabledObservable(FEATURES.sanityTasks)
-  const featuresPromise = useObservablePromise(features$)
+  // Mapped as an observable, not with `featuresPromise.then()`: that returns a plain promise
+  // without the settled `status` that lets `use()` read it without suspending the sidebar
+  const mode$ = useMemo(
+    () =>
+      features$.pipe(
+        map(({enabled, error}): TasksMode => {
+          if (error || !isWorkspaceEnabled) return null
+          return enabled ? 'default' : 'upsell'
+        }),
+      ),
+    [features$, isWorkspaceEnabled],
+  )
+  const modePromise = useObservablePromise(mode$)
   useEffect(() => {
-    void preloadObservablePromise(features$)
-  }, [features$])
+    void preloadObservablePromise(mode$)
+  }, [mode$])
   useEffect(() => {
     // Preload lazy components
     void lazyTasksStudioActiveToolLayout()
     void lazyTasksStudioNavbar()
   }, [])
-
-  const modePromise = useMemo(
-    () =>
-      featuresPromise.then(({enabled, error}): TasksMode => {
-        if (error || !isWorkspaceEnabled) return null
-        return enabled ? 'default' : 'upsell'
-      }),
-    [featuresPromise, isWorkspaceEnabled],
-  )
 
   return (
     <TasksEnabledContext value={isWorkspaceEnabled}>

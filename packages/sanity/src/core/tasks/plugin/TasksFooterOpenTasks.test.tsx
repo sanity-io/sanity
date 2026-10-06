@@ -95,7 +95,11 @@ const createTaskMock = ({
 })
 
 // The tasks mode, as `TasksStudioProvider` provides it once the feature check has answered
-const modePromise = Promise.resolve<TasksMode>('default')
+const mode: TasksMode = 'default'
+const modePromise = Object.assign(Promise.resolve(mode), {
+  status: 'fulfilled' as const,
+  value: mode,
+})
 
 describe('TasksFooterOpenTasks', () => {
   const wrapper = ({children}: {children?: React.ReactNode}) => {

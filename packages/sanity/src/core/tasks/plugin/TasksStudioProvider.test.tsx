@@ -1,5 +1,6 @@
 import {render, renderHook, screen} from '@testing-library/react'
-import {act, Suspense} from 'react'
+import userEvent from '@testing-library/user-event'
+import {act, type ReactElement, Suspense, useState} from 'react'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -31,24 +32,51 @@ function Mode() {
   return <span>mode:{String(useTasksMode())}</span>
 }
 
+/** Records whether reading the mode suspended */
+const onModeFallback = vi.fn()
+function ModeFallback() {
+  onModeFallback()
+  return <span>mode:pending</span>
+}
+
 function Probe() {
   return (
     <>
       <Enabled />
-      <Suspense fallback={<span>mode:pending</span>}>
+      <Suspense fallback={<ModeFallback />}>
         <Mode />
       </Suspense>
     </>
   )
 }
 
-async function renderProvider(features: Partial<SettledFeatures>) {
+/** The sidebar: it mounts on a click, long after the feature check has answered */
+function LateProbe() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button onClick={() => setOpen(true)} type="button">
+        open
+      </button>
+      {open && (
+        <Suspense fallback={<ModeFallback />}>
+          <Mode />
+        </Suspense>
+      )}
+    </>
+  )
+}
+
+async function renderProvider(
+  features: Partial<SettledFeatures>,
+  children: ReactElement = <Probe />,
+) {
   useFeatureEnabledObservableMock.mockReturnValue(
     of({enabled: false, features: [], error: null, ...features}),
   )
   // oxlint-disable-next-line testing-library/no-unnecessary-act -- the mode read suspends on a promise; React only resumes it inside an awaited act
   await act(async () => {
-    render(<TasksStudioProvider renderDefault={() => <Probe />}>{null}</TasksStudioProvider>)
+    render(<TasksStudioProvider renderDefault={() => children}>{null}</TasksStudioProvider>)
   })
 }
 
@@ -62,6 +90,15 @@ describe('TasksStudioProvider', () => {
 
     expect(screen.getByText('enabled:true')).toBeInTheDocument()
     expect(await screen.findByText('mode:default')).toBeInTheDocument()
+  })
+
+  it('reads an already settled mode without suspending the UI that opens later', async () => {
+    await renderProvider({enabled: true}, <LateProbe />)
+
+    await userEvent.click(screen.getByRole('button', {name: 'open'}))
+
+    expect(screen.getByText('mode:default')).toBeInTheDocument()
+    expect(onModeFallback).not.toHaveBeenCalled()
   })
 
   it('resolves the upsell mode when the plan lacks the feature', async () => {
