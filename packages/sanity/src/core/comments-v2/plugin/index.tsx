@@ -1,5 +1,6 @@
 import {lazy, useEffect, useMemo} from 'react'
 import {preloadObservablePromise, useObservablePromise} from 'react-rx'
+import {map} from 'rxjs'
 import {CommentsModePromiseContext} from 'sanity/_singletons'
 
 import {definePlugin} from '../../config/definePlugin'
@@ -43,19 +44,23 @@ export const comments = definePlugin({
 
 function CommentsStudioProvider(props: ProviderProps) {
   const features$ = useFeatureEnabledObservable(FEATURES.studioComments)
-  const featuresPromise = useObservablePromise(features$)
-  useEffect(() => {
-    void preloadObservablePromise(features$)
-  }, [features$])
-
-  const modePromise = useMemo(
+  // Mapped in the observable, not with `promise.then`: a derived promise is a plain promise that
+  // stays pending for a microtask, so `use()` could not read an already settled check without
+  // suspending first.
+  const mode$ = useMemo(
     () =>
-      featuresPromise.then(({enabled, error}): CommentsMode => {
-        if (error) return null
-        return enabled ? 'default' : 'upsell'
-      }),
-    [featuresPromise],
+      features$.pipe(
+        map(({enabled, error}): CommentsMode => {
+          if (error) return null
+          return enabled ? 'default' : 'upsell'
+        }),
+      ),
+    [features$],
   )
+  const modePromise = useObservablePromise(mode$)
+  useEffect(() => {
+    void preloadObservablePromise(mode$)
+  }, [mode$])
 
   return (
     <CommentsModePromiseContext value={modePromise}>

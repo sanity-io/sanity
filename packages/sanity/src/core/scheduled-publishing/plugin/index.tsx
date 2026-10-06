@@ -1,6 +1,7 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {lazy, useEffect, useMemo} from 'react'
 import {preloadObservablePromise, useObservablePromise} from 'react-rx'
+import {map, of, switchMap} from 'rxjs'
 import {
   type ScheduledPublishingEnabledContextValue,
   ScheduledPublishingEnabledPromiseContext,
@@ -71,31 +72,30 @@ function SchedulePublishingStudioProvider(props: ProviderProps) {
   const hasUsedScheduledPublishing$ = useHasUsedScheduledPublishingObservable({
     explicitEnabled: useWorkspace().scheduledPublishing.__internal__workspaceEnabled,
   })
-  const featureEnabled = useObservablePromise(featureEnabled$)
-  const hasUsedScheduledPublishing = useObservablePromise(hasUsedScheduledPublishing$)
+  // Chained in the observable, not with `promise.then`: a derived promise is a plain promise that
+  // stays pending for a microtask, so `use()` could not read an already settled check without
+  // suspending first.
+  const enabled$ = useMemo(
+    () =>
+      featureEnabled$.pipe(
+        switchMap(({enabled, error}) => {
+          // A failed feature check disables the feature on its own; don't wait for the usage probe
+          if (error) return of(DISABLED)
+          return hasUsedScheduledPublishing$.pipe(
+            map(({used}): ScheduledPublishingEnabledContextValue =>
+              used ? {enabled: true, mode: enabled ? 'default' : 'upsell'} : DISABLED,
+            ),
+          )
+        }),
+      ),
+    [featureEnabled$, hasUsedScheduledPublishing$],
+  )
+  const enabledPromise = useObservablePromise(enabled$)
   useEffect(() => {
+    // Preloaded individually so both requests are in flight at once; `enabled$` only chains them
     void preloadObservablePromise(featureEnabled$)
     void preloadObservablePromise(hasUsedScheduledPublishing$)
   }, [featureEnabled$, hasUsedScheduledPublishing$])
-
-  const enabledPromise = useMemo(
-    () =>
-      featureEnabled.then(
-        ({
-          enabled,
-          error,
-        }):
-          | ScheduledPublishingEnabledContextValue
-          | Promise<ScheduledPublishingEnabledContextValue> => {
-          // A failed feature check disables the feature on its own; don't wait for the usage probe
-          if (error) return DISABLED
-          return hasUsedScheduledPublishing.then(({used}) =>
-            used ? {enabled: true, mode: enabled ? 'default' : 'upsell'} : DISABLED,
-          )
-        },
-      ),
-    [featureEnabled, hasUsedScheduledPublishing],
-  )
 
   return (
     <ScheduledPublishingEnabledPromiseContext value={enabledPromise}>
