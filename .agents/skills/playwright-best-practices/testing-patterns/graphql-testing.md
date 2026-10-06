@@ -244,6 +244,7 @@ export async function gqlMutation<T = any>(
 ```typescript
 // tests/api/items.spec.ts
 import {test, expect} from '@playwright/test'
+
 import {gqlQuery, gqlMutation} from '../../utils/graphql'
 
 test('fetch and update item', async ({request}) => {

@@ -97,7 +97,9 @@ defineField({
    ```ts
    // sanity.blueprint.ts
    import 'dotenv/config'
+
    import process from 'node:process'
+
    import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 
    const {BLUESKY_USERNAME, BLUESKY_PASSWORD, BLUESKY_HOST} = process.env

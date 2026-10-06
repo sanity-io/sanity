@@ -56,8 +56,9 @@ export async function deleteUser(userId: string) {
 ```typescript
 'use server'
 
-import {verifySession} from '@/lib/auth'
 import {z} from 'zod'
+
+import {verifySession} from '@/lib/auth'
 
 const updateProfileSchema = z.object({
   userId: z.string().uuid(),

@@ -23,9 +23,10 @@
 ### Capturing Downloads and Verifying Content
 
 ```typescript
-import {test, expect} from '@playwright/test'
 import fs from 'fs'
 import path from 'path'
+
+import {test, expect} from '@playwright/test'
 
 test('verifies downloaded CSV content', async ({page}) => {
   await page.goto('/exports')
