@@ -694,10 +694,10 @@ importers:
   dev/sdk-app:
     dependencies:
       '@sanity/sdk':
-        specifier: ^3.7.0
+        specifier: ^3.8.0
         version: 3.8.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.3)(xstate@5.33.2)
       '@sanity/sdk-react':
-        specifier: ^3.7.0
+        specifier: ^3.8.0
         version: 3.8.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.3)(xstate@5.33.2)
       react:
         specifier: 'catalog:'
@@ -2173,10 +2173,10 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/schema
       '@sanity/sdk':
-        specifier: ^3.7.0
+        specifier: ^3.8.0
         version: 3.8.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.3)(xstate@5.33.2)
       '@sanity/sdk-react':
-        specifier: ^3.7.0
+        specifier: ^3.8.0
         version: 3.8.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.3)(xstate@5.33.2)
       '@sanity/telemetry':
         specifier: 'catalog:'
