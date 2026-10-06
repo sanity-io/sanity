@@ -16,9 +16,9 @@ export interface MediaLibraryOptions {
 }
 
 /**
- * Per-field selection of asset sources (`options.sources` on file, image and
- * video fields). When set, it replaces the asset sources configured on the
- * Studio for this field:
+ * Per-field selection of asset sources (`options.sources` on file and image
+ * fields; video fields always use the built-in Media Library source). When
+ * set, it replaces the asset sources configured on the Studio for this field:
  *
  * - `AssetSource` entries are used as-is (the classic pattern of importing a
  *   source from a plugin).
