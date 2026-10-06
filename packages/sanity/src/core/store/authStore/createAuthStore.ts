@@ -92,6 +92,20 @@ export interface AuthStoreOptions extends AuthConfig {
    */
   getRequestFailureDiagnostics?: () => RequestFailureDiagnostics | undefined
   /**
+   * Called right before the store probes a client's credentials (`/users/me`), with that client
+   * stripped of the studio request handler the same way the probe's own request is. Requests that
+   * need credentials but not the probe's answer (the project's feature list) start here,
+   * concurrently with the probe, instead of once the auth state has settled; rejected credentials
+   * then fail those requests locally, like they fail the probe, instead of being claimed as a
+   * forced logout. Called again for every re-probe (a new token, a cookie state change) with the
+   * client that re-probe uses, so it has to be idempotent. Resolved lazily for the same reason as
+   * `getRequestErrorHandler`: it's unhashable runtime wiring that must stay out of the auth-store
+   * memo key.
+   *
+   * @internal
+   */
+  onBeforeProbe?: (client: SanityClient) => void
+  /**
    * Retrieves the session ID from the URL hash for the auth callback flow.
    * Called by `handleCallbackUrl` to obtain the session ID that is exchanged
    * for a token or cookie.
@@ -363,6 +377,7 @@ function createDashboardAuthStore({
   loginMethod = 'dual',
   getRequestErrorHandler,
   getRequestFailureDiagnostics,
+  onBeforeProbe,
   ...providerOptions
 }: DashboardAuthStoreOptions): AuthStore {
   consumeHashClaimUrl(projectId)
@@ -399,6 +414,7 @@ function createDashboardAuthStore({
         refreshedToken = dashboardToken
         refreshDashboardToken()
       }
+      onBeforeProbe?.(withoutRequestHandler(client))
       return from(
         getCurrentUser(
           client,
@@ -445,6 +461,7 @@ function createStandaloneAuthStore({
   consumeHashToken,
   getRequestErrorHandler,
   getRequestFailureDiagnostics,
+  onBeforeProbe,
   ...providerOptions
 }: StandaloneAuthStoreOptions): AuthStore {
   // Precedence when initializing auth:
@@ -559,6 +576,7 @@ function createStandaloneAuthStore({
    * auth state this store emits is built here.
    */
   async function probeAuthState(client: SanityClient, tag: string): Promise<AuthState> {
+    onBeforeProbe?.(withoutRequestHandler(client))
     const currentUser = await getCurrentUser(
       client,
       tag,
@@ -1091,12 +1109,13 @@ export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = m
       observeWorkbenchToken: defaultObserveDashboardToken,
       refreshWorkbenchToken: defaultRefreshDashboardToken,
     }),
-  // `getRequestErrorHandler` / `getRequestFailureDiagnostics` are functions
-  // (not hashable, and not part of the store's identity — they just look up UI
-  // wiring lazily). Exclude them from the cache key.
+  // `getRequestErrorHandler` / `getRequestFailureDiagnostics` / `onBeforeProbe`
+  // are functions (not hashable, and not part of the store's identity — they
+  // just look up or warm up studio wiring). Exclude them from the cache key.
   ({
     getRequestErrorHandler: _getRequestErrorHandler,
     getRequestFailureDiagnostics: _getRequestFailureDiagnostics,
+    onBeforeProbe: _onBeforeProbe,
     ...options
   }: CreateAuthStoreOptions) => canonicalHash(options),
 )

@@ -1,8 +1,9 @@
-import {useCallback, useEffect, useMemo} from 'react'
+import {use, useCallback, useEffect, useMemo} from 'react'
 import useSWR from 'swr'
 
 import {useClient} from '../../hooks/useClient'
-import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/useScheduledPublishingEnabled'
+import {useScheduledPublishingMode} from '../../scheduledPublishing/contexts/useScheduledPublishingMode'
 import {type Schedule, type ScheduleState} from '../types'
 import {sortByExecuteDate} from '../utils/sortByExecuteDate'
 import {
@@ -50,7 +51,8 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
   isInitialLoading: boolean
   schedules: Schedule[]
 } {
-  const {mode, enabled} = useScheduledPublishingEnabled()
+  const mode = use(useScheduledPublishingMode())
+  const enabled = use(useScheduledPublishingEnabled())
 
   const swrOptions = useMemo(() => {
     const SWR_OPTIONS = {

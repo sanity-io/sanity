@@ -1,6 +1,7 @@
 import {useContext} from 'react'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
+import {SETTLED_WITHOUT_UPSELL_DATA} from '../../../hooks/useUpsellData'
 import {type ReleasesUpsellContextValue} from './types'
 
 /**
@@ -21,7 +22,7 @@ const FALLBACK_CONTEXT_VALUE = {
   onReleaseLimitReached: () => null,
   guardWithReleaseLimitUpsell: async () => undefined,
   handleOpenDialog: () => null,
-  upsellData: null,
+  upsellDataPromise: SETTLED_WITHOUT_UPSELL_DATA,
   telemetryLogs: {
     dialogSecondaryClicked: () => null,
     dialogPrimaryClicked: () => null,

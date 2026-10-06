@@ -1,21 +1,20 @@
+import {use} from 'react'
+import {CommentsEnabledContext} from 'sanity/_singletons'
+
 import {type DocumentLayoutProps} from '../../../config/types'
 import {CommentsAuthoringPathProvider} from '../../context/authoring-path/CommentsAuthoringPathProvider'
 import {CommentsEnabledProvider} from '../../context/enabled/CommentsEnabledProvider'
 import {CommentsSelectedPathProvider} from '../../context/selected-path/CommentsSelectedPathProvider'
-import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 
 export default function CommentsDocumentLayout(props: DocumentLayoutProps) {
   const {documentId, documentType} = props
-  const parentContext = useCommentsEnabled()
+  const parentEnabled = use(CommentsEnabledContext)
 
-  // If there is a parent context and the mode is not null, a parent provider is
-  // already checking if comments are enabled. In such cases, additional wrapping
-  // of the document layout in the `CommentsEnabledProvider` is unnecessary.
-  // The `DocumentPane` component within the `structureTool` handles this wrapping.
-  // However, as this plugin may be used in contexts outside of the `structureTool`,
-  // we must check for a parent context that checks if comments are enabled and
-  // conditionally apply the `CommentsEnabledProvider` wrapping if it is not present.
-  if (parentContext.mode !== null) {
+  // When a parent provider already resolved comments as enabled, wrapping the document layout
+  // in another `CommentsEnabledProvider` is unnecessary; the `DocumentPane` of the structure
+  // tool does that. The plugin may render outside the structure tool though, so without one
+  // (the context's default is `false`) resolve it here.
+  if (parentEnabled) {
     return <CommentsDocumentLayoutInner {...props} />
   }
 
@@ -27,10 +26,10 @@ export default function CommentsDocumentLayout(props: DocumentLayoutProps) {
 }
 
 function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
-  const commentsEnabled = useCommentsEnabled()
+  const enabled = use(CommentsEnabledContext)
 
   // If comments are not enabled, render the default document layout
-  if (!commentsEnabled.enabled) {
+  if (!enabled) {
     return props.renderDefault(props)
   }
 

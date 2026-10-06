@@ -19,8 +19,10 @@ import {
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
 } from '../form/studio/assetSourceMediaLibrary'
+import {prefetchFeatures} from '../hooks/useFeatureEnabled'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
+import {prefetchUsedScheduledPublishing} from '../scheduledPublishing/tool/contexts/useHasUsedScheduledPublishing'
 import {createSchema} from '../schema/createSchema'
 import {createAuthStore, type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
 import {type AuthStore} from '../store/authStore/types'
@@ -91,7 +93,11 @@ import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
 import {resolveConfigProperty} from './resolveConfigProperty'
-import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
+import {
+  getDefaultPlugins,
+  getDefaultPluginsOptions,
+  hasScheduledPublishingUsageProbe,
+} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
 import {SchemaError} from './SchemaError'
 import {
@@ -389,10 +395,22 @@ export function prepareConfig(
         })
       }
 
+      // The studio layout waits for these answers before it paints (the navbar's tool menu, see
+      // the scheduled publishing plugin's provider), so they start with the credentials the auth
+      // probe is about to check, concurrently with it, rather than once the auth state has
+      // settled and the plugins' providers mount. The client comes without the studio request
+      // handler, like the probe's own request, so rejected credentials fail these requests (and
+      // evict them from their caches) instead of being claimed as a forced logout.
+      const probesScheduledPublishingUsage =
+        sourceIndex === 0 && hasScheduledPublishingUsageProbe(defaultPluginsOptions, source.plugins)
       const auth = getAuthStore(source, {
         createStudioRequestHandler: options?.createStudioRequestHandler,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
+        onBeforeProbe: (client) => {
+          prefetchFeatures({projectId, client})
+          if (probesScheduledPublishingUsage) prefetchUsedScheduledPublishing(client)
+        },
       })
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
@@ -460,10 +478,12 @@ function getAuthStore(
     createStudioRequestHandler,
     requestErrorChannel,
     requestFailureDiagnostics,
+    onBeforeProbe,
   }: {
     createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
+    onBeforeProbe: (client: SanityClient) => void
   },
 ): AuthStore {
   if (isAuthStore(source.auth)) {
@@ -490,6 +510,7 @@ function getAuthStore(
     // auth-store memo key.
     getRequestErrorHandler: () => requestErrorChannel,
     getRequestFailureDiagnostics: () => requestFailureDiagnostics,
+    onBeforeProbe,
     dataset,
     projectId,
   })

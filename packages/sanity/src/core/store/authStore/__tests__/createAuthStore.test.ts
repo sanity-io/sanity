@@ -12,7 +12,7 @@ import {stubMessageBusHost} from '../../../../../test/testUtils/stubMessageBusHo
 import {promiseWithResolvers} from '../../../util/promiseWithResolvers'
 import {AUTH_STATE_SETTLE_TIMEOUT_MS} from '../constants'
 import {_createAuthStore, createAuthStore} from '../createAuthStore'
-import {type AuthStore} from '../types'
+import {type AuthState, type AuthStore} from '../types'
 
 // Mock supportsLocalStorage to return true so createBroadcastStorage uses localStorage.
 // In jsdom/Node.js it returns false because process.versions.node is defined.
@@ -149,14 +149,14 @@ function createCredentialAwareClientFactory(opts: {
  */
 function waitForState(
   store: AuthStore,
-  predicate: (state: {authenticated: boolean}) => boolean,
+  predicate: (state: AuthState) => boolean,
   timeoutMs = 5000,
-): Promise<{authenticated: boolean; currentUser: CurrentUser | null}> {
+): Promise<AuthState> {
   return Promise.race([
     new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error(`Timed out waiting for auth state`)), timeoutMs),
     ),
-    new Promise<{authenticated: boolean; currentUser: CurrentUser | null}>((resolve) => {
+    new Promise<AuthState>((resolve) => {
       const sub = store.state.subscribe((state) => {
         if (predicate(state)) {
           queueMicrotask(() => sub.unsubscribe())
@@ -765,6 +765,74 @@ describe('createAuthStore: cross-tab sync', () => {
       await new Promise((resolve) => setTimeout(resolve, 100))
 
       expect(usersMeProbes).toBe(1)
+    })
+
+    it('calls onBeforeProbe with the probe client before /users/me, and again for a re-probe', async () => {
+      // The studio starts the requests its layout waits for (the project's feature list, the
+      // scheduled publishing usage probe) here, concurrently with the auth probe
+      localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'pre-stored-token'}))
+
+      type ProbeClient = SanityClient & {token?: string; requestHandler?: RequestHandler}
+      const probed: {client: ProbeClient; usersMeProbesSoFar: number}[] = []
+      let usersMeProbes = 0
+      // Like the studio's factory: every client carries the studio request handler
+      const studioRequestHandler: RequestHandler = (request, next) => next(request)
+      const factory = (options: SanityClientConfig): SanityClient =>
+        ({
+          token: options.token,
+          requestHandler: options.requestHandler,
+          withConfig: (next: SanityClientConfig) => factory({...options, ...next}),
+          request: vi.fn(({url}: {url: string}) => {
+            if (url === '/users/me') {
+              usersMeProbes += 1
+              return Promise.resolve(MOCK_USER)
+            }
+            return Promise.resolve({})
+          }),
+        }) as unknown as SanityClient
+
+      // One-shot values: the store's hashchange listener outlives the test by its share reset delay
+      const consumeHashToken = vi.fn<() => string | undefined>().mockReturnValueOnce(undefined)
+      const store = _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'dual',
+        clientFactory: (options) => factory({...options, requestHandler: studioRequestHandler}),
+        getSessionId: () => undefined,
+        consumeHashToken,
+        onBeforeProbe: (client) =>
+          probed.push({client: client as ProbeClient, usersMeProbesSoFar: usersMeProbes}),
+      })
+      const sub = store.state.subscribe(() => {})
+
+      try {
+        const state = await waitForState(store, (s) => s.authenticated)
+
+        // Once, with the credentials the initial probe then used, before that probe went out
+        expect(probed).toHaveLength(1)
+        expect(probed[0].usersMeProbesSoFar).toBe(0)
+        expect(probed[0].client.token).toBe('pre-stored-token')
+        // Stripped of the studio request handler like the probe's own request, so rejected
+        // credentials fail the prefetches locally instead of being claimed as a forced logout
+        expect(probed[0].client.requestHandler).toBeUndefined()
+        expect((state.client as ProbeClient).requestHandler).toBe(studioRequestHandler)
+
+        // A new token (pasted into the hash) means a re-probe with a new client, announced the
+        // same way
+        consumeHashToken.mockReturnValueOnce('next-token')
+        window.dispatchEvent(new HashChangeEvent('hashchange'))
+        await waitForState(
+          store,
+          (s) => (s.client as unknown as {token: string}).token === 'next-token',
+        )
+
+        expect(probed).toHaveLength(2)
+        expect(probed[1].client.token).toBe('next-token')
+        expect(probed[1].client.requestHandler).toBeUndefined()
+        expect(probed[1].usersMeProbesSoFar).toBe(1)
+      } finally {
+        sub.unsubscribe()
+      }
     })
 
     it('transitions to unauthenticated on logout despite the forced-logout middleware parking 401s', async () => {

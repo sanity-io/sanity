@@ -1,7 +1,14 @@
-import {createClient, type RequestHandler} from '@sanity/client'
+import {
+  type ClientConfig,
+  createClient,
+  type RequestHandler,
+  type SanityClient,
+} from '@sanity/client'
+import {defer, of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getCollectedConfigWarnings} from '../configWarnings'
+import {definePlugin} from '../definePlugin'
 import {prepareConfig} from '../prepareConfig'
 import {SchemaError} from '../SchemaError'
 import {type WorkspaceOptions} from '../types'
@@ -207,6 +214,84 @@ describe('prepareConfig — studio request handler', () => {
     for (const [config] of clientFactory.mock.calls) {
       expect(config.requestHandler).toBe(requestHandler)
     }
+  })
+})
+
+describe('prepareConfig — boot prefetch', () => {
+  /**
+   * A client that records every request (and whether the client making it carried the studio
+   * request handler) and never answers the auth probe, so the test can see what went out while
+   * `/users/me` was still in flight.
+   */
+  function createRecordingClientFactory() {
+    const requests: string[] = []
+    const record = (config: ClientConfig, url: string) =>
+      requests.push(config.requestHandler ? `${url} (studio handler)` : url)
+    const make = (config: ClientConfig): SanityClient =>
+      ({
+        config: () => config,
+        withConfig: (next: ClientConfig) => make({...config, ...next}),
+        request: vi.fn(({url}: {url: string}) => {
+          record(config, url)
+          return new Promise(() => {})
+        }),
+        observable: {
+          request: vi.fn(({url}: {url: string}) =>
+            defer(() => {
+              record(config, url)
+              return of(url.startsWith('/schedules') ? {schedules: []} : [])
+            }),
+          ),
+        },
+      }) as unknown as SanityClient
+    return {factory: make, requests}
+  }
+
+  const somePlugin = definePlugin({name: 'some-plugin'})
+  const studioRequestHandler: RequestHandler = (request, next) => next(request)
+
+  function bootRequests(overrides: Partial<WorkspaceOptions>) {
+    const {factory, requests} = createRecordingClientFactory()
+    const workspace = createWorkspace({unstable_clientFactory: factory, ...overrides})
+    const {workspaces} = prepareConfig(workspace, {
+      createStudioRequestHandler: () => studioRequestHandler,
+    })
+    // What WorkspaceLoader does: resolving the source is what starts the auth probe
+    // oxlint-disable-next-line no-deprecated -- the internal source observable is the subject here
+    const subscription = workspaces[0].__internal.sources[0].source.subscribe(() => {})
+    subscription.unsubscribe()
+    return {requests, projectId: workspace.projectId}
+  }
+
+  it('starts the feature list and scheduled publishing usage requests with the auth probe', () => {
+    const {requests, projectId} = bootRequests({plugins: [somePlugin()]})
+
+    // All three went out together, and all three without the studio request handler (which
+    // would claim rejected credentials as a forced logout instead of letting them fail): nothing
+    // waited for /users/me to answer
+    expect(requests).toContain('/users/me')
+    expect(requests).toContain('/features')
+    expect(requests).toContain(`/schedules/${projectId}/test?limit=1`)
+    expect(requests.filter((url) => url === '/features')).toHaveLength(1)
+    expect(requests.some((url) => url.includes('(studio handler)'))).toBe(false)
+  })
+
+  it('skips the usage probe when the workspace enabled scheduled publishing explicitly', () => {
+    const {requests} = bootRequests({
+      plugins: [somePlugin()],
+      scheduledPublishing: {enabled: true},
+    })
+
+    expect(requests).toContain('/features')
+    expect(requests.some((url) => url.startsWith('/schedules/'))).toBe(false)
+  })
+
+  it('skips the usage probe when the scheduled publishing plugin is not loaded', () => {
+    // Without user plugins the default plugins leave scheduled publishing out
+    const {requests} = bootRequests({})
+
+    expect(requests).toContain('/features')
+    expect(requests.some((url) => url.startsWith('/schedules/'))).toBe(false)
   })
 })
 
