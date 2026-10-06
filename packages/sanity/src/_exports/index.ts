@@ -6,6 +6,7 @@ import '../core/form/types/definitionExtensions'
 import {createAuthStore as _createAuthStorePublic} from '../core/store/authStore/createAuthStore'
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
+export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
@@ -84,6 +85,7 @@ export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comm
 export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
+export {DashboardLink} from '../core/components/DashboardLink'
 export {
   AutoCollapseMenu,
   CollapseMenu,
@@ -241,6 +243,7 @@ export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {createConfig, defineConfig} from '../core/config/defineConfig'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {createPlugin, definePlugin, type PluginFactory} from '../core/config/definePlugin'
+export {defineSingleton} from '../core/config/defineSingleton'
 export {
   type DocumentActionComponent,
   type DocumentActionConfirmDialogProps,
@@ -303,7 +306,7 @@ export {
   resolveConfig,
 } from '../core/config/resolveConfig'
 export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
-export {SchemaError} from '../core/config/SchemaError'
+export {SchemaError, type SchemaErrorContext} from '../core/config/SchemaError'
 export {
   type ActiveToolLayoutProps,
   type LayoutProps,
@@ -357,12 +360,15 @@ export {
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,
   type SchemaPluginOptions,
+  type SingletonDefinition,
+  type SingletonsResolver,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
   type SourceOptions,
   type TemplateResolver,
   type Tool,
+  type UnresolvedSingletonDefinition,
   type VariantConditionMap,
   type VariantConditions,
   type VariantConditionsContext,
@@ -1670,6 +1676,7 @@ export {
 } from '../core/templates/resolve'
 export {
   type InitialValueTemplateItem,
+  type ResolvedTemplate,
   type Template,
   type TemplateArrayFieldDefinition,
   type TemplateFieldDefinition,

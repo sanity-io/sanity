@@ -113,9 +113,7 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
   if (isReleaseDocument(selectedPerspective)) {
     return (
       <BadgeContainer gap={2} padding={2} alignItems="center">
-        <Text size={1}>
-          <ReleaseAvatarIcon release={selectedPerspective} />
-        </Text>
+        <ReleaseAvatarIcon release={selectedPerspective} />
 
         <ReleaseTitle
           title={selectedPerspective.metadata?.title}

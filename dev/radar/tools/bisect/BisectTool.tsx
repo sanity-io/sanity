@@ -1,12 +1,12 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {EnterRightIcon} from '@sanity/icons/EnterRight'
-import {Badge, Box, Button, Card, Container, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type SVGProps, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Container, Flex, VStack} from 'ui5'
 
 import {compareTagsSemverDesc, regressionsByTag, withoutEolLines} from '../releases/releaseInfo'
 import {RELEASE_LINES_QUERY, type ReleaseLineSlice} from '../releases/releaseLines'
@@ -245,7 +245,7 @@ export function BisectTool() {
 
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
-      <Container width={2}>
+      <Container size={2}>
         <VStack gap={4}>
           <Flex alignItems="center" gap={3}>
             <Box flex={1}>

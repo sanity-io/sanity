@@ -120,7 +120,7 @@ export function createObserveVersionDocumentIds(options: {
  *
  * @internal
  */
-export function bufferByByteSize<Type extends string>(
+export function bufferByByteSize<Type>(
   byteSize: (value: Type) => number,
   maxBytes: number,
 ): OperatorFunction<Type, Type[]> {

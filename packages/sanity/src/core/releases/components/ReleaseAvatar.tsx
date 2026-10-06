@@ -2,9 +2,9 @@ import {type ReleaseType} from '@sanity/client'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {DotIcon} from '@sanity/icons/Dot'
-import {type BadgeTone, Text} from '@sanity/ui'
+import {type BadgeTone} from '@sanity/ui'
 import {type CSSProperties} from 'react'
-import {Box, type Space} from 'ui5'
+import {Flex, Icon, type IconProps as UIIconProps, type Space} from 'ui5'
 
 import {BoltSmallIcon} from '../../components/temporary-icons/BoltSmall'
 import {CircleSmallIcon} from '../../components/temporary-icons/CircleSmall'
@@ -19,10 +19,13 @@ import {isReleaseDocument} from '../store/types'
 import {RELEASE_TYPES_TONES} from '../util/const'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {isDraftPerspective} from '../util/util'
+import {releaseAvatarIcon} from './ReleaseAvatar.css'
 
 interface IconProps {
   'data-testid': string
-  'style': CSSProperties & {'--card-icon-color': string}
+  'className': string
+  'style': CSSProperties & {'--card-icon-color': string; '--icon-color': string}
+  'size': UIIconProps['size']
 }
 type IconSize = 'default' | 'small'
 function renderReleaseTypeIcon(
@@ -32,13 +35,29 @@ function renderReleaseTypeIcon(
 ) {
   switch (releaseType) {
     case 'asap':
-      return size === 'default' ? <BoltIcon {...iconProps} /> : <BoltSmallIcon {...iconProps} />
+      return size === 'default' ? (
+        <Icon icon={BoltIcon} {...iconProps} />
+      ) : (
+        <Icon icon={BoltSmallIcon} {...iconProps} />
+      )
     case 'scheduled':
-      return size === 'default' ? <ClockIcon {...iconProps} /> : <ClockSmallIcon {...iconProps} />
+      return size === 'default' ? (
+        <Icon icon={ClockIcon} {...iconProps} />
+      ) : (
+        <Icon icon={ClockSmallIcon} {...iconProps} />
+      )
     case 'undecided':
-      return size === 'default' ? <DotIcon {...iconProps} /> : <UnknownSmallIcon {...iconProps} />
+      return size === 'default' ? (
+        <Icon icon={DotIcon} {...iconProps} />
+      ) : (
+        <Icon icon={UnknownSmallIcon} {...iconProps} />
+      )
     default:
-      return size === 'default' ? <DotIcon {...iconProps} /> : <CircleXsIcon {...iconProps} />
+      return size === 'default' ? (
+        <Icon icon={DotIcon} {...iconProps} />
+      ) : (
+        <Icon icon={CircleXsIcon} {...iconProps} />
+      )
   }
 }
 
@@ -49,12 +68,14 @@ type ReleaseAvatarIconProps =
       tone?: never
       releaseType?: never
       size?: IconSize
+      fontSize?: UIIconProps['size']
     }
   | {
       releaseType: ReleaseType
       tone?: never
       release?: never
       size?: IconSize
+      fontSize?: UIIconProps['size']
     }
   | {
       /**
@@ -64,6 +85,7 @@ type ReleaseAvatarIconProps =
       release?: never
       releaseType?: never
       size?: IconSize
+      fontSize?: UIIconProps['size']
     }
 
 export const ReleaseAvatarIcon = ({
@@ -72,6 +94,7 @@ export const ReleaseAvatarIcon = ({
   release,
   releaseType,
   size = 'default',
+  fontSize = 1,
 }: ReleaseAvatarIconProps) => {
   const resolvedTone =
     tone ??
@@ -86,11 +109,15 @@ export const ReleaseAvatarIcon = ({
 
   const iconProps: IconProps = {
     'data-testid': `release-avatar-${resolvedTone}`,
+    'className': releaseAvatarIcon,
     'style': {
       '--card-icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
+      '--icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
+      'margin': fontSize === 2 ? '-0.4375rem' : '-0.375rem',
     },
+    'size': fontSize,
   }
-  if (isAgentBundleName(release)) return <CircleXsIcon {...iconProps} />
+  if (isAgentBundleName(release)) return <Icon icon={CircleXsIcon} {...iconProps} />
 
   if (releaseType) {
     return renderReleaseTypeIcon(releaseType, iconProps, size)
@@ -98,32 +125,42 @@ export const ReleaseAvatarIcon = ({
 
   if (isReleaseDocument(release)) {
     if (isPausedCardinalityOneRelease(release)) {
-      return size === 'default' ? <ClockIcon {...iconProps} /> : <ClockSmallIcon {...iconProps} />
+      return size === 'default' ? (
+        <Icon icon={ClockIcon} {...iconProps} />
+      ) : (
+        <Icon icon={ClockSmallIcon} {...iconProps} />
+      )
     }
 
     return renderReleaseTypeIcon(release.metadata.releaseType, iconProps, size)
   }
 
   if (release && isDraftPerspective(release)) {
-    return size === 'default' ? <DotIcon {...iconProps} /> : <RingIcon {...iconProps} />
+    return size === 'default' ? (
+      <Icon icon={DotIcon} {...iconProps} />
+    ) : (
+      <Icon icon={RingIcon} {...iconProps} />
+    )
   }
 
-  return size === 'default' ? <DotIcon {...iconProps} /> : <CircleSmallIcon {...iconProps} />
+  return size === 'default' ? (
+    <Icon icon={DotIcon} {...iconProps} />
+  ) : (
+    <Icon icon={CircleSmallIcon} {...iconProps} />
+  )
 }
 
 export function ReleaseAvatar({
-  fontSize = 1,
   padding = 3,
   ...iconProps
 }: ReleaseAvatarIconProps & {
-  fontSize?: number
   padding?: Space
 }): React.JSX.Element {
+  // A flex container blockifies the glyph even when a v4 `Text` ancestor makes it inline (see
+  // `ReleaseAvatar.css.ts`), so the padded box keeps the same size in both contexts.
   return (
-    <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={padding} style={{borderRadius: 3}}>
-      <Text size={fontSize}>
-        <ReleaseAvatarIcon {...iconProps} />
-      </Text>
-    </Box>
+    <Flex flexBasis="auto" flexGrow={0} flexShrink={0} padding={padding} style={{borderRadius: 3}}>
+      <ReleaseAvatarIcon {...iconProps} />
+    </Flex>
   )
 }

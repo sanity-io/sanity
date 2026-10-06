@@ -9,6 +9,10 @@ permissions: {}
 #
 # There is no paths filter: what a fuzz test covers can break from changes
 # almost anywhere, such as a dependency bump or a change to shared code.
+#
+# The `Fuzz Status` job is the one required check for merging: it fails when
+# any matrix job failed, so the branch ruleset lists that single job rather
+# than every seed. Same pattern as `Test Status` and `Browser Test Status`.
 on:
   pull_request:
   push:
@@ -64,3 +68,17 @@ jobs:
             export FUZZ_RANDOM=1
           fi
           pnpm --filter sanity test:fuzz
+
+  fuzz-status:
+    name: "Fuzz Test Status"
+    runs-on: ubuntu-latest
+    needs: [fuzz]
+    if: ${{ !cancelled() }}
+    steps:
+      - name: Check fuzz matrix status
+        run: |
+          result="${{ needs.fuzz.result }}"
+          if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+            echo "Fuzz matrix failed with status: $result"
+            exit 1
+          fi

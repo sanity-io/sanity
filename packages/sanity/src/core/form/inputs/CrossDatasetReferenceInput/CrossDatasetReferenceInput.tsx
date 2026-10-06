@@ -21,6 +21,7 @@ import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {DashboardLink} from '../../../components/DashboardLink'
 import {PreviewCard, ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
 import {type FIXME} from '../../../FIXME'
 import {useFeatureEnabled, FEATURES} from '../../../hooks/useFeatureEnabled'
@@ -312,7 +313,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                 <Flex alignItems="center" padding={1}>
                   {studioUrl ? (
                     <PreviewCard
-                      as="a"
+                      as={DashboardLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       href={studioUrl}

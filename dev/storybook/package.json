@@ -13,7 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sanity/icons": "^5.2.2",
+    "@sanity/icons": "^5.2.3",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
     "react": "catalog:",
@@ -23,15 +23,15 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^5.3.1",
+    "@chromatic-com/storybook": "^5.4.0",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
-    "@storybook/addon-vitest": "^10.6.0",
-    "@storybook/react-vite": "^10.6.0",
+    "@storybook/addon-vitest": "^10.6.1",
+    "@storybook/react-vite": "^10.6.1",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "catalog:",
-    "chromatic": "^18.9.5",
+    "chromatic": "^18.10.2",
     "oxc-transform-react": "catalog:",
     "playwright": "catalog:",
     "rimraf": "catalog:",

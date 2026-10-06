@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Avatar, Button, Card, Spinner, Stack, Text, TextArea} from '@sanity/ui'
+import {Avatar, Button, Card, Spinner, Text, TextArea} from '@sanity/ui'
 import {
   type ReactNode,
   type SubmitEvent,
@@ -10,7 +10,7 @@ import {
   useState,
   useTransition,
 } from 'react'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {
   fetchAccessRequestStatus,
@@ -326,7 +326,7 @@ function RequestAccessFormContent(
         ) : null}
 
         {state.view === 'blocked' || state.view === 'sso-enforced' ? (
-          <Stack gap={4}>
+          <VStack gap={4}>
             <Card border padding={3} radius={2} role="alert" tone="caution">
               <Text as="p" muted size={1}>
                 {state.message}
@@ -342,11 +342,11 @@ function RequestAccessFormContent(
                 width="fill"
               />
             ) : null}
-          </Stack>
+          </VStack>
         ) : null}
 
         {state.view === 'form' ? (
-          <Stack as="form" aria-labelledby={titleId} onSubmit={handleSubmit} gap={4}>
+          <VStack as="form" aria-labelledby={titleId} onSubmit={handleSubmit} gap={4}>
             <Text as="p" size={1}>
               {state.expired
                 ? labels.expiredMessage
@@ -354,7 +354,7 @@ function RequestAccessFormContent(
                   ? labels.promptOrganization
                   : labels.promptProject}
             </Text>
-            <Stack gap={2}>
+            <VStack gap={2}>
               <TextArea
                 aria-label={labels.noteAriaLabel}
                 disabled={isSubmitting}
@@ -368,7 +368,7 @@ function RequestAccessFormContent(
               <Text align="right" muted size={0}>
                 {`${note.length}/${MAX_ACCESS_REQUEST_NOTE_LENGTH}`}
               </Text>
-            </Stack>
+            </VStack>
             {submitFailed ? (
               <Card border padding={3} radius={2} role="alert" tone="critical">
                 <Text as="p" muted size={1}>
@@ -383,7 +383,7 @@ function RequestAccessFormContent(
               type="submit"
               width="fill"
             />
-          </Stack>
+          </VStack>
         ) : null}
 
         {renderAction?.({view: state.view})}

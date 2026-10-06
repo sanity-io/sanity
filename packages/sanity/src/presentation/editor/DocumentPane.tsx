@@ -1,5 +1,5 @@
 import {studioPath} from '@sanity/client/csm'
-import {Card, Label, Stack} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {LoadingBlock, type Path, useTranslation} from 'sanity'
@@ -9,6 +9,7 @@ import {
   type DocumentPaneNode,
   PaneLayout,
 } from 'sanity/structure'
+import {VStack} from 'ui5'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
@@ -92,14 +93,14 @@ export function DocumentPane(props: {
         {devMode && (
           // show runtime error message in dev mode
           <Card overflow="auto" padding={3} radius={2} tone="critical">
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
               <Code className={wrappedCode} size={1}>
                 {errorParams.error.message}
               </Code>
-            </Stack>
+            </VStack>
           </Card>
         )}
       </ErrorCard>

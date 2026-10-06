@@ -19,7 +19,6 @@ import {
   Badge,
   Button,
   Card,
-  Container,
   Dialog,
   PortalProvider,
   Select,
@@ -37,7 +36,7 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Box, Flex, Grid, VStack} from 'ui5'
+import {Container, Box, Flex, Grid, VStack} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
@@ -892,12 +891,13 @@ function StylesPanel(props: {
     ...(scenarios.length > 0 ? [{id: 'weekly', label: 'Per week'}] : []),
   ]
   // The all-scenarios cards each view leads with: the adoption overview score
-  // on the UI view, and for styled-components one summed card per metric the
-  // view has a section for, in section order — so the top of the page answers
-  // "how is the escape hatch doing overall?" before the per-scenario breakdown.
+  // on the UI view, and for styled-components and CSS weight one summed card
+  // per metric the view has a section for, in section order — so the top of
+  // the page answers "how is it doing overall?" before the per-scenario
+  // breakdown.
   // Declared before the sub-tab resolution below, which reads them.
   const overview = props.aggregate.find((entry) => entry.key === UI_OVERVIEW_KEY)
-  const styledTotals = (view: StyleView) =>
+  const viewTotals = (view: StyleView) =>
     view.sections.flatMap((section) =>
       props.aggregate.filter((entry) => styleLabel(entry) === section.id),
     )
@@ -908,7 +908,7 @@ function StylesPanel(props: {
     const view = views.find((candidate) => candidate.id === viewId)
     if (!view) return false
     if (viewId === 'ui5' && key === UI_OVERVIEW_KEY) return true
-    if (styledTotals(view).some((entry) => entry.key === key)) return true
+    if (viewTotals(view).some((entry) => entry.key === key)) return true
     return view.sections.some((section) => section.series.some((entry) => entry.key === key))
   }
   const activeId =
@@ -1016,22 +1016,24 @@ function StylesPanel(props: {
                   />
                 </VStack>
               )}
-              {/* The styled-components totals lead their view the same way:
-                  every scenario page summed per commit, one card per metric,
-                  so the whole escape hatch is readable before the breakdown */}
-              {activeView.id === 'styled' && styledTotals(activeView).length > 0 && (
+              {/* The styled-components and CSS weight totals lead their view
+                  the same way: every scenario page summed per commit, one card
+                  per metric, so the whole picture is readable before the
+                  breakdown */}
+              {activeView.id !== 'ui5' && viewTotals(activeView).length > 0 && (
                 <VStack gap={4}>
                   <Flex alignItems="baseline" gap={2}>
                     <Text size={1} weight="semibold">
                       All scenarios
                     </Text>
                     <Text size={1} muted>
-                      summed over every scenario page per commit; the rule share weighted by rules ·
-                      lower is better
+                      {activeView.id === 'styled'
+                        ? 'summed over every scenario page per commit; the rule share weighted by rules · lower is better'
+                        : 'summed over every scenario page per commit · lower is better'}
                     </Text>
                   </Flex>
                   <ChartGrid
-                    series={styledTotals(activeView)}
+                    series={viewTotals(activeView)}
                     driftBySeries={props.driftBySeries}
                     silencedBySeries={props.silencedBySeries}
                     baselineBySeries={props.baselineBySeries}
@@ -1473,7 +1475,7 @@ export function TrendsTool() {
     <PortalProvider element={portalElement}>
       <style dangerouslySetInnerHTML={{__html: FOCUS_PULSE_CSS}} />
       <Card ref={setPortalElement} height="fill" overflow="auto">
-        <Container width={3} padding={4}>
+        <Container size={3} padding={4}>
           <VStack gap={4}>
             <Flex alignItems="flex-start" justifyContent="space-between" gap={3}>
               <Flex alignItems="center" gap={2}>

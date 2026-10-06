@@ -48,7 +48,7 @@ export function Calendar(props: CalendarProps) {
 
   const [calendarElement, setCalendarElement] = useState<HTMLElement | null>(null)
   const [selectEndValue, setSelectEndValue] = useState(false)
-  const [focusedDate, setFocusedDate] = useState(date || new Date())
+  const [focusedDate, setFocusedDate] = useState(() => date || new Date())
 
   const previousDate = useRef<Date | null>(date || null)
   const previousEndDate = useRef<Date | null>(endDate || null)

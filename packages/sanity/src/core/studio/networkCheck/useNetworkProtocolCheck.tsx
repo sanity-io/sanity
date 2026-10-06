@@ -39,6 +39,7 @@ export function useNetworkProtocolCheck(): undefined {
   const isWarningSnoozed = useMemo(
     () =>
       warningDismissedAt &&
+      // oxlint-disable-next-line react/purity -- the snooze window is measured from the current time
       new Date().getTime() - warningDismissedAt.getTime() < 1000 * 60 * 60 * SNOOZE_DURATION_HOURS,
     [warningDismissedAt],
   )

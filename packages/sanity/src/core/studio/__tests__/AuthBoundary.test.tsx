@@ -2,6 +2,7 @@ import {act, render, screen, waitFor} from '@testing-library/react'
 import {Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {stubMessageBusHost} from '../../../../test/testUtils/stubMessageBusHost'
 import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {type StudioAuthReadyMeasured as StudioAuthReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
 import {type AuthBoundary as AuthBoundaryType} from '../AuthBoundary'
@@ -143,6 +144,38 @@ describe('AuthBoundary login flash gate', () => {
       </AuthBoundary>,
     )
 
+    act(() => authState$.next({authenticated: false, currentUser: null}))
+
+    await screen.findByTestId('authenticate-screen')
+  })
+
+  it('holds the loading screen on logged-out when a message bus host owns sign-in', async () => {
+    stubMessageBusHost().publish('auth.token', null)
+    const {createAuthStore} = await import('../../store/authStore/createAuthStore')
+    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
+    ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
+      activeWorkspace: {auth: createAuthStore({projectId: 'p', dataset: 'd'})},
+    })
+
+    render(
+      <AuthBoundary>
+        <div data-testid="content" />
+      </AuthBoundary>,
+    )
+
+    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.queryByTestId('authenticate-screen')).toBeNull()
+  })
+
+  it("shows a custom auth store's login screen under a message bus host", async () => {
+    stubMessageBusHost()
+    await mockWorkspaceAuth({})
+
+    render(
+      <AuthBoundary>
+        <div data-testid="content" />
+      </AuthBoundary>,
+    )
     act(() => authState$.next({authenticated: false, currentUser: null}))
 
     await screen.findByTestId('authenticate-screen')

@@ -70,6 +70,8 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
   'dialog.unlink-from-canvas.error': 'Failed to unlink from Canvas',
   /** The text for the "Navigate to Canvas" dialog error message. */
   'navigate-to-canvas-doc.error.missing-permissions': 'Missing permissions to navigate to Canvas',
+  /** The text for the "Navigate to Canvas" error message when the host fails to open Canvas. */
+  'navigate-to-canvas-doc.error.failed': 'Failed to open Canvas',
 })
 
 /**

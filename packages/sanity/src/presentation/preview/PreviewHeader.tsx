@@ -2,8 +2,6 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
 import {RefreshIcon} from '@sanity/icons/Refresh'
-import {getRedirectTo} from '@sanity/preview-url-secret/get-redirect-to'
-import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Card, Hotkeys, Switch, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type RefObject, useCallback, useMemo} from 'react'
@@ -18,6 +16,7 @@ import {useId} from '../useId'
 import {OpenPreviewButton} from './OpenPreviewButton'
 import {type PreviewProps} from './Preview'
 import {PreviewLocationInput} from './PreviewLocationInput'
+import {resolvePreviewLocationRoute} from './resolvePreviewLocationRoute'
 import {SharePreviewMenu} from './SharePreviewMenu'
 
 /** @public */
@@ -85,12 +84,10 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     (state) => state.context.visualEditingOverlaysEnabled,
   )
 
-  const previewLocationRoute = useMemo(() => {
-    const previewURL = new URL(previewUrl || '/', targetOrigin)
-    const {pathname, search} = withoutSecretSearchParams(getRedirectTo(previewURL))
-
-    return `${pathname}${search}`
-  }, [previewUrl, targetOrigin])
+  const previewLocationRoute = useMemo(
+    () => resolvePreviewLocationRoute(previewUrl, targetOrigin),
+    [previewUrl, targetOrigin],
+  )
 
   const perspectiveToggleTooltipId = useId()
 

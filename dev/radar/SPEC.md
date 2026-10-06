@@ -452,7 +452,11 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    `@sanity/ui` components — the headline — with the v5 and v4 counts behind
    it) and the **styled-components** escape hatch (rendered nodes, distinct
    components, `<style data-styled>` tags, CSS rules and bytes inserted at
-   runtime, share of all CSS rules). The bench takes a style census of each
+   runtime, share of all CSS rules), alongside the page's **CSS weight** — all
+   the CSS it holds, whatever wrote it (bytes and rules across linked
+   stylesheets, `<style>` tags and constructed sheets, then the `<style>` tag
+   part alone), so the drop shows when a runtime-styled library leaves, not
+   only its own share. The bench takes a style census of each
    session's page once it has gone quiet (perf/bench README, "Style migration
    census") and stores it as ordinary metric rows, so nothing here is a new
    document shape: the rows flow through `buildSeries` like every other metric
@@ -517,9 +521,14 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
      and `styledComponentsVersion` names the runtime — surfaced on style points
      (tooltip, popover) because a step in the CSS rows that lands with a
      version bump is the library changing its output, not a migration.
-   - **Two sub-views plus "Per week".** UI v5 adoption (the two paired
-     sections) and styled-components (a section per registry metric) each lay
-     out like the Vitals tab, a card per scenario. "Per week" redraws the
+   - **Three sub-views plus "Per week".** UI v5 adoption (the two paired
+     sections), styled-components and CSS weight (a section per registry
+     metric, `track` in the registry says which) each lay out like the Vitals
+     tab, a card per scenario; CSS weight leads with summed "All scenarios"
+     cards like styled-components does. The load scenarios take the census
+     too, so CSS weight reads per step: the login screen (`loginReady`), a
+     tool without a document (`toolReady`, `emptyToolReady`) and a settled
+     document form (`synthetic`). "Per week" redraws the
      headline series as weekly histograms modelled on Linear's "StyleX adoption
      per week" chart (`WeeklyBars.tsx`, buckets from `weekly.ts`): a
      100%-stacked bar per Monday-start UTC week for the shares (the filled part

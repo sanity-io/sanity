@@ -11,7 +11,7 @@ import {
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {Card, Label, Spinner, Stack, Text, usePrefersReducedMotion} from '@sanity/ui'
+import {Card, Label, Spinner, Text, usePrefersReducedMotion} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
@@ -29,7 +29,7 @@ import {
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../ui-components/button/Button'
@@ -216,7 +216,13 @@ export const Preview = memo(function PreviewComponent(
   const preventIframeInteraction = useSelector(presentationRef, (state) =>
     state.hasTag('prevent iframe interaction'),
   )
-  const iframeIsBusy = isLoading || isRefreshing || overlaysConnection === 'connecting'
+  // Read the machine's classification rather than the raw `overlaysConnection` aggregate: a new
+  // connection on a page whose overlays already connected (a recreated channel) reports
+  // `connecting` but is modelled as a reconnect, and the preview is interactive meanwhile.
+  const overlaysConnectingForTheFirstTime = useSelector(presentationRef, (state) =>
+    state.matches({loaded: {idle: 'connecting'}}),
+  )
+  const iframeIsBusy = isLoading || isRefreshing || overlaysConnectingForTheFirstTime
 
   const handleContinueAnyway = useCallback(() => {
     presentationRef.send({type: 'continue anyway'})
@@ -542,27 +548,27 @@ export const Preview = memo(function PreviewComponent(
                       <>
                         {overlaysConnection !== 'connected' && (
                           <Card padding={3} radius={2} tone="critical">
-                            <Stack gap={3}>
+                            <VStack gap={3}>
                               <Label muted size={0}>
                                 {t('preview-frame.overlay.connection-status.label')}
                               </Label>
                               <Code size={1}>
                                 {t('channel.status', {context: overlaysConnection})}
                               </Code>
-                            </Stack>
+                            </VStack>
                           </Card>
                         )}
 
                         {loadersConnection !== 'connected' && (
                           <Card padding={3} radius={2} tone="critical">
-                            <Stack gap={3}>
+                            <VStack gap={3}>
                               <Label muted size={0}>
                                 {t('preview-frame.loader.connection-status.label')}
                               </Label>
                               <Code size={1}>
                                 {t('channel.status', {context: loadersConnection})}
                               </Code>
-                            </Stack>
+                            </VStack>
                           </Card>
                         )}
                       </>
