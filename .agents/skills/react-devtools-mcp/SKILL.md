@@ -15,10 +15,12 @@ the same session also gives you `take_snapshot`, `click`, `navigate_page`, `perf
 and the rest of its tools.
 
 In this repo `dev/test-studio/sanity.cli.ts` loads `react-devtools-cdt-mcp/register` before the
-studio entry when `ENABLE_REACT_DEVTOOLS_MCP=true`. Nothing changes for `pnpm dev` or
+studio entry when `ENABLE_REACT_DEVTOOLS_MCP=true`, and turns React StrictMode off for that run
+(development StrictMode double-renders and would inflate every profile;
+`SANITY_STUDIO_REACT_STRICT_MODE=true` overrides). Nothing changes for `pnpm dev` or
 `sanity build`. The older `agent-react-devtools` path (`pnpm react-devtools:test-studio`, skill
-`react-devtools`) installs the full DevTools backend over a WebSocket daemon instead; do not enable
-both flags at once.
+`react-devtools`) installs the full DevTools backend over a WebSocket daemon instead; setting both
+flags is rejected when the CLI config loads.
 
 ## Setup (three processes)
 
@@ -26,17 +28,22 @@ both flags at once.
 export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"   # cloud VM: Node >= 22.18 for the build
 pnpm build                                                   # once; sanity dev needs packages/sanity/lib
 
-# 1. Test studio with the React DevTools hook installed (port 3333, long-running)
+# 1. Test studio with the React DevTools hook installed, StrictMode off (port 3333, long-running)
 pnpm react-devtools-mcp:test-studio
 
 # 2. Chrome with the remote debugging port open, on the studio. With STUDIO_AUTH_TOKEN set
-#    (cloud agents have it) the studio is signed in on load; the token is never printed.
+#    (cloud agents have it) the studio is signed in on load. The token is never printed and
+#    never put on Chrome's command line: Chrome opens a one-time loopback redirect that
+#    forwards to the #token= url. Re-running the command opens a new tab in the Chrome that
+#    is already listening on the port instead of starting a second one.
 pnpm react-devtools-mcp:chrome                       # http://localhost:3333/test
 pnpm react-devtools-mcp:chrome http://localhost:3333/test/structure/author
 pnpm react-devtools-mcp:chrome --headless            # no display
+pnpm react-devtools-mcp:chrome --port=9333           # 1-65535; also change --browserUrl below
 
 # 3. chrome-devtools-mcp attached to that Chrome — pick ONE of:
-#    a) Cursor: .cursor/mcp.json already defines the `chrome-devtools` server with
+#    a) Cursor: .cursor/mcp.json defines the `chrome-devtools` server (the workspace-installed,
+#       lockfile-pinned chrome-devtools-mcp under dev/test-studio/node_modules) with
 #       --categoryExperimentalThirdParty=true --browserUrl=http://127.0.0.1:9222
 #    b) Terminal / cloud agents (same tools, no MCP client needed):
 pnpm --filter sanity-test-studio exec chrome-devtools start \
@@ -127,11 +134,14 @@ resolve to a `/node_modules/.sanity/vite/deps/...` chunk.
   the studio is up (see AGENTS.md).
 - The `chrome-devtools` CLI and the MCP server are the same daemon; do not run both against the
   same Chrome at once. `pnpm --filter sanity-test-studio exec chrome-devtools status` / `stop`.
-- Chrome keeps running after `react-devtools-mcp:chrome` returns (it prints the pid); the profile
-  is reused from `node_modules/.cache/react-devtools-mcp/chrome-profile`, so the login survives
-  restarts. `list_pages` prints page URLs: right after launch the URL may still carry
-  `#token=...` until the studio strips it, so wait for `list_pages` to show `/test/structure`
-  before pasting output anywhere.
+- Chrome keeps running after `react-devtools-mcp:chrome` returns (it prints the pid, or reports
+  that it reused the browser already listening on the port); the profile is reused from
+  `node_modules/.cache/react-devtools-mcp/chrome-profile`, so the login survives restarts.
+  `list_pages` prints page URLs: right after launch the URL may still carry `#token=...` until
+  the studio strips it, so wait for `list_pages` to show `/test/structure` before pasting output
+  anywhere.
+- "Chrome exited before opening its debugging port": a Chrome using the profile is already
+  running without `--remote-debugging-port` (for example started by hand). Close it and retry.
 - Set `CHROME_PATH` if Chrome is not found; the script turns on headless automatically when
   `DISPLAY` is unset on Linux.
 - To let `chrome-devtools-mcp` launch its own Chrome instead, drop `--browserUrl` (and skip step 2);
