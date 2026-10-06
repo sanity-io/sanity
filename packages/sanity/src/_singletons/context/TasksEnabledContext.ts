@@ -1,20 +1,12 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {TasksEnabledContextValue} from '../../core/tasks/context/enabled/types'
-
-// NOTE: We initialize this context with a default value (`enabled: false`)
-// rather than `null` to handle cases where the tasks feature's availability
-// isn't explicitly provided by a surrounding provider component. Typically,
-// Tasks are included by default in all new Studio configurations. Therefore,
-// in the absence of a specific provider (TasksEnabledProvider), we assume that
-// the feature is disabled.
 /**
+ * Whether the workspace has tasks enabled, as `TasksStudioProvider` provides it. Synchronous, so
+ * the tasks UI can render before the feature check behind `TasksModePromiseContext` has answered.
+ * Defaults to `false` so that a studio without the plugin shows no tasks UI.
  * @internal
  */
-export const TasksEnabledContext = createContext<TasksEnabledContextValue>(
+export const TasksEnabledContext = createContext<boolean>(
   'sanity/_singletons/context/tasks-enabled',
-  {
-    enabled: false,
-    mode: null,
-  },
+  false,
 )

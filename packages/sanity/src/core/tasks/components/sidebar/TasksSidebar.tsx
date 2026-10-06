@@ -5,6 +5,7 @@ import {Flex} from 'ui5'
 
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {useTasksMode} from '../../context/enabled/useTasksMode'
 import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {useTasks} from '../../context/tasks/useTasks'
 import {TasksFormBuilder} from '../form/tasksFormBuilder/TasksFormBuilder'
@@ -21,7 +22,7 @@ const MotionCard = motion.create(Card)
  * @internal
  */
 function TasksStudioSidebarInner() {
-  const {mode} = useTasksEnabled()
+  const mode = useTasksMode()
   const {activeDocument, data, isLoading} = useTasks()
   const {state, setActiveTab, setViewMode} = useTasksNavigation()
   const {activeTabId, viewMode, selectedTask} = state
@@ -103,7 +104,7 @@ function TasksStudioSidebarInner() {
  * @internal
  */
 export function TasksStudioSidebar() {
-  const {enabled} = useTasksEnabled()
+  const enabled = useTasksEnabled()
 
   if (!enabled) {
     return null

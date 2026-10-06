@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {DevServerStoppedErrorScreen} from '../ViteDevServerStopped'
+import DevServerStoppedErrorScreen from '../ViteDevServerStoppedErrorScreen'
 
 /**
  * Chromatic sentinel for the dev-server-stopped error screen after the ui5

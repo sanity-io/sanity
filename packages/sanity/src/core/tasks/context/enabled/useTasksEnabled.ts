@@ -1,11 +1,11 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {TasksEnabledContext} from 'sanity/_singletons'
 
-import {type TasksEnabledContextValue} from './types'
-
 /**
+ * Whether the workspace has tasks enabled. Synchronous: it does not wait for the feature check,
+ * which only decides the mode (`useTasksMode`).
  * @internal
  */
-export function useTasksEnabled(): TasksEnabledContextValue {
-  return useContext(TasksEnabledContext)
+export function useTasksEnabled(): boolean {
+  return use(TasksEnabledContext)
 }

@@ -76,7 +76,7 @@ function VariantTypeFilter(props: {
   )
 }
 
-export function VariantsStudioNavbar(props: NavbarProps) {
+export default function VariantsStudioNavbar(props: NavbarProps) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const {t: coreT} = useTranslation()
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()

@@ -1,39 +1,24 @@
-import {lazy, Suspense} from 'react'
+import {lazy, Suspense, useEffect, useMemo} from 'react'
+import {preloadObservablePromise, useObservablePromise} from 'react-rx'
+import {TasksEnabledContext, TasksModePromiseContext} from 'sanity/_singletons'
 
 import {definePlugin} from '../../config/definePlugin'
+import {type ProviderProps} from '../../config/studio/types'
 import {type ObjectInputProps} from '../../form/types/inputProps'
+import {FEATURES, useFeatureEnabledObservable} from '../../hooks/useFeatureEnabled'
+import {useWorkspace} from '../../studio/workspace'
+import {type TasksMode} from '../context/enabled/types'
 import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
+import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
+import {TasksStudioLayout} from './TasksStudioLayout'
 
-const TasksDocumentInputLayout = lazy(() =>
-  import('./TasksDocumentInputLayout').then((module) => ({
-    default: module.TasksDocumentInputLayout,
-  })),
-)
-const TasksFooterOpenTasks = lazy(() =>
-  import('./TasksFooterOpenTasks').then((module) => ({default: module.TasksFooterOpenTasks})),
-)
-const TasksStudioActiveToolLayout = lazy(() =>
-  import('./TasksStudioActiveToolLayout').then((module) => ({
-    default: module.TasksStudioActiveToolLayout,
-  })),
-)
-const TasksStudioLayout = lazy(() =>
-  import('./TasksStudioLayout').then((module) => ({default: module.TasksStudioLayout})),
-)
-const TasksStudioNavbar = lazy(() =>
-  import('./TasksStudioNavbar').then((module) => ({default: module.TasksStudioNavbar})),
-)
+const TasksFooterOpenTasks = lazy(() => import('./TasksFooterOpenTasks'))
 
-// The footer action is consumed as a `ReactNode` outside any Suspense boundary
-// (see DocumentStatusBarActions), so the lazy component needs its own boundary here.
-function TasksFooterAction() {
-  return (
-    <Suspense fallback={null}>
-      <TasksFooterOpenTasks />
-    </Suspense>
-  )
-}
+const lazyTasksStudioActiveToolLayout = () => import('./TasksStudioActiveToolLayout')
+const lazyTasksStudioNavbar = () => import('./TasksStudioNavbar')
+const TasksStudioActiveToolLayout = lazy(lazyTasksStudioActiveToolLayout)
+const TasksStudioNavbar = lazy(lazyTasksStudioNavbar)
 
 /**
  * @internal
@@ -47,7 +32,13 @@ export const TASKS_NAME = 'sanity/tasks'
 export const tasks = definePlugin({
   name: TASKS_NAME,
   __internal_tasks: {
-    footerAction: <TasksFooterAction />,
+    // The footer action is consumed as a `ReactNode` outside any Suspense boundary
+    // (see DocumentStatusBarActions), so the lazy component needs its own boundary here.
+    footerAction: (
+      <Suspense>
+        <TasksFooterOpenTasks />
+      </Suspense>
+    ),
   },
   document: {
     actions: (prev) => {
@@ -56,6 +47,7 @@ export const tasks = definePlugin({
   },
   studio: {
     components: {
+      provider: TasksStudioProvider,
       layout: TasksStudioLayout,
       navbar: TasksStudioNavbar,
       activeToolLayout: TasksStudioActiveToolLayout,
@@ -64,6 +56,7 @@ export const tasks = definePlugin({
   form: {
     components: {
       input: (props) => {
+        'use memo'
         if (props.id === 'root' && props.schemaType.type?.name === 'document') {
           return <TasksDocumentInputLayout {...(props as ObjectInputProps)} />
         }
@@ -76,3 +69,34 @@ export const tasks = definePlugin({
     bundles: [tasksUsEnglishLocaleBundle],
   },
 })
+
+function TasksStudioProvider(props: ProviderProps) {
+  const isWorkspaceEnabled = useWorkspace().tasks?.enabled !== false
+  const features$ = useFeatureEnabledObservable(FEATURES.sanityTasks)
+  const featuresPromise = useObservablePromise(features$)
+  useEffect(() => {
+    void preloadObservablePromise(features$)
+  }, [features$])
+  useEffect(() => {
+    // Preload lazy components
+    void lazyTasksStudioActiveToolLayout()
+    void lazyTasksStudioNavbar()
+  }, [])
+
+  const modePromise = useMemo(
+    () =>
+      featuresPromise.then(({enabled, error}): TasksMode => {
+        if (error || !isWorkspaceEnabled) return null
+        return enabled ? 'default' : 'upsell'
+      }),
+    [featuresPromise, isWorkspaceEnabled],
+  )
+
+  return (
+    <TasksEnabledContext value={isWorkspaceEnabled}>
+      <TasksModePromiseContext value={modePromise}>
+        {props.renderDefault(props)}
+      </TasksModePromiseContext>
+    </TasksEnabledContext>
+  )
+}

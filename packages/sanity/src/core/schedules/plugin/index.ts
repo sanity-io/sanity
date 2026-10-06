@@ -5,26 +5,13 @@ import {definePlugin} from '../../config/definePlugin'
 import {type DefaultPluginsWorkspaceOptions} from '../../config/types'
 import {releasesUsEnglishLocaleBundle} from '../../releases/i18n'
 import {RELEASES_INTENT} from '../../releases/plugin'
+import {ReleasesStudioLayout} from '../../releases/plugin/ReleasesStudioLayout'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
+import {SCHEDULES_NAME, SCHEDULES_TOOL_NAME} from '../constants'
 
-const ReleasesStudioLayout = lazy(() =>
-  import('../../releases/plugin/ReleasesStudioLayout').then((module) => ({
-    default: module.ReleasesStudioLayout,
-  })),
-)
-const ReleasesTool = lazy(() =>
-  import('../../releases/tool/ReleasesTool').then((module) => ({default: module.ReleasesTool})),
-)
+const ReleasesTool = lazy(() => import('../../releases/tool/ReleasesTool'))
 
-/**
- * @internal
- */
-export const SCHEDULES_NAME = 'sanity/schedules'
-
-/**
- * @internal
- */
-export const SCHEDULES_TOOL_NAME = 'releases'
+export {SCHEDULES_NAME, SCHEDULES_TOOL_NAME} from '../constants'
 
 /**
  * @internal

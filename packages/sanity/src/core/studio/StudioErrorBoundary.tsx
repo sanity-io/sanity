@@ -1,5 +1,5 @@
 import {type ErrorBoundaryProps} from '@sanity/ui'
-import {lazy, type ReactNode, useCallback, useState} from 'react'
+import {type ReactNode, useCallback, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
@@ -9,17 +9,7 @@ import {isImportError} from '../error/isImportError'
 import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
 import {ImportErrorScreen} from './screens/ImportErrorScreen'
 import {SchemaErrorsScreen} from './screens/schemaErrors/SchemaErrorsScreen'
-
-/**
- * The DevServerStoppedErrorScreen will always have been lazy loaded to client
- * in instances where it is used, since DevServerStoppedError is only thrown
- * when this module is loaded, and this screen is also conditional on this error type
- */
-const DevServerStoppedErrorScreen = lazy(() =>
-  import('./ViteDevServerStopped').then((DevServerStopped) => ({
-    default: DevServerStopped.DevServerStoppedErrorScreen,
-  })),
-)
+import DevServerStoppedErrorScreen from './ViteDevServerStoppedErrorScreen'
 
 interface StudioErrorBoundaryProps {
   children: ReactNode

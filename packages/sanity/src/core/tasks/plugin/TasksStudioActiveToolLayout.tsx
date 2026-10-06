@@ -1,5 +1,6 @@
 import {Layer, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence} from 'motion/react'
+import {Suspense} from 'react'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
@@ -72,7 +73,11 @@ function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
       <AnimatePresence initial={false}>
         {isOpen && (
           <SidebarMotionLayer zOffset={100} height="fill">
-            <TasksStudioSidebar />
+            {/* The sidebar reads the tasks mode, which suspends until the feature check has
+                answered; this boundary keeps that wait inside the sidebar. */}
+            <Suspense>
+              <TasksStudioSidebar />
+            </Suspense>
           </SidebarMotionLayer>
         )}
       </AnimatePresence>
@@ -80,8 +85,8 @@ function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
   )
 }
 
-export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
-  const {enabled} = useTasksEnabled()
+export default function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
+  const enabled = useTasksEnabled()
   if (!enabled) {
     return props.renderDefault(props)
   }
