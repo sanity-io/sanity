@@ -1,20 +1,14 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {CommentsEnabledContextValue} from '../../core/comments/context/enabled/types'
-
-// NOTE: We initialize this context with a default value (`enabled: false`)
-// rather than `null` to handle cases where the comments feature's availability
-// isn't explicitly provided by a surrounding provider component. Typically,
-// comments functionality is included by default in all new studio
-// configurations. Therefore, in the absence of a specific provider
-// (CommentsEnabledProvider), we assume that the feature is disabled.
 /**
+ * Whether comments are enabled for the document being rendered, as the `CommentsEnabledProvider`
+ * of whichever comments plugin is active resolves it from the workspace's
+ * `document.comments.enabled` config (only one of the two plugins is registered at a time).
+ * Synchronous; the plan check behind `CommentsModePromiseContext` only decides the mode. Defaults
+ * to `false` so that document UI rendered without the provider shows no comments.
  * @internal
  */
-export const CommentsEnabledContext = createContext<CommentsEnabledContextValue>(
+export const CommentsEnabledContext = createContext<boolean>(
   'sanity/_singletons/context/comments-enabled',
-  {
-    enabled: false,
-    mode: null,
-  },
+  false,
 )

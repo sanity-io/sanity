@@ -6,12 +6,12 @@ import {
   Button as UIButton,
   Text,
 } from '@sanity/ui'
-import {useCallback} from 'react'
+import {use, useCallback} from 'react'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {useTasksMode} from '../../context/enabled/useTasksMode'
 import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
@@ -27,7 +27,7 @@ interface TasksSidebarHeaderProps {
  */
 export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
   const {items: allItems} = props
-  const {mode} = useTasksEnabled()
+  const mode = use(useTasksMode())
   const {state, setViewMode, handleCloseTasks} = useTasksNavigation()
   const {viewMode, activeTabId} = state
 
@@ -75,7 +75,8 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
             onClick={handleTaskCreate}
             mode="bleed"
             text={t('buttons.new.text')}
-            disabled={mode === 'upsell'}
+            // Disabled in upsell mode and when the feature check failed (`null`)
+            disabled={mode !== 'default'}
             tooltipProps={
               mode === 'upsell'
                 ? {

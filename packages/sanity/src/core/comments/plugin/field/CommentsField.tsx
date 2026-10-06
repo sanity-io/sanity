@@ -4,11 +4,12 @@ import {useBoundaryElement} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {use, useCallback, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 import {VStack} from 'ui5'
 
 import {type FieldProps} from '../../../form/types/fieldProps'
+import {NO_UPSELL_DATA} from '../../../hooks/useUpsellData'
 import {getSchemaTypeTitle} from '../../../schema/helpers'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
@@ -16,10 +17,11 @@ import {isTextSelectionComment, parseCommentFieldPath} from '../../helpers'
 import {useComments} from '../../hooks/useComments'
 import {useCommentsAuthoringPath} from '../../hooks/useCommentsAuthoringPath'
 import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
+import {useCommentsMode} from '../../hooks/useCommentsMode'
 import {applyCommentsFieldAttr, useCommentsScroll} from '../../hooks/useCommentsScroll'
 import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
 import {useCommentsUpsell} from '../../hooks/useCommentsUpsell'
-import {type CommentCreatePayload, type CommentMessage, type CommentsUIMode} from '../../types'
+import {type CommentCreatePayload, type CommentMessage} from '../../types'
 import {CommentsFieldButton} from './CommentsFieldButton'
 
 // When the form is temporarily set to `readOnly` while reconnecting, the form
@@ -43,13 +45,13 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
 }
 
 export default function CommentsField(props: FieldProps) {
-  const {enabled, mode} = useCommentsEnabled()
+  const enabled = useCommentsEnabled()
 
   if (!enabled) {
     return props.renderDefault(props)
   }
 
-  return <CommentFieldInner {...props} mode={mode} />
+  return <CommentFieldInner {...props} />
 }
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
@@ -84,12 +86,10 @@ const FieldStack = styled(VStack)`
   }
 `
 
-function CommentFieldInner(
-  props: FieldProps & {
-    mode: CommentsUIMode
-  },
-) {
-  const {mode} = props
+function CommentFieldInner(props: FieldProps) {
+  // Settled in place by the plugin's provider long before a form renders, so this reads
+  // synchronously; a form that does get here first waits under the document pane's boundary
+  const mode = use(useCommentsMode())
 
   const currentUser = useCurrentUser()
   const {element: boundaryElement} = useBoundaryElement()
@@ -106,7 +106,11 @@ function CommentFieldInner(
     setStatus,
     status,
   } = useComments()
-  const {upsellData, handleOpenDialog} = useCommentsUpsell()
+  const {upsellDataPromise, handleOpenDialog} = useCommentsUpsell()
+  // Only the upsell mode needs the content, to tell a click that opens the dialog from one that
+  // opens the inspector; the other modes never touch its request
+  const {upsellData} =
+    mode === 'upsell' && upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {authoringPath, setAuthoringPath} = useCommentsAuthoringPath()
   const {scrollToGroup} = useCommentsScroll({
@@ -189,6 +193,12 @@ function CommentFieldInner(
         scrollToGroup(latestThread.threadId)
       }
 
+      return
+    }
+
+    if (mode === null) {
+      // The feature check failed: the inspector explains that comments are unavailable
+      onCommentsOpen?.()
       return
     }
 
