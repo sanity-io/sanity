@@ -80,7 +80,7 @@ function TasksActivityCommentItemV1(props: TasksActivityCommentItemProps) {
           currentUser={currentUser}
           isSelected={false}
           mentionOptions={mentionOptions}
-          mode={mode ?? 'default'}
+          mode={mode}
           onCreateRetry={onCreateRetry}
           onDelete={onDelete}
           onEdit={operation.update}
@@ -115,7 +115,7 @@ function TasksActivityCommentItemV2(props: TasksActivityCommentItemProps) {
           currentUser={currentUser}
           isSelected={false}
           mentionOptions={mentionOptions}
-          mode={mode ?? 'default'}
+          mode={mode}
           onCreateRetry={onCreateRetry}
           onDelete={onDelete}
           onEdit={operation.update}
