@@ -52,10 +52,10 @@ describe('TasksStudioProvider', () => {
     expect(await screen.findByText('mode:upsell')).toBeInTheDocument()
   })
 
-  it('settles no mode when the feature check fails', async () => {
-    await renderProvider({enabled: false, error: new Error('Something went wrong')})
+  it('settles the upsell mode when the feature check fails', async () => {
+    await renderProvider({enabled: true, error: new Error('Something went wrong')})
 
-    expect(await screen.findByText('mode:null')).toBeInTheDocument()
+    expect(await screen.findByText('mode:upsell')).toBeInTheDocument()
   })
 
   it('throws from the mode promise hook without the provider', () => {

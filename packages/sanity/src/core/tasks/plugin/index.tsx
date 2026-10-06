@@ -86,7 +86,8 @@ function TasksStudioProvider(props: ProviderProps) {
   const modePromise = useMemo(
     () =>
       featuresPromise.then(({enabled, error}): TasksMode => {
-        if (error) return null
+        // A failed check must not unlock the paid experience
+        if (error) return 'upsell'
         return enabled ? 'default' : 'upsell'
       }),
     [featuresPromise],
