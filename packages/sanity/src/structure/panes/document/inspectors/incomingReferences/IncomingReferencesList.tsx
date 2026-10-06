@@ -119,7 +119,7 @@ export function IncomingReferencesList() {
         documentId,
         documentPreviewStore,
         getClient,
-      }).pipe(map((documents) => groupByType(documents, (doc) => doc._type))),
+      }).pipe(map(({documents}) => groupByType(documents, (doc) => doc._type))),
     [documentId, documentPreviewStore, getClient],
   )
   const referencesPromise = useObservablePromise(references$)
