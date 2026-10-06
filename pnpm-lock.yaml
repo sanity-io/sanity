@@ -2197,7 +2197,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/validation
       '@sentry/react':
-        specifier: ^10.75.3
+        specifier: ^10.76.0
         version: 10.76.0(react@19.3.0)
       '@tanstack/react-virtual':
         specifier: ^3.14.13
