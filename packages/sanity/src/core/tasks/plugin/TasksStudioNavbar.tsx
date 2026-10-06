@@ -4,7 +4,6 @@ import {useCallback, useMemo} from 'react'
 import {Button} from '../../../ui-components/button/Button'
 import {type NavbarProps} from '../../config/studio/types'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
 import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../i18n'
 
@@ -27,7 +26,7 @@ const TasksToolbar = ({onClick, isOpen}: {onClick: () => void; isOpen: boolean})
   )
 }
 
-function TasksStudioNavbarInner(props: NavbarProps) {
+export default function TasksStudioNavbar(props: NavbarProps) {
   const {
     handleOpenTasks,
     handleCloseTasks,
@@ -72,14 +71,4 @@ function TasksStudioNavbarInner(props: NavbarProps) {
     ...props,
     __internal_actions: actions,
   })
-}
-
-export function TasksStudioNavbar(props: NavbarProps) {
-  const {enabled} = useTasksEnabled()
-
-  if (!enabled) {
-    return props.renderDefault(props)
-  }
-
-  return <TasksStudioNavbarInner {...props} />
 }

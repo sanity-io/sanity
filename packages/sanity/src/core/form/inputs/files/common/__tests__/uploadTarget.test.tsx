@@ -38,7 +38,7 @@ vi.mock('../../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo'
   }),
 }))
 vi.mock('../../../../../../media-library/plugin/VideoInput/VideoPlayer', () => ({
-  VideoPlayer: () => null,
+  default: () => null,
 }))
 
 /**

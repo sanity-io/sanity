@@ -24,7 +24,7 @@ const ButtonContainer = styled.div`
  * Clicking it will open the task sidebar, showing the open tasks related to the document.
  * @internal
  */
-export function TasksFooterOpenTasks() {
+export default function TasksFooterOpenTasks() {
   const {data, activeDocument} = useTasks()
   const {handleOpenTasks, setActiveTab} = useTasksNavigation()
   const mediaIndex = useMediaIndex()

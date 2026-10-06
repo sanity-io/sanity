@@ -11,6 +11,23 @@ export interface LayoutProps {
 }
 
 /**
+ * Props for a `studio.components.provider` component: a middleware for the providers a plugin
+ * needs across the whole studio. `StudioProvider` renders it under the studio's own providers
+ * and above `StudioLayout`, so a promise created here (for example with react-rx's
+ * `useObservablePromise`) and passed down through a context can be `use()`d by a `layout`,
+ * `navbar` or tool, which suspends up to the studio's loading screen instead of needing a
+ * boundary of its own. Keep it small and synchronous, not `lazy()`.
+ *
+ * @hidden
+ * @beta */
+export interface ProviderProps {
+  /** The rest of the studio. Render it through `renderDefault(props)`, which also lets the other
+   * providers in the chain wrap it; rendering it directly skips them. */
+  children: React.ReactNode
+  renderDefault: (props: ProviderProps) => React.JSX.Element
+}
+
+/**
  * @hidden
  * @beta */
 export interface LogoProps {
@@ -101,5 +118,6 @@ export interface StudioComponentsPluginOptions {
    */
   logo?: ComponentType<LogoProps>
   navbar?: ComponentType<NavbarProps>
+  provider?: ComponentType<ProviderProps>
   toolMenu?: ComponentType<ToolMenuProps>
 }
