@@ -14,6 +14,16 @@ const isReactDevtoolsEnabled = process.env.ENABLE_REACT_DEVTOOLS === 'true'
 // Usage: `pnpm react-devtools-mcp:test-studio` (see .agents/skills/react-devtools-mcp).
 const isReactDevtoolsMcpEnabled = process.env.ENABLE_REACT_DEVTOOLS_MCP === 'true'
 
+if (isReactDevtoolsEnabled && isReactDevtoolsMcpEnabled) {
+  // Both inject a module that installs `__REACT_DEVTOOLS_GLOBAL_HOOK__`; whichever runs second
+  // attaches to the other's hook and neither tool sees a complete picture.
+  throw new Error(
+    'ENABLE_REACT_DEVTOOLS and ENABLE_REACT_DEVTOOLS_MCP cannot be combined: both install a React ' +
+      'DevTools hook. Unset one of them (`pnpm react-devtools:test-studio` uses the former, ' +
+      '`pnpm react-devtools-mcp:test-studio` the latter).',
+  )
+}
+
 /**
  * Loads `react-devtools-cdt-mcp/register` before anything else in the studio document, so the
  * React DevTools hook it installs is in place when `react-dom` initializes. With that hook
@@ -53,7 +63,10 @@ export default defineCliConfig({
   // Can be overriden by:
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
-  reactStrictMode: true,
+  // Off by default when profiling through chrome-devtools-mcp: development StrictMode renders
+  // every component twice, which inflates the profiler's render counts and durations.
+  // `SANITY_STUDIO_REACT_STRICT_MODE=true pnpm react-devtools-mcp:test-studio` turns it back on.
+  reactStrictMode: !isReactDevtoolsMcpEnabled,
   // Opt into Vite's experimental full-bundle (bundledDev) mode for `sanity dev`.
   // Bundles the app up front so late-discovered lazy import() targets no longer
   // trigger the monorepo "waterfall of reload doom", which previously required
