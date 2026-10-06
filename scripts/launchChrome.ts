@@ -120,6 +120,16 @@ function getBrowserName(versionInfo: unknown): string {
   return 'Chrome'
 }
 
+/** Checks whether a Chrome instance is already serving the debugging port. */
+async function isDevToolsListening(port: number): Promise<boolean> {
+  try {
+    const response = await fetch(`http://127.0.0.1:${port}/json/version`)
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
 // oxlint-disable no-await-in-loop -- sequential polling of Chrome's debugging endpoint is intentional
 async function waitForDevTools(port: number): Promise<string> {
   const deadline = Date.now() + STARTUP_TIMEOUT_MS
@@ -181,14 +191,14 @@ async function main(): Promise<void> {
     url,
   ]
 
+  // When Chrome is already running with this profile, the new process hands the URL over to it
+  // and exits; the running instance keeps serving the debugging port. That handover process is
+  // still alive when the running instance answers the first poll below, so reuse has to be
+  // detected by probing the port before spawning.
+  const alreadyRunning = await isDevToolsListening(options.port)
+
   const child = spawn(chrome, args, {detached: true, stdio: 'ignore'})
   child.unref()
-  // When Chrome is already running with this profile, the new process hands the URL over to
-  // it and exits; the running instance keeps serving the debugging port.
-  let handedOver = false
-  child.once('exit', () => {
-    handedOver = true
-  })
 
   const browserName = await waitForDevTools(options.port)
   const browserUrl = `http://127.0.0.1:${options.port}`
@@ -196,7 +206,9 @@ async function main(): Promise<void> {
   console.log(`${browserName} is listening on ${browserUrl}${headless ? ' (headless)' : ''}`)
   console.log(`Opened ${options.url}${usedToken ? ' (signed in with STUDIO_AUTH_TOKEN)' : ''}`)
   console.log(
-    handedOver ? 'Reused the Chrome instance that was already running' : `Chrome pid: ${child.pid}`,
+    alreadyRunning
+      ? 'Reused the Chrome instance that was already running'
+      : `Chrome pid: ${child.pid}`,
   )
   console.log('')
   console.log('Attach chrome-devtools-mcp to it with:')
