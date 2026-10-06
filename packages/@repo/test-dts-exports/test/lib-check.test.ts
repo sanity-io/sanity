@@ -89,7 +89,8 @@ const filteredErrors = errors.filter((d) => {
   // ships declarations that declare (or stop referencing) that name.
   if (
     code === 2304 &&
-    file.fileName.includes('/node_modules/@module-federation/runtime-core/dist/')
+    file.fileName.includes('/node_modules/@module-federation/runtime-core/dist/') &&
+    ts.flattenDiagnosticMessageText(d.messageText, ' ').includes("'ResourceLoadContext'")
   ) {
     return false
   }
