@@ -410,7 +410,7 @@ wraps the native hook, so check the implementation before trusting one.
 `react-rx` v7 never subscribes during render. `useObservable` / `useSyncObservable` render the
 `initialValue` (required — pass `undefined` explicitly when there is nothing better) until the
 subscription started on commit delivers a value, and a synchronous emission arrives one pass later.
-Two rules follow:
+Three rules follow:
 
 - **The observable identity must be stable across renders**: build it with `useMemo`, keep it on a
   store, or hoist it to module scope, and key memos on primitives (a path string, an id) rather than
@@ -423,6 +423,12 @@ Two rules follow:
   exported `INITIAL_RELEASES_STATE`, `useVariantsStore().initialState`), or derive it per render
   when it depends on the observable's parameters (`useEditState`), since react-rx captures
   `initialValue` once per hook instance.
+- **Derive the value inside the observable, never with `.then()` on the promise.**
+  `useObservablePromise` returns an `ObservablePromise` carrying the `status` / `value` fields
+  `use()` reads synchronously; `.then()` returns a plain promise without them, so the first
+  component to `use()` it suspends even when the source settled long ago. Map the observable
+  before the hook, as the tasks and comments plugin providers do for their mode
+  (`TasksStudioProvider.test.tsx` guards it).
 
 ### Translate: never define `components` inline
 

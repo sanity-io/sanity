@@ -1,5 +1,6 @@
 import {lazy, Suspense, useEffect, useMemo} from 'react'
 import {preloadObservablePromise, useObservablePromise} from 'react-rx'
+import {map} from 'rxjs'
 import {TasksModePromiseContext} from 'sanity/_singletons'
 
 import {definePlugin} from '../../config/definePlugin'
@@ -73,24 +74,28 @@ export const tasks = definePlugin({
 // its components check `workspace.tasks.enabled` themselves.
 function TasksStudioProvider(props: ProviderProps) {
   const features$ = useFeatureEnabledObservable(FEATURES.sanityTasks)
-  const featuresPromise = useObservablePromise(features$)
+  // Mapped before the promise so the mode is carried by the `ObservablePromise` itself: a promise
+  // derived with `.then()` has no `status`/`value` for `use()` to read, so the first consumer
+  // would suspend even once the check has settled.
+  const mode$ = useMemo(
+    () =>
+      features$.pipe(
+        map(({enabled, error}): TasksMode => {
+          if (error) return null
+          return enabled ? 'default' : 'upsell'
+        }),
+      ),
+    [features$],
+  )
+  const modePromise = useObservablePromise(mode$)
   useEffect(() => {
-    void preloadObservablePromise(features$)
-  }, [features$])
+    void preloadObservablePromise(mode$)
+  }, [mode$])
   useEffect(() => {
     // Preload lazy components
     void lazyTasksStudioActiveToolLayout()
     void lazyTasksStudioNavbar()
   }, [])
-
-  const modePromise = useMemo(
-    () =>
-      featuresPromise.then(({enabled, error}): TasksMode => {
-        if (error) return null
-        return enabled ? 'default' : 'upsell'
-      }),
-    [featuresPromise],
-  )
 
   return (
     <TasksModePromiseContext value={modePromise}>

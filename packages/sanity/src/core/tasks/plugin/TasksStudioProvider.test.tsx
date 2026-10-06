@@ -21,12 +21,8 @@ function Mode() {
   return <span>mode:{String(useTasksMode())}</span>
 }
 
-function Probe() {
-  return (
-    <Suspense fallback={<span>mode:pending</span>}>
-      <Mode />
-    </Suspense>
-  )
+function Probe({mounted = true}: {mounted?: boolean}) {
+  return <Suspense fallback={<span>mode:pending</span>}>{mounted ? <Mode /> : null}</Suspense>
 }
 
 async function renderProvider(features: Partial<SettledFeatures>) {
@@ -56,6 +52,23 @@ describe('TasksStudioProvider', () => {
     await renderProvider({enabled: false, error: new Error('Something went wrong')})
 
     expect(await screen.findByText('mode:null')).toBeInTheDocument()
+  })
+
+  it('does not suspend a consumer mounted after the feature check settled', async () => {
+    useFeatureEnabledObservableMock.mockReturnValue(of({enabled: true, features: [], error: null}))
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- the mode read suspends on a promise; React only resumes it inside an awaited act
+    const {rerender} = await act(async () =>
+      render(
+        <TasksStudioProvider renderDefault={() => <Probe mounted={false} />}>
+          {null}
+        </TasksStudioProvider>,
+      ),
+    )
+
+    rerender(<TasksStudioProvider renderDefault={() => <Probe />}>{null}</TasksStudioProvider>)
+
+    expect(screen.queryByText('mode:pending')).not.toBeInTheDocument()
+    expect(screen.getByText('mode:default')).toBeInTheDocument()
   })
 
   it('throws from the mode promise hook without the provider', () => {
