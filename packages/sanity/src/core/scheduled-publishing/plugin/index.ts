@@ -6,16 +6,10 @@ import {definePlugin} from '../../config/definePlugin'
 import {SCHEDULED_PUBLISHING_TOOL_NAME, TOOL_TITLE} from '../constants'
 import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
+import {SchedulePublishingStudioLayout} from './SchedulePublishingStudioLayout'
 
 const Tool = lazy(() => import('../tool/Tool'))
-const DocumentBannerInput = lazy(() =>
-  import('./inputResolver').then((module) => ({default: module.DocumentBannerInput})),
-)
-const SchedulePublishingStudioLayout = lazy(() =>
-  import('./SchedulePublishingStudioLayout').then((module) => ({
-    default: module.SchedulePublishingStudioLayout,
-  })),
-)
+const DocumentBannerInput = lazy(() => import('./inputResolver'))
 
 /**
  * @internal

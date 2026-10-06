@@ -58,7 +58,7 @@ vi.mock('../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo', (
 
 // Mock VideoPlayer to avoid loading @mux/mux-player-react and media-chrome (slow startup)
 vi.mock('../../../../../media-library/plugin/VideoInput/VideoPlayer', () => ({
-  VideoPlayer: () => null,
+  default: () => null,
 }))
 
 const INPUT_CONFIGS = [
