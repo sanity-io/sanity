@@ -245,7 +245,9 @@ async function openInRunningBrowser(
 }
 
 /** Starts Chrome on `url` and resolves once its debugging port answers. */
-async function launchChrome(chrome: string, options: Options, url: string): Promise<Launched> {
+async function launchChrome(options: Options, url: string): Promise<Launched> {
+  // Resolved here rather than up front: opening a tab in a running browser needs no executable
+  const chrome = findChrome()
   const userDataDir = path.join(
     REPO_ROOT,
     'node_modules',
@@ -303,7 +305,6 @@ async function waitForRedirect(redirect: Redirect): Promise<void> {
 
 async function main(): Promise<void> {
   const options = parseOptions(process.argv.slice(2))
-  const chrome = findChrome()
   const hasDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY)
   options.headless ||= process.platform === 'linux' && !hasDisplay
   const browserUrl = `http://127.0.0.1:${options.port}`
@@ -320,7 +321,7 @@ async function main(): Promise<void> {
     const runningBrowser = await probeDevTools(options.port)
     const {browserName, pid} =
       runningBrowser === null
-        ? await launchChrome(chrome, options, redirect.url)
+        ? await launchChrome(options, redirect.url)
         : await openInRunningBrowser(browserUrl, runningBrowser, redirect.url)
     await waitForRedirect(redirect)
 
