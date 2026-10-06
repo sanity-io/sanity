@@ -2,7 +2,7 @@ import {useCallback, useEffect, useMemo} from 'react'
 import useSWR from 'swr'
 
 import {useClient} from '../../hooks/useClient'
-import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/useScheduledPublishingEnabled'
 import {type Schedule, type ScheduleState} from '../types'
 import {sortByExecuteDate} from '../utils/sortByExecuteDate'
 import {

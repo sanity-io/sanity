@@ -5,7 +5,7 @@ import {Badge, Card, Inline, Text} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {Box, Flex, VStack} from 'ui5'
 
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/useScheduledPublishingEnabled'
 import {DATE_FORMAT} from '../../../studio/timezones/constants'
 import {DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
 import usePollSchedules from '../../hooks/usePollSchedules'

@@ -12,7 +12,7 @@ import {
 } from '../../../../config/document/actions'
 import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
-import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/useScheduledPublishingEnabled'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {debugWithName} from '../../../../studio/timezones/utils/debug'

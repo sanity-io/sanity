@@ -1,8 +1,12 @@
-import {lazy, Suspense, useEffect} from 'react'
+import {lazy, Suspense, useEffect, useMemo} from 'react'
+import {preloadObservablePromise, useObservablePromise} from 'react-rx'
+import {TasksModePromiseContext} from 'sanity/_singletons'
 
 import {definePlugin} from '../../config/definePlugin'
 import {type ProviderProps} from '../../config/studio/types'
 import {type ObjectInputProps} from '../../form/types/inputProps'
+import {FEATURES, useFeatureEnabledObservable} from '../../hooks/useFeatureEnabled'
+import {type TasksMode} from '../context/enabled/types'
 import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
@@ -65,12 +69,32 @@ export const tasks = definePlugin({
   },
 })
 
+// `getDefaultPlugins` only includes this plugin when the workspace has tasks enabled, so none of
+// its components check `workspace.tasks.enabled` themselves.
 function TasksStudioProvider(props: ProviderProps) {
+  const features$ = useFeatureEnabledObservable(FEATURES.sanityTasks)
+  const featuresPromise = useObservablePromise(features$)
+  useEffect(() => {
+    void preloadObservablePromise(features$)
+  }, [features$])
   useEffect(() => {
     // Preload lazy components
     void lazyTasksStudioActiveToolLayout()
     void lazyTasksStudioNavbar()
   }, [])
 
-  return props.renderDefault(props)
+  const modePromise = useMemo(
+    () =>
+      featuresPromise.then(({enabled, error}): TasksMode => {
+        if (error) return null
+        return enabled ? 'default' : 'upsell'
+      }),
+    [featuresPromise],
+  )
+
+  return (
+    <TasksModePromiseContext value={modePromise}>
+      {props.renderDefault(props)}
+    </TasksModePromiseContext>
+  )
 }

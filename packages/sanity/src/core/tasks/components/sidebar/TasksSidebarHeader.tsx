@@ -11,7 +11,7 @@ import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {useTasksMode} from '../../context/enabled/useTasksMode'
 import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
@@ -27,7 +27,7 @@ interface TasksSidebarHeaderProps {
  */
 export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
   const {items: allItems} = props
-  const {mode} = useTasksEnabled()
+  const mode = useTasksMode()
   const {state, setViewMode, handleCloseTasks} = useTasksNavigation()
   const {viewMode, activeTabId} = state
 

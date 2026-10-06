@@ -78,12 +78,11 @@ describe('StudioLayout with studio.components.provider', () => {
       answer$.complete()
     })
 
-    // The layout only ever rendered with the answer. The default plugins' layouts above it in the
-    // chain re-render as their own feature checks settle, so the count is theirs, not ours.
+    // One committed layout render, with the answer
     expect(await screen.findByTestId('layout')).toHaveTextContent('42')
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
-    const layoutRenders = log.filter((entry) => entry.startsWith('layout rendered'))
-    expect(layoutRenders.length).toBeGreaterThan(0)
-    expect(layoutRenders.every((entry) => entry === 'layout rendered with 42')).toBe(true)
+    expect(log.filter((entry) => entry.startsWith('layout rendered'))).toEqual([
+      'layout rendered with 42',
+    ])
   })
 })

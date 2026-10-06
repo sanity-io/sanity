@@ -9,7 +9,7 @@ import {DocumentVersionsStatusIndicator} from '../../../components/documentStatu
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/useScheduledPublishingEnabled'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,
