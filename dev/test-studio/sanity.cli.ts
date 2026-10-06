@@ -1,6 +1,6 @@
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
-import {defaultClientConditions, mergeConfig} from 'vite'
+import {defaultClientConditions, mergeConfig, type Plugin} from 'vite'
 
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // Enables Vite DevTools (https://devtools.vite.dev) for both `sanity dev` and `sanity build`.
@@ -10,6 +10,35 @@ const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 const isViteDevToolsEnabled = process.env.ENABLE_VITE_DEVTOOLS === 'true'
 // React DevTools profiling via agent-react-devtools. Usage: `pnpm react-devtools:test-studio` (see AGENTS.md).
 const isReactDevtoolsEnabled = process.env.ENABLE_REACT_DEVTOOLS === 'true'
+// React DevTools inspection and profiling through chrome-devtools-mcp (react-devtools-cdt-mcp).
+// Usage: `pnpm react-devtools-mcp:test-studio` (see .agents/skills/react-devtools-mcp).
+const isReactDevtoolsMcpEnabled = process.env.ENABLE_REACT_DEVTOOLS_MCP === 'true'
+
+/**
+ * Loads `react-devtools-cdt-mcp/register` before anything else in the studio document, so the
+ * React DevTools hook it installs is in place when `react-dom` initializes. With that hook
+ * present, `chrome-devtools-mcp` (started with `--categoryExperimentalThirdParty=true`) discovers
+ * the React component tree and profiler tools from the page. Dev server only.
+ */
+function reactDevtoolsMcp(): Plugin {
+  return {
+    name: 'sanity-test-studio:react-devtools-mcp',
+    apply: 'serve',
+    transformIndexHtml: {
+      order: 'pre',
+      handler: () => [
+        {
+          tag: 'script',
+          attrs: {type: 'module'},
+          // Module scripts evaluate in document order, so prepending this one to <head> runs it
+          // before the studio entry module (and the `react-dom` it imports)
+          children: `import 'react-devtools-cdt-mcp/register'`,
+          injectTo: 'head-prepend',
+        },
+      ],
+    },
+  }
+}
 
 export default defineCliConfig({
   api: isStaging
@@ -66,6 +95,10 @@ export default defineCliConfig({
     if (isReactDevtoolsEnabled) {
       const {reactDevtools} = await import('agent-react-devtools/vite')
       nextConfig = mergeConfig(nextConfig, {plugins: [reactDevtools()]})
+    }
+
+    if (isReactDevtoolsMcpEnabled) {
+      nextConfig = mergeConfig(nextConfig, {plugins: [reactDevtoolsMcp()]})
     }
 
     // Support React Production Profiling on deployed studios
