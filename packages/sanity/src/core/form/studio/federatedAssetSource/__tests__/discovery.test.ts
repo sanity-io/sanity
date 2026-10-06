@@ -41,9 +41,7 @@ function deployment(interfaces: InterfaceRecord[]): Deployment {
   }
 }
 
-function application(
-  fields: {id: string} & Partial<ListedApplication>,
-): ListedApplication {
+function application(fields: {id: string} & Partial<ListedApplication>): ListedApplication {
   return {
     type: 'studio',
     title: '',
@@ -63,9 +61,7 @@ function application(
   }
 }
 
-function installation(
-  fields: {id: string} & Partial<ListedInstallation>,
-): ListedInstallation {
+function installation(fields: {id: string} & Partial<ListedInstallation>): ListedInstallation {
   return {
     applicationId: 'app-1',
     organizationId: 'org-1',
