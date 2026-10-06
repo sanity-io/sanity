@@ -595,6 +595,50 @@ revealed. Two consequences for Suspense code:
 - For content inside a closed popover or any other hidden `<Activity>` tree, call the hook in a
   visible ancestor and pass the promise down, as `WorkspaceMenuButton` does for `ManageMenu`.
   The fetch then starts when the ancestor commits, and the data is settled before the reveal.
+- A `studio.components.layout` middleware whose tree shape depends on an async check (which
+  providers wrap `renderDefault`, whether a navbar button or tool exists) must settle that check
+  before rendering, or the answer arriving after the first paint remounts the whole studio below
+  it. The place to start such a check is `studio.components.provider`: `StudioProvider` renders
+  that chain (`PluginProviders`) above `StudioLayout` and its loading screen boundary, so a provider
+  component (small, never `lazy()`) can turn an observable into a promise with
+  `useObservablePromise`, start it on commit with `preloadObservablePromise` in an effect so
+  several checks load in parallel, and publish the promise through a context (default `null`,
+  read through a hook that throws when missing); the layout or navbar below reads it with
+  `use()` and suspends up to the studio's own loading screen, with no boundary of its own (a
+  tool, or its `activeToolLayout`, suspends up to the tool's own loading block instead:
+  `RenderTool` in `StudioLayoutComponent` wraps each tool in a `Suspense`).
+- The provider is declared in the plugin's `index.tsx`, below the `definePlugin` call, and it is
+  also where the plugin's lazy components are preloaded. `navbar` and `toolMenu` render under
+  `StudioLayout` with no boundary of their own and `activeToolLayout` wraps the tool under the
+  tool's own boundary, so a `lazy()` component there that React discovers on render holds the
+  layout or the tool for a chunk round trip. Keep them lazy, but hold the import function and
+  call it from the provider's effect: `const lazyTasksStudioNavbar = () =>
+  import('./TasksStudioNavbar')`, `const TasksStudioNavbar = lazy(lazyTasksStudioNavbar)`,
+  `useEffect(() => { void lazyTasksStudioNavbar() }, [])`. The chunk then loads as soon as the
+  providers commit (see `core/tasks/plugin/index.tsx` and `core/variants/plugin/index.tsx`).
+  Preloads are fire-and-forget: `void` the promise and do not attach `.catch` handlers. A rejected
+  preload has nothing to report, because the `lazy()` render re-imports the module and surfaces a
+  real failure through the error boundary; a review comment asking to handle that rejection is
+  asking to change the intended shape. In jsdom tests, a preloaded chunk that nothing rendered
+  may still be loading when a test ends, and Vitest would reject it at environment teardown
+  (`EnvironmentTeardownError`) as an unhandled error even though every test passed; the shared
+  `afterEach` in `test/setup/environment.ts` awaits `vi.dynamicImportSettled()` so those imports
+  finish first.
+- Never `lazy()` a `studio.components.provider` or `layout` component, and do not put a
+  `<Suspense>` at its top level. Both render in the studio's first render pass, before any effect
+  could preload them: a provider renders above `StudioLayout`'s boundary, so a lazy one suspends
+  the whole studio to an ancestor fallback; a layout renders under that boundary, so a lazy chunk
+  only delays the loading screen's replacement. `pickLayoutComponent` / `pickProviderComponent`
+  warn about both in development (`warnIfSuspendsOnCriticalPath`). The other slots are not
+  checked, since a bare `import()` preload leaves nothing the check could read.
+- A component that only wraps `renderDefault` in providers is a `studio.components.provider`,
+  not a `layout`. The schedules plugin's `ReleasesStudioProvider`,
+  `SingleDocReleaseStudioProvider` and `SchedulePublishingStudioProvider` are the plugin's
+  providers (declared in the plugin's `index.tsx`, imported directly, nothing to lazy-load) and
+  those plugins define no `layout` at all. Reserve `layout` for a component that renders layout
+  of its own around the studio.
+- A module that is only ever loaded through `lazy()` uses `export default`, so the call site is
+  `lazy(() => import('./TasksStudioNavbar'))` with no `.then` remapping.
 
 `useObservable` and `useSyncObservable` require an `initialValue` in v7 and render it on the first
 pass regardless of synchronous emissions, so do not rely on a replayed value winning the first

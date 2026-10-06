@@ -1218,6 +1218,7 @@ import type {
   ProjectOrganizationData,
   ProjectStore,
   ProvenanceDiffAnnotation,
+  ProviderProps,
   PublishDocumentVersionEvent,
   PUBLISHED,
   PublishedId,
@@ -5529,6 +5530,9 @@ describe('sanity', () => {
   })
   test('ProvenanceDiffAnnotation', () => {
     expectTypeOf<ProvenanceDiffAnnotation>().toBeObject()
+  })
+  test('ProviderProps', () => {
+    expectTypeOf<ProviderProps>().toBeObject()
   })
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
