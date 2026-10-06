@@ -235,6 +235,23 @@ How it works and gotchas:
 - Profile with StrictMode off (`SANITY_STUDIO_REACT_STRICT_MODE=false`) so dev double-rendering doesn't inflate durations — production studios don't run StrictMode.
 - Do not run `pnpm check:oxlint` while the dev studio and daemon are running (same memory constraint as noted in the Cursor Cloud gotchas).
 
+### Inspecting and profiling the studio through chrome-devtools-mcp (react-devtools-cdt-mcp)
+
+An alternative to the daemon above that works over the Chrome DevTools Protocol and plugs into [chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp): `ENABLE_REACT_DEVTOOLS_MCP=true` makes `dev/test-studio/sanity.cli.ts` load [`react-devtools-cdt-mcp/register`](https://github.com/facebook/react/tree/main/packages/react-devtools-cdt-mcp) before the studio entry, and `chrome-devtools-mcp` started with `--categoryExperimentalThirdParty=true` then exposes twelve `react_*` tools (component tree, props/hooks, source locations, owner/parent stacks, render profiler with per-commit reports) next to its own `take_snapshot` / `click` / `navigate_page`. The `react-devtools-mcp` skill (`.agents/skills/react-devtools-mcp/SKILL.md`) documents the workflow and a real profile run; read it before using this.
+
+```bash
+pnpm react-devtools-mcp:test-studio   # sanity dev with the hook (build the packages first)
+pnpm react-devtools-mcp:chrome        # Chrome on http://localhost:3333/test with --remote-debugging-port=9222, signed in via STUDIO_AUTH_TOKEN when set
+# Cursor: the chrome-devtools server in .cursor/mcp.json attaches to that Chrome via --browserUrl.
+# Terminal / cloud agents: the same daemon through its CLI
+pnpm --filter sanity-test-studio exec chrome-devtools start --categoryExperimentalThirdParty=true --browserUrl=http://127.0.0.1:9222
+pnpm --filter sanity-test-studio exec chrome-devtools list_3p_developer_tools 1
+pnpm --filter sanity-test-studio exec chrome-devtools execute_3p_developer_tool 1 react_get_component_tree --params '{"depth":400}'
+pnpm --filter sanity-test-studio exec chrome-devtools stop
+```
+
+Do not combine it with `ENABLE_REACT_DEVTOOLS=true`: both install a DevTools hook. Headless Chrome works here (`pnpm react-devtools-mcp:chrome --headless`), unlike the daemon above. With the default bundled dev mode the `sanity dev` process reached 7.1 GB RSS on the Cloud VM with one `/test` page open and the MCP server attached; flip `unstable_bundledDev: false` locally when memory is tight (see the Cursor Cloud gotchas).
+
 ### Analyzing the `sanity` package bundle
 
 The `sanity` package tsdown build can emit a Rolldown [bundle analyzer](https://rolldown.rs/builtin-plugins/bundle-analyzer) markdown report (module/chunk breakdown for humans and coding agents) when `ENABLE_BUNDLE_ANALYZER=true`:
