@@ -41,9 +41,10 @@ const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
 // Chrome gets exactly this environment and nothing else from the caller's shell, so whatever
 // else the shell holds (STUDIO_AUTH_TOKEN, cloud credentials, any *_KEY) never shows up in
 // /proc/<pid>/environ for the browser's lifetime. Covered: user and paths, temp dirs, locale and
-// time zone, the display and session bus, proxy settings, custom CA bundles and Chrome's own
-// CHROME_* knobs. GOOGLE_* is left out on purpose: this launcher relies on none of those and
-// GOOGLE_API_KEY / GOOGLE_DEFAULT_CLIENT_SECRET are credentials.
+// time zone, the display and session bus, proxy settings, custom CA bundles, Chrome's own
+// CHROME_* knobs and the Windows system and profile variables Chrome cannot start without.
+// GOOGLE_* is left out on purpose: this launcher relies on none of those and GOOGLE_API_KEY /
+// GOOGLE_DEFAULT_CLIENT_SECRET are credentials.
 const CHROME_ENV_NAMES = new Set([
   'HOME',
   'PATH',
@@ -66,6 +67,23 @@ const CHROME_ENV_NAMES = new Set([
   'http_proxy',
   'https_proxy',
   'no_proxy',
+  // Windows. Node reports these the way the shell spelled them (`Path`, `SystemRoot`), hence the
+  // case-insensitive match in chromeEnvironment()
+  'SYSTEMROOT',
+  'SYSTEMDRIVE',
+  'WINDIR',
+  'COMSPEC',
+  'PATHEXT',
+  'USERNAME',
+  'USERPROFILE',
+  'HOMEDRIVE',
+  'HOMEPATH',
+  'APPDATA',
+  'LOCALAPPDATA',
+  'PROGRAMDATA',
+  'PROGRAMFILES',
+  'PROGRAMFILES(X86)',
+  'PROGRAMW6432',
 ])
 const CHROME_ENV_PREFIXES = ['LC_', 'XDG_', 'SSL_CERT_', 'CHROME_']
 
@@ -220,11 +238,17 @@ function resolveTarget(options: Options): Target {
 
 /** The allowlisted subset of `env` that Chrome is started with. */
 function chromeEnvironment(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  // Windows environment names are case-insensitive, so the allowlist is matched against the
+  // upper-cased name there; elsewhere `Path` and `PATH` are two different variables
+  const normalize =
+    process.platform === 'win32' ? (name: string) => name.toUpperCase() : (name: string) => name
   return Object.fromEntries(
-    Object.entries(env).filter(
-      ([name]) =>
-        CHROME_ENV_NAMES.has(name) || CHROME_ENV_PREFIXES.some((prefix) => name.startsWith(prefix)),
-    ),
+    Object.entries(env).filter(([name]) => {
+      const key = normalize(name)
+      return (
+        CHROME_ENV_NAMES.has(key) || CHROME_ENV_PREFIXES.some((prefix) => key.startsWith(prefix))
+      )
+    }),
   )
 }
 
