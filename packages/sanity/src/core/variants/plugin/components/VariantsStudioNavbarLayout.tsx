@@ -26,7 +26,13 @@ export function VariantsStudioNavbarFallback() {
   )
 }
 
-export default function VariantsStudioNavbarLayout(props: NavbarProps) {
+/**
+ * The navbar middleware of the variants plugin: the default navbar with the perspective bar
+ * under it. Imported eagerly, since the bar's filters are what load lazily, behind the
+ * `Suspense` here, so the bar itself paints with the navbar.
+ * @internal
+ */
+export function VariantsStudioNavbarLayout(props: NavbarProps) {
   const router = useRouter()
   const variantSelections = useMemo(
     () =>

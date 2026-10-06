@@ -1,7 +1,8 @@
-import {memo, type ReactNode} from 'react'
+import {memo, type ReactNode, useMemo} from 'react'
 import {CommentsEnabledContext} from 'sanity/_singletons'
 
-import {useResolveCommentsEnabled} from '../../hooks/useResolveCommentsEnabled'
+import {useSource} from '../../../studio/source'
+import {getPublishedId} from '../../../util/draftUtils'
 
 interface CommentsEnabledProviderProps {
   children: ReactNode
@@ -10,6 +11,10 @@ interface CommentsEnabledProviderProps {
 }
 
 /**
+ * Resolves whether comments are enabled for the document from the workspace's
+ * `document.comments.enabled` config. Synchronous: the plan check only decides the mode, which
+ * `useCommentsMode()` hands out as a promise from the plugin's `CommentsModePromiseContext`.
+ *
  * @beta
  * @hidden
  */
@@ -17,8 +22,12 @@ export const CommentsEnabledProvider = memo(function CommentsEnabledProvider(
   props: CommentsEnabledProviderProps,
 ) {
   const {children, documentId, documentType} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  const {enabled} = useSource().document.comments
+  const enabledFromConfig = useMemo(
+    () => enabled({documentType, documentId: getPublishedId(documentId)}),
+    [documentId, documentType, enabled],
+  )
 
-  const value = useResolveCommentsEnabled(documentId, documentType)
-
-  return <CommentsEnabledContext.Provider value={value}>{children}</CommentsEnabledContext.Provider>
+  return <CommentsEnabledContext value={enabledFromConfig}>{children}</CommentsEnabledContext>
 })
