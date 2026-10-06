@@ -407,9 +407,10 @@ test.describe('Error responses', () => {
 **Avoid when**: You need to test the browser file picker dialog — use `page.setInputFiles()` instead.
 
 ```typescript
-import {test, expect} from '@playwright/test'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+
+import {test, expect} from '@playwright/test'
 
 test('upload file via multipart', async ({request}) => {
   const filePath = path.resolve('tests/fixtures/report.pdf')

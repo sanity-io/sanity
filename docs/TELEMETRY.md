@@ -135,6 +135,7 @@ Components log events using the `useTelemetry()` hook from `@sanity/telemetry/re
 
 ```typescript
 import {useTelemetry} from '@sanity/telemetry/react'
+
 import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
 
 function MyComponent() {
@@ -394,6 +395,7 @@ A divergence session starts on the first `Inspected Divergence` event for a docu
 
    ```typescript
    import {useTelemetry} from '@sanity/telemetry/react'
+
    import {MyFeatureUsed} from './__telemetry__/myFeature.telemetry'
 
    function MyFeature() {
