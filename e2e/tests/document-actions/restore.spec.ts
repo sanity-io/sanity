@@ -202,7 +202,9 @@ test(`user defined restore actions should not appear in any other document actio
 }) => {
   const actionMenuButton = page.getByTestId('action-menu-button')
   const customRestoreButton = page.getByTestId('action-Customrestore')
-  const paneContextMenu = page.locator('[data-ui="MenuButton__popover"]')
+  // The menu this button opens, by its accessible name: a field's "Field actions" menu can have
+  // its (closed) popover mounted too, so a bare `MenuButton__popover` locator is ambiguous
+  const paneContextMenu = page.getByRole('menu', {name: 'Open document actions'})
 
   await createDraftDocument('/content/input-debug;documentActionsTest')
 

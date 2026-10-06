@@ -1,13 +1,26 @@
 import {motion} from 'motion/react'
-import {useCallback} from 'react'
+import {Suspense, use, useCallback} from 'react'
 import {Container, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
 
+/**
+ * The screen shown in place of a tool that failed on the document limit. Waits for the upsell
+ * content behind its own boundary, so the wait never reaches the studio's loading screen.
+ */
 export function DocumentLimitsUpsellPanel() {
-  const {upsellData, telemetryLogs} = useDocumentLimitsUpsellContext()
+  return (
+    <Suspense fallback={<LoadingBlock title="Loading documents limit" showText />}>
+      <DocumentLimitsUpsellPanelContent />
+    </Suspense>
+  )
+}
+
+function DocumentLimitsUpsellPanelContent() {
+  const {upsellDataPromise, telemetryLogs} = useDocumentLimitsUpsellContext()
+  const {upsellData} = use(upsellDataPromise)
 
   const handlePrimaryButtonClick = useCallback(() => {
     telemetryLogs.panelPrimaryClicked()
@@ -18,7 +31,7 @@ export function DocumentLimitsUpsellPanel() {
   }, [telemetryLogs])
 
   if (!upsellData) {
-    return <LoadingBlock title="Loading documents limit" showText />
+    return null
   }
 
   return (

@@ -40,15 +40,10 @@ import {ToolMountTimer} from './ToolMountTimer'
 import {UnclaimedProjectNudge} from './unclaimedProject/UnclaimedProjectNudge'
 import {useWorkspace} from './workspace'
 
-const lazyDetectViteDevServerStopped = () => import('./ViteDevServerStopped')
-const DetectViteDevServerStopped = lazy(lazyDetectViteDevServerStopped)
+// Loads behind its own `Suspense` (no fallback needed), in parallel with the rest of the layout
+const DetectViteDevServerStopped = lazy(() => import('./ViteDevServerStopped'))
 
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
-
-if (detectViteDevServerStopped) {
-  // Preload the stopped dev server lazy component right away
-  void lazyDetectViteDevServerStopped()
-}
 
 const SearchFullscreenPortalCard = styled(Card)`
   height: 100%;
@@ -262,7 +257,11 @@ export function StudioLayoutComponent() {
         )}
         {reactActivityMode ? (
           <StudioErrorBoundary>
-            {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+            {detectViteDevServerStopped && (
+              <Suspense>
+                <DetectViteDevServerStopped />
+              </Suspense>
+            )}
             <Card flex={1} hidden={searchFullscreenOpen}>
               {mountedTools.map(({tool, router: toolRouter}) => (
                 // Each tool keeps the root router context it last rendered with while active, so
@@ -296,7 +295,11 @@ export function StudioLayoutComponent() {
             heading={`The ${activeTool?.name} tool crashed`}
             getErrorScreen={getErrorScreen}
           >
-            {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+            {detectViteDevServerStopped && (
+              <Suspense>
+                <DetectViteDevServerStopped />
+              </Suspense>
+            )}
             <Card flex={1} hidden={searchFullscreenOpen}>
               {activeTool && (
                 <RenderTool
