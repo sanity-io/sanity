@@ -11,7 +11,8 @@
  *   studio consumes the token and strips it from the address bar). The token never appears in
  *   Chrome's argv, in Chrome's environment or in this script's output: Chrome is started on a
  *   one-shot redirect served from an ephemeral loopback server, which forwards it to the
- *   tokenized url, and with every secret-looking variable removed from its environment.
+ *   tokenized url, and with an allowlisted environment (`CHROME_ENV_NAMES` / `CHROME_ENV_PREFIXES`
+ *   below) instead of the caller's.
  * - The token is only injected automatically for loopback origins (`localhost`, `127.0.0.1`,
  *   `[::1]`), where a local studio runs. Any other origin would receive the production token
  *   through `location.hash`, so an `https:` origin requires the explicit `--inject-token` flag
@@ -37,10 +38,36 @@ const PROBE_TIMEOUT_MS = 2_000
 const REPO_ROOT = path.resolve(import.meta.dirname, '..')
 
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
-// Environment variables Chrome must not inherit: it would expose them through
-// /proc/<pid>/environ for its whole lifetime, and it needs none of them
-const SECRET_ENV_PATTERN =
-  /TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|API_?KEY|PRIVATE_KEY|ACCESS_KEY/i
+// Chrome gets exactly this environment and nothing else from the caller's shell, so whatever
+// else the shell holds (STUDIO_AUTH_TOKEN, cloud credentials, any *_KEY) never shows up in
+// /proc/<pid>/environ for the browser's lifetime. Covered: user and paths, temp dirs, locale and
+// time zone, the display and session bus, proxy settings, custom CA bundles and Chrome's own
+// CHROME_* knobs. GOOGLE_* is left out on purpose: this launcher relies on none of those and
+// GOOGLE_API_KEY / GOOGLE_DEFAULT_CLIENT_SECRET are credentials.
+const CHROME_ENV_NAMES = new Set([
+  'HOME',
+  'PATH',
+  'USER',
+  'LOGNAME',
+  'SHELL',
+  'TMPDIR',
+  'TMP',
+  'TEMP',
+  'LANG',
+  'LANGUAGE',
+  'TZ',
+  'DISPLAY',
+  'WAYLAND_DISPLAY',
+  'XAUTHORITY',
+  'DBUS_SESSION_BUS_ADDRESS',
+  'HTTP_PROXY',
+  'HTTPS_PROXY',
+  'NO_PROXY',
+  'http_proxy',
+  'https_proxy',
+  'no_proxy',
+])
+const CHROME_ENV_PREFIXES = ['LC_', 'XDG_', 'SSL_CERT_', 'CHROME_']
 
 interface Options {
   url: URL
@@ -191,9 +218,14 @@ function resolveTarget(options: Options): Target {
   }
 }
 
-/** `process.env` without the variables that look like secrets. */
-function withoutSecrets(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
-  return Object.fromEntries(Object.entries(env).filter(([name]) => !SECRET_ENV_PATTERN.test(name)))
+/** The allowlisted subset of `env` that Chrome is started with. */
+function chromeEnvironment(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  return Object.fromEntries(
+    Object.entries(env).filter(
+      ([name]) =>
+        CHROME_ENV_NAMES.has(name) || CHROME_ENV_PREFIXES.some((prefix) => name.startsWith(prefix)),
+    ),
+  )
 }
 
 function isExecutable(file: string): boolean {
@@ -402,7 +434,7 @@ async function launchChrome(options: Options, url: string): Promise<Launched> {
   const child = spawn(chrome, args, {
     detached: true,
     stdio: 'ignore',
-    env: withoutSecrets(process.env),
+    env: chromeEnvironment(process.env),
   })
   child.unref()
   let failure: Error | null = null
@@ -458,9 +490,9 @@ async function main(): Promise<void> {
         : await openInRunningBrowser(browserUrl, runningBrowser, redirect.url)
     await waitForRedirect(redirect)
 
-    console.log(
-      `${browserName} is listening on ${browserUrl}${options.headless ? ' (headless)' : ''}`,
-    )
+    // A reused browser's mode is unknown; --headless only describes a Chrome started here
+    const mode = pid !== undefined && options.headless ? ' (headless)' : ''
+    console.log(`${browserName} is listening on ${browserUrl}${mode}`)
     console.log(
       `Opened ${describeUrl(options.url)}${target.signIn ? ' (signed in with STUDIO_AUTH_TOKEN)' : ''}`,
     )

@@ -34,8 +34,11 @@ pnpm react-devtools-mcp:test-studio
 # 2. Chrome with the remote debugging port open, on the studio. With STUDIO_AUTH_TOKEN set
 #    (cloud agents have it) the studio is signed in on load. The token is never printed and
 #    never put on Chrome's command line: Chrome opens a one-time loopback redirect that
-#    forwards to the #token= url, and Chrome's environment is scrubbed of secret-looking
-#    variables (*TOKEN*, *SECRET*, *PASSWORD*, *KEY*...). Only loopback origins (localhost,
+#    forwards to the #token= url, and Chrome is started with an allowlisted environment instead
+#    of your shell's: HOME, PATH, USER, LOGNAME, SHELL, TMPDIR/TMP/TEMP, LANG/LANGUAGE/LC_*, TZ,
+#    DISPLAY/WAYLAND_DISPLAY/XAUTHORITY/XDG_*, DBUS_SESSION_BUS_ADDRESS, HTTP(S)_PROXY/NO_PROXY,
+#    SSL_CERT_* and CHROME_* (see CHROME_ENV_NAMES in scripts/launchChrome.ts); nothing else,
+#    tokens and keys included, reaches /proc/<pid>/environ. Only loopback origins (localhost,
 #    127.0.0.1, [::1]) get the token automatically; any other origin would read it from
 #    location.hash, so an https origin needs --inject-token and a plaintext http origin the
 #    separately named --inject-token-insecure-http (token on the wire). Without the flag a
