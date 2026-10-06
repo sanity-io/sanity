@@ -48,6 +48,7 @@ export {type CommentsSelectedPath} from '../core/comments/context/selected-path/
 export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
 export {useComments} from '../core/comments/hooks/useComments'
 export {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
+export {useCommentsMode} from '../core/comments/hooks/useCommentsMode'
 export {useCommentsSelectedPath} from '../core/comments/hooks/useCommentsSelectedPath'
 export {useCommentsTelemetry} from '../core/comments/hooks/useCommentsTelemetry'
 export {
@@ -83,6 +84,7 @@ export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comm
 export {CommentsProvider as CommentsProviderV2} from '../core/comments-v2/context/comments/CommentsProvider'
 export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
 export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
+export {useCommentsMode as useCommentsModeV2} from '../core/comments-v2/hooks/useCommentsMode'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
 export {DashboardLink} from '../core/components/DashboardLink'

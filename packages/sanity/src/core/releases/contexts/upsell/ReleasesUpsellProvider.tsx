@@ -1,5 +1,6 @@
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo, useState} from 'react'
+import {Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
+import {type ObservablePromise, preloadObservablePromise, useObservablePromise} from 'react-rx'
 import {firstValueFrom, tap} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
@@ -7,6 +8,8 @@ import {useFeatureEnabled, FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useUpsellData} from '../../../hooks/useUpsellData'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
+import {type UpsellDataResult} from '../../../studio/upsell/types'
+import {type InterpolationProp} from '../../../studio/upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {ReleaseLimitsMisconfigurationDialog} from '../../components/dialog/ReleaseLimitsMisconfigurationDialog'
@@ -35,10 +38,16 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {data: allActiveReleases} = useActiveReleases()
   const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled(FEATURES.contentReleases)
-  const {upsellData, telemetryLogs, hasError} = useUpsellData({
+  const {upsellData$, telemetryLogs} = useUpsellData({
     dataUri: '/journey/content-releases',
     feature: 'content-releases',
   })
+  // Read where it is rendered (the dialog leaf) or awaited (handleOpenDialog); the request starts
+  // when the provider commits
+  const upsellDataPromise = useObservablePromise(upsellData$)
+  useEffect(() => {
+    void preloadObservablePromise(upsellData$)
+  }, [upsellData$])
   const toast = useToast()
   const {t} = useTranslation()
 
@@ -76,20 +85,22 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
   const handleOpenDialog = useCallback(
     (source: UpsellDialogViewedInfo['source'] = 'navbar') => {
-      if (hasError) {
-        toast.push({
-          status: 'error',
-          title: t('errors.unable-to-perform-action'),
-          closable: true,
-        })
-        return
-      }
+      void upsellDataPromise.then(({hasError}) => {
+        if (hasError) {
+          toast.push({
+            status: 'error',
+            title: t('errors.unable-to-perform-action'),
+            closable: true,
+          })
+          return
+        }
 
-      setUpsellDialogOpen(true)
+        setUpsellDialogOpen(true)
 
-      telemetryLogs.dialogViewed(source)
+        telemetryLogs.dialogViewed(source)
+      })
     },
-    [hasError, toast, t, telemetryLogs],
+    [upsellDataPromise, toast, t, telemetryLogs],
   )
 
   const {releaseLimits$} = useReleaseLimits()
@@ -217,7 +228,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       guardWithReleaseLimitUpsell,
       onReleaseLimitReached,
       telemetryLogs,
-      upsellData,
+      upsellDataPromise,
       handleOpenDialog,
     }),
     [
@@ -226,7 +237,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       guardWithReleaseLimitUpsell,
       onReleaseLimitReached,
       telemetryLogs,
-      upsellData,
+      upsellDataPromise,
       handleOpenDialog,
     ],
   )
@@ -236,33 +247,42 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     [releaseLimit],
   )
 
-  const dialogProps = useMemo(
-    () => ({
-      data: upsellData,
-      open: upsellDialogOpen,
-      interpolation,
-      onClose: handleClose,
-      onPrimaryClick: handlePrimaryButtonClick,
-      onSecondaryClick: handleSecondaryButtonClick,
-    }),
-    [
-      upsellData,
-      upsellDialogOpen,
-      interpolation,
-      handleClose,
-      handlePrimaryButtonClick,
-      handleSecondaryButtonClick,
-    ],
-  )
-
   return (
     <ReleasesUpsellContext.Provider value={ctxValue}>
       {props.children}
       {showMisconfigurationDialog ? (
         <ReleaseLimitsMisconfigurationDialog onClose={() => setShowMisconfigurationDialog(false)} />
       ) : (
-        <UpsellDialog {...dialogProps} />
+        upsellDialogOpen && (
+          <Suspense>
+            <ReleasesUpsellDialog
+              upsellDataPromise={upsellDataPromise}
+              interpolation={interpolation}
+              onClose={handleClose}
+              onPrimaryClick={handlePrimaryButtonClick}
+              onSecondaryClick={handleSecondaryButtonClick}
+            />
+          </Suspense>
+        )
       )}
     </ReleasesUpsellContext.Provider>
   )
+}
+
+interface ReleasesUpsellDialogProps {
+  upsellDataPromise: ObservablePromise<UpsellDataResult>
+  interpolation: InterpolationProp | undefined
+  onClose: () => void
+  onPrimaryClick: () => void
+  onSecondaryClick: () => void
+}
+
+/**
+ * Mounted only while the dialog is open, which `handleOpenDialog` does once the upsell content
+ * has settled, so the `use()` reads synchronously; the boundary above it covers the case where it
+ * does not.
+ */
+function ReleasesUpsellDialog({upsellDataPromise, ...dialogProps}: ReleasesUpsellDialogProps) {
+  const {upsellData} = use(upsellDataPromise)
+  return <UpsellDialog data={upsellData} {...dialogProps} />
 }

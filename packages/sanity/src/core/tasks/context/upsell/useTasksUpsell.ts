@@ -1,6 +1,7 @@
 import {useContext} from 'react'
 import {TasksUpsellContext} from 'sanity/_singletons'
 
+import {SETTLED_WITHOUT_UPSELL_DATA} from '../../../hooks/useUpsellData'
 import {type TasksUpsellContextValue} from './types'
 
 /**
@@ -18,7 +19,7 @@ export function useTasksUpsell(): TasksUpsellContextValue {
 }
 
 const FALLBACK_CONTEXT_VALUE = {
-  upsellData: null,
+  upsellDataPromise: SETTLED_WITHOUT_UPSELL_DATA,
   handleOpenDialog: () => null,
   handleClose: () => null,
   upsellDialogOpen: false,

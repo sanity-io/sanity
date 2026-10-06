@@ -601,29 +601,123 @@ revealed. Two consequences for Suspense code:
   it. The place to start such a check is `studio.components.provider`: `StudioProvider` renders
   that chain (`PluginProviders`) above `StudioLayout` and its loading screen boundary, so a provider
   component (small, never `lazy()`) can turn an observable into a promise with
-  `useObservablePromise`, start it on commit with `preloadObservablePromise` in an effect so
-  several checks load in parallel, and publish the promise through a context (default `null`,
-  read through a hook that throws when missing); the layout or navbar below reads it with
-  `use()` and suspends up to the studio's own loading screen, with no boundary of its own (a
-  tool, or its `activeToolLayout`, suspends up to the tool's own loading block instead:
-  `RenderTool` in `StudioLayoutComponent` wraps each tool in a `Suspense`).
+  `useObservablePromise` (for feature flags: `useFeatureEnabledObservable`), start it on commit
+  with `preloadObservablePromise` in an effect so several checks load in parallel, and publish
+  the promise through a context (default `null`, read through a hook that throws when missing);
+  the layout or navbar below reads it with `use()` and suspends up to the studio's own loading
+  screen, with no boundary of its own (a tool, or its `activeToolLayout`, suspends up to the
+  tool's own loading block instead: `RenderTool` in `StudioLayoutComponent` wraps each tool in a
+  `Suspense`). Scheduled publishing does this where it cannot avoid it: `enabled` there is itself
+  async (feature check plus a "has this dataset ever scheduled anything" probe, unless the
+  workspace opted in explicitly), and the navbar's `StudioToolMenu` must know it before painting
+  to leave the tool out, so `SchedulePublishingStudioProvider` publishes
+  `ScheduledPublishingEnabledPromiseContext` (`Promise<boolean>`) and the tool menu reads
+  `use(useScheduledPublishingEnabled())` (settled as disabled, without suspending, where the
+  plugin is not loaded).
+- Derive the published value inside the observable, never with `.then()` on the promise:
+  `useObservablePromise(useMemo(() => features$.pipe(map(toMode)), [features$]))` hands out the
+  `ObservablePromise` that react-rx fulfils in place, so `use()` reads it synchronously once it
+  has settled and a leaf that mounts later (the comments inspector, the tasks sidebar) renders in
+  one pass with no fallback. `featuresPromise.then(toMode)` is a native promise whose `status`
+  React records only after the first `use()` of it has thrown, so every first read suspends once
+  more: one extra attempt of the whole layout tree at boot (3 → 2 in the provider tests) and a
+  fallback flash on the inspector's first open. Two checks combine with `switchMap`/`map`
+  (`SchedulePublishingStudioProvider`); a source that must start concurrently rather than when the
+  outer check answers is preloaded on its own in the same effect.
+- Whether a feature is enabled and which mode it is in are separate hooks, and a hook never
+  returns a resolved mode: `useXEnabled()` answers the enabled question (synchronously when it
+  can: `useCommentsEnabled(): boolean` from the per-document `CommentsEnabledContext`, since
+  `document.comments.enabled` is a config API; as a promise when it cannot:
+  `useScheduledPublishingEnabled(): Promise<boolean>`), and `useXMode()` hands out the mode as a
+  promise (`useTasksMode()`, `useCommentsMode()`, `useScheduledPublishingMode()`:
+  `Promise<'default' | 'upsell' | null>`, from `TasksModePromiseContext`,
+  `CommentsModePromiseContext`, `ScheduledPublishingModePromiseContext`; `null` is a failed
+  check, and for scheduled publishing also "not enabled", so there `enabled` is `mode !== null`
+  and both promises settle together). Whatever leaf needs the value calls `use()` on it and
+  suspends under a boundary close to that UI, or awaits it in an event handler; a provider or a
+  layout never reads it, so the critical path never waits for a mode. Tasks: the sidebar under
+  its own `<Suspense>` in `TasksStudioActiveToolLayout` (the sidebar's spinner as the fallback,
+  since a `?sidebar=tasks` link or the navbar button can open it before the check settles), and
+  `TaskCreateAction` awaiting it when it runs. Comments: the inspector (under the inspector
+  panel's boundary) and the upsell dialog leaf read it with `use()`; the field button and the
+  PTE floating button await it in their click handlers, so a form full of fields never suspends
+  on the plan; `CommentsProvider` and `CommentsWrapper` only read the synchronous `enabled`.
+  Scheduled publishing: the tool, the action, the badge polling and the schedule UI `use()` it
+  (they already live under the document pane's or the tool's boundary). An action that awaits a
+  mode checks that what it was invoked on is still current when the answer arrives
+  (`TaskCreateAction` compares the active document before and after the await, since the task
+  form targets whichever document is active when it opens). A `null` mode fails closed: `TaskCreateAction` shows an error toast instead of opening anything, the tasks sidebar
+  and the comments inspector render an unavailable notice with only their close control, and a
+  comments button click opens that inspector. A provider whose presence would depend on the mode
+  is mounted in both modes instead, so the tree never changes shape (`TasksUpsellProvider` under
+  `TasksStudioLayout`, `CommentsUpsellProvider` under `CommentsStudioLayout`,
+  `SchedulePublishingUpsellProvider` in `SchedulePublishingStudioProvider`, like
+  `ReleasesUpsellProvider`); the UI that consults it already knows it is in upsell mode, and each
+  provider's dialog leaf (`TasksUpsellDialog`, `CommentsUpsellDialog`,
+  `SchedulePublishingUpsellDialog`, under its own `<Suspense>`) `use()`s the mode once more and
+  renders the dialog only in upsell mode.
+- The upsell content itself follows the same rule. `useUpsellData` returns
+  `{upsellData$, telemetryLogs}`: a stable, cold observable of the settled answer (never erroring:
+  a failed request settles as `hasError`), not a promise. The provider that consumes it turns it
+  into a `use()`-compatible promise with `useObservablePromise(upsellData$)` and starts the
+  request on commit with `useEffect(() => { void preloadObservablePromise(upsellData$) },
+  [upsellData$])` (`useUpsellContext` does this for the simple providers,
+  `ReleasesUpsellProvider` for itself), and the context values carry the promise as
+  `upsellDataPromise`. Nothing on the provider's path waits for it: `handleOpenDialog` awaits it
+  before opening (a failed request becomes a toast, the dialog never renders empty),
+  `UpsellContextDialog` renders the dialog from the settled value only while it is open, and
+  each upsell panel (`CommentsUpsellPanel`, `TasksUpsellPanel`, `DocumentLimitsUpsellPanel`, the
+  schedules panels) is a leaf that `use()`s the promise under its own `<Suspense>`. Where no
+  provider is mounted, the fallback hooks hand out `SETTLED_WITHOUT_UPSELL_DATA`, already
+  fulfilled so `use()` reads it synchronously. Because the settled promise is fulfilled in place
+  (stable identity), a provider's context value does not change when the response arrives, so its
+  consumers do not re-render for it. Tests mock `useUpsellData` with a module-scoped
+  `of(result)` (`test/testUtils/TestProvider.tsx`): react-rx caches by observable identity, so an
+  observable created per render would resubscribe on every commit.
+- The feature requests start when the plugins' providers commit, once the auth state has settled
+  as signed in, not before: nothing probes `/features` or the schedules usage for a visitor who
+  is not logged in or whose credentials the auth probe rejects. `getFeatures` and
+  `getUsedScheduledPublishing` cache one request per project (and dataset) for the session, and
+  both are bounded at 10 seconds so a stalled request cannot hold the loading screen.
+- A default plugin's components never check the workspace flag that enables the plugin:
+  `getDefaultPlugins` (`core/config/resolveDefaultPlugins.ts`) only includes `tasks()`,
+  `scheduledPublishing()`, `releases()`, `singleDocRelease()`, `variants()`, `mediaLibrary()`
+  and `canvasIntegration()` when that flag is on, and the workspace carries the same resolved
+  options, so inside the plugin `useWorkspace().tasks.enabled` is always `true`. Only code that
+  renders outside the plugin needs the flag (`StudioToolMenu` reading
+  `useScheduledPublishingEnabled()`, `DocumentGroupInventory` through `useVariantsStore`), which
+  is also why those contexts keep a disabled default value. Two exceptions: the comments plugin,
+  since one of its two versions is always included, and `SingleDocReleaseEnabledProvider`, which
+  keeps reading the source's resolved `scheduledDrafts.enabled` (`useScheduledDraftsEnabled`)
+  because `scheduledDrafts` is a per-source option (`PluginOptions.scheduledDrafts`, reduced per
+  source by `scheduledDraftsEnabledReducer`) while the default plugins are added to every source,
+  nested `unstable_sources` included, from the root workspace's options, so a nested source that
+  opts out still loads the plugin. For the root source the gate agrees with the resolved flag:
+  `getDefaultPluginsOptions` reduces `scheduledDrafts.enabled` across the root config and its
+  plugins the same way (the root's own value winning) before `singleDocRelease()` is included,
+  since a gate reading only the root option would mount a plugin the resolved config disables
+  (`core/config/__tests__/resolveDefaultPlugins.test.ts`). The other flags are root-only options.
 - The provider is declared in the plugin's `index.tsx`, below the `definePlugin` call, and it is
   also where the plugin's lazy components are preloaded. `navbar` and `toolMenu` render under
   `StudioLayout` with no boundary of their own and `activeToolLayout` wraps the tool under the
   tool's own boundary, so a `lazy()` component there that React discovers on render holds the
   layout or the tool for a chunk round trip. Keep them lazy, but hold the import function and
-  call it from the provider's effect: `const lazyTasksStudioNavbar = () =>
-  import('./TasksStudioNavbar')`, `const TasksStudioNavbar = lazy(lazyTasksStudioNavbar)`,
-  `useEffect(() => { void lazyTasksStudioNavbar() }, [])`. The chunk then loads as soon as the
-  providers commit (see `core/tasks/plugin/index.tsx` and `core/variants/plugin/index.tsx`).
-  Preloads are fire-and-forget: `void` the promise and do not attach `.catch` handlers. A rejected
-  preload has nothing to report, because the `lazy()` render re-imports the module and surfaces a
-  real failure through the error boundary; a review comment asking to handle that rejection is
-  asking to change the intended shape. In jsdom tests, a preloaded chunk that nothing rendered
-  may still be loading when a test ends, and Vitest would reject it at environment teardown
-  (`EnvironmentTeardownError`) as an unhandled error even though every test passed; the shared
-  `afterEach` in `test/setup/environment.ts` awaits `vi.dynamicImportSettled()` so those imports
-  finish first.
+  call it from the provider's effect, next to `preloadObservablePromise`:
+  `const lazyTasksStudioNavbar = () => import('./TasksStudioNavbar')`,
+  `const TasksStudioNavbar = lazy(lazyTasksStudioNavbar)`,
+  `useEffect(() => { void lazyTasksStudioNavbar() }, [])`. The chunk then loads in parallel with
+  the feature checks the layout suspends on (see `core/tasks/plugin/index.tsx`). A component
+  that already does its own lazy loading behind a `Suspense` with a fallback, such as the
+  variants plugin's `VariantsStudioNavbarLayout` (the bar is small; its filters are the lazy
+  part), gains nothing from an outer `lazy()` and is imported directly, with no provider to
+  preload it. Preloads are fire-and-forget: `void` the promise and do not
+  attach `.catch` handlers. A rejected preload has nothing to report, because the `lazy()` render
+  re-imports the module and surfaces a real failure through the error boundary; a review comment
+  asking to handle that rejection is asking to change the intended shape. In jsdom tests, a
+  preloaded chunk that nothing rendered may still be loading when a test ends, and Vitest would
+  reject it at environment teardown (`EnvironmentTeardownError`) as an unhandled error even though
+  every test passed; the shared `afterEach` in `test/setup/environment.ts` awaits
+  `vi.dynamicImportSettled()` so those imports finish first.
 - Never `lazy()` a `studio.components.provider` or `layout` component, and do not put a
   `<Suspense>` at its top level. Both render in the studio's first render pass, before any effect
   could preload them: a provider renders above `StudioLayout`'s boundary, so a lazy one suspends
@@ -639,6 +733,13 @@ revealed. Two consequences for Suspense code:
   of its own around the studio.
 - A module that is only ever loaded through `lazy()` uses `export default`, so the call site is
   `lazy(() => import('./TasksStudioNavbar'))` with no `.then` remapping.
+- To unit test a component below one of these providers, provide the promise context directly
+  with a resolved promise (`<TasksModePromiseContext value={Promise.resolve<TasksMode>('default')}>`,
+  see `TasksFooterOpenTasks.test.tsx`). A component that `use()`s it still suspends for a
+  microtask, so mount it inside an awaited async `act` under a `Suspense` boundary (see
+  `TasksStudioProvider.test.tsx`), or hand it an already settled thenable,
+  `Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value})`, which `use()`
+  reads synchronously.
 
 `useObservable` and `useSyncObservable` require an `initialValue` in v7 and render it on the first
 pass regardless of synchronous emissions, so do not rely on a replayed value winning the first

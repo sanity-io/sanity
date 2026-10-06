@@ -16,10 +16,11 @@ import {isTextSelectionComment, parseCommentFieldPath} from '../../helpers'
 import {useComments} from '../../hooks/useComments'
 import {useCommentsAuthoringPath} from '../../hooks/useCommentsAuthoringPath'
 import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
+import {useCommentsMode} from '../../hooks/useCommentsMode'
 import {applyCommentsFieldAttr, useCommentsScroll} from '../../hooks/useCommentsScroll'
 import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
 import {useCommentsUpsell} from '../../hooks/useCommentsUpsell'
-import {type CommentCreatePayload, type CommentMessage, type CommentsUIMode} from '../../types'
+import {type CommentCreatePayload, type CommentMessage} from '../../types'
 import {CommentsFieldButton} from './CommentsFieldButton'
 
 // When the form is temporarily set to `readOnly` while reconnecting, the form
@@ -43,13 +44,13 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
 }
 
 export default function CommentsField(props: FieldProps) {
-  const {enabled, mode} = useCommentsEnabled()
+  const enabled = useCommentsEnabled()
 
   if (!enabled) {
     return props.renderDefault(props)
   }
 
-  return <CommentFieldInner {...props} mode={mode} />
+  return <CommentFieldInner {...props} />
 }
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
@@ -84,12 +85,9 @@ const FieldStack = styled(VStack)`
   }
 `
 
-function CommentFieldInner(
-  props: FieldProps & {
-    mode: CommentsUIMode
-  },
-) {
-  const {mode} = props
+function CommentFieldInner(props: FieldProps) {
+  // Only the click handler tells upsell from default, so the field never waits for the mode
+  const modePromise = useCommentsMode()
 
   const currentUser = useCurrentUser()
   const {element: boundaryElement} = useBoundaryElement()
@@ -106,7 +104,7 @@ function CommentFieldInner(
     setStatus,
     status,
   } = useComments()
-  const {upsellData, handleOpenDialog} = useCommentsUpsell()
+  const {upsellDataPromise, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {authoringPath, setAuthoringPath} = useCommentsAuthoringPath()
   const {scrollToGroup} = useCommentsScroll({
@@ -192,26 +190,37 @@ function CommentFieldInner(
       return
     }
 
-    if (mode === 'upsell') {
-      if (upsellData) {
-        handleOpenDialog('field_action')
-      } else {
-        // Open the comments inspector
+    // The mode and the upsell content are read when the button is clicked, not while rendering
+    // the field
+    void modePromise.then(async (mode) => {
+      if (mode === null) {
+        // The feature check failed: the inspector explains that comments are unavailable
         onCommentsOpen?.()
+        return
       }
-      return
-    }
 
-    // If the field is open (i.e. the authoring path is set to the current field)
-    // we close the field by resetting the authoring path. If the field is not open,
-    // we set the authoring path to the current field so that the comment form is opened.
-    setAuthoringPath(isOpen ? null : stringPath)
+      if (mode === 'upsell') {
+        const {upsellData} = await upsellDataPromise
+        if (upsellData) {
+          handleOpenDialog('field_action')
+        } else {
+          // Open the comments inspector
+          onCommentsOpen?.()
+        }
+        return
+      }
+
+      // If the field is open (i.e. the authoring path is set to the current field)
+      // we close the field by resetting the authoring path. If the field is not open,
+      // we set the authoring path to the current field so that the comment form is opened.
+      setAuthoringPath(isOpen ? null : stringPath)
+    })
   }, [
     comments.data.open,
     handleOpenDialog,
     hasComments,
     isOpen,
-    mode,
+    modePromise,
     onCommentsOpen,
     props.path,
     scrollToGroup,
@@ -220,7 +229,7 @@ function CommentFieldInner(
     setStatus,
     status,
     stringPath,
-    upsellData,
+    upsellDataPromise,
   ])
 
   const handleCommentAdd = useCallback(

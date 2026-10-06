@@ -84,6 +84,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 
   /** The title of the error card shown in the comments inspector */
   'inspector-error.title': 'Something went wrong while loading comments',
+  /** The text shown in the comments inspector when the feature check failed, so comments cannot be used */
+  'inspector.unavailable.text': 'Comments are unavailable right now. Try again later.',
 
   /** Aria label for the breadcrumb button showing the field path. `{{field}}` is the last (most specific) field. */
   'list-item.breadcrumb-button-go-to-field-aria-label': 'Go to {{field}} field',

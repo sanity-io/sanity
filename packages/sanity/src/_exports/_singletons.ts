@@ -21,8 +21,8 @@ export {CommentsAuthoringPathContextV2} from '../_singletons/context/CommentsAut
 export {CommentsContext} from '../_singletons/context/CommentsContext'
 export {CommentsContextV2} from '../_singletons/context/CommentsContextV2'
 export {CommentsEnabledContext} from '../_singletons/context/CommentsEnabledContext'
-export {CommentsEnabledContextV2} from '../_singletons/context/CommentsEnabledContextV2'
 export {CommentsIntentContext} from '../_singletons/context/CommentsIntentContext'
+export {CommentsModePromiseContext} from '../_singletons/context/CommentsModePromiseContext'
 export {CommentsOnboardingContext} from '../_singletons/context/CommentsOnboardingContext'
 export {CommentsOnboardingContextV2} from '../_singletons/context/CommentsOnboardingContextV2'
 export {CommentsSelectedPathContext} from '../_singletons/context/CommentsSelectedPathContext'
@@ -146,10 +146,8 @@ export {ResourceCacheContext} from '../_singletons/context/ResourceCacheContext'
 export {ReviewChangesContext} from '../_singletons/context/ReviewChangesContext'
 export {RouterContext} from '../_singletons/context/RouterContext'
 export {RouterHistoryContext} from '../_singletons/context/RouterHistoryContext'
-export {
-  ScheduledPublishingEnabledContext,
-  type ScheduledPublishingEnabledContextValue,
-} from '../_singletons/context/ScheduledPublishingEnabledContext'
+export {ScheduledPublishingEnabledPromiseContext} from '../_singletons/context/ScheduledPublishingEnabledPromiseContext'
+export {ScheduledPublishingModePromiseContext} from '../_singletons/context/ScheduledPublishingModePromiseContext'
 export {
   SchedulePublishUpsellContext,
   type SchedulePublishUpsellContextValue,
@@ -181,7 +179,7 @@ export {StructureToolContext} from '../_singletons/context/StructureToolContext'
 export {StudioAnnouncementContext} from '../_singletons/context/StudioAnnouncementsContext'
 export {StudioErrorHandlerContext} from '../_singletons/context/StudioErrorHandlerContext'
 export {TasksContext} from '../_singletons/context/TasksContext'
-export {TasksEnabledContext} from '../_singletons/context/TasksEnabledContext'
+export {TasksModePromiseContext} from '../_singletons/context/TasksModePromiseContext'
 export {TasksNavigationContext} from '../_singletons/context/TasksNavigationContext'
 export {TasksUpsellContext} from '../_singletons/context/TasksUpsellContext'
 export {UserApplicationCacheContext} from '../_singletons/context/UserApplicationCacheContext'

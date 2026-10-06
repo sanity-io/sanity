@@ -1,16 +1,21 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
-import {useCallback, useMemo} from 'react'
+import {useMemo} from 'react'
 
 import {Button} from '../../../ui-components/button/Button'
 import {type NavbarProps} from '../../config/studio/types'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
 import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../i18n'
 
 const EMPTY_ARRAY: [] = []
 
-const TasksToolbar = ({onClick, isOpen}: {onClick: () => void; isOpen: boolean}) => {
+function TasksStudioNavbarToolbar() {
+  const {
+    handleOpenTasks,
+    handleCloseTasks,
+    state: {isOpen},
+  } = useTasksNavigation()
+
   const {t} = useTranslation(tasksLocaleNamespace)
 
   return (
@@ -20,66 +25,53 @@ const TasksToolbar = ({onClick, isOpen}: {onClick: () => void; isOpen: boolean})
       }}
       icon={CheckmarkCircleIcon}
       mode="bleed"
-      onClick={onClick}
+      onClick={isOpen ? handleCloseTasks : handleOpenTasks}
       selected={isOpen}
       data-testid="tasks-toolbar"
     />
   )
 }
 
-function TasksStudioNavbarInner(props: NavbarProps) {
+export default function TasksStudioNavbar(props: NavbarProps) {
   const {
     handleOpenTasks,
     handleCloseTasks,
     state: {isOpen},
   } = useTasksNavigation()
-
   const {t} = useTranslation(tasksLocaleNamespace)
 
-  const handleClick = useCallback(() => {
-    if (isOpen) {
-      handleCloseTasks()
-    } else {
-      handleOpenTasks()
-    }
-  }, [isOpen, handleOpenTasks, handleCloseTasks])
-
-  const renderTasksNav = useCallback(
-    () => <TasksToolbar onClick={handleClick} isOpen={isOpen} />,
-    [handleClick, isOpen],
+  const topbarAction = useMemo(
+    () => ({
+      location: 'topbar' as const,
+      name: 'tasks-topbar',
+      render: TasksStudioNavbarToolbar,
+    }),
+    [],
   )
-
-  const actions = useMemo((): NavbarProps['__internal_actions'] => {
-    return [
-      ...(props?.__internal_actions || EMPTY_ARRAY),
-      {
-        location: 'topbar',
-        name: 'tasks-topbar',
-        render: renderTasksNav,
-      },
-      {
-        icon: CheckmarkCircleIcon,
-        location: 'sidebar',
-        name: 'tasks-sidebar',
-        onAction: handleClick,
-        selected: isOpen,
-        title: t('actions.open.text'),
-      },
-    ]
-  }, [handleClick, isOpen, props?.__internal_actions, renderTasksNav, t])
+  // @TODO the sidebar action cannot use `render` like the topbar one: NavDrawer closes itself
+  // after `onAction` runs, but exposes no `onClose` to a `render` component. Once that API
+  // exists, this can become a stable `render` too.
+  const sidebarAction = useMemo(
+    () => ({
+      icon: CheckmarkCircleIcon,
+      location: 'sidebar' as const,
+      name: 'tasks-sidebar',
+      onAction: isOpen ? handleCloseTasks : handleOpenTasks,
+      selected: isOpen,
+      title: t('actions.open.text'),
+    }),
+    [handleCloseTasks, handleOpenTasks, isOpen, t],
+  )
+  const prevActions = Array.isArray(props?.__internal_actions)
+    ? props.__internal_actions
+    : EMPTY_ARRAY
+  const actions = useMemo(
+    () => [...prevActions, topbarAction, sidebarAction],
+    [prevActions, topbarAction, sidebarAction],
+  )
 
   return props.renderDefault({
     ...props,
     __internal_actions: actions,
   })
-}
-
-export default function TasksStudioNavbar(props: NavbarProps) {
-  const {enabled} = useTasksEnabled()
-
-  if (!enabled) {
-    return props.renderDefault(props)
-  }
-
-  return <TasksStudioNavbarInner {...props} />
 }
