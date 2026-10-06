@@ -177,8 +177,8 @@ interface Redirect {
 /**
  * Serves a one-time `302` to the target url from an ephemeral loopback server. Chrome opens the
  * loopback url instead of the target itself, which keeps `#token=` out of Chrome's command line
- * (readable through `ps` and `/proc/<pid>/cmdline` for the browser's lifetime) and lets the
- * fragment survive `/json/new`, which drops it like any HTTP request.
+ * (readable through `ps` and `/proc/<pid>/cmdline` for the browser's lifetime) and out of the
+ * `/json/new` request that the reuse path sends to the running browser.
  */
 async function startRedirect(targetUrl: string): Promise<Redirect> {
   const secretPath = `/${randomBytes(16).toString('hex')}`
@@ -226,7 +226,11 @@ async function openInRunningBrowser(
   browserName: string,
   url: string,
 ): Promise<Launched> {
-  const response = await fetch(`${browserUrl}/json/new?${url}`, {method: 'PUT'})
+  // Chrome reads the url from the raw query string and unescapes it, so encoding keeps `&`,
+  // `?` and `#` inside `url` intact
+  const response = await fetch(`${browserUrl}/json/new?${encodeURIComponent(url)}`, {
+    method: 'PUT',
+  })
   if (!response.ok) {
     throw new Error(
       `The browser listening on ${browserUrl} refused to open a new tab (HTTP ${response.status})`,
