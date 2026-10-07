@@ -25,9 +25,16 @@ export function WorkspaceAuthCard({workspace, onSelect}: WorkspaceAuthCardProps)
       probeWorkspaceAuth({
         projectId: workspace.projectId,
         dataset: workspace.dataset,
-        apiHost: workspace.apiHost,
+        apiHost: workspace.oauthApiHost ?? workspace.apiHost,
+        oauthClientId: workspace.oauthClientId,
       }),
-    [workspace.apiHost, workspace.dataset, workspace.projectId],
+    [
+      workspace.apiHost,
+      workspace.dataset,
+      workspace.oauthApiHost,
+      workspace.oauthClientId,
+      workspace.projectId,
+    ],
   )
   const probe = useObservable(probe$, undefined)
 

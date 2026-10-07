@@ -24,16 +24,20 @@ import {
   AUTHENTICATED,
   getAuthTokenStorageKey,
   getCookieAuthStateKey,
+  getOAuthTokensStorageKey,
   UNAUTHENTICATED,
 } from './constants'
 import {createBroadcastState} from './createBroadcastState'
 import {observeDashboardToken} from './dashboardToken'
+import {readTabAccessToken} from './oauth/tabTokens'
 
 /** @internal */
 export interface WorkspaceAuthProbeInput {
   projectId: string
   dataset: string
   apiHost?: string
+  /** The OAuth client of a workspace that signs in with `auth.unstable_oauth`. */
+  oauthClientId?: string
 }
 
 /** @internal */
@@ -41,13 +45,24 @@ export interface WorkspaceAuthProbeResult {
   authenticated: boolean
 }
 
-function getStoredToken(projectId: string): string | undefined {
-  if (!supportsLocalStorage) return undefined
+function getTokenStorageKey(projectId: string, oauthClientId: string | undefined): string {
+  return oauthClientId
+    ? getOAuthTokensStorageKey(projectId, oauthClientId)
+    : getAuthTokenStorageKey(projectId)
+}
+
+function getStoredToken(projectId: string, oauthClientId: string | undefined): string | undefined {
+  // Without localStorage an OAuth pair lives in the store's tab memory, which it registers.
+  if (!supportsLocalStorage) {
+    return oauthClientId
+      ? readTabAccessToken(getOAuthTokensStorageKey(projectId, oauthClientId))
+      : undefined
+  }
   try {
-    const raw = localStorage.getItem(getAuthTokenStorageKey(projectId))
+    const raw = localStorage.getItem(getTokenStorageKey(projectId, oauthClientId))
     if (!raw) return undefined
-    const parsed = JSON.parse(raw) as {token?: string} | null
-    return parsed?.token
+    const parsed = JSON.parse(raw) as {token?: string; accessToken?: string} | null
+    return oauthClientId ? parsed?.accessToken : parsed?.token
   } catch {
     return undefined
   }
@@ -100,11 +115,17 @@ function cacheKey(input: {
   apiHost: string | undefined
   projectId: string
   token: string | undefined
+  oauthClientId: string | undefined
 }): string {
   // Cookie probes (no token) collapse across workspaces of the same project
   // on the same apiHost. Token probes are keyed per-token so different tokens
-  // resolve independently.
-  const auth = input.token ? `tok:${input.token}` : 'cookie'
+  // resolve independently. An OAuth workspace without a token never falls
+  // back to the cookie, so it gets a key of its own.
+  const auth = input.token
+    ? `tok:${input.token}`
+    : input.oauthClientId
+      ? `oauth:${input.oauthClientId}`
+      : 'cookie'
   return `${input.apiHost ?? 'default'}|${input.projectId}|${auth}`
 }
 
@@ -116,25 +137,54 @@ function buildProbe(
   input: WorkspaceAuthProbeInput,
   options: CreateProbeOptions,
   token: string | undefined,
+  readStoredToken?: () => string | undefined,
 ): Observable<WorkspaceAuthProbeResult> {
   const apiHost = resolveApiHost(input.apiHost)
+  const {oauthClientId} = input
   const factory = options.clientFactory ?? createSanityClient
 
-  const key = cacheKey({apiHost, projectId: input.projectId, token})
+  // An OAuth probe that reads its token from storage follows every rotation itself (see `probe`
+  // below), so it is keyed by client, not by token: a key per access token would add a cache
+  // entry for every rotation.
+  const followsStoredToken = Boolean(oauthClientId && readStoredToken)
+  const key = cacheKey({
+    apiHost,
+    projectId: input.projectId,
+    token: followsStoredToken ? undefined : token,
+    oauthClientId,
+  })
   const existing = cache.get(key)
   if (existing) return existing
 
-  const clientConfig: SanityClientConfig = {
-    ...AUTH_CLIENT_OPTIONS,
-    projectId: input.projectId,
-    dataset: input.dataset,
-    ...(apiHost ? {apiHost} : {}),
-    ...(token ? {token, ignoreBrowserTokenWarning: true} : {withCredentials: true}),
+  const clientFor = (credential: string | undefined): SanityClient =>
+    factory({
+      ...AUTH_CLIENT_OPTIONS,
+      projectId: input.projectId,
+      dataset: input.dataset,
+      ...(apiHost ? {apiHost} : {}),
+      ...(credential
+        ? {token: credential, ignoreBrowserTokenWarning: true}
+        : {withCredentials: true}),
+    })
+
+  let currentToken = token
+  let client = clientFor(currentToken)
+
+  const tokenKey = getTokenStorageKey(input.projectId, oauthClientId)
+  const probe = (): Promise<WorkspaceAuthProbeResult> => {
+    // A stored token can be replaced while the probe is open, e.g. when another tab rotates an
+    // OAuth pair. Re-read it on every probe, so the probe never checks a token that was replaced.
+    if (readStoredToken) {
+      const latest = readStoredToken()
+      if (latest !== currentToken) {
+        currentToken = latest
+        client = clientFor(currentToken)
+      }
+    }
+    // An OAuth workspace is signed in only with its own tokens. The API cookie belongs to the
+    // other workspaces of the project, so it is not probed.
+    return oauthClientId && !currentToken ? Promise.resolve(UNAUTHENTICATED) : callAuthId(client)
   }
-
-  const client = factory(clientConfig)
-
-  const tokenKey = getAuthTokenStorageKey(input.projectId)
   const cookieKey = getCookieAuthStateKey(input.projectId)
 
   // Re-probe when an external signal indicates auth state may have changed.
@@ -159,7 +209,7 @@ function buildProbe(
       // the cookie broadcast, so they skip the channel entirely. The
       // resource is owned by `using` per subscription, so simultaneous
       // teardown/resubscribe cycles can't cross-dispose each other.
-      const cookieState = token ? null : createBroadcastState(cookieKey)
+      const cookieState = token || oauthClientId ? null : createBroadcastState(cookieKey)
       return {cookieState, unsubscribe: () => cookieState?.dispose()}
     },
     (resource) => {
@@ -174,7 +224,7 @@ function buildProbe(
           : fromEvent<StorageEvent>(window, 'storage').pipe(filter((e) => e.key === tokenKey))
       return merge(storageEvents$, cookieTicks$).pipe(
         startWith(undefined),
-        switchMap(() => defer(() => callAuthId(client))),
+        switchMap(() => defer(probe)),
         // `callAuthId` always returns one of two stable references
         // (`AUTHENTICATED` / `UNAUTHENTICATED`), so default `===` is enough.
         distinctUntilChanged(),
@@ -233,7 +283,8 @@ function probe(
       switchMap((token) => (token ? buildProbe(input, options, token) : of(UNAUTHENTICATED))),
     )
   }
-  return buildProbe(input, options, getStoredToken(input.projectId))
+  const readStoredToken = () => getStoredToken(input.projectId, input.oauthClientId)
+  return buildProbe(input, options, readStoredToken(), readStoredToken)
 }
 
 /**

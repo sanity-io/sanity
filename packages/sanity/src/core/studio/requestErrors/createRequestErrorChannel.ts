@@ -1,6 +1,7 @@
 import {type HttpError} from '@sanity/client'
 import {BehaviorSubject, isObservable, lastValueFrom, type Observable} from 'rxjs'
 
+import {getInvalidSessionOwner} from '../../util/apiErrors'
 import {classifyRequestError, isInvalidSessionError} from './classify'
 import {
   type RequestErrorChannel,
@@ -60,7 +61,12 @@ export function createRequestErrorChannel(): RequestErrorChannel {
       // ones for the same teardown (including the logout request's own
       // 401) just park behind it rather than re-claiming.
       if (claimSubject.getValue()?.type !== 'unauthorized') {
-        claimSubject.next({type: 'unauthorized', error: err, projectId: projectIdFromError(err)})
+        claimSubject.next({
+          type: 'unauthorized',
+          error: err,
+          projectId: projectIdFromError(err),
+          logout: getInvalidSessionOwner(err),
+        })
       }
       return true
     }

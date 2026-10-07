@@ -3,7 +3,7 @@ import {firstValueFrom, lastValueFrom, take, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {stubMessageBusHost} from '../../../../../test/testUtils/stubMessageBusHost'
-import {getAuthTokenStorageKey, getCookieAuthStateKey} from '../constants'
+import {getAuthTokenStorageKey, getCookieAuthStateKey, getOAuthTokensStorageKey} from '../constants'
 import {_probeWorkspaceAuthForTest, _resetProbeWorkspaceAuthCache} from '../probeWorkspaceAuth'
 
 // Match the convention from createAuthStore.test.ts: ensure localStorage is
@@ -244,6 +244,79 @@ describe('probeWorkspaceAuth', () => {
     const config = mock.configs()[0]
     expect(config.token).toBe('mock-token-abc')
     expect(config.withCredentials).toBeUndefined()
+  })
+
+  it('uses the access token of an OAuth workspace', async () => {
+    localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'provider-token'}))
+    localStorage.setItem(
+      getOAuthTokensStorageKey('p1', 'oc-1'),
+      JSON.stringify({accessToken: 'oauth-access-token', refreshToken: 'oauth-refresh-token'}),
+    )
+
+    const mock = createMockFactory({authenticated: true})
+    const result = await firstValueFrom(
+      _probeWorkspaceAuthForTest(
+        {projectId: 'p1', dataset: 'd1', oauthClientId: 'oc-1'},
+        {clientFactory: mock.factory},
+      ),
+    )
+
+    expect(result).toEqual({authenticated: true})
+    expect(mock.configs()[0].token).toBe('oauth-access-token')
+  })
+
+  it('probes the replacement token after another tab rotates the OAuth pair', async () => {
+    const tokensKey = getOAuthTokensStorageKey('p-rotate', 'oc-1')
+    localStorage.setItem(tokensKey, JSON.stringify({accessToken: 'access-1', refreshToken: 'r-1'}))
+    // Only the rotated token is accepted, as after access-1 expired.
+    const mock = createMockFactory({
+      authIdImpl: (config) =>
+        config.token === 'access-2'
+          ? Promise.resolve({id: 'mock-id', expiry: 0})
+          : Promise.reject(create401Error()),
+    })
+
+    const probe$ = _probeWorkspaceAuthForTest(
+      {projectId: 'p-rotate', dataset: 'd1', oauthClientId: 'oc-1'},
+      {clientFactory: mock.factory},
+    )
+    const collected = lastValueFrom(probe$.pipe(take(2), toArray()))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    // Another tab rotates the pair; the storage event reaches this tab.
+    localStorage.setItem(tokensKey, JSON.stringify({accessToken: 'access-2', refreshToken: 'r-2'}))
+    window.dispatchEvent(new StorageEvent('storage', {key: tokensKey}))
+
+    expect(await collected).toEqual([{authenticated: false}, {authenticated: true}])
+    expect(mock.configs().at(-1)?.token).toBe('access-2')
+  })
+
+  it('keeps one cached OAuth probe per client across token rotations', () => {
+    const tokensKey = getOAuthTokensStorageKey('p-cache', 'oc-1')
+    const mock = createMockFactory({authenticated: true})
+    const input = {projectId: 'p-cache', dataset: 'd1', oauthClientId: 'oc-1'}
+
+    localStorage.setItem(tokensKey, JSON.stringify({accessToken: 'access-1'}))
+    const first = _probeWorkspaceAuthForTest(input, {clientFactory: mock.factory})
+    localStorage.setItem(tokensKey, JSON.stringify({accessToken: 'access-2'}))
+    const second = _probeWorkspaceAuthForTest(input, {clientFactory: mock.factory})
+
+    expect(second).toBe(first)
+  })
+
+  it('reports an OAuth workspace without tokens as signed out, without probing the cookie', async () => {
+    localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'provider-token'}))
+
+    const mock = createMockFactory({authenticated: true})
+    const result = await firstValueFrom(
+      _probeWorkspaceAuthForTest(
+        {projectId: 'p1', dataset: 'd1', oauthClientId: 'oc-1'},
+        {clientFactory: mock.factory},
+      ),
+    )
+
+    expect(result).toEqual({authenticated: false})
+    expect(mock.callCount()).toBe(0)
   })
 
   it('does not write to localStorage when probing', async () => {

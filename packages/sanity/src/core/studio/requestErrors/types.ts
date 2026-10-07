@@ -35,7 +35,13 @@ export type RequestErrorClaim =
   | {type: 'networkError'; error: Error; retryable: boolean}
   | {type: 'serverError'; error: HttpError; retryable: boolean}
   | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number; retryable: boolean}
-  | {type: 'unauthorized'; error: HttpError; projectId?: string}
+  | {
+      type: 'unauthorized'
+      error: HttpError
+      projectId?: string
+      /** The logout of the auth store the session belongs to, when the error records one. */
+      logout?: () => Promise<void>
+    }
 
 /**
  * Call-site API for delegating unrecoverable request errors to the

@@ -228,6 +228,7 @@ export {
   type AuthProvider,
   type CookielessCompatibleLoginMethod,
   type LoginMethod,
+  type OAuthConfig,
 } from '../core/config/auth/types'
 export {useMiddlewareComponents} from '../core/config/components/useMiddlewareComponents'
 export {

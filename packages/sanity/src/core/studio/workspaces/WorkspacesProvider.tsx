@@ -237,15 +237,17 @@ export function WorkspacesProvider({
     if (claim?.type !== 'unauthorized') return
     const current = workspacesRef.current
     if (!current) return
-    // Auth is project-scoped — any workspace matching the projectId has
-    // the right credentials and the right logout endpoint. First match
-    // wins; in practice all workspaces for the same project share an
-    // auth store anyway.
+    // An auth store that knows the session was its own (the OAuth store, whose tokens are stored
+    // per project and client) names its logout on the claim. Otherwise auth is project-scoped —
+    // any workspace matching the projectId has the right credentials and the right logout
+    // endpoint. First match wins; in practice all workspaces for the same project share an auth
+    // store anyway.
     const target = claim.projectId
       ? current.find((ws) => ws.projectId === claim.projectId)
       : current[0]
-    if (!target?.auth.logout) return
-    target.auth.logout().catch((logoutErr) => {
+    const logout = claim.logout ?? target?.auth.logout?.bind(target.auth)
+    if (!logout) return
+    logout().catch((logoutErr) => {
       // The logout request itself failed (likely network). The channel's
       // dedupe prevents recursion; just log so a dev can diagnose.
       console.warn('[sanity] Forced logout failed:', logoutErr)
