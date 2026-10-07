@@ -67,8 +67,12 @@ export class IdleScheduler implements ValidationScheduler {
   private draining = false
 
   constructor(options: IdleSchedulerOptions = {}) {
-    this.requestIdle = options.requestIdleCallback ?? requestIdleCallback
-    this.cancelIdle = options.cancelIdleCallback ?? cancelIdleCallback
+    // Wrapped rather than stored: the native functions throw "Illegal invocation" when called
+    // as a method of anything other than `window`.
+    this.requestIdle =
+      options.requestIdleCallback ??
+      ((callback, idleOptions) => requestIdleCallback(callback, idleOptions))
+    this.cancelIdle = options.cancelIdleCallback ?? ((handle) => cancelIdleCallback(handle))
     this.isHidden = options.isDocumentHidden ?? isDocumentHidden
     this.now = options.now ?? now
   }
