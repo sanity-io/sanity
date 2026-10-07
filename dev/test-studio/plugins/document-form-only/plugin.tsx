@@ -1,15 +1,31 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {definePlugin} from 'sanity'
+import {definePlugin, type Tool} from 'sanity'
+import {route, type SearchParam} from 'sanity/router'
 import {structureTool} from 'sanity/structure'
 
 import {DocumentFormOnlyTool} from './DocumentFormOnlyTool'
-import {documentFormOnlyArticle} from './schema'
+import {DOCUMENT_FORM_ONLY_ID, DOCUMENT_FORM_ONLY_TYPE, documentFormOnlyArticle} from './schema'
 
-const documentFormTool = {
+// Pane params a comment link carries: the open inspector and the selected thread.
+const PANE_INTENT_PARAMS = ['inspect', 'comment']
+
+function toPaneSearchParams(params: Record<string, string>): SearchParam[] {
+  return PANE_INTENT_PARAMS.filter((name) => typeof params[name] === 'string').map(
+    (name): SearchParam => [name, params[name]],
+  )
+}
+
+const documentFormTool: Tool = {
   name: 'document-form-only',
   title: 'Document',
   icon: DocumentIcon,
   component: DocumentFormOnlyTool,
+  router: route.create('/'),
+  canHandleIntent: (intent, params) =>
+    intent === 'edit' &&
+    params.id === DOCUMENT_FORM_ONLY_ID &&
+    params.type === DOCUMENT_FORM_ONLY_TYPE,
+  getIntentState: (_intent, params) => ({_searchParams: toPaneSearchParams(params)}),
 }
 
 /**

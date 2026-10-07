@@ -2,7 +2,8 @@ import './documentFormOnly.css'
 
 import {CommentIcon} from '@sanity/icons/Comment'
 import {Button, Card, Flex} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
+import {type SearchParam, useRouter} from 'sanity/router'
 import {
   DocumentPane,
   type DocumentPaneNode,
@@ -26,8 +27,17 @@ function NoLink() {
 
 function noop() {}
 
+function toSearchParams(params: PaneParams): SearchParam[] {
+  return Object.entries(params).flatMap(([name, value]): SearchParam[] =>
+    typeof value === 'string' ? [[name, value]] : [],
+  )
+}
+
+// Pane params live in the URL so an `edit` intent from a comment link can open the comments panel.
 export function DocumentFormOnlyTool() {
-  const [params, setParams] = useState<PaneParams>({})
+  const {state, navigate} = useRouter()
+  const searchParams = state._searchParams
+  const params: PaneParams = useMemo(() => Object.fromEntries(searchParams ?? []), [searchParams])
   const isCommentsOpen = params.inspect === COMMENTS_INSPECTOR
 
   const paneRouter: PaneRouterContextValue = useMemo(
@@ -49,12 +59,13 @@ export function DocumentFormOnlyTool() {
       closeCurrentAndAfter: noop,
       duplicateCurrent: noop,
       setView: noop,
-      setParams,
+      setParams: (nextParams: PaneParams) =>
+        navigate({_searchParams: toSearchParams(nextParams)}, {replace: true}),
       setPayload: noop,
       createPathWithParams: () => '',
       navigateIntent: noop,
     }),
-    [params],
+    [navigate, params],
   )
 
   const pane: DocumentPaneNode = useMemo(
@@ -68,7 +79,7 @@ export function DocumentFormOnlyTool() {
   )
 
   function toggleComments() {
-    setParams({...params, inspect: isCommentsOpen ? undefined : COMMENTS_INSPECTOR})
+    paneRouter.setParams({...params, inspect: isCommentsOpen ? undefined : COMMENTS_INSPECTOR})
   }
 
   return (
