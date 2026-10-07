@@ -14,7 +14,7 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import {concat, defer, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
+import {concat, defer, from, lastValueFrom, merge, type Observable, of, throwError} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
@@ -26,8 +26,8 @@ import {markInternalValidator} from './internalValidators'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
 import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
+import {IdleScheduler, type ValidationScheduler} from './util/idleScheduler'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
-import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
 import {typeString} from './util/typeString'
 import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
@@ -509,6 +509,8 @@ function evaluateDocumentObservableWithoutCancellation({
       currentUser,
       customValidation,
       signal,
+      // one scheduler per run: every node in the document shares its idle slices
+      scheduler: new IdleScheduler(),
       __internal: {
         markIncomplete: () => {
           complete = false
@@ -556,6 +558,8 @@ export type ValidateItemOptions = {
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
   signal?: AbortSignal
+  /** Paces the work of this item and everything nested in it. One is created when omitted. */
+  scheduler?: ValidationScheduler
   __internal?: InternalValidationContext['__internal']
 } & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal'>>
 
@@ -584,198 +588,213 @@ function validateItemObservable({
   customValidationConcurrencyLimiter,
   environment,
   customValidation = true,
+  scheduler = new IdleScheduler(),
   __internal,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
-  // Track whether any ancestor in the tree is hidden.
-  // It will be true if this field OR any ancestor is hidden.
-  // This allows validation rules to check `context.hidden` to skip validation for hidden fields,
-  // without needing to know whether the field itself or an ancestor caused it to be hidden.
-  const ancestorHidden = restOfContext.hidden === true
-  const resolveHiddenForType = (
-    schemaType: SchemaType | undefined,
-    schemaValue: unknown,
-    schemaParent: unknown,
-    schemaPath: ValidationContext['path'],
-    ancestorHiddenValue: boolean,
-  ) => {
-    // If there is no schema type, fall back to the ancestor's hidden state.
-    if (!schemaType) {
-      return ancestorHiddenValue
-    }
-    return (
-      ancestorHiddenValue ||
-      resolveConditionalProperty(schemaType.hidden, {
-        ...restOfContext,
-        parent: schemaParent,
-        value: schemaValue,
-        path: schemaPath || [],
-        currentUser: restOfContext.currentUser ?? null,
-      })
-    )
-  }
-  const hidden = resolveHiddenForType(type, value, parent, path, ancestorHidden)
-
-  // Note: this validator is added here because it's conditional based on the
-  // environment.
-  const addUnknownFieldsValidator = (rule: Rule) => {
-    if (
-      // if the schema type is an object type
-      type?.jsonType === 'object' &&
-      // and if somewhere in it's type chain, it inherits from object or document
-      getTypeChain(type).find((t) => ['object', 'document', 'file', 'image'].includes(t.name)) &&
-      // and the environment is not the studio
-      environment !== 'studio'
-    ) {
-      // then add the validator for unknown fields
-      return rule
-        .custom(markInternalValidator(unknownFieldsValidator(type)), {
-          bypassConcurrencyLimit: true,
-        })
-        .warning()
-    }
-
-    // otherwise, leave it unchanged
-    return rule
-  }
-
-  const rules = normalizeValidationRules(type, {
-    ...restOfContext,
-    hidden,
-    environment,
-    parent,
-    path,
-    type,
-  })
-  // run validation for the current value
-  const selfChecks = rules.map(addUnknownFieldsValidator).map((rule) =>
-    defer(() =>
-      validateRule(rule, value, {
-        ...restOfContext,
-        environment,
-        hidden,
-        parent,
-        path,
-        type,
-        __internal: {
-          ...__internal,
-          customValidation,
-          customValidationConcurrencyLimiter,
-        },
-      }),
-    ),
-  )
-
-  // run validation for nested values (conditionally)
-  let nestedChecks: Array<Observable<ValidationMarker[]>> = []
-
-  const selfIsRequired = rules.some((rule) => rule.isRequired())
-  const shouldRunNestedObjectValidation =
-    // run nested validation for objects
-    type?.jsonType === 'object' &&
-    // if the value is truthy
-    (!!value || // or
-      // (the value is null or undefined) and the top-level value is required
-      ((value === null || value === undefined) && selfIsRequired))
-
-  if (shouldRunNestedObjectValidation) {
-    const fieldTypes = type.fields.reduce<Record<string, SchemaType>>((acc, field) => {
-      acc[field.name] = field.type
-      return acc
-    }, {})
-
-    // Validation for rules set at the object level with `Rule.fields({/* ... */})`
-    // Use extractFieldRulesFromRule to handle Rule.fields() inside Rule.all() or Rule.either()
-    nestedChecks = nestedChecks.concat(
-      rules
-        .flatMap((rule) => extractFieldRulesFromRule(rule))
-        .flatMap((fieldResults) => Object.entries(fieldResults))
-        .flatMap(([name, validation]) => {
-          const fieldType = fieldTypes[name]
-          const nestedValue = isRecord(value) ? value[name] : undefined
-          const fieldContext = {
-            ...restOfContext,
-            parent: value,
-            path: path.concat(name),
-            type: fieldType,
-            environment,
-            hidden: resolveHiddenForType(fieldType, nestedValue, value, path.concat(name), hidden),
-          }
-          return normalizeValidationRules({...fieldType, validation}, fieldContext)
-            .map(addUnknownFieldsValidator)
-            .map((subRule) => {
-              return defer(() =>
-                validateRule(subRule, nestedValue, {
-                  ...fieldContext,
-                  __internal: {
-                    ...__internal,
-                    customValidation,
-                    customValidationConcurrencyLimiter,
-                  },
-                }),
-              )
-            })
-        }),
-    )
-
-    // Validation from each field's schema `validation: Rule => {/* ... */}` function
-    nestedChecks = nestedChecks.concat(
-      type.fields.map((field) =>
-        validateItemObservable({
-          ...restOfContext,
-          hidden,
-          parent: value,
-          value: isRecord(value) ? value[field.name] : undefined,
-          path: path.concat(field.name),
-          type: field.type,
-          environment,
-          customValidationConcurrencyLimiter,
-          customValidation,
-          __internal,
-        }),
-      ),
-    )
-  }
-
-  // note: unlike objects, arrays should not run nested validation for undefined
-  // values because we won't have a valid path to put a marker (i.e. missing the
-  // key or index in the path) and the downstream form builder won't have a
-  // valid target component
-  const shouldRunNestedValidationForArrays = type?.jsonType === 'array' && Array.isArray(value)
-
-  if (shouldRunNestedValidationForArrays) {
-    nestedChecks = nestedChecks.concat(
-      value.map((item, index) =>
-        validateItemObservable({
-          ...restOfContext,
-          hidden,
-          parent: value,
-          value: item,
-          path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
-          type: resolveTypeForArrayItem(item, type.of),
-          environment,
-          customValidationConcurrencyLimiter,
-          customValidation,
-          __internal,
-        }),
-      ),
-    )
-  }
-
-  return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
-    mergeMap((validateNode) => concat(idle(), validateNode), 40),
-    mergeAll(),
-    toArray(),
-    map(flatten),
-    map((results) => {
-      // Deduplicate markers when `_fieldRules` are present because they can
-      // cause repeat markers (check recursively for nested rules)
-      if (rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)) {
-        return deduplicateMarkers(results)
+  // Deferred so that resolving rules and walking into nested values happens in the scheduler's
+  // slice for this node, rather than eagerly for the whole document when the root is created.
+  return defer(() => {
+    // Track whether any ancestor in the tree is hidden.
+    // It will be true if this field OR any ancestor is hidden.
+    // This allows validation rules to check `context.hidden` to skip validation for hidden fields,
+    // without needing to know whether the field itself or an ancestor caused it to be hidden.
+    const ancestorHidden = restOfContext.hidden === true
+    const resolveHiddenForType = (
+      schemaType: SchemaType | undefined,
+      schemaValue: unknown,
+      schemaParent: unknown,
+      schemaPath: ValidationContext['path'],
+      ancestorHiddenValue: boolean,
+    ) => {
+      // If there is no schema type, fall back to the ancestor's hidden state.
+      if (!schemaType) {
+        return ancestorHiddenValue
       }
-      return results
-    }),
-  )
+      return (
+        ancestorHiddenValue ||
+        resolveConditionalProperty(schemaType.hidden, {
+          ...restOfContext,
+          parent: schemaParent,
+          value: schemaValue,
+          path: schemaPath || [],
+          currentUser: restOfContext.currentUser ?? null,
+        })
+      )
+    }
+    const hidden = resolveHiddenForType(type, value, parent, path, ancestorHidden)
+
+    // Note: this validator is added here because it's conditional based on the
+    // environment.
+    const addUnknownFieldsValidator = (rule: Rule) => {
+      if (
+        // if the schema type is an object type
+        type?.jsonType === 'object' &&
+        // and if somewhere in it's type chain, it inherits from object or document
+        getTypeChain(type).find((t) => ['object', 'document', 'file', 'image'].includes(t.name)) &&
+        // and the environment is not the studio
+        environment !== 'studio'
+      ) {
+        // then add the validator for unknown fields
+        return rule
+          .custom(markInternalValidator(unknownFieldsValidator(type)), {
+            bypassConcurrencyLimit: true,
+          })
+          .warning()
+      }
+
+      // otherwise, leave it unchanged
+      return rule
+    }
+
+    const rules = normalizeValidationRules(type, {
+      ...restOfContext,
+      hidden,
+      environment,
+      parent,
+      path,
+      type,
+    })
+    // run validation for the current value
+    const selfChecks = rules.map(addUnknownFieldsValidator).map((rule) =>
+      defer(() =>
+        validateRule(rule, value, {
+          ...restOfContext,
+          environment,
+          hidden,
+          parent,
+          path,
+          type,
+          __internal: {
+            ...__internal,
+            customValidation,
+            customValidationConcurrencyLimiter,
+          },
+        }),
+      ),
+    )
+
+    // run validation for nested values (conditionally)
+    let nestedChecks: Array<Observable<ValidationMarker[]>> = []
+
+    const selfIsRequired = rules.some((rule) => rule.isRequired())
+    const shouldRunNestedObjectValidation =
+      // run nested validation for objects
+      type?.jsonType === 'object' &&
+      // if the value is truthy
+      (!!value || // or
+        // (the value is null or undefined) and the top-level value is required
+        ((value === null || value === undefined) && selfIsRequired))
+
+    if (shouldRunNestedObjectValidation) {
+      const fieldTypes = type.fields.reduce<Record<string, SchemaType>>((acc, field) => {
+        acc[field.name] = field.type
+        return acc
+      }, {})
+
+      // Validation for rules set at the object level with `Rule.fields({/* ... */})`
+      // Use extractFieldRulesFromRule to handle Rule.fields() inside Rule.all() or Rule.either()
+      nestedChecks = nestedChecks.concat(
+        rules
+          .flatMap((rule) => extractFieldRulesFromRule(rule))
+          .flatMap((fieldResults) => Object.entries(fieldResults))
+          .flatMap(([name, validation]) => {
+            const fieldType = fieldTypes[name]
+            const nestedValue = isRecord(value) ? value[name] : undefined
+            const fieldContext = {
+              ...restOfContext,
+              parent: value,
+              path: path.concat(name),
+              type: fieldType,
+              environment,
+              hidden: resolveHiddenForType(
+                fieldType,
+                nestedValue,
+                value,
+                path.concat(name),
+                hidden,
+              ),
+            }
+            return normalizeValidationRules({...fieldType, validation}, fieldContext)
+              .map(addUnknownFieldsValidator)
+              .map((subRule) => {
+                return defer(() =>
+                  validateRule(subRule, nestedValue, {
+                    ...fieldContext,
+                    __internal: {
+                      ...__internal,
+                      customValidation,
+                      customValidationConcurrencyLimiter,
+                    },
+                  }),
+                )
+              })
+          }),
+      )
+
+      // Validation from each field's schema `validation: Rule => {/* ... */}` function
+      nestedChecks = nestedChecks.concat(
+        type.fields.map((field) =>
+          validateItemObservable({
+            ...restOfContext,
+            hidden,
+            parent: value,
+            value: isRecord(value) ? value[field.name] : undefined,
+            path: path.concat(field.name),
+            type: field.type,
+            environment,
+            customValidationConcurrencyLimiter,
+            customValidation,
+            scheduler,
+            __internal,
+          }),
+        ),
+      )
+    }
+
+    // note: unlike objects, arrays should not run nested validation for undefined
+    // values because we won't have a valid path to put a marker (i.e. missing the
+    // key or index in the path) and the downstream form builder won't have a
+    // valid target component
+    const shouldRunNestedValidationForArrays = type?.jsonType === 'array' && Array.isArray(value)
+
+    if (shouldRunNestedValidationForArrays) {
+      nestedChecks = nestedChecks.concat(
+        value.map((item, index) =>
+          validateItemObservable({
+            ...restOfContext,
+            hidden,
+            parent: value,
+            value: item,
+            path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
+            type: resolveTypeForArrayItem(item, type.of),
+            environment,
+            customValidationConcurrencyLimiter,
+            customValidation,
+            scheduler,
+            __internal,
+          }),
+        ),
+      )
+    }
+
+    // `merge` with a single array argument emits the node observables themselves; each is then
+    // run once the scheduler grants it a turn, at most 40 siblings in flight at a time.
+    return merge([...selfChecks, ...nestedChecks]).pipe(
+      mergeMap((validateNode) => concat(scheduler.yield(), validateNode), 40),
+      mergeAll(),
+      toArray(),
+      map(flatten),
+      map((results) => {
+        // Deduplicate markers when `_fieldRules` are present because they can
+        // cause repeat markers (check recursively for nested rules)
+        if (rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)) {
+          return deduplicateMarkers(results)
+        }
+        return results
+      }),
+    )
+  })
 }
 
 function deduplicateMarkers(markers: ValidationMarker[]): ValidationMarker[] {
@@ -807,17 +826,4 @@ function toDocumentValidationMarker(marker: ValidationMarker): DocumentValidatio
     ...marker,
     code: validationMarkerCodes.validationFailed,
   }
-}
-
-function idle(timeout?: number): Observable<never> {
-  return new Observable<never>((observer) => {
-    const handle = requestIdleCallback(
-      () => {
-        observer.complete()
-      },
-      timeout ? {timeout} : undefined,
-    )
-
-    return () => cancelIdleCallback(handle)
-  })
 }

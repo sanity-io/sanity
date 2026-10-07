@@ -1,4 +1,11 @@
 /**
+ * The longest idle period browsers hand out (the spec's cap when no frame is pending), which the
+ * shim reports as the budget of each callback so that callers that pace themselves on
+ * `timeRemaining()` yield at the same rate as in a browser.
+ */
+const SHIM_IDLE_PERIOD_MS = 50
+
+/**
  * Simple requestIdleCallback polyfill
  * Can be removed when all browsers support requestIdleCallback: https://caniuse.com/requestidlecallback
  * @param callback -
@@ -8,12 +15,12 @@ const requestIdleCallbackShim: typeof window.requestIdleCallback = function requ
   callback,
   _options?,
 ): number {
-  const start = Date.now()
   return globalThis.setTimeout(() => {
+    const start = Date.now()
     callback({
       didTimeout: false,
       timeRemaining() {
-        return Math.max(0, Date.now() - start)
+        return Math.max(0, SHIM_IDLE_PERIOD_MS - (Date.now() - start))
       },
     })
   }, 0) as unknown as number
