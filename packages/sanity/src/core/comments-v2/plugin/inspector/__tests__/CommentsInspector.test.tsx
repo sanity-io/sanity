@@ -69,4 +69,21 @@ describe('CommentsInspector', () => {
     expect(screen.queryByRole('heading', {name: 'Comments'})).toBeNull()
     expect(screen.queryByTestId('inspector-pending')).toBeNull()
   })
+
+  it('neither waits for the feature check nor needs its provider when comments are disabled', async () => {
+    const wrapper = await createTestProvider({resources: [commentsUsEnglishLocaleBundle]})
+    // No `CommentsModePromiseContext`: the config boolean is read first, so a disabled document
+    // never reaches the mode promise
+    render(
+      <CommentsEnabledContext value={false}>
+        <Suspense fallback={<span data-testid="inspector-pending" />}>
+          <CommentsInspector documentId="doc" documentType="article" onClose={onClose} />
+        </Suspense>
+      </CommentsEnabledContext>,
+      {wrapper},
+    )
+
+    expect(screen.queryByRole('heading', {name: 'Comments'})).toBeNull()
+    expect(screen.queryByTestId('inspector-pending')).toBeNull()
+  })
 })

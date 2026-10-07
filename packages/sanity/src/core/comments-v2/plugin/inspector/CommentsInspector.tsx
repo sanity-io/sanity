@@ -48,10 +48,17 @@ const RootLayer = styled(Layer)`
 
 export default function CommentsInspector(props: DocumentInspectorProps) {
   const enabled = useCommentsEnabled()
+
+  // The config boolean is read first, so a document with comments off neither waits for the
+  // feature check nor needs the plugin's mode provider
+  if (!enabled) return null
+
+  return <CommentsInspectorWithMode {...props} />
+}
+
+function CommentsInspectorWithMode(props: DocumentInspectorProps) {
   // Suspends until the feature check has answered, under the inspector panel's boundary
   const mode = use(useCommentsMode())
-
-  if (!enabled) return null
 
   if (mode === null) {
     // The feature check failed, so whether the plan has comments is unknown: fail closed, with
@@ -149,12 +156,15 @@ function CommentsInspectorInner(
 
   const handleChangeView = useCallback(
     (nextView: CommentStatus) => {
+      // The resolved view is not available in upsell mode, same as for a link to a resolved comment
+      if (mode === 'upsell' && nextView === 'resolved') return
+
       setStatus(nextView)
       setSelectedPath(null)
 
       telemetry.commentListViewChanged(nextView)
     },
-    [setSelectedPath, setStatus, telemetry],
+    [mode, setSelectedPath, setStatus, telemetry],
   )
 
   const handleCloseInspector = useCallback(() => {
