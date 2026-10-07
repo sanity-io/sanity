@@ -1,11 +1,19 @@
+import {type SanityClient} from '@sanity/client'
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {describe, expect, it, vi} from 'vitest'
+import {Activity, type ReactNode, StrictMode, Suspense, use, useEffect, useState} from 'react'
+import {createRoot, type Root} from 'react-dom/client'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {RequestAccessForm, type RequestAccessFormProps} from '../RequestAccessForm'
+import {type AccessRequest} from '../types'
 import {createAccessRequest, createApiError, createClientStub} from './testUtils'
+
+declare global {
+  var IS_REACT_ACT_ENVIRONMENT: boolean | undefined
+}
 
 const theme = buildTheme()
 const USER_EMAIL = 'rosti@example.com'
@@ -27,18 +35,22 @@ function formUi(props: Partial<RequestAccessFormProps> = {}) {
   )
 }
 
-/**
- * Suspense recovery requires the initial render to happen inside an awaited
- * `act`, otherwise React never attaches the promise ping and the boundary
- * stays stuck on the fallback (same workaround as the studio's
- * RequestAccessScreen tests).
- */
+// The awaited `act` lets the stubbed requests resolve, so tests can query the
+// loaded form straight away.
 async function renderForm(props: Partial<RequestAccessFormProps> = {}) {
   let result!: ReturnType<typeof render>
   await act(async () => {
     result = render(formUi(props))
   })
   return result
+}
+
+function fetchCounts(client: SanityClient) {
+  const urls = vi.mocked(client.request).mock.calls.map(([options]) => options.url)
+  return {
+    requests: urls.filter((url) => url === '/access/requests/me').length,
+    state: urls.filter((url) => url?.endsWith('/requests/state')).length,
+  }
 }
 
 const submitRequest = async () => {
@@ -242,6 +254,90 @@ describe('RequestAccessForm', () => {
     expect(await screen.findByRole('link', {name: 'View organizations'})).toBeInTheDocument()
   })
 
+  it('reloads from the server when the form is mounted again', async () => {
+    let requests: AccessRequest[] = []
+    const client = createClientStub({list: () => Promise.resolve(requests)})
+    const {unmount} = await renderForm({client})
+    expect(screen.getByRole('form', {name: 'Request access'})).toBeInTheDocument()
+    unmount()
+
+    requests = [createAccessRequest()]
+    await renderForm({client})
+
+    expect(
+      screen.getByText('Your request to access this content is pending approval.'),
+    ).toBeInTheDocument()
+  })
+
+  it('reloads from the server when unmounted before the first load settles', async () => {
+    let answerFirstLoad!: (requests: AccessRequest[]) => void
+    const firstLoad = new Promise<AccessRequest[]>((resolve) => {
+      answerFirstLoad = resolve
+    })
+    let calls = 0
+    const client = createClientStub({
+      list: () => (++calls === 1 ? firstLoad : Promise.resolve([createAccessRequest()])),
+    })
+    const {unmount} = await renderForm({client})
+    unmount()
+    answerFirstLoad([])
+
+    await renderForm({client})
+
+    expect(
+      screen.getByText('Your request to access this content is pending approval.'),
+    ).toBeInTheDocument()
+    expect(fetchCounts(client).requests).toBe(2)
+  })
+
+  it('keeps the note and does not refetch when the host passes a new client for the same resource', async () => {
+    const client = createClientStub()
+    const {rerender} = await renderForm({client})
+    await userEvent.type(await screen.findByRole('textbox', {name: 'Message'}), 'please')
+
+    const nextClient = createClientStub()
+    await act(async () => {
+      rerender(formUi({client: nextClient}))
+    })
+
+    expect(screen.getByRole('textbox', {name: 'Message'})).toHaveValue('please')
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
+    expect(fetchCounts(nextClient)).toEqual({requests: 0, state: 0})
+  })
+
+  it('keeps the note and does not refetch when the host hides and shows the form again', async () => {
+    const client = createClientStub()
+    const ui = (mode: 'visible' | 'hidden') => <Activity mode={mode}>{formUi({client})}</Activity>
+    let rerender!: ReturnType<typeof render>['rerender']
+    await act(async () => {
+      rerender = render(ui('visible')).rerender
+    })
+    await userEvent.type(await screen.findByRole('textbox', {name: 'Message'}), 'please')
+
+    // Hiding tears the subscription down; react-rx releases its source a
+    // microtask later, so the reveal subscribes afresh.
+    await act(async () => {
+      rerender(ui('hidden'))
+      await Promise.resolve()
+    })
+    await act(async () => {
+      rerender(ui('visible'))
+    })
+
+    expect(screen.getByRole('textbox', {name: 'Message'})).toHaveValue('please')
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
+  })
+
+  it('fetches once under StrictMode', async () => {
+    const client = createClientStub()
+    await act(async () => {
+      render(<StrictMode>{formUi({client})}</StrictMode>)
+    })
+    await screen.findByRole('form', {name: 'Request access'})
+
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
+  })
+
   it('renders the sign-out action only when onSignOut is provided', async () => {
     const onSignOut = vi.fn()
     const {rerender} = await renderForm({onSignOut})
@@ -251,5 +347,66 @@ describe('RequestAccessForm', () => {
 
     rerender(formUi({onSignOut: undefined}))
     expect(screen.queryByRole('button', {name: /Sign out/})).not.toBeInTheDocument()
+  })
+})
+
+function UnrelatedUpdates() {
+  const [tick, setTick] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setTick((value) => value + 1), 10)
+    return () => clearInterval(id)
+  }, [])
+  return <span data-tick={tick} />
+}
+
+/**
+ * Uses a raw root outside `act`: `act` flushes Suspense retries straight away,
+ * which hides the render React throws away in a real host.
+ */
+describe('RequestAccessForm behind a suspending host', () => {
+  let container: HTMLElement
+  let root: Root
+  let previousActEnvironment: boolean | undefined
+
+  beforeEach(() => {
+    previousActEnvironment = globalThis.IS_REACT_ACT_ENVIRONMENT
+    globalThis.IS_REACT_ACT_ENVIRONMENT = false
+    container = document.createElement('div')
+    document.body.appendChild(container)
+    root = createRoot(container)
+  })
+
+  afterEach(() => {
+    root.unmount()
+    container.remove()
+    globalThis.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment
+  })
+
+  it('fetches once when it first mounts in a Suspense retry while the host keeps updating', async () => {
+    const client = createClientStub()
+    // The form first renders in React's retry of this boundary. React holds a
+    // retry back up to 300ms before committing and throws it away when the
+    // ticking sibling updates, so anything fetched during render repeats: 26–27
+    // pairs here when the form fetched in a `useState` initialiser.
+    const hostCheck = new Promise<void>((resolve) => setTimeout(resolve, 20))
+
+    function HostCheck({children}: {children: ReactNode}) {
+      use(hostCheck)
+      return children
+    }
+
+    root.render(
+      <ThemeProvider theme={theme}>
+        <UnrelatedUpdates />
+        <Suspense fallback={null}>
+          <HostCheck>
+            <RequestAccessForm client={client} resourceId="project-a" />
+          </HostCheck>
+        </Suspense>
+      </ThemeProvider>,
+    )
+
+    expect(await screen.findByRole('form', {name: 'Request access'}, {timeout: 2000})).toBeVisible()
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
   })
 })
