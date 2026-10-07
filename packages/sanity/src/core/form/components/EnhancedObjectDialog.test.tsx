@@ -116,6 +116,45 @@ describe('EnhancedObjectDialog: Cmd/Ctrl+ArrowUp handler', () => {
     expect(event.defaultPrevented).toBe(false)
   })
 
+  it('calls onClose before the stack close when the shortcut dismisses the dialog', () => {
+    const onClose = vi.fn()
+    render(
+      <EnhancedObjectDialog type="dialog" header="Header" width={1} onClose={onClose}>
+        <div />
+      </EnhancedObjectDialog>,
+    )
+    const button = document.createElement('button')
+    document.body.appendChild(button)
+
+    dispatchKeyDown(button, {key: 'ArrowUp', metaKey: true})
+
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(close).toHaveBeenCalledTimes(1)
+    expect(onClose.mock.invocationCallOrder[0]).toBeLessThan(close.mock.invocationCallOrder[0])
+  })
+
+  it('calls onClose before stepping up to a parent path', () => {
+    mockState = {
+      isTop: true,
+      stack: [{id: 'dialog-1', path: ['arr', {_key: 'k'}, 'nested']}],
+    }
+    const onClose = vi.fn()
+    render(
+      <EnhancedObjectDialog type="dialog" header="Header" width={1} onClose={onClose}>
+        <div />
+      </EnhancedObjectDialog>,
+    )
+    const button = document.createElement('button')
+    document.body.appendChild(button)
+
+    dispatchKeyDown(button, {key: 'ArrowUp', metaKey: true})
+
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(navigateTo).toHaveBeenCalledTimes(1)
+    expect(close).not.toHaveBeenCalled()
+    expect(onClose.mock.invocationCallOrder[0]).toBeLessThan(navigateTo.mock.invocationCallOrder[0])
+  })
+
   it('handles the shortcut when focus is on a non-editable element', () => {
     renderDialog()
     const button = document.createElement('button')

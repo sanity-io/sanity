@@ -87,7 +87,7 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
  * Non-top dialogs are hidden via CSS while preserving their state.
  */
 export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.JSX.Element {
-  const {children, header, type, width} = props
+  const {children, header, onClose, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
   const telemetry = useTelemetry()
@@ -107,6 +107,13 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const {dialogId, isTop, stack, close, navigateTo} = useDialogStack({
     path: currentPath,
   })
+
+  // The dialog stack only changes the open path. Array items and portable text
+  // objects still pass `onClose` to drop an empty value or restore editor focus,
+  // which the legacy edit portal invoked.
+  const notifyClose = useCallback(() => {
+    onClose?.()
+  }, [onClose])
 
   // Reserve space for the scrollbar in the dialog's scrollable content element,
   // so that switching to a tab with overflowing (scrollable) content doesn't
@@ -172,36 +179,41 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
           if (newLastStackPath.length > 1) {
             telemetry.log(NestedObjectOpened, {path: 'keyboard_shortcut'})
+            notifyClose()
             navigateTo(newLastStackPath)
           } else {
             telemetry.log(NestedDialogClosed)
+            notifyClose()
             close()
           }
         }
       }
     },
-    [isTop, stack, navigateTo, close, telemetry],
+    [isTop, stack, navigateTo, close, notifyClose, telemetry],
   )
 
   const handleStackedDialogClose = useCallback(
     (closeAll?: boolean) => {
       if (!closeAll && stack.length >= 2) {
         telemetry.log(NestedObjectOpened, {path: 'close_button'})
+        notifyClose()
         close({toParent: true})
       } else {
         telemetry.log(NestedDialogClosed)
+        notifyClose()
         close()
       }
     },
-    [telemetry, close, stack.length],
+    [telemetry, close, notifyClose, stack.length],
   )
 
   const handleCompleteDialogClose = useCallback(() => {
     if (isInspectOpen) return
 
     telemetry.log(NestedDialogClosed)
+    notifyClose()
     close()
-  }, [close, isInspectOpen, telemetry])
+  }, [close, isInspectOpen, notifyClose, telemetry])
 
   useGlobalKeyDown(handleGlobalKeyDown)
 
