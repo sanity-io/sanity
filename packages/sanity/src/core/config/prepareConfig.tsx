@@ -408,6 +408,12 @@ export function prepareConfig(
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
         onBeforeProbe: (client) => {
+          // Both prefetches pin the API version with `withConfig`, which a custom
+          // `unstable_clientFactory` client may not implement — skip them for such a client
+          // rather than throwing inside the probe, which would leave the auth state unsettled
+          // and the studio without a login screen. Their consumers request the same answers
+          // themselves once the auth state has settled.
+          if (typeof client.withConfig !== 'function') return
           prefetchFeatures({projectId, client})
           if (probesScheduledPublishingUsage) prefetchUsedScheduledPublishing(client)
         },

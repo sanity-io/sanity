@@ -223,14 +223,14 @@ describe('prepareConfig — boot prefetch', () => {
    * request handler) and never answers the auth probe, so the test can see what went out while
    * `/users/me` was still in flight.
    */
-  function createRecordingClientFactory() {
+  function createRecordingClientFactory({withConfig = true}: {withConfig?: boolean} = {}) {
     const requests: string[] = []
     const record = (config: ClientConfig, url: string) =>
       requests.push(config.requestHandler ? `${url} (studio handler)` : url)
     const make = (config: ClientConfig): SanityClient =>
       ({
         config: () => config,
-        withConfig: (next: ClientConfig) => make({...config, ...next}),
+        ...(withConfig ? {withConfig: (next: ClientConfig) => make({...config, ...next})} : {}),
         request: vi.fn(({url}: {url: string}) => {
           record(config, url)
           return new Promise(() => {})
@@ -250,8 +250,11 @@ describe('prepareConfig — boot prefetch', () => {
   const somePlugin = definePlugin({name: 'some-plugin'})
   const studioRequestHandler: RequestHandler = (request, next) => next(request)
 
-  function bootRequests(overrides: Partial<WorkspaceOptions>) {
-    const {factory, requests} = createRecordingClientFactory()
+  function bootRequests(
+    overrides: Partial<WorkspaceOptions>,
+    factoryOptions?: {withConfig?: boolean},
+  ) {
+    const {factory, requests} = createRecordingClientFactory(factoryOptions)
     const workspace = createWorkspace({unstable_clientFactory: factory, ...overrides})
     const {workspaces} = prepareConfig(workspace, {
       createStudioRequestHandler: () => studioRequestHandler,
@@ -292,6 +295,14 @@ describe('prepareConfig — boot prefetch', () => {
 
     expect(requests).toContain('/features')
     expect(requests.some((url) => url.startsWith('/schedules/'))).toBe(false)
+  })
+
+  it('skips the prefetches for a custom client without withConfig, so the probe still runs', () => {
+    const {requests} = bootRequests({plugins: [somePlugin()]}, {withConfig: false})
+
+    // Only the probe goes out, and it keeps the studio request handler — the handler can only be
+    // stripped through `withConfig` too
+    expect(requests).toEqual(['/users/me (studio handler)'])
   })
 })
 
