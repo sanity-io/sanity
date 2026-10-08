@@ -1,13 +1,20 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
-import {lazy, type ReactNode, useEffect} from 'react'
+import {lazy, useEffect, useMemo} from 'react'
+import {preloadObservablePromise, useObservablePromise} from 'react-rx'
+import {map} from 'rxjs'
+import {
+  HasUsedScheduledPublishingPromiseContext,
+  ScheduledPublishingEnabledContext,
+  ScheduledPublishingModePromiseContext,
+} from 'sanity/_singletons'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
 import {type ProviderProps} from '../../config/studio/types'
-import {
-  ScheduledPublishingEnabledProvider,
-  useScheduledPublishingEnabled,
-} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {FEATURES, useFeatureEnabledObservable} from '../../hooks/useFeatureEnabled'
+import {type ScheduledPublishingMode} from '../../scheduledPublishing/contexts/types'
+import {useHasUsedScheduledPublishingObservable} from '../../scheduledPublishing/tool/contexts/useHasUsedScheduledPublishing'
+import {useWorkspace} from '../../studio/workspace'
 import {SCHEDULED_PUBLISHING_TOOL_NAME, TOOL_TITLE} from '../constants'
 import {SchedulePublishingUpsellProvider} from '../tool/contexts/SchedulePublishingUpsellProvider'
 import resolveDocumentActions from './documentActions/schedule'
@@ -61,26 +68,55 @@ export const scheduledPublishing = definePlugin({
   },
 })
 
-/** The scheduled publishing providers for the whole studio */
+/**
+ * The scheduled publishing contexts for the whole studio: whether the workspace has the feature
+ * enabled, and the two answers that arrive later, as promises for `use()`: the mode (from the
+ * feature check) and whether the dataset has ever scheduled anything (from the usage probe). Each
+ * callsite combines them for its own purpose: the navbar's tool menu, which also renders where the
+ * plugin is not loaded, lists the tool when `enabled && mode !== null && hasUsed`; the tool, the
+ * document action and the schedule polling only render through the plugin, so they skip the
+ * always-true flag and count the feature as on when `mode !== null && hasUsed`. The upsell
+ * provider is mounted in both modes so the tree never waits for the feature check; its dialog
+ * reads the mode at the leaf.
+ */
 function SchedulePublishingStudioProvider(props: ProviderProps) {
+  const {scheduledPublishing} = useWorkspace()
+  const features$ = useFeatureEnabledObservable(FEATURES.scheduledPublishing)
+  // Derived inside the observable, so the context carries the promise that settles in place and
+  // `use()` reads it synchronously once it has (a `.then()`-derived promise suspends once more)
+  const mode$ = useMemo(
+    () =>
+      features$.pipe(
+        map(({enabled, error}): ScheduledPublishingMode => {
+          if (error) return null
+          return enabled ? 'default' : 'upsell'
+        }),
+      ),
+    [features$],
+  )
+  const hasUsed$ = useHasUsedScheduledPublishingObservable({
+    explicitEnabled: scheduledPublishing.__internal__workspaceEnabled,
+  })
+  const modePromise = useObservablePromise(mode$)
+  const hasUsedPromise = useObservablePromise(hasUsed$)
+  useEffect(() => {
+    void preloadObservablePromise(mode$)
+    void preloadObservablePromise(hasUsed$)
+  }, [hasUsed$, mode$])
   useEffect(() => {
     // Preload lazy components (fire-and-forget: the lazy() render reports a failed import)
     void lazyDocumentBannerInput()
   }, [])
 
   return (
-    <ScheduledPublishingEnabledProvider>
-      <SchedulePublishingUpsellProviderInUpsellMode>
-        {props.renderDefault(props)}
-      </SchedulePublishingUpsellProviderInUpsellMode>
-    </ScheduledPublishingEnabledProvider>
+    <ScheduledPublishingEnabledContext value={scheduledPublishing.enabled}>
+      <ScheduledPublishingModePromiseContext value={modePromise}>
+        <HasUsedScheduledPublishingPromiseContext value={hasUsedPromise}>
+          <SchedulePublishingUpsellProvider>
+            {props.renderDefault(props)}
+          </SchedulePublishingUpsellProvider>
+        </HasUsedScheduledPublishingPromiseContext>
+      </ScheduledPublishingModePromiseContext>
+    </ScheduledPublishingEnabledContext>
   )
-}
-
-function SchedulePublishingUpsellProviderInUpsellMode({children}: {children: ReactNode}) {
-  const {enabled, mode} = useScheduledPublishingEnabled()
-  if (!enabled || mode !== 'upsell') {
-    return children
-  }
-  return <SchedulePublishingUpsellProvider>{children}</SchedulePublishingUpsellProvider>
 }

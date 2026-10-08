@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {Badge, Card, Text} from '@sanity/ui'
-import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, useState} from 'react'
+import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, use, useState} from 'react'
+import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
 import {Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -9,7 +10,6 @@ import {DocumentVersionsStatusIndicator} from '../../../components/documentStatu
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,
@@ -49,7 +49,8 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
     schemaType,
     useElementQueries,
   } = props
-  const {mode} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
   const [validationStatus, setValidationStatus] = useState(EMPTY_VALIDATION_STATUS)
   const {validation} = validationStatus
   const {hasError, validationTone} = useValidationState(validation)
