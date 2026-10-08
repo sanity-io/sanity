@@ -18,7 +18,7 @@ import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
-import {ObserveElement} from './ObserveElement'
+import {ObserveElement, type ObservedIntersection} from './ObserveElement'
 
 /** @internal */
 export interface CollapseMenuProps {
@@ -185,7 +185,7 @@ export function AutoCollapseMenu(
   )
 
   const handleExpandedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: React.JSX.Element) => {
+    (e: ObservedIntersection, element: React.JSX.Element) => {
       setExpandedIntersections((current) => {
         const key = element.key
         if (key === null) {
@@ -210,7 +210,7 @@ export function AutoCollapseMenu(
   )
 
   const handleCollapsedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: React.JSX.Element) => {
+    (e: ObservedIntersection, element: React.JSX.Element) => {
       setCollapsedIntersections((current) => {
         const key = element.key
         if (key === null) {
@@ -306,20 +306,27 @@ export function AutoCollapseMenu(
               )
             })}
         </RowFlex>
-        {/* Rendered hidden in order to calculate intersections for original (expanded) menu options */}
-        <RenderHidden
-          gap={gap}
-          elements={menuOptions}
-          intersectionOptions={intersectionOptions}
-          onIntersectionChange={handleExpandedIntersection}
-        />
-        {/* Rendered hidden in order to calculate intersections for collapsed menu options */}
-        <RenderHidden
-          gap={gap}
-          elements={collapsedElements}
-          intersectionOptions={intersectionOptions}
-          onIntersectionChange={handleCollapsedIntersection}
-        />
+        {/* The hidden rows measure against RootFlex, known after the first commit. Mounting them
+            then, rather than with a viewport root they would re-measure against a commit later,
+            keeps it to one measurement; both commits happen before the first paint. */}
+        {rootEl && (
+          <>
+            {/* Rendered hidden in order to calculate intersections for original (expanded) menu options */}
+            <RenderHidden
+              gap={gap}
+              elements={menuOptions}
+              intersectionOptions={intersectionOptions}
+              onIntersectionChange={handleExpandedIntersection}
+            />
+            {/* Rendered hidden in order to calculate intersections for collapsed menu options */}
+            <RenderHidden
+              gap={gap}
+              elements={collapsedElements}
+              intersectionOptions={intersectionOptions}
+              onIntersectionChange={handleCollapsedIntersection}
+            />
+          </>
+        )}
       </RootFlex>
 
       {/* Show the collapsed items that doesn't fit in a menu */}
@@ -342,7 +349,7 @@ const RenderHidden = memo(function RenderHidden(props: {
   elements: React.JSX.Element[]
   gap?: GapProps['gap']
   intersectionOptions: IntersectionObserverInit
-  onIntersectionChange: (e: IntersectionObserverEntry, element: React.JSX.Element) => void
+  onIntersectionChange: (e: ObservedIntersection, element: React.JSX.Element) => void
 }) {
   const {elements, gap, intersectionOptions, onIntersectionChange} = props
   return (

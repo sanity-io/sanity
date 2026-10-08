@@ -220,6 +220,38 @@ export async function expectStable<T>(sample: () => T, repeats = 3): Promise<T> 
   return previous
 }
 
+/**
+ * Run `fn` with an `IntersectionObserver` that never reports. A real observer delivers its
+ * first entries a task after the frame that lays the target out, and it may already have
+ * done so by the time `render` resolves, so this is how a test tells what a component renders
+ * from its own measurement in its first commit (`ObserveElement` reports one from a layout
+ * effect) from what it renders once the observer has reported. Render and assert inside `fn`:
+ * a harness that mounts the component after an async step (`TestWrapper` loading its
+ * workspace) would otherwise mount it with the real observer again. Observers created while
+ * `fn` runs stay silent for the rest of the test; the global is restored before `fn` returns.
+ */
+export async function withSilentIntersectionObserver<T>(fn: () => Promise<T>): Promise<T> {
+  const RealIntersectionObserver = window.IntersectionObserver
+  class SilentIntersectionObserver implements IntersectionObserver {
+    readonly root = null
+    readonly rootMargin = '0px'
+    readonly scrollMargin = '0px'
+    readonly thresholds: readonly number[] = []
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+    takeRecords(): IntersectionObserverEntry[] {
+      return []
+    }
+  }
+  window.IntersectionObserver = SilentIntersectionObserver
+  try {
+    return await fn()
+  } finally {
+    window.IntersectionObserver = RealIntersectionObserver
+  }
+}
+
 const POINTER_PARK_TESTID = 'chromatic-pointer-park'
 
 /**
