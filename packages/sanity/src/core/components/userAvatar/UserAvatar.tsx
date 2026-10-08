@@ -106,23 +106,27 @@ function StaticUserAvatar(
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
   const userColor = useUserColor(user.id)
   const imageUrl = imageLoadError ? undefined : user?.imageUrl
+  const avatarSize = typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size
 
   return (
-    <Avatar
-      __unstable_hideInnerStroke
-      animateArrowFrom={animateArrowFrom}
-      arrowPosition={position}
-      color={userColor.name}
-      data-legacy-tone={tone}
-      initials={user?.displayName && nameToInitials(user.displayName)}
-      src={imageUrl}
-      onImageLoadError={setImageLoadError}
-      ref={ref}
-      size={typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size}
-      status={status}
-      title={user?.displayName}
-      {...restProps}
-    />
+    // React can suspend on the `<img>` that `Avatar` renders until the image has loaded
+    <Suspense fallback={<AvatarSkeleton $size={avatarSize} animated />}>
+      <Avatar
+        __unstable_hideInnerStroke
+        animateArrowFrom={animateArrowFrom}
+        arrowPosition={position}
+        color={userColor.name}
+        data-legacy-tone={tone}
+        initials={user?.displayName && nameToInitials(user.displayName)}
+        src={imageUrl}
+        onImageLoadError={setImageLoadError}
+        ref={ref}
+        size={avatarSize}
+        status={status}
+        title={user?.displayName}
+        {...restProps}
+      />
+    </Suspense>
   )
 }
 
