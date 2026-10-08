@@ -2,6 +2,7 @@ import {assist} from '@sanity/assist'
 import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
 import {documentInternationalization} from '@sanity/document-internationalization'
 import {googleMapsInput} from '@sanity/google-maps-input'
+import {BlockContentIcon} from '@sanity/icons/BlockContent'
 import {BookIcon} from '@sanity/icons/Book'
 import {EnvelopeIcon} from '@sanity/icons/Envelope'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
@@ -47,6 +48,7 @@ import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter/plugin'
+import {nestedPtOomRepro} from './plugins/nested-pt-oom-repro/plugin'
 import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
@@ -834,5 +836,17 @@ export default defineConfig([
     auth: sanitySandboxAuth,
     basePath: '/document-form-only',
     plugins: [documentFormOnly()],
+  },
+  {
+    name: 'nested-pt-oom',
+    title: 'Nested PT OOM',
+    subtitle: 'Morrowbank blockContent: recursive content block and nested anonymous objects',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    auth: sanitySandboxAuth,
+    basePath: '/nested-pt-oom',
+    icon: BlockContentIcon,
+    plugins: [nestedPtOomRepro()],
   },
 ]) as WorkspaceOptions[]
