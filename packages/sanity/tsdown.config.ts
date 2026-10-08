@@ -1,8 +1,13 @@
+import {mkdtemp, readdir, readFile, rm} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import path from 'node:path'
+
 import {defineConfig} from '@repo/tsdown.config'
+import {build, mergeConfig, type Rolldown} from 'tsdown'
 
 import pkg from './package.json' with {type: 'json'}
 
-export default defineConfig({
+const config = await defineConfig({
   // Filenames under `_exports/` map 1:1 to export names (index, cli, structure, …)
   entry: './src/_exports/*.ts',
   // Also wipe legacy root-level entry artifacts from older pkg-utils layouts (a string[] replaces
@@ -47,3 +52,83 @@ export default defineConfig({
   // adds work to the tsdown build. Usage: `pnpm analyze:sanity` from the repo root (see AGENTS.md).
   bundleAnalyzer: process.env.ENABLE_BUNDLE_ANALYZER === 'true',
 })
+
+// Bundles `*.ts?worker&inline` imports (the validation worker) into Blob-backed factories, the
+// way Vite does for studios that bundle the sources directly
+export default mergeConfig(config, {plugins: [inlineWorker()]})
+
+const SUFFIX = '?worker&inline'
+
+/**
+ * Reproduces Vite's `import Worker from './file.ts?worker&inline'` for the package build: the
+ * worker entry is bundled on its own (self-contained, IIFE, browser platform) and the module
+ * resolves to a factory that starts the worker from a Blob URL of that code. The published
+ * package therefore ships the worker inside a regular chunk rather than as a separate file, which
+ * is what lets a consuming studio's bundler, and the CDN-hosted auto-updating studio, start it
+ * without knowing about it.
+ */
+function inlineWorker(): Rolldown.Plugin {
+  return {
+    name: 'sanity:inline-worker',
+    resolveId(source, importer) {
+      if (!source.endsWith(SUFFIX) || !importer) return null
+      const file = path.resolve(path.dirname(importer), source.slice(0, -SUFFIX.length))
+      return `${file}${SUFFIX}`
+    },
+    async load(id) {
+      if (!id.endsWith(SUFFIX)) return null
+      const code = await bundleWorker(id.slice(0, -SUFFIX.length))
+      return `const source = ${JSON.stringify(code)}
+const blob = typeof Blob === 'undefined' ? undefined : new Blob([source], {type: 'text/javascript;charset=utf-8'})
+export default function InlineWorker(options) {
+  const objectUrl = blob && URL.createObjectURL(blob)
+  if (!objectUrl) throw new Error('Inline workers are not supported in this environment')
+  try {
+    return new Worker(objectUrl, options)
+  } finally {
+    URL.revokeObjectURL(objectUrl)
+  }
+}
+`
+    },
+  }
+}
+
+async function bundleWorker(file: string): Promise<string> {
+  const outDir = await mkdtemp(path.join(tmpdir(), 'sanity-inline-worker-'))
+  try {
+    await build({
+      // A nested build with its own options: it must not pick up this config file.
+      config: false,
+      entry: {worker: file},
+      outDir,
+      format: 'iife',
+      platform: 'browser',
+      tsconfig: 'tsconfig.lib.json',
+      // Everything the worker needs must be inside the blob: nothing can be imported from it.
+      deps: {alwaysBundle: [/./]},
+      define: {'__DEV__': 'false', 'process.env.NODE_ENV': '"production"'},
+      // Fully minified, unlike the chunks around it: a consuming studio's build minifies its
+      // dependencies' modules again but never the inside of a string literal.
+      minify: true,
+      dts: false,
+      clean: false,
+      sourcemap: false,
+      hash: false,
+      report: false,
+      publint: false,
+      logLevel: 'warn',
+      outputOptions: {inlineDynamicImports: true},
+    })
+    const files = await readdir(outDir)
+    const output = files.find((name) => /^worker(\.iife)?\.js$/.test(name))
+    if (!output) {
+      throw new Error(
+        `Inline worker build produced no bundle for ${file} (got ${files.join(', ')})`,
+      )
+    }
+    return readFile(path.join(outDir, output), 'utf8')
+  } finally {
+    await rm(outDir, {recursive: true, force: true})
+  }
+}

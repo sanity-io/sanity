@@ -49,11 +49,10 @@ interface SchemaWorker {
 
 const workers = new WeakMap<Schema, Promise<SchemaWorker | undefined>>()
 
-function createDefaultWorker() {
-  return new Worker(new URL('./validation.worker.ts', import.meta.url), {
-    type: 'module',
-    name: 'sanity-validation',
-  })
+/** The inlined worker bundle is only loaded by studios that enable the worker. */
+async function loadInlineWorkerFactory(): Promise<() => Worker> {
+  const {createValidationWorker} = await import('./createValidationWorker')
+  return createValidationWorker
 }
 
 function collectI18nResources(i18next: ValidationWorkerI18nSource): WorkerI18nResources {
@@ -82,8 +81,9 @@ function getSchemaWorker(ctx: ValidationWorkerContext): Promise<SchemaWorker | u
       if (!ctx.createWorker && typeof Worker === 'undefined') return undefined
       const types = extractManifestSchemaTypes(ctx.schema)
       await ctx.i18n.loadNamespaces(['validation'])
+      const createWorker = ctx.createWorker ?? (await loadInlineWorkerFactory())
       const client = createValidationWorkerClient({
-        port: (ctx.createWorker ?? createDefaultWorker)(),
+        port: createWorker(),
         schema: {name: ctx.schema.name, types},
         i18n: collectI18nResources(ctx.i18next),
       })
