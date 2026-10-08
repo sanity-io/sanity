@@ -1,21 +1,22 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
-import {lazy} from 'react'
+import {lazy, type ReactNode, useEffect} from 'react'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
+import {type ProviderProps} from '../../config/studio/types'
+import {
+  ScheduledPublishingEnabledProvider,
+  useScheduledPublishingEnabled,
+} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {SCHEDULED_PUBLISHING_TOOL_NAME, TOOL_TITLE} from '../constants'
+import {SchedulePublishingUpsellProvider} from '../tool/contexts/SchedulePublishingUpsellProvider'
 import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
 
 const Tool = lazy(() => import('../tool/Tool'))
-const DocumentBannerInput = lazy(() =>
-  import('./inputResolver').then((module) => ({default: module.DocumentBannerInput})),
-)
-const SchedulePublishingStudioLayout = lazy(() =>
-  import('./SchedulePublishingStudioLayout').then((module) => ({
-    default: module.SchedulePublishingStudioLayout,
-  })),
-)
+
+const lazyDocumentBannerInput = () => import('./inputResolver')
+const DocumentBannerInput = lazy(lazyDocumentBannerInput)
 
 /**
  * @internal
@@ -41,7 +42,7 @@ export const scheduledPublishing = definePlugin({
   },
   studio: {
     components: {
-      layout: SchedulePublishingStudioLayout,
+      provider: SchedulePublishingStudioProvider,
     },
   },
 
@@ -59,3 +60,27 @@ export const scheduledPublishing = definePlugin({
     ]
   },
 })
+
+/** The scheduled publishing providers for the whole studio */
+function SchedulePublishingStudioProvider(props: ProviderProps) {
+  useEffect(() => {
+    // Preload lazy components (fire-and-forget: the lazy() render reports a failed import)
+    void lazyDocumentBannerInput()
+  }, [])
+
+  return (
+    <ScheduledPublishingEnabledProvider>
+      <SchedulePublishingUpsellProviderInUpsellMode>
+        {props.renderDefault(props)}
+      </SchedulePublishingUpsellProviderInUpsellMode>
+    </ScheduledPublishingEnabledProvider>
+  )
+}
+
+function SchedulePublishingUpsellProviderInUpsellMode({children}: {children: ReactNode}) {
+  const {enabled, mode} = useScheduledPublishingEnabled()
+  if (!enabled || mode !== 'upsell') {
+    return children
+  }
+  return <SchedulePublishingUpsellProvider>{children}</SchedulePublishingUpsellProvider>
+}

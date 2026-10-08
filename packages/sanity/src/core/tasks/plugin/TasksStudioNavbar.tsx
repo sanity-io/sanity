@@ -74,7 +74,7 @@ function TasksStudioNavbarInner(props: NavbarProps) {
   })
 }
 
-export function TasksStudioNavbar(props: NavbarProps) {
+export default function TasksStudioNavbar(props: NavbarProps) {
   const {enabled} = useTasksEnabled()
 
   if (!enabled) {
