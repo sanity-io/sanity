@@ -5,6 +5,7 @@ import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {Activity, type ReactNode, StrictMode, Suspense, use, useEffect, useState} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
+import {DEFAULT_HOOK_TTL} from 'react-rx'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {RequestAccessForm, type RequestAccessFormProps} from '../RequestAccessForm'
@@ -35,7 +36,10 @@ function formUi(props: Partial<RequestAccessFormProps> = {}) {
   )
 }
 
-// The awaited `act` lets the stubbed requests resolve, so tests can query the
+// The mount must sit inside an awaited `act`: the content suspends on the load
+// promise with `use()`, and React only resumes work that suspended inside an
+// awaited `act` scope (the synchronous one `render` wraps parks it for good).
+// Awaiting also lets the stubbed requests resolve, so tests can query the
 // loaded form straight away.
 async function renderForm(props: Partial<RequestAccessFormProps> = {}) {
   let result!: ReturnType<typeof render>
@@ -64,6 +68,27 @@ describe('RequestAccessForm', () => {
     expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
     expect(screen.getByRole('textbox', {name: 'Message'})).toBeInTheDocument()
     expect(screen.getAllByText(new RegExp(USER_EMAIL)).length).toBeGreaterThan(0)
+  })
+
+  it('shows the spinner fallback until the requests have loaded', async () => {
+    let answerLoad!: (requests: AccessRequest[]) => void
+    const client = createClientStub({
+      list: () =>
+        new Promise<AccessRequest[]>((resolve) => {
+          answerLoad = resolve
+        }),
+    })
+    const {container} = await renderForm({client})
+
+    expect(container.querySelector('[data-ui="Spinner"]')).toBeInTheDocument()
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+
+    await act(async () => {
+      answerLoad([])
+    })
+
+    expect(screen.getByRole('form', {name: 'Request access'})).toBeInTheDocument()
+    expect(container.querySelector('[data-ui="Spinner"]')).not.toBeInTheDocument()
   })
 
   it('renders the pending state instead of the form when a recent request exists', async () => {
@@ -314,11 +339,35 @@ describe('RequestAccessForm', () => {
     })
     await userEvent.type(await screen.findByRole('textbox', {name: 'Message'}), 'please')
 
-    // Hiding tears the subscription down; react-rx releases its source a
-    // microtask later, so the reveal subscribes afresh.
+    // Hiding tears the subscription down, so the reveal subscribes afresh; the
+    // microtask gives react-rx a chance to release anything it held per
+    // subscriber. The settled promise must survive on the hook's cache entry.
     await act(async () => {
       rerender(ui('hidden'))
       await Promise.resolve()
+    })
+    await act(async () => {
+      rerender(ui('visible'))
+    })
+
+    expect(screen.getByRole('textbox', {name: 'Message'})).toHaveValue('please')
+    expect(fetchCounts(client)).toEqual({requests: 1, state: 1})
+  })
+
+  it('does not refetch when hidden for longer than react-rx retains an idle result', async () => {
+    const client = createClientStub()
+    const ui = (mode: 'visible' | 'hidden') => <Activity mode={mode}>{formUi({client})}</Activity>
+    let rerender!: ReturnType<typeof render>['rerender']
+    await act(async () => {
+      rerender = render(ui('visible')).rerender
+    })
+    await userEvent.type(await screen.findByRole('textbox', {name: 'Message'}), 'please')
+
+    // Past the TTL the hook evicts its cache entry and lets the shared source
+    // go; the requests have completed by then, so nothing must start them again.
+    await act(async () => {
+      rerender(ui('hidden'))
+      await new Promise((resolve) => setTimeout(resolve, DEFAULT_HOOK_TTL + 100))
     })
     await act(async () => {
       rerender(ui('visible'))
