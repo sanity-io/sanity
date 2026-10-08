@@ -47,6 +47,7 @@ This function is built to be compatible with any of [the official "clean" templa
    ```ts
    // sanity.blueprint.ts
    import 'dotenv/config'
+
    import process from 'node:process'
 
    const {ALGOLIA_APP_ID, ALGOLIA_WRITE_KEY} = process.env

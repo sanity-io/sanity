@@ -117,7 +117,8 @@ describe('WorkspaceMenuButton', () => {
     await renderButton()
 
     // The Studio `MenuButton` leaves `menu` out until the button is pressed, focused or
-    // opened, so the closed menu is not in the DOM and no probe observable is created.
+    // opened (and @sanity/ui v4.4 renders nothing until the button shows intent to open
+    // it), so the closed menu is not in the DOM and no probe observable is created.
     expect(screen.getByRole('button', {name: /Workspace A/})).toBeInTheDocument()
     expect(screen.queryByTestId('manage-menu')).not.toBeInTheDocument()
     expect(screen.queryByText('Workspace B')).not.toBeInTheDocument()
@@ -129,7 +130,8 @@ describe('WorkspaceMenuButton', () => {
     await renderButton()
     await pressButton()
 
-    // The menu is now pre-rendered in the closed popover (`<Activity>`, @sanity/ui v4).
+    // Pointer down is intent to open for both the Studio `MenuButton` and @sanity/ui v4.4, so
+    // the menu is now pre-rendered in the closed popover (`<Activity>`).
     // So: content is in the DOM, probe observables got created…
     expect(await screen.findByTestId('manage-menu')).toBeInTheDocument()
     expect(screen.getByText('Workspace B')).toBeInTheDocument()
@@ -166,13 +168,16 @@ describe('WorkspaceMenuButton', () => {
     expect(projectNameSubscriptions.count).toBe(1)
   })
 
-  it('subscribes the auth probes on hover while the menu stays closed', async () => {
+  it('subscribes the auth probes on hover while the menu stays unmounted', async () => {
     await renderButton()
 
     await userEvent.hover(screen.getByRole('button', {name: /Workspace A/}))
 
     // Hover preload: one probe per workspace, buffered before the click.
-    // The hidden menu items themselves still subscribe nothing.
     expect(probeSubscriptions.count).toBe(2)
+
+    // Hover is intent to open for @sanity/ui v4.4, but the Studio `MenuButton` still leaves
+    // `menu` out until the button is pressed or focused, so nothing else is mounted yet.
+    expect(screen.queryByTestId('manage-menu')).not.toBeInTheDocument()
   })
 })

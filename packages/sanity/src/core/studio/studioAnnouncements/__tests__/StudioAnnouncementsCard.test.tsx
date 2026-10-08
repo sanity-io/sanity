@@ -109,7 +109,9 @@ describe('StudioAnnouncementsCard', () => {
       {wrapper},
     )
 
-    // The card renders in a popover whose content is not mounted while closed.
+    // The card renders in a popover whose content is not mounted while closed: the Studio
+    // `Popover` leaves it out, and @sanity/ui v4.4 renders nothing until it opens (or the
+    // reference element shows intent to open it).
     expect(screen.queryByText("What's new")).not.toBeInTheDocument()
     expect(screen.queryByText(announcementCardProps.title)).not.toBeInTheDocument()
   })

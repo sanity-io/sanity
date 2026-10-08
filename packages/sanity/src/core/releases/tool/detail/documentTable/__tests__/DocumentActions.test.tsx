@@ -30,8 +30,9 @@ const documentRow = {
 
 const localeResources = [studioDefaultLocaleResources, releasesUsEnglishLocaleBundle]
 
-// The menu is mounted only once its button is pressed, so the items are asserted with it open.
-async function openMenu() {
+// The row actions live in a menu that is mounted only once its button is pressed, so the items
+// are asserted with it open.
+async function openActionsMenu() {
   await userEvent.click(screen.getByRole('button'))
 }
 
@@ -49,7 +50,7 @@ describe('DocumentActions', () => {
       {wrapper},
     )
     await flushMicrotasksThisIsACodeSmell()
-    await openMenu()
+    await openActionsMenu()
 
     expect(screen.getByText('Discard version')).toBeInTheDocument()
     expect(screen.getByText('Unpublish')).toBeInTheDocument()
@@ -95,7 +96,7 @@ describe('DocumentActions', () => {
       {wrapper},
     )
     await flushMicrotasksThisIsACodeSmell()
-    await openMenu()
+    await openActionsMenu()
 
     expect(screen.getByText('Discard version')).toBeInTheDocument()
     expect(screen.queryByText('Unpublish')).not.toBeInTheDocument()
@@ -121,7 +122,7 @@ describe('DocumentActions', () => {
       {wrapper},
     )
     await flushMicrotasksThisIsACodeSmell()
-    await openMenu()
+    await openActionsMenu()
 
     expect(screen.queryByText('Discard version')).not.toBeInTheDocument()
     expect(screen.getByText('Unpublish')).toBeInTheDocument()

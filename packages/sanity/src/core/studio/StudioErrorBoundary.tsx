@@ -10,16 +10,14 @@ import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
 import {ImportErrorScreen} from './screens/ImportErrorScreen'
 import {SchemaErrorsScreen} from './screens/schemaErrors/SchemaErrorsScreen'
 
-/**
- * The DevServerStoppedErrorScreen will always have been lazy loaded to client
- * in instances where it is used, since DevServerStoppedError is only thrown
- * when this module is loaded, and this screen is also conditional on this error type
- */
-const DevServerStoppedErrorScreen = lazy(() =>
-  import('./ViteDevServerStopped').then((DevServerStopped) => ({
-    default: DevServerStopped.DevServerStoppedErrorScreen,
-  })),
-)
+const lazyDevServerStoppedErrorScreen = () => import('./ViteDevServerStoppedErrorScreen')
+const DevServerStoppedErrorScreen = lazy(lazyDevServerStoppedErrorScreen)
+
+if (import.meta.hot && process.env.NODE_ENV === 'development') {
+  // Preload the dev server stopped screen right away: once the server is gone, no chunk can be
+  // fetched anymore, so the screen that reports it has to be loaded already
+  void lazyDevServerStoppedErrorScreen()
+}
 
 interface StudioErrorBoundaryProps {
   children: ReactNode

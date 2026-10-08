@@ -334,6 +334,7 @@ import type {
   CurrentUserAttribute,
   CustomValidator,
   CustomValidatorResult,
+  DashboardLink,
   DashboardNotificationPayload,
   DateComponents,
   DateDefinition,
@@ -1217,6 +1218,7 @@ import type {
   ProjectOrganizationData,
   ProjectStore,
   ProvenanceDiffAnnotation,
+  ProviderProps,
   PublishDocumentVersionEvent,
   PUBLISHED,
   PublishedId,
@@ -1603,6 +1605,7 @@ import type {
   useAnnotationColor,
   useArchivedReleases,
   useCanvasCompanionDoc,
+  useCanvasNavigate,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
   useClient,
@@ -2863,6 +2866,9 @@ describe('sanity', () => {
   })
   test('CustomValidatorResult', () => {
     expectTypeOf<CustomValidatorResult>().not.toBeNever()
+  })
+  test('DashboardLink', () => {
+    expectTypeOf<typeof DashboardLink>().toBeFunction()
   })
   test('DashboardNotificationPayload', () => {
     expectTypeOf<DashboardNotificationPayload>().toBeObject()
@@ -5525,6 +5531,9 @@ describe('sanity', () => {
   test('ProvenanceDiffAnnotation', () => {
     expectTypeOf<ProvenanceDiffAnnotation>().toBeObject()
   })
+  test('ProviderProps', () => {
+    expectTypeOf<ProviderProps>().toBeObject()
+  })
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
   })
@@ -5786,7 +5795,7 @@ describe('sanity', () => {
     expectTypeOf<typeof resolveDiffComponent>().toBeFunction()
   })
   test('ResolvedTemplate', () => {
-    expectTypeOf<ResolvedTemplate>().not.toBeNever()
+    expectTypeOf<ResolvedTemplate<any, any>>().toBeObject()
   })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()
@@ -6688,6 +6697,9 @@ describe('sanity', () => {
   })
   test('useCanvasCompanionDoc', () => {
     expectTypeOf<typeof useCanvasCompanionDoc>().not.toBeNever()
+  })
+  test('useCanvasNavigate', () => {
+    expectTypeOf<typeof useCanvasNavigate>().toBeFunction()
   })
   test('useChangeIndicatorsReportedValues', () => {
     expectTypeOf<typeof useChangeIndicatorsReportedValues>().toBeFunction()

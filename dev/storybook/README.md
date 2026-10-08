@@ -99,7 +99,7 @@ Notes:
   and connecting the Git repository during setup enables automatic PR previews + production
   deploys on `main` (no separate `vercel git connect` needed if done during setup).
 - [vercel.json](vercel.json) pins the build: `cd ../.. && pnpm exec turbo run build
---filter=sanity-storybook` with output `storybook-static`, so upstream workspace packages are
+  --filter=sanity-storybook` with output `storybook-static`, so upstream workspace packages are
   built first and the project's detected framework preset is irrelevant. Git-integration builds
   clone the monorepo and install the pnpm workspace from the root (so `workspace:*` and
   `catalog:` protocols resolve) — the same behavior as the `test-studio-preview-iframe` project.

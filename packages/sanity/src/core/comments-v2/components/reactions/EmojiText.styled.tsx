@@ -10,5 +10,5 @@ type EmojiTextProps = TextProps<ElementType> &
 export function EmojiText(props: EmojiTextProps) {
   const {className, ...rest} = props
 
-  return <Text {...rest} className={clsx(emojiText, className)} />
+  return <Text {...rest} className={clsx(emojiText, className)} as="div" trim={true} />
 }

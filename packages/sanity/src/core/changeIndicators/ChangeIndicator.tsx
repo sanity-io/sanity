@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Text, useLayer} from '@sanity/ui'
+import {useLayer} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {pathToString} from '@sanity/validation/_internal'
 import {
@@ -13,6 +13,7 @@ import {
   useState,
 } from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
+import {Text} from 'ui5'
 
 import {EMPTY_ARRAY} from '../util/empty'
 import {DEBUG} from './constants'
@@ -88,7 +89,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
         isInteractive={isInteractive}
       >
         {DEBUG && (
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {pathToString(path)}
           </Text>
         )}

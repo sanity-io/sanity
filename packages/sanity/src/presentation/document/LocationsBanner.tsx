@@ -170,10 +170,10 @@ function LocationItem(props: {
     params: {
       id: documentId,
       type: documentType,
-      mode: 'presentation',
-      presentation: toolName,
       ...presentation?.structureParams,
       ...paneParams,
+      mode: 'presentation',
+      presentation: toolName,
       preview: node.href,
     },
   })

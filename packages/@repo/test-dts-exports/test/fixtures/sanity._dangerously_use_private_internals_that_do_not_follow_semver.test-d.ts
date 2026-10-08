@@ -143,6 +143,7 @@ import type {
   CreateWorkspaceFromConfigOptions,
   CrossDatasetReferencePreview,
   CustomComponentPaneNode,
+  DashboardLink,
   decodeJsonParams,
   decodePath,
   DEFAULT_INTENT_HANDLER,
@@ -714,6 +715,7 @@ import type {
   useAllVariants,
   useAnnotationColor,
   useArchivedReleases,
+  useCanvasNavigate,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
   useColorScheme,
@@ -1310,6 +1312,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('CustomComponentPaneNode', () => {
     expectTypeOf<CustomComponentPaneNode>().toBeObject()
+  })
+  test('DashboardLink', () => {
+    expectTypeOf<typeof DashboardLink>().toBeFunction()
   })
   test('decodeJsonParams', () => {
     expectTypeOf<typeof decodeJsonParams>().toBeFunction()
@@ -3025,6 +3030,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useArchivedReleases', () => {
     expectTypeOf<typeof useArchivedReleases>().toBeFunction()
+  })
+  test('useCanvasNavigate', () => {
+    expectTypeOf<typeof useCanvasNavigate>().toBeFunction()
   })
   test('useChangeIndicatorsReportedValues', () => {
     expectTypeOf<typeof useChangeIndicatorsReportedValues>().toBeFunction()

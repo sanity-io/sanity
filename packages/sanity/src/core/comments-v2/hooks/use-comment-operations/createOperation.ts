@@ -204,7 +204,8 @@ export async function createOperation(props: CreateOperationProps): Promise<void
           threadId: comment.threadId,
           context: {...nextComment.context},
           target: comment.range
-            ? {...target, range: comment.range, fieldValue: comment.fieldValue}
+            ? // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
+              {...target, range: comment.range, fieldValue: comment.fieldValue}
             : target,
         }
   }
