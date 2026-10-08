@@ -17,3 +17,23 @@ export const readFileAsBase64: BrowserCommand<[filePath: string]> = ({testPath},
   const buffer = readFileSync(resolved)
   return buffer.toString('base64')
 }
+
+/**
+ * Leave every request to `url` pending until `releaseRequests` (server-side command), for browser
+ * tests that need a resource that never finishes loading.
+ */
+export const holdRequests: BrowserCommand<[url: string]> = async ({page}, url) => {
+  await page.route(url, () => undefined)
+}
+
+/** Stop holding the requests to `url` that `holdRequests` held (server-side command). */
+export const releaseRequests: BrowserCommand<[url: string]> = async ({page}, url) => {
+  await page.unroute(url)
+}
+
+declare module 'vitest/browser' {
+  interface BrowserCommands {
+    holdRequests: (url: string) => Promise<void>
+    releaseRequests: (url: string) => Promise<void>
+  }
+}
