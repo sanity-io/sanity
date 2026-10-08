@@ -27,6 +27,23 @@ export function isChannelError(error: unknown): error is ChannelError {
 }
 
 /**
+ * Check if a ChannelError represents a query/configuration error that is
+ * caller-domain (e.g. malformed GROQ filter, invalid dataset) rather than
+ * an infrastructure failure.
+ *
+ * ChannelErrors containing query parse errors have a structured `type`
+ * field in their data payload. These are actionable by fixing the query,
+ * not by retrying or reloading, so they should not be claimed by the
+ * studio's error UI.
+ */
+function isQueryOrConfigChannelError(error: ChannelError): boolean {
+  const data = error.data as {error?: {type?: string}} | undefined
+  if (!data?.error) return false
+  // Query parse errors have `type: 'queryParseError'` in the error payload
+  return data.error.type === 'queryParseError'
+}
+
+/**
  * Node / get-it v8 timeout codes. get-it v9 reports timeouts as
  * `TimeoutError` (caught by {@link isTimeoutError}); older transports used
  * `ESOCKETTIMEDOUT` (idle socket) or `ETIMEDOUT` (connect/request deadline)
@@ -118,7 +135,13 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
     // the caller is better positioned to render than a generic dialog.
     return null
   }
-  if (isChannelError(err)) return {type: 'channelError', error: err}
+  // Only classify ChannelErrors that represent infrastructure failures (e.g.
+  // "Internal error"), not caller-domain issues like malformed GROQ queries.
+  // Query parse errors and similar are actionable by fixing the query, not by
+  // retrying, so they should stay with the caller.
+  if (isChannelError(err) && !isQueryOrConfigChannelError(err)) {
+    return {type: 'channelError', error: err}
+  }
   if (isNetworkError(err)) return {type: 'networkError', error: err}
   return null
 }

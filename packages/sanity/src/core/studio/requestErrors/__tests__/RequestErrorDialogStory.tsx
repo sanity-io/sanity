@@ -1,3 +1,4 @@
+import {ChannelError} from '@sanity/client'
 import noop from 'lodash-es/noop.js'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
@@ -8,6 +9,12 @@ const NETWORK_CLAIM: Extract<RequestErrorClaim, {type: 'networkError'}> = {
   type: 'networkError',
   error: new Error('Failed to fetch'),
   retryable: true,
+}
+
+const CHANNEL_ERROR_CLAIM: Extract<RequestErrorClaim, {type: 'channelError'}> = {
+  type: 'channelError',
+  error: new ChannelError('Internal error', {error: {description: 'Internal error'}}),
+  retryable: false,
 }
 
 /**
@@ -21,6 +28,19 @@ export function RequestErrorDialogStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <RequestErrorDialog claim={NETWORK_CLAIM} onRetry={noop} />
+    </TestWrapper>
+  )
+}
+
+/**
+ * Chromatic sentinel for the channel error dialog. Shows the "Connection
+ * error" heading, channel-specific copy, Sanity Status link, and the
+ * non-retryable footer (Reload Studio only, no Try again).
+ */
+export function ChannelErrorDialogStory() {
+  return (
+    <TestWrapper schemaTypes={[]}>
+      <RequestErrorDialog claim={CHANNEL_ERROR_CLAIM} onRetry={noop} />
     </TestWrapper>
   )
 }

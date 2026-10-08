@@ -49,6 +49,18 @@ function channelError(): ChannelError {
   return new ChannelError('Internal error', {error: {description: 'Internal error'}})
 }
 
+function queryParseChannelError(): ChannelError {
+  return new ChannelError('GROQ query parse error', {
+    error: {
+      type: 'queryParseError',
+      query: '*[_type == "foo"',
+      start: 16,
+      end: 16,
+      description: 'Unexpected end of input',
+    },
+  })
+}
+
 async function latestClaim(
   channel: ReturnType<typeof createRequestErrorChannel>,
 ): Promise<RequestErrorClaim | undefined> {
@@ -155,7 +167,7 @@ describe('classifyRequestError', () => {
     expect(classifyRequestError(timeout)).toMatchObject({type: 'networkError'})
   })
 
-  it('classifies ChannelError as channelError', () => {
+  it('classifies ChannelError with internal error as channelError', () => {
     expect(classifyRequestError(channelError())).toMatchObject({type: 'channelError'})
   })
 
@@ -167,6 +179,29 @@ describe('classifyRequestError', () => {
     }
 
     expect(classifyRequestError(error)).toEqual({type: 'channelError', error})
+  })
+
+  it('leaves query parse ChannelErrors unclassified (caller-domain)', () => {
+    // Query parse errors are actionable by fixing the GROQ query,
+    // not by retrying or reloading, so they stay with the caller.
+    expect(classifyRequestError(queryParseChannelError())).toBeNull()
+  })
+
+  it('leaves query parse channel errors from another client copy unclassified', () => {
+    const error = {
+      name: 'ChannelError',
+      message: 'GROQ query parse error',
+      data: {
+        error: {
+          type: 'queryParseError',
+          query: '*[_type == "foo"',
+          start: 16,
+          end: 16,
+          description: 'Unexpected end of input',
+        },
+      },
+    }
+    expect(classifyRequestError(error)).toBeNull()
   })
 
   it('leaves arbitrary errors unclassified', () => {
