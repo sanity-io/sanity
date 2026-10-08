@@ -1,6 +1,13 @@
-import {expect} from '@playwright/test'
+import {expect, type Page} from '@playwright/test'
 
 import {test} from '../../studio-test'
+
+async function openResourcesMenu(page: Page) {
+  const button = page.getByTestId('button-resources-menu')
+  await button.hover()
+  await expect(page.getByTestId('menu-button-resources')).toBeAttached()
+  await button.click()
+}
 
 test.describe('auto-updating studio behavior', () => {
   test('should facilitate reload if in auto-updating studio, and version is higher than minversion from importmap', async ({
@@ -48,8 +55,7 @@ test.describe('auto-updating studio behavior', () => {
     await expect(resourcesMenuButton).toBeVisible()
     await expect(resourcesMenuButton).toBeEnabled()
 
-    // Click to open the menu
-    await resourcesMenuButton.click()
+    await openResourcesMenu(page)
 
     // Wait for menu to be visible before checking for the update item
     await expect(page.getByTestId('menu-item-update-studio-now')).toBeVisible({timeout: 10000})
@@ -87,7 +93,7 @@ test.describe('deprecated studio version', () => {
     const resourcesMenuButton = page.getByTestId('button-resources-menu')
     await expect(resourcesMenuButton).toBeVisible()
     await expect(resourcesMenuButton).toBeEnabled()
-    await resourcesMenuButton.click()
+    await openResourcesMenu(page)
 
     const versionItem = page.getByTestId('menu-item-studio-version-deprecated')
     await expect(versionItem).toBeVisible({timeout: 10000})
