@@ -38,6 +38,12 @@ describe('ColorScheme', () => {
     })
     // Clear all mocks before each test
     vi.clearAllMocks()
+    setSnapshot('system')
+    document.documentElement.style.colorScheme = ''
+  })
+
+  afterEach(() => {
+    document.documentElement.style.colorScheme = ''
   })
 
   describe('ColorSchemeProvider - smoke tests', () => {
@@ -92,6 +98,7 @@ describe('ColorScheme', () => {
       expect(screen.getByTestId('scheme')).toHaveTextContent('dark')
       expect(onSchemeChange).toHaveBeenCalledWith('dark')
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith('sanityStudio:ui:colorScheme', 'dark')
+      expect(document.documentElement.style.colorScheme).toBe('dark')
     })
   })
 
