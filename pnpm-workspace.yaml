@@ -24,7 +24,7 @@ allowBuilds:
 catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
-  '@playwright/test': 1.63.0
+  '@playwright/test': 1.64.0
   '@sanity/client': ^8.9.0
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
@@ -43,7 +43,7 @@ catalog:
   get-it: ^9.6.1
   jsdom: ^29.1.1
   oxc-transform-react: ^0.153.0
-  playwright: 1.63.0
+  playwright: 1.64.0
   react: ^19.3.0
   react-dom: ^19.3.0
   react-is: ^19.3.0
