@@ -115,6 +115,24 @@ describe('UserAvatar', () => {
     expect(container.querySelector(AVATAR)).not.toBeInTheDocument()
   })
 
+  it('looks the user up again for a later avatar when a lookup failed', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    let attempt = 0
+    mockGetUser(async () => {
+      attempt++
+      if (attempt === 1) throw new Error('Network request failed')
+      return ada
+    })
+
+    const {container, unmount} = await renderAvatar(<UserAvatar user={ada.id} />)
+    expect(container.querySelector(AVATAR)).not.toBeInTheDocument()
+    unmount()
+
+    await renderAvatar(<UserAvatar user={ada.id} />)
+
+    expect(screen.getByLabelText('Ada Lovelace')).toBeInTheDocument()
+  })
+
   it('renders an already loaded user without a loading state, from a single lookup', async () => {
     const getUser = mockGetUser(async () => ada)
     await renderAvatar(<UserAvatar user={ada.id} />)

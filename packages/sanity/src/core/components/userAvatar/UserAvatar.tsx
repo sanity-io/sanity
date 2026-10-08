@@ -10,7 +10,7 @@ import {
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type RefAttributes, Suspense, use, useMemo, useState} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
-import {type Observable} from 'rxjs'
+import {catchError, type Observable, of} from 'rxjs'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -138,6 +138,11 @@ function StaticUserAvatar(
 // the user has loaded render without suspending.
 const USER_TTL = 5 * 60_000
 const userCaches = new WeakMap<UserStore, (userId: string) => Observable<User | null>>()
+// A failed lookup has to reach the cache, which releases its key instead of caching the failure,
+// and becomes `null` for subscribers here. Keeping one wrapper per cached observable keeps the
+// identity react-rx settles its promise against stable while a lookup is cached, and replaces it
+// together with a released one, so a later avatar retries instead of reusing the `null`.
+const nullOnFailure = new WeakMap<Observable<User | null>, Observable<User | null>>()
 
 function observeUser(userStore: UserStore, userId: string): Observable<User | null> {
   let cache = userCaches.get(userStore)
@@ -146,13 +151,19 @@ function observeUser(userStore: UserStore, userId: string): Observable<User | nu
       (id: string) =>
         userStore.getUser(id).catch((err) => {
           console.error(err)
-          return null
+          throw err
         }),
       {ttl: USER_TTL},
     )
     userCaches.set(userStore, cache)
   }
-  return cache(userId)
+  const lookup = cache(userId)
+  let user = nullOnFailure.get(lookup)
+  if (!user) {
+    user = lookup.pipe(catchError(() => of(null)))
+    nullOnFailure.set(lookup, user)
+  }
+  return user
 }
 
 function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
