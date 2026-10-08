@@ -3,10 +3,10 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ValidationMarker} from '@sanity/types'
 import {Badge, Card, Inline} from '@sanity/ui'
 import {format} from 'date-fns/format'
-import {type CSSProperties} from 'react'
+import {type CSSProperties, use} from 'react'
+import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
 import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {DATE_FORMAT} from '../../../studio/timezones/constants'
 import {DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
 import usePollSchedules from '../../hooks/usePollSchedules'
@@ -35,7 +35,8 @@ export function ScheduleBanner(props: Props) {
   const publishedId = usePublishedId(id)
   const {hasError} = useValidationState(markers)
   const {schedules} = usePollSchedules({documentId: publishedId, state: 'scheduled'})
-  const {mode} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
 
   const hasSchedules = schedules.length > 0
   if (!hasSchedules) {

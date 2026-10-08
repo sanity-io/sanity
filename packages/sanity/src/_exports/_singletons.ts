@@ -79,6 +79,7 @@ export {
   GetFormValueContext,
   type GetFormValueContextValue,
 } from '../_singletons/context/GetFormValueContext'
+export {HasUsedScheduledPublishingPromiseContext} from '../_singletons/context/HasUsedScheduledPublishingPromiseContext'
 export {
   HoveredFieldContext,
   type HoveredFieldContextValue,
@@ -146,10 +147,8 @@ export {ResourceCacheContext} from '../_singletons/context/ResourceCacheContext'
 export {ReviewChangesContext} from '../_singletons/context/ReviewChangesContext'
 export {RouterContext} from '../_singletons/context/RouterContext'
 export {RouterHistoryContext} from '../_singletons/context/RouterHistoryContext'
-export {
-  ScheduledPublishingEnabledContext,
-  type ScheduledPublishingEnabledContextValue,
-} from '../_singletons/context/ScheduledPublishingEnabledContext'
+export {ScheduledPublishingEnabledContext} from '../_singletons/context/ScheduledPublishingEnabledContext'
+export {ScheduledPublishingModePromiseContext} from '../_singletons/context/ScheduledPublishingModePromiseContext'
 export {
   SchedulePublishUpsellContext,
   type SchedulePublishUpsellContextValue,

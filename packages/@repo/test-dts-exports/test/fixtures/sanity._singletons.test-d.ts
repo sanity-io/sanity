@@ -67,6 +67,7 @@ import type {
   FullscreenPTEContext,
   GetFormValueContext,
   GetFormValueContextValue,
+  HasUsedScheduledPublishingPromiseContext,
   HoveredFieldContext,
   HoveredFieldContextValue,
   IsLastPaneContext,
@@ -117,7 +118,7 @@ import type {
   RouterContext,
   RouterHistoryContext,
   ScheduledPublishingEnabledContext,
-  ScheduledPublishingEnabledContextValue,
+  ScheduledPublishingModePromiseContext,
   SchedulePublishUpsellContext,
   SchedulePublishUpsellContextValue,
   SchedulesContext,
@@ -349,6 +350,9 @@ describe('sanity/_singletons', () => {
   test('GetFormValueContextValue', () => {
     expectTypeOf<GetFormValueContextValue>().not.toBeNever()
   })
+  test('HasUsedScheduledPublishingPromiseContext', () => {
+    expectTypeOf<typeof HasUsedScheduledPublishingPromiseContext>().not.toBeNever()
+  })
   test('HoveredFieldContext', () => {
     expectTypeOf<typeof HoveredFieldContext>().not.toBeNever()
   })
@@ -499,8 +503,8 @@ describe('sanity/_singletons', () => {
   test('ScheduledPublishingEnabledContext', () => {
     expectTypeOf<typeof ScheduledPublishingEnabledContext>().not.toBeNever()
   })
-  test('ScheduledPublishingEnabledContextValue', () => {
-    expectTypeOf<ScheduledPublishingEnabledContextValue>().not.toBeNever()
+  test('ScheduledPublishingModePromiseContext', () => {
+    expectTypeOf<typeof ScheduledPublishingModePromiseContext>().not.toBeNever()
   })
   test('SchedulePublishUpsellContext', () => {
     expectTypeOf<typeof SchedulePublishUpsellContext>().not.toBeNever()
