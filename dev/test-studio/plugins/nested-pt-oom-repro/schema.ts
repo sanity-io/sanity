@@ -6,31 +6,30 @@
  * `Cannot read properties of undefined (reading 'map')` in
  * `compileInlineObjectOfMember`. EDEX-2600
  * (https://linear.app/sanity/issue/EDEX-2600) fixed that throw. On 6.18.0 /
- * `@portabletext/sanity-bridge` 4.1.2 the throw is gone, and opening a document
- * that has the field sits on "Loading document…" until the tab runs out of memory.
+ * `@portabletext/sanity-bridge` 4.1.2 the throw is gone, and they report that
+ * opening a document with the field sits on "Loading document…" until the tab
+ * runs out of memory.
  *
  * The block content, content block, and URL object match the schema they
  * shared. `{type: 'table'}` is theirs too; they did not paste the table type.
  * This table is the nested unnamed-object shape from EDEX-2600 (anonymous rows
- * of anonymous cells), which is what produced the original `map` throw.
+ * of anonymous cells), which is what produced the original `map` throw. The
+ * other referenced objects are title-only stubs.
  *
- * Manual repro:
+ * Manual check:
  * 1. Open the "Nested PT OOM" workspace (`/nested-pt-oom`).
- * 2. Create a Page. Its initial value already nests a content block, a URL
- *    object, and a table inside Body.
- * 3. The document pane should stay on "Loading document…" and the tab's memory
- *    should climb until it crashes.
+ * 2. Create a Page. Body already nests a content block, a URL object, and a table.
+ * 3. Edit that content block. Its Content field is the same block content again.
  */
 import {defineArrayMember, defineField, defineType, type SanityDocument} from 'sanity'
 
 export const NESTED_PT_OOM_PAGE_TYPE = 'nestedPtOomPage'
 
 const INSTRUCTIONS = [
-  'Open this document and watch the document pane.',
-  'On sanity 6.18 / @portabletext/sanity-bridge 4.1.2 it stays on "Loading document…" and the browser tab runs out of memory.',
+  'Reported on sanity 6.18 / @portabletext/sanity-bridge 4.1.2: a document with this field stays on "Loading document…" until the tab runs out of memory.',
   "On 6.17 the same field threw `Cannot read properties of undefined (reading 'map')` in compileInlineObjectOfMember (EDEX-2600).",
-  'Body is their blockContent. Content Block is inlined in the text block and its own Blocks fields are that same block content.',
-  'Table is anonymous rows of anonymous cells, the nested unnamed-object shape from EDEX-2600.',
+  'Body is their blockContent. Edit the nested Content Block: its Content field is that same block content again.',
+  'Table is anonymous rows of anonymous cells, the nested unnamed-object shape from EDEX-2600. They referenced {type: "table"} without pasting the type.',
 ].join('\n')
 
 const styleOptions = [
