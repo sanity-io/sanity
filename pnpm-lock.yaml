@@ -2116,8 +2116,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       '@sanity/cli':
-        specifier: ^8.14.0
-        version: 8.14.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(@types/react@19.3.0)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(oxfmt@0.72.0)(react@19.3.0)(rolldown@1.2.12)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(xstate@5.33.2)
+        specifier: ^8.16.0
+        version: 8.16.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@sanity/workflow-blueprint@0.36.0)(@types/node@24.19.1)(@types/react@19.3.0)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(oxfmt@0.72.0)(react@19.3.0)(rolldown@1.2.12)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(xstate@5.33.2)
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.9.0(vitest@5.0.3)
@@ -7479,8 +7479,8 @@ packages:
     resolution: {integrity: sha512-wlfpO5gbYLPU5K6i7gaRBuZHGOnyEsuPOe8XMfEklLi1pE0PhRl9WgdLRwwt+M+aGguAuOpISjEcFSf2I5N3lA==}
     engines: {node: '>=22.12'}
 
-  '@sanity/blueprints@0.24.0':
-    resolution: {integrity: sha512-xhbpKrjcfowl7M1hm4C2E5x+IxMTpRMylWPLlK86bUImqhgdNMjI+AFHxJa8H7FvIl5byAhGvGRMJvWdvljviw==}
+  '@sanity/blueprints@0.27.0':
+    resolution: {integrity: sha512-WIvZ9IfuDV2AArsLAIqAYGiN0IGJ+Mux2Jet3wSib3rZRrAz7L85lBLPS4ndDIzn7uarHqSKbwFZ7YPp35Ksgw==}
     engines: {node: '>=22'}
     peerDependencies:
       vite: '>= 8'
@@ -7491,13 +7491,13 @@ packages:
   '@sanity/browserslist-config@1.0.5':
     resolution: {integrity: sha512-so+/UtCge8t1jq509hH0otbbptRz0zM/Aa0dh5MhMD7HGT6n2igWIL2VWH/9QR9e77Jn3dJsjz23mW1WCxT+sg==}
 
-  '@sanity/cli-build@6.4.4':
-    resolution: {integrity: sha512-BcYFMvxoj/eG/mOCP+kuHVeKXFHNo9fgXPddCN253LLsL4hnzZyZlhRACBjKhLrTJRavZZIdbCetRSgIdktrfg==}
+  '@sanity/cli-build@6.4.5':
+    resolution: {integrity: sha512-WyQe4t+1V6PAO1cUhl02mm6nNAt8PC4hPDDBhAhgrqEdDfk0FbycOHHvGa1wMLSdIG/65/KpyaMspP847SpOzg==}
     engines: {node: '>=22.12'}
     peerDependencies:
       babel-plugin-react-compiler: '*'
       oxc-transform-react: '*'
-      sanity: ^6.15.0
+      sanity: ^6.17.0
     peerDependenciesMeta:
       babel-plugin-react-compiler:
         optional: true
@@ -7506,8 +7506,8 @@ packages:
       sanity:
         optional: true
 
-  '@sanity/cli-core@3.8.2':
-    resolution: {integrity: sha512-baqWcnbV1atNj2kcxmNVCUFt8CHOYXOkq5e13nsID5+2WupoGVtTHl8imgiNxRk7vYXPfm6qryqH7ef/B6kP1A==}
+  '@sanity/cli-core@3.9.0':
+    resolution: {integrity: sha512-pUOQS5btL5lochiE45+kWWWVmXQqEogmxG1+LmVmkKiD9NhCJVFOEuMFRHGSgXbECFZBq96+8TjusdjxJsSddw==}
     engines: {node: '>=22.12'}
     peerDependencies:
       babel-plugin-react-compiler: '*'
@@ -7518,8 +7518,8 @@ packages:
       oxc-transform-react:
         optional: true
 
-  '@sanity/cli@8.14.0':
-    resolution: {integrity: sha512-dTEfF7/65ZpgAlk7shJfzreHlmtrS1aqCOnEzj6DkWn/SEdS7KwhfPiQd00ME7yhxtZNaAGWpKwQ3w/yqSK76g==}
+  '@sanity/cli@8.16.0':
+    resolution: {integrity: sha512-I6Pp2Wu9/+d+/sOdj6/vD5D9VUKfTaZjO4HQg8mL19GOvSvk1GJpZoSAWhjkFLfH6TeEoOgWC/nEVPEc0V6BbA==}
     engines: {node: '>=22.12'}
     hasBin: true
     peerDependencies:
@@ -7547,8 +7547,8 @@ packages:
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
 
-  '@sanity/codegen@8.1.1':
-    resolution: {integrity: sha512-dZqAQdXRJomvSSQVwnyT3geMt7GbrzQT2Ieh+fKS9TkrEaOYaR3JBv5HMXs+OkfvZq/YEkOhjz1r3MFlMIdSvg==}
+  '@sanity/codegen@8.2.0':
+    resolution: {integrity: sha512-bMJuhbXLwMGZfnwenRBa4umhWoO5VTZQhAiXBcO/rwgnzEtA9mF5fv9SYcqX7mj8O3l35XeeETUdi1qZYVg1GQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
       oxfmt: '*'
@@ -7622,8 +7622,8 @@ packages:
       react-dom: ^19.2
       sanity: ^5 || ^6.0.0-0
 
-  '@sanity/groq-condition-describe@0.5.0':
-    resolution: {integrity: sha512-+fC2CBbbL5kk4rSO5oDOawJQU+nC2qlyvR8WfJtcrlB7sYJq0vBoj16jyE+cKSw7zt5ZpxhYWkAEgSM6BkQXAQ==}
+  '@sanity/groq-condition-describe@0.5.2':
+    resolution: {integrity: sha512-HbP+UytB9gbScX5JuCM5mJNIZ093p3eeuDojqbf5KIunBaAqi0AuamsU5bjfNa/roE92xAJ9HDLbS5Vc93aPWA==}
     engines: {node: '>=20'}
 
   '@sanity/icons@5.2.3':
@@ -7712,10 +7712,14 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19
 
-  '@sanity/runtime-cli@17.14.0':
-    resolution: {integrity: sha512-0kbA6aFiwGMLVdOZ2bskWpHdxGbGCgiQmyNL5NxETMPJC2El3XgWjEIsyRb93ZIcxhJVzO1Yf3PQ3YpW82GN8g==}
+  '@sanity/runtime-cli@17.15.0':
+    resolution: {integrity: sha512-rEjdm+Ju1TIVqUIK9vvQL4y8oHc4p+6ssdGwwfDdFVrNlHHfswIy0XryWvcxhliIMLuD8ShEe2gSvSGRCg8tXQ==}
     engines: {node: '>=22.12'}
     hasBin: true
+
+  '@sanity/schema-descriptor-utils@1.3.3':
+    resolution: {integrity: sha512-Qb5ZTHStp2jXeK+KlrbOnoD4LakdTS/JSvHwl91wnQmQVkIp/K965C5qgZsrnBKmNf5BHZ8KijPiApJWBe/KCQ==}
+    engines: {node: '>=22'}
 
   '@sanity/sdk-react@3.8.0':
     resolution: {integrity: sha512-12VtN2C29ojQgWQE0YA6Oc0Xktgr6IbEYxo7yVr3lYyS9Q7Belj/xGqRLUOM2uRlJDC6+N9eq2335sKhgtM4zg==}
@@ -7879,24 +7883,35 @@ packages:
       svelte:
         optional: true
 
-  '@sanity/workbench-cli@2.8.3':
-    resolution: {integrity: sha512-JqXL78UyIxRcC0g3w+f8f3m9/dy1irVSYvUR9sy9LjDgnavD0fPuGeXh7538TWClrr4Rnfqex0htOglAF0VN8A==}
+  '@sanity/workbench-cli@2.8.4':
+    resolution: {integrity: sha512-b6ehlwEXUZQWoUoOXwsofmBK+Z2/41UW2SJxe5AIYrXpCiP5g4ud9kcaOZQSfte12cuiV31lYnQX2Uk5yP0SRg==}
     engines: {node: '>=22.12'}
 
   '@sanity/worker-channels@2.0.0':
     resolution: {integrity: sha512-mC+8yPQuw2rHXdHigFPU9thNa6vTaPmh7jFR6RvloE8s+6dmnk9bHdPXRbrrUqafxzK3L9aH2E170ubXyxcAIA==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
 
-  '@sanity/workflow-cli@0.32.0':
-    resolution: {integrity: sha512-okHCmYwCCCOpVaqJpcUHU+xyUJsQX8KfozYS+SNnvQ1I7Y4zy1nsUPmPiI7M8udMsTnhqmV5n1zWRUEypuKUDQ==}
+  '@sanity/workflow-blueprint@0.36.0':
+    resolution: {integrity: sha512-9+uhiY7Ldj/XiIu1OaAFjcYQZj/m9QMHh1fu9xmJXx6AbklsOCpXfoqowepmDbnUrImMEicsvb1vahlR+Wl9pA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@sanity/workflow-engine': 0.36.0
+      typescript: ^6.0.3 || ^7.0.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
+  '@sanity/workflow-cli@0.36.0':
+    resolution: {integrity: sha512-xbhMiEA2hw99gRtPI+2KihERL4ZPL0BM0YuVxsn9KoIsH5vhtt5Tk8+IQOeoeE6NDNibyh4jomkYMxyDMblTnQ==}
     engines: {node: '>=20.12'}
     hasBin: true
     peerDependencies:
       '@sanity/cli-core': ^3.6.0
-      '@sanity/workflow-engine': 0.32.0
+      '@sanity/workflow-blueprint': 0.36.0
+      '@sanity/workflow-engine': 0.36.0
 
-  '@sanity/workflow-engine@0.32.0':
-    resolution: {integrity: sha512-+zr3tqvqmU6Xq20Xq8bJtvZn6bbNt/w7T5WqUfsbla1s7JSI6E5UB7vkUN340u6o3ysBil+kjxclgrtrfeFFiw==}
+  '@sanity/workflow-engine@0.36.0':
+    resolution: {integrity: sha512-ONK3O+X5XEC6EyG+OUnhgrdYzOsVi0VbuB6AnY1D6uc+mV/IKcCZRiZHlJoQzyXI8/EU02mHtc/CRmWBQWbPCg==}
     engines: {node: '>=20'}
 
   '@sec-ant/readable-stream@0.4.1':
@@ -13265,6 +13280,9 @@ packages:
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
+
+  parse-duration@2.1.9:
+    resolution: {integrity: sha512-q73c2djLx0fPIEcnW4Eb9LBZnH+NunMUzKh3/UwHyMz8LKxd4hF0OVq3nap8x0AevX1QEyCojF7QO/vAb6PFiA==}
 
   parse-entities@4.0.2:
     resolution: {integrity: sha512-GG2AQYWoLgL877gQIKeRPGO1xF9+eG1ujIb5soS5gPvLQ1y2o8FL90w2QWNdf9I361Mpp7726c+lj3U0qK1uGw==}
@@ -20322,22 +20340,24 @@ snapshots:
 
   '@sanity/blueprints-parser@0.5.0': {}
 
-  '@sanity/blueprints@0.24.0(vite@8.3.3)':
+  '@sanity/blueprints@0.27.0(vite@8.3.3)':
+    dependencies:
+      parse-duration: 2.1.9
     optionalDependencies:
       vite: 8.3.3(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
   '@sanity/browserslist-config@1.0.5': {}
 
-  '@sanity/cli-build@6.4.4(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)':
+  '@sanity/cli-build@6.4.5(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)':
     dependencies:
       '@oclif/core': 4.14.0
       '@rolldown/plugin-babel': 0.2.4(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.12)(vite@8.3.3)
-      '@sanity/cli-core': 3.8.2(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/cli-core': 3.9.0(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.3.0)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 2.8.3(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/workbench-cli': 2.8.4(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
       '@vitejs/plugin-react': 6.1.2(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.153.0)(vite@8.3.3)
       chokidar: 5.0.0
       cjs-module-lexer: 2.3.0
@@ -20382,7 +20402,7 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/cli-core@3.8.2(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)':
+  '@sanity/cli-core@3.9.0(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)':
     dependencies:
       '@inquirer/prompts': 8.7.3(@types/node@24.19.1)
       '@oclif/core': 4.14.0
@@ -20420,30 +20440,31 @@ snapshots:
       - vitest
       - yaml
 
-  '@sanity/cli@8.14.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(@types/react@19.3.0)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(oxfmt@0.72.0)(react@19.3.0)(rolldown@1.2.12)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(xstate@5.33.2)':
+  '@sanity/cli@8.16.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@sanity/workflow-blueprint@0.36.0)(@types/node@24.19.1)(@types/react@19.3.0)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(oxfmt@0.72.0)(react@19.3.0)(rolldown@1.2.12)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(xstate@5.33.2)':
     dependencies:
       '@oclif/core': 4.14.0
       '@oclif/plugin-help': 6.3.0
       '@oclif/plugin-not-found': 3.3.0(@types/node@24.19.1)
-      '@sanity/cli-build': 6.4.4(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
-      '@sanity/cli-core': 3.8.2(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/cli-build': 6.4.5(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/cli-core': 3.9.0(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
       '@sanity/client': 8.9.0(vitest@5.0.3)
-      '@sanity/codegen': 8.1.1(oxfmt@0.72.0)(react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
+      '@sanity/codegen': 8.2.0(oxfmt@0.72.0)(react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
       '@sanity/descriptors': 1.3.0
       '@sanity/export': 6.2.1(supports-color@8.1.1)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.1.0
       '@sanity/import': 7.0.4(@sanity/client@8.9.0)(vitest@5.0.3)
       '@sanity/migrate': 8.0.5(vitest@5.0.3)(xstate@5.33.2)
-      '@sanity/runtime-cli': 17.14.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/runtime-cli': 17.15.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
       '@sanity/schema': link:packages/@sanity/schema
+      '@sanity/schema-descriptor-utils': 1.3.3
       '@sanity/telemetry': 1.1.0(react@19.3.0)
       '@sanity/template-validator': 3.1.1
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 2.8.3(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/workbench-cli': 2.8.4(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
       '@sanity/worker-channels': 2.0.0
-      '@sanity/workflow-cli': 0.32.0(@sanity/cli-core@3.8.2)(@sanity/workflow-engine@0.32.0)(react@19.3.0)
-      '@sanity/workflow-engine': 0.32.0(@types/react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
+      '@sanity/workflow-cli': 0.36.0(@sanity/cli-core@3.9.0)(@sanity/workflow-blueprint@0.36.0)(@sanity/workflow-engine@0.36.0)(react@19.3.0)
+      '@sanity/workflow-engine': 0.36.0(@types/react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
       '@vercel/frameworks': 3.29.0
       chokidar: 5.0.0
       console-table-printer: 2.16.1
@@ -20492,6 +20513,7 @@ snapshots:
       - '@babel/runtime'
       - '@noble/hashes'
       - '@rolldown/plugin-babel'
+      - '@sanity/workflow-blueprint'
       - '@types/node'
       - '@types/react'
       - '@vitejs/devtools'
@@ -20567,7 +20589,7 @@ snapshots:
       - codemirror
       - react-dom
 
-  '@sanity/codegen@8.1.1(oxfmt@0.72.0)(react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)':
+  '@sanity/codegen@8.2.0(oxfmt@0.72.0)(react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/generator': 7.29.8
@@ -20692,7 +20714,7 @@ snapshots:
     transitivePeerDependencies:
       - styled-components
 
-  '@sanity/groq-condition-describe@0.5.0(supports-color@8.1.1)':
+  '@sanity/groq-condition-describe@0.5.2(supports-color@8.1.1)':
     dependencies:
       groq-js: 1.30.3(supports-color@8.1.1)
     transitivePeerDependencies:
@@ -20821,7 +20843,7 @@ snapshots:
       - typescript
       - vitest
 
-  '@sanity/runtime-cli@17.14.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)':
+  '@sanity/runtime-cli@17.15.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)':
     dependencies:
       '@architect/hydrate': 6.0.2
       '@architect/inventory': 6.1.0
@@ -20829,10 +20851,10 @@ snapshots:
       '@oclif/core': 4.14.0
       '@oclif/plugin-help': 6.3.0
       '@sanity-labs/oclif-plugin-skills-flag': 0.2.1(@oclif/core@4.14.0)
-      '@sanity/blueprints': 0.24.0(vite@8.3.3)
+      '@sanity/blueprints': 0.27.0(vite@8.3.3)
       '@sanity/blueprints-parser': 0.5.0
-      '@sanity/cli-build': 6.4.4(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
-      '@sanity/cli-core': 3.8.2(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/cli-build': 6.4.5(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(rolldown@1.2.12)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/cli-core': 3.9.0(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
       '@sanity/client': 8.9.0(vitest@5.0.3)
       adm-zip: 0.6.1
       array-treeify: 0.2.0
@@ -20879,6 +20901,8 @@ snapshots:
       - vitest
       - vue-tsc
       - yaml
+
+  '@sanity/schema-descriptor-utils@1.3.3': {}
 
   '@sanity/sdk-react@3.8.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.3)(xstate@5.33.2)':
     dependencies:
@@ -21123,11 +21147,11 @@ snapshots:
       - typescript
       - vitest
 
-  '@sanity/workbench-cli@2.8.3(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)':
+  '@sanity/workbench-cli@2.8.4(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.153.0)(tsx@4.23.15)(typescript@7.0.2)(vitest@5.0.3)(yaml@2.9.1)':
     dependencies:
       '@module-federation/runtime': 2.9.2
       '@module-federation/vite': 1.23.2(typescript@7.0.2)(vite@8.3.3)
-      '@sanity/cli-core': 3.8.2(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/cli-core': 3.9.0(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
       '@sanity/types': link:packages/@sanity/types
       '@vitejs/plugin-react': 6.1.2(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.153.0)(vite@8.3.3)
       form-data: 4.0.6
@@ -21162,14 +21186,23 @@ snapshots:
 
   '@sanity/worker-channels@2.0.0': {}
 
-  '@sanity/workflow-cli@0.32.0(@sanity/cli-core@3.8.2)(@sanity/workflow-engine@0.32.0)(react@19.3.0)':
+  '@sanity/workflow-blueprint@0.36.0(@sanity/workflow-engine@0.36.0)(typescript@7.0.2)':
+    dependencies:
+      '@sanity/client': 7.27.0
+      '@sanity/workflow-engine': 0.36.0(@types/react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
+    optionalDependencies:
+      typescript: 7.0.2
+
+  '@sanity/workflow-cli@0.36.0(@sanity/cli-core@3.9.0)(@sanity/workflow-blueprint@0.36.0)(@sanity/workflow-engine@0.36.0)(react@19.3.0)':
     dependencies:
       '@oclif/core': 4.14.0
       '@oclif/plugin-help': 6.3.0
-      '@sanity/cli-core': 3.8.2(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
+      '@sanity/cli-core': 3.9.0(@noble/hashes@2.4.0)(@types/node@24.19.1)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(oxc-transform-react@0.153.0)(tsx@4.23.15)(vitest@5.0.3)(yaml@2.9.1)
       '@sanity/client': 7.27.0
       '@sanity/telemetry': 1.1.0(react@19.3.0)
-      '@sanity/workflow-engine': 0.32.0(@types/react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
+      '@sanity/workflow-blueprint': 0.36.0(@sanity/workflow-engine@0.36.0)(typescript@7.0.2)
+      '@sanity/workflow-engine': 0.36.0(@types/react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
+      '@typescript/typescript6': 6.0.2
       boxen: 8.0.1
       diff: 9.0.0
       jiti: 2.7.0
@@ -21178,9 +21211,9 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@sanity/workflow-engine@0.32.0(@types/react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)':
+  '@sanity/workflow-engine@0.36.0(@types/react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
-      '@sanity/groq-condition-describe': 0.5.0(supports-color@8.1.1)
+      '@sanity/groq-condition-describe': 0.5.2(supports-color@8.1.1)
       '@sanity/id-utils': 1.1.0
       '@sanity/types': 5.31.2(@types/react@19.3.0)
       groq-js: 1.30.3(supports-color@8.1.1)
@@ -26910,6 +26943,8 @@ snapshots:
   parent-module@1.0.1:
     dependencies:
       callsites: 3.1.0
+
+  parse-duration@2.1.9: {}
 
   parse-entities@4.0.2:
     dependencies:
