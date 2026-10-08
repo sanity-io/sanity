@@ -22,7 +22,7 @@ const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?:
       ${props.$border ? 'box-shadow: inset 0 0 0 1px var(--card-border-color);' : ''};
       ${props.$removeBg ? '--card-avatar-gray-bg-color: transparent;' : ''}
       [data-as='button'][data-selected] & [data-ui='Icon'] {
-        --icon-color: light-dark(var(--blue-200), var(--blue-800));
+        --icon-color-muted: light-dark(var(--blue-200), var(--blue-800));
       }
     `
   },
