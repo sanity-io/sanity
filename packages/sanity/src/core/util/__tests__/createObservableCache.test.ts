@@ -98,8 +98,8 @@ describe('createObservableCache', () => {
       {ttl: TTL},
     )
 
-    await expect(firstValueFrom(cache())).rejects.toThrow('users endpoint is down')
-    await expect(firstValueFrom(cache())).rejects.toThrow('users endpoint is down')
+    await expect(firstValueFrom(cache('a'))).rejects.toThrow('users endpoint is down')
+    await expect(firstValueFrom(cache('a'))).rejects.toThrow('users endpoint is down')
     expect(attempts).toBe(2)
   })
 })
