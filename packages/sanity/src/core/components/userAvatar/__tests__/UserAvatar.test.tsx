@@ -18,7 +18,9 @@ const ada: User = {id: 'pAda', displayName: 'Ada Lovelace'}
 const grace: User = {id: 'pGrace', displayName: 'Grace Hopper'}
 
 function mockGetUser(getUser: UserStore['getUser']) {
-  vi.mocked(useUserStore).mockReturnValue({getUser: vi.fn(getUser), getUsers: vi.fn()})
+  const userStore = {getUser: vi.fn(getUser), getUsers: vi.fn()}
+  vi.mocked(useUserStore).mockReturnValue(userStore)
+  return userStore.getUser
 }
 
 function wrapper({children}: {children: ReactNode}) {
@@ -40,6 +42,27 @@ async function renderAvatar(ui: ReactNode) {
     result = render(ui, {wrapper})
   })
   return result
+}
+
+/** The skeletons inserted while `run` is pending, including ones a later commit replaced. */
+async function collectInsertedSkeletons(run: () => Promise<unknown>): Promise<Element[]> {
+  const inserted: Element[] = []
+  const collect = (records: MutationRecord[]) => {
+    for (const node of records.flatMap((record) => [...record.addedNodes])) {
+      if (node instanceof Element) {
+        inserted.push(...(node.matches(SKELETON) ? [node] : []), ...node.querySelectorAll(SKELETON))
+      }
+    }
+  }
+  const observer = new MutationObserver(collect)
+  observer.observe(document.body, {childList: true, subtree: true})
+  try {
+    await run()
+    collect(observer.takeRecords())
+  } finally {
+    observer.disconnect()
+  }
+  return inserted
 }
 
 afterEach(() => {
@@ -90,6 +113,19 @@ describe('UserAvatar', () => {
     expect(consoleError).toHaveBeenCalledWith(error)
     expect(container.querySelector(SKELETON)).toBeInTheDocument()
     expect(container.querySelector(AVATAR)).not.toBeInTheDocument()
+  })
+
+  it('renders an already loaded user without a loading state, from a single lookup', async () => {
+    const getUser = mockGetUser(async () => ada)
+    await renderAvatar(<UserAvatar user={ada.id} />)
+
+    const insertedSkeletons = await collectInsertedSkeletons(() =>
+      renderAvatar(<UserAvatar user={ada.id} size={2} />),
+    )
+
+    expect(insertedSkeletons).toHaveLength(0)
+    expect(screen.getAllByLabelText('Ada Lovelace')).toHaveLength(2)
+    expect(getUser).toHaveBeenCalledTimes(1)
   })
 
   it('switches to the new user when the user id changes', async () => {

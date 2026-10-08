@@ -13,10 +13,10 @@ test.describe('@sanity/default-layout: Navbar', () => {
     // Wait for tasks toolbar to be visible, when this is rendered it re renders the navbar. Causing flakiness in the next assertion
     await expect(page.getByTestId('tasks-toolbar')).toBeVisible()
 
-    // UserMenu renders <UserAvatar user="me" />, which suspends into AvatarSkeleton while
-    // userStore.getUser('me') resolves asynchronously (even though userStore primes "me").
-    // Navbar remounts (e.g. after tasks-toolbar) suspend again. Wait for the settled Avatar
-    // so the Chromatic archive does not flip between gray skeleton and colored initials.
+    // UserMenu renders <UserAvatar user="me" />, which suspends into AvatarSkeleton the
+    // first time it reads "me": userStore primes "me", but getUser still resolves it
+    // asynchronously. Wait for the settled Avatar so the Chromatic archive does not flip
+    // between gray skeleton and colored initials.
     await expect(page.locator('#user-menu [data-ui="Avatar"]')).toBeVisible()
 
     // Snapshot before opening the help menu: its contents are fetched

@@ -10,12 +10,14 @@ import {
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type RefAttributes, Suspense, use, useMemo, useState} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
-import {defer, from} from 'rxjs'
+import {type Observable} from 'rxjs'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useUserStore} from '../../store/datastores'
+import {type UserStore} from '../../store/user/userStore'
 import {useUserColor} from '../../user-color/hooks'
+import {createObservableCache} from '../../util/createObservableCache'
 import {isRecord} from '../../util/isRecord'
 
 interface AvatarSkeletonProps {
@@ -131,22 +133,33 @@ function StaticUserAvatar(
   )
 }
 
+// react-rx keeps one settled promise per observable, so every avatar for a user shares one
+// observable, and the hook keeps its promise for as long as the cache does: avatars mounting after
+// the user has loaded render without suspending.
+const USER_TTL = 5 * 60_000
+const userCaches = new WeakMap<UserStore, (userId: string) => Observable<User | null>>()
+
+function observeUser(userStore: UserStore, userId: string): Observable<User | null> {
+  let cache = userCaches.get(userStore)
+  if (!cache) {
+    cache = createObservableCache(
+      (id: string) =>
+        userStore.getUser(id).catch((err) => {
+          console.error(err)
+          return null
+        }),
+      {ttl: USER_TTL},
+    )
+    userCaches.set(userStore, cache)
+  }
+  return cache(userId)
+}
+
 function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
   const userStore = useUserStore()
-  const observable = useMemo(
-    () =>
-      defer(() =>
-        from(
-          userStore.getUser(user).catch((err) => {
-            console.error(err)
-            return null
-          }),
-        ),
-      ),
-    [userStore, user],
-  )
+  const observable = useMemo(() => observeUser(userStore, user), [userStore, user])
   // Read with `use()` below the boundary, never here: the lookup starts when this component commits
-  const promise = useObservablePromise(observable)
+  const promise = useObservablePromise(observable, {ttl: USER_TTL})
 
   return (
     <Suspense fallback={<AvatarSkeleton $size={loadedProps.size} animated />}>
