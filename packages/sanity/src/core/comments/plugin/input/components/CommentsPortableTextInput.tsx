@@ -87,6 +87,18 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   // Only the floating button's click handler tells upsell from default, so the input never waits
   // for the mode
   const modePromise = useCommentsMode()
+
+  // The inspector and the upsell dialog target the document the pane is showing, and the pane
+  // remounts the form when that document changes, so a click whose mode answers after this
+  // input went away must not act on its replacement
+  const mountedRef = useRef(false)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
   const currentUser = useCurrentUser()
   const portal = usePortal()
 
@@ -161,6 +173,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     // while the mode is pending, and the fragment has to match the selection that is stored
     const currentFragment = getFragment() || null
     void modePromise.then((mode) => {
+      if (!mountedRef.current) return
       if (mode === null) {
         // The feature check failed: the inspector explains that comments are unavailable
         onCommentsOpen?.()

@@ -4,7 +4,7 @@ import {useBoundaryElement} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 import {VStack} from 'ui5'
 
@@ -88,6 +88,17 @@ const FieldStack = styled(VStack)`
 function CommentFieldInner(props: FieldProps) {
   // Only the click handler tells upsell from default, so the field never waits for the mode
   const modePromise = useCommentsMode()
+
+  // The inspector, the upsell dialog and the authoring path all target the document the pane is
+  // showing, and the pane remounts the form when that document changes, so a click whose mode
+  // (or upsell content) answers after this field went away must not act on its replacement
+  const mountedRef = useRef(false)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   const currentUser = useCurrentUser()
   const {element: boundaryElement} = useBoundaryElement()
@@ -193,6 +204,8 @@ function CommentFieldInner(props: FieldProps) {
     // The mode and the upsell content are read when the button is clicked, not while rendering
     // the field
     void modePromise.then(async (mode) => {
+      if (!mountedRef.current) return
+
       if (mode === null) {
         // The feature check failed: the inspector explains that comments are unavailable
         onCommentsOpen?.()
@@ -201,6 +214,7 @@ function CommentFieldInner(props: FieldProps) {
 
       if (mode === 'upsell') {
         const {upsellData} = await upsellDataPromise
+        if (!mountedRef.current) return
         if (upsellData) {
           handleOpenDialog('field_action')
         } else {
