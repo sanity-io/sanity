@@ -42,7 +42,12 @@ export interface ValidationWorkerRun {
   getDocumentExists: (options: {id: string; signal?: AbortSignal}) => Promise<boolean>
 }
 
-const clients = new WeakMap<Schema, Promise<ValidationWorkerClient | undefined>>()
+interface SchemaWorker {
+  client: ValidationWorkerClient
+  unsupportedTypes: Set<string>
+}
+
+const workers = new WeakMap<Schema, Promise<SchemaWorker | undefined>>()
 
 function createDefaultWorker() {
   return new Worker(new URL('./validation.worker.ts', import.meta.url), {
@@ -64,34 +69,38 @@ function collectI18nResources(i18next: ValidationWorkerI18nSource): WorkerI18nRe
 
 /**
  * One worker per schema, created on first use. Resolves to `undefined` when the worker cannot be
- * set up (no `Worker` global, a schema the manifest cannot express, a failing worker script), in
- * which case validation stays on the main thread for that schema.
+ * set up (no `Worker` global, a schema the manifest cannot express at all, a failing worker
+ * script), in which case validation stays on the main thread for that schema. Document types the
+ * worker had to leave out of its schema are validated on the main thread as well.
  */
-function getWorkerClient(
-  ctx: ValidationWorkerContext,
-): Promise<ValidationWorkerClient | undefined> {
-  const existing = clients.get(ctx.schema)
+function getSchemaWorker(ctx: ValidationWorkerContext): Promise<SchemaWorker | undefined> {
+  const existing = workers.get(ctx.schema)
   if (existing) return existing
 
-  const client = (async () => {
+  const worker = (async () => {
     try {
       if (!ctx.createWorker && typeof Worker === 'undefined') return undefined
       const types = extractManifestSchemaTypes(ctx.schema)
       await ctx.i18n.loadNamespaces(['validation'])
-      const workerClient = createValidationWorkerClient({
+      const client = createValidationWorkerClient({
         port: (ctx.createWorker ?? createDefaultWorker)(),
         schema: {name: ctx.schema.name, types},
         i18n: collectI18nResources(ctx.i18next),
       })
-      await workerClient.ready
-      return workerClient
+      const {unsupportedTypes} = await client.ready
+      if (unsupportedTypes.length > 0) {
+        console.warn(
+          `Validation worker: the schema manifest cannot express ${unsupportedTypes.join(', ')}; documents of these types are validated on the main thread`,
+        )
+      }
+      return {client, unsupportedTypes: new Set(unsupportedTypes)}
     } catch (error) {
       console.warn('Validation worker unavailable, validating on the main thread instead:', error)
       return undefined
     }
   })()
-  clients.set(ctx.schema, client)
-  return client
+  workers.set(ctx.schema, worker)
+  return worker
 }
 
 function toDocumentValidationMarker(marker: ValidationMarker): DocumentValidationMarker {
@@ -162,16 +171,16 @@ export function evaluateDocumentWithWorker(
           subscriber.add(inThread().subscribe(subscriber))
         }
 
-        getWorkerClient(ctx)
-          .then(async (client) => {
+        getSchemaWorker(ctx)
+          .then(async (worker) => {
             if (signal.aborted) return
-            if (!client) {
+            if (!worker || worker.unsupportedTypes.has(run.document._type)) {
               subscriber.add(inThread().subscribe(subscriber))
               return
             }
             try {
               const [workerResult, mainThreadMarkers] = await Promise.all([
-                client.validate({
+                worker.client.validate({
                   document: run.document,
                   currentUser: ctx.currentUser,
                   getDocumentExists: run.getDocumentExists,

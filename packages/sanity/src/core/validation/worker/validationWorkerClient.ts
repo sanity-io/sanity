@@ -26,8 +26,11 @@ export interface ValidationWorkerRunOptions {
 }
 
 export interface ValidationWorkerClient {
-  /** Resolves once the worker has compiled the schema; rejects when it cannot. */
-  ready: Promise<void>
+  /**
+   * Resolves once the worker has compiled the schema, with the document types it had to leave
+   * out; rejects when nothing could be compiled.
+   */
+  ready: Promise<{unsupportedTypes: string[]}>
   validate(options: ValidationWorkerRunOptions): Promise<DocumentValidationResult>
   terminate(): void
 }
@@ -53,9 +56,9 @@ export function createValidationWorkerClient(options: {
   let failure: Error | undefined
 
   const initRequestId = nextRequestId++
-  let resolveReady: () => void = () => undefined
+  let resolveReady: (value: {unsupportedTypes: string[]}) => void = () => undefined
   let rejectReady: (error: Error) => void = () => undefined
-  const ready = new Promise<void>((resolve, reject) => {
+  const ready = new Promise<{unsupportedTypes: string[]}>((resolve, reject) => {
     resolveReady = resolve
     rejectReady = reject
   })
@@ -84,7 +87,9 @@ export function createValidationWorkerClient(options: {
     const message = event.data
     switch (message.type) {
       case 'ready': {
-        if (message.requestId === initRequestId) resolveReady()
+        if (message.requestId === initRequestId) {
+          resolveReady({unsupportedTypes: message.unsupportedTypes})
+        }
         return
       }
       case 'result': {

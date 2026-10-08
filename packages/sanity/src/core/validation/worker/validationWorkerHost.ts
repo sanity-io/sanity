@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {createSchemaFromManifestTypes} from '@sanity/schema/_internal'
-import {type Schema} from '@sanity/types'
+import {type Schema, type SchemaValidationProblemGroup} from '@sanity/types'
 import {
   evaluateDocumentObservable,
   type LocaleSource,
@@ -73,17 +73,22 @@ export function createValidationWorkerHost(port: HostPort): () => void {
     switch (message.type) {
       case 'init': {
         try {
-          schema = createSchemaFromManifestTypes({
-            name: message.schema.name,
-            types: prepareManifestTypesForWorker(message.schema.types),
-          })
+          const compiled = compileManifestSchema(
+            message.schema.name,
+            prepareManifestTypesForWorker(message.schema.types),
+          )
+          schema = compiled.schema
           i18n = createWorkerLocaleSource(message.i18n)
-          port.postMessage({type: 'ready', requestId: message.requestId})
+          port.postMessage({
+            type: 'ready',
+            requestId: message.requestId,
+            unsupportedTypes: compiled.unsupportedTypes,
+          })
         } catch (error) {
           port.postMessage({
             type: 'error',
             requestId: message.requestId,
-            message: errorMessage(error),
+            message: describeSchemaError(error),
           })
         }
         return
@@ -192,6 +197,78 @@ function createWorkerLocaleSource({locale, resources}: WorkerI18nResources): Loc
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
+const MAX_COMPILE_ATTEMPTS = 10
+
+function schemaProblems(error: unknown): SchemaValidationProblemGroup[] | undefined {
+  if (error instanceof Error && 'problems' in error && Array.isArray(error.problems)) {
+    return error.problems as SchemaValidationProblemGroup[]
+  }
+  return undefined
+}
+
+function describeProblems(problems: SchemaValidationProblemGroup[]): string[] {
+  return problems.flatMap((group) =>
+    group.problems
+      .filter((problem) => problem.severity === 'error')
+      .map(
+        (problem) =>
+          `${group.path
+            .map((segment) =>
+              segment.kind === 'type' ? segment.name || segment.type : segment.name,
+            )
+            .join('.')}: ${problem.message}`,
+      ),
+  )
+}
+
+/**
+ * `createSchemaFromManifestTypes` throws a bare `ValidationError` whose problems live on the
+ * instance; spell them out so the main thread's warning says which types the manifest cannot
+ * express.
+ */
+function describeSchemaError(error: unknown): string {
+  const problems = schemaProblems(error)
+  if (!problems) return errorMessage(error)
+  return `The schema manifest could not be compiled:\n${describeProblems(problems).join('\n')}`
+}
+
+/**
+ * Compiles the manifest, leaving out the top-level types the schema validator rejects (and, on
+ * the following attempts, the types that referred to them). Documents of those types are
+ * validated on the main thread; everything else still gets the worker.
+ */
+export function compileManifestSchema(
+  name: string,
+  types: unknown[],
+): {schema: Schema; unsupportedTypes: string[]} {
+  let remaining = types
+  const unsupportedTypes: string[] = []
+  for (let attempt = 0; attempt < MAX_COMPILE_ATTEMPTS; attempt++) {
+    try {
+      return {schema: createSchemaFromManifestTypes({name, types: remaining}), unsupportedTypes}
+    } catch (error) {
+      const problems = schemaProblems(error)
+      const failing = new Set(
+        (problems ?? [])
+          .filter((group) => group.problems.some((problem) => problem.severity === 'error'))
+          .map((group) => group.path[0])
+          .filter((segment) => segment?.kind === 'type')
+          .map((segment) => (segment.kind === 'type' ? segment.name || segment.type : '')),
+      )
+      const next = remaining.filter(
+        (type) => !(isRecord(type) && typeof type.name === 'string' && failing.has(type.name)),
+      )
+      if (failing.size === 0 || next.length === remaining.length) throw error
+      console.warn(
+        `Validation worker: leaving ${[...failing].join(', ')} to the main thread:\n${describeProblems(problems ?? []).join('\n')}`,
+      )
+      unsupportedTypes.push(...failing)
+      remaining = next
+    }
+  }
+  throw new Error('The schema manifest could not be compiled after dropping failing types')
+}
+
 const COMBINATOR_FLAGS = new Set(['all', 'either'])
 
 /**
@@ -232,6 +309,17 @@ export function prepareManifestTypesForWorker(types: unknown[]): unknown[] {
     const result: Record<string, unknown> = {}
     for (const [key, entry] of Object.entries(value)) {
       if ((key === 'hidden' || key === 'readOnly') && entry === 'conditional') continue
+      if (key === 'of' && Array.isArray(entry)) {
+        // The extractor omits a member's name when it equals its type name, but an anonymous
+        // object member is rejected next to a `block` member. Restore the default name.
+        const hasBlock = entry.some((member) => isRecord(member) && member.type === 'block')
+        result[key] = entry.map((member) =>
+          hasBlock && isRecord(member) && member.type === 'object' && member.name === undefined
+            ? visit({...member, name: 'object'})
+            : visit(member),
+        )
+        continue
+      }
       if (key === 'validation' && Array.isArray(entry)) {
         const groups = entry
           .map((group) =>

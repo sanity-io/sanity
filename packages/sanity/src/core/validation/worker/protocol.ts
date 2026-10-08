@@ -36,7 +36,12 @@ export type ValidationWorkerCall =
 
 /** Messages the worker sends to the main thread. */
 export type ValidationWorkerResponse =
-  | {type: 'ready'; requestId: number}
+  | {
+      type: 'ready'
+      requestId: number
+      /** Document types the worker could not compile; validate those on the main thread. */
+      unsupportedTypes: string[]
+    }
   | {type: 'result'; requestId: number; result: DocumentValidationResult}
   | {type: 'error'; requestId: number; message: string}
   | ({type: 'rpc'; requestId: number; callId: number} & ValidationWorkerCall)
