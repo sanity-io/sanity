@@ -8,12 +8,17 @@ import {
   Skeleton,
 } from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useState, type RefAttributes} from 'react'
+import {type RefAttributes, Suspense, use, useMemo} from 'react'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
+import {catchError, type Observable, of} from 'rxjs'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {useUser} from '../../store/user/hooks'
+import {useUserStore} from '../../store/datastores'
+import {useCurrentUser} from '../../store/user/hooks'
+import {getUserFromCurrentUser, type UserStore} from '../../store/user/userStore'
 import {useUserColor} from '../../user-color/hooks'
+import {createObservableCache} from '../../util/createObservableCache'
 import {isRecord} from '../../util/isRecord'
 
 interface AvatarSkeletonProps {
@@ -102,38 +107,95 @@ function StaticUserAvatar(
   props: Omit<UserAvatarProps, 'user'> & {user: User} & RefAttributes<HTMLDivElement>,
 ) {
   const {ref, user, animateArrowFrom, position, size, status, tone, ...restProps} = props
-  const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
   const userColor = useUserColor(user.id)
-  const imageUrl = imageLoadError ? undefined : user?.imageUrl
+  const avatarSize = typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size
 
   return (
-    <Avatar
-      __unstable_hideInnerStroke
-      animateArrowFrom={animateArrowFrom}
-      arrowPosition={position}
-      color={userColor.name}
-      data-legacy-tone={tone}
-      initials={user?.displayName && nameToInitials(user.displayName)}
-      src={imageUrl}
-      onImageLoadError={setImageLoadError}
-      ref={ref}
-      size={typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size}
-      status={status}
-      title={user?.displayName}
-      {...restProps}
-    />
+    // React can suspend on the `<img>` that `Avatar` renders until the image has loaded
+    <Suspense fallback={<AvatarSkeleton $size={avatarSize} animated />}>
+      <Avatar
+        __unstable_hideInnerStroke
+        animateArrowFrom={animateArrowFrom}
+        arrowPosition={position}
+        color={userColor.name}
+        data-legacy-tone={tone}
+        initials={user?.displayName && nameToInitials(user.displayName)}
+        src={user?.imageUrl}
+        ref={ref}
+        size={avatarSize}
+        status={status}
+        title={user?.displayName}
+        {...restProps}
+      />
+    </Suspense>
   )
 }
 
-function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
-  const [value, loading] = useUser(user)
+// react-rx keeps one settled promise per observable, so every avatar for a user shares one
+// observable, and the hook keeps its promise for as long as the cache does: avatars mounting after
+// the user has loaded render without suspending.
+const USER_TTL = 5 * 60_000
+const userCaches = new WeakMap<UserStore, (userId: string) => Observable<User | null>>()
+// The cache only forgets a lookup that errors, so the error becomes `null` after it, once per
+// cached observable to keep that identity
+const avatarUsers = new WeakMap<Observable<User | null>, Observable<User | null>>()
 
-  if (loading) {
-    return <AvatarSkeleton $size={loadedProps.size} animated />
+function observeUser(userStore: UserStore, userId: string): Observable<User | null> {
+  let cache = userCaches.get(userStore)
+  if (!cache) {
+    cache = createObservableCache((id) => userStore.getUser(id), {ttl: USER_TTL})
+    userCaches.set(userStore, cache)
   }
-  if (!value) {
+  const user$ = cache(userId)
+  let avatarUser$ = avatarUsers.get(user$)
+  if (!avatarUser$) {
+    avatarUser$ = user$.pipe(
+      catchError((err) => {
+        console.error(err)
+        return of(null)
+      }),
+    )
+    avatarUsers.set(user$, avatarUser$)
+  }
+  return avatarUser$
+}
+
+function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
+  const currentUser = useCurrentUser()
+
+  // The signed-in user is resolved before the studio renders, and the user store answers `me`
+  // and the user's own id from that same record. Rendering it from here, rather than asking the
+  // store and suspending on its answer, paints the user's own avatar (the navbar's user menu)
+  // together with its surroundings instead of a skeleton first.
+  if (currentUser && (user === 'me' || user === currentUser.id)) {
+    return <UserAvatar {...loadedProps} user={getUserFromCurrentUser(currentUser)} />
+  }
+
+  return <RemoteUserAvatar {...loadedProps} user={user} />
+}
+
+function RemoteUserAvatar({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
+  const userStore = useUserStore()
+  const observable = useMemo(() => observeUser(userStore, user), [userStore, user])
+  // Read with `use()` below the boundary, never here: the lookup starts when this component commits
+  const promise = useObservablePromise(observable, {ttl: USER_TTL})
+
+  return (
+    <Suspense fallback={<AvatarSkeleton $size={loadedProps.size} animated />}>
+      <UserAvatarLoaderResolver {...loadedProps} promise={promise} />
+    </Suspense>
+  )
+}
+
+function UserAvatarLoaderResolver({
+  promise,
+  ...loadedProps
+}: Omit<UserAvatarProps, 'user'> & {promise: ObservablePromise<User | null>}) {
+  const user = use(promise)
+
+  if (!user) {
     return <AvatarSkeleton $size={loadedProps.size} animated={false} />
   }
 
-  return <UserAvatar {...loadedProps} user={value} />
+  return <UserAvatar {...loadedProps} user={user} />
 }
