@@ -1,8 +1,9 @@
 import {motion} from 'motion/react'
 import {Suspense, use, useCallback} from 'react'
-import {Container, Flex} from 'ui5'
+import {Container, Flex, Text} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
 
@@ -21,6 +22,7 @@ export function DocumentLimitsUpsellPanel() {
 function DocumentLimitsUpsellPanelContent() {
   const {upsellDataPromise, telemetryLogs} = useDocumentLimitsUpsellContext()
   const {upsellData} = use(upsellDataPromise)
+  const {t} = useTranslation()
 
   const handlePrimaryButtonClick = useCallback(() => {
     telemetryLogs.panelPrimaryClicked()
@@ -30,8 +32,18 @@ function DocumentLimitsUpsellPanelContent() {
     telemetryLogs.panelSecondaryClicked()
   }, [telemetryLogs])
 
+  // The content request failed: this panel stands in for the whole tool, so it has to say
+  // something rather than leave it blank
   if (!upsellData) {
-    return null
+    return (
+      <Flex height="100%" justifyContent="center" alignItems="center" padding={4}>
+        <Container size={0}>
+          <Text muted size={1}>
+            {t('document-limit.unavailable.text')}
+          </Text>
+        </Container>
+      </Flex>
+    )
   }
 
   return (

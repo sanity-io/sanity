@@ -645,6 +645,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
   'document-group.subject.version_other': 'versions',
 
+  /** Message shown in place of a tool that hit the document limit, when the upgrade information could not be loaded */
+  'document-limit.unavailable.text':
+    'This project has reached its document limit, and the upgrade options could not be loaded. Try again later.',
+
   /** Label to show in the document footer indicating the creation date of the document */
   'document-status.created': 'Created {{date}}',
 

@@ -9,7 +9,6 @@ import {css, styled} from 'styled-components'
 import {VStack} from 'ui5'
 
 import {type FieldProps} from '../../../form/types/fieldProps'
-import {NO_UPSELL_DATA} from '../../../hooks/useUpsellData'
 import {getSchemaTypeTitle} from '../../../schema/helpers'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
@@ -106,11 +105,7 @@ function CommentFieldInner(props: FieldProps) {
     setStatus,
     status,
   } = useComments()
-  const {upsellDataPromise, handleOpenDialog} = useCommentsUpsell()
-  // Only the upsell mode needs the content, to tell a click that opens the dialog from one that
-  // opens the inspector; the other modes never touch its request
-  const {upsellData} =
-    mode === 'upsell' && upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA
+  const {handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {authoringPath, setAuthoringPath} = useCommentsAuthoringPath()
   const {scrollToGroup} = useCommentsScroll({
@@ -203,12 +198,9 @@ function CommentFieldInner(props: FieldProps) {
     }
 
     if (mode === 'upsell') {
-      if (upsellData) {
-        handleOpenDialog('field_action')
-      } else {
-        // Open the comments inspector
-        onCommentsOpen?.()
-      }
+      // The dialog waits for the upsell content behind the provider's boundary, so the form
+      // never does
+      handleOpenDialog('field_action')
       return
     }
 
@@ -230,7 +222,6 @@ function CommentFieldInner(props: FieldProps) {
     setStatus,
     status,
     stringPath,
-    upsellData,
   ])
 
   const handleCommentAdd = useCallback(
