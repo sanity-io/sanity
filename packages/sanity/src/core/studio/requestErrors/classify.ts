@@ -1,4 +1,4 @@
-import {type HttpError, isHttpError, isTimeoutError} from '@sanity/client'
+import {ChannelError, type HttpError, isHttpError, isTimeoutError} from '@sanity/client'
 import isNativeNetworkError from 'is-network-error'
 
 // These live in `util` so that non-studio code (e.g. the document store) can
@@ -6,6 +6,25 @@ import isNativeNetworkError from 'is-network-error'
 // the public API surface and existing import sites unchanged.
 export {getApiErrorCode, isInvalidSessionError, isUnauthorizedError} from '../../util/apiErrors'
 export {isTimeoutError}
+
+/**
+ * Type guard for ChannelError from `@sanity/client`. ChannelErrors occur
+ * when real-time listeners (EventSource/WebSocket) encounter an error
+ * from the server, such as an internal server error during a listen
+ * operation.
+ *
+ * @internal
+ */
+export function isChannelError(error: unknown): error is ChannelError {
+  if (error instanceof ChannelError) return true
+  if (typeof error !== 'object' || error === null) return false
+  return (
+    'name' in error &&
+    error.name === 'ChannelError' &&
+    'message' in error &&
+    typeof error.message === 'string'
+  )
+}
 
 /**
  * Node / get-it v8 timeout codes. get-it v9 reports timeouts as
@@ -75,6 +94,7 @@ export type RequestErrorClassification =
   | {type: 'networkError'; error: Error}
   | {type: 'serverError'; error: HttpError}
   | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number}
+  | {type: 'channelError'; error: ChannelError}
 
 /**
  * Classify an error as an infrastructure-level request failure, or return
@@ -98,6 +118,7 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
     // the caller is better positioned to render than a generic dialog.
     return null
   }
+  if (isChannelError(err)) return {type: 'channelError', error: err}
   if (isNetworkError(err)) return {type: 'networkError', error: err}
   return null
 }
@@ -187,5 +208,5 @@ export function classifyConfigError(err: unknown): ConfigErrorClassification | n
  * @internal
  */
 export function isClientRequestError(err: unknown): boolean {
-  return isHttpError(err) || isNetworkError(err)
+  return isHttpError(err) || isNetworkError(err) || isChannelError(err)
 }

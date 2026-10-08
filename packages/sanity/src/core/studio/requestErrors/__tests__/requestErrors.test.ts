@@ -1,4 +1,4 @@
-import {ClientError, ServerError} from '@sanity/client'
+import {ChannelError, ClientError, ServerError} from '@sanity/client'
 import {act, renderHook} from '@testing-library/react'
 import {firstValueFrom, of, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -7,6 +7,7 @@ import {
   classifyConfigError,
   classifyRequestError,
   getApiErrorCode,
+  isChannelError,
   isInvalidSessionError,
   parseRetryAfter,
 } from '../classify'
@@ -42,6 +43,10 @@ function networkError(): Error {
     isNetworkError: true,
     request: {url: 'https://abc123.api.sanity.io/v1/foo'},
   })
+}
+
+function channelError(): ChannelError {
+  return new ChannelError('Internal error', {error: {description: 'Internal error'}})
 }
 
 async function latestClaim(
@@ -150,8 +155,56 @@ describe('classifyRequestError', () => {
     expect(classifyRequestError(timeout)).toMatchObject({type: 'networkError'})
   })
 
+  it('classifies ChannelError as channelError', () => {
+    expect(classifyRequestError(channelError())).toMatchObject({type: 'channelError'})
+  })
+
+  it('classifies a channel error from another client copy by its public shape', () => {
+    const error = {
+      name: 'ChannelError',
+      message: 'Internal error',
+      data: {error: {description: 'Internal error'}},
+    }
+
+    expect(classifyRequestError(error)).toEqual({type: 'channelError', error})
+  })
+
   it('leaves arbitrary errors unclassified', () => {
     expect(classifyRequestError(new Error('nope'))).toBeNull()
+  })
+})
+
+describe('isChannelError', () => {
+  it('matches a ChannelError instance', () => {
+    expect(isChannelError(channelError())).toBe(true)
+  })
+
+  it('matches a channel error by its public shape (for cross-realm detection)', () => {
+    const error = {
+      name: 'ChannelError',
+      message: 'Internal error',
+      data: {error: {description: 'Internal error'}},
+    }
+    expect(isChannelError(error)).toBe(true)
+  })
+
+  it('rejects errors with a different name', () => {
+    const error = {
+      name: 'SomeOtherError',
+      message: 'Internal error',
+    }
+    expect(isChannelError(error)).toBe(false)
+  })
+
+  it('rejects non-object values', () => {
+    expect(isChannelError(null)).toBe(false)
+    expect(isChannelError(undefined)).toBe(false)
+    expect(isChannelError('error')).toBe(false)
+    expect(isChannelError(42)).toBe(false)
+  })
+
+  it('rejects plain Error instances', () => {
+    expect(isChannelError(new Error('nope'))).toBe(false)
   })
 })
 
@@ -308,6 +361,24 @@ describe('createRequestErrorChannel', () => {
       // Give the (async) claim a tick to land.
       await new Promise((resolve) => setTimeout(resolve, 0))
       expect(await latestClaim(channel)).toMatchObject({type: 'serverError', retryable: false})
+
+      // The chain must stay pending — race it against a sentinel.
+      const outcome = await Promise.race([
+        pending.then(
+          () => 'settled',
+          () => 'settled',
+        ),
+        new Promise((resolve) => setTimeout(() => resolve('pending'), 10)),
+      ])
+      expect(outcome).toBe('pending')
+    })
+
+    it('claims channel errors and leaves the chain pending', async () => {
+      const channel = createRequestErrorChannel()
+      const pending = Promise.reject(channelError()).catch(channel.handle)
+      // Give the (async) claim a tick to land.
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(await latestClaim(channel)).toMatchObject({type: 'channelError', retryable: false})
 
       // The chain must stay pending — race it against a sentinel.
       const outcome = await Promise.race([

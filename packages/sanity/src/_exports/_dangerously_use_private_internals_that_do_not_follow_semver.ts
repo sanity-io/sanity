@@ -880,6 +880,7 @@ export {
   classifyConfigError,
   classifyRequestError,
   type ConfigErrorClassification,
+  isChannelError,
   isClientRequestError,
   isNetworkError,
   parseRetryAfter,
