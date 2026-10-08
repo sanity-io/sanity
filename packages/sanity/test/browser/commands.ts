@@ -18,22 +18,28 @@ export const readFileAsBase64: BrowserCommand<[filePath: string]> = ({testPath},
   return buffer.toString('base64')
 }
 
+// Every browser instance shares this module but routes its own page, so the url alone is not a
+// key: releasing one session's requests would abort the ones another session is still holding.
 const heldRequests = new Map<string, {abort: () => Promise<void>}[]>()
+
+const heldRequestsKey = (sessionId: string, url: string) => `${sessionId}:${url}`
 
 /**
  * Leave every request to `url` pending until `releaseRequests` (server-side command), for browser
  * tests that need a resource that never finishes loading.
  */
-export const holdRequests: BrowserCommand<[url: string]> = async ({page}, url) => {
+export const holdRequests: BrowserCommand<[url: string]> = async ({page, sessionId}, url) => {
+  const key = heldRequestsKey(sessionId, url)
   await page.route(url, (route) => {
-    heldRequests.set(url, [...(heldRequests.get(url) ?? []), route])
+    heldRequests.set(key, [...(heldRequests.get(key) ?? []), route])
   })
 }
 
 /** Abort the requests to `url` that `holdRequests` held, and stop holding new ones. */
-export const releaseRequests: BrowserCommand<[url: string]> = async ({page}, url) => {
-  const held = heldRequests.get(url) ?? []
-  heldRequests.delete(url)
+export const releaseRequests: BrowserCommand<[url: string]> = async ({page, sessionId}, url) => {
+  const key = heldRequestsKey(sessionId, url)
+  const held = heldRequests.get(key) ?? []
+  heldRequests.delete(key)
   await Promise.all(held.map((route) => route.abort()))
   await page.unroute(url)
 }
