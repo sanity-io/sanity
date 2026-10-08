@@ -1,15 +1,9 @@
 import {type SanityClient} from '@sanity/client'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Avatar, Button, Card, Spinner, Text, TextArea} from '@sanity/ui'
-import {
-  type ReactNode,
-  type SubmitEvent,
-  Suspense,
-  use,
-  useId,
-  useState,
-  useTransition,
-} from 'react'
+import {type ReactNode, type SubmitEvent, useId, useState, useTransition} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, combineLatest, defer, of, shareReplay} from 'rxjs'
 import {Flex, Box, VStack} from 'ui5'
 
 import {
@@ -63,44 +57,41 @@ export interface RequestAccessFormProps {
  * access, lets the user request it with an optional note, and reflects the
  * request lifecycle (pending, denied, expired, over-limit, SSO-enforced).
  *
- * Fetches the caller's existing requests on mount and suspends while loading;
- * an internal `Suspense` boundary renders a spinner, so hosts can mount it
- * directly. Remount with a `key` when `client` or `resourceId` change.
+ * Fetches the caller's existing requests on mount and renders a spinner while
+ * loading, so hosts can mount it directly. Remount with a `key` when `client`
+ * or `resourceId` change.
  *
  * @public
  */
 export function RequestAccessForm(props: RequestAccessFormProps) {
   const {client, resourceType = 'project', resourceId} = props
 
-  // Created once (lazy init): recreating the promise per render would refetch
-  // and re-suspend forever. Callers remount with `key` to reset.
-  const [requestsPromise] = useState(() =>
-    listMyAccessRequests(client).catch((): AccessRequest[] | null => null),
+  // Frozen at first render, so a new client for the same resource neither
+  // refetches nor resets the form; hosts remount with `key` to reload. Nothing
+  // runs until `useObservable` subscribes after commit, so a render React
+  // discards never fetches. The replay keeps the result when a hidden
+  // `<Activity>` resubscribes.
+  const [load$] = useState(() =>
+    combineLatest({
+      accessRequestsHistory: defer(() => listMyAccessRequests(client)).pipe(
+        catchError(() => of(null)),
+      ),
+      accessRequestEligibilityState: defer(() =>
+        fetchAccessRequestStatus({client, resourceType, resourceId, origin: getRequestUrl()}),
+      ),
+    }).pipe(shareReplay({bufferSize: 1, refCount: false})),
   )
-  const [statusPromise] = useState(() =>
-    fetchAccessRequestStatus({
-      client,
-      resourceType,
-      resourceId,
-      origin: getRequestUrl(),
-    }),
-  )
+  const loaded = useObservable(load$, null)
 
   return (
     <Card border height="fill" overflow="hidden" radius={3} tone="default">
-      <Suspense
-        fallback={
-          <Flex alignItems="center" height="100%" justifyContent="center" padding={5}>
-            <Spinner muted />
-          </Flex>
-        }
-      >
-        <RequestAccessFormContent
-          {...props}
-          requestsPromise={requestsPromise}
-          statusPromise={statusPromise}
-        />
-      </Suspense>
+      {loaded ? (
+        <RequestAccessFormContent {...props} {...loaded} />
+      ) : (
+        <Flex alignItems="center" height="100%" justifyContent="center" padding={5}>
+          <Spinner muted />
+        </Flex>
+      )}
     </Card>
   )
 }
@@ -249,8 +240,8 @@ function deriveViewState(options: {
 
 function RequestAccessFormContent(
   props: RequestAccessFormProps & {
-    requestsPromise: Promise<AccessRequest[] | null>
-    statusPromise: Promise<AccessRequestEligibilityState>
+    accessRequestsHistory: AccessRequest[] | null
+    accessRequestEligibilityState: AccessRequestEligibilityState
   },
 ) {
   const {
@@ -262,13 +253,11 @@ function RequestAccessFormContent(
     onRequestSubmitted,
     preview,
     renderAction,
-    requestsPromise,
-    statusPromise,
+    accessRequestsHistory,
+    accessRequestEligibilityState,
   } = props
 
   const labels = {...defaultLabels, ...props.labels}
-  const accessRequestsHistory = use(requestsPromise)
-  const accessRequestEligibilityState = use(statusPromise)
   const titleId = useId()
 
   const [note, setNote] = useState('')
