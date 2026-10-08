@@ -17,6 +17,7 @@ import {
 } from '../../util/draftUtils'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type ValidationStatus} from '../../validation'
+import {type ValidationWorkerI18nSource} from '../../validation/worker/validateDocumentWithWorker'
 import {type HistoryStore} from '../history/createHistoryStore'
 import {
   checkoutPair,
@@ -145,6 +146,8 @@ export interface DocumentStoreOptions {
   serverActionsEnabled?: Observable<boolean>
   extraOptions?: DocumentStoreExtraOptions
   currentUser?: Omit<CurrentUser, 'role'> | null
+  /** Set when `beta.validationWorker` is enabled: evaluates built-in validation rules in a worker. */
+  validationWorker?: {i18next: ValidationWorkerI18nSource}
 }
 
 /** @internal */
@@ -157,6 +160,7 @@ export function createDocumentStore({
   i18n,
   extraOptions = {},
   currentUser,
+  validationWorker,
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
@@ -182,6 +186,7 @@ export function createDocumentStore({
     i18n,
     extraOptions,
     currentUser,
+    validationWorker,
   }
 
   return {

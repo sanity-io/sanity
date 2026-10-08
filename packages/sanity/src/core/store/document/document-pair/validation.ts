@@ -10,6 +10,7 @@ import {type DraftsModelDocumentAvailability} from '../../../preview/types'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {shallowEquals} from '../../../util/shallowEquals'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
+import {type ValidationWorkerI18nSource} from '../../../validation/worker/validateDocumentWithWorker'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
@@ -39,6 +40,7 @@ export const validation = memoize(
       serverActionsEnabled?: Observable<boolean>
       pairListenerOptions?: DocumentStoreExtraOptions
       currentUser?: Omit<CurrentUser, 'role'> | null
+      validationWorker?: {i18next: ValidationWorkerI18nSource}
     },
     {draftId, publishedId, versionId}: IdPair,
     typeName: string,

@@ -1689,4 +1689,20 @@ export interface BetaFeatures {
   reactActivityMode?: {
     enabled?: boolean
   }
+  /**
+   * Evaluate a document's built-in validation rules in a web worker instead of on the main
+   * thread.
+   *
+   * The worker receives the schema as a serialized manifest, so it can only run rules that need
+   * no user code: `required`, `min`/`max`, `uri`, `regex`, reference existence, slug structure,
+   * and so on. Custom and media validators, `Rule.fields()` and rules referencing other fields
+   * (`Rule.valueOfField`) keep running on the main thread, and the two sets of markers are merged.
+   * Validation falls back to the main thread when a worker cannot be started.
+   *
+   * This is an experiment and not ready for production use. Only enable it to test in development
+   * and staging environments.
+   */
+  validationWorker?: {
+    enabled?: boolean
+  }
 }

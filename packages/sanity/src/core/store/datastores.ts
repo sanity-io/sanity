@@ -166,7 +166,11 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
  * @beta */
 export function useDocumentStore(): DocumentStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {getClient, i18n, currentUser} = useSource()
+  const {getClient, i18n, currentUser, beta, __internal: sourceInternals} = useSource()
+  const validationWorker = useMemo(
+    () => (beta?.validationWorker?.enabled ? {i18next: sourceInternals.i18next} : undefined),
+    [beta?.validationWorker?.enabled, sourceInternals.i18next],
+  )
   const schema = useSchema()
   const templates = useTemplates()
   const resourceCache = useResourceCache()
@@ -259,6 +263,7 @@ export function useDocumentStore(): DocumentStore {
         schema,
         i18n,
         currentUser,
+        validationWorker,
         extraOptions: {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
@@ -303,6 +308,7 @@ export function useDocumentStore(): DocumentStore {
     handleReportMutationPerformance,
     handleDocumentRebase,
     errorHandler,
+    validationWorker,
   ])
 }
 
