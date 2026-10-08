@@ -101,18 +101,24 @@ describe('UserAvatar', () => {
     expect(container.querySelector(AVATAR)).not.toBeInTheDocument()
   })
 
-  it('logs a failed lookup and keeps showing a skeleton', async () => {
+  it('logs a failed lookup, keeps showing a skeleton, and retries it on the next mount', async () => {
     const error = new Error('Network request failed')
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    mockGetUser(async () => {
-      throw error
-    })
+    const getUser = mockGetUser(
+      vi.fn<UserStore['getUser']>().mockRejectedValueOnce(error).mockResolvedValueOnce(ada),
+    )
 
-    const {container} = await renderAvatar(<UserAvatar user={ada.id} />)
+    const {container, unmount} = await renderAvatar(<UserAvatar user={ada.id} />)
 
     expect(consoleError).toHaveBeenCalledWith(error)
     expect(container.querySelector(SKELETON)).toBeInTheDocument()
     expect(container.querySelector(AVATAR)).not.toBeInTheDocument()
+
+    unmount()
+    await renderAvatar(<UserAvatar user={ada.id} />)
+
+    expect(screen.getByLabelText('Ada Lovelace')).toBeInTheDocument()
+    expect(getUser).toHaveBeenCalledTimes(2)
   })
 
   it('renders an already loaded user without a loading state, from a single lookup', async () => {

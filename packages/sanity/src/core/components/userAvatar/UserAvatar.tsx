@@ -10,7 +10,7 @@ import {
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type RefAttributes, Suspense, use, useMemo, useState} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
-import {type Observable} from 'rxjs'
+import {catchError, type Observable, of} from 'rxjs'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -138,21 +138,28 @@ function StaticUserAvatar(
 // the user has loaded render without suspending.
 const USER_TTL = 5 * 60_000
 const userCaches = new WeakMap<UserStore, (userId: string) => Observable<User | null>>()
+// The cache only forgets a lookup that errors, so the error becomes `null` after it, once per
+// cached observable to keep that identity
+const avatarUsers = new WeakMap<Observable<User | null>, Observable<User | null>>()
 
 function observeUser(userStore: UserStore, userId: string): Observable<User | null> {
   let cache = userCaches.get(userStore)
   if (!cache) {
-    cache = createObservableCache(
-      (id: string) =>
-        userStore.getUser(id).catch((err) => {
-          console.error(err)
-          return null
-        }),
-      {ttl: USER_TTL},
-    )
+    cache = createObservableCache((id) => userStore.getUser(id), {ttl: USER_TTL})
     userCaches.set(userStore, cache)
   }
-  return cache(userId)
+  const user$ = cache(userId)
+  let avatarUser$ = avatarUsers.get(user$)
+  if (!avatarUser$) {
+    avatarUser$ = user$.pipe(
+      catchError((err) => {
+        console.error(err)
+        return of(null)
+      }),
+    )
+    avatarUsers.set(user$, avatarUser$)
+  }
+  return avatarUser$
 }
 
 function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
