@@ -9,9 +9,10 @@ import {
 } from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type RefAttributes, Suspense, use, useMemo, useState} from 'react'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
+import {defer, from} from 'rxjs'
 import {css, styled} from 'styled-components'
 
-import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useUserStore} from '../../store/datastores'
 import {useUserColor} from '../../user-color/hooks'
@@ -132,28 +133,32 @@ function StaticUserAvatar(
 
 function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
   const userStore = useUserStore()
-  const promise = useMemo(() => userStore.getUser(user), [userStore, user])
-  const [failedPromise, setFailedPromise] = useState<Promise<User | null> | null>(null)
-
-  // `ErrorBoundary` prints the message of the error it caught (React has already logged it), so
-  // render the same placeholder as for a missing user instead.
-  if (promise === failedPromise) {
-    return <AvatarSkeleton $size={loadedProps.size} animated={false} />
-  }
+  const observable = useMemo(
+    () =>
+      defer(() =>
+        from(
+          userStore.getUser(user).catch((err) => {
+            console.error(err)
+            return null
+          }),
+        ),
+      ),
+    [userStore, user],
+  )
+  // Read with `use()` below the boundary, never here: the lookup starts when this component commits
+  const promise = useObservablePromise(observable)
 
   return (
-    <ErrorBoundary onCatch={() => setFailedPromise(promise)}>
-      <Suspense fallback={<AvatarSkeleton $size={loadedProps.size} animated />}>
-        <UserAvatarLoaderResolver {...loadedProps} promise={promise} />
-      </Suspense>
-    </ErrorBoundary>
+    <Suspense fallback={<AvatarSkeleton $size={loadedProps.size} animated />}>
+      <UserAvatarLoaderResolver {...loadedProps} promise={promise} />
+    </Suspense>
   )
 }
 
 function UserAvatarLoaderResolver({
   promise,
   ...loadedProps
-}: Omit<UserAvatarProps, 'user'> & {promise: Promise<User | null>}) {
+}: Omit<UserAvatarProps, 'user'> & {promise: ObservablePromise<User | null>}) {
   const user = use(promise)
 
   if (!user) {

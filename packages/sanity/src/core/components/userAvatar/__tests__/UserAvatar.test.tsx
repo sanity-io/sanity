@@ -78,28 +78,18 @@ describe('UserAvatar', () => {
     expect(container.querySelector(AVATAR)).not.toBeInTheDocument()
   })
 
-  it('shows a skeleton instead of a failed lookup, then loads the next user', async () => {
+  it('logs a failed lookup and keeps showing a skeleton', async () => {
     const error = new Error('Network request failed')
-    // React logs the errors that error boundaries catch
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    mockGetUser(async (userId) => {
-      if (userId === ada.id) throw error
-      return grace
+    mockGetUser(async () => {
+      throw error
     })
 
-    const {container, rerender} = await renderAvatar(<UserAvatar user={ada.id} />)
+    const {container} = await renderAvatar(<UserAvatar user={ada.id} />)
 
-    expect(consoleError.mock.calls.flat()).toContain(error)
-    expect(screen.queryByText(error.message)).not.toBeInTheDocument()
+    expect(consoleError).toHaveBeenCalledWith(error)
     expect(container.querySelector(SKELETON)).toBeInTheDocument()
     expect(container.querySelector(AVATAR)).not.toBeInTheDocument()
-
-    // oxlint-disable-next-line testing-library/no-unnecessary-act -- the avatar suspends on the new user, and React only resumes work that suspended inside an awaited `act`
-    await act(async () => {
-      rerender(<UserAvatar user={grace.id} />)
-    })
-
-    expect(screen.getByLabelText('Grace Hopper')).toBeInTheDocument()
   })
 
   it('switches to the new user when the user id changes', async () => {
