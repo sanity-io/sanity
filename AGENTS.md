@@ -609,11 +609,16 @@ revealed. Two consequences for Suspense code:
   `lazy()`) turns an observable into a promise with `useObservablePromise` (for feature flags:
   `useFeatureEnabledObservable`), starts it on commit with `preloadObservablePromise` in an
   effect so several checks load in parallel, and publishes the promise through a context
-  (default `null`, read through a hook that throws when missing). A layout or navbar that has no
-  way around waiting for an answer before it paints reads the promise with `use()` and suspends
-  up to the studio's own loading screen, with no boundary of its own (a tool, or its
-  `activeToolLayout`, suspends up to the tool's own loading block instead: `RenderTool` in
-  `StudioLayoutComponent` wraps each tool in a `Suspense`).
+  (default `null`, read through a hook that throws when missing, or directly where the consumer
+  renders without the plugin too). A layout or navbar that has no way around waiting for an
+  answer before it paints reads the promise with `use()` and suspends up to the studio's own
+  loading screen, with no boundary of its own (a tool, or its `activeToolLayout`, suspends up to
+  the tool's own loading block instead: `RenderTool` in `StudioLayoutComponent` wraps each tool
+  in a `Suspense`). The navbar's `StudioToolMenu` is the one such place: whether the Schedules
+  tool is listed depends on the scheduled publishing feature check and on whether the dataset has
+  ever scheduled anything, so it `use()`s both promises before painting the tool list
+  (`@TODO SAPP-4633` there is to see whether that wait can go by always listing the tool and
+  rendering a placeholder inside it).
 - Derive the published value inside the observable, never with `.then()` on the promise:
   `useObservablePromise(useMemo(() => features$.pipe(map(toMode)), [features$]))` hands out the
   `ObservablePromise` that react-rx fulfils in place, so `use()` reads it synchronously once it
@@ -627,7 +632,8 @@ revealed. Two consequences for Suspense code:
   consumer that cannot work without the provider reads the context through a hook that throws
   (`useTasksMode`, `useCommentsMode`); one that renders either way checks before reading,
   `promise ? use(promise) : fallback`, and the fallback is the plain value that case means
-  (`NO_UPSELL_DATA`), not a promise of it.
+  (`NO_UPSELL_DATA`; `null` for `ScheduledPublishingModePromiseContext`, `false` for
+  `HasUsedScheduledPublishingPromiseContext`), not a promise of it.
 - Whether a feature is enabled and which mode it is in are separate hooks, and a hook never
   returns a resolved mode: `useXEnabled()` answers the enabled question synchronously
   (`useCommentsEnabled(): boolean` from the per-document `CommentsEnabledContext`, since
@@ -652,9 +658,27 @@ revealed. Two consequences for Suspense code:
   button click opens that inspector. A provider whose presence would depend on the mode is
   mounted in both modes instead, so the tree never changes shape (`TasksUpsellProvider` under
   `TasksStudioLayout`, `CommentsUpsellProvider` under `CommentsStudioLayout`, like
-  `ReleasesUpsellProvider`); the UI that consults it already knows it is in upsell mode, and each
-  provider's dialog leaf (`TasksUpsellDialog`, `CommentsUpsellDialog`, under its own
-  `<Suspense>`) `use()`s the mode once more and renders the dialog only in upsell mode.
+  `ReleasesUpsellProvider`, `SchedulePublishingUpsellProvider` in the scheduled publishing
+  plugin's studio provider); the UI that consults it already knows it is in upsell mode, and each
+  provider's dialog leaf (`TasksUpsellDialog`, `CommentsUpsellDialog`,
+  `SchedulePublishingUpsellDialog`, under its own `<Suspense>`) `use()`s the mode once more and
+  renders the dialog only in upsell mode.
+- Scheduled publishing has no single `enabled` answer, so it publishes three contexts from its
+  studio provider (`core/scheduled-publishing/plugin/index.tsx`) and every callsite combines them
+  for its own purpose: `ScheduledPublishingEnabledContext` (`boolean`, the workspace flag, `false`
+  where the plugin is not loaded), `ScheduledPublishingModePromiseContext`
+  (`Promise<'default' | 'upsell' | null>`, from the feature check) and
+  `HasUsedScheduledPublishingPromiseContext` (`Promise<boolean>`, from the "has this dataset ever
+  scheduled anything" probe in `useHasUsedScheduledPublishingObservable`, settled as `true`
+  without probing when the workspace opted in explicitly). The two promises are independent, and
+  every callsite reads the mode first and only `use()`s the probe when the mode is not `null`
+  (`const hasUsed = mode !== null && hasUsedPromise ? use(hasUsedPromise) : false`), so a failed
+  feature check never waits for the probe. The tool menu lists the tool, the tool renders
+  its schedules, `usePollSchedules` polls and `ScheduleAction` exists when
+  `enabled && mode !== null && hasUsed` (the plugin's own components skip the always-true flag);
+  the banner, the context menu, the preview and the schedules panel read only the mode. They
+  already live under the document pane's or the tool's boundary, where `use()` suspends to a
+  loading state that already existed.
 - The upsell content itself follows the same rule. `useUpsellData` returns
   `{upsellData$, telemetryLogs}`: a stable, cold observable of the settled answer (never erroring:
   a failed request settles as `hasError`), not a promise. The provider that consumes it turns it
@@ -679,17 +703,18 @@ revealed. Two consequences for Suspense code:
   (`test/testUtils/TestProvider.tsx`): react-rx caches by observable identity, so an observable
   created per render would resubscribe on every commit.
 - The feature requests start when the plugins' providers commit, once the auth state has settled
-  as signed in, not before: nothing probes `/features` for a visitor who is not logged in or
-  whose credentials the auth probe rejects. `getFeatures` caches one request per project for the
-  session, bounded at 10 seconds so a stalled request cannot hold a loading state.
+  as signed in, not before: nothing probes `/features` or the schedules usage for a visitor who
+  is not logged in or whose credentials the auth probe rejects. `getFeatures` and
+  `getUsedScheduledPublishing` cache one request per project (and dataset) for the session, and
+  both are bounded at 10 seconds so a stalled request cannot hold the loading screen.
 - A default plugin's components never check the workspace flag that enables the plugin:
   `getDefaultPlugins` (`core/config/resolveDefaultPlugins.ts`) only includes `tasks()`,
   `scheduledPublishing()`, `releases()`, `singleDocRelease()`, `variants()`, `mediaLibrary()`
   and `canvasIntegration()` when that flag is on, and the workspace carries the same resolved
   options, so inside the plugin `useWorkspace().tasks.enabled` is always `true`. Only code that
   renders outside the plugin needs the flag (`StudioToolMenu` reading
-  `useScheduledPublishingEnabled()`, `DocumentGroupInventory` through `useVariantsStore`), which
-  is also why those contexts keep a disabled default value. Two exceptions: the comments plugin,
+  `ScheduledPublishingEnabledContext`, `DocumentGroupInventory` through `useVariantsStore`),
+  which is also why those contexts keep a disabled default value. Two exceptions: the comments plugin,
   since one of its two versions is always included, and `SingleDocReleaseEnabledProvider`, which
   keeps reading the source's resolved `scheduledDrafts.enabled` (`useScheduledDraftsEnabled`)
   because `scheduledDrafts` is a per-source option (`PluginOptions.scheduledDrafts`, reduced per

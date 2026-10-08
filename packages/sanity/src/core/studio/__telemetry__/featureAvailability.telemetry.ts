@@ -58,7 +58,9 @@ export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeature
     scheduledDraftsEnabled: workspace.scheduledDrafts?.enabled,
     // `enabled` is on-by-default and only flips false on explicit opt-out, so it
     // reads as a near-constant; the explicit opt-in is the real adoption signal.
-    // See ScheduledPublishingEnabledProvider, which gates on both.
+    // See SchedulePublishingStudioProvider: `enabled` is what it publishes as
+    // ScheduledPublishingEnabledContext, while the explicit opt-in only settles its
+    // usage probe as used without probing.
     scheduledPublishingEnabled: workspace.scheduledPublishing.enabled,
     scheduledPublishingExplicitlyEnabled:
       workspace.scheduledPublishing.__internal__workspaceEnabled,
