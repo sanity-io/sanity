@@ -104,9 +104,11 @@ function StaticUserAvatar(
   props: Omit<UserAvatarProps, 'user'> & {user: User} & RefAttributes<HTMLDivElement>,
 ) {
   const {ref, user, animateArrowFrom, position, size, status, tone, ...restProps} = props
-  const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
+  // Keyed by URL rather than a plain flag: this component instance is reused when the user
+  // changes, and a failure for the previous user must not suppress the next user's image
+  const [failedImageUrl, setFailedImageUrl] = useState<string | undefined>(undefined)
   const userColor = useUserColor(user.id)
-  const imageUrl = imageLoadError ? undefined : user?.imageUrl
+  const imageUrl = user?.imageUrl === failedImageUrl ? undefined : user?.imageUrl
   const avatarSize = typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size
 
   return (
@@ -120,7 +122,7 @@ function StaticUserAvatar(
         data-legacy-tone={tone}
         initials={user?.displayName && nameToInitials(user.displayName)}
         src={imageUrl}
-        onImageLoadError={setImageLoadError}
+        onImageLoadError={() => setFailedImageUrl(user?.imageUrl)}
         ref={ref}
         size={avatarSize}
         status={status}
