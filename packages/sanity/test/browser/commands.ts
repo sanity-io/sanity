@@ -18,16 +18,23 @@ export const readFileAsBase64: BrowserCommand<[filePath: string]> = ({testPath},
   return buffer.toString('base64')
 }
 
+const heldRequests = new Map<string, {abort: () => Promise<void>}[]>()
+
 /**
  * Leave every request to `url` pending until `releaseRequests` (server-side command), for browser
  * tests that need a resource that never finishes loading.
  */
 export const holdRequests: BrowserCommand<[url: string]> = async ({page}, url) => {
-  await page.route(url, () => undefined)
+  await page.route(url, (route) => {
+    heldRequests.set(url, [...(heldRequests.get(url) ?? []), route])
+  })
 }
 
-/** Stop holding the requests to `url` that `holdRequests` held (server-side command). */
+/** Abort the requests to `url` that `holdRequests` held, and stop holding new ones. */
 export const releaseRequests: BrowserCommand<[url: string]> = async ({page}, url) => {
+  const held = heldRequests.get(url) ?? []
+  heldRequests.delete(url)
+  await Promise.all(held.map((route) => route.abort()))
   await page.unroute(url)
 }
 
