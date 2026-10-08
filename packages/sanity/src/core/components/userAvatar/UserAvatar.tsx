@@ -8,11 +8,12 @@ import {
   Skeleton,
 } from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useState, type RefAttributes} from 'react'
+import {type RefAttributes, Suspense, use, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
+import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {useUser} from '../../store/user/hooks'
+import {useUserStore} from '../../store/datastores'
 import {useUserColor} from '../../user-color/hooks'
 import {isRecord} from '../../util/isRecord'
 
@@ -126,14 +127,34 @@ function StaticUserAvatar(
 }
 
 function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
-  const [value, loading] = useUser(user)
+  const userStore = useUserStore()
+  const promise = useMemo(() => userStore.getUser(user), [userStore, user])
+  const [failedPromise, setFailedPromise] = useState<Promise<User | null> | null>(null)
 
-  if (loading) {
-    return <AvatarSkeleton $size={loadedProps.size} animated />
-  }
-  if (!value) {
+  // `ErrorBoundary` prints the message of the error it caught (React has already logged it), so
+  // render the same placeholder as for a missing user instead.
+  if (promise === failedPromise) {
     return <AvatarSkeleton $size={loadedProps.size} animated={false} />
   }
 
-  return <UserAvatar {...loadedProps} user={value} />
+  return (
+    <ErrorBoundary onCatch={() => setFailedPromise(promise)}>
+      <Suspense fallback={<AvatarSkeleton $size={loadedProps.size} animated />}>
+        <UserAvatarLoaderResolver {...loadedProps} promise={promise} />
+      </Suspense>
+    </ErrorBoundary>
+  )
+}
+
+function UserAvatarLoaderResolver({
+  promise,
+  ...loadedProps
+}: Omit<UserAvatarProps, 'user'> & {promise: Promise<User | null>}) {
+  const user = use(promise)
+
+  if (!user) {
+    return <AvatarSkeleton $size={loadedProps.size} animated={false} />
+  }
+
+  return <UserAvatar {...loadedProps} user={user} />
 }
