@@ -7,17 +7,34 @@ import {CommentsModePromiseContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {useCommentsUpsell as useCommentsUpsellV2} from '../../../../comments-v2/hooks/useCommentsUpsell'
+import {CommentsStudioLayout as CommentsStudioLayoutV2} from '../../../../comments-v2/plugin/studio-layout/CommentsStudioLayout'
 import {useUpsellData} from '../../../../hooks/useUpsellData'
 import {type UpsellData, type UpsellDataResult} from '../../../../studio/upsell/types'
 import {type CommentsMode} from '../../../context/enabled/types'
-import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
-import {CommentsStudioLayout} from '../CommentsStudioLayout'
+import {useCommentsUpsell as useCommentsUpsellV1} from '../../../hooks/useCommentsUpsell'
+import {CommentsStudioLayout as CommentsStudioLayoutV1} from '../CommentsStudioLayout'
 
 /**
  * The layout renders the same tree in both plan modes, so the comments mode (the plan check the
  * plugin's provider publishes through `CommentsModePromiseContext`) is read only by the upsell
  * dialog at the leaf: the layout and its children never wait for it.
+ *
+ * Both comments plugins carry their own copy of the layout, the upsell provider and its context,
+ * so the suite runs against each.
  */
+const implementations = [
+  {
+    name: 'comments',
+    CommentsStudioLayout: CommentsStudioLayoutV1,
+    useCommentsUpsell: useCommentsUpsellV1,
+  },
+  {
+    name: 'comments-v2',
+    CommentsStudioLayout: CommentsStudioLayoutV2,
+    useCommentsUpsell: useCommentsUpsellV2,
+  },
+]
 
 // `createTestProvider` mocks the `useUpsellData` module; the observable it returns is set per test
 const useUpsellDataMock = vi.mocked(useUpsellData)
@@ -67,39 +84,6 @@ beforeEach(() => {
   })
 })
 
-// Stands in for the studio below the layout; asks for the upsell dialog the way the comments UI
-// does once it knows it is in upsell mode
-function StudioBelowLayout() {
-  onChildRender()
-  const {handleOpenDialog, upsellDialogOpen} = useCommentsUpsell()
-  return (
-    <>
-      <button type="button" onClick={() => handleOpenDialog('document_action')}>
-        open upsell
-      </button>
-      <div data-testid="open-state">{String(upsellDialogOpen)}</div>
-    </>
-  )
-}
-
-async function renderLayout() {
-  const TestProvider = await createTestProvider()
-  const modePromise = preloadObservablePromise(mode$.asObservable())
-  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog leaf suspends on the feature check during mount; React only resumes work that suspended inside an awaited async `act`
-  await act(async () => {
-    render(
-      <TestProvider>
-        <CommentsModePromiseContext value={modePromise}>
-          {/* Stands in for StudioLayout's loading screen boundary: shown if the layout suspends */}
-          <Suspense fallback={<div data-testid="studio-loading" />}>
-            <CommentsStudioLayout renderDefault={() => <StudioBelowLayout />} />
-          </Suspense>
-        </CommentsModePromiseContext>
-      </TestProvider>,
-    )
-  })
-}
-
 function settleMode(mode: CommentsMode) {
   return act(async () => {
     mode$.next(mode)
@@ -107,72 +91,108 @@ function settleMode(mode: CommentsMode) {
   })
 }
 
-describe('CommentsStudioLayout', () => {
-  it('renders the studio below it before the feature check has answered', async () => {
-    await renderLayout()
+describe.each(implementations)(
+  'CommentsStudioLayout ($name)',
+  ({CommentsStudioLayout, useCommentsUpsell}) => {
+    // Stands in for the studio below the layout; asks for the upsell dialog the way the comments UI
+    // does once it knows it is in upsell mode
+    function StudioBelowLayout() {
+      onChildRender()
+      const {handleOpenDialog, upsellDialogOpen} = useCommentsUpsell()
+      return (
+        <>
+          <button type="button" onClick={() => handleOpenDialog('document_action')}>
+            open upsell
+          </button>
+          <div data-testid="open-state">{String(upsellDialogOpen)}</div>
+        </>
+      )
+    }
 
-    expect(screen.getByRole('button', {name: 'open upsell'})).toBeInTheDocument()
-    expect(screen.queryByTestId('studio-loading')).not.toBeInTheDocument()
-    expect(onChildRender).toHaveBeenCalledTimes(1)
-  })
+    async function renderLayout() {
+      const TestProvider = await createTestProvider()
+      const modePromise = preloadObservablePromise(mode$.asObservable())
+      // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog leaf suspends on the feature check during mount; React only resumes work that suspended inside an awaited async `act`
+      await act(async () => {
+        render(
+          <TestProvider>
+            <CommentsModePromiseContext value={modePromise}>
+              {/* Stands in for StudioLayout's loading screen boundary: shown if the layout suspends */}
+              <Suspense fallback={<div data-testid="studio-loading" />}>
+                <CommentsStudioLayout renderDefault={() => <StudioBelowLayout />} />
+              </Suspense>
+            </CommentsModePromiseContext>
+          </TestProvider>,
+        )
+      })
+    }
 
-  it('does not re-render the studio below it when the feature check answers', async () => {
-    await renderLayout()
-    const rendersBeforeAnswer = onChildRender.mock.calls.length
+    it('renders the studio below it before the feature check has answered', async () => {
+      await renderLayout()
 
-    await settleMode('default')
-
-    expect(screen.getByRole('button', {name: 'open upsell'})).toBeInTheDocument()
-    expect(onChildRender).toHaveBeenCalledTimes(rendersBeforeAnswer)
-  })
-
-  it('opens the upsell dialog on a plan without comments', async () => {
-    await renderLayout()
-    await settleMode('upsell')
-
-    await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
-
-    expect(await screen.findByRole('dialog')).toHaveTextContent('Comments need a bigger plan')
-  })
-
-  it('never shows the upsell dialog on a plan with comments, whatever asks for it', async () => {
-    await renderLayout()
-    await settleMode('default')
-
-    await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
-
-    // The context did open; the leaf that knows about the plan is what drops the dialog
-    expect(await screen.findByTestId('open-state')).toHaveTextContent('true')
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-  })
-
-  it('never shows the upsell dialog when the feature check failed', async () => {
-    await renderLayout()
-    await settleMode(null)
-
-    await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
-
-    expect(await screen.findByTestId('open-state')).toHaveTextContent('true')
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-  })
-
-  it('holds the dialog, not the studio, while the feature check is still pending', async () => {
-    await renderLayout()
-
-    // The click opens the dialog at once, and its leaf suspends on the mode: a render that suspends
-    // only resumes when it happened inside an awaited act (see AGENTS.md)
-    // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog leaf suspends on the click
-    await act(async () => {
-      await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
+      expect(screen.getByRole('button', {name: 'open upsell'})).toBeInTheDocument()
+      expect(screen.queryByTestId('studio-loading')).not.toBeInTheDocument()
+      expect(onChildRender).toHaveBeenCalledTimes(1)
     })
 
-    // The dialog leaf waits inside its own boundary; the studio below the layout is unaffected
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'open upsell'})).toBeInTheDocument()
-    expect(screen.queryByTestId('studio-loading')).not.toBeInTheDocument()
+    it('does not re-render the studio below it when the feature check answers', async () => {
+      await renderLayout()
+      const rendersBeforeAnswer = onChildRender.mock.calls.length
 
-    await settleMode('upsell')
+      await settleMode('default')
 
-    expect(await screen.findByRole('dialog')).toHaveTextContent('Comments need a bigger plan')
-  })
-})
+      expect(screen.getByRole('button', {name: 'open upsell'})).toBeInTheDocument()
+      expect(onChildRender).toHaveBeenCalledTimes(rendersBeforeAnswer)
+    })
+
+    it('opens the upsell dialog on a plan without comments', async () => {
+      await renderLayout()
+      await settleMode('upsell')
+
+      await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
+
+      expect(await screen.findByRole('dialog')).toHaveTextContent('Comments need a bigger plan')
+    })
+
+    it('never shows the upsell dialog on a plan with comments, whatever asks for it', async () => {
+      await renderLayout()
+      await settleMode('default')
+
+      await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
+
+      // The context did open; the leaf that knows about the plan is what drops the dialog
+      expect(await screen.findByTestId('open-state')).toHaveTextContent('true')
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+
+    it('never shows the upsell dialog when the feature check failed', async () => {
+      await renderLayout()
+      await settleMode(null)
+
+      await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
+
+      expect(await screen.findByTestId('open-state')).toHaveTextContent('true')
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+
+    it('holds the dialog, not the studio, while the feature check is still pending', async () => {
+      await renderLayout()
+
+      // The click opens the dialog at once, and its leaf suspends on the mode: a render that suspends
+      // only resumes when it happened inside an awaited act (see AGENTS.md)
+      // oxlint-disable-next-line testing-library/no-unnecessary-act -- the dialog leaf suspends on the click
+      await act(async () => {
+        await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
+      })
+
+      // The dialog leaf waits inside its own boundary; the studio below the layout is unaffected
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      expect(screen.getByRole('button', {name: 'open upsell'})).toBeInTheDocument()
+      expect(screen.queryByTestId('studio-loading')).not.toBeInTheDocument()
+
+      await settleMode('upsell')
+
+      expect(await screen.findByRole('dialog')).toHaveTextContent('Comments need a bigger plan')
+    })
+  },
+)
