@@ -6,6 +6,7 @@ import {
   isKeySegment,
   type ObjectSchemaType,
   type Path,
+  type ValidationSuggestedFix,
 } from '@sanity/types'
 import {startsWith, toString} from '@sanity/util/paths'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
@@ -515,6 +516,28 @@ describe.each(
     expect(prepareFormState._preparePrimitiveInputState).toHaveBeenCalledTimes(
       expectedCalls.preparePrimitiveInputState,
     )
+  })
+})
+
+describe('validation suggested fixes', () => {
+  const suggestedFixes: ValidationSuggestedFix[] = [
+    {type: 'set', title: 'Use fixed value', value: 'fixed'},
+    {type: 'unset', title: 'Clear value'},
+  ]
+
+  test.each(paths)('reach the form node at $path', ({path}) => {
+    const formState = prepareFormState({
+      ...defaultOptions,
+      validation: [{path, level: 'error', message: 'example marker', suggestedFixes}],
+    })
+
+    const node = Array.from(traverseForm(formState)).find(
+      ([candidate]) => toString(candidate.path) === toString(path),
+    )?.[0]
+
+    expect(node?.validation).toEqual([
+      {path, level: 'error', message: 'example marker', suggestedFixes},
+    ])
   })
 })
 

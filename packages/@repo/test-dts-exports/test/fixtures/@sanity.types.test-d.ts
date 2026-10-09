@@ -358,6 +358,9 @@ import type {
   ValidationErrorClass,
   ValidationErrorOptions,
   ValidationMarker,
+  ValidationSetFix,
+  ValidationSuggestedFix,
+  ValidationUnsetFix,
   Validator,
   Validators,
   WeakCrossDatasetReferenceValue,
@@ -1433,6 +1436,15 @@ describe('@sanity/types', () => {
   })
   test('ValidationMarker', () => {
     expectTypeOf<ValidationMarker>().toBeObject()
+  })
+  test('ValidationSetFix', () => {
+    expectTypeOf<ValidationSetFix>().toBeObject()
+  })
+  test('ValidationSuggestedFix', () => {
+    expectTypeOf<ValidationSuggestedFix>().not.toBeNever()
+  })
+  test('ValidationUnsetFix', () => {
+    expectTypeOf<ValidationUnsetFix>().toBeObject()
   })
   test('Validator', () => {
     expectTypeOf<Validator<any, any>>().not.toBeNever()

@@ -4,6 +4,7 @@ import {
   type BooleanSchemaType,
   type CurrentUser,
   type FieldGroup,
+  type FormNodeValidation,
   isArrayOfObjectsSchemaType,
   isArraySchemaType,
   isKeyedObject,
@@ -59,6 +60,11 @@ import {getItemType, getPrimitiveItemType} from './utils/getItemType'
 import {getSafeDomId} from './utils/getSafeDomId'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
+
+function toFormNodeValidation(marker: ValidationMarker): FormNodeValidation {
+  const {level, message, path, suggestedFixes} = marker
+  return suggestedFixes ? {level, message, path, suggestedFixes} : {level, message, path}
+}
 
 interface FormStateOptions<TSchemaType, T> extends NodeChronologyProps {
   schemaType: TSchemaType
@@ -1072,7 +1078,7 @@ export function createPrepareFormState({
 
     const validation = props.validation
       .filter((item) => isEqual(item.path, props.path))
-      .map((v) => ({level: v.level, message: v.message, path: v.path}))
+      .map(toFormNodeValidation)
 
     const visibleMembers = members.filter(
       (member): member is Exclude<ObjectMember, DecorationMember> =>
@@ -1189,7 +1195,7 @@ export function createPrepareFormState({
       const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
       const validation = props.validation
         .filter((item) => isEqual(item.path, props.path))
-        .map((v) => ({level: v.level, message: v.message, path: v.path}))
+        .map(toFormNodeValidation)
       const members = items.flatMap((item, index) =>
         prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index}),
       )
@@ -1240,7 +1246,7 @@ export function createPrepareFormState({
       const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
       const validation = props.validation
         .filter((item) => isEqual(item.path, props.path))
-        .map((v) => ({level: v.level, message: v.message, path: v.path}))
+        .map(toFormNodeValidation)
 
       const members = items.flatMap((item, index) =>
         prepareArrayOfObjectsMember({
@@ -1447,7 +1453,7 @@ export function createPrepareFormState({
 
       const validation = props.validation
         .filter((item) => isEqual(item.path, props.path))
-        .map((v) => ({level: v.level, message: v.message, path: v.path}))
+        .map(toFormNodeValidation)
 
       const diffProps = prepareDiffProps(props)
 

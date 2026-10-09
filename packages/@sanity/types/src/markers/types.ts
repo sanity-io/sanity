@@ -1,5 +1,5 @@
 import {type Path} from '../paths/types'
-import {type ValidationError} from '../validation/types'
+import {type ValidationError, type ValidationSuggestedFix} from '../validation/types'
 
 /** @public */
 export interface ValidationMarker {
@@ -15,6 +15,14 @@ export interface ValidationMarker {
 
   /** Structured information about the validation failure. */
   details?: Record<string, unknown>
+
+  /**
+   * Corrections the editor can apply with one click. Each fix targets this
+   * marker's `path`.
+   *
+   * @beta
+   */
+  suggestedFixes?: ValidationSuggestedFix[]
 
   /**
    * The validation message for this marker. E.g. "Must be greater than 0"

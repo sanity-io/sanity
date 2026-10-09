@@ -407,6 +407,9 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type ValidationErrorClass,
   type ValidationErrorOptions,
+  type ValidationSetFix,
+  type ValidationSuggestedFix,
+  type ValidationUnsetFix,
   type Validator,
   type Validators,
 } from './validation/types'

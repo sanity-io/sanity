@@ -8,18 +8,24 @@ import {
   type SanityDocument,
   type SchemaType,
   type ValidationMarker,
+  type ValidationSuggestedFix,
 } from '@sanity/types'
 import {Card, type CardTone, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentInspectorProps,
+  type FormPatch,
   isGoingToUnpublish,
   mergeParseErrors,
+  PatchEvent,
+  set,
+  unset,
   useParseErrors,
   useTranslation,
 } from 'sanity'
 import {Flex, Box, VStack} from 'ui5'
 
+import {Button} from '../../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -31,15 +37,29 @@ const MARKER_ICON: Record<'error' | 'warning' | 'info', IconComponent> = {
   info: InfoOutlineIcon,
 }
 
-const MARKER_TONE: Record<'error' | 'warning' | 'info', CardTone> = {
+const MARKER_TONE = {
   error: 'critical',
   warning: 'caution',
   info: 'primary',
+} as const satisfies Record<'error' | 'warning' | 'info', CardTone>
+
+function suggestedFixToPatch(fix: ValidationSuggestedFix, path: Path): FormPatch {
+  switch (fix.type) {
+    case 'set':
+      return set(fix.value, path)
+    case 'unset':
+      return unset(path)
+    default: {
+      const unknownFix: never = fix
+      throw new Error(`Unknown suggested fix: ${JSON.stringify(unknownFix)}`)
+    }
+  }
 }
 
 export function ValidationInspector(props: DocumentInspectorProps) {
   const {onClose} = props
-  const {onFocus, onPathOpen, schemaType, validation, value, editState} = useDocumentPane()
+  const {onChange, onFocus, onPathOpen, schemaType, validation, value, editState, formState} =
+    useDocumentPane()
   const parseErrors = useParseErrors()
   const mergedValidation = useMemo(
     () => mergeParseErrors(validation, parseErrors),
@@ -53,6 +73,14 @@ export function ValidationInspector(props: DocumentInspectorProps) {
       onFocus(path)
     },
     [onFocus, onPathOpen],
+  )
+
+  const readOnly = !formState || formState.readOnly
+  const handleApplyFix = useCallback(
+    (path: Path, fix: ValidationSuggestedFix) => {
+      onChange(PatchEvent.from(suggestedFixToPatch(fix, path)))
+    },
+    [onChange],
   )
 
   const isVersionGoingToUnpublish =
@@ -91,6 +119,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
                     // oxlint-disable-next-line no-array-index-key
                     key={i}
                     marker={marker}
+                    onApplyFix={readOnly ? undefined : handleApplyFix}
                     onOpen={handleOpen}
                     schemaType={schemaType}
                     value={value}
@@ -107,11 +136,13 @@ export function ValidationInspector(props: DocumentInspectorProps) {
 
 function ValidationCard(props: {
   marker: ValidationMarker
+  onApplyFix?: (path: Path, fix: ValidationSuggestedFix) => void
   onOpen: (path: Path) => void
   schemaType: ObjectSchemaType
   value: Partial<SanityDocument> | null
 }) {
-  const {marker, onOpen, schemaType, value} = props
+  const {marker, onApplyFix, onOpen, schemaType, value} = props
+  const suggestedFixes = onApplyFix ? marker.suggestedFixes : undefined
   const handleClick = useCallback(
     (event: MouseEvent) => {
       // Allow text selection: if the user selected text, don't navigate
@@ -169,6 +200,22 @@ function ValidationCard(props: {
             </Flex>
           </Flex>
         </Card>
+      )}
+
+      {!errorInfo && onApplyFix && suggestedFixes && suggestedFixes.length > 0 && (
+        <Flex flexWrap="wrap" gap={2} paddingTop={2} paddingLeft={3}>
+          {suggestedFixes.map((fix, fixIndex) => (
+            <Button
+              data-testid="validation-suggested-fix"
+              // oxlint-disable-next-line no-array-index-key
+              key={fixIndex}
+              mode="ghost"
+              onClick={() => onApplyFix(marker.path, fix)}
+              text={fix.title}
+              tone={MARKER_TONE[marker.level]}
+            />
+          ))}
+        </Flex>
       )}
     </ErrorBoundary>
   )
