@@ -1,3 +1,4 @@
+import {type PayloadOf} from '@sanity/sdk/dashboard'
 import {act, render, screen, waitFor} from '@testing-library/react'
 import {Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -54,11 +55,13 @@ describe('AuthBoundary login flash gate', () => {
     vi.clearAllMocks()
   })
 
-  async function mockWorkspaceAuth(auth: Record<string, unknown>) {
+  async function mockWorkspaceAuth(auth: Record<string, unknown>, projectId = 'project-1') {
+    const workspaceAuth = {state: authState$, ...auth}
     const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
     ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
-      activeWorkspace: {auth: {state: authState$, ...auth}},
+      activeWorkspace: {projectId, auth: workspaceAuth},
     })
+    return workspaceAuth
   }
 
   it('holds the loading screen on logged-out while the callback is unsettled, then renders children', async () => {
@@ -280,6 +283,151 @@ describe('AuthBoundary login flash gate', () => {
     })
     expect(screen.getByTestId('authenticate-screen')).toBeTruthy()
     expect(screen.queryByTestId('loading-block')).toBeNull()
+  })
+
+  describe('for a user without access to the project', () => {
+    const WITHOUT_ROLES: AuthState = {
+      authenticated: true,
+      currentUser: {roles: [], provider: 'google'},
+    }
+
+    afterEach(() => {
+      window.history.replaceState(null, '', '/')
+      vi.restoreAllMocks()
+    })
+
+    function renderWithoutAccess() {
+      const view = render(
+        <AuthBoundary>
+          <div data-testid="content" />
+        </AuthBoundary>,
+      )
+      act(() => authState$.next(WITHOUT_ROLES))
+      return view
+    }
+
+    // Renders Studio in the Dashboard's frame, where Studio talks Comlink.
+    async function stubComlinkHost() {
+      window.history.replaceState(
+        null,
+        '',
+        `/?_context=${encodeURIComponent(JSON.stringify({mode: 'core-ui', env: 'test'}))}`,
+      )
+      vi.spyOn(window, 'top', 'get').mockReturnValue(null)
+      // The rendering context reads the URL once, when its module loads.
+      vi.resetModules()
+      ;({AuthBoundary} = await import('../AuthBoundary'))
+      const {createSanityInstance} = await import('@sanity/sdk')
+      const {getOrCreateNode} = await import('@sanity/sdk/comlink')
+      const node = getOrCreateNode(createSanityInstance(), {
+        name: 'dashboard/nodes/sdk',
+        connectTo: 'dashboard/channels/sdk',
+      })
+      return vi.spyOn(node, 'fetch')
+    }
+
+    it('asks a message bus host to show its access request prompt', async () => {
+      const host = stubMessageBusHost()
+      const requests: PayloadOf<'access.request'>[] = []
+      const replies: Array<() => void> = []
+      host.respond('access.request', (message) => {
+        requests.push(message.payload)
+        replies.push(() => message.reply({ok: true}))
+      })
+      await mockWorkspaceAuth({})
+
+      renderWithoutAccess()
+
+      await waitFor(() =>
+        expect(requests).toEqual([{resourceType: 'project', resourceId: 'project-1'}]),
+      )
+      expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+
+      // The host shows its prompt, so Studio keeps waiting behind it.
+      await act(async () => replies.forEach((reply) => reply()))
+      expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+      expect(screen.queryByTestId('request-access-screen')).toBeNull()
+    })
+
+    it('asks the Dashboard to show its access request prompt over Comlink', async () => {
+      const fetch = await stubComlinkHost()
+      const reply = promiseWithResolvers<{success: true}>()
+      fetch.mockReturnValue(reply.promise)
+      await mockWorkspaceAuth({})
+
+      renderWithoutAccess()
+
+      await waitFor(() =>
+        expect(fetch).toHaveBeenCalledWith('dashboard/v1/auth/access/request', {
+          resourceType: 'project',
+          resourceId: 'project-1',
+        }),
+      )
+      // The Dashboard shows its prompt, so Studio keeps waiting behind it.
+      await act(async () => reply.resolve({success: true}))
+      expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+      expect(screen.queryByTestId('request-access-screen')).toBeNull()
+    })
+
+    it('asks for the project of another workspace once that workspace has no access', async () => {
+      const host = stubMessageBusHost()
+      const requests: PayloadOf<'access.request'>[] = []
+      host.respond('access.request', (message) => {
+        requests.push(message.payload)
+        message.reply({ok: true})
+      })
+      await mockWorkspaceAuth({}, 'project-1')
+      const {rerender} = renderWithoutAccess()
+      await waitFor(() => expect(requests).toHaveLength(1))
+
+      // Each project has an auth store of its own.
+      const otherState$ = new Subject<AuthState>()
+      await mockWorkspaceAuth({state: otherState$}, 'project-2')
+      rerender(
+        <AuthBoundary>
+          <div data-testid="content" />
+        </AuthBoundary>,
+      )
+      act(() => otherState$.next(WITHOUT_ROLES))
+
+      await waitFor(() =>
+        expect(requests.map(({resourceId}) => resourceId)).toEqual(['project-1', 'project-2']),
+      )
+    })
+
+    it.each([
+      {
+        host: 'a message bus host declines',
+        setup: () => {
+          stubMessageBusHost().respond('access.request', (message) =>
+            message.reply({ok: false, reason: 'unsupported'}),
+          )
+        },
+      },
+      {host: 'nothing on the message bus handles access requests', setup: stubMessageBusHost},
+      {
+        host: 'the Dashboard declines over Comlink',
+        setup: async () => {
+          const fetch = await stubComlinkHost()
+          fetch.mockResolvedValue({success: false, message: 'Not allowed'})
+        },
+      },
+    ])("shows Studio's request access screen when $host", async ({setup}) => {
+      await setup()
+      await mockWorkspaceAuth({})
+
+      renderWithoutAccess()
+
+      expect(await screen.findByTestId('request-access-screen')).toBeInTheDocument()
+    })
+
+    it("shows Studio's request access screen without a host", async () => {
+      await mockWorkspaceAuth({})
+
+      renderWithoutAccess()
+
+      expect(screen.getByTestId('request-access-screen')).toBeInTheDocument()
+    })
   })
 })
 

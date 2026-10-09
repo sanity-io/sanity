@@ -3,9 +3,12 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useState} from '
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 
+import {CapabilityGate} from '../components/CapabilityGate'
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {isDashboardAuthStore} from '../store/authStore/createAuthStore'
 import {type AuthStore} from '../store/authStore/types'
+import {useComlinkStore, useRenderingContextStore} from '../store/datastores'
+import {ResourceCacheProvider} from '../store/ResourceCacheProvider'
 import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,
@@ -158,8 +161,21 @@ export function AuthBoundary({
     // If using unverified `sanity` login provider, send them
     // to basic NotAuthorized component.
     if (!loginProvider || loginProvider === 'sanity') return <NotAuthenticatedComponent />
-    // Otherwise, send user to request access screen
-    return <RequestAccessScreen />
+    return (
+      // The rendering context lives in a resource cache, which Studio renders below this boundary.
+      <ResourceCacheProvider>
+        <CapabilityGate capability="dashboard" condition="unavailable">
+          <RequestAccessScreen />
+        </CapabilityGate>
+        <CapabilityGate capability="dashboard" condition="available">
+          <HostAccessRequest
+            key={activeWorkspace.projectId}
+            projectId={activeWorkspace.projectId}
+            LoadingComponent={LoadingComponent}
+          />
+        </CapabilityGate>
+      </ResourceCacheProvider>
+    )
   }
 
   // While the callback exchange is unsettled, logged-out may be the stale
@@ -176,4 +192,30 @@ export function AuthBoundary({
   if (loggedIn === 'logged-out') return <AuthenticateComponent />
 
   return <>{children}</>
+}
+
+// Waits behind the host's access prompt, and falls back to Studio's screen when the host can't.
+function HostAccessRequest({
+  projectId,
+  LoadingComponent,
+}: {
+  projectId: string
+  LoadingComponent: ComponentType
+}) {
+  const messageBusConnection = useRenderingContextStore().getMessageBusConnection()
+  const {node} = useComlinkStore()
+  const [hostPrompts, setHostPrompts] = useState<boolean | undefined>(undefined)
+
+  useEffect(() => {
+    const request = {resourceType: 'project', resourceId: projectId} as const
+    async function askHost(): Promise<boolean> {
+      if (messageBusConnection)
+        return (await messageBusConnection.emit('access.request', request)).ok
+      if (node) return (await node.fetch('dashboard/v1/auth/access/request', request)).success
+      return false
+    }
+    askHost().then(setHostPrompts, () => setHostPrompts(false))
+  }, [messageBusConnection, node, projectId])
+
+  return hostPrompts === false ? <RequestAccessScreen /> : <LoadingComponent />
 }
