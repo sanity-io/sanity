@@ -17,7 +17,6 @@ import {
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
-  internalTasksReducer,
   localeBundlesReducer,
   localeDefReducer,
   mediaLibraryEnabledReducer,
@@ -792,33 +791,6 @@ describe('onUncaughtErrorResolver', () => {
         context: {error, errorInfo},
       }),
     ).toThrow('Expected `document.onUncaughtError` to be a a function, but received string')
-  })
-})
-
-describe('internalTasksReducer', () => {
-  it('returns undefined when no plugin configures internal tasks', () => {
-    expect(internalTasksReducer({config: {name: 'test'}})).toBeUndefined()
-  })
-
-  it('returns the last object that has a footerAction', () => {
-    const footerAction = 'footer'
-    expect(
-      internalTasksReducer({
-        config: {
-          name: 'root',
-          __internal_tasks: {footerAction},
-          plugins: [{name: 'plugin', __internal_tasks: {footerAction: 'plugin-footer'}}],
-        },
-      }),
-    ).toEqual({footerAction})
-  })
-
-  it('throws when the value is not an object with footerAction', () => {
-    expect(() =>
-      internalTasksReducer({
-        config: {name: 'test', __internal_tasks: {} as never},
-      }),
-    ).toThrow('Expected `__internal__tasks` to be an object with footerAction, but received object')
   })
 })
 
