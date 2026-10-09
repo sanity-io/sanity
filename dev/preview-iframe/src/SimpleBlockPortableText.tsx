@@ -3,18 +3,28 @@ import {stegaClean} from '@sanity/client/stega'
 import {type PortableTextBlock} from '@sanity/types'
 import {Spinner} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
+import {createContext, useContext, useMemo} from 'react'
 import {Flex} from 'ui5'
 
 import {imageBuilder, useQuery} from './loader'
+
+// The document a `table` block belongs to. Read through context so the table component below
+// keeps a stable module-scope identity; creating it per document during render would remount
+// every table on each re-render.
+const TableDocumentContext = createContext<{id: string; type: string} | null>(null)
 
 // Renders `table` blocks so the Presentation preview exercises overlays
 // at container depth. Cell text binds overlays via its stega-encoded
 // content; the `data-sanity` attribute on each `<td>` additionally binds
 // the element itself, so empty cells stay clickable (stega needs
 // rendered text, and an empty cell has none).
-function createTableComponent(documentId: string, documentType: string) {
-  const dataAttribute = createDataAttribute({id: documentId, type: documentType})
-  const TableComponent = ({value}: {value: any}) => (
+function TableComponent({value}: {value: any}) {
+  const document = useContext(TableDocumentContext)
+  if (!document) {
+    throw new Error('TableComponent must be rendered inside TableDocumentContext')
+  }
+  const dataAttribute = createDataAttribute(document)
+  return (
     <table style={{borderCollapse: 'collapse', margin: '8px 0'}}>
       <tbody>
         {(value.rows ?? []).map((row: any) => (
@@ -43,7 +53,6 @@ function createTableComponent(documentId: string, documentType: string) {
       </tbody>
     </table>
   )
-  return TableComponent
 }
 
 const components: PortableTextComponents = {
@@ -60,6 +69,29 @@ const components: PortableTextComponents = {
       )
     },
   },
+}
+
+const bodyComponents: PortableTextComponents = {
+  ...components,
+  types: {...components.types, table: TableComponent},
+}
+
+function DocumentBody(props: {
+  body: PortableTextBlock[]
+  documentId: string
+  documentType: string
+}) {
+  const {body, documentId, documentType} = props
+  const tableDocument = useMemo(
+    () => ({id: documentId, type: documentType}),
+    [documentId, documentType],
+  )
+
+  return (
+    <TableDocumentContext.Provider value={tableDocument}>
+      <PortableText components={bodyComponents} value={body} />
+    </TableDocumentContext.Provider>
+  )
 }
 
 export function SimpleBlockPortableText(): React.JSX.Element {
@@ -144,13 +176,7 @@ export function SimpleBlockPortableText(): React.JSX.Element {
               </div>
             ))}
             <p>{item.bodyString}</p>
-            <PortableText
-              components={{
-                ...components,
-                types: {...components.types, table: createTableComponent(item._id, item._type)},
-              }}
-              value={item.body}
-            />
+            <DocumentBody body={item.body} documentId={item._id} documentType={item._type} />
             {item.notes?.map((note) => (
               <div key={note._key}>
                 <h2>{note.title}</h2>

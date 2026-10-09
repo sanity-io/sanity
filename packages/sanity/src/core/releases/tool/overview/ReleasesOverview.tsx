@@ -60,7 +60,7 @@ import {
   getInitialReleaseNotFound,
   type Mode,
 } from './queryParamUtils'
-import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalendarFilter'
+import {DateFilterButton, RELEASE_CALENDAR_FILTER_DAY} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleaseNotFoundBanner} from './ReleaseNotFoundBanner'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
@@ -469,7 +469,7 @@ export function ReleasesOverview() {
     () => (
       <CalendarFilter
         disabled={loading || releases.length === 0}
-        renderCalendarDay={createReleaseCalendarFilterDay(cardinalityView)}
+        renderCalendarDay={RELEASE_CALENDAR_FILTER_DAY[cardinalityView]}
         selectedDate={releaseFilterDate}
         onSelect={handleSelectFilterDate}
         timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}

@@ -32,6 +32,7 @@ import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoAr
 import {useInsertMenuMenuItems} from '../arrays/ArrayOfObjectsInput/InsertMenuMenuItems'
 import {useArrayValidation} from '../arrays/common/ArrayValidationContext'
 import {RowLayout} from '../arrays/layouts/RowLayout'
+import {EditReferenceLink} from './EditReferenceLink'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
 import {ReferenceItemRefProvider} from './ReferenceItemRefProvider'
@@ -101,12 +102,10 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   const menuButtonRef = useRef<HTMLButtonElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
 
-  const {EditReferenceLink, getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} =
-    useReferenceInput({
-      path,
-      schemaType,
-      value,
-    })
+  const {getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} = useReferenceInput({
+    path,
+    schemaType,
+  })
 
   // this is here to make sure the item is visible if it's being edited behind a modal
   useScrollIntoViewOnFocusWithin(elementRef, open)
@@ -369,6 +368,8 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             radius={2}
             documentId={value?._ref}
             documentType={refType?.name}
+            parentRefPath={path}
+            template={value?._strengthenOnPublish?.template}
             disabled={resolvingInitialValue}
             __unstable_focusRing
             selected={selected}

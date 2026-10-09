@@ -1,7 +1,7 @@
 import {type ComponentType, type PropsWithChildren, useCallback, useContext, useState} from 'react'
 import {TableContext} from 'sanity/_singletons'
 
-import {type SortDirection} from './types'
+import {type SortDirection, type TableRowActions} from './types'
 
 export interface TableSort {
   column: string
@@ -16,15 +16,15 @@ export interface TableContextValue {
   setSearchTerm: (searchTerm: string) => void
   sort: TableSort | null
   setSortColumn: (column: string) => void
+  rowActions?: TableRowActions
 }
 
 /**
  * @internal
  */
-export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: TableSort}> = ({
-  children,
-  defaultSort,
-}) => {
+export const TableProvider: ComponentType<
+  PropsWithChildren & {defaultSort?: TableSort; rowActions?: TableRowActions}
+> = ({children, defaultSort, rowActions}) => {
   const [searchTerm, setSearchTerm] = useState<string | null>(null)
   const [sort, setSort] = useState<TableSort | null>(defaultSort || null)
 
@@ -38,7 +38,7 @@ export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: Tab
     })
   }, [])
 
-  const contextValue = {searchTerm, setSearchTerm, sort, setSortColumn}
+  const contextValue = {searchTerm, setSearchTerm, sort, setSortColumn, rowActions}
 
   return <TableContext.Provider value={contextValue}>{children}</TableContext.Provider>
 }

@@ -45,7 +45,7 @@ import {
 import {PresentationNarrowTabBar} from './panels/PresentationNarrowTabBar'
 import {PresentationContent} from './PresentationContent'
 import {PresentationNavigateProvider} from './PresentationNavigateProvider'
-import {usePresentationNavigator} from './PresentationNavigator'
+import {PresentationNavigator, usePresentationNavigator} from './PresentationNavigator'
 import {PresentationParamsProvider} from './PresentationParamsProvider'
 import {PresentationProvider} from './PresentationProvider'
 import {container} from './PresentationTool.css'
@@ -458,7 +458,7 @@ export default function PresentationTool(props: {
 
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
 
-  const [{navigatorEnabled, toggleNavigator}, PresentationNavigator] = usePresentationNavigator({
+  const {navigatorEnabled, toggleNavigator} = usePresentationNavigator({
     unstable_navigator,
   })
 
@@ -555,7 +555,9 @@ export default function PresentationTool(props: {
                   <Panels>
                     <PresentationNavigator
                       hidden={isNarrow && resolvedTab !== 'navigator'}
+                      navigatorEnabled={navigatorEnabled}
                       resizerHidden={isNarrow}
+                      unstable_navigator={unstable_navigator}
                     />
                     <Panel
                       id="preview"

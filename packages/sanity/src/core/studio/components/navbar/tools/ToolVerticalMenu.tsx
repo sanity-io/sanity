@@ -1,10 +1,10 @@
 import startCase from 'lodash-es/startCase.js'
-import {useMemo, type RefAttributes} from 'react'
+import {useMemo} from 'react'
 import {VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type Tool} from '../../../../config/types'
-import {ToolLink, type ToolLinkProps} from './ToolLink'
+import {ToolLink} from './ToolLink'
 
 interface ToolVerticalMenuProps {
   activeToolName?: string
@@ -21,19 +21,11 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
         {tools.map((tool) => {
           const title = tool?.title || startCase(tool.name)
 
-          function Link(linkProps: ToolLinkProps & RefAttributes<HTMLAnchorElement>) {
-            const {ref, ...rest} = linkProps
-            return (
-              <ToolLink {...rest} ref={ref} name={tool.name}>
-                {linkProps.children}
-              </ToolLink>
-            )
-          }
-
           return (
             <VStack key={tool.name} as="li">
               <Button
-                as={Link}
+                as={ToolLink}
+                name={tool.name}
                 justify="flex-start"
                 mode="bleed"
                 selected={activeToolName === tool.name}
