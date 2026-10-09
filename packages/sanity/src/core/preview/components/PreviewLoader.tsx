@@ -1,4 +1,5 @@
 import {type ComponentType, type CSSProperties, Suspense, useMemo, useState} from 'react'
+import {isValidElementType} from 'react-is'
 
 import {type PreviewProps} from '../../components/previews/types'
 import {type RenderPreviewCallbackProps} from '../../form/types/renderCallback'
@@ -85,7 +86,10 @@ export function PreviewLoader(
     }
 
     if (!preview?.value?.media) {
-      return schemaType.icon
+      // Media components are rendered with `dimensions` and `layout`, which an icon would spread
+      // onto its <svg>. A string icon is text, not a tag name.
+      const Icon = schemaType.icon
+      return typeof Icon !== 'string' && isValidElementType(Icon) ? <Icon /> : Icon
     }
 
     // @todo: fix `TS2769: No overload matches this call.`

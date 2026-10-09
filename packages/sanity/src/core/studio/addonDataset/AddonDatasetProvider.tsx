@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {isHttpError, type SanityClient} from '@sanity/client'
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
 
@@ -9,6 +9,68 @@ import {type AddonDatasetContextValue} from './types'
 
 interface AddonDatasetSetupProviderProps {
   children: React.ReactNode
+}
+
+const LISTING_POLL_INTERVAL_MS = 1_000
+const LISTING_POLL_ATTEMPTS = 30
+
+/**
+ * Whether the API rejected a setup because the dataset already has an add-on dataset. It reports
+ * that as a 400 without an error code, whose message says that the number of datasets with the
+ * dataset profile `comments` for the dataset would exceed the limit of 1.
+ */
+function isAddonDatasetLimitError(err: unknown): boolean {
+  return (
+    isHttpError(err) &&
+    err.statusCode === 400 &&
+    /dataset profile "comments".* would exceed the limit/.test(err.message)
+  )
+}
+
+/**
+ * Checks up to `attempts` times, {@link LISTING_POLL_INTERVAL_MS} apart, whether the add-on dataset
+ * is listed, and resolves with its name once it is.
+ */
+async function waitForAddonDatasetListing(
+  getAddonDatasetName: () => Promise<string | undefined>,
+  attempts: number,
+): Promise<string | undefined> {
+  if (attempts === 0) return undefined
+  await new Promise((resolve) => setTimeout(resolve, LISTING_POLL_INTERVAL_MS))
+  const addonDatasetName = await getAddonDatasetName().catch(() => undefined)
+  if (addonDatasetName) return addonDatasetName
+  return waitForAddonDatasetListing(getAddonDatasetName, attempts - 1)
+}
+
+/**
+ * Sets up the add-on dataset of `dataset` and resolves with its name.
+ *
+ * Of the setups that run at the same time, as when several studios open the tasks form of a dataset
+ * that has no add-on dataset yet, the API lets one through and rejects the others right away (see
+ * {@link isAddonDatasetLimitError}), while it lists the add-on dataset only once the setup it let
+ * through has finished, several seconds later. A rejected setup therefore waits for the add-on
+ * dataset to be listed.
+ */
+async function setUpAddonDataset(
+  client: SanityClient,
+  dataset: string,
+  getAddonDatasetName: () => Promise<string | undefined>,
+): Promise<string | undefined> {
+  try {
+    const res = await client.request<{datasetName?: string} | undefined>({
+      url: `/comments/${dataset}/setup`,
+      method: 'POST',
+    })
+    return res?.datasetName
+  } catch (err) {
+    if (!isAddonDatasetLimitError(err)) throw err
+    const addonDatasetName = await waitForAddonDatasetListing(
+      getAddonDatasetName,
+      LISTING_POLL_ATTEMPTS,
+    )
+    if (!addonDatasetName) throw err
+    return addonDatasetName
+  }
 }
 
 function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
@@ -70,12 +132,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
     // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
     const run = async () => {
       // 1. Create the addon dataset
-      const res = await originalClient.request({
-        url: `/comments/${dataset}/setup`,
-        method: 'POST',
-      })
-
-      const datasetName = res?.datasetName
+      const datasetName = await setUpAddonDataset(originalClient, dataset, getAddonDatasetName)
 
       // 2. We can't continue if the addon dataset name is not returned
       if (!datasetName) {

@@ -1,4 +1,5 @@
 import {render} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import noop from 'lodash-es/noop.js'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -98,5 +99,26 @@ describe('IntentLink', () => {
     expect(component.container.querySelector('a')?.href).not.toContain(
       'aTestStickyParam=aStickyParam.value.to-be-overridden',
     )
+  })
+
+  it('replaces the history entry when `replace` is set instead of rendering it as an attribute', async () => {
+    const router = route.create('/test', [route.intents('/intent')])
+    const onNavigate = vi.fn()
+    const component = render(<IntentLink intent="edit" params={{id: 'doc'}} replace />, {
+      wrapper: ({children}) => (
+        <RouterProvider onNavigate={onNavigate} router={router} state={{}}>
+          {children}
+        </RouterProvider>
+      ),
+    })
+    const anchor = component.container.querySelector('a')!
+    expect(anchor.hasAttribute('replace')).toBe(false)
+
+    await userEvent.click(anchor)
+
+    expect(onNavigate).toHaveBeenCalledWith({
+      path: expect.stringContaining('/test/intent/edit/'),
+      replace: true,
+    })
   })
 })

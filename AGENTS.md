@@ -541,6 +541,31 @@ production source.
   `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
   matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
 
+#### DOM prop leak guard
+
+`@repo/test-config/vitest/failOnReactDomPropWarnings` is loaded by the `sanity` jsdom and
+browser-mode setup files and by the `@sanity/vision` and `@sanity/access-ui` configs. It fails the
+current test when a non-DOM prop reaches a DOM element: react-dom's development-build warnings
+(`React does not recognize the … prop on a DOM element`, `Received true for a non-boolean
+attribute`, invalid event handler / ARIA names, …), styled-components' `unknown prop … is being
+sent through to the DOM` warning, and any `setAttribute` call that writes an object
+(`params="[object Object]"` — react-dom renders all-lowercase unknown props like `intent` or
+`params` silently, so the attribute write is the only trace). The failure lists the offending
+prop; fix the component rather than the test: strip the prop before the `{...rest}` spread, or
+make it a transient `$prop` on a `styled.<tag>`. Every `@sanity/ui` primitive forwards unknown
+props to a `styled.<tag>`, so `<Button {...props} as="a">` leaks whatever `props` carries that the
+component never consumed.
+
+The e2e suite has its own guard in `watchForStudioErrors` (`e2e/helpers/studioErrors.ts`), which
+fails a spec at its end when a leak happened during it. CI runs the specs against a production
+`sanity build`, where react-dom and styled-components do not warn, so an init script
+(`e2e/helpers/domPropLeaks/scanner.ts`) reads the props React keeps on every element
+(`__reactProps$…`, kept in production) and checks them with a port of react-dom's development
+validation and styled-components' `@emotion/is-prop-valid` check, plus the object and
+lowercase-name cases React is silent about. The report names the components above the element;
+see "DOM prop leak guard" in `e2e/README.md`. When `react-dom` or `@emotion/is-prop-valid` is
+upgraded, `pnpm vitest run --project=e2e` checks the port against the new versions.
+
 #### Test Timeouts
 
 When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:

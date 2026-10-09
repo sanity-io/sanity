@@ -5,7 +5,8 @@
   "description": "Test (as in unit test) config shared across packages in the sanity monorepo",
   "type": "module",
   "exports": {
-    "./vitest": "./vitest/index.mjs"
+    "./vitest": "./vitest/index.mjs",
+    "./vitest/failOnReactDomPropWarnings": "./vitest/failOnReactDomPropWarnings.mjs"
   },
   "devDependencies": {
     "vite": "catalog:",
