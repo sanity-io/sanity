@@ -384,6 +384,9 @@ const defaultWorkspace = defineConfig({
     reactActivityMode: {
       enabled: true,
     },
+    validationWorker: {
+      enabled: true,
+    },
   },
 })
 

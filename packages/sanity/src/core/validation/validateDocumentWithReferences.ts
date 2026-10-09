@@ -40,6 +40,10 @@ import {type LocaleSource} from '../i18n/types'
 import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
 import {getVersionFromId} from '../util/draftUtils'
 import {shallowEquals} from '../util/shallowEquals'
+import {
+  evaluateDocumentWithWorker,
+  type ValidationWorkerI18nSource,
+} from './worker/validateDocumentWithWorker'
 
 /**
  * @hidden
@@ -105,6 +109,12 @@ export function validateDocumentWithReferences(
     schema: Schema
     i18n: LocaleSource
     currentUser?: Omit<CurrentUser, 'role'> | null
+    /**
+     * When set, built-in rules are evaluated in a web worker and only the rules the worker cannot
+     * run (custom validators and the like) stay on the main thread. See
+     * `beta.validationWorker` in the studio config.
+     */
+    validationWorker?: {i18next: ValidationWorkerI18nSource}
   },
   document$: Observable<SanityDocument | null | undefined>,
   // whether to require all references to exist as published documents
@@ -177,17 +187,29 @@ export function validateDocumentWithReferences(
         if (!document?._type) {
           return of({validation: EMPTY_VALIDATION, isValidating: false})
         }
+        const evaluation = ctx.validationWorker
+          ? evaluateDocumentWithWorker(
+              {
+                schema: ctx.schema,
+                i18n: ctx.i18n,
+                i18next: ctx.validationWorker.i18next,
+                getClient: ctx.getClient,
+                currentUser: ctx.currentUser,
+              },
+              {document, getDocumentExists},
+            )
+          : evaluateDocumentObservable({
+              document,
+              getClient: ctx.getClient,
+              getDocumentExists,
+              i18n: ctx.i18n,
+              schema: ctx.schema,
+              environment: 'studio',
+              currentUser: ctx.currentUser,
+            })
         return concat(
           of({isValidating: true, revision: document._rev}),
-          evaluateDocumentObservable({
-            document,
-            getClient: ctx.getClient,
-            getDocumentExists,
-            i18n: ctx.i18n,
-            schema: ctx.schema,
-            environment: 'studio',
-            currentUser: ctx.currentUser,
-          }).pipe(map((result) => ({validation: result.markers, isValidating: false}))),
+          evaluation.pipe(map((result) => ({validation: result.markers, isValidating: false}))),
         )
       })
     }),

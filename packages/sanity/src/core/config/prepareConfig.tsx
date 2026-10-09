@@ -82,6 +82,7 @@ import {
   searchStrategyReducer,
   singletonsReducer,
   toolsReducer,
+  validationWorkerEnabledReducer,
   variantsTypesReducer,
   variantsEnabledReducer,
 } from './configPropertyReducers'
@@ -1089,6 +1090,9 @@ function resolveSource({
       },
       reactActivityMode: {
         enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
+      },
+      validationWorker: {
+        enabled: validationWorkerEnabledReducer({config, initialValue: false}),
       },
     },
 

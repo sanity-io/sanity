@@ -819,6 +819,48 @@ export const reactActivityModeEnabledReducer = ({
   }, initialValue)
 }
 
+export const validationWorkerEnabledReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
+    const validationWorker: unknown = innerConfig.beta?.validationWorker
+
+    if (typeof validationWorker === 'undefined') {
+      return value
+    }
+
+    if (!isRecord(validationWorker)) {
+      throw new Error(
+        `Expected \`beta.validationWorker\` to be an object, but received ${getPrintableType(
+          validationWorker,
+        )}`,
+      )
+    }
+
+    const enabled = validationWorker.enabled
+
+    if (typeof enabled === 'undefined') {
+      return value
+    }
+
+    if (typeof enabled === 'boolean') {
+      return enabled
+    }
+
+    throw new Error(
+      `Expected \`beta.validationWorker.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+}
+
 export const mediaLibraryEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
