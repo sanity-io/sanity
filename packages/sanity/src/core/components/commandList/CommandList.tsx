@@ -110,6 +110,7 @@ function CommandListComponent({
   ariaMultiselectable = false,
   autoFocus,
   canReceiveFocus,
+  className,
   fixedHeight,
   focusRingOffset = 0,
   getItemDisabled,
@@ -571,6 +572,7 @@ function CommandListComponent({
 
   return (
     <VirtualListBox
+      className={className}
       id={getCommandListChildrenId()}
       onMouseEnter={handleVirtualListMouseEnter}
       onMouseLeave={handleVirtualListMouseLeave}
