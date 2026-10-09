@@ -1,5 +1,17 @@
 import {createContainer, style} from '@vanilla-extract/css'
 
+export const rootLayer = style({
+  minHeight: 'auto',
+  position: 'relative',
+  selectors: {
+    // (0,2,0) already beats Layer's own `position: relative`
+    "&[data-search-open='true']": {
+      top: 0,
+      position: 'sticky',
+    },
+  },
+})
+
 /**
  * The navbar root is a size query container, so the grid below adapts to the navbar's own inline
  * size rather than the viewport's. The two differ whenever the studio does not fill the window:
@@ -18,6 +30,7 @@ const navbarContainer = createContainer()
 export const navbar = style({
   containerName: navbarContainer,
   containerType: 'inline-size',
+  lineHeight: 0,
 })
 
 /**
