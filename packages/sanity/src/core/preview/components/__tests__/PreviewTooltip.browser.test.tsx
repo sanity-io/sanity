@@ -26,6 +26,19 @@ function renderScrollableList() {
   )
 }
 
+/**
+ * Whether a tooltip with the given text is shown. A closed tooltip is either
+ * not rendered (while disabled) or rendered hidden: browsers that fire
+ * mouseout on the row scrolled away from the pointer (Firefox, WebKit) end the
+ * suppression, which re-enables the closed tooltip.
+ */
+function isTooltipVisible(text: string) {
+  return page
+    .getByText(text, {exact: true})
+    .elements()
+    .some((element) => element.checkVisibility())
+}
+
 describe('PreviewTooltip', () => {
   it('shows the tooltip on hover and closes it when the list scrolls underneath', async () => {
     void renderScrollableList()
@@ -40,12 +53,12 @@ describe('PreviewTooltip', () => {
     const container = page.getByTestId('scroll-container').element()
     container.scrollTop = 80
 
-    await expect.element(page.getByText('Status for row 1', {exact: true})).not.toBeInTheDocument()
+    await expect.poll(() => isTooltipVisible('Status for row 1')).toBe(false)
 
     // The tooltip must not come back on its own while the pointer rests on
     // the row (longer than the tooltip open delay).
     await new Promise((resolve) => setTimeout(resolve, 600))
-    await expect.element(page.getByText('Status for row 1', {exact: true})).not.toBeInTheDocument()
+    expect(isTooltipVisible('Status for row 1')).toBe(false)
 
     // Hovering another row must show its tooltip again: the suppression only
     // lasts until the pointer leaves the row that was scrolled under it.

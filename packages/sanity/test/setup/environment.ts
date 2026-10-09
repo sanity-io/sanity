@@ -20,7 +20,14 @@ expect.extend({
   toMatchEmissions,
 })
 
-afterEach(() => cleanup())
+afterEach(async () => {
+  cleanup()
+  // The default plugins' providers preload their lazy components with fire-and-forget `import()`
+  // calls, and a chunk a test never rendered may still be loading when the test ends. Let those
+  // imports finish before Vitest tears the environment down; otherwise it rejects them with an
+  // `EnvironmentTeardownError` that counts as an unhandled error even though every test passed.
+  await vi.dynamicImportSettled()
+})
 ;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 
 // get rid of context warning

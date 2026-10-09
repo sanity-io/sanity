@@ -2,29 +2,19 @@ import {lazy} from 'react'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
+import {type ProviderProps} from '../../config/studio/types'
 import {type DefaultPluginsWorkspaceOptions} from '../../config/types'
+import {ReleasesMetadataProvider} from '../../releases/contexts/ReleasesMetadataProvider'
+import {ReleasesUpsellProvider} from '../../releases/contexts/upsell/ReleasesUpsellProvider'
 import {releasesUsEnglishLocaleBundle} from '../../releases/i18n'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
+import {SCHEDULES_NAME, SCHEDULES_TOOL_NAME} from '../constants'
+import {useReleasesToolAvailable} from '../hooks/useReleasesToolAvailable'
 
-const ReleasesStudioLayout = lazy(() =>
-  import('../../releases/plugin/ReleasesStudioLayout').then((module) => ({
-    default: module.ReleasesStudioLayout,
-  })),
-)
-const ReleasesTool = lazy(() =>
-  import('../../releases/tool/ReleasesTool').then((module) => ({default: module.ReleasesTool})),
-)
+const ReleasesTool = lazy(() => import('../../releases/tool/ReleasesTool'))
 
-/**
- * @internal
- */
-export const SCHEDULES_NAME = 'sanity/schedules'
-
-/**
- * @internal
- */
-export const SCHEDULES_TOOL_NAME = 'releases'
+export {SCHEDULES_NAME, SCHEDULES_TOOL_NAME} from '../constants'
 
 /**
  * @internal
@@ -33,7 +23,7 @@ export const schedules = definePlugin((options: DefaultPluginsWorkspaceOptions) 
   name: SCHEDULES_NAME,
   studio: {
     components: {
-      layout: ReleasesStudioLayout,
+      provider: ReleasesStudioProvider,
     },
   },
   tools: [
@@ -67,3 +57,21 @@ export const schedules = definePlugin((options: DefaultPluginsWorkspaceOptions) 
     bundles: [releasesUsEnglishLocaleBundle],
   },
 }))
+
+/**
+ * The releases providers for the whole studio. Only mounted when the releases tool is in the
+ * workspace: releases can be enabled while the tool was filtered out, and then nothing needs them.
+ */
+function ReleasesStudioProvider(props: ProviderProps) {
+  const releasesToolAvailable = useReleasesToolAvailable()
+
+  if (!releasesToolAvailable) {
+    return props.renderDefault(props)
+  }
+
+  return (
+    <ReleasesUpsellProvider>
+      <ReleasesMetadataProvider>{props.renderDefault(props)}</ReleasesMetadataProvider>
+    </ReleasesUpsellProvider>
+  )
+}
