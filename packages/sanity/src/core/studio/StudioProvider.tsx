@@ -8,6 +8,7 @@ import {LocaleProvider} from '../i18n/components/LocaleProvider'
 import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
 import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
+import {StudioWebAppMetadata} from '../pwa/StudioWebAppMetadata'
 import {ResourceCacheProvider} from '../store/ResourceCacheProvider'
 import {AppIdCacheProvider} from '../store/studio-app/AppIdCacheProvider'
 import {UserApplicationCacheProvider} from '../store/userApplications'
@@ -128,6 +129,9 @@ export function StudioProvider({
                     LoadingComponent={LoadingBlock}
                   >
                     <StudioThemeProvider>
+                      {/* Outside the auth boundary on purpose: a studio should be installable
+                          from its sign-in screen, and the manifest only needs the workspace. */}
+                      <StudioWebAppMetadata />
                       <UserColorManagerProvider>
                         <ConfigErrorGate>
                           {noAuthBoundary ? (
