@@ -31,3 +31,12 @@ globalStyle(`${editorRoot} .cm-content`, {
   borderRightWidth: `${contentBorderRightWidthVar} !important`,
   paddingTop: contentPaddingTopVar,
 })
+
+/** An editor that is as tall as its document, for use under a header rather than in a fixed pane */
+export const editorRootAutoHeight = style({
+  height: 'auto',
+})
+
+globalStyle(`${editorRootAutoHeight} .cm-editor`, {
+  height: 'auto',
+})

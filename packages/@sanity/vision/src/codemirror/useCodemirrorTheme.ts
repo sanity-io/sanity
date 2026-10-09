@@ -50,6 +50,19 @@ function createTheme(theme: Theme) {
       '.cm-panels': {backgroundColor: card.bg, color: card.fg},
       '.cm-panels.cm-panels-top': {borderBottom: `2px solid ${card.border}`},
       '.cm-panels.cm-panels-bottom': {borderTop: `2px solid ${card.border}`},
+
+      // Lint diagnostics hover tooltips and the lint panel's entries
+      '.cm-tooltip': {
+        backgroundColor: card.bg,
+        color: card.fg,
+        border: `1px solid ${card.border}`,
+        borderRadius: '3px',
+      },
+      // Rule messages quote whole rewrites of the query; wrap them rather than span the screen
+      // (in a hover tooltip the lint content is a section of the shared tooltip element)
+      '.cm-tooltip-lint': {fontFamily: fonts.text.family, maxWidth: '520px'},
+      '.cm-panel.cm-panel-lint ul [aria-selected]': {backgroundColor: selection},
+      '.cm-panel.cm-panel-lint ul [aria-selected] .cm-diagnostic': {color: card.fg},
     },
     {dark: color.dark},
   )
