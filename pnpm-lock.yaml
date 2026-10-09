@@ -885,7 +885,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
         specifier: ^5.3.2
-        version: 5.3.2(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+        version: 5.3.3(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-media:
         specifier: ^6.3.2
         version: 6.3.3(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(supports-color@8.1.1)(vitest@5.0.3)
@@ -959,7 +959,7 @@ importers:
         version: 2.0.22(@sanity/client@8.9.0)(react@19.3.0)(sanity@packages+sanity)
       '@sanity/document-internationalization':
         specifier: ^6.2.40
-        version: 6.2.40(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.2)(sanity@packages+sanity)(styled-components@6.5.3)
+        version: 6.2.40(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.3)(sanity@packages+sanity)(styled-components@6.5.3)
       '@sanity/google-maps-input':
         specifier: ^6.1.15
         version: 6.1.15(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
@@ -1052,7 +1052,7 @@ importers:
         version: 7.0.27(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-internationalized-array:
         specifier: ^5.3.2
-        version: 5.3.2(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+        version: 5.3.3(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-media:
         specifier: ^6.3.2
         version: 6.3.3(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(supports-color@8.1.1)(vitest@5.0.3)
@@ -2552,8 +2552,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
-        specifier: ^5.3.2
-        version: 5.3.2(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+        specifier: ^5.3.3
+        version: 5.3.3(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
@@ -14192,12 +14192,12 @@ packages:
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
 
-  sanity-plugin-internationalized-array@5.3.2:
-    resolution: {integrity: sha512-3htPJAZcvbp/W+rKS/s4HBfbcrK93Sa0ylCp2tGl8/pWmsUW+/ad1C/+uGWSp7onTUXsX7CxdnSqpEery4Y+Rw==}
+  sanity-plugin-internationalized-array@5.3.3:
+    resolution: {integrity: sha512-e+Mv9VZdFmBrtrvIUGugnS2ATIa4/SZJmyjHLuc353N9FTJ9wRjQOfiHPo0kPKSaSxCaKMUhPfhU9si7FoDsqA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@sanity/assist': ^6.2.2
-      '@sanity/language-filter': ^5.0.19
+      '@sanity/assist': ^6.2.3
+      '@sanity/language-filter': ^5.0.20
       react: ^19.2
       react-dom: ^19.2
       sanity: ^5 || ^6.0.0-0
@@ -20650,7 +20650,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.1
 
-  '@sanity/document-internationalization@6.2.40(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.2)(sanity@packages+sanity)(styled-components@6.5.3)':
+  '@sanity/document-internationalization@6.2.40(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.3)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/icons': 5.2.3(react@19.3.0)
       '@sanity/mutator': link:packages/@sanity/mutator
@@ -20661,7 +20661,7 @@ snapshots:
       react-dom: 19.3.0(react@19.3.0)
       rxjs: 7.8.2
       sanity: link:packages/sanity
-      sanity-plugin-internationalized-array: 5.3.2(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+      sanity-plugin-internationalized-array: 5.3.3(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-utils: 2.0.20(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
     transitivePeerDependencies:
       - styled-components
@@ -28113,7 +28113,7 @@ snapshots:
       - '@types/react'
       - react-dom
 
-  sanity-plugin-internationalized-array@5.3.2(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3):
+  sanity-plugin-internationalized-array@5.3.3(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3):
     dependencies:
       '@sanity/icons': 5.2.3(react@19.3.0)
       '@sanity/language-filter': 5.0.20(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
