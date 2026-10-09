@@ -271,6 +271,9 @@ catalogs:
 overrides:
   vitest: ^5.0.3
 
+patchedDependencies:
+  motion-dom@14.0.0: 0b6b0e6c780a6aece759b4dcdb066c014540324d290d1d741afbef64ec6b9890
+
 importers:
 
   .:
@@ -24842,7 +24845,7 @@ snapshots:
 
   framer-motion@14.0.0(react-dom@19.3.0)(react@19.3.0):
     dependencies:
-      motion-dom: 14.0.0
+      motion-dom: 14.0.0(patch_hash=0b6b0e6c780a6aece759b4dcdb066c014540324d290d1d741afbef64ec6b9890)
       motion-utils: 14.0.0
       tslib: 2.8.1
     optionalDependencies:
@@ -26272,7 +26275,7 @@ snapshots:
       - socks
     optional: true
 
-  motion-dom@14.0.0:
+  motion-dom@14.0.0(patch_hash=0b6b0e6c780a6aece759b4dcdb066c014540324d290d1d741afbef64ec6b9890):
     dependencies:
       motion-utils: 14.0.0
 

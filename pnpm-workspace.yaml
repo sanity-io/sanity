@@ -156,3 +156,5 @@ trustPolicyExclude:
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
+patchedDependencies:
+  motion-dom@14.0.0: patches/motion-dom@14.0.0.patch
