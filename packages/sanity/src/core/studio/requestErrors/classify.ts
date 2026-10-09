@@ -1,4 +1,4 @@
-import {type HttpError, isHttpError, isTimeoutError} from '@sanity/client'
+import {ChannelError, type HttpError, isHttpError, isTimeoutError} from '@sanity/client'
 import isNativeNetworkError from 'is-network-error'
 
 // These live in `util` so that non-studio code (e.g. the document store) can
@@ -6,6 +6,42 @@ import isNativeNetworkError from 'is-network-error'
 // the public API surface and existing import sites unchanged.
 export {getApiErrorCode, isInvalidSessionError, isUnauthorizedError} from '../../util/apiErrors'
 export {isTimeoutError}
+
+/**
+ * Type guard for ChannelError from `@sanity/client`. ChannelErrors occur
+ * when real-time listeners (EventSource/WebSocket) encounter an error
+ * from the server, such as an internal server error during a listen
+ * operation.
+ *
+ * @internal
+ */
+export function isChannelError(error: unknown): error is ChannelError {
+  if (error instanceof ChannelError) return true
+  if (typeof error !== 'object' || error === null) return false
+  return (
+    'name' in error &&
+    error.name === 'ChannelError' &&
+    'message' in error &&
+    typeof error.message === 'string'
+  )
+}
+
+/**
+ * Check if a ChannelError represents a query/configuration error that is
+ * caller-domain (e.g. malformed GROQ filter, invalid dataset) rather than
+ * an infrastructure failure.
+ *
+ * ChannelErrors containing query parse errors have a structured `type`
+ * field in their data payload. These are actionable by fixing the query,
+ * not by retrying or reloading, so they should not be claimed by the
+ * studio's error UI.
+ */
+function isQueryOrConfigChannelError(error: ChannelError): boolean {
+  const data = error.data as {error?: {type?: string}} | undefined
+  if (!data?.error) return false
+  // Query parse errors have `type: 'queryParseError'` in the error payload
+  return data.error.type === 'queryParseError'
+}
 
 /**
  * Node / get-it v8 timeout codes. get-it v9 reports timeouts as
@@ -75,6 +111,7 @@ export type RequestErrorClassification =
   | {type: 'networkError'; error: Error}
   | {type: 'serverError'; error: HttpError}
   | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number}
+  | {type: 'channelError'; error: ChannelError}
 
 /**
  * Classify an error as an infrastructure-level request failure, or return
@@ -97,6 +134,13 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
     // 4xx other than 429 are caller-domain. They carry structured context
     // the caller is better positioned to render than a generic dialog.
     return null
+  }
+  // Only classify ChannelErrors that represent infrastructure failures (e.g.
+  // "Internal error"), not caller-domain issues like malformed GROQ queries.
+  // Query parse errors and similar are actionable by fixing the query, not by
+  // retrying, so they should stay with the caller.
+  if (isChannelError(err) && !isQueryOrConfigChannelError(err)) {
+    return {type: 'channelError', error: err}
   }
   if (isNetworkError(err)) return {type: 'networkError', error: err}
   return null
@@ -187,5 +231,5 @@ export function classifyConfigError(err: unknown): ConfigErrorClassification | n
  * @internal
  */
 export function isClientRequestError(err: unknown): boolean {
-  return isHttpError(err) || isNetworkError(err)
+  return isHttpError(err) || isNetworkError(err) || isChannelError(err)
 }

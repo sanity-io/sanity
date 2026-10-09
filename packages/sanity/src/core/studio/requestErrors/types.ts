@@ -1,4 +1,4 @@
-import {type HttpError} from '@sanity/client'
+import {type ChannelError, type HttpError} from '@sanity/client'
 import {type Observable} from 'rxjs'
 
 /**
@@ -35,6 +35,7 @@ export type RequestErrorClaim =
   | {type: 'networkError'; error: Error; retryable: boolean}
   | {type: 'serverError'; error: HttpError; retryable: boolean}
   | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number; retryable: boolean}
+  | {type: 'channelError'; error: ChannelError; retryable: boolean}
   | {type: 'unauthorized'; error: HttpError; projectId?: string}
 
 /**
