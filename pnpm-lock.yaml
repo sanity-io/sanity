@@ -790,8 +790,8 @@ importers:
         specifier: 'catalog:'
         version: 5.0.3(playwright@1.64.0)(vite@8.3.4)(vitest@5.0.3)
       chromatic:
-        specifier: ^18.11.0
-        version: 18.11.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
+        specifier: ^18.12.0
+        version: 18.12.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
       oxc-transform-react:
         specifier: 'catalog:'
         version: 0.153.0
@@ -884,10 +884,10 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
-        specifier: ^5.3.2
+        specifier: ^5.3.3
         version: 5.3.3(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-media:
-        specifier: ^6.3.2
+        specifier: ^6.3.3
         version: 6.3.3(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(supports-color@8.1.1)(vitest@5.0.3)
       sanity-test-studio:
         specifier: workspace:*
@@ -1048,13 +1048,13 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-asset-source-unsplash:
-        specifier: ^7.0.26
+        specifier: ^7.0.27
         version: 7.0.27(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-internationalized-array:
-        specifier: ^5.3.2
+        specifier: ^5.3.3
         version: 5.3.3(@sanity/assist@6.2.3)(@sanity/language-filter@5.0.20)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-media:
-        specifier: ^6.3.2
+        specifier: ^6.3.3
         version: 6.3.3(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(supports-color@8.1.1)(vitest@5.0.3)
       styled-components:
         specifier: 'catalog:'
@@ -1140,7 +1140,7 @@ importers:
         version: 3.0.3
       chromatic:
         specifier: ^18.10.2
-        version: 18.11.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
+        version: 18.12.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
@@ -2442,7 +2442,7 @@ importers:
         version: 9.0.20240710
       chromatic:
         specifier: ^18.10.2
-        version: 18.11.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
+        version: 18.12.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
       fast-check:
         specifier: ^4.10.2
         version: 4.10.2
@@ -10045,8 +10045,8 @@ packages:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
 
-  chromatic@18.11.0:
-    resolution: {integrity: sha512-gn5wXxt26Lr1ZMa7Bp0epTvcN0t+33ZEJaPtpbtnnNH8jtoS4EA0xsLuThukKoI2zpu64lFVUN3TMYqZYHMcgQ==}
+  chromatic@18.12.0:
+    resolution: {integrity: sha512-ACi49naCDfR/nCC716LrpjndBzCVhON7T5g1VY5CmonTJIOlXL/kMfya81InoSM0KtlY534MjfIS01UPlxiCqg==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
@@ -17148,7 +17148,7 @@ snapshots:
   '@chromatic-com/storybook@5.4.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.1)':
     dependencies:
       '@neoconfetti/react': 1.0.0
-      chromatic: 18.11.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
+      chromatic: 18.12.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
       jsonfile: 6.2.1
       storybook: 10.6.1(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0)
       strip-ansi: 7.2.0
@@ -23477,7 +23477,7 @@ snapshots:
 
   chownr@3.0.0: {}
 
-  chromatic@18.11.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1):
+  chromatic@18.12.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1):
     dependencies:
       semver: 7.8.5
     optionalDependencies:
