@@ -1096,9 +1096,15 @@ importers:
       agent-react-devtools:
         specifier: ^0.5.0
         version: 0.5.0(react-devtools-core@8.0.0)(supports-color@8.1.1)(vite@8.3.4)
+      chrome-devtools-mcp:
+        specifier: ^1.10.1
+        version: 1.10.1
       oxc-transform-react:
         specifier: 'catalog:'
         version: 0.153.0
+      react-devtools-cdt-mcp:
+        specifier: ^0.1.0
+        version: 0.1.0
       react-devtools-core:
         specifier: ^8.0.0
         version: 8.0.0
@@ -2668,6 +2674,9 @@ importers:
       '@optique/run':
         specifier: 'catalog:'
         version: 1.3.3
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../packages/@repo/test-config
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../packages/@repo/tsconfig
@@ -2698,6 +2707,9 @@ importers:
       semver:
         specifier: ^7.8.5
         version: 7.8.5
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.3(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.1)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(jsdom@29.1.1)(vite@8.3.4)
 
 packages:
 
@@ -10061,6 +10073,19 @@ packages:
       '@chromatic-com/vitest':
         optional: true
 
+  chrome-devtools-mcp@1.10.1:
+    resolution: {integrity: sha512-Klw6HWDqHC/XS1JwZldd2r49aUhbUJN9m9Mvcx4SEueIPXtzuQX+QelxAViobv8YUkDZ7HWDrmViR6LeYK0wAw==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=23}
+    hasBin: true
+    peerDependencies:
+      '@blackwell-systems/gcf': ^2.2.2
+      '@toon-format/toon': ^4.1.0
+    peerDependenciesMeta:
+      '@blackwell-systems/gcf':
+        optional: true
+      '@toon-format/toon':
+        optional: true
+
   cjs-module-lexer@1.2.3:
     resolution: {integrity: sha512-0TNiGstbQmCFwt4akjjBg5pLRTSyj/PkWQ1ZoO2zntmg9yLqSRxwEa4iCfQLGjqhiqBfOJa7W/E8wfGrTDmlZQ==}
 
@@ -13750,6 +13775,9 @@ packages:
     resolution: {integrity: sha512-rRfjYv66HlG8896yPUDONgKzG5BxZD1nV9U6rkm+7VCuvQc903C4MjcoZR4zPw53IKSOX9wMQVpA1IAbRtzQ7w==}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
+
+  react-devtools-cdt-mcp@0.1.0:
+    resolution: {integrity: sha512-ruEhlMq+iTNl5uAIIUXfuKwbfLqADwE2BogM7mk7PtwE2FCTC5/rzu86YmWlCgKz5DjELre5AL6597y96/ziFQ==}
 
   react-devtools-core@8.0.0:
     resolution: {integrity: sha512-DGXJX+sCn2zC3ZalHoJhmZJsvP4QTpERlmCQAOgExc4Vp74ywB9ZnO8992cKw5ZcOS5u8GtpchTUPbjTiu5zaw==}
@@ -23484,6 +23512,8 @@ snapshots:
       '@chromatic-com/playwright': 1.0.0(@playwright/test@1.64.0)(@testing-library/dom@10.4.2)(prettier@3.9.9)(react@19.3.0)
       '@chromatic-com/vitest': 1.0.1(@testing-library/dom@10.4.2)(prettier@3.9.9)(react@19.3.0)(vitest@5.0.3)
 
+  chrome-devtools-mcp@1.10.1: {}
+
   cjs-module-lexer@1.2.3: {}
 
   cjs-module-lexer@2.3.0: {}
@@ -27591,6 +27621,8 @@ snapshots:
   react-compiler-runtime@1.0.0(react@19.3.0):
     dependencies:
       react: 19.3.0
+
+  react-devtools-cdt-mcp@0.1.0: {}
 
   react-devtools-core@8.0.0:
     dependencies:
