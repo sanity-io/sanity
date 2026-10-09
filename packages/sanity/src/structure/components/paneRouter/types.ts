@@ -38,6 +38,7 @@ export interface ReferenceChildLinkProps {
 export interface ParameterizedLinkProps {
   params?: Record<string, string>
   payload?: unknown
+  children?: ReactNode
 }
 
 /**

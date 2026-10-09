@@ -14,6 +14,7 @@ import debounce from 'lodash-es/debounce.js'
 import {AnimatePresence} from 'motion/react'
 import {
   memo,
+  type PropsWithChildren,
   startTransition,
   useCallback,
   useEffect,
@@ -497,6 +498,19 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     [debounceSelectionChange, updateCommentRange],
   )
 
+  // The editor invokes a range decoration's `component` as a plain render
+  // callback (`rangeDecoration.component({children})`), so this is not a
+  // component type and a stable identity is enough. The state setter it
+  // captures never changes.
+  const renderAuthoringDecoration = useCallback(
+    ({children}: PropsWithChildren) => (
+      <CommentInlineHighlightSpan isAuthoring ref={setAuthoringDecorationElement}>
+        {children}
+      </CommentInlineHighlightSpan>
+    ),
+    [],
+  )
+
   // The range decoration for the comment input. This is used to position the
   // comment input popover on the current selection and to highlight the
   // selected text.
@@ -504,14 +518,10 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     if (!nextCommentSelection) return null
 
     return {
-      component: ({children}) => (
-        <CommentInlineHighlightSpan isAuthoring ref={setAuthoringDecorationElement}>
-          {children}
-        </CommentInlineHighlightSpan>
-      ),
+      component: renderAuthoringDecoration,
       selection: nextCommentSelection,
     }
-  }, [nextCommentSelection])
+  }, [nextCommentSelection, renderAuthoringDecoration])
 
   // All the range decorations
   const rangeDecorations: RangeDecoration[] = [

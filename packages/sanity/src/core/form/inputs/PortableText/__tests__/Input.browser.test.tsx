@@ -1,6 +1,6 @@
 import {type PortableTextEditor} from '@portabletext/editor'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {useMemo} from 'react'
+import {createContext, useContext, useMemo} from 'react'
 import {type EditorChange, type InputProps, type PortableTextInputProps} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -16,49 +16,50 @@ interface InputHarnessProps {
   ptInputProps?: Partial<PortableTextInputProps>
 }
 
-function InputHarness(props: InputHarnessProps) {
-  const {editorRef, ptInputProps} = props
+const InputHarnessContext = createContext<InputHarnessProps>({})
 
-  const schemaTypes = useMemo(
-    () => [
-      defineType({
-        type: 'document',
-        name: 'test',
-        title: 'Test',
-        fields: [
-          defineField({
-            type: 'array',
-            name: 'body',
-            of: [
-              defineArrayMember({
-                type: 'block',
-              }),
-            ],
-            components: {
-              input: (inputProps: InputProps) => {
-                const editorProps = {
-                  ...inputProps,
-                  ...ptInputProps,
-                  editorRef,
-                } as PortableTextInputProps
-                return (
-                  <div data-testid="pt-input-with-editor-ref">
-                    {inputProps.renderDefault(editorProps)}
-                  </div>
-                )
-              },
-            },
+function PTInputWithEditorRef(inputProps: InputProps) {
+  const {editorRef, ptInputProps} = useContext(InputHarnessContext)
+  const editorProps = {
+    ...inputProps,
+    ...ptInputProps,
+    editorRef,
+  } as PortableTextInputProps
+  return <div data-testid="pt-input-with-editor-ref">{inputProps.renderDefault(editorProps)}</div>
+}
+
+const schemaTypes = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
           }),
         ],
+        components: {
+          input: PTInputWithEditorRef,
+        },
       }),
     ],
-    [ptInputProps, editorRef],
-  )
+  }),
+]
+
+function InputHarness(props: InputHarnessProps) {
+  const {editorRef, ptInputProps} = props
+  const contextValue = useMemo(() => ({editorRef, ptInputProps}), [editorRef, ptInputProps])
 
   return (
-    <TestWrapper schemaTypes={schemaTypes}>
-      <TestForm />
-    </TestWrapper>
+    <InputHarnessContext.Provider value={contextValue}>
+      <TestWrapper schemaTypes={schemaTypes}>
+        <TestForm />
+      </TestWrapper>
+    </InputHarnessContext.Provider>
   )
 }
 

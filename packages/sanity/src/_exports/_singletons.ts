@@ -59,6 +59,7 @@ export {
 } from '../_singletons/context/DocumentLimitContext'
 export {DocumentPaneContext} from '../_singletons/context/DocumentPaneContext'
 export {DocumentPaneInfoContext} from '../_singletons/context/DocumentPaneInfoContext'
+export {DocumentTableSelectionContext} from '../_singletons/context/DocumentTableSelectionContext'
 // oxlint-disable-next-line no-deprecated -- kept exported to avoid a breaking change; remove in the next major
 export {EditDialogOuterBoundaryContext} from '../_singletons/context/EditDialogOuterBoundaryContext'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -126,6 +127,7 @@ export {PresentationContext} from '../_singletons/context/PresentationContext'
 export {PresentationDisplayedDocumentContext} from '../_singletons/context/PresentationDisplayedDocumentContext'
 export {PresentationDocumentContext} from '../_singletons/context/PresentationDocumentContext'
 export {PresentationNavigateContext} from '../_singletons/context/PresentationNavigateContext'
+export {PresentationPaneLinksContext} from '../_singletons/context/PresentationPaneLinksContext'
 export {PresentationPanelsContext} from '../_singletons/context/PresentationPanelsContext'
 export {PresentationParamsContext} from '../_singletons/context/PresentationParamsContext'
 export {PresentationSharedStateContext} from '../_singletons/context/PresentationSharedStateContext'
@@ -184,6 +186,7 @@ export {TasksContext} from '../_singletons/context/TasksContext'
 export {TasksEnabledContext} from '../_singletons/context/TasksEnabledContext'
 export {TasksNavigationContext} from '../_singletons/context/TasksNavigationContext'
 export {TasksUpsellContext} from '../_singletons/context/TasksUpsellContext'
+export {UpsellDescriptionSerializerContext} from '../_singletons/context/UpsellDescriptionSerializerContext'
 export {UserApplicationCacheContext} from '../_singletons/context/UserApplicationCacheContext'
 export {UserColorManagerContext} from '../_singletons/context/UserColorManagerContext'
 export {

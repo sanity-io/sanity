@@ -2,7 +2,7 @@ import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {type CurrentUser} from '@sanity/types'
 import {Inline, Text} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {Fragment, useCallback} from 'react'
+import {Fragment, useMemo} from 'react'
 import {Box} from 'ui5'
 
 import {useListFormat} from '../hooks/useListFormat'
@@ -31,6 +31,22 @@ export interface InsufficientPermissionsMessageProps {
 
 const EMPTY_ARRAY = [] as never[]
 
+type ListFormatParts = ReturnType<Intl.ListFormat['formatToParts']>
+
+function Roles({parts}: {parts?: ListFormatParts}) {
+  return (
+    <>
+      {parts?.map((part, index) =>
+        part.type === 'element' ? (
+          <code key={`${part.value}-${index}`}>{part.value}</code>
+        ) : (
+          <Fragment key={`${part.value}-${index}`}>{part.value}</Fragment>
+        ),
+      )}
+    </>
+  )
+}
+
 /** @internal */
 export function InsufficientPermissionsMessage({
   currentUser,
@@ -41,20 +57,8 @@ export function InsufficientPermissionsMessage({
   const list = useListFormat({style: 'short', type: 'unit'})
   const roles = currentUser?.roles || EMPTY_ARRAY
 
-  const Roles = useCallback(
-    () => (
-      <>
-        {list
-          .formatToParts(roles.map((role) => role.title || startCase(role.name)))
-          .map((i, index) =>
-            i.type === 'element' ? (
-              <code key={`${i.value}-${index}`}>{i.value}</code>
-            ) : (
-              <Fragment key={`${i.value}-${index}`}>{i.value}</Fragment>
-            ),
-          )}
-      </>
-    ),
+  const roleParts = useMemo(
+    () => list.formatToParts(roles.map((role) => role.title || startCase(role.name))),
     [roles, list],
   )
 
@@ -79,7 +83,12 @@ export function InsufficientPermissionsMessage({
       </Inline>
       <Inline marginTop={4} marginBottom={1}>
         <Text size={1}>
-          <Translate i18nKey="insufficient-permissions-message.roles" t={t} components={{Roles}} />
+          <Translate
+            i18nKey="insufficient-permissions-message.roles"
+            t={t}
+            components={{Roles}}
+            componentProps={{parts: roleParts}}
+          />
         </Text>
       </Inline>
     </Box>

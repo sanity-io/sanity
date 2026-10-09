@@ -4,48 +4,26 @@ import {ControlsIcon} from '@sanity/icons/Controls'
 import {LinkIcon} from '@sanity/icons/Link'
 import {Card, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {useMemo, useState, type ComponentType} from 'react'
+import {useState} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
 import {Flex, Box, VStack} from 'ui5'
 
-function usePaneChildLinkComponent(props: {
-  id: string
-  params?: Record<string, string>
-}): ComponentType {
-  const {id, params} = props
-  const {ChildLink} = usePaneRouter()
-
-  return useMemo(() => {
-    return function Link(linkProps: any) {
-      return <ChildLink {...linkProps} childId={id} childParameters={params || {}} />
-    }
-  }, [ChildLink, id, params])
-}
-
-function usePaneParameterizedLinkComponent(props: {
-  params?: Record<string, string>
-  payload?: unknown
-}): ComponentType {
-  const {params, payload} = props
-  const {ParameterizedLink} = usePaneRouter()
-
-  return useMemo(() => {
-    return function Link(linkProps: any) {
-      return <ParameterizedLink {...linkProps} params={params} payload={payload} />
-    }
-  }, [ParameterizedLink, params, payload])
-}
+const CHILD_LINK_PARAMETERS: Record<string, string> = {}
+const PARAMETERIZED_LINK_PARAMS: Record<string, string> = {param1: 'test'}
+const PARAMETERIZED_LINK_PAYLOAD = {key: 'foo'}
 
 export const DebugPane: UserComponent = function DebugPane(props) {
   const {childItemId, id, isActive, isSelected, itemId, options, paneKey, urlParams} = props
-  const {groupIndex, hasGroupSiblings, index, params, payload, siblingIndex} = usePaneRouter()
-
-  const ChildLink = usePaneChildLinkComponent({id: 'test'})
-
-  const ParameterizedLink = usePaneParameterizedLinkComponent({
-    params: {param1: 'test'},
-    payload: {key: 'foo'},
-  })
+  const {
+    ChildLink,
+    ParameterizedLink,
+    groupIndex,
+    hasGroupSiblings,
+    index,
+    params,
+    payload,
+    siblingIndex,
+  } = usePaneRouter()
 
   // this is used to see whether or not the component re-renders.
   //
@@ -70,7 +48,9 @@ export const DebugPane: UserComponent = function DebugPane(props) {
       <Card borderBottom padding={2}>
         <VStack gap={1}>
           <Card
-            as={ChildLink as ComponentType<Record<string, unknown>>}
+            as={ChildLink}
+            childId="test"
+            childParameters={CHILD_LINK_PARAMETERS}
             data-as="a"
             padding={3}
             pressed={!isActive && childItemId === 'test'}
@@ -97,7 +77,9 @@ export const DebugPane: UserComponent = function DebugPane(props) {
           </Card>
 
           <Card
-            as={ParameterizedLink as ComponentType<Record<string, unknown>>}
+            as={ParameterizedLink}
+            params={PARAMETERIZED_LINK_PARAMS}
+            payload={PARAMETERIZED_LINK_PAYLOAD}
             data-as="a"
             padding={3}
             pressed={params?.param1 === 'test'}
