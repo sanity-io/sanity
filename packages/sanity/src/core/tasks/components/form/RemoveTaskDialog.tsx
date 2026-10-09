@@ -1,5 +1,4 @@
-import {Text} from '@sanity/ui'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -29,7 +28,9 @@ export function RemoveTaskDialog(props: ReturnType<typeof useRemoveTask>) {
         }}
       >
         <VStack gap={3}>
-          <Text as="p">{t('dialog.remove-task.body')}</Text>
+          <Text as="p" trim={true}>
+            {t('dialog.remove-task.body')}
+          </Text>
         </VStack>
       </Dialog>
     )

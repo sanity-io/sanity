@@ -1,6 +1,6 @@
 import {type Image} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, Box} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type TFunction} from '../../../../i18n/types'
@@ -87,7 +87,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   if (!from && !to) {
     return (
       <Card padding={4} radius={2} tone="transparent">
-        <Text muted size={1} align="center">
+        <Text muted size={1} align="center" as="div" trim={true}>
           {t('changes.image.no-asset-set')}
         </Text>
       </Card>

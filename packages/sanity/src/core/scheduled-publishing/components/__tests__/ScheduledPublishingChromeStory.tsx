@@ -1,5 +1,5 @@
-import {Card, Text} from '@sanity/ui'
-import {Container, Box, VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, Container, Box, VStack} from 'ui5'
 
 import EmptySchedules from '../../tool/schedules/EmptySchedules'
 import ErrorCallout from '../errorCallout/ErrorCallout'
@@ -24,7 +24,7 @@ export function ScheduledPublishingChromeStory() {
     <Card padding={4}>
       <VStack gap={5}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             error callout
           </Text>
           <Container size={1}>
@@ -40,7 +40,7 @@ export function ScheduledPublishingChromeStory() {
           </Container>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             info callout
           </Text>
           <Container size={1}>
@@ -50,7 +50,7 @@ export function ScheduledPublishingChromeStory() {
           </Container>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             empty schedules
           </Text>
           <Container size={1} padding={4}>

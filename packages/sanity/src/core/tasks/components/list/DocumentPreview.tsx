@@ -1,10 +1,10 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {useSchema} from '../../../hooks/useSchema'
 import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
@@ -62,13 +62,18 @@ export function DocumentPreview({
 
   return (
     <Flex alignItems="center" gap={2}>
-      <Text size={1}>
-        <DocumentIcon />
-      </Text>
+      <Icon icon={DocumentIcon} size={1} style={{margin: '-0.375rem'}} />
       {isLoading ? (
         <TextSkeleton size={1} muted />
       ) : (
-        <Text size={1} as={Link} weight="medium" style={{maxWidth: '20ch'}} textOverflow="ellipsis">
+        <Text
+          size={1}
+          as={Link}
+          weight="medium"
+          style={{maxWidth: '20ch'}}
+          truncate={1}
+          trim={true}
+        >
           {value?.title || 'Untitled'}
         </Text>
       )}

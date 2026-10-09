@@ -1,9 +1,9 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Switch, Text} from '@sanity/ui'
+import {Switch} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -134,7 +134,7 @@ export function FormCreate(props: ObjectInputProps) {
 
           <Flex alignItems="center" gap={2} justifyContent={'flex-end'} flexBasis="0%" flexGrow={1}>
             <Switch onChange={handleCreateMore} checked={createMore} />
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {t('form.input.create-more.text')}
             </Text>
           </Flex>

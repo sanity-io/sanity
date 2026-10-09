@@ -2,12 +2,11 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
   Card,
-  Text,
 } from '@sanity/ui'
 import {isThisISOWeek} from 'date-fns/isThisISOWeek'
 import {isToday} from 'date-fns/isToday'
 import {useMemo} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../hooks/useDateTimeFormat'
@@ -69,7 +68,14 @@ function TaskDueDate({dueBy}: {dueBy: string}) {
     <Tooltip content={fullDate}>
       <Card tone={isDueByToday ? 'critical' : 'transparent'} padding={1} radius={2}>
         <Flex alignItems="center" gap={2}>
-          <Text as="time" size={1} dateTime={dueBy} muted>
+          <Text
+            as="time"
+            size={1}
+            dateTime={dueBy}
+            muted
+            trim={true}
+            tone={isDueByToday ? 'critical' : undefined}
+          >
             {isDueByToday ? 'Today' : isDueThisWeek ? day : monthAndDay}
           </Text>
         </Flex>
@@ -91,7 +97,7 @@ export function TasksListItem(props: TasksListItemProps) {
 
         <Flex flexBasis="0%" flexGrow={1}>
           <UIButton className={titleButton} onClick={onSelect} mode="bleed" padding={2}>
-            <Text size={1} textOverflow="ellipsis" weight="semibold">
+            <Text size={1} truncate={1} weight="semibold" as="div" trim={true}>
               {title || 'Untitled'}
             </Text>
           </UIButton>

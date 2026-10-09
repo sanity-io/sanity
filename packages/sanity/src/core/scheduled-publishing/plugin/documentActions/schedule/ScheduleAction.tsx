@@ -1,8 +1,7 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {ClockIcon} from '@sanity/icons/Clock'
-import {Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
@@ -182,7 +181,9 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
     onHandle: handleDialogOpen,
     title: tooltip && (
       <Box style={{maxWidth: '315px'}}>
-        <Text size={1}>{tooltip}</Text>
+        <Text size={1} as="div" trim={true}>
+          {tooltip}
+        </Text>
       </Box>
     ),
   }

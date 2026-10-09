@@ -1,6 +1,6 @@
-import {Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
 import {memo} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -24,7 +24,7 @@ export const TasksActivityCreatedAt = memo(
     return (
       <ActivityItem userId={authorId}>
         <Flex alignItems="center" paddingTop={1}>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             <strong style={{fontWeight: 600}}>
               {loading ? (
                 <TextSkeleton className={userSkeleton} />
