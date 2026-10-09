@@ -1,7 +1,7 @@
 import {Layer, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import * as PathUtils from '@sanity/util/paths'
-import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Fragment, use, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
@@ -17,6 +17,7 @@ import {type CommentsSelectedPath} from '../../context/selected-path/types'
 import {isTextSelectionComment} from '../../helpers'
 import {useComments} from '../../hooks/useComments'
 import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
+import {useCommentsMode} from '../../hooks/useCommentsMode'
 import {useCommentsOnboarding} from '../../hooks/useCommentsOnboarding'
 import {useCommentsScroll} from '../../hooks/useCommentsScroll'
 import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
@@ -32,6 +33,7 @@ import {
 } from '../../types'
 import {CommentsInspectorError} from './CommentsInspectorError'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
+import {CommentsInspectorUnavailable} from './CommentsInspectorUnavailable'
 
 interface CommentToDelete {
   commentId: string
@@ -46,9 +48,21 @@ const RootLayer = styled(Layer)`
 `
 
 export default function CommentsInspector(props: DocumentInspectorProps) {
-  const {enabled, mode} = useCommentsEnabled()
+  // A document with comments disabled in the config never waits for, or needs, the plan check
+  if (!useCommentsEnabled()) return null
 
-  if (!enabled) return null
+  return <CommentsInspectorEnabled {...props} />
+}
+
+function CommentsInspectorEnabled(props: DocumentInspectorProps) {
+  // Suspends until the feature check has answered, under the inspector panel's boundary
+  const mode = use(useCommentsMode())
+
+  if (mode === null) {
+    // The feature check failed, so whether the plan has comments is unknown: fail closed, with
+    // the panel saying so since the inspector can still be opened (menu item, field button, link)
+    return <CommentsInspectorUnavailable onClose={props.onClose} />
+  }
 
   // We wrap the comments inspector in a Layer in order to know when the comments inspector
   // is the top layer (that is, if there is e.g. a popover open). This is used to determine
@@ -103,9 +117,11 @@ function CommentsInspectorInner(
   const {isDismissed, setDismissed} = useCommentsOnboarding()
   const telemetry = useCommentsTelemetry()
 
-  const {upsellData, telemetryLogs: upsellTelemetryLogs} = useCommentsUpsell()
+  const {telemetryLogs: upsellTelemetryLogs} = useCommentsUpsell()
 
-  const currentComments = useMemo(() => comments.data[status], [comments, status])
+  // The resolved view is not available in upsell mode, whichever way the status was set
+  const view: CommentStatus = mode === 'upsell' ? 'open' : status
+  const currentComments = useMemo(() => comments.data[view], [comments, view])
 
   const {loading} = comments
 
@@ -346,8 +362,9 @@ function CommentsInspectorInner(
     const commentToScrollTo = getComment(commentIdParamRef.current || '')
 
     if (!loading && commentToScrollTo && !didScrollToCommentFromParam.current) {
-      // Make sure we have the correct status set before we scroll to the comment
-      setStatus(commentToScrollTo.status || 'open')
+      // Make sure we have the correct status set before we scroll to the comment. The resolved
+      // view is not available in upsell mode, so a link to a resolved comment stays on open.
+      setStatus(mode === 'upsell' ? 'open' : commentToScrollTo.status || 'open')
 
       handlePathSelect({
         fieldPath: commentToScrollTo.target.path?.field || null,
@@ -371,30 +388,15 @@ function CommentsInspectorInner(
     getComment,
     handlePathSelect,
     loading,
+    mode,
     onClearSelectedComment,
     scrollToComment,
     setStatus,
     telemetry,
   ])
 
-  const beforeListNode = useMemo(() => {
-    if (mode === 'upsell' && upsellData) {
-      return (
-        <CommentsUpsellPanel
-          data={upsellData}
-          onPrimaryClick={upsellTelemetryLogs.panelPrimaryClicked}
-          onSecondaryClick={upsellTelemetryLogs.panelSecondaryClicked}
-        />
-      )
-    }
-
-    return null
-  }, [
-    mode,
-    upsellTelemetryLogs.panelPrimaryClicked,
-    upsellTelemetryLogs.panelSecondaryClicked,
-    upsellData,
-  ])
+  // The panel waits for the upsell content itself, so the inspector never does
+  const beforeListNode = mode === 'upsell' ? <CommentsUpsellPanel /> : null
 
   return (
     <Fragment>
@@ -425,7 +427,7 @@ function CommentsInspectorInner(
           <CommentsInspectorHeader
             onClose={handleCloseInspector}
             onViewChange={handleChangeView}
-            view={status}
+            view={view}
             mode={mode}
           />
         </CommentsOnboardingPopover>
@@ -450,7 +452,7 @@ function CommentsInspectorInner(
             onStatusChange={handleStatusChange}
             readOnly={isCreatingDataset}
             selectedPath={selectedPath}
-            status={status}
+            status={view}
           />
         )}
       </Flex>
