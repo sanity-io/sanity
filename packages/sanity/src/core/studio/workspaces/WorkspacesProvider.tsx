@@ -10,8 +10,8 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useSyncObservable} from 'react-rx'
-import {firstValueFrom, Subject, type Observable} from 'rxjs'
+import {useSyncObservable, useObservableSubject} from 'react-rx'
+import {firstValueFrom} from 'rxjs'
 import {take} from 'rxjs/operators'
 import {
   ConfigErrorContext,
@@ -20,9 +20,10 @@ import {
   StudioErrorHandlerContext,
   WorkspacesContext,
 } from 'sanity/_singletons'
+import {useEffectEvent} from 'use-effect-event'
 
 import {prepareConfig} from '../../config/prepareConfig'
-import {type Config} from '../../config/types'
+import {type Config, type WorkspaceSummary} from '../../config/types'
 import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'
@@ -31,6 +32,7 @@ import {
   type RequestFailureResult,
 } from '../requestErrors/diagnoseRequestFailure'
 import {RequestErrorDialog} from '../requestErrors/RequestErrorDialog'
+import {type RequestErrorChannel, type RequestErrorClaim} from '../requestErrors/types'
 import {type CorsCheckCache, checkCors} from './corsCheck'
 import {CorsOriginErrorView} from './CorsOriginErrorView'
 import {type WorkspacesContextValue} from './WorkspacesContext'
@@ -98,7 +100,7 @@ export function WorkspacesProvider({
 }: WorkspacesProviderProps) {
   const [corsError, setCorsError] = useState<CorsErrorState>()
   const [configError, setConfigError] = useState<ConfigErrorValue>()
-  const [corsRetry, onCorsRetry] = useObservableEventHandler()
+  const [corsRetry, onCorsRetry] = useObservableSubject<void>()
 
   // Per-mount cache — module scope would bleed across studios mounted on
   // the same page, HMR reloads, and tests.
@@ -109,10 +111,8 @@ export function WorkspacesProvider({
 
   // Channel for call-site-delegated request errors. Created before the
   // workspaces resolve (it's threaded into `prepareConfig` so the auth
-  // store can use it during boot). The forced-logout effect below reads
-  // the workspace list lazily through this ref to find the auth store to
-  // tear down.
-  const workspacesRef = useRef<WorkspacesContextValue | null>(null)
+  // store can use it during boot). Forced logout reads the resolved
+  // workspace list from `WorkspacesClaimProvider`.
   const [requestErrorChannel] = useState(() => createRequestErrorChannel())
 
   // Apply a diagnosed config/CORS failure to the screen-takeover state. Shared
@@ -206,51 +206,23 @@ export function WorkspacesProvider({
     null,
   )
 
-  useEffect(() => {
-    // Ref mutation from an effect (not during render) — safe under
-    // concurrent rendering.
-    workspacesRef.current = workspaces
-  }, [workspaces])
-
-  // `null` initial value (rather than undefined) so react-rx provides a
-  // server snapshot — SSR renders without a dialog instead of warning
-  // about a missing getServerSnapshot. Kept synchronous: the `unauthorized`
-  // claim drives forced logout, and session teardown shouldn't wait for a
-  // deferred re-render.
-  const claim = useSyncObservable(requestErrorChannel.claim$, null) ?? undefined
-
-  // Why we logged the user out, consumed by the login screen to surface a
-  // toast. Derived from the live `unauthorized` claim, so it's present exactly
-  // while the forced-logout state is — and clears on re-login (no persistence).
-  // The reason mirrors the API's invalid-session code so the toast copy can
-  // be accurate: "expired" only when the API actually said expired.
-  const loggedOutReason =
-    claim?.type === 'unauthorized'
-      ? getApiErrorCode(claim.error) === 'SIO-401-AEX'
-        ? 'session-expired'
-        : 'session-not-found'
-      : undefined
-
-  // Fire forced logout on a verified `unauthorized` claim. Done in an
-  // effect so the logout call doesn't run during a render commit.
-  useEffect(() => {
-    if (claim?.type !== 'unauthorized') return
-    const current = workspacesRef.current
-    if (!current) return
-    // Auth is project-scoped — any workspace matching the projectId has
-    // the right credentials and the right logout endpoint. First match
-    // wins; in practice all workspaces for the same project share an
-    // auth store anyway.
-    const target = claim.projectId
-      ? current.find((ws) => ws.projectId === claim.projectId)
-      : current[0]
-    if (!target?.auth.logout) return
-    target.auth.logout().catch((logoutErr) => {
-      // The logout request itself failed (likely network). The channel's
-      // dedupe prevents recursion; just log so a dev can diagnose.
-      console.warn('[sanity] Forced logout failed:', logoutErr)
-    })
-  }, [claim])
+  // Survives the CORS (and loading) early returns. Those replace
+  // `WorkspacesClaimProvider`, and `claim$` keeps the unauthorized claim
+  // with no retry path that clears it, so a remount would log out again.
+  const loggedOutClaim = useRef<Extract<RequestErrorClaim, {type: 'unauthorized'}> | undefined>(
+    undefined,
+  )
+  const rememberLoggedOutClaim = useCallback(
+    (unauthorizedClaim: Extract<RequestErrorClaim, {type: 'unauthorized'}>) => {
+      loggedOutClaim.current = unauthorizedClaim
+    },
+    [],
+  )
+  const hasLoggedOutClaim = useCallback(
+    (unauthorizedClaim: Extract<RequestErrorClaim, {type: 'unauthorized'}>) =>
+      loggedOutClaim.current === unauthorizedClaim,
+    [],
+  )
 
   const handleCorsResolved = useCallback(() => {
     // Recheck succeeded — clear the error and let `caught` resubscribe.
@@ -301,36 +273,96 @@ export function WorkspacesProvider({
   return (
     <WorkspacesContext.Provider value={workspaces}>
       <ConfigErrorContext.Provider value={configError ?? null}>
-        <StudioErrorHandlerContext.Provider value={requestErrorChannel}>
-          <LoggedOutReasonContext.Provider value={loggedOutReason}>
-            {/* A config error (missing project/dataset) and a request-error
-                claim can fire from the same boot failure — the data request
-                network-errors (claimed here) while the `/check/cors` probe
-                separately resolves it to project-not-found. The config-error
-                takeover wins, so suppress the dialog while one is active. */}
-            {!configError && claim && claim.type !== 'unauthorized' && (
-              <RequestErrorDialog claim={claim} onRetry={requestErrorChannel.retry} />
-            )}
+        <StudioErrorHandlerContext value={requestErrorChannel}>
+          <WorkspacesClaimProvider
+            requestErrorChannel={requestErrorChannel}
+            hasConfigError={!!configError}
+            hasLoggedOutClaim={hasLoggedOutClaim}
+            rememberLoggedOutClaim={rememberLoggedOutClaim}
+            workspaces={workspaces}
+          >
             {children}
-          </LoggedOutReasonContext.Provider>
-        </StudioErrorHandlerContext.Provider>
+          </WorkspacesClaimProvider>
+        </StudioErrorHandlerContext>
       </ConfigErrorContext.Provider>
     </WorkspacesContext.Provider>
   )
 }
 
-function useObservableEventHandler<T = void>(): [Observable<T>, (event: T) => void] {
-  const [subject] = useState(() => new Subject<T>())
-  const callback = useCallback(
-    (value: T) => {
-      subject.next(value)
+function WorkspacesClaimProvider({
+  children,
+  requestErrorChannel,
+  hasConfigError,
+  hasLoggedOutClaim,
+  rememberLoggedOutClaim,
+  workspaces,
+}: {
+  children: ReactNode
+  requestErrorChannel: RequestErrorChannel
+  hasConfigError: boolean
+  hasLoggedOutClaim: (claim: Extract<RequestErrorClaim, {type: 'unauthorized'}>) => boolean
+  rememberLoggedOutClaim: (claim: Extract<RequestErrorClaim, {type: 'unauthorized'}>) => void
+  workspaces: WorkspaceSummary[] | null
+}) {
+  // `null` initial value (rather than undefined) so react-rx provides a
+  // server snapshot — SSR renders without a dialog instead of warning
+  // about a missing getServerSnapshot. Kept synchronous: the `unauthorized`
+  // claim drives forced logout, and session teardown shouldn't wait for a
+  // deferred re-render.
+  const claim = useSyncObservable(requestErrorChannel.claim$, null) ?? undefined
+
+  // Why we logged the user out, consumed by the login screen to surface a
+  // toast. Derived from the live `unauthorized` claim, so it's present exactly
+  // while the forced-logout state is — and clears on re-login (no persistence).
+  // The reason mirrors the API's invalid-session code so the toast copy can
+  // be accurate: "expired" only when the API actually said expired.
+  const loggedOutReason =
+    claim?.type === 'unauthorized'
+      ? getApiErrorCode(claim.error) === 'SIO-401-AEX'
+        ? 'session-expired'
+        : 'session-not-found'
+      : undefined
+
+  // Need access to the current `workspaces` without triggering setup/teardown on change
+  const handleLogout = useEffectEvent(
+    (unauthorizedClaim: Extract<RequestErrorClaim, {type: 'unauthorized'}>) => {
+      if (!workspaces) return
+      // Auth is project-scoped — any workspace matching the projectId has
+      // the right credentials and the right logout endpoint. First match
+      // wins; in practice all workspaces for the same project share an
+      // auth store anyway.
+      const target = unauthorizedClaim.projectId
+        ? workspaces.find((ws) => ws.projectId === unauthorizedClaim.projectId)
+        : workspaces[0]
+      if (!target?.auth.logout) return
+      target.auth.logout().catch((logoutErr) => {
+        // The logout request itself failed (likely network). The channel's
+        // dedupe prevents recursion; just log so a dev can diagnose.
+        console.warn('[sanity] Forced logout failed:', logoutErr)
+      })
     },
-    [subject],
   )
+  // Fire forced logout on a verified `unauthorized` claim. Done in an
+  // effect so the logout call doesn't run during a render commit.
+  useEffect(() => {
+    if (claim?.type !== 'unauthorized') return
+    if (hasLoggedOutClaim(claim)) return
+    rememberLoggedOutClaim(claim)
+    handleLogout(claim)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
+  }, [claim, hasLoggedOutClaim, rememberLoggedOutClaim])
 
-  const observable = useMemo(() => {
-    return subject.asObservable()
-  }, [subject])
-
-  return [observable, callback]
+  return (
+    <LoggedOutReasonContext value={loggedOutReason}>
+      {/* A config error (missing project/dataset) and a request-error
+      claim can fire from the same boot failure — the data request
+      network-errors (claimed here) while the `/check/cors` probe
+      separately resolves it to project-not-found. The config-error
+      takeover wins, so suppress the dialog while one is active. */}
+      {!hasConfigError && claim && claim.type !== 'unauthorized' && (
+        <RequestErrorDialog claim={claim} onRetry={() => requestErrorChannel.retry()} />
+      )}
+      {children}
+    </LoggedOutReasonContext>
+  )
 }
