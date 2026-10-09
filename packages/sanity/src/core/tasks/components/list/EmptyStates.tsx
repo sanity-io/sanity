@@ -1,7 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -55,10 +54,12 @@ export function EmptyStatusListState({status}: {status: TaskStatus}) {
   const {heading, text} = HEADING_BY_STATUS[status][activeTabId]
   return (
     <VStack gap={3}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="semibold" as="div" trim={true}>
         {t(heading)}
       </Text>
-      <Text size={1}>{t(text)}</Text>
+      <Text size={1} as="div" trim={true}>
+        {t(text)}
+      </Text>
     </VStack>
   )
 }
@@ -114,11 +115,11 @@ export function EmptyTasksListState() {
         flexGrow={1}
         justifyContent={'center'}
       >
-        <Text className={animatedText} key={key} size={1} weight="semibold">
+        <Text className={animatedText} key={key} size={1} weight="semibold" as="div" trim={true}>
           {t(heading)}
         </Text>
         <Box paddingBottom={6} paddingTop={1}>
-          <Text className={animatedText} key={key} size={1} align="center">
+          <Text className={animatedText} key={key} size={1} align="center" as="div" trim={true}>
             {t(text)}
           </Text>
         </Box>
