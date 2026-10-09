@@ -21,9 +21,7 @@ export function CommonDateRangeInput({
   isDateTime: boolean
 }) {
   const {t} = useTranslation()
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
 
   /**
    * For placeholder values: Use the current date for the end date input, and an arbitrary date

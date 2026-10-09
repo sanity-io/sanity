@@ -1,10 +1,11 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
 import {DEBUG_MODE} from '../../constants'
-import {useSearchState} from '../../contexts/search/useSearchState'
+import {selectFilters} from '../../contexts/search/searchSelectors'
+import {useSearchSelector, useSearchState} from '../../contexts/search/useSearchState'
 import {getFilterKey} from '../../utils/filterUtils'
 import {AddFilterButton} from './addFilter/AddFilterButton'
 import {DebugDocumentTypesNarrowed} from './debug/_DebugDocumentTypesNarrowed'
@@ -16,32 +17,25 @@ import {FilterButton} from './filter/FilterButton'
  * @internal
  */
 export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
-  const {
-    dispatch,
-    state: {
-      filters,
-      fullscreen,
-      lastAddedFilter,
-      terms: {types},
-    },
-  } = useSearchState()
+  const {fullscreen, searchActorRef} = useSearchState()
+  const filters = useSearchSelector(selectFilters)
+  const lastAddedFilter = useSearchSelector((snapshot) => snapshot.context.lastAddedFilter)
+  const hasSelectedTypes = useSearchSelector((snapshot) => snapshot.context.terms.types.length > 0)
   const {t} = useTranslation()
 
-  const [isMounted, setIsMounted] = useState(false)
+  // Only filters added while mounted open their popover, not one added before the search reopened
+  const [lastAddedFilterOnMount] = useState(lastAddedFilter)
+  const newFilterKey =
+    lastAddedFilter && lastAddedFilter !== lastAddedFilterOnMount
+      ? getFilterKey(lastAddedFilter)
+      : null
 
   const handleClear = useCallback(() => {
-    if (showTypeFilter) dispatch({type: 'TERMS_TYPES_CLEAR'})
-    dispatch({type: 'TERMS_FILTERS_CLEAR'})
-  }, [dispatch, showTypeFilter])
+    if (showTypeFilter) searchActorRef.send({type: 'TERMS_TYPES_CLEAR'})
+    searchActorRef.send({type: 'TERMS_FILTERS_CLEAR'})
+  }, [searchActorRef, showTypeFilter])
 
-  const clearFiltersButtonVisible = filters.length > 0 || (showTypeFilter && types.length > 0)
-
-  useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
-    setIsMounted(true)
-  }, [])
-
-  const lastAddedFilterKey = lastAddedFilter && getFilterKey(lastAddedFilter)
+  const clearFiltersButtonVisible = filters.length > 0 || (showTypeFilter && hasSelectedTypes)
 
   const clearFiltersButton = (
     <Button
@@ -60,13 +54,7 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
           {showTypeFilter && <DocumentTypesButton />}
           {filters?.map((filter) => {
             const key = getFilterKey(filter)
-            return (
-              <FilterButton
-                key={key}
-                filter={filter}
-                initialOpen={isMounted && lastAddedFilterKey === key}
-              />
-            )
+            return <FilterButton key={key} filter={filter} initialOpen={newFilterKey === key} />
           })}
           {!fullscreen && <AddFilterButton />}
         </Flex>

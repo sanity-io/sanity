@@ -42,9 +42,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
       null,
     )
 
-    const {
-      state: {fullscreen},
-    } = useSearchState()
+    const {fullscreen} = useSearchState()
 
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {file, image} = useSource().form
