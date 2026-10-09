@@ -6,8 +6,6 @@ import {
   type ObjectDefinition,
   type ObjectField,
 } from '@sanity/types'
-import castArray from 'lodash-es/castArray.js'
-import flatMap from 'lodash-es/flatMap.js'
 import pick from 'lodash-es/pick.js'
 import startCase from 'lodash-es/startCase.js'
 
@@ -189,7 +187,8 @@ function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): F
   }
 
   fields.forEach((field) => {
-    const fieldGroupNames = castArray(field.group || [])
+    const group = field.group || []
+    const fieldGroupNames = Array.isArray(group) ? group : [group]
     if (fieldGroupNames.length === 0) {
       return
     }
@@ -209,7 +208,7 @@ function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): F
     })
   })
 
-  return flatMap(groupsByName).filter(
+  return Object.values(groupsByName).filter(
     // All fields group is added by default in structure.
     // To pass the properties from the schema to the form state, we need to include it in the list of groups.
     (group) => group.fields.length > 0 || group.name === ALL_FIELDS_GROUP_NAME,

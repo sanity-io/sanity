@@ -1,6 +1,3 @@
-import isFinite from 'lodash-es/isFinite.js'
-import uniqBy from 'lodash-es/uniqBy.js'
-
 export const DEFAULT_MAX_FIELD_DEPTH = 5
 
 const stringFieldsSymbols = {} as Record<number, symbol>
@@ -106,22 +103,29 @@ function deriveFromPreview(
   return fields
 }
 
+function uniqueByPath<T extends {path: (string | number)[]}>(specs: T[]): T[] {
+  const seen = new Set<string>()
+  return specs.filter((spec) => {
+    const path = spec.path.join('.')
+    if (seen.has(path)) return false
+    seen.add(path)
+    return true
+  })
+}
+
 function getCachedStringFieldPaths(type: any, maxDepth: number) {
   const symbol = getStringFieldSymbol(maxDepth)
   if (!type[symbol]) {
-    type[symbol] = uniqBy(
-      [
-        ...BASE_WEIGHTS,
-        ...deriveFromPreview(type, maxDepth),
-        ...getStringFieldPaths(type, maxDepth).map((path: any) => ({weight: 1, path})),
-        ...getPortableTextFieldPaths(type, maxDepth).map((path: any) => ({
-          weight: 1,
-          path,
-          mapWith: 'pt::text',
-        })),
-      ],
-      (spec) => spec.path.join('.'),
-    )
+    type[symbol] = uniqueByPath([
+      ...BASE_WEIGHTS,
+      ...deriveFromPreview(type, maxDepth),
+      ...getStringFieldPaths(type, maxDepth).map((path: any) => ({weight: 1, path})),
+      ...getPortableTextFieldPaths(type, maxDepth).map((path: any) => ({
+        weight: 1,
+        path,
+        mapWith: 'pt::text',
+      })),
+    ])
   }
   return type[symbol]
 }
@@ -129,9 +133,7 @@ function getCachedStringFieldPaths(type: any, maxDepth: number) {
 function getCachedBaseFieldPaths(type: any, maxDepth: number) {
   const symbol = getStringFieldSymbol(maxDepth)
   if (!type[symbol]) {
-    type[symbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type, maxDepth)], (spec) =>
-      spec.path.join('.'),
-    )
+    type[symbol] = uniqueByPath([...BASE_WEIGHTS, ...deriveFromPreview(type, maxDepth)])
   }
   return type[symbol]
 }
@@ -168,7 +170,7 @@ export function resolveSearchConfig(type: any, maxDepth?: number) {
  * @internal
  */
 function normalizeMaxDepth(maxDepth?: number) {
-  if (!isFinite(maxDepth) || maxDepth! < 1 || maxDepth! > DEFAULT_MAX_FIELD_DEPTH) {
+  if (!Number.isFinite(maxDepth) || maxDepth! < 1 || maxDepth! > DEFAULT_MAX_FIELD_DEPTH) {
     return DEFAULT_MAX_FIELD_DEPTH - 1
   }
 
