@@ -1486,6 +1486,13 @@ exports[`exports snapshot 1`] = `
     "useWorkspace": "function",
     "validateDocument": "function",
   },
+  "./_unstable-i18n": {
+    "Translate": "function",
+    "useCurrentLocale": "function",
+    "useDateTimeFormat": "function",
+    "useRelativeTime": "function",
+    "useTranslation": "function",
+  },
   "./cli": {
     "createCliConfig": "function",
     "defineApplication": "function",
