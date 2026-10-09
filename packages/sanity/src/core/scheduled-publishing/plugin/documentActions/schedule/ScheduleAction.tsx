@@ -1,6 +1,10 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {ClockIcon} from '@sanity/icons/Clock'
-import {useCallback, useState} from 'react'
+import {use, useCallback, useState} from 'react'
+import {
+  HasUsedScheduledPublishingPromiseContext,
+  ScheduledPublishingModePromiseContext,
+} from 'sanity/_singletons'
 import {Text, Box} from 'ui5'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
@@ -11,7 +15,6 @@ import {
 } from '../../../../config/document/actions'
 import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
-import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {debugWithName} from '../../../../studio/timezones/utils/debug'
@@ -62,7 +65,13 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
     permission: 'publish',
   })
   const {createSchedule} = useScheduleOperation()
-  const {enabled, mode} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const hasUsedPromise = use(HasUsedScheduledPublishingPromiseContext)
+  const mode = modePromise ? use(modePromise) : null
+  // A failed feature check settles the answer on its own: the probe is not waited for then
+  const hasUsed = mode !== null && hasUsedPromise ? use(hasUsedPromise) : false
+  // The action exists once the feature check passed and the dataset has used scheduling
+  const enabled = mode !== null && hasUsed
   const {handleOpenDialog} = useSchedulePublishingUpsell()
   // Scheduling operates on the base draft, so it is not available while a variant is selected —
   // it would silently schedule the base document instead of the variant (SAPP-3986).
