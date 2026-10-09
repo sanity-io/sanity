@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-09)
+
+### Features
+
+* **core:** add studio.components.provider and preload lazy default plugin components ([#15205](https://github.com/sanity-io/sanity/issues/15205)) ([86f8d18](https://github.com/sanity-io/sanity/commit/86f8d18a5f7e228f9e45cb6636c1e04c091e8212))
+
+### Bug Fixes
+
+* **access-ui:** fetch access requests once when mounted behind Suspense ([#15216](https://github.com/sanity-io/sanity/issues/15216)) ([aebd2bf](https://github.com/sanity-io/sanity/commit/aebd2bf2c181143b025f0331369794ee672b8154))
+* **core:** keep presence avatars in stable positions ([#15238](https://github.com/sanity-io/sanity/issues/15238)) ([4038f96](https://github.com/sanity-io/sanity/commit/4038f969a40cf8d37fdf18843b3e7b7af3fd94ee))
+* **deps:** update codemirror ([#15229](https://github.com/sanity-io/sanity/issues/15229)) ([ccdaec4](https://github.com/sanity-io/sanity/commit/ccdaec4b6a6a9fa31b3cdc80a5fdd3cea2db1db6))
+* **deps:** update dependency @sanity/cli to ^8.16.0 ([#15245](https://github.com/sanity-io/sanity/issues/15245)) ([73980e6](https://github.com/sanity-io/sanity/commit/73980e64ac34a0da69e5e88ab5f6c7909155b39e))
+* **deps:** update dev-non-major ([#15244](https://github.com/sanity-io/sanity/issues/15244)) ([8ed96f5](https://github.com/sanity-io/sanity/commit/8ed96f5d449638e6bfa398c88258d96d95381273))
+* **deps:** update dev-non-major ([#15247](https://github.com/sanity-io/sanity/issues/15247)) ([466dde4](https://github.com/sanity-io/sanity/commit/466dde4df7d66fbc70a07565029d09280920818a))
+* **deps:** update dev-non-major ([#15256](https://github.com/sanity-io/sanity/issues/15256)) ([efa15fb](https://github.com/sanity-io/sanity/commit/efa15fb8a47b190732582ece532b2d64d0b050cc))
+* **deps:** update playwright monorepo to v1.64.0 ([#15230](https://github.com/sanity-io/sanity/issues/15230)) ([285b064](https://github.com/sanity-io/sanity/commit/285b064ed0f199e1e9328558788e86519b1c7e62))
+* **deps:** update portabletext ([#15251](https://github.com/sanity-io/sanity/issues/15251)) ([13bece8](https://github.com/sanity-io/sanity/commit/13bece8956123d378b6eba761ae5c2f7c4ac0c77))
+* **form:** clear stuck file drop overlay on escape ([#14156](https://github.com/sanity-io/sanity/issues/14156)) ([982525c](https://github.com/sanity-io/sanity/commit/982525c032947a6977af79f341ffe4e8177370d2))
+* **presentation:** keep location links targeting presentation after open in structure ([#15214](https://github.com/sanity-io/sanity/issues/15214)) ([53a4678](https://github.com/sanity-io/sanity/commit/53a4678aae086bc0012c14a034bdfd0d42f40f5d))
 ## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
 
 ### Features

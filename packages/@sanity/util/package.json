@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "6.18.0",
+  "version": "6.19.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "cms",

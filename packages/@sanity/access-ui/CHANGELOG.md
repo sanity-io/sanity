@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-09)
+
+### Bug Fixes
+
+* **access-ui:** fetch access requests once when mounted behind Suspense ([#15216](https://github.com/sanity-io/sanity/issues/15216)) ([aebd2bf](https://github.com/sanity-io/sanity/commit/aebd2bf2c181143b025f0331369794ee672b8154))
 ## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
 
 ### Bug Fixes
