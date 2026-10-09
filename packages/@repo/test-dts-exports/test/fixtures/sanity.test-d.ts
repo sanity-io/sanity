@@ -1684,6 +1684,7 @@ import type {
   useHistoryStore,
   useHoveredField,
   useI18nText,
+  useImmediateValidation,
   useInitialValue,
   useInitialValueResolverContext,
   useInStudioFeedback,
@@ -6935,6 +6936,9 @@ describe('sanity', () => {
   })
   test('useI18nText', () => {
     expectTypeOf<typeof useI18nText>().toBeFunction()
+  })
+  test('useImmediateValidation', () => {
+    expectTypeOf<typeof useImmediateValidation>().toBeFunction()
   })
   test('useInitialValue', () => {
     expectTypeOf<typeof useInitialValue>().toBeFunction()

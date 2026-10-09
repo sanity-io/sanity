@@ -3,14 +3,13 @@ import {act, render, renderHook, screen, waitFor} from '@testing-library/react'
 import deepCompare from 'react-fast-compare'
 import {
   type DocumentActionProps,
-  type DocumentStore,
   type EditStateFor,
   type TargetDocumentState,
   useDocumentOperation,
   useDocumentOperationEvent,
   useDocumentPairPermissions,
-  useDocumentStore,
   useEditState,
+  useImmediateValidation,
   useSyncState,
   useValidationStatus,
 } from 'sanity'
@@ -26,8 +25,8 @@ vi.mock('sanity', async (importOriginal) => ({
   useDocumentOperation: vi.fn(),
   useDocumentOperationEvent: vi.fn(),
   useDocumentPairPermissions: vi.fn(),
-  useDocumentStore: vi.fn(),
   useEditState: vi.fn(),
+  useImmediateValidation: vi.fn(),
   useSyncState: vi.fn(),
   useValidationStatus: vi.fn(),
 }))
@@ -44,7 +43,7 @@ const mockUseDocumentPairPermissions = useDocumentPairPermissions as Mock<
 const mockUseEditState = useEditState as Mock<typeof useEditState>
 const mockUseSyncState = useSyncState as Mock<typeof useSyncState>
 const mockUseValidationStatus = useValidationStatus as Mock<typeof useValidationStatus>
-const mockUseDocumentStore = useDocumentStore as Mock<typeof useDocumentStore>
+const mockUseImmediateValidation = useImmediateValidation as Mock<typeof useImmediateValidation>
 const mockUseDocumentOperationEvent = useDocumentOperationEvent as Mock<
   typeof useDocumentOperationEvent
 >
@@ -148,7 +147,6 @@ function applyKeystroke(
 
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 let operations: {publish: {disabled: false; execute: Mock}}
-let setValidationScheduling: Mock
 
 beforeAll(async () => {
   wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
@@ -160,6 +158,11 @@ async function renderPublishAction(props: DocumentActionProps) {
   return rendered
 }
 
+/** The arguments the action last rendered `useImmediateValidation` with. */
+function immediateValidationArgs() {
+  return mockUseImmediateValidation.mock.lastCall
+}
+
 describe('usePublishAction', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -168,10 +171,7 @@ describe('usePublishAction', () => {
       operations as unknown as ReturnType<typeof useDocumentOperation>,
     )
     mockUseDocumentPairPermissions.mockReturnValue(PERMITTED)
-    setValidationScheduling = vi.fn()
-    mockUseDocumentStore.mockReturnValue({
-      pair: {setValidationScheduling},
-    } as unknown as DocumentStore)
+    mockUseImmediateValidation.mockReturnValue(null)
     mockUseDocumentOperationEvent.mockReturnValue(undefined)
   })
 
@@ -243,7 +243,7 @@ describe('usePublishAction', () => {
     return {dialog, steps}
   }
 
-  it('leaves validation on idle pacing and only switches to immediate once the dialog shows', async () => {
+  it('waits on the store validation and only runs its own, immediate one once the dialog shows', async () => {
     const first = keystroke('1')
     applyKeystroke(first, {validating: true})
     const {result, rerender} = await renderPublishAction(first.props)
@@ -251,13 +251,13 @@ describe('usePublishAction', () => {
 
     act(() => result.current?.onHandle?.())
     expect(result.current?.label).toBe('Validating document…')
-    expect(setValidationScheduling).not.toHaveBeenCalled()
+    expect(immediateValidationArgs()).toEqual([first.draft, true, false])
 
     act(() => {
       vi.advanceTimersByTime(2999)
     })
     expect(result.current?.dialog).toBeUndefined()
-    expect(setValidationScheduling).not.toHaveBeenCalled()
+    expect(immediateValidationArgs()).toEqual([first.draft, true, false])
 
     act(() => {
       vi.advanceTimersByTime(1)
@@ -266,18 +266,18 @@ describe('usePublishAction', () => {
     expect(dialog.showCloseButton).toBe(false)
     expect(steps.validation).toEqual({status: 'running', text: 'Validating your document'})
     expect(steps.publish).toEqual({status: 'pending', text: 'Publishing document'})
-    expect(setValidationScheduling).toHaveBeenLastCalledWith(
-      `drafts.${ID}`,
-      'author',
-      true,
-      'immediate',
-    )
+    expect(immediateValidationArgs()).toEqual([first.draft, true, true])
 
-    // validation finishes: the publish runs and validation goes back to idle pacing
-    applyKeystroke(first)
+    // the immediate run finishes while the store validation is still going: the publish runs
+    // on its result and the run is switched off again
+    mockUseImmediateValidation.mockReturnValue({
+      isValidating: false,
+      validation: [],
+      revision: first.draft?._rev,
+    })
     rerender(first.props)
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
-    expect(setValidationScheduling).toHaveBeenLastCalledWith(`drafts.${ID}`, 'author', true, 'idle')
+    expect(immediateValidationArgs()).toEqual([first.draft, true, false])
     const publishing = renderDialogContent(result)
     expect(publishing.steps.validation.status).toBe('succeeded')
     expect(publishing.steps.publish).toEqual({status: 'running', text: 'Publishing document'})
@@ -303,6 +303,31 @@ describe('usePublishAction', () => {
     expect(result.current?.dialog).toBeUndefined()
   })
 
+  it('publishes on the store validation when that one finishes first', async () => {
+    const first = keystroke('1')
+    applyKeystroke(first, {validating: true})
+    const {result, rerender} = await renderPublishAction(first.props)
+    vi.useFakeTimers()
+    act(() => result.current?.onHandle?.())
+    act(() => {
+      vi.advanceTimersByTime(3000)
+    })
+    mockUseImmediateValidation.mockReturnValue({
+      isValidating: true,
+      validation: [],
+      revision: first.draft?._rev,
+    })
+    rerender(first.props)
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+
+    applyKeystroke(first)
+    rerender(first.props)
+
+    expect(operations.publish.execute).toHaveBeenCalledTimes(1)
+    expect(immediateValidationArgs()).toEqual([first.draft, true, false])
+    expect(renderDialogContent(result).steps.validation.status).toBe('succeeded')
+  })
+
   it('shows the error count and stays open until dismissed when validation fails', async () => {
     const first = keystroke('1')
     applyKeystroke(first, {validating: true})
@@ -313,7 +338,11 @@ describe('usePublishAction', () => {
       vi.advanceTimersByTime(3000)
     })
 
-    applyKeystroke(first, {validation: [REQUIRED_NAME, {...REQUIRED_NAME, path: ['bio']}]})
+    mockUseImmediateValidation.mockReturnValue({
+      isValidating: false,
+      validation: [REQUIRED_NAME, {...REQUIRED_NAME, path: ['bio']}],
+      revision: first.draft?._rev,
+    })
     rerender(first.props)
 
     const {dialog, steps} = renderDialogContent(result)
@@ -321,6 +350,7 @@ describe('usePublishAction', () => {
     expect(steps.publish.status).toBe('pending')
     expect(dialog.showCloseButton).toBe(true)
     expect(operations.publish.execute).not.toHaveBeenCalled()
+    expect(immediateValidationArgs()).toEqual([first.draft, true, false])
     act(() => {
       vi.advanceTimersByTime(10_000)
     })
@@ -385,6 +415,6 @@ describe('usePublishAction', () => {
     })
 
     expect(result.current?.dialog).toBeUndefined()
-    expect(setValidationScheduling).not.toHaveBeenCalled()
+    expect(mockUseImmediateValidation.mock.calls.some(([, , enabled]) => enabled)).toBe(false)
   })
 })

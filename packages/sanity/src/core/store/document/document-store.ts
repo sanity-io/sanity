@@ -1,6 +1,5 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {type ValidationScheduling} from '@sanity/validation/_internal'
 import {type Observable, of} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
@@ -37,7 +36,7 @@ import {
 } from './document-pair/operationEvents'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {type OperationsAPI} from './document-pair/operations/types'
-import {setValidationScheduling, validation} from './document-pair/validation'
+import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
 import {type InitialValueMsg} from './initialValue/types'
@@ -128,18 +127,6 @@ export interface DocumentStore {
       // as the document we're validating
       validatePublishedReferences: boolean,
     ) => Observable<ValidationStatus>
-    /**
-     * Paces the validation runs of the document behind `validation()` with the same arguments.
-     * `immediate` drops an idle run in flight and validates right away without yielding to idle
-     * callbacks, for the moment a user is waiting on the result (a pending publish); switch back
-     * to `idle` when nothing waits on it any more.
-     */
-    setValidationScheduling: (
-      validationTargetId: string,
-      type: string,
-      validatePublishedReferences: boolean,
-      scheduling: ValidationScheduling,
-    ) => void
   }
 }
 
@@ -309,19 +296,6 @@ export function createDocumentStore({
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
         return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
-      },
-      setValidationScheduling(validationTargetId, type, requirePublishedReferences, scheduling) {
-        const publishedId = getPublishedId(validationTargetId)
-        const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
-        const validationTarget = getDocumentVariantType(validationTargetId)
-        setValidationScheduling(
-          ctx,
-          idPair,
-          type,
-          validationTarget,
-          requirePublishedReferences,
-          scheduling,
-        )
       },
     },
   }
