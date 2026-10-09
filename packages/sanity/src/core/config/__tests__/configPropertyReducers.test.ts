@@ -15,6 +15,7 @@ import {
   documentLanguageFilterReducer,
   draftsEnabledReducer,
   eventsAPIReducer,
+  federatedAssetSourcesReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
   internalTasksReducer,
@@ -529,6 +530,70 @@ describe('mediaLibraryEnabledReducer', () => {
         initialValue: false,
       }),
     ).toThrow('Expected `mediaLibrary.enabled` to be a boolean, but received string')
+  })
+})
+
+describe('federatedAssetSourcesReducer', () => {
+  it('returns undefined when no config sets federatedAssetSources', () => {
+    expect(
+      federatedAssetSourcesReducer({
+        config: {name: 'root'},
+        initialValue: undefined,
+      }),
+    ).toBeUndefined()
+  })
+
+  it('merges configs with the root config winning', () => {
+    const filter = () => true
+    expect(
+      federatedAssetSourcesReducer({
+        config: {
+          name: 'root',
+          federatedAssetSources: {enabled: true},
+          plugins: [{name: 'plugin', federatedAssetSources: {enabled: false, filter}}],
+        },
+        initialValue: undefined,
+      }),
+    ).toEqual({enabled: true, filter})
+  })
+
+  it('throws when enabled is not a boolean', () => {
+    expect(() =>
+      federatedAssetSourcesReducer({
+        config: {name: 'test', federatedAssetSources: {enabled: 'yes' as never}},
+        initialValue: undefined,
+      }),
+    ).toThrow('Expected `federatedAssetSources.enabled` to be a boolean, but received string')
+  })
+
+  it('throws when filter is not a function', () => {
+    expect(() =>
+      federatedAssetSourcesReducer({
+        config: {name: 'test', federatedAssetSources: {filter: 'nope' as never}},
+        initialValue: undefined,
+      }),
+    ).toThrow('Expected `federatedAssetSources.filter` to be a function, but received string')
+  })
+
+  it('throws when uploads is not a function', () => {
+    expect(() =>
+      federatedAssetSourcesReducer({
+        config: {name: 'test', federatedAssetSources: {uploads: true as never}},
+        initialValue: undefined,
+      }),
+    ).toThrow('Expected `federatedAssetSources.uploads` to be a function, but received boolean')
+  })
+
+  it.each([
+    {label: 'a boolean', value: true, received: 'boolean'},
+    {label: 'null', value: null, received: 'null'},
+  ])('throws when the namespace itself is $label (raw JavaScript config)', ({value, received}) => {
+    expect(() =>
+      federatedAssetSourcesReducer({
+        config: {name: 'test', federatedAssetSources: value as never},
+        initialValue: undefined,
+      }),
+    ).toThrow(`Expected \`federatedAssetSources\` to be an object, but received ${received}`)
   })
 })
 

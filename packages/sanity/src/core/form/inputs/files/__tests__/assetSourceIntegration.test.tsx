@@ -181,7 +181,8 @@ describe.each(INPUT_CONFIGS)(
         {timeout: 10000},
       )
 
-      // Verify reset: a second upload should work. Without signalCompletion the input would stay stuck.
+      // Verify reset: a second upload should work. Without the terminal statuses
+      // firing all-complete, the input would stay stuck.
       const file2 =
         _inputType === 'video'
           ? new File(['more content'], 'test2.mp4', {type: 'video/mp4'})

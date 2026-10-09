@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {useCallback} from 'react'
 
+import {resolveSchemaAssetSources} from '../../../core/form/inputs/files/common/resolveSchemaAssetSources'
 import {observeVideoAsset} from '../../../core/form/studio/inputs/client-adapters/assets'
 import {resolveUploader as defaultResolveUploader} from '../../../core/form/studio/uploads/resolveUploader'
 import {type FileLike} from '../../../core/form/studio/uploads/types'
@@ -33,7 +34,7 @@ export function StudioVideoInput(props: VideoInputProps) {
     [fileConfig.directUploads],
   )
 
-  const assetSources = sourcesFromSchema || fileConfig.assetSources
+  const assetSources = resolveSchemaAssetSources(sourcesFromSchema, fileConfig.assetSources)
   const filteredAssetSources = assetSources.filter((source) => source.name === sourceName)
 
   const observeAsset = useCallback(
