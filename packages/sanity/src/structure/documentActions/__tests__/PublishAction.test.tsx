@@ -76,8 +76,15 @@ function doc(id: string, rev: string): SanityDocument {
  * re-emits fresh stubs for every version whenever any of them changes) new sibling objects for
  * both the draft and the unchanged published document.
  */
-function keystroke(rev: string, {publishedRev = 'published-1'}: {publishedRev?: string} = {}) {
-  const draft = doc(`drafts.${ID}`, `draft-${rev}`)
+function keystroke(
+  rev: string,
+  {
+    publishedRev = 'published-1',
+    withDraft = true,
+  }: {publishedRev?: string; withDraft?: boolean} = {},
+) {
+  // publishing deletes the draft, so a just-published document has none
+  const draft = withDraft ? doc(`drafts.${ID}`, `draft-${rev}`) : null
   const published = doc(ID, publishedRev)
   const editState: EditStateFor = {
     id: ID,
@@ -97,11 +104,15 @@ function keystroke(rev: string, {publishedRev = 'published-1'}: {publishedRev?: 
     targetDocument: undefined,
     scopeId: undefined,
     variant: undefined,
-    siblings: {published: {...published}, draft: {...draft}, version: undefined},
+    siblings: {
+      published: {...published},
+      draft: draft ? {...draft} : undefined,
+      version: undefined,
+    },
   } as unknown as TargetDocumentState
   const props: DocumentActionProps = {
     ...editState,
-    revision: draft._rev,
+    revision: (draft ?? published)._rev,
     initialValueResolved: true,
     // oxlint-disable-next-line no-deprecated -- still a required field of DocumentActionProps
     onComplete: () => undefined,
@@ -117,11 +128,13 @@ function applyKeystroke(
     validation = [],
   }: {syncing?: boolean; validating?: boolean; validation?: ValidationMarker[]} = {},
 ) {
+  const value = state.draft ?? state.editState.published
+  if (!value) throw new Error('a keystroke state needs a draft or a published document')
   mockUseDocumentPane.mockReturnValue({
     changesOpen: false,
     documentId: ID,
     documentType: 'author',
-    value: state.draft,
+    value,
     targetDocumentState: state.targetDocumentState,
   } as unknown as ReturnType<typeof useDocumentPane>)
   mockUseEditState.mockReturnValue(state.editState)
@@ -129,7 +142,7 @@ function applyKeystroke(
   mockUseValidationStatus.mockReturnValue({
     isValidating: validating,
     validation,
-    revision: state.draft._rev,
+    revision: value._rev,
   })
 }
 
@@ -254,7 +267,7 @@ describe('usePublishAction', () => {
     expect(steps.validation).toEqual({status: 'running', text: 'Validating your document'})
     expect(steps.publish).toEqual({status: 'pending', text: 'Publishing document'})
     expect(setValidationScheduling).toHaveBeenLastCalledWith(
-      first.draft._id,
+      `drafts.${ID}`,
       'author',
       true,
       'immediate',
@@ -264,22 +277,22 @@ describe('usePublishAction', () => {
     applyKeystroke(first)
     rerender(first.props)
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
-    expect(setValidationScheduling).toHaveBeenLastCalledWith(
-      first.draft._id,
-      'author',
-      true,
-      'idle',
-    )
+    expect(setValidationScheduling).toHaveBeenLastCalledWith(`drafts.${ID}`, 'author', true, 'idle')
     const publishing = renderDialogContent(result)
     expect(publishing.steps.validation.status).toBe('succeeded')
     expect(publishing.steps.publish).toEqual({status: 'running', text: 'Publishing document'})
     expect(publishing.dialog.showCloseButton).toBe(false)
 
-    // a new published revision arrives: done, and the dialog closes two seconds later
-    const published = keystroke('1', {publishedRev: 'published-2'})
+    // the document is published (new published revision, draft gone): done, and the dialog
+    // stays up, through the "already published" description, for two more seconds
+    const published = keystroke('1', {publishedRev: 'published-2', withDraft: false})
     applyKeystroke(published)
     rerender(published.props)
-    expect(renderDialogContent(result).steps.publish.status).toBe('succeeded')
+    expect(result.current?.disabled).toBe(true)
+    expect(renderDialogContent(result).steps.publish).toEqual({
+      status: 'succeeded',
+      text: 'Publishing document',
+    })
     act(() => {
       vi.advanceTimersByTime(1999)
     })
@@ -364,7 +377,7 @@ describe('usePublishAction', () => {
     applyKeystroke(first)
     rerender(first.props)
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
-    const published = keystroke('1', {publishedRev: 'published-2'})
+    const published = keystroke('1', {publishedRev: 'published-2', withDraft: false})
     applyKeystroke(published)
     rerender(published.props)
     act(() => {

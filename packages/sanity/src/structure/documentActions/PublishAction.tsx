@@ -430,6 +430,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
         label: t('action.publish.label'),
         title: getDisabledReason('ALREADY_PUBLISHED', published?._updatedAt, t),
         disabled: true,
+        // publishing removes the draft, which lands here while the progress dialog is still up
+        dialog: progressDialog,
       }
     }
 
@@ -442,6 +444,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
           <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
         ),
         disabled: true,
+        dialog: progressDialog,
       }
     }
 
