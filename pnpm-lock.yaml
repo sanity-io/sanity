@@ -1897,7 +1897,7 @@ importers:
         specifier: ^6.2.5
         version: 6.2.5
       '@codemirror/language':
-        specifier: ^6.12.4
+        specifier: ^6.13.1
         version: 6.13.1
       '@codemirror/search':
         specifier: ^6.7.2
@@ -1906,7 +1906,7 @@ importers:
         specifier: ^6.7.6
         version: 6.7.6
       '@codemirror/view':
-        specifier: ^6.43.13
+        specifier: ^6.43.14
         version: 6.43.14
       '@lezer/highlight':
         specifier: ^1.2.3
