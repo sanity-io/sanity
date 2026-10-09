@@ -1,10 +1,4 @@
-import {
-  diffItem,
-  type DiffOptions,
-  type InsertAfterPatch,
-  type SetPatch,
-  type UnsetPatch,
-} from '@sanity/diff-patch'
+import {diffValue, type SanityPatchOperations} from '@sanity/diff-patch'
 import {
   isIndexSegment,
   isKeyedObject,
@@ -21,6 +15,7 @@ import {
   getValueAtPath,
   isEmptyObject,
   pathToString,
+  stringToPath,
 } from '../../paths/helpers'
 import {
   type ArrayDiff,
@@ -31,10 +26,6 @@ import {
   type ObjectDiff,
 } from '../../types'
 import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
-
-const diffOptions: DiffOptions = {
-  diffMatchPatch: {enabled: false, lengthThresholdAbsolute: 30, lengthThresholdRelative: 1.2},
-}
 
 export function undoChange(
   change: ChangeNode,
@@ -205,37 +196,50 @@ function buildUndoPatches(
   path: Path,
   stubbedPaths: Set<string>,
 ): PatchOperations[] {
-  const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path)
+  // The operations are kept in the groups and order diff-patch emits them in. The order matters:
+  // a reordered keyed array comes out as two consecutive `set` groups, the second of which
+  // targets temporary keys that only exist once the first has been applied.
+  const patches = diffValue(diff.toValue, diff.fromValue, path).map((operation) =>
+    restorePreviousStrings(operation, diff.fromValue, path),
+  )
 
-  const inserts = patches
-    .filter((patch): patch is InsertAfterPatch => patch.op === 'insert')
-    .map(({after, items}) => ({insert: {after: pathToString(after), items}}) as any)
+  // diff-patch only descends into containers present in both the current and the previous value,
+  // so every parent below `path` already exists in the document (or is created by a preceding
+  // group). The ancestors of `path` itself are the only ones a `set` may need stubbed in.
+  const stubs = patches.some((patch) => patch.set)
+    ? getParentStubs(path, rootDiff, stubbedPaths)
+    : []
 
-  const unsets = patches
-    .filter((patch): patch is UnsetPatch => patch.op === 'unset')
-    .reduce((acc, patch) => acc.concat(pathToString(patch.path)), [] as string[])
+  return [...stubs, ...patches]
+}
 
-  const stubs: PatchOperations[] = []
+/**
+ * Since v6, `@sanity/diff-patch` emits `diffMatchPatch` operations for changed strings and no
+ * longer offers an option to turn that off. A revert must restore the exact previous value rather
+ * than fuzzy-patch whatever the field holds by then, so each entry is rewritten to a `set` of the
+ * previous string. Should that string not resolve (a path that does not round-trip through
+ * `stringToPath`), the `diffMatchPatch` entry is kept rather than setting `undefined`.
+ */
+function restorePreviousStrings(
+  operation: SanityPatchOperations,
+  previousValue: unknown,
+  basePath: Path,
+): PatchOperations {
+  if (!operation.diffMatchPatch) {
+    return operation
+  }
 
-  let hasSets = false
-  const sets = patches
-    .filter((patch): patch is SetPatch => patch.op === 'set')
-    .reduce(
-      (acc, patch) => {
-        hasSets = true
-        stubs.push(...getParentStubs(patch.path, rootDiff, stubbedPaths))
-        acc[pathToString(patch.path)] = patch.value
-        return acc
-      },
-      {} as Record<string, unknown>,
-    )
+  const patch: PatchOperations = {}
+  for (const [pathString, textPatch] of Object.entries(operation.diffMatchPatch)) {
+    const previous = getValueAtPath(previousValue, stringToPath(pathString).slice(basePath.length))
+    if (typeof previous === 'string') {
+      patch.set = {...patch.set, [pathString]: previous}
+    } else {
+      patch.diffMatchPatch = {...patch.diffMatchPatch, [pathString]: textPatch}
+    }
+  }
 
-  return [
-    ...stubs,
-    ...inserts,
-    ...(unsets.length > 0 ? [{unset: unsets}] : []),
-    ...(hasSets ? [{set: sets}] : []),
-  ]
+  return patch
 }
 
 function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>): PatchOperations[] {
