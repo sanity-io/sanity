@@ -10,6 +10,7 @@ import {
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {PaneItem} from '../../components/paneItem/PaneItem'
@@ -141,12 +142,13 @@ export function ListPaneContent(props: ListPaneContentProps) {
           activeItemDataAttr="data-hovered"
           ariaLabel={title}
           canReceiveFocus
+          className={paneCommandList}
           getItemDisabled={getItemDisabled}
           itemHeight={51}
           items={items}
           onlyShowSelectionWhenActive
           paddingBottom={1}
-          paddingX={3}
+          paddingLeft={3}
           renderItem={renderItem}
           wrapAround={false}
         />
