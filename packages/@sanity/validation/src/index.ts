@@ -10,6 +10,8 @@ export {
 export {
   type DocumentValidationResult,
   validateDocument,
+  validateDocuments,
+  type ValidateDocumentsOptions,
   type ValidateDocumentOptions,
   type ValidateDocumentWorkspaceOptions,
   type ValidationClient,
