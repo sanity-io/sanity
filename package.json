@@ -99,6 +99,8 @@
     "prepublishOnly": "pnpm build",
     "publish:tarball": "tsx scripts/publish/tarball.ts",
     "radar": "pnpm --filter radar dev",
+    "react-devtools-mcp:chrome": "tsx scripts/launchChrome.ts",
+    "react-devtools-mcp:test-studio": "ENABLE_REACT_DEVTOOLS_MCP=true pnpm dev:test-studio:studio",
     "react-devtools:test-studio": "ENABLE_REACT_DEVTOOLS=true pnpm dev:test-studio:studio",
     "start": "pnpm dev",
     "test": "pnpm test:vitest",

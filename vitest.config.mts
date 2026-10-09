@@ -47,6 +47,8 @@ export default defineConfig({
       'dev/radar',
       // The style widget's corner math — likewise pure, likewise plain node
       'dev/test-studio',
+      // Pure helpers of the repo scripts (the Chrome launcher's environment allowlist)
+      'scripts',
       'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
