@@ -306,7 +306,7 @@ describe('getInitialValueStream', () => {
     sub.unsubscribe()
   })
 
-  test('debounces rapid snapshots of the same existence state into one resolve', async () => {
+  test('resolves once for repeated snapshots of the same existence state', async () => {
     const values: InitialValueMsg[] = []
     const sub = getInitialValueStream(
       schema,
@@ -326,14 +326,14 @@ describe('getInitialValueStream', () => {
     await vi.advanceTimersByTimeAsync(25)
     expect(values).toEqual([{type: 'loading'}, {type: 'success', value: {title: 'Ada'}}])
 
+    published$.next(null)
+    await flushDebounce()
+    expect(values).toEqual([{type: 'loading'}, {type: 'success', value: {title: 'Ada'}}])
+
     sub.unsubscribe()
   })
 
-  // The existence comparator is `Boolean(prev) !== Boolean(next)`.
-  // distinctUntilChanged treats a true comparator as "same" and drops the
-  // value, so a missing → present transition is ignored. The comment on that
-  // line describes the opposite. SAPP-4619.
-  test.fails('emits success with a null value when a document appears after the stream resolved a template', async () => {
+  test('emits success with a null value when a document appears after the stream resolved a template', async () => {
     const values: InitialValueMsg[] = []
     const sub = getInitialValueStream(
       schema,
@@ -355,6 +355,59 @@ describe('getInitialValueStream', () => {
       {type: 'success', value: {title: 'Ada'}},
       {type: 'success', value: null},
     ])
+
+    sub.unsubscribe()
+  })
+
+  test('re-resolves the template when the document disappears after it existed', async () => {
+    const values: InitialValueMsg[] = []
+    const sub = getInitialValueStream(
+      schema,
+      [authorTemplate],
+      previewStore,
+      streamOpts(),
+      context,
+    ).subscribe((value) => values.push(value))
+
+    draft$.next(EXISTING)
+    published$.next(null)
+    await flushDebounce()
+    expect(values).toEqual([{type: 'loading'}, {type: 'success', value: null}])
+
+    draft$.next(null)
+    await flushDebounce()
+    expect(values).toEqual([
+      {type: 'loading'},
+      {type: 'success', value: null},
+      {type: 'loading'},
+      {type: 'success', value: {title: 'Ada'}},
+    ])
+
+    sub.unsubscribe()
+  })
+
+  test('collapses an existence flip that reverts within the debounce window', async () => {
+    const values: InitialValueMsg[] = []
+    const sub = getInitialValueStream(
+      schema,
+      [authorTemplate],
+      previewStore,
+      streamOpts(),
+      context,
+    ).subscribe((value) => values.push(value))
+
+    draft$.next(EXISTING)
+    published$.next(null)
+    await flushDebounce()
+    expect(values).toEqual([{type: 'loading'}, {type: 'success', value: null}])
+
+    // A publish deletes the draft and creates the published document in one
+    // transaction; the two snapshots arrive moments apart.
+    draft$.next(null)
+    await vi.advanceTimersByTimeAsync(10)
+    published$.next(EXISTING)
+    await flushDebounce()
+    expect(values).toEqual([{type: 'loading'}, {type: 'success', value: null}])
 
     sub.unsubscribe()
   })
