@@ -229,16 +229,24 @@ function restorePreviousStrings(
     return operation
   }
 
-  const patch: PatchOperations = {}
+  const set: Record<string, unknown> = {}
+  const diffMatchPatch: Record<string, string> = {}
   for (const [pathString, textPatch] of Object.entries(operation.diffMatchPatch)) {
     const previous = getValueAtPath(previousValue, stringToPath(pathString).slice(basePath.length))
     if (typeof previous === 'string') {
-      patch.set = {...patch.set, [pathString]: previous}
+      set[pathString] = previous
     } else {
-      patch.diffMatchPatch = {...patch.diffMatchPatch, [pathString]: textPatch}
+      diffMatchPatch[pathString] = textPatch
     }
   }
 
+  const patch: PatchOperations = {}
+  if (Object.keys(set).length > 0) {
+    patch.set = set
+  }
+  if (Object.keys(diffMatchPatch).length > 0) {
+    patch.diffMatchPatch = diffMatchPatch
+  }
   return patch
 }
 
