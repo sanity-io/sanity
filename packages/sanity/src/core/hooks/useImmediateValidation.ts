@@ -1,11 +1,12 @@
 import {type SanityDocument} from '@sanity/types'
 import {useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
-import {asyncScheduler, type Observable, of} from 'rxjs'
-import {map, startWith, subscribeOn} from 'rxjs/operators'
+import {type Observable, of} from 'rxjs'
+import {map, startWith, switchMap} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../store/datastores'
 import {useSource} from '../studio/source'
+import {afterNextPaint} from '../util/afterNextPaint'
 import {
   isSameDocumentContent,
   validateDocumentImmediately,
@@ -49,16 +50,13 @@ export function useImmediateValidation(
 
   const progress$ = useMemo((): Observable<Progress | null> => {
     if (!enabled || !content) return of(null)
-    return validateDocumentImmediately(
-      {getClient, observeDocumentPairAvailability, schema, i18n, currentUser},
-      content,
-      requirePublishedReferences,
-    ).pipe(
+    const ctx = {getClient, observeDocumentPairAvailability, schema, i18n, currentUser}
+    // The run blocks the main thread, so it waits for whatever the enabling render committed
+    // (e.g. a dialog saying the document is being validated) to be painted first. `startWith`
+    // still reports the run as under way right away.
+    return afterNextPaint().pipe(
+      switchMap(() => validateDocumentImmediately(ctx, content, requirePublishedReferences)),
       map((validation): Progress => ({isValidating: false, validation})),
-      // The run blocks the main thread, so it starts in a task of its own: whatever the enabling
-      // render committed (e.g. a dialog saying the document is being validated) gets to paint
-      // first. `startWith` still reports the run as under way right away.
-      subscribeOn(asyncScheduler),
       startWith(RUNNING),
     )
   }, [
