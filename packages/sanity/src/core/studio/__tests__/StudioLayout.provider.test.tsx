@@ -1,5 +1,5 @@
 import {act, render, screen} from '@testing-library/react'
-import {use, useContext, useMemo} from 'react'
+import {use, useMemo} from 'react'
 import {useObservablePromise} from 'react-rx'
 import {Subject} from 'rxjs'
 import {createContext} from 'sanity/_createContext'
@@ -32,7 +32,7 @@ function AnswerProvider(props: ProviderProps) {
 
 // Never calls `renderDefault`, so the default studio layout stays out of the test
 function AnswerLayout(_props: LayoutProps) {
-  const promise = useContext(AnswerPromiseContext)
+  const promise = use(AnswerPromiseContext)
   if (!promise) throw new Error('no provider above the layout')
   log.push('layout attempted')
   const answer = use(promise)

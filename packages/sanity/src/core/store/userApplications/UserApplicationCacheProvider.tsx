@@ -1,4 +1,4 @@
-import {type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, use, useMemo} from 'react'
 import {UserApplicationCacheContext} from 'sanity/_singletons'
 
 import {createUserApplicationCache, type UserApplicationCache} from './userApplicationCache'
@@ -13,7 +13,7 @@ interface UserApplicationCacheProviderProps {
  * @internal
  */
 export function UserApplicationCacheProvider({children}: UserApplicationCacheProviderProps) {
-  const parentCache = useContext(UserApplicationCacheContext)
+  const parentCache = use(UserApplicationCacheContext)
 
   const cache = useMemo(() => parentCache || createUserApplicationCache(), [parentCache])
 
@@ -29,7 +29,7 @@ export function UserApplicationCacheProvider({children}: UserApplicationCachePro
  * @internal
  */
 export function useUserApplicationCache(): UserApplicationCache {
-  const cache = useContext(UserApplicationCacheContext)
+  const cache = use(UserApplicationCacheContext)
 
   if (!cache) {
     throw new Error(

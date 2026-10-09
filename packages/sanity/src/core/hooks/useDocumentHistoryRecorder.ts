@@ -1,5 +1,5 @@
 import {type useRecordDocumentHistoryEvent} from '@sanity/sdk-react'
-import {useCallback, useContext} from 'react'
+import {useCallback, use} from 'react'
 import {DocumentHistoryContext} from 'sanity/_singletons'
 
 /**
@@ -34,7 +34,7 @@ export function useDocumentHistoryRecorder({
   resourceId,
   schemaName,
 }: DocumentHistoryHandle): {recordEvent: (eventType: DocumentHistoryEventType) => void} {
-  const recordDocumentHistoryEvent = useContext(DocumentHistoryContext)
+  const recordDocumentHistoryEvent = use(DocumentHistoryContext)
 
   const recordEvent = useCallback(
     (eventType: DocumentHistoryEventType) =>

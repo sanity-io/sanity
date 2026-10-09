@@ -2,7 +2,7 @@ import {SanityEncoder} from '@sanity/mutate'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocument} from '@sanity/types'
 import {fromString, get} from '@sanity/util/paths'
-import {useContext, useEffect, useMemo, useState} from 'react'
+import {use, useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
   type Observable,
@@ -85,7 +85,7 @@ export function useDivergenceController(
 
   // Why: `useDocumentDivergences` throws outside a `DivergencesProvider`, and
   // the controller can render in trees that lack one. Read the context directly.
-  const divergencesContext = useContext(DocumentDivergencesContext)
+  const divergencesContext = use(DocumentDivergencesContext)
   const sessionId = divergencesContext?.sessionId ?? null
   // Why: `null` distinguishes "no provider mounted" from "known zero
   // divergences" in telemetry.

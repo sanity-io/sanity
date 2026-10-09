@@ -1,4 +1,4 @@
-import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, use, useMemo, useState} from 'react'
 import {
   type AnnotationEntry,
   SelectedAnnotationsContext,
@@ -52,7 +52,7 @@ export function SelectedAnnotationsProvider({children}: {children: ReactNode}): 
  * @internal
  */
 export function useSelectedAnnotations(): SelectedAnnotationsContextValue {
-  const context = useContext(SelectedAnnotationsContext)
+  const context = use(SelectedAnnotationsContext)
   if (!context) {
     throw new Error('useSelectedAnnotations must be used within a SelectedAnnotationsProvider')
   }

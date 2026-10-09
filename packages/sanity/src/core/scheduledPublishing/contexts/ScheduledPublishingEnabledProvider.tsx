@@ -1,4 +1,4 @@
-import {useContext, useMemo} from 'react'
+import {use, useMemo} from 'react'
 import {
   ScheduledPublishingEnabledContext,
   type ScheduledPublishingEnabledContextValue,
@@ -70,6 +70,6 @@ export function ScheduledPublishingEnabledProvider({
  * @internal
  */
 export function useScheduledPublishingEnabled(): ScheduledPublishingEnabledContextValue {
-  const context = useContext(ScheduledPublishingEnabledContext)
+  const context = use(ScheduledPublishingEnabledContext)
   return context
 }

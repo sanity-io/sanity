@@ -1,4 +1,4 @@
-import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {useCallback, use, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {ReleasesMetadataContext} from 'sanity/_singletons'
 
@@ -105,7 +105,7 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
 }
 
 export const ReleasesMetadataProvider = ({children}: {children: React.ReactNode}) => {
-  const context = useContext(ReleasesMetadataContext)
+  const context = use(ReleasesMetadataContext)
 
   // Avoid mounting the provider if it's already provided by a parent
   if (context) return children
@@ -113,7 +113,7 @@ export const ReleasesMetadataProvider = ({children}: {children: React.ReactNode}
 }
 
 export const useReleasesMetadataProvider = (): ReleasesMetadataContextValue => {
-  const contextValue = useContext(ReleasesMetadataContext)
+  const contextValue = use(ReleasesMetadataContext)
 
   return (
     contextValue || {

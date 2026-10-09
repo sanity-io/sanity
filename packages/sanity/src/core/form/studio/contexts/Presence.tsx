@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
-import {type ReactNode, useContext, useRef} from 'react'
+import {type ReactNode, use, useRef} from 'react'
 import {PresenceContext} from 'sanity/_singletons'
 
 import {type FormNodePresence} from '../../../presence/types'
@@ -13,7 +13,7 @@ export function PresenceProvider(props: {presence: FormNodePresence[]; children:
 }
 
 export function useFormFieldPresence(): FormNodePresence[] {
-  const ctx = useContext(PresenceContext)
+  const ctx = use(PresenceContext)
   if (!ctx) {
     throw new Error('Form context not provided')
   }

@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {FreeTrialContext} from 'sanity/_singletons'
 
 import {type FreeTrialResponse} from './types'
@@ -20,7 +20,7 @@ export interface FreeTrialContextProps {
  * @internal
  */
 export const useFreeTrialContext = (): FreeTrialContextProps => {
-  const context = useContext(FreeTrialContext)
+  const context = use(FreeTrialContext)
   if (!context) {
     throw new Error('useFreeTrial must be used within a FreeTrialProvider')
   }

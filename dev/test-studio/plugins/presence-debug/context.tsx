@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {createContext, type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {createContext, type ReactNode, useCallback, use, useMemo, useState} from 'react'
 import {type PresenceLocation} from 'sanity'
 
 import {PresenceDebugDialog} from './PresenceDebugDialog'
@@ -23,7 +23,7 @@ interface PresenceDebugContextValue {
 const PresenceDebugContext = createContext<PresenceDebugContextValue | null>(null)
 
 export function usePresenceDebug(): PresenceDebugContextValue {
-  const value = useContext(PresenceDebugContext)
+  const value = use(PresenceDebugContext)
   if (!value) {
     throw new Error('usePresenceDebug: the presence-debug plugin is not enabled')
   }

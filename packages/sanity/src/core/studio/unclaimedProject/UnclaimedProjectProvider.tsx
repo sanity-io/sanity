@@ -1,4 +1,4 @@
-import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, use, useMemo, useState} from 'react'
 import {UnclaimedProjectContext, type UnclaimedProjectContextValue} from 'sanity/_singletons'
 
 import {isDev} from '../../environment'
@@ -50,5 +50,5 @@ function RobotUnclaimedProjectProvider({children}: {children: ReactNode}) {
 
 /** @internal */
 export function useUnclaimedProjectContext(): UnclaimedProjectContextValue {
-  return useContext(UnclaimedProjectContext)
+  return use(UnclaimedProjectContext)
 }

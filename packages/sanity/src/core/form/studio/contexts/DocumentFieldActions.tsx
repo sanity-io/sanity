@@ -1,4 +1,4 @@
-import {type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, use, useMemo} from 'react'
 import {DocumentFieldActionsContext} from 'sanity/_singletons'
 
 import {type DocumentFieldAction} from '../../../config/document/fieldActions/types'
@@ -17,7 +17,7 @@ export function DocumentFieldActionsProvider(props: {
 }
 
 export function useDocumentFieldActions() {
-  const context = useContext(DocumentFieldActionsContext)
+  const context = use(DocumentFieldActionsContext)
   if (!context) {
     throw new Error('useDocumentFieldActions must be used within a DocumentFieldActionsProvider')
   }

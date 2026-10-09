@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {useCallback, use, useEffect, useMemo, useState} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
@@ -139,7 +139,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
  * @hidden
  */
 export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
-  const context = useContext(AddonDatasetContext)
+  const context = use(AddonDatasetContext)
   // Avoid mounting the provider if it's already provided by a parent
   if (context) return props.children
   return <AddonDatasetProviderInner {...props} />
