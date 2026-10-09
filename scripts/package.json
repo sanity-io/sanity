@@ -12,6 +12,7 @@
   "devDependencies": {
     "@optique/core": "catalog:",
     "@optique/run": "catalog:",
+    "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
@@ -21,7 +22,8 @@
     "lodash-es": "^4.18.1",
     "rimraf": "catalog:",
     "rxjs": "^7.8.2",
-    "semver": "^7.8.5"
+    "semver": "^7.8.5",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=22.12"
