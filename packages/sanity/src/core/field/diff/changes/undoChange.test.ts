@@ -44,11 +44,15 @@ function groupChange(changes: ChangeNode[]): GroupChangeNode {
  * Reverts `change` on a document that went from `previous` to `current`, asserts that the
  * executed patches take the document back to `previous` when applied the way the document store
  * applies them, and returns the patches as executed (one array per `patch.execute` call).
+ *
+ * `applyTo` replays the patches onto a different document than `current`, for the case where the
+ * document moved on after the diff was computed.
  */
 function revert(
   previous: DocumentValue,
   current: DocumentValue,
   change: (rootDiff: ObjectDiff) => ChangeNode,
+  applyTo: DocumentValue = current,
 ): PatchOperations[][] {
   const rootDiff = diffDocument(previous, current)
   const executed: PatchOperations[][] = []
@@ -65,13 +69,19 @@ function revert(
   const mutation = new Mutation({
     mutations: executed.flat().map((patch) => ({patch: {id: 'doc', ...patch}})),
   })
-  expect(mutation.apply({_id: 'doc', _type: 'doc', ...current})).toEqual({
+  expect(mutation.apply({_id: 'doc', _type: 'doc', ...applyTo})).toEqual({
     _id: 'doc',
     _type: 'doc',
     ...previous,
   })
 
   return executed
+}
+
+/** The change node Review changes builds for an unkeyed array item: the item diff at its position. */
+function arrayItemChange(arrayDiff: ArrayDiff, fromIndex: number): FieldChangeNode {
+  const item = arrayDiff.items.find((candidate) => candidate.fromIndex === fromIndex)!
+  return fieldChange(['counts', arrayDiff.items.indexOf(item)], item.diff)
 }
 
 describe('undoChange', () => {
@@ -229,12 +239,27 @@ describe('undoChange', () => {
     expect(executed).toEqual([[{insert: {after: 'tags[-1]', items: ['b', 'c']}}]])
   })
 
-  it('restores a primitive array item whose current value is falsy without inserting a stub', () => {
+  it('restores a primitive array item in place when the current item at its index is falsy', () => {
+    // Primitive items are keyed by value, so the change shows up as the removed `1` at index 1.
     const executed = revert({counts: [0, 1]}, {counts: [0, 0]}, (root) =>
-      fieldChange(['counts'], root.fields.counts),
+      arrayItemChange(root.fields.counts as ArrayDiff, 1),
     )
 
     expect(executed).toEqual([[{setIfMissing: {counts: []}}, {set: {'counts[1]': 1}}]])
+  })
+
+  it('re-creates the slot of a removed trailing primitive item before restoring it', () => {
+    const executed = revert({counts: [0, 1]}, {counts: [0]}, (root) =>
+      arrayItemChange(root.fields.counts as ArrayDiff, 1),
+    )
+
+    expect(executed).toEqual([
+      [
+        {setIfMissing: {counts: []}},
+        {insert: {after: 'counts[0]', items: [undefined]}},
+        {set: {'counts[1]': 1}},
+      ],
+    ])
   })
 
   it('removes added primitive array items as a range', () => {
@@ -245,17 +270,36 @@ describe('undoChange', () => {
     expect(executed).toEqual([[{unset: ['tags[1:]']}]])
   })
 
-  it('keeps the text patch when the previous string cannot be resolved from the path', () => {
-    // A `_key` containing a dot does not survive `stringToPath`, so the previous value cannot be
-    // looked up; the diffMatchPatch still restores the text and nothing is set to `undefined`.
+  it('sets a string inside an item whose key contains a dot, even after the document moved on', () => {
+    // The exact `set` restores the previous value regardless of what the field holds by the time
+    // the revert is applied, which a text patch computed against the old text would not.
     const executed = revert(
       {items: [{_key: 'dotted.key', title: 'before'}]},
       {items: [{_key: 'dotted.key', title: 'after'}]},
       (root) => fieldChange(['items'], root.fields.items),
+      {items: [{_key: 'dotted.key', title: 'after, and edited again'}]},
     )
 
     expect(executed).toEqual([
-      [{diffMatchPatch: {'items[_key=="dotted.key"].title': '@@ -1,5 +1,6 @@\n-after\n+before\n'}}],
+      [{setIfMissing: {items: []}}, {set: {'items[_key=="dotted.key"].title': 'before'}}],
     ])
+  })
+
+  it('throws instead of setting undefined when a previous string cannot be resolved', () => {
+    const rootDiff = diffDocument({title: 'before'}, {title: 'after'})
+    const executed: PatchOperations[][] = []
+    const operations: FieldOperationsAPI = {
+      patch: {
+        execute: (patches) => {
+          executed.push(patches)
+        },
+      },
+    }
+
+    // A change node whose path does not exist in the document the diff was computed for.
+    expect(() =>
+      undoChange(fieldChange(['renamed'], rootDiff.fields.title), rootDiff, operations),
+    ).toThrow('Cannot revert "renamed": the previous value could not be resolved')
+    expect(executed).toEqual([])
   })
 })

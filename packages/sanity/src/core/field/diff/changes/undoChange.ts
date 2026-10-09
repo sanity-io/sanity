@@ -1,4 +1,5 @@
 import {diffValue, type SanityPatchOperations} from '@sanity/diff-patch'
+import {extractWithPath} from '@sanity/mutator'
 import {
   isIndexSegment,
   isKeyedObject,
@@ -15,7 +16,6 @@ import {
   getValueAtPath,
   isEmptyObject,
   pathToString,
-  stringToPath,
 } from '../../paths/helpers'
 import {
   type ArrayDiff,
@@ -200,7 +200,7 @@ function buildUndoPatches(
   // a reordered keyed array comes out as two consecutive `set` groups, the second of which
   // targets temporary keys that only exist once the first has been applied.
   const patches = diffValue(diff.toValue, diff.fromValue, path).map((operation) =>
-    restorePreviousStrings(operation, diff.fromValue, path),
+    restorePreviousStrings(operation, rootDiff.fromValue),
   )
 
   // diff-patch only descends into containers present in both the current and the previous value,
@@ -217,37 +217,28 @@ function buildUndoPatches(
  * Since v6, `@sanity/diff-patch` emits `diffMatchPatch` operations for changed strings and no
  * longer offers an option to turn that off. A revert must restore the exact previous value rather
  * than fuzzy-patch whatever the field holds by then, so each entry is rewritten to a `set` of the
- * previous string. Should that string not resolve (a path that does not round-trip through
- * `stringToPath`), the `diffMatchPatch` entry is kept rather than setting `undefined`.
+ * previous string. The serialized path is resolved against the previous document with the same
+ * JSONMatch engine that applies the patch, so every path diff-patch can emit resolves, including
+ * `_key` values containing dots.
  */
 function restorePreviousStrings(
   operation: SanityPatchOperations,
-  previousValue: unknown,
-  basePath: Path,
+  previousDocument: unknown,
 ): PatchOperations {
   if (!operation.diffMatchPatch) {
     return operation
   }
 
   const set: Record<string, unknown> = {}
-  const diffMatchPatch: Record<string, string> = {}
-  for (const [pathString, textPatch] of Object.entries(operation.diffMatchPatch)) {
-    const previous = getValueAtPath(previousValue, stringToPath(pathString).slice(basePath.length))
-    if (typeof previous === 'string') {
-      set[pathString] = previous
-    } else {
-      diffMatchPatch[pathString] = textPatch
+  for (const pathString of Object.keys(operation.diffMatchPatch)) {
+    const previous = extractWithPath(pathString, previousDocument).at(0)?.value
+    if (typeof previous !== 'string') {
+      throw new Error(`Cannot revert "${pathString}": the previous value could not be resolved`)
     }
+    set[pathString] = previous
   }
 
-  const patch: PatchOperations = {}
-  if (Object.keys(set).length > 0) {
-    patch.set = set
-  }
-  if (Object.keys(diffMatchPatch).length > 0) {
-    patch.diffMatchPatch = diffMatchPatch
-  }
-  return patch
+  return {set}
 }
 
 function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>): PatchOperations[] {
@@ -267,11 +258,12 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
     const itemValue = getValueAtPath(value, subPath)
     const stub = getStubValue(itemValue)
 
-    // If the next array element does not exist, we need to inject an insert stub here
+    // If the next array element does not exist, we need to inject an insert stub here. Only a
+    // missing element counts: a falsy item (`0`, `''`, `false`, `null`) is still an element.
     if (
       nextIsArrayElement &&
       Array.isArray(itemValue) &&
-      !getValueAtPath(nextValue, path.slice(0, i + 1))
+      getValueAtPath(nextValue, path.slice(0, i + 1)) === undefined
     ) {
       const indexAtPrev = findIndex(itemValue, nextSegment)
       const nextItem = getValueAtPath(value, subPath.concat(nextSegment))
