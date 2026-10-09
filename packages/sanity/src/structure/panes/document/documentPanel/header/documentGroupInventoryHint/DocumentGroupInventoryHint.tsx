@@ -3,27 +3,41 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Text} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
+import {type Observable, of} from 'rxjs'
 import {useTranslation} from 'sanity'
 import {styled, css} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../../i18n'
+import {useDocumentGroupInventoryTarget} from '../../../useDocumentGroupInventoryTarget'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DocumentGroupInventoryHintPressed} from '../__telemetry__/documentGroupInventoryHint.telemetry'
-import {browserStorageAdapter, hintStatus, suppressHint} from './hintStatus'
+import {browserStorageAdapter, hintStatus, type HintStatus, suppressHint} from './hintStatus'
 
+/**
+ * Onboarding hint pointing at the "Manage versions" action in the pane footer. Pressing it
+ * opens the document group inventory, so it is only rendered while that action is mounted
+ * (see {@link useDocumentGroupInventoryTarget}) — otherwise pressing it would do nothing.
+ */
 export const DocumentGroupInventoryHint: ComponentType = () => {
   const {t} = useTranslation(structureLocaleNamespace)
   const {setIsDocumentGroupInventoryActive} = useDocumentPane()
+  const {isAvailable} = useDocumentGroupInventoryTarget()
   const telemetry = useTelemetry()
   const status = useObservable(
-    useMemo(() => hintStatus(browserStorageAdapter), []),
+    // Reading the status counts the session towards the hint's budget, so only read it once
+    // there is an inventory to open; a hidden hint must not use up its sessions.
+    useMemo(
+      (): Observable<HintStatus | undefined> =>
+        isAvailable ? hintStatus(browserStorageAdapter) : of(undefined),
+      [isAvailable],
+    ),
     undefined,
   )
 
   // The status is read from storage asynchronously; a hint the user has already dismissed must
   // not flash while it is unresolved.
-  if (status !== 'active') {
+  if (status !== 'active' || !isAvailable) {
     return null
   }
 
