@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-09)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#15229](https://github.com/sanity-io/sanity/issues/15229)) ([ccdaec4](https://github.com/sanity-io/sanity/commit/ccdaec4b6a6a9fa31b3cdc80a5fdd3cea2db1db6))
 ## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
 
 ### Bug Fixes

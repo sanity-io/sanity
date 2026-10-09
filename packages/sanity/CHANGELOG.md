@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-09)
+
+### Features
+
+* **core:** add studio.components.provider and preload lazy default plugin components ([#15205](https://github.com/sanity-io/sanity/issues/15205)) ([86f8d18](https://github.com/sanity-io/sanity/commit/86f8d18a5f7e228f9e45cb6636c1e04c091e8212))
+
+### Bug Fixes
+
+* **core:** keep presence avatars in stable positions ([#15238](https://github.com/sanity-io/sanity/issues/15238)) ([4038f96](https://github.com/sanity-io/sanity/commit/4038f969a40cf8d37fdf18843b3e7b7af3fd94ee))
+* **deps:** update dependency @sanity/cli to ^8.16.0 ([#15245](https://github.com/sanity-io/sanity/issues/15245)) ([73980e6](https://github.com/sanity-io/sanity/commit/73980e64ac34a0da69e5e88ab5f6c7909155b39e))
+* **deps:** update portabletext ([#15251](https://github.com/sanity-io/sanity/issues/15251)) ([13bece8](https://github.com/sanity-io/sanity/commit/13bece8956123d378b6eba761ae5c2f7c4ac0c77))
+* **form:** clear stuck file drop overlay on escape ([#14156](https://github.com/sanity-io/sanity/issues/14156)) ([982525c](https://github.com/sanity-io/sanity/commit/982525c032947a6977af79f341ffe4e8177370d2))
+* **presentation:** keep location links targeting presentation after open in structure ([#15214](https://github.com/sanity-io/sanity/issues/15214)) ([53a4678](https://github.com/sanity-io/sanity/commit/53a4678aae086bc0012c14a034bdfd0d42f40f5d))
 ## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
 
 ### Features
