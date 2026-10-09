@@ -958,8 +958,8 @@ importers:
         specifier: ^2.0.22
         version: 2.0.22(@sanity/client@8.9.0)(react@19.3.0)(sanity@packages+sanity)
       '@sanity/document-internationalization':
-        specifier: ^6.2.39
-        version: 6.2.39(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.2)(sanity@packages+sanity)(styled-components@6.5.3)
+        specifier: ^6.2.40
+        version: 6.2.40(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.2)(sanity@packages+sanity)(styled-components@6.5.3)
       '@sanity/google-maps-input':
         specifier: ^6.1.15
         version: 6.1.15(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
@@ -7595,14 +7595,14 @@ packages:
     resolution: {integrity: sha512-oJ5kZQV6C/DAlcpRLEU7AcVWXrSPuJb3Z1TQ9tm/qZOVWJENwWln45jtepQEYolTIuGx9jUlhYUi3hGIkOt8RA==}
     engines: {node: '>=18.2'}
 
-  '@sanity/document-internationalization@6.2.39':
-    resolution: {integrity: sha512-eH2ZtCKRkgC6A/rzLtwQgB8ciKaNLgL8OztYQJ+OdWp9pN56CZ1m9bFJYE5HQrgkjmL1EcRikqXBn1oAa2iUtw==}
+  '@sanity/document-internationalization@6.2.40':
+    resolution: {integrity: sha512-EBQHo5FUltkL4a58Fsr7eAJLTgxGvTDXMfhwQ4hrtyOdOYH4ySd5cwzQ+QCBncyuqDgZa1ohOlwC4P4kI6LHvg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
       react-dom: ^19.2
       sanity: ^5 || ^6.0.0-0
-      sanity-plugin-internationalized-array: ^5.3.2
+      sanity-plugin-internationalized-array: ^5.3.3
 
   '@sanity/eslint-plugin-i18n@1.1.0':
     resolution: {integrity: sha512-EpoqPVqaP2NSmG8vGa4zsD6BuyBTVHwmD3VigOya7roHB8GZXuJjDg6+SXzhb+cTVuZtWaAjt8NMYVYx4uWCIQ==}
@@ -20655,7 +20655,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.1
 
-  '@sanity/document-internationalization@6.2.39(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.2)(sanity@packages+sanity)(styled-components@6.5.3)':
+  '@sanity/document-internationalization@6.2.40(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.2)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/icons': 5.2.3(react@19.3.0)
       '@sanity/mutator': link:packages/@sanity/mutator
