@@ -1,6 +1,9 @@
 import './documentFormOnly.css'
 
-import {useMemo, useState} from 'react'
+import {CommentIcon} from '@sanity/icons/Comment'
+import {Button, Card, Flex} from '@sanity/ui'
+import {useMemo} from 'react'
+import {type SearchParam, useRouter} from 'sanity/router'
 import {
   DocumentPane,
   type DocumentPaneNode,
@@ -14,6 +17,9 @@ import {DOCUMENT_FORM_ONLY_ID, DOCUMENT_FORM_ONLY_TYPE} from './schema'
 
 type PaneParams = Record<string, string | undefined>
 
+// Studio's built-in comments inspector name; `sanity` exports it only as @internal.
+const COMMENTS_INSPECTOR = 'sanity/comments'
+
 // The tool navigates nowhere, so every link the document pane renders is a dead end.
 function NoLink() {
   return null
@@ -21,8 +27,18 @@ function NoLink() {
 
 function noop() {}
 
+function toSearchParams(params: PaneParams): SearchParam[] {
+  return Object.entries(params).flatMap(([name, value]): SearchParam[] =>
+    typeof value === 'string' ? [[name, value]] : [],
+  )
+}
+
+// Pane params live in the URL so an `edit` intent from a comment link can open the comments panel.
 export function DocumentFormOnlyTool() {
-  const [params, setParams] = useState<PaneParams>({})
+  const {state, navigate} = useRouter()
+  const searchParams = state._searchParams
+  const params: PaneParams = useMemo(() => Object.fromEntries(searchParams ?? []), [searchParams])
+  const isCommentsOpen = params.inspect === COMMENTS_INSPECTOR
 
   const paneRouter: PaneRouterContextValue = useMemo(
     () => ({
@@ -43,12 +59,13 @@ export function DocumentFormOnlyTool() {
       closeCurrentAndAfter: noop,
       duplicateCurrent: noop,
       setView: noop,
-      setParams,
+      setParams: (nextParams: PaneParams) =>
+        navigate({_searchParams: toSearchParams(nextParams)}, {replace: true}),
       setPayload: noop,
       createPathWithParams: () => '',
       navigateIntent: noop,
     }),
-    [params],
+    [navigate, params],
   )
 
   const pane: DocumentPaneNode = useMemo(
@@ -61,13 +78,31 @@ export function DocumentFormOnlyTool() {
     [],
   )
 
+  function toggleComments() {
+    paneRouter.setParams({...params, inspect: isCommentsOpen ? undefined : COMMENTS_INSPECTOR})
+  }
+
   return (
     <StructureToolProvider>
-      <PaneLayout className="document-form-only-tool" style={{height: '100%'}}>
-        <PaneRouterContext.Provider value={paneRouter}>
-          <DocumentPane paneKey="document" index={1} itemId="document" pane={pane} />
-        </PaneRouterContext.Provider>
-      </PaneLayout>
+      <Flex direction="column" height="fill">
+        <Card borderBottom padding={2}>
+          <Flex justify="flex-end">
+            <Button
+              icon={CommentIcon}
+              mode="bleed"
+              text="Comments"
+              selected={isCommentsOpen}
+              aria-pressed={isCommentsOpen}
+              onClick={toggleComments}
+            />
+          </Flex>
+        </Card>
+        <PaneLayout className="document-form-only-tool" flex={1} style={{minHeight: 0}}>
+          <PaneRouterContext.Provider value={paneRouter}>
+            <DocumentPane paneKey="document" index={1} itemId="document" pane={pane} />
+          </PaneRouterContext.Provider>
+        </PaneLayout>
+      </Flex>
     </StructureToolProvider>
   )
 }

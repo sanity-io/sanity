@@ -827,7 +827,8 @@ export default defineConfig([
   {
     name: 'document-form-only',
     title: 'Document form only',
-    subtitle: 'A single document form: no navbar, no structure tool, no document form toolbar',
+    subtitle:
+      'A single document form: no navbar, no structure tool, a custom toolbar with only comments',
     projectId: 'ppsg7ml5',
     dataset: 'test',
     ...envConfig.production,
