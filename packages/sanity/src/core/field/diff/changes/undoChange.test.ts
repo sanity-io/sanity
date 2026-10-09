@@ -177,14 +177,13 @@ describe('undoChange', () => {
     ])
   })
 
-  it('restores the previous order of a keyed array through sequential key swaps', () => {
+  it('restores a reordered keyed array wholesale instead of swapping keys', () => {
+    const previousItems = [
+      {_key: 'item1', title: 'A'},
+      {_key: 'item2', title: 'B'},
+    ]
     const executed = revert(
-      {
-        items: [
-          {_key: 'item1', title: 'A'},
-          {_key: 'item2', title: 'B'},
-        ],
-      },
+      {items: previousItems},
       {
         items: [
           {_key: 'item2', title: 'B'},
@@ -194,23 +193,53 @@ describe('undoChange', () => {
       (root) => fieldChange(['items'], root.fields.items),
     )
 
-    // Both `set` groups must stay separate, in this order: the second one addresses the
-    // temporary keys written by the first. No stubs are inserted for those temporary keys.
+    expect(executed).toEqual([[{setIfMissing: {items: []}}, {set: {items: previousItems}}]])
+  })
+
+  it('restores a reordered keyed array exactly when an item carries one of the temporary keys', () => {
+    // Forwarding diff-patch's key swaps would rename this item too and leave duplicate keys.
+    const previousItems = [
+      {_key: 'item1', title: 'A'},
+      {_key: 'item2', title: 'B'},
+    ]
+    const executed = revert(
+      {items: previousItems},
+      {
+        items: [
+          {_key: 'item2', title: 'B'},
+          {_key: 'item1', title: 'A'},
+          {_key: '__temp_reorder_item2__', title: 'C'},
+        ],
+      },
+      (root) => fieldChange(['items'], root.fields.items),
+    )
+
+    expect(executed).toEqual([[{setIfMissing: {items: []}}, {set: {items: previousItems}}]])
+  })
+
+  it('restores a block wholesale when the keyed array inside it was reordered', () => {
+    const previousBlock = {
+      _key: 'block1',
+      _type: 'block',
+      children: [
+        {_key: 'span1', _type: 'span', text: 'Hello ', marks: []},
+        {_key: 'span2', _type: 'span', text: 'world', marks: ['strong']},
+      ],
+    }
+    const currentBlock = {
+      ...previousBlock,
+      children: [previousBlock.children[1], previousBlock.children[0]],
+    }
+
+    const executed = revert({body: [previousBlock]}, {body: [currentBlock]}, (root) =>
+      fieldChange(['body', {_key: 'block1'}], (root.fields.body as ArrayDiff).items[0].diff),
+    )
+
     expect(executed).toEqual([
       [
-        {setIfMissing: {items: []}},
-        {
-          set: {
-            'items[_key=="item2"]': {_key: '__temp_reorder_item2__', title: 'A'},
-            'items[_key=="item1"]': {_key: '__temp_reorder_item1__', title: 'B'},
-          },
-        },
-        {
-          set: {
-            'items[_key=="__temp_reorder_item2__"]._key': 'item1',
-            'items[_key=="__temp_reorder_item1__"]._key': 'item2',
-          },
-        },
+        {setIfMissing: {body: []}},
+        {setIfMissing: {'body[_key=="block1"]': {_key: 'block1', _type: 'block'}}},
+        {set: {'body[_key=="block1"]': previousBlock}},
       ],
     ])
   })

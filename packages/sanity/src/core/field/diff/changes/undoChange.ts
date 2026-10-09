@@ -196,21 +196,37 @@ function buildUndoPatches(
   path: Path,
   stubbedPaths: Set<string>,
 ): PatchOperations[] {
-  // The operations are kept in the groups and order diff-patch emits them in. The order matters:
-  // a reordered keyed array comes out as two consecutive `set` groups, the second of which
-  // targets temporary keys that only exist once the first has been applied.
-  const patches = diffValue(diff.toValue, diff.fromValue, path).map((operation) =>
-    restorePreviousStrings(operation, rootDiff.fromValue),
-  )
+  const operations = diffValue(diff.toValue, diff.fromValue, path)
+
+  // diff-patch expresses a reordered keyed array as `set`s that move the items through predictable
+  // temporary `_key`s, and an item that already carries such a key gets caught up in the second
+  // pass. A revert that would rewrite keys restores the whole previous value instead, which is
+  // exact regardless. Everything else is kept in the groups and order diff-patch emits.
+  const patches: PatchOperations[] = operations.some(rewritesKeys)
+    ? [{set: {[pathToString(path)]: diff.fromValue}}]
+    : operations.map((operation) => restorePreviousStrings(operation, rootDiff.fromValue))
 
   // diff-patch only descends into containers present in both the current and the previous value,
-  // so every parent below `path` already exists in the document (or is created by a preceding
-  // group). The ancestors of `path` itself are the only ones a `set` may need stubbed in.
+  // so every parent below `path` already exists in the document. The ancestors of `path` itself
+  // are the only ones a `set` may need stubbed in.
   const stubs = patches.some((patch) => patch.set)
     ? getParentStubs(path, rootDiff, stubbedPaths)
     : []
 
   return [...stubs, ...patches]
+}
+
+const KEYED_SELECTOR_SUFFIX = /\[_key=="([^"]*)"\]$/
+
+/**
+ * Whether a `set` writes a keyed object under a `_key` selector for another key, which is how
+ * diff-patch moves the items of a reordered array.
+ */
+function rewritesKeys(operation: SanityPatchOperations): boolean {
+  return Object.entries(operation.set ?? {}).some(([pathString, value]) => {
+    const selectedKey = KEYED_SELECTOR_SUFFIX.exec(pathString)?.[1]
+    return selectedKey !== undefined && isKeyedObject(value) && value._key !== selectedKey
+  })
 }
 
 /**
