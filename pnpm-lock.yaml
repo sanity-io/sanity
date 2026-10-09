@@ -262,7 +262,7 @@ catalogs:
       specifier: npm:@sanity/ui@5.0.0-alpha.14
       version: 5.0.0-alpha.14
     vite:
-      specifier: ^8.3.3
+      specifier: ^8.3.4
       version: 8.3.4
     vitest-browser-react:
       specifier: ^2.3.0
