@@ -2570,6 +2570,12 @@ importers:
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../../packages/@repo/tsconfig
+      '@sanity/schema':
+        specifier: workspace:*
+        version: link:../../packages/@sanity/schema
+      '@sanity/validation':
+        specifier: workspace:*
+        version: link:../../packages/@sanity/validation
       '@types/node':
         specifier: 'catalog:'
         version: 24.19.1
