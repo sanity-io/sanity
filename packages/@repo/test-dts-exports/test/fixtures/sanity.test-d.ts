@@ -1688,6 +1688,7 @@ import type {
   useInitialValueResolverContext,
   useInStudioFeedback,
   UseInStudioFeedbackReturn,
+  useIsDocumentGroupInventoryAvailable,
   useIsReleaseActive,
   useKeyValueStore,
   useListFormat,
@@ -6947,6 +6948,9 @@ describe('sanity', () => {
   })
   test('UseInStudioFeedbackReturn', () => {
     expectTypeOf<UseInStudioFeedbackReturn>().toBeObject()
+  })
+  test('useIsDocumentGroupInventoryAvailable', () => {
+    expectTypeOf<typeof useIsDocumentGroupInventoryAvailable>().toBeFunction()
   })
   test('useIsReleaseActive', () => {
     expectTypeOf<typeof useIsReleaseActive>().not.toBeNever()

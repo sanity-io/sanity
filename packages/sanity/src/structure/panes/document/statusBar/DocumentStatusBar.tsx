@@ -1,13 +1,7 @@
 import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
-import {
-  getCreatableVariantTarget,
-  getDefaultVariant,
-  isPublishedPerspective,
-  isReleaseDocument,
-  usePerspective,
-} from 'sanity'
+import {getDefaultVariant, usePerspective} from 'sanity'
 import {Flex} from 'ui5'
 
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
@@ -18,6 +12,7 @@ import {DocumentBadges} from './DocumentBadges'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentStatusLine} from './DocumentStatusLine'
 import {RevisionStatusLine} from './RevisionStatusLine'
+import {shouldRenderDocumentStatusBar} from './shouldRenderDocumentStatusBar'
 import {useResizeObserver} from './useResizeObserver'
 
 export interface DocumentStatusBarProps {
@@ -45,41 +40,28 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   useResizeObserver({element: rootElement, onResize: handleResize})
 
-  const shouldRender = useMemo(() => {
-    const isReady = Boolean(editState?.ready && typeof collapsed === 'boolean')
-
-    // Hide the footer (status + actions) when a variant is requested but its target document has
-    // not resolved to an editable version (missing, invalid selection, or mid-transition).
-    // Mirrors the not-in-variant banner and read-only form state. Exception: a creatable missing
-    // draft variant is editable (typing creates it), so the footer renders like the base
-    // published-with-no-draft experience.
-    if (
-      selectedVariantName &&
-      targetDocumentState.status !== 'ready' &&
-      !getCreatableVariantTarget(targetDocumentState)
-    ) {
-      return false
-    }
-
-    // Prefer `targetDocument` so published / release variants (which are not always present on
-    // `editState.published`) still render the footer.
-    const hasTargetDocument =
-      targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)
-    if (hasTargetDocument) {
-      return isReady
-    }
-
-    if (selectedPerspective) {
-      if (isPublishedPerspective(selectedPerspective)) {
-        return isReady && Boolean(editState?.published)
-      }
-      if (isReleaseDocument(selectedPerspective)) {
-        return isReady && Boolean(editState?.version)
-      }
-    }
-
-    return isReady
-  }, [collapsed, editState, selectedPerspective, selectedVariantName, targetDocumentState])
+  const shouldRenderForDocument = useMemo(
+    () =>
+      shouldRenderDocumentStatusBar({
+        editState,
+        targetDocumentState,
+        selectedPerspective,
+        selectedVariantName,
+        showingRevision,
+        revisionNotFound,
+      }),
+    [
+      editState,
+      revisionNotFound,
+      selectedPerspective,
+      selectedVariantName,
+      showingRevision,
+      targetDocumentState,
+    ],
+  )
+  // `collapsed` is only known once the root element has been measured; wait for it so the
+  // first paint already uses the right spacing.
+  const shouldRender = shouldRenderForDocument && typeof collapsed === 'boolean'
 
   let actions: React.JSX.Element | null = null
   if (showingRevision) {

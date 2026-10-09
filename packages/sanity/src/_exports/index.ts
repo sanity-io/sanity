@@ -393,6 +393,7 @@ export {
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
 export {DocumentGroupInventoryAction} from '../core/documentGroupInventory/components/DocumentGroupInventoryAction'
+export {useIsDocumentGroupInventoryAvailable} from '../core/documentGroupInventory/hooks/useIsDocumentGroupInventoryAvailable'
 export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {
   type DocumentGroupInventoryComponents,
