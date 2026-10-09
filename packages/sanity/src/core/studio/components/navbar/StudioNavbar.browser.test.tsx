@@ -10,7 +10,7 @@ import {beforeEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
-import {expectStable} from '../../../../../test/browser/testHelpers'
+import {expectStable, withSilentIntersectionObserver} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../ui-components/button/Button'
 import {type Tool} from '../../../config/types'
@@ -154,6 +154,20 @@ describe('StudioNavbar grid', () => {
   beforeEach(async () => {
     // Wide enough for the old viewport breakpoint (1800px); the grid must not care.
     await page.viewport(2000, 800)
+  })
+
+  it('paints the tools, and their overflow button, in its first commit', async () => {
+    // The tool menu measures its tools while mounting, so the first frame already shows the
+    // ones that fit and the overflow button for the rest. With the observer silenced for the
+    // whole test, nothing can arrive later: what is visible is what the first paint showed.
+    await withSilentIntersectionObserver(async () => {
+      await render(<NavbarFrame width={900} />)
+
+      await expect.element(page.getByRole('link', {name: 'Structure'})).toBeVisible()
+      expect(overflowButton()).not.toBeNull()
+      await expect.element(page.getByRole('link', {name: 'Releases'})).not.toBeInTheDocument()
+      expectOverflowButtonClearOfClusters()
+    })
   })
 
   it('lays out by the width of the navbar, not the viewport', async () => {
