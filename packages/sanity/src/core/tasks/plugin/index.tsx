@@ -1,4 +1,4 @@
-import {lazy, Suspense, useEffect, useMemo} from 'react'
+import {lazy, useEffect, useMemo} from 'react'
 import {preloadObservablePromise, useObservablePromise} from 'react-rx'
 import {map} from 'rxjs'
 import {TasksModePromiseContext} from 'sanity/_singletons'
@@ -14,8 +14,6 @@ import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
 import {TasksStudioLayout} from './TasksStudioLayout'
 import {TasksStudioNavbar} from './TasksStudioNavbar'
 
-const TasksFooterOpenTasks = lazy(() => import('./TasksFooterOpenTasks'))
-
 const lazyTasksStudioActiveToolLayout = () => import('./TasksStudioActiveToolLayout')
 const TasksStudioActiveToolLayout = lazy(lazyTasksStudioActiveToolLayout)
 
@@ -30,15 +28,6 @@ export const TASKS_NAME = 'sanity/tasks'
  */
 export const tasks = definePlugin({
   name: TASKS_NAME,
-  __internal_tasks: {
-    // The footer action is consumed as a `ReactNode` outside any Suspense boundary
-    // (see DocumentStatusBarActions), so the lazy component needs its own boundary here.
-    footerAction: (
-      <Suspense>
-        <TasksFooterOpenTasks />
-      </Suspense>
-    ),
-  },
   document: {
     actions: (prev) => {
       return [...prev, TaskCreateAction].filter(Boolean)

@@ -26,11 +26,10 @@ const ButtonContainer = styled.div`
  * @internal
  */
 export default function TasksFooterOpenTasks() {
-  // Suspends under the plugin's own boundary around this action. A failed feature check (`null`)
-  // fails closed here as well: the sidebar this button opens reads as unavailable, so the count
-  // stays hidden, as it did when the tasks providers were not mounted for a failed check. The
-  // action is handed to the document pane as a `ReactNode`, so like `useTasks()` it also copes
-  // with the tasks studio provider not being mounted around it (the structure test harness)
+  // `DocumentStatusBarActions` lazy-loads this module and suspends it under the status bar's
+  // own boundary. A failed feature check (`null`) is already excluded before this mounts; the
+  // check here fails closed too, because the sidebar this button opens reads as unavailable.
+  // Like `useTasks()`, the mode read also tolerates the tasks studio provider not being mounted.
   const modePromise = use(TasksModePromiseContext)
   const mode = modePromise ? use(modePromise) : null
   const {data, activeDocument} = useTasks()
