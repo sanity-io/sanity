@@ -90,6 +90,8 @@ minimumReleaseAgeExclude:
   - '@codemirror/search'
   - '@codemirror/state'
   - '@codemirror/view'
+  # Fresh patch; exclude so 18.12.0 can install before the age gate
+  - 'chromatic@18.12.0'
   - 'csstype'
   - 'eslint-plugin-boundaries'
   - 'get-it'
