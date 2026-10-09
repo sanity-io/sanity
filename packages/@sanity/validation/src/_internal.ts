@@ -22,4 +22,5 @@ export {
   validateDocumentObservable,
   type ValidateDocumentObservableOptions,
   validateItem,
+  type ValidationScheduling,
 } from './validateDocument'

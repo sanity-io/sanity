@@ -6,6 +6,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
+  type DocumentActionDescription,
   getDefaultVariant,
   getPairTarget,
   getTargetScopeId,
@@ -16,6 +17,7 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  useDocumentStore,
   useEditState,
   usePerspective,
   useRelativeTime,
@@ -24,6 +26,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 
+import {Button} from '../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
@@ -33,8 +36,15 @@ import {
   PublishButtonClicked,
 } from './__telemetry__/documentActions.telemetry'
 import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
+import {PublishProgress} from './PublishProgress'
 
 const PUBLISHED_STATE = {status: 'published'} as const
+
+/**
+ * How long a scheduled publish may wait on validation and sync before a dialog takes over the
+ * view to show what it is waiting for.
+ */
+const PUBLISH_PROGRESS_DIALOG_DELAY = 3000
 
 function getDisabledReason(
   reason: keyof typeof PUBLISH_DISABLED_REASON,
@@ -77,6 +87,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const validationStatus = useValidationStatus(value._id, type, !release)
+  const documentStore = useDocumentStore()
   const syncState = useSyncState(id, type, scopeId)
   const editState = useEditState(documentId, documentType, 'default', scopeId)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -84,11 +95,43 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const revision = (editState?.version || editState?.draft || editState?.published || {})._rev
   const toast = useToast()
 
-  const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
+  const validationErrorCount = validationStatus.validation.filter(isValidationErrorMarker).length
+  const hasValidationErrors = validationErrorCount > 0
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
+  // Once a scheduled publish has waited long enough, a dialog shows what it is waiting for. It
+  // stays up while the publish is pending, and afterwards while it has validation errors to show.
+  const [progressShown, setProgressShown] = useState(false)
+  const [progressDismissed, setProgressDismissed] = useState(false)
   const isSyncing = syncState.isSyncing
   const isValidating = validationStatus.isValidating
+
+  // The user is waiting on this validation run: stop pacing it on idle callbacks (a busy or
+  // hidden page grants few or none) and run it right away, blocking the main thread if need be.
+  useEffect(() => {
+    if (!publishScheduled) return undefined
+    const requirePublishedReferences = !release
+    documentStore.pair.setValidationScheduling(
+      value._id,
+      type,
+      requirePublishedReferences,
+      'immediate',
+    )
+    return () => {
+      documentStore.pair.setValidationScheduling(
+        value._id,
+        type,
+        requirePublishedReferences,
+        'idle',
+      )
+    }
+  }, [documentStore, publishScheduled, release, type, value._id])
+
+  useEffect(() => {
+    if (!publishScheduled) return undefined
+    const timer = setTimeout(() => setProgressShown(true), PUBLISH_PROGRESS_DIALOG_DELAY)
+    return () => clearTimeout(timer)
+  }, [publishScheduled])
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
@@ -126,8 +169,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     if (!hasValidationErrors) {
       // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       doPublish()
-    } else {
-      // User tried to publish before validation was complete
+    } else if (!progressShown) {
+      // User tried to publish before validation was complete; the progress dialog, when it is up,
+      // already shows the errors
       toast.push({
         title: t('action.publish.validation-issues-toast.title'),
         description: t('action.publish.validation-issues-toast.description'),
@@ -139,6 +183,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     isSyncing,
     doPublish,
     hasValidationErrors,
+    progressShown,
     publishScheduled,
     validationStatus.revision,
     revision,
@@ -212,12 +257,56 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       publishedImmediately,
       previouslyPublished,
     })
+    setProgressShown(false)
+    setProgressDismissed(false)
     if (shouldSetPublishScheduledRef.current) {
       setPublishScheduled(true)
     } else {
       doPublish()
     }
-  }, [publishedImmediately, previouslyPublished, telemetry, setPublishScheduled, doPublish])
+  }, [
+    publishedImmediately,
+    previouslyPublished,
+    telemetry,
+    setProgressShown,
+    setProgressDismissed,
+    setPublishScheduled,
+    doPublish,
+  ])
+
+  const closeProgress = useCallback(() => setProgressDismissed(true), [setProgressDismissed])
+
+  // While the publish is pending nothing else should be reachable, so the dialog cannot be
+  // closed; once validation has reported errors it can.
+  const progressDialogOpen =
+    progressShown && !progressDismissed && (publishScheduled || hasValidationErrors)
+  const progressDialog = useMemo(
+    () =>
+      progressDialogOpen
+        ? ({
+            type: 'dialog' as const,
+            header: t('action.publish.progress.title'),
+            content: (
+              <PublishProgress
+                isValidating={publishScheduled}
+                errorCount={publishScheduled ? 0 : validationErrorCount}
+              />
+            ),
+            onClose: publishScheduled ? () => undefined : closeProgress,
+            showCloseButton: !publishScheduled,
+            footer: publishScheduled ? undefined : (
+              <Button
+                mode="ghost"
+                text={t('action.publish.progress.close')}
+                onClick={closeProgress}
+                data-testid="publish-progress-close"
+              />
+            ),
+            width: 'small' as const,
+          } satisfies DocumentActionDescription['dialog'])
+        : undefined,
+    [closeProgress, progressDialogOpen, publishScheduled, t, validationErrorCount],
+  )
 
   return useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) {
@@ -298,6 +387,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
           : title,
       shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
       onHandle: handle,
+      dialog: progressDialog,
     }
   }, [
     selectedPerspective,
@@ -319,6 +409,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     title,
     handle,
     currentUser,
+    progressDialog,
   ])
 }
 

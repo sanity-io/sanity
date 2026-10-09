@@ -1,17 +1,19 @@
 import {type SanityDocument, type ValidationMarker} from '@sanity/types'
-import {act, renderHook, waitFor} from '@testing-library/react'
+import {act, render, renderHook, screen, waitFor} from '@testing-library/react'
 import deepCompare from 'react-fast-compare'
 import {
   type DocumentActionProps,
+  type DocumentStore,
   type EditStateFor,
   type TargetDocumentState,
   useDocumentOperation,
   useDocumentPairPermissions,
+  useDocumentStore,
   useEditState,
   useSyncState,
   useValidationStatus,
 } from 'sanity'
-import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
@@ -22,6 +24,7 @@ vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useDocumentOperation: vi.fn(),
   useDocumentPairPermissions: vi.fn(),
+  useDocumentStore: vi.fn(),
   useEditState: vi.fn(),
   useSyncState: vi.fn(),
   useValidationStatus: vi.fn(),
@@ -39,6 +42,7 @@ const mockUseDocumentPairPermissions = useDocumentPairPermissions as Mock<
 const mockUseEditState = useEditState as Mock<typeof useEditState>
 const mockUseSyncState = useSyncState as Mock<typeof useSyncState>
 const mockUseValidationStatus = useValidationStatus as Mock<typeof useValidationStatus>
+const mockUseDocumentStore = useDocumentStore as Mock<typeof useDocumentStore>
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 
 const ID = 'author-1'
@@ -101,7 +105,11 @@ function keystroke(rev: string) {
 
 function applyKeystroke(
   state: ReturnType<typeof keystroke>,
-  {syncing = false, validation = []}: {syncing?: boolean; validation?: ValidationMarker[]} = {},
+  {
+    syncing = false,
+    validating = false,
+    validation = [],
+  }: {syncing?: boolean; validating?: boolean; validation?: ValidationMarker[]} = {},
 ) {
   mockUseDocumentPane.mockReturnValue({
     changesOpen: false,
@@ -113,7 +121,7 @@ function applyKeystroke(
   mockUseEditState.mockReturnValue(state.editState)
   mockUseSyncState.mockReturnValue({isSyncing: syncing})
   mockUseValidationStatus.mockReturnValue({
-    isValidating: false,
+    isValidating: validating,
     validation,
     revision: state.draft._rev,
   })
@@ -121,6 +129,7 @@ function applyKeystroke(
 
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 let operations: {publish: {disabled: false; execute: Mock}}
+let setValidationScheduling: Mock
 
 beforeAll(async () => {
   wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
@@ -140,6 +149,14 @@ describe('usePublishAction', () => {
       operations as unknown as ReturnType<typeof useDocumentOperation>,
     )
     mockUseDocumentPairPermissions.mockReturnValue(PERMITTED)
+    setValidationScheduling = vi.fn()
+    mockUseDocumentStore.mockReturnValue({
+      pair: {setValidationScheduling},
+    } as unknown as DocumentStore)
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('keeps the description deep-equal across draft revisions', async () => {
@@ -188,5 +205,95 @@ describe('usePublishAction', () => {
     applyKeystroke(third)
     rerender(third.props)
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
+  })
+
+  it('validates immediately while a publish waits on validation, then goes back to idle', async () => {
+    const first = keystroke('1')
+    applyKeystroke(first, {validating: true})
+    const {result, rerender} = await renderPublishAction(first.props)
+
+    act(() => result.current?.onHandle?.())
+
+    expect(result.current?.label).toBe('Validating document…')
+    expect(setValidationScheduling).toHaveBeenLastCalledWith(
+      first.draft._id,
+      'author',
+      true,
+      'immediate',
+    )
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+
+    applyKeystroke(first)
+    rerender(first.props)
+
+    expect(operations.publish.execute).toHaveBeenCalledTimes(1)
+    expect(setValidationScheduling).toHaveBeenLastCalledWith(
+      first.draft._id,
+      'author',
+      true,
+      'idle',
+    )
+  })
+
+  it('takes over the view after three seconds and reports the validation outcome', async () => {
+    const first = keystroke('1')
+    applyKeystroke(first, {validating: true})
+    const {result, rerender} = await renderPublishAction(first.props)
+    vi.useFakeTimers()
+
+    act(() => result.current?.onHandle?.())
+    expect(result.current?.dialog).toBeUndefined()
+
+    act(() => {
+      vi.advanceTimersByTime(2999)
+    })
+    expect(result.current?.dialog).toBeUndefined()
+
+    act(() => {
+      vi.advanceTimersByTime(1)
+    })
+    const dialog = result.current?.dialog
+    if (!dialog || dialog.type !== 'dialog') throw new Error('expected a modal dialog')
+    expect(dialog.showCloseButton).toBe(false)
+    const validating = render(<>{dialog.content}</>, {wrapper})
+    expect(screen.getByTestId('publish-progress-validation')).toHaveTextContent(
+      'Validating document…',
+    )
+    validating.unmount()
+
+    // validation finishes with errors: the dialog stays, now closable, and names the count
+    applyKeystroke(first, {validation: [REQUIRED_NAME, {...REQUIRED_NAME, path: ['bio']}]})
+    rerender(first.props)
+    const withErrors = result.current?.dialog
+    if (!withErrors || withErrors.type !== 'dialog') throw new Error('expected a modal dialog')
+    expect(withErrors.showCloseButton).toBe(true)
+    render(<>{withErrors.content}</>, {wrapper})
+    expect(screen.getByTestId('publish-progress-validation')).toHaveTextContent(
+      '2 validation errors',
+    )
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+
+    act(() => withErrors.onClose())
+    expect(result.current?.dialog).toBeUndefined()
+  })
+
+  it('does not show the dialog when validation finishes within three seconds', async () => {
+    const first = keystroke('1')
+    applyKeystroke(first, {validating: true})
+    const {result, rerender} = await renderPublishAction(first.props)
+    vi.useFakeTimers()
+
+    act(() => result.current?.onHandle?.())
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    applyKeystroke(first)
+    rerender(first.props)
+    act(() => {
+      vi.advanceTimersByTime(5000)
+    })
+
+    expect(operations.publish.execute).toHaveBeenCalledTimes(1)
+    expect(result.current?.dialog).toBeUndefined()
   })
 })
