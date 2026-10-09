@@ -229,6 +229,14 @@ describe('undoChange', () => {
     expect(executed).toEqual([[{insert: {after: 'tags[-1]', items: ['b', 'c']}}]])
   })
 
+  it('restores a primitive array item whose current value is falsy without inserting a stub', () => {
+    const executed = revert({counts: [0, 1]}, {counts: [0, 0]}, (root) =>
+      fieldChange(['counts'], root.fields.counts),
+    )
+
+    expect(executed).toEqual([[{setIfMissing: {counts: []}}, {set: {'counts[1]': 1}}]])
+  })
+
   it('removes added primitive array items as a range', () => {
     const executed = revert({tags: ['a']}, {tags: ['a', 'b', 'c']}, (root) =>
       fieldChange(['tags'], root.fields.tags),
