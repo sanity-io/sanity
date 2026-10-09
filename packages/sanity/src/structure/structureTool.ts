@@ -33,6 +33,8 @@ const documentBadges = [useLiveEditBadge]
 
 const inspectors = [validationInspector, changesInspector, incomingReferencesInspector]
 
+const StructureTool = lazy(() => import('./components/structureTool'))
+
 /**
  * The structureTool is a studio plugin which adds the “structure tool” – a tool within
  * Sanity Studio in which content editors can drill down to specific documents to edit them.
@@ -129,7 +131,7 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         name: options?.name || 'structure',
         title: options?.title || 'Structure',
         icon,
-        component: lazy(() => import('./components/structureTool')),
+        component: StructureTool,
         canHandleIntent: (intent, params) => {
           if (intent === 'create') return canHandleCreateIntent(params)
           if (intent === 'edit') return canHandleEditIntent(params)

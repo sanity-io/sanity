@@ -1,12 +1,9 @@
-import {lazy} from 'react'
-
 import {definePlugin} from '../../config/definePlugin'
+import {type ProviderProps} from '../../config/studio/types'
+import {SingleDocReleaseEnabledProvider} from '../context/SingleDocReleaseEnabledProvider'
+import {SingleDocReleaseUpsellProvider} from '../context/SingleDocReleaseUpsellProvider'
 import {singleDocReleaseUsEnglishLocaleBundle} from '../i18n'
 import resolveDocumentActions from './documentActions'
-
-const SingleDocReleaseLayout = lazy(() =>
-  import('./SingleDocReleaseLayout').then((module) => ({default: module.SingleDocReleaseLayout})),
-)
 
 /**
  * @internal
@@ -25,7 +22,7 @@ export const singleDocRelease = definePlugin({
   name: SINGLE_DOC_RELEASE_NAME,
   studio: {
     components: {
-      layout: SingleDocReleaseLayout,
+      provider: SingleDocReleaseStudioProvider,
     },
   },
   i18n: {
@@ -35,3 +32,12 @@ export const singleDocRelease = definePlugin({
     actions: resolveDocumentActions,
   },
 })
+
+/** The single-doc release providers for the whole studio */
+function SingleDocReleaseStudioProvider(props: ProviderProps) {
+  return (
+    <SingleDocReleaseEnabledProvider>
+      <SingleDocReleaseUpsellProvider>{props.renderDefault(props)}</SingleDocReleaseUpsellProvider>
+    </SingleDocReleaseEnabledProvider>
+  )
+}

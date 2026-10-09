@@ -9,8 +9,8 @@ import {TasksNavigationProvider} from '../context/navigation/TasksNavigationProv
 import {TasksProvider} from '../context/tasks/TasksProvider'
 import {useTasksStore} from '../store/useTasksStore'
 import {type TaskDocument} from '../types'
-import {SetActiveDocument} from './structure/SetActiveDocument'
-import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
+import SetActiveDocument from './structure/SetActiveDocument'
+import TasksFooterOpenTasks from './TasksFooterOpenTasks'
 
 vi.mock('react-i18next', async (importOriginal) => ({
   ...(await importOriginal()),

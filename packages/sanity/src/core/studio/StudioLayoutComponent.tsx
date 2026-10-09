@@ -40,13 +40,15 @@ import {ToolMountTimer} from './ToolMountTimer'
 import {UnclaimedProjectNudge} from './unclaimedProject/UnclaimedProjectNudge'
 import {useWorkspace} from './workspace'
 
-const DetectViteDevServerStopped = lazy(() =>
-  import('./ViteDevServerStopped').then((DevServerStopped) => ({
-    default: DevServerStopped.DetectViteDevServerStopped,
-  })),
-)
+const lazyDetectViteDevServerStopped = () => import('./ViteDevServerStopped')
+const DetectViteDevServerStopped = lazy(lazyDetectViteDevServerStopped)
 
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
+
+if (detectViteDevServerStopped) {
+  // Preload the stopped dev server lazy component right away
+  void lazyDetectViteDevServerStopped()
+}
 
 const SearchFullscreenPortalCard = styled(Card)`
   height: 100%;
