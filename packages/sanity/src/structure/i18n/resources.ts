@@ -90,17 +90,19 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Live Edit is enabled for this content type and publishing happens automatically as you make changes',
   /** Tooltip when publish button is disabled because there are no changes.*/
   'action.publish.no-changes.tooltip': 'No unpublished changes',
-  /** Label of the button that closes the publish progress dialog once it shows validation errors */
+  /** Label of the button that closes the publish progress dialog after a failure */
   'action.publish.progress.close': 'Close',
-  /** Title of the dialog shown when a publish has been waiting on validation for a while */
+  /** Publish step of the publish progress dialog, once the publish failed */
+  'action.publish.progress.publish-failed': 'Publishing failed',
+  /** Publish step of the publish progress dialog */
+  'action.publish.progress.publishing': 'Publishing document',
+  /** Title of the dialog shown when a publish has been taking a while */
   'action.publish.progress.title': 'Publishing document',
   /** Validation step of the publish progress dialog, once validation found errors */
-  'action.publish.progress.validation-errors_one': '{{count}} validation error',
-  'action.publish.progress.validation-errors_other': '{{count}} validation errors',
-  /** Validation step of the publish progress dialog, once validation found no errors */
-  'action.publish.progress.validation-passed': 'No validation errors',
-  /** Validation step of the publish progress dialog while validation is running */
-  'action.publish.progress.validating': 'Validating document…',
+  'action.publish.progress.validation-errors_one': '{{count}} error',
+  'action.publish.progress.validation-errors_other': '{{count}} errors',
+  /** Validation step of the publish progress dialog */
+  'action.publish.progress.validating': 'Validating your document',
   /** Label for the "Publish" document action when there are no changes.*/
   'action.publish.published.label': 'Published',
   /** Label for the "Publish" document action while publish is being executed.*/
