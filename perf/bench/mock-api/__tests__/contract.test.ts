@@ -17,6 +17,19 @@ const PORT = 43121
 const DRAFT_ID = 'drafts.contract-doc'
 const PUBLISHED_ID = 'contract-doc'
 
+function createBenchClient(port: number): SanityClient {
+  return createClient({
+    projectId: 'benchexp',
+    dataset: 'bench',
+    apiHost: `http://127.0.0.1:${port}`,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    useProjectHostname: false,
+    useCdn: false,
+    apiVersion: '2025-02-19',
+    token: 'bench-fake-token',
+  })
+}
+
 const PAIR_LISTEN_OPTIONS = {
   includeResult: false,
   includeAllVersions: true,
@@ -35,16 +48,7 @@ describe('mock Content Lake contract (real @sanity/client)', () => {
   beforeAll(async () => {
     mock = createMockApi({port: PORT, projectId: 'benchexp', dataset: 'bench'})
     await mock.listen()
-    client = createClient({
-      projectId: 'benchexp',
-      dataset: 'bench',
-      apiHost: `http://127.0.0.1:${PORT}`,
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      useProjectHostname: false,
-      useCdn: false,
-      apiVersion: '2025-02-19',
-      token: 'bench-fake-token',
-    })
+    client = createBenchClient(PORT)
   })
 
   afterEach(() => {
@@ -286,5 +290,107 @@ describe('mock Content Lake contract (real @sanity/client)', () => {
     const {unexpected} = mock.ledger.snapshot()
     expect(unexpected).toHaveLength(1)
     expect(unexpected[0].path).toContain('/some/unknown/endpoint')
+  })
+})
+
+describe('comments feature module (real @sanity/client)', () => {
+  const PORT = 43124
+  let mock: MockApiServer
+  let client: SanityClient
+
+  beforeAll(async () => {
+    mock = createMockApi({port: PORT, projectId: 'benchexp', dataset: 'bench'})
+    await mock.listen()
+    client = createBenchClient(PORT)
+  })
+
+  afterEach(() => {
+    mock.setActiveFeatures([])
+    mock.hub.closeAll()
+    mock.store.reset()
+    mock.ledger.reset()
+  })
+
+  afterAll(async () => {
+    await mock.close()
+  })
+
+  it('gates /features per activation', async () => {
+    expect(await client.request({url: '/features'})).toEqual([])
+    mock.setActiveFeatures(['comments'])
+    expect(await client.request({url: '/features'})).toEqual(['studioComments'])
+    mock.setActiveFeatures([])
+    expect(await client.request({url: '/features'})).toEqual([])
+  })
+
+  it('resolves the comments addon-dataset handshake', async () => {
+    const datasets = await client.request<{name: string}[]>({
+      url: '/projects/benchexp/datasets?datasetProfile=comments&addonFor=bench',
+    })
+    expect(Array.isArray(datasets)).toBe(true)
+    expect(datasets[0]?.name).toBeTruthy()
+  })
+
+  it('round-trips a comment create on the data plane', async () => {
+    mock.setActiveFeatures(['comments'])
+    const publishedId = 'comment-target'
+    const commentId = 'the-comment'
+    mock.store.seed([{_id: publishedId, _type: 'commentsField', stringField: 'x'}])
+    // The mock's mutate response carries no `document`, so the store is the round-trip oracle, not the client's return value.
+    await client.create({
+      _id: commentId,
+      _type: 'comment',
+      message: [
+        {
+          _type: 'block',
+          _key: 'b1',
+          children: [{_type: 'span', _key: 's1', text: 'nice work', marks: []}],
+          markDefs: [],
+        },
+      ],
+      target: {document: {_ref: publishedId}},
+    })
+    expect(mock.store.get(commentId)).toMatchObject({_type: 'comment'})
+  })
+
+  it('evaluates a comments GROQ query over the store', async () => {
+    const publishedId = 'comment-target'
+    mock.store.seed([
+      {_id: publishedId, _type: 'commentsField', stringField: 'x'},
+      {
+        _id: 'the-comment',
+        _type: 'comment',
+        message: [],
+        target: {document: {_ref: publishedId}},
+      },
+    ])
+    const result = await client.fetch(`*[_type == "comment" && target.document._ref == $id]{_id}`, {
+      id: publishedId,
+    })
+    expect(result).toEqual([{_id: 'the-comment'}])
+  })
+
+  it('records no unexpected endpoints while active', async () => {
+    mock.setActiveFeatures(['comments'])
+    await client.request({url: '/features'})
+    await client.request({
+      url: '/projects/benchexp/datasets?datasetProfile=comments&addonFor=bench',
+    })
+    expect(mock.ledger.snapshot().unexpected).toEqual([])
+  })
+
+  it('throws on an unknown feature name', () => {
+    expect(() => mock.setActiveFeatures(['bogus'])).toThrow(/bogus/)
+  })
+
+  it('reports the Comments API as unexpected rather than allowlisting it', async () => {
+    // comments-v2 serves comments from /collaboration/comments. A 404 there degrades gracefully,
+    // which makes UNIMPLEMENTED_BUT_GRACEFUL the tempting fix and the wrong one: it would leave
+    // commentsField measuring a comments UI with no backend. Keep the failure loud.
+    await client
+      .request({url: '/collaboration/comments/query', query: {organizationId: 'bench-org'}})
+      .catch(() => null)
+    const paths = mock.ledger.snapshot().unexpected.map((entry) => entry.path)
+    expect(paths.some((path) => path.includes('/collaboration/comments'))).toBe(true)
   })
 })

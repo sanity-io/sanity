@@ -32,7 +32,7 @@ export interface UnexpectedRequest {
  */
 const UNIMPLEMENTED_BUT_GRACEFUL = [
   /^\/v[^/]+\/socket\//, // bifur websocket fallback probes — presence degrades
-  /^\/v[^/]+\/comments\//, // comments addon setup — gated off via /features
+  /^\/v[^/]+\/comments\//, // comments addon setup — the /datasets handshake resolves it first
   /^\/v[^/]+\/data\/history\//, // timeline — lazy, inspector-only
   /^\/v[^/]+\/data\/events\//, // events API — lazy, inspector-only
   /^\/v[^/]+\/data\/transactions\//, // translog — lazy, inspector-only

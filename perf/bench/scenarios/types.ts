@@ -1,5 +1,6 @@
 import {type Page} from 'playwright'
 
+import {type FeatureModuleName} from '../mock-api/features'
 import {type DocumentStore} from '../mock-api/store'
 import {type BenchDocument} from '../mock-api/types'
 import {type RunningSide} from '../runner/servers'
@@ -82,6 +83,13 @@ export interface BenchScenario {
   fixture?: () => BenchDocument[]
   /** Fields measured by interaction mode, in fixed execution order. */
   interactions: InteractionTarget[]
+  /**
+   * Mock feature modules to activate for this scenario's sessions
+   * (mock-api/features). A studio feature gated on a `/features` flag takes
+   * its upsell path until its module is active, so a scenario measuring one
+   * must opt in here.
+   */
+  features?: FeatureModuleName[]
   /**
    * Component-interaction choreography for INP mode (runner/session/steps.ts),
    * run to completion each pass. Absent ⇒ one `type` step per interaction

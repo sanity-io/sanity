@@ -19,6 +19,7 @@ import {
 
 const defaultPlugins = (options: DefaultPluginsOptions) => [
   variants(),
+  // perf/bench commentsField has no Comments API mock; flipping this default fails that shard by name.
   options.comments.v2 ? commentsV2() : commentsCurrent(),
   tasks(),
   scheduledPublishing(),

@@ -10,7 +10,9 @@
  * `--customizations` serves the nested customization project instead
  * (studio-customizations/, the config the settle scenarios run against) and
  * seeds every customization scenario's fixture, printing one URL per
- * scenario.
+ * scenario. `--scenario <name>` seeds one registered scenario instead — the
+ * interactive way to check a feature module renders — and picks the studio
+ * that scenario needs on its own.
  */
 import {spawn} from 'node:child_process'
 import path from 'node:path'
@@ -19,16 +21,30 @@ import {fileURLToPath} from 'node:url'
 import {DATASET, EXPERIMENT} from '../constants'
 import {createMockApi} from '../mock-api/createServer'
 import {getBenchTls} from '../mock-api/tls'
-import {SCENARIOS} from '../scenarios'
-import {scenarioFixture} from '../scenarios/types'
+import {getScenario, SCENARIOS} from '../scenarios'
+import {type BenchScenario, scenarioFixture} from '../scenarios/types'
 import {scenarioUrl} from './session/navigation'
 
 const benchRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 
 const SEED_DOCUMENT_ID = 'bench-dev-doc'
 
-export async function startBenchDev(options: {customizations: boolean}): Promise<void> {
-  const {customizations} = options
+/** `--scenario` narrows to one; `--customizations` seeds the whole set. */
+function scenariosToSeed(options: {customizations: boolean; scenario?: string}): BenchScenario[] {
+  if (options.scenario) return [getScenario(options.scenario)]
+  if (options.customizations) {
+    return SCENARIOS.filter((candidate) => candidate.requiresCustomizations)
+  }
+  return []
+}
+
+export async function startBenchDev(options: {
+  customizations: boolean
+  scenario?: string
+}): Promise<void> {
+  const scenarios = scenariosToSeed(options)
+  const customizations =
+    options.customizations || scenarios.some((scenario) => scenario.requiresCustomizations)
   const mock = createMockApi({
     port: EXPERIMENT.apiPort,
     projectId: EXPERIMENT.projectId,
@@ -38,13 +54,18 @@ export async function startBenchDev(options: {customizations: boolean}): Promise
   await mock.listen()
 
   const studioUrl = `http://localhost:${EXPERIMENT.studioPort}`
-  const urls: string[] = []
-  if (customizations) {
-    for (const scenario of SCENARIOS.filter((candidate) => candidate.requiresCustomizations)) {
-      mock.store.seed(scenarioFixture(scenario))
-      urls.push(`${scenario.name.padEnd(16)} ${scenarioUrl(studioUrl, scenario)}`)
-    }
-  } else {
+  mock.setActiveFeatures(scenarios.flatMap((scenario) => scenario.features ?? []))
+  // Without this the mock signs every request in, and a logged-out scenario's
+  // URL opens the authenticated tool. The provider link dead-ends in dev.
+  mock.setRequireToken(scenarios.some((scenario) => scenario.load?.auth === 'logged-out'))
+  const urls = scenarios.map((scenario) => {
+    mock.store.seed(scenarioFixture(scenario))
+    return `${scenario.name.padEnd(16)} ${scenarioUrl(studioUrl, scenario)}`
+  })
+
+  // No scenario asked for: a published/draft pair to poke at, so the document
+  // actions the suite never benchmarks are still reachable by hand.
+  if (scenarios.length === 0) {
     mock.store.seed([
       {_id: SEED_DOCUMENT_ID, _type: 'singleString', stringField: 'type here'},
       {_id: `drafts.${SEED_DOCUMENT_ID}`, _type: 'singleString', stringField: 'type here'},
