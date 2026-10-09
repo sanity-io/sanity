@@ -144,7 +144,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@isaacs/ttlcache": "^2.1.5",
-    "@mux/mux-player-react": "^3.13.4",
+    "@mux/mux-player-react": "^3.14.0",
     "@portabletext/editor": "^8.2.3",
     "@portabletext/html": "^2.0.0",
     "@portabletext/patches": "^3.0.1",
