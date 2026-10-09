@@ -1157,7 +1157,7 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       '@sanity/ailf':
-        specifier: ^7.40.0
+        specifier: ^7.41.0
         version: 7.41.0(@aws-sdk/credential-provider-node@3.972.84)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.4)(@types/json-schema@7.0.15)(@types/node@24.19.1)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.1)(playwright-core@1.64.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)
       sanity:
         specifier: workspace:*
