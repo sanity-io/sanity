@@ -1,0 +1,6 @@
+import {style} from '@vanilla-extract/css'
+
+export const root = style({
+  position: 'relative',
+  outline: 'none',
+})
