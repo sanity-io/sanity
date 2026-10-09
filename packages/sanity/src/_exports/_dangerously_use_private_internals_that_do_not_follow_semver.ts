@@ -479,6 +479,7 @@ export {
   type GlobalCopyPasteElementHandler,
   useGlobalCopyPasteElementHandler,
 } from '../core/hooks/useGlobalCopyPasteElementHandler'
+export {useImmediateValidation} from '../core/hooks/useImmediateValidation'
 export {useManageFavorite, type UseManageFavoriteProps} from '../core/hooks/useManageFavorite'
 export {useReconnectingToast} from '../core/hooks/useReconnectingToast'
 export {type RelativeTimeOptions, useRelativeTime} from '../core/hooks/useRelativeTime'

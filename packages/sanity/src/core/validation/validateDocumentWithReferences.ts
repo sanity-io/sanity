@@ -8,13 +8,14 @@ import {
   type ValidationMarker,
   type CurrentUser,
 } from '@sanity/types'
-import {evaluateDocumentObservable, type ValidationScheduling} from '@sanity/validation/_internal'
+import {evaluateDocumentObservable} from '@sanity/validation/_internal'
 import {reduce as reduceJSON} from 'json-reduce'
 import {
   asyncScheduler,
   combineLatest,
   concat,
   defer,
+  firstValueFrom,
   from,
   lastValueFrom,
   type Observable,
@@ -25,7 +26,6 @@ import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {
   distinct,
   distinctUntilChanged,
-  filter,
   first,
   groupBy,
   map,
@@ -33,8 +33,6 @@ import {
   scan,
   shareReplay,
   skip,
-  switchMap,
-  takeUntil,
   throttleTime,
 } from 'rxjs/operators'
 
@@ -98,28 +96,61 @@ function shareLatestWithRefCount<T>() {
 }
 
 /**
+ * What the studio needs in order to validate a document: the schema and client of its source, and
+ * the preview store's availability tracking for the documents it references.
+ *
+ * @internal
+ */
+export interface DocumentValidationContext {
+  getClient: (options: SourceClientOptions) => SanityClient
+  observeDocumentPairAvailability: DocumentPreviewStore['unstable_observeDocumentPairAvailability']
+  schema: Schema
+  i18n: LocaleSource
+  currentUser?: Omit<CurrentUser, 'role'> | null
+}
+
+/**
+ * Validates a document once, right away. Unlike {@link validateDocumentWithReferences} it neither
+ * paces its checks on idle callbacks (the run uses the main thread as soon as it can, blocking it
+ * for the duration of the synchronous checks) nor keeps watching the document or the documents it
+ * references, so it completes with the markers of the document as it was passed in. For the
+ * moment a user is waiting on the result, such as a publish that has been waiting on validation.
+ *
+ * `requirePublishedReferences` has the meaning it has in {@link validateDocumentWithReferences}.
+ *
+ * @internal
+ */
+export function validateDocumentImmediately(
+  ctx: DocumentValidationContext,
+  document: SanityDocument,
+  requirePublishedReferences: boolean,
+): Observable<ValidationMarker[]> {
+  const versionId = requirePublishedReferences ? undefined : getVersionFromId(document._id)
+  const getDocumentExists: GetDocumentExists = ({id}) =>
+    firstValueFrom(listenDocumentExists(ctx.observeDocumentPairAvailability, id, versionId))
+
+  return evaluateDocumentObservable({
+    document,
+    getClient: ctx.getClient,
+    getDocumentExists,
+    i18n: ctx.i18n,
+    schema: ctx.schema,
+    environment: 'studio',
+    currentUser: ctx.currentUser,
+    scheduling: 'immediate',
+  }).pipe(map((result) => result.markers))
+}
+
+/**
  * @internal
  * Takes an observable of a document and validates it, including any references in the document.
- *
- * `scheduling$` paces the runs (see `ValidationScheduling`). Runs started while it is `idle` wait
- * for idle callbacks, as editing should not compete with rendering. When it switches to
- * `immediate` (a user is waiting on the result, e.g. to publish), an idle run in flight is dropped
- * and the latest document is validated right away without yielding; runs started while it stays
- * `immediate` run the same way.
  * */
 export function validateDocumentWithReferences(
-  ctx: {
-    getClient: (options: SourceClientOptions) => SanityClient
-    observeDocumentPairAvailability: DocumentPreviewStore['unstable_observeDocumentPairAvailability']
-    schema: Schema
-    i18n: LocaleSource
-    currentUser?: Omit<CurrentUser, 'role'> | null
-  },
+  ctx: DocumentValidationContext,
   document$: Observable<SanityDocument | null | undefined>,
   // whether to require all references to exist as published documents
   // set to false to allow references to versions as long they exist in the same bundle
   requirePublishedReferences: boolean,
-  scheduling$: Observable<ValidationScheduling> = of('idle'),
 ): Observable<ValidationStatus> {
   const referenceIds$ = document$.pipe(
     map((document) => findReferenceIds(document)),
@@ -180,42 +211,24 @@ export function validateDocumentWithReferences(
     throttleTime(REF_UPDATE_DELAY, asyncScheduler, {leading: true, trailing: true}),
   )
 
-  const currentScheduling$ = scheduling$.pipe(distinctUntilChanged(), shareLatestWithRefCount())
-  // Each switch to `immediate` both re-triggers validation (through `combineLatest`) and cuts an
-  // idle run short (through `takeUntil`), so the trailing run picks up the new scheduling.
-  const immediateRequests$ = currentScheduling$.pipe(
-    filter((scheduling) => scheduling === 'immediate'),
-  )
-
-  return combineLatest([
-    document$,
-    concat(of(null), referenceDocumentUpdates$),
-    concat(of(null), immediateRequests$),
-  ]).pipe(
+  return combineLatest([document$, concat(of(null), referenceDocumentUpdates$)]).pipe(
     map(([document]) => document),
     exhaustMapWithTrailing((document) => {
       return defer(() => {
         if (!document?._type) {
           return of({validation: EMPTY_VALIDATION, isValidating: false})
         }
-        return currentScheduling$.pipe(
-          first(),
-          switchMap((scheduling) => {
-            const run$ = evaluateDocumentObservable({
-              document,
-              getClient: ctx.getClient,
-              getDocumentExists,
-              i18n: ctx.i18n,
-              schema: ctx.schema,
-              environment: 'studio',
-              currentUser: ctx.currentUser,
-              scheduling,
-            }).pipe(map((result) => ({validation: result.markers, isValidating: false})))
-            return concat(
-              of({isValidating: true, revision: document._rev}),
-              scheduling === 'idle' ? run$.pipe(takeUntil(immediateRequests$)) : run$,
-            )
-          }),
+        return concat(
+          of({isValidating: true, revision: document._rev}),
+          evaluateDocumentObservable({
+            document,
+            getClient: ctx.getClient,
+            getDocumentExists,
+            i18n: ctx.i18n,
+            schema: ctx.schema,
+            environment: 'studio',
+            currentUser: ctx.currentUser,
+          }).pipe(map((result) => ({validation: result.markers, isValidating: false}))),
         )
       })
     }),

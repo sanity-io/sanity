@@ -3,7 +3,10 @@ import {
   validateDocumentWithWorkspace,
 } from '@sanity/validation'
 
+export {isSameDocumentContent} from './isSameDocumentContent'
 export {
+  type DocumentValidationContext,
+  validateDocumentImmediately,
   validateDocumentWithReferences,
   type ValidationStatus,
 } from './validateDocumentWithReferences'

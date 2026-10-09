@@ -939,6 +939,7 @@ export {
   type GlobalCopyPasteElementHandler,
   useGlobalCopyPasteElementHandler,
 } from '../core/hooks/useGlobalCopyPasteElementHandler'
+export {useImmediateValidation} from '../core/hooks/useImmediateValidation'
 export {useListFormat, type UseListFormatOptions} from '../core/hooks/useListFormat'
 export {useManageFavorite, type UseManageFavoriteProps} from '../core/hooks/useManageFavorite'
 export {useNumberFormat, type UseNumberFormatOptions} from '../core/hooks/useNumberFormat'

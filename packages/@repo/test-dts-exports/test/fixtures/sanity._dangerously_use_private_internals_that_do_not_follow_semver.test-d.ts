@@ -767,6 +767,7 @@ import type {
   useGlobalPresence,
   useHoveredField,
   useI18nText,
+  useImmediateValidation,
   useInitialValue,
   useInitialValueResolverContext,
   useInStudioFeedback,
@@ -3186,6 +3187,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useI18nText', () => {
     expectTypeOf<typeof useI18nText>().toBeFunction()
+  })
+  test('useImmediateValidation', () => {
+    expectTypeOf<typeof useImmediateValidation>().toBeFunction()
   })
   test('useInitialValue', () => {
     expectTypeOf<typeof useInitialValue>().toBeFunction()
