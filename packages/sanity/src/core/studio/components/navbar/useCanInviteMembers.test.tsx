@@ -55,4 +55,34 @@ describe('useCanInviteProjectMembers', () => {
     rerender(view('visible'))
     expect(subscribes.count).toBe(1)
   })
+
+  it('does not subscribe while disabled, then subscribes once when enabled', async () => {
+    const subscribes = {count: 0}
+    const getGrants = vi.fn(() =>
+      defer(() => {
+        subscribes.count += 1
+        return of(grants)
+      }),
+    )
+    vi.mocked(useProjectStore).mockReturnValue({getGrants} as unknown as ProjectStore)
+
+    function CanInvite({enabled}: {enabled: boolean}) {
+      return <span data-testid="can-invite">{String(useCanInviteProjectMembers({enabled}))}</span>
+    }
+
+    const {rerender} = render(<CanInvite enabled={false} />)
+    expect(screen.getByTestId('can-invite')).toHaveTextContent('false')
+    rerender(<CanInvite enabled={false} />)
+    expect(subscribes.count).toBe(0)
+
+    rerender(<CanInvite enabled={true} />)
+    await waitFor(() => expect(screen.getByTestId('can-invite')).toHaveTextContent('true'))
+    expect(subscribes.count).toBe(1)
+
+    // `disabled` keeps the last emission, but the hook's contract is: if we
+    // are not checking grants, assume no access.
+    rerender(<CanInvite enabled={false} />)
+    expect(screen.getByTestId('can-invite')).toHaveTextContent('false')
+    expect(subscribes.count).toBe(1)
+  })
 })
