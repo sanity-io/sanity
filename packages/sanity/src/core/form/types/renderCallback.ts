@@ -63,6 +63,11 @@ export type RenderAnnotationCallback<T extends BlockAnnotationProps = BlockAnnot
  */
 export interface RenderPreviewCallbackProps<TLayoutKey = PreviewLayoutKey> {
   actions?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  /**
+   * Whether the previewed value has changes compared to the published version.
+   * Currently only populated for Portable Text block and inline-block previews.
+   */
+  changed?: boolean
   children?: ReactNode
   error?: Error | null
   fallbackTitle?: ReactNode
