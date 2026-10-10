@@ -153,8 +153,10 @@ interface ValidateDocumentBaseOptions {
 
   /**
    * The current user, when available. Used when resolving schema `hidden`
-   * conditionals so validation matches what the form shows. If omitted, hidden
-   * is resolved with no user (e.g. CLI or headless validation).
+   * conditionals so validation matches what the form shows, and exposed to
+   * custom validators and schema-level `validation` functions as
+   * `context.currentUser`. If omitted, hidden is resolved with no user (e.g. CLI
+   * or headless validation).
    */
   currentUser?: Omit<CurrentUser, 'role'> | null
 }
@@ -402,14 +404,13 @@ export function evaluateDocumentInternal({
  */
 export interface ValidateDocumentObservableOptions extends Pick<
   ValidationContext,
-  'getDocumentExists' | 'i18n' | 'signal'
+  'getDocumentExists' | 'i18n' | 'signal' | 'currentUser'
 > {
   getClient: (options: {apiVersion: string}) => SanityClient
   document: SanityDocument
   schema: Schema
   environment: 'cli' | 'studio'
   maxCustomValidationConcurrency?: number
-  currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
 }
 
@@ -553,11 +554,11 @@ export type ValidateItemOptions = {
   value: unknown
   customValidationConcurrencyLimiter?: ConcurrencyLimiter
   hidden?: boolean
-  currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
   signal?: AbortSignal
   __internal?: InternalValidationContext['__internal']
-} & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal'>>
+} & Pick<ValidationContext, 'currentUser'> &
+  ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal' | 'currentUser'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   return lastValueFrom(

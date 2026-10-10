@@ -468,6 +468,117 @@ describe('validateItem', () => {
     ).resolves.toEqual([])
   })
 
+  // Covers both the document-to-field respread and the array-item respread, which build the
+  // context separately.
+  const createCurrentUserSchema = (
+    recordSchemaContext: (context?: ValidationContext) => void,
+    recordCustomContext: (context: ValidationContext) => void,
+  ) => {
+    const validation = (rule: Rule, context?: ValidationContext) => {
+      recordSchemaContext(context)
+      return rule.custom((_value, customContext: ValidationContext) => {
+        recordCustomContext(customContext)
+        return true
+      })
+    }
+
+    return createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'currentUserDoc',
+          type: 'document',
+          fields: [
+            {name: 'title', type: 'string', validation},
+            {
+              name: 'items',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'item',
+                  fields: [{name: 'title', type: 'string', validation}],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    })
+  }
+
+  const currentUserDocument: SanityDocument = {
+    _id: 'current-user-doc-id',
+    _type: 'currentUserDoc',
+    _createdAt: '2024-01-01T00:00:00.000Z',
+    _updatedAt: '2024-01-01T00:00:00.000Z',
+    _rev: 'current-user-doc-rev',
+    title: 'hello',
+    items: [{_key: 'a', _type: 'item', title: 'nested'}],
+  }
+
+  it('passes currentUser to schema validation and custom validator contexts', async () => {
+    const currentUser: ValidationContext['currentUser'] = {
+      id: 'user-id',
+      name: 'Test User',
+      email: 'test@example.com',
+      roles: [{name: 'administrator', title: 'Administrator'}],
+    }
+
+    const schemaContexts: Array<ValidationContext['currentUser']> = []
+    const customContexts: Array<ValidationContext['currentUser']> = []
+    const schema = createCurrentUserSchema(
+      (context) => schemaContexts.push(context?.currentUser),
+      (context) => customContexts.push(context.currentUser),
+    )
+
+    const result = await validateItem({
+      getClient,
+      schema,
+      value: currentUserDocument,
+      document: currentUserDocument,
+      parent: undefined,
+      path: [],
+      type: schema.get('currentUserDoc'),
+      i18n: getFallbackLocaleSource(),
+      environment: 'studio',
+      getDocumentExists: undefined,
+      currentUser,
+    })
+
+    expect(result).toHaveLength(0)
+    expect(schemaContexts).toHaveLength(2)
+    expect(customContexts).toHaveLength(2)
+    schemaContexts.forEach((context) => expect(context).toBe(currentUser))
+    customContexts.forEach((context) => expect(context).toBe(currentUser))
+  })
+
+  it('leaves currentUser undefined when the caller omits it', async () => {
+    const schemaContexts: Array<ValidationContext['currentUser']> = []
+    const customContexts: Array<ValidationContext['currentUser']> = []
+    const schema = createCurrentUserSchema(
+      (context) => schemaContexts.push(context?.currentUser),
+      (context) => customContexts.push(context.currentUser),
+    )
+
+    const result = await validateItem({
+      getClient,
+      schema,
+      value: currentUserDocument,
+      document: currentUserDocument,
+      parent: undefined,
+      path: [],
+      type: schema.get('currentUserDoc'),
+      i18n: getFallbackLocaleSource(),
+      environment: 'studio',
+      getDocumentExists: undefined,
+    })
+
+    expect(result).toHaveLength(0)
+    expect(schemaContexts).toEqual([undefined, undefined])
+    expect(customContexts).toEqual([undefined, undefined])
+  })
+
   it("runs nested validation on an undefined value for object types if it's required", async () => {
     const validation = (rule: Rule) => [
       rule.required().error('This is required!'),
