@@ -7,9 +7,9 @@ import {expect, type Page, type Response} from '@playwright/test'
 import {test} from '../../studio-test'
 
 /**
- * Regression coverage for CLDX-5653: in Firefox, "Edit hotspot and crop" cannot load the image
- * when the Studio runs inside the Sanity dashboard, while the same Studio works when opened
- * directly and everything works in Chromium.
+ * Regression coverage for CLDX-5653: in Firefox, "Edit hotspot and crop" could not load the
+ * image when the Studio ran inside the Sanity dashboard, while the same Studio worked when
+ * opened directly and everything worked in Chromium.
  *
  * The chain, verified against Firefox 155 (default prefs) and the live CDN:
  *
@@ -20,16 +20,16 @@ import {test} from '../../studio-test'
  *    `<img src>` loads (`nsHttpChannel::SetOriginHeader`, "Modified Step 4").
  * 2. Every Studio built or served by the CLI carries `<meta name="referrer" content="same-origin">`.
  *    Under that policy Firefox serialises the `Origin` of a cross-origin request as `null`.
- * 3. The asset CDN treats `Origin: null` as an origin that has to be on the project's CORS
- *    allow-list and answers `403 {"error":"Forbidden","message":"CORS Origin not allowed"}`.
+ * 3. The asset CDN treated `Origin: null` as an origin that has to be on the project's CORS
+ *    allow-list and answered `403 {"error":"Forbidden","message":"CORS Origin not allowed"}`.
  *    A JSON body on an image destination is then dropped by Opaque Response Blocking
  *    (`NS_BINDING_ABORTED` in the console), the `<img>` fires `error`, and `useLoadImage`
  *    renders the "Could not load image from …" card instead of the hotspot tool.
  *
  * The fix lives in the API gateway (sanity-io/kong#1283: treat `Origin: null` as if no Origin
- * header was sent). Until it is deployed these tests are expected to fail; once it ships they
- * pass without any Studio change. Chromium does not send an `Origin` header on these requests,
- * so the tests only run in the firefox project.
+ * header was sent) and is deployed on both `cdn.sanity.io` and `cdn.sanity.work`, so these
+ * tests pass as they are and fail again if the gateway regresses. Chromium does not send an
+ * `Origin` header on these requests, so the tests only run in the firefox project.
  */
 
 const capybara = readFileSync(
