@@ -30,7 +30,7 @@ class UnknownType {
 
 const TYPE_TYPE = {name: 'type', type: null}
 
-const FUTURE_RESERVED = ['any', 'time', 'date']
+const FUTURE_RESERVED = ['any', 'time']
 
 export function traverseSchema(
   types: SchemaTypeDef[] = [],
@@ -42,7 +42,7 @@ export function traverseSchema(
 
   const coreTypeNames = coreTypes.map((typeDef) => typeDef.name)
 
-  const reservedTypeNames = FUTURE_RESERVED.concat(coreTypeNames)
+  const reservedTypeNames = new Set(['type', ...FUTURE_RESERVED, ...coreTypeNames])
 
   const typeNames = types.map((typeDef) => typeDef && typeDef.name).filter(Boolean)
 
@@ -69,8 +69,8 @@ export function traverseSchema(
   function getTypeNames() {
     return typeNames.concat(coreTypeNames)
   }
-  function isReserved(typeName: any) {
-    return typeName === 'type' || reservedTypeNames.includes(typeName)
+  function isReserved(typeName: unknown): typeName is string {
+    return reservedTypeNames.has(typeName)
   }
 
   const visitType = (isRoot: any) => (typeDef: any, index: any) => {
