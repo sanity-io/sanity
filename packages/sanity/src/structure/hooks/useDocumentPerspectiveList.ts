@@ -19,6 +19,7 @@ import {isGoingToUnpublish} from '../../core/releases/util/isGoingToUnpublish'
 import {isPublishedPerspective} from '../../core/releases/util/util'
 import {useSingleDocRelease} from '../../core/singleDocRelease/context/SingleDocReleaseProvider'
 import {useAgentVersionDisplay} from '../../core/store/agent/useAgentVersionDisplay'
+import {getDocumentVersionVariantId} from '../../core/util/getDocumentVersionVariant'
 import {useAllVariants} from '../../core/variants/store/useAllVariants'
 import {getVariantTitle} from '../../core/variants/tool/util'
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
@@ -217,13 +218,12 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
   )
   const getVersionDisplay = useCallback(
     (version: VersionInfoDocumentStub) => {
-      const isVariantVersion = Boolean(version._system.variant)
-      if (!isVariantVersion) {
+      const variantId = getDocumentVersionVariantId(version)
+      if (!variantId) {
         return getAgentVersionDisplay(version._id)
       }
-      const variantId = version._system.variant?._ref
-      const variant = variantId ? variants.get(variantId) : undefined
-      const variantTitle = variant ? getVariantTitle(variant) : (variantId ?? '')
+      const variant = variants.get(variantId)
+      const variantTitle = variant ? getVariantTitle(variant) : variantId
       return {
         displayName: `${variantTitle} [${version._system.bundleId || 'published'}]`,
         tone: version._system.bundleId ? ('caution' as const) : ('positive' as const),
@@ -239,20 +239,20 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
           return false
         }
         const hasRelease = Boolean(version._system.release)
-        const hasVariant = Boolean(version._system.variant)
+        const hasVariant = Boolean(getDocumentVersionVariantId(version))
         return !hasRelease && !hasVariant
       }),
     [filteredVersions],
   )
 
   const variantVersions = useMemo(
-    () => filteredVersions.filter((version) => Boolean(version._system.variant)),
+    () => filteredVersions.filter((version) => Boolean(getDocumentVersionVariantId(version))),
     [filteredVersions],
   )
   const setVariant = useSetVariant()
   const handleVariantSelectionChange = useCallback(
     (version: VersionInfoDocumentStub) => {
-      const variantId = version._system.variant?._ref
+      const variantId = getDocumentVersionVariantId(version)
       const variant = variantId ? variants.get(variantId) : undefined
       // Published version documents omit `bundleId`, so treat a missing bundle as published.
       // Passing the perspective alongside the variant updates both sticky params atomically.

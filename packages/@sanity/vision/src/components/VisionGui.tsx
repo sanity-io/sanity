@@ -8,7 +8,7 @@ import {
 } from '@sanity/client'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Button, Flex} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -21,13 +21,14 @@ import {
   useWorkspace,
 } from 'sanity'
 import {
+  getDefaultVariant,
   isCardinalityOneRelease,
   sortReleases,
   useActiveReleases,
   useScheduledDraftsEnabled,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
@@ -118,7 +119,8 @@ export function VisionGui(props: VisionGuiProps) {
   const {datasets, config, projectId, defaultDataset} = props
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()
@@ -376,7 +378,7 @@ export function VisionGui(props: VisionGuiProps) {
 
       handleQueryExecution({perspective: newPerspective})
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setPerspectiveState],
   )
 
   const handleChangeDataset = useCallback(
@@ -386,7 +388,7 @@ export function VisionGui(props: VisionGuiProps) {
       setDataset(newDataset)
       handleQueryExecution({dataset: newDataset})
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setDataset],
   )
 
   const changeApiVersion = useCallback(
@@ -589,7 +591,7 @@ export function VisionGui(props: VisionGuiProps) {
       // Execute query with new values
       handleQueryExecution(parsedUrlObj)
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setDataset, setPerspectiveState],
   )
 
   const handlePaste = useCallback(
@@ -694,10 +696,9 @@ export function VisionGui(props: VisionGuiProps) {
 
   return (
     <Root
-      direction="column"
-      height="fill"
+      flexDirection="column"
+      height="100%"
       ref={visionRootRef}
-      sizing="border"
       overflow="hidden"
       data-testid="vision-root"
     >

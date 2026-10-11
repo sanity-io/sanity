@@ -430,6 +430,8 @@ export const previewUrlMachine = setup({
             actions: [
               assign({
                 previewUrl: ({context}) => context.initialUrl,
+                previewMode: null,
+                previewUrlSecret: null,
               }),
               'notify preview will likely fail',
             ],
@@ -438,6 +440,8 @@ export const previewUrlMachine = setup({
           {
             actions: assign({
               previewUrl: ({context}) => context.initialUrl,
+              previewMode: null,
+              previewUrlSecret: null,
             }),
             target: 'success',
           },

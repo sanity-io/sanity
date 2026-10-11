@@ -1,5 +1,25 @@
-import {useEffect, useState} from 'react'
+import {
+  type StyleCensus,
+  styledRuleShare,
+  takeStyleCensus,
+  ui5Share,
+} from '@repo/utils/style-systems'
+import {animate, motion, useDragControls, useMotionValue, useReducedMotion} from 'motion/react'
+import {type KeyboardEvent, type PointerEvent, useEffect, useRef, useState} from 'react'
 
+import {
+  anchorOrigin,
+  DEFAULT_CORNER,
+  type DragDirection,
+  isPanelCorner,
+  moveCorner,
+  type PanelCorner,
+  type Point,
+  rebaseAnchor,
+  releaseCorner,
+  restingAnchor,
+  type Size,
+} from './corners'
 import {
   adoption,
   checkbox,
@@ -13,11 +33,14 @@ import {
   escapeDetails,
   group,
   groupHeading,
+  handleDragging,
   header,
   legend,
+  lifted,
   metricLabel,
   panel,
   root,
+  rootDragging,
   row,
   rowCount,
   rowLabel,
@@ -34,22 +57,26 @@ import {
 interface PanelState {
   open: boolean
   active: StyleSystemId[]
+  corner: PanelCorner
 }
 
-type Counts = ReadonlyMap<StyleSystemId, number>
+// Fast enough to read as a snap, with enough bounce left to read as a throw.
+const SNAP_TRANSITION = {type: 'spring', visualDuration: 0.35, bounce: 0.2} as const
 
-interface StyleSheetCounts {
-  inaccessible: number
-  styled: number
-  total: number
+const NO_MOMENTUM: Point = {x: 0, y: 0}
+
+const KEY_DIRECTIONS: Record<string, DragDirection | undefined> = {
+  ArrowUp: 'up',
+  ArrowDown: 'down',
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
 }
 
-interface Metrics {
-  nodes: Counts
-  stylesheets: StyleSheetCounts
-}
+const DEFAULT_STATE: PanelState = {open: false, active: [], corner: DEFAULT_CORNER}
 
-const DEFAULT_STATE: PanelState = {open: false, active: []}
+function classNames(...values: (string | false | null | undefined)[]): string {
+  return values.filter(Boolean).join(' ')
+}
 
 function isStyleSystemId(value: unknown): value is StyleSystemId {
   return STYLE_SYSTEMS.some((system) => system.id === value)
@@ -67,7 +94,12 @@ function readStoredState(): PanelState {
     const {open, active} = parsed
     if (typeof open !== 'boolean' || !Array.isArray(active)) return DEFAULT_STATE
     const ids: unknown[] = active
-    return {open, active: inRegistryOrder(new Set(ids.filter(isStyleSystemId)))}
+    const stored: unknown = 'corner' in parsed ? parsed.corner : undefined
+    return {
+      open,
+      corner: isPanelCorner(stored) ? stored : DEFAULT_CORNER,
+      active: inRegistryOrder(new Set(ids.filter(isStyleSystemId))),
+    }
   } catch {
     return DEFAULT_STATE
   }
@@ -86,68 +118,51 @@ function toggleId(active: StyleSystemId[], id: StyleSystemId): StyleSystemId[] {
   return inRegistryOrder(next)
 }
 
-function countNodes(): Counts {
-  return new Map(
-    STYLE_SYSTEMS.map((system): [StyleSystemId, number] => [
-      system.id,
-      document.querySelectorAll(system.selector).length,
-    ]),
-  )
-}
-
-function countStylesheetRules(): StyleSheetCounts {
-  let inaccessible = 0
-  let styled = 0
-  let total = 0
-
-  for (const sheet of document.styleSheets) {
-    try {
-      const ruleCount = sheet.cssRules.length
-      total += ruleCount
-      if (
-        sheet.ownerNode instanceof HTMLStyleElement &&
-        sheet.ownerNode.matches('style[data-styled]')
-      ) {
-        styled += ruleCount
-      }
-    } catch {
-      inaccessible += 1
-    }
-  }
-
-  return {inaccessible, styled, total}
-}
-
-function countMetrics(): Metrics {
-  return {nodes: countNodes(), stylesheets: countStylesheetRules()}
-}
-
-function sameMetrics(a: Metrics | null, b: Metrics): boolean {
-  return (
-    a !== null &&
-    STYLE_SYSTEMS.every((system) => a.nodes.get(system.id) === b.nodes.get(system.id)) &&
-    a.stylesheets.inaccessible === b.stylesheets.inaccessible &&
-    a.stylesheets.styled === b.stylesheets.styled &&
-    a.stylesheets.total === b.stylesheets.total
-  )
-}
-
-function percentage(part: number, total: number): number | null {
-  return total === 0 ? null : Math.round((part / total) * 100)
+// The census is a plain JSON tree of counts and strings, so a structural
+// comparison is what "nothing changed" means for the panel.
+function sameMetrics(a: StyleCensus | null, b: StyleCensus): boolean {
+  return a !== null && JSON.stringify(a) === JSON.stringify(b)
 }
 
 function formatPercentage(value: number | null): string {
-  return value === null ? '—' : `${value}%`
+  return value === null ? '—' : `${Math.round(value)}%`
+}
+
+function readViewport(): Size {
+  return {width: window.innerWidth, height: window.innerHeight}
 }
 
 export default function StyleOutlinePanel() {
   const [state, setState] = useState(readStoredState)
-  const [metrics, setMetrics] = useState<Metrics | null>(null)
-  const {open, active} = state
+  const [metrics, setMetrics] = useState<StyleCensus | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const [initialAnchor] = useState(() => restingAnchor(state.corner, readViewport()))
+  const x = useMotionValue(initialAnchor.x)
+  const y = useMotionValue(initialAnchor.y)
+  const dragControls = useDragControls()
+  const prefersReducedMotion = useReducedMotion()
+  const widgetRef = useRef<HTMLDivElement>(null)
+  const droppedRef = useRef(false)
+  // The corner the anchor is currently held against. It leads `state.corner`, which
+  // only persists it, because the transform origin and the anchor have to change in
+  // the same Motion render or the widget would draw a corner away for a frame.
+  const anchorCornerRef = useRef(state.corner)
+  const {open, active, corner} = state
 
   useEffect(() => {
     writeStoredState(state)
   }, [state])
+
+  // Docking against the far edges means a resized viewport moves the anchor.
+  useEffect(() => {
+    const redock = () => {
+      const anchor = restingAnchor(anchorCornerRef.current, readViewport())
+      x.jump(anchor.x)
+      y.jump(anchor.y)
+    }
+    window.addEventListener('resize', redock)
+    return () => window.removeEventListener('resize', redock)
+  }, [x, y])
 
   useEffect(() => {
     const html = document.documentElement
@@ -161,7 +176,7 @@ export default function StyleOutlinePanel() {
     let frame: number | null = null
     const recount = () => {
       frame = null
-      const next = countMetrics()
+      const next = takeStyleCensus(document)
       setMetrics((prev) => (sameMetrics(prev, next) ? prev : next))
     }
     const schedule = () => {
@@ -192,30 +207,128 @@ export default function StyleOutlinePanel() {
     }
   }, [open])
 
-  const ui5Count = metrics?.nodes.get('ui5') ?? 0
-  const ui4Count = metrics?.nodes.get('ui4') ?? 0
-  const styledCount = metrics?.nodes.get('styled')
-  const uiTotal = ui5Count + ui4Count
-  const ui5Percentage = percentage(ui5Count, uiTotal)
-  const ui4Percentage = percentage(ui4Count, uiTotal)
-  const styledRulePercentage = metrics
-    ? percentage(metrics.stylesheets.styled, metrics.stylesheets.total)
-    : null
-  const toggleOpen = () => setState((prev) => ({...prev, open: !prev.open}))
+  const ui5Count = metrics?.nodes.ui5 ?? 0
+  const ui4Count = metrics?.nodes.ui4 ?? 0
+  const styledCount = metrics?.nodes.styled
+  // Shares come from the shared census helpers so the widget, the bench probe
+  // and Radar can never round or compute them differently
+  const ui5Percentage = metrics ? ui5Share(metrics) : null
+  const ui4Percentage = ui5Percentage === null ? null : 100 - ui5Percentage
+  const styledRulePercentage = metrics ? styledRuleShare(metrics) : null
   const toggleSystem = (id: StyleSystemId) =>
     setState((prev) => ({...prev, active: toggleId(prev.active, id)}))
 
+  // Carries the widget to `next` with the momentum it was released with, which is
+  // what makes a throw look like it was thrown rather than teleported.
+  const dock = (next: PanelCorner, momentum: Point) => {
+    const element = widgetRef.current
+    if (element === null) return
+    const previous = anchorCornerRef.current
+    if (next !== previous) {
+      const rebased = rebaseAnchor(
+        {x: x.get(), y: y.get()},
+        element.getBoundingClientRect(),
+        previous,
+        next,
+      )
+      anchorCornerRef.current = next
+      x.jump(rebased.x)
+      y.jump(rebased.y)
+    }
+    const anchor = restingAnchor(next, readViewport())
+    if (prefersReducedMotion === true) {
+      x.jump(anchor.x)
+      y.jump(anchor.y)
+    } else {
+      animate(x, anchor.x, {...SNAP_TRANSITION, velocity: momentum.x})
+      animate(y, anchor.y, {...SNAP_TRANSITION, velocity: momentum.y})
+    }
+    setState((prev) => (prev.corner === next ? prev : {...prev, corner: next}))
+  }
+
+  // Motion reports the release velocity in px per second, and the widget's centre
+  // decides the corner so that grabbing the panel by one end does not skew it.
+  const drop = (momentum: Point) => {
+    setDragging(false)
+    const element = widgetRef.current
+    if (element === null) return
+    const rect = element.getBoundingClientRect()
+    const center = {x: rect.left + rect.width / 2, y: rect.top + rect.height / 2}
+    dock(releaseCorner(center, momentum, readViewport()), momentum)
+  }
+
+  const startDrag = (event: PointerEvent<HTMLElement>) => {
+    if (event.button !== 0) return
+    // Cleared here as well as by the click it suppresses, so that a release outside
+    // the window — which fires no click — cannot swallow the next real one.
+    droppedRef.current = false
+    dragControls.start(event)
+  }
+
+  // Motion only reports a drag once the pointer has passed its own threshold, so a
+  // click on the handle still toggles the panel and a drop never does.
+  const beginDrag = () => {
+    droppedRef.current = true
+    setDragging(true)
+  }
+
+  const toggleOpen = () => {
+    if (droppedRef.current) {
+      droppedRef.current = false
+      return
+    }
+    setState((prev) => ({...prev, open: !prev.open}))
+  }
+
+  const nudge = (event: KeyboardEvent<HTMLElement>) => {
+    const direction = KEY_DIRECTIONS[event.key]
+    if (direction === undefined) return
+    event.preventDefault()
+    // From the ref rather than from `corner`, so holding an arrow key keeps moving
+    // the widget instead of re-deciding from the corner of the last render.
+    dock(moveCorner(anchorCornerRef.current, direction), NO_MOMENTUM)
+  }
+
+  const handleProps = {
+    onPointerDown: startDrag,
+    onKeyDown: nudge,
+    onClick: toggleOpen,
+  }
+
   return (
-    <div className={root} data-testid="style-outline">
+    <motion.div
+      ref={widgetRef}
+      className={classNames(root, dragging && rootDragging)}
+      style={{x, y}}
+      // Hangs the widget off its docked corner. Read from the ref so that the origin
+      // and the anchor it belongs to are always written in the same render.
+      transformTemplate={(_values, transform) => {
+        const origin = anchorOrigin(anchorCornerRef.current)
+        return `${transform} translate(${origin.x}, ${origin.y})`
+      }}
+      drag
+      dragListener={false}
+      dragControls={dragControls}
+      // The throw is a spring towards a corner, not Motion's free inertia.
+      dragMomentum={false}
+      onDragStart={beginDrag}
+      onDragEnd={(_event, info) => drop(info.velocity)}
+      data-corner={corner}
+      data-testid="style-outline"
+    >
       {open ? (
-        <fieldset className={panel} aria-label="Style outline" data-testid="style-outline-panel">
+        <fieldset
+          className={classNames(panel, dragging && lifted)}
+          aria-label="Style outline"
+          data-testid="style-outline-panel"
+        >
           <button
             type="button"
-            className={header}
-            title="Collapse"
+            className={classNames(header, dragging && handleDragging)}
+            title="Drag to a corner, or click to collapse"
             aria-expanded
-            onClick={toggleOpen}
             data-testid="style-outline-collapse"
+            {...handleProps}
           >
             Style migrations
           </button>
@@ -306,12 +419,12 @@ export default function StyleOutlinePanel() {
       ) : (
         <button
           type="button"
-          className={trigger}
-          title="Style migrations"
+          className={classNames(trigger, dragging && handleDragging, dragging && lifted)}
+          title="Drag to a corner, or click to open"
           aria-label="Style migrations"
           aria-expanded={false}
-          onClick={toggleOpen}
           data-testid="style-outline-trigger"
+          {...handleProps}
         >
           {STYLE_SYSTEMS.map((system) => (
             <span
@@ -322,6 +435,6 @@ export default function StyleOutlinePanel() {
           ))}
         </button>
       )}
-    </div>
+    </motion.div>
   )
 }

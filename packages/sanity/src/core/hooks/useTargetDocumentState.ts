@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
 
+import {getDefaultVariant} from '../perspective/getDefaultVariant'
 import {type PerspectiveBundle} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
@@ -8,7 +9,7 @@ import {type DocumentPairTarget} from '../store/document/types'
 import {getVersionFromId, isSystemBundle} from '../util/draftUtils'
 import {getTargetDocument} from '../util/getTargetDocument'
 import {useAllVariants} from '../variants/store/useAllVariants'
-import {type SystemVariant} from '../variants/types'
+import {type SystemVariant, type VariantId} from '../variants/types'
 import {useSchema} from './useSchema'
 
 /**
@@ -118,7 +119,7 @@ function getCreatableTarget(
 
 function getDocumentSiblings(
   versions: VersionInfoDocumentStub[],
-  variantId: string | undefined,
+  variantId: VariantId | undefined,
   bundle: PerspectiveBundle,
 ): TargetDocumentSiblings {
   return {
@@ -348,7 +349,9 @@ export function getTargetDocumentState(options: {
  */
 export function useTargetDocumentState(documentGroupId: string): TargetDocumentState {
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: documentGroupId})
-  const {bundle, selectedVariant, selectedVariantName} = usePerspective()
+  const {bundle, selectedVariants, selectedVariantNames} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {loading: variantsLoading} = useAllVariants()
   const schema = useSchema()
   const liveEdit = useMemo(

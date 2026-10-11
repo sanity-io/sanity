@@ -13,7 +13,7 @@ beforeEach(() => {
 })
 
 /**
- * A variant-scoped version snapshot: `_system.variant` set, bundle per `bundleId`. Release
+ * A variant-scoped version snapshot: `_system.variants` set, bundle per `bundleId`. Release
  * bundles carry the `_system.release` reference, matching real release-scoped variant documents.
  */
 function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocument {
@@ -27,7 +27,7 @@ function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocum
     _system: {
       ...(bundleId ? {bundleId} : {}),
       ...(isReleaseBundle ? {release: {_ref: `_.releases.${bundleId}`, _weak: true}} : {}),
-      variant: {_ref: '_.variants.french', _weak: true},
+      variants: [{_ref: '_.variants.french', _key: 'k-123'}],
       group: {_ref: 'my-id', _weak: true},
       scopeId: 'varscope',
     },

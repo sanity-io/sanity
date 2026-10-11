@@ -1,9 +1,9 @@
-import {Card, Container, Text, useTheme} from '@sanity/ui'
+import {Card, useTheme} from '@sanity/ui'
 import {parse} from 'date-fns/parse'
 import {useEffect, useMemo, useRef} from 'react'
 import {Link, type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Container, Box, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
@@ -48,7 +48,7 @@ function ScheduledDraftsBanner() {
     return (
       <Card padding={4} tone="caution">
         <Flex gap={3} alignItems="center" justifyContent="center">
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true} tone="caution">
             Scheduled Drafts is enabled for this Studio. All new Scheduled Drafts will be{' '}
             <Link href={releasesUrl}>available here</Link>
           </Text>
@@ -70,9 +70,11 @@ export default function Tool() {
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
   const scheduleState: ScheduleState = router.state.state as ScheduleState
+  // oxlint-disable react/purity -- `new Date()` is only date-fns `parse`'s reference date; kept as-is rather than changing the parser input
   const selectedDate = router.state.date
     ? parse(router.state.date as string, DATE_SLUG_FORMAT, new Date())
     : undefined
+  // oxlint-enable react/purity
 
   //Store last active schedule state
   useEffect(() => {
@@ -111,7 +113,7 @@ export default function Tool() {
   if (!enabled) {
     if (scheduledPublishing.__internal__workspaceEnabled) {
       return (
-        <Container width={1} paddingTop={4}>
+        <Container size={1} paddingTop={4}>
           <Box paddingTop={4} paddingX={4}>
             <ErrorCallout
               description="Something went wrong loading permissions, please try again."
@@ -123,7 +125,7 @@ export default function Tool() {
     }
     // This is for the case users lands in the tool rout without having the feature enabled.
     return (
-      <Container width={1} paddingTop={4}>
+      <Container size={1} paddingTop={4}>
         <Box paddingTop={4} paddingX={4}>
           {hasUsedScheduledPublishing.loading ? <LoadingBlock /> : <InfoCallout />}
         </Box>
@@ -210,7 +212,9 @@ export default function Tool() {
               <Box flexBasis="0%" flexGrow={1} overflow="auto">
                 {isInitialLoading ? (
                   <Box padding={4}>
-                    <Text muted>Loading...</Text>
+                    <Text muted as="div" trim={true}>
+                      Loading...
+                    </Text>
                   </Box>
                 ) : (
                   // Loaded schedules

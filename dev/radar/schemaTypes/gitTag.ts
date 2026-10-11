@@ -63,6 +63,11 @@ export const gitTag = defineType({
           of: [{type: 'string'}],
         }),
         defineField({name: 'weeklyDownloads', type: 'number'}),
+        defineField({
+          name: 'deprecated',
+          description: 'The npm deprecation message — present only while the version is deprecated',
+          type: 'string',
+        }),
       ],
     }),
   ],

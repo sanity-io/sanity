@@ -3,6 +3,8 @@ import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
+import {createAuthStore as _createAuthStorePublic} from '../core/store/authStore/createAuthStore'
+
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {ChangeIndicator} from '../core/changeIndicators/ChangeIndicator'
 export {CommentDeleteDialog} from '../core/comments/components/CommentDeleteDialog'
@@ -114,12 +116,11 @@ export {
 export {WithReferringDocuments} from '../core/components/WithReferringDocuments'
 export {type AuthConfig, type AuthProvider, type LoginMethod} from '../core/config/auth/types'
 export {createDefaultIcon} from '../core/config/createDefaultIcon'
-export {resolveConfig} from '../core/config/resolveConfig'
-export {SchemaError} from '../core/config/SchemaError'
-// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {createConfig, defineConfig} from '../core/config/defineConfig'
-// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {createPlugin, definePlugin, type PluginFactory} from '../core/config/definePlugin'
+export {defineSingleton} from '../core/config/defineSingleton'
 export {
   type DocumentActionComponent,
   type DocumentActionConfirmDialogProps,
@@ -170,11 +171,14 @@ export {
   type ReleaseActionProps,
   type ReleaseActionsContext,
 } from '../core/config/releases/actions'
+export {resolveConfig} from '../core/config/resolveConfig'
+export {SchemaError} from '../core/config/SchemaError'
 export {
   type ActiveToolLayoutProps,
   type LayoutProps,
   type LogoProps,
   type NavbarProps,
+  type ProviderProps,
   type StudioComponents,
   type StudioComponentsPluginOptions,
   type ToolMenuProps,
@@ -216,12 +220,15 @@ export {
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,
   type SchemaPluginOptions,
+  type SingletonDefinition,
+  type SingletonsResolver,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
   type SourceOptions,
   type TemplateResolver,
   type Tool,
+  type UnresolvedSingletonDefinition,
   type Workspace,
   type WorkspaceHiddenContext,
   type WorkspaceHiddenProperty,
@@ -513,7 +520,7 @@ export {useRelativeTime} from '../core/hooks/useRelativeTime'
 export {useSchema} from '../core/hooks/useSchema'
 export {useSyncState} from '../core/hooks/useSyncState'
 export {useTemplates} from '../core/hooks/useTemplates'
-// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useTimeAgo} from '../core/hooks/useTimeAgo'
 export {useTools} from '../core/hooks/useTools'
 export {
@@ -610,6 +617,12 @@ export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
 export {createSchema} from '../core/schema/createSchema'
+export {type CreateAuthStoreOptions} from '../core/store/authStore/createAuthStore'
+/**
+ * @internal
+ * @deprecated Use the `auth` config key with an `AuthConfig` object instead. Deprecated since Studio v3.15.0.
+ */
+export const createAuthStore = _createAuthStorePublic
 export {getProviderTitle} from '@sanity/access-ui'
 export {
   type AuthProbeResult,
@@ -697,30 +710,23 @@ export {
   type PermissionCheckResult,
 } from '../core/store/grants/types'
 export {type DocumentRevision, type HistoryStore} from '../core/store/history/createHistoryStore'
+/* oxlint-disable no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major */
 export {
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type ParsedTimeRef,
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   Timeline,
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type TimelineOptions,
 } from '../core/store/history/history/Timeline'
 export {
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type SelectionState,
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   TimelineController,
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type TimelineControllerOptions,
 } from '../core/store/history/history/TimelineController'
 export {
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type CombinedDocument,
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type DocumentRemoteMutationVersionEvent,
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type Transaction,
 } from '../core/store/history/history/types'
+/* oxlint-enable no-deprecated */
 export {type PresenceStore} from '../core/store/presence/presence-store'
 export {useDocumentPresence} from '../core/store/presence/useDocumentPresence'
 export {
@@ -796,6 +802,7 @@ export {useWorkspace} from '../core/studio/workspace'
 export {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../core/studioClient'
 export {
   type InitialValueTemplateItem,
+  type ResolvedTemplate,
   type Template,
   type TemplateArrayFieldDefinition,
   type TemplateFieldDefinition,
@@ -806,9 +813,9 @@ export {
 } from '../core/templates/types'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {buildLegacyTheme} from '../core/theme/_legacy/theme'
-// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type LegacyThemeProps} from '../core/theme/_legacy/types'
-// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type StudioTheme, type StudioThemeColorSchemeKey} from '../core/theme/types'
 export {useUserColorManager} from '../core/user-color/hooks'
 export {createHookFromObservableFactory} from '../core/util/createHookFromObservableFactory'

@@ -3,12 +3,10 @@ import {
   Badge,
   // oxlint-disable-next-line no-restricted-imports
   Button,
-  Text,
   TextSkeleton,
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../../../ui-components/tooltip/Tooltip'
 import {useFormValue} from '../../../../../form/contexts/FormValue'
@@ -19,11 +17,8 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
+import {styledButton} from './AssigneeEditFormField.css'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
-
-const StyledButton = styled(Button)`
-  padding: 3px 6px;
-`
 
 interface AssigneeEditFormFieldProps {
   value: string | undefined
@@ -65,7 +60,7 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
       onSelect={onSelect}
       value={value}
       menuButton={
-        <StyledButton mode="ghost" padding={0}>
+        <Button className={styledButton} mode="ghost" padding={0}>
           <Tooltip
             content={
               value
@@ -77,7 +72,7 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
               <Flex alignItems="center" gap={2} flexBasis="0%" flexGrow={1}>
                 <TasksUserAvatar user={mentionedUser} size={0} />
                 <Box>
-                  <Text size={1} textOverflow="ellipsis">
+                  <Text size={1} truncate={1} as="div" trim={true}>
                     {displayText}
                   </Text>
                 </Box>
@@ -88,7 +83,7 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
               )}
             </Flex>
           </Tooltip>
-        </StyledButton>
+        </Button>
       }
     />
   )

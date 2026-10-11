@@ -29,7 +29,11 @@ vi.mock('sanity', async (importOriginal) => ({
     selectedPerspective: 'drafts',
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
+    selectedVariantNames: [],
+    selectedVariants: [],
+    // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
     selectedVariantName: undefined,
+    // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
     selectedVariant: undefined,
     bundle: 'drafts',
   })),
@@ -52,7 +56,11 @@ const BASE_PERSPECTIVE: PerspectiveContextValue = {
   selectedPerspective: 'drafts',
   selectedPerspectiveName: undefined,
   selectedReleaseId: undefined,
+  selectedVariantNames: [],
+  selectedVariants: [],
+  // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
   selectedVariantName: undefined,
+  // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
   selectedVariant: undefined,
   bundle: 'drafts',
 }
@@ -241,7 +249,12 @@ describe('DocumentListPane perspective and variant', () => {
   })
 
   it('queries with the selected variant alongside the perspective stack', async () => {
-    mockUsePerspective.mockReturnValue({...BASE_PERSPECTIVE, selectedVariantName: 'alpha-audience'})
+    mockUsePerspective.mockReturnValue({
+      ...BASE_PERSPECTIVE,
+      selectedVariantNames: ['alpha-audience'],
+      // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
+      selectedVariantName: 'alpha-audience',
+    })
 
     await renderDocumentListPane()
 

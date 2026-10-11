@@ -1,6 +1,6 @@
-import {rem, Skeleton, Stack} from '@sanity/ui'
+import {rem, Skeleton} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
 export const RootBox = styled(Box)`
   position: relative;
@@ -44,6 +44,6 @@ export const ProgressFlex = styled(Flex).attrs({alignItems: 'center', justifyCon
   }
 `
 
-export const TooltipContentStack = styled(Stack).attrs({gap: 2})`
+export const TooltipContentStack = styled(VStack).attrs({gap: 2})`
   max-width: ${rem(200)};
 `

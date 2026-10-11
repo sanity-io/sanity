@@ -8,9 +8,10 @@ import {
   type Reference,
   type ReferenceSchemaType,
 } from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode} from 'react'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
@@ -102,12 +103,12 @@ const renderPreview: RenderPreviewCallback = (props) => (
 
 function Labelled({label, children}: {label: string; children: ReactNode}) {
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <Text muted size={1} weight="medium">
         {label}
       </Text>
       {children}
-    </Stack>
+    </VStack>
   )
 }
 
@@ -128,7 +129,7 @@ function ReferenceChrome() {
 
   return (
     <Card padding={4} style={{maxWidth: 480}}>
-      <Stack gap={5}>
+      <VStack gap={5}>
         <Labelled label="reference value (not found, no permission, invalid type, created in place)">
           <Row>
             <PreviewReferenceValue
@@ -231,7 +232,7 @@ function ReferenceChrome() {
             }}
           />
         </Labelled>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

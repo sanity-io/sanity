@@ -1,12 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Badge, Box, Button, Card, Container, Dialog, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Dialog, Text} from '@sanity/ui'
 import {type ToastContextValue, useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
-import {Flex} from 'ui5'
+import {Container, Flex, VStack} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {
@@ -29,6 +29,7 @@ import {
   undoMark,
   updateResult,
 } from './sessions'
+import {isSeverity} from './severity'
 import {pluralize} from './text'
 import {Timeline} from './Timeline'
 
@@ -155,6 +156,12 @@ export function SessionView(props: {
 
   const onError = (title: string) => toastError(toast, title)
 
+  // Annotations are this session's own: a parent and its refinement may
+  // both rate the same regression, and the overview and the Releases tool
+  // show the union of the chain (sessionChains.ts)
+  const annotate = (patch: ResultAnnotations) =>
+    updateResult(client, sessionId, patch).catch(onError('Could not save annotation'))
+
   // Sessions can be converged FROM BIRTH (adjacent endpoints, a drill-down
   // over an untestable range) — no converging mark ever fires, so appendMark
   // never persists the verdict and the sessions list would show them as
@@ -236,10 +243,14 @@ export function SessionView(props: {
       const version = versionBySha.get(sha)
       return version ? {sha, label: `v${version}`} : {sha}
     }
+    // Linked to this session: the two are one regression (sessionChains.ts),
+    // and the issue text travels along
     createSession(client, {
       good: label(state.lastGood.sha),
       bad: label(state.firstBad.sha),
       reproPath,
+      description: session?.description ?? undefined,
+      refines: sessionId,
       createdBy: userName,
     })
       .then(onOpenSession)
@@ -251,21 +262,63 @@ export function SessionView(props: {
 
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
-      <Container width={2}>
-        <Stack gap={4}>
+      <Container size={2}>
+        <VStack gap={4}>
           <Flex alignItems="center" gap={3}>
             <Button mode="bleed" icon={ArrowLeftIcon} text="Sessions" onClick={onBack} />
             <Box flex={1} style={{minWidth: 0}}>
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={2} weight="semibold">
-                  {session?.title ?? 'Bisect session'}
+                  {session?.description || session?.title || 'Bisect session'}
                 </Text>
+                {session?.description && (
+                  <Text size={1} muted>
+                    {session.title ?? sessionId}
+                  </Text>
+                )}
                 {reproPath && (
                   <Text size={0} muted textOverflow="ellipsis">
                     Preview builds open at <code>{reproPath}</code>
                   </Text>
                 )}
-              </Stack>
+                {/* A refinement and its parent are one regression; say so
+                    both ways so neither reads as a duplicate */}
+                {session?.refines && (
+                  <Text size={0} muted>
+                    Narrows down{' '}
+                    <a
+                      href={`?session=${encodeURIComponent(session.refines._id)}`}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        onOpenSession(session.refines!._id)
+                      }}
+                    >
+                      {session.refines.title ?? session.refines._id}
+                    </a>{' '}
+                    — counted as one regression
+                  </Text>
+                )}
+                {session && session.refinedBy.length > 0 && (
+                  <Text size={0} muted>
+                    Narrowed down by{' '}
+                    {session.refinedBy.map((child, index) => (
+                      <span key={child._id}>
+                        {index > 0 && ', '}
+                        <a
+                          href={`?session=${encodeURIComponent(child._id)}`}
+                          onClick={(event) => {
+                            event.preventDefault()
+                            onOpenSession(child._id)
+                          }}
+                        >
+                          {child.title ?? child._id}
+                        </a>
+                      </span>
+                    ))}{' '}
+                    — counted as one regression
+                  </Text>
+                )}
+              </VStack>
             </Box>
             {session && (
               <Button
@@ -361,20 +414,21 @@ export function SessionView(props: {
                       releasesOnly,
                       annotations: {
                         regression: session?.result?.regression ?? undefined,
-                        description: session?.result?.description ?? undefined,
+                        description: session?.description ?? undefined,
+                        note: session?.result?.note ?? undefined,
+                        severity: isSeverity(session?.result?.severity)
+                          ? session.result.severity
+                          : undefined,
                         linearIssue: session?.result?.linearIssue ?? undefined,
                       },
-                      onAnnotate: (patch: ResultAnnotations) =>
-                        updateResult(client, sessionId, patch).catch(
-                          onError('Could not save annotation'),
-                        ),
+                      onAnnotate: annotate,
                       onContinue: releasesOnly ? continueBisect : undefined,
                     }
                   : undefined
               }
             />
           )}
-        </Stack>
+        </VStack>
       </Container>
 
       {confirmingDelete && (
@@ -385,7 +439,7 @@ export function SessionView(props: {
           onClose={() => setConfirmingDelete(false)}
         >
           <Box padding={4}>
-            <Stack gap={4}>
+            <VStack gap={4}>
               <Text size={1}>
                 Delete “{session?.title ?? sessionId}”? The session, its marks log, and any verdict
                 (including a regression pinned on a release) are permanently removed.
@@ -399,7 +453,7 @@ export function SessionView(props: {
                   onClick={removeSession}
                 />
               </Flex>
-            </Stack>
+            </VStack>
           </Box>
         </Dialog>
       )}
@@ -414,7 +468,7 @@ function RangeStatus(props: {
 }) {
   const {state, releasesOnly} = props
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Flex alignItems="center" gap={2} flexWrap="wrap">
         <Text size={1} muted>
           The bad commit is between
@@ -458,6 +512,6 @@ function RangeStatus(props: {
           </Text>
         )
       )}
-    </Stack>
+    </VStack>
   )
 }

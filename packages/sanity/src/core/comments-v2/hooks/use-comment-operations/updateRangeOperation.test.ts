@@ -8,6 +8,7 @@ import {describe, expect, test, vi} from 'vitest'
 import {type CommentUpdatePayload} from '../../types'
 import {updateRangeOperation} from './updateRangeOperation'
 
+// oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
 const range: CollaborationCommentRange = {
   start: {_key: 'block-1', offset: 1},
   end: {_key: 'block-1', offset: 4},

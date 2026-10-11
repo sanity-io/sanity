@@ -1,5 +1,5 @@
-import {Card, Container, Text} from '@sanity/ui'
-import {Box, VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, Container, Box, VStack} from 'ui5'
 
 import EmptySchedules from '../../tool/schedules/EmptySchedules'
 import ErrorCallout from '../errorCallout/ErrorCallout'
@@ -24,10 +24,10 @@ export function ScheduledPublishingChromeStory() {
     <Card padding={4}>
       <VStack gap={5}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             error callout
           </Text>
-          <Container width={1}>
+          <Container size={1}>
             <Box paddingTop={4} paddingX={4}>
               <VStack gap={3}>
                 <ErrorCallout title="Could not load schedules" />
@@ -40,20 +40,20 @@ export function ScheduledPublishingChromeStory() {
           </Container>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             info callout
           </Text>
-          <Container width={1}>
+          <Container size={1}>
             <Box paddingTop={4} paddingX={4}>
               <InfoCallout />
             </Box>
           </Container>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             empty schedules
           </Text>
-          <Container width={1} padding={4}>
+          <Container size={1} padding={4}>
             <VStack gap={3}>
               <EmptySchedules scheduleState="scheduled" />
               <EmptySchedules scheduleState="succeeded" />

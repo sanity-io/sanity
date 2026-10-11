@@ -12,6 +12,7 @@ import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {type TargetDocumentState} from '../../../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'
 import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
 import {isReleaseDocument} from '../../../../../core/releases/store/types'
 import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
@@ -111,9 +112,7 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
   if (isReleaseDocument(selectedPerspective)) {
     return (
       <BadgeContainer gap={2} padding={2} alignItems="center">
-        <Text size={1}>
-          <ReleaseAvatarIcon release={selectedPerspective} />
-        </Text>
+        <ReleaseAvatarIcon release={selectedPerspective} />
 
         <ReleaseTitle
           title={selectedPerspective.metadata?.title}
@@ -151,7 +150,8 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
 
 export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
   const {displayed, schemaType, targetDocumentState} = useDocumentPane()
-  const {bundle, selectedPerspective, selectedVariant} = usePerspective()
+  const {bundle, selectedPerspective, selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {t} = useTranslation(structureLocaleNamespace)
   const isLiveEdit = isLiveEditEnabled(schemaType)
 

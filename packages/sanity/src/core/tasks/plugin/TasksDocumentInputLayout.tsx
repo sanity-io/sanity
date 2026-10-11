@@ -1,5 +1,8 @@
+import {lazy, Suspense} from 'react'
+
 import {type ObjectInputProps} from '../../form/types/inputProps'
-import {SetActiveDocument} from './structure/SetActiveDocument'
+
+const SetActiveDocument = lazy(() => import('./structure/SetActiveDocument'))
 
 export function TasksDocumentInputLayout(props: ObjectInputProps) {
   const documentId = props.value?._id
@@ -7,7 +10,9 @@ export function TasksDocumentInputLayout(props: ObjectInputProps) {
 
   return (
     <>
-      <SetActiveDocument documentId={documentId} documentType={documentType} />
+      <Suspense>
+        <SetActiveDocument documentId={documentId} documentType={documentType} />
+      </Suspense>
       {props.renderDefault(props)}
     </>
   )

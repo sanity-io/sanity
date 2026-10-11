@@ -1,13 +1,12 @@
-import {Box, Button, Card, Heading, Stack, Text, TextArea} from '@sanity/ui'
+import {Box, Button, Card, Heading, Text, TextArea} from '@sanity/ui'
 import {lazy, Suspense, type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
 import {type StudioDiagnostics} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 // Loaded on demand so the initial paste screen doesn't carry the sanity
 // package; the report and the parser share the same lazy chunk. Module-scope
 // because React Compiler cannot lower import() inside a component body.
-const loadSanityModule = () =>
-  import('sanity/_dangerously_use_private_internals_that_do_not_follow_semver')
+const loadSanityModule = () => import('sanity')
 
 const DiagnosticsReport = lazy(() =>
   loadSanityModule().then((module) => ({default: module.DiagnosticsReport})),
@@ -46,7 +45,7 @@ export function App() {
     return (
       <main className="viewer-page viewer-page-report">
         <Box padding={[3, 4, 5]}>
-          <Stack gap={5}>
+          <VStack gap={5}>
             <ViewerHeader />
             <Suspense fallback={<ReportLoadingState />}>
               <DiagnosticsReport
@@ -55,7 +54,7 @@ export function App() {
                 runAgainLabel="Paste another"
               />
             </Suspense>
-          </Stack>
+          </VStack>
         </Box>
       </main>
     )
@@ -64,13 +63,13 @@ export function App() {
   return (
     <main className="viewer-page">
       <Box padding={[3, 4, 5]}>
-        <Stack gap={5}>
+        <VStack gap={5}>
           <ViewerHeader />
 
           <Card border padding={[4, 5]} radius={3} shadow={1}>
             <form onSubmit={handleSubmit}>
-              <Stack gap={4}>
-                <Stack gap={3}>
+              <VStack gap={4}>
+                <VStack gap={3}>
                   <Heading as="h2" size={2}>
                     Paste diagnostics output
                   </Heading>
@@ -78,9 +77,9 @@ export function App() {
                     Copy the JSON from Studio diagnostics and paste it below. The data stays in this
                     browser and is not uploaded anywhere.
                   </Text>
-                </Stack>
+                </VStack>
 
-                <Stack gap={3}>
+                <VStack gap={3}>
                   <Text as="label" htmlFor={inputId} size={1} weight="medium">
                     Diagnostics JSON
                   </Text>
@@ -93,7 +92,7 @@ export function App() {
                     ref={inputRef}
                     rows={18}
                   />
-                </Stack>
+                </VStack>
 
                 {error ? (
                   <Card padding={3} radius={2} tone="critical">
@@ -110,10 +109,10 @@ export function App() {
                     type="submit"
                   />
                 </Flex>
-              </Stack>
+              </VStack>
             </form>
           </Card>
-        </Stack>
+        </VStack>
       </Box>
     </main>
   )
@@ -131,13 +130,13 @@ function ReportLoadingState() {
 
 function ViewerHeader() {
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <Heading as="h1" size={3}>
         Studio diagnostics viewer
       </Heading>
       <Text muted size={1}>
         Inspect diagnostics gathered from a Sanity Studio session.
       </Text>
-    </Stack>
+    </VStack>
   )
 }

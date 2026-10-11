@@ -16,6 +16,8 @@ import {useRouter} from 'sanity/router'
 
 import {COMMENTS_INSPECTOR_NAME} from '../../../../core/comments/constants'
 import {getTargetScopeId} from '../../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../../core/perspective/getDefaultVariant'
+import {encodeVariantLinkParam} from '../../../../core/variants/util/variantSelection'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../useDocumentPane'
 
@@ -66,7 +68,8 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {enabled} = commentsV2 ? enabledV2 : enabledV1
   const {connectionState, onPathOpen, inspector, openInspector, targetDocumentState, value} =
     useDocumentPane()
-  const {selectedPerspectiveName, selectedReleaseId, selectedVariantName} = usePerspective()
+  const {selectedPerspectiveName, selectedReleaseId, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {params, setParams} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
 
@@ -89,7 +92,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
         selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
 
       if (selectedVariantName) {
-        searchParams.push(['variant', selectedVariantName])
+        searchParams.push(['variant', encodeVariantLinkParam(selectedVariantName)])
       }
 
       const intentLink = resolveIntentLink(

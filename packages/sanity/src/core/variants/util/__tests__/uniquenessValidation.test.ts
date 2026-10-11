@@ -148,4 +148,20 @@ describe('getVariantUniquenessValidation', () => {
       duplicateConditionsOf: sameConditions,
     })
   })
+
+  it('allows the same title and conditions on a different type', () => {
+    const existing = createVariant('existing', {
+      conditions: {audience: 'loyal'},
+      metadata: {title: 'Loyal customers', description: [], type: 'language'},
+    })
+    const candidate = createVariant('candidate', {
+      conditions: {audience: 'loyal'},
+      metadata: {title: 'Loyal customers', description: [], type: 'variant'},
+    })
+
+    expect(getVariantUniquenessValidation(candidate, [existing])).toEqual({
+      duplicateTitleOf: undefined,
+      duplicateConditionsOf: undefined,
+    })
+  })
 })

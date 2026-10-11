@@ -12,6 +12,7 @@ import {
 } from 'sanity'
 
 import {useTargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
 import {useArchivedReleases} from '../../../core/releases/store/useArchivedReleases'
 import {EventsProvider} from '../../../core/store/events/EventsProvider'
 import {useEventsStore} from '../../../core/store/events/useEventsStore'
@@ -30,13 +31,14 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const schemaType = schema.get(options.type) as ObjectSchemaType | undefined
   const liveEdit = Boolean(schemaType?.liveEdit)
 
-  const {selectedPerspectiveName, selectedPerspective, selectedVariantName} = usePerspective()
+  const {selectedPerspectiveName, selectedPerspective, selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {data: archivedReleases} = useArchivedReleases()
   const {versions} = useDocumentVersions({documentId: getPublishedId(options.id)})
   const targetDocumentState = useTargetDocumentState(getPublishedId(options.id))
   const draftVersion = getTargetDocument({
     bundle: 'draft',
-    variant: selectedVariantName,
+    variant: selectedVariant?._id,
     documentVersions: versions,
   })
 

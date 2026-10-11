@@ -1,10 +1,10 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Container, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {getDocumentVersionType} from '../../../config/document/useConfiguredDocumentActionIds'
@@ -77,7 +77,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   // production Releases until the flag is on.
   const {beta} = useWorkspace()
   const variantsEnabled = Boolean(beta?.variants?.enabled)
-  // Resolves each document's variant (via `_system.variant._ref`) to its definition for the
+  // Resolves each document's variant (via `_system.variants[0]._ref`) to its definition for the
   // "Variant" column. Provider-free + cached; returns empty when variants are disabled.
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
 
@@ -243,7 +243,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   // Old (non-variant) path: Add-document lives at the end of the list.
   const addDocumentFooter = release.state === 'active' && (
-    <Container width={3}>
+    <Container size={3}>
       <Card padding={3}>
         <Button
           icon={AddIcon}

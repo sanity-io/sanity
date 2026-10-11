@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {map} from 'rxjs'
@@ -51,7 +51,7 @@ function TypeSection<T>({
   const title = schemaType?.title || type
 
   return (
-    <Stack key={type} padding={2} gap={1} marginBottom={2}>
+    <Flex key={type} padding={2} gap={1} marginBottom={2} flexDirection="column">
       <Flex alignItems="center" justifyContent="space-between" paddingBottom={2} gap={2}>
         <Box padding={2}>
           <Text size={1} weight="medium">
@@ -88,7 +88,7 @@ function TypeSection<T>({
           </Card>
         </Box>
       )}
-    </Stack>
+    </Flex>
   )
 }
 

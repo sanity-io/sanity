@@ -87,6 +87,7 @@ import {objectsDebug} from './debug/objectsDebug'
 import {patchOnMountDebug} from './debug/patchOnMount'
 import poppers from './debug/poppers'
 import presence, {objectWithNestedArray} from './debug/presence'
+import {presenceDebug} from './debug/presenceDebug'
 import previewImageUrlTest from './debug/previewImageUrlTest'
 import previewMediaTest from './debug/previewMediaTest'
 import {previewSelectBugRepro} from './debug/previewSelectBugRepro'
@@ -121,6 +122,7 @@ import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
 import geopoint from './plugins/geopoint'
+import {singletonCampaign, singletonSettings} from './singletons'
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
@@ -277,6 +279,7 @@ export function createSchemaTypes(projectId: string) {
     superlatives,
     inspectorsTestType,
     invalidPreviews,
+    presenceDebug,
     issue4516AddFilterIntentLink,
     issue13494I18nTitleKeyStylesLists,
     languageFilterDebugType,
@@ -355,6 +358,8 @@ export function createSchemaTypes(projectId: string) {
     house,
     playlist,
     playlistTrack,
+    singletonCampaign,
+    singletonSettings,
 
     // CI documents
     allNativeInputComponents,

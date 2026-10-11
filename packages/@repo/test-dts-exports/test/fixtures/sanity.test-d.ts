@@ -178,6 +178,8 @@ import type {
   CopyOptions,
   CopyPasteContextType,
   CopyPasteProvider,
+  createAuthStore,
+  CreateAuthStoreOptions,
   createConfig,
   createDefaultIcon,
   CreateDocumentVersionEvent,
@@ -244,6 +246,7 @@ import type {
   defineSearchFilter,
   defineSearchFilterOperators,
   defineSearchOperator,
+  defineSingleton,
   defineType,
   DeleteDocumentGroupEvent,
   DeleteDocumentVersionEvent,
@@ -755,6 +758,7 @@ import type {
   ProjectOrganizationData,
   ProjectStore,
   ProvenanceDiffAnnotation,
+  ProviderProps,
   PublishDocumentVersionEvent,
   PublishedId,
   QueryParams,
@@ -809,6 +813,7 @@ import type {
   RequestErrorReportOptions,
   ResetEvent,
   resolveConfig,
+  ResolvedTemplate,
   ResolvedUploader,
   ResolveProductionUrlContext,
   Role,
@@ -864,6 +869,8 @@ import type {
   setIfMissing,
   SingleFieldSet,
   SingleMutationResult,
+  SingletonDefinition,
+  SingletonsResolver,
   SingleWorkspace,
   Slug,
   SlugComponents,
@@ -981,6 +988,7 @@ import type {
   UnitFormatter,
   UniversalArrayInput,
   UnpublishDocumentEvent,
+  UnresolvedSingletonDefinition,
   UnscheduleDocumentVersionEvent,
   unset,
   UpdateLiveDocumentEvent,
@@ -1642,6 +1650,12 @@ describe('sanity', () => {
   test('CopyPasteProvider', () => {
     expectTypeOf<typeof CopyPasteProvider>().not.toBeNever()
   })
+  test('createAuthStore', () => {
+    expectTypeOf<typeof createAuthStore>().not.toBeNever()
+  })
+  test('CreateAuthStoreOptions', () => {
+    expectTypeOf<CreateAuthStoreOptions>().not.toBeNever()
+  })
   test('createConfig', () => {
     expectTypeOf<typeof createConfig>().toBeFunction()
   })
@@ -1843,6 +1857,9 @@ describe('sanity', () => {
   })
   test('defineSearchOperator', () => {
     expectTypeOf<typeof defineSearchOperator>().toBeFunction()
+  })
+  test('defineSingleton', () => {
+    expectTypeOf<typeof defineSingleton>().toBeFunction()
   })
   test('defineType', () => {
     expectTypeOf<typeof defineType>().toBeFunction()
@@ -3386,6 +3403,9 @@ describe('sanity', () => {
   test('ProvenanceDiffAnnotation', () => {
     expectTypeOf<ProvenanceDiffAnnotation>().toBeObject()
   })
+  test('ProviderProps', () => {
+    expectTypeOf<ProviderProps>().toBeObject()
+  })
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
   })
@@ -3549,6 +3569,9 @@ describe('sanity', () => {
   })
   test('resolveConfig', () => {
     expectTypeOf<typeof resolveConfig>().toBeFunction()
+  })
+  test('ResolvedTemplate', () => {
+    expectTypeOf<ResolvedTemplate<any, any>>().toBeObject()
   })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()
@@ -3714,6 +3737,12 @@ describe('sanity', () => {
   })
   test('SingleMutationResult', () => {
     expectTypeOf<SingleMutationResult>().toBeObject()
+  })
+  test('SingletonDefinition', () => {
+    expectTypeOf<SingletonDefinition>().toBeObject()
+  })
+  test('SingletonsResolver', () => {
+    expectTypeOf<SingletonsResolver>().not.toBeNever()
   })
   test('SingleWorkspace', () => {
     expectTypeOf<SingleWorkspace>().not.toBeNever()
@@ -4068,6 +4097,9 @@ describe('sanity', () => {
   })
   test('UnpublishDocumentEvent', () => {
     expectTypeOf<UnpublishDocumentEvent>().toBeObject()
+  })
+  test('UnresolvedSingletonDefinition', () => {
+    expectTypeOf<UnresolvedSingletonDefinition>().not.toBeNever()
   })
   test('UnscheduleDocumentVersionEvent', () => {
     expectTypeOf<UnscheduleDocumentVersionEvent>().toBeObject()

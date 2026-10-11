@@ -163,7 +163,7 @@ describe('ReleaseDocumentPreview', () => {
     // @ts-expect-error -- pre-existing, fix later
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toEqual([
-      ['variant', 'alpha-audience'],
+      ['variant', 'variant:alpha-audience'],
       ['perspective', 'rActive'],
     ])
   })

@@ -29,6 +29,22 @@ export const bisectSession = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'description',
+      title: 'Issue',
+      description:
+        'What is broken, in the bisector’s words — set at creation and carried into every refinement',
+      type: 'text',
+      rows: 2,
+    }),
+    defineField({
+      name: 'refines',
+      description:
+        'The session this one narrows down — e.g. the commits of a release a releases-only bisect blamed. A chain of refinements counts as ONE regression: the deepest verdict names the commit, annotations anywhere in the chain apply.',
+      type: 'reference',
+      to: [{type: 'bisectSession'}],
+      weak: true,
+    }),
+    defineField({
       name: 'good',
       description: 'The known-good endpoint (older)',
       type: 'object',
@@ -108,10 +124,18 @@ export const bisectSession = defineType({
           type: 'boolean',
         }),
         defineField({
-          name: 'description',
-          description: 'What broke, in the bisector’s words',
+          name: 'note',
+          title: 'Notes on the verdict',
+          description:
+            'Why this commit, the fix, a workaround — about the verdict, not the issue (that is the session’s description)',
           type: 'text',
           rows: 2,
+        }),
+        defineField({
+          name: 'severity',
+          description: 'How bad the regression is — a human call',
+          type: 'string',
+          options: {list: ['minor', 'major', 'critical']},
         }),
         defineField({
           name: 'linearIssue',
@@ -131,12 +155,23 @@ export const bisectSession = defineType({
     defineField({name: 'createdBy', type: 'string'}),
   ],
   preview: {
-    select: {title: 'title', firstBadSha: 'result.firstBadSha', markCount: 'marks'},
-    prepare: ({title, firstBadSha, markCount}) => ({
-      title,
-      subtitle: firstBadSha
+    select: {
+      title: 'title',
+      description: 'description',
+      firstBadSha: 'result.firstBadSha',
+      markCount: 'marks',
+    },
+    // The issue is what a session is about; the endpoints title and the
+    // verdict move to the subtitle
+    prepare: ({title, description, firstBadSha, markCount}) => {
+      const issue = description
+      const status = firstBadSha
         ? `found ${firstBadSha.slice(0, 10)}`
-        : `${Array.isArray(markCount) ? markCount.length : 0} mark${Array.isArray(markCount) && markCount.length === 1 ? '' : 's'}`,
-    }),
+        : `${Array.isArray(markCount) ? markCount.length : 0} mark${Array.isArray(markCount) && markCount.length === 1 ? '' : 's'}`
+      return {
+        title: issue || title,
+        subtitle: issue ? `${title} · ${status}` : status,
+      }
+    },
   },
 })

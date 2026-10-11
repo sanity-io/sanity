@@ -45,6 +45,7 @@ import {
   getCreatableVariantTarget,
   useTargetDocumentState,
 } from '../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
 import {isPerspectiveWriteable} from '../../../core/perspective/isPerspectiveWriteable'
 import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
 import {isGoingToUnpublish} from '../../../core/releases/util/isGoingToUnpublish'
@@ -75,6 +76,7 @@ import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {useDocumentApplicationContext} from './useDocumentApplicationContext'
 import {useDocumentInitialLoadTelemetry} from './useDocumentInitialLoadTelemetry'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
 import {useDocumentPaneInspector} from './useDocumentPaneInspector'
@@ -249,7 +251,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
   // creates the document seeded from the published sibling.
   const isVariantTargetReadOnly =
-    Boolean(perspective.selectedVariantName) &&
+    Boolean(getDefaultVariant(perspective.selectedVariantNames)) &&
     targetDocumentState.status !== 'ready' &&
     !getCreatableVariantTarget(targetDocumentState)
 
@@ -549,6 +551,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     }
     return displayed
   }, [editState.version, editState.published, displayed])
+
+  useDocumentApplicationContext({displayedId: currentDisplayed?._id, editState})
 
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
