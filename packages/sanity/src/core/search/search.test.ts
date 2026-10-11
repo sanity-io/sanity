@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {Schema} from '@sanity/schema'
+import {evaluate, parse} from 'groq-js'
 import {lastValueFrom, of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -75,12 +76,38 @@ describe.each(['groqLegacy', 'groq2024'] as const)('createSearch (%s)', (strateg
 })
 
 describe('EXCLUDE_AGENT_VERSIONS_FILTER', () => {
-  it('stays boolean for documents without _system.bundleId', () => {
-    // `string::startsWith(null, …)` is `null` and `!(false || null)` is `null`, which a GROQ
-    // filter treats as excluded — silently dropping every published and classic draft document.
-    // The `== true` comparison guards against that regression.
-    expect(EXCLUDE_AGENT_VERSIONS_FILTER).toContain(
-      'string::startsWith(_system.bundleId, "agent-") == true',
-    )
+  const dataset = [
+    // No `_system` at all: `string::startsWith(null, …)` is `null` and `!(false || null)` is
+    // `null`, which a GROQ filter treats as excluded. The `== true` comparison keeps the clause
+    // boolean, so these documents must survive.
+    {_id: 'book', _type: 'book'},
+    {_id: 'drafts.book', _type: 'book'},
+    {_id: 'book-without-bundle', _type: 'book', _system: {}},
+    {_id: 'versions.rJmP4k.book', _type: 'book', _system: {bundleId: 'rJmP4k'}},
+    // Neither leg is a prefix match, so the `agent-` hyphen is load bearing.
+    {_id: 'versions.agentic.book', _type: 'book', _system: {bundleId: 'agentic'}},
+    {_id: 'versions.agent-12334.book', _type: 'book', _system: {bundleId: 'agent-12334'}},
+    // Variant-scoped agent version: the id is an opaque hash, only `_system` names the bundle.
+    {_id: 'versions.Hf82nd.book', _type: 'book', _system: {bundleId: 'agent-12334'}},
+  ]
+
+  async function keptIds(): Promise<string[]> {
+    const result = await evaluate(parse(`*[${EXCLUDE_AGENT_VERSIONS_FILTER}]._id`), {dataset})
+    return result.get()
+  }
+
+  it('keeps every document that is not a Content Agent version', async () => {
+    await expect(keptIds()).resolves.toEqual([
+      'book',
+      'drafts.book',
+      'book-without-bundle',
+      'versions.rJmP4k.book',
+      'versions.agentic.book',
+    ])
+  })
+
+  it('drops agent versions named by id and by _system.bundleId alone', async () => {
+    await expect(keptIds()).resolves.not.toContain('versions.agent-12334.book')
+    await expect(keptIds()).resolves.not.toContain('versions.Hf82nd.book')
   })
 })
