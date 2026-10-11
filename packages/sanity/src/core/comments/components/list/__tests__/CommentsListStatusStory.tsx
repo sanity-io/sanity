@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {commentsUsEnglishLocaleBundle} from '../../../i18n'
@@ -25,7 +25,7 @@ export function CommentsListStatusStory() {
       <Card padding={4} style={{maxWidth: 360}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               error
             </Text>
             <StatusFrame>
@@ -38,7 +38,7 @@ export function CommentsListStatusStory() {
             </StatusFrame>
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               empty open
             </Text>
             <StatusFrame>
@@ -46,7 +46,7 @@ export function CommentsListStatusStory() {
             </StatusFrame>
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               empty resolved
             </Text>
             <StatusFrame>

@@ -217,6 +217,8 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
         />
       ) : (
         <Card
+          // Stable CSS hook for hiding the toolbar. Public contract: do not rename or remove.
+          data-sanity-document-toolbar=""
           hidden={collapsed}
           style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
           borderBottom

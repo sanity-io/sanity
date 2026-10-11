@@ -5,7 +5,7 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -17,7 +17,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -87,7 +87,7 @@ function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
 
-const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
+const Root = styled(VStack).attrs({forwardedAs: 'fieldset'})`
   border: none;
 
   /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
@@ -244,7 +244,7 @@ export function FormFieldSet(
             presence={presence}
             inputId={inputId}
             content={
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Flex alignItems="center">
                   {title && (
                     <FormFieldSetLegend
@@ -288,7 +288,7 @@ export function FormFieldSet(
                     {description}
                   </Text>
                 )}
-              </Stack>
+              </VStack>
             }
           />
           <Content

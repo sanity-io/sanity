@@ -1,5 +1,5 @@
-import {Stack, Text} from '@sanity/ui'
-import {Flex, Box} from 'ui5'
+import {Text} from '@sanity/ui'
+import {Flex, Box, VStack} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media} from '../_common/Media'
@@ -47,9 +47,9 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
 
   return (
     <RootBox>
-      <Stack>
+      <VStack>
         <HeaderFlex paddingBottom={3} paddingLeft={2} paddingRight={1} paddingTop={1}>
-          <Stack flex={1} gap={2}>
+          <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
             {(title || fallbackTitle) && (
               <Text size={1} textOverflow="ellipsis" weight="medium">
                 {title ? renderPreviewNode(title as any, 'block') : fallbackTitle}
@@ -61,7 +61,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
                 {renderPreviewNode(subtitle as any, 'block')}
               </Text>
             )}
-          </Stack>
+          </Flex>
 
           <Flex gap={1} paddingLeft={1}>
             {status && (
@@ -91,7 +91,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
             responsive
           />
         </MediaCard>
-      </Stack>
+      </VStack>
 
       {description && (
         <Box paddingX={2} paddingY={3}>

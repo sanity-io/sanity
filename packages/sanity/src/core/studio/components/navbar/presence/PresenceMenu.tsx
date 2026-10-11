@@ -1,10 +1,10 @@
 import {AddUserIcon} from '@sanity/icons/AddUser'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -21,7 +21,7 @@ const StyledMenu = styled(Menu)`
   max-width: 260px;
 `
 
-const FooterStack = styled(Stack)`
+const FooterStack = styled(VStack)`
   position: sticky;
   bottom: 0;
   background-color: var(--card-bg-color);
@@ -108,7 +108,7 @@ export function PresenceMenu() {
 
           {!hasPresence && (
             <Box padding={3}>
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Text weight="medium" size={1}>
                   {t('presence.no-one-else-title')}
                 </Text>
@@ -116,7 +116,7 @@ export function PresenceMenu() {
                 <Text size={1} muted>
                   {t('presence.no-one-else-description')}
                 </Text>
-              </Stack>
+              </VStack>
             </Box>
           )}
 

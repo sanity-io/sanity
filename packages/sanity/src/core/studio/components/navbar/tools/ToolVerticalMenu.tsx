@@ -1,6 +1,6 @@
-import {Stack} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import {useMemo, type RefAttributes} from 'react'
+import {VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type Tool} from '../../../../config/types'
@@ -17,7 +17,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
 
   return useMemo(
     () => (
-      <Stack as="ul" gap={1}>
+      <VStack as="ul" gap={1}>
         {tools.map((tool) => {
           const title = tool?.title || startCase(tool.name)
 
@@ -31,7 +31,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
           }
 
           return (
-            <Stack key={tool.name} as="li">
+            <VStack key={tool.name} as="li">
               <Button
                 as={Link}
                 justify="flex-start"
@@ -41,10 +41,10 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
                 tabIndex={isVisible ? 0 : -1}
                 text={title}
               />
-            </Stack>
+            </VStack>
           )
         })}
-      </Stack>
+      </VStack>
     ),
     [activeToolName, isVisible, tools],
   )

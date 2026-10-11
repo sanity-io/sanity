@@ -1,10 +1,11 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Button, Card, Dialog, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Inline, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, of, type Observable} from 'rxjs'
 import {
+  getDefaultVariant,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getTargetDocument,
@@ -17,7 +18,7 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
-import {Box, Grid} from 'ui5'
+import {Box, Grid, VStack} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'
 const RAW_PERSPECTIVE_CLIENT_OPTIONS = {apiVersion: 'X' as const}
@@ -90,7 +91,8 @@ function observeSnapshot(
 function useVariantVersionSnapshots(documentId: string) {
   const publishedId = getPublishedId(documentId)
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: publishedId})
-  const {selectedVariant, selectedReleaseId} = usePerspective()
+  const {selectedVariants, selectedReleaseId} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {data: releases = []} = useActiveReleases()
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -342,8 +344,8 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
   return (
     <>
       <Card padding={4} radius={2} shadow={2} tone="default">
-        <Stack gap={3}>
-          <Stack gap={1}>
+        <VStack gap={3}>
+          <VStack gap={1}>
             <Text size={2} weight="semibold">
               {label}
             </Text>
@@ -352,7 +354,7 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
                 {contextTitle}
               </Text>
             )}
-          </Stack>
+          </VStack>
           {status === 'loading' && (
             <Text muted size={1}>
               Loading…
@@ -374,7 +376,7 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
             </Text>
           )}
           {status === 'ready' && (
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Inline>
                 <Text size={1} weight="semibold">
                   Title:{' '}
@@ -394,7 +396,7 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
                 <Text size={1}>{snapshot?._id ?? <Text muted>(unknown)</Text>}</Text>
               </Inline>
               {queryUrl && documentId && (
-                <Stack gap={2}>
+                <VStack gap={2}>
                   <Text size={1}>
                     <a href={queryUrl} rel="noopener noreferrer" target="_blank">
                       See document <LaunchIcon />
@@ -413,11 +415,11 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
                       {deleteError}
                     </Text>
                   )}
-                </Stack>
+                </VStack>
               )}
-            </Stack>
+            </VStack>
           )}
-        </Stack>
+        </VStack>
       </Card>
       {dialogOpen && documentId && (
         <DocumentJsonDialog documentId={documentId} label={label} onClose={handleCloseDialog} />
@@ -434,8 +436,8 @@ export function VariantVersionsView(props: {documentId: string}) {
   return (
     <Card overflow="auto" style={{minHeight: '100%'}} tone="transparent">
       <Box padding={4}>
-        <Stack gap={4}>
-          <Stack gap={2}>
+        <VStack gap={4}>
+          <VStack gap={2}>
             <Text size={3} weight="bold">
               Variant versions
             </Text>
@@ -461,7 +463,7 @@ export function VariantVersionsView(props: {documentId: string}) {
                 Resolving document versions…
               </Text>
             )}
-          </Stack>
+          </VStack>
           <Grid
             gridTemplateColumns={[
               'repeat(1, minmax(0, 1fr))',
@@ -474,7 +476,7 @@ export function VariantVersionsView(props: {documentId: string}) {
               <VersionSlotCard key={slot.label} {...slot} />
             ))}
           </Grid>
-        </Stack>
+        </VStack>
       </Box>
     </Card>
   )

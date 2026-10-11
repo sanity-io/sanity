@@ -3,6 +3,7 @@ import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {
   getCreatableVariantTarget,
+  getDefaultVariant,
   isPublishedPerspective,
   isReleaseDocument,
   usePerspective,
@@ -31,7 +32,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
   const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
-  const {selectedPerspective, selectedVariantName} = usePerspective()
+  const {selectedPerspective, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)

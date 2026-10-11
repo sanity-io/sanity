@@ -1,7 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type ReactNode, type RefObject} from 'react'
-import {Flex, Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {formatBytes} from '../../common/helper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
@@ -52,7 +52,7 @@ export function FileActionsMenu(props: Props) {
               <BinaryDocumentIcon />
             </Text>
           </Card>
-          <Stack flex={1} gap={2} marginLeft={3}>
+          <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
             <Text
               size={1}
               textOverflow="ellipsis"
@@ -65,7 +65,7 @@ export function FileActionsMenu(props: Props) {
             <Text size={1} muted data-testid="file-size">
               {formatBytes(size)}
             </Text>
-          </Stack>
+          </Flex>
         </Flex>
       </Card>
 
