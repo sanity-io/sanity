@@ -1,7 +1,8 @@
 import {defineField, defineType, type SanityDocument} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ComponentProps} from 'react'
+import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -58,7 +59,7 @@ function UnknownFieldsHarness() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 560}}>
-        <Stack gap={2}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             unknown object fields
           </Text>
@@ -71,7 +72,7 @@ function UnknownFieldsHarness() {
               legacyAuthor: {_type: 'reference', _ref: 'author-1'},
             }}
           />
-        </Stack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

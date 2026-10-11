@@ -1,8 +1,7 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {ClockIcon} from '@sanity/icons/Clock'
-import {Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
@@ -10,6 +9,7 @@ import {
   type DocumentActionDialogProps,
   type DocumentActionProps,
 } from '../../../../config/document/actions'
+import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
@@ -66,8 +66,8 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
   const {handleOpenDialog} = useSchedulePublishingUpsell()
   // Scheduling operates on the base draft, so it is not available while a variant is selected —
   // it would silently schedule the base document instead of the variant (SAPP-3986).
-  const {selectedVariantName} = usePerspective()
-  const isVariantSelected = Boolean(selectedVariantName)
+  const {selectedVariantNames} = usePerspective()
+  const isVariantSelected = Boolean(getDefaultVariant(selectedVariantNames))
   // Check if the current project supports Scheduled Publishing
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -181,7 +181,9 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
     onHandle: handleDialogOpen,
     title: tooltip && (
       <Box style={{maxWidth: '315px'}}>
-        <Text size={1}>{tooltip}</Text>
+        <Text size={1} as="div" trim={true}>
+          {tooltip}
+        </Text>
       </Box>
     ),
   }

@@ -1,5 +1,7 @@
-import {createNode} from '@sanity/comlink'
 import {type FrameMessages, type WindowMessages} from '@sanity/message-protocol'
+import {createSanityInstance} from '@sanity/sdk'
+import {getNodeState, getOrCreateNode} from '@sanity/sdk/comlink'
+import {type Subscription} from 'rxjs'
 
 import {type CapabilityRecord} from '../renderingContext/types'
 import {type ComlinkStore} from './types'
@@ -15,12 +17,12 @@ interface Options {
 const SDK_CHANNEL_NAME = 'dashboard/channels/sdk'
 const SDK_NODE_NAME = 'dashboard/nodes/sdk'
 
+const SDK_NODE = {name: SDK_NODE_NAME, connectTo: SDK_CHANNEL_NAME}
+
 function noop() {}
 
 /**
- * Create a Comlink node if Comlink is provided by the Studio rendering context. The node is not
- * started here — the store is created during render — but by the first `start()` call, which
- * `useComlinkStore` makes once the consumer has committed.
+ * Shares the SDK's Comlink node: a second node with its name would handle every message twice.
  *
  * @internal
  */
@@ -29,19 +31,15 @@ export function createComlinkStore({capabilities}: Options): ComlinkStore {
     return {start: noop}
   }
 
-  const node = createNode<FrameMessages, WindowMessages>({
-    name: SDK_NODE_NAME,
-    connectTo: SDK_CHANNEL_NAME,
-  })
-
-  let started = false
+  // Never disposed, so the SDK keeps its node for the lifetime of the page.
+  const instance = createSanityInstance()
+  const node = getOrCreateNode<FrameMessages, WindowMessages>(instance, SDK_NODE)
+  let subscription: Subscription | undefined
 
   return {
     node,
     start: () => {
-      if (started) return
-      started = true
-      node.start()
+      subscription ??= getNodeState(instance, SDK_NODE).observable.subscribe()
     },
   }
 }

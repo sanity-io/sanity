@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
 
+import {getDefaultVariant} from '../perspective/getDefaultVariant'
 import {type PerspectiveBundle} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
@@ -355,7 +356,9 @@ export function getTargetDocumentState(options: {
  */
 export function useTargetDocumentState(documentGroupId: string): TargetDocumentState {
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: documentGroupId})
-  const {bundle, selectedVariant, selectedVariantName} = usePerspective()
+  const {bundle, selectedVariants, selectedVariantNames} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {loading: variantsLoading} = useAllVariants()
   const schema = useSchema()
   const liveEdit = useMemo(

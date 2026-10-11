@@ -4,11 +4,11 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {SanityMonogram} from '@sanity/logos'
-import {Badge, Card, Inline, Spinner, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Inline, Spinner, Text} from '@sanity/ui'
 import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
-import {Grid, Flex} from 'ui5'
+import {Flex, Grid, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -128,7 +128,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
           <TextWithTone tone="caution">
             <WarningOutlineIcon />
           </TextWithTone>
-          <Stack gap={4}>
+          <VStack gap={4}>
             <TextWithTone size={1} tone="caution" weight="medium">
               {t('about-dialog.configuration-issue.header')}
             </TextWithTone>
@@ -146,9 +146,9 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </a>
               </Text>
             </TextWithTone>
-          </Stack>
+          </VStack>
         </Flex>
-        <Stack gap={2} />
+        <VStack gap={2} />
       </Card>
     ) : null
 
@@ -158,7 +158,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
         <TextWithTone tone="caution">
           <WarningOutlineIcon />
         </TextWithTone>
-        <Stack gap={4}>
+        <VStack gap={4}>
           <TextWithTone size={1} tone="caution" weight="medium">
             {t('about-dialog.version-info.deprecated.header')}
           </TextWithTone>
@@ -193,7 +193,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Text>
             </TextWithTone>
           )}
-        </Stack>
+        </VStack>
       </Flex>
     </Card>
   ) : null
@@ -220,7 +220,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
         </Flex>
       ) : null}
 
-      <Stack gap={3} paddingY={3}>
+      <Flex gap={3} paddingY={3} flexDirection="column">
         <Flex alignItems="center" justifyContent="center" paddingY={4}>
           <MonogramContainer>
             <SanityMonogram height={75} width={75} />
@@ -337,7 +337,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             </>
           )}
         </Grid>
-        <Stack gap={2} paddingY={3}>
+        <Flex gap={2} paddingY={3} flexDirection="column">
           {isAutoUpdating ? (
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
               <Flex alignItems="center" justifyContent="space-evenly" gap={2}>
@@ -377,11 +377,11 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
           ) : null}
           {deprecationWarning}
           {importMapWarning}
-        </Stack>
-        <Stack paddingX={3}>
+        </Flex>
+        <Flex paddingX={3} flexDirection="column">
           <Button tone="primary" text="OK" paddingY={3} onClick={onClose} />
-        </Stack>
-      </Stack>
+        </Flex>
+      </Flex>
     </Dialog>
   )
 }

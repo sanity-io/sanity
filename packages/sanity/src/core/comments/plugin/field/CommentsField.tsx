@@ -42,7 +42,7 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
   },
 }
 
-export function CommentsField(props: FieldProps) {
+export default function CommentsField(props: FieldProps) {
   const {enabled, mode} = useCommentsEnabled()
 
   if (!enabled) {

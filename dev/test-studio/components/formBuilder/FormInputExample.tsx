@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
-import {Button, Card, Checkbox, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Card, Checkbox, Inline, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {
   FormInput,
@@ -9,7 +9,7 @@ import {
   pathToString,
   type RenderInputCallback,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 export function FormInputExample(props: ObjectInputProps) {
   const [path, setPath] = useState<Path>([])
@@ -42,18 +42,18 @@ export function FormInputExample(props: ObjectInputProps) {
 
   if (renderDefaultForm) {
     return (
-      <Stack gap={2}>
+      <VStack gap={2}>
         <Card shadow={2} margin={3} padding={4} radius={2}>
           {props.renderDefault({...props, renderInput})}
         </Card>
-      </Stack>
+      </VStack>
     )
   }
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <Card padding={3} radius={2}>
-        <Stack gap={4}>
-          <Stack gap={4}>
+        <VStack gap={4}>
+          <VStack gap={4}>
             <Flex gap={2}>
               <Text weight="semibold">
                 Input at <code>{pathToString(path)}</code>
@@ -69,7 +69,7 @@ export function FormInputExample(props: ObjectInputProps) {
                 <Text>Include item</Text>
               </Inline>
             </Flex>
-          </Stack>
+          </VStack>
           <Card shadow={2} padding={3} radius={2}>
             <FormInput
               {...props}
@@ -79,8 +79,8 @@ export function FormInputExample(props: ObjectInputProps) {
               includeItem={includeItem}
             />
           </Card>
-        </Stack>
+        </VStack>
       </Card>
-    </Stack>
+    </VStack>
   )
 }

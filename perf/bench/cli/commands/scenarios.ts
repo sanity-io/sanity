@@ -26,7 +26,13 @@ export function listScenarios(json: boolean): void {
     const fields = scenario.interactions
       .map((target) => target.label ?? target.fieldPath)
       .join(', ')
-    const detail = fields ? `types into: ${fields}` : 'settle only (no typing targets)'
-    console.log(`${scenario.name.padEnd(width)}  ${scenario.documentType} document — ${detail}`)
+    const detail = fields
+      ? `types into: ${fields}`
+      : scenario.load
+        ? 'pageload only (load steps)'
+        : 'settle only (no typing targets)'
+    console.log(
+      `${scenario.name.padEnd(width)}  ${scenario.documentType ? `${scenario.documentType} document` : 'no document'} — ${detail}`,
+    )
   }
 }

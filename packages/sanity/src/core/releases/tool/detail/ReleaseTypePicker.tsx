@@ -74,7 +74,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   const publishDate = useMemo(() => getPublishDateFromRelease(release), [release])
   const [isUpdating, setIsUpdating] = useState(false)
   const [isIntendedScheduleDateInPast, setIsIntendedScheduleDateInPast] = useState(
-    publishDate && isBefore(new Date(publishDate), new Date()),
+    () => publishDate && isBefore(new Date(publishDate), new Date()),
   )
 
   const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>(
@@ -140,6 +140,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     datePickerRef.current,
   ])
 
+  // oxlint-disable-next-line react/purity -- intentionally compares against the current time on every render
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
   const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
 

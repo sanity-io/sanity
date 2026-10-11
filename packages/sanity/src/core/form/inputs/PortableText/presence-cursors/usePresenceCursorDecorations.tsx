@@ -2,7 +2,7 @@ import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabl
 import {type Path} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
 import {dequal} from 'dequal/lite'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {type ReactNode, startTransition, useCallback, useEffect, useRef, useState} from 'react'
 
 import {type FormNodePresence} from '../../../../presence/types'
 import {EMPTY_ARRAY} from '../../../../util/empty'
@@ -75,18 +75,29 @@ export function usePresenceCursorDecorations(
       const cursorPoint = {focus: presence.selection.focus, anchor: presence.selection.focus}
 
       return {
-        component: ({children}) => (
-          <UserPresenceCursor presence={presence}>{children}</UserPresenceCursor>
-        ),
+        component: createUserPresenceCursor(presence),
         selection: cursorPoint,
         onMoved: handleRangeDecorationMoved,
         payload: {sessionId: presence.sessionId},
       }
     }) as RangeDecoration[]
 
-    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
-    setPresenceCursorDecorations(decorations.filter(Boolean))
+    startTransition(() => setPresenceCursorDecorations(decorations.filter(Boolean)))
   }, [currentPresence, handleRangeDecorationMoved])
 
   return presenceCursorDecorations
+}
+
+/**
+ * Creates the `RangeDecoration` component for a single presence entry.
+ *
+ * The component is created by a top-level factory instead of inline in the effect above so the
+ * React Compiler can see it: an anonymous inline component created inside `useEffect` is skipped
+ * by the compiler, while the `'use memo'` directive opts the returned component in to compilation.
+ */
+function createUserPresenceCursor(presence: FormNodePresence): RangeDecoration['component'] {
+  return function ({children}: {children?: ReactNode}) {
+    'use memo'
+    return <UserPresenceCursor presence={presence}>{children}</UserPresenceCursor>
+  }
 }
