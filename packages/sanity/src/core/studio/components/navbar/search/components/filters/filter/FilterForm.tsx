@@ -1,11 +1,12 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Card, Text} from '@sanity/ui'
-import {type ErrorInfo, useCallback, useState} from 'react'
-import FocusLock from 'react-focus-lock'
+import {type ErrorInfo, Suspense, useCallback, useState} from 'react'
+import FocusLock, {MoveFocusInside} from 'react-focus-lock'
 import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {LoadingBlock} from '../../../../../../../components/loadingBlock/LoadingBlock'
 import {supportsTouch} from '../../../../../../../util/supportsTouch'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
@@ -59,6 +60,15 @@ export function FilterForm({filter}: FilterFormProps) {
     setErrorParams(params)
   }, [])
 
+  // The operator menu and the remove button are interactive while the input's chunk is still
+  // loading. Once the user has used one of them, moving focus into the input when it arrives
+  // would take focus off what they are doing (and close an open operator menu), so the move is
+  // only made when the form has not been touched yet.
+  const [formTouched, setFormTouched] = useState(false)
+  const handleFormInteraction = useCallback(() => {
+    setFormTouched(true)
+  }, [])
+
   const Component = operator?.inputComponent
 
   if (errorParams) {
@@ -69,17 +79,29 @@ export function FilterForm({filter}: FilterFormProps) {
   return (
     <ErrorBoundary onCatch={handleCatchError}>
       <FocusLock autoFocus={!supportsTouch} returnFocus>
-        <Flex flexDirection="column-reverse">
+        <Flex
+          flexDirection="column-reverse"
+          onKeyDownCapture={handleFormInteraction}
+          onPointerDownCapture={handleFormInteraction}
+        >
           {/* Value */}
           {Component && (
             <Card borderTop padding={3}>
-              <Component
-                // re-render on new operators
-                key={filter.operatorType}
-                fieldDefinition={fieldDefinition}
-                onChange={handleValueChange}
-                value={filter.value}
-              />
+              {/* Operator input components are code-split (see definitions/operators/lazyInputComponents).
+                  FocusLock autofocuses when it mounts, before the input has loaded, so once the input
+                  is in the DOM focus is moved into it; the wrapper sits outside the operator-keyed input
+                  and therefore only does this once, not on every operator change. */}
+              <Suspense fallback={<LoadingBlock />}>
+                <MoveFocusInside disabled={supportsTouch || formTouched}>
+                  <Component
+                    // re-render on new operators
+                    key={filter.operatorType}
+                    fieldDefinition={fieldDefinition}
+                    onChange={handleValueChange}
+                    value={filter.value}
+                  />
+                </MoveFocusInside>
+              </Suspense>
             </Card>
           )}
 

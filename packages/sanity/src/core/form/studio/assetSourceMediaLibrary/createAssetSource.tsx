@@ -7,8 +7,13 @@ import {
   type AssetSourceOpenInSourceResult,
 } from '@sanity/types'
 
-import {MediaLibraryAssetSource} from './shared/MediaLibraryAssetSource'
+import {createLazyComponent} from '../../../components/lazy/createLazyComponent'
 import {MediaLibraryUploader} from './uploader'
+
+// Same as the dataset asset source: the picker dialog (iframe, comlink) loads when opened.
+const MediaLibraryAssetSource = createLazyComponent(() =>
+  import('./shared/MediaLibraryAssetSource').then((module) => module.MediaLibraryAssetSource),
+)
 
 // Default name for the Media Library asset source
 // This is used to identify assets created from the Media Library in the openInSource function,
