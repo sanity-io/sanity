@@ -1,5 +1,4 @@
 import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {
   Fragment,
   type HTMLAttributes,
@@ -11,7 +10,7 @@ import {
   useState,
 } from 'react'
 import {DiffContext} from 'sanity/_singletons'
-import {VStack, Box} from 'ui5'
+import {Text, VStack, Box} from 'ui5'
 
 import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {
@@ -90,7 +89,7 @@ export function ChangeResolver(props: ChangeResolverProps) {
   }
 
   return (
-    <Text>
+    <Text as="div" trim={true}>
       Unknown change type: <code>{(change as any).type || 'undefined'}</code>
     </Text>
   )

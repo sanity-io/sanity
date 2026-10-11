@@ -1,12 +1,13 @@
 import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser} from 'playwright'
 
-import {type BenchScenario} from '../../scenarios/types'
+import {type BenchScenario, scenarioFixture, type ScenarioStep} from '../../scenarios/types'
 import {type AttachedPage, attachPage, createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
-import {HERMETICITY_HINT} from './interaction'
+import {HERMETICITY_HINT, UNEXPECTED_ENDPOINT_HINT} from './interaction'
 import {awaitReadiness, scenarioUrl} from './navigation'
+import {milestoneMeasureName, runStep} from './steps'
 import {takePageStyleCensus} from './styles'
 
 export type LoadCondition = 'boot-cold' | 'open-doc-warm'
@@ -26,8 +27,21 @@ export const DEFAULT_PAGELOAD_CONFIG: PageLoadConfig = {
 
 export interface PageLoadSample {
   condition: LoadCondition
-  /** Headline: navigation start → form editable + probe keystroke landed. */
-  timeToEditableMs: number
+  /**
+   * Headline: navigation start → form editable + probe keystroke landed.
+   * Null for a scenario whose load steps have no `awaitEditable`.
+   */
+  timeToEditableMs: number | null
+  /**
+   * Navigation start → each load-step `milestone` reached, in the order
+   * reached (see BenchScenario.load).
+   */
+  milestones: {name: string; atMs: number}[]
+  /**
+   * Navigation start → the load steps finished (the later of editable and
+   * the last milestone): the cutoff for `jsPaths` and `auth`.
+   */
+  loadEndMs: number
   // No ttfbMs: the document is served by the local mock, so its TTFB is a
   // 2–10ms constant of the bench setup (the navigation request also bypasses
   // the emulated network latency) — a number we chose, not one we measure
@@ -42,7 +56,7 @@ export interface PageLoadSample {
    */
   clsAttribution: {source: string; totalValue: number}[]
   /**
-   * Pathnames of the JS chunks fetched before the form was editable — joined
+   * Pathnames of the JS chunks fetched before the load ended — joined
    * with the dist's exact gzip sizes at report time to measure what booting
    * actually downloads (the index.html entry chunk is a fraction of it).
    */
@@ -63,7 +77,7 @@ export interface PageLoadSample {
    * the window that scales with real-world API latency per trip).
    */
   auth: {
-    /** Auth requests completed before the form became editable. */
+    /** Auth requests completed before the load ended. */
     trips: number
     /** Navigation start → first auth request issued (client-controlled). */
     firstRequestMs: number | null
@@ -194,8 +208,49 @@ async function applyNetworkEmulation(
   })
 }
 
+/** The pre-steps probe budget for the editable input, kept from the fixed probe. */
+const EDITABLE_INPUT_TIMEOUT_MS = 30_000
+
+/**
+ * Load steps for a scenario without `load`: the editable probe on its first
+ * interaction target, after `awaitReadiness` (the readiness selector keeps
+ * its own timeout and error).
+ */
+export function defaultLoadSteps(scenario: BenchScenario): ScenarioStep[] {
+  const first = scenario.interactions[0]
+  return first ? [{kind: 'awaitEditable', field: first.fieldPath}] : []
+}
+
+function hasEditableStep(steps: ScenarioStep[]): boolean {
+  return steps.some((step) => step.kind === 'awaitEditable')
+}
+
+function describeStep(step: ScenarioStep): string {
+  if ('milestone' in step && step.milestone !== undefined) return `"${step.milestone}"`
+  if ('label' in step && step.label !== undefined) return `"${step.label}"`
+  return step.kind
+}
+
+/** `bench:milestone:*` measures → milestones in the order reached (first hit per name). */
+export function collectMilestones(
+  measures: {name: string; duration: number}[],
+): PageLoadSample['milestones'] {
+  const prefix = milestoneMeasureName('')
+  const seen = new Set<string>()
+  const milestones: PageLoadSample['milestones'] = []
+  for (const measure of measures) {
+    if (!measure.name.startsWith(prefix)) continue
+    const name = measure.name.slice(prefix.length)
+    if (seen.has(name)) continue
+    seen.add(name)
+    milestones.push({name, atMs: measure.duration})
+  }
+  return milestones.sort((a, b) => a.atMs - b.atMs)
+}
+
 async function measureLoad(options: {
   attached: AttachedPage
+  running: RunningSide
   url: string
   scenario: BenchScenario
   condition: LoadCondition
@@ -209,54 +264,52 @@ async function measureLoad(options: {
   await page.addInitScript(instrumentation)
   await page.goto(url, {waitUntil: 'domcontentloaded', timeout: config.readinessTimeoutMs})
 
-  await awaitReadiness(page, scenario, {
-    timeoutMs: config.readinessTimeoutMs,
-    context: condition,
-    diagnostics: () => [...attached.consoleErrors, ...attached.httpErrors],
-  })
-
-  const firstField = scenario.interactions[0]
-  const input = page
-    .locator(
-      `[data-testid="field-${firstField.fieldPath}"] input[type="text"], ` +
-        `[data-testid="field-${firstField.fieldPath}"] textarea, ` +
-        `[data-testid="field-${firstField.fieldPath}"] [contenteditable="true"]`,
-    )
-    .first()
-  await input.waitFor({state: 'visible', timeout: 30_000})
-  await input.click()
-  await input.evaluate((el) => {
-    el.addEventListener('input', () => performance.measure('bench:time-to-editable'), {once: true})
-  })
-  await page.keyboard.press('a')
-
-  await page
-    .waitForFunction(
-      () => performance.getEntriesByName('bench:time-to-editable', 'measure').length > 0,
-      undefined,
-      {timeout: 20_000, polling: 100},
-    )
-    .catch(() => {
-      throw new SessionError('probe-timeout', `probe keystroke never landed (${condition})`, [
-        ...attached.consoleErrors,
-        ...attached.httpErrors,
-      ])
+  const diagnostics = () => [...attached.consoleErrors, ...attached.httpErrors]
+  const loadSteps = scenario.load?.steps ?? defaultLoadSteps(scenario)
+  if (scenario.load === undefined) {
+    await awaitReadiness(page, scenario, {
+      timeoutMs: config.readinessTimeoutMs,
+      context: condition,
+      diagnostics,
     })
+  }
+  const stepContext = {
+    page,
+    running: options.running,
+    timeoutMs: scenario.load === undefined ? EDITABLE_INPUT_TIMEOUT_MS : config.readinessTimeoutMs,
+    interruptions: {count: 0, totalMs: 0},
+    label: condition,
+    diagnostics,
+  }
+  for (const step of loadSteps) {
+    await runStep(stepContext, step).catch((error: unknown) => {
+      if (error instanceof SessionError) throw error
+      throw new SessionError(
+        'readiness-timeout',
+        `load step ${describeStep(step)} failed (${condition}): ${error instanceof Error ? error.message.split('\n')[0] : String(error)}`,
+        diagnostics(),
+      )
+    })
+  }
 
   const entries = await page.evaluate(() => window.__bench?.take() ?? null)
   if (!entries) {
     throw new SessionError('page-error', 'instrumentation collector missing')
   }
 
-  const timeToEditable = entries.measures.find(
-    (measure) => measure.name === 'bench:time-to-editable',
-  )
-  if (!timeToEditable) {
+  const timeToEditableMs =
+    entries.measures.find((measure) => measure.name === 'bench:time-to-editable')?.duration ?? null
+  if (timeToEditableMs === null && hasEditableStep(loadSteps)) {
     throw new SessionError('page-error', `bench:time-to-editable measure missing (${condition})`)
   }
+  const milestones = collectMilestones(entries.measures)
+  const loadEndMs = Math.max(
+    timeToEditableMs ?? 0,
+    ...milestones.map((milestone) => milestone.atMs),
+  )
   const fcp = entries.paints.find((paint) => paint.name === 'first-contentful-paint')
 
-  // Style census once the document is editable: every load metric above is
+  // Style census once the load steps finished: every load metric above is
   // already measured, so the DOM walk cannot land in any of them
   const styles = styleProbe ? await takePageStyleCensus(page, styleProbe) : null
 
@@ -272,17 +325,19 @@ async function measureLoad(options: {
 
   return {
     condition,
-    timeToEditableMs: timeToEditable.duration,
+    timeToEditableMs,
+    milestones,
+    loadEndMs,
     fcpMs: fcp?.startTime ?? null,
     lcpMs: entries.largestContentfulPaint?.startTime ?? null,
     cls: entries.layoutShifts
       .filter((shift) => !shift.hadRecentInput)
       .reduce((sum, shift) => sum + shift.value, 0),
     clsAttribution: foldClsAttribution(entries.layoutShifts),
-    jsPaths: bootJsPaths(entries.resources, timeToEditable.duration),
+    jsPaths: bootJsPaths(entries.resources, loadEndMs),
     blockingMs: entries.loafs.reduce((sum, loaf) => sum + loaf.blockingDuration, 0),
     loafAttribution: foldLoafAttribution(entries.loafs),
-    auth: deriveAuthMilestones(entries.resources, timeToEditable.duration),
+    auth: deriveAuthMilestones(entries.resources, loadEndMs),
     styles,
   }
 }
@@ -306,42 +361,47 @@ export async function runPageLoadSample(options: {
   const {browser, running, scenario, instrumentation, styleProbe} = options
   const config = {...DEFAULT_PAGELOAD_CONFIG, ...options.config}
 
+  const auth = scenario.load?.auth ?? 'authenticated'
+  const conditions = scenario.load?.conditions ?? ['boot-cold', 'open-doc-warm']
+
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
-  running.mock.store.seed(scenario.fixture())
+  running.mock.setRequireToken(auth === 'logged-out')
+  running.mock.store.seed(scenarioFixture(scenario))
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,
+    auth,
   })
   const {context} = session
 
   const url = scenarioUrl(running.studioUrl, scenario)
 
   try {
-    await applyNetworkEmulation(session, config.network)
-    const cold = await measureLoad({
-      attached: session,
-      url,
-      scenario,
-      condition: 'boot-cold',
-      instrumentation,
-      styleProbe,
-      config,
-    })
-    await session.page.close()
-
-    const warmPage = await attachPage(context, {cpuThrottleRate: config.cpuThrottleRate})
-    await applyNetworkEmulation(warmPage, config.network)
-    const warm = await measureLoad({
-      attached: warmPage,
-      url,
-      scenario,
-      condition: 'open-doc-warm',
-      instrumentation,
-      styleProbe,
-      config,
-    })
+    const samples: PageLoadSample[] = []
+    for (const condition of conditions) {
+      // Cold uses the session's first page; warm opens a second page in the
+      // same context (primed HTTP cache) after the previous page closed
+      const attached =
+        condition === 'boot-cold'
+          ? session
+          : await attachPage(context, {cpuThrottleRate: config.cpuThrottleRate})
+      await applyNetworkEmulation(attached, config.network)
+      samples.push(
+        await measureLoad({
+          attached,
+          running,
+          url,
+          scenario,
+          condition,
+          instrumentation,
+          styleProbe,
+          config,
+        }),
+      )
+      await attached.page.close()
+    }
 
     if (session.violations.length > 0) {
       throw new SessionError(
@@ -350,9 +410,18 @@ export async function runPageLoadSample(options: {
         HERMETICITY_HINT,
       )
     }
+    const {unexpected} = running.mock.ledger.snapshot()
+    if (unexpected.length > 0) {
+      throw new SessionError(
+        'unexpected-endpoint',
+        unexpected.map((entry) => `${entry.method} ${entry.path}`).join(', '),
+        UNEXPECTED_ENDPOINT_HINT,
+      )
+    }
 
-    return [cold, warm]
+    return samples
   } finally {
+    running.mock.setRequireToken(false)
     await context.close()
   }
 }

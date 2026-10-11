@@ -1,5 +1,4 @@
 import {type Path} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ReactNode,
@@ -10,6 +9,7 @@ import {
   useState,
 } from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
+import {Text} from 'ui5'
 
 import {useZIndex} from '../components/zOffsets/useZIndex'
 import {pathToString} from '../field/paths/helpers'
@@ -74,7 +74,7 @@ export const ChangeFieldWrapper = (props: {
       onMouseEnter={onMouseEnter}
     >
       {DEBUG && (
-        <Text weight="medium" size={1}>
+        <Text weight="medium" size={1} as="div" trim={true}>
           {pathToString(path)}
         </Text>
       )}

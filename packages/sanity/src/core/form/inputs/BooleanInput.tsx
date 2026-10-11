@@ -1,5 +1,4 @@
 import {Card, type CardTone, Checkbox, Switch} from '@sanity/ui'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -9,10 +8,7 @@ import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
 import {FormFieldStatus} from '../components/formField/FormFieldStatus'
 import {useFieldActions} from '../field/actions/useFieldActions'
 import {type BooleanInputProps} from '../types/inputProps'
-
-const CenterAlignedBox = styled(Box)`
-  align-self: center;
-`
+import {centerAlignedBox} from './BooleanInput.css'
 
 /**
  *
@@ -84,11 +80,11 @@ export function BooleanInput(props: BooleanInputProps) {
             }
           />
         </Box>
-        <CenterAlignedBox paddingX={3} paddingY={1}>
+        <Box className={centerAlignedBox} paddingX={3} paddingY={1}>
           <FormFieldStatus maxAvatars={1} position="top">
             {/*<FieldPresence maxAvatars={1} presence={presence} />*/}
           </FormFieldStatus>
-        </CenterAlignedBox>
+        </Box>
       </Flex>
     </Card>
   )

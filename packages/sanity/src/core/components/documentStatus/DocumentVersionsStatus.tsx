@@ -1,6 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {useDocumentVersionTitle} from '../../hooks/useDocumentVersionTitle'
 import {useRelativeTime} from '../../hooks/useRelativeTime'
@@ -52,7 +52,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   }
 
   return (
-    <Stack gap={1}>
+    <VStack gap={1}>
       {versionGroups.map((group, groupIndex, allGroups) => (
         <Card
           borderBottom={groupIndex < allGroups.length - 1}
@@ -64,7 +64,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
           ))}
         </Card>
       ))}
-    </Stack>
+    </VStack>
   )
 }
 
@@ -86,14 +86,14 @@ function VersionStatus({version}: DocumentVersionStatusItem) {
   return (
     <Box className={versionStatusItem}>
       <Flex gap={2} justifyContent="space-between" paddingY={2}>
-        <Stack className={titleStack} gap={2}>
+        <VStack className={titleStack} gap={2}>
           <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
             {title}
           </Text>
           <Text className={updatedAtText} muted size={1}>
             {timestampLabel}
           </Text>
-        </Stack>
+        </VStack>
         <Box paddingRight={2}>
           <DocumentVersionIcons version={version} />
         </Box>

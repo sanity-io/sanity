@@ -26,6 +26,7 @@ import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {DashboardLink} from '../../../components/DashboardLink'
 import {PreviewCard} from '../../../components/previewCard/PreviewCard'
 import {type FIXME} from '../../../FIXME'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -329,7 +330,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
             <Flex alignItems="center" padding={1}>
               {studioUrl ? (
                 <PreviewCard
-                  as="a"
+                  as={DashboardLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   href={studioUrl}

@@ -1,10 +1,10 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {AxisBottom, AxisLeft} from '@visx/axis'
 import {Group} from '@visx/group'
 import {scaleLinear, scaleTime} from '@visx/scale'
 import {Area, LinePath} from '@visx/shape'
 import {useRef, useState} from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
@@ -1086,7 +1086,7 @@ export function TrendChart(props: {
           }}
         >
           <Card radius={2} shadow={2} padding={2}>
-            <Stack gap={2}>
+            <VStack gap={2}>
               {hovered.map((entry) => (
                 <Flex key={entry.name} alignItems="center" gap={2}>
                   {lines.length > 1 && (
@@ -1173,7 +1173,7 @@ export function TrendChart(props: {
               {perBranch.some(
                 (entry) => entry.point.calibrationMs !== undefined || entry.point.host,
               ) && (
-                <Stack gap={1}>
+                <VStack gap={1}>
                   {perBranch
                     .filter((entry) => entry.point.calibrationMs !== undefined)
                     .map((entry) => (
@@ -1216,7 +1216,7 @@ export function TrendChart(props: {
                         {hostVersions(entry.point.host)}
                       </Text>
                     ))}
-                </Stack>
+                </VStack>
               )}
               {/* The run's own release, when it measured one. "measured" is a
                   stronger claim than "near", and only earned when the run
@@ -1271,7 +1271,7 @@ export function TrendChart(props: {
               {/* No baseline medians here: the legend names the baseline and
                   its window, the overlay draws the levels, and repeating the
                   same two labelled rows in every chart's tooltip was noise. */}
-            </Stack>
+            </VStack>
           </Card>
         </div>
       )}

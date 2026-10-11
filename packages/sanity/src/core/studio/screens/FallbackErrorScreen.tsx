@@ -1,7 +1,7 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Card, Container, Heading, Text} from '@sanity/ui'
+import {Card, Heading, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {VStack, Flex} from 'ui5'
+import {Container, VStack, Flex} from 'ui5'
 
 import {ErrorActions} from '../../components/errorActions/ErrorActions'
 import {isDev, isProd} from '../../environment'
@@ -41,7 +41,7 @@ export function FallbackErrorScreen(props: {
       sizing="border"
     >
       <Flex alignItems="center" height="100%">
-        <Container width={3}>
+        <Container size={3}>
           <VStack gap={6}>
             <VStack gap={4}>
               <Heading>{heading}</Heading>

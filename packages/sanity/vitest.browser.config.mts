@@ -124,6 +124,12 @@ export default defineConfig({
       provider: playwright(),
       headless: true,
       commands: {readFileAsBase64},
+      // Vitest 5 made `getByText`/`getByRole({name})`/`getByLabelText`/... match the full,
+      // case-sensitive string by default. The suite was written against the substring,
+      // case-insensitive matching of Vitest 4 (e.g. `getByText('Lorem:Lore')`,
+      // `getByRole('button', {name: 'body'})`), so keep that default; tests that need a
+      // full-string match pass `{exact: true}` explicitly.
+      locators: {exact: false},
       // Desktop viewport so the Portable Text toolbar renders all buttons
       // instead of collapsing them into an overflow menu (matches the old
       // Playwright "Desktop" device presets).

@@ -138,6 +138,12 @@ function styleRows(
       metric(rng, 'styled-components CSS bytes', cssBytes, 'bytes'),
       metric(rng, 'styled-components CSS rule share', (cssRules / totalRules) * 100, 'percent'),
       metric(rng, 'styled-components style tags', 1, 'count'),
+      // CSS weight: the inserted CSS plus a static stylesheet that grows a
+      // little as components move to it (fewer bytes per rule than runtime CSS)
+      metric(rng, 'CSS bytes', cssBytes + Math.round(420_000 + 90_000 * progress), 'bytes'),
+      metric(rng, 'CSS rules', cssRules + Math.round(1500 + 260 * progress), 'count'),
+      metric(rng, 'style tag CSS bytes', cssBytes, 'bytes'),
+      metric(rng, 'style tag CSS rules', cssRules, 'count'),
     ],
     styles: {
       experiment: {

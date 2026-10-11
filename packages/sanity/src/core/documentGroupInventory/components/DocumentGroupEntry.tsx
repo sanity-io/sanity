@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
-import {Text} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, type Ref} from 'react'
+import {Text} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
@@ -57,7 +57,7 @@ export function DocumentGroupEntry({
           {variant.name}
         </button>
         {leading}
-        <Text size={1} weight="medium" className="inert">
+        <Text size={1} weight="medium" className="inert" as="div" trim={true}>
           {variant.name}
         </Text>
       </div>
@@ -67,19 +67,17 @@ export function DocumentGroupEntry({
             <EyeOpenIcon /> {t('document-group-inventory.viewing-item-label')}
           </StatusBadge>
         )}
-        <Text size={1}>
-          {agentBundleName ? (
-            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-            <ReleaseAvatarIcon tone="suggest" />
-          ) : (
-            <ReleaseAvatarIcon
-              release={
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
-                (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
-              }
-            />
-          )}
-        </Text>
+        {agentBundleName ? (
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+          <ReleaseAvatarIcon tone="suggest" />
+        ) : (
+          <ReleaseAvatarIcon
+            release={
+              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
+              (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
+            }
+          />
+        )}
       </div>
     </VariantSetEntry>
   )

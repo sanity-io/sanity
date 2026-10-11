@@ -13,6 +13,11 @@
  *   document (`STYLE_METRICS` holds the labels — the join key with Studio
  *   Radar, dev/radar, which charts them over time).
  *
+ * The CSS weight block (`css`) counts every readable stylesheet on the page —
+ * `<link>` sheets, `<style>` elements (styled-components included) and
+ * constructed sheets — so the total drops when a runtime-styled library goes,
+ * not only its own share.
+ *
  * The styled-components sheet numbers mirror the studio diagnostics dialog
  * (packages/sanity/src/core/studio/diagnostics/getStylesDiagnostics.ts): rule
  * count of every `<style data-styled>` sheet, UTF-8 size of its CSS, and the
@@ -119,6 +124,30 @@ export interface StyleCensus {
     /** Stylesheets whose rules could not be read (cross-origin). */
     inaccessible: number
   }
+  /**
+   * How much CSS the page holds, across every readable stylesheet. Rules are
+   * counted inside grouping at-rules (`@layer`, `@media`, `@supports`, …), so a
+   * sheet wrapped in one `@layer` block counts its rules, not 1 — unlike
+   * `stylesheets.totalRules`, which counts top-level rules only. Bytes are the
+   * UTF-8 size of the serialized rules (the CSSOM's `cssText`): what the
+   * browser parsed and holds, not what went over the wire, so a `<style>` tag
+   * filled at runtime and a downloaded file are measured the same way.
+   *
+   * Blind spots, none of which the built studio hits today: unreadable
+   * (cross-origin) sheets are left out, so a page with some is undercounted
+   * (see `stylesheets.inaccessible`); `@import`ed sheets are not in
+   * `document.styleSheets` and the `@import` rule counts as one; shadow roots'
+   * `adoptedStyleSheets` are not visited; a `@layer a, b;` statement counts as
+   * a rule.
+   */
+  css: {
+    /** Readable stylesheets the numbers below were read from. */
+    sheets: number
+    rules: number
+    bytes: number
+    /** The share held by `<style>` elements (styled-components' included): CSS the page inserted rather than linked. */
+    styleTags: {rules: number; bytes: number}
+  }
 }
 
 function readRules(sheet: CSSStyleSheet): CSSRuleList | null {
@@ -128,6 +157,29 @@ function readRules(sheet: CSSStyleSheet): CSSRuleList | null {
     // Cross-origin or otherwise inaccessible CSSOM sheets throw on `cssRules`.
     return null
   }
+}
+
+/**
+ * Rules in `rules`, counted through grouping at-rules: a container
+ * (`@media`, `@supports`, `@layer` block, `@container`, …) adds its children
+ * but not itself, a style rule adds itself and any nested rules, and a
+ * `@keyframes` block counts as one rule. Duck-typed on `cssRules` /
+ * `selectorText` so it runs where the CSSOM rule constructors are missing.
+ */
+function countRules(rules: CSSRuleList): number {
+  let count = 0
+  for (const rule of Array.from(rules)) {
+    if (!hasChildRules(rule) || 'findRule' in rule) {
+      count += 1
+      continue
+    }
+    count += ('selectorText' in rule ? 1 : 0) + countRules(rule.cssRules)
+  }
+  return count
+}
+
+function hasChildRules(rule: CSSRule): rule is CSSRule & {cssRules: CSSRuleList} {
+  return 'cssRules' in rule && rule.cssRules != null
 }
 
 /**
@@ -175,18 +227,33 @@ export function takeStyleCensus(root: Document): StyleCensus {
   let totalRules = 0
   let inaccessible = 0
   let ui5Layer = false
+  const css = {sheets: 0, rules: 0, bytes: 0, styleTags: {rules: 0, bytes: 0}}
   const encoder = new TextEncoder()
-  for (const sheet of Array.from(root.styleSheets)) {
+  const sizeOf = (rules: CSSRuleList) =>
+    encoder.encode(Array.from(rules, (rule) => rule.cssText).join('')).byteLength
+  // Constructed sheets (`adoptedStyleSheets`) are not in `styleSheets`, but
+  // they are CSS the page holds all the same
+  const sheets = [...Array.from(root.styleSheets), ...(root.adoptedStyleSheets ?? [])]
+  for (const sheet of sheets) {
     const rules = readRules(sheet)
     if (!rules) {
       inaccessible += 1
       continue
     }
     totalRules += rules.length
+    css.sheets += 1
+    const sheetRules = countRules(rules)
+    const sheetBytes = sizeOf(rules)
+    css.rules += sheetRules
+    css.bytes += sheetBytes
     const owner = sheet.ownerNode
+    if (owner instanceof HTMLStyleElement) {
+      css.styleTags.rules += sheetRules
+      css.styleTags.bytes += sheetBytes
+    }
     if (owner instanceof HTMLStyleElement && owner.matches('style[data-styled]')) {
       cssRules += rules.length
-      cssBytes += encoder.encode(Array.from(rules, (rule) => rule.cssText).join('')).byteLength
+      cssBytes += sheetBytes
     } else if (!ui5Layer) {
       ui5Layer = hasUi5Layer(rules)
     }
@@ -203,6 +270,7 @@ export function takeStyleCensus(root: Document): StyleCensus {
       versions: [...versions].sort(),
     },
     stylesheets: {totalRules, inaccessible},
+    css,
   }
 }
 
@@ -236,8 +304,8 @@ export interface StyleMetric {
    */
   label: string
   unit: StyleMetricUnit
-  /** Which migration the metric tracks. */
-  track: 'ui5' | 'styled'
+  /** Which migration the metric tracks; `css` is the page's CSS weight, whatever wrote it. */
+  track: 'ui5' | 'styled' | 'css'
   /** How to read a move: adoption climbs, the escape hatch shrinks. */
   goal: 'higher' | 'lower'
   /** Plain-English explanation, for chart ⓘ buttons. */
@@ -257,7 +325,7 @@ export interface StyleMetric {
 /**
  * Every style-migration metric the bench records, in display order. UI v5
  * adoption first (the headline share leading), then the styled-components
- * escape hatch, largest-picture numbers first.
+ * escape hatch, largest-picture numbers first, then the page's CSS weight.
  */
 export const STYLE_METRICS: readonly StyleMetric[] = [
   {
@@ -344,6 +412,42 @@ export const STYLE_METRICS: readonly StyleMetric[] = [
     // every page, and a flat line of ones tells no migration story.
     charted: false,
     read: (census) => census.styledComponents.styleTags,
+  },
+  {
+    label: 'CSS bytes',
+    unit: 'bytes',
+    track: 'css',
+    goal: 'lower',
+    description:
+      'UTF-8 size of all the CSS on the page: linked stylesheets, <style> tags (styled-components included) and constructed sheets, measured as the browser serializes the parsed rules — so CSS inserted at runtime and CSS downloaded as a file count the same way. Absent when no stylesheet was readable.',
+    read: (census) => (census.css.sheets > 0 ? census.css.bytes : null),
+  },
+  {
+    label: 'CSS rules',
+    unit: 'count',
+    track: 'css',
+    goal: 'lower',
+    description:
+      'CSS rules on the page across every readable stylesheet, counted inside @layer, @media and other grouping rules (a stylesheet wrapped in one @layer counts its rules, not 1). Absent when no stylesheet was readable.',
+    read: (census) => (census.css.sheets > 0 ? census.css.rules : null),
+  },
+  {
+    label: 'style tag CSS bytes',
+    unit: 'bytes',
+    track: 'css',
+    goal: 'lower',
+    description:
+      'UTF-8 size of the CSS held by <style> elements — styled-components\u2019 sheet and anything else a script inserted — as opposed to linked stylesheets the browser can cache.',
+    read: (census) => census.css.styleTags.bytes,
+  },
+  {
+    label: 'style tag CSS rules',
+    unit: 'count',
+    track: 'css',
+    goal: 'lower',
+    description:
+      'CSS rules held by <style> elements, counted inside grouping rules like the CSS rules row.',
+    read: (census) => census.css.styleTags.rules,
   },
 ]
 

@@ -287,9 +287,10 @@ test('guest cannot access admin panel', async ({page}) => {
 **Alternative**: Use a fixture that accepts a role parameter when you need role switching within a single spec file.
 
 ```typescript
+import fs from 'fs'
+
 // fixtures/auth.ts — role-based fixture
 import {test as base, type Page} from '@playwright/test'
-import fs from 'fs'
 
 type RoleFixtures = {
   loginAs: (role: 'admin' | 'member' | 'guest') => Promise<Page>
@@ -420,6 +421,7 @@ export function generateTOTP(secret: string): string {
 ```typescript
 // tests/mfa-login.spec.ts
 import {test, expect} from '@playwright/test'
+
 import {generateTOTP} from '../helpers/totp'
 
 test('login with TOTP two-factor auth', async ({page}) => {
@@ -449,9 +451,10 @@ test('login with TOTP two-factor auth', async ({page}) => {
 **Avoid when**: Your test suite runs quickly and tokens outlast the entire run.
 
 ```typescript
+import fs from 'fs'
+
 // fixtures/auth-with-refresh.ts
 import {test as base, type BrowserContext} from '@playwright/test'
-import fs from 'fs'
 
 type AuthFixtures = {
   authenticatedPage: import('@playwright/test').Page
@@ -555,6 +558,7 @@ export class LoginPage {
 ```typescript
 // tests/login.spec.ts
 import {test, expect} from '@playwright/test'
+
 import {LoginPage} from '../page-objects/LoginPage'
 
 test.use({storageState: {cookies: [], origins: []}})

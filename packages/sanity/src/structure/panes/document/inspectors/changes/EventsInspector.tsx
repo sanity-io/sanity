@@ -1,5 +1,5 @@
 import {diffInput, wrap} from '@sanity/diff'
-import {BoundaryElementProvider, Card, Spinner, Stack, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Spinner, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -79,9 +79,9 @@ const CompareWithPublishedView = () => {
     return null
   }
   return (
-    <Stack gap={2} marginBottom={3}>
+    <Flex gap={2} marginBottom={3} flexDirection="column">
       <Card borderBottom paddingBottom={3}>
-        <Stack gap={3} paddingTop={1}>
+        <Flex gap={3} paddingTop={1} flexDirection="column">
           <Text size={1} weight="medium">
             {t('events.compare-with-published.title')}
           </Text>
@@ -96,7 +96,7 @@ const CompareWithPublishedView = () => {
               }}
             />
           </Text>
-        </Stack>
+        </Flex>
       </Card>
       <DocumentChangeContext.Provider
         value={{
@@ -113,7 +113,7 @@ const CompareWithPublishedView = () => {
           <ChangeList diff={rootDiff} schemaType={schemaType} />
         </Box>
       </DocumentChangeContext.Provider>
-    </Stack>
+    </Flex>
   )
 }
 export function EventsInspector({showChanges}: {showChanges: boolean}): ReactElement {
@@ -174,14 +174,14 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   if (!events.length) {
     return (
       <Box paddingX={2}>
-        <Stack padding={3} gap={3}>
+        <Flex padding={3} gap={3} flexDirection="column">
           <Text size={1} weight="medium">
             {t('timeline.error.no-document-history-title')}
           </Text>
           <Text muted size={1}>
             {t('timeline.error.no-document-history-description')}
           </Text>
-        </Stack>
+        </Flex>
       </Box>
     )
   }
@@ -311,14 +311,14 @@ function SameRevisionSelected() {
       initial={{opacity: 0}}
       transition={{delay: 0.2, duration: 0.2}}
     >
-      <Stack gap={3} paddingTop={2}>
+      <Flex gap={3} paddingTop={2} flexDirection="column">
         <Text size={1} weight="medium" as="h3">
           {t('changes.same-revision-selected-title')}
         </Text>
         <Text as="p" size={1} muted>
           <Translate i18nKey="changes.same-revision-selected-description" t={t} />
         </Text>
-      </Stack>
+      </Flex>
     </motion.div>
   )
 }

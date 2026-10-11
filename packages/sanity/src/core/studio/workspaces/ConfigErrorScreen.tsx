@@ -1,10 +1,10 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Container, Heading, Text} from '@sanity/ui'
+import {Card, Heading, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex, VStack, Box} from 'ui5'
+import {Container, Flex, VStack, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -146,7 +146,7 @@ function WorkspaceChooserScreen(props: {
       height="fill"
     >
       <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
-        <Container width={1}>
+        <Container size={1}>
           <VStack gap={2}>
             <Flex>
               <Button icon={ArrowLeftIcon} mode="bleed" onClick={onBack} text="Back" />

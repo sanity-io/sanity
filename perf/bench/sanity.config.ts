@@ -3,8 +3,10 @@ import {defineConfig} from 'sanity'
 import {apiConfig} from './studio/apiConfig'
 import {arrayI18nWorkspace} from './studio/schemas/arrayI18n'
 import {articleWorkspace} from './studio/schemas/article'
+import {emptyToolWorkspace} from './studio/schemas/emptyTool'
 import {recipeWorkspace} from './studio/schemas/recipe'
 import {singleStringWorkspace} from './studio/schemas/singleString'
+import {structureToolWorkspace} from './studio/schemas/structureTool'
 import {syntheticWorkspace} from './studio/schemas/synthetic'
 
 /**
@@ -44,5 +46,15 @@ export default defineConfig([
     basePath: '/synthetic',
     ...common,
     ...syntheticWorkspace,
+  },
+  {
+    basePath: '/structureTool',
+    ...common,
+    ...structureToolWorkspace,
+  },
+  {
+    basePath: '/emptyTool',
+    ...common,
+    ...emptyToolWorkspace,
   },
 ])
