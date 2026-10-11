@@ -12,9 +12,6 @@
         "dotenv",
         // keeping it a dev dependency speeds up 'npx only-allow pnpm' in package.json's preinstall script
         "only-allow",
-        // Used by the boundaries jsPlugin via `settings["import/resolver"]` in .oxlintrc.json,
-        // which knip can't trace (unlike jsPlugins, which it detects)
-        "eslint-import-resolver-typescript",
       ],
       "ignoreBinaries": [
         // No root packages provide these binaries
@@ -50,7 +47,8 @@
     },
     // Studios that set `reactCompiler` in sanity.cli.ts need oxc-transform-react
     // in their dependencies: `sanity dev` / `sanity build` resolve the plugin by
-    // name at runtime, which knip can't trace.
+    // name at runtime, which knip can't trace. Every such studio below carries its
+    // own `ignoreDependencies: ["oxc-transform-react"]` for that reason.
     "dev/auth-test-studio": {
       "ignoreDependencies": ["oxc-transform-react"],
     },
@@ -65,10 +63,10 @@
       "project": ["**/*.{ts,tsx}"],
       "playwright": false,
     },
-    // The dev/perf app workspaces below carry pre-existing unused files/exports (example
-    // and debug code, out of scope for dependency checking). Like the e2e workspace,
-    // treat every file as an entry so the full `pnpm knip` run doesn't report them,
-    // while dependency usage is still traced.
+    // Several of the dev/perf app workspaces below carry pre-existing unused files/exports
+    // (example and debug code, out of scope for dependency checking). Those workspaces,
+    // like the e2e workspace, treat every file as an entry so the full `pnpm knip` run
+    // doesn't report them, while dependency usage is still traced.
     "dev/media-library-aspects-studio": {
       "entry": ["**/*.{ts,tsx}"],
       "project": ["**/*.{ts,tsx}"],
