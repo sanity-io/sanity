@@ -25,7 +25,9 @@ const CreateReleaseDialog = lazy(() =>
 )
 
 function preloadCreateReleaseDialog() {
-  void importCreateReleaseDialog()
+  importCreateReleaseDialog().catch(() => {
+    // Ignored: rendering the lazy dialog surfaces load failures through the error boundary.
+  })
 }
 
 const StyledMenu = styled(Menu)`

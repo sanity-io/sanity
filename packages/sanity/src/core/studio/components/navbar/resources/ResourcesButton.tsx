@@ -39,9 +39,13 @@ const StudioInfoDialog = lazy(() =>
 )
 
 function preloadResourcesDialogs() {
-  void importDiagnosticsDialog()
-  void importStudioFeedbackDialog()
-  void importStudioInfoDialog()
+  Promise.all([
+    importDiagnosticsDialog(),
+    importStudioFeedbackDialog(),
+    importStudioInfoDialog(),
+  ]).catch(() => {
+    // Ignored: rendering the lazy dialogs surfaces load failures through the error boundary.
+  })
 }
 
 const StyledMenu = styled(Menu)`
