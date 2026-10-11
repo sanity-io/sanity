@@ -7,9 +7,10 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {usePerspectiveMockReturn} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {activeASAPRelease} from '../../../../releases/__fixtures__/release.fixture'
 import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
+import * as variantConditions from '../../../hooks/useVariantConditions'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {getVariantId} from '../../../tool/util'
-import {VariantsStudioNavbar} from '../VariantsStudioNavbar'
+import VariantsStudioNavbarLayout from '../VariantsStudioNavbarLayout'
 
 const mockNavigate = vi.fn()
 
@@ -50,20 +51,22 @@ function getFilter(prefix: string) {
   return filter as HTMLElement
 }
 
-describe('VariantsStudioNavbar', () => {
+describe('VariantsStudioNavbarLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     routerMock.stickyParams = {}
     usePerspectiveMockReturn.selectedPerspective = 'drafts'
-    usePerspectiveMockReturn.selectedVariant = undefined
+    usePerspectiveMockReturn.selectedVariants = []
+    usePerspectiveMockReturn.selectedVariantNames = []
   })
 
+  // The layout lazy-loads the filters behind a Suspense fallback, so wait for them to appear
   const renderNavbar = async () => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    // @ts-expect-error -- pre-existing, fix later
-    const view = render(<VariantsStudioNavbar renderDefault={() => null} />, {wrapper})
+    const view = render(<VariantsStudioNavbarLayout renderDefault={() => <span />} />, {wrapper})
+    await screen.findByText('Version')
     await flushMicrotasksThisIsACodeSmell()
     return view
   }
@@ -124,6 +127,22 @@ describe('VariantsStudioNavbar', () => {
         perspective: '',
       },
     })
+  })
+
+  it('renders one menu per resolved variant type', async () => {
+    const spy = vi.spyOn(variantConditions, 'useVariantTypes').mockReturnValue({
+      status: 'ready',
+      types: [
+        {key: 'variant', label: 'Variant', conditions: {mode: 'freeform'}},
+        {key: 'language', label: 'Language', conditions: {mode: 'freeform'}},
+      ],
+    })
+
+    await renderNavbar()
+
+    expect(screen.getByText('Language')).toBeInTheDocument()
+    expect(screen.getAllByTestId('variants-menu')).toHaveLength(2)
+    spy.mockRestore()
   })
 
   it('clears variant when variant remove is clicked', async () => {

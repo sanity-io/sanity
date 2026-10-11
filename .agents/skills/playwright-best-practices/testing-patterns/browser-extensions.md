@@ -22,9 +22,10 @@ npx playwright install chromium  # Extensions only work in Chromium
 ### Basic Configuration
 
 ```typescript
+import path from 'path'
+
 // playwright.config.ts
 import {defineConfig} from '@playwright/test'
-import path from 'path'
 
 export default defineConfig({
   testDir: './tests',
@@ -46,9 +47,10 @@ export default defineConfig({
 ### Extension Fixture
 
 ```typescript
+import path from 'path'
+
 // fixtures/extension.ts
 import {test as base, chromium, BrowserContext, Page} from '@playwright/test'
-import path from 'path'
 
 type ExtensionFixtures = {
   context: BrowserContext

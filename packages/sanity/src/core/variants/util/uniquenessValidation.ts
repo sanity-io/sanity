@@ -1,5 +1,6 @@
 import {type EditableSystemVariant} from '../types'
 import {getVariantTitleValue} from './getIsVariantInvalid'
+import {getVariantType} from './variantType'
 
 /**
  * The existing variants that a candidate variant would duplicate, per uniqueness check.
@@ -52,8 +53,8 @@ function conditionsAreEqual(a: Map<string, string>, b: Map<string, string>): boo
  * superset of the candidate's is not a duplicate.
  *
  * The candidate itself is excluded by `_id`, so an unchanged variant never matches itself when
- * editing. Empty titles and empty condition sets never match — those are covered by the
- * required-field validation.
+ * editing. Comparisons are limited to definitions of the same type. Empty titles and empty
+ * condition sets never match — those are covered by the required-field validation.
  *
  * @internal
  */
@@ -61,7 +62,10 @@ export function getVariantUniquenessValidation<T extends EditableSystemVariant>(
   variant: EditableSystemVariant,
   allVariants: readonly T[],
 ): VariantUniquenessValidation<T> {
-  const otherVariants = allVariants.filter((other) => other._id !== variant._id)
+  const variantType = getVariantType(variant)
+  const otherVariants = allVariants.filter(
+    (other) => other._id !== variant._id && getVariantType(other) === variantType,
+  )
 
   const title = getVariantTitleValue(variant).toLowerCase()
   const conditions = getNormalizedConditions(variant.conditions)

@@ -4,10 +4,11 @@ import {
   type ObjectSchemaType,
   type ReferenceSchemaType,
 } from '@sanity/types'
-import {Card, Stack, TextInput} from '@sanity/ui'
+import {Card, TextInput} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ComponentProps, type ReactNode} from 'react'
 import {of} from 'rxjs'
+import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -112,7 +113,7 @@ function ReferenceAlerts() {
 
   return (
     <Card padding={4} style={{maxWidth: 480}}>
-      <Stack gap={5}>
+      <VStack gap={5}>
         <OptionPreview
           id="author-1"
           referenceType={referenceType}
@@ -131,7 +132,7 @@ function ReferenceAlerts() {
           errorMessage="The reference metadata could not be loaded."
           onHandleRetry={noop}
         />
-      </Stack>
+      </VStack>
     </Card>
   )
 }

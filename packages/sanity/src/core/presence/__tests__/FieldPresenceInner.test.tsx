@@ -82,7 +82,7 @@ describe('FieldPresenceInner', () => {
     expect(avatarUserIds()).toEqual(expect.arrayContaining(['u1', 'u2']))
   })
 
-  it('renders the most recently active user first and on top of the stack', () => {
+  it('orders avatars by stable user identity with the first avatar on top', () => {
     renderInner(
       <FieldPresenceInner
         presence={[
@@ -93,11 +93,74 @@ describe('FieldPresenceInner', () => {
       />,
     )
 
-    expect(avatarUserIds()).toEqual(['newest', 'middle', 'older'])
+    expect(avatarUserIds()).toEqual(['older', 'newest', 'middle'])
     // Each avatar sits in a positioned wrapper; the first one is stacked on top of the others
     const zIndexes = avatars().map((avatar) => Number(avatar.parentElement?.style.zIndex))
     expect(zIndexes[0]).toBeGreaterThan(zIndexes[1])
     expect(zIndexes[1]).toBeGreaterThan(zIndexes[2])
+  })
+
+  it.each([true, false])(
+    'keeps avatars in place when heartbeat timestamps and input order change (stack=%s)',
+    (stack) => {
+      const collaborators = users(3)
+      const {rerender} = renderInner(<FieldPresenceInner presence={collaborators} stack={stack} />)
+      const initialAvatars = avatars()
+
+      rerender(
+        <FieldPresenceInner
+          presence={[
+            presence('u2', {lastActiveAt: '2026-01-01T00:00:04.000Z'}),
+            presence('u3', {lastActiveAt: '2026-01-01T00:00:05.000Z'}),
+            presence('u1', {lastActiveAt: '2026-01-01T00:00:06.000Z'}),
+          ]}
+          stack={stack}
+        />,
+      )
+
+      expect(avatars()).toHaveLength(initialAvatars.length)
+      avatars().forEach((avatar, index) => {
+        expect(avatar).toBe(initialAvatars[index])
+      })
+    },
+  )
+
+  it('keeps the same visible collaborators when a hidden collaborator sends a heartbeat', () => {
+    const collaborators = users(4)
+    const {rerender} = renderInner(<FieldPresenceInner presence={collaborators} />)
+    const initialAvatars = avatars()
+
+    rerender(
+      <FieldPresenceInner
+        presence={[
+          presence('u1', {lastActiveAt: '2026-01-01T00:00:30.000Z'}),
+          ...collaborators.slice(1),
+        ]}
+      />,
+    )
+
+    expect(avatars()).toHaveLength(initialAvatars.length)
+    avatars().forEach((avatar, index) => {
+      expect(avatar).toBe(initialAvatars[index])
+    })
+    expect(counter()).toHaveTextContent('2')
+  })
+
+  it('updates membership and profiles without relying on display names for order', () => {
+    const first = {...presence('u1'), user: {id: 'u1'}}
+    const {rerender} = renderInner(<FieldPresenceInner presence={[first, presence('u2')]} />)
+    const initialFirstAvatar = screen
+      .getAllByTestId('user-avatar')
+      .find((avatar) => avatar.dataset.userId === 'u1')
+
+    rerender(
+      <FieldPresenceInner
+        presence={[{...first, user: {id: 'u1', displayName: 'Updated User'}}, presence('u3')]}
+      />,
+    )
+
+    expect(avatarUserIds()).toEqual(['u3', 'u1'])
+    expect(screen.getByTitle('Updated User')).toBe(initialFirstAvatar)
   })
 
   it('stacks 10 users into 2 avatars and a counter of 8 at the dock maximum', () => {

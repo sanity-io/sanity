@@ -1,5 +1,5 @@
-import {Card, Text} from '@sanity/ui'
-import {VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {NumberPreview} from '../types/number/preview/NumberPreview'
 import {SlugPreview} from '../types/slug/preview/SlugPreview'
@@ -18,7 +18,7 @@ export function FieldPreviewsStory() {
     <Card padding={4} style={{maxWidth: 420}}>
       <VStack gap={5}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             string
           </Text>
           <StringPreview schemaType={UNUSED_SCHEMA_TYPE} value="A short string value" />
@@ -28,13 +28,13 @@ export function FieldPreviewsStory() {
           />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             number
           </Text>
           <NumberPreview schemaType={UNUSED_SCHEMA_TYPE} value="1280" />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             slug
           </Text>
           <SlugPreview

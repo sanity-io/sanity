@@ -126,10 +126,14 @@ describe('Portable Text Input', () => {
 
       await getFocusedPortableTextEditor('field-body')
 
-      // Drag and drop the 'Hello world' block to the position of 'Baz'
+      // Drag and drop the 'Hello world' block to the position of 'Baz'. Release on the upper
+      // half of 'Baz' so the editor resolves the drop as "before" it: releasing on the exact
+      // center lands on the before/after threshold, which Firefox and WebKit resolve as
+      // "after" (a no-op move) now that Vitest 5 renders the test iframe unscaled.
       await dragAndDrop(
         '[data-pt-editor] [draggable="true"]',
         '[data-pt-block="text"]:nth-child(3)',
+        {dropAt: 'top'},
       )
 
       // NOTE: `document` is shadowed by the SanityDocument fixture above, so

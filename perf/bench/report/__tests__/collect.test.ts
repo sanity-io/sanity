@@ -222,13 +222,16 @@ describe('collectRunMetadata', () => {
 
 function sample(
   condition: PageLoadSample['condition'],
-  timeToEditableMs: number,
+  timeToEditableMs: number | null,
   auth: Partial<PageLoadSample['auth']> = {},
   styles: PageLoadSample['styles'] = null,
+  milestones: PageLoadSample['milestones'] = [],
 ): PageLoadSample {
   return {
     condition,
     timeToEditableMs,
+    milestones,
+    loadEndMs: Math.max(timeToEditableMs ?? 0, ...milestones.map((milestone) => milestone.atMs)),
     fcpMs: 1000,
     lcpMs: 2000,
     cls: 0,
@@ -260,6 +263,7 @@ function census(overrides: Partial<StyleCensus> = {}): StyleCensus {
       versions: ['6.5.3'],
     },
     stylesheets: {totalRules: 1966, inaccessible: 0},
+    css: {sheets: 4, rules: 2410, bytes: 1_204_000, styleTags: {rules: 806, bytes: 794_690}},
     ...overrides,
   }
 }
@@ -333,6 +337,53 @@ describe('collectPageLoad', () => {
       // auth first request is skipped (firstRequestMs is null in this fixture)
       'boot-cold · auth round trips',
       'boot-cold · auth in flight',
+    ])
+  })
+
+  it('emits report-only milestone rows and drops time to editable when no sample has one', () => {
+    const report = collectPageLoad(
+      'loginReady',
+      new Map([
+        [
+          'experiment',
+          [
+            sample('boot-cold', null, {}, null, [{name: 'login clickable', atMs: 900}]),
+            sample('boot-cold', null, {}, null, [{name: 'login clickable', atMs: 1100}]),
+          ],
+        ],
+        [
+          'reference',
+          [sample('boot-cold', null, {}, null, [{name: 'login clickable', atMs: 800}])],
+        ],
+      ]),
+      new Map(),
+    )
+    expect(report.metrics.map((metric) => metric.label).slice(0, 2)).toEqual([
+      'boot-cold · login clickable',
+      'boot-cold · FCP',
+    ])
+    const clickable = report.metrics[0]
+    expect(clickable.unit).toBe('ms')
+    expect(clickable.comparison).toBeUndefined()
+    expect(clickable.experiment.summary.median).toBe(1000)
+    expect(clickable.reference?.summary.median).toBe(800)
+  })
+
+  it('places milestone rows after time to editable', () => {
+    const report = collectPageLoad(
+      'syntheticLarge',
+      new Map([
+        [
+          'experiment',
+          [sample('boot-cold', 4100, {}, null, [{name: 'all fields editable', atMs: 5200}])],
+        ],
+      ]),
+      new Map(),
+    )
+    expect(report.metrics.map((metric) => metric.label).slice(0, 3)).toEqual([
+      'boot-cold · time to editable',
+      'boot-cold · all fields editable',
+      'boot-cold · FCP',
     ])
   })
 
@@ -537,6 +588,10 @@ describe('collectStyleMetrics', () => {
     expect(byLabel.get('styled-components CSS rules')?.experiment.summary.median).toBe(806)
     expect(byLabel.get('styled-components CSS bytes')?.experiment.summary.median).toBe(794_690)
     expect(byLabel.get('styled-components style tags')?.experiment.summary.median).toBe(1)
+    expect(byLabel.get('CSS bytes')?.experiment.summary.median).toBe(1_204_000)
+    expect(byLabel.get('CSS rules')?.experiment.summary.median).toBe(2410)
+    expect(byLabel.get('style tag CSS bytes')?.experiment.summary.median).toBe(794_690)
+    expect(byLabel.get('style tag CSS rules')?.experiment.summary.median).toBe(806)
     // 1081 / (1081 + 2023) — a 0–100 share, unrounded
     expect(byLabel.get('UI v5 share')?.experiment.summary.median).toBeCloseTo(34.826, 2)
     // 806 / 1966 readable rules
@@ -568,14 +623,18 @@ describe('collectStyleMetrics', () => {
     expect(rows.find((row) => row.label === 'UI v5 share')?.experiment.summary.median).toBe(0)
   })
 
-  it('leaves the CSS rule share out when no stylesheet was readable', () => {
+  it('leaves the CSS rule share and the CSS totals out when no stylesheet was readable', () => {
     const rows = collectStyleMetrics([
       census({
         styledComponents: {components: 0, styleTags: 0, cssRules: 0, cssBytes: 0, versions: []},
         stylesheets: {totalRules: 0, inaccessible: 3},
+        css: {sheets: 0, rules: 0, bytes: 0, styleTags: {rules: 0, bytes: 0}},
       }),
     ])
-    expect(rows.map((row) => row.label)).not.toContain('styled-components CSS rule share')
+    const labels = rows.map((row) => row.label)
+    expect(labels).not.toContain('styled-components CSS rule share')
+    expect(labels).not.toContain('CSS bytes')
+    expect(labels).not.toContain('CSS rules')
   })
 
   it('carries the reference side without a verdict', () => {

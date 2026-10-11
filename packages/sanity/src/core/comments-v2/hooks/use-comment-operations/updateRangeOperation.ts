@@ -27,8 +27,10 @@ export async function updateRangeOperation({
   await client.collaboration.comments.update(
     id,
     selection.range === null
-      ? {range: null}
-      : {range: selection.range, fieldValue: selection.fieldValue},
+      ? // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
+        {range: null}
+      : // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
+        {range: selection.range, fieldValue: selection.fieldValue},
     {transactionId},
   )
 }

@@ -1,14 +1,11 @@
 import {type ReactNode} from 'react'
-import {styled} from 'styled-components'
 
-const Quote = styled.blockquote`
-  margin: 0;
-`
+import {quote} from './Blockquote.css'
 
 export function Blockquote({children}: {children: ReactNode}): React.JSX.Element {
   return (
     <div>
-      <Quote>{children}</Quote>
+      <blockquote className={quote}>{children}</blockquote>
     </div>
   )
 }

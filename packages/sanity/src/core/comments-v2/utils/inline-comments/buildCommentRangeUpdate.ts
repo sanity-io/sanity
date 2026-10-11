@@ -13,6 +13,7 @@ interface BuildCommentRangeUpdateProps {
 }
 
 interface CommentRangeUpdate {
+  // oxlint-disable-next-line no-deprecated -- comments-v2 still uses the deprecated range API from @sanity/client 8.8
   range: CollaborationCommentRange | null
   selection: {
     type: 'text'

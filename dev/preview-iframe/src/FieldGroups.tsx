@@ -1,5 +1,5 @@
-import {Card, Spinner, Stack, Text} from '@sanity/ui'
-import {Flex, Box} from 'ui5'
+import {Card, Spinner, Text} from '@sanity/ui'
+import {Flex, Box, VStack} from 'ui5'
 
 import {useQuery} from './loader'
 
@@ -56,32 +56,32 @@ export function FieldGroups(): React.JSX.Element {
       {data?.map((item) => {
         return (
           <Card key={item._id} padding={4}>
-            <Stack gap={4}>
+            <VStack gap={4}>
               <Text weight={'bold'}>{item.field1 || 'N/A'}</Text>
               <Text weight={'bold'}>{item.field2 || 'N/A'}</Text>
               {item.nested && (
-                <Stack gap={4} paddingLeft={2}>
+                <Flex gap={4} paddingLeft={2} flexDirection="column">
                   <Text>{item.nested.field3 || 'N/A'}</Text>
                   <Text>{item.nested.field4 || 'N/A'}</Text>
                   <Text>{item.nested.field5 || 'N/A'}</Text>
                   {item.nested.nested && (
-                    <Stack gap={4} paddingLeft={2}>
+                    <Flex gap={4} paddingLeft={2} flexDirection="column">
                       <Text>{item.nested.nested.field6 || 'N/A'}</Text>
                       <Text>{item.nested.nested.field7 || 'N/A'}</Text>
                       <Text>{item.nested.nested.field8 || 'N/A'}</Text>
-                    </Stack>
+                    </Flex>
                   )}
-                </Stack>
+                </Flex>
               )}
-              <Stack gap={4} paddingLeft={2}>
+              <Flex gap={4} paddingLeft={2} flexDirection="column">
                 {item.objectArray?.map((object) => (
-                  <Stack key={object._key} gap={4} paddingLeft={2}>
+                  <Flex key={object._key} gap={4} paddingLeft={2} flexDirection="column">
                     <Text>{object.stringAlpha || 'N/A'}</Text>
                     <Text>{object.stringBeta || 'N/A'}</Text>
-                  </Stack>
+                  </Flex>
                 ))}
-              </Stack>
-            </Stack>
+              </Flex>
+            </VStack>
           </Card>
         )
       })}

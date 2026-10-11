@@ -1,6 +1,6 @@
-import {Card, Container, Heading} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Container, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {UpsellDescriptionSerializer} from '../../../upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
@@ -23,7 +23,7 @@ interface PopoverContentProps {
 export function PopoverContent({content, handleClose, handleOpenNext}: PopoverContentProps) {
   return (
     <Card radius={3} overflow={'hidden'}>
-      <Container width={0}>
+      <Container size={0}>
         {content.image && (
           <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
         )}

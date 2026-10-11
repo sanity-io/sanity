@@ -1,5 +1,6 @@
-import {Stack, Text, TextInput} from '@sanity/ui'
+import {Text, TextInput} from '@sanity/ui'
 import {type ComponentProps} from 'react'
+import {VStack} from 'ui5'
 
 import {normalizeReproPath} from './reproPath'
 
@@ -41,7 +42,7 @@ export function ReproPathField(props: {
 }) {
   const {value, onChange, appliesTo} = props
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Text size={1} weight="medium">
         Test studio path{' '}
         <Text as="span" size={1} muted>
@@ -53,6 +54,6 @@ export function ReproPathField(props: {
         Where the issue reproduces — {appliesTo} opens there. Paste a test-studio URL and only its
         path is kept.
       </Text>
-    </Stack>
+    </VStack>
   )
 }

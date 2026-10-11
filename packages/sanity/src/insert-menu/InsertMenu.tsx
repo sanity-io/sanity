@@ -3,7 +3,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {UlistIcon} from '@sanity/icons/Ulist'
 import {type InsertMenuOptions, type SchemaType} from '@sanity/types'
-import {Button, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Button, Tab, TabList, Text, TextInput} from '@sanity/ui'
 import {Menu, MenuItem, type MenuItemProps} from '@sanity/ui/menu'
 import {Tooltip} from '@sanity/ui/tooltip'
 import startCase from 'lodash-es/startCase.js'
@@ -187,7 +187,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
               ))}
             </Grid>
           ) : (
-            <Stack flex={1} gap={1}>
+            <Flex flexBasis="0%" flexGrow={1} gap={1} flexDirection="column">
               {filteredSchemaTypes.map((schemaType) => (
                 <MenuItem
                   key={schemaType.name}
@@ -198,7 +198,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
                   text={schemaType.title ?? startCase(schemaType.name)}
                 />
               ))}
-            </Stack>
+            </Flex>
           )}
         </Box>
       </Flex>

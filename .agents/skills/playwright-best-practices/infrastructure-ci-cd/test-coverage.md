@@ -40,11 +40,12 @@ export default defineConfig({
 ### V8 Coverage Fixture
 
 ```typescript
-// fixtures/coverage.ts
-import {test as base, expect} from '@playwright/test'
+import {randomUUID} from 'crypto'
 import fs from 'fs'
 import path from 'path'
-import {randomUUID} from 'crypto'
+
+// fixtures/coverage.ts
+import {test as base, expect} from '@playwright/test'
 
 export const test = base.extend<{}, {collectCoverage: void}>({
   collectCoverage: [
@@ -172,6 +173,7 @@ test('collect CSS coverage', async ({page}) => {
 import {execSync} from 'child_process'
 import fs from 'fs'
 import path from 'path'
+
 import v8ToIstanbul from 'v8-to-istanbul'
 
 async function convertCoverage() {
@@ -224,10 +226,11 @@ npx nyc report --reporter=html --reporter=text --temp-dir=./coverage
 ### Custom Coverage Reporter
 
 ```typescript
-// reporters/coverage-reporter.ts
-import type {Reporter, FullResult} from '@playwright/test/reporter'
 import fs from 'fs'
 import path from 'path'
+
+// reporters/coverage-reporter.ts
+import type {Reporter, FullResult} from '@playwright/test/reporter'
 
 class CoverageReporter implements Reporter {
   private coverageData: any[] = []
@@ -283,10 +286,11 @@ export default CoverageReporter
 ### Enforcing Minimum Coverage
 
 ```typescript
-// tests/coverage.spec.ts
-import {test, expect} from '@playwright/test'
 import fs from 'fs'
 import path from 'path'
+
+// tests/coverage.spec.ts
+import {test, expect} from '@playwright/test'
 
 test.afterAll(async () => {
   const coverageDir = './coverage'
@@ -360,6 +364,7 @@ function checkThresholds(coverage: any[]): string[] {
 ```typescript
 // scripts/merge-coverage.ts
 import fs from 'fs'
+
 import {glob} from 'glob'
 
 async function mergeCoverage() {

@@ -1,8 +1,7 @@
-import {Container} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Container, Box, Flex} from 'ui5'
 
 import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {useSingleDocReleaseUpsell} from '../../../singleDocRelease/context/SingleDocReleaseUpsellProvider'
@@ -43,7 +42,7 @@ const SingleDocReleasesUpsell = () => {
         animate={{opacity: 1}}
         transition={{duration: 0.3, ease: 'easeInOut'}}
       >
-        <Panel width={0} padding={4} paddingY={1}>
+        <Panel size={0} padding={4} paddingY={1}>
           <Flex alignItems={'center'} flexDirection="column">
             <ReleaseIllustration />
             <Box paddingTop={2}>
@@ -89,7 +88,7 @@ const ReleasesUpsell = () => {
         animate={{opacity: 1}}
         transition={{duration: 0.3, ease: 'easeInOut'}}
       >
-        <Panel width={0} padding={4} paddingY={1}>
+        <Panel size={0} padding={4} paddingY={1}>
           <Flex alignItems={'center'} flexDirection="column">
             <ReleaseIllustration />
             <Box paddingTop={2}>

@@ -28,7 +28,6 @@ import {
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -49,6 +48,7 @@ import {PresentationNavigateProvider} from './PresentationNavigateProvider'
 import {usePresentationNavigator} from './PresentationNavigator'
 import {PresentationParamsProvider} from './PresentationParamsProvider'
 import {PresentationProvider} from './PresentationProvider'
+import {container} from './PresentationTool.css'
 import {Preview} from './preview/Preview'
 import {
   type FrameState,
@@ -63,6 +63,7 @@ import {useAllowPatterns} from './useAllowPatterns'
 import {useDocumentsOnPage} from './useDocumentsOnPage'
 import {useMainDocument} from './useMainDocument'
 import {useNavigatePreviewFrame} from './useNavigatePreviewFrame'
+import {useOpenPreviewUrlActorRef} from './useOpenPreviewUrlActorRef'
 import {useParams} from './useParams'
 import {usePopups} from './usePopups'
 import {usePresentationPerspective} from './usePresentationPerspective'
@@ -78,10 +79,6 @@ const PostMessagePerspective = lazy(() => import('./PostMessagePerspective'))
 const PostMessagePreviewSnapshots = lazy(() => import('./editor/PostMessagePreviewSnapshots'))
 const PostMessageSchema = lazy(() => import('./overlays/schema/PostMessageSchema'))
 const PostMessageTelemetry = lazy(() => import('./PostMessageTelemetry'))
-
-const Container = styled(Flex)`
-  overflow-x: auto;
-`
 
 // Fall back to the preview if the navigator tab is selected but no longer enabled.
 function resolveActiveTab(
@@ -112,6 +109,7 @@ export default function PresentationTool(props: {
 
   const allowOrigins = useAllowPatterns(previewUrlRef)
   const targetOrigin = useTargetOrigin(previewUrlRef)
+  const openPreviewUrlRef = useOpenPreviewUrlActorRef(tool.options?.previewUrl, targetOrigin)
 
   const components = tool.options?.components
   const name = tool.name || DEFAULT_TOOL_NAME
@@ -540,7 +538,12 @@ export default function PresentationTool(props: {
         <PresentationNavigateProvider navigate={navigate}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
-              <Container data-testid="presentation-root" flexDirection="column" height="100%">
+              <Flex
+                className={container}
+                data-testid="presentation-root"
+                flexDirection="column"
+                height="100%"
+              >
                 {isNarrow && (
                   <PresentationNarrowTabBar
                     activeTab={resolvedTab}
@@ -584,6 +587,7 @@ export default function PresentationTool(props: {
                             onPathChange={handlePreviewPath}
                             onRefresh={handleRefresh}
                             openPopup={handleOpenPopup}
+                            openPreviewUrlRef={openPreviewUrlRef}
                             overlaysConnection={overlaysConnection}
                             previewUrl={params.preview}
                             perspective={perspective}
@@ -621,7 +625,7 @@ export default function PresentationTool(props: {
                     />
                   </Panels>
                 </Flex>
-              </Container>
+              </Flex>
             </SharedStateProvider>
           </PresentationParamsProvider>
         </PresentationNavigateProvider>

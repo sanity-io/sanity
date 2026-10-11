@@ -5,9 +5,9 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {PlayIcon} from '@sanity/icons/Play'
 import {UndoIcon} from '@sanity/icons/Undo'
-import {Badge, type BadgeTone, Box, Button, Card, Stack, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Box, Button, Card, Text} from '@sanity/ui'
 import {type ReactNode, useMemo, useState} from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
@@ -122,11 +122,11 @@ export function Timeline(props: {
   )
 
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <Text size={1} weight="semibold">
         Bisect timeline
       </Text>
-      <Stack gap={1}>
+      <VStack gap={1}>
         {entries.map((entry) => {
           if (entry.kind === 'gap') {
             const expanded = expandedGaps.has(entry.newestSha)
@@ -193,8 +193,8 @@ export function Timeline(props: {
             />
           )
         })}
-      </Stack>
-    </Stack>
+      </VStack>
+    </VStack>
   )
 }
 
@@ -207,7 +207,7 @@ function GapGroup(props: {
 }) {
   const {entry, expanded, onToggle, children} = props
   return (
-    <Stack gap={1}>
+    <VStack gap={1}>
       <Card padding={2} radius={2} tone="neutral">
         <Flex alignItems="center" gap={2}>
           <Box style={{width: 96, flexShrink: 0}}>
@@ -234,10 +234,10 @@ function GapGroup(props: {
       </Card>
       {expanded && (
         <Box paddingLeft={4}>
-          <Stack gap={1}>{children}</Stack>
+          <VStack gap={1}>{children}</VStack>
         </Box>
       )}
-    </Stack>
+    </VStack>
   )
 }
 

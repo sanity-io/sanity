@@ -1,6 +1,7 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type RefObject} from 'react'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {
@@ -33,7 +34,7 @@ function ReleasesMenu({range}: {range: LayerRange}) {
     <Card radius={3} shadow={2}>
       <Menu>
         <Card borderBottom padding={1}>
-          <Stack gap={1}>
+          <VStack gap={1}>
             <GlobalPerspectiveMenuItem
               rangePosition={getRangePosition(range, 0)}
               release={PUBLISHED}
@@ -42,7 +43,7 @@ function ReleasesMenu({range}: {range: LayerRange}) {
               rangePosition={getRangePosition(range, 1)}
               release={LATEST}
             />
-          </Stack>
+          </VStack>
         </Card>
         <ReleaseTypeMenuSection
           currentGlobalBundleMenuItemRef={SCROLL_REF}
@@ -73,20 +74,20 @@ export function PerspectiveLayerIndicatorStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 320}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               drafts perspective (labels outside range)
             </Text>
             <ReleasesMenu range={RANGE_TO_DRAFTS} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               range down to undecided (first / within / last)
             </Text>
             <ReleasesMenu range={RANGE_TO_UNDECIDED} />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

@@ -22,6 +22,7 @@ const DEFAULT_PERSPECTIVE = {
   selectedPerspective: 'drafts' as const,
   perspectiveStack: ['drafts'],
   excludedPerspectives: [],
+  selectedVariantNames: [] as string[],
 }
 
 const DRAFT_SIBLING = {_id: 'drafts.doc-123'}
@@ -157,14 +158,14 @@ describe('CopyDocumentActions', () => {
     it('copies URL with variant search param when a variant is selected', async () => {
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
       })
 
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-link-to-document')
 
       expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
-        ['variant', 'alpha-audience'],
+        ['variant', 'variant:alpha-audience'],
       ])
     })
 
@@ -173,7 +174,7 @@ describe('CopyDocumentActions', () => {
         ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rMyRelease',
         selectedReleaseId: 'rMyRelease',
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
         selectedPerspective: 'rMyRelease',
         perspectiveStack: ['rMyRelease', 'drafts'],
       })
@@ -184,7 +185,7 @@ describe('CopyDocumentActions', () => {
 
       expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
         ['perspective', 'rMyRelease'],
-        ['variant', 'alpha-audience'],
+        ['variant', 'variant:alpha-audience'],
       ])
     })
 
@@ -217,7 +218,7 @@ describe('CopyDocumentActions', () => {
         ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rScheduled',
         selectedReleaseId: 'rScheduled',
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
         selectedPerspective: 'rScheduled',
         perspectiveStack: ['rScheduled', 'drafts'],
       })
@@ -233,7 +234,7 @@ describe('CopyDocumentActions', () => {
       expect(mockResolveIntentLink).toHaveBeenCalledWith(
         'edit',
         {id: 'doc-123', type: 'article', scheduledDraft: 'rScheduled'},
-        [['variant', 'alpha-audience']],
+        [['variant', 'variant:alpha-audience']],
       )
     })
 

@@ -1,5 +1,5 @@
 import {diffInput, wrap} from '@sanity/diff'
-import {BoundaryElementProvider, Card, Spinner, Stack, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Spinner, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -23,25 +23,13 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 import {Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
-
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
-
-const SpinnerContainer = styled(Flex)`
-  width: 100%;
-  position: absolute;
-  bottom: -4px;
-`
+import {spinnerContainer} from './EventsInspector.css'
+import {scroller} from './Scroller.css'
 
 const DIFF_INITIAL_VALUE = {
   diff: null,
@@ -91,9 +79,9 @@ const CompareWithPublishedView = () => {
     return null
   }
   return (
-    <Stack gap={2} marginBottom={3}>
+    <Flex gap={2} marginBottom={3} flexDirection="column">
       <Card borderBottom paddingBottom={3}>
-        <Stack gap={3} paddingTop={1}>
+        <Flex gap={3} paddingTop={1} flexDirection="column">
           <Text size={1} weight="medium">
             {t('events.compare-with-published.title')}
           </Text>
@@ -108,7 +96,7 @@ const CompareWithPublishedView = () => {
               }}
             />
           </Text>
-        </Stack>
+        </Flex>
       </Card>
       <DocumentChangeContext.Provider
         value={{
@@ -125,7 +113,7 @@ const CompareWithPublishedView = () => {
           <ChangeList diff={rootDiff} schemaType={schemaType} />
         </Box>
       </DocumentChangeContext.Provider>
-    </Stack>
+    </Flex>
   )
 }
 export function EventsInspector({showChanges}: {showChanges: boolean}): ReactElement {
@@ -186,14 +174,14 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   if (!events.length) {
     return (
       <Box paddingX={2}>
-        <Stack padding={3} gap={3}>
+        <Flex padding={3} gap={3} flexDirection="column">
           <Text size={1} weight="medium">
             {t('timeline.error.no-document-history-title')}
           </Text>
           <Text muted size={1}>
             {t('timeline.error.no-document-history-description')}
           </Text>
-        </Stack>
+        </Flex>
       </Box>
     )
   }
@@ -231,19 +219,19 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             initial={{opacity: 0}}
             transition={{delay: 0.2, duration: 0.2}}
           >
-            <SpinnerContainer justifyContent="center" alignItems="center" gap={2}>
+            <Flex className={spinnerContainer} justifyContent="center" alignItems="center" gap={2}>
               <Text muted size={0}>
                 {t('changes.loading-changes')}
               </Text>
               <Spinner size={0} />
-            </SpinnerContainer>
+            </Flex>
           </motion.div>
         )}
       </Box>
 
       <Card flex={1} paddingX={2} paddingY={2}>
         <BoundaryElementProvider element={scrollRef}>
-          <Scroller data-ui="Scroller" ref={setScrollRef}>
+          <ScrollContainer className={scroller} data-ui="Scroller" ref={setScrollRef}>
             <Box flexBasis="0%" flexGrow={1} paddingX={3} height="100%">
               {showChanges && (
                 <Content
@@ -256,7 +244,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
                 />
               )}
             </Box>
-          </Scroller>
+          </ScrollContainer>
         </BoundaryElementProvider>
       </Card>
     </Flex>
@@ -323,14 +311,14 @@ function SameRevisionSelected() {
       initial={{opacity: 0}}
       transition={{delay: 0.2, duration: 0.2}}
     >
-      <Stack gap={3} paddingTop={2}>
+      <Flex gap={3} paddingTop={2} flexDirection="column">
         <Text size={1} weight="medium" as="h3">
           {t('changes.same-revision-selected-title')}
         </Text>
         <Text as="p" size={1} muted>
           <Translate i18nKey="changes.same-revision-selected-description" t={t} />
         </Text>
-      </Stack>
+      </Flex>
     </motion.div>
   )
 }

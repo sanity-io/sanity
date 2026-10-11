@@ -5,11 +5,11 @@ import {
   type ImageAsset,
   type UploadState,
 } from '@sanity/types'
-import {Stack} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import get from 'lodash-es/get.js'
 import {Fragment, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
+import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
@@ -451,7 +451,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   return (
     // The Stack space should match the space in ObjectInput
-    <Stack gap={5} data-testid="image-input">
+    <VStack gap={5} data-testid="image-input">
       {renderedMembers.map((member) => {
         if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
           // we're rendering these separately
@@ -520,7 +520,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         />
       )}
       {selectedAssetSource && renderAssetSource()}
-    </Stack>
+    </VStack>
   )
 }
 

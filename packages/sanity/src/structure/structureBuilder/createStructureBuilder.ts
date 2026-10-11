@@ -53,13 +53,19 @@ function hasIcon(schemaType?: SchemaType | string): boolean {
 }
 
 function getDefaultStructure(context: StructureContext): ListBuilder {
-  const items = getDocumentTypeListItems(context)
+  const items = [
+    ...getDocumentTypeListItems(context),
+    ...context.document.singletons.map(({id}) =>
+      context.getStructureBuilder().listItem().singleton(id),
+    ),
+  ]
+
   return new ListBuilder(context)
     .id('__root__')
     .title('Content')
     .i18n({title: {key: 'default-definition.content-title', ns: structureLocaleNamespace}})
     .items(items)
-    .showIcons(items.some((item) => hasIcon(item.getSchemaType())))
+    .showIcons(items.some((item) => Boolean(item.getIcon()) || hasIcon(item.getSchemaType())))
 }
 
 /** @internal */
