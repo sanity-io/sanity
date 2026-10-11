@@ -16,8 +16,8 @@ import {PaneLayout} from '../PaneLayout'
 const theme = buildTheme()
 const {settleChromaticEndState} = testHelpers()
 
-// Studio's `GlobalStyle` gives WebKit and Blink a classic 12px scrollbar; the gutter the list
-// scroller reserves is that scrollbar's width.
+// Studio's `GlobalStyle` gives WebKit and Blink a classic 12px scrollbar; the strip the list
+// scroller keeps free at its right edge is that scrollbar's width.
 const SCROLLBAR_STYLE = `
   ::-webkit-scrollbar { width: 12px; height: 12px; }
   ::-webkit-scrollbar-thumb { background-clip: content-box; background-color: #8690a0; border: 4px solid transparent; }
@@ -73,14 +73,14 @@ function measure() {
   const scroller = document.querySelector<HTMLElement>('[data-testid="list-scroller"]')!
   const scrollerRect = scroller.getBoundingClientRect()
   const item = document.querySelector('[data-testid="item"]')!.getBoundingClientRect()
-  const {paddingLeft, paddingRight, scrollbarGutter} = getComputedStyle(scroller)
+  const {paddingLeft, paddingRight, overflowY} = getComputedStyle(scroller)
 
   return {
     paddingLeft,
     paddingRight,
-    scrollbarGutter,
+    overflowY,
     overflowing: scroller.scrollHeight > scroller.clientHeight,
-    // Space taken by the scrollbar (or the reserved gutter) at the right edge of the scroller
+    // Space taken by the scrollbar (or its empty track) at the right edge of the scroller
     scrollbarInset: scroller.offsetWidth - scroller.clientWidth,
     itemGaps: {left: item.left - scrollerRect.left, right: scrollerRect.right - item.right},
   }
@@ -115,13 +115,14 @@ describe('PaneCommandList', () => {
 
     if (server.browser === 'firefox') {
       // Firefox ignores `::-webkit-scrollbar`, so the list keeps its `space[3]` padding there
+      expect(short.overflowY).toBe('auto')
       expect(short.paddingRight).toBe('12px')
       expect(long.paddingRight).toBe('12px')
     } else {
-      // The reserved gutter is the right-hand spacing, so it must be present before the list
-      // overflows, and nothing moves when the scrollbar appears. (Headless Chromium hides
-      // scrollbars, so the inset is 0 there; in a headed browser it is the 12px scrollbar.)
-      expect(short.scrollbarGutter).toBe('stable')
+      // The scrollbar's strip is the right-hand spacing, so it must be kept free before the list
+      // overflows, and nothing moves once it does. (Headless Chromium hides scrollbars, so the
+      // inset is 0 there; WebKit and headed Chromium reserve the 12px scrollbar.)
+      expect(short.overflowY).toBe('scroll')
       expect(short.paddingRight).toBe('0px')
       expect(long.scrollbarInset).toBe(short.scrollbarInset)
       expect(long.itemGaps).toEqual(short.itemGaps)
