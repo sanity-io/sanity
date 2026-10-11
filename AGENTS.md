@@ -540,6 +540,14 @@ production source.
   Vitest 4 substring, case-insensitive matching (`browser.locators.exact: false` in
   `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
   matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
+- In browser mode, `cdp()` from `vitest/browser` is a Chrome DevTools Protocol session for the
+  page (chromium only — guard with `describe.skipIf(server.browser !== 'chromium')`). It is how a
+  test reproduces what the DevTools UI does, e.g. `Animation.setPlaybackRate` for the Animations
+  panel's playback speed. Such settings apply to the whole page. Vitest 5's browser pool gives
+  every parallel test file its own tab (one orchestrator page per worker, each in its own
+  browser context) and `cdp()` is bound to the tab the test runs in, so they cannot reach the
+  files running alongside — but the tab is reused for the files scheduled after it, so reset them
+  in `afterEach`.
 
 #### Test Timeouts
 
@@ -875,6 +883,12 @@ Notes:
 - Key the patch by exact version (`<pkg>@<version>`) so other locked versions of the same package stay untouched
 - Record the upstream commit sha in the commit/PR so the patch is reproducible
 - The patch is an experiment vehicle: before merging, land + release the upstream fix, bump the catalog, drop the patch
+
+#### Maintained patches (upstream declined the fix)
+
+The one exception to "drop the patch" is a fix upstream has closed as wontfix. Those stay in `patches/` and are listed here so nobody deletes them as leftovers:
+
+- **`motion-dom` (`patches/motion-dom@<version>.patch`)** — the `AnimateActivity` exit/enter animations of `@sanity/ui` Tooltip and Popover run `opacity` through WAAPI, and `motion-dom`'s `NativeAnimationExtended` assigns a `performance.now()`-based start time straight to `animation.startTime`, which the browser resolves against `document.timeline`. With Chrome DevTools' Animations panel slowed to 25%/10% the two clocks drift apart, the WAAPI animation waits at a negative `currentTime` for as long as the page has been slowed, and the overlay never hides (or never fades in). The patch is [motion#3830](https://github.com/motiondivision/motion/pull/3830) (issue [motion#3820](https://github.com/motiondivision/motion/issues/3820), closed wontfix): express the start time as an offset from `animation.timeline.currentTime`. The patch is the `dist` output of building `motion-dom` from source at the release tag with that PR's `NativeAnimationExtended.ts` hunk applied, so it covers `dist/es` (including its regenerated source map), `dist/cjs`, `dist/motion-dom.dev.js` and the minified `dist/motion-dom.js`. `dist/cjs/index.js.map` stays as published: its regenerated diff is 1.8 MB per version, and nothing in this monorepo consumes the CJS entry (Vite and rolldown resolve the ESM one). The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) inlines `motion-dom`, so hosted studios get it; studios that install `sanity` from npm resolve their own `motion-dom` and do not. When Renovate bumps `motion`, check upstream first (drop the patch if they shipped a fix), then regenerate it: clone `motiondivision/motion` at the new tag, apply the hunk to `packages/motion-dom/src/animation/NativeAnimationExtended.ts`, `yarn install`, build `motion-utils` and then `motion-dom` (`tsc -p . && rollup -c` in each package, with the clone's `node_modules/.bin` on `PATH`) — an unmodified build reproduces the npm tarball byte for byte, which is what makes the diff exact — copy the changed `dist` files into `pnpm patch motion-dom@<new version> --edit-dir <dir>` and run `pnpm patch-commit <dir>`, which also rewrites the key in `pnpm-workspace.yaml`. `Popover.browser.test.tsx` and `Tooltip.browser.test.tsx` in `packages/sanity/src/ui-components` fail without it (negative `currentTime` on the exit animation).
 
 ### Creating a New Test
 
