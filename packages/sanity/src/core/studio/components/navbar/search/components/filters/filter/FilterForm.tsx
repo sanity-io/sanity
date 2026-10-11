@@ -60,6 +60,15 @@ export function FilterForm({filter}: FilterFormProps) {
     setErrorParams(params)
   }, [])
 
+  // The operator menu and the remove button are interactive while the input's chunk is still
+  // loading. Once the user has used one of them, moving focus into the input when it arrives
+  // would take focus off what they are doing (and close an open operator menu), so the move is
+  // only made when the form has not been touched yet.
+  const [formTouched, setFormTouched] = useState(false)
+  const handleFormInteraction = useCallback(() => {
+    setFormTouched(true)
+  }, [])
+
   const Component = operator?.inputComponent
 
   if (errorParams) {
@@ -70,7 +79,11 @@ export function FilterForm({filter}: FilterFormProps) {
   return (
     <ErrorBoundary onCatch={handleCatchError}>
       <FocusLock autoFocus={!supportsTouch} returnFocus>
-        <Flex flexDirection="column-reverse">
+        <Flex
+          flexDirection="column-reverse"
+          onKeyDownCapture={handleFormInteraction}
+          onPointerDownCapture={handleFormInteraction}
+        >
           {/* Value */}
           {Component && (
             <Card borderTop padding={3}>
@@ -79,7 +92,7 @@ export function FilterForm({filter}: FilterFormProps) {
                   is in the DOM focus is moved into it; the wrapper sits outside the operator-keyed input
                   and therefore only does this once, not on every operator change. */}
               <Suspense fallback={<LoadingBlock />}>
-                <MoveFocusInside disabled={supportsTouch}>
+                <MoveFocusInside disabled={supportsTouch || formTouched}>
                   <Component
                     // re-render on new operators
                     key={filter.operatorType}
