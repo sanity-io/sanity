@@ -1,7 +1,8 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Badge, Card, Flex, Text} from '@sanity/ui'
+import {Badge, Card, Text} from '@sanity/ui'
 import {type ThemeColorStateToneKey} from '@sanity/ui/theme'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Flex} from 'ui5'
 
 import {ToneIcon} from '../ToneIcon'
 
@@ -26,7 +27,7 @@ export const AllTones: Story = {
     <Card padding={4}>
       <Flex gap={4}>
         {TONES.map((tone) => (
-          <Flex key={tone} align="center" direction="column" gap={2}>
+          <Flex key={tone} alignItems="center" flexDirection="column" gap={2}>
             <Badge tone={tone === 'default' ? undefined : tone}>
               <Text size={1}>
                 <ToneIcon icon={InfoOutlineIcon} tone={tone} />

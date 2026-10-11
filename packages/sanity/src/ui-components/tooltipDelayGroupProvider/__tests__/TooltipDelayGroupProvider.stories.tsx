@@ -2,9 +2,9 @@ import {BoldIcon} from '@sanity/icons/Bold'
 import {ItalicIcon} from '@sanity/icons/Italic'
 import {LinkIcon} from '@sanity/icons/Link'
 import {UnderlineIcon} from '@sanity/icons/Underline'
-import {Flex} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
+import {Flex} from 'ui5'
 
 import {Button} from '../../button/Button'
 import {TooltipDelayGroupProvider} from '../TooltipDelayGroupProvider'
@@ -36,7 +36,7 @@ const tools = [
 
 export const Grouped: Story = {
   render: () => (
-    <Flex align="center" justify="center" style={{minHeight: 160}}>
+    <Flex alignItems="center" justifyContent="center" style={{minHeight: 160}}>
       <TooltipDelayGroupProvider>
         <Flex gap={1}>
           {tools.map(({icon, label}) => (

@@ -17,6 +17,7 @@ import {
   timer,
 } from 'rxjs'
 
+import {randomKey} from '../../form/utils/randomKey'
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
@@ -156,16 +157,36 @@ const buildDocumentSystem = (id: string, releases: ReleaseDocument[]): DocumentS
   }
 }
 
+/**
+ * Canonicalizes the variant reference to `_system.variants`: documents that have not been
+ * migrated yet carry the legacy single `_system.variant` reference, which is folded into the
+ * array so every stub consumer can read `variants[0]`.
+ */
+const normalizeVariants = (system: DocumentSystem): DocumentSystem => {
+  // oxlint-disable-next-line typescript/no-deprecated - we need to destructure the variant fallback field.
+  const {variant, ...rest} = system
+  // Document has the new shape, remove legacy field and return the rest.
+  if (system.variants?.[0]) return rest
+
+  // Document has the legacy shape, create the variants array with the legacy variant reference, strips the legacy field.
+  if (variant) {
+    return {...rest, variants: [{_ref: variant._ref, _key: randomKey()}]}
+  }
+
+  // Document has no variant reference, return the rest.
+  return rest
+}
+
 const resolveVersionSystem = (
   version: VersionInfoDocumentStub,
   releases: ReleaseDocument[],
 ): DocumentSystem => {
-  if (version._system?.group) return version._system
+  if (version._system?.group) return normalizeVariants(version._system)
 
-  return {
+  return normalizeVariants({
     ...version._system,
     ...buildDocumentSystem(version._id, releases),
-  }
+  })
 }
 
 const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']

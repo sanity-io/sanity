@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
@@ -6,10 +7,12 @@ import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
+import {expectStable, testHelpers} from '../../../../../test/browser/testHelpers'
 import {Button} from '../../../../ui-components/button/Button'
 import {CollapseTabList} from '../CollapseTabList'
 
 const theme = buildTheme()
+const {settleChromaticEndState} = testHelpers()
 
 const overflowButton = (
   <Button aria-label="More tools" icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={null} />
@@ -56,6 +59,9 @@ describe('CollapseTabList', () => {
   })
 
   it('moves children that do not fit into the overflow menu', async () => {
+    // Menu open/closed and overflow-button x offset raced the auto snapshot
+    // (2px capture-height pairwise flakes). Snapshot while the menu is open.
+    configure({disableAutoSnapshot: true})
     await render(
       <TestList width={NARROW}>{makeTabs(['Alpha', 'Beta', 'Gamma', 'Delta'])}</TestList>,
     )
@@ -65,6 +71,27 @@ describe('CollapseTabList', () => {
 
     await overflowMenuButton.click()
     await expect.element(page.getByRole('menuitem', {name: 'Delta'})).toBeVisible()
+
+    // Park the real pointer (it is still on the "..." button, which Chromatic
+    // would archive as `:hover`), require the open menu to stay open with a
+    // stable rectangle, and snap its Floating UI transform to whole pixels.
+    await settleChromaticEndState()
+
+    // The list width and the full menu rectangle (x, y, width, height) must
+    // then hold still together; a width-only relayout would otherwise pass.
+    const layoutSig = () => {
+      const list = window.document.querySelector('[data-testid="collapse-tab-list"]')
+      const menu = Array.from(window.document.querySelectorAll<HTMLElement>('[role="menu"]')).find(
+        (el) => el.checkVisibility(),
+      )
+      if (!(list instanceof HTMLElement) || !menu) return Symbol('menu closed')
+      const lr = list.getBoundingClientRect()
+      const mr = menu.getBoundingClientRect()
+      return `${Math.round(lr.width)}:${Math.round(mr.x)},${Math.round(mr.y)},${Math.round(mr.width)},${Math.round(mr.height)}`
+    }
+    await expectStable(layoutSig)
+    await expect.element(page.getByRole('menuitem', {name: 'Delta'})).toBeVisible()
+    await takeSnapshot('overflow-menu-open')
   })
 
   it('removes the overflow button when the container grows enough to fit all children', async () => {

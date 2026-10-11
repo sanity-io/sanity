@@ -4,7 +4,6 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Select,
-  Text,
 } from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
@@ -24,7 +23,7 @@ import {
   useRef,
   type RefAttributes,
 } from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
 import {CalendarMonth} from './CalendarMonth'
@@ -252,7 +251,9 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
               </Box>
 
               <Box paddingX={1}>
-                <Text>:</Text>
+                <Text as="div" trim={true}>
+                  :
+                </Text>
               </Box>
 
               <Box>

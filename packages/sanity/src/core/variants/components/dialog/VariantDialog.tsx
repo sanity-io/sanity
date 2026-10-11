@@ -23,6 +23,7 @@ interface VariantDialogProps {
   id: string
   initialValue: EditableSystemVariant
   onCancel: () => void
+  lockType?: boolean
   onSubmit: (variant: EditableSystemVariant) => Promise<void>
   renderCancelButton?: boolean
 }
@@ -36,6 +37,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
     id,
     initialValue,
     onCancel,
+    lockType = false,
     onSubmit,
     renderCancelButton = false,
   } = props
@@ -44,7 +46,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
   const [variant, setVariant] = useState(initialValue)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showValidation, setShowValidation] = useState(false)
-  const [conditionsInvalid, setConditionsInvalid] = useState(false)
+  const [conditionsInvalid, setConditionsInvalid] = useState(true)
   const [priorityInvalid, setPriorityInvalid] = useState(false)
   const {data: allVariants} = useAllVariants()
   const {duplicateTitleOf, duplicateConditionsOf} = useMemo(
@@ -109,6 +111,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
             <VariantForm
               duplicateConditionsOf={duplicateConditionsOf}
               duplicateTitleOf={duplicateTitleOf}
+              lockType={lockType}
               onChange={handleVariantChange}
               onConditionValidityChange={setConditionsInvalid}
               onPriorityValidityChange={setPriorityInvalid}

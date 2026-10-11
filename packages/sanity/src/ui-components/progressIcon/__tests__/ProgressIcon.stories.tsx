@@ -1,5 +1,6 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Flex} from 'ui5'
 
 import {ProgressIcon} from '../ProgressIcon'
 
@@ -34,7 +35,7 @@ const SIZES = [0, 1, 2, 3, 4] as const
 export const AllVariants: Story = {
   render: () => (
     <Stack gap={5} padding={4}>
-      <Flex align="center" gap={4}>
+      <Flex alignItems="center" gap={4}>
         {FRACTIONS.map((progress) => (
           <Stack gap={2} key={progress} style={{textAlign: 'center'}}>
             <Text size={4}>
@@ -46,7 +47,7 @@ export const AllVariants: Story = {
           </Stack>
         ))}
       </Flex>
-      <Flex align="center" gap={4}>
+      <Flex alignItems="center" gap={4}>
         {SIZES.map((size) => (
           <Stack gap={2} key={size} style={{textAlign: 'center'}}>
             <Text size={size}>
@@ -60,7 +61,7 @@ export const AllVariants: Story = {
       </Flex>
       <Flex>
         <Card padding={2} radius="full" tone="primary">
-          <Flex align="center" gap={2}>
+          <Flex alignItems="center" gap={2}>
             <Text size={1}>
               <ProgressIcon progress={0.4} />
             </Text>

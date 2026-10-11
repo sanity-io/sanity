@@ -13,6 +13,7 @@ import {
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
+  getDefaultVariant,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getPublishedId,
@@ -53,7 +54,8 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
 
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
     if (!sortOrder) return undefined
     return {

@@ -1,6 +1,6 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Stack, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Grid} from 'ui5'
+import {Flex, Grid} from 'ui5'
 
 import {Button} from '../../button/Button'
 import {Popover} from '../Popover'
@@ -36,7 +36,7 @@ const popoverContent = (
 
 export const Default: Story = {
   render: () => (
-    <Flex align="center" justify="center" style={{minHeight: 240}}>
+    <Flex alignItems="center" justifyContent="center" style={{minHeight: 240}}>
       <Popover content={popoverContent} open placement="bottom" portal>
         <Button mode="ghost" text="Anchor" />
       </Popover>
@@ -52,7 +52,7 @@ const placementContent = (
 
 function PlacementCell(props: {placement: 'top' | 'right' | 'bottom' | 'left'}) {
   return (
-    <Flex justify="center" paddingY={5}>
+    <Flex justifyContent="center" paddingY={5}>
       <Popover content={placementContent} open placement={props.placement} portal>
         <Button mode="ghost" text={props.placement} />
       </Popover>

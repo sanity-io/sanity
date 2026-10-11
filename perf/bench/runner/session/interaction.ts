@@ -1,14 +1,21 @@
 import process from 'node:process'
 
+import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser, type Locator, type Page} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
-import {type BenchScenario, type InteractionTarget} from '../../scenarios/types'
+import {
+  type BenchScenario,
+  type InteractionTarget,
+  scenarioDocument,
+  scenarioFixture,
+} from '../../scenarios/types'
 import {median} from '../../stats/quantiles'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
 import {awaitReadiness, gotoScenario} from './navigation'
+import {takePageStyleCensus} from './styles'
 
 /** Characters cycled through while typing (letters + digits only). */
 export const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -102,6 +109,12 @@ export interface InteractionSessionResult {
   requests: SessionRequests
   cpu: SessionCpu | null
   memory: SessionMemory | null
+  /**
+   * Style-system census of the open document (report-only): UI v5 vs v4 nodes
+   * and the styled-components footprint — see @repo/utils/style-systems. Null
+   * when no probe was supplied or it failed.
+   */
+  styles: StyleCensus | null
 }
 
 /**
@@ -183,7 +196,7 @@ function toLatencies(
   }
 }
 
-function fieldInput(page: Page, target: InteractionTarget): Locator {
+export function fieldInput(page: Page, target: InteractionTarget): Locator {
   if (target.kind === 'pte') {
     return page
       .locator(`[data-testid="field-${target.fieldPath}"] [contenteditable="true"]`)
@@ -270,7 +283,10 @@ const isFormReadOnly = () =>
  * keystrokes while it lasts (see ReadOnlyInterruptions). Pause rather than
  * type into the void — the wait is not keystroke latency.
  */
-async function waitUntilEditable(page: Page, interruptions: ReadOnlyInterruptions): Promise<void> {
+export async function waitUntilEditable(
+  page: Page,
+  interruptions: ReadOnlyInterruptions,
+): Promise<void> {
   if (!(await page.evaluate(isFormReadOnly))) return
   const waitStart = Date.now()
   await page.waitForFunction(
@@ -349,6 +365,8 @@ export async function runInteractionSession(options: {
   running: RunningSide
   scenario: BenchScenario
   instrumentation: string
+  /** The bundled style probe (runner/inject.ts); omitted = no style census. */
+  styleProbe?: string
   config?: Partial<SessionConfig>
 }): Promise<InteractionSessionResult> {
   const {browser, running, scenario, instrumentation} = options
@@ -367,13 +385,14 @@ export async function runInteractionSession(options: {
       burstKeystrokes: scenario.keystrokes.burst,
     }),
   }
-  const draftId = `drafts.${scenario.documentId}`
+  const {documentId, documentType} = scenarioDocument(scenario)
+  const draftId = `drafts.${documentId}`
 
   // Fresh state, in-process — no HTTP round-trips to our own mock
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
-  running.mock.store.seed(scenario.fixture())
+  running.mock.store.seed(scenarioFixture(scenario))
 
   // Pre-typing field text, needed by the Portable Text readback (typed
   // characters are validated as a delta over the seeded content)
@@ -383,7 +402,7 @@ export async function runInteractionSession(options: {
     if (target.kind === 'pte') {
       baselineTexts.set(
         target.fieldPath,
-        target.readbackText?.(seededDocument ?? {_id: draftId, _type: scenario.documentType}) ??
+        target.readbackText?.(seededDocument ?? {_id: draftId, _type: documentType}) ??
           String(getAtPath(seededDocument, target.fieldPath) ?? ''),
       )
     }
@@ -573,7 +592,7 @@ export async function runInteractionSession(options: {
       for (const target of scenario.interactions) {
         const typed = typedPerField.get(target.fieldPath) ?? ''
         const text =
-          target.readbackText?.(document ?? {_id: draftId, _type: scenario.documentType}) ??
+          target.readbackText?.(document ?? {_id: draftId, _type: documentType}) ??
           String(getAtPath(document, target.fieldPath) ?? '')
         if (target.kind === 'pte') {
           const missing = countMissingCharacters(
@@ -610,6 +629,15 @@ export async function runInteractionSession(options: {
           }
         : null
     const memory = await readMemorySnapshot(session.cdp)
+
+    // Style census (report-only): which styling systems built this page.
+    // Taken LAST, after the workload and the resource counters: the probe
+    // waits for the DOM to go quiet before it counts, and doing that before
+    // the keystrokes would let the lazy panes finish loading ahead of the
+    // warmup — a harness-induced improvement in keystroke latency that would
+    // put a step in the series unrelated to any studio change. By now the
+    // page has been open for a minute, so the wait is only its quiet window.
+    const styles = options.styleProbe ? await takePageStyleCensus(page, options.styleProbe) : null
 
     // Session-level invariants
     if (session.violations.length > 0) {
@@ -650,6 +678,7 @@ export async function runInteractionSession(options: {
       requests,
       cpu,
       memory,
+      styles,
     }
   } finally {
     await context.close()
@@ -696,7 +725,7 @@ export async function runSoakSession(options: {
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
-  running.mock.store.seed(scenario.fixture())
+  running.mock.store.seed(scenarioFixture(scenario))
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,

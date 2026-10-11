@@ -7,7 +7,7 @@ import {command, constant, option} from '@optique/core/primitives'
 import {string} from '@optique/core/valueparser'
 import {run} from '@optique/run'
 
-import {tagVersion, uploadBundles} from '../src'
+import {deprecateVersion, tagVersion, undeprecateVersion, uploadBundles} from '../src'
 import {verify} from '../src/commands/verify'
 
 const parser = or(
@@ -39,6 +39,29 @@ const parser = or(
     }),
     {description: message`Tag a version`},
   ),
+  command(
+    'deprecate',
+    object({
+      action: constant('deprecate'),
+      targetVersion: option('--target-version', string()),
+      reason: optional(
+        option('--reason', string(), {
+          description: message`Why the version is deprecated (shown to studio users)`,
+        }),
+      ),
+    }),
+    {
+      description: message`Mark a version as deprecated in the module manifest`,
+    },
+  ),
+  command(
+    'undeprecate',
+    object({
+      action: constant('undeprecate'),
+      targetVersion: option('--target-version', string()),
+    }),
+    {description: message`Remove the deprecation of a version`},
+  ),
   command('verify', object({action: constant('verify')}), {
     description: message`Verify read/write access to bucket`,
   }),
@@ -59,6 +82,12 @@ switch (args.action) {
     break
   case 'tag':
     await tagVersion({tag: args.tag, version: args.targetVersion})
+    break
+  case 'deprecate':
+    await deprecateVersion({version: args.targetVersion, reason: args.reason})
+    break
+  case 'undeprecate':
+    await undeprecateVersion({version: args.targetVersion})
     break
   case 'verify':
     await verify()

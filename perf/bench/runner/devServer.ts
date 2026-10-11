@@ -20,6 +20,7 @@ import {DATASET, EXPERIMENT} from '../constants'
 import {createMockApi} from '../mock-api/createServer'
 import {getBenchTls} from '../mock-api/tls'
 import {SCENARIOS} from '../scenarios'
+import {scenarioFixture} from '../scenarios/types'
 import {scenarioUrl} from './session/navigation'
 
 const benchRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
@@ -40,7 +41,7 @@ export async function startBenchDev(options: {customizations: boolean}): Promise
   const urls: string[] = []
   if (customizations) {
     for (const scenario of SCENARIOS.filter((candidate) => candidate.requiresCustomizations)) {
-      mock.store.seed(scenario.fixture())
+      mock.store.seed(scenarioFixture(scenario))
       urls.push(`${scenario.name.padEnd(16)} ${scenarioUrl(studioUrl, scenario)}`)
     }
   } else {

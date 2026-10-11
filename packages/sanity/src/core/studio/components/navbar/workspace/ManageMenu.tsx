@@ -1,6 +1,6 @@
 import {AddUserIcon} from '@sanity/icons/AddUser'
 import {CogIcon} from '@sanity/icons/Cog'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Text, TextSkeleton} from '@sanity/ui'
 import {Suspense, use} from 'react'
 import {type ObservablePromise} from 'react-rx'
 import {Flex} from 'ui5'
@@ -34,17 +34,22 @@ export function ManageMenu({
   const {t} = useTranslation()
 
   return (
-    <Stack paddingX={4} paddingTop={4} paddingBottom={multipleWorkspaces ? 3 : 4}>
+    <Flex
+      paddingX={4}
+      paddingTop={4}
+      paddingBottom={multipleWorkspaces ? 3 : 4}
+      flexDirection="column"
+    >
       <Flex alignItems="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
-        <Stack marginLeft={2} gap={2}>
+        <Flex marginLeft={2} gap={2} flexDirection="column">
           <Suspense fallback={<TextSkeleton size={0} animated style={{width: '8ch'}} />}>
             <ProjectName promise={projectNamePromise} />
           </Suspense>
           <Text size={2} weight="medium">
             {activeWorkspace.title}
           </Text>
-        </Stack>
+        </Flex>
       </Flex>
 
       <Flex justifyContent="flex-start" gap={3} paddingTop={4}>
@@ -71,6 +76,6 @@ export function ManageMenu({
           />
         )}
       </Flex>
-    </Stack>
+    </Flex>
   )
 }

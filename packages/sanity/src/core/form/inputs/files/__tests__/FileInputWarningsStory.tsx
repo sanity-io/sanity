@@ -1,5 +1,6 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
+import {Flex, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
@@ -20,34 +21,34 @@ export function FileInputWarningsStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 420}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               invalid image
             </Text>
             <InvalidImageWarning onClearValue={noop} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               invalid file
             </Text>
             <InvalidFileWarning onClearValue={noop} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               stale upload
             </Text>
             <UploadWarning onClearStale={noop} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               access policy (FileActionsMenu row)
             </Text>
-            <Flex justify="center" gap={2}>
+            <Flex justifyContent="center" gap={2}>
               <AccessPolicyBadge />
             </Flex>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

@@ -4,7 +4,6 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
-  Stack,
   TabPanel,
   Text,
 } from '@sanity/ui'
@@ -23,7 +22,7 @@ import {
   useId,
   useState,
 } from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -125,8 +124,8 @@ export function ReleaseForm(props: {
   const [menuButton, setMenuButton] = useState<HTMLElement | null>(null)
 
   return (
-    <Stack gap={5}>
-      <Stack gap={4}>
+    <VStack gap={5}>
+      <VStack gap={4}>
         <Flex gap={2} alignItems="center">
           <Text as="label" htmlFor={menuButtonId}>
             {t('release.dialog.tooltip.title')}
@@ -134,12 +133,12 @@ export function ReleaseForm(props: {
           <Text muted size={1}>
             <Tooltip
               content={
-                <Stack gap={3} style={{maxWidth: 320 - 16}}>
+                <VStack gap={3} style={{maxWidth: 320 - 16}}>
                   <Text size={1}>{t('release.dialog.tooltip.description')}</Text>
                   <Text muted size={1}>
                     {t('release.dialog.tooltip.note')}
                   </Text>
-                </Stack>
+                </VStack>
               }
               delay={0}
               placement="right-start"
@@ -149,7 +148,7 @@ export function ReleaseForm(props: {
             </Tooltip>
           </Text>
         </Flex>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <MenuButton
             id={menuButtonId}
             ref={setMenuButton}
@@ -201,10 +200,10 @@ export function ReleaseForm(props: {
               </TabPanel>
             )}
           </Flex>
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
       <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
-    </Stack>
+    </VStack>
   )
 }
 

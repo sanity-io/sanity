@@ -1,6 +1,6 @@
 import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
-import {Card, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 import {Box, Flex} from 'ui5'
@@ -108,7 +108,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
               <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                 <ReleaseAvatar release={release} size="small" fontSize={2} />
               </Box>
-              <Stack flex={1} gap={2}>
+              <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
                 <Flex alignItems="center" gap={2}>
                   <ReleaseTitle
                     title={release.metadata.title}
@@ -116,7 +116,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
                     textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
                   />
                 </Flex>
-              </Stack>
+              </Flex>
             </Flex>
           </Card>
         </Flex>

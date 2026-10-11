@@ -1,6 +1,6 @@
-import {Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -48,18 +48,24 @@ export function CompactPreview(props: CompactPreviewProps) {
   if (isPlaceholder) {
     return (
       <Root
-        align="center"
+        alignItems="center"
         data-testid="default-preview"
         paddingLeft={media ? 1 : 2}
         paddingRight={2}
         paddingY={1}
       >
-        <Flex align="center" flex={1} gap={2}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
           {media && <Skeleton animated radius={2} style={PREVIEW_SIZES.compact.media} />}
 
-          <Stack data-testid="compact-preview__heading" flex={1} gap={2}>
+          <Flex
+            data-testid="compact-preview__heading"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={2}
+            flexDirection="column"
+          >
             <TitleSkeleton />
-          </Stack>
+          </Flex>
 
           {statusNode}
         </Flex>
@@ -69,13 +75,13 @@ export function CompactPreview(props: CompactPreviewProps) {
 
   return (
     <Root
-      align="center"
+      alignItems="center"
       data-testid="compact-preview"
       paddingLeft={media ? 1 : 2}
       paddingRight={2}
       paddingY={1}
     >
-      <Flex align="center" flex={1} gap={2}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
         {media && (
           <Media
             border={false}
@@ -84,7 +90,13 @@ export function CompactPreview(props: CompactPreviewProps) {
             media={media as any}
           />
         )}
-        <Stack data-testid="compact-preview__header" flex={1} gap={2}>
+        <Flex
+          data-testid="compact-preview__header"
+          flexBasis="0%"
+          flexGrow={1}
+          gap={2}
+          flexDirection="column"
+        >
           <Text size={1} style={{color: 'inherit'}} textOverflow="ellipsis" weight="medium">
             {title && renderPreviewNode(title, 'compact')}
             {!title && (
@@ -93,7 +105,7 @@ export function CompactPreview(props: CompactPreviewProps) {
               </span>
             )}
           </Text>
-        </Stack>
+        </Flex>
 
         {statusNode}
       </Flex>

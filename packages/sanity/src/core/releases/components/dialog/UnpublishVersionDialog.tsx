@@ -1,7 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {type BadgeTone, Stack, Text} from '@sanity/ui'
+import {type BadgeTone, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useRef, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -151,7 +152,7 @@ export function UnpublishVersionDialog(props: {
         },
       }}
     >
-      <Stack gap={4} paddingX={4} paddingBottom={4}>
+      <Flex gap={4} paddingX={4} paddingBottom={4} flexDirection="column">
         {schemaType ? (
           <Preview value={{_id: documentVersionId}} schemaType={schemaType} />
         ) : (
@@ -171,7 +172,7 @@ export function UnpublishVersionDialog(props: {
         <Text muted size={1}>
           {t('unpublish-dialog.description.lost-changes')}
         </Text>
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }

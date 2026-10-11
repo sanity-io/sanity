@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {activeASAPRelease} from '../../../../../releases/__fixtures__/release.fixture'
@@ -37,26 +38,26 @@ export function VariantDocumentBundleChipsStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 360}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               published
             </Text>
             <VariantDocumentBundleChips releasesById={RELEASES_BY_ID} versions={[PUBLISHED]} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               drafts
             </Text>
             <VariantDocumentBundleChips releasesById={RELEASES_BY_ID} versions={[DRAFTS]} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               release
             </Text>
             <VariantDocumentBundleChips releasesById={RELEASES_BY_ID} versions={[RELEASE]} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               overflow
             </Text>
@@ -64,8 +65,8 @@ export function VariantDocumentBundleChipsStory() {
               releasesById={RELEASES_BY_ID}
               versions={[PUBLISHED, DRAFTS, RELEASE]}
             />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

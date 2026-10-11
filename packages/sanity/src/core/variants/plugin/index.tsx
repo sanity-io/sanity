@@ -1,17 +1,14 @@
-import {lazy} from 'react'
+import {lazy, useEffect} from 'react'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
+import {type ProviderProps} from '../../config/studio/types'
 import {variantsUsEnglishLocaleBundle} from '../i18n'
 
-const VariantsTool = lazy(() =>
-  import('../tool/VariantsTool').then((module) => ({default: module.VariantsTool})),
-)
-const VariantsStudioNavbar = lazy(() =>
-  import('./components/VariantsStudioNavbar').then((module) => ({
-    default: module.VariantsStudioNavbar,
-  })),
-)
+const VariantsTool = lazy(() => import('../tool/VariantsTool'))
+
+const lazyVariantsStudioNavbarLayout = () => import('./components/VariantsStudioNavbarLayout')
+const VariantsStudioNavbarLayout = lazy(lazyVariantsStudioNavbarLayout)
 
 /**
  * @internal
@@ -32,7 +29,8 @@ export const variants = definePlugin({
   name: VARIANTS_NAME,
   studio: {
     components: {
-      navbar: VariantsStudioNavbar,
+      provider: VariantsStudioProvider,
+      navbar: VariantsStudioNavbarLayout,
     },
   },
   tools: [
@@ -55,3 +53,12 @@ export const variants = definePlugin({
     bundles: [variantsUsEnglishLocaleBundle],
   },
 })
+
+function VariantsStudioProvider(props: ProviderProps) {
+  useEffect(() => {
+    // Preload lazy components (fire-and-forget: the lazy() render reports a failed import)
+    void lazyVariantsStudioNavbarLayout()
+  }, [])
+
+  return props.renderDefault(props)
+}

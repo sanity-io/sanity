@@ -1,9 +1,3 @@
-import {
-  urlSearchParamPreviewPathname,
-  urlSearchParamPreviewPerspective,
-  urlSearchParamPreviewSecret,
-  urlSearchParamPreviewVariant,
-} from '@sanity/preview-url-secret/constants'
 import {type SanityClient} from 'sanity'
 import {fromPromise, type PromiseActorLogic} from 'xstate'
 
@@ -12,6 +6,7 @@ import {
   type PreviewUrlOption,
   type PreviewUrlPreviewMode,
 } from '../types'
+import {createPreviewModeEnableUrl} from '../util/createPreviewModeEnableUrl'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 
 /** @internal */
@@ -60,22 +55,12 @@ export function defineResolvePreviewModeUrlActor({
       throw new Error('Resolved preview mode is false')
     }
 
-    const url = new URL(resolvedPreviewMode.enable, initialUrl)
-
-    url.searchParams.set(urlSearchParamPreviewSecret, previewUrlSecret)
-    url.searchParams.set(urlSearchParamPreviewPerspective, encodeStudioPerspective(perspective))
-    if (variant) {
-      url.searchParams.set(urlSearchParamPreviewVariant, variant)
-    } else {
-      url.searchParams.delete(urlSearchParamPreviewVariant)
-    }
-    if (initialUrl.pathname !== url.pathname) {
-      url.searchParams.set(
-        urlSearchParamPreviewPathname,
-        `${initialUrl.pathname}${initialUrl.search}${initialUrl.hash}`,
-      )
-    }
-
-    return url
+    return createPreviewModeEnableUrl({
+      enable: resolvedPreviewMode.enable,
+      perspective,
+      previewUrl: initialUrl,
+      previewUrlSecret,
+      variant,
+    })
   })
 }

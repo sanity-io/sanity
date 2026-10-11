@@ -24,7 +24,8 @@ pnpm visual-coverage --help
 For a PR you are not on: `gh pr checkout <number> && pnpm visual-coverage --changed --prs`. Every
 same-repo PR that touches `packages/**/src/**/*.tsx` or `*.css.ts` also gets a sticky
 "Visual regression coverage" comment from `.github/workflows/visual-coverage.yml`, produced by the
-same script with `--format markdown --prs`. Read that comment first when reviewing.
+same script with `--format markdown --prs`. Read that comment first when reviewing; its counts are
+in plain sight and the per-file table sits behind the collapsed `Per-file coverage` toggle.
 
 The script is `scripts/visualCoverage.ts`. It has no dependencies and runs under `tsx` or plain
 Node 22.18+ (`node scripts/visualCoverage.ts`).

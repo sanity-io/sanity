@@ -1,6 +1,6 @@
-import {Flex} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
+import {Flex} from 'ui5'
 
 import {Button} from '../../button/Button'
 import {Tooltip} from '../Tooltip'
@@ -25,7 +25,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   render: () => (
-    <Flex align="center" justify="center" style={{minHeight: 160}}>
+    <Flex alignItems="center" justifyContent="center" style={{minHeight: 160}}>
       <Tooltip content="Publish this document" portal>
         <Button mode="ghost" text="Hover me" />
       </Tooltip>
@@ -48,7 +48,7 @@ export const Default: Story = {
  */
 export const WithHotkeys: Story = {
   render: () => (
-    <Flex align="center" justify="center" style={{minHeight: 160}}>
+    <Flex alignItems="center" justifyContent="center" style={{minHeight: 160}}>
       <Tooltip content="Search" hotkeys={['Ctrl', 'K']} portal>
         <Button mode="ghost" text="Hover me" />
       </Tooltip>

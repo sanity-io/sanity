@@ -67,6 +67,16 @@ export const Scroller = styled(ScrollContainer)`
   }
 `
 
+/**
+ * In fullscreen the editable is wrapped in a presence overlay, whose content row this fills so
+ * the editable below keeps its `height: 100%` chain intact and stays clickable all the way down.
+ * Otherwise it is the scroller's flex child, which must not get a definite height: a flex item's
+ * automatic minimum size is then capped to it and the content gets clipped.
+ */
+export const EditableContent = styled.div<{$isFullscreen: boolean}>`
+  height: ${({$isFullscreen}) => ($isFullscreen ? '100%' : 'auto')};
+`
+
 export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine: boolean}>`
   height: 100%;
   width: 100%;

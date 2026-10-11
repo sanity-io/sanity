@@ -334,6 +334,7 @@ import type {
   CurrentUserAttribute,
   CustomValidator,
   CustomValidatorResult,
+  DashboardLink,
   DashboardNotificationPayload,
   DateComponents,
   DateDefinition,
@@ -388,6 +389,7 @@ import type {
   defineSearchFilterOperators,
   defineSearchMachine,
   defineSearchOperator,
+  defineSingleton,
   defineType,
   Delay,
   DeleteDocumentGroupEvent,
@@ -548,6 +550,7 @@ import type {
   EmptyProps,
   emptyValuesByType,
   encodePath,
+  encodeVariantLinkParam,
   EnhancedObjectDialog,
   EnumListProps,
   ErrorActions,
@@ -699,6 +702,7 @@ import type {
   getCalendarLabels,
   getConfigContextFromSource,
   getCreatableVariantTarget,
+  getDefaultVariant,
   getDiffAtPath,
   getDocumentIdForCanvasLink,
   getDocumentIsInPerspective,
@@ -706,6 +710,7 @@ import type {
   getDocumentValuePermissions,
   getDocumentVariantType,
   getDocumentVersionType,
+  getDocumentVersionVariantId,
   getDraftId,
   getErrorMessage,
   getExpandOperations,
@@ -1213,6 +1218,7 @@ import type {
   ProjectOrganizationData,
   ProjectStore,
   ProvenanceDiffAnnotation,
+  ProviderProps,
   PublishDocumentVersionEvent,
   PUBLISHED,
   PublishedId,
@@ -1299,6 +1305,7 @@ import type {
   resolveConditionalProperty,
   resolveConfig,
   resolveDiffComponent,
+  ResolvedTemplate,
   ResolvedUploader,
   resolveInitialObjectValue,
   resolveInitialValue,
@@ -1339,6 +1346,7 @@ import type {
   SchedulesContext,
   Schema,
   SchemaError,
+  SchemaErrorContext,
   SchemaPluginOptions,
   SchemaType,
   SchemaTypeDefinition,
@@ -1398,6 +1406,8 @@ import type {
   SingleDocReleaseProvider,
   SingleFieldSet,
   SingleMutationResult,
+  SingletonDefinition,
+  SingletonsResolver,
   SingleWorkspace,
   Size,
   sliceString,
@@ -1453,6 +1463,7 @@ import type {
   StringSegmentChanged,
   StringSegmentUnchanged,
   stringToPath,
+  StructureNodeIdValidationResult,
   Studio,
   StudioAnnouncementsCard,
   StudioAnnouncementsDialog,
@@ -1557,6 +1568,7 @@ import type {
   UnitFormatter,
   UniversalArrayInput,
   UnpublishDocumentEvent,
+  UnresolvedSingletonDefinition,
   UnscheduleDocumentVersionEvent,
   unset,
   unstable_useObserveDocument,
@@ -1593,6 +1605,7 @@ import type {
   useAnnotationColor,
   useArchivedReleases,
   useCanvasCompanionDoc,
+  useCanvasNavigate,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
   useClient,
@@ -1790,6 +1803,7 @@ import type {
   validateDocument,
   ValidateDocumentOptions,
   validateNames,
+  validateStructureNodeId,
   ValidateWorkspaceOptions,
   validateWorkspaces,
   validation,
@@ -1805,7 +1819,14 @@ import type {
   ValueError,
   ValuelessSearchOperatorBuilder,
   ValuelessSearchOperatorParams,
+  VariantConditionMap,
+  VariantConditions,
+  VariantConditionsContext,
+  VariantConditionValue,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
+  VariantTypeConfig,
+  VariantTypeContext,
+  VariantTypesConfig,
   VERSION_FOLDER,
   VersionChip,
   VersionInfoDocumentStub,
@@ -2846,6 +2867,9 @@ describe('sanity', () => {
   test('CustomValidatorResult', () => {
     expectTypeOf<CustomValidatorResult>().not.toBeNever()
   })
+  test('DashboardLink', () => {
+    expectTypeOf<typeof DashboardLink>().toBeFunction()
+  })
   test('DashboardNotificationPayload', () => {
     expectTypeOf<DashboardNotificationPayload>().toBeObject()
   })
@@ -3009,6 +3033,9 @@ describe('sanity', () => {
   })
   test('defineSearchOperator', () => {
     expectTypeOf<typeof defineSearchOperator>().toBeFunction()
+  })
+  test('defineSingleton', () => {
+    expectTypeOf<typeof defineSingleton>().toBeFunction()
   })
   test('defineType', () => {
     expectTypeOf<typeof defineType>().toBeFunction()
@@ -3492,6 +3519,9 @@ describe('sanity', () => {
   test('encodePath', () => {
     expectTypeOf<typeof encodePath>().toBeFunction()
   })
+  test('encodeVariantLinkParam', () => {
+    expectTypeOf<typeof encodeVariantLinkParam>().toBeFunction()
+  })
   test('EnhancedObjectDialog', () => {
     expectTypeOf<typeof EnhancedObjectDialog>().toBeFunction()
   })
@@ -3948,6 +3978,10 @@ describe('sanity', () => {
   test('getCreatableVariantTarget', () => {
     expectTypeOf<typeof getCreatableVariantTarget>().toBeFunction()
   })
+  test('getDefaultVariant', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<typeof getDefaultVariant>().toBeFunction()
+  })
   test('getDiffAtPath', () => {
     expectTypeOf<typeof getDiffAtPath>().toBeFunction()
   })
@@ -3968,6 +4002,9 @@ describe('sanity', () => {
   })
   test('getDocumentVersionType', () => {
     expectTypeOf<typeof getDocumentVersionType>().toBeFunction()
+  })
+  test('getDocumentVersionVariantId', () => {
+    expectTypeOf<typeof getDocumentVersionVariantId>().toBeFunction()
   })
   test('getDraftId', () => {
     expectTypeOf<typeof getDraftId>().toBeFunction()
@@ -5494,6 +5531,9 @@ describe('sanity', () => {
   test('ProvenanceDiffAnnotation', () => {
     expectTypeOf<ProvenanceDiffAnnotation>().toBeObject()
   })
+  test('ProviderProps', () => {
+    expectTypeOf<ProviderProps>().toBeObject()
+  })
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
   })
@@ -5754,6 +5794,9 @@ describe('sanity', () => {
   test('resolveDiffComponent', () => {
     expectTypeOf<typeof resolveDiffComponent>().toBeFunction()
   })
+  test('ResolvedTemplate', () => {
+    expectTypeOf<ResolvedTemplate<any, any>>().toBeObject()
+  })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()
   })
@@ -5873,6 +5916,9 @@ describe('sanity', () => {
   })
   test('SchemaError', () => {
     expectTypeOf<SchemaError>().not.toBeNever()
+  })
+  test('SchemaErrorContext', () => {
+    expectTypeOf<SchemaErrorContext>().toBeObject()
   })
   test('SchemaPluginOptions', () => {
     expectTypeOf<SchemaPluginOptions>().toBeObject()
@@ -6051,6 +6097,12 @@ describe('sanity', () => {
   test('SingleMutationResult', () => {
     expectTypeOf<SingleMutationResult>().toBeObject()
   })
+  test('SingletonDefinition', () => {
+    expectTypeOf<SingletonDefinition>().toBeObject()
+  })
+  test('SingletonsResolver', () => {
+    expectTypeOf<SingletonsResolver>().not.toBeNever()
+  })
   test('SingleWorkspace', () => {
     expectTypeOf<SingleWorkspace>().not.toBeNever()
   })
@@ -6217,6 +6269,9 @@ describe('sanity', () => {
   })
   test('stringToPath', () => {
     expectTypeOf<typeof stringToPath>().toBeFunction()
+  })
+  test('StructureNodeIdValidationResult', () => {
+    expectTypeOf<StructureNodeIdValidationResult>().not.toBeNever()
   })
   test('Studio', () => {
     expectTypeOf<typeof Studio>().toBeFunction()
@@ -6531,6 +6586,9 @@ describe('sanity', () => {
   test('UnpublishDocumentEvent', () => {
     expectTypeOf<UnpublishDocumentEvent>().toBeObject()
   })
+  test('UnresolvedSingletonDefinition', () => {
+    expectTypeOf<UnresolvedSingletonDefinition>().not.toBeNever()
+  })
   test('UnscheduleDocumentVersionEvent', () => {
     expectTypeOf<UnscheduleDocumentVersionEvent>().toBeObject()
   })
@@ -6639,6 +6697,9 @@ describe('sanity', () => {
   })
   test('useCanvasCompanionDoc', () => {
     expectTypeOf<typeof useCanvasCompanionDoc>().not.toBeNever()
+  })
+  test('useCanvasNavigate', () => {
+    expectTypeOf<typeof useCanvasNavigate>().toBeFunction()
   })
   test('useChangeIndicatorsReportedValues', () => {
     expectTypeOf<typeof useChangeIndicatorsReportedValues>().toBeFunction()
@@ -7233,6 +7294,9 @@ describe('sanity', () => {
   test('validateNames', () => {
     expectTypeOf<typeof validateNames>().toBeFunction()
   })
+  test('validateStructureNodeId', () => {
+    expectTypeOf<typeof validateStructureNodeId>().toBeFunction()
+  })
   test('ValidateWorkspaceOptions', () => {
     expectTypeOf<ValidateWorkspaceOptions>().toBeObject()
   })
@@ -7279,8 +7343,29 @@ describe('sanity', () => {
   test('ValuelessSearchOperatorParams', () => {
     expectTypeOf<ValuelessSearchOperatorParams>().not.toBeNever()
   })
+  test('VariantConditionMap', () => {
+    expectTypeOf<VariantConditionMap>().toBeObject()
+  })
+  test('VariantConditions', () => {
+    expectTypeOf<VariantConditions>().not.toBeNever()
+  })
+  test('VariantConditionsContext', () => {
+    expectTypeOf<VariantConditionsContext>().not.toBeNever()
+  })
+  test('VariantConditionValue', () => {
+    expectTypeOf<VariantConditionValue>().toBeObject()
+  })
   test('VARIANTS_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof VARIANTS_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
+  test('VariantTypeConfig', () => {
+    expectTypeOf<VariantTypeConfig>().toBeObject()
+  })
+  test('VariantTypeContext', () => {
+    expectTypeOf<VariantTypeContext>().not.toBeNever()
+  })
+  test('VariantTypesConfig', () => {
+    expectTypeOf<VariantTypesConfig>().not.toBeNever()
   })
   test('VERSION_FOLDER', () => {
     expectTypeOf<typeof VERSION_FOLDER>().not.toBeNever()
@@ -7292,7 +7377,7 @@ describe('sanity', () => {
     expectTypeOf<VersionInfoDocumentStub>().toBeObject()
   })
   test('VersionInlineBadge', () => {
-    expectTypeOf<typeof VersionInlineBadge>().not.toBeNever()
+    expectTypeOf<typeof VersionInlineBadge>().toBeFunction()
   })
   test('VersionType', () => {
     expectTypeOf<VersionType>().not.toBeNever()

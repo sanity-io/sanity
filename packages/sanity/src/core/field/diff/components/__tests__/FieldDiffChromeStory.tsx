@@ -1,5 +1,6 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {MissingSinceDocumentError} from '../../../../store/events/getDocumentChanges'
@@ -24,27 +25,27 @@ export function FieldDiffChromeStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 480}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               value error
             </Text>
             <ValueError error={TYPE_ERROR} />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               changes error
             </Text>
             <ChangesError />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               missing revision
             </Text>
             <ChangesError error={new MissingSinceDocumentError('revAbc123')} />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               meta info
             </Text>
             <MetaInfo icon={DocumentIcon} title="report.pdf">
@@ -53,17 +54,17 @@ export function FieldDiffChromeStory() {
             <MetaInfo icon={DocumentIcon} markRemoved title="old-report.pdf">
               12 kB
             </MetaInfo>
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               change breadcrumb
             </Text>
             <ChangeBreadcrumb titlePath={['Article', 'Body', 'Image']} />
             <ChangeBreadcrumb
               titlePath={['Article', 'Body', 'Content', 'Block', 'Image', 'Alt text']}
             />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

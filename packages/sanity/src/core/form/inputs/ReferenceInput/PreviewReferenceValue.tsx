@@ -1,9 +1,9 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
-import {Badge, Inline, Stack, Text} from '@sanity/ui'
+import {Badge, Inline, Text} from '@sanity/ui'
 import {type ComponentType, Fragment, type ReactNode} from 'react'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
@@ -199,7 +199,7 @@ function InvalidType({
         <Tooltip
           portal
           content={
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Text size={1}>
                 <Translate
                   t={t}
@@ -209,7 +209,7 @@ function InvalidType({
                   componentProps={{declaredTypes}}
                 />
               </Text>
-            </Stack>
+            </VStack>
           }
         >
           <Box padding={2}>

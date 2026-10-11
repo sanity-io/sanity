@@ -45,6 +45,7 @@ import type {
   DocumentDivergencesContextValue,
   DocumentFieldActionsContext,
   DocumentFieldActionsContextValue,
+  DocumentHistoryContext,
   DocumentIdContext,
   DocumentIdContextValue,
   DocumentLimitUpsellContext,
@@ -77,6 +78,7 @@ import type {
   LoggedOutReasonContext,
   MediaLibraryIdsContext,
   MentionUserContext,
+  MountedToolsContext,
   NavbarContext,
   PackageVersionInfoContext,
   PackageVersionInfoContextValue,
@@ -281,6 +283,9 @@ describe('sanity/_singletons', () => {
   test('DocumentFieldActionsContextValue', () => {
     expectTypeOf<DocumentFieldActionsContextValue>().toBeObject()
   })
+  test('DocumentHistoryContext', () => {
+    expectTypeOf<typeof DocumentHistoryContext>().not.toBeNever()
+  })
   test('DocumentIdContext', () => {
     expectTypeOf<typeof DocumentIdContext>().not.toBeNever()
   })
@@ -376,6 +381,9 @@ describe('sanity/_singletons', () => {
   })
   test('MentionUserContext', () => {
     expectTypeOf<typeof MentionUserContext>().not.toBeNever()
+  })
+  test('MountedToolsContext', () => {
+    expectTypeOf<typeof MountedToolsContext>().not.toBeNever()
   })
   test('NavbarContext', () => {
     expectTypeOf<typeof NavbarContext>().not.toBeNever()

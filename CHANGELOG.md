@@ -2,6 +2,148 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
+
+### Features
+
+* **core:** follow the workbench color scheme ([#15063](https://github.com/sanity-io/sanity/issues/15063)) ([25aa731](https://github.com/sanity-io/sanity/commit/25aa7313039fc709da1d9c4a9ae506b97f2ef599))
+* **core:** open canvas inside workbench ([#15060](https://github.com/sanity-io/sanity/issues/15060)) ([17eec24](https://github.com/sanity-io/sanity/commit/17eec241c969b0a3db9ccff029e9ad1222535ff5))
+* **core:** record document history through the sdk ([#14963](https://github.com/sanity-io/sanity/issues/14963)) ([f62caf3](https://github.com/sanity-io/sanity/commit/f62caf3c6d59bc031dfd3d9c1e070938f29d25b3))
+* **core:** skip page performance metrics in workbench ([#15064](https://github.com/sanity-io/sanity/issues/15064)) ([7c63e1e](https://github.com/sanity-io/sanity/commit/7c63e1e7b7608e4a9452485da3a372aac3cb8174))
+* **core:** sync studio navigation with workbench ([#15092](https://github.com/sanity-io/sanity/issues/15092)) ([0005bd9](https://github.com/sanity-io/sanity/commit/0005bd9e2eafa9e1f8fc860f258cec04bb9b4e22))
+* **core:** tell dashboard and workbench hosts apart ([#15014](https://github.com/sanity-io/sanity/issues/15014)) ([1a06b63](https://github.com/sanity-io/sanity/commit/1a06b6374368b0c694aaf58c9f1be1413a1ebfe5))
+* **structure:** add a stable attribute for hiding the document toolbar ([#15139](https://github.com/sanity-io/sanity/issues/15139)) ([60fdf3d](https://github.com/sanity-io/sanity/commit/60fdf3d1177f735455bd8b3413b0e1378050878a))
+* **structure:** report the open document to workbench ([#14969](https://github.com/sanity-io/sanity/issues/14969)) ([9b9f9ff](https://github.com/sanity-io/sanity/commit/9b9f9ff5bff17e84a1dbf7e4bad17590d3d80f4b))
+* **structure:** support document favorites in workbench ([#15019](https://github.com/sanity-io/sanity/issues/15019)) ([8dae879](https://github.com/sanity-io/sanity/commit/8dae8795de4c9739f4438427c6ba0f944b53c043))
+* **studio:** add workspace and source context to schema error messages ([#12108](https://github.com/sanity-io/sanity/issues/12108)) ([8b12e33](https://github.com/sanity-io/sanity/commit/8b12e33ee31541b807534fbc75e16300a3e2d8e7))
+
+### Bug Fixes
+
+* **core:** let workbench own sign-in ([#15080](https://github.com/sanity-io/sanity/issues/15080)) ([20d3e1f](https://github.com/sanity-io/sanity/commit/20d3e1f4fe9cdcd084d431d0a34ef33cab5b27ee))
+* **deps:** update dependency @sanity/cli to ^8.13.1 ([#15171](https://github.com/sanity-io/sanity/issues/15171)) ([5621df3](https://github.com/sanity-io/sanity/commit/5621df3e17e4ea6f37be345ae12ecd9afd3841b5))
+* **deps:** update dependency @sanity/client to ^8.8.0 ([#15079](https://github.com/sanity-io/sanity/issues/15079)) ([7962239](https://github.com/sanity-io/sanity/commit/7962239731de0446d7b0934fbce37682367a5c11))
+* **deps:** update dependency @sanity/icons to ^5.2.3 ([#15086](https://github.com/sanity-io/sanity/issues/15086)) ([5ecaf30](https://github.com/sanity-io/sanity/commit/5ecaf300efa8821379892e4eb12c9accd7d15f55))
+* **deps:** update dependency get-it to ^9.6.1 ([#15115](https://github.com/sanity-io/sanity/issues/15115)) ([c6bc655](https://github.com/sanity-io/sanity/commit/c6bc655a707477959167c6e7d8e71795c4bae2ff))
+* **deps:** update dependency motion to ^13.4.6 ([#15125](https://github.com/sanity-io/sanity/issues/15125)) ([388698d](https://github.com/sanity-io/sanity/commit/388698df2cea26585c809635feb6e512af654fcf))
+* **deps:** update dependency motion to ^13.5.1 ([#15179](https://github.com/sanity-io/sanity/issues/15179)) ([0c1fa74](https://github.com/sanity-io/sanity/commit/0c1fa741fa3a122c879101df5a9e27015867bc51))
+* **deps:** update dependency motion to v14 ([#15181](https://github.com/sanity-io/sanity/issues/15181)) ([c7b0c03](https://github.com/sanity-io/sanity/commit/c7b0c0364b3de8d3a48e11feb24ed316a6fc6610))
+* **deps:** update dev-non-major ([#15118](https://github.com/sanity-io/sanity/issues/15118)) ([45dc011](https://github.com/sanity-io/sanity/commit/45dc011721ba7e026df4a6c041a345a59a4f1525))
+* **deps:** update dev-non-major ([#15180](https://github.com/sanity-io/sanity/issues/15180)) ([34a1125](https://github.com/sanity-io/sanity/commit/34a112537e19a7f26dd8b03c1c7ff74c3a2dd79c))
+* **deps:** update portabletext ([#15116](https://github.com/sanity-io/sanity/issues/15116)) ([7242868](https://github.com/sanity-io/sanity/commit/7242868df13805bf76ee89108e9b62c18d843f54))
+* **deps:** update sanity-sdk to ^3.7.0 ([#15119](https://github.com/sanity-io/sanity/issues/15119)) ([821dfa5](https://github.com/sanity-io/sanity/commit/821dfa577df6f5e3291cc606cf89c158ce57b7e3))
+* **deps:** update sanity-sdk to ^3.8.0 ([#15184](https://github.com/sanity-io/sanity/issues/15184)) ([ab6f9c5](https://github.com/sanity-io/sanity/commit/ab6f9c5f7e3e73307d1cf5571f85d873bacb8498))
+* **deps:** update storybook monorepo to ^10.6.1 ([#15172](https://github.com/sanity-io/sanity/issues/15172)) ([2e8c27c](https://github.com/sanity-io/sanity/commit/2e8c27cb0b292442e56aeecd01f5c72b07a47e65))
+* **deps:** update vitest monorepo to ^5.0.3 ([#15046](https://github.com/sanity-io/sanity/issues/15046)) ([51a16e7](https://github.com/sanity-io/sanity/commit/51a16e74c98865b1f3b0e9ad40bb623cc472de7c))
+* **releases:** restore release avatar icon alignment inside v4 button and text hosts ([#15148](https://github.com/sanity-io/sanity/issues/15148)) ([0362e48](https://github.com/sanity-io/sanity/commit/0362e48ea1a05c026cd79ccfcab625dc51d18b34))
+## [6.17.0](https://github.com/sanity-io/sanity/compare/v6.16.0...v6.17.0) (2026-09-29)
+
+### Features
+
+* **core:** add beta.reactActivityMode to keep recent tools mounted ([#14901](https://github.com/sanity-io/sanity/issues/14901)) ([f5821c3](https://github.com/sanity-io/sanity/commit/f5821c33bf77f836610b8b636f4f388630b54dd2))
+* **core:** add sanity/_dangerously_use_private_internals_that_do_not_follow_semver entry (additive) ([#14837](https://github.com/sanity-io/sanity/issues/14837)) ([d0e8253](https://github.com/sanity-io/sanity/commit/d0e825323c09bfe2904fc97ed42f9c803c93fd7f))
+* **core:** configure variant conditions under types ([#14883](https://github.com/sanity-io/sanity/issues/14883)) ([b3e7efd](https://github.com/sanity-io/sanity/commit/b3e7efd092b81840ed4c53208c0a01264c2237f2))
+* **core:** read every selected variant from perspective ([#14918](https://github.com/sanity-io/sanity/issues/14918)) ([b15b556](https://github.com/sanity-io/sanity/commit/b15b556a3eff6fabd2414c1a71147ba70fd84335))
+* **core:** render one variant menu per type and update variant creation form ([#14884](https://github.com/sanity-io/sanity/issues/14884)) ([45e733c](https://github.com/sanity-io/sanity/commit/45e733cb606ff597f54c1ac9aa1ebbfe2a287824))
+* **form:** collapse long arrays behind a show all items toggle ([#13870](https://github.com/sanity-io/sanity/issues/13870)) ([83a9f83](https://github.com/sanity-io/sanity/commit/83a9f8389271ede7e4930afb6e94123a7e0749e6))
+* **sanity:** first-class singletons API ([#12810](https://github.com/sanity-io/sanity/issues/12810)) ([02890f3](https://github.com/sanity-io/sanity/commit/02890f3986de11ad98ba5648271655ed3b4e0bc3))
+* **sanity:** singleton document badge ([#14443](https://github.com/sanity-io/sanity/issues/14443)) ([c21d524](https://github.com/sanity-io/sanity/commit/c21d524db4ced03909203f5b6e3c4eb34b1a3827))
+* **structure:** add opt-in live document count badges to document type list items ([#14163](https://github.com/sanity-io/sanity/issues/14163)) ([23ee1df](https://github.com/sanity-io/sanity/commit/23ee1df9079384b4f4cafff57fff59caa8430d6a))
+* **structure:** support list pane widths ([#14967](https://github.com/sanity-io/sanity/issues/14967)) ([b12fb38](https://github.com/sanity-io/sanity/commit/b12fb38ad8d726df56995a7498d914e5fe408040))
+* **telemetry:** report portable text editor and app sdk versions ([#14922](https://github.com/sanity-io/sanity/issues/14922)) ([b699078](https://github.com/sanity-io/sanity/commit/b69907858b7f19de10865aea8f58a95703eff7df))
+* **test-studio:** throw the style migrations widget between viewport corners ([#14945](https://github.com/sanity-io/sanity/issues/14945)) ([9702372](https://github.com/sanity-io/sanity/commit/97023728fbc24afd73b1452e7e5d02b52b387421))
+
+### Bug Fixes
+
+* **comments-v2:** exclude pathless comments from field queries ([#14860](https://github.com/sanity-io/sanity/issues/14860)) ([9f36804](https://github.com/sanity-io/sanity/commit/9f3680475cea5d8c345d87f9ee89d6a4cd48a16d))
+* **core:** let a container block config add portable text toolbar actions ([#14961](https://github.com/sanity-io/sanity/issues/14961)) ([4cebde0](https://github.com/sanity-io/sanity/commit/4cebde08327d39eae16dd704425ffc5055ca2a7a))
+* **core:** move middleware Suspense fallbacks to the render sites ([#14687](https://github.com/sanity-io/sanity/issues/14687)) ([8737940](https://github.com/sanity-io/sanity/commit/8737940a4082dd606065daa951e0e80391d75c43))
+* **core:** treat empty variant conditions as an error ([#14586](https://github.com/sanity-io/sanity/issues/14586)) ([0c10e61](https://github.com/sanity-io/sanity/commit/0c10e61c3146ef893b07a5df1e341f8c29a12abf))
+* **deps:** update codemirror ([#14976](https://github.com/sanity-io/sanity/issues/14976)) ([abe61ba](https://github.com/sanity-io/sanity/commit/abe61ba08396a88f1f0f80703c913b3d0c7530bc))
+* **deps:** update dependency @sanity/cli to ^8.13.0 ([#15012](https://github.com/sanity-io/sanity/issues/15012)) ([d0bc976](https://github.com/sanity-io/sanity/commit/d0bc9760759bb47d2d249cd3d514ea30db8cbdca))
+* **deps:** update dependency @sanity/client to ^8.7.0 ([#14953](https://github.com/sanity-io/sanity/issues/14953)) ([ed409c5](https://github.com/sanity-io/sanity/commit/ed409c5eb9c9fa6e5aafb4490234511b83dad805))
+* **deps:** update dependency get-it to ^9.5.7 ([#14921](https://github.com/sanity-io/sanity/issues/14921)) ([455717e](https://github.com/sanity-io/sanity/commit/455717e7ba18a5abc126c46542f7a9b992708dc1))
+* **deps:** update dependency get-it to ^9.5.8 ([#14951](https://github.com/sanity-io/sanity/issues/14951)) ([37abe77](https://github.com/sanity-io/sanity/commit/37abe7764fe3d6ed539826f1422845dc54808e38))
+* **deps:** update dependency get-it to ^9.6.0 ([#15013](https://github.com/sanity-io/sanity/issues/15013)) ([a3e1534](https://github.com/sanity-io/sanity/commit/a3e153438c61aa42a94c856eeeb8fa8d9fe8664a))
+* **deps:** update dependency motion to ^13.4.4 ([#14977](https://github.com/sanity-io/sanity/issues/14977)) ([be2e1aa](https://github.com/sanity-io/sanity/commit/be2e1aa17c3fe396beab5bdc32d4c1902819b110))
+* **deps:** update dev-non-major ([#14984](https://github.com/sanity-io/sanity/issues/14984)) ([68e6096](https://github.com/sanity-io/sanity/commit/68e609663a322b47c128fd0328321c34592d181a))
+* **deps:** update dev-non-major ([#15025](https://github.com/sanity-io/sanity/issues/15025)) ([e80674d](https://github.com/sanity-io/sanity/commit/e80674d5afddae8c814acc102e9ea958e848eac8))
+* **deps:** update dev-non-major ([#15040](https://github.com/sanity-io/sanity/issues/15040)) ([2adc86f](https://github.com/sanity-io/sanity/commit/2adc86f46f75039e2a10c0a99f896bc8f17c0c47))
+* **deps:** update dev-non-major ([#15076](https://github.com/sanity-io/sanity/issues/15076)) ([c23a168](https://github.com/sanity-io/sanity/commit/c23a1684e9e83a5797cf68bc9ea79519a806128b))
+* **deps:** update portabletext ([#14890](https://github.com/sanity-io/sanity/issues/14890)) ([b2f1c73](https://github.com/sanity-io/sanity/commit/b2f1c7394493274cdf1d51f2bfdf9a820e77f1eb))
+* **deps:** update portabletext ([#14982](https://github.com/sanity-io/sanity/issues/14982)) ([06b0b03](https://github.com/sanity-io/sanity/commit/06b0b034a234480b4edfffd2c808db450e0be10f))
+* **deps:** update sanity-sdk to ^3.5.0 ([#14891](https://github.com/sanity-io/sanity/issues/14891)) ([a4c50e0](https://github.com/sanity-io/sanity/commit/a4c50e01678f7a9c060864ec15969876582d51b8))
+* **deps:** update sanity-sdk to ^3.6.0 ([#15091](https://github.com/sanity-io/sanity/issues/15091)) ([aac614c](https://github.com/sanity-io/sanity/commit/aac614c195a8c344eda5c3703b3e7bf28779f6ac))
+* **e2e:** exit playwright webServer after the suite ([#14988](https://github.com/sanity-io/sanity/issues/14988)) ([3fbbb6e](https://github.com/sanity-io/sanity/commit/3fbbb6e3abb0b973e306aac82df042ceca1a17d0))
+* **form:** keep a grown portable text editor from scrolling to top on focus ([#14954](https://github.com/sanity-io/sanity/issues/14954)) ([56113a4](https://github.com/sanity-io/sanity/commit/56113a4bed3a90b6b7dd4bb5d46c18eee6407745))
+* **presentation:** enable preview mode when opening preview ([#14936](https://github.com/sanity-io/sanity/issues/14936)) ([8ef1e7c](https://github.com/sanity-io/sanity/commit/8ef1e7c4ce4634f74062ec0b8ad8638c036464bd))
+* **presentation:** handle review feedback on the open preview link ([#15020](https://github.com/sanity-io/sanity/issues/15020)) ([a6f6a91](https://github.com/sanity-io/sanity/commit/a6f6a919386697a6b3aa292195ee24e63a08b145))
+* **releases:** detect scheduled draft edits when deleting a schedule ([#14787](https://github.com/sanity-io/sanity/issues/14787)) ([a28d84a](https://github.com/sanity-io/sanity/commit/a28d84a4b4ccf33027ebebb06d5fd5b8dfd1ace7))
+* **schema:** inline object-inspect parts ([#14902](https://github.com/sanity-io/sanity/issues/14902)) ([3efc395](https://github.com/sanity-io/sanity/commit/3efc3950ca4e7d11ac974bc0801153b5f0f818fb))
+* **search:** close vstack tags in SearchChromeStory ([#14927](https://github.com/sanity-io/sanity/issues/14927)) ([4e3733d](https://github.com/sanity-io/sanity/commit/4e3733de195401920b34b811cb6f3999ed5c0e12))
+* **structure:** forward pane widths from the document type list input ([#14968](https://github.com/sanity-io/sanity/issues/14968)) ([632128d](https://github.com/sanity-io/sanity/commit/632128d57b469f18ef41bdc317116579861bcaa0))
+* **structure:** keep pane widths when releasing a resize divider ([#14964](https://github.com/sanity-io/sanity/issues/14964)) ([c97d0e3](https://github.com/sanity-io/sanity/commit/c97d0e3ff2ba28909ec06c73939ac79d5ca3757d))
+* **structure:** remove the pane layout observer on unsubscribe ([#14980](https://github.com/sanity-io/sanity/issues/14980)) ([455bd45](https://github.com/sanity-io/sanity/commit/455bd4524aee1500a2a569cbe84b3f0a7f818650))
+* **structure:** suppress deprecated selectedVariantName lint error in useListPaneCounts ([#15061](https://github.com/sanity-io/sanity/issues/15061)) ([30dcbdf](https://github.com/sanity-io/sanity/commit/30dcbdf90af12a05b0aa20a6524aeb312e734a82))
+* **studio:** collapse navbar tools into the overflow menu when the studio is narrower than the viewport ([#15030](https://github.com/sanity-io/sanity/issues/15030)) ([adbe052](https://github.com/sanity-io/sanity/commit/adbe052b3083847fa0c5dfdf0087cb80ee47c008))
+* **studio:** show draft indicator for draft-only documents ([#14859](https://github.com/sanity-io/sanity/issues/14859)) ([5813869](https://github.com/sanity-io/sanity/commit/581386984247c55547c5c3ca1beb85be063928da))
+* **ui:** prevent resizable layout props leaking to DOM ([#14937](https://github.com/sanity-io/sanity/issues/14937)) ([907d651](https://github.com/sanity-io/sanity/commit/907d651375137bb72c77af94734f4998903f5e41))
+
+### Performance Improvements
+
+* **form:** create presence cursor components via a compiler-friendly factory ([#15069](https://github.com/sanity-io/sanity/issues/15069)) ([090696e](https://github.com/sanity-io/sanity/commit/090696e355da274b1267d61b34a4a99d25223a0d))
+* **structure:** keep pane router context stable while resizing panes ([#14966](https://github.com/sanity-io/sanity/issues/14966)) ([3b92c51](https://github.com/sanity-io/sanity/commit/3b92c51b57194aafe85db80bc3f94fd2435cd202))
+## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
+
+### Features
+
+* **core:** mark schema-less Portable Text values with a visible affordance ([ea02de3](https://github.com/sanity-io/sanity/commit/ea02de38960a582229bc421f343681a04cdcedcf))
+* **core:** read document variants from `_system.variants` with legacy fallback ([#14762](https://github.com/sanity-io/sanity/issues/14762)) ([4913ff6](https://github.com/sanity-io/sanity/commit/4913ff6c3247a4d3fe2778625db72390090c6353))
+* **radar:** track ui v5 adoption and styled-components removal per scenario ([#14843](https://github.com/sanity-io/sanity/issues/14843)) ([cf943c6](https://github.com/sanity-io/sanity/commit/cf943c69817329712003588a058a377f8f9a52bb))
+
+### Bug Fixes
+
+* **auth:** add missing deprecated tag to createAuthStore ([#14842](https://github.com/sanity-io/sanity/issues/14842)) ([b049d30](https://github.com/sanity-io/sanity/commit/b049d30a812db5cbf4b1e218edd96e3a293fc40f))
+* **ci:** collapse the visual coverage table in the pr comment ([#14846](https://github.com/sanity-io/sanity/issues/14846)) ([e95d593](https://github.com/sanity-io/sanity/commit/e95d593b30c77593b2c256bd895dd9e2de2b1061))
+* **comments-v2:** rematch persisted inline ranges after edits ([#14764](https://github.com/sanity-io/sanity/issues/14764)) ([1bf2357](https://github.com/sanity-io/sanity/commit/1bf2357f1a6c84928757e68e376a69cf0dc059ab))
+* **comments:** tolerate stored comment with unparseable field path ([#14778](https://github.com/sanity-io/sanity/issues/14778)) ([1bc591a](https://github.com/sanity-io/sanity/commit/1bc591adcff1b9dccc5d4bab0ae5277664daca6e))
+* **core:** keep field presence avatar in place when field actions appear on hover ([#14761](https://github.com/sanity-io/sanity/issues/14761)) ([06af50f](https://github.com/sanity-io/sanity/commit/06af50f9ef5f81cdc4ca6b68ce26316a1fa3271c))
+* **core:** PTE should display presence inline and in field ([#14751](https://github.com/sanity-io/sanity/issues/14751)) ([98573ad](https://github.com/sanity-io/sanity/commit/98573ad3a6d71cee66a42cbac8de039f32aba74b))
+* **core:** render Portable Text values whose types left the schema ([d5bae96](https://github.com/sanity-io/sanity/commit/d5bae9658826dd6ec0173f4cc00d3b0f27e00aaa))
+* **deps:** update codemirror ([#14815](https://github.com/sanity-io/sanity/issues/14815)) ([a75baf8](https://github.com/sanity-io/sanity/commit/a75baf823ed5fdcf8e820cc68ec635d0cb8cc151))
+* **deps:** update dependency @portabletext/sanity-bridge to ^4.1.1 ([#14779](https://github.com/sanity-io/sanity/issues/14779)) ([28159ea](https://github.com/sanity-io/sanity/commit/28159eabec13c4d6c8af7282569bfdf487254659))
+* **deps:** update dependency @sanity/cli to ^8.11.0 ([#14540](https://github.com/sanity-io/sanity/issues/14540)) ([c2256fa](https://github.com/sanity-io/sanity/commit/c2256fa6d8577539a642fe231a18acc901e18158))
+* **deps:** update dependency @sanity/client to ^8.6.2 ([#14749](https://github.com/sanity-io/sanity/issues/14749)) ([d5bbecc](https://github.com/sanity-io/sanity/commit/d5bbecceefad4fde23b8b33aae7791f54fea7dfc))
+* **deps:** update dependency get-it to ^9.5.5 ([#14853](https://github.com/sanity-io/sanity/issues/14853)) ([9fb4756](https://github.com/sanity-io/sanity/commit/9fb4756235bb5828b74b09d5569755c98fd08878))
+* **deps:** update dependency motion to ^13.4.0 ([#14816](https://github.com/sanity-io/sanity/issues/14816)) ([dd52505](https://github.com/sanity-io/sanity/commit/dd525051a3e29090d83764643ddd13aed47dd9f3))
+* **deps:** update dependency xstate to ^5.33.2 ([#14817](https://github.com/sanity-io/sanity/issues/14817)) ([d256660](https://github.com/sanity-io/sanity/commit/d2566601510ba69d43e2196744d7d68c6258cecf))
+* **deps:** update dev-non-major ([#14818](https://github.com/sanity-io/sanity/issues/14818)) ([5c369b4](https://github.com/sanity-io/sanity/commit/5c369b41bd1605c1351ae9a7bf7f4254d0f246b9))
+* **deps:** update linters ([#14819](https://github.com/sanity-io/sanity/issues/14819)) ([8bee257](https://github.com/sanity-io/sanity/commit/8bee2573664f567ccf17fb4ee3b5af9596223f3b))
+* **deps:** update portabletext ([#14855](https://github.com/sanity-io/sanity/issues/14855)) ([d8afd5d](https://github.com/sanity-io/sanity/commit/d8afd5d3a30706e3bcfd1ef5235bfa4a6f9a0f58))
+* **deps:** update portabletext ([#14871](https://github.com/sanity-io/sanity/issues/14871)) ([07a638b](https://github.com/sanity-io/sanity/commit/07a638b4e40d5bd5e51d10b30b58a81520aa0666))
+* **deps:** update sanity-sdk to ^3.3.0 ([#14770](https://github.com/sanity-io/sanity/issues/14770)) ([07b66f2](https://github.com/sanity-io/sanity/commit/07b66f2ed524fa65dc61cc9f18c67d872ea183b4))
+* **dev:** pin bundled dev rolldown runtime ([#14835](https://github.com/sanity-io/sanity/issues/14835)) ([84f1a08](https://github.com/sanity-io/sanity/commit/84f1a083b9364dcb4ee73f6e455692694822e97b))
+* **e2e:** stabilize navbar avatar snapshot ([#14814](https://github.com/sanity-io/sanity/issues/14814)) ([73bc12b](https://github.com/sanity-io/sanity/commit/73bc12b766188a365bb651b6af5a70ca428a247c))
+* **history:** restore release revisions with version.replace ([#14813](https://github.com/sanity-io/sanity/issues/14813)) ([16a557c](https://github.com/sanity-io/sanity/commit/16a557c40643dc520fe370d6801982ad015b4028))
+* **mutator:** drop lodash-es usages ([#14593](https://github.com/sanity-io/sanity/issues/14593)) ([eca963b](https://github.com/sanity-io/sanity/commit/eca963b915e063dee92be7e05d3c3e25db7ea49b))
+* **perspective:** reset sticky perspective for archived releases ([#14753](https://github.com/sanity-io/sanity/issues/14753)) ([aecb75e](https://github.com/sanity-io/sanity/commit/aecb75ec5954cfbac67c4911525fad04847243fa))
+* **test:** stabilize chromatic vitest snapshots ([#14710](https://github.com/sanity-io/sanity/issues/14710)) ([044e422](https://github.com/sanity-io/sanity/commit/044e4224ea5fadd0bacb3fcb49fb0cf7591e278c))
+
+### Performance Improvements
+
+* **preview:** stream useValuePreview inputs through one subject ([#14720](https://github.com/sanity-io/sanity/issues/14720)) ([e44cd25](https://github.com/sanity-io/sanity/commit/e44cd25bb829c566331cbf7f188298d133dd3a2c))
+## [6.15.0](https://github.com/sanity-io/sanity/compare/v6.14.1...v6.15.0) (2026-09-17)
+
+### Features
+
+* **structure:** add pause to edit for scheduled drafts ([#14274](https://github.com/sanity-io/sanity/issues/14274)) ([6f71196](https://github.com/sanity-io/sanity/commit/6f71196ed73e172a5b8c52865ae9faad305099d9))
+
+### Bug Fixes
+
+* **core:** read the workbench auth token through the SDK message bus ([#14758](https://github.com/sanity-io/sanity/issues/14758)) ([41ba5da](https://github.com/sanity-io/sanity/commit/41ba5da2d43e81e9d48a0ce3c7957a3f4f6d6fb3))
+* **core:** replace stale editSchedule key in VersionChip test fixture ([#14759](https://github.com/sanity-io/sanity/issues/14759)) ([9edcf59](https://github.com/sanity-io/sanity/commit/9edcf59a9dfa1c53124285b1df6700d1fb02233d))
+* **core:** restore padding bottom on scrollable dialogs ([#14763](https://github.com/sanity-io/sanity/issues/14763)) ([10ff9aa](https://github.com/sanity-io/sanity/commit/10ff9aafe63f6a92e75ba2509fbedc0646b22850))
+* **deps:** update sanity-sdk to ^3.2.0 ([#14743](https://github.com/sanity-io/sanity/issues/14743)) ([825c031](https://github.com/sanity-io/sanity/commit/825c031716fb073b4aee6896df5433bf99c9da45))
+* **validation:** accept allowed object array selections ([#14765](https://github.com/sanity-io/sanity/issues/14765)) ([e570612](https://github.com/sanity-io/sanity/commit/e57061275a63d223fb0c687f08a253afb5b3d276))
 ## [6.14.1](https://github.com/sanity-io/sanity/compare/v6.14.0...v6.14.1) (2026-09-16)
 
 ### Bug Fixes

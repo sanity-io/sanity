@@ -3,14 +3,13 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
-import {Card, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
+import {Card, Text, type ThemeColorToneKey} from '@sanity/ui'
 import {Breadcrumbs} from '@sanity/ui/breadcrumbs'
 import capitalize from 'lodash-es/capitalize.js'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getTypeInfo} from './getTypeInfo'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -32,7 +31,6 @@ const ErrorMessageText = styled(Text)`
 
 export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
-  const {t} = useTranslation()
 
   const items = useMemo(() => {
     const ret = []
@@ -47,7 +45,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
   }, [problemGroups])
 
   return (
-    <Stack as="ul" gap={4}>
+    <VStack as="ul" gap={4}>
       {items.map(({group, problem}, i) => {
         const isError = problem.severity === 'error'
         const isWarning = problem.severity === 'warning'
@@ -112,7 +110,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
 
             <Box as="ul" marginTop={4}>
               <Box as="li">
-                <Stack gap={3}>
+                <VStack gap={3}>
                   <ErrorMessageText muted size={1}>
                     {problem.message}
                   </ErrorMessageText>
@@ -128,13 +126,13 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                       </a>
                     </Text>
                   )}
-                </Stack>
+                </VStack>
               </Box>
             </Box>
           </Card>
         )
       })}
-    </Stack>
+    </VStack>
   )
 }
 

@@ -1,8 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {type ButtonTone, Flex, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Stack, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Grid} from 'ui5'
+import {Flex, Grid} from 'ui5'
 
 import {Button} from '../Button'
 

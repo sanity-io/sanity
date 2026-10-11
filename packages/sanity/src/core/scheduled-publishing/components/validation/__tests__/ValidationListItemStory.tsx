@@ -1,6 +1,7 @@
 import {type ValidationMarker} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {ValidationListItem} from '../ValidationListItem'
@@ -40,9 +41,9 @@ export function ValidationListItemStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 360}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               error / warning / info
             </Text>
             <Card padding={1} radius={2} shadow={2}>
@@ -52,9 +53,9 @@ export function ValidationListItemStory() {
                 <ValidationListItem marker={INFO} onClick={() => null} path="Summary" />
               </Menu>
             </Card>
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               truncated vs full
             </Text>
             <Card padding={1} radius={2} shadow={2}>
@@ -68,8 +69,8 @@ export function ValidationListItemStory() {
                 <ValidationListItem marker={LONG_WARNING} onClick={() => null} path="Description" />
               </Menu>
             </Card>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

@@ -8,6 +8,7 @@ import {
   previewHeavy,
   structurePane,
 } from './customizations'
+import {emptyToolReady, loginReady, loginToEmptyTool, loginToTool, toolReady} from './load'
 import {recipe} from './recipe'
 import {singleString} from './singleString'
 import {synthetic, syntheticLarge} from './synthetic'
@@ -21,6 +22,12 @@ export const SCENARIOS: BenchScenario[] = [
   recipe,
   synthetic,
   syntheticLarge,
+  // Load scenarios — pageload mode only
+  loginReady,
+  loginToTool,
+  toolReady,
+  emptyToolReady,
+  loginToEmptyTool,
   // Customization scenarios — one workspace each, only in the customization
   // build (pnpm --filter bench build:customizations)
   previewHeavy,

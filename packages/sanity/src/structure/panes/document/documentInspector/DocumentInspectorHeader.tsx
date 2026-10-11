@@ -1,12 +1,13 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Card, type CardProps, Text} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {type ElementType, type HTMLProps, type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../i18n'
+import {root} from './DocumentInspectorHeader.css'
 
 export interface DocumentInspectorHeaderProps {
   as?: ElementType
@@ -16,21 +17,23 @@ export interface DocumentInspectorHeaderProps {
   title: ReactNode
 }
 
-const Root = styled(Card)({
-  position: 'relative',
-  zIndex: '1',
-  lineHeight: '0',
-})
-
 /** @internal */
 export function DocumentInspectorHeader(
   props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {
-  const {as: forwardedAs, children, closeButtonLabel, onClose, title, ...restProps} = props
+  const {
+    as: forwardedAs,
+    children,
+    className,
+    closeButtonLabel,
+    onClose,
+    title,
+    ...restProps
+  } = props
   const {t} = useTranslation(structureLocaleNamespace)
 
   return (
-    <Root {...restProps} as={forwardedAs}>
+    <Card {...restProps} as={forwardedAs} className={clsx(root, className)}>
       <Flex padding={2}>
         <Box flexBasis="0%" flexGrow={1} padding={3}>
           <Text as="h1" size={1} weight="medium">
@@ -48,6 +51,6 @@ export function DocumentInspectorHeader(
         </Box>
       </Flex>
       {children}
-    </Root>
+    </Card>
   )
 }

@@ -1,7 +1,6 @@
-import {Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {RatioBox} from '../ImageInput/ImagePreview.styled'
 
@@ -16,7 +15,7 @@ export const FlexWrapper = styled(Flex)`
   overflow: clip;
 `
 
-export const LeftSection = styled(Stack)`
+export const LeftSection = styled(VStack)`
   position: relative;
   width: 60%;
 `

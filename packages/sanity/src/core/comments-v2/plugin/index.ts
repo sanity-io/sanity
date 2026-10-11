@@ -1,25 +1,17 @@
-import {lazy} from 'react'
+import {lazy, useEffect} from 'react'
 
 import {definePlugin} from '../../config/definePlugin'
+import {type ProviderProps} from '../../config/studio/types'
 import {commentsUsEnglishLocaleBundle} from '../i18n'
 import {commentsInspector} from './inspector'
+import {CommentsStudioLayout} from './studio-layout/CommentsStudioLayout'
 
-const CommentsDocumentLayout = lazy(() =>
-  import('./document-layout/CommentsDocumentLayout').then((module) => ({
-    default: module.CommentsDocumentLayout,
-  })),
-)
-const CommentsField = lazy(() =>
-  import('./field/CommentsField').then((module) => ({default: module.CommentsField})),
-)
-const CommentsInput = lazy(() =>
-  import('./input/CommentsInput').then((module) => ({default: module.CommentsInput})),
-)
-const CommentsStudioLayout = lazy(() =>
-  import('./studio-layout/CommentsStudioLayout').then((module) => ({
-    default: module.CommentsStudioLayout,
-  })),
-)
+const lazyCommentsDocumentLayout = () => import('./document-layout/CommentsDocumentLayout')
+const lazyCommentsField = () => import('./field/CommentsField')
+const lazyCommentsInput = () => import('./input/CommentsInput')
+const CommentsDocumentLayout = lazy(lazyCommentsDocumentLayout)
+const CommentsField = lazy(lazyCommentsField)
+const CommentsInput = lazy(lazyCommentsInput)
 
 export const comments = definePlugin({
   name: 'sanity/comments',
@@ -40,9 +32,21 @@ export const comments = definePlugin({
 
   studio: {
     components: {
+      provider: CommentsStudioProvider,
       layout: CommentsStudioLayout,
     },
   },
 
   i18n: {bundles: [commentsUsEnglishLocaleBundle]},
 })
+
+function CommentsStudioProvider(props: ProviderProps) {
+  useEffect(() => {
+    // Preload lazy components (fire-and-forget: the lazy() render reports a failed import)
+    void lazyCommentsDocumentLayout()
+    void lazyCommentsField()
+    void lazyCommentsInput()
+  }, [])
+
+  return props.renderDefault(props)
+}

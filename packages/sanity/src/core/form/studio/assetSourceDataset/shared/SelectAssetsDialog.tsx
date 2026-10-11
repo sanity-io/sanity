@@ -1,7 +1,7 @@
 import {DownloadIcon} from '@sanity/icons/Download'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {
@@ -15,8 +15,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {type Subscription} from 'rxjs'
-import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -27,6 +26,7 @@ import {Translate} from '../../../../i18n/Translate'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
+import {cardLoadMore} from './SelectAssetsDialog.css'
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
@@ -95,13 +95,6 @@ const buildQuery = (
   }
 `
 }
-
-const CardLoadMore = styled(Card)`
-  border-top: 1px solid var(--card-border-color);
-  position: sticky;
-  bottom: 0;
-  z-index: 200;
-`
 
 function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<HTMLDivElement>) {
   const {
@@ -258,7 +251,7 @@ function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<
       ref={ref}
       width={2}
     >
-      <Stack gap={5}>
+      <VStack gap={5}>
         {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
           <Card tone="primary" padding={3} border radius={2}>
             <Flex gap={3} alignItems="center">
@@ -298,7 +291,7 @@ function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<
           />
         )}
         {assets.length > 0 && !isLastPage && (
-          <CardLoadMore tone="default" padding={4}>
+          <Card className={cardLoadMore} tone="default" padding={4}>
             <Flex flexDirection="column">
               <Button
                 type="button"
@@ -310,9 +303,9 @@ function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<
                 tone="primary"
               />
             </Flex>
-          </CardLoadMore>
+          </Card>
         )}
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }

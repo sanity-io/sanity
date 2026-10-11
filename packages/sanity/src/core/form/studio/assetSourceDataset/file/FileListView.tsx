@@ -1,7 +1,7 @@
 import {type Asset} from '@sanity/types'
-import {Card, Spinner, Stack, Text, useMediaIndex} from '@sanity/ui'
+import {Card, Spinner, Text, useMediaIndex} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
-import {Flex, Grid, Box} from 'ui5'
+import {VStack, Flex, Grid, Box} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {AssetRow} from './AssetRow'
@@ -60,7 +60,7 @@ export function FileListView(props: Props) {
           </Grid>
         )}
       </Card>
-      <Stack>
+      <VStack>
         {isLoading && assets.length === 0 && (
           <Box paddingTop={4} paddingBottom={2}>
             <Flex justifyContent="center">
@@ -79,7 +79,7 @@ export function FileListView(props: Props) {
             onDeleteFinished={onDeleteFinished}
           />
         ))}
-      </Stack>
+      </VStack>
     </Box>
   )
 }

@@ -1,17 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {
-  Flex,
-  Layer,
-  type ResponsiveWidthProps,
-  Stack,
-  Text,
-  type Theme,
-  usePortal,
-} from '@sanity/ui'
+import {Layer, type ResponsiveWidthProps, Text, type Theme, usePortal} from '@sanity/ui'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
 import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../ui-components/popover/Popover'
@@ -87,10 +79,10 @@ export function PopoverDialog(props: PopoverDialogProps) {
   const content = (
     <PopoverContainer width={width} data-testid="popover-dialog">
       <TrapFocus autoFocus whiteList={trapPaneFocus}>
-        <Stack ref={containerRef}>
+        <VStack ref={containerRef}>
           <StickyLayer>
             <Box padding={2} paddingLeft={4}>
-              <Flex align="center" gap={2}>
+              <Flex alignItems="center" gap={2}>
                 <Box flexBasis="0%" flexGrow={1}>
                   <Text size={1} textOverflow="ellipsis" weight="medium">
                     {header}
@@ -106,7 +98,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
             </Box>
           </StickyLayer>
           <Box padding={4}>{children}</Box>
-        </Stack>
+        </VStack>
       </TrapFocus>
     </PopoverContainer>
   )

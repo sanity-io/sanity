@@ -1,10 +1,12 @@
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useWorkspace} from '../../studio/workspace'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useAllVariants} from '../../variants/store/useAllVariants'
 import {variantIconCard} from './DocumentVersionIcons.css'
 import {getReleasePerspective} from './getReleasePerspective'
@@ -24,12 +26,11 @@ export function DocumentVersionIcons({version}: {version: VersionInfoDocumentStu
   const releaseRef = version._system.release?._ref
   const release = releaseRef ? releasesById.get(releaseRef) : undefined
 
-  const variant = version._system.variant?._ref
-    ? variantsById.get(version._system.variant._ref)
-    : undefined
+  const variantId = getDocumentVersionVariantId(version)
+  const variant = variantId ? variantsById.get(variantId) : undefined
 
   return (
-    <Flex align="center" flex="none" gap={1}>
+    <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={1}>
       {variantsEnabled && variant ? (
         <Card className={variantIconCard} tone="suggest">
           <Text size={2}>

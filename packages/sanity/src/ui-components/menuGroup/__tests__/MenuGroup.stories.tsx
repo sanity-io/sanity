@@ -6,10 +6,11 @@ import {DocumentIcon} from '@sanity/icons/Document'
 import {EditIcon} from '@sanity/icons/Edit'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {type ButtonTone, Card, Flex, Text} from '@sanity/ui'
+import {type ButtonTone, Card, Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
+import {Flex} from 'ui5'
 
 import {Button} from '../../button/Button'
 import {MenuButton} from '../../menuButton/MenuButton'
@@ -94,7 +95,7 @@ export const Open: Story = {
   args: {text: 'Export'},
   parameters: {chromatic: {delay: 300}},
   render: () => (
-    <Flex align="flex-start" justify="center" paddingTop={4} style={{minHeight: 340}}>
+    <Flex alignItems="flex-start" justifyContent="center" paddingTop={4} style={{minHeight: 340}}>
       <MenuButton
         id="menu-group-story"
         button={<Button iconRight={ChevronDownIcon} mode="ghost" text="Document actions" />}

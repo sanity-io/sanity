@@ -1,7 +1,8 @@
 import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Text, TextSkeleton} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Alert} from '../../components/Alert'
@@ -30,22 +31,22 @@ export function OptionPreview(props: {
 
   if (isLoading) {
     return (
-      <Stack gap={2} padding={1}>
+      <Flex gap={2} padding={1} flexDirection="column">
         <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
         <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
-      </Stack>
+      </Flex>
     )
   }
 
   if (error) {
     return (
-      <Stack gap={2} padding={1}>
+      <Flex gap={2} padding={1} flexDirection="column">
         <Alert title={t('inputs.reference.error.failed-to-load-document-title')}>
           <Text muted size={1}>
             {error.message}
           </Text>
         </Alert>
-      </Stack>
+      </Flex>
     )
   }
 
@@ -55,20 +56,20 @@ export function OptionPreview(props: {
 
   if (referenceInfo.availability?.reason === 'PERMISSION_DENIED') {
     return (
-      <Stack gap={2} padding={1}>
+      <Flex gap={2} padding={1} flexDirection="column">
         {t('inputs.reference.error.missing-read-permissions-description')}
-      </Stack>
+      </Flex>
     )
   }
 
   const refType = props.referenceType.to.find((toEntry) => toEntry.type === referenceInfo.type)
   if (!refType) {
     return (
-      <Stack gap={2} padding={1}>
+      <Flex gap={2} padding={1} flexDirection="column">
         {t('inputs.reference.error.invalid-search-result-type-title', {
           returnedType: referenceInfo.type,
         })}
-      </Stack>
+      </Flex>
     )
   }
   return (
