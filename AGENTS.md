@@ -420,8 +420,9 @@ code off that path. Measure it on the CDN build, not on `sanity build` output:
 - Code that must be fetched right after login (layout, navbar) is preloaded from
   `PreloadStudioShell`, mounted inside `AuthBoundary`, so the fetch overlaps with workspace loading.
 - Exporting a `memo()`-wrapped component through a facade changes `typeof` from `object` to
-  `function` in `test/__snapshots__/exports.test.ts.snap`, and the generated d.ts fixtures in
-  `@repo/test-dts-exports` switch from function to const declarations; regenerate both.
+  `function` in `test/__snapshots__/exports.test.ts.snap`, and the declaration it emits from a
+  `const` to a function, so the generated fixtures in `@repo/test-dts-exports` switch from
+  `not.toBeNever()` to `toBeFunction()`; regenerate both.
 
 ### Effect events: use `use-effect-event`, not React's native hook
 
