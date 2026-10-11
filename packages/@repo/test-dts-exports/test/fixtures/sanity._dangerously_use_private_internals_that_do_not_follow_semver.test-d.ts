@@ -768,7 +768,6 @@ import type {
   useTrackerStore,
   useTrackerStoreReporter,
   useUnique,
-  useUnstableObserveDocument,
   useUser,
   useUserColor,
   useValuePreview,
@@ -3117,9 +3116,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useUnique', () => {
     expectTypeOf<typeof useUnique>().toBeFunction()
-  })
-  test('useUnstableObserveDocument', () => {
-    expectTypeOf<typeof useUnstableObserveDocument>().toBeFunction()
   })
   test('useUser', () => {
     expectTypeOf<typeof useUser>().toBeFunction()

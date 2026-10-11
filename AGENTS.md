@@ -396,7 +396,7 @@ Rules that follow from this:
   (`resolveLocalPackage('sanity')`) and destructure `renderStudio`, `resolveConfig`,
   `createSchema`, `SchemaError`, `createDefaultIcon`, `generateStudioManifest`, `uploadSchema`
   and `validateDocument` from the root, so `sanity schema extract/deploy`, `sanity manifest
-extract` and `sanity documents validate` break at runtime (not at build time) if one of them
+  extract` and `sanity documents validate` break at runtime (not at build time) if one of them
   leaves the root. They are tagged `@hidden @public`; grep the CLI packages in `node_modules`
   for `resolveLocalPackage('sanity'` before touching them.
 - `createAuthStore` (deprecated since v3.15.0) and `CreateAuthStoreOptions` are the one deliberate

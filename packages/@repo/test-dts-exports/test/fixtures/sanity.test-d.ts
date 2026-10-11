@@ -1079,6 +1079,7 @@ import type {
   UseTranslationResponse,
   useUnitFormatter,
   UseUnitFormatterOptions,
+  useUnstableObserveDocument,
   useUserColorManager,
   useUserListWithPermissions,
   useUserStore,
@@ -4372,6 +4373,9 @@ describe('sanity', () => {
   })
   test('UseUnitFormatterOptions', () => {
     expectTypeOf<UseUnitFormatterOptions>().not.toBeNever()
+  })
+  test('useUnstableObserveDocument', () => {
+    expectTypeOf<typeof useUnstableObserveDocument>().toBeFunction()
   })
   test('useUserColorManager', () => {
     expectTypeOf<typeof useUserColorManager>().toBeFunction()

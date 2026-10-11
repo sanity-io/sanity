@@ -602,6 +602,7 @@ export {
   type PreviewableType,
   type PreviewPath,
 } from '../core/preview/types'
+export {useUnstableObserveDocument} from '../core/preview/useObserveDocument'
 export {getPreviewStateObservable} from '../core/preview/utils/getPreviewStateObservable'
 export {getPreviewValueWithFallback} from '../core/preview/utils/getPreviewValueWithFallback'
 export {ReleaseAvatar, ReleaseAvatarIcon} from '../core/releases/components/ReleaseAvatar'

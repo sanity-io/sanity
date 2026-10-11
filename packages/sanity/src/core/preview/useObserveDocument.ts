@@ -10,7 +10,8 @@ import {type ObserveDocumentAPIConfig} from './createObserveDocument'
 const INITIAL_STATE = {loading: true, document: null, error: null}
 
 /**
- * @internal
+ * @hidden
+ * @beta
  *
  * Observes a document by its ID and returns the document and loading state
  * it will listen to the document changes.

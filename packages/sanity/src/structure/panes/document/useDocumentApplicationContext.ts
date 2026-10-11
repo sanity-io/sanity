@@ -2,6 +2,7 @@ import {useEffect, useRef} from 'react'
 import {type EditStateFor, useDataset, useProjectId} from 'sanity'
 
 import {useRenderingContextStore} from '../../../core/store/datastores'
+
 interface DocumentApplicationContextOptions {
   /** The id of the version, draft or published document on screen. */
   displayedId: string | undefined

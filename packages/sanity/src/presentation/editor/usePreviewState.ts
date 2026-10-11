@@ -11,6 +11,7 @@ import {
 } from 'sanity'
 
 import {getDefaultVariant} from '../../core/perspective/getDefaultVariant'
+
 interface PreviewState {
   isLoading?: boolean
   snapshot?: PreviewValue | Partial<SanityDocument> | null

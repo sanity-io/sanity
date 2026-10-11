@@ -506,11 +506,8 @@ export {
   type ObserveDocumentTypeFromIdFn,
   type Selection,
 } from '../core/preview/types'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  unstable_useObserveDocument,
-  useUnstableObserveDocument,
-} from '../core/preview/useObserveDocument'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+export {unstable_useObserveDocument} from '../core/preview/useObserveDocument'
 export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   unstable_useValuePreview,
