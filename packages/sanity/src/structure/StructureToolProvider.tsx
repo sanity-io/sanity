@@ -3,6 +3,7 @@ import {useDocumentStore, usePerspective} from 'sanity'
 import {StructureToolContext} from 'sanity/_singletons'
 
 import {useConfigContextFromSource} from '../core/config/useConfigContextFromSource'
+import {getDefaultVariant} from '../core/perspective/getDefaultVariant'
 import {useSource} from '../core/studio/source'
 import {createStructureBuilder} from './structureBuilder/createStructureBuilder'
 import {type DefaultDocumentNodeResolver} from './structureBuilder/types'
@@ -31,7 +32,8 @@ export function StructureToolProvider({
   const configContext = useConfigContextFromSource(source)
   const documentStore = useDocumentStore()
 
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const S = useMemo(() => {
     return createStructureBuilder({

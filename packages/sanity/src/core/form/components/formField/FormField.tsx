@@ -1,6 +1,6 @@
 import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Stack} from '@sanity/ui'
 import {type HTMLProps, memo, type ReactNode} from 'react'
+import {Box, VStack} from 'ui5'
 
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {type FormNodePresence} from '../../../presence/types'
@@ -88,7 +88,7 @@ export const FormField = memo(function FormField(
           <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
         }
       >
-        <Stack
+        <VStack
           {...restProps}
           data-level={level}
           onMouseEnter={onMouseEnter}
@@ -119,8 +119,8 @@ export const FormField = memo(function FormField(
               }
             />
           )}
-          <div>{children}</div>
-        </Stack>
+          <Box>{children}</Box>
+        </VStack>
       </FormRow>
     </FormNodeDivergenceDetail>
   )

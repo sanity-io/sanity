@@ -15,10 +15,10 @@ import {useCallback, useMemo} from 'react'
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useUnique} from '../../../../util/useUnique'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {getPTEToolbarActionGroups} from './helpers'
 import {type BlockStyleItem, type PTEToolbarAction, type PTEToolbarActionGroup} from './types'
 import {useApplicableSchema} from './useApplicableSchema'
+import {useToolbarSchemaTypes} from './useToolbarSchemaTypes'
 
 export function useFocusBlock(): PortableTextBlock | undefined {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -59,7 +59,7 @@ export function useActionGroups({
 }): PTEToolbarActionGroup[] {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
-  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const schemaTypes = useToolbarSchemaTypes()
   const applicable = useApplicableSchema()
   const {t} = useTranslation()
 

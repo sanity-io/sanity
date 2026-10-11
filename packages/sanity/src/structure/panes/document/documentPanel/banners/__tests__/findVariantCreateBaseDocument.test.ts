@@ -9,6 +9,7 @@ const groupRef = {_type: 'reference' as const, _ref: PUBLISHED_ID, _weak: true a
 const variantRef = (variantId: string) => ({
   _type: 'reference' as const,
   _ref: variantId,
+  _key: 'k-123',
   _weak: true as const,
 })
 
@@ -48,7 +49,7 @@ const returningVisitorDraft = versionStub({
   _rev: 'returning-draft-rev',
   _system: {
     bundleId: 'drafts',
-    variant: variantRef(returningVisitor._id),
+    variants: [variantRef(returningVisitor._id)],
     group: groupRef,
     scopeId: 'returning-scope',
   },
@@ -58,7 +59,7 @@ const returningVisitorPublished = versionStub({
   _id: 'versions.returning-pub-scope.article-1',
   _rev: 'returning-published-rev',
   _system: {
-    variant: variantRef(returningVisitor._id),
+    variants: [variantRef(returningVisitor._id)],
     group: groupRef,
     scopeId: 'returning-pub-scope',
   },

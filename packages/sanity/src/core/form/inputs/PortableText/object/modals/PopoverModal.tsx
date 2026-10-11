@@ -1,12 +1,21 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {BoundaryElementProvider, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {type ComponentProps, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {
+  type ComponentProps,
+  type ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {type PopoverProps} from '../../../../../../ui-components/popover/Popover'
+import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
 import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
@@ -153,7 +162,9 @@ function Content(props: PopoverEditDialogProps) {
             <ContentScrollerBox flexBasis="0%" flexGrow={1}>
               <PresenceOverlay margins={[0, 0, 1, 0]}>
                 <Box padding={3} ref={setContentElement}>
-                  {props.children}
+                  {/* The popover owns the boundary for the form nodes it shows: a lazy input
+                      loads behind its loading block instead of hiding the block that opened it. */}
+                  <Suspense fallback={<LoadingBlock showText />}>{props.children}</Suspense>
                 </Box>
               </PresenceOverlay>
             </ContentScrollerBox>

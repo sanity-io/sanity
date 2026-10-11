@@ -1,11 +1,20 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
-import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {
+  type DragEvent,
+  type ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {PopoverDialog} from '../../components/popoverDialog/PopoverDialog'
 import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
@@ -121,7 +130,9 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
       <Box ref={containerElement} style={{minHeight: 'min(calc(100vh - 200px), 500px)'}}>
-        {children}
+        {/* The dialog owns the boundary for the form nodes it shows: a lazy input, field or item
+            loads behind the dialog's loading block instead of hiding the form or block behind it. */}
+        <Suspense fallback={<LoadingBlock showText />}>{children}</Suspense>
       </Box>
     </PresenceOverlay>
   )

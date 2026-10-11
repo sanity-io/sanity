@@ -1,5 +1,5 @@
 import {SparkleIcon} from '@sanity/icons/Sparkle'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- MenuItem with custom children not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
 import {type CSSProperties, memo, useCallback} from 'react'
@@ -43,19 +43,21 @@ export const AgentBundleMenuItem = memo(function AgentBundleMenuItem({
             <SparkleIcon />
           </Text>
         </Box>
-        <Stack
-          flex={1}
+        <Flex
+          flexBasis="0%"
+          flexGrow={1}
           paddingY={2}
           paddingRight={2}
           gap={2}
-          style={{maxWidth: '200px', minWidth: 0}}
+          style={{maxWidth: '200px'}}
+          flexDirection="column"
         >
           <Flex gap={3} alignItems="center">
             <Text size={1} weight="medium" style={{minWidth: 0}}>
               {label}
             </Text>
           </Flex>
-        </Stack>
+        </Flex>
       </Flex>
     </MenuItem>
   )

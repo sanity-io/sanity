@@ -122,7 +122,7 @@ describe('Inline comment composer', () => {
     const $editable = page.getByTestId('comment-input-editable')
     await expect.element($editable).toBeVisible()
     await insertPortableText('hello', $editable)
-    await expect.element($editable).toHaveTextContent('hello')
+    await expect.element($editable).toMatchTextContent('hello')
     // The draft value has reached the composer once submitting is possible.
     await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
 

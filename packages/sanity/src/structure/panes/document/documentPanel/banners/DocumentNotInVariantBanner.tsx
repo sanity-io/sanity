@@ -4,6 +4,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {Translate, usePerspective, useTranslation} from 'sanity'
 
 import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
+import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'
 import {useGetDefaultPerspective} from '../../../../../core/perspective/useGetDefaultPerspective'
 import {useDocumentVersions} from '../../../../../core/releases/hooks/useDocumentVersions'
 import {isReleaseDocument} from '../../../../../core/releases/store/types'
@@ -25,7 +26,8 @@ export function DocumentNotInVariantBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {value, documentId, schemaType} = useDocumentPane()
-  const {selectedPerspective, selectedVariant, selectedReleaseId} = usePerspective()
+  const {selectedPerspective, selectedVariants, selectedReleaseId} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {versions} = useDocumentVersions({documentId})
 
   const {createVariantDocument} = useVariantDocumentOperations()
@@ -108,6 +110,7 @@ export function DocumentNotInVariantBanner() {
     value,
     selectedVariant,
     createPerspective,
+    setStatus,
     t,
     toast,
     versions,

@@ -1,8 +1,8 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals, @sanity/i18n/no-attribute-template-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
-import {Card, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading, Text} from '@sanity/ui'
 import {memo, type PointerEvent as ReactPointerEvent, useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {
@@ -237,7 +237,7 @@ export function RequestPerformanceReport({
   const handleTimeRangeReset = useCallback(() => setTimeRange(undefined), [])
 
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <Flex alignItems="center" gap={3} justifyContent="space-between" flexWrap="wrap">
         <Heading as="h2" size={1}>
           Recent request timings
@@ -256,7 +256,7 @@ export function RequestPerformanceReport({
               : 'No data API requests have been observed for this workspace target in this browser session.'}
           </Text>
         ) : (
-          <Stack gap={4}>
+          <VStack gap={4}>
             <InteractiveChart
               ariaLabel={`Scatter plot of ${chartPointCount} session request timings`}
               chart={chart}
@@ -277,7 +277,7 @@ export function RequestPerformanceReport({
               ) : null}
             </Flex>
 
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Text muted size={1} weight="semibold">
                 {timeRange
                   ? 'Selected range summary'
@@ -351,7 +351,7 @@ export function RequestPerformanceReport({
                   })}
                 </tbody>
               </SummaryTable>
-            </Stack>
+            </VStack>
 
             {abortedCount > 0 ? (
               <Text muted size={1}>
@@ -366,10 +366,10 @@ export function RequestPerformanceReport({
                 Older samples have been omitted because the session limit was reached.
               </Text>
             ) : null}
-          </Stack>
+          </VStack>
         )}
       </Card>
-    </Stack>
+    </VStack>
   )
 }
 
@@ -540,7 +540,7 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
   return (
     <PointTooltipPositioner $x={x} $y={y} role="tooltip">
       <Card border padding={3} radius={2} shadow={2}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Flex alignItems="center" gap={2}>
             <SeriesMarker aria-hidden="true" viewBox="-6 -6 12 12">
               <g fill={style.color} stroke="none">
@@ -555,7 +555,7 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
           <TooltipDetail label="Started" value={formatTime(entry.startedAt, useUtc)} />
           <TooltipDetail label="API version" value={entry.apiVersion} />
           <TooltipDetail label="Status" value={status} />
-        </Stack>
+        </VStack>
       </Card>
     </PointTooltipPositioner>
   )

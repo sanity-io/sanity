@@ -1,8 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -12,6 +10,7 @@ import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {useTasks} from '../../context/tasks/useTasks'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskStatus} from '../../types'
+import {animatedText, root} from './EmptyStates.css'
 
 const HEADING_BY_STATUS: Record<
   TaskStatus,
@@ -54,12 +53,14 @@ export function EmptyStatusListState({status}: {status: TaskStatus}) {
   const {t} = useTranslation(tasksLocaleNamespace)
   const {heading, text} = HEADING_BY_STATUS[status][activeTabId]
   return (
-    <Stack gap={3}>
-      <Text size={1} weight="semibold">
+    <VStack gap={3}>
+      <Text size={1} weight="semibold" as="div" trim={true}>
         {t(heading)}
       </Text>
-      <Text size={1}>{t(text)}</Text>
-    </Stack>
+      <Text size={1} as="div" trim={true}>
+        {t(text)}
+      </Text>
+    </VStack>
   )
 }
 
@@ -88,25 +89,6 @@ const EMPTY_TASK_LIST: Record<
   },
 }
 
-const Root = styled.div`
-  max-width: 268px;
-  margin: 0 auto;
-  height: 100%;
-  margin-top: 40%;
-`
-
-const AnimatedText = styled(Text)`
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  animation: fadeIn 0.2s ease-in-out;
-`
-
 export function EmptyTasksListState() {
   const {activeDocument} = useTasks()
   const {mode} = useTasksEnabled()
@@ -124,7 +106,7 @@ export function EmptyTasksListState() {
     setViewMode({type: 'create'})
   }, [setViewMode])
   return (
-    <Root>
+    <div className={root}>
       <Flex
         flexDirection={'column'}
         gap={3}
@@ -133,13 +115,13 @@ export function EmptyTasksListState() {
         flexGrow={1}
         justifyContent={'center'}
       >
-        <AnimatedText key={key} size={1} weight="semibold">
+        <Text className={animatedText} key={key} size={1} weight="semibold" as="div" trim={true}>
           {t(heading)}
-        </AnimatedText>
+        </Text>
         <Box paddingBottom={6} paddingTop={1}>
-          <AnimatedText key={key} size={1} align="center">
+          <Text className={animatedText} key={key} size={1} align="center" as="div" trim={true}>
             {t(text)}
-          </AnimatedText>
+          </Text>
         </Box>
         {mode !== 'upsell' && (
           <Button
@@ -149,6 +131,6 @@ export function EmptyTasksListState() {
           />
         )}
       </Flex>
-    </Root>
+    </div>
   )
 }

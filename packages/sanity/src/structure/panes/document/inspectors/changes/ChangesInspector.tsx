@@ -4,7 +4,6 @@ import {BoundaryElementProvider, Card, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {ChangeList, type ObjectSchemaType, usePerspective, useTranslation} from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 import {Flex, Box, Grid} from 'ui5'
 
 import {ChangeFieldWrapper} from '../../../../../core/changeIndicators/ChangeFieldWrapper'
@@ -17,13 +16,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {TimelineError} from '../../timeline/TimelineError'
 import {TimelineMenu} from '../../timeline/timelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
-
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
+import {scroller} from './Scroller.css'
 
 export function ChangesInspector({showChanges}: {showChanges: boolean}): React.JSX.Element {
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
@@ -89,7 +82,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
 
       <Card flex={1} paddingX={2} paddingY={2}>
         <BoundaryElementProvider element={scrollRef}>
-          <Scroller data-ui="Scroller" ref={setScrollRef}>
+          <ScrollContainer className={scroller} data-ui="Scroller" ref={setScrollRef}>
             <Box flexBasis="0%" flexGrow={1} paddingX={3} height="100%">
               {showChanges && (
                 <Content
@@ -101,7 +94,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
                 />
               )}
             </Box>
-          </Scroller>
+          </ScrollContainer>
         </BoundaryElementProvider>
       </Card>
     </Flex>

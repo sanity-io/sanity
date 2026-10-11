@@ -1,7 +1,7 @@
 import camelCase from 'lodash-es/camelCase.js'
 import getSlug from 'speakingurl'
 
-import {disallowedPattern} from './validateId'
+import {validateStructureNodeId} from '../../../core/util/validateStructureNodeId'
 
 export function getStructureNodeId(title: string, id?: string): string {
   if (id) {
@@ -10,5 +10,5 @@ export function getStructureNodeId(title: string, id?: string): string {
 
   const camelCased = camelCase(title)
 
-  return disallowedPattern.test(camelCased) ? camelCase(getSlug(title)) : camelCased
+  return validateStructureNodeId(camelCased).isValid ? camelCased : camelCase(getSlug(title))
 }

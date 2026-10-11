@@ -3,7 +3,6 @@ import {type Placement, PortalProvider, useClickOutsideEvent, useGlobalKeyDown} 
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {type DocumentGroupEvent, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../../../../../core/field/diff/components/constants'
@@ -20,6 +19,7 @@ import {Popover} from '../../../../../ui-components/popover/Popover'
 import {useDocumentPane} from '../../useDocumentPane'
 import {TimelineError} from '../TimelineError'
 import {EventsTimeline} from './EventsTimeline'
+import {root} from './EventsTimelineMenu.css'
 
 interface TimelineMenuProps {
   event: DocumentGroupEvent | null
@@ -27,11 +27,6 @@ interface TimelineMenuProps {
   mode: 'rev' | 'since'
   placement?: Placement
 }
-
-const Root = styled(Popover)`
-  overflow: hidden;
-  overflow: clip;
-`
 
 const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
@@ -187,7 +182,8 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
 
   return (
     <PortalProvider __unstable_elements={portalElements}>
-      <Root
+      <Popover
+        className={root}
         data-testid="timeline-menu"
         constrainSize
         content={open && content}
@@ -216,7 +212,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
             text={loading ? t('timeline.loading-history') : buttonLabel}
           />
         </Flex>
-      </Root>
+      </Popover>
     </PortalProvider>
   )
 }

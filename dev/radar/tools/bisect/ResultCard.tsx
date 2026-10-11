@@ -1,7 +1,7 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {UndoIcon} from '@sanity/icons/Undo'
-import {Badge, Box, Button, Card, Stack, Text, TextArea} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Badge, Box, Button, Card, Text, TextArea} from '@sanity/ui'
+import {Flex, VStack} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {type deriveBisectState} from './bisect'
@@ -11,6 +11,7 @@ import {type TagSlice} from './data'
 import {IncludedIn} from './IncludedIn'
 import {withReproPath} from './reproPath'
 import {type ResultAnnotations} from './sessions'
+import {SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from './severity'
 import {pluralize} from './text'
 
 /**
@@ -119,9 +120,45 @@ export function ResultCard(props: {
           onClick={() => onAnnotate({regression: !annotations.regression})}
         />
       </Flex>
+      {/* About the verdict rather than the issue: why this commit, the fix,
+          a workaround. Same save-on-blur as the description */}
+      <TextArea
+        rows={2}
+        fontSize={1}
+        placeholder="Notes on the verdict — why this commit, the fix, a workaround…"
+        defaultValue={annotations.note ?? ''}
+        onBlur={(event) => {
+          const value = event.currentTarget.value.trim()
+          if (value !== (annotations.note ?? '')) onAnnotate({note: value})
+        }}
+      />
+      {/* How bad — only meaningful once it IS a regression. Clicking the
+          selected step clears it, so an unrated regression stays possible */}
+      {annotations.regression && (
+        <Flex alignItems="center" gap={2} flexWrap="wrap">
+          <Text size={1} muted>
+            Severity
+          </Text>
+          {SEVERITIES.map((severity) => {
+            const selected = annotations.severity === severity
+            return (
+              <Button
+                key={severity}
+                mode={selected ? 'default' : 'ghost'}
+                tone={SEVERITY_TONE[severity]}
+                fontSize={0}
+                padding={2}
+                text={SEVERITY_LABEL[severity]}
+                aria-pressed={selected}
+                onClick={() => onAnnotate({severity: selected ? '' : severity})}
+              />
+            )
+          })}
+        </Flex>
+      )}
       {state.suspects.length > 0 && (
         <Card padding={3} radius={2} tone="caution">
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Text size={1} weight="semibold">
               {/* Two different reasons the range stays untested: a releases-only
                   session never proposes non-release commits (most have builds —
@@ -150,7 +187,7 @@ export function ResultCard(props: {
                 />
               </Flex>
             )}
-          </Stack>
+          </VStack>
         </Card>
       )}
     </CommitCard>

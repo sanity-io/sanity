@@ -66,6 +66,7 @@ import type {
   ListItem,
   ListItemBuilder,
   ListItemChild,
+  ListItemCount,
   ListItemDisplayOptions,
   ListItemInput,
   ListItemSerializeOptions,
@@ -91,6 +92,7 @@ import type {
   Serializable,
   SerializeOptions,
   SerializePath,
+  SingletonListBuilder,
   StructureBuilder,
   StructureContext,
   structureLocaleNamespace,
@@ -304,6 +306,9 @@ describe('sanity/structure', () => {
   test('ListItemChild', () => {
     expectTypeOf<ListItemChild>().not.toBeNever()
   })
+  test('ListItemCount', () => {
+    expectTypeOf<ListItemCount>().toBeObject()
+  })
   test('ListItemDisplayOptions', () => {
     expectTypeOf<ListItemDisplayOptions>().toBeObject()
   })
@@ -378,6 +383,9 @@ describe('sanity/structure', () => {
   })
   test('SerializePath', () => {
     expectTypeOf<SerializePath>().not.toBeNever()
+  })
+  test('SingletonListBuilder', () => {
+    expectTypeOf<SingletonListBuilder>().not.toBeNever()
   })
   test('StructureBuilder', () => {
     expectTypeOf<StructureBuilder>().toBeObject()

@@ -631,8 +631,9 @@
                 }
               },
               {
-                // The internals entry re-exports from every area; the public barrels and
-                // src/core must never import it (core uses relative imports)
+                // The internals entry re-exports @internal declarations from every area. Nothing
+                // inside the package imports it: src/core, src/structure and src/router keep
+                // using relative imports, so the entry never becomes part of an import cycle.
                 "from": {
                   "file": {
                     "categories": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"

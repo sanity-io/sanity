@@ -79,7 +79,11 @@ export async function createTestProvider({
   await i18next.init()
 
   const routerState = {}
-  const activeWorkspace = {name: 'default'} as WorkspaceSummary
+  const activeWorkspace = {
+    name: workspace.name,
+    projectId: workspace.projectId,
+    dataset: workspace.dataset,
+  } as WorkspaceSummary
   const history = createMemoryHistory()
   const addonDatasetContextValue = {
     createAddonDataset: async () => Promise.resolve(null),

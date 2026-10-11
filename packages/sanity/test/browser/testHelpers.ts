@@ -41,6 +41,33 @@ const fieldActionsSig = (): string =>
     .map((el) => el.getAttribute('data-actions-visible'))
     .join(',')
 
+const presenceGeometrySig = (): string =>
+  Array.from(
+    window.document.querySelectorAll<HTMLElement>(
+      '[data-ui="Avatar"], [data-ui="AvatarCounter"], [data-testid^="presence-cursor-"]',
+    ),
+  )
+    .filter(isShown)
+    .map((element) => {
+      const rect = element.getBoundingClientRect()
+      const dock = element.closest('[data-dock]')?.getAttribute('data-dock') ?? ''
+      const identity =
+        element.getAttribute('title') ??
+        element.getAttribute('data-testid') ??
+        element.getAttribute('data-ui') ??
+        ''
+      return [
+        identity,
+        dock,
+        element.getAttribute('data-arrow-position') ?? '',
+        rect.x.toFixed(3),
+        rect.y.toFixed(3),
+        rect.width.toFixed(3),
+        rect.height.toFixed(3),
+      ].join(':')
+    })
+    .join('|')
+
 /**
  * Geometry signature of every visible match: `x,y,w,h` per element, `''` when
  * none is visible. A match that is mounted but has no size yet (a portal whose
@@ -613,13 +640,33 @@ export function testHelpers() {
     /**
      * Drag and drop using mouse events
      */
-    dragAndDrop: async (sourceSelector: string, targetSelector: string) => {
+    dragAndDrop: async (
+      sourceSelector: string,
+      targetSelector: string,
+      options?: {
+        /**
+         * Which half of the target to release on. Playwright drops on the target's center by
+         * default, which for a block sits exactly on the line the Portable Text editor uses to
+         * decide between dropping before or after it; pick a half when that matters.
+         */
+        dropAt?: 'top' | 'bottom'
+      },
+    ) => {
       const source = await waitForElement(sourceSelector)
       const target = await waitForElement(targetSelector)
+      const targetRect = target.getBoundingClientRect()
+      const targetPosition = options?.dropAt
+        ? {
+            x: targetRect.width / 2,
+            y: targetRect.height * (options.dropAt === 'top' ? 0.25 : 0.75),
+          }
+        : undefined
       // Use the provider's real pointer-driven drag (Playwright under the hood),
       // which dispatches the full hover/move/up sequence the PTE drag tracking
       // relies on. Synthetic MouseEvents don't drive it.
-      await userEvent.dragAndDrop(page.elementLocator(source), page.elementLocator(target))
+      await userEvent.dragAndDrop(page.elementLocator(source), page.elementLocator(target), {
+        targetPosition,
+      })
     },
 
     /**
@@ -714,6 +761,15 @@ export function testHelpers() {
     },
 
     waitForPortableTextSelection,
+
+    /**
+     * Wait for visible presence cursors, avatars, counters, docks and arrow positions to stop
+     * moving. Call after `settleChromaticEndState`, which parks the pointer and flushes field
+     * action hover state that can move field-presence avatars.
+     */
+    waitForPresenceGeometry: async () => {
+      await expectStable(presenceGeometrySig)
+    },
 
     /**
      * Extend a collapsed selection over `text` with Shift+ArrowRight (or

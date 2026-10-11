@@ -1,4 +1,5 @@
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -28,7 +29,7 @@ export function ReferenceStrengthMismatchAlertStrip({
       status="warning"
       data-testid="alert-reference-strength-mismatch"
     >
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Text as="p" muted size={1}>
           <Translate
             t={t}
@@ -58,7 +59,7 @@ export function ReferenceStrengthMismatchAlertStrip({
           )}
           tone="caution"
         />
-      </Stack>
+      </VStack>
     </AlertStrip>
   )
 }

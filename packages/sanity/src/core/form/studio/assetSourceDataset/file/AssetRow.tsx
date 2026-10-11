@@ -8,14 +8,13 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  Stack,
   Text,
 } from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
-import {Flex, Grid, Box} from 'ui5'
+import {Flex, Grid, Box, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
@@ -300,32 +299,32 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         {isOpen && (
           <>
             <Grid marginTop={3} gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={1}>
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.size')}
                 </Text>
                 <Text size={1} muted>
                   {formattedSize}
                 </Text>
-              </Stack>
-              <Stack gap={2}>
+              </VStack>
+              <VStack gap={2}>
                 <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.type')}
                 </Text>
                 <Text size={1} muted>
                   {formattedMimeType}
                 </Text>
-              </Stack>
-              <Stack gap={2}>
+              </VStack>
+              <VStack gap={2}>
                 <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.date-added')}
                 </Text>
                 <Text size={1} muted>
                   {formattedTime}
                 </Text>
-              </Stack>
+              </VStack>
             </Grid>
-            <Stack gap={2} marginTop={3}>
+            <Flex gap={2} marginTop={3} flexDirection="column">
               <Button
                 fontSize={1}
                 tone="default"
@@ -349,7 +348,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
                 )}
                 onClick={handleConfirmDelete}
               />
-            </Stack>
+            </Flex>
           </>
         )}
         {usageDialog || deleteDialog}

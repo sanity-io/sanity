@@ -1,15 +1,17 @@
 /**
  * Pure mapping of npm registry responses onto git tags (I/O lives in
  * syncGitHistory.ts). Tag `vX.Y.Z` = `sanity@X.Y.Z`; npm adds what git can't
- * know: publish time, current dist-tags, and last week's downloads (the
- * blast radius of a regression). Versions npm doesn't know get no
- * enrichment.
+ * know: publish time, current dist-tags, last week's downloads (the blast
+ * radius of a regression) and whether the version is deprecated on npm.
+ * Versions npm doesn't know get no enrichment.
  */
 
 export interface NpmVersionInfo {
   publishedAt?: string
   distTags?: string[]
   weeklyDownloads?: number
+  /** The npm deprecation message — present only while the version is deprecated. */
+  deprecated?: string
 }
 
 export function npmInfoForTags(
@@ -21,6 +23,8 @@ export function npmInfoForTags(
     time?: Record<string, string>
     /** `api.npmjs.org/versions/sanity/last-week` `downloads`: version → count */
     downloads?: Record<string, number>
+    /** packument `versions`: version → manifest; `deprecated` is the message */
+    versions?: Record<string, {deprecated?: string}>
   },
 ): Map<string, NpmVersionInfo> {
   const tagsByVersion = new Map<string, string[]>()
@@ -34,13 +38,22 @@ export function npmInfoForTags(
     const publishedAt = data.time?.[version]
     const distTags = tagsByVersion.get(version)
     const weeklyDownloads = data.downloads?.[version]
-    if (publishedAt === undefined && distTags === undefined && weeklyDownloads === undefined) {
+    // `npm deprecate <pkg>@<v> ""` undeprecates by writing an empty message,
+    // so an empty string means "not deprecated" too
+    const deprecated = data.versions?.[version]?.deprecated || undefined
+    if (
+      publishedAt === undefined &&
+      distTags === undefined &&
+      weeklyDownloads === undefined &&
+      deprecated === undefined
+    ) {
       continue
     }
     info.set(tagName, {
       ...(publishedAt ? {publishedAt} : {}),
       ...(distTags ? {distTags: distTags.toSorted()} : {}),
       ...(weeklyDownloads === undefined ? {} : {weeklyDownloads}),
+      ...(deprecated ? {deprecated} : {}),
     })
   }
   return info

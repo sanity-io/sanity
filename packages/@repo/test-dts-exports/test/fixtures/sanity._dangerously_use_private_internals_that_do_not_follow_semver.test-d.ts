@@ -135,8 +135,6 @@ import type {
   CorsOriginErrorScreen,
   CorsProbeOutcome,
   CreatableTargetDocument,
-  createAuthStore,
-  CreateAuthStoreOptions,
   createBufferedDocument,
   createConnectionStatusStore,
   createDocumentPreviewStore,
@@ -166,6 +164,7 @@ import type {
   CrossDatasetReferenceInput,
   CrossDatasetReferencePreview,
   CustomComponentPaneNode,
+  DashboardLink,
   DateInput,
   DateTimeInput,
   decodeJsonParams,
@@ -260,6 +259,7 @@ import type {
   emptyValuesByType,
   encodeJsonParams,
   encodePath,
+  encodeVariantLinkParam,
   EnhancedObjectDialog,
   ErrorActions,
   ErrorActionsProps,
@@ -342,11 +342,13 @@ import type {
   getCalendarLabels,
   getConfigContextFromSource,
   getCreatableVariantTarget,
+  getDefaultVariant,
   getDocumentIdForCanvasLink,
   getDocumentIsInPerspective,
   getDocumentPairPermissions,
   getDocumentValuePermissions,
   getDocumentVersionType,
+  getDocumentVersionVariantId,
   getErrorMessage,
   getExpandOperations,
   GetFormValueProvider,
@@ -623,6 +625,7 @@ import type {
   SANITY_PATCH_TYPE,
   SanityDefaultPreviewProps,
   SchedulesContext,
+  SchemaErrorContext,
   ScrollContainer,
   ScrollContainerProps,
   ScrollContextValue,
@@ -676,6 +679,7 @@ import type {
   StringSegmentChanged,
   StringSegmentUnchanged,
   StructureBuilderOptions,
+  StructureNodeIdValidationResult,
   StructureToolContextValue,
   StructureToolFeatures,
   StructureToolPaneActionHandler,
@@ -738,6 +742,7 @@ import type {
   useAllVariants,
   useArchivedReleases,
   useCanvasCompanionDoc,
+  useCanvasNavigate,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
   useColorScheme,
@@ -865,7 +870,6 @@ import type {
   useTrackerStore,
   useTrackerStoreReporter,
   useUnique,
-  useUnstableObserveDocument,
   useUser,
   useUserColor,
   useUserListWithPermissions,
@@ -880,12 +884,20 @@ import type {
   useZIndex,
   validateBasePaths,
   validateNames,
+  validateStructureNodeId,
   ValidateWorkspaceOptions,
   validateWorkspaces,
   validation,
   ValidationContext,
   ValueError,
+  VariantConditionMap,
+  VariantConditions,
+  VariantConditionsContext,
+  VariantConditionValue,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
+  VariantTypeConfig,
+  VariantTypeContext,
+  VariantTypesConfig,
   VersionChip,
   VersionInfoDocumentStub,
   VersionInlineBadge,
@@ -1307,12 +1319,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CreatableTargetDocument', () => {
     expectTypeOf<CreatableTargetDocument>().toBeObject()
   })
-  test('createAuthStore', () => {
-    expectTypeOf<typeof createAuthStore>().not.toBeNever()
-  })
-  test('CreateAuthStoreOptions', () => {
-    expectTypeOf<CreateAuthStoreOptions>().not.toBeNever()
-  })
   test('createBufferedDocument', () => {
     expectTypeOf<typeof createBufferedDocument>().not.toBeNever()
   })
@@ -1399,6 +1405,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('CustomComponentPaneNode', () => {
     expectTypeOf<CustomComponentPaneNode>().toBeObject()
+  })
+  test('DashboardLink', () => {
+    expectTypeOf<typeof DashboardLink>().toBeFunction()
   })
   test('DateInput', () => {
     expectTypeOf<typeof DateInput>().toBeFunction()
@@ -1682,6 +1691,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('encodePath', () => {
     expectTypeOf<typeof encodePath>().toBeFunction()
   })
+  test('encodeVariantLinkParam', () => {
+    expectTypeOf<typeof encodeVariantLinkParam>().toBeFunction()
+  })
   test('EnhancedObjectDialog', () => {
     expectTypeOf<typeof EnhancedObjectDialog>().toBeFunction()
   })
@@ -1928,6 +1940,10 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('getCreatableVariantTarget', () => {
     expectTypeOf<typeof getCreatableVariantTarget>().toBeFunction()
   })
+  test('getDefaultVariant', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<typeof getDefaultVariant>().toBeFunction()
+  })
   test('getDocumentIdForCanvasLink', () => {
     expectTypeOf<typeof getDocumentIdForCanvasLink>().toBeFunction()
   })
@@ -1942,6 +1958,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('getDocumentVersionType', () => {
     expectTypeOf<typeof getDocumentVersionType>().toBeFunction()
+  })
+  test('getDocumentVersionVariantId', () => {
+    expectTypeOf<typeof getDocumentVersionVariantId>().toBeFunction()
   })
   test('getErrorMessage', () => {
     expectTypeOf<typeof getErrorMessage>().toBeFunction()
@@ -2771,6 +2790,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('SchedulesContext', () => {
     expectTypeOf<typeof SchedulesContext>().not.toBeNever()
   })
+  test('SchemaErrorContext', () => {
+    expectTypeOf<SchemaErrorContext>().toBeObject()
+  })
   test('ScrollContainer', () => {
     expectTypeOf<typeof ScrollContainer>().not.toBeNever()
   })
@@ -2929,6 +2951,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('StructureBuilderOptions', () => {
     expectTypeOf<StructureBuilderOptions>().toBeObject()
+  })
+  test('StructureNodeIdValidationResult', () => {
+    expectTypeOf<StructureNodeIdValidationResult>().not.toBeNever()
   })
   test('StructureToolContextValue', () => {
     expectTypeOf<StructureToolContextValue>().toBeObject()
@@ -3115,6 +3140,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useCanvasCompanionDoc', () => {
     expectTypeOf<typeof useCanvasCompanionDoc>().not.toBeNever()
+  })
+  test('useCanvasNavigate', () => {
+    expectTypeOf<typeof useCanvasNavigate>().toBeFunction()
   })
   test('useChangeIndicatorsReportedValues', () => {
     expectTypeOf<typeof useChangeIndicatorsReportedValues>().toBeFunction()
@@ -3498,9 +3526,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useUnique', () => {
     expectTypeOf<typeof useUnique>().toBeFunction()
   })
-  test('useUnstableObserveDocument', () => {
-    expectTypeOf<typeof useUnstableObserveDocument>().toBeFunction()
-  })
   test('useUser', () => {
     expectTypeOf<typeof useUser>().toBeFunction()
   })
@@ -3543,6 +3568,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('validateNames', () => {
     expectTypeOf<typeof validateNames>().toBeFunction()
   })
+  test('validateStructureNodeId', () => {
+    expectTypeOf<typeof validateStructureNodeId>().toBeFunction()
+  })
   test('ValidateWorkspaceOptions', () => {
     expectTypeOf<ValidateWorkspaceOptions>().toBeObject()
   })
@@ -3559,8 +3587,29 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ValueError', () => {
     expectTypeOf<typeof ValueError>().toBeFunction()
   })
+  test('VariantConditionMap', () => {
+    expectTypeOf<VariantConditionMap>().toBeObject()
+  })
+  test('VariantConditions', () => {
+    expectTypeOf<VariantConditions>().not.toBeNever()
+  })
+  test('VariantConditionsContext', () => {
+    expectTypeOf<VariantConditionsContext>().not.toBeNever()
+  })
+  test('VariantConditionValue', () => {
+    expectTypeOf<VariantConditionValue>().toBeObject()
+  })
   test('VARIANTS_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof VARIANTS_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
+  test('VariantTypeConfig', () => {
+    expectTypeOf<VariantTypeConfig>().toBeObject()
+  })
+  test('VariantTypeContext', () => {
+    expectTypeOf<VariantTypeContext>().not.toBeNever()
+  })
+  test('VariantTypesConfig', () => {
+    expectTypeOf<VariantTypesConfig>().not.toBeNever()
   })
   test('VersionChip', () => {
     expectTypeOf<typeof VersionChip>().not.toBeNever()
@@ -3569,7 +3618,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<VersionInfoDocumentStub>().toBeObject()
   })
   test('VersionInlineBadge', () => {
-    expectTypeOf<typeof VersionInlineBadge>().not.toBeNever()
+    expectTypeOf<typeof VersionInlineBadge>().toBeFunction()
   })
   test('VirtualizerScrollInstance', () => {
     expectTypeOf<VirtualizerScrollInstance>().toBeObject()

@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client/stega'
 import ChevronLeftIcon from '@sanity/icons/ChevronLeft'
 // oxlint-disable-next-line no-restricted-imports -- `Button` requires fine-grained control
-import {Button, Label, Spinner, Text} from '@sanity/ui'
+import {Button, Label, Spinner} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
 import {styled} from 'styled-components'
-import {VStack, Flex} from 'ui5'
+import {Text, VStack, Flex, Icon} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Delay} from '../../../components/Delay'
@@ -16,6 +16,7 @@ import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {getReleaseDocumentIdFromReleaseId} from '../../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isNotArchivedRelease, isReleaseScheduledOrScheduling} from '../../../releases/util/util'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {getVariantTitle} from '../../../variants/tool/util'
 import {type selectionMachine} from '../../machines/selectionMachine'
 import {type variantCreationMachine} from '../../machines/variantCreationMachine'
@@ -61,7 +62,7 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
         })
 
   const existingBundles = existingVariants.reduce((bundleKeys, variant) => {
-    const variantId = variant.document?._system.variant?._ref
+    const variantId = getDocumentVersionVariantId(variant.document)
 
     if (typeof variantId !== 'undefined' && variantId === selectedVariantDefinition?._id) {
       bundleKeys.add(
@@ -86,9 +87,9 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
             })
           }
         >
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             <Flex gap={2} alignItems="center">
-              <ChevronLeftIcon />
+              <Icon icon={ChevronLeftIcon} size={1} />
               <TruncatedText>{headerTitle}</TruncatedText>
             </Flex>
           </Text>

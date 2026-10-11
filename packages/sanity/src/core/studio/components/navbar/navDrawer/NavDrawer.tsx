@@ -1,10 +1,10 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Layer, Stack, Text} from '@sanity/ui'
+import {Card, Layer, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {CapabilityGate} from '../../../../components/CapabilityGate'
@@ -161,7 +161,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               variants={INNER_CARD_VARIANTS}
             >
               <Card borderBottom>
-                <Stack gap={3} padding={3}>
+                <Flex gap={3} padding={3} flexDirection="column">
                   <Flex alignItems="center">
                     {/* Current user */}
                     <Flex flexBasis="0%" flexGrow={1} alignItems="center" paddingRight={2}>
@@ -196,7 +196,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                       <WorkspaceMenuButton />
                     </Flex>
                   )}
-                </Stack>
+                </Flex>
               </Card>
 
               <Flex
@@ -221,7 +221,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                 <Flex flexDirection="column">
                   {actionNodes && (
                     <Card flex="none" padding={2}>
-                      <Stack gap={1}>{actionNodes}</Stack>
+                      <VStack gap={1}>{actionNodes}</VStack>
                     </Card>
                   )}
 

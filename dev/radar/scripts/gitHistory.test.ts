@@ -139,10 +139,12 @@ describe('parseTagRefs', () => {
       tagLine('sanity-v3.86.0', SHA_A, SHA_B),
       tagLine('v3.86.0', SHA_A, SHA_B),
       tagLine('v4.10.1', SHA_A, SHA_B),
+      tagLine('v2.36.2', SHA_A, SHA_B),
       tagLine('v0.144.3', SHA_A, SHA_B),
       tagLine('v6.10.1', SHA_A, SHA_B),
     ].join('\n')
-    expect(parseTagRefs(raw).map((t) => t.tag)).toEqual(['v6.10.1'])
+    // v3 and up are in; v2 and earlier are not
+    expect(parseTagRefs(raw).map((t) => t.tag)).toEqual(['v3.86.0', 'v4.10.1', 'v6.10.1'])
   })
 
   it('throws on a structurally broken record', () => {

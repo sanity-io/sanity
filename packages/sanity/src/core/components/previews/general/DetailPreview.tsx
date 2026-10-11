@@ -1,4 +1,4 @@
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
@@ -51,6 +51,11 @@ export function DetailPreview(props: DetailPreviewProps) {
   )
 
   if (isPlaceholder) {
+    // `subtitle` is `undefined` while the value is still loading (both rows), `null` when the
+    // resolved value has none (a lazy preview component loading in front of it), so the
+    // placeholder has the rows the preview will have.
+    const showSubtitleSkeleton = subtitle === undefined || Boolean(subtitle)
+
     return (
       <RootFlex
         data-testid="detail-preview"
@@ -67,15 +72,15 @@ export function DetailPreview(props: DetailPreviewProps) {
             flexBasis="0%"
             flexGrow={1}
           >
-            <Stack flex={1} gap={2}>
+            <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
               <TitleSkeleton />
-              <SubtitleSkeleton />
+              {showSubtitleSkeleton && <SubtitleSkeleton />}
               {description && (
                 <Box marginTop={1}>
                   <DescriptionSkeleton />
                 </Box>
               )}
-            </Stack>
+            </Flex>
           </Flex>
 
           {statusNode}
@@ -95,7 +100,7 @@ export function DetailPreview(props: DetailPreviewProps) {
         {media && <Media dimensions={mediaDimensions} layout="detail" media={media as any} />}
 
         <Flex alignItems="center" data-testid="detail-preview__header" flexBasis="0%" flexGrow={1}>
-          <Stack flex={1} gap={2}>
+          <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
             <Text textOverflow="ellipsis" size={1} style={{color: 'inherit'}} weight="medium">
               {title && renderPreviewNode(title, 'detail')}
               {!title && <>{t('preview.default.title-fallback')}</>}
@@ -114,7 +119,7 @@ export function DetailPreview(props: DetailPreviewProps) {
                 </DescriptionText>
               </Box>
             )}
-          </Stack>
+          </Flex>
 
           {statusNode}
         </Flex>
