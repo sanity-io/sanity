@@ -63,8 +63,7 @@ function getInvalidUserDefinedPerspectives(
 }
 /**
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function StudioReferenceInput(props: StudioReferenceInputProps) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

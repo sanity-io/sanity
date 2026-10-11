@@ -88,6 +88,7 @@ type ReleaseAvatarIconProps =
       fontSize?: UIIconProps['size']
     }
 
+/** @internal */
 export const ReleaseAvatarIcon = ({
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   tone,
@@ -150,6 +151,7 @@ export const ReleaseAvatarIcon = ({
   )
 }
 
+/** @internal */
 export function ReleaseAvatar({
   padding = 3,
   ...iconProps

@@ -85,8 +85,7 @@ export function useUserStore(): UserStore {
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function useGrantsStore(): GrantsStore {
   // `currentUser` is read from the source directly (instead of via `useCurrentUser` from
   // `./user/hooks`) to avoid a circular import: `./user/hooks` imports `useUserStore` from here.
@@ -114,8 +113,7 @@ export function useGrantsStore(): GrantsStore {
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function useHistoryStore(): HistoryStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -330,8 +328,7 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function usePresenceStore(): PresenceStore {
   const {
     __internal: {bifur},
@@ -359,8 +356,7 @@ export function usePresenceStore(): PresenceStore {
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function useProjectStore(): ProjectStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()

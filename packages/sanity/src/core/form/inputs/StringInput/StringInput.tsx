@@ -3,8 +3,7 @@ import {StringInputBasic} from './StringInputBasic/StringInputBasic'
 import {StringInputPortableText} from './StringInputPortableText/StringInputPortableText'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export function StringInput(props: StringInputProps) {
   if (props.displayInlineChanges) {
