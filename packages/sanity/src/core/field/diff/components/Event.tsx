@@ -1,8 +1,8 @@
-import {type AvatarSize, AvatarStack, Skeleton, Text} from '@sanity/ui'
+import {type AvatarSize, AvatarStack, Skeleton} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
@@ -49,7 +49,6 @@ const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
   const color = props.$color
 
   return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
     background-color: ${theme.color.avatar[color].bg};
     box-shadow: 0 0 0 1px var(--card-bg-color);
 
@@ -59,6 +58,10 @@ const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
     right: -3px;
     bottom: -3px;
     border-radius: 50%;
+
+    & svg {
+      --icon-color: ${theme.color.avatar[color].fg};
+    }
   `
 })
 
@@ -92,11 +95,11 @@ const UserLine = ({userId}: {userId: string}) => {
       <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
       <Box>
         {loading || !user?.displayName ? (
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <NameSkeleton animated />
           </Text>
         ) : (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {user.displayName}
           </Text>
         )}
@@ -109,7 +112,7 @@ const ChangesBy = ({collaborators}: {collaborators: string[]}) => {
   return (
     <Flex paddingBottom={1} flexDirection="column" flexShrink={0}>
       <Box padding={1} paddingBottom={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('timeline.changes.title')}
         </Text>
       </Box>
@@ -192,11 +195,11 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             justifyContent="center"
             $color={TIMELINE_ITEM_EVENT_TONE[type]}
           >
-            <Text size={0}>{IconComponent && <IconComponent />}</Text>
+            {IconComponent && <Icon icon={IconComponent} size={0} />}
           </IconBox>
         </div>
         <VStack gap={2}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
               <>
@@ -206,7 +209,14 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             )}
           </Text>
 
-          <Text as="time" size={1} muted dateTime={timestamp} title={formattedTimestamp}>
+          <Text
+            as="time"
+            size={1}
+            muted
+            dateTime={timestamp}
+            title={formattedTimestamp}
+            trim={true}
+          >
             {updatedTimeAgo}
           </Text>
         </VStack>

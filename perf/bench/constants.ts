@@ -35,6 +35,13 @@ export const DATASET = 'bench'
 /** The dummy studio auth token seeded into localStorage (never a secret). */
 export const FAKE_TOKEN = 'bench-fake-token'
 
+/**
+ * The session id the route guard's fake login provider hands back in the
+ * `#sid=` hash, and the only one the mock's /auth/fetch exchanges for
+ * FAKE_TOKEN. The studio ignores sids shorter than 20 characters.
+ */
+export const FAKE_SESSION_ID = 'bench-fake-session-id-0000'
+
 /** The mock user returned by /users/me. */
 export const BENCH_USER = {
   id: 'bench-user',

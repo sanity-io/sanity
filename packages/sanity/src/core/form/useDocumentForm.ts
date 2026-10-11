@@ -38,6 +38,7 @@ import {
 } from '../hooks/useTargetDocumentState'
 import {useTargetScopeId} from '../hooks/useTargetScopeId'
 import {useValidationStatus} from '../hooks/useValidationStatus'
+import {getDefaultVariant} from '../perspective/getDefaultVariant'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
@@ -73,7 +74,7 @@ import {type StateTree} from './store/types/state'
 import {type FormState, useFormState} from './store/useFormState'
 import {getExpandOperations} from './store/utils/getExpandOperations'
 import {type OnPathFocusPayload} from './types/inputProps'
-import {useComlinkViewHistory} from './useComlinkViewHistory'
+import {useDocumentViewHistory} from './useDocumentViewHistory'
 import {toMutationPatches} from './utils/mutationPatch'
 
 interface DocumentFormOptions {
@@ -175,7 +176,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {versions: documentVersionStubs, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const {selectedVariantName, bundle} = usePerspective()
+  const {selectedVariantNames, bundle} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const targetDocumentState = useTargetDocumentState(documentId)
   const creatableVariantTarget = getCreatableVariantTarget(targetDocumentState)
   const canCreateVariantDraft = Boolean(creatableVariantTarget && initialValue?.value)
@@ -611,7 +613,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     formStateRef.current = formState
   }, [formState])
 
-  useComlinkViewHistory({editState})
+  useDocumentViewHistory({editState})
 
   const handleSetOpenPath = (path: Path) => {
     if (!formStateRef.current) return

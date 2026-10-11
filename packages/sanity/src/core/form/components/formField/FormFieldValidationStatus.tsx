@@ -1,18 +1,12 @@
 import {type FormNodeValidation} from '@sanity/types'
-import {type Placement, Stack, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {type Placement, Text} from '@sanity/ui'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {statusIconWrapper, styledStack} from './FormFieldValidationStatus.css'
 import {StatusIcon} from './ValidationStatusIcon'
-
-const StatusIconWrapper = styled.div`
-  left: 8px;
-  position: relative;
-  width: 25px;
-`
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
@@ -34,10 +28,6 @@ export interface FormFieldValidationStatusProps {
 
 const EMPTY_ARRAY: never[] = []
 
-const StyledStack = styled(Stack)`
-  max-width: 200px;
-`
-
 /**
  * @hidden
  * @beta */
@@ -52,7 +42,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   return (
     <Tooltip
       content={
-        <StyledStack gap={3}>
+        <VStack className={styledStack} gap={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
@@ -63,17 +53,17 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
               ))}
             </>
           )}
-        </StyledStack>
+        </VStack>
       }
       portal
       placement={placement}
       fallbackPlacements={['bottom', 'right', 'left']}
     >
-      <StatusIconWrapper>
+      <div className={statusIconWrapper}>
         <Text size={fontSize} weight="medium">
           <StatusIcon status={status} />
         </Text>
-      </StatusIconWrapper>
+      </div>
     </Tooltip>
   )
 }

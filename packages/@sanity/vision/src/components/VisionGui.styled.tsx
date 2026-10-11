@@ -1,7 +1,7 @@
-import {Card, Flex, Label, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Card, Label, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ComponentProps, type ComponentPropsWithoutRef, type RefAttributes} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {
   controlsContainer,
@@ -49,15 +49,16 @@ export function SplitpaneContainer(props: ComponentProps<typeof Box>) {
 }
 
 export function QueryRecallPaneContainer(props: ComponentProps<typeof Flex>) {
-  return <Flex {...props} direction="column" className={queryRecallPaneContainer} />
+  return <Flex {...props} flexDirection="column" className={queryRecallPaneContainer} />
 }
 
 export function QueryRecallPaneWrapper(props: ComponentProps<typeof Flex>) {
   return (
     <Flex
       {...props}
-      direction="column"
-      flex={1}
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
       overflow="hidden"
       className={queryRecallPaneWrapper}
     />

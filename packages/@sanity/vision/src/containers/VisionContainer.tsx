@@ -1,7 +1,7 @@
-import {Flex} from '@sanity/ui'
 import {Suspense, use} from 'react'
 import {type ObservablePromise} from 'react-rx'
 import {useClient} from 'sanity'
+import {Flex} from 'ui5'
 
 import {DelayedSpinner} from '../components/DelayedSpinner'
 import {VisionGui} from '../components/VisionGui'
@@ -15,7 +15,7 @@ export function VisionContainer(props: VisionProps) {
   return (
     <Suspense
       fallback={
-        <Flex align="center" height="fill" justify="center">
+        <Flex alignItems="center" height="100%" justifyContent="center">
           <DelayedSpinner />
         </Flex>
       }

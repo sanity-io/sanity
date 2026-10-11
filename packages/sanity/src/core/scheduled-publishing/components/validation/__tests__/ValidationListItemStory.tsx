@@ -1,7 +1,7 @@
 import {type ValidationMarker} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {ValidationListItem} from '../ValidationListItem'
@@ -43,7 +43,7 @@ export function ValidationListItemStory() {
       <Card padding={4} style={{maxWidth: 360}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               error / warning / info
             </Text>
             <Card padding={1} radius={2} shadow={2}>
@@ -55,7 +55,7 @@ export function ValidationListItemStory() {
             </Card>
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               truncated vs full
             </Text>
             <Card padding={1} radius={2} shadow={2}>

@@ -1,11 +1,12 @@
 import {studioPath} from '@sanity/client/csm'
-import {Card, Label, Stack} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
 import {PaneLayout} from 'sanity/structure'
-import {styled} from 'styled-components'
+import {VStack} from 'ui5'
 
+import {LoadingBlock} from '../../core/components/loadingBlock/LoadingBlock'
 import {decodeJsonParams} from '../../router/utils/jsonParamsEncoding'
 import {DocumentPane as StructureDocumentPane} from '../../structure/panes/document/DocumentPane'
 import {type DocumentPaneNode} from '../../structure/types'
@@ -13,7 +14,6 @@ import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
 import {PresentationPaneRouterProvider} from '../paneRouter/PresentationPaneRouterProvider'
-import {PresentationSpinner} from '../PresentationSpinner'
 import {
   type PresentationNavigate,
   type PresentationSearchParams,
@@ -21,10 +21,7 @@ import {
   type StructureDocumentPaneParams,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
-
-const WrappedCode = styled(Code)`
-  white-space: pre-wrap;
-`
+import {wrappedCode} from './DocumentPane.css'
 
 export function DocumentPane(props: {
   documentId: string
@@ -95,12 +92,14 @@ export function DocumentPane(props: {
         {devMode && (
           // show runtime error message in dev mode
           <Card overflow="auto" padding={3} radius={2} tone="critical">
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
-              <WrappedCode size={1}>{errorParams.error.message}</WrappedCode>
-            </Stack>
+              <Code className={wrappedCode} size={1}>
+                {errorParams.error.message}
+              </Code>
+            </VStack>
           </Card>
         )}
       </ErrorCard>
@@ -116,7 +115,7 @@ export function DocumentPane(props: {
           onStructureParams={onStructureParams}
           structureParams={structureParams}
         >
-          <Suspense fallback={<PresentationSpinner />}>
+          <Suspense fallback={<LoadingBlock showText />}>
             <StructureDocumentPane
               // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               paneKey="document"

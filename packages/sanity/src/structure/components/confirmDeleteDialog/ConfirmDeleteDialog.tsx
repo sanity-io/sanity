@@ -1,27 +1,15 @@
 import {useCallback, useId, useMemo} from 'react'
 import {getPublishedId, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
 import {useDocumentVersions} from '../../../core/releases/hooks/useDocumentVersions'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocTitle} from '../DocTitle'
+import {dialogBody, loadingContainer} from './ConfirmDeleteDialog.css'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 import {useReferringDocuments} from './useReferringDocuments'
-
-const DialogBody = styled(Box)`
-  box-sizing: border-box;
-`
-
-const LoadingContainer = styled(Flex).attrs({
-  alignItems: 'center',
-  flexDirection: 'column',
-  justifyContent: 'center',
-})`
-  height: 110px;
-`
 
 /**
  * The reference counts known at the point a delete is confirmed, surfaced so
@@ -134,7 +122,7 @@ export function ConfirmDeleteDialog({
       onClose={onCancel}
       onClickOutside={onCancel}
     >
-      <DialogBody>
+      <Box className={dialogBody}>
         {crossDatasetReferences && internalReferences && !isLoading && !versionsLoading ? (
           <ConfirmDeleteDialogBody
             crossDatasetReferences={crossDatasetReferences}
@@ -152,11 +140,17 @@ export function ConfirmDeleteDialog({
             documentVersions={documentVersions}
           />
         ) : (
-          <LoadingContainer data-testid="loading-container">
+          <Flex
+            alignItems="center"
+            flexDirection="column"
+            justifyContent="center"
+            className={loadingContainer}
+            data-testid="loading-container"
+          >
             <LoadingBlock showText title={t('confirm-delete-dialog.loading.text')} />
-          </LoadingContainer>
+          </Flex>
         )}
-      </DialogBody>
+      </Box>
     </Dialog>
   )
 }

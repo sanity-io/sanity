@@ -13,6 +13,9 @@ import {
   getTargetSiblings,
   useTargetDocumentState,
 } from '../../../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'
+import {getDocumentVersionVariantId} from '../../../../../core/util/getDocumentVersionVariant'
+import {encodeVariantLinkParam} from '../../../../../core/variants/util/variantSelection'
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -32,7 +35,8 @@ export function CopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
   const targetDocumentState = useTargetDocumentState(documentId)
   const siblings = getTargetSiblings(targetDocumentState)
-  const {selectedReleaseId, selectedPerspectiveName, selectedVariantName} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
   const {buildIntentUrl} = useStudioUrl()
@@ -60,7 +64,9 @@ export function CopyDocumentActions() {
     }
     const advertisedDraftId = siblings.published._system?.draft?._ref
 
-    return siblings.published._system?.variant ? advertisedDraftId : getDraftId(documentId)
+    return getDocumentVersionVariantId(siblings.published)
+      ? advertisedDraftId
+      : getDraftId(documentId)
   }, [
     documentId,
     scheduledDraft,
@@ -77,7 +83,7 @@ export function CopyDocumentActions() {
       selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
 
     if (selectedVariantName) {
-      searchParams.push(['variant', selectedVariantName])
+      searchParams.push(['variant', encodeVariantLinkParam(selectedVariantName)])
     }
 
     const intentParams = {

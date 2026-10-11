@@ -15,11 +15,12 @@ import {UserColorManagerProvider} from '../user-color/provider'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher/ActiveWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
-import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
+import {DashboardRouteHandler} from './components/DashboardRouteHandler'
 import {Z_OFFSET} from './constants'
 import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
 import {LiveManifestRegisterProvider} from './manifest'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
+import {PluginProviders} from './PluginProviders'
 import {PreloadStudioShell} from './preloadStudioShell'
 import {AuthenticateScreen} from './screens/AuthenticateScreen'
 import {ConfigErrorsScreen} from './screens/ConfigErrorsScreen'
@@ -86,12 +87,14 @@ export function StudioProvider({
                 <ResourceCacheProvider>
                   <StudioTelemetryProvider>
                     <AppIdCacheProvider>
-                      <ComlinkRouteHandler />
+                      <DashboardRouteHandler />
                       <StudioAnnouncementsProvider>
                         <GlobalPerspectiveProvider>
                           <DocumentLimitUpsellProvider>
                             <AssetLimitUpsellProvider>
-                              <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+                              <UnclaimedProjectProvider>
+                                <PluginProviders>{children}</PluginProviders>
+                              </UnclaimedProjectProvider>
                             </AssetLimitUpsellProvider>
                           </DocumentLimitUpsellProvider>
                         </GlobalPerspectiveProvider>

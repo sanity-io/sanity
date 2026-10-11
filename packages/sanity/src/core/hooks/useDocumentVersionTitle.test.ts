@@ -98,7 +98,7 @@ function createVersion({
     _system: {
       bundleId,
       group: {_ref: GROUP_ID, _weak: true},
-      ...(variantRef ? {variant: {_ref: variantRef, _weak: true}} : {}),
+      ...(variantRef ? {variants: [{_ref: variantRef, _key: 'k-123'}]} : {}),
       ...(releaseRef ? {release: {_ref: releaseRef, _weak: true}} : {}),
     },
   }
@@ -316,7 +316,7 @@ describe('useDocumentVersionTitle', () => {
         ...createVersion({id: GROUP_ID}),
         _system: {
           group: {_ref: GROUP_ID, _weak: true},
-          variant: {_weak: true},
+          variants: [{_key: 'missing-ref'}],
           release: {_weak: true},
         } as VersionInfoDocumentStub['_system'],
       }

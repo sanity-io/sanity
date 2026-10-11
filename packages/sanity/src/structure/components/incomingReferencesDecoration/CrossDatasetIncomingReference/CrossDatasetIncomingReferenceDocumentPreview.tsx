@@ -1,6 +1,7 @@
 import {PreviewCard} from 'sanity'
 import {Flex, Box} from 'ui5'
 
+import {DashboardLink} from '../../../../core/components/DashboardLink'
 import {CrossDatasetReferencePreview} from '../../../../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 import {type CrossDatasetIncomingReference} from '../types'
 import {type CrossDatasetIncomingReferenceDocument} from './getCrossDatasetIncomingReferences'
@@ -25,7 +26,7 @@ export function CrossDatasetIncomingReferenceDocumentPreview({
           __unstable_focusRing
           tabIndex={0}
           {...(studioUrl
-            ? {href: studioUrl, target: '_blank', rel: 'noopener noreferrer', as: 'a'}
+            ? {href: studioUrl, target: '_blank', rel: 'noopener noreferrer', as: DashboardLink}
             : {})}
         >
           <CrossDatasetReferencePreview

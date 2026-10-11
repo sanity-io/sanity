@@ -1,6 +1,6 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Card, Heading, Inline, Stack} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Card, Heading, Inline} from '@sanity/ui'
+import {VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 
@@ -14,7 +14,7 @@ export function NotFoundScreen(props: {onNavigateToDefaultWorkspace: () => void}
         flexGrow={1}
         alignItems="center"
       >
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Heading as="h1">Workspace not found</Heading>
           <Inline>
             <Button
@@ -23,7 +23,7 @@ export function NotFoundScreen(props: {onNavigateToDefaultWorkspace: () => void}
               mode="ghost"
             />
           </Inline>
-        </Stack>
+        </VStack>
       </Flex>
     </Card>
   )

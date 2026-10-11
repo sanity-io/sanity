@@ -11,4 +11,5 @@ interface Props {
  */
 export const FormCell = styled.div<Props>`
   grid-area: ${({$area}) => $area};
+  min-width: 0;
 `

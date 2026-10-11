@@ -1,16 +1,16 @@
 import {type SanityClient, type SanityDocument} from '@sanity/client'
-import {type Bridge} from '@sanity/message-protocol'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
+import {catchError, map, type Observable, of, tap} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'
+import {useDataset} from '../../../hooks/useDataset'
+import {useProjectId} from '../../../hooks/useProjectId'
 import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
-import {useComlinkStore, useProjectStore} from '../../../store/datastores'
-import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {useStudioAppIdStore} from '../../../store/studio-app/useStudioAppIdStore'
 import {useWorkspace} from '../../../studio/workspace'
 import {type CanvasDiff} from '../../types'
+import {useCanvasNavigate} from '../../useCanvasNavigate'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 
 const localeSettings = Intl.DateTimeFormat().resolvedOptions()
@@ -82,10 +82,9 @@ const canvasPreflight = ({
 
 export function useLinkToCanvas({document}: {document: SanityDocument | undefined}) {
   const workspace = useWorkspace()
-  const projectStore = useProjectStore()
-  const renderContext = useRenderingContext()
-  const {node} = useComlinkStore()
-  const isInDashboard = renderContext?.name === 'coreUi'
+  const projectId = useProjectId()
+  const dataset = useDataset()
+  const {openCanvas} = useCanvasNavigate()
   const {linkRedirected, linkDialogDiffsShown} = useCanvasTelemetry()
 
   const {studioApp, loading: appIdLoading} = useStudioAppIdStore({
@@ -113,53 +112,17 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
       })
     }
 
-    const getNavigateToCanvas = () => {
-      const dataset = client.config().dataset || ''
-      const projectId = client.config().projectId || ''
+    const queryParams = new URLSearchParams({
+      projectId,
+      dataset,
+      documentType: document._type,
+      documentId: document._id,
+      workspaceName: workspace.name,
+      applicationId: studioApp?.appId,
+    })
 
-      const queryParams = new URLSearchParams({
-        projectId,
-        dataset,
-        documentType: document._type,
-        documentId: document._id,
-        workspaceName: workspace.name,
-        applicationId: studioApp?.appId || '',
-      })
-
-      const path = `studio-import?${queryParams.toString()}`
-
-      if (isInDashboard && node) {
-        const message: Bridge.Navigation.NavigateToResourceMessage = {
-          type: 'dashboard/v1/bridge/navigate-to-resource',
-          data: {
-            resourceId: '',
-            resourceType: 'canvas',
-            path: path,
-          },
-        }
-
-        return of(() => node.post(message.type, message.data))
-      }
-
-      return projectStore.getOrganizationId().pipe(
-        map((organizationId) => {
-          if (!organizationId) {
-            // Users should not land at this stage, it is caught first in the action by disabling it
-            return () => {}
-          }
-          const isStaging = client.config().apiHost === 'https://api.sanity.work'
-
-          const canvasLinkUrl = `https://www.sanity.${isStaging ? 'work' : 'io'}/@${organizationId}/canvas/${path}`
-          return () => window.open(canvasLinkUrl, '_blank')
-        }),
-      )
-    }
-
-    return combineLatest([
-      canvasPreflight({client, document, schemaId}),
-      getNavigateToCanvas(),
-    ]).pipe(
-      map(([preflight, navigateToCanvas]) => {
+    return canvasPreflight({client, document, schemaId}).pipe(
+      map((preflight) => {
         if (!preflight.error) {
           const status = preflight.diff?.length ? ('diff' as const) : ('redirecting' as const)
 
@@ -169,7 +132,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
             response: preflight,
             navigateToCanvas: () => {
               linkRedirected(status === 'diff' ? 'diff-dialog' : 'redirect', preflight.diff)
-              navigateToCanvas()
+              openCanvas(`studio-import?${queryParams.toString()}`)
             },
           }
         }
@@ -203,14 +166,14 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
     appIdLoading,
     client,
     document,
-    isInDashboard,
     linkRedirected,
     linkDialogDiffsShown,
-    node,
-    projectStore,
+    openCanvas,
     schemaId,
     studioApp?.appId,
+    dataset,
     workspace.name,
+    projectId,
   ])
 
   return useObservable(linkToCanvas$, initialState)

@@ -20,7 +20,7 @@ const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 
 const groupRef = {_ref: 'doc-1', _weak: true as const}
-const variantRef = {_ref: '_.variants.alpha-audience', _weak: true as const}
+const variantRef = {_ref: '_.variants.alpha-audience', _key: 'k-123'}
 
 const versionStub = (
   stub: Pick<VersionInfoDocumentStub, '_id' | '_system'>,
@@ -45,7 +45,7 @@ const draftDocument = versionStub({
 const publishedVariant = versionStub({
   _id: 'versions.varscope.doc-1',
   _system: {
-    variant: variantRef,
+    variants: [variantRef],
     group: groupRef,
     scopeId: 'varscope',
   },
@@ -94,6 +94,8 @@ const DEFAULT_PERSPECTIVE = {
   selectedPerspective: 'drafts' as const,
   perspectiveStack: ['drafts'],
   excludedPerspectives: [],
+  selectedVariantNames: [],
+  selectedVariants: [],
   selectedVariantName: undefined,
   selectedVariant: undefined,
   bundle: 'drafts' as const,
@@ -210,7 +212,11 @@ describe('DocumentTargetBadges', () => {
   it('shows Published and the variant badge for a published live-edit variant', async () => {
     mockUsePerspective.mockReturnValue({
       ...DEFAULT_PERSPECTIVE,
+      selectedVariantNames: ['alpha-audience'],
+      selectedVariants: [variantAlphaAudience],
+      // oxlint-disable-next-line typescript/no-deprecated
       selectedVariantName: 'alpha-audience',
+      // oxlint-disable-next-line typescript/no-deprecated
       selectedVariant: variantAlphaAudience,
     })
     mockPane({
@@ -228,7 +234,11 @@ describe('DocumentTargetBadges', () => {
   it('shows Published without dimming when a live-edit variant is missing but a published sibling exists', async () => {
     mockUsePerspective.mockReturnValue({
       ...DEFAULT_PERSPECTIVE,
+      selectedVariantNames: ['alpha-audience'],
+      selectedVariants: [variantAlphaAudience],
+      // oxlint-disable-next-line typescript/no-deprecated
       selectedVariantName: 'alpha-audience',
+      // oxlint-disable-next-line typescript/no-deprecated
       selectedVariant: variantAlphaAudience,
     })
     mockPane({

@@ -1,4 +1,4 @@
-import {rem, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Text, TextSkeleton} from '@sanity/ui'
 import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
@@ -71,10 +71,10 @@ export function TemplatePreview(props: TemplatePreviewProps) {
     return (
       <Root>
         <HeaderFlex>
-          <Stack flex={1} gap={2}>
+          <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
             <TitleSkeleton />
             <SubtitleSkeleton />
-          </Stack>
+          </Flex>
         </HeaderFlex>
       </Root>
     )
@@ -83,7 +83,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
   return (
     <Root>
       <HeaderFlex>
-        <Stack flex={1} gap={2}>
+        <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
           {isValidElementType(Title) && (
             <Text textOverflow="ellipsis">
               <Title layout="default" />
@@ -101,7 +101,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
               {Subtitle}
             </Text>
           )}
-        </Stack>
+        </Flex>
 
         {media && (
           <Flex alignItems="flex-start" paddingLeft={2}>

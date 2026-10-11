@@ -1,7 +1,8 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 import {useCallback, useImperativeHandle, useMemo, type RefAttributes} from 'react'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -78,13 +79,13 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
   }
 
   const suffix = (
-    <Stack padding={2}>
+    <Flex padding={2} flexDirection="column">
       <Button
         onClick={handleClearClick}
         tone="critical"
         text={t('inputs.invalid-value.reset-button.text')}
       />
-    </Stack>
+    </Flex>
   )
 
   return (
@@ -94,7 +95,7 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
       </Text>
 
       <Details marginTop={4} open={isDev} title={t('inputs.invalid-value.details.title')}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           {validTypes.length === 1 && (
             <Text as="p" muted size={1}>
               <Translate
@@ -120,16 +121,16 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
           )}
 
           {validTypes.length !== 1 && (
-            <Stack as="ul" gap={2}>
+            <VStack as="ul" gap={2}>
               {validTypes.map((validType) => (
                 <Text key={validType} as="li">
                   <code>{validType}</code>
                 </Text>
               ))}
-            </Stack>
+            </VStack>
           )}
 
-          <Stack marginTop={2} gap={2}>
+          <Flex marginTop={2} gap={2} flexDirection="column">
             <Text size={1} weight="medium">
               <Translate
                 t={t}
@@ -145,10 +146,10 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
                 {JSON.stringify(value, null, 2)}
               </Code>
             </Card>
-          </Stack>
+          </Flex>
 
           {converters.length > 0 && (
-            <Stack gap={1}>
+            <VStack gap={1}>
               {converters.map((converter) => (
                 <ConvertButton
                   key={`${converter.from}-${converter.to}`}
@@ -157,9 +158,9 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
                   value={value}
                 />
               ))}
-            </Stack>
+            </VStack>
           )}
-        </Stack>
+        </VStack>
       </Details>
     </Alert>
   )

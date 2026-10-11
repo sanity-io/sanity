@@ -1,7 +1,7 @@
 import CloseIcon from '@sanity/icons/Close'
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {PortalProvider, Text} from '@sanity/ui'
+import {PortalProvider} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -23,7 +23,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {VStack, Flex} from 'ui5'
+import {Text, VStack, Flex, Icon} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -49,6 +49,7 @@ import {useDocumentStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
@@ -386,18 +387,14 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                       title={feedbackT('feedback.menu-item')}
                       aria-label={feedbackT('feedback.menu-item')}
                     >
-                      <Text size={1}>
-                        <FeedbackIcon />
-                      </Text>
+                      <Icon icon={FeedbackIcon} size={1} />
                     </TextButton>
                     <TextButton
                       onClick={requestClose}
                       title={t('document-group-inventory.action.cancel')}
                       aria-label={t('document-group-inventory.action.cancel')}
                     >
-                      <Text size={1}>
-                        <CloseIcon />
-                      </Text>
+                      <Icon icon={CloseIcon} size={1} />
                     </TextButton>
                   </Flex>
                 )}
@@ -530,7 +527,7 @@ const Select: ComponentType<{
                 }}
               >
                 {/* These strings will be removed in the next iteration, so we've skipped internationalisation. */}
-                <Text size={1}>{`Select all ${set.variants.length}`}</Text>
+                <Text size={1} as="div" trim={true}>{`Select all ${set.variants.length}`}</Text>
               </TextButton>
             ) : undefined
           }
@@ -639,7 +636,7 @@ const ManagedVariantRow: ComponentType<{
 
   const pendingReleases = useVariantPendingReleases({
     documentId: documentGroupId,
-    variantRef: document._system.variant?._ref,
+    variantId: getDocumentVersionVariantId(document),
   })
 
   const {

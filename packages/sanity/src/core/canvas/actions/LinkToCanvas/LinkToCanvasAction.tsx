@@ -15,6 +15,7 @@ import {useProjectOrganizationId} from '../../../store/project/useProjectOrganiz
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
+import {useCanvasNavigate} from '../../useCanvasNavigate'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
@@ -44,7 +45,9 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
 
   const handleCloseDialog = useCallback(() => setIsDialogOpen(false), [])
   const renderingContext = useRenderingContext()
-  const isInDashboard = renderingContext?.name === 'coreUi'
+  const isInDashboard =
+    renderingContext?.name === 'coreUi' || renderingContext?.name === 'messageBus'
+  const {isAvailable} = useCanvasNavigate()
   const isVersionDocument = Boolean(props.release)
   const getFormValue = useGetFormValue()
   const [formValue, setFormValue] = useState<SanityDocument | undefined>()
@@ -64,10 +67,6 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
       return {disabled: true, reason: t('action.link-document-disabled.missing-permissions')}
     }
 
-    if (!isInDashboard) {
-      return {disabled: true, reason: t('action.link-document-disabled.not-in-dashboard')}
-    }
-
     if (isVersionDocument) {
       return {disabled: true, reason: t('action.link-document-disabled.version-document')}
     }
@@ -77,7 +76,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
     }
 
     return {disabled: false, reason: undefined}
-  }, [isVersionDocument, t, props.initialValueResolved, isInDashboard, organizationId])
+  }, [isVersionDocument, t, props.initialValueResolved, organizationId])
 
   useEffect(() => {
     if (isLinked) {
@@ -93,8 +92,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
   // Release documents are not yet supported in Canvas
   if (isReleaseDocument(selectedPerspective)) return null
 
-  // Hide the action in the dashboard - TODO Remove this once dashboard is released
-  if (!isInDashboard) return null
+  if (!isInDashboard || !isAvailable) return null
 
   return {
     disabled: disabled.disabled,

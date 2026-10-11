@@ -1,5 +1,5 @@
-import {Stack} from '@sanity/ui'
 import {lazy, Suspense} from 'react'
+import {VStack} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -38,7 +38,7 @@ export function ImageInputHotspotInput(props: {
       width={1}
     >
       <PresenceOverlay>
-        <Stack gap={5}>
+        <VStack gap={5}>
           {withImageTool && value?.asset && (
             <Suspense fallback={<LoadingBlock />}>
               <ImageToolInput
@@ -50,7 +50,7 @@ export function ImageInputHotspotInput(props: {
               />
             </Suspense>
           )}
-        </Stack>
+        </VStack>
       </PresenceOverlay>
     </Dialog>
   )

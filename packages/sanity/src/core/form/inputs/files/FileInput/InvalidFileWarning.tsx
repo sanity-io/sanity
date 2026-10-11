@@ -1,7 +1,7 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Stack, Text} from '@sanity/ui'
-import {Flex, Box} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -20,12 +20,12 @@ export function InvalidFileWarning({onClearValue}: Props) {
             <WarningOutlineIcon />
           </Text>
         </Box>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Text size={1} weight="medium">
             {t('inputs.file.invalid-file-warning.title')}
           </Text>
           <Text size={1}>{t('inputs.file.invalid-file-warning.description')}</Text>
-        </Stack>
+        </VStack>
       </Flex>
       <Button
         icon={ResetIcon}

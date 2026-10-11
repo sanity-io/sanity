@@ -8,17 +8,13 @@ pids
 *.pid
 *.seed
 
-# Combined blobs used from Vitest sharding
-.vitest-reports
-
-# Vitest browser-mode artifacts (auto-captured screenshots / attachments)
+# Vitest artifact root (since Vitest 5): blob reports used for sharding
+# (`.vitest/blob/`), browser-mode attachments and failure screenshots
+# (`.vitest/attachments/`), and Chromatic archives captured by
+# @chromatic-com/vitest (CHROMATIC=1 runs), plus Chromatic CLI logs/diagnostics
+.vitest/
 **/__browser-tests__/**/__screenshots__/
 **/__tests__/**/__screenshots__/
-.vitest-attachments
-
-# Chromatic archives captured by @chromatic-com/vitest (CHROMATIC=1 runs)
-# and Chromatic CLI logs/diagnostics
-.vitest/
 chromatic.log
 chromatic-diagnostics.json
 

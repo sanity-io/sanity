@@ -4,7 +4,7 @@ import {CommentsEnabledProvider} from '../../context/enabled/CommentsEnabledProv
 import {CommentsSelectedPathProvider} from '../../context/selected-path/CommentsSelectedPathProvider'
 import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 
-export function CommentsDocumentLayout(props: DocumentLayoutProps) {
+export default function CommentsDocumentLayout(props: DocumentLayoutProps) {
   const {documentId, documentType} = props
   const parentContext = useCommentsEnabled()
 

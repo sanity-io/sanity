@@ -13,6 +13,7 @@ import {getOrderingMenuItemsForSchemaType, MenuItemBuilder} from './MenuItem'
 import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {type Collection} from './StructureNodes'
 import {type StructureContext} from './types'
+import {markDefaultDocumentTypeChild} from './util/defaultDocumentTypeChild'
 
 const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
 
@@ -28,7 +29,19 @@ function isList(collection: Collection): collection is List {
   return collection.type === 'list'
 }
 
-function getDocumentTypes({schema}: StructureContext): string[] {
+function getDocumentTypes({schema, document}: StructureContext): string[] {
+  // Schema types used by at least one singleton definition are excluded from
+  // default document lists. Developers surface singletons explicitly via
+  // `S.document().singleton()`, `S.listItem().singleton()`, or
+  // `S.list().singletons()`.
+  //
+  // `S.documentTypeList(typeName)`, which is never filtered, can be used to
+  // create document list showing singleton and non-singleton documents that
+  // share a schema type.
+  const singletonSchemaTypeNames = new Set(
+    document.singletons.map((singleton) => singleton.schemaType),
+  )
+
   return schema
     .getTypeNames()
     .filter((n) => {
@@ -36,6 +49,7 @@ function getDocumentTypes({schema}: StructureContext): string[] {
       return schemaType && isDocumentType(schemaType)
     })
     .filter((n) => !isBundledDocType(n))
+    .filter((n) => !singletonSchemaTypeNames.has(n))
 }
 
 export function getDocumentTypeListItems(context: StructureContext): ListItemBuilder[] {
@@ -60,19 +74,21 @@ export function getDocumentTypeListItem(
     .id(typeName)
     .title(title)
     .schemaType(type)
-    .child((id, childContext) => {
-      const parent = childContext.parent as Collection
-      const parentItem = isList(parent)
-        ? (parent.items.find((item) => item.id === id) as ListItem)
-        : null
+    .child(
+      markDefaultDocumentTypeChild((id, childContext) => {
+        const parent = childContext.parent as Collection
+        const parentItem = isList(parent)
+          ? (parent.items.find((item) => item.id === id) as ListItem)
+          : null
 
-      let list = getDocumentTypeList(context, typeName)
-      if (parentItem && parentItem.title) {
-        list = list.title(parentItem.title)
-      }
+        let list = getDocumentTypeList(context, typeName)
+        if (parentItem && parentItem.title) {
+          list = list.title(parentItem.title)
+        }
 
-      return list
-    })
+        return list
+      }, typeName),
+    )
 }
 
 export function getDocumentTypeList(
@@ -93,7 +109,7 @@ export function getDocumentTypeList(
 
   const title = type.title || startCase(typeName)
 
-  return new DocumentTypeListBuilder(context)
+  let list: DocumentListBuilder = new DocumentTypeListBuilder(context)
     .id(spec.id || typeName)
     .title(spec.title || title)
     .filter('_type == $type')
@@ -151,4 +167,16 @@ export function getDocumentTypeList(
         // Create new (from menu) will be added in serialization step of GenericList
       ],
     )
+
+  if (spec.minWidth !== undefined) {
+    list = list.minWidth(spec.minWidth)
+  }
+  if (spec.currentMaxWidth !== undefined) {
+    list = list.currentMaxWidth(spec.currentMaxWidth)
+  }
+  if (spec.maxWidth !== undefined) {
+    list = list.maxWidth(spec.maxWidth)
+  }
+
+  return list
 }

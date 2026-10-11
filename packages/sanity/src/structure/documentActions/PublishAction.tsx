@@ -24,6 +24,7 @@ import {
   getTargetScopeId,
   getTargetSiblings,
 } from '../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../core/perspective/getDefaultVariant'
 import {isPublishedPerspective} from '../../core/releases/util/util'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
@@ -58,7 +59,8 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 /** @internal */
 export const usePublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release, version} = props
-  const {selectedPerspective, selectedVariantName} = usePerspective()
+  const {selectedPerspective, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
