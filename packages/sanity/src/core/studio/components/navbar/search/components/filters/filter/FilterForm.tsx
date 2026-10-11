@@ -28,6 +28,7 @@ interface ErrorParams {
 
 export function FilterForm({filter}: FilterFormProps) {
   const [errorParams, setErrorParams] = useState<ErrorParams | null>(null)
+  const [userInteracted, setUserInteracted] = useState(false)
   const {
     dispatch,
     state: {definitions, fullscreen},
@@ -60,6 +61,10 @@ export function FilterForm({filter}: FilterFormProps) {
     setErrorParams(params)
   }, [])
 
+  const handleUserInteraction = useCallback(() => {
+    setUserInteracted(true)
+  }, [])
+
   const Component = operator?.inputComponent
 
   if (errorParams) {
@@ -70,16 +75,22 @@ export function FilterForm({filter}: FilterFormProps) {
   return (
     <ErrorBoundary onCatch={handleCatchError}>
       <FocusLock autoFocus={!supportsTouch} returnFocus>
-        <Flex flexDirection="column-reverse">
+        <Flex
+          flexDirection="column-reverse"
+          onKeyDownCapture={handleUserInteraction}
+          onPointerDownCapture={handleUserInteraction}
+        >
           {/* Value */}
           {Component && (
             <Card borderTop padding={3}>
               {/* Operator input components are code-split (see definitions/operators/lazyInputComponents).
                   FocusLock autofocuses when it mounts, before the input has loaded, so once the input
                   is in the DOM focus is moved into it; the wrapper sits outside the operator-keyed input
-                  and therefore only does this once, not on every operator change. */}
+                  and therefore only does this once, not on every operator change. The operator menu and
+                  the remove button are interactive during the load, so any interaction before the input
+                  arrives cancels the move rather than pulling focus away from what the user is using. */}
               <Suspense fallback={<LoadingBlock />}>
-                <MoveFocusInside disabled={supportsTouch}>
+                <MoveFocusInside disabled={supportsTouch || userInteracted}>
                   <Component
                     // re-render on new operators
                     key={filter.operatorType}
