@@ -118,7 +118,7 @@
   },
   "peerDependencies": {
     "react": "^19.2.2",
-    "sanity": "^6.17.0"
+    "sanity": "^6.17.0-0"
   },
   "browserslist": [
     "node >=22.12",
