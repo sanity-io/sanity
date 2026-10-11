@@ -121,7 +121,14 @@ export default defineConfig({
     expect: {poll: {timeout: 10_000}},
     browser: {
       enabled: true,
-      provider: playwright(),
+      // Pin the browser time zone the way `test/setup/global.ts` pins `TZ` for
+      // the jsdom suite. Anything rendered through `Intl.DateTimeFormat`
+      // without an explicit `timeZone` (asset rows, document timestamps)
+      // otherwise reads the host clock's zone, so the same fixture produces
+      // different text locally than on the CI runner that captures the
+      // Chromatic baselines. UTC is what that runner already uses, so pinning
+      // it leaves existing baselines untouched.
+      provider: playwright({contextOptions: {timezoneId: 'UTC'}}),
       headless: true,
       commands: {readFileAsBase64},
       // Vitest 5 made `getByText`/`getByRole({name})`/`getByLabelText`/... match the full,
