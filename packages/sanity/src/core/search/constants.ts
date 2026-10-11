@@ -1,5 +1,6 @@
-import {AGENT_BUNDLE_PREFIX} from '../store/agent/createAgentBundlesStore'
-import {VERSION_FOLDER} from '../util/draftUtils'
+import {VERSION_FOLDER} from '@sanity/client/csm'
+
+import {AGENT_BUNDLE_PREFIX} from '../store/agent/constants'
 
 // Findability version, prepended to every search query for future measurement
 export const FINDABILITY_MVI = 4
