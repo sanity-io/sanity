@@ -1,3 +1,4 @@
+import {ClientError, ServerError} from '@sanity/client'
 import {
   type TransactionLogEventWithMutations,
   type TransactionLogEventWithEffects,
@@ -17,7 +18,37 @@ export async function getJsonStream(
     ? {headers: {...DEFAULT_STUDIO_CLIENT_HEADERS, Authorization: `Bearer ${token}`}}
     : {credentials: 'include', headers: DEFAULT_STUDIO_CLIENT_HEADERS}
   const response = await fetch(url, options)
+  if (!response.ok) {
+    throw await toHttpError(response, url)
+  }
   return getStream(response)
+}
+
+/**
+ * Builds the same error `@sanity/client` throws for a non-OK response, so callers (and the studio's
+ * request-error handler, which only claims `HttpError`s) can treat translog failures like any other
+ * API failure: `statusCode`, `response.headers` (e.g. `retry-after`) and the API's error message.
+ */
+async function toHttpError(response: Response, url: string): Promise<Error> {
+  const text = await response.text()
+  const headers = Object.fromEntries(response.headers.entries())
+  let body: unknown = text
+  if ((headers['content-type'] || '').includes('application/json')) {
+    try {
+      body = JSON.parse(text)
+    } catch {
+      // keep the raw text
+    }
+  }
+  const res = {
+    statusCode: response.status,
+    statusMessage: response.statusText,
+    headers,
+    body,
+    url,
+    method: 'GET',
+  }
+  return response.status >= 500 ? new ServerError(res) : new ClientError(res)
 }
 
 function getStream(response: Response): ReadableStream<StreamResult> {

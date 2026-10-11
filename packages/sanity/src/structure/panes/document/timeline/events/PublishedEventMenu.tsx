@@ -1,4 +1,4 @@
-import {type BadgeTone, Flex, Text, usePortal} from '@sanity/ui'
+import {type BadgeTone, Text, usePortal} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -23,6 +23,7 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
+import {Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
@@ -117,7 +118,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                 style={{textDecoration: 'none'}}
               >
                 <MenuItem padding={3}>
-                  <Flex align={'center'} justify="flex-start">
+                  <Flex alignItems={'center'} justifyContent="flex-start">
                     <Text size={1} style={{textDecoration: 'none'}}>
                       <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                         {({displayTitle}) => (
@@ -137,7 +138,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                 </MenuItem>
               </IntentLink>
               <MenuItem onClick={handleOpenReleaseDocument}>
-                <Flex align={'center'} justify="flex-start">
+                <Flex alignItems={'center'} justifyContent="flex-start">
                   <Text size={1}>
                     <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                       {({displayTitle}) => (
@@ -158,7 +159,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
             </>
           ) : (
             <MenuItem onClick={handleOpenDraftDocument} disabled={!event.versionRevisionId}>
-              <Flex align={'center'}>
+              <Flex alignItems={'center'}>
                 <Text size={1}>
                   <Translate
                     components={{VersionBadge}}

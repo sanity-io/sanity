@@ -1,0 +1,19 @@
+import {type LocaleResourceBundle} from '../../i18n/types'
+
+/**
+ * The locale namespace for the comments plugin
+ *
+ * @public
+ */
+export const commentsLocaleNamespace = 'comments' as const
+
+/**
+ * The default locale bundle for the comments plugin, which is US English.
+ *
+ * @internal
+ */
+export const commentsUsEnglishLocaleBundle: LocaleResourceBundle = {
+  locale: 'en-US',
+  namespace: commentsLocaleNamespace,
+  resources: () => import('./resources'),
+}

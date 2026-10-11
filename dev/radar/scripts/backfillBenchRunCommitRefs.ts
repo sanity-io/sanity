@@ -16,6 +16,7 @@ import process from 'node:process'
 import {parseArgs} from 'node:util'
 
 import {readEnv} from '@repo/utils'
+import {gitCommitId} from '@repo/utils/radar-ids'
 import {createClient} from '@sanity/client'
 
 const METRICS_PROJECT_ID = 'mhfozd0z'
@@ -41,7 +42,9 @@ async function main(): Promise<void> {
   const docs = await client.fetch<{_id: string; sha: string | null}[]>(
     '*[_type == "benchRun" && !defined(git.commit)]{_id, "sha": git.sha}',
   )
-  const patchable = docs.filter((doc) => doc.sha && FULL_SHA_RE.test(doc.sha))
+  const patchable = docs.filter(
+    (doc): doc is {_id: string; sha: string} => !!doc.sha && FULL_SHA_RE.test(doc.sha),
+  )
   const skipped = docs.length - patchable.length
   console.log(
     `${docs.length} benchRun doc(s) missing git.commit; ${patchable.length} patchable` +
@@ -50,7 +53,7 @@ async function main(): Promise<void> {
 
   if (values['dry-run']) {
     for (const doc of patchable.slice(0, 5))
-      console.log(`  would patch ${doc._id} -> gitCommit-${doc.sha}`)
+      console.log(`  would patch ${doc._id} -> ${gitCommitId(doc.sha)}`)
     return
   }
   if (patchable.length === 0) return
@@ -61,7 +64,7 @@ async function main(): Promise<void> {
     let transaction = client.transaction()
     for (const doc of patchable.slice(offset, offset + BATCH)) {
       transaction = transaction.patch(doc._id, {
-        set: {'git.commit': {_type: 'reference', _ref: `gitCommit-${doc.sha}`, _weak: true}},
+        set: {'git.commit': {_type: 'reference', _ref: gitCommitId(doc.sha), _weak: true}},
       })
     }
     await transaction.commit()

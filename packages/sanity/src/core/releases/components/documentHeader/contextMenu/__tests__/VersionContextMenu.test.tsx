@@ -45,13 +45,13 @@ const createScheduledDraftMenuActions = () => ({
       'disabled': false,
       'data-testid': 'publish-now-menu-item',
     },
-    editSchedule: {
+    pauseToEdit: {
       'icon': undefined,
-      'text': 'Edit schedule',
+      'text': 'Pause to edit',
       'tone': 'default' as const,
       'onClick': vi.fn(),
       'disabled': false,
-      'data-testid': 'edit-schedule-menu-item',
+      'data-testid': 'pause-to-edit-menu-item',
     },
     schedulePublish: {
       'icon': undefined,
@@ -277,7 +277,7 @@ describe('VersionContextMenu', () => {
     await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.getByTestId('publish-now-menu-item')).toBeInTheDocument()
-    expect(screen.getByTestId('edit-schedule-menu-item')).toBeInTheDocument()
+    expect(screen.getByTestId('pause-to-edit-menu-item')).toBeInTheDocument()
     expect(screen.getByTestId('delete-schedule-menu-item')).toBeInTheDocument()
   })
 
@@ -307,7 +307,7 @@ describe('VersionContextMenu', () => {
     await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.queryByTestId('publish-now-menu-item')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('edit-schedule-menu-item')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('pause-to-edit-menu-item')).not.toBeInTheDocument()
     expect(screen.queryByTestId('delete-schedule-menu-item')).not.toBeInTheDocument()
   })
 
@@ -337,7 +337,7 @@ describe('VersionContextMenu', () => {
     await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.getByTestId('publish-now-menu-item')).toBeInTheDocument()
-    expect(screen.queryByTestId('edit-schedule-menu-item')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('pause-to-edit-menu-item')).not.toBeInTheDocument()
     expect(screen.queryByTestId('delete-schedule-menu-item')).not.toBeInTheDocument()
   })
 

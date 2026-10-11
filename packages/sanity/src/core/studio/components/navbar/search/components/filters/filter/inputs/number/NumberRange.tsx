@@ -1,6 +1,6 @@
-import {Flex, TextInput} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'

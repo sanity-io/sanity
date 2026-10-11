@@ -59,6 +59,10 @@
     ],
     "boundaries/files": [
       {"category": "sanity", "pattern": "src/_exports/index.ts"},
+      {
+        "category": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver",
+        "pattern": "src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts"
+      },
       {"category": "sanity/_internal", "pattern": "src/_exports/_internal.ts"},
       {"category": "sanity/cli", "pattern": "src/_exports/cli.ts"},
       {"category": "sanity/desk", "pattern": "src/_exports/desk.ts"},
@@ -611,6 +615,27 @@
                     {"file": {"categories": "sanity"}},
                     {"element": {"type": "sanity/_internal__contents"}}
                   ]
+                }
+              },
+              {
+                // The internals entry re-exports @internal declarations from every area. Nothing
+                // inside the package imports it: src/core, src/structure and src/router keep
+                // using relative imports, so the entry never becomes part of an import cycle.
+                "from": {
+                  "file": {
+                    "categories": "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"
+                  }
+                },
+                "allow": {
+                  "to": {
+                    "element": {
+                      "type": [
+                        "sanity__contents",
+                        "sanity/structure__contents",
+                        "sanity/router__contents"
+                      ]
+                    }
+                  }
                 }
               },
               {
@@ -1283,14 +1308,9 @@
       }
     },
     {
-      // Browser-mode tests and their story/helper files render real Studio inputs and may import
-      // the public API and test-only deps freely
-      "files": [
-        "packages/sanity/**/*.browser.test.{ts,tsx}",
-        "packages/sanity/src/core/comments/components/pte/comment-input/__tests__/*Story.tsx",
-        "packages/sanity/src/core/form/inputs/arrays/__tests__/*Story.tsx",
-        "packages/sanity/src/core/form/inputs/PortableText/__tests__/**/*Story.tsx"
-      ],
+      // Browser-mode tests (harness components included) render real Studio inputs and may
+      // import the public API and test-only deps freely
+      "files": ["packages/sanity/**/*.browser.test.{ts,tsx}"],
       "rules": {
         "eslint/no-restricted-imports": "off"
       }

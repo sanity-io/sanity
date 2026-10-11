@@ -30,7 +30,7 @@ function SetActiveDocumentInner(document: ActiveDocument) {
   return null
 }
 
-export function SetActiveDocument(document: ActiveDocument) {
+export default function SetActiveDocument(document: ActiveDocument) {
   const {enabled} = useTasksEnabled()
   if (!enabled) return null
   return <SetActiveDocumentInner {...document} />

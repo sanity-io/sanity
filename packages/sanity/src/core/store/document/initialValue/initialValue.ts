@@ -41,7 +41,7 @@ const LOADING_MSG: InitialValueLoadingMsg = {type: 'loading'}
 export function getInitialValueStream(
   schema: Schema,
   initialValueTemplates: Template[],
-  documentPreviewStore: DocumentPreviewStore,
+  documentPreviewStore: Pick<DocumentPreviewStore, 'observePaths'>,
   opts: InitialValueOptions,
   context: InitialValueResolverContext,
 ): Observable<InitialValueMsg> {

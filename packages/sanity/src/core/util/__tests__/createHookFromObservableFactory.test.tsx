@@ -79,8 +79,6 @@ describe('createHookFromObservableFactory', () => {
     await waitFor(() =>
       expect(renderTimeline[renderTimeline.length - 1]).toEqual([{value: 'hello, world'}, false]),
     )
-    // One factory call per distinct arg — react-rx@4.2.5 fixed a useObservable cache
-    // leak that previously caused duplicate subscriptions (and thus double calls).
     expect(observableFactory).toHaveBeenCalledTimes(1)
 
     const timelineLengthBeforeArgChange = renderTimeline.length
@@ -137,7 +135,6 @@ describe('createHookFromObservableFactory', () => {
     // Wait for the initial render cycle to settle with the resolved value
     await waitFor(() => expect(syncRenders).toBeGreaterThan(1))
     await waitFor(() => expect(deferRenders).toBeGreaterThan(0))
-    // One factory call per distinct arg (see react-rx@4.2.5 cache-leak fix note above).
     expect(observableFactory).toHaveBeenCalledTimes(1)
     // Deferred child should render fewer or equal times than the sync parent
     expect(deferRenders).toBeLessThanOrEqual(syncRenders)

@@ -1,8 +1,10 @@
 import {type DocumentId, getPublishedId} from '@sanity/id-utils'
 import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
 
+import {validationMarkerCodes} from '../codes'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
+import {typeString} from '../util/typeString'
 import {genericValidators, SLOW_VALIDATOR_TIMEOUT} from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']
@@ -23,7 +25,10 @@ export const objectValidators: Validators = {
     const keys = value && Object.keys(value).filter((key) => !metaKeys.includes(key))
 
     if (value === undefined || (keys && keys.length === 0)) {
-      return message || i18n.t('validation:generic.required', {context: 'object'})
+      return {
+        code: validationMarkerCodes.valueRequired,
+        message: message || i18n.t('validation:generic.required', {context: 'object'}),
+      }
     }
 
     return true
@@ -37,7 +42,11 @@ export const objectValidators: Validators = {
     const {type, document, getDocumentExists, i18n} = context
 
     if (!isReference(value)) {
-      return message || i18n.t('validation:object.not-reference')
+      return {
+        code: validationMarkerCodes.referenceInvalid,
+        details: {actualType: typeString(value)},
+        message: message || i18n.t('validation:object.not-reference'),
+      }
     }
 
     if (!type) {
@@ -57,9 +66,13 @@ export const objectValidators: Validators = {
       // a document should be able to reference itself without first being published
       return true
     }
-    const exists = await getDocumentExists({id: value._ref})
+    const exists = await getDocumentExists({id: value._ref, signal: context.signal})
     if (!exists) {
-      return i18n.t('validation:object.reference-not-published', {documentId: value._ref})
+      return {
+        code: validationMarkerCodes.referenceNotPublished,
+        details: {referenceId: value._ref},
+        message: i18n.t('validation:object.reference-not-published', {documentId: value._ref}),
+      }
     }
 
     return true
@@ -71,6 +84,8 @@ export const objectValidators: Validators = {
         __internal_metadata: {
           name: 'assetRequired',
         },
+        code: validationMarkerCodes.assetRequired,
+        details: {assetType: flag.assetType},
         message:
           message || i18n.t('validation:object.asset-required', {context: flag.assetType || ''}),
       }
@@ -99,7 +114,10 @@ export const objectValidators: Validators = {
     // If the value is not an object or does not have a media reference, we return an error message.
     // It should not be allowed to use regular dataset assets with this validator.
     if (!value || !value.media || !value.media._ref) {
-      return context.i18n.t('validation:object.not-media-library-asset')
+      return {
+        code: validationMarkerCodes.mediaInvalidReference,
+        message: context.i18n.t('validation:object.not-media-library-asset'),
+      }
     }
 
     let result: CustomValidatorResult = true
@@ -116,12 +134,17 @@ export const objectValidators: Validators = {
           {
             id: documentId,
           },
+          {signal: context.signal},
         )
       if (!asset) {
         console.warn(
           `${context.i18n.t('validation:object.media-not-found')}\nAsset ID: ${value.media._ref}`,
         )
-        return context.i18n.t('validation:object.media-not-found')
+        return {
+          code: validationMarkerCodes.mediaNotFound,
+          details: {referenceId: value.media._ref},
+          message: context.i18n.t('validation:object.media-not-found'),
+        }
       }
 
       result = await fn(

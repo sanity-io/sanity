@@ -1,4 +1,4 @@
-import {type ComponentType, type CSSProperties, useMemo, useState} from 'react'
+import {type ComponentType, type CSSProperties, Suspense, useMemo, useState} from 'react'
 
 import {type PreviewProps} from '../../components/previews/types'
 import {type RenderPreviewCallbackProps} from '../../form/types/renderCallback'
@@ -8,6 +8,7 @@ import {useValuePreview} from '../useValuePreview'
 import {useVisibility} from '../useVisibility'
 import {_HIDE_DELAY} from './_constants'
 import {_extractUploadState} from './_extractUploadState'
+import {SanityDefaultPreview} from './SanityDefaultPreview'
 
 /**
  * This component is responsible for converting renderPreview() calls into an element.
@@ -91,17 +92,37 @@ export function PreviewLoader(
     return preview?.value?.media as any
   }, [preview, schemaType, uploadState, t])
 
+  // While a lazy preview component loads: the default preview in its placeholder state, with the
+  // resolved value, so the fallback has the rows and media slot of the preview that replaces it.
+  // A resolved value without a subtitle passes `null`, which the placeholder reads as "no second
+  // row"; `undefined` means the value itself is still loading.
+  const placeholderSubtitle = preview?.value ? (preview.value.subtitle ?? null) : undefined
+
   return (
     <div ref={setElement} style={style}>
-      <Component
-        {...restProps}
-        {...(preview?.value || {})}
-        media={media}
-        error={preview?.error}
-        isPlaceholder={preview?.isLoading}
-        layout={layout}
-        schemaType={schemaType}
-      />
+      <Suspense
+        fallback={
+          <SanityDefaultPreview
+            {...restProps}
+            {...(preview?.value || {})}
+            isPlaceholder
+            layout={layout}
+            media={media}
+            schemaType={schemaType}
+            subtitle={placeholderSubtitle}
+          />
+        }
+      >
+        <Component
+          {...restProps}
+          {...(preview?.value || {})}
+          media={media}
+          error={preview?.error}
+          isPlaceholder={preview?.isLoading}
+          layout={layout}
+          schemaType={schemaType}
+        />
+      </Suspense>
     </div>
   )
 }

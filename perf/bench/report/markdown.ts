@@ -1,3 +1,4 @@
+import {settleMismatch} from '../stats/settle'
 import {type BenchRunDocument, type ScenarioReport} from './types'
 
 /** Signed ms delta, e.g. "+4.2ms" / "-1.0ms". */
@@ -101,11 +102,33 @@ export function renderMarkdownReport(
 
   const link = dashboardLink(run)
 
+  // Settle mode: expected-vs-observed per scenario. Strictly conditional —
+  // runs without settle reports render exactly as before. A mismatch in
+  // EITHER direction gets the warning: "expected to settle but didn't" is a
+  // render-loop regression; "expected red but settled" means a hook hardening
+  // landed and the scenario's expectedToSettle flag must be flipped.
+  const settleScenarios = run.scenarios.filter((scenario) => scenario.mode === 'settle')
+  const settleLines = settleScenarios.map((scenario) => {
+    const expected = scenario.settleExpectation?.expectedToSettle ?? true
+    const settledMetric = scenario.metrics.find((metric) => metric.label === 'settled sessions')
+    const sessions = settledMetric?.experiment.sessions ?? []
+    const settledCount = sessions.filter(([value]) => value === 1).length
+    const mismatch = settleMismatch({
+      expectedToSettle: expected,
+      settledCount,
+      sessionCount: sessions.length,
+    })
+    const expectation = expected ? 'expected: settles' : 'expected: does not settle (known bug)'
+    const marker = mismatch ? ' ⚠️ **expectation mismatch**' : ''
+    return `- \`${scenario.scenario}\` settled ${settledCount}/${sessions.length} session(s) — ${expectation}${marker}`
+  })
+
   return [
     '### ⚡ Studio performance benchmark',
     '',
     headline,
     ...(regressionLines.length > 0 ? ['', ...regressionLines, '', regressionChart(regressed)] : []),
+    ...(settleLines.length > 0 ? ['', '**Settle** (post-open quiescence):', ...settleLines] : []),
     // A failed shard uploads no results — say so loudly instead of staying
     // silent about a scenario that never ran
     ...(missing.length > 0

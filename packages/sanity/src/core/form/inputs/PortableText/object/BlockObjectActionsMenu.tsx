@@ -4,7 +4,7 @@ import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {isReference, type PortableTextBlock} from '@sanity/types'
-import {Flex, useGlobalKeyDown} from '@sanity/ui'
+import {useGlobalKeyDown} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {
   type ComponentPropsWithoutRef,
@@ -18,7 +18,7 @@ import {
   useRef,
 } from 'react'
 import {IntentLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'

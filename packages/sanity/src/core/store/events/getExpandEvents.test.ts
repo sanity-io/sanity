@@ -3,20 +3,51 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {collectEmissions} from './__fixtures__/collect.fixture'
 import {
   createDocumentVersionEvent,
+  deleteDocumentVersionEvent,
   DRAFT_ID,
+  editDocumentVersionEvent,
   minutesAfterBase,
   publishDocumentVersionEvent,
 } from './__fixtures__/events.fixture'
 import {createMockClient} from './__fixtures__/mockClient'
 import {editTransaction} from './__fixtures__/transactions.fixture'
 import {getDocumentTransactions} from './getDocumentTransactions'
-import {getExpandEvents} from './getExpandEvents'
+import {getExpandEvents, isExpandableEvent} from './getExpandEvents'
 
 vi.mock('./getDocumentTransactions', () => ({
   getDocumentTransactions: vi.fn(),
 }))
 
 const mockGetDocumentTransactions = vi.mocked(getDocumentTransactions)
+
+describe('isExpandableEvent', () => {
+  it('accepts publish and delete events carrying versionRevisionId and creationEvent', () => {
+    const creationEvent = createDocumentVersionEvent()
+    expect(
+      isExpandableEvent(publishDocumentVersionEvent({versionRevisionId: 'rev', creationEvent})),
+    ).toBe(true)
+    expect(
+      isExpandableEvent(deleteDocumentVersionEvent({versionRevisionId: 'rev', creationEvent})),
+    ).toBe(true)
+  })
+
+  it('rejects events missing the creation event or the version revision', () => {
+    expect(isExpandableEvent(publishDocumentVersionEvent())).toBe(false)
+    expect(
+      isExpandableEvent(
+        publishDocumentVersionEvent({
+          versionRevisionId: undefined,
+          creationEvent: createDocumentVersionEvent(),
+        }),
+      ),
+    ).toBe(false)
+  })
+
+  it('rejects other event types', () => {
+    expect(isExpandableEvent(editDocumentVersionEvent())).toBe(false)
+    expect(isExpandableEvent(createDocumentVersionEvent())).toBe(false)
+  })
+})
 
 describe('getExpandEvents', () => {
   beforeEach(() => {

@@ -1,7 +1,8 @@
 /**
  * Pure helpers for the Releases tool: external URLs per release and the
  * regression attribution (which release first shipped each confirmed
- * regression, per the bisect sessions).
+ * regression, which ones still carried it and which one fixed it, per the
+ * bisect sessions).
  */
 import {type BisectCommit, type ReleaseTag, releasesContaining} from '../bisect/bisect'
 
@@ -65,22 +66,240 @@ export function baseVersionOf(
   return baseTagOf(commitsBySha, tagBySha, tag)?.replace(/^v/, '')
 }
 
+/** A confirmed regression as the release attribution needs it. */
+export interface RegressionSpan {
+  firstBadSha: string
+  /** Release tag it was fixed in, when known. */
+  fixedIn?: string | null
+}
+
 /**
- * Count confirmed regressions per INTRODUCING release: for each first-bad
- * sha from a regression-flagged bisect session, the oldest release whose
- * ancestry contains it gets the blame. Shas no release contains (unreleased
- * regressions) are not counted here.
+ * What one release has to say about the confirmed regressions: the ones it
+ * INTRODUCED (first shipped the culprit — the blame), the ones it INHERITED
+ * (introduced by an earlier release and not yet fixed when it shipped) and
+ * the ones it FIXED. A regression therefore marks a span of releases —
+ * introducing release, every release after it, up to and excluding the one
+ * that fixed it (every synced release when it is not fixed yet) — and the
+ * three lists keep the span's ends distinguishable from its middle.
  */
-export function regressionCountByTag<T extends ReleaseTag>(
+export interface ReleaseRegressions<R> {
+  introduced: R[]
+  inherited: R[]
+  fixed: R[]
+}
+
+/**
+ * Group confirmed regressions by release along their span: for each item's
+ * first-bad sha, the oldest release whose ancestry contains it gets the
+ * blame (`introduced`); every other release containing the sha carries it
+ * (`inherited`) until the fix ships; the release named by `fixedIn` gets it
+ * under `fixed`. Containment of the fix is ancestry too, so a release that
+ * shipped before the fix keeps the regression however its version compares
+ * (mirrors the blame side); when the fix tag's commit is outside the synced
+ * chain — no ancestry to walk — every release at or above it by semver
+ * counts as fixed instead, so a stored fix is never silently ignored. Items
+ * no release contains (unreleased regressions) are dropped. Order within a
+ * list follows the input.
+ */
+export function regressionsByTag<T extends ReleaseTag, R extends RegressionSpan>(
   commitsBySha: Map<string, BisectCommit>,
   tags: T[],
-  firstBadShas: string[],
-): Map<string, number> {
-  const counts = new Map<string, number>()
-  for (const sha of firstBadShas) {
-    const introducing = releasesContaining(commitsBySha, tags, sha)[0]
-    if (!introducing) continue
-    counts.set(introducing.tag, (counts.get(introducing.tag) ?? 0) + 1)
+  regressions: R[],
+): Map<string, ReleaseRegressions<R>> {
+  const byTag = new Map<string, ReleaseRegressions<R>>()
+  const entry = (tag: string) => {
+    const existing = byTag.get(tag)
+    if (existing) return existing
+    const created = {introduced: [], inherited: [], fixed: []}
+    byTag.set(tag, created)
+    return created
   }
-  return counts
+  const tagByName = new Map(tags.map((tag) => [tag.tag, tag]))
+  for (const regression of regressions) {
+    const [introducing, ...later] = releasesContaining(commitsBySha, tags, regression.firstBadSha)
+    if (!introducing) continue
+    entry(introducing.tag).introduced.push(regression)
+
+    const fixTag = regression.fixedIn ? tagByName.get(regression.fixedIn) : undefined
+    const fixedTags = fixTag ? releasesFixedBy(commitsBySha, tags, fixTag) : new Set<string>()
+    if (fixTag) entry(fixTag.tag).fixed.push(regression)
+    for (const release of later) {
+      if (fixedTags.has(release.tag)) continue
+      entry(release.tag).inherited.push(regression)
+    }
+  }
+  return byTag
+}
+
+/**
+ * The releases that ship the fix tagged `fixTag`: those whose ancestry
+ * contains its commit, or — when that commit is not in the synced chain —
+ * those at or above it by semver.
+ */
+function releasesFixedBy<T extends ReleaseTag>(
+  commitsBySha: Map<string, BisectCommit>,
+  tags: T[],
+  fixTag: T,
+): Set<string> {
+  const byAncestry = releasesContaining(commitsBySha, tags, fixTag.sha)
+  if (byAncestry.length > 0) return new Set(byAncestry.map((tag) => tag.tag))
+  return new Set(
+    tags
+      .filter((candidate) => compareTagsSemverDesc(candidate.tag, fixTag.tag) <= 0)
+      .map((tag) => tag.tag),
+  )
+}
+
+/**
+ * Semver order for `vMAJOR.MINOR.PATCH[-prerelease]` tags, newest first —
+ * the releases list is a version list, not a timeline, and tag dates put a
+ * maintenance patch cut last week above the minor it backports from.
+ * A prerelease sorts below its release (`v7.0.0-rc.1` < `v7.0.0`);
+ * prerelease identifiers compare numerically when both are numbers, else as
+ * strings. Anything that doesn't parse sorts last, by tag name.
+ */
+export function compareTagsSemverDesc(a: string, b: string): number {
+  const pa = parseSemverTag(a)
+  const pb = parseSemverTag(b)
+  if (!pa && !pb) return compareCodePointsDesc(a, b)
+  if (!pa) return 1
+  if (!pb) return -1
+  for (const key of ['major', 'minor', 'patch'] as const) {
+    if (pa[key] !== pb[key]) return pb[key] - pa[key]
+  }
+  if (!pa.prerelease && !pb.prerelease) return 0
+  if (!pa.prerelease) return -1
+  if (!pb.prerelease) return 1
+  return comparePrereleaseDesc(pa.prerelease, pb.prerelease)
+}
+
+/** The major version of a `vMAJOR.MINOR.PATCH[-prerelease]` tag; undefined when it doesn't parse. */
+export function majorOf(tag: string): number | undefined {
+  return parseSemverTag(tag)?.major
+}
+
+/**
+ * Split a semver-DESC sorted tag list into its release lines, one group per
+ * major in list order. Majors are contiguous in that order, so this is a
+ * single pass; tags that don't parse sort last and form one trailing group
+ * with `major: undefined`.
+ */
+export function groupTagsByMajor<T extends {tag: string}>(
+  sortedTags: T[],
+): {major: number | undefined; tags: T[]}[] {
+  const lines: {major: number | undefined; tags: T[]}[] = []
+  for (const tag of sortedTags) {
+    const major = majorOf(tag.tag)
+    const last = lines.at(-1)
+    if (last && last.major === major) last.tags.push(tag)
+    else lines.push({major, tags: [tag]})
+  }
+  return lines
+}
+
+/**
+ * Drop the releases of end-of-life lines — for pickers (bisect endpoints,
+ * the blamed release, the fix release), not for attribution: the chain
+ * walks do not care whether a line is EOL, and hiding an EOL release from
+ * `releasesContaining` would misplace blame onto the next release.
+ */
+export function withoutEolLines<T extends {tag: string}>(
+  tags: T[],
+  eolMajors: ReadonlySet<number>,
+): T[] {
+  if (eolMajors.size === 0) return tags
+  return tags.filter((tag) => {
+    const major = majorOf(tag.tag)
+    return major === undefined || !eolMajors.has(major)
+  })
+}
+
+export type DeprecatedRunEntry<T> =
+  | {kind: 'tag'; tag: T}
+  | {kind: 'run'; tags: T[]; message: string}
+
+/**
+ * Fold consecutive releases that carry the SAME deprecation message into one
+ * entry — npm deprecations are usually stamped on a whole span of versions
+ * at once ("upgrade to 6.10.3"), and one line says it better than ten. A
+ * lone deprecated release, or one whose message differs from its
+ * neighbour's, stays a plain entry. Order is preserved.
+ */
+export function groupDeprecatedRuns<T extends {npm: {deprecated: string | null} | null}>(
+  tags: T[],
+): DeprecatedRunEntry<T>[] {
+  const entries: DeprecatedRunEntry<T>[] = []
+  let run: {tags: T[]; message: string} | undefined
+  const flush = () => {
+    if (!run) return
+    if (run.tags.length > 1) entries.push({kind: 'run', ...run})
+    else entries.push({kind: 'tag', tag: run.tags[0]})
+    run = undefined
+  }
+  for (const tag of tags) {
+    const message = tag.npm?.deprecated || undefined
+    if (!message) {
+      flush()
+      entries.push({kind: 'tag', tag})
+      continue
+    }
+    if (run && run.message === message) run.tags.push(tag)
+    else {
+      flush()
+      run = {tags: [tag], message}
+    }
+  }
+  flush()
+  return entries
+}
+
+function parseSemverTag(
+  tag: string,
+): {major: number; minor: number; patch: number; prerelease?: string} | undefined {
+  const match = /^v?(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/.exec(tag)
+  if (!match) return undefined
+  const [, major, minor, patch, prerelease] = match
+  return {major: Number(major), minor: Number(minor), patch: Number(patch), prerelease}
+}
+
+function comparePrereleaseDesc(a: string, b: string): number {
+  const as = a.split('.')
+  const bs = b.split('.')
+  for (let i = 0; i < Math.max(as.length, bs.length); i++) {
+    // A shorter identifier list is the lower precedence (rc < rc.1)
+    if (as[i] === undefined) return 1
+    if (bs[i] === undefined) return -1
+    const an = /^\d+$/.test(as[i]) ? Number(as[i]) : undefined
+    const bn = /^\d+$/.test(bs[i]) ? Number(bs[i]) : undefined
+    if (an !== undefined && bn !== undefined) {
+      if (an !== bn) return bn - an
+    } else if (an !== undefined) {
+      return 1 // numeric identifiers rank below alphanumeric ones
+    } else if (bn !== undefined) {
+      return -1
+    } else if (as[i] !== bs[i]) {
+      return compareCodePointsDesc(as[i], bs[i])
+    }
+  }
+  return 0
+}
+
+/** SemVer wants ASCII order for non-numeric identifiers; `localeCompare` is locale- and case-folding-dependent. */
+function compareCodePointsDesc(a: string, b: string): number {
+  if (a === b) return 0
+  return a < b ? 1 : -1
+}
+
+/**
+ * The Bisect tool URL for a session, from the Releases tool's own location.
+ * Tools are top-level studio routes (`<basePath>/<tool name>`), and the
+ * Bisect tool reads `?session=` from the location rather than router state,
+ * so this is plain path surgery on the current pathname: swap the trailing
+ * `releases` segment for `bisect` and append the query. Router-based
+ * resolution is not an option here — `useRouter()` inside a tool is scoped
+ * to that tool, so a `{tool: 'bisect'}` state can't be encoded from it.
+ */
+export function bisectSessionPath(pathname: string, sessionId: string): string {
+  const base = pathname.replace(/\/releases(?:\/.*)?$/, '')
+  return `${base}/bisect?session=${encodeURIComponent(sessionId)}`
 }

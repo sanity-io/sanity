@@ -1,21 +1,16 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Button, Card, Text} from '@sanity/ui'
 import {MenuButton, Menu, MenuItem} from '@sanity/ui/menu'
 import {useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
-import {baselineDetail, type DriftResult} from './drift'
+import {baselineDetail, deltaLabel, type DriftResult, noiseLabel} from './drift'
 import {backlinksFor} from './links'
 import {type DriftState} from './useDriftState'
-
-function pct(fraction: number): string {
-  const sign = fraction > 0 ? '+' : ''
-  return `${sign}${(fraction * 100).toFixed(0)}%`
-}
 
 function DriftRow(props: {
   entry: DriftResult
@@ -28,9 +23,11 @@ function DriftRow(props: {
   const {entry, showBranch, acked, onAck, onClear, onFocus} = props
   const worst = entry.baseline
   return (
-    <Flex align="center" gap={2} wrap="wrap">
+    <Flex alignItems="center" gap={2} flexWrap="wrap">
       <Badge tone={entry.direction === 'regression' ? 'critical' : 'positive'} fontSize={0}>
-        {entry.direction === 'regression' ? '↑ regression' : '↓ improvement'}
+        {/* Arrow = which way the value moved; word = what that means for
+            the metric (a UI v5 share that fell is a "↓ regression") */}
+        {entry.baseline.delta > 0 ? '↑' : '↓'} {entry.direction}
       </Badge>
       {/* The metric name navigates to its chart (one pushed history entry, so
           Back returns) — looks like a button, behaves like a link */}
@@ -40,11 +37,13 @@ function DriftRow(props: {
           ({entry.branch})
         </Text>
       )}
-      <Text size={1}>{pct(worst.deltaFraction)}</Text>
+      <Text size={1}>{deltaLabel(worst, entry.unit)}</Text>
       <Text size={0} muted>
         {formatValue(worst.baseline, entry.unit)} → {formatValue(worst.recent, entry.unit)}
         {' · '}
         {baselineDetail(worst)}
+        {' · '}
+        {noiseLabel(worst)}
       </Text>
       {backlinksFor(entry.latest).map((link) => (
         <Box
@@ -56,7 +55,7 @@ function DriftRow(props: {
           aria-label={`${link.label} (opens in a new tab)`}
         >
           <Badge fontSize={0} tone="primary">
-            <Flex align="center" gap={1}>
+            <Flex alignItems="center" gap={1}>
               <LaunchIcon />
               {link.label}
             </Flex>
@@ -91,10 +90,11 @@ function DriftRow(props: {
 }
 
 /**
- * "Changes to review" — metrics that drifted past the gate thresholds.
- * Regressions first; entries can be silenced / snoozed / marked fixed
- * (shared driftAck docs, realtime, half-lived). Acked entries collapse into
- * a reveal footer. Renders nothing when everything is steady and unacked.
+ * "Changes to review" — metrics whose recent window moved past the gate's
+ * floors *and* past their own noise (see drift.ts). Regressions first;
+ * entries can be silenced / snoozed / marked fixed (shared driftAck docs,
+ * realtime, half-lived). Acked entries collapse into a reveal footer.
+ * Renders nothing when everything is steady and unacked.
  */
 export function DriftFeed(props: {
   drift: DriftState
@@ -125,7 +125,7 @@ export function DriftFeed(props: {
       padding={3}
       radius={2}
     >
-      <Stack gap={expanded ? 3 : 0}>
+      <VStack gap={expanded ? 3 : 0}>
         {/* The whole header row is the expander */}
         <Button
           mode="bleed"
@@ -134,7 +134,7 @@ export function DriftFeed(props: {
           aria-expanded={expanded}
           title={expanded ? 'Collapse' : 'Expand'}
         >
-          <Flex align="center" gap={2} paddingY={1}>
+          <Flex alignItems="center" gap={2} paddingY={1}>
             {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
             <Text size={1} weight="semibold">
               {summary}
@@ -143,7 +143,7 @@ export function DriftFeed(props: {
         </Button>
 
         {expanded && active.length > 0 && (
-          <Stack gap={2}>
+          <VStack gap={2}>
             {active.map((entry) => (
               <DriftRow
                 key={`${entry.seriesKey}:${entry.branch}`}
@@ -155,10 +155,10 @@ export function DriftFeed(props: {
                 onFocus={() => onFocusMetric(entry.seriesKey)}
               />
             ))}
-          </Stack>
+          </VStack>
         )}
         {expanded && silenced.length > 0 && (
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Button
               mode="bleed"
               fontSize={1}
@@ -182,9 +182,9 @@ export function DriftFeed(props: {
                   onFocus={() => onFocusMetric(entry.seriesKey)}
                 />
               ))}
-          </Stack>
+          </VStack>
         )}
-      </Stack>
+      </VStack>
     </Card>
   )
 }

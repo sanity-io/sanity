@@ -187,21 +187,7 @@ export interface Rule {
   reference(): Rule
   fields(rules: FieldRules): Rule
   assetRequired(): Rule
-  validate(
-    value: unknown,
-    options: ValidationContext & {
-      /**
-       * @deprecated Internal use only
-       * @internal
-       */
-      __internal?: {
-        customValidationConcurrencyLimiter?: {
-          ready: () => Promise<void>
-          release: () => void
-        }
-      }
-    },
-  ): Promise<ValidationMarker[]>
+  validate(value: unknown, options: ValidationContext): Promise<ValidationMarker[]>
 }
 
 /** @public */
@@ -280,8 +266,10 @@ export interface ValidationContext {
   type?: SchemaType
   document?: SanityDocument
   path?: Path
-  getDocumentExists?: (options: {id: string}) => Promise<boolean>
+  getDocumentExists?: (options: {id: string; signal?: AbortSignal}) => Promise<boolean>
   environment: 'cli' | 'studio'
+  /** Signal used to cancel validation and any work it starts. */
+  signal?: AbortSignal
   /**
    * Whether this field is hidden for any reason (either itself or any of its ancestors).
    */
@@ -362,6 +350,15 @@ export interface ValidationErrorClass {
  * @public
  */
 export interface ValidationError {
+  /**
+   * A machine-readable identifier for the validation failure.
+   * Custom validators should namespace custom codes, for example `custom.seo-title`.
+   */
+  code?: string
+
+  /** Structured information about the validation failure. */
+  details?: Record<string, unknown>
+
   /**
    * The message describing why the value is not valid. This message will be
    * included in the validation markers after validation has finished running.

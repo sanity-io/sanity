@@ -14,7 +14,7 @@ import {
   urlSearchParamVercelProtectionBypass,
   urlSearchParamVercelSetBypassCookie,
 } from '@sanity/preview-url-secret/constants'
-import {BoundaryElementProvider, Flex, useMediaIndex} from '@sanity/ui'
+import {BoundaryElementProvider, useMediaIndex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
@@ -28,7 +28,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
@@ -48,6 +48,7 @@ import {PresentationNavigateProvider} from './PresentationNavigateProvider'
 import {usePresentationNavigator} from './PresentationNavigator'
 import {PresentationParamsProvider} from './PresentationParamsProvider'
 import {PresentationProvider} from './PresentationProvider'
+import {container} from './PresentationTool.css'
 import {Preview} from './preview/Preview'
 import {
   type FrameState,
@@ -61,6 +62,8 @@ import {
 import {useAllowPatterns} from './useAllowPatterns'
 import {useDocumentsOnPage} from './useDocumentsOnPage'
 import {useMainDocument} from './useMainDocument'
+import {useNavigatePreviewFrame} from './useNavigatePreviewFrame'
+import {useOpenPreviewUrlActorRef} from './useOpenPreviewUrlActorRef'
 import {useParams} from './useParams'
 import {usePopups} from './usePopups'
 import {usePresentationPerspective} from './usePresentationPerspective'
@@ -76,10 +79,6 @@ const PostMessagePerspective = lazy(() => import('./PostMessagePerspective'))
 const PostMessagePreviewSnapshots = lazy(() => import('./editor/PostMessagePreviewSnapshots'))
 const PostMessageSchema = lazy(() => import('./overlays/schema/PostMessageSchema'))
 const PostMessageTelemetry = lazy(() => import('./PostMessageTelemetry'))
-
-const Container = styled(Flex)`
-  overflow-x: auto;
-`
 
 // Fall back to the preview if the navigator tab is selected but no longer enabled.
 function resolveActiveTab(
@@ -110,6 +109,7 @@ export default function PresentationTool(props: {
 
   const allowOrigins = useAllowPatterns(previewUrlRef)
   const targetOrigin = useTargetOrigin(previewUrlRef)
+  const openPreviewUrlRef = useOpenPreviewUrlActorRef(tool.options?.previewUrl, targetOrigin)
 
   const components = tool.options?.components
   const name = tool.name || DEFAULT_TOOL_NAME
@@ -416,43 +416,13 @@ export default function PresentationTool(props: {
   }, [params.id, params.path, visualEditingComlink])
 
   // Dispatch a navigation message when the preview param changes
-  useEffect(() => {
-    if (
-      frameStateRef.current.url &&
-      params.preview &&
-      frameStateRef.current.url !== params.preview
-    ) {
-      try {
-        const frameOrigin = new URL(frameStateRef.current.url, targetOrigin).origin
-        const previewOrigin = new URL(params.preview, targetOrigin).origin
-        if (frameOrigin !== previewOrigin) {
-          return
-        }
-      } catch {
-        // ignore
-      }
-
-      frameStateRef.current.url = params.preview
-      if (overlaysConnection === 'connected') {
-        /**
-         * Translate the possibly absolute params url back to a relative URL
-         */
-        let url = params.preview
-        if (url.startsWith('http')) {
-          try {
-            const newUrl = new URL(params.preview, targetOrigin)
-            url = newUrl.pathname + newUrl.search + newUrl.hash
-          } catch {
-            // ignore
-          }
-        }
-        visualEditingComlink?.post('presentation/navigate', {
-          url,
-          type: 'replace',
-        })
-      }
-    }
-  }, [overlaysConnection, targetOrigin, params.preview, visualEditingComlink])
+  useNavigatePreviewFrame({
+    frameStateRef,
+    overlaysConnection,
+    preview: params.preview,
+    targetOrigin,
+    visualEditingComlink,
+  })
 
   const toggleOverlay = useCallback(
     () => visualEditingComlink?.post('presentation/toggle-overlay'),
@@ -568,7 +538,12 @@ export default function PresentationTool(props: {
         <PresentationNavigateProvider navigate={navigate}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
-              <Container data-testid="presentation-root" direction="column" height="fill">
+              <Flex
+                className={container}
+                data-testid="presentation-root"
+                flexDirection="column"
+                height="100%"
+              >
                 {isNarrow && (
                   <PresentationNarrowTabBar
                     activeTab={resolvedTab}
@@ -576,7 +551,7 @@ export default function PresentationTool(props: {
                     onTabChange={setActiveTab}
                   />
                 )}
-                <Flex direction="column" flex={1} style={{minHeight: 0}}>
+                <Flex flexDirection="column" flexBasis="0%" flexGrow={1}>
                   <Panels>
                     <PresentationNavigator
                       hidden={isNarrow && resolvedTab !== 'navigator'}
@@ -590,7 +565,13 @@ export default function PresentationTool(props: {
                       order={3}
                       hidden={isNarrow && resolvedTab !== 'preview'}
                     >
-                      <Flex direction="column" flex={1} height="fill" ref={setBoundaryElement}>
+                      <Flex
+                        flexDirection="column"
+                        flexBasis="0%"
+                        flexGrow={1}
+                        height="100%"
+                        ref={setBoundaryElement}
+                      >
                         <BoundaryElementProvider element={boundaryElement}>
                           <Preview
                             // @TODO move closer to the <iframe> element itself to allow for more precise handling of when to reload the iframe and when to reconnect when the target origin changes
@@ -606,6 +587,7 @@ export default function PresentationTool(props: {
                             onPathChange={handlePreviewPath}
                             onRefresh={handleRefresh}
                             openPopup={handleOpenPopup}
+                            openPreviewUrlRef={openPreviewUrlRef}
                             overlaysConnection={overlaysConnection}
                             previewUrl={params.preview}
                             perspective={perspective}
@@ -643,7 +625,7 @@ export default function PresentationTool(props: {
                     />
                   </Panels>
                 </Flex>
-              </Container>
+              </Flex>
             </SharedStateProvider>
           </PresentationParamsProvider>
         </PresentationNavigateProvider>

@@ -1,3 +1,4 @@
+import {type ValidationMarker} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
 import {getFallbackLocaleSource, Rule} from '../src/_internal'
@@ -37,6 +38,23 @@ describe('child rules', () => {
     await expect(rule.validate('moop', context)).resolves.toMatchSnapshot(
       'all() rules - multiple failures, custom messages',
     )
+  })
+
+  test('all() rules - preserves legacy item messages in structured causes', async () => {
+    const legacyMarker: ValidationMarker = {
+      level: 'error',
+      message: 'Legacy failure',
+      path: [],
+    }
+    Object.assign(legacyMarker, {item: {message: legacyMarker.message}})
+    Reflect.deleteProperty(legacyMarker, 'message')
+
+    const legacyRule = Rule.string()
+    legacyRule.validate = async () => [legacyMarker]
+
+    const [marker] = await Rule.string().all([legacyRule]).validate('value', context)
+
+    expect(marker.details).toMatchObject({causes: [{message: 'Legacy failure'}]})
   })
 
   test('all() rules - single failure, custom, common error', async () => {

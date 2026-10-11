@@ -1,4 +1,50 @@
-import semver from 'semver'
+import semver, {type SemVer} from 'semver'
+
+/**
+ * A deprecation notice for a package version, as published in the module server manifest
+ */
+export interface VersionDeprecation {
+  /** Human readable explanation set when the version was deprecated, if any */
+  reason?: string
+}
+
+/** Deprecated versions of a package, keyed by exact version (no `v` prefix) */
+export type DeprecatedVersions = Record<string, VersionDeprecation>
+
+/**
+ * Parses the `deprecated` field of a module server metadata response. Returns undefined when the
+ * field is missing or malformed, so callers can tell "no info" from "nothing deprecated".
+ */
+export function parseDeprecatedVersions(input: unknown): DeprecatedVersions | undefined {
+  if (!isRecord(input)) {
+    return undefined
+  }
+  const result: DeprecatedVersions = {}
+  for (const [version, entry] of Object.entries(input)) {
+    const normalized = semver.valid(version)
+    if (!normalized) continue
+    const reason = isRecord(entry) && typeof entry.reason === 'string' ? entry.reason : undefined
+    result[normalized] = reason ? {reason} : {}
+  }
+  return result
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+/**
+ * Looks up the deprecation notice for a version
+ */
+export function getVersionDeprecation(
+  deprecatedVersions: DeprecatedVersions | undefined,
+  version: SemVer | undefined,
+): VersionDeprecation | undefined {
+  if (!deprecatedVersions || !version) {
+    return undefined
+  }
+  return deprecatedVersions[version.version]
+}
 
 const MODULE_PATH_REGEX = /^\/v1\/modules\/sanity\/[^/]+\/[^/]+\/[^/]+\/?$/
 // /v1/modules/by-app/some-appid-123/t1755876954/%5E4.5.0/sanity

@@ -1,5 +1,5 @@
-import {Stack} from '@sanity/ui'
 import {type PropsWithChildren} from 'react'
+import {VStack} from 'ui5'
 
 import {type ScheduleFormData} from '../../types'
 import ScheduleForm from './ScheduleForm'
@@ -18,9 +18,9 @@ export function EditScheduleForm(props: PropsWithChildren<Props>) {
   const {onChange, value} = props
 
   return (
-    <Stack gap={4}>
+    <VStack gap={4}>
       {props.children}
       <ScheduleForm onChange={onChange} value={value} />
-    </Stack>
+    </VStack>
   )
 }

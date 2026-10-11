@@ -1,11 +1,13 @@
-import {Box, Button, Card, Dialog, Flex, Select, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Select, Text, TextArea, TextInput} from '@sanity/ui'
 import {useMemo, useState} from 'react'
+import {Flex, VStack} from 'ui5'
 
 import {type BisectCommit, buildChain} from '../bisect/bisect'
 import {type TagSlice} from '../bisect/data'
 import {type ManualRegressionInput} from '../bisect/sessions'
+import {isSeverity, SEVERITIES, SEVERITY_LABEL} from '../bisect/severity'
 import {pluralize} from '../bisect/text'
-import {baseTagOf} from './releaseInfo'
+import {baseTagOf, compareTagsSemverDesc} from './releaseInfo'
 
 /**
  * Report a regression by hand when the introducing release is already known
@@ -18,20 +20,30 @@ import {baseTagOf} from './releaseInfo'
  * be encoded that way and are called out instead of silently allowed.
  */
 export function AddRegressionDialog(props: {
+  /** The releases that can be picked — EOL lines left out. */
   tags: TagSlice[]
+  /**
+   * Every synced release, for finding a release's base: the base of the
+   * oldest pickable release may itself be end of life.
+   */
+  allTags?: TagSlice[]
   commitsBySha: Map<string, BisectCommit>
   createdBy: string
+  /** Opened from a release row — that release starts selected (still changeable). */
+  initialTag?: string
   onClose: () => void
   /** Must settle (the tool toasts failures) — the submit stays disabled until it does. */
   onCreate: (input: ManualRegressionInput) => Promise<unknown>
 }) {
-  const {tags, commitsBySha, createdBy, onClose, onCreate} = props
-  const [selectedTagName, setSelectedTagName] = useState('')
+  const {tags, allTags = tags, commitsBySha, createdBy, initialTag, onClose, onCreate} = props
+  const [selectedTagName, setSelectedTagName] = useState(initialTag ?? '')
   const [description, setDescription] = useState('')
+  const [severity, setSeverity] = useState('')
   const [linearIssue, setLinearIssue] = useState('')
+  const [fixedIn, setFixedIn] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  const tagBySha = useMemo(() => new Map(tags.map((tag) => [tag.sha, tag.tag])), [tags])
+  const tagBySha = useMemo(() => new Map(allTags.map((tag) => [tag.sha, tag.tag])), [allTags])
   const selected = tags.find((tag) => tag.tag === selectedTagName)
 
   // The blamed release's endpoints: base release → this release, with the
@@ -40,7 +52,7 @@ export function AddRegressionDialog(props: {
   const encoded = useMemo(() => {
     if (!selected) return null
     const baseTagName = baseTagOf(commitsBySha, tagBySha, selected)
-    const baseTag = baseTagName ? tags.find((tag) => tag.tag === baseTagName) : undefined
+    const baseTag = baseTagName ? allTags.find((tag) => tag.tag === baseTagName) : undefined
     if (!baseTag) return {ok: false as const}
     const chain = buildChain(commitsBySha, baseTag.sha, selected.sha)
     if (!chain.ok) return {ok: false as const}
@@ -49,26 +61,40 @@ export function AddRegressionDialog(props: {
       baseTag,
       suspectShas: chain.chain.slice(1, -1).map((commit) => commit.sha),
     }
-  }, [selected, commitsBySha, tagBySha, tags])
+  }, [selected, commitsBySha, tagBySha, allTags])
+
+  // A fix can only ship after the release that introduced the regression
+  const fixCandidates = useMemo(
+    () =>
+      selected
+        ? tags
+            .filter((candidate) => compareTagsSemverDesc(candidate.tag, selected.tag) < 0)
+            .toSorted((a, b) => compareTagsSemverDesc(a.tag, b.tag))
+        : [],
+    [tags, selected],
+  )
+  // Changing the introducing release can make the chosen fix older than it
+  const fixedInValid = fixCandidates.some((candidate) => candidate.tag === fixedIn)
 
   const blocked = !selected || !encoded?.ok || description.trim() === ''
 
   return (
     <Dialog id="releases-add-regression" header="Add regression" width={1} onClose={onClose}>
       <Box padding={4}>
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Text size={1} muted>
             Pin a regression on the release that introduced it — for issues found outside a bisect
             (user reports, support tickets). It is recorded as a concluded bisect session, so it
             counts in the regression badge and can be drilled into later.
           </Text>
 
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text size={1} weight="medium">
               Introduced in
             </Text>
             <Select
               fontSize={1}
+              aria-label="Introduced in release"
               value={selectedTagName}
               onChange={(event) => setSelectedTagName(event.currentTarget.value)}
             >
@@ -79,7 +105,7 @@ export function AddRegressionDialog(props: {
                 </option>
               ))}
             </Select>
-          </Stack>
+          </VStack>
 
           {selected && encoded && !encoded.ok && (
             <Card padding={3} radius={2} tone="caution">
@@ -99,7 +125,7 @@ export function AddRegressionDialog(props: {
             </Text>
           )}
 
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text size={1} weight="medium">
               What broke
             </Text>
@@ -110,9 +136,28 @@ export function AddRegressionDialog(props: {
               value={description}
               onChange={(event) => setDescription(event.currentTarget.value)}
             />
-          </Stack>
+          </VStack>
 
-          <Stack gap={2}>
+          <VStack gap={2}>
+            <Text size={1} weight="medium">
+              Severity (optional)
+            </Text>
+            <Select
+              fontSize={1}
+              aria-label="Severity"
+              value={severity}
+              onChange={(event) => setSeverity(event.currentTarget.value)}
+            >
+              <option value="">Not rated</option>
+              {SEVERITIES.map((step) => (
+                <option key={step} value={step}>
+                  {SEVERITY_LABEL[step]}
+                </option>
+              ))}
+            </Select>
+          </VStack>
+
+          <VStack gap={2}>
             <Text size={1} weight="medium">
               Linear issue (optional)
             </Text>
@@ -122,9 +167,29 @@ export function AddRegressionDialog(props: {
               value={linearIssue}
               onChange={(event) => setLinearIssue(event.currentTarget.value)}
             />
-          </Stack>
+          </VStack>
 
-          <Flex gap={2} justify="flex-end">
+          <VStack gap={2}>
+            <Text size={1} weight="medium">
+              Fixed in (optional)
+            </Text>
+            <Select
+              fontSize={1}
+              aria-label="Fixed in release"
+              value={fixedInValid ? fixedIn : ''}
+              disabled={!selected}
+              onChange={(event) => setFixedIn(event.currentTarget.value)}
+            >
+              <option value="">Not fixed yet</option>
+              {fixCandidates.map((candidate) => (
+                <option key={candidate._id} value={candidate.tag}>
+                  {candidate.tag}
+                </option>
+              ))}
+            </Select>
+          </VStack>
+
+          <Flex gap={2} justifyContent="flex-end">
             <Button mode="ghost" text="Cancel" onClick={onClose} />
             <Button
               tone="critical"
@@ -140,13 +205,15 @@ export function AddRegressionDialog(props: {
                   bad: {sha: selected.sha, label: selected.tag},
                   suspectShas: encoded.suspectShas,
                   description: description.trim(),
+                  severity: isSeverity(severity) ? severity : undefined,
                   linearIssue: linearIssue.trim() || undefined,
+                  fixedIn: fixedInValid ? fixedIn : undefined,
                   createdBy,
                 }).finally(() => setSubmitting(false))
               }}
             />
           </Flex>
-        </Stack>
+        </VStack>
       </Box>
     </Dialog>
   )

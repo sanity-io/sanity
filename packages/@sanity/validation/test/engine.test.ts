@@ -10,6 +10,7 @@ import {
 } from '@sanity/types'
 import {describe, expect, it, vi} from 'vitest'
 
+import {validationMarkerCodes} from '../src'
 import {
   getFallbackLocaleSource,
   inferFromSchema,
@@ -399,6 +400,74 @@ describe('validateItem', () => {
       },
     ])
   })
+
+  it('skips required url validation when the field is hidden (SAPP-3960)', async () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'validationRepro',
+          type: 'document',
+          fields: [
+            {name: 'hideFields', type: 'boolean'},
+            {
+              name: 'url',
+              type: 'url',
+              hidden: ({parent}: {parent?: {hideFields?: boolean}}) => parent?.hideFields === true,
+              validation: (rule: RuleWithSkip, context?: ValidationContext) =>
+                context?.hidden ? rule.skip() : rule.required(),
+            },
+            {
+              name: 'string',
+              type: 'string',
+              hidden: ({parent}: {parent?: {hideFields?: boolean}}) => parent?.hideFields === true,
+              validation: (rule: RuleWithSkip, context?: ValidationContext) =>
+                context?.hidden ? rule.skip() : rule.required(),
+            },
+          ],
+        },
+      ],
+    })
+
+    const baseDocument: SanityDocument = {
+      _id: 'validation-repro-id',
+      _type: 'validationRepro',
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
+      _rev: 'validation-repro-rev',
+    }
+
+    const validate = (document: SanityDocument) =>
+      validateItem({
+        getClient,
+        schema,
+        value: document,
+        document,
+        parent: undefined,
+        path: [],
+        type: schema.get('validationRepro'),
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+        getDocumentExists: undefined,
+      })
+
+    await expect(validate({...baseDocument, hideFields: true})).resolves.toEqual([])
+
+    await expect(validate({...baseDocument, hideFields: false})).resolves.toMatchObject([
+      {path: ['url'], level: 'error', item: {message: 'Required'}},
+      {path: ['string'], level: 'error', item: {message: 'Required'}},
+    ])
+
+    await expect(
+      validate({
+        ...baseDocument,
+        hideFields: false,
+        url: 'https://example.com',
+        string: 'ok',
+      }),
+    ).resolves.toEqual([])
+  })
+
   it("runs nested validation on an undefined value for object types if it's required", async () => {
     const validation = (rule: Rule) => [
       rule.required().error('This is required!'),
@@ -547,6 +616,40 @@ describe('validateItem', () => {
         path: ['bar'],
       },
     ])
+  })
+
+  it('deduplicates field-rule markers with non-serializable details', async () => {
+    const details: Record<string, unknown> = {count: 1n}
+    details.self = details
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'testObj',
+          type: 'object',
+          fields: [{name: 'foo', type: 'string'}],
+          validation: (rule: Rule) =>
+            rule.fields({
+              foo: (fieldRule) => fieldRule.custom(() => ({details, message: 'Invalid field'})),
+            }),
+        },
+      ],
+    })
+
+    await expect(
+      validateItem({
+        getClient,
+        schema,
+        document: undefined,
+        parent: undefined,
+        path: undefined,
+        type: schema.get('testObj'),
+        value: {foo: 'value'},
+        getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+      }),
+    ).resolves.toEqual([expect.objectContaining({code: validationMarkerCodes.custom, details})])
   })
 
   it('runs nested validation for Rule.fields() inside Rule.all() (issue #8290)', async () => {

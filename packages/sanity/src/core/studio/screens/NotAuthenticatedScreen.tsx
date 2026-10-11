@@ -1,8 +1,9 @@
 import {getProviderTitle} from '@sanity/access-ui'
 /* oxlint-disable i18next/no-literal-string */
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useObservable} from 'react-rx'
+import {VStack} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
@@ -33,7 +34,7 @@ export function NotAuthenticatedScreen() {
           },
         }}
       >
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Text>
             You are not authorized to access this studio. Please contact someone with access to
             invite you to this project.
@@ -47,7 +48,7 @@ export function NotAuthenticatedScreen() {
             </strong>
             {providerHelp}.
           </Text>
-        </Stack>
+        </VStack>
       </Dialog>
     </Card>
   )

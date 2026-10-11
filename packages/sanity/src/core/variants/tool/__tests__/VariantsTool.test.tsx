@@ -8,7 +8,7 @@ import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type SystemVariant} from '../../types'
 import {getVariantId} from '../util'
-import {VariantsTool} from '../VariantsTool'
+import VariantsTool from '../VariantsTool'
 
 const routerState = vi.hoisted(() => ({
   variantId: undefined as string | undefined,

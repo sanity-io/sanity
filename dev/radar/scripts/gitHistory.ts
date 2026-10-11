@@ -8,6 +8,8 @@
  * throws rather than silently mis-attributing fields.
  */
 
+import {gitCommitId, gitTagId} from '@repo/utils/radar-ids'
+
 /** `git log --format=` value producing one \x1e-terminated record per commit. */
 export const COMMIT_LOG_FORMAT = '%H%x1f%an%x1f%ae%x1f%aI%x1f%cI%x1f%s%x1f%P%x1e'
 
@@ -20,8 +22,14 @@ export const COMMIT_LOG_FORMAT = '%H%x1f%an%x1f%ae%x1f%aI%x1f%cI%x1f%s%x1f%P%x1e
 export const TAG_REF_FORMAT =
   '%(refname:lstrip=2)%1f%(creatordate:iso-strict)%1f%(*objectname)%1f%(objectname)'
 
-/** The dataset covers v5.0.0 onward — same cutoff the commit backfill uses. */
-export const MIN_TAG_MAJOR = 5
+/**
+ * The dataset covers v3.0.0 (2022-11-25) onward — same cutoff the commit
+ * backfill uses. Tags below it are the v2 era and earlier, hundreds of them
+ * with nobody left on them. Extending the tag set is free on the npm side
+ * (the enrichment is three package-wide requests), and the commit backfill
+ * is a one-time dispatch.
+ */
+export const MIN_TAG_MAJOR = 3
 
 const FIELD_SEPARATOR = '\x1f'
 const RECORD_SEPARATOR = '\x1e'
@@ -84,7 +92,7 @@ export interface GitTagDocument {
   tag: string
   sha: string
   /** Merged in by syncGitHistory.ts on npm-collecting runs (see npmVersions.ts). */
-  npm?: {publishedAt?: string; distTags?: string[]; weeklyDownloads?: number}
+  npm?: {publishedAt?: string; distTags?: string[]; weeklyDownloads?: number; deprecated?: string}
   /** Weak: the commit may be off-main (release-branch tags) or not ingested yet. */
   commit: {_type: 'reference'; _ref: string; _weak: true}
   taggedAt: string
@@ -182,15 +190,11 @@ export function parseTagRefs(raw: string): TagInfo[] {
     })
 }
 
-export function commitDocumentId(sha: string): string {
-  return `gitCommit-${sha}`
-}
-
 export function commitDocument(info: CommitInfo): GitCommitDocument {
   const {commitType, scope, breaking} = parseConventionalSubject(info.subject)
   const prNumber = parsePrNumber(info.subject)
   return {
-    _id: commitDocumentId(info.sha),
+    _id: gitCommitId(info.sha),
     _type: 'gitCommit',
     schemaVersion: 1,
     sha: info.sha,
@@ -209,14 +213,12 @@ export function commitDocument(info: CommitInfo): GitCommitDocument {
 
 export function tagDocument(info: TagInfo): GitTagDocument {
   return {
-    // Dots in ids make path segments (invisible to unauthenticated queries)
-    // — fine here, every reader authenticates
-    _id: `gitTag-${info.tag}`,
+    _id: gitTagId(info.tag),
     _type: 'gitTag',
     schemaVersion: 1,
     tag: info.tag,
     sha: info.sha,
-    commit: {_type: 'reference', _ref: commitDocumentId(info.sha), _weak: true},
+    commit: {_type: 'reference', _ref: gitCommitId(info.sha), _weak: true},
     taggedAt: info.taggedAt,
     major: info.major,
     minor: info.minor,
@@ -247,7 +249,7 @@ export function assembleSyncDocuments(input: {
   tags: GitTagDocument[]
   github: GitHubCollection
   /** Present only on npm-collecting runs. */
-  npmInfo?: Map<string, {publishedAt?: string; distTags?: string[]; weeklyDownloads?: number}>
+  npmInfo?: Map<string, NonNullable<GitTagDocument['npm']>>
 }): {
   documents: (GitCommitDocument | GitTagDocument)[]
   commitCount: number

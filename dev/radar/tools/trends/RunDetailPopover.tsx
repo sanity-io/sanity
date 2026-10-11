@@ -1,12 +1,13 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RobotIcon} from '@sanity/icons/Robot'
-import {Badge, Button, Flex, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Badge, Button, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
@@ -18,9 +19,40 @@ import {
   type TrendTag,
 } from './data'
 import {buildInvestigationPrompt} from './investigationPrompt'
-import {backlinksFor, compareUrl, sourceFileUrl} from './links'
+import {abDispatchCommand, backlinksFor, compareUrl, sourceFileUrl} from './links'
 
 const FULL_SHA = /^[0-9a-f]{40}$/i
+
+type CopyState = 'idle' | 'copied' | 'failed'
+
+/**
+ * Clipboard write with feedback that lives on the button itself (label + icon
+ * flip) rather than a toast — the popover is small enough that the change is
+ * right under the cursor, and a failure is just as visible. Resets after 2s.
+ */
+function useCopyFeedback(): {state: CopyState; copy: (text: string) => void} {
+  const [state, setState] = useState<CopyState>('idle')
+  const resetTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(resetTimer.current), [])
+  const copy = (text: string) => {
+    const finish = (next: 'copied' | 'failed') => {
+      setState(next)
+      clearTimeout(resetTimer.current)
+      resetTimer.current = setTimeout(() => setState('idle'), 2000)
+    }
+    // navigator.clipboard is undefined outside secure contexts, where the
+    // call would throw synchronously instead of rejecting
+    try {
+      navigator.clipboard.writeText(text).then(
+        () => finish('copied'),
+        () => finish('failed'),
+      )
+    } catch {
+      finish('failed')
+    }
+  }
+  return {state, copy}
+}
 
 /**
  * Details for one run, shown in a popover anchored at the clicked point.
@@ -67,30 +99,19 @@ export function RunDetailPopover(props: {
     intent: 'edit',
     params: {id: point.runId, type: 'benchRun'},
   })
-  // Feedback for the copy-prompt button lives on the button itself (label +
-  // icon flip) rather than a toast — the popover is small enough that the
-  // change is right under the cursor, and a failure is just as visible.
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
-  const copyResetTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
-  useEffect(() => () => clearTimeout(copyResetTimer.current), [])
-  const handleCopyPrompt = () => {
-    if (!previousPoint) return
-    const finish = (state: 'copied' | 'failed') => {
-      setCopyState(state)
-      clearTimeout(copyResetTimer.current)
-      copyResetTimer.current = setTimeout(() => setCopyState('idle'), 2000)
-    }
-    // navigator.clipboard is undefined outside secure contexts, where the
-    // call would throw synchronously instead of rejecting
-    try {
-      navigator.clipboard.writeText(buildInvestigationPrompt(series, point, previousPoint)).then(
-        () => finish('copied'),
-        () => finish('failed'),
-      )
-    } catch {
-      finish('failed')
-    }
-  }
+  // Two copy affordances share the previous point as `ab_from`: the bare
+  // dispatch command (for someone who already knows what they suspect) and
+  // the full investigation brief for a coding agent. Each keeps its own
+  // feedback state so copying one never relabels the other.
+  const abCopy = useCopyFeedback()
+  const promptCopy = useCopyFeedback()
+  // The bench workflow's ab_from/ab_to inputs require full shas, and GitHub
+  // has no URL that prefills a workflow_dispatch form — so the affordance is
+  // a copyable command, previous point as reference, this point as experiment
+  const abCommand =
+    previousPoint && FULL_SHA.test(previousPoint.sha) && FULL_SHA.test(point.sha)
+      ? abDispatchCommand(previousPoint.sha, point.sha)
+      : undefined
   const backlinks = backlinksFor(point)
   // The scenario source *as it ran for this commit* — pinning to the run's sha
   // (not main) shows exactly the definition that produced this point, since
@@ -135,9 +156,9 @@ export function RunDetailPopover(props: {
       tone="default"
       content={
         <Box ref={setContentEl} padding={4} style={{width: 320, maxWidth: '92vw'}}>
-          <Stack gap={4}>
+          <VStack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
-            <Flex align="flex-start" gap={3}>
+            <Flex alignItems="flex-start" gap={3}>
               <Box flexBasis="0%" flexGrow={1} paddingTop={1}>
                 <Text size={1} weight="medium" muted textOverflow="ellipsis">
                   {series.title}
@@ -156,36 +177,36 @@ export function RunDetailPopover(props: {
 
             {/* The value is the headline; the when-line sits beneath it, and
                 the percentiles read as a labelled stat row rather than a run-on */}
-            <Stack gap={3}>
-              <Stack gap={2}>
+            <VStack gap={3}>
+              <VStack gap={2}>
                 <Text size={4} weight="semibold">
                   {formatValue(point.value, series.unit)}
                 </Text>
                 <Text size={1} muted>
                   {when}
                 </Text>
-              </Stack>
+              </VStack>
               {(point.p75 !== undefined || point.p90 !== undefined) && (
                 <Flex gap={4}>
-                  <Stack gap={2}>
+                  <VStack gap={2}>
                     <Text size={0} muted>
                       p75
                     </Text>
                     <Text size={1}>{formatValue(point.p75 ?? point.value, series.unit)}</Text>
-                  </Stack>
-                  <Stack gap={2}>
+                  </VStack>
+                  <VStack gap={2}>
                     <Text size={0} muted>
                       p90
                     </Text>
                     <Text size={1}>{formatValue(point.p90 ?? point.value, series.unit)}</Text>
-                  </Stack>
+                  </VStack>
                   {point.interactions !== undefined && (
-                    <Stack gap={2}>
+                    <VStack gap={2}>
                       <Text size={0} muted>
                         interactions
                       </Text>
                       <Text size={1}>{point.interactions}</Text>
-                    </Stack>
+                    </VStack>
                   )}
                 </Flex>
               )}
@@ -197,7 +218,15 @@ export function RunDetailPopover(props: {
                   {INP_MIN_INTERACTIONS})
                 </Badge>
               )}
-            </Stack>
+              {/* Style-migration points name the styled-components runtime the
+                  page ran: a step that coincides with a version bump is the
+                  library's output changing, not a migration */}
+              {point.styledComponentsVersion && (
+                <Text size={1} muted>
+                  styled-components {point.styledComponentsVersion} on this page
+                </Text>
+              )}
+            </VStack>
 
             {/* Where this run sits in the release timeline. Stated for every
                 run (not only ones next to a marker), because "is this before or
@@ -212,11 +241,11 @@ export function RunDetailPopover(props: {
                 rather than to "main around then". Stated plainly, and
                 deliberately distinct from the after/before bracket below. */}
             {measuredTag && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Release
                 </Text>
-                <Flex align="center" gap={2}>
+                <Flex alignItems="center" gap={2}>
                   <Text size={1} muted>
                     released as
                   </Text>
@@ -227,17 +256,17 @@ export function RunDetailPopover(props: {
                 <Text size={0} muted>
                   This run measured the release commit.
                 </Text>
-              </Stack>
+              </VStack>
             )}
 
             {(releaseContext.previous || releaseContext.next) && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Release
                 </Text>
-                <Stack gap={2}>
+                <VStack gap={2}>
                   {releaseContext.previous && (
-                    <Flex align="center" gap={2}>
+                    <Flex alignItems="center" gap={2}>
                       <Text size={1} muted>
                         after
                       </Text>
@@ -250,7 +279,7 @@ export function RunDetailPopover(props: {
                     </Flex>
                   )}
                   {releaseContext.next ? (
-                    <Flex align="center" gap={2}>
+                    <Flex alignItems="center" gap={2}>
                       <Text size={1} muted>
                         before
                       </Text>
@@ -263,19 +292,19 @@ export function RunDetailPopover(props: {
                       not yet released
                     </Text>
                   )}
-                </Stack>
-              </Stack>
+                </VStack>
+              </VStack>
             )}
 
             {/* The machine that produced this run — the context every absolute
                 number depends on. cpuModel/image/browser exist on documents
                 from Aug 2026 on; older runs show what they recorded. */}
             {(host || point.calibrationMs !== undefined) && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Host
                 </Text>
-                <Stack gap={2}>
+                <VStack gap={2}>
                   {host?.cpuModel && (
                     <Text size={1} muted>
                       {host.cpuModel}
@@ -308,23 +337,23 @@ export function RunDetailPopover(props: {
                     </Text>
                   )}
                   {point.calibrationMs !== undefined && (
-                    <Flex align="center" gap={2} title={CALIBRATION_EXPLAINER}>
+                    <Flex alignItems="center" gap={2} title={CALIBRATION_EXPLAINER}>
                       <Text size={1} muted>
                         calibration
                       </Text>
                       <Text size={1}>{formatValue(point.calibrationMs, 'ms')}</Text>
                     </Flex>
                   )}
-                </Stack>
-              </Stack>
+                </VStack>
+              </VStack>
             )}
 
             {(backlinks.length > 0 || scenarioHref) && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Links
                 </Text>
-                <Flex gap={2} wrap="wrap">
+                <Flex gap={2} flexWrap="wrap">
                   {backlinks.map((link) => (
                     <Button
                       key={link.href}
@@ -353,11 +382,11 @@ export function RunDetailPopover(props: {
                     />
                   )}
                 </Flex>
-              </Stack>
+              </VStack>
             )}
 
             {compareHref && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Suspect a regression?
                 </Text>
@@ -372,30 +401,55 @@ export function RunDetailPopover(props: {
                   text="Compare with previous run"
                   aria-label="GitHub compare view of the commits between the previous run's commit and this one (opens in a new tab)"
                 />
+                {/* The bare dispatch command — previous point as reference,
+                    this point as experiment — for a human who knows what they
+                    suspect and just wants the run going. The command doubles
+                    as the tooltip so a denied clipboard is still recoverable. */}
+                {abCommand && (
+                  <Button
+                    mode="ghost"
+                    fontSize={1}
+                    icon={abCopy.state === 'copied' ? CheckmarkIcon : CopyIcon}
+                    tone={abCopy.state === 'copied' ? 'positive' : 'default'}
+                    text={
+                      abCopy.state === 'copied'
+                        ? 'Copied — paste in a terminal'
+                        : abCopy.state === 'failed'
+                          ? 'Copy failed — command in tooltip'
+                          : 'Copy A/B vs previous run'
+                    }
+                    title={abCommand}
+                    aria-label="Copy the gh command dispatching an A/B bench comparison of this commit against the previous run's commit"
+                    onClick={() => abCopy.copy(abCommand)}
+                  />
+                )}
                 {/* A paste-ready brief for a coding agent: the full signal
                     (metric, both commits, delta, backlinks) plus the A/B
                     dispatch / bisect recipe from perf/bench/README.md */}
                 <Button
                   mode="ghost"
                   fontSize={1}
-                  icon={copyState === 'copied' ? CheckmarkIcon : RobotIcon}
-                  tone={copyState === 'copied' ? 'positive' : 'default'}
+                  icon={promptCopy.state === 'copied' ? CheckmarkIcon : RobotIcon}
+                  tone={promptCopy.state === 'copied' ? 'positive' : 'default'}
                   text={
-                    copyState === 'copied'
+                    promptCopy.state === 'copied'
                       ? 'Copied'
-                      : copyState === 'failed'
+                      : promptCopy.state === 'failed'
                         ? 'Copy failed'
                         : 'Copy investigation prompt'
                   }
                   aria-label="Copy an investigation brief for a coding agent to the clipboard"
-                  onClick={handleCopyPrompt}
+                  onClick={() =>
+                    previousPoint &&
+                    promptCopy.copy(buildInvestigationPrompt(series, point, previousPoint))
+                  }
                 />
-              </Stack>
+              </VStack>
             )}
 
             {/* Divider before the footer action so it reads as a distinct row */}
             <Box style={{borderTop: '1px solid var(--card-border-color)'}} paddingTop={3}>
-              <Flex align="center" justify="space-between" gap={2}>
+              <Flex alignItems="center" justifyContent="space-between" gap={2}>
                 <Badge tone="default" fontSize={0}>
                   benchRun
                 </Badge>
@@ -413,7 +467,7 @@ export function RunDetailPopover(props: {
                 />
               </Flex>
             </Box>
-          </Stack>
+          </VStack>
         </Box>
       }
     />

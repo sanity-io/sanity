@@ -1,8 +1,8 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
-import {Card, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Card, Text, TextArea, TextInput} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type ChangeEvent, useCallback, useId, useRef, useState} from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -81,8 +81,8 @@ export function EditReleaseDialog({
       width={1}
     >
       <Card padding={4} borderTop>
-        <Stack gap={5}>
-          <Stack gap={3}>
+        <VStack gap={5}>
+          <VStack gap={3}>
             <Text as="label" htmlFor={titleId} size={1} weight="medium">
               {t('release.dialog.edit.title-label')}
             </Text>
@@ -94,8 +94,8 @@ export function EditReleaseDialog({
               }
               value={title}
             />
-          </Stack>
-          <Stack gap={3}>
+          </VStack>
+          <VStack gap={3}>
             <Text as="label" htmlFor={descriptionId} size={1} weight="medium">
               {t('release.dialog.edit.description-label')}
             </Text>
@@ -108,8 +108,8 @@ export function EditReleaseDialog({
               rows={6}
               value={description}
             />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
         <Flex justifyContent="flex-end" paddingTop={5}>
           <Button
             data-testid="save-release-details-button"

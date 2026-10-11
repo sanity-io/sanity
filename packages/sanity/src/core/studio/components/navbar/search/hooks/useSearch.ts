@@ -1,26 +1,27 @@
 import {type Schema} from '@sanity/types'
-import isEqual from 'lodash-es/isEqual.js'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {BehaviorSubject, concat, iif, of, Subject, timer} from 'rxjs'
+import {useActorRef, useSelector} from '@xstate/react'
+import {dequal} from 'dequal/lite'
 import {
-  catchError,
-  debounce,
-  distinctUntilChanged,
-  map,
-  scan,
-  switchMap,
-  tap,
-  withLatestFrom,
-} from 'rxjs/operators'
+  useCallback,
+  useEffect,
+  // oxlint-disable-next-line no-restricted-imports -- useSearch is only called from plain function components (SearchProvider and the search filter ReferenceAutocomplete), so facebook/react#34818 does not apply
+  useEffectEvent,
+  useMemo,
+  useState,
+} from 'react'
+import {fromObservable} from 'xstate'
 
 import {useClient} from '../../../../../hooks/useClient'
+import {isEqualSearchTerms} from '../../../../../search/common/isEqualSearchTerms'
 import {
+  type Groq2024SearchResults,
   type SearchHit,
   type SearchOptions,
   type SearchTerms,
+  type WeightedSearchResults,
 } from '../../../../../search/common/types'
 import {createSearch} from '../../../../../search/search'
+import {defineSearchMachine} from '../../../../../search/searchMachine'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'
@@ -34,17 +35,9 @@ interface SearchRequest {
   terms: SearchTerms
 }
 
-const DEFAULT_DEBOUNCE_TIME = 300 // ms
+type SearchResults = WeightedSearchResults | Groq2024SearchResults
 
-const INITIAL_SEARCH_STATE: SearchState = {
-  error: null,
-  hits: [],
-  loading: false,
-  terms: {
-    query: '',
-    types: [],
-  },
-}
+const DEFAULT_DEBOUNCE_TIME = 300 // ms
 
 function sanitizeRequest(request: SearchRequest) {
   return {
@@ -55,6 +48,27 @@ function sanitizeRequest(request: SearchRequest) {
       query: request.terms.query.trim(),
     },
   }
+}
+
+function isEqualSearchRequest(a: SearchRequest | null, b: SearchRequest | null): boolean {
+  if (a === b) return true
+  if (!a || !b) return false
+  const {terms: aTerms, ...aRest} = a
+  const {terms: bTerms, ...bRest} = b
+  return isEqualSearchTerms(aTerms, bTerms) && dequal(aRest, bRest)
+}
+
+function isEqualSearchState(a: SearchState, b: SearchState): boolean {
+  if (a === b) return true
+  const {error: aError, terms: aTerms, ...aRest} = a
+  const {error: bError, terms: bTerms, ...bRest} = b
+  const errorsEqual =
+    aError === bError ||
+    (aError !== null &&
+      bError !== null &&
+      aError.name === bError.name &&
+      aError.message === bError.message)
+  return errorsEqual && isEqualSearchTerms(aTerms, bTerms) && dequal(aRest, bRest)
 }
 
 export function useSearch({
@@ -75,7 +89,6 @@ export function useSearch({
   handleSearch: (request: SearchRequest) => void
   searchState: SearchState
 } {
-  const [searchRequests$] = useState(() => new Subject<SearchRequest>())
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
   const {strategy} = useWorkspace().search
@@ -91,79 +104,79 @@ export function useSearch({
     [schema, client, strategy, maxFieldDepth],
   )
 
-  // The latest render's unstable values: the callbacks are props that can
-  // change identity every render, and `search` settles asynchronously
-  // (`useSearchMaxFieldDepth`). Carried by a subject so the memoized pipeline
-  // reads them at event time without rebuilding, which would cancel in-flight
-  // searches without replay, stranding the loading state, and reset the
-  // debounce, dedupe, and accumulated search state.
-  const [latest$] = useState(() => new BehaviorSubject({onComplete, onError, onStart, search}))
-  useEffect(() => {
-    latest$.next({onComplete, onError, onStart, search})
-  }, [latest$, onComplete, onError, onStart, search])
-
-  const searchState$ = useMemo(
-    () =>
-      searchRequests$.pipe(
-        // Sanitize request (trim query and filter)
-        map(sanitizeRequest),
-        // Only emit when values have changed
-        distinctUntilChanged(isEqual),
-        // Debounce requests
-        debounce((request) => timer(request.debounceTime || DEFAULT_DEBOUNCE_TIME)),
-        withLatestFrom(latest$),
-        switchMap(([request, latest]) => {
-          latest.onStart?.()
-          return concat(
-            // Emit loading start
-            of({
-              ...INITIAL_SEARCH_STATE,
-              loading: true,
-              options: request.options,
-              terms: request.terms,
-            }),
-            // Conditionally trigger search ONLY if we have valid searchable terms.
-            // Typically, search terms are valid if either query, filter or selected types is non-empty.
-            // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
-            // which is what `allowEmptyQueries` is used for.
-            iif(
-              () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
-              // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-              latest.search(request.terms, request.options).pipe(
-                tap(({hits, nextCursor}) => latest.onComplete?.({hits, nextCursor})),
-                catchError((error) => {
-                  latest.onError?.(error)
-                  return of({
-                    ...INITIAL_SEARCH_STATE,
-                    error,
-                    loading: false,
-                    options: request.options,
-                    terms: request.terms,
-                  })
-                }),
-              ),
-              // If there is no valid search, emit an empty update and trigger `onComplete`
-              of({}).pipe(tap(() => latest.onComplete?.({hits: [], nextCursor: undefined}))),
-            ),
-            // Emit loading completed
-            of({loading: false}),
-          )
-        }),
-        scan((prevState, nextState): SearchState => {
-          return {...prevState, ...nextState}
-        }, INITIAL_SEARCH_STATE),
-      ),
-    [allowEmptyQueries, latest$, searchRequests$],
+  const [machine] = useState(() => defineSearchMachine<SearchRequest, SearchResults>())
+  const actorRef = useActorRef(
+    machine.provide({
+      actors: {
+        search: fromObservable(({input}) => search(input.query.terms, input.query.options)),
+      },
+      guards: {
+        'is same query': ({context, event}) => isEqualSearchRequest(context.query, event.query),
+        'should search': ({context}) =>
+          context.query !== null &&
+          hasSearchableTerms({allowEmptyQueries, terms: context.query.terms}),
+      },
+      delays: {
+        debounce: ({context}) => context.query?.debounceTime || DEFAULT_DEBOUNCE_TIME,
+      },
+    }),
+    {input: {}},
   )
-  // Captured once, like the `useState(initialState)` mirror it replaces: both
-  // callers rebuild the object every render, and react-rx re-reads an unstable
-  // initial value on every snapshot until the first emission.
+
+  const handleSearchStarted = useEffectEvent(() => onStart?.())
+  const handleSearchCompleted = useEffectEvent((result: SearchResults) =>
+    onComplete?.({hits: result.hits, nextCursor: result.nextCursor}),
+  )
+  const handleSearchSkipped = useEffectEvent(() => onComplete?.({hits: [], nextCursor: undefined}))
+  const handleSearchFailed = useEffectEvent((error: Error) => onError?.(error))
+
+  useEffect(() => {
+    const subscriptions = [
+      actorRef.on('search started', () => handleSearchStarted()),
+      actorRef.on('search completed', (event) => handleSearchCompleted(event.result)),
+      actorRef.on('search skipped', () => handleSearchSkipped()),
+      actorRef.on('search failed', (event) => handleSearchFailed(event.error)),
+    ]
+    return () => subscriptions.forEach((subscription) => subscription.unsubscribe())
+  }, [actorRef])
+
+  // Captured once to mirror the useState mirror this replaces: both callers
+  // rebuild the object every render.
   const [initialSearchState] = useState(initialState)
-  const searchState = useObservable(searchState$, initialSearchState)
+  const searchState = useSelector(
+    actorRef,
+    (state): SearchState => {
+      const {error, query, result, searchInterrupted, settledQuery} = state.context
+
+      // Nothing has cleared the debounce yet, so callers still see the state
+      // they seeded the hook with.
+      if (
+        query === null ||
+        (state.matches('debouncing') && settledQuery === null && !searchInterrupted)
+      ) {
+        return initialSearchState
+      }
+
+      // While debouncing, the previous search's request is still the one the
+      // current state describes.
+      const activeQuery = state.matches('debouncing') ? (settledQuery ?? query) : query
+
+      return {
+        error,
+        hits: state.matches({searching: 'pending'}) ? [] : (result?.hits ?? []),
+        // A debounce that interrupted a running search keeps reporting
+        // loading, like the interrupted request would have.
+        loading: state.matches('searching') || (state.matches('debouncing') && searchInterrupted),
+        options: activeQuery.options,
+        terms: activeQuery.terms,
+      }
+    },
+    isEqualSearchState,
+  )
 
   const handleSearch = useCallback(
-    (searchRequest: SearchRequest) => searchRequests$.next(searchRequest),
-    [searchRequests$],
+    (request: SearchRequest) => actorRef.send({type: 'search', query: sanitizeRequest(request)}),
+    [actorRef],
   )
 
   return {handleSearch, searchState}

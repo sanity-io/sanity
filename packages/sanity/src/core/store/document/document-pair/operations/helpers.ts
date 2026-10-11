@@ -60,6 +60,17 @@ export const TARGET_NOT_FOUND_OPERATIONS: OperationsAPI = {
   duplicate: createTargetNotFoundOperation('duplicate'),
   restore: createTargetNotFoundOperation('restore'),
 }
+const OPERATION_NAMES = Object.keys(GUARDED) as (keyof OperationsAPI)[]
+
+/**
+ * `execute` only emits the operation name with the id pair, type name and store key the api
+ * was created for; the arguments are read from the live `operationArgs` stream at execution
+ * time. `disabled` is therefore the only field a consumer can observe changing.
+ */
+export function hasSameDisabledState(a: OperationsAPI, b: OperationsAPI): boolean {
+  return OPERATION_NAMES.every((name) => a[name].disabled === b[name].disabled)
+}
+
 const createEmitter =
   (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string, storeKey: string) =>
   (...executeArgs: any[]) =>
@@ -97,16 +108,19 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
   // publish the draft), so the mutating operations are disabled regardless of what the caller
   // declared. Deliberately excluded:
   // - New documents (no draft, published, or version snapshots): typing must still create the
-  //   release version locally via its deterministic id (create-on-first-edit).
+  //   release version locally via its deterministic id (create-on-first-edit). This does not
+  //   apply to a declared variant target: a variant document is never created from its id, so a
+  //   missing variant document is guarded regardless of the base pair.
   // - `restore` (history restore into a release) legitimately creates missing versions.
   // - `delete` / `duplicate` operate on the whole document group.
-  const targetVersionMissing = Boolean(
+  const isVariantTarget = args.target?.kind === 'variant'
+  const targetMissing = Boolean(
     args.idPair.versionId &&
     !args.snapshots.version &&
-    (args.snapshots.draft || args.snapshots.published),
+    (isVariantTarget || args.snapshots.draft || args.snapshots.published),
   )
 
-  if (!targetVersionMissing) {
+  if (!targetMissing) {
     return operations
   }
 
@@ -124,5 +138,10 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     publish: createTargetNotFoundOperation('publish'),
     unpublish: createTargetNotFoundOperation('unpublish'),
     discardChanges: createTargetNotFoundOperation('discardChanges'),
+    // Restore can create a missing release version, but not a variant document: the restore path
+    // only sees the version id, whose opaque variant scope is indistinguishable from a release id,
+    // and the declared target is not available at execution time (`execute` re-reads the operation
+    // arguments from the live document stream).
+    restore: isVariantTarget ? createTargetNotFoundOperation('restore') : operations.restore,
   }
 }

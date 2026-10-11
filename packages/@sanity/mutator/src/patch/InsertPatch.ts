@@ -1,6 +1,3 @@
-import max from 'lodash-es/max.js'
-import min from 'lodash-es/min.js'
-
 import {type Expression} from '../jsonpath'
 import {type ImmutableAccessor} from './ImmutableAccessor'
 import {targetsToIndicies} from './util'
@@ -21,10 +18,8 @@ export class InsertPatch {
   apply(targets: Expression[], accessor: ImmutableAccessor): ImmutableAccessor {
     let result = accessor
     if (accessor.containerType() !== 'array') {
-      const valueType = accessor.valueType()
-      throw new Error(
-        `Attempt to apply insert patch to value of type "${valueType}" at path "${accessor.path.join(' → ')}"`,
-      )
+      // Insert targets only exist for arrays
+      return result
     }
 
     switch (this.location) {
@@ -55,12 +50,13 @@ export class InsertPatch {
 }
 
 function minIndex(targets: Expression[], accessor: ImmutableAccessor): number {
-  let result = min(targetsToIndicies(targets, accessor)) || 0
+  // `targetsToIndicies` returns indices sorted ascending, so the first one is the lowest
+  let result = targetsToIndicies(targets, accessor).at(0) ?? 0
 
   // Ranges may be zero-length and not turn up in indices
   targets.forEach((target) => {
     if (target.isRange()) {
-      const {start} = target.expandRange()
+      const {start} = target.expandRange(accessor)
       if (start < result) {
         result = start
       }
@@ -70,12 +66,13 @@ function minIndex(targets: Expression[], accessor: ImmutableAccessor): number {
 }
 
 function maxIndex(targets: Expression[], accessor: ImmutableAccessor): number {
-  let result = max(targetsToIndicies(targets, accessor)) || 0
+  // `targetsToIndicies` returns indices sorted ascending, so the last one is the highest
+  let result = targetsToIndicies(targets, accessor).at(-1) ?? 0
 
   // Ranges may be zero-length and not turn up in indices
   targets.forEach((target) => {
     if (target.isRange()) {
-      const {end} = target.expandRange()
+      const {end} = target.expandRange(accessor)
       if (end > result) {
         result = end
       }

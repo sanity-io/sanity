@@ -1,30 +1,24 @@
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Container, Flex, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Container, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   getDocumentVariantType,
   useCanvasCompanionDoc,
+  useCanvasNavigate,
   useNavigateToCanvasDoc,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
+import {image} from './CanvasLinkedBanner.css'
 
-const Image = styled.img`
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  height: 180px;
-  display: flex;
-`
 const CANVAS_IMAGE_URL =
   'https://cdn.sanity.io/images/pyrmmpch/production/b47224e2f3a7d1747e43b9da1ac31739250e628b-632x376.png'
 
@@ -52,8 +46,8 @@ const CanvasPopoverContent = ({
   return (
     <Card radius={3} overflow={'hidden'} ref={ref}>
       <Container width={0}>
-        <Image src={CANVAS_IMAGE_URL} alt={'Canvas'} />
-        <Flex paddingX={4} paddingBottom={4} paddingTop={3} direction={'column'}>
+        <img className={image} src={CANVAS_IMAGE_URL} alt={'Canvas'} />
+        <Flex paddingX={4} paddingBottom={4} paddingTop={3} flexDirection={'column'}>
           <Flex paddingY={1} gap={2}>
             <Text size={1} weight="semibold">
               {CANVAS_APP_NAME}
@@ -69,7 +63,7 @@ const CanvasPopoverContent = ({
             <Text size={1}>{popoverDescription}</Text>
           </Box>
         </Flex>
-        <Flex gap={3} justify="flex-end" paddingX={4} paddingBottom={4}>
+        <Flex gap={3} justifyContent="flex-end" paddingX={4} paddingBottom={4}>
           <Button
             mode="bleed"
             text={t('canvas.banner.popover-button-text')}
@@ -111,7 +105,7 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
   const togglePopover = useCallback(() => setOpen((prev) => !prev), [])
   const onClose = useCallback(() => setOpen(false), [])
   return (
-    <Flex align={'center'} gap={2}>
+    <Flex alignItems={'center'} gap={2}>
       <Text size={1} weight="medium">
         {variantText}
       </Text>
@@ -141,6 +135,7 @@ export function CanvasLinkedBanner() {
   const id = displayed?._id || documentId
   const {companionDoc} = useCanvasCompanionDoc(id)
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'banner')
+  const {isAvailable} = useCanvasNavigate()
 
   if (!companionDoc) return null
 
@@ -150,11 +145,15 @@ export function CanvasLinkedBanner() {
       data-test-id="canvas-linked-banner"
       paddingY={0}
       content={<CanvasLinkedBannerContent documentId={id} />}
-      action={{
-        mode: 'ghost',
-        text: t('canvas.banner.edit-in-canvas-action'),
-        onClick: navigateToCanvas,
-      }}
+      action={
+        isAvailable
+          ? {
+              mode: 'ghost',
+              text: t('canvas.banner.edit-in-canvas-action'),
+              onClick: navigateToCanvas,
+            }
+          : undefined
+      }
     />
   )
 }

@@ -111,7 +111,9 @@ This function includes a `socialPost` document type schema with a custom charact
    ```ts
    // sanity.blueprint.ts
    import 'dotenv/config'
+
    import process from 'node:process'
+
    import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 
    // Extract environment variables for platforms you want to use

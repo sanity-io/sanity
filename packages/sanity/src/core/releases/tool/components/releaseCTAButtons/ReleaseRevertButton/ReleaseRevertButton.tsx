@@ -74,7 +74,15 @@ const ConfirmReleaseDialog = ({
   const releaseDisplayTitle =
     release.metadata.title || tCore('release.placeholder-untitled-release')
   const hasPostPublishTransactions = usePostPublishTransactions(documents)
-  const getDocumentRevertStates = useDocumentRevertStates(documents)
+  const documentRevertStates = useDocumentRevertStates(documents)
+  const isResolvingRevertStates = documentRevertStates === null
+  const unresolvedCount = documentRevertStates?.unresolvedDocumentIds.length ?? 0
+  // Two cards: a failed request can be retried, history pruned by retention cannot
+  const requestFailedCount =
+    documentRevertStates?.states.filter(
+      (state) => state.type === 'unresolved' && state.reason === 'request-failed',
+    ).length ?? 0
+  const historyUnavailableCount = unresolvedCount - requestFailedCount
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
   const toast = useToast()
   const telemetry = useTelemetry()
@@ -89,19 +97,19 @@ const ConfirmReleaseDialog = ({
 
   const handleRevertRelease = useCallback(async () => {
     setRevertReleaseStatus('reverting')
-    const documentRevertStates = await getDocumentRevertStates()
 
     const revertReleaseId = createReleaseId()
 
     // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
     const run = async () => {
-      if (!documentRevertStates) {
-        throw new Error('Unable to find documents to revert')
+      // The confirm button is disabled in these states; this guards against a stale click.
+      if (!documentRevertStates || documentRevertStates.unresolvedDocumentIds.length > 0) {
+        throw new Error('Unable to determine the previous state of every document in the release')
       }
 
       await revertRelease(
         revertReleaseId,
-        documentRevertStates,
+        documentRevertStates.revertDocuments,
         {
           title: t('revert-release.title', {
             title: releaseDisplayTitle,
@@ -175,7 +183,7 @@ const ConfirmReleaseDialog = ({
       })
   }, [
     setRevertReleaseStatus,
-    getDocumentRevertStates,
+    documentRevertStates,
     revertRelease,
     t,
     releaseDisplayTitle,
@@ -206,8 +214,9 @@ const ConfirmReleaseDialog = ({
           ),
           tone: 'positive',
           onClick: handleRevertRelease,
-          loading: revertReleaseStatus === 'reverting',
-          disabled: revertReleaseStatus === 'reverting',
+          loading: revertReleaseStatus === 'reverting' || isResolvingRevertStates,
+          disabled:
+            revertReleaseStatus === 'reverting' || isResolvingRevertStates || unresolvedCount > 0,
         },
       }}
     >
@@ -222,6 +231,61 @@ const ConfirmReleaseDialog = ({
           />
         }
       </Text>
+      {isResolvingRevertStates && (
+        <Box paddingTop={3}>
+          <Text muted size={1} data-testid="revert-resolving">
+            {t('revert-dialog.confirm-revert.resolving')}
+          </Text>
+        </Box>
+      )}
+      {documentRevertStates && documentRevertStates.revertCount > 0 && (
+        <Box paddingTop={3}>
+          <Text muted size={1} data-testid="revert-summary-restore">
+            {t('revert-dialog.confirm-revert.summary-restore', {
+              count: documentRevertStates.revertCount,
+            })}
+          </Text>
+        </Box>
+      )}
+      {documentRevertStates && documentRevertStates.unpublishCount > 0 && (
+        <Box paddingTop={3}>
+          <Text muted size={1} data-testid="revert-summary-unpublish">
+            {t('revert-dialog.confirm-revert.summary-unpublish', {
+              count: documentRevertStates.unpublishCount,
+            })}
+          </Text>
+        </Box>
+      )}
+      {historyUnavailableCount > 0 && (
+        <Card
+          marginTop={4}
+          padding={3}
+          radius={2}
+          shadow={1}
+          tone="critical"
+          data-testid="revert-history-unavailable-card"
+        >
+          <Text muted size={1}>
+            {t('revert-dialog.confirm-revert.history-unavailable-card', {
+              count: historyUnavailableCount,
+            })}
+          </Text>
+        </Card>
+      )}
+      {requestFailedCount > 0 && (
+        <Card
+          marginTop={4}
+          padding={3}
+          radius={2}
+          shadow={1}
+          tone="critical"
+          data-testid="revert-unresolved-card"
+        >
+          <Text muted size={1}>
+            {t('revert-dialog.confirm-revert.unresolved-card', {count: requestFailedCount})}
+          </Text>
+        </Card>
+      )}
       <Flex alignItems="center" paddingTop={4}>
         <Checkbox
           onChange={() => setStageNewRevertRelease((current) => !current)}

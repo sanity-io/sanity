@@ -60,7 +60,6 @@ describe('getEditEvents()', () => {
       timestamp: '2024-11-19T08:27:33.251404Z',
       author: 'p8xDvUMxC',
       contributors: ['p8xDvUMxC'],
-      releaseId: 'rkaihDvC1',
       revisionId: 'edit-tx-2',
       documentVariantType: 'version',
       transactions: [
@@ -108,7 +107,6 @@ describe('getEditEvents()', () => {
         id: 'new-tx',
         author: 'p8xDvUMxC',
         contributors: ['p8xDvUMxC'],
-        releaseId: 'rkaihDvC1',
         revisionId: 'new-tx',
         documentVariantType: 'version',
         transactions: [
@@ -172,10 +170,10 @@ describe('getEditEvents()', () => {
       expect(events).toEqual([expectedEvent])
     })
 
-    it('fails soft for variant-scoped version ids (opaque scope hash as bundle segment)', () => {
+    it('does not populate releaseId for variant-scoped version ids', () => {
       // Variant document ids are `versions.<scopeId>.<groupId>` where the scope id is an opaque
-      // server-generated hash, not a release id. Attribution must not throw or misclassify —
-      // `releaseId` simply carries the hash (it will never match a real release downstream).
+      // server-generated hash, not a release id. Synthesized edits must not throw or treat the
+      // hash as a releaseId.
       const variantDocumentId = 'versions.a1b2c3d4e5f6.f8dece19-c458-4cff-bf76-732b00617183'
       const variantTx = {
         id: 'variant-edit-tx',
@@ -197,9 +195,9 @@ describe('getEditEvents()', () => {
       expect(events[0]).toMatchObject({
         type: 'editDocumentVersion',
         documentId: variantDocumentId,
-        releaseId: 'a1b2c3d4e5f6',
         documentVariantType: 'version',
       })
+      expect(events[0]).not.toHaveProperty('releaseId')
     })
   })
   describe('when the document is liveEdit', () => {

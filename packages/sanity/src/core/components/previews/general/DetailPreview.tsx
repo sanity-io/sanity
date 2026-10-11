@@ -1,5 +1,5 @@
-import {Flex, Stack, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Text} from '@sanity/ui'
+import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -52,6 +52,11 @@ export function DetailPreview(props: DetailPreviewProps) {
   )
 
   if (isPlaceholder) {
+    // `subtitle` is `undefined` while the value is still loading (both rows), `null` when the
+    // resolved value has none (a lazy preview component loading in front of it), so the
+    // placeholder has the rows the preview will have.
+    const showSubtitleSkeleton = subtitle === undefined || Boolean(subtitle)
+
     return (
       <RootFlex
         data-testid="detail-preview"
@@ -59,19 +64,24 @@ export function DetailPreview(props: DetailPreviewProps) {
         paddingRight={2}
         paddingY={2}
       >
-        <Flex align="center" flex={1} gap={3}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={3}>
           {media && <MediaSkeleton data-testid="detail-preview__media" />}
 
-          <Flex align="center" data-testid="detail-preview__header" flex={1}>
-            <Stack flex={1} gap={2}>
+          <Flex
+            alignItems="center"
+            data-testid="detail-preview__header"
+            flexBasis="0%"
+            flexGrow={1}
+          >
+            <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
               <TitleSkeleton />
-              <SubtitleSkeleton />
+              {showSubtitleSkeleton && <SubtitleSkeleton />}
               {description && (
                 <Box marginTop={1}>
                   <DescriptionSkeleton />
                 </Box>
               )}
-            </Stack>
+            </Flex>
           </Flex>
 
           {statusNode}
@@ -87,11 +97,11 @@ export function DetailPreview(props: DetailPreviewProps) {
       paddingRight={2}
       paddingY={2}
     >
-      <Flex align="center" flex={1} gap={3}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={3}>
         {media && <Media dimensions={mediaDimensions} layout="detail" media={media as any} />}
 
-        <Flex align="center" data-testid="detail-preview__header" flex={1}>
-          <Stack flex={1} gap={2}>
+        <Flex alignItems="center" data-testid="detail-preview__header" flexBasis="0%" flexGrow={1}>
+          <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
             <Text textOverflow="ellipsis" size={1} style={{color: 'inherit'}} weight="medium">
               {title && renderPreviewNode(title, 'detail')}
               {!title && <>{t('preview.default.title-fallback')}</>}
@@ -110,7 +120,7 @@ export function DetailPreview(props: DetailPreviewProps) {
                 </DescriptionText>
               </Box>
             )}
-          </Stack>
+          </Flex>
 
           {statusNode}
         </Flex>

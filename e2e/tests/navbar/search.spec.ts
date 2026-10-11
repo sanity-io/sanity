@@ -37,6 +37,11 @@ function queriesOf(recentSearches: StoredSearchItem[]): string[] {
 }
 
 test('searching creates unique saved searches', async ({page, sanityClient, _testContext}) => {
+  // Three search → open-result → persisted-write round trips against the live
+  // API: on a loaded CI runner two healthy rounds alone have taken ~35s, so
+  // the default 60s budget leaves no room for a single slow round.
+  test.slow()
+
   const dataset = sanityClient.config().dataset
   const storedSearchKey = `${SEARCH_KEY}.${dataset}`
 
@@ -110,12 +115,19 @@ test('searching creates unique saved searches', async ({page, sanityClient, _tes
     // re-runs a search when the terms change, so a response that comes back
     // without it is never retried on its own. Opening is part of the retry
     // because a studio that is still settling can drop the popover again.
+    //
+    // Each attempt gets a generous visibility window: on a starved CI runner
+    // the studio can take well over five seconds to *render* results it has
+    // already received (a CI trace shows the matching response arriving within
+    // an attempt's window while the option only painted ~20s later), and every
+    // retype cancels the in-flight search and starts that work over — with a
+    // short window the retries livelock the very rendering they wait for.
     await expect(async () => {
       await openSearchIfClosed()
       await searchInput.fill('')
       await searchInput.fill(query)
-      await expect(seededResult).toBeVisible({timeout: 5_000})
-    }).toPass({intervals: [1_000, 2_000], timeout: 30_000})
+      await expect(seededResult).toBeVisible({timeout: 15_000})
+    }).toPass({intervals: [1_000, 2_000], timeout: 45_000})
 
     // Wait for the write itself rather than reading the value back afterwards:
     // the studio rebuilds recent searches from the value it last saw, so the

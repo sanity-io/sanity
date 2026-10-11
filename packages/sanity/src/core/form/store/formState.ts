@@ -18,8 +18,8 @@ import {
 } from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
+import {dequal as _isEqual} from 'dequal/lite'
 import castArray from 'lodash-es/castArray.js'
-import _isEqual from 'lodash-es/isEqual.js'
 
 import {emptyValuesByType} from '../../field/diff/helpers'
 import {type FIXME} from '../../FIXME'

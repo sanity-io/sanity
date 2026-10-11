@@ -1,6 +1,7 @@
 import {MEDIA_LIBRARY_NAME, mediaLibrary} from '../../media-library/plugin'
 import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegrationPlugin'
-import {comments} from '../comments/plugin'
+import {comments as commentsV2} from '../comments-v2/plugin'
+import {comments as commentsCurrent} from '../comments/plugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
 // oxlint-disable-next-line no-restricted-imports
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publishing/plugin'
@@ -18,7 +19,7 @@ import {
 
 const defaultPlugins = (options: DefaultPluginsOptions) => [
   variants(),
-  comments(),
+  options.comments.v2 ? commentsV2() : commentsCurrent(),
   tasks(),
   scheduledPublishing(),
   releases(),
@@ -69,6 +70,10 @@ export function getDefaultPluginsOptions(
   workspace: WorkspaceOptions | SingleWorkspace,
 ): DefaultPluginsOptions {
   return {
+    comments: {
+      v2: false,
+      ...workspace.beta?.comments,
+    },
     tasks: {
       enabled: true,
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

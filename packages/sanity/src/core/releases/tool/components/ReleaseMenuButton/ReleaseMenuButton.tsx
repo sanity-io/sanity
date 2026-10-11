@@ -1,11 +1,12 @@
 import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Spinner, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Spinner, Text, useClickOutsideEvent} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -256,7 +257,7 @@ export const ReleaseMenuButton = ({
           },
         }}
       >
-        <Stack gap={4} paddingX={4} paddingBottom={4}>
+        <Flex gap={4} paddingX={4} paddingBottom={4} flexDirection="column">
           <ReleasePreviewCard release={release} />
           {!!documentsCount && (
             <Text muted size={1}>
@@ -269,7 +270,7 @@ export const ReleaseMenuButton = ({
               />
             </Text>
           )}
-        </Stack>
+        </Flex>
       </Dialog>
     )
   }, [

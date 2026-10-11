@@ -452,10 +452,11 @@ test('clipboard operations', async ({electronApp, window}) => {
 ### Testing Packaged Apps
 
 ```typescript
+import {execSync} from 'child_process'
+import path from 'path'
+
 // fixtures/packaged-electron.ts
 import {test as base, _electron as electron} from '@playwright/test'
-import path from 'path'
-import {execSync} from 'child_process'
 
 export const test = base.extend({
   electronApp: async ({}, use) => {

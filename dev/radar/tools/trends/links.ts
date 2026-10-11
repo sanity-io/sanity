@@ -39,6 +39,21 @@ export function compareUrl(fromSha: string, toSha: string): string {
   return `https://github.com/${REPO}/compare/${fromSha}...${toSha}`
 }
 
+/**
+ * `gh` command dispatching an A/B bench run that compares two commits
+ * (bench.yml `ab_from`/`ab_to` inputs — full shas required). A command to
+ * copy rather than a link: GitHub has no URL that prefills workflow_dispatch
+ * inputs. `-R` pins the repo so the command works from any directory.
+ */
+export function abDispatchCommand(fromSha: string, toSha: string): string {
+  return `gh workflow run bench.yml -R ${REPO} -f ab_from=${fromSha} -f ab_to=${toSha}`
+}
+
+/** The dispatched-runs list, for watching an A/B comparison after dispatching it. */
+export function dispatchRunsUrl(): string {
+  return `https://github.com/${REPO}/actions/workflows/bench.yml?query=event%3Aworkflow_dispatch`
+}
+
 /** Link a scenario's source file on the branch it was measured on (or main). */
 export function sourceFileUrl(path: string, branch = 'main'): string {
   return `https://github.com/${REPO}/blob/${branch}/${path}`

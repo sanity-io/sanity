@@ -1,5 +1,6 @@
 import {type Validators} from '@sanity/types'
 
+import {validationMarkerCodes} from '../codes'
 import {genericValidators} from './genericValidator'
 
 const DUMMY_ORIGIN = 'http://sanity'
@@ -15,7 +16,11 @@ export const stringValidators: Validators = {
       return true
     }
 
-    return message || i18n.t('validation:string.minimum-length', {minLength})
+    return {
+      code: validationMarkerCodes.stringMinimumLength,
+      details: {actualLength: value.length, minimumLength: minLength},
+      message: message || i18n.t('validation:string.minimum-length', {minLength}),
+    }
   },
 
   max: (maxLength, value, message, {i18n}) => {
@@ -23,7 +28,11 @@ export const stringValidators: Validators = {
       return true
     }
 
-    return message || i18n.t('validation:string.maximum-length', {maxLength})
+    return {
+      code: validationMarkerCodes.stringMaximumLength,
+      details: {actualLength: value.length, maximumLength: maxLength},
+      message: message || i18n.t('validation:string.maximum-length', {maxLength}),
+    }
   },
 
   length: (wantedLength, value, message, {i18n}) => {
@@ -32,7 +41,11 @@ export const stringValidators: Validators = {
       return true
     }
 
-    return message || i18n.t('validation:string.exact-length', {wantedLength})
+    return {
+      code: validationMarkerCodes.stringExactLength,
+      details: {actualLength: strValue.length, expectedLength: wantedLength},
+      message: message || i18n.t('validation:string.exact-length', {wantedLength}),
+    }
   },
 
   uri: (constraints, value, message, {i18n}) => {
@@ -51,19 +64,31 @@ export const stringValidators: Validators = {
       // to new URL(str, base), and will fail if invoked with new URL(strValue, undefined)
       url = allowRelative ? new URL(strValue, DUMMY_ORIGIN) : new URL(strValue)
     } catch {
-      return message || i18n.t('validation:string.url.invalid')
+      return {
+        code: validationMarkerCodes.stringUrlInvalid,
+        message: message || i18n.t('validation:string.url.invalid'),
+      }
     }
 
     if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
-      return message || i18n.t('validation:string.url.not-relative')
+      return {
+        code: validationMarkerCodes.stringUrlNotRelative,
+        message: message || i18n.t('validation:string.url.not-relative'),
+      }
     }
 
     if (!allowRelative && url.origin === DUMMY_ORIGIN && isRelativeUrl(strValue)) {
-      return message || i18n.t('validation:string.url.not-absolute')
+      return {
+        code: validationMarkerCodes.stringUrlNotAbsolute,
+        message: message || i18n.t('validation:string.url.not-absolute'),
+      }
     }
 
     if (!allowCredentials && (url.username || url.password)) {
-      return message || i18n.t('validation:string.url.includes-credentials')
+      return {
+        code: validationMarkerCodes.stringUrlCredentialsNotAllowed,
+        message: message || i18n.t('validation:string.url.includes-credentials'),
+      }
     }
 
     const urlScheme = url.protocol.replace(/:$/, '')
@@ -71,7 +96,11 @@ export const stringValidators: Validators = {
     const matchesAllowedScheme =
       isRelative || options.scheme.some((scheme) => scheme.test(urlScheme))
     if (!matchesAllowedScheme) {
-      return message || i18n.t('validation:string.url.disallowed-scheme', {scheme: urlScheme})
+      return {
+        code: validationMarkerCodes.stringUrlSchemeNotAllowed,
+        details: {scheme: urlScheme},
+        message: message || i18n.t('validation:string.url.disallowed-scheme', {scheme: urlScheme}),
+      }
     }
 
     return true
@@ -80,11 +109,17 @@ export const stringValidators: Validators = {
   stringCasing: (casing, value, message, {i18n}) => {
     const strValue = value || ''
     if (casing === 'uppercase' && strValue !== strValue.toLocaleUpperCase()) {
-      return message || i18n.t('validation:string.uppercase')
+      return {
+        code: validationMarkerCodes.stringUppercase,
+        message: message || i18n.t('validation:string.uppercase'),
+      }
     }
 
     if (casing === 'lowercase' && strValue !== strValue.toLocaleLowerCase()) {
-      return message || i18n.t('validation:string.lowercase')
+      return {
+        code: validationMarkerCodes.stringLowercase,
+        message: message || i18n.t('validation:string.lowercase'),
+      }
     }
 
     return true
@@ -92,7 +127,10 @@ export const stringValidators: Validators = {
 
   presence: (flag, value, message, {i18n}) => {
     if (flag === 'required' && !value) {
-      return message || i18n.t('validation:generic.required', {context: 'string'})
+      return {
+        code: validationMarkerCodes.valueRequired,
+        message: message || i18n.t('validation:generic.required', {context: 'string'}),
+      }
     }
 
     return true
@@ -107,13 +145,17 @@ export const stringValidators: Validators = {
     pattern.lastIndex = 0
     const matches = pattern.test(strValue)
     if ((!invert && !matches) || (invert && matches)) {
-      if (message) {
-        return message
+      return {
+        code: invert
+          ? validationMarkerCodes.stringRegexMatch
+          : validationMarkerCodes.stringRegexMismatch,
+        details: {invert, name: regName, pattern: pattern.source},
+        message:
+          message ||
+          (invert
+            ? i18n.t('validation:string.regex-match', {name: regName})
+            : i18n.t('validation:string.regex-does-not-match', {name: regName})),
       }
-
-      return invert
-        ? i18n.t('validation:string.regex-match', {name: regName})
-        : i18n.t('validation:string.regex-does-not-match', {name: regName})
     }
 
     return true
@@ -125,6 +167,9 @@ export const stringValidators: Validators = {
       return true
     }
 
-    return message || i18n.t('validation:string.email')
+    return {
+      code: validationMarkerCodes.stringEmail,
+      message: message || i18n.t('validation:string.email'),
+    }
   },
 }

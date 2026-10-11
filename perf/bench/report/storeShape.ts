@@ -1,3 +1,5 @@
+import {gitCommitId} from '@repo/utils/radar-ids'
+
 import {
   type BenchRunDocument,
   type ResourceSide,
@@ -15,8 +17,8 @@ import {
  *   declare either — stored as a keyed `{endpointClass, count}` array
  * - every object in an array gets a `_key`
  * - `git.commit` is added as a weak reference to the run's `gitCommit`
- *   document, derived from the deterministic id `gitCommit-<sha>` — no
- *   lookup. Weak because the target may not exist (PR-branch commits are
+ *   document, derived from the deterministic id (`gitCommitId` in
+ *   `@repo/utils/radar-ids`) — no lookup. Weak because the target may not exist (PR-branch commits are
  *   never synced; a fresh main run can beat the sync). `git.sha` stays the
  *   source of truth.
  *
@@ -30,7 +32,7 @@ export function toStorableRun(document: BenchRunDocument) {
     git: {
       ...document.git,
       ...(isFullSha
-        ? {commit: {_type: 'reference', _ref: `gitCommit-${document.git.sha}`, _weak: true}}
+        ? {commit: {_type: 'reference', _ref: gitCommitId(document.git.sha), _weak: true}}
         : {}),
     },
     scenarios: document.scenarios.map((scenario) => ({

@@ -1,4 +1,4 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -18,14 +18,9 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
+import {Flex, VStack} from 'ui5'
 
-const EllipsisText = styled(Text)`
-  /* text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap; */
-  max-width: 120px;
-`
+import {ellipsisText} from './VersionsPreviewList.css'
 
 const VersionItemPreview = ({
   versionId,
@@ -100,7 +95,7 @@ const VersionItemPreview = ({
       status={
         <Card border radius="full">
           <Card radius={'full'} tone={tone} style={{backgroundColor: 'transparent'}}>
-            <Flex align="center" gap={2} paddingY={2} paddingRight={3} paddingLeft={2}>
+            <Flex alignItems="center" gap={2} paddingY={2} paddingRight={3} paddingLeft={2}>
               <Text size={1}>
                 <ReleaseAvatarIcon
                   release={documentVariant === 'version' && release ? release : documentVariant}
@@ -112,15 +107,15 @@ const VersionItemPreview = ({
                   fallback={getVersionFromId(versionId) as string}
                 >
                   {({displayTitle}) => (
-                    <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
+                    <Text className={ellipsisText} size={1} weight="medium" textOverflow="ellipsis">
                       {displayTitle}
-                    </EllipsisText>
+                    </Text>
                   )}
                 </ReleaseTitle>
               ) : (
-                <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
+                <Text className={ellipsisText} size={1} weight="medium" textOverflow="ellipsis">
                   {systemTitle}
-                </EllipsisText>
+                </Text>
               )}
             </Flex>
           </Card>
@@ -151,11 +146,11 @@ export const VersionsPreviewList = ({
 
   return (
     <Card border padding={1} radius={2}>
-      <Stack>
+      <VStack>
         {documentVersions?.map((version) => (
           <VersionItemPreview key={version} versionId={version} schemaType={schemaType} />
         ))}
-      </Stack>
+      </VStack>
     </Card>
   )
 }

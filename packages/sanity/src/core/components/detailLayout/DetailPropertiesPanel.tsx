@@ -1,8 +1,8 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {Fragment, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 // At or above this many rows, a `multiColumn` section splits into two side-by-side columns so a
 // long list (e.g. six targeting conditions) reads as a compact block instead of a tall stack.
@@ -103,7 +103,7 @@ function PropertyRowsGrid({
           </Text>
           {/* Pure-text value on one left edge; a long value truncates (title tooltip shows the full
               text) rather than wrapping and breaking the single-line grid. */}
-          <Box style={{minWidth: 0}}>
+          <Box>
             {typeof row.value === 'string' ? (
               <Text size={1} textOverflow="ellipsis" title={row.value}>
                 {row.value}
@@ -146,7 +146,7 @@ export function DetailPropertiesPanel(props: {
       $maxWidth={maxWidth}
       data-testid={testId}
     >
-      <Stack gap={4}>
+      <VStack gap={4}>
         {sections.map((section, sectionIndex) => {
           const rows = section.rows.filter((row): row is DetailPropertyRow => Boolean(row))
           if (rows.length === 0) return null
@@ -161,24 +161,24 @@ export function DetailPropertiesPanel(props: {
           return (
             // Sections are positional and static, so the index is a stable key.
             // oxlint-disable-next-line no-array-index-key
-            <Stack key={sectionIndex} gap={2}>
+            <VStack key={sectionIndex} gap={2}>
               {section.title && (
                 <Text muted size={0} weight="semibold" style={{textTransform: 'uppercase'}}>
                   {section.title}
                 </Text>
               )}
               {splitIntoColumns ? (
-                <Flex gap={4} wrap="wrap">
+                <Flex gap={4} flexWrap="wrap">
                   <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(0, leftCount)} />
                   <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(leftCount)} />
                 </Flex>
               ) : (
                 <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows} />
               )}
-            </Stack>
+            </VStack>
           )
         })}
-      </Stack>
+      </VStack>
     </PropertiesCard>
   )
 }

@@ -1,15 +1,15 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, type BadgeTone, Button, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Button, Card, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Box} from 'ui5'
+import {Container, Flex, Box, VStack} from 'ui5'
 
 import {formatValue} from '../trends/data'
-import {ciRunUrl, commitUrl} from '../trends/links'
+import {ciRunUrl, commitUrl, dispatchRunsUrl} from '../trends/links'
 import {
   type ComparisonMetric,
   type ComparisonRun,
@@ -71,9 +71,9 @@ export function ComparisonsTool() {
 
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
-      <Container width={2}>
-        <Stack gap={4}>
-          <Stack gap={3}>
+      <Container size={2}>
+        <VStack gap={4}>
+          <VStack gap={3}>
             <Text size={3} weight="semibold">
               A/B comparisons
             </Text>
@@ -84,10 +84,28 @@ export function ComparisonsTool() {
             </Text>
             <Card padding={3} radius={2} tone="transparent" border>
               <Text size={1}>
-                <code>gh workflow run bench.yml -f ab_from=&lt;sha&gt; -f ab_to=&lt;sha&gt;</code>
+                <code>
+                  gh workflow run bench.yml -R sanity-io/sanity -f ab_from=&lt;sha&gt; -f
+                  ab_to=&lt;sha&gt;
+                </code>
               </Text>
             </Card>
-          </Stack>
+            {/* A dispatched run takes ~30 minutes to land here; the runs list
+                is where to watch it in the meantime */}
+            <Flex>
+              <Button
+                as="a"
+                href={dispatchRunsUrl()}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Dispatched bench runs on GitHub (opens in a new tab)"
+                mode="ghost"
+                fontSize={1}
+                icon={LaunchIcon}
+                text="Dispatched runs"
+              />
+            </Flex>
+          </VStack>
 
           {live.error && (
             <Card padding={4} radius={3} tone="critical">
@@ -115,7 +133,7 @@ export function ComparisonsTool() {
               onToggle={() => setExpandedId((current) => (current === run._id ? null : run._id))}
             />
           ))}
-        </Stack>
+        </VStack>
       </Container>
     </Box>
   )
@@ -129,8 +147,8 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
 
   return (
     <Card padding={4} radius={3} border>
-      <Stack gap={4}>
-        <Flex align="center" gap={3} wrap="wrap">
+      <VStack gap={4}>
+        <Flex alignItems="center" gap={3} flexWrap="wrap">
           <Button
             mode="bleed"
             padding={2}
@@ -141,7 +159,7 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
             onClick={onToggle}
           />
           <Box flexBasis="0%" flexGrow={1}>
-            <Flex align="center" gap={2} wrap="wrap">
+            <Flex alignItems="center" gap={2} flexWrap="wrap">
               <ShaLink sha={fromSha} />
               <Text size={1} muted>
                 →
@@ -174,18 +192,18 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
 
         {expanded &&
           (run.scenarios ?? []).map((scenario) => (
-            <Stack key={`${scenario.mode ?? scenario.kind}-${scenario.scenario}`} gap={3}>
+            <VStack key={`${scenario.mode ?? scenario.kind}-${scenario.scenario}`} gap={3}>
               <Text size={1} weight="medium">
                 {scenario.scenario} · {scenario.mode ?? scenario.kind}
               </Text>
-              <Stack gap={2}>
+              <VStack gap={2}>
                 {(scenario.metrics ?? []).map((metric) => (
                   <MetricRow key={metric.label} metric={metric} />
                 ))}
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           ))}
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -217,7 +235,7 @@ function MetricRow(props: {metric: ComparisonMetric}) {
   const sign = (value: number) => `${value >= 0 ? '+' : ''}${formatValue(value, metric.unit)}`
 
   return (
-    <Flex align="center" gap={3} wrap="wrap">
+    <Flex alignItems="center" gap={3} flexWrap="wrap">
       <Box style={{width: 220}}>
         <Text size={1} textOverflow="ellipsis">
           {metric.label}

@@ -78,16 +78,19 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
     ? editState.published
     : (editState.version ?? editState.draft)
 
-  const collatedDivergences =
-    !hasUpstreamVersion || typeof upstreamId === 'undefined' || typeof subjectId === 'undefined'
-      ? {
-          context: new Subject<FindDivergencesContext>(),
-          observable: of(collateDocumentDivergencesInitialState),
-        }
-      : collateDocumentDivergences({
-          subjectId: subjectId,
-          upstreamId: upstreamId,
-        })
+  const collatedDivergences = useMemo(
+    () =>
+      !hasUpstreamVersion || typeof upstreamId === 'undefined' || typeof subjectId === 'undefined'
+        ? {
+            context: new Subject<FindDivergencesContext>(),
+            observable: of(collateDocumentDivergencesInitialState),
+          }
+        : collateDocumentDivergences({
+            subjectId: subjectId,
+            upstreamId: upstreamId,
+          }),
+    [hasUpstreamVersion, upstreamId, subjectId],
+  )
 
   useCollateDivergencesContext({
     upstreamHead,
@@ -192,6 +195,7 @@ function useCollateDivergencesContext({
           b: subjectHead?._id,
           client,
         }),
+    undefined,
   )
 
   const listenUpstreamHead = useMemo(() => new BehaviorSubject<SanityDocument | null>(null), [])
@@ -267,5 +271,5 @@ function useCollateDivergencesContext({
   // The subscription exists to drive the `context.next` pipeline above; the
   // returned snapshot is not consumed for rendering, so deferring it would
   // only desynchronize the pipeline.
-  return useSyncObservable(listenContext)
+  return useSyncObservable(listenContext, undefined)
 }

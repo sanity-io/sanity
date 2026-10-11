@@ -1,8 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CircleIcon} from '@sanity/icons/Circle'
-import {Card, Stack, Text, type CardTone} from '@sanity/ui'
+import {Card, Text, type CardTone} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {PerspectiveFilter} from '../PerspectiveFilter'
@@ -50,7 +50,7 @@ export const Enabled: Story = {
   args: {prefix: 'Version', tone: 'default', children: null},
   render: () => (
     <Card padding={4}>
-      <Stack gap={4}>
+      <VStack gap={4}>
         {CASES.map(({tone, label, caption}) => (
           <Flex key={tone} alignItems="center" gap={4}>
             <PerspectiveFilter prefix="Version" tone={tone}>
@@ -61,7 +61,7 @@ export const Enabled: Story = {
             </Text>
           </Flex>
         ))}
-      </Stack>
+      </VStack>
     </Card>
   ),
 }
@@ -71,7 +71,7 @@ export const Selected: Story = {
   args: {prefix: 'Version', tone: 'default', children: null},
   render: () => (
     <Card padding={4}>
-      <Stack gap={4}>
+      <VStack gap={4}>
         {CASES.map(({tone, label, caption}) => (
           <Flex key={tone} alignItems="center" gap={4}>
             <PerspectiveFilter
@@ -87,7 +87,7 @@ export const Selected: Story = {
             </Text>
           </Flex>
         ))}
-      </Stack>
+      </VStack>
     </Card>
   ),
 }

@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Schema} from '@sanity/types'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import omit from 'lodash-es/omit.js'
 import {useMemo} from 'react'
 

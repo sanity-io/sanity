@@ -2765,13 +2765,13 @@ describe('checkoutPair -- version documents', () => {
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
 
-    // The seed written by the creatable-variant flow always carries `_system.variant` — the
+    // The seed written by the creatable-variant flow always carries `_system.variants` — the
     // discriminator that routes the create to `variant.create` (addressed by coordinates, with
     // the seeded document). `document.create` would reject with documentAlreadyExistsError,
     // since the group already exists (the published variant sibling at minimum).
     const system = {
       group: {_ref: 'publishedId', _weak: true as const},
-      variant: {_ref: '_.variants.alpha', _weak: true as const},
+      variants: [{_ref: '_.variants.alpha', _key: 'k-123'}],
       bundleId: 'drafts',
       scopeId: 'varscope',
     }
@@ -2806,6 +2806,65 @@ describe('checkoutPair -- version documents', () => {
           publishedId: 'publishedId',
           patch: {set: {title: 'edited'}},
         },
+      ],
+      {
+        tag: 'document.commit',
+        transactionId: expect.any(String),
+      },
+    )
+
+    sub.unsubscribe()
+  })
+
+  test('variant version create routes off the legacy `_system.variant` reference on unmigrated seeds', async () => {
+    const variantIdPair = {
+      publishedId: 'publishedId',
+      draftId: 'draftId',
+      versionId: 'versions.varscope.publishedId',
+    }
+
+    const versionClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        action: mockedActionRequest,
+      },
+      withConfig: vi.fn(() => versionClient),
+    }
+
+    const {version, draft, published} = checkoutPair(
+      versionClient as any as SanityClient,
+      variantIdPair,
+      of(true),
+    )
+    const combined = merge(draft.events, published.events, version!.events)
+    const sub = combined.subscribe()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    const system = {
+      group: {_ref: 'publishedId', _weak: true as const},
+      variant: {_ref: '_.variants.alpha'},
+      bundleId: 'drafts',
+      scopeId: 'varscope',
+    }
+    version!.mutate([
+      version!.create({
+        _type: 'any',
+        _createdAt: 'now',
+        title: 'seeded from legacy published variant',
+        _system: system,
+      }),
+    ])
+    version!.commit()
+
+    expect(mockedActionRequest).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({
+          actionType: 'sanity.action.document.variant.create',
+          publishedId: 'publishedId',
+          variantId: 'alpha',
+          bundleId: 'drafts',
+        }),
       ],
       {
         tag: 'document.commit',
