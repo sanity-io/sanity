@@ -107,7 +107,9 @@ export interface ChangeIndicatorProps {
   withHoverEffect?: boolean
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function ChangeIndicator(
   props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {

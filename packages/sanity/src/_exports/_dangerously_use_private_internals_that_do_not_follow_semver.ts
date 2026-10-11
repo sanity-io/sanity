@@ -10,12 +10,9 @@
  * If you import from this entry anyway: pin an exact `sanity` version, expect breakage on every
  * upgrade, and know that there is no support for it.
  *
- * This entry re-exports every declaration on the public `sanity`, `sanity/structure` and
- * `sanity/router` entries that carries the `@internal` TSDoc release tag. Those symbols are still
- * exported from the public entries for now; this entry exists so that consumers that depend on
- * them can move to an import path that states the contract, ahead of the public entries dropping
- * them in a future major. The `internals-entry-completeness` test in the `@repo/test-dts-exports`
- * workspace fails when an `@internal` export of a public entry is missing here.
+ * Everything here carries the `@internal` TSDoc release tag, and the public `sanity`,
+ * `sanity/structure`, `sanity/router` and `sanity/presentation` entries no longer export it. The
+ * `internal-exports` test in the `@repo/test-dts-exports` workspace enforces both directions.
  */
 
 // From `sanity`
@@ -23,7 +20,7 @@ export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
-export {ChangeIndicator, type ChangeIndicatorProps} from '../core/changeIndicators/ChangeIndicator'
+export {type ChangeIndicatorProps} from '../core/changeIndicators/ChangeIndicator'
 export {type ConnectorContextValue} from '../core/changeIndicators/ConnectorContext'
 export {
   ChangeConnectorRoot,
@@ -91,16 +88,12 @@ export {
   useCopyErrorDetails,
 } from '../core/components/errorActions/useCopyErrorDetails'
 export {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
-export {
-  InsufficientPermissionsMessage,
-  type InsufficientPermissionsMessageProps,
-} from '../core/components/InsufficientPermissionsMessage'
+export {type InsufficientPermissionsMessageProps} from '../core/components/InsufficientPermissionsMessage'
 export {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
 export {PopoverDialog} from '../core/components/popoverDialog/PopoverDialog'
 export {PortalBoundaryProvider} from '../core/components/portalBoundary/PortalBoundaryProvider'
 export {usePortalBoundary} from '../core/components/portalBoundary/usePortalBoundary'
 export {
-  PreviewCard,
   type PreviewCardContextValue,
   ReferenceInputPreviewCard,
   usePreviewCard,
@@ -121,7 +114,7 @@ export {Resizable} from '../core/components/resizer/Resizable'
 export {useOnScroll} from '../core/components/scroll/hooks'
 export {ScrollContainer, type ScrollContainerProps} from '../core/components/scroll/scrollContainer'
 export {type ScrollContextValue, type ScrollEventHandler} from '../core/components/scroll/types'
-export {TextWithTone, type TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
+export {type TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
 export {TooltipOfDisabled} from '../core/components/TooltipOfDisabled'
 export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -132,10 +125,6 @@ export {
   LegacyLayerProvider,
   type ZIndexContextValueKey,
 } from '../core/components/transitional/LegacyLayerProvider'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  WithReferringDocuments,
-} from '../core/components/WithReferringDocuments'
 export {type ZIndexContextValue} from '../core/components/zOffsets/types'
 export {useZIndex} from '../core/components/zOffsets/useZIndex'
 export {ZIndexProvider} from '../core/components/zOffsets/ZIndexProvider'
@@ -149,9 +138,7 @@ export {
   ConfigResolutionError,
   type ConfigResolutionErrorOptions,
 } from '../core/config/ConfigResolutionError'
-export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {initialDocumentFieldActions} from '../core/config/document/fieldActions'
-export {defineDocumentFieldAction} from '../core/config/document/fieldActions/define'
 export {documentFieldActionsReducer} from '../core/config/document/fieldActions/reducer'
 export {getDocumentVersionType} from '../core/config/document/useConfiguredDocumentActionIds'
 export {flattenConfig} from '../core/config/flattenConfig'
@@ -160,10 +147,9 @@ export {
   createSourceFromConfig,
   createWorkspaceFromConfig,
   type CreateWorkspaceFromConfigOptions,
-  resolveConfig,
 } from '../core/config/resolveConfig'
 export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
-export {SchemaError, type SchemaErrorContext} from '../core/config/SchemaError'
+export {type SchemaErrorContext} from '../core/config/SchemaError'
 export {type NavbarAction} from '../core/config/studio/types'
 export {
   type AsyncConfigPropertyReducer,
@@ -195,7 +181,7 @@ export {
   type DocumentGroupInventoryPerspectiveList,
   type DocumentGroupInventoryReferencePreviewLinkProps,
 } from '../core/documentGroupInventory/types'
-export {isDev, isProd} from '../core/environment'
+export {isProd} from '../core/environment'
 export {FeedbackDialog, type FeedbackDialogProps} from '../core/feedback/components/FeedbackDialog'
 export {
   StudioFeedbackDialog,
@@ -216,12 +202,10 @@ export {
   type DiffVisitor,
   getAnnotationAtPath,
   getAnnotationColor,
-  getDiffAtPath,
   visitDiff,
 } from '../core/field/diff/annotations/helpers'
-export {useAnnotationColor, useDiffAnnotationColor} from '../core/field/diff/annotations/hooks'
 export {ChangeBreadcrumb} from '../core/field/diff/components/ChangeBreadcrumb'
-export {ChangeList, type ChangeListProps} from '../core/field/diff/components/ChangeList'
+export {type ChangeListProps} from '../core/field/diff/components/ChangeList'
 export {
   ChangeResolver,
   type ChangeResolverProps,
@@ -230,20 +214,19 @@ export {
 export {ChangesError} from '../core/field/diff/components/ChangesError'
 export {ChangeTitleSegment} from '../core/field/diff/components/ChangeTitleSegment'
 export {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../core/field/diff/components/constants'
-export {DiffCard, type DiffCardProps} from '../core/field/diff/components/DiffCard'
+export {type DiffCardProps} from '../core/field/diff/components/DiffCard'
 export {
   DiffErrorBoundary,
   type DiffErrorBoundaryProps,
   type DiffErrorBoundaryState,
 } from '../core/field/diff/components/DiffErrorBoundary'
-export {DiffFromTo, type DiffFromToProps} from '../core/field/diff/components/DiffFromTo'
+export {type DiffFromToProps} from '../core/field/diff/components/DiffFromTo'
 export {
   DiffInspectWrapper,
   type DiffInspectWrapperProps,
 } from '../core/field/diff/components/DiffInspectWrapper'
 export {DiffString, DiffStringSegment} from '../core/field/diff/components/DiffString'
 export {
-  DiffTooltip,
   type DiffTooltipProps,
   type DiffTooltipWithAnnotationsProps,
 } from '../core/field/diff/components/DiffTooltip'
@@ -279,9 +262,6 @@ export {
   normalizeIndexTupleSegment,
   normalizeKeySegment,
   normalizePathSegment,
-  pathsAreEqual,
-  pathToString,
-  stringToPath,
 } from '../core/field/paths/helpers'
 export {type FieldPreviewComponent} from '../core/field/preview/types'
 export {
@@ -291,10 +271,8 @@ export {
   type ChangeNode,
   type ChangeTitlePath,
   type Diff,
-  type DiffComponent,
   type DiffComponentOptions,
   type DiffComponentResolver,
-  type DiffProps,
   type FieldChangeNode,
   type FieldOperationsAPI,
   type FromToIndex,
@@ -302,7 +280,6 @@ export {
   type ItemDiff,
   type NullDiff,
   type NumberDiff,
-  type ObjectDiff,
   type ReferenceDiff,
   type StringDiff,
   type StringDiffSegment,
@@ -312,20 +289,14 @@ export {
 } from '../core/field/types'
 export {type FieldValueError, getValueError} from '../core/field/validation'
 export {type FIXME} from '../core/FIXME'
-export {FormField, type FormFieldProps} from '../core/form/components/formField/FormField'
-export {
-  FormFieldHeaderText,
-  type FormFieldHeaderTextProps,
-} from '../core/form/components/formField/FormFieldHeaderText'
+export {type FormFieldProps} from '../core/form/components/formField/FormField'
+export {type FormFieldHeaderTextProps} from '../core/form/components/formField/FormFieldHeaderText'
 export {FormFieldSet, type FormFieldSetProps} from '../core/form/components/formField/FormFieldSet'
 export {
   type FieldStatusProps,
   FormFieldStatus,
 } from '../core/form/components/formField/FormFieldStatus'
-export {
-  FormFieldValidationStatus,
-  type FormFieldValidationStatusProps,
-} from '../core/form/components/formField/FormFieldValidationStatus'
+export {type FormFieldValidationStatusProps} from '../core/form/components/formField/FormFieldValidationStatus'
 export {
   type FormFieldValidation,
   type FormFieldValidationError,
@@ -333,7 +304,6 @@ export {
   type FormFieldValidationWarning,
 } from '../core/form/components/formField/types'
 export {
-  FormInput,
   type FormInputAbsolutePathArg,
   type FormInputRelativePathArg,
 } from '../core/form/components/FormInput'
@@ -362,7 +332,6 @@ export {
   useVirtualizerScrollInstance,
   type VirtualizerScrollInstance,
 } from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
-export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {CrossDatasetReferencePreview} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 export {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
 export {
@@ -380,14 +349,9 @@ export {
   ArrayOfObjectsInputMembers,
   type ArrayOfObjectsInputMembersProps,
 } from '../core/form/members/array/ArrayOfObjectsInputMembers'
-export {MemberItemError} from '../core/form/members/array/MemberItemError'
-export {MemberField, type MemberFieldProps} from '../core/form/members/object/MemberField'
-export {MemberFieldError} from '../core/form/members/object/MemberFieldError'
+export {type MemberFieldProps} from '../core/form/members/object/MemberField'
 export {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
-export {
-  ObjectInputMember,
-  type ObjectInputMemberProps,
-} from '../core/form/members/object/ObjectInputMember'
+export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
 export {
   ObjectInputMembers,
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -395,7 +359,6 @@ export {
   type ObjectMembersProps,
 } from '../core/form/members/object/ObjectInputMembers'
 export {prefixPath, SANITY_PATCH_TYPE} from '../core/form/patch/patch'
-export {createPatchChannel} from '../core/form/patch/PatchChannel'
 export {resolveConditionalProperty} from '../core/form/store/conditional-property/resolveConditionalProperty'
 export {setAtPath} from '../core/form/store/stateTreeHelper'
 export {type DocumentFormNode, type HiddenField} from '../core/form/store/types/nodes'
@@ -412,11 +375,7 @@ export {
   type SetActiveGroupOperation,
 } from '../core/form/store/utils/getExpandOperations'
 export {mergeParseErrors, type ParseError} from '../core/form/store/utils/mergeParseErrors'
-export {
-  FormCallbacksProvider,
-  type FormCallbacksValue,
-  useFormCallbacks,
-} from '../core/form/studio/contexts/FormCallbacks'
+export {type FormCallbacksValue} from '../core/form/studio/contexts/FormCallbacks'
 export {
   ParseErrorsProvider,
   useParseErrorForPath,
@@ -452,11 +411,7 @@ export {
   type PrimitiveFieldProps,
 } from '../core/form/types/fieldProps'
 export {useDocumentForm} from '../core/form/useDocumentForm'
-export {
-  fromMutationPatches,
-  type MutationPatch,
-  toMutationPatches,
-} from '../core/form/utils/mutationPatch'
+export {type MutationPatch, toMutationPatches} from '../core/form/utils/mutationPatch'
 export {decodePath, encodePath} from '../core/form/utils/path'
 export {useConditionalToast} from '../core/hooks/useConditionalToast'
 export {
@@ -465,14 +420,12 @@ export {
   useConnectionState,
 } from '../core/hooks/useConnectionState'
 export {type DocumentIdStack, useDocumentIdStack} from '../core/hooks/useDocumentIdStack'
-export {useDocumentOperation} from '../core/hooks/useDocumentOperation'
 export {useDocumentOperationEvent} from '../core/hooks/useDocumentOperationEvent'
 export {
   deriveDocumentSyncState,
   type DocumentSyncState,
   useDocumentSyncState,
 } from '../core/hooks/useDocumentSyncState'
-export {useEditState} from '../core/hooks/useEditState'
 export {useFeatureEnabled} from '../core/hooks/useFeatureEnabled'
 export {useFilteredReleases} from '../core/hooks/useFilteredReleases'
 export {
@@ -481,10 +434,10 @@ export {
 } from '../core/hooks/useGlobalCopyPasteElementHandler'
 export {useManageFavorite, type UseManageFavoriteProps} from '../core/hooks/useManageFavorite'
 export {useReconnectingToast} from '../core/hooks/useReconnectingToast'
-export {type RelativeTimeOptions, useRelativeTime} from '../core/hooks/useRelativeTime'
+export {type RelativeTimeOptions} from '../core/hooks/useRelativeTime'
 export {useReviewChanges} from '../core/hooks/useReviewChanges'
 export {useStudioUrl} from '../core/hooks/useStudioUrl'
-export {type SyncState, useSyncState} from '../core/hooks/useSyncState'
+export {type SyncState} from '../core/hooks/useSyncState'
 export {
   type CreatableTargetDocument,
   getCreatableVariantTarget,
@@ -495,12 +448,7 @@ export {
   useTargetDocumentState,
 } from '../core/hooks/useTargetDocumentState'
 export {type TargetScopeIdOptions, useTargetScopeId} from '../core/hooks/useTargetScopeId'
-export {
-  type TimeAgoOpts,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  useTimeAgo,
-} from '../core/hooks/useTimeAgo'
-export {useValidationStatus} from '../core/hooks/useValidationStatus'
+export {type TimeAgoOpts} from '../core/hooks/useTimeAgo'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
 export {
@@ -520,15 +468,11 @@ export {
   type PerspectiveNotWriteableReason,
 } from '../core/perspective/isPerspectiveWriteable'
 export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
-export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
 export {type ReleasesNavMenuItemPropsGetter} from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
 export {useSetPerspective} from '../core/perspective/useSetPerspective'
 export {useSetVariant} from '../core/perspective/useSetVariant'
-export {
-  DocumentPreviewPresence,
-  type DocumentPreviewPresenceProps,
-} from '../core/presence/DocumentPreviewPresence'
+export {type DocumentPreviewPresenceProps} from '../core/presence/DocumentPreviewPresence'
 export {
   FieldPresence,
   FieldPresenceInner,
@@ -537,7 +481,7 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   FieldPresenceWithOverlay,
 } from '../core/presence/FieldPresence'
-export {PresenceOverlay, type PresenceOverlayProps} from '../core/presence/overlay/PresenceOverlay'
+export {type PresenceOverlayProps} from '../core/presence/overlay/PresenceOverlay'
 export {PresenceScope, type PresenceScopeProps} from '../core/presence/PresenceScope'
 export {
   type FieldPresenceData,
@@ -549,12 +493,8 @@ export {
   type ReportedRegionWithRect,
   type Size,
 } from '../core/presence/types'
-export {Preview} from '../core/preview/components/Preview'
 export {PreviewLoader} from '../core/preview/components/PreviewLoader'
-export {
-  SanityDefaultPreview,
-  type SanityDefaultPreviewProps,
-} from '../core/preview/components/SanityDefaultPreview'
+export {type SanityDefaultPreviewProps} from '../core/preview/components/SanityDefaultPreview'
 export {
   createDocumentPreviewStore,
   type DocumentPreviewStoreOptions,
@@ -566,19 +506,14 @@ export {
   type ObserveDocumentTypeFromIdFn,
   type Selection,
 } from '../core/preview/types'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  unstable_useObserveDocument,
-  useUnstableObserveDocument,
-} from '../core/preview/useObserveDocument'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+export {unstable_useObserveDocument} from '../core/preview/useObserveDocument'
 export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   unstable_useValuePreview,
   useValuePreview,
 } from '../core/preview/useValuePreview'
 export {getPreviewPaths} from '../core/preview/utils/getPreviewPaths'
-export {getPreviewStateObservable} from '../core/preview/utils/getPreviewStateObservable'
-export {getPreviewValueWithFallback} from '../core/preview/utils/getPreviewValueWithFallback'
 export {prepareForPreview} from '../core/preview/utils/prepareForPreview'
 export {Chip} from '../core/releases/components/Chip'
 export {VersionChip} from '../core/releases/components/documentHeader/VersionChip'
@@ -599,7 +534,6 @@ export {useArchivedReleases} from '../core/releases/store/useArchivedReleases'
 export {useReleasesIds} from '../core/releases/store/useReleasesIds'
 export {LATEST, PUBLISHED} from '../core/releases/util/const'
 export {getReleaseDocumentIdFromReleaseId} from '../core/releases/util/getReleaseDocumentIdFromReleaseId'
-export {getReleaseIdFromReleaseDocumentId} from '../core/releases/util/getReleaseIdFromReleaseDocumentId'
 export {getReleaseTone} from '../core/releases/util/getReleaseTone'
 export {isGoingToUnpublish} from '../core/releases/util/isGoingToUnpublish'
 export {
@@ -726,11 +660,10 @@ export {
   type DocumentTypeResolveState,
   useDocumentType,
 } from '../core/store/document/hooks/useDocumentType'
-export {useDocumentValues} from '../core/store/document/hooks/useDocumentValues'
 export {getInitialValueStream} from '../core/store/document/initialValue/initialValue'
 export {type InitialValueState} from '../core/store/document/initialValue/types'
 export {isNewDocument} from '../core/store/document/isNewDocument'
-export {listenQuery, type ListenQueryParams} from '../core/store/document/listenQuery'
+export {listenQuery} from '../core/store/document/listenQuery'
 export {selectUpstreamVersion} from '../core/store/document/selectUpstreamVersion'
 export {
   type DocumentPairTarget,
@@ -742,14 +675,12 @@ export {
   useInitialValue,
   useInitialValueResolverContext,
 } from '../core/store/document/useInitialValue'
-export {useResolveInitialValueForType} from '../core/store/document/useResolveInitialValueForType'
 export {EventsProvider, useEvents} from '../core/store/events/EventsProvider'
 export {type DocumentVersionEventType, type EventsStore} from '../core/store/events/types'
 export {useEventsStore} from '../core/store/events/useEventsStore'
 export {
   type DocumentPairPermissionsOptions,
   type DocumentPermission,
-  useDocumentPairPermissions,
   useDocumentPairPermissionsFromHookFactory,
 } from '../core/store/grants/documentPairPermissions'
 export {
@@ -798,7 +729,6 @@ export {
   type Status,
   type UserSessionPair,
 } from '../core/store/presence/types'
-export {useDocumentPresence} from '../core/store/presence/useDocumentPresence'
 export {useGlobalPresence} from '../core/store/presence/useGlobalPresence'
 export {createProjectStore, getProjectGrants} from '../core/store/project/projectStore'
 export {useProject} from '../core/store/project/useProject'
@@ -822,7 +752,6 @@ export {
   type MatchWorkspaceOptions,
   type MatchWorkspaceResult,
 } from '../core/studio/activeWorkspaceMatcher/matchWorkspace'
-export {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
 export {
   ColorSchemeCustomProvider,
   ColorSchemeLocalStorageProvider,
@@ -861,21 +790,7 @@ export {
   type StudioDiagnosticsBridgeApi,
 } from '../core/studio/diagnostics/StudioDiagnosticsBridge'
 export {StudioFeedbackProvider} from '../core/studio/feedback/StudioFeedbackProvider'
-export {
-  generateStudioManifest,
-  type GenerateStudioManifestOptions,
-} from '../core/studio/manifest/generateStudioManifest'
 export {LiveManifestRegisterProvider} from '../core/studio/manifest/LiveManifestRegisterProvider'
-export {
-  type ManifestWorkspaceInput,
-  type StudioManifest,
-  type StudioWorkspaceManifest,
-} from '../core/studio/manifest/types'
-export {uploadSchema} from '../core/studio/manifest/uploadSchema'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  renderStudio,
-} from '../core/studio/renderStudio'
 export {
   classifyConfigError,
   classifyRequestError,
@@ -952,7 +867,6 @@ export {
   WorkspacesProvider,
   type WorkspacesProviderProps,
 } from '../core/studio/workspaces/WorkspacesProvider'
-export {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../core/studioClient'
 export {IsLastPaneProvider} from '../core/tasks/context/isLastPane/IsLastPaneProvider'
 export {useDocumentPreviewValues} from '../core/tasks/hooks/useDocumentPreviewValues'
 export {
@@ -977,7 +891,7 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type LegacyThemeTints,
 } from '../core/theme/_legacy/types'
-export {useUserColor, useUserColorManager} from '../core/user-color/hooks'
+export {useUserColor} from '../core/user-color/hooks'
 export {createUserColorManager, type UserColorManagerOptions} from '../core/user-color/manager'
 export {
   UserColorManagerProvider,
@@ -992,13 +906,8 @@ export {
 } from '../core/user-color/types'
 export {getApiErrorCode, isInvalidSessionError, isUnauthorizedError} from '../core/util/apiErrors'
 export {catchWithCount} from '../core/util/catchWithCount'
+export {type LoadingTuple, type ReactHook} from '../core/util/createHookFromObservableFactory'
 export {
-  createHookFromObservableFactory,
-  type LoadingTuple,
-  type ReactHook,
-} from '../core/util/createHookFromObservableFactory'
-export {
-  collate,
   type CollatedHit,
   createDraftFrom,
   createPublishedFrom,
@@ -1018,7 +927,6 @@ export {getTargetDocument, getVariantPublishedSibling} from '../core/util/getTar
 export {globalScope} from '../core/util/globalScope'
 export {isArray} from '../core/util/isArray'
 export {isNonNullable} from '../core/util/isNonNullable'
-export {isRecord} from '../core/util/isRecord'
 export {isString} from '../core/util/isString'
 export {isTruthy} from '../core/util/isTruthy'
 export {measureFirstEmission, measureFirstMatch} from '../core/util/measureFirstEmission'
@@ -1038,7 +946,7 @@ export {
 export {escapeField, fieldNeedsEscape, joinPath} from '../core/util/searchUtils'
 export {supportsTouch} from '../core/util/supportsTouch'
 export {uncaughtErrorHandler} from '../core/util/uncaughtErrorHandler'
-export {sliceString, truncateString} from '../core/util/unicodeString'
+export {sliceString} from '../core/util/unicodeString'
 export {
   asLoadable,
   type ErrorState,
@@ -1066,16 +974,15 @@ export {getVariantTitle} from '../core/variants/tool/util'
 export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
 export {isVariantId} from '../core/variants/types'
 
+export {Rule as ConcreteRuleClass, type ValidationContext} from '@sanity/validation/_internal'
+
 // From `sanity/structure`
 export {ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog'
 export {type ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
 export {Pane} from '../structure/components/pane/Pane'
 export {PaneContent} from '../structure/components/pane/PaneContent'
-export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
 export {DocumentPane} from '../structure/panes/document/DocumentPane'
-export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
 export {type DocumentPaneProviderProps} from '../structure/panes/document/types'
-export {useDocumentPane} from '../structure/panes/document/useDocumentPane'
 export {usePaneOptions} from '../structure/panes/document/usePaneOptions'
 export {type DocumentListPaneProps} from '../structure/panes/documentList'
 export {ORDER_BY_IDS_PARAM_FIELD} from '../structure/panes/documentList/orderByIdsParam'
@@ -1144,7 +1051,6 @@ export {
   type MatchResult,
   type NextStateOrOptions,
 } from '../router/types'
-export {RouterContext} from '../router/useRouter'
 export {decodeJsonParams, encodeJsonParams} from '../router/utils/jsonParamsEncoding'
 export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

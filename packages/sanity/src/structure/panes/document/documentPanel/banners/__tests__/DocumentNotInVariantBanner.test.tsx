@@ -6,12 +6,12 @@ import {
   useDocumentVersions,
   useGetDefaultPerspective,
   usePerspective,
-  useVariantDocumentOperations,
-  type VersionInfoDocumentStub,
 } from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {type VersionInfoDocumentStub} from '../../../../../../core/releases/store/types'
+import {useVariantDocumentOperations} from '../../../../../../core/variants/hooks/useVariantDocumentOperations'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DocumentNotInVariantBanner} from '../DocumentNotInVariantBanner'
@@ -26,10 +26,16 @@ vi.mock('sanity', async () => {
     ...sanity,
     usePerspective: vi.fn(),
     useDocumentVersions: vi.fn(),
-    useVariantDocumentOperations: vi.fn(),
     useGetDefaultPerspective: vi.fn(),
   }
 })
+vi.mock(
+  '../../../../../../core/variants/hooks/useVariantDocumentOperations',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useVariantDocumentOperations: vi.fn(),
+  }),
+)
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>

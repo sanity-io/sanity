@@ -17,7 +17,9 @@ export interface DocumentInspectorHeaderProps {
   title: ReactNode
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function DocumentInspectorHeader(
   props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {

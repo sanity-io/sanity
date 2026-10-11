@@ -9,7 +9,7 @@ import {useDocumentOperationWithHistory} from './useDocumentOperationWithHistory
 import {useMemoizedDocumentPairTarget} from './useMemoizedDocumentPairTarget'
 
 /**
- * @internal
+ * @public
  * `version` accepts either a plain version name (release/bundle) or a {@link DocumentPairTarget}
  * declaring the resolved target of the selected perspective/variant. With the guarded target
  * kinds (`unresolved`, `target-missing`) the returned operations are disabled and throw if

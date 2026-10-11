@@ -6,12 +6,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
-  getDefaultVariant,
-  getPairTarget,
-  getTargetScopeId,
-  getTargetSiblings,
   InsufficientPermissionsMessage,
-  isPublishedPerspective,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -24,6 +19,13 @@ import {
   useValidationStatus,
 } from 'sanity'
 
+import {
+  getPairTarget,
+  getTargetScopeId,
+  getTargetSiblings,
+} from '../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../core/perspective/getDefaultVariant'
+import {isPublishedPerspective} from '../../core/releases/util/util'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {

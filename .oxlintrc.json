@@ -67,6 +67,12 @@
       {"category": "sanity/cli", "pattern": "src/_exports/cli.ts"},
       {"category": "sanity/desk", "pattern": "src/_exports/desk.ts"},
       {"category": "sanity/router", "pattern": "src/_exports/router.ts"},
+      {
+        // Leaf router utilities that src/core imports directly, so they can stay off the public
+        // `sanity/router` entry (they are internal)
+        "category": "sanity/router__shared",
+        "pattern": ["src/router/stickyParams.ts", "src/router/utils/jsonParamsEncoding.ts"]
+      },
       {"category": "sanity/structure", "pattern": "src/_exports/structure.ts"},
       {"category": "sanity/_singletons", "pattern": "src/_exports/_singletons.ts"}
     ]
@@ -612,7 +618,14 @@
                 "from": {"element": {"type": "sanity/_internal__contents"}},
                 "allow": {
                   "to": [
-                    {"file": {"categories": "sanity"}},
+                    {
+                      "file": {
+                        "categories": [
+                          "sanity",
+                          "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"
+                        ]
+                      }
+                    },
                     {"element": {"type": "sanity/_internal__contents"}}
                   ]
                 }
@@ -655,7 +668,15 @@
                 "allow": {
                   "to": [
                     {"element": {"type": "sanity__contents"}},
-                    {"file": {"categories": ["sanity/router", "sanity/_singletons"]}}
+                    {
+                      "file": {
+                        "categories": [
+                          "sanity/router",
+                          "sanity/router__shared",
+                          "sanity/_singletons"
+                        ]
+                      }
+                    }
                   ]
                 }
               },
@@ -709,13 +730,21 @@
                 "allow": {"to": {"element": {"type": "sanity/structure__contents"}}}
               },
               {
+                // Structure imports public API through the `sanity` entry and internals
+                // relatively from src/core. It must not import the internals entry: that entry
+                // re-exports structure modules, so the import would be a cycle.
                 "from": {"element": {"type": "sanity/structure__contents"}},
                 "allow": {
                   "to": [
-                    {"element": {"type": "sanity/structure__contents"}},
+                    {"element": {"type": ["sanity/structure__contents", "sanity__contents"]}},
                     {
                       "file": {
-                        "categories": ["sanity", "sanity/router", "sanity/_singletons"]
+                        "categories": [
+                          "sanity",
+                          "sanity/router",
+                          "sanity/router__shared",
+                          "sanity/_singletons"
+                        ]
                       }
                     }
                   ]
