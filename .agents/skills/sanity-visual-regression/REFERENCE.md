@@ -193,12 +193,15 @@ chromium-only, so it is unaffected by any of this.
   `[data-testid="loading-block"]` before it serializes; the `:visible` filter matters, because
   closed `@sanity/ui` overlays stay mounted with their own loading blocks inside.
 - **Content that cannot settle under the fixture goes in `ignoreSelectors`, not in a wait.** The
-  CDP instrumentation that breaks streaming connections also breaks document previews: the
-  `validation` `documentListItem` at the top of the root structure list resolved in 2 of 13 local
+  CDP instrumentation that breaks streaming connections also breaks document previews, so any
+  `documentListItem` row is a coin flip: one in the root structure list resolved in 2 of 13 local
   runs and kept its media and text skeletons indefinitely in the rest, so neither state can be
   waited for. `test.use({ignoreSelectors: [...]})` (a `ChromaticConfig` option, forwarded as the
-  `chromatic.ignoreSelectors` parameter of the generated archive story) drops that one region from
-  the comparison and keeps the rest of the pane covered.
+  `chromatic.ignoreSelectors` parameter of the generated archive story) drops just that region
+  from the comparison and keeps the rest of the pane covered. Only document previews need this —
+  a `S.listItem()` renders a static title and icon, because `ListPaneContent` passes a `value` to
+  `PaneItem` (and so mounts a `PaneItemPreview`) only for items carrying an `_id`, which only
+  `S.documentListItem()` sets.
 - The e2e studio (`dev/studio-e2e-testing`) must set a workspace `icon`. The default
   letter-mark hashes `projectId` + `dataset` into a color, and e2e datasets change per PR.
 - Archives are written into the Playwright output dir during the run; the `e2e.yml` workflow
