@@ -13,12 +13,20 @@ import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
 // Opened from the menu, so the dialog (form, date handling) is fetched on first use rather
-// than with the navbar.
+// than with the navbar. Opening the menu starts the fetch, so the chunk is normally there by
+// the time the item is clicked and the dialog opens without a wait.
+const importCreateReleaseDialog = () =>
+  import('../../releases/components/dialog/CreateReleaseDialog')
+
 const CreateReleaseDialog = lazy(() =>
-  import('../../releases/components/dialog/CreateReleaseDialog').then((module) => ({
+  importCreateReleaseDialog().then((module) => ({
     default: module.CreateReleaseDialog,
   })),
 )
+
+function preloadCreateReleaseDialog() {
+  void importCreateReleaseDialog()
+}
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -82,6 +90,7 @@ export function GlobalPerspectiveMenu({
         }
         id="releases-menu"
         onClose={resetRangeVisibility}
+        onOpen={preloadCreateReleaseDialog}
         menu={
           <StyledMenu data-testid="release-menu" ref={styledMenuRef} padding={0}>
             <ReleasesList

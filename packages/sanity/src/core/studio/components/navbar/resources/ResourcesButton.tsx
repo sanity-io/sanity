@@ -19,18 +19,30 @@ import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 
 // The dialogs behind the help menu are only needed after a click, so they load on demand
-// instead of shipping with the navbar.
+// instead of shipping with the navbar. Opening the menu starts the fetch, so the chunks are
+// normally there by the time an item is clicked and the dialog opens without a wait.
+const importDiagnosticsDialog = () => import('./DiagnosticsDialog')
+const importStudioFeedbackDialog = () =>
+  import('../../../../feedback/components/StudioFeedbackDialog')
+const importStudioInfoDialog = () => import('./StudioInfoDialog')
+
 const DiagnosticsDialog = lazy(() =>
-  import('./DiagnosticsDialog').then((module) => ({default: module.DiagnosticsDialog})),
+  importDiagnosticsDialog().then((module) => ({default: module.DiagnosticsDialog})),
 )
 const StudioFeedbackDialog = lazy(() =>
-  import('../../../../feedback/components/StudioFeedbackDialog').then((module) => ({
+  importStudioFeedbackDialog().then((module) => ({
     default: module.StudioFeedbackDialog,
   })),
 )
 const StudioInfoDialog = lazy(() =>
-  import('./StudioInfoDialog').then((module) => ({default: module.StudioInfoDialog})),
+  importStudioInfoDialog().then((module) => ({default: module.StudioInfoDialog})),
 )
+
+function preloadResourcesDialogs() {
+  void importDiagnosticsDialog()
+  void importStudioFeedbackDialog()
+  void importStudioInfoDialog()
+}
 
 const StyledMenu = styled(Menu)`
   max-width: 300px;
@@ -115,6 +127,7 @@ export function ResourcesButton() {
           />
         }
         id="menu-button-resources"
+        onOpen={preloadResourcesDialogs}
         menu={
           <StyledMenu data-testid="menu-button-resources">
             {!isInDashboard && feedbackAvailable && (
