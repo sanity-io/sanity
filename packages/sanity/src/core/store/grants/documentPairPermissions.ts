@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema, type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
-import {map, shareReplay, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, map, shareReplay, switchMap} from 'rxjs/operators'
 
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
@@ -10,10 +10,12 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId, getIdPair} from '../../util/draftUtils'
 import {type PartialExcept} from '../../util/PartialExcept'
+import {shallowEquals} from '../../util/shallowEquals'
 import {useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {type DocumentStoreExtraOptions} from '../document/getPairListener'
 import {memoize} from '../document/utils/createMemoizer'
+import {createMemoKey, getClientCredentialSegments} from '../document/utils/memoKey'
 import {useCurrentUser} from '../user/hooks'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
@@ -279,7 +281,10 @@ function getDocumentPairPermissionsUncached({
 
 export const getDocumentPairPermissions = memoize(
   (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
-    getDocumentPairPermissionsUncached(options).pipe(shareLatestWithRefCount()),
+    getDocumentPairPermissionsUncached(options).pipe(
+      distinctUntilChanged(shallowEquals),
+      shareLatestWithRefCount(),
+    ),
   ({
     client,
     schema,
@@ -289,7 +294,10 @@ export const getDocumentPairPermissions = memoize(
     permission,
     userId,
   }: DocumentPairPermissionsOptions): string => {
-    const {dataset = '', projectId = ''} = client.config()
+    // Keyed by the credential: this captures `client` and issues grants
+    // requests through it, so a re-login must build a fresh entry instead of
+    // replaying the stale-token client, which would 401 (see
+    // getClientCredentialSegments).
     // `liveEdit` is derived from the schema and branches the resulting permission
     // observable, so it must be part of the key: workspaces sharing a
     // project/dataset can define the same `type` with a different `liveEdit`.
@@ -298,16 +306,15 @@ export const getDocumentPairPermissions = memoize(
     // (id, version) to `getIdPair(id, {version})`, a pure function of
     // (getPublishedId(id), version). The raw `version` string is kept as-is;
     // never call getIdPair here (it throws on version 'drafts'|'published').
-    return [
-      dataset,
-      projectId,
+    return createMemoKey([
+      ...getClientCredentialSegments(client),
       getPublishedId(id),
-      version ?? '',
-      userId ?? '',
+      version,
+      userId,
       type,
       permission,
-      liveEdit,
-    ].join('-')
+      String(liveEdit),
+    ])
   },
 )
 

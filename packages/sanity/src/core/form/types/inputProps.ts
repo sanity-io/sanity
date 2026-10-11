@@ -30,12 +30,12 @@ import {
 import {
   type ClipboardEventHandler,
   type ComponentType,
+  type CSSProperties,
   type FocusEvent as ReactFocusEvent,
   type FocusEventHandler,
   type FormEventHandler,
   type RefObject,
 } from 'react'
-import {type CSSProperties} from 'styled-components'
 
 import {type PatchEvent} from '../patch/PatchEvent'
 import {type FormPatch} from '../patch/types'
@@ -653,6 +653,9 @@ export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise
  * to decouple Studio's public callback interface from the editor's internals.
  * The `EditorChangePlugin` in `PortableTextInput.tsx` translates
  * `EditorEmittedEvent`s into these change types.
+ *
+ * `error` and `loading` stay in the union for compatibility. `@portabletext/editor`
+ * v8 no longer emits the events that produced them.
  *
  * @beta
  */

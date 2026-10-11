@@ -8,8 +8,6 @@ import {
   // oxlint-disable-next-line no-restricted-imports -- the resolved menu button props are spread onto the `@sanity/ui` Button above
   type ButtonProps,
   type ButtonTone,
-  Flex,
-  Stack,
   Text,
 } from '@sanity/ui'
 import {
@@ -44,27 +42,15 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../../hooks/useDiffViewState'
 import {findRelease} from '../../utils/findRelease'
-
-const VersionModeHeaderLayout = styled.header`
-  display: grid;
-  grid-area: header;
-  grid-template-columns: 1fr min-content 1fr;
-  border-block-end: 1px solid var(--card-border-color);
-`
-
-const VersionModeHeaderLayoutSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
+import {DocumentGroupPickerMenu} from './DocumentGroupPickerMenu'
+import {versionModeHeaderLayout, versionModeHeaderLayoutSection} from './VersionModeHeader.css'
 
 /**
  * The header component that is rendered when diff view is being used to compare versions of a
@@ -83,6 +69,8 @@ export const VersionModeHeader: ComponentType<
   const {documents} = useDiffViewState()
   const activeReleases = useActiveReleases()
   const releasesIds = documentVersions.flatMap((id) => getVersionFromId(id) ?? [])
+  const {beta} = useWorkspace()
+  const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
   const releases = useMemo(() => {
     return activeReleases.data.filter((release) => {
@@ -116,42 +104,58 @@ export const VersionModeHeader: ComponentType<
   }
 
   return (
-    <VersionModeHeaderLayout>
-      <VersionModeHeaderLayoutSection>
+    <header className={versionModeHeaderLayout}>
+      <div className={versionModeHeaderLayoutSection}>
         <Box padding={4}>
           <Text as="h1" size={1} muted>
             {t('compare-versions.title')}
           </Text>
         </Box>
-        {typeof documents?.previous !== 'undefined' && (
-          <VersionMenu
-            releases={releases}
-            releasesState={releasesState}
-            onSelectRelease={onSelectPreviousRelease}
-            role="previous"
-            documentId={documentId}
-            state={state}
-            document={documents.previous}
-          />
-        )}
-      </VersionModeHeaderLayoutSection>
-      <Flex align="center" paddingX={3}>
+        {typeof documents?.previous !== 'undefined' &&
+          (hasDocumentGroupInventory ? (
+            <DocumentGroupPickerMenu
+              role="previous"
+              document={documents.previous}
+              onSelectDocument={onSelectPreviousRelease}
+            />
+          ) : (
+            // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
+            <VersionMenu
+              releases={releases}
+              releasesState={releasesState}
+              onSelectRelease={onSelectPreviousRelease}
+              role="previous"
+              documentId={documentId}
+              state={state}
+              document={documents.previous}
+            />
+          ))}
+      </div>
+      <Flex alignItems="center" paddingX={3}>
         <Text size={1}>
           <TransferIcon />
         </Text>
       </Flex>
-      <VersionModeHeaderLayoutSection>
-        {typeof documents?.next !== 'undefined' && (
-          <VersionMenu
-            releases={releases}
-            releasesState={releasesState}
-            onSelectRelease={onSelectNextRelease}
-            role="next"
-            documentId={documentId}
-            state={state}
-            document={documents.next}
-          />
-        )}
+      <div className={versionModeHeaderLayoutSection}>
+        {typeof documents?.next !== 'undefined' &&
+          (hasDocumentGroupInventory ? (
+            <DocumentGroupPickerMenu
+              role="next"
+              document={documents.next}
+              onSelectDocument={onSelectNextRelease}
+            />
+          ) : (
+            // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
+            <VersionMenu
+              releases={releases}
+              releasesState={releasesState}
+              onSelectRelease={onSelectNextRelease}
+              role="next"
+              documentId={documentId}
+              state={state}
+              document={documents.next}
+            />
+          ))}
         <Box
           padding={3}
           style={{
@@ -160,8 +164,8 @@ export const VersionModeHeader: ComponentType<
         >
           <Button icon={CloseIcon} mode="bleed" onClick={exitDiffView} padding={2} />
         </Box>
-      </VersionModeHeaderLayoutSection>
-    </VersionModeHeaderLayout>
+      </div>
+    </header>
   )
 }
 
@@ -178,6 +182,11 @@ interface VersionMenuProps {
   }
 }
 
+/**
+ *
+ * @deprecated Use `DocumentGroupPickerMenu` instead.
+ * Remove once `beta.documentGroupInventory.enabled` is not optional.
+ */
 const VersionMenu: ComponentType<VersionMenuProps> = ({
   releases = [],
   releasesState,
@@ -317,7 +326,14 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} release={release} />
-        <Stack flex={1} paddingY={2} paddingRight={2} gap={2} style={{minWidth: 0}}>
+        <Flex
+          flexBasis="0%"
+          flexGrow={1}
+          paddingY={2}
+          paddingRight={2}
+          gap={2}
+          flexDirection="column"
+        >
           <ReleaseTitle
             title={release.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}
@@ -333,8 +349,8 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
               {formatPublishDate(release)}
             </Text>
           )}
-        </Stack>
-        <Flex flex="none">
+        </Flex>
+        <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
           {isReleaseScheduledOrScheduling(release) && (
             <Box padding={2}>
               <Text size={1}>

@@ -4,26 +4,15 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Dialog,
-  Flex,
-  Stack,
-  Tab,
-  TabList,
-  Text,
-  TextInput,
-} from '@sanity/ui'
+import {Badge, Button, Card, Dialog, Tab, TabList, Text, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
+import {Flex, Box, VStack} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
@@ -31,18 +20,25 @@ import {fixedHeader, queryList, scrollContainer} from './QueryRecall.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
 
-function FixedHeader(props: ComponentProps<typeof Stack>) {
-  return <Stack {...props} className={fixedHeader} />
+function FixedHeader(props: ComponentProps<typeof VStack>) {
+  return <VStack {...props} className={fixedHeader} />
 }
 
 function ScrollContainer(props: ComponentProps<typeof Flex>) {
   return (
-    <Flex {...props} direction="column" flex={1} overflow="hidden" className={scrollContainer} />
+    <Flex
+      {...props}
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      overflow="hidden"
+      className={scrollContainer}
+    />
   )
 }
 
 function QueryList(props: ComponentProps<typeof Box>) {
-  return <Box {...props} flex={1} overflow="auto" className={queryList} />
+  return <Box {...props} flexBasis="0%" flexGrow={1} overflow="auto" className={queryList} />
 }
 
 export function QueryRecall({
@@ -367,7 +363,13 @@ export function QueryRecall({
   return (
     <ScrollContainer>
       <FixedHeader gap={3}>
-        <Flex padding={3} paddingTop={2} paddingBottom={0} justify="space-between" align="center">
+        <Flex
+          padding={3}
+          paddingTop={2}
+          paddingBottom={0}
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <StyledLabel muted>{t('label.saved-queries')}</StyledLabel>
           <Button
             aria-label={t('action.save-query')}
@@ -412,7 +414,7 @@ export function QueryRecall({
         </Box>
       </FixedHeader>
       <QueryList id="vision-query-recall-list">
-        <Stack paddingY={3}>
+        <Flex paddingY={3} flexDirection="column">
           {filteredQueries?.map((q, index) => {
             const queryObj = getStateFromUrl(q.url)
             const fullQueryPreview = queryObj?.query || ''
@@ -452,9 +454,13 @@ export function QueryRecall({
                   cursor: 'pointer',
                 }}
               >
-                <Stack gap={compactMode ? 2 : 3}>
-                  <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
-                    <Flex align="center" gap={2} paddingRight={1} style={{minWidth: 0, flex: 1}}>
+                <VStack gap={compactMode ? 2 : 3}>
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems={'center'}
+                    style={{minHeight: '25px'}}
+                  >
+                    <Flex alignItems="center" gap={2} paddingRight={1} style={{flex: 1}}>
                       {editingKey === q._key ? (
                         <TextInput
                           value={editingTitle}
@@ -510,7 +516,7 @@ export function QueryRecall({
                         />
                       )}
                     </Flex>
-                    <Flex align="center" gap={2}>
+                    <Flex alignItems="center" gap={2}>
                       <Box
                         data-query-actions="true"
                         style={{
@@ -589,8 +595,8 @@ export function QueryRecall({
                   )}
 
                   {compactMode ? (
-                    <Stack gap={1} style={{paddingTop: 0, minHeight: '30px'}}>
-                      <Flex align="center" gap={2} style={{minHeight: '18px'}}>
+                    <VStack gap={1} style={{paddingTop: 0, minHeight: '30px'}}>
+                      <Flex alignItems="center" gap={2} style={{minHeight: '18px'}}>
                         <Box
                           style={{
                             display: 'flex',
@@ -630,9 +636,13 @@ export function QueryRecall({
                       <Text size={1} muted>
                         {formatDate.format(new Date(q.savedAt || ''))}
                       </Text>
-                    </Stack>
+                    </VStack>
                   ) : (
-                    <Flex align="center" gap={2} style={{paddingTop: '2px', minHeight: '20px'}}>
+                    <Flex
+                      alignItems="center"
+                      gap={2}
+                      style={{paddingTop: '2px', minHeight: '20px'}}
+                    >
                       <Box
                         style={{
                           display: 'flex',
@@ -696,11 +706,11 @@ export function QueryRecall({
                       }}
                     />
                   )}
-                </Stack>
+                </VStack>
               </Card>
             )
           })}
-        </Stack>
+        </Flex>
       </QueryList>
       {shareDialogQuery && (
         <Dialog
@@ -709,7 +719,7 @@ export function QueryRecall({
           header={t('label.share')}
           onClose={() => setShareDialogQuery(null)}
           footer={
-            <Flex justify="flex-end" gap={3} padding={3} align="center">
+            <Flex justifyContent="flex-end" gap={3} padding={3} alignItems="center">
               <Button
                 mode="bleed"
                 padding={2}

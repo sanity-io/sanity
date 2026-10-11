@@ -1,12 +1,14 @@
 import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {type ReactNode} from 'react'
 import {Translate, useTranslation} from 'sanity'
+import {VStack} from 'ui5'
 
 export function TranslateExample() {
   const {t} = useTranslation('testStudio')
   return (
     <Card padding={4}>
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Text>{t('use-translation.with-html')}</Text>
         <Text>
           {t('use-translation.interpolation-example', {
@@ -26,11 +28,7 @@ export function TranslateExample() {
           <Translate
             t={t}
             i18nKey="translate.example"
-            components={{
-              Icon: () => <InfoFilledIcon />,
-              Red: ({children}) => <span style={{color: 'red'}}>{children}</span>,
-              Bold: ({children}) => <b>{children}</b>,
-            }}
+            components={{Icon: InfoFilledIcon, Red, Bold}}
             values={{
               keyword: 'something',
               duration: '30',
@@ -72,13 +70,21 @@ export function TranslateExample() {
           <Translate
             t={t}
             i18nKey="translate.mismatched-component"
-            components={{
-              VersionBadge: ({children}) => <span style={{fontWeight: 'bold'}}>{children}</span>,
-            }}
+            components={{VersionBadge}}
             values={{title: 'My Release'}}
           />
         </Text>
-      </Stack>
+      </VStack>
     </Card>
   )
+}
+
+function VersionBadge({children}: {children?: ReactNode}) {
+  return <span style={{fontWeight: 'bold'}}>{children}</span>
+}
+function Red({children}: {children?: ReactNode}) {
+  return <span style={{color: 'red'}}>{children}</span>
+}
+function Bold({children}: {children?: ReactNode}) {
+  return <b>{children}</b>
 }

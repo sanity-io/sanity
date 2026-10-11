@@ -1,11 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Card, Flex} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
-import {type NavbarProps} from '../../../config/studio/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {GlobalPerspectiveMenu} from '../../../perspective/navbar/GlobalPerspectiveMenu'
 import {useGetDefaultPerspective} from '../../../perspective/useGetDefaultPerspective'
@@ -17,22 +14,78 @@ import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {useAgentBundles} from '../../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../../studio/workspace'
+import {useVariantTypes} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
-import {getVariantTitle} from '../../tool/util'
+import {useAllVariants} from '../../store/useAllVariants'
+import {getVariantId, getVariantTitle} from '../../tool/util'
+import {type SystemVariant} from '../../types'
+import {type VariantSelection} from '../../util/variantSelection'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../util/variantType'
 import {getVersionFilterLabel} from './getVersionFilterLabel'
 import {PerspectiveFilter} from './PerspectiveFilter'
 import {VariantsMenu} from './VariantsMenu'
 
-export function VariantsStudioNavbar(props: NavbarProps) {
+function VariantTypeFilter(props: {
+  label: string
+  selectedId: string | undefined
+  typeKey: string
+  variants: SystemVariant[]
+}) {
+  const {label, selectedId, typeKey, variants} = props
+  const {t} = useTranslation(variantsLocaleNamespace)
+  const setVariant = useSetVariant()
+  const selectedVariant = selectedId
+    ? variants.find((variant) => getVariantId(variant._id) === selectedId)
+    : undefined
+  const variantLabel = selectedVariant
+    ? getVariantTitle(selectedVariant)
+    : t('navbar.variant.default')
+  const handleClear = useCallback(() => {
+    setVariant({type: typeKey, variantId: undefined})
+  }, [setVariant, typeKey])
+
+  return (
+    <PerspectiveFilter
+      prefix={label}
+      tone={selectedId ? 'suggest' : 'default'}
+      onRemove={selectedId ? handleClear : undefined}
+      removeLabel={t('navbar.variant.clear')}
+      label={variantLabel}
+    >
+      <VariantsMenu
+        typeKey={typeKey}
+        trigger={
+          <Button
+            data-testid={
+              typeKey === DEFAULT_VARIANT_TYPE_KEY
+                ? 'variants-nav-menu-button'
+                : `variants-nav-menu-button-${typeKey}`
+            }
+            icon={RhombusIcon}
+            iconRight={ChevronDownIcon}
+            mode="bleed"
+            text={variantLabel}
+          />
+        }
+      />
+    </PerspectiveFilter>
+  )
+}
+
+/** The filters of the perspective bar; `VariantsStudioNavbarLayout` owns the bar itself */
+export default function VariantsStudioNavbar({
+  variantSelections,
+}: {
+  variantSelections: VariantSelection[]
+}) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const {t: coreT} = useTranslation()
-  const {selectedPerspective, selectedPerspectiveName, selectedVariant} = usePerspective()
-  const router = useRouter()
+  const {selectedPerspective, selectedPerspectiveName} = usePerspective()
+  const {data: variants} = useAllVariants()
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
-  const setVariant = useSetVariant()
   const setPerspective = useSetPerspective()
-  const hasVariantSelection = Boolean(router.stickyParams.variant)
+  const variantTypes = useVariantTypes()
   const defaultPerspective = useGetDefaultPerspective()
   const hasVersionSelection = selectedPerspective !== defaultPerspective
   const {bundles} = useAgentBundles()
@@ -42,74 +95,52 @@ export function VariantsStudioNavbar(props: NavbarProps) {
     [selectedPerspective, coreT, bundles],
   )
 
-  const variantLabel = selectedVariant
-    ? getVariantTitle(selectedVariant)
-    : t('navbar.variant.default')
-
   const handleClearVersion = useCallback(() => {
     setPerspective(undefined)
   }, [setPerspective])
 
-  const handleClearVariant = useCallback(() => {
-    setVariant({variantId: undefined})
-  }, [setVariant])
+  const resolvedTypes = variantTypes.status === 'ready' ? variantTypes.types : []
+  const navbarTypes =
+    resolvedTypes.length > 0
+      ? resolvedTypes
+      : [{key: DEFAULT_VARIANT_TYPE_KEY, label: t('navbar.variant')}]
 
   return (
-    <Flex direction="column">
-      {props.renderDefault(props)}
-      <Card
-        tone={hasVariantSelection ? 'suggest' : 'neutral'}
-        paddingY={2}
-        paddingX={3}
-        borderBottom
+    <>
+      <PerspectiveFilter
+        prefix={t('navbar.version')}
+        tone={getReleaseTone(selectedPerspective)}
+        onRemove={hasVersionSelection ? handleClearVersion : undefined}
+        removeLabel={t('navbar.version.clear')}
+        label={versionTitle.displayTitle}
       >
-        <Flex align="center" justify="center" gap={2} wrap="wrap">
-          <PerspectiveFilter
-            prefix={t('navbar.version')}
-            tone={getReleaseTone(selectedPerspective)}
-            onRemove={hasVersionSelection ? handleClearVersion : undefined}
-            removeLabel={t('navbar.version.clear')}
-            label={versionTitle.displayTitle}
-          >
-            <GlobalPerspectiveMenu
-              selectedPerspectiveName={selectedPerspectiveName}
-              areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
-              trigger={
-                <Button
-                  data-testid="global-perspective-menu-button"
-                  icon={<ReleaseAvatarIcon release={selectedPerspective} />}
-                  iconRight={ChevronDownIcon}
-                  mode="bleed"
-                  text={versionTitle.displayTitle}
-                  tooltipProps={
-                    versionTitle.isTruncated ? {content: versionTitle.fullTitle} : undefined
-                  }
-                />
+        <GlobalPerspectiveMenu
+          selectedPerspectiveName={selectedPerspectiveName}
+          areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
+          trigger={
+            <Button
+              data-testid="global-perspective-menu-button"
+              icon={<ReleaseAvatarIcon release={selectedPerspective} />}
+              iconRight={ChevronDownIcon}
+              mode="bleed"
+              text={versionTitle.displayTitle}
+              tooltipProps={
+                versionTitle.isTruncated ? {content: versionTitle.fullTitle} : undefined
               }
             />
-          </PerspectiveFilter>
+          }
+        />
+      </PerspectiveFilter>
 
-          <PerspectiveFilter
-            prefix={t('navbar.variant')}
-            tone={hasVariantSelection ? 'suggest' : 'default'}
-            onRemove={hasVariantSelection ? handleClearVariant : undefined}
-            removeLabel={t('navbar.variant.clear')}
-            label={variantLabel}
-          >
-            <VariantsMenu
-              trigger={
-                <Button
-                  data-testid="variants-nav-menu-button"
-                  icon={RhombusIcon}
-                  iconRight={ChevronDownIcon}
-                  mode="bleed"
-                  text={variantLabel}
-                />
-              }
-            />
-          </PerspectiveFilter>
-        </Flex>
-      </Card>
-    </Flex>
+      {navbarTypes.map((type) => (
+        <VariantTypeFilter
+          key={type.key}
+          label={type.label}
+          selectedId={variantSelections.find((selection) => selection.type === type.key)?.name}
+          typeKey={type.key}
+          variants={variants}
+        />
+      ))}
+    </>
   )
 }

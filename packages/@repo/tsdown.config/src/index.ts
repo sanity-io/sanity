@@ -6,8 +6,8 @@ import {type UserConfig} from 'tsdown'
  * `@sanity/tsdown-config`, with these defaults:
  *
  * - `tsconfig: 'tsconfig.lib.json'` - build/dts config (`noCheck: true`; type checking is via oxlint)
- * - `dts: {tsgo: true}` - generate `.d.ts` files with the TypeScript 7 native compiler (`tsc`);
- *   declaration emit only — type checking is owned by oxlint (`options.typeCheck`).
+ * - `dts: {generator: 'tsgo'}` - generate `.d.ts` files with the TypeScript 7 native compiler
+ *   (`tsc`); declaration emit only — type checking is owned by oxlint (`options.typeCheck`).
  *   Packages must depend on `typescript` (catalog, v7+) so rolldown-plugin-dts can resolve it
  * - `exports.devExports: 'monorepo'` - local builds regenerate the `exports` map in
  *   `package.json` with the `monorepo` condition pointing at the sources (resolved by the
@@ -23,7 +23,7 @@ import {type UserConfig} from 'tsdown'
 export function defineConfig(options: PackageOptions = {}): Promise<UserConfig> {
   return defineTsdownConfig({
     tsconfig: 'tsconfig.lib.json',
-    dts: {tsgo: true},
+    dts: {generator: 'tsgo'},
     exports: {devExports: 'monorepo', bin: false},
     outDir: 'lib',
     clean: ['lib'],

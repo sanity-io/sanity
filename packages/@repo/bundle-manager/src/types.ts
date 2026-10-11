@@ -13,10 +13,17 @@ export type PackageDict = {[PackageId in string]?: ManifestPackage}
 export type TagEntry = {timestamp: number; version: Semver}
 export type VersionEntry = {version: Semver; timestamp: number}
 
+/**
+ * A deprecation notice for a version. Deprecated versions stay in `versions` and in tag lists.
+ */
+export type DeprecationEntry = {timestamp: number; reason?: string}
+export type DeprecatedDict = {[Version in Semver]?: DeprecationEntry}
+
 export interface ManifestPackage {
   default?: Semver
   versions: VersionEntry[]
   tags?: TagDict
+  deprecated?: DeprecatedDict
 }
 
 export interface Manifest {

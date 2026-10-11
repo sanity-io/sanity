@@ -41,8 +41,10 @@ export async function renderStringInput(options: {
         schemaType,
         comparisonValue: value,
         hasUpstreamVersion: false,
+        hasBaseVariant: false,
       }),
       changed: false,
+      changedFromBaseVariant: false,
     }
   }
 

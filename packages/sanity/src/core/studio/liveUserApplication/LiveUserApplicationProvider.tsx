@@ -1,4 +1,4 @@
-import debugit from 'debug'
+import {createDebug} from 'obug'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {LiveUserApplicationContext} from 'sanity/_singletons'
 
@@ -6,7 +6,7 @@ import {type UserApplication, useUserApplicationCache} from '../../store/userApp
 import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {findUserApplication} from './liveUserApplication'
 
-const debug = debugit('studio:live-user-application')
+const debug = createDebug('studio:live-user-application')
 
 /** @internal */
 interface LiveUserApplicationProviderProps {

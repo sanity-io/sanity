@@ -1,4 +1,4 @@
-import {Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
+import {focusFirstDescendant, Spinner, Text} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
@@ -20,7 +20,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -186,8 +186,32 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     // auto-focusing the first descendant after blurring a path that was focused
     // for any reason (e.g. by this auto-focus mechanism itself, or by
     // navigating to a deep-link).
-    if (!hasFocusedAnyPath && ready && !formState?.focusPath.length && formRef) {
-      focusFirstDescendant(formRef)
+    if (hasFocusedAnyPath || !ready || formState?.focusPath.length || !formRef) {
+      return undefined
+    }
+    if (focusFirstDescendant(formRef)) {
+      return undefined
+    }
+    // Nothing focusable yet: the inputs are behind FormBuilder's Suspense boundary while a lazy
+    // form component loads. Retry when they land, unless focus has moved anywhere since the form
+    // committed: whatever held focus before that (the list item that opened the document) is not
+    // a choice the user made while waiting, but any focus after it is.
+    const {ownerDocument} = formRef
+    let focusMoved = false
+    const handleFocusIn = () => {
+      focusMoved = true
+    }
+    ownerDocument.addEventListener('focusin', handleFocusIn, true)
+    const observer = new MutationObserver(() => {
+      if (focusMoved || focusFirstDescendant(formRef)) {
+        observer.disconnect()
+        ownerDocument.removeEventListener('focusin', handleFocusIn, true)
+      }
+    })
+    observer.observe(formRef, {childList: true, subtree: true})
+    return () => {
+      observer.disconnect()
+      ownerDocument.removeEventListener('focusin', handleFocusIn, true)
     }
   }, [hasFocusedAnyPath, formRef, formState?.focusPath.length, ready])
 
@@ -225,7 +249,12 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
           {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
-              <Flex align="center" direction="column" height="fill" justify="center">
+              <Flex
+                alignItems="center"
+                flexDirection="column"
+                height="100%"
+                justifyContent="center"
+              >
                 <Spinner muted />
                 <Box marginTop={3}>
                   <Text align="center" muted size={1}>
@@ -270,6 +299,9 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
                 openPath={openPath}
                 perspective={selectedPerspective}
                 hasUpstreamVersion={hasUpstreamVersion}
+                changedFromBaseVariant={formState.changedFromBaseVariant}
+                baseVariantValue={formState.baseVariantValue}
+                hasBaseVariant={formState.hasBaseVariant}
                 presence={presence}
                 readOnly={isReadOnly}
                 schemaType={formState.schemaType}

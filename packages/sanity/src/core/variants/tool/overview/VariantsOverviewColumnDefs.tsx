@@ -1,13 +1,16 @@
-import {Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton, Text} from '@sanity/ui'
 import {type HTMLProps, useMemo, type RefAttributes} from 'react'
 import {StateLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
+import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
+import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
+import {getVariantType} from '../../util/variantType'
 import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
 
 /**
@@ -25,7 +28,7 @@ export interface TableVariant extends SystemVariant {
 const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum}) => {
   if (datum.isLoading || datum.documentCount === undefined) {
     return (
-      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+      <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
         <Text size={1}>
           <Skeleton animated radius={1} style={{width: '4ch'}} />
         </Text>
@@ -34,7 +37,7 @@ const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, d
   }
 
   return (
-    <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+    <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
       <Text muted size={1}>
         {datum.documentCount === null ? '-' : datum.documentCount}
       </Text>
@@ -44,6 +47,10 @@ const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, d
 
 const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum: variant}) => {
   const {t} = useTranslation(variantsLocaleNamespace)
+  const mismatches = useVariantConditionMismatches(
+    variant.conditions ?? {},
+    getVariantType(variant),
+  )
 
   const encodedVariantId = getVariantId(variant._id)
 
@@ -61,14 +68,14 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
   if (variant.isLoading) {
     return (
       <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={2}>
-        <Stack gap={2}>
+        <VStack gap={2}>
           <Text size={1} weight="medium">
             <Skeleton animated radius={1} style={{width: '16ch'}} />
           </Text>
           <Text muted size={1}>
             <Skeleton animated radius={1} style={{width: '32ch'}} />
           </Text>
-        </Stack>
+        </VStack>
       </Box>
     )
   }
@@ -77,21 +84,26 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
   return (
     <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={1}>
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             {/* min-width: 0 lets the flex child shrink below its content width so a long name
                 truncates with a trailing ellipsis instead of overflowing on narrow viewports. */}
-            <Stack flex={1} gap={2} style={{minWidth: 0}}>
+            <Flex flexBasis="0%" flexGrow={1} gap={2} style={{minWidth: 0}} flexDirection="column">
               <Text size={1} textOverflow="ellipsis" weight="medium">
                 {getVariantTitle(variant)}
               </Text>
               <Text muted size={1} textOverflow="ellipsis">
                 {conditionsText || t('overview.table.no-conditions')}
               </Text>
-            </Stack>
+            </Flex>
           </Flex>
         </Card>
+        {mismatches.length > 0 ? (
+          <Box paddingTop={2}>
+            <ConditionMismatchIndicator mismatches={mismatches} />
+          </Box>
+        ) : null}
       </Flex>
     </Box>
   )
@@ -99,6 +111,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
 export function variantsOverviewColumnDefs(
   t: UseTranslationResponse<'variants', undefined>['t'],
+  showTypeColumn: boolean,
 ): Column<TableVariant>[] {
   return [
     {
@@ -109,11 +122,11 @@ export function variantsOverviewColumnDefs(
       header: (props) => (
         <Flex
           {...props.headerProps}
-          flex={1}
+          flexBasis="0%"
+          flexGrow={1}
           paddingLeft={3}
           paddingRight={2}
           paddingY={3}
-          sizing="border"
         >
           <Headers.SortHeaderButton {...props} text={t('overview.table.variant')} />
         </Flex>
@@ -121,12 +134,34 @@ export function variantsOverviewColumnDefs(
       cell: VariantTitleCell,
       sortTransform: (variant) => getVariantTitle(variant),
     },
+    ...(showTypeColumn
+      ? [
+          {
+            id: 'metadata.type',
+            sorting: true,
+            width: 140,
+            header: ({headerProps}) => (
+              <Flex {...headerProps} paddingY={3}>
+                <Headers.BasicHeader text={t('overview.table.type')} />
+              </Flex>
+            ),
+            cell: ({cellProps, datum: variant}) => (
+              <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
+                <Text muted size={1}>
+                  {variant.isLoading ? '' : getVariantType(variant)}
+                </Text>
+              </Flex>
+            ),
+            sortTransform: (variant) => getVariantType(variant),
+          } satisfies Column<TableVariant>,
+        ]
+      : []),
     {
       id: 'documentCount',
       sorting: false,
       width: 120,
       header: ({headerProps}) => (
-        <Flex {...headerProps} paddingY={3} sizing="border">
+        <Flex {...headerProps} paddingY={3}>
           <Headers.BasicHeader text={t('overview.table.documents')} />
         </Flex>
       ),

@@ -8,18 +8,27 @@
  *  - In portaled dialogs (e.g. the Media Library) where the reference element is not inside the
  *    inherited boundary element, we fall back to `document.documentElement` so the popover is
  *    positioned against the viewport (avoids `referenceHidden` / misalignment).
+ *  - When the hosting surface declares a `PortalBoundaryProvider` (the document pane does, with
+ *    its scroll container), that boundary wins regardless of where the input sits in the DOM.
+ *    Dialogs and Portable Text object popovers are portaled, so a DOM containment test can
+ *    never find the pane from inside them; the declared boundary lets results escape the dialog
+ *    while still staying between the pane header and footer (#14661, #14726).
+ *  - The declared boundary is tied to the surface's portal: an input that renders into a
+ *    different `PortalProvider` (a custom input's body-level dialog) falls back to the rules above.
  *
  * `ReferenceInput/ReferenceAutocomplete` (same-dataset), GDR, and Cross-dataset
  * `CrossDatasetReferenceInput/ReferenceAutocomplete` share this Popover wiring. Same-dataset needs
  * `useFormBuilder` mocked with a `focusPath` that matches the `path` passed in props so the
  * component can mount.
  */
+import {PortalProvider} from '@sanity/ui'
 import {type Autocomplete, type AutocompleteProps} from '@sanity/ui/autocomplete'
 import {render, waitFor} from '@testing-library/react'
 import {type ReactNode, type Ref, useLayoutEffect, useRef, useState} from 'react'
 import {describe, expect, test, vi, beforeEach} from 'vitest'
 
 import {type PopoverProps as UIPopoverProps} from '../../../../ui-components/popover/Popover'
+import {PortalBoundaryProvider} from '../../../components/portalBoundary/PortalBoundaryProvider'
 import {ReferenceAutocomplete as CrossDatasetReferenceAutocomplete} from '../CrossDatasetReferenceInput/ReferenceAutocomplete'
 import {ReferenceAutocomplete as SameDatasetReferenceAutocomplete} from '../ReferenceInput/ReferenceAutocomplete'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
@@ -147,6 +156,21 @@ function setupContainedBoundary(): {
   document.body.append(boundary)
   mockBoundaryElement = boundary
   return {boundary, referenceElement}
+}
+
+/**
+ * Stand-in for a surface such as the document pane: a `PortalProvider` plus the boundary it
+ * declares for content rendered through that portal.
+ */
+function DeclaredPortal(props: {boundary: HTMLElement | null; children: ReactNode}) {
+  const [portalElement] = useState(() => document.body.appendChild(document.createElement('div')))
+  return (
+    <PortalProvider element={portalElement}>
+      <PortalBoundaryProvider element={props.boundary} portalElement={portalElement}>
+        {props.children}
+      </PortalBoundaryProvider>
+    </PortalProvider>
+  )
 }
 
 describe('ReferenceAutocomplete popover boundaries', () => {
@@ -308,6 +332,139 @@ describe('ReferenceAutocomplete popover boundaries', () => {
 
       expect(lastPopoverProps?.floatingBoundary).toBe(document.documentElement)
       expect(lastPopoverProps?.referenceBoundary).toBe(document.documentElement)
+    })
+  })
+
+  describe('uses the declared portal boundary when the hosting surface provides one', () => {
+    test('even when it does not contain the reference (portaled dialog / PTE popover)', async () => {
+      // The ambient boundary is the dialog's own scroll box, which contains the input …
+      const {referenceElement} = setupContainedBoundary()
+      // … while the pane scroll container that declared the portal boundary does not.
+      const paneBoundary = document.createElement('div')
+      document.body.append(paneBoundary)
+
+      render(
+        <DeclaredPortal boundary={paneBoundary}>
+          <SameDatasetReferenceAutocomplete
+            path={[...sameDatasetFieldPath]}
+            loading={false}
+            options={[]}
+            onQueryChange={() => undefined}
+            referenceElement={referenceElement}
+            searchString=""
+            id="same-dataset-ref-ac-portal-boundary"
+          />
+        </DeclaredPortal>,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps?.floatingBoundary).toBe(paneBoundary)
+      })
+      expect(lastPopoverProps?.referenceBoundary).toBe(paneBoundary)
+    })
+
+    test('cross-dataset reference', async () => {
+      const {referenceElement} = setupContainedBoundary()
+      const paneBoundary = document.createElement('div')
+      document.body.append(paneBoundary)
+
+      render(
+        <DeclaredPortal boundary={paneBoundary}>
+          <CrossDatasetReferenceAutocomplete
+            loading={false}
+            options={[]}
+            onQueryChange={() => undefined}
+            referenceElement={referenceElement}
+            searchString=""
+            id="cross-ref-ac-portal-boundary"
+          />
+        </DeclaredPortal>,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps?.floatingBoundary).toBe(paneBoundary)
+      })
+      expect(lastPopoverProps?.referenceBoundary).toBe(paneBoundary)
+    })
+
+    test('global document reference', async () => {
+      const {referenceElement} = setupContainedBoundary()
+      const paneBoundary = document.createElement('div')
+      document.body.append(paneBoundary)
+
+      render(
+        <DeclaredPortal boundary={paneBoundary}>
+          <ReferenceAutocomplete
+            loading={false}
+            options={[]}
+            onQueryChange={() => undefined}
+            referenceElement={referenceElement}
+            searchString=""
+            id="ref-ac-portal-boundary"
+          />
+        </DeclaredPortal>,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps?.floatingBoundary).toBe(paneBoundary)
+      })
+      expect(lastPopoverProps?.referenceBoundary).toBe(paneBoundary)
+    })
+
+    test('is ignored when the input renders into a different portal (custom body-level dialog)', async () => {
+      // A custom input provides its own body-level portal for a dialog that holds the reference
+      // field. The dialog is centered over the whole studio, so the pane's rect would hide it.
+      const paneBoundary = document.createElement('div')
+      document.body.append(paneBoundary)
+      mockBoundaryElement = paneBoundary
+      const detachedReference = document.createElement('div')
+      document.body.append(detachedReference)
+      const customPortal = document.body.appendChild(document.createElement('div'))
+
+      render(
+        <DeclaredPortal boundary={paneBoundary}>
+          <PortalProvider element={customPortal}>
+            <SameDatasetReferenceAutocomplete
+              path={[...sameDatasetFieldPath]}
+              loading={false}
+              options={[]}
+              onQueryChange={() => undefined}
+              referenceElement={detachedReference}
+              searchString=""
+              id="same-dataset-ref-ac-foreign-portal"
+            />
+          </PortalProvider>
+        </DeclaredPortal>,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps).not.toBeNull()
+      })
+      expect(lastPopoverProps?.floatingBoundary).toBe(document.documentElement)
+      expect(lastPopoverProps?.referenceBoundary).toBe(document.documentElement)
+    })
+
+    test('falls back to the ambient rules when the provider has no element yet', async () => {
+      const {boundary, referenceElement} = setupContainedBoundary()
+
+      render(
+        <DeclaredPortal boundary={null}>
+          <SameDatasetReferenceAutocomplete
+            path={[...sameDatasetFieldPath]}
+            loading={false}
+            options={[]}
+            onQueryChange={() => undefined}
+            referenceElement={referenceElement}
+            searchString=""
+            id="same-dataset-ref-ac-portal-boundary-null"
+          />
+        </DeclaredPortal>,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps?.floatingBoundary).toBe(boundary)
+      })
+      expect(lastPopoverProps?.referenceBoundary).toBe(boundary)
     })
   })
 })

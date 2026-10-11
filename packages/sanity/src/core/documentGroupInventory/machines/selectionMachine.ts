@@ -16,6 +16,11 @@ interface SelectionContext {
   variants: Variant[]
   filterString: string | undefined
   filterMatchingVariantIds: Set<string>
+  /**
+   * Whether this instance may never mutate the selection. Distinct from the
+   * `locked` state, which freezes the selection only while a deletion runs.
+   */
+  readOnly: boolean
 }
 
 type SelectionEvents =
@@ -33,12 +38,14 @@ export const selectionMachine = setup({
   types: {} as {
     context: SelectionContext
     events: SelectionEvents
+    input: {readOnly?: boolean} | undefined
   },
   actors: {
     filterString: fromObservable<string, unknown>(() => EMPTY),
   },
   guards: {
     hasSelection: ({context}) => context.selectedIds.size !== 0,
+    isMutable: ({context}) => !context.readOnly,
   },
   actions: {
     notifySelectionChanged: sendParent(({context}) => ({
@@ -70,12 +77,13 @@ export const selectionMachine = setup({
   },
 }).createMachine({
   id: 'selection',
-  context: {
-    selectedIds: new Set(),
+  context: ({input}) => ({
+    selectedIds: new Set<string>(),
     variants: [],
     filterString: '',
-    filterMatchingVariantIds: new Set(),
-  },
+    filterMatchingVariantIds: new Set<string>(),
+    readOnly: input?.readOnly ?? false,
+  }),
   invoke: {
     src: 'filterString',
     onSnapshot: {
@@ -109,6 +117,7 @@ export const selectionMachine = setup({
     ready: {
       on: {
         'selection.toggle': {
+          guard: 'isMutable',
           actions: [
             assign({
               selectedIds: ({context, event}) => {
@@ -122,6 +131,7 @@ export const selectionMachine = setup({
           ],
         },
         'selection.add': {
+          guard: 'isMutable',
           actions: [
             assign({
               selectedIds: ({context, event}) => {
@@ -134,6 +144,7 @@ export const selectionMachine = setup({
           ],
         },
         'selection.remove': {
+          guard: 'isMutable',
           actions: [
             assign({
               selectedIds: ({context, event}) => {
@@ -146,6 +157,7 @@ export const selectionMachine = setup({
           ],
         },
         'selection.clear': {
+          guard: 'isMutable',
           actions: [assign({selectedIds: () => new Set<string>()}), 'notifySelectionChanged'],
         },
         'filterString.set': {
@@ -156,10 +168,10 @@ export const selectionMachine = setup({
             'filterStringChanged',
           ],
         },
-        'selection.lock': 'readonly',
+        'selection.lock': 'locked',
       },
     },
-    readonly: {
+    locked: {
       on: {
         'selection.unlock': 'ready',
       },

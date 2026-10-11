@@ -1,4 +1,5 @@
 import {type SchemaType} from '@sanity/types'
+import {type SingletonDefinition} from 'sanity'
 
 import {DocumentBuilder} from './Document'
 import {
@@ -72,6 +73,10 @@ export class DocumentListItemBuilder extends ListItemBuilder {
     super(_context, spec)
     this._context = _context
     this.spec = spec ? spec : {}
+  }
+
+  protected getDefaultSingletonItemId(definition: SingletonDefinition): string {
+    return definition.documentId
   }
 
   /**

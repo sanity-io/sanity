@@ -52,7 +52,7 @@ export class ImmutableAccessor implements Probe {
       return false
     }
 
-    if (i >= this.length()) {
+    if (i < 0 || i >= this.length()) {
       return null
     }
 

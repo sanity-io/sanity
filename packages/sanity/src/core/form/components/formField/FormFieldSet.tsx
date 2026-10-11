@@ -5,7 +5,7 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -17,7 +17,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -26,10 +26,11 @@ import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types/fieldProps'
-import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
+import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
+import {getGridTemplateColumns} from '../layout/getGridTemplateColumns'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
@@ -76,13 +77,17 @@ export interface FormFieldSetProps {
 
   path: Path
   readOnly?: boolean
+  /**
+   * Whether the value differs to the document's base variant.
+   */
+  changedFromBaseVariant?: boolean
 }
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
 
-const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
+const Root = styled(VStack).attrs({forwardedAs: 'fieldset'})`
   border: none;
 
   /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
@@ -156,6 +161,7 @@ export function FormFieldSet(
     __internal_slot: slot = null,
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
+    changedFromBaseVariant = false,
     children,
     collapsed,
     collapsible,
@@ -205,14 +211,22 @@ export function FormFieldSet(
       return null
     }
     return (
-      <ColumnarGrid gridTemplateColumns={columns} gapX={4} gapY={5}>
+      <ColumnarGrid
+        gridTemplateColumns={columns ? getGridTemplateColumns(columns) : undefined}
+        columnGap={4}
+        rowGap={5}
+      >
         {getChildren(children)}
       </ColumnarGrid>
     )
   }, [children, collapsed, columns])
 
   return (
-    <FormRow gutterStartCell={<FormDivergenceIndicator path={path} />}>
+    <FormRow
+      gutterStartCell={
+        <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+      }
+    >
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
         <Root
           data-level={level}
@@ -230,8 +244,8 @@ export function FormFieldSet(
             presence={presence}
             inputId={inputId}
             content={
-              <Stack gap={3}>
-                <Flex align="center">
+              <VStack gap={3}>
+                <Flex alignItems="center">
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}
@@ -247,7 +261,7 @@ export function FormFieldSet(
                       </Badge>
                     </Box>
                   )}
-                  {isArraySchemaType(schemaType) && (
+                  {isArraySchemaType(schemaType) && Array.isArray(path) && (
                     <Box marginLeft={2}>
                       <FormNodeDivergenceCollectionIndicator path={path} />
                     </Box>
@@ -274,7 +288,7 @@ export function FormFieldSet(
                     {description}
                   </Text>
                 )}
-              </Stack>
+              </VStack>
             }
           />
           <Content

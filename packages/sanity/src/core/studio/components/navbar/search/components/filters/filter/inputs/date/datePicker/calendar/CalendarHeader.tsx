@@ -1,8 +1,9 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Flex, Inline, Text} from '@sanity/ui'
+import {Inline, Text} from '@sanity/ui'
 import upperFirst from 'lodash-es/upperFirst.js'
 import {useCallback} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../../../../../../../../ui-components/button/Button'
 import {useDateTimeFormat} from '../../../../../../../../../../../hooks/useDateTimeFormat'
@@ -24,14 +25,14 @@ export function CalendarHeader(props: {
   const handleNextMonthClick = useCallback(() => moveFocusedDate(1), [moveFocusedDate])
 
   return (
-    <Flex align="center" flex={1} justify="space-between">
+    <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
       <Inline paddingLeft={2} gap={1}>
         {/* Technically not correct to simply uppercase first here, but simplifying for now */}
         <Text size={1} weight="medium">
           {upperFirst(monthFormatter.format(focusedDate))}
         </Text>
       </Inline>
-      <Flex align="center">
+      <Flex alignItems="center">
         <Button
           aria-label={t('calendar.action.go-to-today-aria-label')}
           mode="bleed"

@@ -32,7 +32,7 @@ const OversizedButton = styled(ToolLink)`
 export function ReleasesToolLink(): React.JSX.Element {
   const {t} = useTranslation()
   const {errorCount$} = useReleasesStore()
-  const errorCount = useObservable(errorCount$)
+  const errorCount = useObservable(errorCount$, 0)
   const hasError = errorCount !== 0
   const {selectedPerspective} = usePerspective()
   const activeToolName = useRouterState(
@@ -49,7 +49,7 @@ export function ReleasesToolLink(): React.JSX.Element {
         name={SCHEDULES_TOOL_NAME}
         data-as="a"
         fontSize={2}
-        icon={<ReleaseAvatarIcon size="small" release={selectedPerspective} />}
+        icon={<ReleaseAvatarIcon size="small" release={selectedPerspective} fontSize={2} />}
         mode="bleed"
         padding={2}
         radius="full"

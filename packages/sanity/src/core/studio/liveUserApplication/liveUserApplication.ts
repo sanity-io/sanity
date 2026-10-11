@@ -1,6 +1,7 @@
 import {firstValueFrom} from 'rxjs'
 
 import {type WorkspaceSummary} from '../../config/types'
+import {getMessageBusConnection} from '../../store/messageBus/getMessageBusConnection'
 import {type UserApplication, type UserApplicationCache} from '../../store/userApplications'
 
 function getAppUrl(app: UserApplication, internalHost: string): string {
@@ -56,6 +57,9 @@ export async function findUserApplication(
   }
 
   const userApplications = await cache.get(state.client)
+  const messageBusAppId = getMessageBusConnection()?.appId
+  if (messageBusAppId) return userApplications.find((app) => app.id === messageBusAppId)
+
   const bestMatch = userApplications.reduce<[UserApplication | undefined, string]>(
     (best, app) => {
       const appUrl = getAppUrl(app, internalHost)

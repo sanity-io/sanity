@@ -87,6 +87,7 @@ import {objectsDebug} from './debug/objectsDebug'
 import {patchOnMountDebug} from './debug/patchOnMount'
 import poppers from './debug/poppers'
 import presence, {objectWithNestedArray} from './debug/presence'
+import {presenceDebug} from './debug/presenceDebug'
 import previewImageUrlTest from './debug/previewImageUrlTest'
 import previewMediaTest from './debug/previewMediaTest'
 import {previewSelectBugRepro} from './debug/previewSelectBugRepro'
@@ -100,6 +101,7 @@ import recursivePopover from './debug/recursivePopover'
 import {pageDocRepro, sectionDocRepro} from './debug/referenceCreateButtonRepro'
 import removeRestoreAction from './debug/removeRestoreAction'
 import reservedFieldNames from './debug/reservedFieldNames'
+import restrictedVersionActions from './debug/restrictedVersionActions'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
 import select from './debug/select'
@@ -120,6 +122,7 @@ import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
 import geopoint from './plugins/geopoint'
+import {singletonCampaign, singletonSettings} from './singletons'
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
@@ -262,6 +265,7 @@ export function createSchemaTypes(projectId: string) {
     ...hiddenFieldValidationTypes,
     fieldsets,
     removeRestoreAction,
+    restrictedVersionActions,
 
     fieldValidationInferReproSharedObject,
     fieldValidationInferReproDoc,
@@ -275,6 +279,7 @@ export function createSchemaTypes(projectId: string) {
     superlatives,
     inspectorsTestType,
     invalidPreviews,
+    presenceDebug,
     issue4516AddFilterIntentLink,
     issue13494I18nTitleKeyStylesLists,
     languageFilterDebugType,
@@ -353,6 +358,8 @@ export function createSchemaTypes(projectId: string) {
     house,
     playlist,
     playlistTrack,
+    singletonCampaign,
+    singletonSettings,
 
     // CI documents
     allNativeInputComponents,

@@ -1,8 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type PreviewLayoutKey} from '../../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../../presence/DocumentPreviewPresence'
@@ -12,6 +12,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../../../../releases/util/getRe
 import {useDocumentPresence} from '../../../../store/presence/useDocumentPresence'
 import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../../util/draftUtils'
+import {encodeVariantLinkParam} from '../../../util/variantSelection'
 import {isPublishedBundleId} from '../../util'
 import {getPrimaryBundle} from '../releaseLane'
 import {type DocumentInVariantGroup} from '../types'
@@ -37,20 +38,18 @@ function PrimaryBundleIcon({
 
   return (
     <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-      <Text size={1}>
-        {primary.kind === 'published' ? (
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          <ReleaseAvatarIcon tone="positive" />
-        ) : primary.kind === 'drafts' ? (
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          <ReleaseAvatarIcon tone="caution" />
-        ) : primary.release ? (
-          <ReleaseAvatarIcon release={primary.release} />
-        ) : (
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          <ReleaseAvatarIcon tone="default" />
-        )}
-      </Text>
+      {primary.kind === 'published' ? (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        <ReleaseAvatarIcon tone="positive" />
+      ) : primary.kind === 'drafts' ? (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        <ReleaseAvatarIcon tone="caution" />
+      ) : primary.release ? (
+        <ReleaseAvatarIcon release={primary.release} />
+      ) : (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        <ReleaseAvatarIcon tone="default" />
+      )}
     </Box>
   )
 }
@@ -89,7 +88,9 @@ function getVersionPerspectiveNavigation(
   perspectiveStack: string[]
   searchParams: Array<[string, string]> | undefined
 } {
-  const searchParams: Array<[string, string]> = variantId ? [['variant', variantId]] : []
+  const searchParams: Array<[string, string]> = variantId
+    ? [['variant', encodeVariantLinkParam(variantId)]]
+    : []
 
   if (isPublishedBundleId(bundleId)) {
     return {
@@ -151,7 +152,7 @@ export function VariantDocumentPreview({
   })
 
   return (
-    <Flex align="center" gap={2}>
+    <Flex alignItems="center" gap={2}>
       <PrimaryBundleIcon releasesById={releasesById} row={row} />
       <Card
         tone="inherit"

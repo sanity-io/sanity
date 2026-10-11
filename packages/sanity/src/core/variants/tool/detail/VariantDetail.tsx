@@ -2,10 +2,10 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
-import {Card, Container, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box} from 'ui5'
+import {Container, Flex, Box, VStack} from 'ui5'
 
 import {
   DetailBackButton,
@@ -16,9 +16,12 @@ import {
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
+import {useVariantConditionMismatches, useVariantTypes} from '../../hooks/useVariantConditions'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
+import {getVariantType} from '../../util/variantType'
 import {
   decodeVariantIdFromRoute,
   getVariantDescription,
@@ -33,12 +36,18 @@ import {VariantDocumentsTable} from './VariantDocumentsTable'
 export function VariantDetail() {
   const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
+  const variantTypes = useVariantTypes()
+  const showVariantType = variantTypes.status === 'ready' && variantTypes.types.length > 1
   const variantIdRaw =
     typeof router.state.variantId === 'string' ? router.state.variantId : undefined
   const variantId = decodeVariantIdFromRoute(variantIdRaw)
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
+  const conditionMismatches = useVariantConditionMismatches(
+    variant?.conditions ?? {},
+    getVariantType(variant),
+  )
   const {
     loading: documentsLoading,
     results: variantDocuments,
@@ -74,6 +83,7 @@ export function VariantDetail() {
             // Each targeting dimension gets a recognizable glyph (audience → people, location →
             // pin, …) so a multi-dimension definition reads at a glance.
             const DimensionIcon = getVariantConditionIcon(key)
+            const mismatch = conditionMismatches.find((item) => item.key === key)
             return {
               icon: (
                 <Text muted size={1}>
@@ -81,7 +91,14 @@ export function VariantDetail() {
                 </Text>
               ),
               label: key,
-              value,
+              value: mismatch ? (
+                <Flex alignItems="center" gap={2}>
+                  <Text size={1}>{value}</Text>
+                  <ConditionMismatchIndicator mismatches={[mismatch]} />
+                </Flex>
+              ) : (
+                value
+              ),
             }
           })
         : [
@@ -106,7 +123,7 @@ export function VariantDetail() {
         rows: conditionRows,
       },
     ]
-  }, [t, variant])
+  }, [conditionMismatches, t, variant])
 
   const documentSections = useMemo<DetailPropertiesSection[]>(() => {
     // While documents are still streaming in, show a skeleton rather than "0" — a literal 0
@@ -143,6 +160,16 @@ export function VariantDetail() {
             label: t('detail.metadata.unpublished-changes'),
             value: countValue(unpublishedCount),
           },
+          variant &&
+            showVariantType && {
+              icon: (
+                <Text muted size={1}>
+                  <DocumentsIcon />
+                </Text>
+              ),
+              label: t('detail.metadata.type'),
+              value: getVariantType(variant),
+            },
           variant && {
             // Resolution priority — the tiebreaker when several definitions match. Shown here (it is
             // authored in the create/edit dialog) so the detail page reflects the full definition.
@@ -173,7 +200,7 @@ export function VariantDetail() {
         ],
       },
     ]
-  }, [documentsLoading, t, tableRows.length, unpublishedCount, variant])
+  }, [documentsLoading, showVariantType, t, tableRows.length, unpublishedCount, variant])
 
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />
@@ -181,20 +208,20 @@ export function VariantDetail() {
 
   if (!variant) {
     return (
-      <Flex direction="column" flex={1} height="fill">
+      <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
         <Card borderBottom flex="none" padding={3}>
           <DetailBackButton onClick={() => router.navigate({})} text={t('detail.back')} />
         </Card>
         <Box padding={4}>
           <Card border padding={4} radius={3}>
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Text size={2} weight="semibold">
                 {t('detail.not-found.title')}
               </Text>
               <Text muted size={1}>
                 {t('detail.not-found.description')}
               </Text>
-            </Stack>
+            </VStack>
           </Card>
         </Box>
       </Flex>
@@ -204,7 +231,7 @@ export function VariantDetail() {
   const description = getVariantDescription(variant)
 
   return (
-    <Flex direction="column" flex={1} height="fill" overflow="hidden">
+    <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%" overflow="hidden">
       {/* Header region — the shared detail spine: a top rail (back on the left, action rail on the
           right), then a two-zone body (identity on the left, a bordered properties panel on the
           right). Matches the Releases detail page so the two read as one family. No borderBottom:
@@ -213,20 +240,25 @@ export function VariantDetail() {
       <Card flex="none" paddingY={3}>
         {/* container[3] so the header aligns with the table's row content below (the shared Table
             centers rows at container[3]) instead of spreading edge-to-edge on wide screens. */}
-        <Container flex="none" width={3}>
+        <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
           {/* paddingX={2} (8px) matches the table's first-column content inset so the back button and
               actions line up with the row content below. */}
           <Box paddingX={2}>
-            <Stack gap={4}>
-              <Flex align="center" gap={3}>
-                <Flex align="center" flex={1} style={{minWidth: 0}}>
+            <VStack gap={4}>
+              <Flex alignItems="center" gap={3}>
+                <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
                   <DetailBackButton
                     onClick={() => router.navigate({})}
                     testId="back-to-variants-button"
                     text={t('detail.back')}
                   />
                 </Flex>
-                <Flex data-testid="variant-detail-actions" flex="none">
+                <Flex
+                  data-testid="variant-detail-actions"
+                  flexBasis="auto"
+                  flexGrow={0}
+                  flexShrink={0}
+                >
                   <VariantActionRail
                     documentCount={tableRows.length}
                     documentsLoading={documentsLoading}
@@ -234,7 +266,7 @@ export function VariantDetail() {
                   />
                 </Flex>
               </Flex>
-              <Flex align="flex-start" gap={4} wrap="wrap">
+              <Flex alignItems="flex-start" gap={4} flexWrap="wrap">
                 <Box flexBasis="0%" flexGrow={1} style={{minWidth: 280}}>
                   <DetailIdentity
                     description={description || undefined}
@@ -258,11 +290,11 @@ export function VariantDetail() {
                   testId="variant-detail-documents"
                 />
               </Flex>
-            </Stack>
+            </VStack>
           </Box>
         </Container>
       </Card>
-      <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
+      <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%" overflow="hidden">
         {variantDocumentsError ? (
           <Box padding={4}>
             <Text muted size={1}>

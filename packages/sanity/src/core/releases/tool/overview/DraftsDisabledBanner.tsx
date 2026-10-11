@@ -1,8 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
@@ -40,11 +40,11 @@ export const DraftsDisabledBanner = ({
   return (
     <Box padding={1} marginBottom={4}>
       <Card radius={3} paddingX={2} paddingY={2} tone="caution">
-        <Flex align="center" gap={3} paddingX={2}>
+        <Flex alignItems="center" gap={3} paddingX={2}>
           <Text size={0}>
             <WarningOutlineIcon />
           </Text>
-          <Flex align="center" flex={1} gap={2} paddingY={2}>
+          <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2}>
             <Text size={1} weight="medium">
               {getBannerMessage()}
             </Text>

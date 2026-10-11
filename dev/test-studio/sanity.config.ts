@@ -41,12 +41,15 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
+import {documentFormOnly} from './plugins/document-form-only/plugin'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter/plugin'
+import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
+import {styleOutline} from './plugins/style-outline/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -54,6 +57,7 @@ import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {newDocumentOptions} from './structure/resolveNewDocumentOptions'
+import {singletons} from './structure/resolveSingletons'
 import {structure} from './structure/resolveStructure'
 import {defaultDocumentNode} from './structure/resolveStructureDocumentNode'
 
@@ -154,6 +158,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         return defaultActions
       },
       newDocumentOptions,
+      singletons,
       comments: {
         enabled: true,
       },
@@ -262,8 +267,11 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       }),
       themerTool(),
       routerDebugTool(),
+      // Opt-in (Vercel test-studio). Must stay this exact member expression.
+      ...(process.env.SANITY_STUDIO_STYLE_OUTLINE === 'true' ? [styleOutline()] : []),
       formBuilderReproTool(),
       errorReportingTestPlugin(),
+      presenceDebug(),
       media(),
       wave(),
       autoCloseBrackets(),
@@ -315,6 +323,9 @@ const defaultWorkspace = defineConfig({
   },
   document: {
     actions: (prev, ctx) => {
+      if (ctx.schemaType === 'restrictedVersionActionsTest') {
+        return prev.filter(({action}) => action === 'publish')
+      }
       if (ctx.schemaType === 'book' && ctx.releaseId) {
         return [useTestVersionAction, ...prev]
       }
@@ -335,6 +346,42 @@ const defaultWorkspace = defineConfig({
   },
   beta: {
     variants: {
+      enabled: true,
+      types: {
+        variant: {
+          conditions: async () => {
+            // Mimics an api call to get the conditions
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+            return [
+              {
+                name: 'audience',
+                title: 'Audience',
+                description: 'The group of visitors this content targets.',
+                values: [
+                  {
+                    value: 'loyal',
+                    title: 'Loyal customers',
+                    description: 'Repeat purchasers and members.',
+                  },
+                  {
+                    value: 'new',
+                    title: 'New visitors',
+                    description: 'First-time visitors to the site.',
+                  },
+                ],
+              },
+              {
+                name: 'locale',
+                title: 'Locale',
+                description: 'The visitor language and region.',
+                values: ['en-US', 'nb-NO', 'de-DE'],
+              },
+            ]
+          },
+        },
+      },
+    },
+    reactActivityMode: {
       enabled: true,
     },
   },
@@ -359,6 +406,17 @@ export default defineConfig([
       variants: {
         enabled: false,
       },
+    },
+  },
+  {
+    ...defaultWorkspace,
+    name: 'comments-v2',
+    title: 'Comments v2',
+    subtitle: 'Default workspace with the comments v2 beta enabled',
+    basePath: '/comments-v2',
+    beta: {
+      ...defaultWorkspace.beta,
+      comments: {v2: true},
     },
   },
   {
@@ -407,12 +465,26 @@ export default defineConfig([
     ...defaultWorkspace,
     name: 'no-releases',
     title: 'No releases',
-    dataset: 'no-releases',
     basePath: '/no-releases',
     document: {
       drafts: {enabled: true},
     },
     releases: {enabled: false},
+  },
+  {
+    ...defaultWorkspace,
+    name: 'no-releases-no-variants',
+    title: 'No releases and no variants',
+    basePath: '/no-releases-no-variants',
+    document: {
+      drafts: {enabled: true},
+    },
+    releases: {enabled: false},
+    beta: {
+      variants: {
+        enabled: false,
+      },
+    },
   },
   {
     ...defaultWorkspace,
@@ -751,5 +823,16 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+  },
+  {
+    name: 'document-form-only',
+    title: 'Document form only',
+    subtitle: 'A single document form: no navbar, no structure tool, no document form toolbar',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    auth: sanitySandboxAuth,
+    basePath: '/document-form-only',
+    plugins: [documentFormOnly()],
   },
 ]) as WorkspaceOptions[]

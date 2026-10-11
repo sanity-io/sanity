@@ -6,7 +6,7 @@
  * effectively letting you preview a revert action you might be considering to perform.
  */
 
-import isEqual from 'fast-deep-equal'
+import {dequal as isEqual} from 'dequal/lite'
 import {type PropsWithChildren, useCallback, useContext, useEffect} from 'react'
 import {type SanityDocument} from 'sanity'
 import {PresentationDisplayedDocumentContext} from 'sanity/_singletons'

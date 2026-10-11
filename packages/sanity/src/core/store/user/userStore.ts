@@ -69,6 +69,7 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
     id: currentUser.id,
     displayName: currentUser.name,
     imageUrl: currentUser.profileImage,
+    sanityUserId: currentUser.sanityUserId ?? undefined,
   }
 
   userLoader.prime('me', userFromCurrentUser)

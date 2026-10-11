@@ -148,6 +148,8 @@ const defaultOptions: Omit<
   readOnly: undefined,
   perspective: 'published',
   hasUpstreamVersion: true,
+  baseVariantValue: undefined,
+  hasBaseVariant: false,
 }
 
 const it = baseIt.extend<{

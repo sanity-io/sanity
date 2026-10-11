@@ -1,5 +1,6 @@
-import {Card, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, TextInput} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {ElementWithChangeBar} from '../ElementWithChangeBar'
@@ -30,32 +31,32 @@ export const States: Story = {
   args: {isChanged: true, children: null},
   render: () => (
     <Card padding={4}>
-      <Stack gap={4}>
-        <Stack gap={2}>
-          <Text muted size={1}>
+      <VStack gap={4}>
+        <VStack gap={2}>
+          <Text muted size={1} as="div" trim={true}>
             changed
           </Text>
           <ElementWithChangeBar isChanged>
             <TextInput readOnly value="Changed field" />
           </ElementWithChangeBar>
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1}>
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} as="div" trim={true}>
             changed + focus
           </Text>
           <ElementWithChangeBar hasFocus isChanged>
             <TextInput readOnly value="Changed field with focus" />
           </ElementWithChangeBar>
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1}>
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} as="div" trim={true}>
             unchanged
           </Text>
           <ElementWithChangeBar isChanged={false}>
             <TextInput readOnly value="Unchanged field" />
           </ElementWithChangeBar>
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }

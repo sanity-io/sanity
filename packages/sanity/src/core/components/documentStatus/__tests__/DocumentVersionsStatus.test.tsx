@@ -23,6 +23,7 @@ vi.mock('../../../releases/hooks/useDocumentVersions', () => ({
 vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => ({
     data: [],
+    byId: new Map(),
     error: undefined,
     loading: false,
     dispatch: vi.fn(),
@@ -72,7 +73,7 @@ function createVersion({
     _system: {
       bundleId,
       group: {_ref: GROUP_ID, _weak: true},
-      variant: variantRef ? {_ref: variantRef, _weak: true} : undefined,
+      variants: variantRef ? [{_ref: variantRef, _key: 'k-123'}] : undefined,
     },
   }
 }
@@ -134,6 +135,7 @@ describe('DocumentVersionsStatus', () => {
     })
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       error: undefined,
       loading: false,
       dispatch: vi.fn(),

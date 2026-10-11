@@ -1,6 +1,6 @@
 {
   "name": "@sanity/access-ui",
-  "version": "6.10.1",
+  "version": "6.18.0",
   "description": "Shared request-access screen and access-request logic for Sanity applications",
   "keywords": [
     "access",
@@ -47,17 +47,21 @@
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/icons": "^5.2.1",
-    "@sanity/ui": "catalog:"
+    "@sanity/icons": "^5.2.3",
+    "@sanity/ui": "catalog:",
+    "react-rx": "catalog:",
+    "rxjs": "^7.8.2",
+    "ui5": "catalog:"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
     "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.4",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "jsdom": "catalog:",
     "oxc-transform-react": "catalog:",

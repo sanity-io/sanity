@@ -16,7 +16,7 @@ interface PreviewHookOptions {
   /**
    * The variant to resolve the preview values in, as a bare variant id. Like `perspectiveStack`,
    * this is explicit: callers that want the variant currently selected in the studio pass
-   * `usePerspective().selectedVariantName`.
+   * `getDefaultVariant(usePerspective().selectedVariantNames)`.
    */
   variant?: string
 }
@@ -60,10 +60,7 @@ export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHo
     perspectiveStack,
     variant,
   ])
-  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
-  // id change the live snapshot wins and the previous document's title/media
-  // never pairs with the new identity.
-  const previewState = useObservable(previewStateObservable)
+  const previewState = useObservable(previewStateObservable, undefined)
 
   const isLoading = previewState?.isLoading ?? true
 

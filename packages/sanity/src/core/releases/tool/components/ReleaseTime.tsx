@@ -1,6 +1,6 @@
 import {LockIcon} from '@sanity/icons/Lock'
-import {Flex, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Text} from '@sanity/ui'
+import {Box, Flex} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
@@ -37,7 +37,7 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
   const isInArchivedView = ARCHIVED_RELEASE_STATES.includes(release.state)
 
   return (
-    <Flex gap={1} align="center" wrap="wrap">
+    <Flex gap={1} alignItems="center" flexWrap="wrap">
       {isScheduledOrScheduling && (
         <Box paddingY={1}>
           <Text size={1} muted>

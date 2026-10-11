@@ -1,7 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CircleIcon} from '@sanity/icons/Circle'
-import {Card, Flex, Stack, Text, type CardTone} from '@sanity/ui'
+import {Card, Text, type CardTone} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {PerspectiveFilter} from '../PerspectiveFilter'
@@ -49,9 +50,9 @@ export const Enabled: Story = {
   args: {prefix: 'Version', tone: 'default', children: null},
   render: () => (
     <Card padding={4}>
-      <Stack gap={4}>
+      <VStack gap={4}>
         {CASES.map(({tone, label, caption}) => (
-          <Flex key={tone} align="center" gap={4}>
+          <Flex key={tone} alignItems="center" gap={4}>
             <PerspectiveFilter prefix="Version" tone={tone}>
               <TriggerButton text={label} />
             </PerspectiveFilter>
@@ -60,7 +61,7 @@ export const Enabled: Story = {
             </Text>
           </Flex>
         ))}
-      </Stack>
+      </VStack>
     </Card>
   ),
 }
@@ -70,9 +71,9 @@ export const Selected: Story = {
   args: {prefix: 'Version', tone: 'default', children: null},
   render: () => (
     <Card padding={4}>
-      <Stack gap={4}>
+      <VStack gap={4}>
         {CASES.map(({tone, label, caption}) => (
-          <Flex key={tone} align="center" gap={4}>
+          <Flex key={tone} alignItems="center" gap={4}>
             <PerspectiveFilter
               prefix="Version"
               tone={tone}
@@ -86,7 +87,7 @@ export const Selected: Story = {
             </Text>
           </Flex>
         ))}
-      </Stack>
+      </VStack>
     </Card>
   ),
 }
@@ -96,7 +97,7 @@ export const Disabled: Story = {
   args: {prefix: 'Variant', tone: 'default', children: null},
   render: () => (
     <Card padding={4}>
-      <Flex align="center" gap={4}>
+      <Flex alignItems="center" gap={4}>
         <PerspectiveFilter prefix="Variant" tone="default">
           <TriggerButton text="All users (Default)" disabled />
         </PerspectiveFilter>

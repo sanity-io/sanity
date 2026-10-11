@@ -8,11 +8,12 @@ import {
 } from '@sanity/client'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Box, Button, Flex} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
+  getDefaultVariant,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
   type PerspectiveStack,
@@ -25,6 +26,7 @@ import {
   useWorkspace,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
+import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
@@ -115,7 +117,8 @@ export function VisionGui(props: VisionGuiProps) {
   const {datasets, config, projectId, defaultDataset} = props
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()
@@ -373,7 +376,7 @@ export function VisionGui(props: VisionGuiProps) {
 
       handleQueryExecution({perspective: newPerspective})
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setPerspectiveState],
   )
 
   const handleChangeDataset = useCallback(
@@ -383,7 +386,7 @@ export function VisionGui(props: VisionGuiProps) {
       setDataset(newDataset)
       handleQueryExecution({dataset: newDataset})
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setDataset],
   )
 
   const changeApiVersion = useCallback(
@@ -586,7 +589,7 @@ export function VisionGui(props: VisionGuiProps) {
       // Execute query with new values
       handleQueryExecution(parsedUrlObj)
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setDataset, setPerspectiveState],
   )
 
   const handlePaste = useCallback(
@@ -691,10 +694,9 @@ export function VisionGui(props: VisionGuiProps) {
 
   return (
     <Root
-      direction="column"
-      height="fill"
+      flexDirection="column"
+      height="100%"
       ref={visionRootRef}
-      sizing="border"
       overflow="hidden"
       data-testid="vision-root"
     >
@@ -714,7 +716,7 @@ export function VisionGui(props: VisionGuiProps) {
         isScheduledDraftsEnabled={isScheduledDraftsEnabled}
       />
 
-      <SplitpaneContainer flex="auto">
+      <SplitpaneContainer flexBasis="auto" flexGrow={1} flexShrink={1}>
         <SplitPane
           minSize={800}
           defaultSize={window.innerWidth - 275}
@@ -722,14 +724,14 @@ export function VisionGui(props: VisionGuiProps) {
           maxSize={-225}
           primary="first"
         >
-          <Box height="stretch" flex={1}>
+          <Box height="stretch" flexBasis="0%" flexGrow={1}>
             <SplitPane
               className="sidebarPanes"
               // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
               minSize={300}
             >
-              <Box height="stretch" flex={1}>
+              <Box height="stretch" flexBasis="0%" flexGrow={1}>
                 <SplitPane
                   className="sidebarPanes"
                   split="horizontal"
@@ -743,7 +745,7 @@ export function VisionGui(props: VisionGuiProps) {
                   primary="first"
                 >
                   <InputContainer display="flex" data-testid="vision-query-editor">
-                    <Box flex={1}>
+                    <Box flexBasis="0%" flexGrow={1}>
                       <InputBackgroundContainerLeft>
                         <Flex>
                           <StyledLabel muted>{t('query.label')}</StyledLabel>
@@ -778,6 +780,13 @@ export function VisionGui(props: VisionGuiProps) {
               </Box>
               <VisionGuiResult
                 error={error}
+                apiVersion={userApiVersion}
+                perspective={getActivePerspective({
+                  visionPerspective: perspective,
+                  perspectiveStack,
+                  scheduledDraftsStack,
+                })}
+                variant={activeVariant}
                 queryInProgress={queryInProgress}
                 queryResult={queryResult}
                 listenInProgress={listenInProgress}

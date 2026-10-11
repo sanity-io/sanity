@@ -8,14 +8,13 @@ import {
   enablePreviewAccessSharing,
 } from '@sanity/preview-url-secret/toggle-preview-access-sharing'
 import {setSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
-import {Card, Grid, Spinner, Stack, Switch, Text} from '@sanity/ui'
+import {Card, Spinner, Switch, Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Grid, Box, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {MenuButton} from '../../ui-components/menuButton/MenuButton'
@@ -25,6 +24,7 @@ import {API_VERSION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {type PreviewProps} from './Preview'
+import {styledSanityMonogram} from './SharePreviewMenu.css'
 
 const QRCodeSVG = lazy(() => import('./QRCodeSVG'))
 
@@ -37,22 +37,14 @@ export interface SharePreviewMenuProps {
   variant: string | undefined
 }
 
+// Keep in sync with the `height`/`width` in `SharePreviewMenu.css.ts`
 const QrCodeLogoSize = 24
 const QrCodeLogoPadding = 16
 const QrSize = 224
 
-const StyledSanityMonogram = styled(SanityMonogram)`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  height: ${QrCodeLogoSize}px;
-  width: ${QrCodeLogoSize}px;
-`
-
 const MotionSpinner = motion.create(Spinner)
 const MotionText = motion.create(Text)
-const MotionMonogram = motion.create(StyledSanityMonogram)
+const MotionMonogram = motion.create(SanityMonogram)
 
 export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Element {
   const {
@@ -213,10 +205,10 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
             <>
               <label style={{cursor: 'pointer'}}>
                 <Grid
-                  gridTemplateColumns={2}
-                  gridTemplateRows={2}
-                  gapX={3}
-                  gapY={1}
+                  gridTemplateColumns="repeat(2, minmax(0, 1fr))"
+                  gridTemplateRows="repeat(2, minmax(0, 1fr))"
+                  columnGap={3}
+                  rowGap={1}
                   style={{
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -262,7 +254,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                 </Grid>
               </label>
               <Box padding={3} paddingTop={2}>
-                <Stack gap={3}>
+                <VStack gap={3}>
                   <Card
                     tone={busy || !url ? 'transparent' : undefined}
                     style={{
@@ -292,6 +284,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                               logoSize={QrCodeLogoSize + QrCodeLogoPadding}
                             />
                             <MotionMonogram
+                              className={styledSanityMonogram}
                               initial={{opacity: -0.5}}
                               animate={{opacity: 1.5}}
                               exit={{opacity: 0}}
@@ -315,7 +308,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                   <Text muted size={1}>
                     {t('share-preview-menu.qr-code.instructions')}
                   </Text>
-                </Stack>
+                </VStack>
               </Box>
               <MenuDivider />
               <MenuItem

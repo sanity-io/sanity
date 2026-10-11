@@ -1,12 +1,12 @@
-import {Flex, rem, Skeleton, Stack} from '@sanity/ui'
+import {rem, Skeleton} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
 export const RootBox = styled(Box)`
   position: relative;
 `
 
-export const MediaFlex = styled(Flex).attrs({align: 'center', justify: 'center'})`
+export const MediaFlex = styled(Flex).attrs({alignItems: 'center', justifyContent: 'center'})`
   position: absolute;
   left: 0;
   top: 0;
@@ -19,7 +19,7 @@ export const MediaSkeleton = styled(Skeleton).attrs({animated: true, radius: 2})
   height: 100%;
 `
 
-export const ProgressFlex = styled(Flex).attrs({align: 'center', justify: 'center'})`
+export const ProgressFlex = styled(Flex).attrs({alignItems: 'center', justifyContent: 'center'})`
   position: absolute;
   left: 0;
   top: 0;
@@ -44,6 +44,6 @@ export const ProgressFlex = styled(Flex).attrs({align: 'center', justify: 'cente
   }
 `
 
-export const TooltipContentStack = styled(Stack).attrs({gap: 2})`
+export const TooltipContentStack = styled(VStack).attrs({gap: 2})`
   max-width: ${rem(200)};
 `

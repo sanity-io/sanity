@@ -1,11 +1,13 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
+import {Container, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {getDocumentVersionType} from '../../../config/document/useConfiguredDocumentActionIds'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../studio/workspace'
 import {getVersionId} from '../../../util/draftUtils'
@@ -75,11 +77,20 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   // production Releases until the flag is on.
   const {beta} = useWorkspace()
   const variantsEnabled = Boolean(beta?.variants?.enabled)
-  // Resolves each document's variant (via `_system.variant._ref`) to its definition for the
+  // Resolves each document's variant (via `_system.variants[0]._ref`) to its definition for the
   // "Variant" column. Provider-free + cached; returns empty when variants are disabled.
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
+
+  const isCardinalityOne = isCardinalityOneRelease(release)
+
+  // Rows of a cardinality-one release are scheduled drafts, and that plugin resolves a different
+  // action list, so the row menu has to ask about the same version type the footer does.
+  const rowVersionType = getDocumentVersionType({
+    isScheduledDraft: isCardinalityOne,
+    isVersionDocument: true,
+  })
 
   const renderRowActions = useCallback(
     (rowProps: {datum: BundleDocumentRow | unknown}) => {
@@ -87,9 +98,16 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       if (!isBundleDocumentRow(rowProps.datum)) return null
       if (rowProps.datum.isPending) return null
 
-      return <DocumentActions document={rowProps.datum} releaseTitle={release.metadata.title} />
+      return (
+        <DocumentActions
+          document={rowProps.datum}
+          releaseId={releaseId}
+          releaseTitle={release.metadata.title}
+          versionType={rowVersionType}
+        />
+      )
     },
-    [release.metadata.title, release.state],
+    [release.metadata.title, release.state, releaseId, rowVersionType],
   )
 
   const documentTableColumnDefs = useMemo(
@@ -199,34 +217,33 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [tableData, activeFilter],
   )
 
-  const isCardinalityOne = isCardinalityOneRelease(release)
   const hasNoDocuments = !isLoading && documents.length === 0
 
   if (isCardinalityOne && hasNoDocuments) {
     return (
       <Flex
-        direction="column"
-        align="center"
-        justify="center"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
         padding={5}
         style={FULL_HEIGHT_STYLE}
         data-testid="cardinality-one-empty-state"
       >
-        <Stack gap={3} style={{textAlign: 'center', maxWidth: '300px'}}>
+        <VStack gap={3} style={{textAlign: 'center', maxWidth: '300px'}}>
           <Text size={1} weight="semibold">
             {t('summary.no-documents-cardinality-one.title')}
           </Text>
           <Text size={1} muted>
             {t('summary.no-documents-cardinality-one.description')}
           </Text>
-        </Stack>
+        </VStack>
       </Flex>
     )
   }
 
   // Old (non-variant) path: Add-document lives at the end of the list.
   const addDocumentFooter = release.state === 'active' && (
-    <Container width={3}>
+    <Container size={3}>
       <Card padding={3}>
         <Button
           icon={AddIcon}
@@ -266,7 +283,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     (isLoading || tableData.length > 0)
 
   return (
-    <Flex direction="column" style={FULL_HEIGHT_STYLE}>
+    <Flex flexDirection="column" style={FULL_HEIGHT_STYLE}>
       {variantsEnabled ? (
         <DocumentTable<DocumentInReleaseDetail>
           alwaysShowCommandLane

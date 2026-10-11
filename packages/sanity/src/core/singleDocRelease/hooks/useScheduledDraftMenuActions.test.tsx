@@ -86,7 +86,7 @@ function TestComponent({options}: TestComponentProps) {
       <Menu>
         <div data-testid="menu-items">
           <MenuItem {...actions.publishNow} />
-          <MenuItem {...actions.editSchedule} />
+          <MenuItem {...actions.pauseToEdit} />
           <MenuItem {...actions.deleteSchedule} />
         </div>
       </Menu>
@@ -95,9 +95,9 @@ function TestComponent({options}: TestComponentProps) {
           <span data-testid="publish-now-text">{actions.publishNow.text}</span>
           <span data-testid="publish-now-disabled">{String(actions.publishNow.disabled)}</span>
         </div>
-        <div data-testid="edit-schedule-props">
-          <span data-testid="edit-schedule-text">{actions.editSchedule.text}</span>
-          <span data-testid="edit-schedule-disabled">{String(actions.editSchedule.disabled)}</span>
+        <div data-testid="pause-to-edit-props">
+          <span data-testid="pause-to-edit-text">{actions.pauseToEdit.text}</span>
+          <span data-testid="pause-to-edit-disabled">{String(actions.pauseToEdit.disabled)}</span>
         </div>
         <div data-testid="delete-schedule-props">
           <span data-testid="delete-schedule-text">{actions.deleteSchedule.text}</span>
@@ -192,14 +192,14 @@ describe('useScheduledDraftMenuActions', () => {
     // Should have exactly 3 menu items
     expect(menuItems).toHaveLength(3)
 
-    // Check the order: Publish Now -> Edit Schedule -> Delete Schedule
+    // Check the order: Publish Now -> Pause to edit -> Delete Schedule
     expect(menuItems[0]).toHaveAttribute('data-testid', 'publish-now-menu-item')
-    expect(menuItems[1]).toHaveAttribute('data-testid', 'edit-schedule-menu-item')
+    expect(menuItems[1]).toHaveAttribute('data-testid', 'pause-to-edit-menu-item')
     expect(menuItems[2]).toHaveAttribute('data-testid', 'delete-schedule-menu-item')
 
     // Verify all items are present
     expect(screen.getByTestId('publish-now-menu-item')).toBeInTheDocument()
-    expect(screen.getByTestId('edit-schedule-menu-item')).toBeInTheDocument()
+    expect(screen.getByTestId('pause-to-edit-menu-item')).toBeInTheDocument()
     expect(screen.getByTestId('delete-schedule-menu-item')).toBeInTheDocument()
   })
 
@@ -211,7 +211,7 @@ describe('useScheduledDraftMenuActions', () => {
     )
 
     expect(screen.getByTestId('publish-now-text')).toHaveTextContent('Publish now')
-    expect(screen.getByTestId('edit-schedule-text')).toHaveTextContent('Edit schedule')
+    expect(screen.getByTestId('pause-to-edit-text')).toHaveTextContent('Pause to edit')
     expect(screen.getByTestId('delete-schedule-text')).toHaveTextContent('Delete schedule')
   })
 
@@ -259,7 +259,7 @@ describe('useScheduledDraftMenuActions', () => {
     })
   })
 
-  describe('edit schedule action', () => {
+  describe('pause to edit action', () => {
     it('should call pauseScheduledDraft operation on success', async () => {
       render(
         <TestProvider>
@@ -268,7 +268,7 @@ describe('useScheduledDraftMenuActions', () => {
       )
 
       // Click menu item to trigger pause operation
-      await userEvent.click(screen.getByTestId('edit-schedule-menu-item'))
+      await userEvent.click(screen.getByTestId('pause-to-edit-menu-item'))
 
       await waitFor(() => {
         expect(mockOperations.pauseScheduledDraft).toHaveBeenCalledWith(scheduledRelease)
@@ -286,7 +286,7 @@ describe('useScheduledDraftMenuActions', () => {
         </TestProvider>,
       )
 
-      await userEvent.click(screen.getByTestId('edit-schedule-menu-item'))
+      await userEvent.click(screen.getByTestId('pause-to-edit-menu-item'))
 
       await waitFor(() => {
         expect(mockToastPush).toHaveBeenCalledWith(

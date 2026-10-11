@@ -1,5 +1,5 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Inline, Select, Text, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
@@ -11,12 +11,14 @@ import {
   useRef,
 } from 'react'
 import {
+  getDefaultVariant,
   getVariantTitle,
   type PerspectiveContextValue,
   type TFunction,
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {Box, Flex, Grid, VStack} from 'ui5'
 
 import {API_VERSIONS} from '../apiVersions'
 import {visionLocaleNamespace} from '../i18n'
@@ -38,9 +40,9 @@ const PinnedReleasePerspectiveOption: ComponentType<{
       ? pinnedPerspective.selectedPerspective.metadata.title
       : pinnedPerspective.selectedPerspectiveName
 
-  const variantTitle = pinnedPerspective.selectedVariant
-    ? getVariantTitle(pinnedPerspective.selectedVariant)
-    : pinnedPerspective.selectedVariantName
+  const variant = getDefaultVariant(pinnedPerspective.selectedVariants)
+  const variantName = getDefaultVariant(pinnedPerspective.selectedVariantNames)
+  const variantTitle = variant ? getVariantTitle(variant) : variantName
 
   const label = hasPinnedPerspective(pinnedPerspective)
     ? `(${t('settings.perspectives.pinned-release-label')})`
@@ -94,7 +96,7 @@ export function VisionGuiHeader({
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
   const isApiVersionLocked = Boolean(
-    getActiveVariant(perspective, pinnedPerspective.selectedVariantName),
+    getActiveVariant(perspective, getDefaultVariant(pinnedPerspective.selectedVariantNames)),
   )
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)
@@ -113,10 +115,17 @@ export function VisionGuiHeader({
 
   return (
     <Header paddingX={3} paddingY={2}>
-      <Grid gridTemplateColumns={[1, 4, 8, 12]}>
+      <Grid
+        gridTemplateColumns={[
+          'repeat(1, minmax(0, 1fr))',
+          'repeat(4, minmax(0, 1fr))',
+          'repeat(8, minmax(0, 1fr))',
+          'repeat(12, minmax(0, 1fr))',
+        ]}
+      >
         {/* Dataset selector */}
-        <Box padding={1} gridColumn={[1, 2]}>
-          <Stack>
+        <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
+          <VStack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
             </Card>
@@ -125,12 +134,12 @@ export function VisionGuiHeader({
                 <option key={ds}>{ds}</option>
               ))}
             </Select>
-          </Stack>
+          </VStack>
         </Box>
 
         {/* API version selector */}
-        <Box padding={1} gridColumn={[1, 2]}>
-          <Stack>
+        <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
+          <VStack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
             </Card>
@@ -156,13 +165,13 @@ export function VisionGuiHeader({
                 </Select>
               </Box>
             </Tooltip>
-          </Stack>
+          </VStack>
         </Box>
 
         {/* Custom API version input */}
         {!isApiVersionLocked && customApiVersion !== false && (
-          <Box padding={1} gridColumn={[1, 2]}>
-            <Stack>
+          <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
+            <VStack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel textOverflow="ellipsis">
                   {t('settings.custom-api-version-label')}
@@ -178,13 +187,13 @@ export function VisionGuiHeader({
                 }
                 maxLength={11}
               />
-            </Stack>
+            </VStack>
           </Box>
         )}
 
         {/* Perspective selector */}
-        <Box padding={1} gridColumn={[1, 2]}>
-          <Stack>
+        <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
+          <VStack>
             <Card paddingBottom={1}>
               <Inline gap={1}>
                 <Box>
@@ -224,13 +233,21 @@ export function VisionGuiHeader({
                 return <option key={perspectiveName}>{perspectiveName}</option>
               })}
             </Select>
-          </Stack>
+          </VStack>
         </Box>
 
         {/* Query URL (for copying) */}
         {typeof url === 'string' ? (
-          <Box padding={1} flex={1} gridColumn={[1, customApiVersion === false ? 6 : 4]}>
-            <Stack>
+          <Box
+            padding={1}
+            flexBasis="0%"
+            flexGrow={1}
+            gridColumn={[
+              'span 1 / span 1',
+              customApiVersion === false ? 'span 6 / span 6' : 'span 4 / span 4',
+            ]}
+          >
+            <VStack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel>
                   {t('query.url')}&nbsp;
@@ -246,8 +263,8 @@ export function VisionGuiHeader({
                   </QueryCopyLink>
                 </StyledLabel>
               </Card>
-              <Flex flex={1} gap={1}>
-                <Box flex={1}>
+              <Flex flexBasis="0%" flexGrow={1} gap={1}>
+                <Box flexBasis="0%" flexGrow={1}>
                   <TextInput
                     data-testid="vision-query-url"
                     readOnly
@@ -266,10 +283,10 @@ export function VisionGuiHeader({
                   />
                 </Tooltip>
               </Flex>
-            </Stack>
+            </VStack>
           </Box>
         ) : (
-          <Box flex={1} />
+          <Box flexBasis="0%" flexGrow={1} />
         )}
       </Grid>
     </Header>

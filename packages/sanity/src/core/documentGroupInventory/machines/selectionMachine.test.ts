@@ -46,6 +46,7 @@ function createSelectionActor({
       // covered in documentGroupInventoryMachine.test.ts.
       actions: {notifySelectionChanged: () => {}},
     }),
+    {input: undefined},
   )
   actor.start()
   if (variants) {
@@ -142,7 +143,7 @@ describe('selectionMachine', () => {
 
     selection.send({type: 'selection.add', variantId: 'drafts.foo'})
     selection.send({type: 'selection.lock'})
-    expect(selection.getSnapshot().matches('readonly')).toBe(true)
+    expect(selection.getSnapshot().matches('locked')).toBe(true)
 
     // Selection mutations are dropped while locked.
     selection.send({type: 'selection.add', variantId: 'foo'})

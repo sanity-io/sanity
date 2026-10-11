@@ -46,6 +46,7 @@ describe('DeletedDocumentBanners', () => {
     >)
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       dispatch: vi.fn(),
       loading: false,
     })
@@ -74,6 +75,7 @@ describe('DeletedDocumentBanners', () => {
     >)
     mockUseActiveReleases.mockReturnValue({
       data: [mockReleaseDocument],
+      byId: new Map([[mockReleaseDocument._id, mockReleaseDocument]]),
       dispatch: vi.fn(),
       loading: false,
     })
@@ -104,6 +106,7 @@ describe('DeletedDocumentBanners', () => {
 
     mockUseActiveReleases.mockReturnValue({
       data: [mockBundleDocument],
+      byId: new Map([[mockBundleDocument._id, mockBundleDocument]]),
       dispatch: vi.fn(),
       loading: false,
     })

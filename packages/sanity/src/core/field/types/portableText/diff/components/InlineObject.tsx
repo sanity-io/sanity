@@ -6,11 +6,12 @@ import {
   type PortableTextChild,
   type PortableTextObject,
 } from '@sanity/types'
-import {Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, useClickOutsideEvent} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+import {Text, Flex, Icon} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
 import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators/tracker'
@@ -21,7 +22,7 @@ import {ChangeList} from '../../../../diff/components/ChangeList'
 import {DiffTooltip} from '../../../../diff/components/DiffTooltip'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
-import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
+import {InlineBox, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface InlineObjectProps {
   diff?: ObjectDiff
@@ -164,10 +165,8 @@ function InlineObjectWithDiff({
           >
             <InlineBox>
               <Preview schemaType={schemaType} value={object} layout="inline" />
-              <Flex align="center" paddingX={1}>
-                <InlineText size={0}>
-                  <ChevronDownIcon />
-                </InlineText>
+              <Flex alignItems="center" paddingX={1}>
+                <Icon icon={ChevronDownIcon} size={0} style={{color: 'inherit'}} />
               </Flex>
             </InlineBox>
           </DiffTooltip>
@@ -196,7 +195,7 @@ function PopoverContent({
   return (
     <PopoverContainer ref={popoverRef} padding={3}>
       {emptyObject && (
-        <Text muted size={1} weight="medium">
+        <Text muted size={1} weight="medium" as="div" trim={true}>
           {t('changes.portable-text.empty-inline-object', {
             inlineObjectType: schemaType.title || schemaType.name,
           })}

@@ -30,7 +30,7 @@ function renderPreview(aspectRatio: number, srcAspectRatio: number) {
   return render(
     <ThemeProvider theme={theme}>
       <div style={{width: 147}}>
-        <RatioBox ratio={aspectRatio}>
+        <RatioBox $ratio={aspectRatio}>
           <Card __unstable_checkered border>
             <HotspotImage
               aspectRatio={aspectRatio}

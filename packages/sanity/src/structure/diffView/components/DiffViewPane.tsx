@@ -10,6 +10,7 @@ import noop from 'lodash-es/noop.js'
 import {
   type ComponentType,
   type CSSProperties,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -27,6 +28,8 @@ import {
   isPublishedId,
   isVersionId,
   LoadingBlock,
+  PerspectiveProvider,
+  PortalBoundaryProvider,
   type TargetPerspective,
   useActiveReleases,
   useDocumentForm,
@@ -128,14 +131,27 @@ export function DiffViewPane({
                   } as CSSProperties
                 }
               >
-                <PortalProvider element={portalElement}>
-                  <DialogProvider position="absolute">
-                    <Container ref={containerElement} padding={4} width={1}>
-                      {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
-                      <DocumentLayout documentId={documentId} documentType={documentType} />
-                    </Container>
-                  </DialogProvider>
-                </PortalProvider>
+                {/* The pane is the visible region for everything portaled into it: popovers that
+                    escape dialogs use it as their boundary, see PortalBoundaryProvider. */}
+                <PortalBoundaryProvider element={boundaryElement} portalElement={portalElement}>
+                  <PortalProvider element={portalElement}>
+                    <DialogProvider position="absolute">
+                      <Container ref={containerElement} padding={4} width={1}>
+                        {/* Each pane renders exactly the document its URL id points at — a variant
+                          version id carries its opaque scope in the id itself — so the globally
+                          selected perspective and variant must not leak into the pane's form.
+                          Scope the perspective to the pane's own bundle, with no variant
+                          selected. */}
+                        <PerspectiveProvider selectedPerspectiveName={perspectiveName(documentId)}>
+                          <Suspense fallback={<LoadingBlock showText />}>
+                            {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
+                            <DocumentLayout documentId={documentId} documentType={documentType} />
+                          </Suspense>
+                        </PerspectiveProvider>
+                      </Container>
+                    </DialogProvider>
+                  </PortalProvider>
+                </PortalBoundaryProvider>
               </Scroller>
               <div data-testid="diffView-document-panel-portal" ref={setPortalElement} />
             </DiffViewPaneLayout>
@@ -237,6 +253,9 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         members={formState.members}
         perspective={sanitizeBundleName(perspective)}
         hasUpstreamVersion={formState.hasUpstreamVersion}
+        changedFromBaseVariant={formState.changedFromBaseVariant}
+        baseVariantValue={formState.baseVariantValue}
+        hasBaseVariant={formState.hasBaseVariant}
         presence={formState.presence}
         schemaType={schemaType}
         value={value}

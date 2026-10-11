@@ -1,6 +1,6 @@
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
-import {type ComponentProps, type ReactNode} from 'react'
+import {type ComponentProps, memo, type ReactNode} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {LocaleProviderBase} from '../components/LocaleProvider'
@@ -61,11 +61,25 @@ function TestComponent(props: TestComponentProps) {
         t={t}
         i18nKey={props.i18nKey}
         components={props.components}
+        componentProps={props.componentProps}
         values={props.values}
       />
     </div>
   )
 }
+
+function ColorText({children, color}: {children?: ReactNode; color?: string}) {
+  return <span style={{color}}>{children}</span>
+}
+
+function LabelBadge({label}: {label?: string; children?: ReactNode}) {
+  return <span>{label}</span>
+}
+
+// Exotic components (memo, forwardRef, lazy) are objects rather than functions, so they pin the
+// "everything except intrinsic tag strings receives componentProps" behavior
+const MemoColorText = memo(ColorText)
+const MemoLabelBadge = memo(LabelBadge)
 
 describe('Translate component', () => {
   it('it translates a key', async () => {
@@ -238,6 +252,92 @@ describe('Translate component', () => {
       expect(await screen.findByTestId('output')).toHaveTextContent('An embedded thing')
       expect(warnSpy).not.toHaveBeenCalled()
       warnSpy.mockRestore()
+    })
+  })
+
+  describe('componentProps', () => {
+    it('forwards componentProps to wrapping function components', async () => {
+      const wrapper = await getWrapper([createBundle({message: 'Hello <Color>world</Color>'})])
+      render(
+        <TestComponent
+          i18nKey="message"
+          components={{Color: ColorText}}
+          componentProps={{color: 'red'}}
+        />,
+        {wrapper},
+      )
+      expect((await screen.findByTestId('output')).innerHTML).toEqual(
+        'Hello <span style="color: red;">world</span>',
+      )
+    })
+
+    it('forwards componentProps to self-closing function components', async () => {
+      const wrapper = await getWrapper([createBundle({message: 'Count: <Badge/>'})])
+      render(
+        <TestComponent
+          i18nKey="message"
+          components={{Badge: LabelBadge}}
+          componentProps={{label: '42'}}
+        />,
+        {wrapper},
+      )
+      expect(await screen.findByTestId('output')).toHaveTextContent('Count: 42')
+    })
+
+    it('forwards componentProps to wrapping memo (exotic) components', async () => {
+      const wrapper = await getWrapper([createBundle({message: 'Hello <Color>world</Color>'})])
+      render(
+        <TestComponent
+          i18nKey="message"
+          components={{Color: MemoColorText}}
+          componentProps={{color: 'red'}}
+        />,
+        {wrapper},
+      )
+      expect((await screen.findByTestId('output')).innerHTML).toEqual(
+        'Hello <span style="color: red;">world</span>',
+      )
+    })
+
+    it('forwards componentProps to self-closing memo (exotic) components', async () => {
+      const wrapper = await getWrapper([createBundle({message: 'Count: <Badge/>'})])
+      render(
+        <TestComponent
+          i18nKey="message"
+          components={{Badge: MemoLabelBadge}}
+          componentProps={{label: '42'}}
+        />,
+        {wrapper},
+      )
+      expect(await screen.findByTestId('output')).toHaveTextContent('Count: 42')
+    })
+
+    it('does not forward componentProps to intrinsic string components', async () => {
+      const wrapper = await getWrapper([createBundle({message: 'A <strong>bold</strong> word'})])
+      render(
+        <TestComponent
+          i18nKey="message"
+          components={{strong: 'strong'}}
+          componentProps={{className: 'injected'}}
+        />,
+        {wrapper},
+      )
+      expect((await screen.findByTestId('output')).innerHTML).toEqual(
+        'A <strong>bold</strong> word',
+      )
+    })
+
+    it('does not forward componentProps to recognized HTML tags', async () => {
+      const wrapper = await getWrapper([createBundle({message: 'A <code>snippet</code> here'})])
+      render(
+        <TestComponent
+          i18nKey="message"
+          components={{}}
+          componentProps={{className: 'injected'}}
+        />,
+        {wrapper},
+      )
+      expect((await screen.findByTestId('output')).innerHTML).toEqual('A <code>snippet</code> here')
     })
   })
 })

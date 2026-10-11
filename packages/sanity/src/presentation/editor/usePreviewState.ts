@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {
+  getDefaultVariant,
   getPreviewStateObservable,
   type PreviewValue,
   type SanityDocument,
@@ -19,7 +20,8 @@ const EMPTY_STATE: PreviewState = {}
 
 export default function usePreviewState(documentId: string, schemaType?: SchemaType): PreviewState {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const preview$ = useMemo(
     () =>
@@ -36,8 +38,5 @@ export default function usePreviewState(documentId: string, schemaType?: SchemaT
     [documentPreviewStore, schemaType, documentId, perspectiveStack, selectedVariantName],
   )
 
-  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
-  // id change the live snapshot wins and the previous document's preview
-  // never renders under the new identity.
   return useObservable(preview$, EMPTY_STATE)
 }

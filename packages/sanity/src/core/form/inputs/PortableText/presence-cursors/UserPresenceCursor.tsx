@@ -1,12 +1,13 @@
 import {type ColorTints} from '@sanity/color'
-import {type User} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useId, useMemo, useReducer, useState} from 'react'
 import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {usePresenceReporter} from '../../../../presence/overlay/tracker'
+import {type FieldPresenceData, type FormNodePresence} from '../../../../presence/types'
 import {useUserColor} from '../../../../user-color/hooks'
 
 const DOT_SIZE = 6
@@ -107,13 +108,57 @@ const UserText = styled(motion.create(Text))`
 
 interface UserPresenceCursorProps {
   children?: React.ReactNode
-  user: User
+  presence: FormNodePresence
 }
 
+/** The nearest ancestor that scrolls vertically, i.e. the editor's scroll container */
+function getScrollParent(element: HTMLElement | null): HTMLElement | null {
+  let node = element?.parentElement ?? null
+  while (node) {
+    const {overflowY} = getComputedStyle(node)
+    if (overflowY === 'auto' || overflowY === 'scroll') {
+      return node
+    }
+    node = node.parentElement
+  }
+  return null
+}
+
+const increment = (count: number) => count + 1
+
 export function UserPresenceCursor(props: UserPresenceCursorProps): React.JSX.Element {
-  const {children, user} = props
+  const {children, presence} = props
+  const {user} = presence
   const {tints} = useUserColor(user.id)
   const [hovered, setHovered] = useState<boolean>(false)
+  const [element, setElement] = useState<HTMLSpanElement | null>(null)
+  const scrollParent = useMemo(() => getScrollParent(element), [element])
+
+  // Register the cursor with the presence overlay, which shows an avatar pointing towards the
+  // cursor when it is out of view: at the edge of the editor's scroll container while the cursor
+  // is hidden by the editor's own scrolling, or in the overlay's docks when the editor itself is
+  // scrolled out of view. `inline` tells the overlay to render nothing while the cursor is visible.
+  const reporterId = useId()
+  const reporterGetSnapshot = useCallback(
+    (): FieldPresenceData => ({
+      element,
+      presence: [presence],
+      maxAvatars: 1,
+      inline: true,
+      clipElement: scrollParent,
+    }),
+    [element, presence, scrollParent],
+  )
+  usePresenceReporter(element ? reporterId : null, reporterGetSnapshot)
+
+  // The overlay only re-measures when a reporter publishes, and scrolling the editor moves the
+  // cursor relative to the overlay without re-rendering anything, so publish on scroll.
+  const [, publish] = useReducer(increment, 0)
+  useEffect(() => {
+    if (!scrollParent) return undefined
+    scrollParent.addEventListener('scroll', publish, {passive: true})
+    return () => scrollParent.removeEventListener('scroll', publish)
+  }, [scrollParent])
 
   const handleMouseEnter = useCallback(() => setHovered(true), [])
   const handleMouseLeave = useCallback(() => setHovered(false), [])
@@ -131,6 +176,7 @@ export function UserPresenceCursor(props: UserPresenceCursorProps): React.JSX.El
         data-testid={testId}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        ref={setElement}
       >
         <AnimatePresence>
           {hovered && (

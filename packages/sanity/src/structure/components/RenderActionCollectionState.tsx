@@ -34,4 +34,3 @@ export const RenderActionCollectionState = memo((props: RenderActionCollectionPr
 
   return children({states: filteredStates})
 })
-RenderActionCollectionState.displayName = 'Memo(RenderActionCollectionState)'

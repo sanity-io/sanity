@@ -4,6 +4,8 @@
 
 import type {
   isDeepEmpty,
+  isDeepEmptyArray,
+  isDeepEmptyObject,
   isEmpty,
   isEmptyArray,
   isEmptyObject,
@@ -16,6 +18,12 @@ import {describe, expectTypeOf, test} from 'vitest'
 describe('@sanity/util/content', () => {
   test('isDeepEmpty', () => {
     expectTypeOf<typeof isDeepEmpty>().toBeFunction()
+  })
+  test('isDeepEmptyArray', () => {
+    expectTypeOf<typeof isDeepEmptyArray>().toBeFunction()
+  })
+  test('isDeepEmptyObject', () => {
+    expectTypeOf<typeof isDeepEmptyObject>().toBeFunction()
   })
   test('isEmpty', () => {
     expectTypeOf<typeof isEmpty>().not.toBeNever()

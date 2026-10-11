@@ -42,4 +42,3 @@ export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProp
     </DocumentPerspectiveProvider>
   )
 })
-DocumentPaneProviderWrapper.displayName = 'Memo(DocumentPaneProviderWrapper)'

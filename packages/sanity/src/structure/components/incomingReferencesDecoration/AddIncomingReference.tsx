@@ -1,16 +1,14 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Grid, Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
-import {catchError, concat, filter, map, type Observable, of, scan, switchMap, tap} from 'rxjs'
+import {useCallback, useMemo} from 'react'
+import {map, type Observable} from 'rxjs'
 import {
   createSearch,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
   isDraftId,
-  isNonNullable,
   isPublishedId,
   isVersionId,
   ReferenceAutocomplete,
@@ -20,21 +18,16 @@ import {
   useClient,
   useDocumentPreviewStore,
   useSchema,
+  useSearchMachine,
   useSource,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Grid, Box, Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {LinkToExistingPreview} from './LinkToExistingPreview'
 import {type IncomingReferencesOptions} from './types'
-
-interface ReferenceSearchState {
-  hits: ReferenceSearchHit[]
-  isLoading: boolean
-  searchString?: string
-}
 
 interface ReferenceOption {
   value: string
@@ -45,10 +38,6 @@ interface ReferenceSearchHit {
   _type: string
 }
 
-const INITIAL_SEARCH_STATE: ReferenceSearchState = {
-  hits: [],
-  isLoading: false,
-}
 const NO_FILTER = () => true
 
 const incomingReferenceSearch = (
@@ -129,36 +118,17 @@ export function AddIncomingReference({
     [client, schemaType, searchStrategy],
   )
 
-  const [searchState, setSearchState] = useState(INITIAL_SEARCH_STATE)
-  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(isNonNullable),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true, hits: []}),
-          handleSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
-            catchError((error) => {
-              push({
-                title: 'Reference search failed',
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${type}`,
-              })
-              console.error(error)
-              return of({hits: [], isLoading: false})
-            }),
-          ),
-        ),
-      ),
-
-      scan(
-        (prevState, nextState: ReferenceSearchState) => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE,
-      ),
-
-      tap(setSearchState),
-    )
+  const {searchState, handleQueryChange} = useSearchMachine<ReferenceSearchHit>({
+    search: handleSearch,
+    onSearchFailed: (error) => {
+      push({
+        title: 'Reference search failed',
+        description: error.message,
+        status: 'error',
+        id: `reference-search-fail-${type}`,
+      })
+      console.error(error)
+    },
   })
 
   const options: ReferenceOption[] = useMemo(() => {
@@ -187,7 +157,7 @@ export function AddIncomingReference({
   )
 
   return (
-    <Stack gap={2} padding={2}>
+    <Flex gap={2} padding={2} flexDirection="column">
       <Box paddingY={2}>
         <Text size={1} weight="medium">
           {t('incoming-references-input.reference-from', {type})}
@@ -218,6 +188,6 @@ export function AddIncomingReference({
           fieldName={fieldName}
         />
       </Grid>
-    </Stack>
+    </Flex>
   )
 }

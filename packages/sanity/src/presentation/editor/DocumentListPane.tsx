@@ -1,4 +1,4 @@
-import {Card, Flex, Label, Stack} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
 import {getPublishedId, useTranslation} from 'sanity'
@@ -10,6 +10,7 @@ import {
   StructureToolProvider,
 } from 'sanity/structure'
 import {styled} from 'styled-components'
+import {Flex, VStack} from 'ui5'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
@@ -162,12 +163,12 @@ export function DocumentListPane(props: {
         {devMode && (
           // show runtime error message in dev mode
           <Card overflow="auto" padding={3} radius={2} tone="critical">
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
               <WrappedCode size={1}>{errorParams.error.message}</WrappedCode>
-            </Stack>
+            </VStack>
           </Card>
         )}
       </ErrorCard>
@@ -185,7 +186,7 @@ export function DocumentListPane(props: {
             searchParams={searchParams}
             refs={refs}
           >
-            <Root direction="column" flex={1}>
+            <Root flexDirection="column" flexBasis="0%" flexGrow={1}>
               <StructureDocumentListPane
                 index={0}
                 itemId="$root"

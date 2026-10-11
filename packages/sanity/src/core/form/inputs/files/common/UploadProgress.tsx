@@ -1,6 +1,7 @@
 import {type UploadState} from '@sanity/types'
-import {Card, Flex, Inline, Text} from '@sanity/ui'
+import {Card, Inline, Text} from '@sanity/ui'
 import {useEffect} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {LinearProgress} from '../../../../components/progress/LinearProgress'
@@ -16,6 +17,10 @@ type Props = {
 }
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
 
+function FileName({filename}: {children?: React.ReactNode; filename?: string}) {
+  return <CodeWrapper size={1}>{filename ? filename : '…'}</CodeWrapper>
+}
+
 export function UploadProgress({uploadState, onCancel, onStale}: Props) {
   const filename = uploadState.file.name
 
@@ -30,22 +35,25 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
     <CardWrapper tone="primary" border>
       <FlexWrapper
         padding={4}
-        align="center"
-        justify="space-between"
-        height="fill"
-        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        height="100%"
+        flexDirection="row"
         gap={2}
       >
         <LeftSection>
-          <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>
+          <Flex
+            justifyContent="center"
+            gap={[3, 3, 2, 2]}
+            flexDirection={['column', 'column', 'row']}
+          >
             <Text size={1}>
               <Inline gap={2}>
                 <Translate
                   t={t}
                   i18nKey="input.files.common.upload-progress"
-                  components={{
-                    FileName: () => <CodeWrapper size={1}>{filename ? filename : '…'}</CodeWrapper>,
-                  }}
+                  components={{FileName}}
+                  componentProps={{filename}}
                 />
               </Inline>
             </Text>

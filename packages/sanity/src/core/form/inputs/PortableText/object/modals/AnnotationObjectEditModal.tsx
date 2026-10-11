@@ -1,6 +1,6 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {useBoundaryElement} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo} from 'react'
 
 import {isEmptyItem} from '../../../../store/utils/isEmptyItem'
 import {usePortableTextMemberItemElementRefs} from '../../contexts/PortableTextMemberItemElementRefsProvider'
@@ -8,10 +8,12 @@ import {usePortableTextMemberItems} from '../../hooks/usePortableTextMembers'
 import {ObjectEditModal} from './ObjectEditModal'
 
 export function AnnotationObjectEditModal(props: {
+  annotationOpeningRef: RefObject<boolean>
   focused: boolean | undefined
   onItemClose: () => void
   referenceBoundary: HTMLElement | null
 }) {
+  const {annotationOpeningRef} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const boundaryElement = useBoundaryElement().element
@@ -20,6 +22,15 @@ export function AnnotationObjectEditModal(props: {
   const openAnnotation = useMemo(() => {
     return portableTextMemberItems.find((m) => m.kind === 'annotation' && m.member.open)
   }, [portableTextMemberItems])
+
+  // The form state now reflects the annotation as open: the modal is rendering,
+  // so the "opening" window (during which the annotation toolbar popover is
+  // suppressed) is over.
+  useEffect(() => {
+    if (openAnnotation) {
+      annotationOpeningRef.current = false
+    }
+  }, [annotationOpeningRef, openAnnotation])
 
   const onClose = useCallback(() => {
     if (!openAnnotation) {

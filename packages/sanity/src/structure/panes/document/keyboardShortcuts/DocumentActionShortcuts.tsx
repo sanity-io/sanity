@@ -136,5 +136,3 @@ export const DocumentActionShortcuts = memo(
     )
   },
 )
-
-DocumentActionShortcuts.displayName = 'Memo(DocumentActionShortcuts)'

@@ -48,6 +48,22 @@ function findArrayItemIndex(array: unknown[], pathSegment: PathSegment): number 
   return index === -1 ? false : index
 }
 
+/**
+ * A stored comment's field path, or no path at all when it does not parse (an
+ * empty string, malformed brackets). This runs during the comments provider's
+ * render for every comment on the document, so a throw here would unmount
+ * every thread — including the UI that could delete the offending comment.
+ * No segments reads as "on the document": the thread stays listed and
+ * deletable, without a breadcrumb.
+ */
+function parseFieldPath(fieldPath: string): PathSegment[] {
+  try {
+    return PathUtils.fromString(fieldPath)
+  } catch {
+    return []
+  }
+}
+
 interface BuildCommentBreadcrumbsProps {
   documentValue: Partial<SanityDocument> | null
   fieldPath: string
@@ -70,7 +86,7 @@ export function buildCommentBreadcrumbs(
   props: BuildCommentBreadcrumbsProps,
 ): CommentListBreadcrumbs {
   const {currentUser, schemaType, fieldPath, documentValue} = props
-  const paths = PathUtils.fromString(fieldPath)
+  const paths = parseFieldPath(fieldPath)
   const fieldPaths: CommentListBreadcrumbs = []
 
   let currentSchemaType: ArraySchemaType<SchemaType> | ObjectFieldType = schemaType

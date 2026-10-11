@@ -3,11 +3,16 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   createCliConfig,
   type DefineAppInput,
+  defineApplication,
+  defineAssetSourceView,
   defineCliConfig,
   type DefineMediaLibraryInput,
+  definePanelView,
+  defineTileView,
+  defineWebWorker,
+  defineWindowView,
   getCliClient,
   type MediaLibraryField,
-  unstable_defineApp,
   unstable_defineMediaLibrary,
 } from '@sanity/cli'
 export {getStudioEnvironmentVariables, type StudioEnvVariablesOptions} from '@sanity/cli/_internal'

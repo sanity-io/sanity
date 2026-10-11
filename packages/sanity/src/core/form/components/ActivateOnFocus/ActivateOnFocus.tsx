@@ -98,7 +98,12 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       onDragEnter={handleDragEnter}
     >
       {isOverlayActive && (
-        <FlexContainer data-testid="activate-overlay" tabIndex={0} align="center" justify="center">
+        <FlexContainer
+          data-testid="activate-overlay"
+          tabIndex={0}
+          alignItems="center"
+          justifyContent="center"
+        >
           <CardContainer
             // Almost all input elements have radius=1, and this component is
             // typically used for overlaying input elements.

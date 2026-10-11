@@ -1,12 +1,14 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
+import {Container, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
+import {useVariantTypes} from '../../hooks/useVariantConditions'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -46,7 +48,12 @@ export function VariantsOverview(): React.JSX.Element {
     [router],
   )
 
-  const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
+  const variantTypes = useVariantTypes()
+  const showTypeColumn = variantTypes.status === 'ready' && variantTypes.types.length > 1
+  const columnDefs = useMemo(
+    () => variantsOverviewColumnDefs(t, showTypeColumn),
+    [showTypeColumn, t],
+  )
 
   const renderRowActions = useCallback(
     ({datum}: {datum: unknown}) => (
@@ -98,7 +105,13 @@ export function VariantsOverview(): React.JSX.Element {
   const tableEmptyState = useCallback(() => {
     if (error && !hasVariants) {
       return (
-        <Flex align="center" direction="column" gap={3} justify="center" padding={4}>
+        <Flex
+          alignItems="center"
+          flexDirection="column"
+          gap={3}
+          justifyContent="center"
+          padding={4}
+        >
           <Text muted size={1}>
             {t('overview.error')}
           </Text>
@@ -108,7 +121,13 @@ export function VariantsOverview(): React.JSX.Element {
 
     if (hasVariants && hasActiveConditionFilters && rows.length === 0) {
       return (
-        <Flex align="center" direction="column" gap={3} justify="center" padding={4}>
+        <Flex
+          alignItems="center"
+          flexDirection="column"
+          gap={3}
+          justifyContent="center"
+          padding={4}
+        >
           <Text data-testid="variants-filter-empty-state" muted size={1}>
             {t('overview.filter.no-matching-definitions')}
           </Text>
@@ -120,21 +139,21 @@ export function VariantsOverview(): React.JSX.Element {
   }, [createVariantButton, error, hasActiveConditionFilters, hasVariants, rows.length, t])
 
   return (
-    <Flex direction="column" flex={1} height="fill">
+    <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
       {/* Same container width as the releases document table (`container[3]`), so the page header
           aligns with the table's row content below. */}
-      <Container flex="none" width={3}>
-        <Flex direction="column" paddingX={3}>
+      <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
+        <Flex flexDirection="column" paddingX={3}>
           <Card flex="none" paddingBottom={4} paddingTop={5}>
-            <Flex align="flex-start" gap={4} justify="space-between">
-              <Stack gap={2}>
+            <Flex alignItems="flex-start" gap={4} justifyContent="space-between">
+              <VStack gap={2}>
                 <Text as="h1" size={4} weight="bold">
                   {t('overview.title')}
                 </Text>
                 <Text muted size={1}>
                   {t('overview.description')}
                 </Text>
-              </Stack>
+              </VStack>
               {createVariantButton}
             </Flex>
           </Card>
