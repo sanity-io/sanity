@@ -27,11 +27,7 @@ export function VariantDocumentsTable({
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const [activeLane, setActiveLane] = useState<string>(RELEASE_LANE_ALL)
-  const {data: releases} = useActiveReleases()
-  const releasesById = useMemo(
-    () => new Map(releases.map((release) => [release._id, release])),
-    [releases],
-  )
+  const {byId: releasesById} = useActiveReleases()
 
   const segments = useMemo(
     () => computeReleaseLaneSegments(rows, releasesById),

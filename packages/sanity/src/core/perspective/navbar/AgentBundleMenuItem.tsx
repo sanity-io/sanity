@@ -1,9 +1,9 @@
 import {SparkleIcon} from '@sanity/icons/Sparkle'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- MenuItem with custom children not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
 import {type CSSProperties, memo, useCallback} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type AgentBundle} from '../../store/agent/createAgentBundlesStore'
@@ -37,25 +37,27 @@ export const AgentBundleMenuItem = memo(function AgentBundleMenuItem({
 
   return (
     <MenuItem onClick={handleClick} padding={1} pressed={active} selected={active}>
-      <Flex align="flex-start" gap={1}>
+      <Flex alignItems="flex-start" gap={1}>
         <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingX={3} paddingY={2}>
           <Text size={1} style={iconStyle}>
             <SparkleIcon />
           </Text>
         </Box>
-        <Stack
-          flex={1}
+        <Flex
+          flexBasis="0%"
+          flexGrow={1}
           paddingY={2}
           paddingRight={2}
           gap={2}
-          style={{maxWidth: '200px', minWidth: 0}}
+          style={{maxWidth: '200px'}}
+          flexDirection="column"
         >
-          <Flex gap={3} align="center" style={{minWidth: 0}}>
+          <Flex gap={3} alignItems="center">
             <Text size={1} weight="medium" style={{minWidth: 0}}>
               {label}
             </Text>
           </Flex>
-        </Stack>
+        </Flex>
       </Flex>
     </MenuItem>
   )

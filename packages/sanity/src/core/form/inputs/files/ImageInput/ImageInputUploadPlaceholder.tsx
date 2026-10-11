@@ -1,6 +1,7 @@
 import {type AssetSource} from '@sanity/types'
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {memo, useCallback} from 'react'
+import {Flex} from 'ui5'
 
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {type BaseImageInputProps} from './types'
@@ -41,7 +42,7 @@ function ImageInputUploadPlaceholderComponent(props: {
     <div style={{padding: 1}}>
       <Card tone={readOnly ? 'transparent' : 'inherit'} border paddingX={3} paddingY={2} radius={2}>
         {disableNew ? (
-          <Flex align="center" justify="flex-end">
+          <Flex alignItems="center" justifyContent="flex-end">
             {renderBrowser()}
           </Flex>
         ) : (

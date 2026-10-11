@@ -2,10 +2,11 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {LinkIcon} from '@sanity/icons/Link'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useMemo, useState, type ComponentType} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
+import {Flex, Box, VStack} from 'ui5'
 
 function usePaneChildLinkComponent(props: {
   id: string
@@ -54,20 +55,20 @@ export const DebugPane: UserComponent = function DebugPane(props) {
   const [randomId] = useState(() => Math.floor(Math.random() * 10000000).toString(16))
 
   return (
-    <Box height="fill">
+    <Box height="100%">
       <Box padding={4} paddingTop={0}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Text muted size={1} textOverflow="ellipsis">
             Random ID: <code>{randomId}</code>
           </Text>
           <Text textOverflow="ellipsis" size={1} muted>
             Assigned on pane component mount
           </Text>
-        </Stack>
+        </VStack>
       </Box>
 
       <Card borderBottom padding={2}>
-        <Stack gap={1}>
+        <VStack gap={1}>
           <Card
             as={ChildLink as ComponentType<Record<string, unknown>>}
             data-as="a"
@@ -82,7 +83,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
                   <LinkIcon />
                 </Text>
               </Box>
-              <Box flex={1} marginLeft={3}>
+              <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
                 <Text size={1} textOverflow="ellipsis">
                   ChildLink
                 </Text>
@@ -108,7 +109,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
                   <ControlsIcon />
                 </Text>
               </Box>
-              <Box flex={1} marginLeft={3}>
+              <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
                 <Text size={1} textOverflow="ellipsis">
                   ParameterizedLink
                 </Text>
@@ -120,7 +121,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
               </Box>
             </Flex>
           </Card>
-        </Stack>
+        </VStack>
       </Card>
 
       <Card padding={4}>

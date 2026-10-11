@@ -61,6 +61,7 @@ export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: Works
       style={{
         marginLeft: '1rem',
         marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
+        flexShrink: 0,
       }}
       __unstable_space={0}
     />

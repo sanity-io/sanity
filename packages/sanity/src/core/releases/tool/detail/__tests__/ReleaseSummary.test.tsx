@@ -11,9 +11,14 @@ import {
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
+import {
+  getAllByDataUi,
+  getByDataUi,
+  queryByDataUi,
+} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {type DocumentActionsResolver} from '../../../../config/types'
 import type * as ConnectionStatusStoreMod from '../../../../store/connection-status/connection-status-store'
 import {
   activeASAPRelease,
@@ -144,11 +149,14 @@ const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
 
 const renderTest = async (
   props: Partial<ReleaseSummaryProps>,
-  options?: {variantsEnabled?: boolean},
+  options?: {variantsEnabled?: boolean; documentActions?: DocumentActionsResolver},
 ) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
-    ...(options?.variantsEnabled ? {config: {beta: {variants: {enabled: true}}}} : undefined),
+    config: {
+      ...(options?.variantsEnabled ? {beta: {variants: {enabled: true}}} : undefined),
+      ...(options?.documentActions ? {document: {actions: options.documentActions}} : undefined),
+    },
   })
 
   return render(
@@ -167,6 +175,20 @@ const renderTest = async (
       wrapper,
     },
   )
+}
+
+const publishOnly: DocumentActionsResolver = (prev) =>
+  prev.filter(({action}) => action === 'publish')
+
+// Every row keeps its menu mounted, and closed ones are hidden with `display: none`. Runtime
+// styles are disabled in jsdom, so the open menu does not read as visible to `getByRole` either,
+// which is why it is picked by the absence of that hidden style.
+const getOpenRowMenu = () => {
+  const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+    (popover) => popover.style.display !== 'none',
+  )
+
+  return openMenu
 }
 
 describe('ReleaseSummary', () => {
@@ -197,15 +219,8 @@ describe('ReleaseSummary', () => {
 
       await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
 
-      // Every row keeps its menu mounted, and closed ones are hidden with `display: none`.
-      // Runtime styles are disabled in jsdom, so the open menu does not read as visible to
-      // `getByRole` either, which is why it is picked by the absence of that hidden style.
-      const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
-        (popover) => popover.style.display !== 'none',
-      )
-
       await userEvent.click(
-        within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true}),
+        within(getOpenRowMenu()).getByRole('menuitem', {name: 'Discard version', hidden: true}),
       )
 
       expect(await screen.findByRole('dialog')).toBeInTheDocument()
@@ -356,6 +371,46 @@ describe('ReleaseSummary', () => {
       expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
       expect(screen.getByRole('tab', {name: /all/i})).toBeInTheDocument()
       expect(searchInput).toHaveFocus()
+    })
+  })
+
+  // Both table shapes share one `renderRowActions`, so the document.actions gate has to hold for
+  // the default table and the beta.variants DocumentTable alike.
+  describe.each([
+    {tableShape: 'default table', variantsEnabled: false},
+    {tableShape: 'variants DocumentTable', variantsEnabled: true},
+  ])('row action menu in the $tableShape', ({variantsEnabled}) => {
+    const findFirstRowMenuButton = async (documentActions?: DocumentActionsResolver) => {
+      await renderTest({}, {variantsEnabled, documentActions})
+      await screen.findByTestId('document-table-card')
+
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+      return queryByDataUi(firstDocumentRow, 'MenuButton')
+    }
+
+    it('renders while discardVersion and unpublishVersion are configured', async () => {
+      expect(await findFirstRowMenuButton()).toBeInTheDocument()
+    })
+
+    it('is gone once both action ids are omitted from document.actions', async () => {
+      expect(await findFirstRowMenuButton(publishOnly)).not.toBeInTheDocument()
+    })
+
+    it('drops unpublish for a cardinality-one release row', async () => {
+      await renderTest({release: activeCardinalityOneRelease}, {variantsEnabled})
+      await screen.findByTestId('document-table-card')
+
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+      await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
+
+      const openMenu = getOpenRowMenu()
+
+      expect(
+        within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true}),
+      ).toBeInTheDocument()
+      expect(
+        within(openMenu).queryByRole('menuitem', {name: 'Unpublish', hidden: true}),
+      ).not.toBeInTheDocument()
     })
   })
 

@@ -1,8 +1,8 @@
 import {getVersionNameFromId, type VersionId} from '@sanity/id-utils'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -148,7 +148,7 @@ export function DiscardVersionDialog(props: {
         },
       }}
     >
-      <Stack gap={3} paddingX={3} marginBottom={2}>
+      <Flex gap={3} paddingX={3} marginBottom={2} flexDirection="column">
         {schemaType ? (
           <Preview
             value={{_id: isGoingToUnpublish ? publishedId : versionId}}
@@ -175,7 +175,7 @@ export function DiscardVersionDialog(props: {
             />
           </Text>
         </Box>
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }

@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {type ComponentType, type ReactNode, type Ref, useMemo} from 'react'
+import {type ComponentType} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {Preview} from '../../../preview/components/Preview'
@@ -7,7 +7,6 @@ import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPre
 import {getPublishedId} from '../../../util/draftUtils'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../constants'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
-import {usePublishedId} from '../../hooks/usePublishedId'
 import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {ScheduleContextMenu} from '../scheduleContextMenu'
@@ -31,29 +30,7 @@ const ToolPreview = (props: Props) => {
     schedule,
     timeZoneScope,
   )
-
-  const publishedId = usePublishedId(visibleDocument?._id)
-
-  const LinkComponent = useMemo(() => {
-    function Component(linkProps: {children?: ReactNode; ref?: Ref<HTMLAnchorElement>}) {
-      const {ref, ...rest} = linkProps
-      const publishedDocId = visibleDocument ? getPublishedId(visibleDocument._id) : undefined
-      return (
-        <IntentLink
-          {...rest}
-          intent="edit"
-          params={{
-            type: schemaType.name,
-            ...(publishedDocId ? {id: publishedDocId} : {}),
-          }}
-          ref={ref}
-        />
-      )
-    }
-    // oxlint-disable-next-line react/immutability -- displayName assignment on render-local component
-    Component.displayName = 'LinkComponent'
-    return Component
-  }, [schemaType, visibleDocument])
+  const publishedDocId = visibleDocument ? getPublishedId(visibleDocument._id) : undefined
 
   return (
     <>
@@ -73,8 +50,15 @@ const ToolPreview = (props: Props) => {
             schemaType={schemaType}
           />
         }
-        linkComponent={LinkComponent}
-        publishedDocumentId={publishedId}
+        linkComponent={IntentLink}
+        linkProps={{
+          intent: 'edit',
+          params: {
+            type: schemaType.name,
+            ...(publishedDocId ? {id: publishedDocId} : {}),
+          },
+        }}
+        publishedDocumentId={publishedDocId}
         schedule={schedule}
         schemaType={schemaType}
         useElementQueries

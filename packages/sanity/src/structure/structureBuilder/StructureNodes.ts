@@ -7,7 +7,7 @@ import {type DocumentList, type DocumentListBuilder} from './DocumentList'
 import {type DocumentListItemBuilder} from './DocumentListItem'
 import {type DocumentTypeListBuilder} from './DocumentTypeList'
 import {type InitialValueTemplateItemBuilder} from './InitialValueTemplateItem'
-import {type List, type ListBuilder} from './List'
+import {type List, type ListBuilder, type SingletonListBuilder} from './List'
 import {type ListItemBuilder} from './ListItem'
 import {type MenuItemBuilder} from './MenuItem'
 import {type MenuItemGroupBuilder} from './MenuItemGroup'
@@ -140,12 +140,13 @@ export type Collection = List | DocumentList | EditorNode | DocumentNode | Compo
 
 /**
  * Collection builder
- * See {@link ListBuilder}, {@link DocumentListBuilder}, {@link DocumentTypeListBuilder}, {@link DocumentBuilder} and {@link ComponentBuilder}
+ * See {@link ListBuilder}, {@link SingletonListBuilder}, {@link DocumentListBuilder}, {@link DocumentTypeListBuilder}, {@link DocumentBuilder} and {@link ComponentBuilder}
  *
  * @public
  */
 export type CollectionBuilder =
   | ListBuilder
+  | SingletonListBuilder
   | DocumentListBuilder
   | DocumentTypeListBuilder
   | DocumentBuilder

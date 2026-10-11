@@ -1,4 +1,4 @@
-import {BoundaryElementProvider, Card, Flex} from '@sanity/ui'
+import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 import {
@@ -13,18 +13,12 @@ import {
   useEvents,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {EventsTimeline} from '../../timeline/events/EventsTimeline'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'
-
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
+import {scroller} from './Scroller.css'
 
 export function EventsSelector({showList}: {showList: boolean}) {
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
@@ -91,13 +85,13 @@ export function EventsSelector({showList}: {showList: boolean}) {
 
   const initialLoad = loading && !events.length
   return (
-    <Flex data-testid="review-changes-pane" direction="column" height="fill">
+    <Flex data-testid="review-changes-pane" flexDirection="column" height="100%">
       <Card flex={1} padding={2} paddingTop={0}>
         {error ? (
           <TimelineError />
         ) : (
           <BoundaryElementProvider element={scrollRef}>
-            <Scroller data-ui="Scroller" ref={getScrollerRef}>
+            <ScrollContainer className={scroller} data-ui="Scroller" ref={getScrollerRef}>
               {listHeight &&
               // This forces the list to unmount and remount, which is needed to reset the scroll position
               showList &&
@@ -114,7 +108,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
                 />
               ) : null}
               {loading && <LoadingBlock />}
-            </Scroller>
+            </ScrollContainer>
           </BoundaryElementProvider>
         )}
       </Card>

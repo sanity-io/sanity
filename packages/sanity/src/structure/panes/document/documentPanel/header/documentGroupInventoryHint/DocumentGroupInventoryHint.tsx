@@ -1,10 +1,11 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useTranslation} from 'sanity'
 import {styled, css} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
@@ -15,9 +16,14 @@ export const DocumentGroupInventoryHint: ComponentType = () => {
   const {t} = useTranslation(structureLocaleNamespace)
   const {setIsDocumentGroupInventoryActive} = useDocumentPane()
   const telemetry = useTelemetry()
-  const status = useObservable(useMemo(() => hintStatus(browserStorageAdapter), []))
+  const status = useObservable(
+    useMemo(() => hintStatus(browserStorageAdapter), []),
+    undefined,
+  )
 
-  if (status === 'inactive') {
+  // The status is read from storage asynchronously; a hint the user has already dismissed must
+  // not flash while it is unresolved.
+  if (status !== 'active') {
     return null
   }
 
@@ -30,7 +36,14 @@ export const DocumentGroupInventoryHint: ComponentType = () => {
       }}
     >
       <Text size={1} weight="medium">
-        <Flex gap={2} align="center" flex="none" justify="flex-end">
+        <Flex
+          gap={2}
+          alignItems="center"
+          flexBasis="auto"
+          flexGrow={0}
+          flexShrink={0}
+          justifyContent="flex-end"
+        >
           <InfoOutlineIcon /> {t('document-group-inventory.onboarding-hint')}
         </Flex>
       </Text>

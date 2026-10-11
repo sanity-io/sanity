@@ -16,6 +16,7 @@ import {
   highlightSpecialChars,
   keymap,
   lineNumbers,
+  type KeyBinding,
 } from '@codemirror/view'
 import {groq} from '@sanity/lezer-groq'
 
@@ -31,18 +32,14 @@ const sharedExtensions: Extension[] = [
   history(),
   drawSelection(),
   syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
-  keymap.of(
-    [
-      // Override the default keymap for Mod-Enter to not insert a new line, we have a custom event handler for executing queries
-      {key: 'Mod-Enter', run: () => true},
+  keymap.of([
+    // Override the default keymap for Mod-Enter to not insert a new line, we have a custom event handler for executing queries
+    {key: 'Mod-Enter', run: () => true},
 
-      // Add the default keymap and history keymap
-      defaultKeymap,
-      historyKeymap,
-    ]
-      .flat()
-      .filter(Boolean),
-  ),
+    // Add the default keymap and history keymap
+    ...defaultKeymap,
+    ...historyKeymap,
+  ] as unknown as readonly KeyBinding[]),
 ]
 
 export const groqExtensions: Extension[] = [groq(), ...sharedExtensions]

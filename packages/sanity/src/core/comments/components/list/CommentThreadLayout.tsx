@@ -2,12 +2,11 @@ import {type CurrentUser} from '@sanity/types'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
-  Flex,
-  Stack,
 } from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
+import {Flex, VStack} from 'ui5'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -125,10 +124,10 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   const lastCrumb = crumbsTitlePath[crumbsTitlePath.length - 1]
 
   return (
-    <Stack gap={2}>
-      <HeaderFlex align="center" gap={2} paddingRight={1} sizing="border">
-        <Stack flex={1}>
-          <Flex align="center">
+    <VStack gap={2}>
+      <HeaderFlex alignItems="center" gap={2} paddingRight={1}>
+        <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
+          <Flex alignItems="center">
             <BreadcrumbsButton
               aria-label={t('list-item.breadcrumb-button-go-to-field-aria-label', {
                 field: lastCrumb,
@@ -141,7 +140,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
               <CommentBreadcrumbs maxLength={3} titlePath={crumbsTitlePath} />
             </BreadcrumbsButton>
           </Flex>
-        </Stack>
+        </Flex>
       </HeaderFlex>
 
       {canCreateNewThread && (
@@ -157,7 +156,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         </ThreadCard>
       )}
 
-      <Stack gap={2}>{children}</Stack>
-    </Stack>
+      <VStack gap={2}>{children}</VStack>
+    </VStack>
   )
 }

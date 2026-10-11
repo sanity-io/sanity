@@ -1,6 +1,7 @@
 import {AddUserIcon} from '@sanity/icons/AddUser'
 import {CogIcon} from '@sanity/icons/Cog'
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -18,12 +19,12 @@ export function ManageMenu() {
 
   return (
     <Card borderTop flex="none" padding={2}>
-      <Stack as="ul" gap={1}>
-        <Stack as="li">
+      <VStack as="ul" gap={1}>
+        <VStack as="li">
           <FreeTrial type="sidebar" />
-        </Stack>
+        </VStack>
 
-        <Stack as="li">
+        <VStack as="li">
           <Button
             aria-label={t('user-menu.action.manage-project-aria-label')}
             as="a"
@@ -35,10 +36,10 @@ export function ManageMenu() {
             target="_blank"
             text={t('user-menu.action.manage-project')}
           />
-        </Stack>
+        </VStack>
 
         {canInviteMembers && (
-          <Stack as="li">
+          <VStack as="li">
             <Button
               aria-label={t('user-menu.action.invite-members-aria-label')}
               as="a"
@@ -50,9 +51,9 @@ export function ManageMenu() {
               target="_blank"
               text={t('user-menu.action.invite-members')}
             />
-          </Stack>
+          </VStack>
         )}
-      </Stack>
+      </VStack>
     </Card>
   )
 }

@@ -1,10 +1,19 @@
 // @vitest-environment node
+import os from 'node:os'
 import process from 'node:process'
 
+import {STYLE_METRICS, type StyleCensus} from '@repo/utils/style-systems'
 import {afterEach, beforeEach, describe, expect, it} from 'vitest'
 
 import {type PageLoadSample} from '../../runner/session/pageLoad'
-import {collectPageLoad, collectRunMetadata} from '../collect'
+import {type SettleSessionResult} from '../../runner/session/settle'
+import {
+  collectPageLoad,
+  collectRunMetadata,
+  collectSettle,
+  collectStyleContext,
+  collectStyleMetrics,
+} from '../collect'
 
 const ENV_KEYS = [
   'GITHUB_SHA',
@@ -15,6 +24,11 @@ const ENV_KEYS = [
   'BENCH_MERGE_BASE',
   'BENCH_GIT_SHA',
   'BENCH_GIT_COMMITTED_AT',
+  'BENCH_TRIGGER',
+  'BENCH_RELEASE_TAG',
+  'GITHUB_EVENT_NAME',
+  'ImageOS',
+  'ImageVersion',
 ] as const
 let savedEnv: Record<string, string | undefined>
 
@@ -41,7 +55,48 @@ function metadata() {
   })
 }
 
+/** The stored-to-metrics shape: only absolute-mode runs reach the dashboards. */
+function absoluteMetadata() {
+  return collectRunMetadata({
+    mode: 'absolute',
+    calibrationMs: 10,
+    cpuThrottleRate: 4,
+    seed: 1,
+    startedAt: '2026-07-10T05:00:00.000Z',
+  })
+}
+
 describe('collectRunMetadata', () => {
+  it('records producer metadata: cpu model, runner image, browser version', () => {
+    process.env.ImageOS = 'ubuntu24'
+    process.env.ImageVersion = '20260810.1.0'
+    const runner = collectRunMetadata({
+      mode: 'ab',
+      calibrationMs: 10,
+      cpuThrottleRate: 4,
+      seed: 1,
+      startedAt: '2026-07-10T05:00:00.000Z',
+      browserVersion: '140.0.7339.16',
+    }).runner
+    expect(runner).toMatchObject({
+      imageOs: 'ubuntu24',
+      imageVersion: '20260810.1.0',
+      browserVersion: '140.0.7339.16',
+    })
+    // Machine-dependent — assert against the same source the code reads so
+    // the test is exact everywhere Node reports a model at all
+    const expectedModel = os.cpus()[0]?.model.trim()
+    if (expectedModel) expect(runner.cpuModel).toBe(expectedModel)
+    else expect(runner.cpuModel).toBeUndefined()
+  })
+
+  it('omits runner image and browser fields when not provided', () => {
+    const runner = metadata().runner
+    expect(runner.imageOs).toBeUndefined()
+    expect(runner.imageVersion).toBeUndefined()
+    expect(runner.browserVersion).toBeUndefined()
+  })
+
   it('extracts the PR number from GITHUB_REF', () => {
     process.env.GITHUB_SHA = 'abc'
     process.env.GITHUB_REF = 'refs/pull/13442/merge'
@@ -93,16 +148,90 @@ describe('collectRunMetadata', () => {
     process.env.BENCH_GIT_COMMITTED_AT = 'not-a-date'
     expect(metadata().git.committedAt).toBeUndefined()
   })
+
+  it('records a release run and the tag it measured', () => {
+    process.env.BENCH_TRIGGER = 'release'
+    process.env.BENCH_RELEASE_TAG = 'v6.10.1'
+    expect(metadata()).toMatchObject({trigger: 'release', releaseTag: 'v6.10.1'})
+  })
+
+  // A release run is dispatched at its tag, so GITHUB_REF_NAME is the tag name.
+  // The measured commit is a main commit, and the dashboards group runs into
+  // per-branch lines defaulting to main — filing it under the tag would drop the
+  // run out of the series it belongs to.
+  it('files a release run on main, not on its tag ref', () => {
+    process.env.BENCH_TRIGGER = 'release'
+    process.env.BENCH_RELEASE_TAG = 'v6.10.1'
+    process.env.GITHUB_REF_NAME = 'v6.10.1'
+    expect(metadata().git.branch).toBe('main')
+  })
+
+  // ...but nothing else is rewritten: a PR or cron run keeps the ref it ran on
+  it('leaves the branch alone for non-release runs', () => {
+    process.env.GITHUB_REF_NAME = 'some-branch'
+    expect(metadata().git.branch).toBe('some-branch')
+    process.env.GITHUB_HEAD_REF = 'pr-branch'
+    expect(metadata().git.branch).toBe('pr-branch')
+  })
+
+  // A tag on a non-release run would assert that the run measured that release,
+  // which is the false attribution the field exists to remove
+  it('keeps the release tag only on release runs', () => {
+    process.env.BENCH_TRIGGER = 'cron'
+    process.env.BENCH_RELEASE_TAG = 'v6.10.1'
+    expect(metadata().releaseTag).toBeUndefined()
+  })
+
+  it('infers cron for the daily schedule', () => {
+    process.env.GITHUB_EVENT_NAME = 'schedule'
+    expect(metadata().trigger).toBe('cron')
+  })
+
+  // The daily cron predates this field; documents it wrote have no trigger and
+  // consumers read them as cron, so the inference must agree with that
+  it('infers pr, backfill and dispatch from the run shape', () => {
+    process.env.GITHUB_REF = 'refs/pull/14234/merge'
+    expect(metadata().trigger).toBe('pr')
+    delete process.env.GITHUB_REF
+
+    // An absolute-mode dispatch measuring a historical commit is a backfill
+    process.env.BENCH_GIT_SHA = 'a'.repeat(40)
+    expect(absoluteMetadata().trigger).toBe('backfill')
+    delete process.env.BENCH_GIT_SHA
+
+    expect(metadata().trigger).toBe('dispatch')
+  })
+
+  // An A/B dispatch also sets BENCH_GIT_SHA (to ab_to), but it compares two
+  // commits rather than repairing a hole in the series — calling it a backfill
+  // would misdescribe it. Harmless today (consumers filter mode == 'absolute'),
+  // but the provenance should still be honest.
+  it('does not call an A/B dispatch a backfill', () => {
+    process.env.BENCH_GIT_SHA = 'a'.repeat(40)
+    expect(metadata().trigger).toBe('dispatch')
+  })
+
+  // A typo in a workflow edit must not invent a trigger kind that consumers
+  // then filter on — fall back to inference instead of storing the garbage
+  it('ignores an unrecognized declared trigger', () => {
+    process.env.BENCH_TRIGGER = 'relase'
+    process.env.GITHUB_EVENT_NAME = 'schedule'
+    expect(metadata().trigger).toBe('cron')
+  })
 })
 
 function sample(
   condition: PageLoadSample['condition'],
-  timeToEditableMs: number,
+  timeToEditableMs: number | null,
   auth: Partial<PageLoadSample['auth']> = {},
+  styles: PageLoadSample['styles'] = null,
+  milestones: PageLoadSample['milestones'] = [],
 ): PageLoadSample {
   return {
     condition,
     timeToEditableMs,
+    milestones,
+    loadEndMs: Math.max(timeToEditableMs ?? 0, ...milestones.map((milestone) => milestone.atMs)),
     fcpMs: 1000,
     lcpMs: 2000,
     cls: 0,
@@ -117,8 +246,31 @@ function sample(
       },
     ],
     auth: {trips: 1, firstRequestMs: 2000, inFlightMs: 40, ...auth},
+    styles,
   }
 }
+
+/** A style census as the probe returns it for a v6.10+ studio page. */
+function census(overrides: Partial<StyleCensus> = {}): StyleCensus {
+  return {
+    nodes: {ui5: 1081, ui4: 2023, styled: 378},
+    ui5Available: true,
+    styledComponents: {
+      components: 96,
+      styleTags: 1,
+      cssRules: 806,
+      cssBytes: 794_690,
+      versions: ['6.5.3'],
+    },
+    stylesheets: {totalRules: 1966, inaccessible: 0},
+    css: {sheets: 4, rules: 2410, bytes: 1_204_000, styleTags: {rules: 806, bytes: 794_690}},
+    ...overrides,
+  }
+}
+
+const styleLabels = (report: {metrics: {label: string}[]}) =>
+  report.metrics.map((metric) => metric.label).filter((label) => STYLE_LABELS.has(label))
+const STYLE_LABELS = new Set(STYLE_METRICS.map((metric) => metric.label))
 
 describe('collectPageLoad', () => {
   it('emits the gated time-to-editable row plus report-only auth rows per condition', () => {
@@ -185,6 +337,53 @@ describe('collectPageLoad', () => {
       // auth first request is skipped (firstRequestMs is null in this fixture)
       'boot-cold · auth round trips',
       'boot-cold · auth in flight',
+    ])
+  })
+
+  it('emits report-only milestone rows and drops time to editable when no sample has one', () => {
+    const report = collectPageLoad(
+      'loginReady',
+      new Map([
+        [
+          'experiment',
+          [
+            sample('boot-cold', null, {}, null, [{name: 'login clickable', atMs: 900}]),
+            sample('boot-cold', null, {}, null, [{name: 'login clickable', atMs: 1100}]),
+          ],
+        ],
+        [
+          'reference',
+          [sample('boot-cold', null, {}, null, [{name: 'login clickable', atMs: 800}])],
+        ],
+      ]),
+      new Map(),
+    )
+    expect(report.metrics.map((metric) => metric.label).slice(0, 2)).toEqual([
+      'boot-cold · login clickable',
+      'boot-cold · FCP',
+    ])
+    const clickable = report.metrics[0]
+    expect(clickable.unit).toBe('ms')
+    expect(clickable.comparison).toBeUndefined()
+    expect(clickable.experiment.summary.median).toBe(1000)
+    expect(clickable.reference?.summary.median).toBe(800)
+  })
+
+  it('places milestone rows after time to editable', () => {
+    const report = collectPageLoad(
+      'syntheticLarge',
+      new Map([
+        [
+          'experiment',
+          [sample('boot-cold', 4100, {}, null, [{name: 'all fields editable', atMs: 5200}])],
+        ],
+      ]),
+      new Map(),
+    )
+    expect(report.metrics.map((metric) => metric.label).slice(0, 3)).toEqual([
+      'boot-cold · time to editable',
+      'boot-cold · all fields editable',
+      'boot-cold · FCP',
     ])
   })
 
@@ -273,5 +472,262 @@ describe('collectPageLoad', () => {
       {source: 'div.banner', totalValue: 0.02},
       {source: '[data-testid="pane-content"]', totalValue: 0.005 + 0.01},
     ])
+  })
+})
+
+describe('collectSettle', () => {
+  const scenario = {
+    name: 'previewHeavy',
+    sourceFile: 'perf/bench/scenarios/customizations.ts',
+    documentType: 'previewHeavy',
+    documentId: 'doc',
+    fixture: () => [],
+    interactions: [],
+  }
+
+  function settleSession(overrides: Partial<SettleSessionResult> = {}): SettleSessionResult {
+    return {
+      ready: true,
+      settled: true,
+      settleTimeMs: 1200,
+      reactCommits: 12,
+      commitsPerSecond: 2.5,
+      hookInstalled: true,
+      loafCount: 1,
+      loafBlockingMs: 60,
+      cpuAfterReadyMs: 400,
+      peakCpuUtilization: 0.2,
+      renderMarks: {'previewHeavy.row': 24},
+      loafAttribution: [{sourceUrl: 'https://x/chunk.js', functionName: 'f', totalMs: 60}],
+      timeline: [],
+      styles: null,
+      ...overrides,
+    }
+  }
+
+  it('reports mode settle with the scenario expectation', () => {
+    const report = collectSettle(scenario, [settleSession()])
+    expect(report.mode).toBe('settle')
+    expect(report.kind).toBe('pageload')
+    expect(report.settleExpectation).toEqual({expectedToSettle: true})
+  })
+
+  it('carries expectedToSettle: false for red-by-design scenarios', () => {
+    const report = collectSettle({...scenario, expectedToSettle: false}, [
+      settleSession({settled: false, settleTimeMs: null}),
+    ])
+    expect(report.settleExpectation).toEqual({expectedToSettle: false})
+  })
+
+  it('emits settled/ready as 0-1 per session and per-component render rows', () => {
+    const report = collectSettle(scenario, [
+      settleSession(),
+      settleSession({settled: false, settleTimeMs: null, ready: false, hookInstalled: false}),
+    ])
+    const byLabel = new Map(report.metrics.map((metric) => [metric.label, metric]))
+    // Run-level count: a single pseudo-session, so the trend median IS the count
+    expect(byLabel.get('sessions not settled')?.experiment.sessions).toEqual([[1]])
+    // Same shape for the detector's own health: sessions whose commit counter never attached
+    expect(byLabel.get('sessions without commit counter')?.experiment.sessions).toEqual([[1]])
+    expect(byLabel.get('settled sessions')?.experiment.sessions).toEqual([[1], [0]])
+    expect(byLabel.get('ready sessions')?.experiment.sessions).toEqual([[1], [0]])
+    expect(byLabel.get('time to settle')?.experiment.sessions).toEqual([[1200]])
+    expect(byLabel.get('react commits after ready')?.experiment.sessions).toEqual([[12], [12]])
+    expect(byLabel.get('renders · previewHeavy.row')?.experiment.sessions).toEqual([[24], [24]])
+  })
+
+  it('omits time-to-settle when no session settled', () => {
+    const report = collectSettle(scenario, [settleSession({settled: false, settleTimeMs: null})])
+    expect(report.metrics.some((metric) => metric.label === 'time to settle')).toBe(false)
+  })
+
+  it('folds loaf attribution across sessions', () => {
+    const report = collectSettle(scenario, [settleSession(), settleSession()])
+    expect(report.loafAttribution).toEqual([
+      {sourceUrl: 'https://x/chunk.js', functionName: 'f', totalMs: 120},
+    ])
+  })
+
+  it('appends the style rows and context when sessions took the census', () => {
+    const report = collectSettle(scenario, [
+      settleSession({styles: census()}),
+      settleSession({styles: census()}),
+    ])
+    expect(styleLabels(report)).toEqual(STYLE_METRICS.map((metric) => metric.label))
+    expect(report.styles).toEqual({
+      experiment: {
+        ui5Available: true,
+        styledComponentsVersion: '6.5.3',
+        readableCssRules: 1966,
+        sessions: 2,
+      },
+    })
+  })
+
+  it('emits no style rows or context when no session took the census', () => {
+    const report = collectSettle(scenario, [settleSession()])
+    expect(styleLabels(report)).toEqual([])
+    expect(report).not.toHaveProperty('styles')
+  })
+})
+
+describe('collectStyleMetrics', () => {
+  it('emits one row per style metric, one value per session, medianed in the summary', () => {
+    const rows = collectStyleMetrics([
+      census(),
+      // A transient popover adds a few nodes to one session — the median ignores it
+      census({nodes: {ui5: 1081, ui4: 2031, styled: 380}}),
+      census(),
+    ])
+    expect(rows.map((row) => row.label)).toEqual(STYLE_METRICS.map((metric) => metric.label))
+    const byLabel = new Map(rows.map((row) => [row.label, row]))
+    expect(byLabel.get('UI v5 instances')?.experiment.sessions).toEqual([[1081], [1081], [1081]])
+    expect(byLabel.get('UI v4 instances')?.experiment.summary.median).toBe(2023)
+    expect(byLabel.get('styled-components instances')?.experiment.summary.median).toBe(378)
+    expect(byLabel.get('styled-components components')?.experiment.summary.median).toBe(96)
+    expect(byLabel.get('styled-components CSS rules')?.experiment.summary.median).toBe(806)
+    expect(byLabel.get('styled-components CSS bytes')?.experiment.summary.median).toBe(794_690)
+    expect(byLabel.get('styled-components style tags')?.experiment.summary.median).toBe(1)
+    expect(byLabel.get('CSS bytes')?.experiment.summary.median).toBe(1_204_000)
+    expect(byLabel.get('CSS rules')?.experiment.summary.median).toBe(2410)
+    expect(byLabel.get('style tag CSS bytes')?.experiment.summary.median).toBe(794_690)
+    expect(byLabel.get('style tag CSS rules')?.experiment.summary.median).toBe(806)
+    // 1081 / (1081 + 2023) — a 0–100 share, unrounded
+    expect(byLabel.get('UI v5 share')?.experiment.summary.median).toBeCloseTo(34.826, 2)
+    // 806 / 1966 readable rules
+    expect(byLabel.get('styled-components CSS rule share')?.experiment.summary.median).toBeCloseTo(
+      40.997,
+      2,
+    )
+    for (const row of rows) {
+      expect(row.presentAsEfps).toBe(false)
+      expect(row).not.toHaveProperty('comparison')
+    }
+  })
+
+  it('leaves the UI v5 rows out on a build without @sanity/ui v5, never writing 0%', () => {
+    const rows = collectStyleMetrics([
+      census({nodes: {ui5: 0, ui4: 2400, styled: 512}, ui5Available: false}),
+    ])
+    const labels = rows.map((row) => row.label)
+    expect(labels).not.toContain('UI v5 share')
+    expect(labels).not.toContain('UI v5 instances')
+    // The v4 backlog and every styled-components row still apply to a v5-era build
+    expect(labels).toContain('UI v4 instances')
+    expect(labels).toContain('styled-components instances')
+    expect(labels).toContain('styled-components CSS bytes')
+  })
+
+  it('writes a genuine 0% share when the build ships v5 but the page renders none of it', () => {
+    const rows = collectStyleMetrics([census({nodes: {ui5: 0, ui4: 2400, styled: 512}})])
+    expect(rows.find((row) => row.label === 'UI v5 share')?.experiment.summary.median).toBe(0)
+  })
+
+  it('leaves the CSS rule share and the CSS totals out when no stylesheet was readable', () => {
+    const rows = collectStyleMetrics([
+      census({
+        styledComponents: {components: 0, styleTags: 0, cssRules: 0, cssBytes: 0, versions: []},
+        stylesheets: {totalRules: 0, inaccessible: 3},
+        css: {sheets: 0, rules: 0, bytes: 0, styleTags: {rules: 0, bytes: 0}},
+      }),
+    ])
+    const labels = rows.map((row) => row.label)
+    expect(labels).not.toContain('styled-components CSS rule share')
+    expect(labels).not.toContain('CSS bytes')
+    expect(labels).not.toContain('CSS rules')
+  })
+
+  it('carries the reference side without a verdict', () => {
+    const rows = collectStyleMetrics(
+      [census()],
+      [census({nodes: {ui5: 900, ui4: 2204, styled: 400}})],
+    )
+    const share = rows.find((row) => row.label === 'UI v5 share')
+    expect(share?.reference?.summary.median).toBeCloseTo(28.994, 2)
+    expect(share).not.toHaveProperty('comparison')
+  })
+
+  it('returns nothing without censuses', () => {
+    expect(collectStyleMetrics([])).toEqual([])
+    expect(collectStyleContext([])).toBeUndefined()
+  })
+})
+
+describe('collectStyleContext', () => {
+  it('records availability, the runtime versions seen, the readable rules and the session count', () => {
+    expect(
+      collectStyleContext([
+        census(),
+        census({
+          styledComponents: {
+            components: 96,
+            styleTags: 2,
+            cssRules: 900,
+            cssBytes: 800_000,
+            versions: ['6.1.15', '6.5.3'],
+          },
+          stylesheets: {totalRules: 2100, inaccessible: 0},
+        }),
+      ]),
+    ).toEqual({
+      ui5Available: true,
+      styledComponentsVersion: '6.1.15, 6.5.3',
+      // Median of the sessions' readable totals (1966 and 2100)
+      readableCssRules: 2033,
+      sessions: 2,
+    })
+  })
+
+  it('omits the version when no runtime stamped one, and the readable total when nothing was readable', () => {
+    const context = collectStyleContext([
+      census({
+        ui5Available: false,
+        styledComponents: {components: 0, styleTags: 0, cssRules: 0, cssBytes: 0, versions: []},
+        stylesheets: {totalRules: 0, inaccessible: 2},
+      }),
+    ])
+    expect(context).toEqual({ui5Available: false, sessions: 1})
+  })
+
+  it('keeps the readable total for a page that inserted no styled rules', () => {
+    // The rule share's denominator must survive a fully migrated page: its
+    // readable stylesheet still counts when shares are summed across pages
+    const context = collectStyleContext([
+      census({
+        styledComponents: {components: 0, styleTags: 0, cssRules: 0, cssBytes: 0, versions: []},
+        stylesheets: {totalRules: 1500, inaccessible: 0},
+      }),
+    ])
+    expect(context?.readableCssRules).toBe(1500)
+  })
+})
+
+describe('collectPageLoad style rows', () => {
+  it('feeds both load conditions of a side into one row set', () => {
+    const report = collectPageLoad(
+      'singleString',
+      new Map([
+        [
+          'experiment',
+          [
+            sample('boot-cold', 4000, {}, census()),
+            sample('open-doc-warm', 2000, {}, census()),
+            sample('boot-cold', 4100, {}, null),
+          ],
+        ],
+      ]),
+      new Map(),
+    )
+    const share = report.metrics.find((metric) => metric.label === 'UI v5 share')
+    // Two samples took the census, one probe failed — two values, not three
+    expect(share?.experiment.sessions).toHaveLength(2)
+    expect(report.styles).toEqual({
+      experiment: {
+        ui5Available: true,
+        styledComponentsVersion: '6.5.3',
+        readableCssRules: 1966,
+        sessions: 2,
+      },
+    })
   })
 })

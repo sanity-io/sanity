@@ -1,4 +1,5 @@
-import {Flex, rem, Text} from '@sanity/ui'
+import {rem, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -16,10 +17,11 @@ export const VariantsEmptyState = ({createVariantButton}: VariantsEmptyStateProp
 
   return (
     <Flex
-      align="center"
+      alignItems="center"
       data-testid="variants-empty-state"
-      flex={1}
-      direction="column"
+      flexBasis="0%"
+      flexGrow={1}
+      flexDirection="column"
       gap={3}
       style={{maxWidth: rem(300)}}
       paddingBottom={5}

@@ -1,11 +1,13 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Flex, Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Text, Flex, Icon} from 'ui5'
 
 import {useSchema} from '../../../hooks/useSchema'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
 
@@ -27,7 +29,8 @@ export function DocumentPreview({
 }) {
   const schema = useSchema()
   const documentSchema = schema.get(documentType)
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
@@ -58,14 +61,19 @@ export function DocumentPreview({
   }
 
   return (
-    <Flex align="center" gap={2}>
-      <Text size={1}>
-        <DocumentIcon />
-      </Text>
+    <Flex alignItems="center" gap={2}>
+      <Icon icon={DocumentIcon} size={1} style={{margin: '-0.375rem'}} />
       {isLoading ? (
         <TextSkeleton size={1} muted />
       ) : (
-        <Text size={1} as={Link} weight="medium" style={{maxWidth: '20ch'}} textOverflow="ellipsis">
+        <Text
+          size={1}
+          as={Link}
+          weight="medium"
+          style={{maxWidth: '20ch'}}
+          truncate={1}
+          trim={true}
+        >
           {value?.title || 'Untitled'}
         </Text>
       )}

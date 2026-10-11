@@ -1,0 +1,11 @@
+{
+  "extends": "@repo/tsconfig/build.json",
+  "include": ["./src"],
+  "exclude": [
+    "./src/**/__fixtures__",
+    "./src/**/__mocks__",
+    "./src/**/*.test.ts",
+    "./src/**/*.test.tsx"
+  ],
+  "compilerOptions": {"noCheck": true, "rootDir": ".", "outDir": "./lib"}
+}

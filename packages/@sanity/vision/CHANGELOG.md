@@ -2,6 +2,63 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.3 ([#15086](https://github.com/sanity-io/sanity/issues/15086)) ([5ecaf30](https://github.com/sanity-io/sanity/commit/5ecaf300efa8821379892e4eb12c9accd7d15f55))
+## [6.17.0](https://github.com/sanity-io/sanity/compare/v6.16.0...v6.17.0) (2026-09-29)
+
+### Features
+
+* **core:** add beta.reactActivityMode to keep recent tools mounted ([#14901](https://github.com/sanity-io/sanity/issues/14901)) ([f5821c3](https://github.com/sanity-io/sanity/commit/f5821c33bf77f836610b8b636f4f388630b54dd2))
+* **core:** read every selected variant from perspective ([#14918](https://github.com/sanity-io/sanity/issues/14918)) ([b15b556](https://github.com/sanity-io/sanity/commit/b15b556a3eff6fabd2414c1a71147ba70fd84335))
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#14976](https://github.com/sanity-io/sanity/issues/14976)) ([abe61ba](https://github.com/sanity-io/sanity/commit/abe61ba08396a88f1f0f80703c913b3d0c7530bc))
+## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#14815](https://github.com/sanity-io/sanity/issues/14815)) ([a75baf8](https://github.com/sanity-io/sanity/commit/a75baf823ed5fdcf8e820cc68ec635d0cb8cc151))
+## [6.13.2](https://github.com/sanity-io/sanity/compare/v6.13.1...v6.13.2) (2026-09-11)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.2 ([#14697](https://github.com/sanity-io/sanity/issues/14697)) ([77313bb](https://github.com/sanity-io/sanity/commit/77313bba37b99b05f1d353fffc4e998866542f5a))
+## [6.13.1](https://github.com/sanity-io/sanity/compare/v6.13.0...v6.13.1) (2026-09-09)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#14605](https://github.com/sanity-io/sanity/issues/14605)) ([a991f45](https://github.com/sanity-io/sanity/commit/a991f4541434fd53d529ebeed7e67aacb8f99191))
+## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-08)
+
+### Performance Improvements
+
+* **core:** consolidate equality checks on dequal/lite and domain comparators ([#14501](https://github.com/sanity-io/sanity/issues/14501)) ([fccc674](https://github.com/sanity-io/sanity/commit/fccc67448c5f5777ecdeb2e7690ca4a8f85ca229))
+## [6.12.0](https://github.com/sanity-io/sanity/compare/v6.11.0...v6.12.0) (2026-09-01)
+
+### Features
+
+* **i18n:** add componentProps to translate component ([#13368](https://github.com/sanity-io/sanity/issues/13368)) ([df297bc](https://github.com/sanity-io/sanity/commit/df297bc887b475ab9597765b607db50d5cf8e46f))
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#14479](https://github.com/sanity-io/sanity/issues/14479)) ([eb710d9](https://github.com/sanity-io/sanity/commit/eb710d9afc1f7ce4c73d719f6ba8acce719fc0b6))
+* **deps:** update dependency @sanity/cli to ^8.5.0 ([#14428](https://github.com/sanity-io/sanity/issues/14428)) ([393c97d](https://github.com/sanity-io/sanity/commit/393c97d648c1f46192bdde8680db54166acc6541))
+* **vision:** explain incompatible release perspective errors ([#14272](https://github.com/sanity-io/sanity/issues/14272)) ([3887d9b](https://github.com/sanity-io/sanity/commit/3887d9bb3c751c5c6f975ea1baa0183505e70f1d))
+## [6.11.0](https://github.com/sanity-io/sanity/compare/v6.10.1...v6.11.0) (2026-08-25)
+
+### Bug Fixes
+
+* **core:** declare sideEffects true to silence publint suggestion ([#14129](https://github.com/sanity-io/sanity/issues/14129)) ([0a8ed7a](https://github.com/sanity-io/sanity/commit/0a8ed7a9b91d591e248331d4637766c2f421b508))
+* **deps:** update codemirror ([#14291](https://github.com/sanity-io/sanity/issues/14291)) ([37e757a](https://github.com/sanity-io/sanity/commit/37e757a810e33a516af331e8b714e297b3bb7577))
+* **pkg:** add missing engines.node fields ([#14126](https://github.com/sanity-io/sanity/issues/14126)) ([7009966](https://github.com/sanity-io/sanity/commit/7009966be9aa012efbb1da24926bd4e102f275dc))
+
+### Performance Improvements
+
+* **build:** run react compiler on oxc instead of babel ([#14199](https://github.com/sanity-io/sanity/issues/14199)) ([822c6ad](https://github.com/sanity-io/sanity/commit/822c6ad446de99e60d13af37fe7652273774c871))
 ## [6.10.1](https://github.com/sanity-io/sanity/compare/v6.10.0...v6.10.1) (2026-08-18)
 
 ### Bug Fixes

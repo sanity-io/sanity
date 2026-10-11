@@ -70,7 +70,6 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
     </>
   )
 }
-DocumentInspectorMenuItemsResolver.displayName = 'DocumentInspectorMenuItemsResolver'
 
 function defineInspectorMenuItemComponent({
   documentId,

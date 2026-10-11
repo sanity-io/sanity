@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {type SanityDocument, type SchemaType} from '@sanity/types'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
@@ -19,7 +19,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -169,15 +169,14 @@ function IncomingReferencesTypeList({
             description: 'The document you are trying to link cannot be linked to',
             status: 'error',
           })
-          return
+        } else {
+          // if the document is published and the schema is not live edit, we want to update the draft id, not the published id
+          // If it's a version, we can update the version document.
+          if (isPublishedId(documentId) && !liveEdit) {
+            linkedDocument._id = getDraftId(documentId)
+          }
+          await client.createOrReplace(linkedDocument)
         }
-
-        // if the document is published and the schema is not live edit, we want to update the draft id, not the published id
-        // If it's a version, we can update the version document.
-        if (isPublishedId(documentId) && !liveEdit) {
-          linkedDocument._id = getDraftId(documentId)
-        }
-        await client.createOrReplace(linkedDocument)
       } catch (err) {
         // The fetch or write failed (e.g. insufficient permissions) —
         // tell the user.
@@ -187,14 +186,12 @@ function IncomingReferencesTypeList({
           description: err instanceof Error ? err.message : undefined,
           status: 'error',
         })
-        // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
-      } finally {
-        // Always clear the optimistic placeholder. The effect below also clears
-        // it once the linked document shows up in `documents`, but that never
-        // happens if the references stream has degraded to an empty list (e.g.
-        // after a load error), so don't rely on it alone.
-        setNewReferenceId(null)
       }
+      // Always clear the optimistic placeholder. The effect below also clears
+      // it once the linked document shows up in `documents`, but that never
+      // happens if the references stream has degraded to an empty list (e.g.
+      // after a load error), so don't rely on it alone.
+      setNewReferenceId(null)
     },
     [client, onLinkDocument, referenced, publishedExists, toast, schemaType],
   )
@@ -222,7 +219,7 @@ function IncomingReferencesTypeList({
   )
 
   return (
-    <Stack gap={2} marginBottom={2}>
+    <Flex gap={2} marginBottom={2} flexDirection="column">
       {shouldRenderTitle && (
         <Box paddingY={2} paddingX={0}>
           <Text size={1} weight="medium">
@@ -252,8 +249,8 @@ function IncomingReferencesTypeList({
         ) : (
           <>
             <Flex
-              align="center"
-              justify="center"
+              alignItems="center"
+              justifyContent="center"
               padding={2}
               hidden={isAdding || Boolean(newReferenceId)}
             >
@@ -297,6 +294,6 @@ function IncomingReferencesTypeList({
           fieldName={fieldName}
         />
       )}
-    </Stack>
+    </Flex>
   )
 }

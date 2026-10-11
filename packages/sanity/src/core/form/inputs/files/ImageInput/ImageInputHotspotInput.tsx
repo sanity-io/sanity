@@ -1,4 +1,4 @@
-import {Stack} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {type FIXME} from '../../../../FIXME'
@@ -31,7 +31,7 @@ export function ImageInputHotspotInput(props: {
       width={1}
     >
       <PresenceOverlay>
-        <Stack gap={5}>
+        <VStack gap={5}>
           {withImageTool && value?.asset && (
             <ImageToolInput
               {...imageInputProps}
@@ -41,7 +41,7 @@ export function ImageInputHotspotInput(props: {
               changed={changed}
             />
           )}
-        </Stack>
+        </VStack>
       </PresenceOverlay>
     </Dialog>
   )

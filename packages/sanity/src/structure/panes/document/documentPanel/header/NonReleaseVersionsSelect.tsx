@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
-import {Container, Flex, useClickOutsideEvent} from '@sanity/ui'
+import {Container, useClickOutsideEvent} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
 import {
   type VersionInfoDocumentStub,
@@ -12,6 +12,7 @@ import {
   useTranslation,
   VersionChip,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -131,7 +132,7 @@ export function NonReleaseVersionsSelect(props: {
         zOffset={10}
         content={
           <Container width={1}>
-            <Flex padding={3} gap={2} wrap="wrap">
+            <Flex padding={3} gap={2} flexWrap="wrap">
               {otherNonReleaseVersions.map((nonReleaseVersion) => {
                 const scopeId = nonReleaseVersion._system.scopeId!
                 const selected = selectedPerspective === scopeId

@@ -88,6 +88,7 @@ describe('DocumentHeaderTitle', () => {
     mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: undefined})
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       loading: false,
       dispatch: vi.fn(),
     })

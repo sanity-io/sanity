@@ -1,5 +1,6 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {Popover} from '../../../../../ui-components/popover/Popover'

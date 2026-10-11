@@ -1,7 +1,8 @@
 import {type StackablePerspective} from '@sanity/client'
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {type MouseEvent, useCallback, useDeferredValue} from 'react'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {CommandList} from '../../../../../../components/commandList/CommandList'
 import {type CommandListRenderItemCallback} from '../../../../../../components/commandList/types'
@@ -14,18 +15,10 @@ import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
 import {DebugOverlay} from './item/DebugOverlay'
 import {type ItemSelectHandler, SearchResultItem} from './item/SearchResultItem'
+import {loadingFirstPage, searchResultsInnerFlex} from './SearchResults.css'
 
 const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 57 // px
 const VIRTUAL_LIST_OVERSCAN = 4
-
-const SearchResultsInnerFlex = styled(Flex)<{$loadingFirstPage: boolean}>`
-  opacity: ${({$loadingFirstPage}) => ($loadingFirstPage ? 0.5 : 1)};
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
-  transition: 300ms opacity;
-  width: 100%;
-`
 
 interface SearchResultsProps {
   disableIntentLink?: boolean
@@ -117,15 +110,19 @@ export function SearchResults({
         borderTop={fullscreen || !!(hasError || hasSearchResults || hasNoSearchResults)}
         flex={1}
       >
-        <Flex direction="column" height="fill">
+        <Flex flexDirection="column" height="100%">
           {/* Sort menu */}
           {hasSearchResults && <SortMenu />}
 
           {/* Results */}
-          <SearchResultsInnerFlex
-            $loadingFirstPage={result.loading && cursor === null}
+          <Flex
             aria-busy={result.loading || isPending}
-            flex={1}
+            className={clsx(
+              searchResultsInnerFlex,
+              result.loading && cursor === null && loadingFirstPage,
+            )}
+            flexBasis="0%"
+            flexGrow={1}
           >
             {hasError ? (
               <SearchError />
@@ -152,7 +149,7 @@ export function SearchResults({
                 {hasNoSearchResults && <NoResults />}
               </>
             )}
-          </SearchResultsInnerFlex>
+          </Flex>
         </Flex>
       </Card>
     </Flex>

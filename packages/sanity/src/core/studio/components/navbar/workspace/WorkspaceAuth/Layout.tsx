@@ -1,8 +1,8 @@
 import {SanityLogo} from '@sanity/logos'
-import {Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
+import {Card, Heading, Text, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 const LINKS = [
   {
@@ -44,9 +44,9 @@ export function Layout(props: LayoutProps) {
   const prefersDark = usePrefersDark()
 
   return (
-    <Stack gap={6}>
+    <VStack gap={6}>
       <Card border radius={3} overflow="auto">
-        <Stack>
+        <VStack>
           {typeof header === 'object' && <Box>{header}</Box>}
           {typeof header === 'string' && (
             <Box paddingY={4}>
@@ -63,15 +63,21 @@ export function Layout(props: LayoutProps) {
           </Box>
 
           {footer && <Box>{footer}</Box>}
-        </Stack>
+        </VStack>
       </Card>
 
-      <Flex direction="column" gap={4} justify="center" align="center" paddingBottom={4}>
+      <Flex
+        flexDirection="column"
+        gap={4}
+        justifyContent="center"
+        alignItems="center"
+        paddingBottom={4}
+      >
         <Text size={3}>
           <SanityLogo dark={prefersDark} />
         </Text>
 
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           {LINKS.map((link, index) => (
             <Fragment key={link.title}>
               <StyledText muted size={1}>
@@ -89,6 +95,6 @@ export function Layout(props: LayoutProps) {
           ))}
         </Flex>
       </Flex>
-    </Stack>
+    </VStack>
   )
 }

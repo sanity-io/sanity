@@ -27,9 +27,7 @@ export function VariantDefinitionNotFoundBanner({
             i18nKey="banners.variant.definition-not-found"
             t={t}
             values={{name: requestedVariantName}}
-            components={{
-              VariantName: ({children}) => <strong>{children}</strong>,
-            }}
+            components={{VariantName: 'strong'}}
           />
         </Text>
       }

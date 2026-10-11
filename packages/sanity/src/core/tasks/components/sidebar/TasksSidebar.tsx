@@ -1,7 +1,7 @@
-import {Card, Flex, Spinner, Stack} from '@sanity/ui'
+import {Card, Spinner} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
@@ -12,22 +12,10 @@ import {getTargetDocumentId} from '../form/utils'
 import {TasksList} from '../list/TasksList'
 import {TasksUpsellPanel} from '../upsell/TasksUpsellPanel'
 import {TasksListTabs} from './TasksListTabs'
+import {contentFlex, headerStack, rootCard} from './TasksSidebar.css'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 
 const MotionCard = motion.create(Card)
-const RootCard = styled(MotionCard)`
-  flex: 1;
-  flex-direction: column;
-`
-
-const HeaderStack = styled(Stack)`
-  border-bottom: 1px solid var(--card-border-color);
-`
-
-const ContentFlex = styled(Flex)`
-  overflow-y: scroll;
-  overflow-x: hidden;
-`
 
 /**
  * @internal
@@ -64,7 +52,7 @@ function TasksStudioSidebarInner() {
 
     if (isLoading) {
       return (
-        <Flex align="center" justify="center">
+        <Flex alignItems="center" justifyContent="center">
           <Spinner />
         </Flex>
       )
@@ -79,7 +67,8 @@ function TasksStudioSidebarInner() {
   }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode, mode])
 
   return (
-    <RootCard
+    <MotionCard
+      className={rootCard}
       display="flex"
       height="fill"
       flex={1}
@@ -87,25 +76,26 @@ function TasksStudioSidebarInner() {
       initial={{opacity: 0}}
       animate={{opacity: 1, transition: {duration: 0.2}}}
     >
-      <HeaderStack gap={3} padding={3} sizing="border">
+      <Flex className={headerStack} gap={3} padding={3} flexDirection="column">
         <TasksSidebarHeader items={filteredList} />
         {viewMode === 'list' && !isLoading && (
           <TasksListTabs activeTabId={activeTabId} onChange={setActiveTab} />
         )}
-      </HeaderStack>
+      </Flex>
 
-      <ContentFlex
-        direction="column"
-        flex={1}
+      <Flex
+        className={contentFlex}
+        flexDirection="column"
+        flexBasis="0%"
+        flexGrow={1}
         overflow="auto"
         padding={3}
         paddingTop={4}
         paddingX={4}
-        sizing="border"
       >
         {content}
-      </ContentFlex>
-    </RootCard>
+      </Flex>
+    </MotionCard>
   )
 }
 

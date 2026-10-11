@@ -17,6 +17,7 @@ const mockDispatch = vi.fn()
 vi.mock('../useVariantsStore', () => ({
   useVariantsStore: () => ({
     state$: mockState$,
+    initialState,
     dispatch: mockDispatch,
   }),
 }))

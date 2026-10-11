@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
+import {INITIAL_RELEASES_STATE} from './createReleaseStore'
 import {useReleasesStore} from './useReleasesStore'
 
 /**
@@ -21,7 +22,7 @@ export function useAllReleases(): {
   // pair a stale release list with the current selection — or disagree with
   // the synchronous `useActiveReleases` read of the same store. Executable
   // proof: perspective/__tests__/deferralSafety.test.tsx.
-  const {releases, error, state} = useSyncObservable(state$)!
+  const {releases, error, state} = useSyncObservable(state$, INITIAL_RELEASES_STATE)
 
   return useMemo(
     () => ({

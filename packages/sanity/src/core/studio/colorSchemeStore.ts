@@ -12,7 +12,7 @@ function getScheme(scheme: unknown): StudioThemeColorSchemeKey {
 }
 
 /** @internal */
-const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
+export const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 let snapshot: StudioThemeColorSchemeKey

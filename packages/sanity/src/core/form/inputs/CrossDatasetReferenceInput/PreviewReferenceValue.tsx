@@ -1,5 +1,6 @@
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Text, TextSkeleton} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -7,6 +8,10 @@ import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
 import {type CrossDatasetReferenceInfo} from './types'
 import {type Loadable} from './useReferenceInfo'
 import {useProjectId} from './utils/useProjectId'
+
+function JsonValue({value}: {children?: React.ReactNode; value?: unknown}) {
+  return <pre>{JSON.stringify(value, null, 2)}</pre>
+}
 
 export function PreviewReferenceValue(props: {
   value: CrossDatasetReferenceValue
@@ -21,10 +26,10 @@ export function PreviewReferenceValue(props: {
 
   if (referenceInfo.isLoading || referenceInfo.error || !referenceInfo.result) {
     return (
-      <Stack gap={2} padding={1}>
+      <Flex gap={2} padding={1} flexDirection="column">
         <TextSkeleton style={{maxWidth: 320}} radius={1} animated={!referenceInfo.error} />
         <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated={!referenceInfo.error} />
-      </Stack>
+      </Flex>
     )
   }
   const showTypeLabel = type.to.length > 1
@@ -34,16 +39,17 @@ export function PreviewReferenceValue(props: {
 
   if (referenceInfo.result.availability?.available && !refType) {
     return (
-      <Stack gap={2} padding={2}>
+      <Flex gap={2} padding={2} flexDirection="column">
         <Text as="p">
           <Translate
             t={t}
             i18nKey="inputs.reference.cross-dataset.invalid-type"
             values={{typeName: refTypeName || 'unknown'}}
-            components={{JsonValue: () => <pre>{JSON.stringify(value, null, 2)}</pre>}}
+            components={{JsonValue}}
+            componentProps={{value}}
           />
         </Text>
-      </Stack>
+      </Flex>
     )
   }
 

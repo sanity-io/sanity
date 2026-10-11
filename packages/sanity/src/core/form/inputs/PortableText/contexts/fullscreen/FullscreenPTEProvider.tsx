@@ -1,9 +1,9 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
+import {pathToString} from '@sanity/validation/_internal'
 import {useCallback, useMemo, useState} from 'react'
 import {FullscreenPTEContext} from 'sanity/_singletons'
 
-import {pathToString} from '../../../../../validation/util/pathToString'
 import {
   NestedDialogEditorClosed,
   NestedDialogEditorOpened,

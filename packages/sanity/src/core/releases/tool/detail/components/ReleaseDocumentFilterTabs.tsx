@@ -1,7 +1,7 @@
 import {type ReleaseState} from '@sanity/client'
-import {Container, Flex, Skeleton, TabList} from '@sanity/ui'
+import {Skeleton, TabList} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Box} from 'ui5'
+import {Container, Box, Flex} from 'ui5'
 
 import {Tab} from '../../../../../ui-components/tab/Tab'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -41,7 +41,7 @@ export function ReleaseDocumentFilterTabs({
 
   if (isLoading) {
     const skeletons = (
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         {FILTER_TAB_CONFIGS.filter((config) => config.key !== 'errors').map((config) => (
           <Skeleton
             key={`loading-skeleton-${config.key}`}
@@ -54,7 +54,7 @@ export function ReleaseDocumentFilterTabs({
     )
     if (inline) return skeletons
     return (
-      <Container width={3}>
+      <Container size={3}>
         <Box padding={3}>{skeletons}</Box>
       </Container>
     )
@@ -142,7 +142,7 @@ function ReleaseDocumentFilterTabsInner({
   if (inline) return tabList
 
   return (
-    <Container width={3}>
+    <Container size={3}>
       <Box padding={3}>{tabList}</Box>
     </Container>
   )

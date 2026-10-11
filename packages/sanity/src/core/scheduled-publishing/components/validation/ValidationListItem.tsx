@@ -2,21 +2,30 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Path, type ValidationMarker} from '@sanity/types'
-import {type ButtonTone, Flex, Stack, Text} from '@sanity/ui'
+import {type ButtonTone} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {MenuItem} from '@sanity/ui/menu'
-import {useCallback} from 'react'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {type CSSProperties, useCallback} from 'react'
+import {Text, Box, Flex, Icon} from 'ui5'
 
-const StyledText = styled(Text)`
-  white-space: initial;
-`
+import {wrappingText} from './ValidationListItem.css'
 
 const MENU_ITEM_TONES: Record<'error' | 'warning' | 'info', ButtonTone> = {
   error: 'critical',
   warning: 'caution',
   info: 'primary',
+}
+
+const PRIMARY_FOREGROUND_STYLE = {
+  '--text-color': 'var(--card-fg-color)',
+  '--text-color-muted': 'var(--card-muted-fg-color)',
+  '--icon-color': 'var(--card-fg-color)',
+  '--icon-color-muted': 'var(--card-muted-fg-color)',
+} as CSSProperties & {
+  '--text-color': string
+  '--text-color-muted': string
+  '--icon-color': string
+  '--icon-color-muted': string
 }
 
 /**
@@ -47,25 +56,46 @@ export function ValidationListItem(props: ValidationListItemProps) {
   const children = (
     <Flex>
       <Box>
-        <Text size={1}>
-          {marker.level === 'error' && <ErrorOutlineIcon />}
-          {marker.level === 'warning' && <WarningOutlineIcon />}
-          {marker.level === 'info' && <InfoOutlineIcon />}
-        </Text>
+        {marker.level === 'error' && <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />}
+        {marker.level === 'warning' && <Icon icon={WarningOutlineIcon} size={1} tone="caution" />}
+        {marker.level === 'info' && (
+          <Icon icon={InfoOutlineIcon} size={1} style={PRIMARY_FOREGROUND_STYLE} />
+        )}
       </Box>
 
-      <Stack gap={2} flex={1} paddingLeft={3}>
+      <Flex gap={2} flexBasis="0%" flexGrow={1} paddingLeft={3} flexDirection="column">
         {path && (
-          <StyledText size={1} weight="semibold">
+          <Text
+            className={wrappingText}
+            size={1}
+            weight="semibold"
+            as="div"
+            trim={true}
+            tone={
+              menuItemTone === 'primary' || menuItemTone === 'default' ? undefined : menuItemTone
+            }
+            style={menuItemTone === 'primary' ? PRIMARY_FOREGROUND_STYLE : undefined}
+          >
             {path}
-          </StyledText>
+          </Text>
         )}
         {message && (
-          <StyledText muted size={1} textOverflow={truncate ? 'ellipsis' : undefined}>
+          <Text
+            className={wrappingText}
+            muted
+            size={1}
+            truncate={truncate ? 1 : undefined}
+            as="div"
+            trim={true}
+            tone={
+              menuItemTone === 'primary' || menuItemTone === 'default' ? undefined : menuItemTone
+            }
+            style={menuItemTone === 'primary' ? PRIMARY_FOREGROUND_STYLE : undefined}
+          >
             {message}
-          </StyledText>
+          </Text>
         )}
-      </Stack>
+      </Flex>
     </Flex>
   )
   return (

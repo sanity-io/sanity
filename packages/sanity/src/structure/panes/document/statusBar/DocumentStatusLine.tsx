@@ -1,7 +1,6 @@
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
-  Flex,
   Skeleton,
   Text,
 } from '@sanity/ui'
@@ -21,7 +20,7 @@ import {
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {HISTORY_INSPECTOR_NAME} from '../constants'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline/timelineI18n'
@@ -47,7 +46,7 @@ function getDocumentStatusKey(timelineKey: string): string {
 
 const ButtonSkeleton = () => {
   return (
-    <Flex align="center" gap={3} paddingLeft={1} paddingRight={2} paddingY={2}>
+    <Flex alignItems="center" gap={3} paddingLeft={1} paddingRight={2} paddingY={2}>
       <div style={{margin: -5}}>
         <AvatarSkeleton $size={0} animated />
       </div>
@@ -80,7 +79,7 @@ const DocumentStatusButton = ({
       padding={2}
       muted
     >
-      <Flex align="center" flex="none" gap={3}>
+      <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={3}>
         {author && (
           <div style={{margin: -5}}>
             <UserAvatar user={author} size={0} />

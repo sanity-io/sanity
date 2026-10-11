@@ -66,6 +66,12 @@ const schema = createSchema({
           // validating a document
           validation: (rule, context) => rule.uri({scheme: [context!.document!._type]}),
         }),
+        defineField({
+          name: 'urlSkipRequired',
+          type: 'url',
+          hidden: ({parent}) => parent?.hideFields === true,
+          validation: (rule, context) => (context?.hidden ? rule.skip() : rule.required()),
+        }),
       ],
     }),
     arrayValidationDoc,
@@ -114,5 +120,11 @@ describe('getValidationRule', () => {
     expect(
       getValidationRule(getFieldType('validationArity', 'urlUnsafeContextAccess'), 'uri'),
     ).toBeNull()
+  })
+
+  test('keeps default url uri and required hints for skip/required two-arg validation (SAPP-3960)', () => {
+    const type = getFieldType('validationArity', 'urlSkipRequired')
+    expect(getValidationRule(type, 'uri')).not.toBeNull()
+    expect(getValidationRule(type, 'presence')?.constraint).toBe('required')
   })
 })

@@ -1,7 +1,8 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Card, Flex, Spinner, Stack} from '@sanity/ui'
+import {Card, Spinner} from '@sanity/ui'
 import {type JSX, type RefObject, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Flex, VStack} from 'ui5'
 
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
@@ -117,7 +118,7 @@ export function ReleasesList({
 
   if (loading) {
     return (
-      <Flex padding={4} justify="center" data-testid="spinner">
+      <Flex padding={4} justifyContent="center" data-testid="spinner">
         <Spinner muted />
       </Flex>
     )
@@ -126,7 +127,7 @@ export function ReleasesList({
   return (
     <Card radius={3}>
       <StickyTopCard borderBottom padding={1}>
-        <Stack gap={1}>
+        <VStack gap={1}>
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
             release={'published'}
@@ -139,17 +140,17 @@ export function ReleasesList({
               menuItemProps={menuItemProps}
             />
           )}
-        </Stack>
+        </VStack>
       </StickyTopCard>
       {agentBundles[0] && (
         <Card borderBottom padding={1}>
-          <Stack gap={1}>
+          <VStack gap={1}>
             <AgentBundleMenuItem bundle={agentBundles[0]} />
-          </Stack>
+          </VStack>
         </Card>
       )}
       {areReleasesEnabled && (
-        <Stack ref={setScrollContainer} data-ui="scroll-wrapper">
+        <VStack ref={setScrollContainer} data-ui="scroll-wrapper">
           {orderedReleaseTypes.map((releaseType) => (
             <ReleaseTypeMenuSection
               key={releaseType}
@@ -160,10 +161,10 @@ export function ReleasesList({
               menuItemProps={menuItemProps}
             />
           ))}
-        </Stack>
+        </VStack>
       )}
       <StickyBottomCard borderTop paddingY={1} paddingX={2}>
-        <Stack gap={1}>
+        <VStack gap={1}>
           <ScheduledDraftsMenuItem />
           {areReleasesEnabled && (
             <>
@@ -171,7 +172,7 @@ export function ReleasesList({
               <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
             </>
           )}
-        </Stack>
+        </VStack>
       </StickyBottomCard>
     </Card>
   )

@@ -21,6 +21,13 @@ const DEFAULT_METADATA_STATE: MetadataWrapper = {
   loading: false,
 }
 
+// What the aggregator emits first for a non-empty set of release ids, while their fetch is pending
+const LOADING_METADATA_STATE: MetadataWrapper = {
+  data: null,
+  error: null,
+  loading: true,
+}
+
 const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) => {
   const [listenerReleaseIds, setListenerReleaseIds] = useState<string[]>([])
   const {getMetadataStateForSlugs$} = useReleasesStore()
@@ -33,7 +40,11 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
     [getMetadataStateForSlugs$, listenerReleaseIds],
   )
 
-  const observedResult = useObservable(memoObservable) || DEFAULT_METADATA_STATE
+  // Until the subscription for the current set of release ids emits (react-rx subscribes on
+  // commit), report what the aggregator emits first for that set: a non-empty set starts loading.
+  const observedResult =
+    useObservable(memoObservable, undefined) ??
+    (listenerReleaseIds.length > 0 ? LOADING_METADATA_STATE : DEFAULT_METADATA_STATE)
 
   // patch metadata in local state
   useEffect(

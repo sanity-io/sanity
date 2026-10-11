@@ -7,7 +7,7 @@ import {
   type ImageUrlBuilder,
   type SanityImageSource,
 } from '@sanity/image-url'
-import {Card, Flex, Skeleton} from '@sanity/ui'
+import {Card, Skeleton} from '@sanity/ui'
 import {
   type ComponentType,
   type ElementType,
@@ -19,8 +19,8 @@ import {
   useState,
 } from 'react'
 import {isValidElementType} from 'react-is'
+import {Flex} from 'ui5'
 
-import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {resolveBlockImageDimensions} from '../../components/previews/helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews/types'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
@@ -29,6 +29,7 @@ import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isString} from '../../util/isString'
 import {_previewComponents} from './_previewComponents'
+import {PreviewTooltip} from './PreviewTooltip'
 
 function FallbackIcon() {
   return <DocumentIcon className="sanity-studio__preview-fallback-icon" />
@@ -88,7 +89,7 @@ function SanityDefaultMedia({
   if (showAccessWarning) {
     return (
       <Card tone="critical" style={{width: '100%', height: '100%'}}>
-        <Flex justify="center" align="center" style={{width: '100%', height: '100%'}}>
+        <Flex justifyContent="center" alignItems="center" style={{width: '100%', height: '100%'}}>
           <WarningOutlineIcon />
         </Flex>
       </Card>
@@ -221,19 +222,8 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   const children = <LayoutComponent {...previewProps} />
 
   if (tooltip) {
-    return (
-      <Tooltip
-        content={tooltip}
-        disabled={!tooltip}
-        fallbackPlacements={['top-end', 'bottom-end']}
-        placement="right"
-      >
-        {/* Currently tooltips won't trigger without a wrapping element */}
-        <div>{children}</div>
-      </Tooltip>
-    )
+    return <PreviewTooltip content={tooltip}>{children}</PreviewTooltip>
   }
 
   return children
 })
-SanityDefaultPreview.displayName = 'Memo(SanityDefaultPreview)'

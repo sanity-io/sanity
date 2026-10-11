@@ -8,6 +8,8 @@ const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // the DevTools dock in a running `sanity dev` server without restarting it.
 // Usage: `pnpm devtools:test-studio` from the repo root (see AGENTS.md).
 const isViteDevToolsEnabled = process.env.ENABLE_VITE_DEVTOOLS === 'true'
+// React DevTools profiling via agent-react-devtools. Usage: `pnpm react-devtools:test-studio` (see AGENTS.md).
+const isReactDevtoolsEnabled = process.env.ENABLE_REACT_DEVTOOLS === 'true'
 
 export default defineCliConfig({
   api: isStaging
@@ -49,19 +51,6 @@ export default defineCliConfig({
       plugins: [vanillaExtractPlugin()],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
-      // With experimental.bundledDev, shared chunks can evaluate before the entry
-      // chunk's react-refresh preamble, causing:
-      // "@vitejs/plugin-react can't detect preamble". Force entry-first order.
-      // See https://github.com/vitejs/vite-plugin-react/issues/1191
-      ...(command === 'serve'
-        ? {
-            build: {
-              rolldownOptions: {
-                output: {strictExecutionOrder: true},
-              },
-            },
-          }
-        : {}),
     })
 
     if (isViteDevToolsEnabled) {
@@ -72,6 +61,11 @@ export default defineCliConfig({
         // `devtools: {}` makes `sanity build` emit a Rolldown build session that the DevTools dock can inspect
         build: {rolldownOptions: {devtools: {}}},
       })
+    }
+
+    if (isReactDevtoolsEnabled) {
+      const {reactDevtools} = await import('agent-react-devtools/vite')
+      nextConfig = mergeConfig(nextConfig, {plugins: [reactDevtools()]})
     }
 
     // Support React Production Profiling on deployed studios

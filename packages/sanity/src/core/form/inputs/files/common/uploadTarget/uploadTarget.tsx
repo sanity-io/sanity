@@ -1,5 +1,5 @@
 import {type AssetSource, type SchemaType} from '@sanity/types'
-import {type CardTone, Flex, Text} from '@sanity/ui'
+import {type CardTone, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import uniqBy from 'lodash-es/uniqBy.js'
 import {
@@ -11,8 +11,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type FIXME} from '../../../../../FIXME'
 import {useClient} from '../../../../../hooks/useClient'
@@ -37,6 +36,7 @@ import {DropMessage} from '../DropMessage'
 import {type FileInfo, fileTarget} from '../fileTarget/fileTarget'
 import {UploadDestinationPicker} from '../UploadDestinationPicker'
 import {Overlay} from './styles'
+import {root} from './uploadTarget.css'
 
 type FileEntry = {
   file: File
@@ -64,10 +64,6 @@ export interface UploadTargetProps {
   tone?: CardTone
   children?: ReactNode
 }
-
-const Root = styled.div`
-  position: relative;
-`
 
 export function uploadTarget<Props>(
   Component: ComponentType<Props>,
@@ -343,7 +339,7 @@ export function uploadTarget<Props>(
     )
 
     return (
-      <Root>
+      <div className={root}>
         {showAssetSourceDestinationPicker && (
           <UploadDestinationPicker
             assetSources={assetSourcesWithUploadByName}
@@ -357,7 +353,7 @@ export function uploadTarget<Props>(
           tone={toneFromProps || tone}
           ref={forwardedRef}
           onFiles={handleFiles}
-          onFilesOver={handleFilesOver}
+          onFilesOver={isReadOnly || disableUpload ? undefined : handleFilesOver}
           onFilesOut={handleFilesOut}
           pasteTarget={pasteTarget}
         >
@@ -368,7 +364,7 @@ export function uploadTarget<Props>(
           )}
           {children}
         </FileTarget>
-      </Root>
+      </div>
     )
   }
 }

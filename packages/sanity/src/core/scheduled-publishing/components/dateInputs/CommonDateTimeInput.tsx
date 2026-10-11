@@ -150,6 +150,7 @@ export function CommonDateTimeInput(props: Props & RefAttributes<HTMLInputElemen
           id={id}
           selectTime={selectTime}
           timeStep={timeStep}
+          // oxlint-disable-next-line react/purity -- the example placeholder shows the current date and time
           placeholder={placeholder || `e.g. ${formatInputValue(new Date())}`}
           ref={inputRef}
           value={parseResult?.date}

@@ -1,5 +1,6 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type ItemProps, ObjectInputMembers, type ObjectInputProps} from 'sanity'
+import {Flex, Box, VStack} from 'ui5'
 
 /**
  * Simple custom item component for array of objects
@@ -18,26 +19,26 @@ export function SideBySideObjectItem(props: ItemProps) {
 
   return (
     <Card padding={3} radius={2} shadow={1} tone="primary">
-      <Stack gap={3}>
+      <VStack gap={3}>
         {/* Preview of the item */}
         <Flex gap={3}>
-          <Stack gap={2} flex={1}>
+          <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
             <Text size={0} weight="semibold">
               Name
             </Text>
             <Text size={1}>{nameChild || 'No name'}</Text>
-          </Stack>
-          <Stack gap={2} flex={1}>
+          </Flex>
+          <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
             <Text size={0} weight="semibold">
               Internationalized
             </Text>
             <Text size={1}>{internationalizedArrayStringChild?.[0]?.value || 'No value'}</Text>
-          </Stack>
+          </Flex>
         </Flex>
 
         {/* Render the editing form (children) which will use the custom input component */}
         {children}
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -71,11 +72,11 @@ export function SideBySideObjectInput(props: ObjectInputProps) {
   )
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       {/* Render the two target fields side by side */}
       {nameChildMember && internationalizedMember && (
         <Flex gap={3}>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <ObjectInputMembers
               members={[nameChildMember]}
               renderAnnotation={renderAnnotation}
@@ -87,7 +88,7 @@ export function SideBySideObjectInput(props: ObjectInputProps) {
               renderPreview={renderPreview}
             />
           </Box>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <ObjectInputMembers
               members={[internationalizedMember]}
               renderAnnotation={renderAnnotation}
@@ -115,6 +116,6 @@ export function SideBySideObjectInput(props: ObjectInputProps) {
           renderPreview={renderPreview}
         />
       )}
-    </Stack>
+    </VStack>
   )
 }

@@ -2,11 +2,11 @@ import {type ReleaseDocument} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -83,7 +83,7 @@ function ValidationStatusIndicator({
         placement="bottom-end"
         content={
           <Text muted size={1}>
-            <Flex align="center" gap={3} padding={1}>
+            <Flex alignItems="center" gap={3} padding={1}>
               <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
               {t(
                 validationErrorCount === 1
@@ -161,7 +161,7 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: true,
     sortTransform: (row) => getRowBundleSortKey(row, releasesById),
     header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.SortHeaderButton
           paddingLeft={2}
           text={t('detail.documents.table.appears-in')}
@@ -171,7 +171,7 @@ export const getVariantDocumentTableColumnDefs = (
     ),
     cell: ({cellProps, datum}) => (
       <Flex
-        align="center"
+        alignItems="center"
         {...cellProps}
         style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
       >
@@ -190,7 +190,7 @@ export const getVariantDocumentTableColumnDefs = (
     style: {minWidth: 110, maxWidth: 130},
     sorting: true,
     header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.SortHeaderButton
           paddingLeft={2}
           text={t('detail.documents.table.type')}
@@ -199,7 +199,7 @@ export const getVariantDocumentTableColumnDefs = (
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
-      <Flex align="center" {...cellProps}>
+      <Flex alignItems="center" {...cellProps}>
         <Box paddingX={2}>
           {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
         </Box>
@@ -219,7 +219,7 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: true,
     sortTransform: ({document}) => getDocumentPreviewTitle(document).toLowerCase(),
     header: (props) => (
-      <Flex {...props.headerProps} flex={1} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} flexBasis="0%" flexGrow={1} paddingY={3}>
         <Headers.SortHeaderButton
           paddingLeft={2}
           text={t('detail.documents.table.document')}
@@ -230,12 +230,12 @@ export const getVariantDocumentTableColumnDefs = (
     cell: ({cellProps, datum}) => (
       <Flex
         {...cellProps}
-        align="center"
-        flex={1}
+        alignItems="center"
+        flexBasis="0%"
+        flexGrow={1}
         gap={2}
         padding={1}
         paddingRight={2}
-        sizing="border"
       >
         <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
           {datum.isLoading ? (
@@ -260,7 +260,7 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: true,
     width: 130,
     header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.SortHeaderButton
           paddingLeft={2}
           text={t('detail.documents.table.last-edited')}
@@ -271,11 +271,12 @@ export const getVariantDocumentTableColumnDefs = (
     cell: ({cellProps, datum}) => (
       <Flex
         {...cellProps}
-        align="center"
+        alignItems="center"
         paddingX={2}
         paddingY={3}
-        style={{minWidth: 130}}
-        sizing="border"
+        style={{
+          minWidth: 130,
+        }}
       >
         {!datum.isLoading && datum.document._updatedAt && (
           <Text muted size={1}>
@@ -294,14 +295,14 @@ export const getVariantDocumentTableColumnDefs = (
     width: 170,
     style: {minWidth: 44, maxWidth: 170},
     header: (props) => (
-      <Flex {...props.headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} alignItems="center" paddingX={2} paddingY={3}>
         <Text muted size={1} textOverflow="ellipsis" weight="medium">
           {t('detail.documents.table.edited-by')}
         </Text>
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
-      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+      <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
         {!datum.isLoading && (
           <EditedByCell documentId={datum.document._id} revision={datum.document._rev} />
         )}
@@ -318,9 +319,9 @@ export const getVariantDocumentTableColumnDefs = (
     style: {minWidth: 44, maxWidth: 44},
     sorting: true,
     sortTransform: (row) => (row.validation.hasError ? 0 : 1),
-    header: (props) => <Flex {...props.headerProps} paddingY={3} sizing="border" />,
+    header: (props) => <Flex {...props.headerProps} paddingY={3} />,
     cell: ({cellProps, datum}) => (
-      <Flex {...cellProps} align="center" justify="center" paddingY={3} sizing="border">
+      <Flex {...cellProps} alignItems="center" justifyContent="center" paddingY={3}>
         {!datum.isLoading && <ValidationStatusIndicator datum={datum} t={t} />}
       </Flex>
     ),

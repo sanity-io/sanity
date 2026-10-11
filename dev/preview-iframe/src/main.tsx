@@ -1,19 +1,12 @@
+import 'ui5/styles.css'
+import './preview.css'
+
 import {type ClientPerspective} from '@sanity/client'
-import {
-  Box,
-  Card,
-  Flex,
-  Stack,
-  studioTheme,
-  Tab,
-  TabList,
-  TabPanel,
-  Text,
-  ThemeProvider,
-} from '@sanity/ui'
+import {Card, studioTheme, Tab, TabList, TabPanel, Text, ThemeProvider} from '@sanity/ui'
 import {enableVisualEditing} from '@sanity/visual-editing'
 import {Suspense, useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
+import {Flex, Box, VStack} from 'ui5'
 
 import {FieldGroups} from './FieldGroups'
 import {InitialValues} from './InitialValues'
@@ -30,7 +23,7 @@ function Main() {
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
-      <Flex direction={'column'}>
+      <Flex flexDirection={'column'}>
         <Box padding={4}>
           <TabList gap={2}>
             <Tab
@@ -140,14 +133,14 @@ function VisualEditing() {
       style={{bottom: 16, maxWidth: 420, position: 'fixed', right: 16, zIndex: 1000}}
       tone="transparent"
     >
-      <Stack gap={2}>
+      <VStack gap={2}>
         <Text muted size={1}>
           perspective: {JSON.stringify(perspective)}
         </Text>
         <Text muted size={1} data-testid="preview-variant">
           variant: {variant ? JSON.stringify(variant) : 'none'}
         </Text>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

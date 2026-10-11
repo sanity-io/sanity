@@ -67,6 +67,16 @@ export const Scroller = styled(ScrollContainer)`
   }
 `
 
+/**
+ * In fullscreen the editable is wrapped in a presence overlay, whose content row this fills so
+ * the editable below keeps its `height: 100%` chain intact and stays clickable all the way down.
+ * Otherwise it is the scroller's flex child, which must not get a definite height: a flex item's
+ * automatic minimum size is then capped to it and the content gets clipped.
+ */
+export const EditableContent = styled.div<{$isFullscreen: boolean}>`
+  height: ${({$isFullscreen}) => ($isFullscreen ? '100%' : 'auto')};
+`
+
 export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine: boolean}>`
   height: 100%;
   width: 100%;
@@ -78,7 +88,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
     height: 100%;
   }
 
-  & .pt-editable {
+  & [data-pt-editor] {
     display: block;
     width: 100%;
     height: 100%;
@@ -122,7 +132,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
     & > [data-pt-block] {
       /* Positioning context for the absolutely-positioned drop indicator so it
          sizes to the block (the centred text column) instead of the full-width
-         .pt-editable, which overshoots the block in fullscreen. */
+         [data-pt-editor], which overshoots the block in fullscreen. */
       position: relative;
       margin: 0 auto;
       max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;

@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
+import {Card, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -14,7 +14,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, type CSSObject, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -322,7 +322,7 @@ function Tag(props: {
 
   return (
     <Card data-ui="Tag" radius={2} tone="transparent">
-      <Flex align="center" gap={1}>
+      <Flex alignItems="center" gap={1}>
         <Box
           flexBasis="0%"
           flexGrow={1}

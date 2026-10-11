@@ -1,7 +1,8 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {type FileAsset, type ReferenceValue} from '@sanity/types'
-import {Card, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Card, Text, TextSkeleton} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Flex} from 'ui5'
 
 import {formatBytes} from '../../../../../../../../../../form/inputs/common/helper'
 import {observeFileAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
@@ -33,20 +34,20 @@ function FilePreview({asset}: {asset: FileAsset}) {
   // todo: consider replacing with <SanityDefaultPreview>
   return (
     <Card padding={2} shadow={1}>
-      <Flex align="center" justify="space-between" wrap="nowrap">
+      <Flex alignItems="center" justifyContent="space-between" flexWrap="nowrap">
         <Card padding={3} radius={1} shadow={1} tone="transparent">
           <Text>
             <BinaryDocumentIcon />
           </Text>
         </Card>
-        <Stack flex={1} gap={2} marginLeft={3}>
+        <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
           <Text muted size={1} textOverflow="ellipsis" weight="medium">
             {asset?.originalFilename || asset._id}
           </Text>
           <Text size={1} muted>
             {formatBytes(asset.size)}
           </Text>
-        </Stack>
+        </Flex>
       </Flex>
     </Card>
   )
@@ -55,16 +56,16 @@ function FilePreview({asset}: {asset: FileAsset}) {
 function FileSkeleton() {
   return (
     <Card padding={2} shadow={1}>
-      <Flex align="center" justify="flex-start">
+      <Flex alignItems="center" justifyContent="flex-start">
         <Card padding={3} radius={1} shadow={1} tone="transparent">
           <Text>
             <BinaryDocumentIcon />
           </Text>
         </Card>
-        <Stack flex={1} gap={2} marginLeft={3}>
+        <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
           <TextSkeleton animated style={{width: '100%'}} radius={1} />
           <TextSkeleton animated style={{width: '100%'}} radius={1} />
-        </Stack>
+        </Flex>
       </Flex>
     </Card>
   )

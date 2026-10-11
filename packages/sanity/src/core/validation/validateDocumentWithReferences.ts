@@ -8,6 +8,7 @@ import {
   type ValidationMarker,
   type CurrentUser,
 } from '@sanity/types'
+import {evaluateDocumentObservable} from '@sanity/validation/_internal'
 import {reduce as reduceJSON} from 'json-reduce'
 import {
   asyncScheduler,
@@ -33,13 +34,12 @@ import {
   skip,
   throttleTime,
 } from 'rxjs/operators'
-import shallowEquals from 'shallow-equals'
 
 import {type SourceClientOptions} from '../config/types'
 import {type LocaleSource} from '../i18n/types'
 import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
 import {getVersionFromId} from '../util/draftUtils'
-import {validateDocumentObservable} from './validateDocument'
+import {shallowEquals} from '../util/shallowEquals'
 
 /**
  * @hidden
@@ -179,7 +179,7 @@ export function validateDocumentWithReferences(
         }
         return concat(
           of({isValidating: true, revision: document._rev}),
-          validateDocumentObservable({
+          evaluateDocumentObservable({
             document,
             getClient: ctx.getClient,
             getDocumentExists,
@@ -187,9 +187,7 @@ export function validateDocumentWithReferences(
             schema: ctx.schema,
             environment: 'studio',
             currentUser: ctx.currentUser,
-          }).pipe(
-            map((validationMarkers) => ({validation: validationMarkers, isValidating: false})),
-          ),
+          }).pipe(map((result) => ({validation: result.markers, isValidating: false}))),
         )
       })
     }),

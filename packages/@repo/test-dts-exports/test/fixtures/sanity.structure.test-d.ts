@@ -90,6 +90,7 @@ import type {
   ListItem,
   ListItemBuilder,
   ListItemChild,
+  ListItemCount,
   ListItemDisplayOptions,
   ListItemInput,
   ListItemSerializeOptions,
@@ -134,6 +135,7 @@ import type {
   SerializeOptions,
   SerializePath,
   shallowIntentChecker,
+  SingletonListBuilder,
   SortMenuItem,
   StrictVersionLayeringOptions,
   StructureBuilder,
@@ -430,6 +432,9 @@ describe('sanity/structure', () => {
   test('ListItemChild', () => {
     expectTypeOf<ListItemChild>().not.toBeNever()
   })
+  test('ListItemCount', () => {
+    expectTypeOf<ListItemCount>().toBeObject()
+  })
   test('ListItemDisplayOptions', () => {
     expectTypeOf<ListItemDisplayOptions>().toBeObject()
   })
@@ -561,6 +566,9 @@ describe('sanity/structure', () => {
   })
   test('shallowIntentChecker', () => {
     expectTypeOf<typeof shallowIntentChecker>().not.toBeNever()
+  })
+  test('SingletonListBuilder', () => {
+    expectTypeOf<SingletonListBuilder>().not.toBeNever()
   })
   test('SortMenuItem', () => {
     expectTypeOf<SortMenuItem>().toBeObject()

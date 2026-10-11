@@ -1,16 +1,10 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {
-  Flex,
-  type Placement,
-  PortalProvider,
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {type Placement, PortalProvider, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -18,17 +12,13 @@ import {useDocumentPane} from '../useDocumentPane'
 import {Timeline} from './timeline'
 import {TimelineError} from './TimelineError'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
+import {root} from './timelineMenu.css'
 
 interface TimelineMenuProps {
   chunk: Chunk | null
   mode: 'rev' | 'since'
   placement?: Placement
 }
-
-const Root = styled(Popover)`
-  overflow: hidden;
-  overflow: clip;
-`
 
 export const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
@@ -180,7 +170,8 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   return (
     <PortalProvider __unstable_elements={portalElements}>
-      <Root
+      <Popover
+        className={root}
         data-testid="timeline-menu"
         constrainSize
         content={open && content}
@@ -209,7 +200,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
             text={ready ? buttonLabel : t('timeline.loading-history')}
           />
         </Flex>
-      </Root>
+      </Popover>
     </PortalProvider>
   )
 }

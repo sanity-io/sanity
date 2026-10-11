@@ -1,5 +1,5 @@
 import {UserIcon} from '@sanity/icons/User'
-import {Badge, Container, Flex, Text, TextInput, VirtualList} from '@sanity/ui'
+import {Badge, TextInput, VirtualList} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -7,8 +7,7 @@ import {
 } from '@sanity/ui/menu'
 import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Container, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
@@ -17,6 +16,7 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
+import {mentionUserMenuItemText, styledMenu} from './AssigneeSelectionMenu.css'
 
 type SelectItemHandler = (id: string) => void
 
@@ -30,10 +30,17 @@ function MentionUserMenuItem(props: {
   const handleSelect = useCallback(() => onSelect(user.id), [user, onSelect])
   return (
     <MenuItem onClick={handleSelect} padding={1} disabled={!user.granted} pressed={pressed}>
-      <Flex align="center" gap={3}>
-        <Flex align="center" gap={2} flex={1}>
+      <Flex alignItems="center" gap={3}>
+        <Flex alignItems="center" gap={2} flexBasis="0%" flexGrow={1}>
           <TasksUserAvatar user={user.id ? user : undefined} size={1} />
-          <Text size={1} textOverflow="ellipsis" title={user.displayName}>
+          <Text
+            className={mentionUserMenuItemText}
+            size={1}
+            truncate={1}
+            title={user.displayName}
+            as="div"
+            trim={true}
+          >
             {user.displayName}
           </Text>
         </Flex>
@@ -43,11 +50,6 @@ function MentionUserMenuItem(props: {
     </MenuItem>
   )
 }
-
-const StyledMenu = styled(Menu)`
-  width: 308px;
-  border-radius: 3px;
-`
 
 const IGNORED_KEYS = [
   'Control',
@@ -135,7 +137,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
 
   if (mentionOptions.loading) {
     return (
-      <Container width={0}>
+      <Container size={0}>
         <LoadingBlock showText />
       </Container>
     )
@@ -159,7 +161,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
       <div style={{maxHeight: '320px', overflowY: 'scroll', paddingTop: '8px'}}>
         {filteredOptions.length === 0 ? (
           <Box padding={3}>
-            <Text align="center" size={1} muted>
+            <Text align="center" size={1} muted as="div" trim={true}>
               {t('form.input.assignee.search.no-users.text')}
             </Text>
           </Box>
@@ -183,9 +185,9 @@ export function AssigneeSelectionMenu(props: {
       button={menuButton}
       id="assign-user-menu"
       menu={
-        <StyledMenu>
+        <Menu className={styledMenu}>
           <MentionsMenu onSelect={onSelect} value={value} />
-        </StyledMenu>
+        </Menu>
       }
       popover={{
         placement: 'bottom',

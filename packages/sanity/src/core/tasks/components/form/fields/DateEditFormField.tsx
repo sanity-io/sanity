@@ -1,10 +1,10 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {type Path} from '@sanity/types'
-import {Flex, useClickOutsideEvent} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui'
 import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
@@ -80,6 +80,7 @@ export function DateEditFormField(props: {
   const handleDeactivation = useCallback(() => {
     buttonRef.current?.focus()
   }, [buttonRef])
+  // oxlint-disable-next-line react/purity -- the label format depends on the current calendar year
   const dueDateIsThisYear = deserializedValue?.date?.getFullYear() === new Date().getFullYear()
 
   return (
@@ -101,7 +102,7 @@ export function DateEditFormField(props: {
               timeZoneScope={SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE}
             />
             {value && (
-              <Flex justify={'flex-start'} padding={3} paddingTop={0}>
+              <Flex justifyContent={'flex-start'} padding={3} paddingTop={0}>
                 <Button
                   mode="bleed"
                   text={t('form.input.date.buttons.remove.text')}

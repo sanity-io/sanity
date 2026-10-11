@@ -1,8 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo} from 'react'
-import {useSyncObservable} from 'react-rx'
+import {useCallback, useEffect, useMemo} from 'react'
 
 import {useClient} from '../hooks/useClient'
 import {useSchema} from '../hooks/useSchema'
@@ -44,13 +43,15 @@ import {createPresenceStore, type PresenceStore} from './presence/presence-store
 import {createProjectStore} from './project/projectStore'
 import {type ProjectStore} from './project/types'
 import {createRenderingContextStore} from './renderingContext/createRenderingContextStore'
-import {type RenderingContextStore} from './renderingContext/types'
+import {type CapabilityRecord, type RenderingContextStore} from './renderingContext/types'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createUserStore, type UserStore} from './user/userStore'
 
 /**
  * Latencies below this value will not be logged
  */
+const EMPTY_CAPABILITIES: CapabilityRecord = {}
+
 const IGNORE_LATENCY_BELOW_MS = 1000
 
 /** Minimum time between slow commit toast notifications */
@@ -446,25 +447,31 @@ export function useRenderingContextStore(): RenderingContextStore {
 export function useComlinkStore(): ComlinkStore {
   const resourceCache = useResourceCache()
   const renderingContext = useRenderingContextStore()
-  // Kept synchronous: `createComlinkStore` starts the comlink node when
-  // `capabilities.comlink` flips true, so a deferred snapshot would delay
-  // comlink initialization. Capabilities emit once at boot; there is nothing
-  // to gain from deferring them.
-  const capabilities = useSyncObservable(renderingContext.capabilities, {})
 
-  return useMemo(() => {
-    const comlinkStore =
+  const comlinkStore = useMemo(() => {
+    const store =
       resourceCache.get<ComlinkStore>({
-        dependencies: [capabilities],
+        dependencies: [renderingContext],
         namespace: 'ComlinkStore',
-      }) || createComlinkStore({capabilities})
+      }) ||
+      // Read once: Comlink only comes from the URL, which doesn't change.
+      createComlinkStore({capabilities: renderingContext.getCapabilities() ?? EMPTY_CAPABILITIES})
 
     resourceCache.set({
-      dependencies: [capabilities],
+      dependencies: [renderingContext],
       namespace: 'ComlinkStore',
-      value: comlinkStore,
+      value: store,
     })
 
-    return comlinkStore
-  }, [capabilities, resourceCache])
+    return store
+  }, [renderingContext, resourceCache])
+
+  // The store is created during render, which React may abandon; the node is
+  // only held once a consumer commits. Holding is idempotent, so every
+  // consumer may ask for it.
+  useEffect(() => {
+    comlinkStore.start()
+  }, [comlinkStore])
+
+  return comlinkStore
 }
