@@ -463,6 +463,37 @@ describe('presence-store', () => {
     })
   })
 
+  describe('leaving the page', () => {
+    it('does not send a disconnect when the page is left', async () => {
+      // A goodbye sent while the page goes away rarely reaches the server, and one sent after the
+      // bifur socket was closed for the back/forward cache opens a new socket that the browser
+      // then kills. Cleaning up after a session that left is up to the server.
+      const {store, requests} = createHarness()
+      const {subscription} = collect<GlobalPresence[]>(store.globalPresence$)
+      await settle()
+
+      window.dispatchEvent(new Event('beforeunload'))
+      window.dispatchEvent(Object.assign(new Event('pagehide'), {persisted: true}))
+      window.dispatchEvent(Object.assign(new Event('pagehide'), {persisted: false}))
+      await settle()
+      expect(requests.map((r) => r.name)).not.toContain('presence_disconnect')
+      subscription.unsubscribe()
+    })
+
+    it('keeps presence running after pagehide, for a page restored from the back/forward cache', async () => {
+      const {store, incoming$} = createHarness()
+      const {latest, subscription} = collect<GlobalPresence[]>(store.globalPresence$)
+
+      window.dispatchEvent(Object.assign(new Event('pagehide'), {persisted: true}))
+      await settle()
+
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(latest().map((p) => p.user.id)).toEqual(['alice'])
+      subscription.unsubscribe()
+    })
+  })
+
   describe('connection status', () => {
     it('only listens to presence while connected', async () => {
       const {store, incoming$, connectionStatus$} = createHarness()
