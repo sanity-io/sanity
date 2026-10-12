@@ -1,5 +1,6 @@
-import {type ReactNode} from 'react'
-import {styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, type ReactNode} from 'react'
 import {Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../../../../components/textWithTone/TextWithTone'
@@ -10,6 +11,7 @@ import {isRecord} from '../../../../../../util/isRecord'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getOperatorDefinition, type SearchOperatorDefinition} from '../../definitions/operators'
 import {type SearchFilter, type SearchFilterValues} from '../../types'
+import {filterLabelBox, flexShrinkVar} from './FilterLabel.css'
 import {FilterTitle} from './FilterTitle'
 
 interface FilterLabelProps {
@@ -18,9 +20,17 @@ interface FilterLabelProps {
   showContent?: boolean
 }
 
-const CustomBox = styled(Box)<{$flexShrink?: number}>`
-  flex-shrink: ${({$flexShrink = 0}) => $flexShrink};
-`
+function CustomBox(props: ComponentProps<typeof Box> & {$flexShrink?: number}) {
+  const {$flexShrink = 0, className, style, ...rest} = props
+
+  return (
+    <Box
+      {...rest}
+      className={clsx(filterLabelBox, className)}
+      style={{...assignInlineVars({[flexShrinkVar]: String($flexShrink)}), ...style}}
+    />
+  )
+}
 
 interface FilterLabelComponentProps {
   children?: ReactNode
