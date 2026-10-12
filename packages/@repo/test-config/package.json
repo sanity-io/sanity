@@ -6,7 +6,8 @@
   "type": "module",
   "exports": {
     "./vitest": "./vitest/index.mjs",
-    "./vitest/failOnReactDomPropWarnings": "./vitest/failOnReactDomPropWarnings.mjs"
+    "./vitest/failOnReactDomPropWarnings": "./vitest/failOnReactDomPropWarnings.mjs",
+    "./vitest/reactDomPropWarnings": "./vitest/reactDomPropWarnings.mjs"
   },
   "devDependencies": {
     "vite": "catalog:",

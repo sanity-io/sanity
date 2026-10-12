@@ -32,11 +32,21 @@ const INTERNAL_NAMES = [
   'isAttributeNameSafe',
   'validatePropertiesInDevelopment',
   'setPropOnCustomElement',
+  'setValueForStyles',
   'warnedProperties',
   'warnedProperties$1',
   'illegalAttributeNameCache',
   'validatedAttributeNameCache',
+  'warnedStyleNames',
+  'warnedStyleValues',
 ] as const
+
+/**
+ * Module-scope `var` flags react-dom sets once it has warned about a style value. Code outside the
+ * bundle cannot assign them, so {@link loadReactDomInternals} also appends a function that clears
+ * each one.
+ */
+const WARNED_FLAGS = ['warnedForNaNValue', 'warnedForInfinityValue'] as const
 
 type ConsoleSink = (level: string, args: unknown[]) => void
 
@@ -81,7 +91,19 @@ export interface ReactDomInternals {
     props: Record<string, unknown>,
     prevValue: unknown,
   ) => void
-  /** Forget which names react-dom has already warned about (it warns once per name). */
+  /**
+   * How react-dom applies a `style` prop: it checks each style property's name and value, then
+   * sets it on `element.style`.
+   */
+  setValueForStyles: (
+    element: {style: object},
+    styles: Record<string, unknown> | null,
+    prevStyles: Record<string, unknown> | null,
+  ) => void
+  /**
+   * Forget which names and values react-dom has already warned about (it warns once per name, and
+   * once per page for a `NaN` or infinite style value).
+   */
   resetWarnings: () => void
   /** Receives the bundle's `console` calls. Returns a function that restores the previous sink. */
   setConsoleSink: (sink: ConsoleSink) => () => void
@@ -122,7 +144,11 @@ export function loadReactDomInternals(): ReactDomInternals {
     (name) =>
       `try { exports.${exportKey}[${JSON.stringify(name)}] = ${name} } catch (error) { exports.${exportKey}.missing.push(${JSON.stringify(name)}) }`,
   ).join('\n')
-  const patched = `${source.slice(0, end)}\nexports.${exportKey} = {missing: []};\n${exportCode}\n${source.slice(end)}`
+  const resetFlagCode = WARNED_FLAGS.map(
+    (name) =>
+      `try { void ${name}; exports.${exportKey}.resetFlags.push(function () { ${name} = false }) } catch (error) { exports.${exportKey}.missing.push(${JSON.stringify(name)}) }`,
+  ).join('\n')
+  const patched = `${source.slice(0, end)}\nexports.${exportKey} = {missing: [], resetFlags: []};\n${exportCode}\n${resetFlagCode}\n${source.slice(end)}`
 
   let sink: ConsoleSink = () => {}
   const bundleConsole = new Proxy(console, {
@@ -153,6 +179,7 @@ export function loadReactDomInternals(): ReactDomInternals {
 
   const internals = bundleModule.exports[exportKey] as Record<string, unknown> & {
     missing: string[]
+    resetFlags: (() => void)[]
   }
   if (internals.missing.length > 0) {
     throw new Error(
@@ -165,6 +192,8 @@ export function loadReactDomInternals(): ReactDomInternals {
     internals['warnedProperties$1'],
     internals.illegalAttributeNameCache,
     internals.validatedAttributeNameCache,
+    internals.warnedStyleNames,
+    internals.warnedStyleValues,
   ] as Record<string, unknown>[]
 
   cached = {
@@ -178,6 +207,7 @@ export function loadReactDomInternals(): ReactDomInternals {
       for (const cache of warnCaches) {
         for (const key of Object.keys(cache)) delete cache[key]
       }
+      for (const resetFlag of internals.resetFlags) resetFlag()
     },
     setConsoleSink(nextSink) {
       const previous = sink

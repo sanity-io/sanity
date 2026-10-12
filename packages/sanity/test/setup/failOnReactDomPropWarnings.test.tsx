@@ -22,6 +22,54 @@ describe('failOnReactDomPropWarnings', () => {
     ])
   })
 
+  it('captures what react-dom reports about several props of one element at once', () => {
+    render(
+      <div
+        // @ts-expect-error -- props that no DOM element has
+        leakedhandler={() => {}}
+        leakedsymbol={Symbol('leaked')}
+      />,
+    )
+
+    expect(takeDomPropWarnings()).toEqual([
+      expect.stringMatching(
+        /^Invalid values for props `leakedhandler`, `leakedsymbol` on <div> tag/,
+      ),
+    ])
+  })
+
+  it('captures what react-dom reports about the props it reserves', () => {
+    render(
+      <>
+        <div
+          // @ts-expect-error -- React has no `onFocusIn` event
+          onFocusIn={() => {}}
+        />
+        <div
+          // @ts-expect-error -- React sets inner HTML through `dangerouslySetInnerHTML`
+          innerHTML="<b>leaked</b>"
+        />
+        <div
+          // @ts-expect-error -- React reserves `aria` for future use
+          aria="leaked"
+        />
+        <div
+          // @ts-expect-error -- `is` names a customized built-in element
+          is={1}
+        />
+        <div style={{width: Infinity}} />
+      </>,
+    )
+
+    expect(takeDomPropWarnings()).toEqual([
+      expect.stringMatching(/^React uses onFocus and onBlur instead of onFocusIn and onFocusOut/),
+      expect.stringMatching(/^Directly setting property `innerHTML` is not permitted/),
+      expect.stringMatching(/^The `aria` attribute is reserved for future use in React/),
+      expect.stringMatching(/^Received a `number` for a string attribute `is`/),
+      '`Infinity` is an invalid value for the `width` css style property.',
+    ])
+  })
+
   it('captures an object that reaches an attribute', () => {
     render(
       <div

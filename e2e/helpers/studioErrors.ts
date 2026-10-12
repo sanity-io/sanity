@@ -9,6 +9,7 @@ import {
   type PlaywrightWorkerOptions,
   type TestType,
 } from '@playwright/test'
+import {REACT_DOM_PROP_WARNING_PATTERNS} from '@repo/test-config/vitest/reactDomPropWarnings'
 
 import {
   buildDomPropLeakScannerScript,
@@ -65,11 +66,20 @@ export type StudioErrorSource = 'pageerror' | 'error-screen'
  * of react-dom emits them, so they appear when the suite runs against `sanity dev` (the default
  * local `webServer`). The DOM prop leak scanner applies the same prop rules to the production
  * build CI deploys; these messages also cover what it does not see, such as `style` values and
- * elements outside the document. The unit and browser-mode vitest suites carry the same check
- * through `@repo/test-config/vitest/failOnReactDomPropWarnings`; keep the two lists in sync.
+ * elements outside the document.
+ *
+ * Built from the list the unit and browser-mode vitest suites fail a test on
+ * (`@repo/test-config/vitest/reactDomPropWarnings`), with each `%s` placeholder matching any text,
+ * so it matches the printed message as well as the format string: Playwright's `msg.text()` joins
+ * the `console.error` arguments instead of substituting them. `domPropLeaks/classifier.test.ts`
+ * checks both against every such warning react-dom logs.
  */
-export const REACT_DOM_PROP_WARNING =
-  /React does not recognize the `\S+` prop on a DOM element|Invalid DOM property `|Invalid value for prop `?\S+`? on <|for a non-boolean attribute `|for the boolean attribute `|Received NaN for the `|Unknown event handler property `|Invalid event handler property `|Invalid ARIA attribute `|Invalid aria props? |Unknown ARIA attribute `|Invalid attribute name: `|Unsupported (?:vendor-prefixed )?style property |is an invalid value for the `\S+` css style property/
+export const REACT_DOM_PROP_WARNING = new RegExp(
+  REACT_DOM_PROP_WARNING_PATTERNS.map((pattern) => pattern.source.replaceAll('%s', '.*?')).join(
+    '|',
+  ),
+  's',
+)
 
 /**
  * styled-components' own leak check (a `console.warn`), which also covers all-lowercase unknown

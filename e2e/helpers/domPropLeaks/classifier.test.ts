@@ -1,7 +1,12 @@
 import vm from 'node:vm'
 
+import {
+  isReactDomPropWarning,
+  REACT_DOM_PROP_WARNING_PATTERNS,
+} from '@repo/test-config/vitest/reactDomPropWarnings'
 import {describe, expect, test} from 'vitest'
 
+import {REACT_DOM_PROP_WARNING} from '../studioErrors'
 import {createDomPropClassifier} from './classifier'
 import {loadReactDomInternals} from './reactDomInternals'
 import {loadDomPropVocabulary, loadIsPropValid} from './vocabulary'
@@ -104,7 +109,7 @@ function describeValue(value: unknown): string {
 // react-dom also logs these, which are not about prop names: the `value` and `contentEditable`
 // checks of `validatePropertiesInDevelopment`, and the check that an event prop is a function.
 const OTHER_WARNINGS =
-  /^error: (?:`value` prop on|A component is `contentEditable`|Expected `[^`]+` listener to be a function)/
+  /^(?:`value` prop on|A component is `contentEditable`|Expected `[^`]+` listener to be a function)/
 
 // What `setPropOnCustomElement` reads from the element: whether it has a property of the prop's
 // name, and the methods it writes attributes and adds listeners with.
@@ -124,40 +129,58 @@ const fakeCustomElements = new Map(
   ]),
 )
 
-/**
- * What react-dom's development build logs for `<type name={value} />`, as `level: message`. A
- * custom element has a property of that name when `hasProperty` is set.
- */
-function reactDomWarnings(
-  type: string,
-  name: string,
-  value: unknown,
-  hasProperty: boolean,
-): string[] {
-  const warnings: string[] = []
+interface ConsoleCall {
+  level: string
+  /** What react-dom passed to `console`: a format string, then the values for its `%s`. */
+  args: unknown[]
+  /** The format string with the values substituted, as the browser console prints it. */
+  message: string
+}
+
+/** What react-dom's development build logs while `run` calls into it. */
+function reactDomConsole(run: () => void): ConsoleCall[] {
+  const calls: ConsoleCall[] = []
   react.resetWarnings()
   const restore = react.setConsoleSink((level, args) => {
-    const warning = `${level}: ${formatConsoleArgs(args)}`
-    if (!OTHER_WARNINGS.test(warning)) warnings.push(warning)
+    calls.push({level, args, message: formatConsoleArgs(args)})
   })
   try {
-    react.validatePropertiesInDevelopment(type, {[name]: value})
-    if (react.isCustomElement(type)) {
-      if (value !== undefined) {
+    run()
+  } finally {
+    restore()
+  }
+  return calls
+}
+
+/**
+ * What react-dom's development build logs about the props when it creates `<type {...props} />`.
+ * A custom element has a property for every prop when `hasProperty` is set, and for none
+ * otherwise.
+ */
+function reactDomPropWarnings(
+  type: string,
+  props: Record<string, unknown>,
+  hasProperty = false,
+): ConsoleCall[] {
+  return reactDomConsole(() => {
+    react.validatePropertiesInDevelopment(type, props)
+    for (const [name, value] of Object.entries(props)) {
+      if (react.isCustomElement(type)) {
+        if (value === undefined) continue
         try {
           react.setPropOnCustomElement(
             fakeCustomElements.get(hasProperty)!,
             type,
             name,
             value,
-            {[name]: value},
+            props,
             undefined,
           )
         } catch {
           // `style` and `dangerouslySetInnerHTML` throw for values of the wrong shape.
         }
+        continue
       }
-    } else {
       // `setProp` writes every other prop with a value as an attribute, checking its name first.
       const isEventLike =
         name.length > 2 &&
@@ -167,10 +190,7 @@ function reactDomWarnings(
         react.isAttributeNameSafe(react.getAttributeAlias(name))
       }
     }
-  } finally {
-    restore()
-  }
-  return warnings
+  }).filter((call) => !OTHER_WARNINGS.test(call.message))
 }
 
 /** Every combination of the types, names and values above, one prop at a time. */
@@ -188,7 +208,9 @@ describe('createDomPropClassifier', () => {
   test('flags a prop exactly when react-dom warns about it, with one of its messages', () => {
     const mismatches: string[] = []
     for (const {type, hasProperty, name, value} of singlePropCases()) {
-      const expected = reactDomWarnings(type, name, value, hasProperty)
+      const expected = reactDomPropWarnings(type, {[name]: value}, hasProperty).map(
+        (call) => `${call.level}: ${call.message}`,
+      )
       const actual = classify({type, props: {[name]: value}, hasProperty: () => hasProperty})
         .filter((issue) => issue.rule === 'react')
         .map((issue) => `error: ${issue.message}`)
@@ -338,5 +360,59 @@ describe('createDomPropClassifier', () => {
         }
       }
     }
+  })
+})
+
+describe('the react-dom warnings the test suites fail a test on', () => {
+  test('match every warning react-dom logs about a prop, as each suite receives it', () => {
+    const calls = [
+      ...Array.from(singlePropCases(), ({type, hasProperty, name, value}) =>
+        reactDomPropWarnings(type, {[name]: value}, hasProperty),
+      ).flat(),
+      // react-dom reports the invalid props of an element in one message.
+      ...reactDomPropWarnings('div', {leakedfirst: () => {}, leakedsecond: Symbol('leaked')}),
+      ...reactDomPropWarnings('div', {'aria-leakedfirst': 'x', 'aria-leakedsecond': 'x'}),
+      // It checks the names and values in a `style` prop as it applies them.
+      ...reactDomConsole(() =>
+        react.setValueForStyles(
+          {style: {setProperty() {}}},
+          {
+            'background-color': 'red',
+            'webkitTransform': 'none',
+            'width': Number.NaN,
+            'height': Number.POSITIVE_INFINITY,
+          },
+          null,
+        ),
+      ),
+    ]
+
+    // Both suites check what react-dom passes to `console.error`.
+    const unmatched = new Set<string>()
+    for (const call of calls) {
+      const checks = {
+        'the vitest guard': isReactDomPropWarning(call.args),
+        // Playwright's `msg.text()` joins the arguments of the call with spaces.
+        'the e2e check of the arguments': REACT_DOM_PROP_WARNING.test(
+          call.args.map(String).join(' '),
+        ),
+        'the e2e check of the printed message': REACT_DOM_PROP_WARNING.test(call.message),
+      }
+      const missedBy = Object.entries(checks)
+        .filter(([, matched]) => !matched)
+        .map(([check]) => check)
+      if (call.level !== 'error' || missedBy.length > 0) {
+        unmatched.add(
+          `${call.level}: ${call.message.split('\n')[0]}${missedBy.length > 0 ? ` (missed by ${missedBy.join(', ')})` : ''}`,
+        )
+      }
+    }
+    expect([...unmatched]).toEqual([])
+
+    const formats = [...new Set(calls.map((call) => String(call.args[0])))]
+    const unused = REACT_DOM_PROP_WARNING_PATTERNS.filter(
+      (pattern) => !formats.some((format) => pattern.test(format)),
+    )
+    expect(unused.map(String)).toEqual([])
   })
 })

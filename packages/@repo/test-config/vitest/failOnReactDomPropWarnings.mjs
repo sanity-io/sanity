@@ -2,7 +2,8 @@
 // have. Three detectors feed one `afterEach` assertion:
 //
 // 1. react-dom's development-build `console.error` diagnostics (unknown camelCase props, bad
-//    boolean/function values, misspelled attributes, event handlers and ARIA names).
+//    boolean/function values, misspelled attributes, event handlers and ARIA names), listed in
+//    `reactDomPropWarnings.mjs`.
 // 2. styled-components' "unknown prop is being sent through to the DOM" `console.warn`.
 // 3. `Element.prototype.setAttribute` receiving an object: react-dom validates neither the name
 //    nor the value of an all-lowercase unknown prop (`params={{…}}` renders silently as
@@ -17,32 +18,7 @@
 // file here (the forks pool and browser mode both isolate modules per file).
 import {afterEach} from 'vitest'
 
-/**
- * The react-dom development-build diagnostics that mean a prop leaked to a DOM element:
- * unknown camelCase props, misspelled attributes, boolean/function/symbol values on attributes
- * that cannot hold them, misspelled event handlers, and bad ARIA attribute names. Matched against
- * the raw format string React passes to `console.error` (before `%s` substitution), so the
- * literal `%s` placeholders are part of the patterns.
- *
- * Source: react-dom `ReactDOMUnknownPropertyHook` / `validateProperty` and `ReactDOMInvalidARIAHook`.
- */
-export const REACT_DOM_PROP_WARNING_PATTERNS = [
-  /React does not recognize the `%s` prop on a DOM element/,
-  /Invalid DOM property `%s`/,
-  /Invalid value for prop `?%s`? on <%s> tag/,
-  /Received `%s` for a non-boolean attribute `%s`/,
-  /Received the string `%s` for the boolean attribute `%s`/,
-  /Received NaN for the `%s` attribute/,
-  /Unknown event handler property `%s`/,
-  /Invalid event handler property `%s`/,
-  /Invalid ARIA attribute `%s`/,
-  /Invalid aria props? %s on <%s> tag/,
-  /Unknown ARIA attribute `%s`/,
-  /Invalid attribute name: `%s`/,
-  /Unsupported style property %s/,
-  /Unsupported vendor-prefixed style property %s/,
-  /`NaN` is an invalid value for the `%s` css style property/,
-]
+import {isReactDomPropWarning} from './reactDomPropWarnings.mjs'
 
 /**
  * React only validates camelCase / boolean / function props; an all-lowercase unknown prop such
@@ -92,16 +68,6 @@ export function formatConsoleMessage(args) {
     return index < rest.length ? stringify(rest[index++]) : match
   })
   return [message, ...rest.slice(index).map(stringify)].join('\n')
-}
-
-/**
- * @param {unknown[]} args - the arguments passed to `console.error`
- * @returns {boolean}
- */
-export function isReactDomPropWarning(args) {
-  const format = args[0]
-  if (typeof format !== 'string') return false
-  return REACT_DOM_PROP_WARNING_PATTERNS.some((pattern) => pattern.test(format))
 }
 
 /**

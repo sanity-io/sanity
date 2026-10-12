@@ -63,7 +63,7 @@ The watcher also fails a test, at its end, when a prop that is not a DOM attribu
 - styled-components' check for elements a styled tag rendered, with the `@emotion/is-prop-valid` it warns with;
 - objects, which React writes as `[object Object]`, and plain lowercase names that are not HTML or SVG attributes (`intent="edit"`), which React writes without any warning.
 
-Against `sanity dev`, the watcher also collects the react-dom and styled-components warnings themselves, which cover a few things the scanner does not look at, such as `style` values.
+Against `sanity dev`, the watcher also collects the react-dom and styled-components warnings themselves, which cover a few things the scanner does not look at, such as `style` values. It recognizes the react-dom ones from the list the vitest suites fail a test on (`@repo/test-config/vitest/reactDomPropWarnings`), which a unit test checks against every prop warning the installed react-dom logs.
 
 A document the scanner could not check fails the test too: its scan threw or timed out, or the studio rendered without a single element carrying `__reactProps$…`, which would mean react-dom renamed it. A frame that navigates, detaches or closes while it is scanned is skipped, since its scanner logged what it found as it happened.
 

@@ -581,7 +581,8 @@ production source.
 browser-mode setup files and by the `@sanity/vision` and `@sanity/access-ui` configs. It fails the
 current test when a non-DOM prop reaches a DOM element: react-dom's development-build warnings
 (`React does not recognize the … prop on a DOM element`, `Received true for a non-boolean
-attribute`, invalid event handler / ARIA names, …), styled-components' `unknown prop … is being
+attribute`, invalid event handler / ARIA names, …, listed in
+`@repo/test-config/vitest/reactDomPropWarnings`), styled-components' `unknown prop … is being
 sent through to the DOM` warning, and any `setAttribute` call that writes an object, an array or a
 `Date` (`params="[object Object]"`, `tags="a,b"` — react-dom renders all-lowercase unknown props
 like `intent` or `params` silently, so the attribute write is the only trace). The failure lists
@@ -594,14 +595,16 @@ that the component never consumed. A test that leaks a prop on purpose takes the
 the react-dom and styled-components builds the suite renders with.
 
 The e2e suite has its own guard in `watchForStudioErrors` (`e2e/helpers/studioErrors.ts`), which
-fails a spec at its end when a leak happened during it. CI runs the specs against a production
-`sanity build`, where react-dom and styled-components do not warn, so an init script
-(`e2e/helpers/domPropLeaks/scanner.ts`) reads the props React keeps on every element
-(`__reactProps$…`, kept in production) and checks them with a port of react-dom's development
-validation and styled-components' `@emotion/is-prop-valid` check, plus the object and
-lowercase-name cases React is silent about. The report names the components above the element;
-see "DOM prop leak guard" in `e2e/README.md`. When `react-dom` or `@emotion/is-prop-valid` is
-upgraded, `pnpm vitest run --project=e2e` checks the port against the new versions.
+fails a spec at its end when a leak happened during it, on the same react-dom warnings when the
+studio runs `sanity dev`. CI runs the specs against a production `sanity build`, where react-dom
+and styled-components do not warn, so an init script (`e2e/helpers/domPropLeaks/scanner.ts`)
+reads the props React keeps on every element (`__reactProps$…`, kept in production) and checks
+them with a port of react-dom's development validation and styled-components'
+`@emotion/is-prop-valid` check, plus the object and lowercase-name cases React is silent about.
+The report names the components above the element; see "DOM prop leak guard" in
+`e2e/README.md`. When `react-dom` or `@emotion/is-prop-valid` is upgraded,
+`pnpm vitest run --project=e2e` checks the port, and the warning list both guards share, against
+the new versions.
 
 #### Test Timeouts
 
