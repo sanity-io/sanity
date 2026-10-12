@@ -989,17 +989,17 @@ added new feature                       # missing type and scope
 
 ```bash
 # Create a draft PR — title MUST follow conventional commit format
-gh pr create --draft --title "fix(scope): description" --body "..." --label "🤖 bot"
+gh pr create --draft --title "fix(scope): description" --body "..." --label "✨ ai"
 ```
 
-### 2. Apply the "🤖 bot" Label
+### 2. Apply the "✨ ai" Label
 
-**All PRs created by AI agents must be labeled with `🤖 bot`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows.
+**All PRs created by AI agents must be labeled with `✨ ai`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows. Do not use `🤖 bot` — that label is reserved for PRs opened by CI automations and Renovate, not AI agents.
 
 When creating or updating a PR, always ensure the label is applied. If the create command did not accept `--label`, add it afterward:
 
 ```bash
-gh pr edit --add-label "🤖 bot"
+gh pr edit --add-label "✨ ai"
 ```
 
 ### 3. Move Out of Draft
@@ -1019,7 +1019,7 @@ gh pr ready
 
 | Label                | When to use                                                                          |
 | -------------------- | ------------------------------------------------------------------------------------ |
-| `🤖 bot`             | **Required** on every AI-agent PR                                                    |
+| `✨ ai`              | **Required** on every AI-agent PR (`🤖 bot` is for CI automation and Renovate only)  |
 | `trigger: preview`   | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated) |
 | `trigger:perf-bench` | Runs the `perf/bench` suite on the PR (maintainer-gated)                             |
 | `trigger:chromatic`  | Runs the Chromatic checks in `chromatic.yml` on the PR (maintainer-gated)            |
@@ -1045,7 +1045,7 @@ When porting or rebasing someone else's PR (community contribution, backport, et
 
 Workflow summary:
 
-1. **Agent creates draft PR** with the `🤖 bot` label
+1. **Agent creates draft PR** with the `✨ ai` label
 2. **Prompter reviews** the draft
 3. **Mark ready for review** once the prompter approves
 4. **Team reviews** and merges
