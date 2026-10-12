@@ -80,6 +80,8 @@ minimumReleaseAgeExclude:
   - '@sanity/*'
   - '@sanity-labs/*'
   - '@yuku-codegen/*'
+  # yuku 0.19 moved the native bindings from @yuku-codegen/* and @yuku-parser/* to this scope
+  - '@yuku-core/*'
   - '@yuku-parser/*'
   - '@yuku-toolchain/types'
   - '@types/*'
