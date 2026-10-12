@@ -118,7 +118,10 @@ export interface DomPropLeakReport {
   findings: DomPropLeakFinding[]
   /** react-dom and styled-components development-build warnings. */
   warnings: string[]
-  /** Scans that cannot be trusted: the scanner failed, or it found no React props to check. */
+  /**
+   * Documents the scanner could not check: the scan failed or timed out, the scanner threw, or it
+   * found no React props to check. A frame that went away during its scan is not one of them.
+   */
   problems: string[]
   /** The final scan of every such frame that had the scanner installed. */
   scans: (DomPropLeakScan & {frameUrl: string})[]
@@ -141,8 +144,24 @@ export interface StudioErrorWatcher {
 
 const SCAN_TIMEOUT = 10_000
 
+/** What Playwright throws when a frame navigates, detaches or closes while it evaluates a script. */
+const FRAME_WENT_AWAY =
+  /Execution context was destroyed|Frame was detached|Target page, context or browser has been closed/
+
 function describeError(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
+}
+
+/**
+ * Whether a scan failed because its frame went away while it ran: the frame navigated, detached or
+ * closed with its page. The scanner of that document logged what it found as it happened. Any other
+ * failure, a scan that timed out included, leaves the document unchecked.
+ */
+export function frameWentAway(
+  frame: {isDetached: () => boolean; page: () => {isClosed: () => boolean}},
+  error: unknown,
+): boolean {
+  return frame.isDetached() || frame.page().isClosed() || FRAME_WENT_AWAY.test(describeError(error))
 }
 
 function findingKey(finding: DomPropLeakFinding): string {
@@ -313,9 +332,10 @@ async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
         let scan: DomPropLeakScan | null
         try {
           scan = await scanFrame(frame)
-        } catch {
-          // The frame navigated, detached or closed since it was listed. Its scanner logged
-          // what it found as it happened.
+        } catch (error) {
+          if (!frameWentAway(frame, error)) {
+            problems.push(`${frameUrl}: the scan failed: ${describeError(error)}`)
+          }
           return
         }
         if (!scan) return

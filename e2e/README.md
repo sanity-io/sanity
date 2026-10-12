@@ -65,6 +65,8 @@ The watcher also fails a test, at its end, when a prop that is not a DOM attribu
 
 Against `sanity dev`, the watcher also collects the react-dom and styled-components warnings themselves, which cover a few things the scanner does not look at, such as `style` values.
 
+A document the scanner could not check fails the test too: its scan threw or timed out, or the studio rendered without a single element carrying `__reactProps$…`, which would mean react-dom renamed it. A frame that navigates, detaches or closes while it is scanned is skipped, since its scanner logged what it found as it happened.
+
 A failure lists each prop with the element, the components that rendered it (outermost first) and the URL. This one is from `tests/desk/defaultPanes.spec.ts` against a production build, for a leak that `IntentButton` used to have while the permissions of a pane's create button loaded:
 
 ```
