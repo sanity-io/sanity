@@ -1,12 +1,13 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {type SchemaType} from '@sanity/types'
+import {defineField, defineType, type SchemaType} from '@sanity/types'
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {act, render, screen} from '@testing-library/react'
-import {type ComponentType, isValidElement, lazy} from 'react'
+import {type ComponentType, isValidElement, lazy, type ReactNode} from 'react'
 import {assert, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type PreviewProps} from '../../../components/previews/types'
+import {createSchema} from '../../../schema/createSchema'
 import {useValuePreview} from '../../useValuePreview'
 import {useVisibility} from '../../useVisibility'
 import {PreviewLoader} from '../PreviewLoader'
@@ -42,6 +43,24 @@ function expectSchemaIconElement(media: unknown, Icon: ComponentType) {
   assert(isValidElement(media), 'expected the schema icon as an element')
   expect(media.type).toBe(Icon)
   expect(media.props).toEqual({})
+}
+
+// Schema definitions accept any React node as an icon and the compiled type keeps it, even though
+// `SchemaType['icon']` is typed as a component only.
+function compileDocumentType(icon: ComponentType | ReactNode): SchemaType {
+  const schemaType = createSchema({
+    name: 'test',
+    types: [
+      defineType({
+        name: 'testDoc',
+        type: 'document',
+        icon,
+        fields: [defineField({name: 'title', type: 'string'})],
+      }),
+    ],
+  }).get('testDoc')
+  assert(schemaType, 'expected the testDoc type to compile')
+  return schemaType
 }
 
 beforeEach(() => {
@@ -254,7 +273,7 @@ describe('PreviewLoader', () => {
     })
 
     it('renders a component schema icon without the media props of the preview', () => {
-      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
+      const schemaType = compileDocumentType(DocumentIcon)
       vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
 
       render(
@@ -279,7 +298,7 @@ describe('PreviewLoader', () => {
       ['string', '📄'],
       ['element', <span key="icon" data-testid="element-icon" />],
     ])('passes %s schema icons through unchanged', (_kind, icon) => {
-      const schemaType = {name: 'testDoc', icon} as unknown as SchemaType
+      const schemaType = compileDocumentType(icon)
       vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
 
       render(
