@@ -12,7 +12,7 @@ import {Flex, type GapProps} from 'ui5'
 
 import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
-import {ObserveElement} from '../collapseMenu/ObserveElement'
+import {type ObservedIntersection, ObserveElement} from '../collapseMenu/ObserveElement'
 import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
 import {hiddenRow, menuButtonPlaceholder, optionObserveElement} from './CollapseTabList.css'
 
@@ -49,8 +49,10 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   )
 
   // Nothing is shown until a measurement arrives for the current children, to
-  // avoid flashing children that may not fit. Derived from the current children
-  // rather than the map as a whole, which retains entries for departed keys.
+  // avoid flashing children that may not fit. The clones below report their
+  // first measurement from a layout effect, so this is true before the first
+  // paint. Derived from the current children rather than the map as a whole,
+  // which retains entries for departed keys.
   const hasMeasured = children.some(
     (child) => child.key !== null && intersections[child.key] !== undefined,
   )
@@ -89,7 +91,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   )
 
   const handleIntersection = useCallback(
-    (entry: IntersectionObserverEntry, child: React.JSX.Element) => {
+    (entry: ObservedIntersection, child: React.JSX.Element) => {
       const {key} = child
       if (key === null) return
       setIntersections((prev) =>
@@ -151,21 +153,25 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
           'disabled': true,
           'aria-hidden': true,
         })}
-        {children?.map((child) => (
-          <ObserveElement
-            className={optionObserveElement}
-            key={`${child.key}_observer`}
-            options={intersectionOptions}
-            // Entries are delivered oldest first, so the last one is current
-            onIntersectionChange={(e) => handleIntersection(e[e.length - 1], child)}
-          >
-            {cloneElement(child, {
-              'disabled': true,
-              'aria-hidden': true,
-              'tabIndex': -1,
-            })}
-          </ObserveElement>
-        ))}
+        {/* The clones measure against this row, known after the first commit. Mounting them
+            then, rather than with a viewport root they would re-measure against a commit later,
+            keeps it to one measurement; both commits happen before the first paint. */}
+        {rootEl &&
+          children.map((child) => (
+            <ObserveElement
+              className={optionObserveElement}
+              key={`${child.key}_observer`}
+              options={intersectionOptions}
+              // Entries are delivered oldest first, so the last one is current
+              onIntersectionChange={(e) => handleIntersection(e[e.length - 1], child)}
+            >
+              {cloneElement(child, {
+                'disabled': true,
+                'aria-hidden': true,
+                'tabIndex': -1,
+              })}
+            </ObserveElement>
+          ))}
       </Flex>
     </Flex>
   )
