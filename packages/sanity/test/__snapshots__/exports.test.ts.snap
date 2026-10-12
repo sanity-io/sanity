@@ -1435,6 +1435,7 @@ exports[`exports snapshot 1`] = `
     "TasksNavigationContext": "object",
     "TasksUpsellContext": "object",
     "UnclaimedProjectContext": "object",
+    "UpsellDescriptionSerializerContext": "object",
     "UserApplicationCacheContext": "object",
     "UserColorManagerContext": "object",
     "ValidationContext": "object",
