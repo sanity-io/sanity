@@ -41,8 +41,8 @@ export const root = style({
       boxShadow: focusedBoxShadowVar,
     },
 
-    // disabled (defined after `&&` so its equal-specificity `color` wins the tie)
-    '*:disabled + &': {
+    // disabled (`&&` to outrank the enabled `&&` block above)
+    '*:disabled + &&': {
       color: disabledFgVar,
       backgroundColor: disabledBgVar,
       boxShadow: disabledBoxShadowVar,
