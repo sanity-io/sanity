@@ -37,7 +37,6 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     onRefresh,
     openPopup,
     openPreviewUrlRef,
-    overlaysConnection,
     presentationRef,
     perspective,
     variant,
@@ -82,6 +81,19 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
   const overlaysEnabled = useSelector(
     presentationRef,
     (state) => state.context.visualEditingOverlaysEnabled,
+  )
+  // Once the overlays of the current page have connected, they are there to be toggled even
+  // while the channel is being recreated: that happens whenever the tool's effects are, which
+  // React does without a remount when a hidden `<Activity>` boundary is shown again. The old
+  // connection drops (`idle`) and the new one handshakes (`connecting`) before it is `connected`
+  // again; comlink buffers posts meanwhile, so the toggle stays usable instead of flickering to
+  // disabled on every return to the tool. A reload forgets the connection, so a new page's
+  // overlays disable it again until they connect. Navigating inside the iframe to a page without
+  // overlays does not, so the switch stays enabled there and a click is buffered until some
+  // page's overlays connect, which is what the keyboard shortcut has always done.
+  const overlaysHaveConnected = useSelector(
+    presentationRef,
+    (state) => state.context.overlaysHaveConnected,
   )
 
   const previewLocationRoute = useMemo(
@@ -152,7 +164,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
                 indeterminate={!isLoaded}
                 checked={overlaysEnabled}
                 onChange={toggleOverlay}
-                disabled={isLoading || overlaysConnection !== 'connected'}
+                disabled={isLoading || !overlaysHaveConnected}
               />
             </div>
             <Box>
