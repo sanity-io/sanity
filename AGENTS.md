@@ -416,7 +416,11 @@ each dropped name before regenerating:
   a type-only re-export (`export {type Foo} from '…'`), which leaves the emitted `.js` untouched.
 - A declaration the module keeps private stays private, and a `Name$1` suffix is a bundler dedup
   artifact that was never API — `sanity/media-library` emitted one because `VideoDefinition` is
-  declared in both `plugin/schemas/index` and `plugin/schemas/types`.
+  declared in both `plugin/schemas/index` and `plugin/schemas/types`. When a name is declared
+  twice, pick which one is public by convention, not by which one the old output left unsuffixed:
+  that was decided by bundler ordering. Here the public one is `plugin/schemas/types`, shaped like
+  `ImageDefinition` and `FileDefinition` in `@sanity/types` and accepted by `defineVideoField`,
+  while `plugin/schemas` declares a reduced one for the `IntrinsicDefinitions` augmentation.
 - A dropped **value** (`const`, `function`) was never importable: the emitted `.js` never exported
   it, so `import {name}` failed to link. Making it a real export is an API decision, and it can cost
   more than it looks — re-exporting `videoTypeName` pulled a 44 kB chunk of form and React code into
