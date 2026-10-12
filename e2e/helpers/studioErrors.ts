@@ -27,7 +27,14 @@ import {isForeignDocument, isFromForeignFrame, type PageFrameUrls} from './forei
  */
 export const STUDIO_ERROR_SELECTOR = '[data-testid="studio-error-screen"], #__sanityError'
 
-const ERROR_SCREEN_MARKER = '__STUDIO_ERROR__'
+/** Prefixes the {@link ErrorScreenReport} that a document logs when it renders an error screen. */
+export const ERROR_SCREEN_MARKER = '__STUDIO_ERROR__'
+
+interface ErrorScreenReport {
+  /** The document that rendered the error screen. */
+  url: string
+  detail: string
+}
 
 /**
  * How long after `beforeunload` a document that renders an error screen must still be there for the
@@ -245,7 +252,10 @@ async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
       return
     }
     if (type === 'error' && text.startsWith(ERROR_SCREEN_MARKER)) {
-      handleError({source: 'error-screen', message: text.slice(ERROR_SCREEN_MARKER.length)})
+      const report = JSON.parse(text.slice(ERROR_SCREEN_MARKER.length)) as ErrorScreenReport
+      if (!page || !isForeignDocument(report.url, page.url())) {
+        handleError({source: 'error-screen', message: report.detail})
+      }
       return
     }
     if (page && isFromForeignFrame({url: msg.location().url, message: text}, frameUrlsOf(page))) {
@@ -278,8 +288,10 @@ async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
           fired = true
           const detail =
             el.getAttribute('data-error') || el.textContent?.trim().slice(0, 200) || 'Unknown error'
-          if (leaving) unreported = `${marker}${detail}`
-          else console.error(`${marker}${detail}`)
+          const report: ErrorScreenReport = {url: location.href, detail}
+          const message = `${marker}${JSON.stringify(report)}`
+          if (leaving) unreported = message
+          else console.error(message)
         }
       }).observe(document, {childList: true, subtree: true})
     },

@@ -7,19 +7,28 @@
 import {expect} from '@playwright/test'
 
 import {DOM_PROP_LEAK_MARKER} from '../../helpers/domPropLeaks/scanner'
-import {type StudioErrorInfo, watchForStudioErrors} from '../../helpers/studioErrors'
+import {
+  ERROR_SCREEN_MARKER,
+  type StudioErrorInfo,
+  watchForStudioErrors,
+} from '../../helpers/studioErrors'
 import {test} from '../../studio-test'
 
 const FOREIGN_URL = 'https://foreign-frame.invalid/'
 
 // Throws what the Presentation preview threw on every load, logs the development-build warnings
-// the watcher collects, and gives an element a prop that the DOM prop leak scanner reports.
+// the watcher collects, renders an element the watcher takes for a studio error screen, and gives
+// an element a prop that the DOM prop leak scanner reports.
 const FOREIGN_DOCUMENT = `<!doctype html>
 <html><body>
 <script>
   const element = document.createElement('div')
   element.__reactProps$foreign = {isOpen: true}
   document.body.append(element)
+  const errorScreen = document.createElement('div')
+  errorScreen.dataset.testid = 'studio-error-screen'
+  errorScreen.dataset.error = 'the foreign frame rendered an error screen'
+  document.body.append(errorScreen)
   console.error('Warning: React does not recognize the \`isOpen\` prop on a DOM element.')
   console.warn('styled-components: it looks like an unknown prop "isOpen" is being sent through to the DOM, which will likely trigger a React console error.')
 </script>
@@ -53,6 +62,10 @@ test('leaves out child frames of another origin, but not the errors of the studi
     'console',
     (msg) => msg.text().startsWith(DOM_PROP_LEAK_MARKER) && msg.text().includes(FOREIGN_URL),
   )
+  const foreignErrorScreenLogged = page.waitForEvent(
+    'console',
+    (msg) => msg.text().startsWith(ERROR_SCREEN_MARKER) && msg.text().includes(FOREIGN_URL),
+  )
   const foreignFrameCrashed = page.waitForEvent('pageerror', (error) =>
     error.message.includes('the foreign frame crashed'),
   )
@@ -61,7 +74,7 @@ test('leaves out child frames of another origin, but not the errors of the studi
     frame.src = src
     document.body.append(frame)
   }, FOREIGN_URL)
-  await Promise.all([foreignLeakLogged, foreignFrameCrashed])
+  await Promise.all([foreignLeakLogged, foreignErrorScreenLogged, foreignFrameCrashed])
 
   expect(page.frames().map((frame) => frame.url())).toContain(FOREIGN_URL)
   const report = await watcher.collectDomPropLeaks()
