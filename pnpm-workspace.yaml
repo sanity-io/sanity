@@ -28,7 +28,7 @@ catalog:
   '@sanity/client': ^8.9.0
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.28.6
+  '@sanity/tsdown-config': ^0.28.7
   '@sanity/ui': ^4.4.0
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
@@ -54,7 +54,7 @@ catalog:
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
   ui5: npm:@sanity/ui@5.0.0-alpha.14
-  tsdown: ^0.23.0
+  tsdown: ^0.23.1
   typescript: ^7.0.2
   vite: ^8.3.4
   vitest: ^5.0.3
