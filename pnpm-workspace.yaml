@@ -101,6 +101,8 @@ minimumReleaseAgeExclude:
   - 'eslint-plugin-boundaries'
   - 'get-it'
   - 'groq-js'
+  # Fresh patch; exclude so 26.4.4 can install before the age gate
+  - 'i18next@26.4.4'
   # lightningcss and its per-platform native bindings (lightningcss-linux-x64-gnu etc.) release
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'
