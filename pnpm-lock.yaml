@@ -184,8 +184,8 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     '@sanity/tsdown-config':
-      specifier: ^0.28.7
-      version: 0.28.7
+      specifier: ^0.28.8
+      version: 0.28.8
     '@sanity/ui':
       specifier: ^4.4.0
       version: 4.4.0
@@ -1485,7 +1485,7 @@ importers:
         version: link:../tsconfig
       '@sanity/tsdown-config':
         specifier: 'catalog:'
-        version: 0.28.7(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(babel-plugin-macros@3.1.0)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)
+        version: 0.28.8(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(babel-plugin-macros@3.1.0)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)
       '@types/node':
         specifier: 'catalog:'
         version: 24.19.1
@@ -7772,8 +7772,8 @@ packages:
       sanity:
         optional: true
 
-  '@sanity/tsdown-config@0.28.7':
-    resolution: {integrity: sha512-LXxsNDekGN4CP3jHFrWyxoO+ZwTCxE2zDfU1rf2lvvBAqox74qIjOr6lRneb98otJx0DQp8dicFLwG1uDmR8nQ==}
+  '@sanity/tsdown-config@0.28.8':
+    resolution: {integrity: sha512-y7nIiYKw6PuQBP0gbvR9C3Bq+733Vdg5oBLVebleuYstsWBZXo6j2TR6zg89JzZveXJqdthO9VNKLMQeWBggqg==}
     engines: {node: ^22.18.0 || ^24.11.0 || >=26.0.0}
     peerDependencies:
       '@babel/core': '*'
@@ -7823,8 +7823,8 @@ packages:
     resolution: {integrity: sha512-7mQRN3bfLxHLwtSRaMGCjOeTCtvuk5QNXbBXu0DdG3X2ZxR0si3Zz4vNxaEi480kGtuKshvTWnjFKdpj2Yyu6g==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity/vanilla-extract-rolldown-plugin@0.4.14':
-    resolution: {integrity: sha512-0o2C+hQ6MPcH4u5PFDrLtDr2rfVQdUMMTFB9iqAtzUoYAuBe3uoEPgRXmvzV0jZpKKaSY2+zVXxWpBq/zCEiGA==}
+  '@sanity/vanilla-extract-rolldown-plugin@0.4.15':
+    resolution: {integrity: sha512-IPK7mzUNE+no0ApycT/oPAYXvCUb9bzzBtKML+Tga2sTy01mn750Nx/YGYhqxhlE4rRwKtLN4d1jX/pOtd6dZg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       rolldown: ^1.0.0
@@ -7832,8 +7832,8 @@ packages:
       rolldown:
         optional: true
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.4.7':
-    resolution: {integrity: sha512-XnRJHtS0BMa02xlRvmJEaENHM17Ww6ND9oqvrVJLw5+Ni1KI94Zey6MllAqxaKfvgft3iE1c5KyLOW2cP7H1pw==}
+  '@sanity/vanilla-extract-tsdown-plugin@0.4.8':
+    resolution: {integrity: sha512-mlmZb5Vfm52/D6sgQEK/0DFJ/dNmH9OONiYl/Wvk5TdpDHnaMGRpQ3ANnUlcGiUkXr0jAOqqW/a04IJwKUxAsw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       tsdown: ^0.23.0
@@ -20822,12 +20822,12 @@ snapshots:
       - styled-components
       - typescript
 
-  '@sanity/tsdown-config@0.28.7(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(babel-plugin-macros@3.1.0)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)':
+  '@sanity/tsdown-config@0.28.8(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.1)(babel-plugin-macros@3.1.0)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)':
     dependencies:
       '@microsoft/api-extractor': 7.59.4(@types/node@24.19.1)
       '@microsoft/tsdoc-config': 0.18.3
       '@sanity/browserslist-config': 1.0.5
-      '@sanity/vanilla-extract-tsdown-plugin': 0.4.7(babel-plugin-macros@3.1.0)(rolldown@1.2.13)(tsdown@0.23.1)
+      '@sanity/vanilla-extract-tsdown-plugin': 0.4.8(babel-plugin-macros@3.1.0)(rolldown@1.2.13)(tsdown@0.23.1)
       '@typescript/typescript6': 6.0.2
       '@vitejs/plugin-react': 6.1.2(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.153.0)(vite@8.3.4)
       browserslist: 4.29.3
@@ -20893,7 +20893,7 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-rolldown-plugin@0.4.14(babel-plugin-macros@3.1.0)(rolldown@1.2.13)':
+  '@sanity/vanilla-extract-rolldown-plugin@0.4.15(babel-plugin-macros@3.1.0)(rolldown@1.2.13)':
     dependencies:
       '@sanity/vanilla-extract-integration': 0.1.26(babel-plugin-macros@3.1.0)
       lightningcss: 1.33.0
@@ -20902,9 +20902,9 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.4.7(babel-plugin-macros@3.1.0)(rolldown@1.2.13)(tsdown@0.23.1)':
+  '@sanity/vanilla-extract-tsdown-plugin@0.4.8(babel-plugin-macros@3.1.0)(rolldown@1.2.13)(tsdown@0.23.1)':
     dependencies:
-      '@sanity/vanilla-extract-rolldown-plugin': 0.4.14(babel-plugin-macros@3.1.0)(rolldown@1.2.13)
+      '@sanity/vanilla-extract-rolldown-plugin': 0.4.15(babel-plugin-macros@3.1.0)(rolldown@1.2.13)
       tsdown: 0.23.1(@vitejs/devtools@0.7.6)(oxc-resolver@11.24.2)(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
     transitivePeerDependencies:
       - babel-plugin-macros
