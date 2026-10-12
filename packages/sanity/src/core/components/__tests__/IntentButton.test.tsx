@@ -23,6 +23,7 @@ function Wrapper({children}: {children: ReactNode}) {
 const intentProps = {
   intent: 'create',
   params: {type: 'author', template: 'author'},
+  replace: true,
   searchParams: [['perspective', 'rXYZ']] as [string, string][],
 }
 
