@@ -8,8 +8,10 @@ import {ColorSchemeProvider} from '../../../studio/colorScheme'
 import {UserColorManagerProvider} from '../../../user-color/provider'
 import {UserAvatar} from '../UserAvatar'
 
-// The test ends on an avatar whose image never loads
-configure({disableAutoSnapshot: true})
+// The test ends on an avatar whose image never loads. Chromatic's `afterEach` waits for the
+// network to go idle before it archives, even with auto snapshots disabled, and runs before this
+// file's `afterEach` releases the held request, so the wait has to be skipped too
+configure({disableAutoSnapshot: true, resourceArchiveTimeout: 0})
 
 const NEVER_LOADING_IMAGE = 'https://avatars.invalid/never-loads.png'
 
