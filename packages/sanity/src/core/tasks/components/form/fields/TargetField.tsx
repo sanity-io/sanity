@@ -1,11 +1,11 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, LayerProvider, Text} from '@sanity/ui'
+import {Card, LayerProvider} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo, useState, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {FormFieldHeaderText} from '../../../../form/components/formField/FormFieldHeaderText'
@@ -118,7 +118,11 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
     [documentId, documentType],
   )
   if (!schemaType) {
-    return <Text>{t('form.input.target.error.schema-not-found')}</Text>
+    return (
+      <Text as="div" trim={true}>
+        {t('form.input.target.error.schema-not-found')}
+      </Text>
+    )
   }
 
   return (
@@ -230,11 +234,9 @@ export function TargetField(
                   >
                     <Flex gap={1} justifyContent={'flex-start'} alignItems={'center'}>
                       <Box paddingX={1}>
-                        <Text size={1}>
-                          <DocumentIcon />
-                        </Text>
+                        <Icon icon={DocumentIcon} size={1} style={{margin: '-0.375rem'}} />
                       </Box>
-                      <Placeholder size={1}>
+                      <Placeholder size={1} forwardedAs="div" trim={true}>
                         {t('form.input.target.search.placeholder')}
                       </Placeholder>
                     </Flex>

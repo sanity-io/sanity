@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {extractDroppedFiles, extractPastedFiles, isPortableTextItem} from './utils/extractFiles'
 import {imageUrlToBlob} from './utils/imageUrlToBlob'
@@ -284,6 +285,42 @@ export function fileTarget<ComponentProps>(
       },
       [onFilesOut],
     )
+
+    const clearHover = useEffectEvent(() => {
+      if (enteredElements.current.length === 0) {
+        return false
+      }
+      enteredElements.current = []
+      onFilesOut?.()
+      return true
+    })
+
+    useEffect(() => {
+      if (disabled || !onFilesOver) {
+        return undefined
+      }
+
+      const handleWindowDragEnd = () => {
+        clearHover()
+      }
+
+      const handleWindowKeyDown = (event: globalThis.KeyboardEvent) => {
+        if (event.key !== 'Escape') {
+          return
+        }
+        if (clearHover()) {
+          event.stopPropagation()
+        }
+      }
+
+      window.addEventListener('dragend', handleWindowDragEnd)
+      // Capture phase so this wins over useGlobalKeyDown, which listens on window while bubbling
+      window.addEventListener('keydown', handleWindowKeyDown, true)
+      return () => {
+        window.removeEventListener('dragend', handleWindowDragEnd)
+        window.removeEventListener('keydown', handleWindowKeyDown, true)
+      }
+    }, [disabled, onFilesOver])
 
     const prevShowPasteInput = useRef(false)
     useEffect(() => {

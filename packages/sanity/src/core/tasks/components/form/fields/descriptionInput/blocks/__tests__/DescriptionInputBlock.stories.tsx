@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {DescriptionInputBlock} from '../DescriptionInputBlock'
 
@@ -22,13 +22,13 @@ export const States: Story = {
     <Card padding={4} style={{maxWidth: 360}}>
       <VStack gap={5}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             short
           </Text>
           <DescriptionInputBlock>Review the hero image crop.</DescriptionInputBlock>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             wrapped
           </Text>
           <DescriptionInputBlock>

@@ -40,11 +40,8 @@ import {ToolMountTimer} from './ToolMountTimer'
 import {UnclaimedProjectNudge} from './unclaimedProject/UnclaimedProjectNudge'
 import {useWorkspace} from './workspace'
 
-const DetectViteDevServerStopped = lazy(() =>
-  import('./ViteDevServerStopped').then((DevServerStopped) => ({
-    default: DevServerStopped.DetectViteDevServerStopped,
-  })),
-)
+// Loads behind its own `Suspense` (no fallback needed), in parallel with the rest of the layout
+const DetectViteDevServerStopped = lazy(() => import('./ViteDevServerStopped'))
 
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
 
@@ -232,9 +229,9 @@ export function StudioLayoutComponent() {
     })
   }, [isLegacyDeskRedirect, router])
 
-  const getErrorScreen = useCallback((error: Error) => {
+  const getErrorScreen = useCallback((error: Error, onReset: () => void) => {
     if (isDocumentLimitError(error)) {
-      return <DocumentLimitsUpsellPanel />
+      return <DocumentLimitsUpsellPanel error={error} onReset={onReset} />
     }
     return null
   }, [])
@@ -260,7 +257,11 @@ export function StudioLayoutComponent() {
         )}
         {reactActivityMode ? (
           <StudioErrorBoundary>
-            {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+            {detectViteDevServerStopped && (
+              <Suspense>
+                <DetectViteDevServerStopped />
+              </Suspense>
+            )}
             <Card flex={1} hidden={searchFullscreenOpen}>
               {mountedTools.map(({tool, router: toolRouter}) => (
                 // Each tool keeps the root router context it last rendered with while active, so
@@ -294,7 +295,11 @@ export function StudioLayoutComponent() {
             heading={`The ${activeTool?.name} tool crashed`}
             getErrorScreen={getErrorScreen}
           >
-            {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+            {detectViteDevServerStopped && (
+              <Suspense>
+                <DetectViteDevServerStopped />
+              </Suspense>
+            )}
             <Card flex={1} hidden={searchFullscreenOpen}>
               {activeTool && (
                 <RenderTool

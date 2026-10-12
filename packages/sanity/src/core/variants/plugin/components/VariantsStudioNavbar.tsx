@@ -1,12 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Card} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {useRouter} from 'sanity/router'
-import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
-import {type NavbarProps} from '../../../config/studio/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {GlobalPerspectiveMenu} from '../../../perspective/navbar/GlobalPerspectiveMenu'
 import {useGetDefaultPerspective} from '../../../perspective/useGetDefaultPerspective'
@@ -23,7 +19,7 @@ import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
-import {parseVariantStickyParam} from '../../util/variantSelection'
+import {type VariantSelection} from '../../util/variantSelection'
 import {DEFAULT_VARIANT_TYPE_KEY} from '../../util/variantType'
 import {getVersionFilterLabel} from './getVersionFilterLabel'
 import {PerspectiveFilter} from './PerspectiveFilter'
@@ -76,23 +72,20 @@ function VariantTypeFilter(props: {
   )
 }
 
-export function VariantsStudioNavbar(props: NavbarProps) {
+/** The filters of the perspective bar; `VariantsStudioNavbarLayout` owns the bar itself */
+export default function VariantsStudioNavbar({
+  variantSelections,
+}: {
+  variantSelections: VariantSelection[]
+}) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const {t: coreT} = useTranslation()
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   const {data: variants} = useAllVariants()
-  const router = useRouter()
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
   const setPerspective = useSetPerspective()
   const variantTypes = useVariantTypes()
-  const variantSelections = useMemo(
-    () =>
-      parseVariantStickyParam(
-        typeof router.stickyParams.variant === 'string' ? router.stickyParams.variant : undefined,
-      ),
-    [router.stickyParams.variant],
-  )
   const defaultPerspective = useGetDefaultPerspective()
   const hasVersionSelection = selectedPerspective !== defaultPerspective
   const {bundles} = useAgentBundles()
@@ -113,51 +106,41 @@ export function VariantsStudioNavbar(props: NavbarProps) {
       : [{key: DEFAULT_VARIANT_TYPE_KEY, label: t('navbar.variant')}]
 
   return (
-    <Flex flexDirection="column">
-      {props.renderDefault(props)}
-      <Card
-        tone={variantSelections.length > 0 ? 'suggest' : 'neutral'}
-        paddingY={2}
-        paddingX={3}
-        borderBottom
+    <>
+      <PerspectiveFilter
+        prefix={t('navbar.version')}
+        tone={getReleaseTone(selectedPerspective)}
+        onRemove={hasVersionSelection ? handleClearVersion : undefined}
+        removeLabel={t('navbar.version.clear')}
+        label={versionTitle.displayTitle}
       >
-        <Flex alignItems="center" justifyContent="center" gap={2} flexWrap="wrap">
-          <PerspectiveFilter
-            prefix={t('navbar.version')}
-            tone={getReleaseTone(selectedPerspective)}
-            onRemove={hasVersionSelection ? handleClearVersion : undefined}
-            removeLabel={t('navbar.version.clear')}
-            label={versionTitle.displayTitle}
-          >
-            <GlobalPerspectiveMenu
-              selectedPerspectiveName={selectedPerspectiveName}
-              areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
-              trigger={
-                <Button
-                  data-testid="global-perspective-menu-button"
-                  icon={<ReleaseAvatarIcon release={selectedPerspective} />}
-                  iconRight={ChevronDownIcon}
-                  mode="bleed"
-                  text={versionTitle.displayTitle}
-                  tooltipProps={
-                    versionTitle.isTruncated ? {content: versionTitle.fullTitle} : undefined
-                  }
-                />
+        <GlobalPerspectiveMenu
+          selectedPerspectiveName={selectedPerspectiveName}
+          areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
+          trigger={
+            <Button
+              data-testid="global-perspective-menu-button"
+              icon={<ReleaseAvatarIcon release={selectedPerspective} />}
+              iconRight={ChevronDownIcon}
+              mode="bleed"
+              text={versionTitle.displayTitle}
+              tooltipProps={
+                versionTitle.isTruncated ? {content: versionTitle.fullTitle} : undefined
               }
             />
-          </PerspectiveFilter>
+          }
+        />
+      </PerspectiveFilter>
 
-          {navbarTypes.map((type) => (
-            <VariantTypeFilter
-              key={type.key}
-              label={type.label}
-              selectedId={variantSelections.find((selection) => selection.type === type.key)?.name}
-              typeKey={type.key}
-              variants={variants}
-            />
-          ))}
-        </Flex>
-      </Card>
-    </Flex>
+      {navbarTypes.map((type) => (
+        <VariantTypeFilter
+          key={type.key}
+          label={type.label}
+          selectedId={variantSelections.find((selection) => selection.type === type.key)?.name}
+          typeKey={type.key}
+          variants={variants}
+        />
+      ))}
+    </>
   )
 }

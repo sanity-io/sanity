@@ -353,7 +353,7 @@ export function uploadTarget<Props>(
           tone={toneFromProps || tone}
           ref={forwardedRef}
           onFiles={handleFiles}
-          onFilesOver={handleFilesOver}
+          onFilesOver={isReadOnly || disableUpload ? undefined : handleFilesOver}
           onFilesOut={handleFilesOut}
           pasteTarget={pasteTarget}
         >

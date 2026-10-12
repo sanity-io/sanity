@@ -3,8 +3,8 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^8.7.0",
-    "@sanity/functions": "^1.8.0"
+    "@sanity/client": "^8.9.0",
+    "@sanity/functions": "^1.8.1"
   },
   "blueprintResourceItem": {
     "name": "klaviyo-campaign-send",

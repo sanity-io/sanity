@@ -1,11 +1,7 @@
-import {Card, Heading, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
-import {Container, VStack} from 'ui5'
 import {type ViteHotContext} from 'vite/types/hot.js'
 
-const ERROR_TITLE = 'Dev server stopped'
-const ERROR_DESCRIPTION =
-  'The development server has stopped. You may need to restart it to continue working.'
+import {ERROR_TITLE} from './ViteDevServerStoppedErrorScreen'
 
 export class ViteDevServerStoppedError extends Error {
   ViteDevServerStoppedError: boolean
@@ -42,30 +38,6 @@ const ThrowViteServerStopped = () => {
   return null
 }
 
-export const DetectViteDevServerStopped = (): ReactNode =>
-  isViteServer(serverHot) ? <ThrowViteServerStopped /> : null
-
-export const DevServerStoppedErrorScreen = (): ReactNode => (
-  <Card
-    data-testid="studio-error-screen"
-    data-error="Dev server stopped"
-    height="fill"
-    overflow="auto"
-    paddingY={[4, 5, 6, 7]}
-    paddingX={4}
-    sizing="border"
-    tone="critical"
-  >
-    <Container size={3}>
-      <VStack gap={4}>
-        <Heading>{ERROR_TITLE}</Heading>
-
-        <Card border radius={2} overflow="auto" padding={4} tone="inherit">
-          <VStack gap={4}>
-            <Text size={2}>{ERROR_DESCRIPTION}</Text>
-          </VStack>
-        </Card>
-      </VStack>
-    </Container>
-  </Card>
-)
+export default function DetectViteDevServerStopped(): ReactNode {
+  return isViteServer(serverHot) ? <ThrowViteServerStopped /> : null
+}

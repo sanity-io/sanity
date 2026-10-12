@@ -35,7 +35,7 @@
 - **Why all three CI uploads go through `chromaui/action`:** the action forwards the `pull_request`
   event (head sha, branch, repository) to Chromatic. Running the bare CLI from a `pull_request`
   checkout logged `Branch '<branch>' does not exist … Falling back to <sha> … Pull request status
-updates likely won't work properly`, and TurboSnap fell back to an unrelated baseline. The
+  updates likely won't work properly`, and TurboSnap fell back to an unrelated baseline. The
   checkouts also use `ref: ${{ github.event.pull_request.head.ref }}` so the workspace holds the
   PR branch rather than GitHub's ephemeral merge commit, as Chromatic's TurboSnap guidance asks.
 
@@ -85,8 +85,8 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
   - `await takeSnapshot('state name')` — targeted mid-test snapshots (e.g. menu open, mid-drag).
     Un-awaited calls fail the test at the end (`PendingSnapshotsError`).
   - Verified against 1.0: a file-level, suite-level and test-level `configure({disableAutoSnapshot:
-true})` each produced no archive for the tests they cover; a test with a `takeSnapshot('first
-state')` plus its end state produced two archives; the same file in a normal run produced only
+    true})` each produced no archive for the tests they cover; a test with a `takeSnapshot('first
+    state')` plus its end state produced two archives; the same file in a normal run produced only
     the explicit one, and nothing on firefox.
 - Cost control: end-of-test snapshots ≈ number of test cases. Reduce with per-suite
   `configure({disableAutoSnapshot: true})` (opt-out) or flip the model to opt-in by disabling at
@@ -148,10 +148,10 @@ hold — the last two are not on that page and were verified against `@chromatic
    `preview-stats.json`; with `--only-changed` and no merged file the build has no module graph,
    every changed file traces to zero tests, and Chromatic uploads an empty build that looks green.
    The merge is `CHROMATIC=1 SANITY_VITEST_BROWSER=chromium pnpm exec vitest run -c
-vitest.browser.config.mts --merge-reports`, run in the upload job after the download: the
+   vitest.browser.config.mts --merge-reports`, run in the upload job after the download: the
    plugin's merge-reports branch combines the shard stats into `preview-stats.json` and skips the
    wipe, so the archives survive. It needs the shards to have run with `--reporter=default
---reporter=blob` (blob reports land in `.vitest/blob/`, where `--merge-reports` reads them
+   --reporter=blob` (blob reports land in `.vitest/blob/`, where `--merge-reports` reads them
    by default since Vitest 5), and `CHROMATIC=1` so the plugin is loaded at all. Verified
    locally: shards 1/2 + 2/2 produced 60 + 58 archives, and the merge produced the same 118
    archives and a `preview-stats.json` with the same 4545 modules / 32 test files as an

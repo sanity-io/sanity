@@ -6,10 +6,10 @@ import {Button, type ButtonProps} from '../../ui-components/button/Button'
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {
   ['aria-label']: HTMLProps<HTMLButtonElement>['aria-label']
-  'forwardedAs'?: string
-  'disabled'?: boolean | {reason: ReactNode}
-  'mode'?: ButtonProps['mode']
-  'iconRight'?: undefined
+  forwardedAs?: string
+  disabled?: boolean | {reason: ReactNode}
+  mode?: ButtonProps['mode']
+  iconRight?: undefined
 }
 
 const StyledButton = styled(Button)`
@@ -38,7 +38,7 @@ export function StatusButton(
 ) {
   const {
     ref,
-    disabled: disabledProp,
+    'disabled': disabledProp,
     'aria-label': label,
     mode = 'bleed',
     tone,

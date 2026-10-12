@@ -67,7 +67,6 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
-  internalTasksReducer,
   mediaLibraryEnabledReducer,
   mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
@@ -352,7 +351,7 @@ export function prepareConfig(
       }
     })
 
-    const resolvedSources = sources.map((source): InternalSource => {
+    const resolvedSources = sources.map((source, sourceIndex): InternalSource => {
       const {projectId, dataset} = source
 
       let schemaTypes
@@ -381,7 +380,12 @@ export function prepareConfig(
 
       if (schemaValidationProblemGroups && schemaErrors?.length) {
         // TODO: consider using the `ConfigResolutionError`
-        throw new SchemaError(schema)
+        throw new SchemaError(schema, {
+          workspaceName: rawWorkspace.name || 'default',
+          sourceName: sourceIndex === 0 ? undefined : source.name || 'default',
+          projectId,
+          dataset,
+        })
       }
 
       const auth = getAuthStore(source, {
@@ -856,9 +860,6 @@ function resolveSource({
     templates,
     auth,
     i18n: i18n.source,
-    __internal_tasks: internalTasksReducer({
-      config,
-    }),
     document: {
       actions: (partialContext) => {
         const singleton = getSingletonId(partialContext.documentId, partialContext.schemaType)

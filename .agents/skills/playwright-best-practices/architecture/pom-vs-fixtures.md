@@ -107,6 +107,7 @@ export class BookingPage {
 ```typescript
 // tests/booking/reservation.spec.ts
 import {test, expect} from '@playwright/test'
+
 import {BookingPage} from '../page-objects/booking.page'
 
 test('complete reservation with standard room', async ({page}) => {
@@ -133,8 +134,9 @@ Best for resources needing setup before and teardown after tests — auth state,
 ```typescript
 // fixtures/base.fixture.ts
 import {test as base, expect} from '@playwright/test'
-import {BookingPage} from '../page-objects/booking.page'
+
 import {generateMember} from '../helpers/data'
+import {BookingPage} from '../page-objects/booking.page'
 
 type Fixtures = {
   bookingPage: BookingPage
@@ -237,8 +239,9 @@ export async function expectNotification(page: Page, message: string): Promise<v
 ```typescript
 // tests/settings/account.spec.ts
 import {test, expect} from '@playwright/test'
-import {generateEmail} from '../../helpers/data'
+
 import {expectNotification} from '../../helpers/assertions'
+import {generateEmail} from '../../helpers/data'
 
 test('update account email', async ({page}) => {
   const newEmail = generateEmail('updated')

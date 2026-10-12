@@ -5,7 +5,7 @@ import {
   searchStrategies,
   type SearchStrategy,
 } from '@sanity/types'
-import {type ErrorInfo, type ReactNode} from 'react'
+import {type ErrorInfo} from 'react'
 
 import {
   type LocaleConfigContext,
@@ -548,31 +548,6 @@ export const onUncaughtErrorResolver = (opts: {
       )}`,
     )
   })
-}
-
-export const internalTasksReducer = (opts: {
-  config: PluginOptions
-}): {footerAction: ReactNode} | undefined => {
-  const {config} = opts
-  const flattenedConfig = flattenConfig(config, [])
-
-  const result = flattenedConfig.reduce(
-    (acc: {footerAction: ReactNode} | undefined, {config: innerConfig}) => {
-      const resolver = innerConfig.__internal_tasks
-
-      if (!resolver) return acc
-      if (typeof resolver === 'object' && resolver.footerAction) return resolver
-
-      throw new Error(
-        `Expected \`__internal__tasks\` to be an object with footerAction, but received ${getPrintableType(
-          resolver,
-        )}`,
-      )
-    },
-    undefined,
-  )
-
-  return result
 }
 
 export const eventsAPIReducer = (opts: {

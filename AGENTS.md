@@ -162,8 +162,6 @@ pnpm dev  # Starts test-studio at http://localhost:3333 and preview-iframe at ht
 - Session persists in browser, so subsequent visits won't require re-authentication
 - `pnpm dev` / `pnpm dev:test-studio` also starts `dev/preview-iframe` (vanilla Vite on port 3334) so Presentation can load its cross-origin iframe. Studio-only: `pnpm dev:test-studio:studio`. Preview-only: `pnpm dev:preview-iframe`.
 - Deployed preview iframe: Sanity Sandbox Vercel project `test-studio-preview-iframe` (`https://test-studio-preview-iframe.sanity.dev`)
-- **Edits to a `.css.ts` (vanilla-extract) file do not reach a running dev server.** With `unstable_bundledDev: true` (the default in `dev/test-studio`), the generated CSS of a changed `.css.ts` module keeps being served as it was at startup — a full page reload does not help, and nothing in the terminal says so. Restart `sanity dev` after changing one, then confirm with `getComputedStyle` rather than by eye.
-- **Swapping a source file back under a running dev server can leave the swapped version served.** For a before/after check with `unstable_bundledDev: false`, a `git checkout origin/main -- <file>` was hot-reloaded, but the `git checkout HEAD -- <file>` that restored it was not: no `hmr update` line appeared in the terminal and new page loads kept running the `main` version. Before trusting the "after" run, check what the server serves with `curl -s http://localhost:3333/@fs/<absolute path> | grep <symbol only the new version has>`, and restart `sanity dev` if it's stale.
 
 Use the dev studio when you need to:
 
@@ -191,7 +189,7 @@ To inspect a **new** build after making changes—while `pnpm devtools:test-stud
 pnpm devtools:test-studio:build
 ```
 
-Builds are not hooked into HMR; `sanity build` must be invoked manually (via the command above) each time you want a new session to inspect. Sessions can be compared against each other in the DevTools UI to diff bundle changes.
+Sessions can be compared against each other in the DevTools UI to diff bundle changes.
 
 How it works:
 
@@ -398,6 +396,41 @@ Rules that follow from this:
   404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
   regenerates the d.ts fixture for the entry after its export list changes.
 
+### An entry's type surface is what its barrel exports, nothing more
+
+A bundled `.d.ts` can only name declarations the entry barrel actually exports. Until
+`rolldown-plugin-dts` 0.28.7 that was not true: a bundled `.d.ts` with no bare `export {…}` clause
+hit TypeScript's rule that every top-level declaration of such a declaration file is implicitly
+exported, so private helpers pulled in for a signature became part of the published type surface —
+including `const`s and `function`s that the emitted `.js` never exported, so importing them
+type-checked and then failed to link. 0.28.7 appends an `export {}` scope marker instead
+(["prevent implicit exports of private declarations"](https://github.com/sxzz/rolldown-plugin-dts/commit/004032f)),
+so only explicit exports are public.
+
+That makes `@repo/test-dts-exports` fixtures the authority on the surface, and a fixture listing a
+name no barrel exports is the bug, not the build. When a dts-tooling bump shrinks a fixture, check
+each dropped name before regenerating:
+
+- A **type** the declaring module exports and tags `@public` belongs on the barrel. Add it there as
+  a type-only re-export (`export {type Foo} from '…'`), which leaves the emitted `.js` untouched.
+- A declaration the module keeps private stays private, and a `Name$1` suffix is a bundler dedup
+  artifact that was never API — `sanity/media-library` emitted one because `VideoDefinition` is
+  declared in both `plugin/schemas/index` and `plugin/schemas/types`. When a name is declared
+  twice, pick which one is public by convention, not by which one the old output left unsuffixed:
+  that was decided by bundler ordering. Here the public one is `plugin/schemas/types`, shaped like
+  `ImageDefinition` and `FileDefinition` in `@sanity/types` and accepted by `defineVideoField`,
+  while `plugin/schemas` declares a reduced one for the `IntrinsicDefinitions` augmentation.
+- A dropped **value** (`const`, `function`) was never importable: the emitted `.js` never exported
+  it, so `import {name}` failed to link. Making it a real export is an API decision, and it can cost
+  more than it looks — re-exporting `videoTypeName` pulled a 44 kB chunk of form and React code into
+  `sanity/media-library`, which `sideEffects: true` keeps a consumer from tree-shaking away.
+- Load-bearing exceptions exist. `@sanity/util`'s `Options` and `Parser` are exported from
+  `createSafeJsonParser` because `@sanity/migrate` imports `Parser` in its own `.d.ts`, and
+  `lib-check.test.ts` runs with `skipLibCheck: false`.
+
+Regenerating needs a full `pnpm build` first: the generator reads each package's built
+`lib/**/*.d.ts`.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
@@ -517,6 +550,16 @@ On macOS, use `TMPDIR=/private/tmp pnpm test` if the E2E summary reporter test f
 `/var` versus `/private/var` path mismatch. The test changes its working directory, which resolves
 the symlink; using a canonical temporary path keeps its expected and actual paths consistent.
 
+#### Types in tests
+
+Applies to every package's `*.test.ts` / `*.test.tsx` (and `*.browser.test.tsx`) files only.
+Do not use `as unknown as T` to force a value into a narrower public type. If a helper's
+return type is not in the union the function accepts, cover that behaviour through a surface
+that already accepts the value, or drop that case from the typed call. Do not widen a public
+union solely so a test type-checks. A single `as T` on a deliberately incomplete object is
+fine when the test is the error path for a missing field. This rule does not apply to
+production source.
+
 #### Vitest 5 specifics
 
 - Every Vitest artifact lives under `.vitest/` (gitignored): sharded blob reports in
@@ -583,7 +626,18 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   scope — the suspended tree parks forever and `waitFor` times out. Wrap the mount yourself:
   `await act(async () => { renderHook(...) })` (suppress `testing-library/no-unnecessary-act` on
   that line; this is the exception the rule doesn't know about). A `Suspense` wrapper is also
-  required.
+  required. **It is the whole commit's passive effects that are lost, not just the suspended
+  subtree's**: the synchronous `act` splices off the rest of its queue once a render in it has
+  called `use()` on a thenable, so the scheduled passive-effect flush never reaches the real
+  Scheduler and no later `waitFor` or `await act(async () => {})` can recover it. A sibling's
+  `useEffect` then never runs at all, which looks nothing like a suspense problem — a
+  fire-and-forget `useEffect(() => { void check().then(setState) })` anywhere under the mount
+  simply never fires. Any sync-lane update scheduled during the mount commit hides this by
+  forcing a flush, so a test can pass for a while on an unrelated dependency doing that (a
+  `useState` setter used directly as a `ref` is one;
+  `packages/sanity/src/core/releases/tool/detail/__tests__/ReleaseDetail.test.tsx` relied on
+  `@sanity/ui`'s `MenuButton` doing it until
+  [ui#3144](https://github.com/sanity-io/ui/pull/3144) stopped).
 - **Keep the `use()` call sequence stable across the replay.** After the promise settles, React
   _replays_ the suspended render reusing the recorded hook state. If the awaited promise's side
   effect flips the condition guarding a conditional `use()` (e.g. a polyfill import that installs
@@ -591,6 +645,10 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   React throws `Update hook called on initial render` as a recoverable error — which vitest can
   catch as an unhandled error and fail the run. Once a load has started, keep calling `use()` on
   the same cached promise on every render instead of re-checking the environment.
+- **A click whose state update makes a child suspend has the same problem.** `userEvent.click`
+  runs the handler inside the sync `act` of testing-library's event wrapper, so a dialog leaf
+  that `use()`s a pending promise parks forever; wrap the click:
+  `await act(async () => { await userEvent.click(button) })` (see `useUpsellContext.test.tsx`).
 - **`use()` inside a hidden `<Activity>` tree can trip React's "A component suspended inside an
   `act` scope, but the `act` call was not awaited" warning even when the thenable is already
   fulfilled.** A sync `act` (what `render` uses) stops flushing as soon as a yielded render has
@@ -611,6 +669,177 @@ revealed. Two consequences for Suspense code:
 - For content inside a closed popover or any other hidden `<Activity>` tree, call the hook in a
   visible ancestor and pass the promise down, as `WorkspaceMenuButton` does for `ManageMenu`.
   The fetch then starts when the ancestor commits, and the data is settled before the reveal.
+- A `studio.components.layout` or `navbar` middleware whose tree shape depends on an async check
+  (which providers wrap `renderDefault`, whether a navbar button exists) remounts the whole
+  studio below it when the answer arrives after the first paint. Keep the shape independent of
+  the check instead: render the same tree in every mode and read the answer only in the leaf
+  that renders differently (next bullets). The check itself starts in
+  `studio.components.provider`: `StudioProvider` renders that chain (`PluginProviders`) above
+  `StudioLayout` and its loading screen boundary, so a provider component (small, never
+  `lazy()`) turns an observable into a promise with `useObservablePromise` (for feature flags:
+  `useFeatureEnabledObservable`), starts it on commit with `preloadObservablePromise` in an
+  effect so several checks load in parallel, and publishes the promise through a context
+  (default `null`, read through a hook that throws when missing, or directly where the consumer
+  renders without the plugin too). A layout or navbar that has no way around waiting for an
+  answer before it paints reads the promise with `use()` and suspends up to the studio's own
+  loading screen, with no boundary of its own (a tool, or its `activeToolLayout`, suspends up to
+  the tool's own loading block instead: `RenderTool` in `StudioLayoutComponent` wraps each tool
+  in a `Suspense`). The navbar's `StudioToolMenu` is the one such place: whether the Schedules
+  tool is listed depends on the scheduled publishing feature check and on whether the dataset has
+  ever scheduled anything, so it `use()`s both promises before painting the tool list
+  (`@TODO SAPP-4633` there is to see whether that wait can go by always listing the tool and
+  rendering a placeholder inside it).
+- Derive the published value inside the observable, never with `.then()` on the promise:
+  `useObservablePromise(useMemo(() => features$.pipe(map(toMode)), [features$]))` hands out the
+  `ObservablePromise` that react-rx fulfils in place, so `use()` reads it synchronously once it
+  has settled and a leaf that mounts later (the comments inspector, the tasks sidebar) renders in
+  one pass with no fallback. `featuresPromise.then(toMode)` is a native promise whose `status`
+  React records only after the first `use()` of it has thrown, so every first read suspends once
+  more: one extra attempt of the whole layout tree at boot (3 → 2 in the provider tests) and a
+  fallback flash on the inspector's first open.
+- A context that carries a promise defaults to `null` and never to a pre-settled stand-in
+  (`Object.assign(Promise.resolve(x), {status: 'fulfilled', value: x})` is for tests only). A
+  consumer that cannot work without the provider reads the context through a hook that throws
+  (`useTasksMode`, `useCommentsMode`); one that renders either way checks before reading,
+  `promise ? use(promise) : fallback`, and the fallback is the plain value that case means
+  (`NO_UPSELL_DATA`; `null` for `ScheduledPublishingModePromiseContext`, `false` for
+  `HasUsedScheduledPublishingPromiseContext`), not a promise of it.
+- Whether a feature is enabled and which mode it is in are separate hooks, and a hook never
+  returns a resolved mode: `useXEnabled()` answers the enabled question synchronously
+  (`useCommentsEnabled(): boolean` from the per-document `CommentsEnabledContext`, since
+  `document.comments.enabled` is a config API), and `useXMode()` hands out the mode as a promise
+  (`useTasksMode()`, `useCommentsMode()`: `Promise<'default' | 'upsell' | null>`, from
+  `TasksModePromiseContext`, `CommentsModePromiseContext`; `null` is a failed check). Whatever
+  leaf needs the value calls `use()` on it and suspends under a boundary close to that UI; a
+  provider or a layout never reads it, so the critical path never waits for a mode. Tasks: the
+  sidebar under its own `<Suspense>` in
+  `TasksStudioActiveToolLayout` (the sidebar's spinner as the fallback, since a `?sidebar=tasks`
+  link or the navbar button can open it before the check settles), and `TaskCreateAction`
+  reading it with `use()` when it renders. Comments: the inspector (under the inspector panel's
+  boundary), the upsell dialog leaf, `CommentsField` and `CommentsPortableTextInput` read it with
+  `use()` while rendering; `CommentsProvider` and `CommentsWrapper` only read the synchronous
+  `enabled`. The form's fields and the document actions render under the document pane's
+  boundary, and the check has settled long before a pane renders, so those reads are synchronous
+  in practice; never await the mode in a click handler instead (nothing then has to check whether
+  the document the click was made on is still current when the answer arrives). A `null` mode
+  fails closed:
+  `TaskCreateAction` shows an error toast instead of opening anything, the tasks sidebar and the
+  comments inspector render an unavailable notice with only their close control, the document
+  footer's open-task count stays hidden (`TasksFooterOpenTasks`; the providers are mounted in
+  every mode, so the store can still answer), and a comments button click opens that inspector.
+  A provider whose presence would depend on the mode is
+  mounted in both modes instead, so the tree never changes shape (`TasksUpsellProvider` under
+  `TasksStudioLayout`, `CommentsUpsellProvider` under `CommentsStudioLayout`, like
+  `ReleasesUpsellProvider`, `SchedulePublishingUpsellProvider` in the scheduled publishing
+  plugin's studio provider); the UI that consults it already knows it is in upsell mode, and each
+  provider's dialog leaf (`TasksUpsellDialog`, `CommentsUpsellDialog`,
+  `SchedulePublishingUpsellDialog`, under its own `<Suspense>`) `use()`s the mode once more and
+  renders the dialog only in upsell mode.
+- Scheduled publishing has no single `enabled` answer, so it publishes three contexts from its
+  studio provider (`core/scheduled-publishing/plugin/index.tsx`) and every callsite combines them
+  for its own purpose: `ScheduledPublishingEnabledContext` (`boolean`, the workspace flag, `false`
+  where the plugin is not loaded), `ScheduledPublishingModePromiseContext`
+  (`Promise<'default' | 'upsell' | null>`, from the feature check) and
+  `HasUsedScheduledPublishingPromiseContext` (`Promise<boolean>`, from the "has this dataset ever
+  scheduled anything" probe in `useHasUsedScheduledPublishingObservable`, settled as `true`
+  without probing when the workspace opted in explicitly). The two promises are independent, and
+  every callsite reads the mode first and only `use()`s the probe when the mode is not `null`
+  (`const hasUsed = mode !== null && hasUsedPromise ? use(hasUsedPromise) : false`), so a failed
+  feature check never waits for the probe. The tool menu lists the tool, the tool renders
+  its schedules, `usePollSchedules` polls and `ScheduleAction` exists when
+  `enabled && mode !== null && hasUsed` (the plugin's own components skip the always-true flag);
+  the banner, the context menu, the preview and the schedules panel read only the mode. They
+  already live under the document pane's or the tool's boundary, where `use()` suspends to a
+  loading state that already existed.
+- The upsell content itself follows the same rule. `useUpsellData` returns
+  `{upsellData$, telemetryLogs}`: a stable, cold observable of the settled answer (never erroring:
+  a failed request settles as `hasError`), not a promise. The provider that consumes it turns it
+  into a `use()`-compatible promise with `useObservablePromise(upsellData$)` and starts the
+  request on commit with `useEffect(() => { void preloadObservablePromise(upsellData$) },
+  [upsellData$])` (`useUpsellContext` does this for the simple providers,
+  `ReleasesUpsellProvider` for itself), and the context values carry the promise as
+  `upsellDataPromise`, which is only ever read with `use()`, never awaited: `handleOpenDialog`
+  just opens, `UpsellContextDialog` reads the content while the dialog is open (a failed request
+  is reported there with the toast and closes the dialog again, `UpsellContentUnavailable`),
+  and each upsell panel (`CommentsUpsellPanel`, `TasksUpsellPanel`, `DocumentLimitsUpsellPanel`,
+  the schedules panels) is a leaf that `use()`s the promise under its own `<Suspense>`. Nothing
+  outside those leaves reads it: a form field or a document action in upsell mode just calls
+  `handleOpenDialog`, so a slow `/journey/*` request can only delay the dialog or a panel, never
+  the form (`CommentsField`, `CommentsPortableTextInput`, `TaskCreateAction`). Where no provider
+  is mounted, the fallback value carries
+  `upsellDataPromise: null` and the leaf reads
+  `upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA`. Because the settled promise is
+  fulfilled in place (stable identity), a provider's
+  context value does not change when the response arrives, so its consumers do not re-render for
+  it. Tests mock `useUpsellData` with a module-scoped `of(result)`
+  (`test/testUtils/TestProvider.tsx`): react-rx caches by observable identity, so an observable
+  created per render would resubscribe on every commit.
+- The feature requests start when the plugins' providers commit, once the auth state has settled
+  as signed in, not before: nothing probes `/features` or the schedules usage for a visitor who
+  is not logged in or whose credentials the auth probe rejects. `getFeatures` and
+  `getUsedScheduledPublishing` cache one request per project (and dataset) for the session, and
+  both are bounded at 10 seconds so a stalled request cannot hold the loading screen.
+- A default plugin's components never check the workspace flag that enables the plugin:
+  `getDefaultPlugins` (`core/config/resolveDefaultPlugins.ts`) only includes `tasks()`,
+  `scheduledPublishing()`, `releases()`, `singleDocRelease()`, `variants()`, `mediaLibrary()`
+  and `canvasIntegration()` when that flag is on, and the workspace carries the same resolved
+  options, so inside the plugin `useWorkspace().tasks.enabled` is always `true`. Only code that
+  renders outside the plugin needs the flag (`StudioToolMenu` reading
+  `ScheduledPublishingEnabledContext`, `DocumentGroupInventory` through `useVariantsStore`),
+  which is also why those contexts keep a disabled default value. Two exceptions: the comments plugin,
+  since one of its two versions is always included, and `SingleDocReleaseEnabledProvider`, which
+  keeps reading the source's resolved `scheduledDrafts.enabled` (`useScheduledDraftsEnabled`)
+  because `scheduledDrafts` is a per-source option (`PluginOptions.scheduledDrafts`, reduced per
+  source by `scheduledDraftsEnabledReducer`) while the default plugins are added to every source,
+  nested `unstable_sources` included, from the root workspace's options, so a nested source that
+  opts out still loads the plugin. For the root source the gate agrees with the resolved flag:
+  `getDefaultPluginsOptions` reduces `scheduledDrafts.enabled` across the root config and its
+  plugins the same way (the root's own value winning) before `singleDocRelease()` is included,
+  since a gate reading only the root option would mount a plugin the resolved config disables
+  (`core/config/__tests__/resolveDefaultPlugins.test.ts`). The other flags are root-only options.
+- The provider is declared in the plugin's `index.tsx`, below the `definePlugin` call, and it is
+  also where the plugin's lazy components are preloaded. `navbar` and `toolMenu` render under
+  `StudioLayout` with no boundary of their own and `activeToolLayout` wraps the tool under the
+  tool's own boundary, so a `lazy()` component there that React discovers on render holds the
+  layout or the tool for a chunk round trip. A small component on that path is imported
+  directly (`TasksStudioNavbar`, `VariantsStudioNavbarLayout`, which lazy loads its filters
+  behind its own `Suspense` fallback): a chunk of its own would cost more than it saves. A big
+  one stays lazy, but hold the import function and call it from the provider's effect, next to
+  `preloadObservablePromise`:
+  `const lazyTasksStudioActiveToolLayout = () => import('./TasksStudioActiveToolLayout')`,
+  `const TasksStudioActiveToolLayout = lazy(lazyTasksStudioActiveToolLayout)`,
+  `useEffect(() => { void lazyTasksStudioActiveToolLayout() }, [])`. The chunk then loads in
+  parallel with the feature checks the layout suspends on (see `core/tasks/plugin/index.tsx`).
+  Preloads are fire-and-forget: `void` the promise and do not
+  attach `.catch` handlers. A rejected preload has nothing to report, because the `lazy()` render
+  re-imports the module and surfaces a real failure through the error boundary; a review comment
+  asking to handle that rejection is asking to change the intended shape. In jsdom tests, a
+  preloaded chunk that nothing rendered may still be loading when a test ends, and Vitest would
+  reject it at environment teardown (`EnvironmentTeardownError`) as an unhandled error even though
+  every test passed; the shared `afterEach` in `test/setup/environment.ts` awaits
+  `vi.dynamicImportSettled()` so those imports finish first.
+- Never `lazy()` a `studio.components.provider` or `layout` component, and do not put a
+  `<Suspense>` at its top level. Both render in the studio's first render pass, before any effect
+  could preload them: a provider renders above `StudioLayout`'s boundary, so a lazy one suspends
+  the whole studio to an ancestor fallback; a layout renders under that boundary, so a lazy chunk
+  only delays the loading screen's replacement. `pickLayoutComponent` / `pickProviderComponent`
+  warn about both in development (`warnIfSuspendsOnCriticalPath`). The other slots are not
+  checked, since a bare `import()` preload leaves nothing the check could read.
+- A component that only wraps `renderDefault` in providers is a `studio.components.provider`,
+  not a `layout`. The schedules plugin's `ReleasesStudioProvider`,
+  `SingleDocReleaseStudioProvider` and `SchedulePublishingStudioProvider` are the plugin's
+  providers (declared in the plugin's `index.tsx`, imported directly, nothing to lazy-load) and
+  those plugins define no `layout` at all. Reserve `layout` for a component that renders layout
+  of its own around the studio.
+- A module that is only ever loaded through `lazy()` uses `export default`, so the call site is
+  `lazy(() => import('./TasksStudioNavbar'))` with no `.then` remapping.
+- To unit test a component below one of these providers, provide the promise context directly
+  with a resolved promise (`<TasksModePromiseContext value={Promise.resolve<TasksMode>('default')}>`,
+  see `TasksFooterOpenTasks.test.tsx`). A component that `use()`s it still suspends for a
+  microtask, so mount it inside an awaited async `act` under a `Suspense` boundary (see
+  `TasksStudioProvider.test.tsx`), or hand it an already settled thenable,
+  `Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value})`, which `use()`
+  reads synchronously.
 
 `useObservable` and `useSyncObservable` require an `initialValue` in v7 and render it on the first
 pass regardless of synchronous emissions, so do not rely on a replayed value winning the first
@@ -930,17 +1159,17 @@ added new feature                       # missing type and scope
 
 ```bash
 # Create a draft PR — title MUST follow conventional commit format
-gh pr create --draft --title "fix(scope): description" --body "..." --label "🤖 bot"
+gh pr create --draft --title "fix(scope): description" --body "..." --label "✨ ai"
 ```
 
-### 2. Apply the "🤖 bot" Label
+### 2. Apply the "✨ ai" Label
 
-**All PRs created by AI agents must be labeled with `🤖 bot`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows.
+**All PRs created by AI agents must be labeled with `✨ ai`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows. Do not use `🤖 bot` — that label is reserved for PRs opened by CI automations and Renovate, not AI agents.
 
 When creating or updating a PR, always ensure the label is applied. If the create command did not accept `--label`, add it afterward:
 
 ```bash
-gh pr edit --add-label "🤖 bot"
+gh pr edit --add-label "✨ ai"
 ```
 
 ### 3. Move Out of Draft
@@ -960,7 +1189,7 @@ gh pr ready
 
 | Label                | When to use                                                                          |
 | -------------------- | ------------------------------------------------------------------------------------ |
-| `🤖 bot`             | **Required** on every AI-agent PR                                                    |
+| `✨ ai`              | **Required** on every AI-agent PR (`🤖 bot` is for CI automation and Renovate only)  |
 | `trigger: preview`   | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated) |
 | `trigger:perf-bench` | Runs the `perf/bench` suite on the PR (maintainer-gated)                             |
 | `trigger:chromatic`  | Runs the Chromatic checks in `chromatic.yml` on the PR (maintainer-gated)            |
@@ -986,7 +1215,7 @@ When porting or rebasing someone else's PR (community contribution, backport, et
 
 Workflow summary:
 
-1. **Agent creates draft PR** with the `🤖 bot` label
+1. **Agent creates draft PR** with the `✨ ai` label
 2. **Prompter reviews** the draft
 3. **Mark ready for review** once the prompter approves
 4. **Team reviews** and merges
@@ -1102,7 +1331,6 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
   - This has bitten agents more than once. The freeze is unrecoverable in practice: the shell stops spawning processes and even file reads time out, and the VM is eventually rebuilt, **losing every uncommitted change**. Sequence the work so linting happens before the studio starts, and commit and push before starting any manual verification.
-- **`sanity dev` in bundledDev mode (`unstable_bundledDev: true`, on by default in `dev/test-studio`, `dev/design-studio`, `dev/radar`, `dev/auth-test-studio`) grows by roughly 300 MB of RSS per distinct lazy chunk (`/@vite/lazy?id=...`) it compiles, on top of a ~2 GB baseline.** Page reloads, fresh client ids and re-requests of an already compiled chunk cost nothing, but a studio session that touches every plugin's lazy entry points can push the server past 10 GB (13.6 GB observed on vite 8.2.2, freezing the 16 GB VM). Classic mode sits at ~1 GB for the same actions. When you need a long-running studio or plan to exercise many tools, either flip `unstable_bundledDev` off locally or run the server with a PID watchdog (`while sleep 5; do r=$(ps -o rss= -p $PID) || break; [ "${r:-0}" -gt 5000000 ] && kill $PID; done`) and restart it when it trips. Note that opening a single `/test` page already compiles enough chunks to pass that 5 GB threshold (6.1 GB observed on vite 8.3.0), so a watchdog set that low kills the server mid-load and the browser only reports `ViteDevServerStoppedError`; for a short scripted verification, flipping `unstable_bundledDev: false` in `dev/test-studio/sanity.cli.ts` is the cheaper option (1.3 GB for the same session). This is upstream vite/rolldown behavior, not something the studio config can tune.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 - **Recording demo videos: drive the browser with Playwright rather than the screen recorder.** The screen recorder auto-zooms toward cursor activity and has truncated clips mid-interaction, producing unusable artifacts. Playwright records a fixed viewport, so the framing cannot drift:

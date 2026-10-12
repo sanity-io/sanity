@@ -27,7 +27,7 @@ const unavailableValidator: CustomValidator & MediaValidator = () => {
 }
 
 export function createSchemaFromManifestTypes(schemaDef: {name: string; types: unknown[]}) {
-  const validated = validateSchema(schemaDef.types).getTypes()
+  const validated = validateSchema(schemaDef.types, {parentTypes: builtinTypes}).getTypes()
   const validation = groupProblems(validated)
   const problems = validation.filter((group) =>
     group.problems.some((problem: SchemaValidationResult) => problem.severity === 'error'),

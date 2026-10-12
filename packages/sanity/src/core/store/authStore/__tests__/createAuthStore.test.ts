@@ -8,9 +8,10 @@ import {type CurrentUser} from '@sanity/types'
 import {BehaviorSubject, firstValueFrom, of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {stubMessageBusHost} from '../../../../../test/testUtils/stubMessageBusHost'
 import {promiseWithResolvers} from '../../../util/promiseWithResolvers'
 import {AUTH_STATE_SETTLE_TIMEOUT_MS} from '../constants'
-import {_createAuthStore} from '../createAuthStore'
+import {_createAuthStore, createAuthStore} from '../createAuthStore'
 import {type AuthStore} from '../types'
 
 // Mock supportsLocalStorage to return true so createBroadcastStorage uses localStorage.
@@ -1727,13 +1728,72 @@ describe('createAuthStore: workbench OS token', () => {
     expect(state.authenticated).toBe(false)
   })
 
+  it('asks for a new OS token once when the project rejects it', async () => {
+    const factory = createCredentialAwareClientFactory({token: 'valid-token', cookieValid: false})
+    const refreshDashboardToken = vi.fn()
+    const token$ = new BehaviorSubject<string | null>('rejected-token')
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      observeWorkbenchToken: () => token$,
+      refreshWorkbenchToken: refreshDashboardToken,
+    })
+    const states: {authenticated: boolean}[] = []
+    const sub = store.state.subscribe((state) => states.push(state))
+
+    try {
+      await vi.waitFor(() => expect(refreshDashboardToken).toHaveBeenCalledTimes(1))
+      // The host answers with the same token: it is probed again, but not refreshed again.
+      token$.next('rejected-token')
+      await vi.waitFor(() => expect(states).toHaveLength(2))
+      expect(refreshDashboardToken).toHaveBeenCalledTimes(1)
+
+      token$.next('another-rejected-token')
+      await vi.waitFor(() => expect(refreshDashboardToken).toHaveBeenCalledTimes(2))
+    } finally {
+      sub.unsubscribe()
+    }
+  })
+
+  it('keeps the OS token when the project is unreachable rather than rejecting it', async () => {
+    const factory = () =>
+      ({
+        request: () =>
+          Promise.reject(Object.assign(new Error('Failed to fetch'), {isNetworkError: true})),
+      }) as unknown as SanityClient
+    const refreshDashboardToken = vi.fn()
+    const onRequestFailure = vi.fn()
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+      getRequestFailureDiagnostics: () => ({
+        diagnose: async () => ({type: 'project-not-found'}) as const,
+        onRequestFailure,
+      }),
+      observeWorkbenchToken: () => of('workbench-os-token'),
+      refreshWorkbenchToken: refreshDashboardToken,
+    })
+
+    await waitForState(store, (s) => !s.authenticated, 2000)
+    expect(onRequestFailure).toHaveBeenCalled()
+    expect(refreshDashboardToken).not.toHaveBeenCalled()
+  })
+
   it('refreshes the OS token instead of tearing down on logout (forced 401)', async () => {
     // In the workbench, a forced logout (rejected token) must ask the OS to
     // reissue rather than clear local state or hit /auth/logout.
     localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({token: 'stored-token'}))
     const OS_TOKEN = 'workbench-os-token'
     const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
-    const refreshWorkbenchToken = vi.fn()
+    const refreshDashboardToken = vi.fn()
 
     const store = _createAuthStore({
       projectId: PROJECT_ID,
@@ -1743,15 +1803,95 @@ describe('createAuthStore: workbench OS token', () => {
       getSessionId: () => undefined,
       consumeHashToken: () => undefined,
       observeWorkbenchToken: () => of(OS_TOKEN),
-      refreshWorkbenchToken,
+      refreshWorkbenchToken: refreshDashboardToken,
     })
 
     await waitForState(store, (s) => s.authenticated, 2000)
     await store.logout!()
 
-    expect(refreshWorkbenchToken).toHaveBeenCalledTimes(1)
+    expect(refreshDashboardToken).toHaveBeenCalledTimes(1)
     // Local state is left intact — the OS drives sign-out, not us.
     expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toEqual(JSON.stringify({token: 'stored-token'}))
+  })
+
+  it('takes a #token= fragment standalone, on boot and on hashchange', async () => {
+    const factory = createCredentialAwareClientFactory({token: 'hash-token', cookieValid: false})
+    // One-shot values: the store's hashchange listener outlives the test by its share reset delay.
+    const consumeHashToken = vi.fn<() => string | undefined>().mockReturnValueOnce('hash-token')
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'dual',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken,
+    })
+    const sub = store.state.subscribe(() => {})
+
+    try {
+      await waitForState(store, (s) => s.authenticated, 2000)
+      expect(JSON.parse(localStorage.getItem(TOKEN_STORAGE_KEY)!)).toMatchObject({
+        token: 'hash-token',
+      })
+
+      consumeHashToken.mockReturnValueOnce('pasted-hash-token')
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+      await vi.waitFor(() => {
+        expect(JSON.parse(localStorage.getItem(TOKEN_STORAGE_KEY)!)).toMatchObject({
+          token: 'pasted-hash-token',
+        })
+      })
+    } finally {
+      sub.unsubscribe()
+    }
+  })
+
+  it('leaves a #token= fragment alone, on boot and on hashchange', async () => {
+    const OS_TOKEN = 'workbench-os-token'
+    const factory = createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false})
+    const consumeHashToken = vi.fn(() => 'hash-token')
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'dual',
+      clientFactory: factory,
+      getSessionId: () => undefined,
+      consumeHashToken,
+      observeWorkbenchToken: () => of(OS_TOKEN),
+    })
+    const sub = store.state.subscribe(() => {})
+
+    try {
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+      await waitForState(store, (s) => s.authenticated, 2000)
+
+      expect(consumeHashToken).not.toHaveBeenCalled()
+      expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull()
+    } finally {
+      sub.unsubscribe()
+    }
+  })
+
+  it('picks the workbench store over a real message bus: no hash token, no callback exchange', async () => {
+    const OS_TOKEN = 'workbench-os-token'
+    const HASH_TOKEN = 'hash-token-that-is-at-least-thirty-two-chars'
+    stubMessageBusHost().publish('auth.token', OS_TOKEN)
+    window.location.hash = `#token=${HASH_TOKEN}`
+
+    // A project id of its own: `createAuthStore` is memoized on its options.
+    const store = createAuthStore({
+      projectId: `${PROJECT_ID}-bus`,
+      dataset: DATASET,
+      clientFactory: createCredentialAwareClientFactory({token: OS_TOKEN, cookieValid: false}),
+    })
+
+    const state = await waitForState(store, (s) => s.authenticated, 2000)
+    expect(state.currentUser).toEqual(MOCK_USER)
+    expect(window.location.hash).toBe(`#token=${HASH_TOKEN}`)
+    expect(localStorage.getItem(`__studio_auth_token_${PROJECT_ID}-bus`)).toBeNull()
+    expect(store.handleCallbackUrl).toBeUndefined()
   })
 
   it('falls through to the normal flow when not embedded in the workbench', async () => {
@@ -1787,22 +1927,29 @@ describe('createAuthStore: hash claim intake', () => {
     window.location.hash = ''
   })
 
-  it('consumes a #claim= fragment on boot and records it for the project', () => {
-    window.location.hash = `#claim=${encodeURIComponent(CLAIM_URL)}`
-    const mock = createMockClientFactory()
+  it.each([
+    {context: 'standalone', observeWorkbenchToken: () => undefined},
+    {context: 'in the workbench', observeWorkbenchToken: () => of('workbench-os-token')},
+  ])(
+    'consumes a #claim= fragment on boot and records it for the project ($context)',
+    ({observeWorkbenchToken}) => {
+      window.location.hash = `#claim=${encodeURIComponent(CLAIM_URL)}`
+      const mock = createMockClientFactory()
 
-    _createAuthStore({
-      projectId: PROJECT_ID,
-      dataset: DATASET,
-      loginMethod: 'token',
-      clientFactory: mock.factory,
-      getSessionId: () => undefined,
-      consumeHashToken: () => undefined,
-    })
+      _createAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod: 'token',
+        clientFactory: mock.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+        observeWorkbenchToken,
+      })
 
-    expect(JSON.parse(localStorage.getItem(CLAIM_STORAGE_KEY)!)).toEqual({claimUrl: CLAIM_URL})
-    expect(window.location.hash).toBe('')
-  })
+      expect(JSON.parse(localStorage.getItem(CLAIM_STORAGE_KEY)!)).toEqual({claimUrl: CLAIM_URL})
+      expect(window.location.hash).toBe('')
+    },
+  )
 
   it('consumes a #claim= fragment pasted into an open tab', async () => {
     const mock = createMockClientFactory()

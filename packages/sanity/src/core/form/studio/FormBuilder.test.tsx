@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {defineType, type ObjectSchemaType} from '@sanity/types'
-import {act, render, type RenderResult, screen, waitFor} from '@testing-library/react'
+import {act, render, type RenderResult, screen, waitFor, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type ComponentType, lazy, type ReactNode, Suspense, useMemo, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -273,7 +274,11 @@ describe('FormBuilder', () => {
       formNodeId: 'root',
     })
 
-    await screen.findByTestId('field-title', {}, {timeout: 10_000})
+    const titleField = await screen.findByTestId('field-title', {}, {timeout: 10_000})
+
+    // The field actions menu doesn't render its items until it is opened.
+    await userEvent.hover(titleField)
+    await userEvent.click(await within(titleField).findByTestId('field-actions-trigger'))
 
     await waitFor(
       () => {

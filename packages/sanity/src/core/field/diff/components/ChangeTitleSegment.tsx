@@ -1,6 +1,6 @@
-import {rem, Text} from '@sanity/ui'
+import {rem} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type Annotation, type FieldChangeNode, type FromToIndex} from '../../types'
@@ -28,7 +28,7 @@ export function ChangeTitleSegment(props: {
   if (typeof segment === 'string') {
     return (
       <Box>
-        <Text title={segment} size={1} weight="medium" textOverflow="ellipsis">
+        <Text title={segment} size={1} weight="medium" truncate={1} as="div" trim={true}>
           {segment}
         </Text>
       </Box>
@@ -57,7 +57,7 @@ export function ChangeTitleSegment(props: {
   const readableIndex = (toIndex || 0) + 1
   return (
     <Box padding={1}>
-      <Text size={1} weight="medium">
+      <Text size={1} weight="medium" as="div" trim={true}>
         #{readableIndex}
       </Text>
     </Box>
@@ -80,7 +80,13 @@ function CreatedTitleSegment(props: {
   if (annotation) {
     return (
       <DiffCard annotation={annotation} tooltip={{description}} as={RoundedCard}>
-        <AnnotationText size={1} weight="medium" forwardedAs="ins" style={{textDecoration: 'none'}}>
+        <AnnotationText
+          size={1}
+          weight="medium"
+          forwardedAs="ins"
+          style={{textDecoration: 'none'}}
+          trim={true}
+        >
           {content}
         </AnnotationText>
       </DiffCard>
@@ -88,7 +94,7 @@ function CreatedTitleSegment(props: {
   }
 
   return (
-    <Text size={1} weight="medium">
+    <Text size={1} weight="medium" as="div" trim={true}>
       {content}
     </Text>
   )
@@ -101,7 +107,7 @@ function DeletedTitleSegment(props: {annotation: Annotation | undefined; fromInd
   const description = t('changes.array.item-removed-from-position', {position: readableIndex})
   return (
     <DiffCard annotation={annotation || null} as={RoundedCard} tooltip={{description}}>
-      <AnnotationText size={1} weight="medium" forwardedAs="del">
+      <AnnotationText size={1} weight="medium" forwardedAs="del" trim={true}>
         #{readableIndex}
       </AnnotationText>
     </DiffCard>
@@ -127,12 +133,12 @@ function MovedTitleSegment(props: {
   return (
     <>
       <Box padding={1}>
-        <AnnotationText size={1} weight="medium">
+        <AnnotationText size={1} weight="medium" forwardedAs="div" trim={true}>
           #{toIndex + 1}
         </AnnotationText>
       </Box>
       <DiffCard annotation={annotation} as={RoundedCard} tooltip={{description}}>
-        <AnnotationText size={1} weight="medium">
+        <AnnotationText size={1} weight="medium" forwardedAs="div" trim={true}>
           {indexSymbol}
           {Math.abs(indexDiff)}
         </AnnotationText>

@@ -45,12 +45,12 @@ function getChipTone(kind: ReleaseLaneKind): 'positive' | 'primary' | 'default' 
 // carries this icon per row, so repeating it on the chip would be redundant.
 function ChipIcon({chip}: {chip: ResolvedChip}) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  if (chip.kind === 'published') return <ReleaseAvatarIcon tone="positive" />
+  if (chip.kind === 'published') return <ReleaseAvatarIcon tone="positive" fontSize={0} />
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  if (chip.kind === 'drafts') return <ReleaseAvatarIcon tone="caution" />
-  if (chip.release) return <ReleaseAvatarIcon release={chip.release} />
+  if (chip.kind === 'drafts') return <ReleaseAvatarIcon tone="caution" fontSize={0} />
+  if (chip.release) return <ReleaseAvatarIcon release={chip.release} fontSize={0} />
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  return <ReleaseAvatarIcon tone="default" />
+  return <ReleaseAvatarIcon tone="default" fontSize={0} />
 }
 
 function ReleaseBundleChip({release}: {release: ReleaseDocument}) {
@@ -136,9 +136,7 @@ export function VariantDocumentBundleChips({
               <VStack gap={2}>
                 {overflow.map((chip) => (
                   <Flex alignItems="center" gap={2} key={chip.key}>
-                    <Text size={0}>
-                      <ChipIcon chip={chip} />
-                    </Text>
+                    <ChipIcon chip={chip} />
                     <Text size={1}>{getLabel(chip)}</Text>
                   </Flex>
                 ))}

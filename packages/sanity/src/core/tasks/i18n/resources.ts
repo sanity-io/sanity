@@ -156,6 +156,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'panel.navigation.tooltip': 'Open tasks',
   /** Title of the Tasks panel   */
   'panel.title': 'Tasks',
+  /** Shown in the panel when the tasks feature check failed, so tasks cannot be used right now */
+  'panel.unavailable.text': 'Tasks are unavailable right now. Try again later.',
 
   /** Label for the Assigned Tab */
   'tab.assigned.label': 'Assigned',

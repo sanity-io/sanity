@@ -1,36 +1,13 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {HasUsedScheduledPublishing} from '../../core/scheduledPublishing/tool/contexts/useHasUsedScheduledPublishing'
-
 /**
+ * Whether the workspace has scheduled publishing enabled, provided by the scheduled publishing
+ * plugin's studio provider. `false` where the plugin is not loaded, which is what the code outside
+ * the plugin (`StudioToolMenu`) reads. Whether the feature is in use is answered separately, by
+ * `ScheduledPublishingModePromiseContext` and `HasUsedScheduledPublishingPromiseContext`.
  * @internal
  */
-export type ScheduledPublishingEnabledContextValue =
-  | {
-      enabled: false
-      mode: null
-      hasUsedScheduledPublishing: HasUsedScheduledPublishing
-    }
-  | {
-      enabled: true
-      mode: 'default' | 'upsell'
-      hasUsedScheduledPublishing: HasUsedScheduledPublishing
-    }
-
-const DEFAULT: ScheduledPublishingEnabledContextValue = {
-  enabled: false,
-  mode: null,
-  hasUsedScheduledPublishing: {
-    used: false,
-    loading: false,
-  },
-}
-
-/**
- * @internal
- */
-export const ScheduledPublishingEnabledContext =
-  createContext<ScheduledPublishingEnabledContextValue>(
-    'sanity/_singletons/context/scheduled-publishing-enabled',
-    DEFAULT,
-  )
+export const ScheduledPublishingEnabledContext = createContext<boolean>(
+  'sanity/_singletons/context/scheduled-publishing-enabled',
+  false,
+)

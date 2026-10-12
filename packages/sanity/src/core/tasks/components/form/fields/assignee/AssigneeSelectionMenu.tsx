@@ -1,5 +1,5 @@
 import {UserIcon} from '@sanity/icons/User'
-import {Badge, Text, TextInput, VirtualList} from '@sanity/ui'
+import {Badge, TextInput, VirtualList} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -7,7 +7,7 @@ import {
 } from '@sanity/ui/menu'
 import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {Container, Flex, Box} from 'ui5'
+import {Text, Container, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
@@ -16,7 +16,7 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
-import {styledMenu} from './AssigneeSelectionMenu.css'
+import {mentionUserMenuItemText, styledMenu} from './AssigneeSelectionMenu.css'
 
 type SelectItemHandler = (id: string) => void
 
@@ -33,7 +33,14 @@ function MentionUserMenuItem(props: {
       <Flex alignItems="center" gap={3}>
         <Flex alignItems="center" gap={2} flexBasis="0%" flexGrow={1}>
           <TasksUserAvatar user={user.id ? user : undefined} size={1} />
-          <Text size={1} textOverflow="ellipsis" title={user.displayName}>
+          <Text
+            className={mentionUserMenuItemText}
+            size={1}
+            truncate={1}
+            title={user.displayName}
+            as="div"
+            trim={true}
+          >
             {user.displayName}
           </Text>
         </Flex>
@@ -154,7 +161,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
       <div style={{maxHeight: '320px', overflowY: 'scroll', paddingTop: '8px'}}>
         {filteredOptions.length === 0 ? (
           <Box padding={3}>
-            <Text align="center" size={1} muted>
+            <Text align="center" size={1} muted as="div" trim={true}>
               {t('form.input.assignee.search.no-users.text')}
             </Text>
           </Box>

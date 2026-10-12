@@ -65,7 +65,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const commentsV2 = Boolean(beta?.comments?.v2)
   const enabledV1 = useCommentsEnabled()
   const enabledV2 = useCommentsEnabledV2()
-  const {enabled} = commentsV2 ? enabledV2 : enabledV1
+  const enabled = commentsV2 ? enabledV2 : enabledV1
   const {connectionState, onPathOpen, inspector, openInspector, targetDocumentState, value} =
     useDocumentPane()
   const {selectedPerspectiveName, selectedReleaseId, selectedVariantNames} = usePerspective()

@@ -1,5 +1,7 @@
+import {type ObservablePromise} from 'react-rx'
+
 import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
-import {type UpsellData} from '../../../studio/upsell/types'
+import {type UpsellDataResult} from '../../../studio/upsell/types'
 
 export interface ReleasesUpsellContextValue {
   /**
@@ -8,7 +10,11 @@ export interface ReleasesUpsellContextValue {
    */
   mode: 'upsell' | 'default'
   upsellDialogOpen: boolean
-  upsellData: UpsellData | null
+  /**
+   * The upsell content, settled once its request has answered, or `null` outside the provider.
+   * Read it with `use()` in the leaf that renders the content, under a `Suspense` boundary.
+   */
+  upsellDataPromise: ObservablePromise<UpsellDataResult> | null
   guardWithReleaseLimitUpsell: (
     callback: () => void,
     throwError?: boolean,

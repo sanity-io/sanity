@@ -1,6 +1,7 @@
 import {TaskIcon} from '@sanity/icons/Task'
 import {Badge, useMediaIndex} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {use, useCallback, useMemo} from 'react'
+import {TasksModePromiseContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -24,7 +25,13 @@ const ButtonContainer = styled.div`
  * Clicking it will open the task sidebar, showing the open tasks related to the document.
  * @internal
  */
-export function TasksFooterOpenTasks() {
+export default function TasksFooterOpenTasks() {
+  // `DocumentStatusBarActions` lazy-loads this module and suspends it under the status bar's
+  // own boundary. A failed feature check (`null`) is already excluded before this mounts; the
+  // check here fails closed too, because the sidebar this button opens reads as unavailable.
+  // Like `useTasks()`, the mode read also tolerates the tasks studio provider not being mounted.
+  const modePromise = use(TasksModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
   const {data, activeDocument} = useTasks()
   const {handleOpenTasks, setActiveTab} = useTasksNavigation()
   const mediaIndex = useMediaIndex()
@@ -48,7 +55,7 @@ export function TasksFooterOpenTasks() {
 
   const {t} = useTranslation(tasksLocaleNamespace)
 
-  if (pendingTasks.length === 0) return null
+  if (mode === null || pendingTasks.length === 0) return null
 
   if (mediaIndex < 3) {
     return (
