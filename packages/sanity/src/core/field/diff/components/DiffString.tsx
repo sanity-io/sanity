@@ -22,12 +22,10 @@ function RoundedCard(props: ComponentProps<'span'>) {
   )
 }
 
-// Previously `styled(Text)` rendered with `as="ins" | "del"`, which replaced `Text` with the plain
-// element, so only the class (never Text's own styles) applied. Render the element directly.
-function ChangeSegment(props: ComponentProps<'ins'> & {as: 'ins' | 'del'}) {
-  const {as: Component, className, ...rest} = props
+function ChangeSegment(props: ComponentProps<typeof Text>) {
+  const {className, ...rest} = props
 
-  return <Component {...rest} className={clsx(changeSegment, className)} />
+  return <Text {...rest} className={clsx(changeSegment, className)} />
 }
 
 /** @internal */
