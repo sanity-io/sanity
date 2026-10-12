@@ -142,6 +142,8 @@ minimumReleaseAgeExclude:
   - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
+  # Fresh patch; exclude so 4.6.6 can install before the age gate
+  - 'zod@4.6.6'
 
 overrides:
   vitest: 'catalog:'
