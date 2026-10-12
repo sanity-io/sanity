@@ -13,7 +13,8 @@ import startCase from 'lodash-es/startCase.js'
 import {createDebug} from 'obug'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
-import {map, shareReplay} from 'rxjs/operators'
+import {EMPTY, fromEvent} from 'rxjs'
+import {filter, map, shareReplay} from 'rxjs/operators'
 
 import {isDev} from '../environment'
 import {
@@ -626,6 +627,16 @@ interface ResolveSourceOptions {
   i18n: {i18next: i18n; source: LocaleSource}
 }
 
+/**
+ * Emits when the page is hidden on its way into the back/forward cache. The browser can't keep the
+ * socket open there, and closes it itself if we don't, logging "WebSocket connection to … failed:
+ * Page entered Back-Forward Cache". The restored page reconnects through the usual recovery.
+ */
+const enteredBackForwardCache$ =
+  typeof window === 'undefined'
+    ? EMPTY
+    : fromEvent<PageTransitionEvent>(window, 'pagehide').pipe(filter((event) => event.persisted))
+
 function getBifurClient(client: SanityClient) {
   const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -638,7 +649,11 @@ function getBifurClient(client: SanityClient) {
   // `{withCredentials: true}`, and the browser sends them with the handshake.
   // `idleTimeout`: React unmounts and remounts subscribers during boot, see
   // https://github.com/sanity-io/sanity/pull/14152
-  return fromUrl(urlWithTag, {auth: client.config().auth, idleTimeout: 5_000})
+  return fromUrl(urlWithTag, {
+    auth: client.config().auth,
+    idleTimeout: 5_000,
+    closeOn: enteredBackForwardCache$,
+  })
 }
 
 function resolveSource({
