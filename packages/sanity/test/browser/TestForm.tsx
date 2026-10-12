@@ -54,6 +54,7 @@ interface TestFormProps {
   onPathFocus?: (path: Path) => void
   openPath?: Path
   presence?: FormNodePresence[]
+  readOnly?: boolean
 }
 
 const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
@@ -79,6 +80,7 @@ export function TestForm(props: TestFormProps) {
     onPathFocus: onPathFocusFromProps,
     openPath: openPathFromProps = EMPTY_ARRAY,
     presence: presenceFromProps = EMPTY_ARRAY,
+    readOnly,
   } = props
 
   const {setDocumentMeta} = useCopyPaste()
@@ -209,6 +211,7 @@ export function TestForm(props: TestFormProps) {
     fieldGroupState,
     openPath,
     presence: presenceFromProps,
+    readOnly,
     validation,
     documentValue: document,
     perspective: 'published',
@@ -325,6 +328,7 @@ export function TestForm(props: TestFormProps) {
       openPath,
       path: EMPTY_ARRAY,
       presence: presenceFromProps,
+      readOnly,
       schemaType: formState?.schemaType || schemaType,
       validation,
       value: formState?.value as FormDocumentValue,
@@ -350,6 +354,7 @@ export function TestForm(props: TestFormProps) {
       openPath,
       patchChannel,
       presenceFromProps,
+      readOnly,
       schemaType,
       setOpenPath,
       validation,

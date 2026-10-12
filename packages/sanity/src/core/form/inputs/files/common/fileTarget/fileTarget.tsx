@@ -297,6 +297,9 @@ export function fileTarget<ComponentProps>(
 
     useEffect(() => {
       if (disabled || !onFilesOver) {
+        // Hover tracking stopped mid-drag (e.g. the input turned read-only): forget the entered
+        // elements, so a later Escape is not swallowed for a drag that has long ended
+        enteredElements.current = []
         return undefined
       }
 
