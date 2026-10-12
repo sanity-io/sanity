@@ -1,4 +1,3 @@
-import {type SanityClient} from '@sanity/client'
 import {type Asset, type AssetSource} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {type ComponentType, type PropsWithChildren} from 'react'
@@ -8,7 +7,10 @@ import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
-import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
+import {
+  asMockSanityClient,
+  createMockSanityClient,
+} from '../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {AssetDeleteDialog} from '../AssetDeleteDialog'
 import {SelectAssetsDialog} from '../SelectAssetsDialog'
@@ -40,7 +42,7 @@ function createDialogClient() {
   const client = createMockSanityClient()
   client.observable.fetch = (query: string) =>
     of(query.includes('_type == "sanity.fileAsset"') ? [FILE_ASSET] : [])
-  return client as unknown as SanityClient
+  return asMockSanityClient(client)
 }
 
 function AssetDeleteDialogHarness({Provider}: {Provider: ComponentType<PropsWithChildren>}) {

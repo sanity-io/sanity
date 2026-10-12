@@ -1,14 +1,13 @@
-import {type SanityClient} from '@sanity/client'
 import {type Asset} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ComponentType, type PropsWithChildren} from 'react'
+import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
-import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {AssetRow} from '../AssetRow'
 import {FileListView} from '../FileListView'
@@ -50,21 +49,21 @@ function FileListViewHarness({Provider}: {Provider: ComponentType<PropsWithChild
   return (
     <Provider>
       <Card padding={4} style={{maxWidth: 900}}>
-        <Stack gap={5}>
+        <VStack gap={5}>
           <FileListView
             assets={FILE_ASSETS}
             onDeleteFinished={noop}
             selectedAssets={[FILE_ASSETS[0]]}
           />
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               expanded mobile row
             </Text>
             <div data-testid="mobile-asset-row">
               <AssetRow asset={FILE_ASSETS[0]} isMobile onDeleteFinished={noop} />
             </div>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </Provider>
   )
@@ -73,8 +72,7 @@ function FileListViewHarness({Provider}: {Provider: ComponentType<PropsWithChild
 describe('dataset file list', () => {
   test('renders desktop rows and expands the mobile row', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const client = createMockSanityClient() as unknown as SanityClient
-    const Provider = await createTestProvider({client})
+    const Provider = await createTestProvider()
     void render(<FileListViewHarness Provider={Provider} />)
 
     await expect.element(page.getByText('PDF Document')).toBeVisible()

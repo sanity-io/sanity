@@ -1,4 +1,3 @@
-import {type SanityClient} from '@sanity/client'
 import {Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ComponentType, type PropsWithChildren} from 'react'
@@ -8,7 +7,11 @@ import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
-import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
+import {
+  asMockSanityClient,
+  createMockSanityClient,
+  createMockSanityClientAsClient,
+} from '../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {EnsureMediaLibrary} from '../EnsureMediaLibrary'
 import {MediaLibraryProvider} from '../MediaLibraryProvider'
@@ -37,9 +40,7 @@ function MediaLibraryProviderHarness({Provider}: {Provider: ComponentType<PropsW
 describe('media library provisioning', () => {
   test('renders the expected provisioning error', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const client = createMockSanityClient({
-      requests: {'/projects/test': {}},
-    }) as unknown as SanityClient
+    const client = createMockSanityClientAsClient({requests: {'/projects/test': {}}})
     const Provider = await createTestProvider({
       client,
       config: {projectId: 'test', dataset: 'test', name: 'test'},
@@ -56,7 +57,7 @@ describe('media library provisioning', () => {
     mockClient.observable.request = () =>
       throwError(() => new Error('Fixture media service unavailable'))
     const Provider = await createTestProvider({
-      client: mockClient as unknown as SanityClient,
+      client: asMockSanityClient(mockClient),
       config: {projectId: 'test', dataset: 'test', name: 'test'},
     })
     void render(<MediaLibraryProviderHarness Provider={Provider} />)
