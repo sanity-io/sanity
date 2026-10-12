@@ -602,7 +602,18 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   scope — the suspended tree parks forever and `waitFor` times out. Wrap the mount yourself:
   `await act(async () => { renderHook(...) })` (suppress `testing-library/no-unnecessary-act` on
   that line; this is the exception the rule doesn't know about). A `Suspense` wrapper is also
-  required.
+  required. **It is the whole commit's passive effects that are lost, not just the suspended
+  subtree's**: the synchronous `act` splices off the rest of its queue once a render in it has
+  called `use()` on a thenable, so the scheduled passive-effect flush never reaches the real
+  Scheduler and no later `waitFor` or `await act(async () => {})` can recover it. A sibling's
+  `useEffect` then never runs at all, which looks nothing like a suspense problem — a
+  fire-and-forget `useEffect(() => { void check().then(setState) })` anywhere under the mount
+  simply never fires. Any sync-lane update scheduled during the mount commit hides this by
+  forcing a flush, so a test can pass for a while on an unrelated dependency doing that (a
+  `useState` setter used directly as a `ref` is one;
+  `packages/sanity/src/core/releases/tool/detail/__tests__/ReleaseDetail.test.tsx` relied on
+  `@sanity/ui`'s `MenuButton` doing it until
+  [ui#3144](https://github.com/sanity-io/ui/pull/3144) stopped).
 - **Keep the `use()` call sequence stable across the replay.** After the promise settles, React
   _replays_ the suspended render reusing the recorded hook state. If the awaited promise's side
   effect flips the condition guarding a conditional `use()` (e.g. a polyfill import that installs
