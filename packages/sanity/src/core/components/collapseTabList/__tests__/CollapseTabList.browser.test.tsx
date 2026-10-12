@@ -94,6 +94,30 @@ describe('CollapseTabList', () => {
     await takeSnapshot('overflow-menu-open')
   })
 
+  it.runIf(typeof document.startViewTransition === 'function')(
+    'names the overflow button but not its hidden clones, so a view transition can start',
+    async () => {
+      configure({disableAutoSnapshot: true})
+      await render(
+        <TestList width={NARROW}>{makeTabs(['Alpha', 'Beta', 'Gamma', 'Delta'])}</TestList>,
+      )
+      await expect.element(overflowMenuButton).toBeVisible()
+
+      // The measuring row renders an aria-hidden clone of the overflow button. Naming it too
+      // would duplicate the name, and a duplicate makes the browser skip the whole transition.
+      const list = document.querySelector('[data-testid="collapse-tab-list"]')!
+      const named = Array.from(list.querySelectorAll('*')).filter(
+        (el) => getComputedStyle(el).viewTransitionName !== 'none',
+      )
+      expect(named).toHaveLength(1)
+      expect(named[0]).toBe(overflowMenuButton.element())
+
+      const transition = document.startViewTransition(() => {})
+      await expect(transition.ready).resolves.toBeUndefined()
+      await transition.finished
+    },
+  )
+
   it('removes the overflow button when the container grows enough to fit all children', async () => {
     const tabs = makeTabs(['Alpha', 'Beta', 'Gamma', 'Delta'])
     const {rerender} = await render(<TestList width={NARROW}>{tabs}</TestList>)
