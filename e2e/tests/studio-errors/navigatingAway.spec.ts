@@ -12,6 +12,7 @@ import {type StudioErrorInfo, watchForStudioErrors} from '../../helpers/studioEr
 import {test} from '../../studio-test'
 
 const MESSAGE = 'error loading dynamically imported module: /static/lazyTool.js'
+const REPORT: StudioErrorInfo = {source: 'error-screen', message: MESSAGE}
 const RENDERED_ON_LEAVE = 'rendered an error screen as the page was left'
 
 // Renders an error screen as the studio does: when it loads with `?now`, and otherwise when a
@@ -55,9 +56,41 @@ test('reports the error screen of a page that no navigation is leaving right awa
 
   await page.goto(`${url}?now`)
 
-  await expect
-    .poll(() => seen, {timeout: 5_000})
-    .toEqual([{source: 'error-screen', message: MESSAGE}])
+  await expect.poll(() => seen, {timeout: 5_000}).toEqual([REPORT])
+})
+
+test('reports every error screen of a page that no navigation is leaving', async ({
+  page,
+  context,
+  baseURL,
+}) => {
+  const url = await routeDocument(page, baseURL)
+  const watcher = await watchForStudioErrors(context)
+  const seen: StudioErrorInfo[] = []
+  const expectErrorScreen = () =>
+    watcher.expectError((info) => {
+      seen.push(info)
+      return info.message === MESSAGE
+    })
+
+  expectErrorScreen()
+  await page.goto(`${url}?now`)
+  await expect.poll(() => seen, {timeout: 5_000}).toEqual([REPORT])
+
+  // While the first one is still shown, as a crashed tool's stays under `<Activity>`.
+  expectErrorScreen()
+  await page.evaluate('renderErrorScreen()')
+  await expect.poll(() => seen, {timeout: 5_000}).toEqual([REPORT, REPORT])
+
+  // Once the earlier ones are gone, as after a retry.
+  const screens = page.getByTestId('studio-error-screen')
+  await screens.evaluateAll((elements) => {
+    for (const element of elements) element.remove()
+  })
+  await expect(screens).toHaveCount(0)
+  expectErrorScreen()
+  await page.evaluate('renderErrorScreen()')
+  await expect.poll(() => seen, {timeout: 5_000}).toEqual([REPORT, REPORT, REPORT])
 })
 
 test('leaves out an error screen that renders as the page is replaced', async ({page, baseURL}) => {
@@ -90,8 +123,6 @@ test('reports an error screen that renders as a navigation that does not replace
   await renderedOnLeave
   expect(seen).toEqual([])
 
-  await expect
-    .poll(() => seen, {timeout: 20_000})
-    .toEqual([{source: 'error-screen', message: MESSAGE}])
+  await expect.poll(() => seen, {timeout: 20_000}).toEqual([REPORT])
   expect(page.url()).toBe(url)
 })

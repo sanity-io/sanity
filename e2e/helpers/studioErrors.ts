@@ -50,7 +50,9 @@ const LEAVE_TIMEOUT = 10_000
  *   handles the uncaught exceptions of the studio's own document (its `window.onerror` returns
  *   `true`), and the studio shows them as an error screen or an "Uncaught error" toast, so from
  *   that document only rejections are page errors.
- * - `error-screen`: a rendered studio error screen (React boundary or pre-React overlay). One that
+ * - `error-screen`: a rendered studio error screen (React boundary or pre-React overlay). Every
+ *   error screen element is reported once, when it renders, even while another one is still in
+ *   the document, as a crashed tool's is under `<Activity>` while another tool is open. One that
  *   renders once a navigation away from its document has started is only reported if the document
  *   is still there {@link LEAVE_TIMEOUT} ms after `beforeunload`, as when the navigation turned out
  *   to be a download or was cancelled. Firefox aborts the requests of a document as soon as a
@@ -299,27 +301,26 @@ async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
 
   await context.addInitScript(
     ({selector, marker, leaveTimeout}) => {
-      let fired = false
+      const reported = new WeakSet<Element>()
       let leaving: ReturnType<typeof setTimeout> | undefined
-      let unreported: string | undefined
+      let unreported: string[] = []
       addEventListener('beforeunload', () => {
         clearTimeout(leaving)
         leaving = setTimeout(() => {
           leaving = undefined
-          if (unreported) console.error(unreported)
-          unreported = undefined
+          for (const message of unreported) console.error(message)
+          unreported = []
         }, leaveTimeout)
       })
       new MutationObserver(() => {
-        if (fired) return
-        const el = document.querySelector(selector)
-        if (el) {
-          fired = true
+        for (const el of document.querySelectorAll(selector)) {
+          if (reported.has(el)) continue
+          reported.add(el)
           const detail =
             el.getAttribute('data-error') || el.textContent?.trim().slice(0, 200) || 'Unknown error'
           const report: ErrorScreenReport = {url: location.href, detail}
           const message = `${marker}${JSON.stringify(report)}`
-          if (leaving) unreported = message
+          if (leaving) unreported.push(message)
           else console.error(message)
         }
       }).observe(document, {childList: true, subtree: true})
