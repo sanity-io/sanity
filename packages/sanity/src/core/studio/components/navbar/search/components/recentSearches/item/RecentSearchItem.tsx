@@ -5,9 +5,11 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
   rem,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
-import {type MouseEvent, useCallback} from 'react'
-import {styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, type MouseEvent, useCallback} from 'react'
 import {Text, Box, Flex, type MarginProps, type PaddingProps, Icon} from 'ui5'
 
 import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
@@ -15,6 +17,13 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type RecentSearch, useRecentSearchesStore} from '../../../datastores/recentSearches'
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
 import {FilterPill} from '../../common/FilterPill'
+import {
+  closeButtonDiv,
+  radius2Var,
+  recentSearchItemButton,
+  searchItemPillsBox,
+  searchItemQueryFlex,
+} from './RecentSearchItem.css'
 
 export interface RecentSearchesProps extends MarginProps, PaddingProps {
   index: number
@@ -24,33 +33,10 @@ export interface RecentSearchesProps extends MarginProps, PaddingProps {
 
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
-const RecentSearchItemButton = styled(Button)`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  cursor: default;
-  width: 100%;
-`
-
-const SearchItemPillsBox = styled(Box)`
-  flex-shrink: 3;
-`
-
-const SearchItemQueryFlex = styled(Flex)`
-  flex-shrink: 2;
-`
-
-const CloseButtonDiv = styled.div`
-  opacity: 0.8;
-  visibility: hidden;
-
-  @media (hover: hover) {
-    ${RecentSearchItemButton}:hover & {
-      visibility: visible;
-    }
-    &:hover {
-      opacity: 0.4;
-    }
-  }
-`
+function CloseButtonDiv(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(closeButtonDiv, className)} />
+}
 
 export function RecentSearchItem({
   index,
@@ -61,6 +47,7 @@ export function RecentSearchItem({
   const {dispatch} = useSearchState()
   const recentSearchesStore = useRecentSearchesStore()
   const telemetry = useTelemetry()
+  const {radius} = useThemeV2()
 
   // Determine how many characters are left to render type pills
   const availableCharacters = maxVisibleTypePillChars - value.query.length
@@ -89,12 +76,14 @@ export function RecentSearchItem({
 
   return (
     <Box {...rest}>
-      <RecentSearchItemButton
+      <Button
+        className={recentSearchItemButton}
         mode="bleed"
         onClick={handleClick}
         paddingLeft={3}
         paddingRight={1}
         paddingY={1}
+        style={assignInlineVars({[radius2Var]: `${rem(radius[2])}`})}
         tabIndex={-1}
       >
         <Flex alignItems="stretch">
@@ -117,7 +106,7 @@ export function RecentSearchItem({
           >
             {/* Text query */}
             {value.query && (
-              <SearchItemQueryFlex alignItems="center" paddingY={2}>
+              <Flex alignItems="center" className={searchItemQueryFlex} paddingY={2}>
                 <Text
                   muted
                   size={1}
@@ -129,13 +118,13 @@ export function RecentSearchItem({
                 >
                   {value.query}
                 </Text>
-              </SearchItemQueryFlex>
+              </Flex>
             )}
             {/* Document type */}
             {value.types.length > 0 && (
-              <SearchItemPillsBox>
+              <Box className={searchItemPillsBox}>
                 <DocumentTypesPill availableCharacters={availableCharacters} types={value.types} />
-              </SearchItemPillsBox>
+              </Box>
             )}
             {/* Filters */}
             {value?.filters?.map((filter, i) => {
@@ -153,7 +142,7 @@ export function RecentSearchItem({
             </CloseButtonDiv>
           </Flex>
         </Flex>
-      </RecentSearchItemButton>
+      </Button>
     </Box>
   )
 }

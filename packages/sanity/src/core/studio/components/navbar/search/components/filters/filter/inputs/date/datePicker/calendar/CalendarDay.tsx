@@ -1,12 +1,14 @@
-import {Card, type Theme} from '@sanity/ui'
+import {Card, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
-import {useCallback} from 'react'
-import {css, styled} from 'styled-components'
+import {type ComponentProps, useCallback} from 'react'
 import {Text} from 'ui5'
 
+import {circle, circleStrokeVar, circleSvg, customCard} from './CalendarDay.css'
 import {useCalendar} from './contexts/useDatePicker'
 
 interface CalendarDayProps {
@@ -14,44 +16,22 @@ interface CalendarDayProps {
   onSelect: (date: Date) => void
 }
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
-  return css`
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
+/** Rendered inside the day's Card so the theme read follows the Card's tone. */
+function CircleSvg(props: ComponentProps<'svg'>) {
+  const {className, style, ...rest} = props
+  const {color} = useThemeV2()
 
-    circle {
-      stroke: ${theme.sanity.color.card.enabled.border /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-      stroke-width: 3;
-      fill: none;
-    }
-  `
-})
-
-const CustomCard = styled(Card)`
-  position: relative;
-
-  &[data-focused='true'] {
-    z-index: 1;
-  }
-
-  &[data-start-date='true'] {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  &[data-end-date='true'] {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
-  &[data-within-range='true'] {
-    border-radius: 0;
-  }
-`
+  return (
+    <svg
+      {...rest}
+      className={clsx(circleSvg, className)}
+      style={{
+        ...assignInlineVars({[circleStrokeVar]: color.border}),
+        ...style,
+      }}
+    />
+  )
+}
 
 export function CalendarDay({date, onSelect}: CalendarDayProps) {
   const handleClick = useCallback(() => {
@@ -78,17 +58,18 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
     isBefore(date, selectedEndDate)
 
   return (
-    <CustomCard
+    <Card
       __unstable_focusRing
       aria-label={date.toDateString()}
       aria-pressed={isSelected}
+      className={customCard}
       data-end-date={isEndDate ? true : undefined}
       data-focused={isFocused ? 'true' : ''}
       data-ui="CalendarDay"
       aria-selected={isSelected}
       data-start-date={isStartDate ? true : undefined}
       data-within-range={isWithinRange ? true : undefined}
-      forwardedAs="button"
+      as="button"
       onClick={handleClick}
       paddingX={3}
       paddingY={2}
@@ -106,7 +87,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
           viewBox="0 0 100 100"
           width="100%"
         >
-          <circle cx="50" cy="50" r="40%" />
+          <circle className={circle} cx="50" cy="50" r="40%" />
         </CircleSvg>
       )}
       <Text
@@ -120,6 +101,6 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       >
         {date.getDate()}
       </Text>
-    </CustomCard>
+    </Card>
   )
 }
