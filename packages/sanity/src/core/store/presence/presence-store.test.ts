@@ -1,6 +1,6 @@
-import {type BifurClient} from '@sanity/bifur-client'
+import {type BifurClient, ERROR_CODES, RpcError} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
-import {BehaviorSubject, of, Subject} from 'rxjs'
+import {BehaviorSubject, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ConnectionStatus} from '../connection-status/connection-status-store'
@@ -24,14 +24,22 @@ interface Harness {
   getUsers: ReturnType<typeof vi.fn>
 }
 
-function createHarness(): Harness {
+function createHarness({
+  rejectedRequests = [],
+  rejectListen = false,
+}: {
+  /** Requests the server answers with a JSON-RPC error */
+  rejectedRequests?: string[]
+  rejectListen?: boolean
+} = {}): Harness {
   const incoming$ = new Subject<unknown>()
   const requests: BifurRequest[] = []
+  const rejection = () => new RpcError('Unauthorized', ERROR_CODES.UNAUTHORIZED)
   const bifur = {
-    listen: vi.fn(() => incoming$),
+    listen: vi.fn(() => (rejectListen ? throwError(rejection) : incoming$)),
     request: vi.fn((name: string, params: unknown) => {
       requests.push({name, params})
-      return of(undefined)
+      return rejectedRequests.includes(name) ? throwError(rejection) : of(undefined)
     }),
   } as unknown as BifurClient
 
@@ -459,6 +467,37 @@ describe('presence-store', () => {
       const locations = [location('doc-1', {path: ['title']})]
       store.setLocation(locations)
       expect(latest()).toBe(locations)
+      subscription.unsubscribe()
+    })
+  })
+
+  describe('requests the server rejects', () => {
+    it('keeps presence running when the server rejects a roll call or an announcement', async () => {
+      const {store, incoming$} = createHarness({
+        rejectedRequests: ['presence_rollcall', 'presence_announce'],
+      })
+      const errors: unknown[] = []
+      const values: GlobalPresence[][] = []
+      const subscription = store.globalPresence$.subscribe({
+        next: (value) => values.push(value),
+        error: (err) => errors.push(err),
+      })
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(errors).toEqual([])
+      expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
+      subscription.unsubscribe()
+    })
+
+    it('does not error presence when the server rejects the presence subscription', async () => {
+      const {store} = createHarness({rejectListen: true})
+      const errors: unknown[] = []
+      const subscription = store.globalPresence$.subscribe({error: (err) => errors.push(err)})
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+
+      expect(errors).toEqual([])
       subscription.unsubscribe()
     })
   })

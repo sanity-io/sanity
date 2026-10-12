@@ -1,6 +1,6 @@
-import {type BifurClient} from '@sanity/bifur-client'
-import {EMPTY, type Observable} from 'rxjs'
-import {map, share} from 'rxjs/operators'
+import {type BifurClient, RpcError} from '@sanity/bifur-client'
+import {EMPTY, type Observable, throwError} from 'rxjs'
+import {catchError, map, share} from 'rxjs/operators'
 
 import {type PresenceLocation} from '../types'
 import {type Transport, type TransportEvent, type TransportMessage} from './transport'
@@ -59,20 +59,39 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
   throw new Error(`Got unknown presence event: ${JSON.stringify(event)}`)
 }
 
+/**
+ * Presence is best effort: a request or subscription the server answers with an error (an
+ * `RpcError`, e.g. when it refuses the credential) is dropped rather than taking presence, and
+ * the studio, down. Connection failures still error, so presence restarts with the connection.
+ */
+function ignoreRejection<T>(source: Observable<T>): Observable<T> {
+  return source.pipe(
+    catchError((err: unknown) => {
+      if (!(err instanceof RpcError)) return throwError(() => err)
+      console.warn('Presence request rejected by the server: %s', err.message)
+      return EMPTY
+    }),
+  )
+}
+
 export const createBifurTransport = (bifur: BifurClient, sessionId: string): Transport => {
   const incomingEvents$: Observable<TransportEvent> = bifur
     .listen<IncomingBifurEvent<Location[]>>('presence')
-    .pipe(map(handleIncomingMessage))
+    .pipe(ignoreRejection, map(handleIncomingMessage))
 
   const dispatchMessage = (message: TransportMessage): Observable<undefined> => {
     if (message.type === 'rollCall') {
-      return bifur.request('presence_rollcall', {session: sessionId})
+      return bifur
+        .request<undefined>('presence_rollcall', {session: sessionId})
+        .pipe(ignoreRejection)
     }
 
     if (message.type === 'state') {
-      return bifur.request('presence_announce', {
-        data: {locations: message.locations, sessionId},
-      })
+      return bifur
+        .request<undefined>('presence_announce', {
+          data: {locations: message.locations, sessionId},
+        })
+        .pipe(ignoreRejection)
     }
 
     return EMPTY
