@@ -1,6 +1,6 @@
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
-import {defaultClientConditions, mergeConfig} from 'vite'
+import {defaultClientConditions, mergeConfig, type Plugin} from 'vite'
 
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // Enables Vite DevTools (https://devtools.vite.dev) for both `sanity dev` and `sanity build`.
@@ -10,6 +10,45 @@ const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 const isViteDevToolsEnabled = process.env.ENABLE_VITE_DEVTOOLS === 'true'
 // React DevTools profiling via agent-react-devtools. Usage: `pnpm react-devtools:test-studio` (see AGENTS.md).
 const isReactDevtoolsEnabled = process.env.ENABLE_REACT_DEVTOOLS === 'true'
+// React DevTools inspection and profiling through chrome-devtools-mcp (react-devtools-cdt-mcp).
+// Usage: `pnpm react-devtools-mcp:test-studio` (see .agents/skills/react-devtools-mcp).
+const isReactDevtoolsMcpEnabled = process.env.ENABLE_REACT_DEVTOOLS_MCP === 'true'
+
+if (isReactDevtoolsEnabled && isReactDevtoolsMcpEnabled) {
+  // Both inject a module that installs `__REACT_DEVTOOLS_GLOBAL_HOOK__`; whichever runs second
+  // attaches to the other's hook and neither tool sees a complete picture.
+  throw new Error(
+    'ENABLE_REACT_DEVTOOLS and ENABLE_REACT_DEVTOOLS_MCP cannot be combined: both install a React ' +
+      'DevTools hook. Unset one of them (`pnpm react-devtools:test-studio` uses the former, ' +
+      '`pnpm react-devtools-mcp:test-studio` the latter).',
+  )
+}
+
+/**
+ * Loads `react-devtools-cdt-mcp/register` before anything else in the studio document, so the
+ * React DevTools hook it installs is in place when `react-dom` initializes. With that hook
+ * present, `chrome-devtools-mcp` (started with `--categoryExperimentalThirdParty=true`) discovers
+ * the React component tree and profiler tools from the page. Dev server only.
+ */
+function reactDevtoolsMcp(): Plugin {
+  return {
+    name: 'sanity-test-studio:react-devtools-mcp',
+    apply: 'serve',
+    transformIndexHtml: {
+      order: 'pre',
+      handler: () => [
+        {
+          tag: 'script',
+          attrs: {type: 'module'},
+          // Module scripts evaluate in document order, so prepending this one to <head> runs it
+          // before the studio entry module (and the `react-dom` it imports)
+          children: `import 'react-devtools-cdt-mcp/register'`,
+          injectTo: 'head-prepend',
+        },
+      ],
+    },
+  }
+}
 
 export default defineCliConfig({
   api: isStaging
@@ -24,7 +63,10 @@ export default defineCliConfig({
   // Can be overriden by:
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
-  reactStrictMode: true,
+  // Off by default when profiling through chrome-devtools-mcp: development StrictMode renders
+  // every component twice, which inflates the profiler's render counts and durations.
+  // `SANITY_STUDIO_REACT_STRICT_MODE=true pnpm react-devtools-mcp:test-studio` turns it back on.
+  reactStrictMode: !isReactDevtoolsMcpEnabled,
   // Opt into Vite's experimental full-bundle (bundledDev) mode for `sanity dev`.
   // Bundles the app up front so late-discovered lazy import() targets no longer
   // trigger the monorepo "waterfall of reload doom", which previously required
@@ -66,6 +108,10 @@ export default defineCliConfig({
     if (isReactDevtoolsEnabled) {
       const {reactDevtools} = await import('agent-react-devtools/vite')
       nextConfig = mergeConfig(nextConfig, {plugins: [reactDevtools()]})
+    }
+
+    if (isReactDevtoolsMcpEnabled) {
+      nextConfig = mergeConfig(nextConfig, {plugins: [reactDevtoolsMcp()]})
     }
 
     // Support React Production Profiling on deployed studios
