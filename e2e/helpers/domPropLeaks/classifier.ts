@@ -17,9 +17,9 @@ export interface DomPropHost {
   /** A styled-components styled tag without `shouldForwardProp` rendered the element. */
   styledTag?: boolean
   /**
-   * Whether the element exposes the (lowercased) name as a property, which is how the
-   * `unknown-attribute` rule accepts attributes React's table does not list, such as `loading`
-   * on `<img>` or the global `slot` and `part`.
+   * Whether setting the element's property of that (lowercased) name writes the attribute, which
+   * is how the `unknown-attribute` rule accepts attributes React's table does not list, such as
+   * the global `part` or `ping` on `<a>`.
    */
   reflects?: (lowerCasedName: string) => boolean
 }

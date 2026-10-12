@@ -71,7 +71,8 @@ function installDomPropLeakScanner(
   const classify = createClassifier(vocabulary)
   const checkedProps = new WeakMap<Element, unknown>()
   const notReact = new WeakSet<Element>()
-  const reflectedNames = new WeakMap<object, Set<string>>()
+  const reflectedNames = new Map<string, boolean>()
+  let probeDocument: Document | undefined
   const findings = new Map<string, DomPropLeakFinding>()
   const stats = {elements: 0, reactElements: 0}
   let propsKey: string | null = null
@@ -99,28 +100,42 @@ function installDomPropLeakScanner(
     return null
   }
 
+  // A property of the same name is not enough (`offsetParent`, the `text` of an `<a>`): setting it
+  // on a fresh element must write the attribute. The element belongs to an inert document, where
+  // nothing it is given loads or runs.
   function reflects(element: Element, name: string): boolean {
-    const prototype = Object.getPrototypeOf(element) as object
-    let names = reflectedNames.get(prototype)
-    if (!names) {
-      names = new Set()
-      for (
-        let object: object | null = prototype;
-        object && object !== Object.prototype;
-        object = Object.getPrototypeOf(object) as object | null
-      ) {
-        const descriptors = Object.getOwnPropertyDescriptors(object)
-        for (const key of Object.keys(descriptors)) {
-          if (!descriptors[key].get) continue
-          const lowerCasedKey = key.toLowerCase()
-          names.add(lowerCasedKey)
-          // `interestfor` is reflected as `interestForElement`, `commandfor` as `commandForElement`.
-          if (lowerCasedKey.endsWith('element')) names.add(lowerCasedKey.slice(0, -7))
-        }
-      }
-      reflectedNames.set(prototype, names)
+    const key = `${element.namespaceURI} ${element.localName} ${name}`
+    let reflected = reflectedNames.get(key)
+    if (reflected === undefined) {
+      reflected = probeReflection(element.namespaceURI, element.localName, name)
+      reflectedNames.set(key, reflected)
     }
-    return names.has(name)
+    return reflected
+  }
+
+  function probeReflection(namespace: string | null, localName: string, name: string): boolean {
+    probeDocument ??= document.implementation.createHTMLDocument('')
+    const probe = probeDocument.createElementNS(namespace, localName)
+    for (
+      let object: object | null = Object.getPrototypeOf(probe) as object;
+      object && object !== Object.prototype;
+      object = Object.getPrototypeOf(object) as object | null
+    ) {
+      const descriptors = Object.getOwnPropertyDescriptors(object)
+      for (const key of Object.keys(descriptors)) {
+        const lowerCasedKey = key.toLowerCase()
+        // `interestfor` is reflected as `interestForElement`, `commandfor` as `commandForElement`.
+        const elementReference = lowerCasedKey === `${name}element`
+        if ((lowerCasedKey !== name && !elementReference) || !descriptors[key].set) continue
+        try {
+          Reflect.set(probe, key, elementReference ? probe : '1')
+        } catch {
+          continue
+        }
+        if (probe.hasAttribute(name)) return true
+      }
+    }
+    return false
   }
 
   // A bundler renames a component whose name clashes with another one in the same chunk to

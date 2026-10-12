@@ -15,6 +15,7 @@ const FIBER_KEY = '__reactFiber$test'
 
 class FakeElement {
   readonly nodeType = 1
+  readonly namespaceURI = 'http://www.w3.org/1999/xhtml'
   readonly attributes: {name: string; value: string}[]
   readonly childElements: FakeElement[] = []
 
@@ -25,8 +26,26 @@ class FakeElement {
     this.attributes = Object.entries(attributes).map(([name, value]) => ({name, value}))
   }
 
+  get offsetParent(): FakeElement | null {
+    return null
+  }
+
   get firstElementChild(): FakeElement | null {
     return this.childElements[0] ?? null
+  }
+
+  getAttribute(name: string): string | null {
+    return this.attributes.find((attribute) => attribute.name === name)?.value ?? null
+  }
+
+  hasAttribute(name: string): boolean {
+    return this.getAttribute(name) !== null
+  }
+
+  setAttribute(name: string, value: string): void {
+    const attribute = this.attributes.find((existing) => existing.name === name)
+    if (attribute) attribute.value = value
+    else this.attributes.push({name, value})
   }
 
   append(...children: FakeElement[]): this {
@@ -39,12 +58,39 @@ class FakeElement {
   }
 }
 
+// `attributionsrc`, `ping` and `text` are in neither React's attribute table nor
+// @emotion/is-prop-valid.
 class FakeImageElement extends FakeElement {
-  // `attributionsrc` is in neither React's attribute table nor @emotion/is-prop-valid.
   get attributionSrc(): string {
-    return ''
+    return this.getAttribute('attributionsrc') ?? ''
+  }
+
+  set attributionSrc(value: string) {
+    this.setAttribute('attributionsrc', value)
   }
 }
+
+class FakeAnchorElement extends FakeElement {
+  textContent = ''
+
+  get ping(): string {
+    return this.getAttribute('ping') ?? ''
+  }
+
+  set ping(value: string) {
+    this.setAttribute('ping', value)
+  }
+
+  get text(): string {
+    return this.textContent
+  }
+
+  set text(value: string) {
+    this.textContent = value
+  }
+}
+
+const ELEMENTS: Record<string, typeof FakeElement> = {a: FakeAnchorElement, img: FakeImageElement}
 
 interface FakeFiber {
   tag: number
@@ -57,11 +103,11 @@ function componentFiber(tag: number, type: unknown, parent: FakeFiber | null): F
   return {tag, type, elementType: type, return: parent}
 }
 
-function render(
-  element: FakeElement,
+function render<Rendered extends FakeElement>(
+  element: Rendered,
   props: Record<string, unknown>,
   parent: FakeFiber | null,
-): FakeElement {
+): Rendered {
   Object.assign(element, {
     [PROPS_KEY]: props,
     [FIBER_KEY]: {tag: 5, type: element.localName, elementType: element.localName, return: parent},
@@ -104,6 +150,12 @@ function createDocument() {
               (attribute) => attribute.name === 'id' && attribute.value === id,
             ),
           ) ?? null,
+      implementation: {
+        createHTMLDocument: () => ({
+          createElementNS: (_namespace: string | null, localName: string) =>
+            new (ELEMENTS[localName] ?? FakeElement)(localName),
+        }),
+      },
     },
     MutationObserver: class {
       constructor(callback: (records: unknown[]) => void) {
@@ -182,18 +234,34 @@ describe('DOM prop leak scanner', () => {
     expect(page.scan().findings).toEqual(page.logged())
   })
 
-  test('accepts attributes the element reflects, and flags names no element has', () => {
+  test('accepts the attributes an element reflects, and flags the names it does not', () => {
     const page = createDocument()
     const image = render(
       new FakeImageElement('img'),
       {src: '/a.png', attributionsrc: 'https://example.com/register', tone: 'primary'},
       intentLinkFiber,
     )
-    page.add(render(new FakeElement('div'), {}, structureToolFiber).append(image))
+    const linkAttributes = {href: '/a', ping: '/track', text: 'Open'}
+    const link = render(new FakeAnchorElement('a', linkAttributes), linkAttributes, intentLinkFiber)
+    const card = render(
+      new FakeElement('div', {offsetparent: 'card'}),
+      {offsetparent: 'card'},
+      intentLinkFiber,
+    )
+    page.add(render(new FakeElement('div'), {}, structureToolFiber).append(image, link, card))
 
+    // Having a property of that name is not enough: setting `text` changes the link's text, and
+    // `offsetParent` cannot be set.
     expect(page.logged()).toEqual([
       expect.objectContaining({rule: 'unknown-attribute', prop: 'tone', tag: 'img'}),
+      expect.objectContaining({rule: 'unknown-attribute', prop: 'text', tag: 'a'}),
+      expect.objectContaining({rule: 'unknown-attribute', prop: 'offsetparent', tag: 'div'}),
     ])
+    // The properties are tried on elements the scanner creates, never on the page's.
+    expect(link.attributes).toEqual(
+      Object.entries(linkAttributes).map(([name, value]) => ({name, value})),
+    )
+    expect(link.text).toBe('')
   })
 
   test('checks props React updates without changing the DOM', () => {
