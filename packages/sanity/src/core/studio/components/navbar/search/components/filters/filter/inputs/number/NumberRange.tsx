@@ -14,9 +14,7 @@ export function SearchFilterNumberRangeInput({
   const [to, setTo] = useState(value?.to ?? '')
   const [from, setFrom] = useState(value?.from ?? '')
 
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
   const {t} = useTranslation()
 
   const handleToChange = useCallback(

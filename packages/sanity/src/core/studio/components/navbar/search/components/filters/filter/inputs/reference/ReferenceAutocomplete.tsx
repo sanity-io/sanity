@@ -44,9 +44,7 @@ export function ReferenceAutocomplete({
 
   const schema = useSchema()
 
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
   const {t} = useTranslation()
 
   const autocompleteId = useId()

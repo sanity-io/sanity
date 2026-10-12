@@ -9,7 +9,13 @@ import {
 } from '../../../../../../../components/commandList/types'
 import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {
+  selectDefinitions,
+  selectDocumentTypesNarrowed,
+  selectFilters,
+  selectSelectedTypes,
+} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector} from '../../../contexts/search/useSearchState'
 import {type FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
@@ -36,14 +42,10 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
 
   const schema = useSchema()
 
-  const {
-    state: {
-      documentTypesNarrowed,
-      definitions,
-      filters,
-      terms: {types},
-    },
-  } = useSearchState()
+  const documentTypesNarrowed = useSearchSelector(selectDocumentTypesNarrowed)
+  const definitions = useSearchSelector(selectDefinitions)
+  const filters = useSearchSelector(selectFilters)
+  const types = useSearchSelector(selectSelectedTypes)
 
   const filteredMenuItems = useMemo(
     () =>

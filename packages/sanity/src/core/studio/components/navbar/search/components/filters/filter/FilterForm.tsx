@@ -7,7 +7,8 @@ import {Box, Flex, VStack} from 'ui5'
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {supportsTouch} from '../../../../../../../util/supportsTouch'
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectDefinitions} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector, useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperatorDefinition} from '../../../definitions/operators'
 import {type SearchFilter} from '../../../types'
@@ -27,10 +28,8 @@ interface ErrorParams {
 
 export function FilterForm({filter}: FilterFormProps) {
   const [errorParams, setErrorParams] = useState<ErrorParams | null>(null)
-  const {
-    dispatch,
-    state: {definitions, fullscreen},
-  } = useSearchState()
+  const {fullscreen, searchActorRef} = useSearchState()
+  const definitions = useSearchSelector(selectDefinitions)
 
   const filterDefinition = getFilterDefinition(definitions.filters, filter.filterName)
   const operator = getOperatorDefinition(definitions.operators, filter.operatorType)
@@ -38,21 +37,21 @@ export function FilterForm({filter}: FilterFormProps) {
   const filterKey = getFilterKey(filter)
 
   const handleClose = useCallback(() => {
-    dispatch({
+    searchActorRef.send({
       filterKey: getFilterKey(filter),
       type: 'TERMS_FILTERS_REMOVE',
     })
-  }, [dispatch, filter])
+  }, [filter, searchActorRef])
 
   const handleValueChange = useCallback(
     (value: any) => {
-      dispatch({
+      searchActorRef.send({
         filterKey: filterKey,
         type: 'TERMS_FILTERS_SET_VALUE',
         value,
       })
     },
-    [dispatch, filterKey],
+    [filterKey, searchActorRef],
   )
 
   const handleCatchError = useCallback((params: ErrorParams) => {

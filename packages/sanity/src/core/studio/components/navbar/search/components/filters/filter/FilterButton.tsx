@@ -12,7 +12,8 @@ import {styled} from 'styled-components'
 import {Popover} from '../../../../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectDefinitions} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector, useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
 import {getFilterKey, validateFilter} from '../../../utils/filterUtils'
 import {FilterLabel} from '../../common/FilterLabel'
@@ -52,10 +53,8 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
-  const {
-    dispatch,
-    state: {definitions, fullscreen},
-  } = useSearchState()
+  const {fullscreen, searchActorRef} = useSearchState()
+  const definitions = useSearchSelector(selectDefinitions)
 
   const {t} = useTranslation()
 
@@ -63,11 +62,11 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
   const handleOpen = useCallback(() => setOpen(true), [])
   const handleRemove = useCallback(
     () =>
-      dispatch({
+      searchActorRef.send({
         filterKey: getFilterKey(filter),
         type: 'TERMS_FILTERS_REMOVE',
       }),
-    [dispatch, filter],
+    [filter, searchActorRef],
   )
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLButtonElement>) => {
