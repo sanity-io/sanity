@@ -1,4 +1,4 @@
-import {type ClientConfig, type SanityClient} from '@sanity/client'
+import {type ClientConfig, createClient} from '@sanity/client'
 import type * as SanityClientModule from '@sanity/client'
 import {act, render, screen, waitFor} from '@testing-library/react'
 import {AddonDatasetContext, StudioErrorHandlerContext} from 'sanity/_singletons'
@@ -39,7 +39,12 @@ const currentUser = {
 
 function addonDatasetContext(dataset: string): AddonDatasetContextValue {
   return {
-    client: {config: () => ({dataset})} as unknown as SanityClient,
+    client: createClient({
+      projectId: 'mock-project-id',
+      dataset,
+      apiVersion: '2025-02-19',
+      useCdn: false,
+    }),
     createAddonDataset: vi.fn(),
     error: null,
     isCreatingDataset: false,
