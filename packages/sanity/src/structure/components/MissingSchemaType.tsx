@@ -33,7 +33,7 @@ export function MissingSchemaType(props: MissingSchemaTypeProps) {
           values={{documentId: value._id}}
         />
       }
-      media={() => <WarningOutlineIcon />}
+      media={<WarningOutlineIcon />}
       layout={layout}
     />
   )
