@@ -10,15 +10,20 @@ import {UpsellContextDialog} from '../../../studio/upsell/UpsellContextDialog'
 
 /**
  * Mounted in both plan modes by the plugin's studio provider, so the studio never waits for the
- * feature check. The UI that opens the dialog already knows it is in upsell mode; the dialog leaf
- * below checks once more, at the leaf, so a plan that has the feature never shows it.
+ * feature check. The upsell content is only requested once that check has settled as upsell, so
+ * a plan that has the feature never requests it. The UI that opens the dialog already knows it is
+ * in upsell mode; the dialog leaf below checks once more, at the leaf, so a plan that has the
+ * feature never shows it.
  *
  * @beta
  */
 export function SchedulePublishingUpsellProvider(props: {children: React.ReactNode}) {
+  const modePromise = use(ScheduledPublishingModePromiseContext)
   const contextValue = useUpsellContext({
     dataUri: '/journey/scheduled-publishing',
     feature: 'scheduled_publishing',
+    // Without the plugin's studio provider above (a test harness) the content is requested at once
+    mode: modePromise ?? undefined,
   })
 
   return (
