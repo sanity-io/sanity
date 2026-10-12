@@ -397,6 +397,41 @@ Rules that follow from this:
   404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
   regenerates the d.ts fixture for the entry after its export list changes.
 
+### An entry's type surface is what its barrel exports, nothing more
+
+A bundled `.d.ts` can only name declarations the entry barrel actually exports. Until
+`rolldown-plugin-dts` 0.28.7 that was not true: a bundled `.d.ts` with no bare `export {…}` clause
+hit TypeScript's rule that every top-level declaration of such a declaration file is implicitly
+exported, so private helpers pulled in for a signature became part of the published type surface —
+including `const`s and `function`s that the emitted `.js` never exported, so importing them
+type-checked and then failed to link. 0.28.7 appends an `export {}` scope marker instead
+(["prevent implicit exports of private declarations"](https://github.com/sxzz/rolldown-plugin-dts/commit/004032f)),
+so only explicit exports are public.
+
+That makes `@repo/test-dts-exports` fixtures the authority on the surface, and a fixture listing a
+name no barrel exports is the bug, not the build. When a dts-tooling bump shrinks a fixture, check
+each dropped name before regenerating:
+
+- A **type** the declaring module exports and tags `@public` belongs on the barrel. Add it there as
+  a type-only re-export (`export {type Foo} from '…'`), which leaves the emitted `.js` untouched.
+- A declaration the module keeps private stays private, and a `Name$1` suffix is a bundler dedup
+  artifact that was never API — `sanity/media-library` emitted one because `VideoDefinition` is
+  declared in both `plugin/schemas/index` and `plugin/schemas/types`. When a name is declared
+  twice, pick which one is public by convention, not by which one the old output left unsuffixed:
+  that was decided by bundler ordering. Here the public one is `plugin/schemas/types`, shaped like
+  `ImageDefinition` and `FileDefinition` in `@sanity/types` and accepted by `defineVideoField`,
+  while `plugin/schemas` declares a reduced one for the `IntrinsicDefinitions` augmentation.
+- A dropped **value** (`const`, `function`) was never importable: the emitted `.js` never exported
+  it, so `import {name}` failed to link. Making it a real export is an API decision, and it can cost
+  more than it looks — re-exporting `videoTypeName` pulled a 44 kB chunk of form and React code into
+  `sanity/media-library`, which `sideEffects: true` keeps a consumer from tree-shaking away.
+- Load-bearing exceptions exist. `@sanity/util`'s `Options` and `Parser` are exported from
+  `createSafeJsonParser` because `@sanity/migrate` imports `Parser` in its own `.d.ts`, and
+  `lib-check.test.ts` runs with `skipLibCheck: false`.
+
+Regenerating needs a full `pnpm build` first: the generator reads each package's built
+`lib/**/*.d.ts`.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
@@ -958,17 +993,17 @@ added new feature                       # missing type and scope
 
 ```bash
 # Create a draft PR — title MUST follow conventional commit format
-gh pr create --draft --title "fix(scope): description" --body "..." --label "🤖 bot"
+gh pr create --draft --title "fix(scope): description" --body "..." --label "✨ ai"
 ```
 
-### 2. Apply the "🤖 bot" Label
+### 2. Apply the "✨ ai" Label
 
-**All PRs created by AI agents must be labeled with `🤖 bot`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows.
+**All PRs created by AI agents must be labeled with `✨ ai`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows. Do not use `🤖 bot` — that label is reserved for PRs opened by CI automations and Renovate, not AI agents.
 
 When creating or updating a PR, always ensure the label is applied. If the create command did not accept `--label`, add it afterward:
 
 ```bash
-gh pr edit --add-label "🤖 bot"
+gh pr edit --add-label "✨ ai"
 ```
 
 ### 3. Move Out of Draft
@@ -988,7 +1023,7 @@ gh pr ready
 
 | Label                | When to use                                                                          |
 | -------------------- | ------------------------------------------------------------------------------------ |
-| `🤖 bot`             | **Required** on every AI-agent PR                                                    |
+| `✨ ai`              | **Required** on every AI-agent PR (`🤖 bot` is for CI automation and Renovate only)  |
 | `trigger: preview`   | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated) |
 | `trigger:perf-bench` | Runs the `perf/bench` suite on the PR (maintainer-gated)                             |
 | `trigger:chromatic`  | Runs the Chromatic checks in `chromatic.yml` on the PR (maintainer-gated)            |
@@ -1014,7 +1049,7 @@ When porting or rebasing someone else's PR (community contribution, backport, et
 
 Workflow summary:
 
-1. **Agent creates draft PR** with the `🤖 bot` label
+1. **Agent creates draft PR** with the `✨ ai` label
 2. **Prompter reviews** the draft
 3. **Mark ready for review** once the prompter approves
 4. **Team reviews** and merges
