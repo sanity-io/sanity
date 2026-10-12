@@ -5,10 +5,8 @@
 import type {
   defineVideoField,
   VideoDefinition,
-  VideoDefinition$1,
   VideoOptions,
   VideoRule,
-  videoTypeName,
   VideoValue,
 } from 'sanity/media-library'
 import {describe, expectTypeOf, test} from 'vitest'
@@ -20,17 +18,11 @@ describe('sanity/media-library', () => {
   test('VideoDefinition', () => {
     expectTypeOf<VideoDefinition>().toBeObject()
   })
-  test('VideoDefinition$1', () => {
-    expectTypeOf<VideoDefinition$1>().toBeObject()
-  })
   test('VideoOptions', () => {
     expectTypeOf<VideoOptions>().toBeObject()
   })
   test('VideoRule', () => {
     expectTypeOf<VideoRule>().toBeObject()
-  })
-  test('videoTypeName', () => {
-    expectTypeOf<typeof videoTypeName>().not.toBeNever()
   })
   test('VideoValue', () => {
     expectTypeOf<VideoValue>().toBeObject()
