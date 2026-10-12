@@ -115,6 +115,16 @@ export function isStyledComponentsUnknownPropWarning(args) {
 /** @type {string[]} */
 const captured = []
 
+/**
+ * Returns the DOM prop warnings reported so far in the current test and clears them, so a test
+ * that leaks a prop on purpose can assert on the report instead of failing.
+ *
+ * @returns {string[]}
+ */
+export function takeDomPropWarnings() {
+  return captured.splice(0)
+}
+
 const originalError = console.error
 console.error = (...args) => {
   if (isReactDomPropWarning(args)) {
@@ -161,8 +171,8 @@ if (typeof Element !== 'undefined') {
 }
 
 afterEach(() => {
-  if (captured.length === 0) return
-  const messages = captured.splice(0)
+  const messages = takeDomPropWarnings()
+  if (messages.length === 0) return
   throw new Error(
     [
       `${messages.length} DOM prop warning(s) were reported during this test. A non-DOM prop reached a DOM element (or an attribute is misspelled). Strip or rename the prop (styled-components: use a transient \`$prop\`) before it is spread onto the element.`,

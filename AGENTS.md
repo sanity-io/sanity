@@ -588,7 +588,10 @@ sent through to the DOM` warning, and any `setAttribute` call that writes an obj
 prop; fix the component rather than the test: strip the prop before the `{...rest}` spread, or
 make it a transient `$prop` on a `styled.<tag>`. Every `@sanity/ui` primitive forwards unknown
 props to a `styled.<tag>`, so `<Button {...props} as="a">` leaks whatever `props` carries that the
-component never consumed.
+component never consumed. A test that leaks a prop on purpose takes the report with
+`takeDomPropWarnings()` from the same module and asserts on it instead of failing;
+`packages/sanity/test/setup/failOnReactDomPropWarnings.test.tsx` checks the guard itself against
+the react-dom and styled-components builds the suite renders with.
 
 The e2e suite has its own guard in `watchForStudioErrors` (`e2e/helpers/studioErrors.ts`), which
 fails a spec at its end when a leak happened during it. CI runs the specs against a production
