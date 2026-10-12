@@ -1660,6 +1660,7 @@ import type {
   useDocumentVersionTitle,
   useDocumentVersionTypeSortedList,
   useEditState,
+  useElementState,
   useEnhancedObjectDialog,
   useEvents,
   useEventsStore,
@@ -6865,6 +6866,9 @@ describe('sanity', () => {
   })
   test('useEditState', () => {
     expectTypeOf<typeof useEditState>().toBeFunction()
+  })
+  test('useElementState', () => {
+    expectTypeOf<typeof useElementState>().toBeFunction()
   })
   test('useEnhancedObjectDialog', () => {
     expectTypeOf<typeof useEnhancedObjectDialog>().toBeFunction()

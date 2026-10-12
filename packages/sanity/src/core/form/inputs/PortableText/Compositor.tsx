@@ -41,6 +41,7 @@ import {PortalBoundaryProvider} from '../../../components/portalBoundary/PortalB
 import {usePortalBoundary} from '../../../components/portalBoundary/usePortalBoundary'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../util/empty'
+import {useElementState} from '../../../util/useElementState'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type RenderCustomMarkers, type RenderBlockActionsCallback} from '../../types/_transitional'
 import {type ArrayOfObjectsInputProps, type OnPasteFn} from '../../types/inputProps'
@@ -169,8 +170,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   }, [onPaste, schemaTypes])
 
   const boundaryElement = useBoundaryElement().element
-  const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
-  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
+  const [wrapperElement, setWrapperElement] = useElementState<HTMLDivElement>()
+  const [scrollElement, setScrollElement] = useElementState<HTMLElement>()
   const floatingBoundary = isFullscreen ? scrollElement : boundaryElement
   // In fullscreen the editor covers the pane's content area and its own scroll element is the
   // region popovers that escape object modals must respect (below the fullscreen toolbar),
@@ -199,7 +200,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const _renderBlockActions = !!value && renderBlockActions ? renderBlockActions : undefined
   const _renderCustomMarkers = !!value && renderCustomMarkers ? renderCustomMarkers : undefined
 
-  const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
+  const [portalElement, setPortalElement] = useElementState<HTMLDivElement>()
 
   const renderTextBlock = useCallback(
     (textBlockProps: TextBlockRenderProps) => {
@@ -704,6 +705,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       path,
       rangeDecorations,
       scrollElement,
+      setPortalElement,
+      setScrollElement,
     ],
   )
 

@@ -1039,6 +1039,7 @@ export {escapeField, fieldNeedsEscape, joinPath} from '../core/util/searchUtils'
 export {supportsTouch} from '../core/util/supportsTouch'
 export {uncaughtErrorHandler} from '../core/util/uncaughtErrorHandler'
 export {sliceString, truncateString} from '../core/util/unicodeString'
+export {useElementState} from '../core/util/useElementState'
 export {
   asLoadable,
   type ErrorState,
