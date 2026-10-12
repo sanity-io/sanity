@@ -1,29 +1,48 @@
-import {type ArraySchemaType} from '@sanity/types'
-import {Card, Stack} from '@sanity/ui'
+import {defineType, isArraySchemaType} from '@sanity/types'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
+import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {createSchema} from '../../../../../schema/createSchema'
 import {DuplicateKeysAlert} from '../DuplicateKeysAlert'
 import {MissingKeysAlert} from '../MissingKeysAlert'
 import {MixedArrayAlert} from '../MixedArrayAlert'
 
-const ARRAY_SCHEMA_TYPE = {
-  jsonType: 'array',
-  name: 'fixtureItems',
-  title: 'Related items',
-  description: 'A fixture array used to show member errors.',
-  of: [],
-} as unknown as ArraySchemaType
+const ARRAY_SCHEMA_TYPE = compileArrayType()
+
+// Each alert reads title and description off the array type it reports on, so the
+// fixture is compiled by the real schema builder instead of hand-rolled.
+function compileArrayType() {
+  const schemaType = createSchema({
+    name: 'fixture',
+    types: [
+      defineType({
+        type: 'array',
+        name: 'fixtureItems',
+        title: 'Related items',
+        description: 'A fixture array used to show member errors.',
+        of: [{type: 'string'}],
+      }),
+    ],
+  }).get('fixtureItems')
+
+  if (!isArraySchemaType(schemaType)) {
+    throw new Error('Expected `fixtureItems` to compile to an array type')
+  }
+
+  return schemaType
+}
 
 function MemberErrorsHarness() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 720}}>
-        <Stack gap={4}>
+        <VStack gap={4}>
           <DuplicateKeysAlert
             error={{
               type: 'DUPLICATE_KEYS',
@@ -50,7 +69,7 @@ function MemberErrorsHarness() {
             onChange={noop}
             path={['mixedItems']}
           />
-        </Stack>
+        </VStack>
       </Card>
     </TestWrapper>
   )
