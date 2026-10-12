@@ -7,7 +7,6 @@ import {
   type DocumentGroupInventoryComponents,
   getReleaseIdFromReleaseDocumentId,
   Hotkeys,
-  isGoingToUnpublish,
   isSanityDefinedAction,
   getDocumentVersionVariantId,
   readVersionType,
@@ -36,6 +35,7 @@ import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useHistoryRestoreAction} from '../../../documentActions/HistoryRestoreAction'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
+import {useDocumentGroupInventoryTarget} from '../useDocumentGroupInventoryTarget'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -56,16 +56,16 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, states} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {__internal_tasks, beta} = useSource()
+  const {__internal_tasks} = useSource()
 
   const {
-    displayed,
     editState,
     isDocumentGroupInventoryActive,
     setIsDocumentGroupInventoryActive,
     documentId,
     documentType,
   } = useDocumentPane()
+  const documentGroupInventoryTarget = useDocumentGroupInventoryTarget()
   const {params} = usePaneRouter()
 
   const showingRevision = Boolean(params?.rev)
@@ -115,7 +115,6 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const {isPaused} = usePausedScheduledDraft()
-  const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
@@ -155,33 +154,19 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       : [firstActionState, ...menuActionStates].filter(Boolean)
   }, [showFirstActionButton, firstActionState, menuActionStates])
 
-  // When a document is designated to be unpublished in a release, the published
-  // document is displayed instead.
-  //
-  // The document group inventory must always reflect the intended document id,
-  // even if the document pane decided to display a different document for some
-  // reason.
-  //
-  // In the future, this would be more robust if `DocumentPaneProvider`
-  // exposed both the displayed document and the original source document.
-  const targetDocumentId =
-    editState?.version && isGoingToUnpublish(editState?.version)
-      ? editState.version._id
-      : displayed?._id
-
   return (
     <Flex alignItems="center" gap={3}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {hasDocumentGroupInventory && typeof targetDocumentId !== 'undefined' && (
+      {documentGroupInventoryTarget.isAvailable && (
         <DocumentGroupInventoryAction
-          documentId={targetDocumentId}
+          documentId={documentGroupInventoryTarget.documentId}
           portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
           isDocumentGroupInventoryActive={isDocumentGroupInventoryActive}
           setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}
         >
           <DocumentGroupInventory
             mode="manage"
-            documentId={targetDocumentId}
+            documentId={documentGroupInventoryTarget.documentId}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
             perspectiveList={perspectiveList}

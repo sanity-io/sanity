@@ -190,6 +190,7 @@ export {
   DocumentGroupInventory,
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
+export {useIsDocumentGroupInventoryAvailable} from '../core/documentGroupInventory/hooks/useIsDocumentGroupInventoryAvailable'
 export {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
