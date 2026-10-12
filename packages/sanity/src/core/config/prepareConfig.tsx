@@ -540,15 +540,19 @@ interface ResolveSourceOptions {
   i18n: {i18next: i18n; source: LocaleSource}
 }
 
-function getBifurClient(client: SanityClient, auth: AuthStore) {
+function getBifurClient(client: SanityClient) {
   const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
   const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
 
-  const options = auth.token ? {token$: auth.token} : {}
-  return fromUrl(urlWithTag, options)
+  // The client's credential, reactive or static: requests wait for a renewal the client is
+  // waiting for, and an open socket is authorized again without reconnecting. With cookies it is
+  // `{withCredentials: true}`, and the browser sends them with the handshake.
+  // `idleTimeout`: React unmounts and remounts subscribers during boot, see
+  // https://github.com/sanity-io/sanity/pull/14152
+  return fromUrl(urlWithTag, {auth: client.config().auth, idleTimeout: 5_000})
 }
 
 function resolveSource({
@@ -561,7 +565,7 @@ function resolveSource({
   i18n,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
-  const bifur = getBifurClient(client, auth)
+  const bifur = getBifurClient(client)
   const errors: unknown[] = []
   const clients: Record<string, SanityClient> = {}
   const getClient = (options: SourceClientOptions): SanityClient => {
