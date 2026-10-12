@@ -220,6 +220,25 @@ export async function expectStable<T>(sample: () => T, repeats = 3): Promise<T> 
   return previous
 }
 
+/**
+ * Settle a test whose archived end state is an *open* tooltip — the one case
+ * `settleChromaticEndState` rejects by design (it asserts no tooltip is
+ * visible). Keeps the real pointer where the test left it (on the trigger),
+ * waits for the Floating UI geometry of every visible `@sanity/ui` tooltip to
+ * stop changing, snaps it to whole pixels and re-reads it as stable. A
+ * tooltip that closes meanwhile never reads as stable, so the test times out
+ * here instead of archiving a closed state.
+ */
+export async function settleOpenTooltip(): Promise<void> {
+  if (typeof document.fonts?.ready !== 'undefined') {
+    await document.fonts.ready
+  }
+  const tooltipSig = present(boxSig('[data-ui="Tooltip"]'))
+  await expectStable(tooltipSig)
+  snapFloatingUiToIntegerPixels()
+  await expectStable(tooltipSig)
+}
+
 const POINTER_PARK_TESTID = 'chromatic-pointer-park'
 
 /**
