@@ -10,7 +10,7 @@ import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
 import * as variantConditions from '../../../hooks/useVariantConditions'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {getVariantId} from '../../../tool/util'
-import VariantsStudioNavbarLayout from '../VariantsStudioNavbarLayout'
+import {VariantsStudioNavbarLayout} from '../VariantsStudioNavbarLayout'
 
 const mockNavigate = vi.fn()
 

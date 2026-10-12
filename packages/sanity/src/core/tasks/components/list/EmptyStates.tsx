@@ -1,10 +1,10 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {useCallback} from 'react'
+import {use, useCallback} from 'react'
 import {Text, Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {useTasksMode} from '../../context/enabled/useTasksMode'
 import {type SidebarTabsIds} from '../../context/navigation/types'
 import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {useTasks} from '../../context/tasks/useTasks'
@@ -91,7 +91,7 @@ const EMPTY_TASK_LIST: Record<
 
 export function EmptyTasksListState() {
   const {activeDocument} = useTasks()
-  const {mode} = useTasksEnabled()
+  const mode = use(useTasksMode())
   const {
     state: {activeTabId},
     setViewMode,

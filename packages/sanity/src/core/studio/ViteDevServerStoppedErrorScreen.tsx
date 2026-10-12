@@ -6,8 +6,11 @@ export const ERROR_TITLE = 'Dev server stopped'
 const ERROR_DESCRIPTION =
   'The development server has stopped. You may need to restart it to continue working.'
 
-/** Preloaded by `StudioErrorBoundary` in development, since no chunk can load once the dev server is gone */
-export default function DevServerStoppedErrorScreen(): ReactNode {
+/**
+ * Imported eagerly by `StudioErrorBoundary`: no chunk can load once the dev server is gone, and
+ * the screen is small enough to ship in the production bundle, where it never renders.
+ */
+export function DevServerStoppedErrorScreen(): ReactNode {
   return (
     <Card
       data-testid="studio-error-screen"

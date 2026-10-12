@@ -1,6 +1,7 @@
 import {TaskIcon} from '@sanity/icons/Task'
 import {Badge, useMediaIndex} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {use, useCallback, useMemo} from 'react'
+import {TasksModePromiseContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -25,6 +26,13 @@ const ButtonContainer = styled.div`
  * @internal
  */
 export default function TasksFooterOpenTasks() {
+  // Suspends under the plugin's own boundary around this action. A failed feature check (`null`)
+  // fails closed here as well: the sidebar this button opens reads as unavailable, so the count
+  // stays hidden, as it did when the tasks providers were not mounted for a failed check. The
+  // action is handed to the document pane as a `ReactNode`, so like `useTasks()` it also copes
+  // with the tasks studio provider not being mounted around it (the structure test harness)
+  const modePromise = use(TasksModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
   const {data, activeDocument} = useTasks()
   const {handleOpenTasks, setActiveTab} = useTasksNavigation()
   const mediaIndex = useMediaIndex()
@@ -48,7 +56,7 @@ export default function TasksFooterOpenTasks() {
 
   const {t} = useTranslation(tasksLocaleNamespace)
 
-  if (pendingTasks.length === 0) return null
+  if (mode === null || pendingTasks.length === 0) return null
 
   if (mediaIndex < 3) {
     return (

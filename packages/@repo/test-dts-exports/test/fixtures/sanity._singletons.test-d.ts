@@ -23,8 +23,8 @@ import type {
   CommentsContext,
   CommentsContextV2,
   CommentsEnabledContext,
-  CommentsEnabledContextV2,
   CommentsIntentContext,
+  CommentsModePromiseContext,
   CommentsOnboardingContext,
   CommentsOnboardingContextV2,
   CommentsSelectedPathContext,
@@ -139,7 +139,7 @@ import type {
   StudioErrorHandlerContext,
   TableContext,
   TasksContext,
-  TasksEnabledContext,
+  TasksModePromiseContext,
   TasksNavigationContext,
   TasksUpsellContext,
   UnclaimedProjectContext,
@@ -217,11 +217,11 @@ describe('sanity/_singletons', () => {
   test('CommentsEnabledContext', () => {
     expectTypeOf<typeof CommentsEnabledContext>().not.toBeNever()
   })
-  test('CommentsEnabledContextV2', () => {
-    expectTypeOf<typeof CommentsEnabledContextV2>().not.toBeNever()
-  })
   test('CommentsIntentContext', () => {
     expectTypeOf<typeof CommentsIntentContext>().not.toBeNever()
+  })
+  test('CommentsModePromiseContext', () => {
+    expectTypeOf<typeof CommentsModePromiseContext>().not.toBeNever()
   })
   test('CommentsOnboardingContext', () => {
     expectTypeOf<typeof CommentsOnboardingContext>().not.toBeNever()
@@ -565,8 +565,8 @@ describe('sanity/_singletons', () => {
   test('TasksContext', () => {
     expectTypeOf<typeof TasksContext>().not.toBeNever()
   })
-  test('TasksEnabledContext', () => {
-    expectTypeOf<typeof TasksEnabledContext>().not.toBeNever()
+  test('TasksModePromiseContext', () => {
+    expectTypeOf<typeof TasksModePromiseContext>().not.toBeNever()
   })
   test('TasksNavigationContext', () => {
     expectTypeOf<typeof TasksNavigationContext>().not.toBeNever()

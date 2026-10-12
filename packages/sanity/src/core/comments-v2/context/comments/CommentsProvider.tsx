@@ -17,7 +17,6 @@ import {
   useCommentOperations,
 } from '../../hooks/use-comment-operations/useCommentOperations'
 import {useCommentsClient} from '../../hooks/useCommentsClient'
-import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 import {useCommentsStore} from '../../store/useCommentsStore'
 import {
   type CommentPostPayload,
@@ -97,7 +96,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     onPathOpen,
     mentionsDisabled,
   } = props
-  const commentsEnabled = useCommentsEnabled()
   const {selectedReleaseId, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const [status, setStatus] = useState<CommentStatus>('open')
@@ -177,17 +175,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       transactionsIdMap.set(commentDocumentId, transactionId)
     },
     [transactionsIdMap],
-  )
-
-  const handleSetStatus = useCallback(
-    (newStatus: CommentStatus) => {
-      // Avoids going to "resolved" when using links to comments
-      if (commentsEnabled.mode === 'upsell' && newStatus === 'resolved') {
-        return null
-      }
-      return setStatus(newStatus)
-    },
-    [setStatus, commentsEnabled],
   )
 
   const projectMentionOptions = useUserListWithPermissions(
@@ -353,7 +340,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       versionId,
 
       status,
-      setStatus: handleSetStatus,
+      setStatus,
       getComment,
       getCommentLink,
       onClearSelectedComment,
@@ -388,7 +375,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       documentType,
       isCommentsClientLoading,
       status,
-      handleSetStatus,
+      setStatus,
       getComment,
       getCommentLink,
       onClearSelectedComment,
