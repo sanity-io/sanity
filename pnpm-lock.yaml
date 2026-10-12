@@ -1287,7 +1287,7 @@ importers:
         specifier: ^0.112.3
         version: 0.112.5(zod@4.6.5)
       '@conventional-changelog/git-client':
-        specifier: ^3.1.2
+        specifier: ^3.2.0
         version: 3.2.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
       '@octokit/plugin-throttling':
         specifier: ^11.0.5
