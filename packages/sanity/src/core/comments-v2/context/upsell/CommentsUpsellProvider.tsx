@@ -7,9 +7,10 @@ import {useCommentsMode} from '../../hooks/useCommentsMode'
 
 /**
  * Mounted in both plan modes by `CommentsStudioLayout`, so the layout never waits for the
- * comments feature check. The UI that opens the dialog already knows it is in upsell mode (it
- * awaited `useCommentsMode()`); the dialog leaf below checks once more, at the leaf, so a plan
- * that has comments never shows it.
+ * comments feature check. The upsell content is only requested once that check has settled as
+ * upsell, so a plan that has comments never requests it. The UI that opens the dialog already
+ * knows it is in upsell mode (it read `useCommentsMode()`); the dialog leaf below checks once
+ * more, at the leaf, so a plan that has comments never shows it.
  *
  * @beta
  * @hidden
@@ -18,6 +19,7 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   const contextValue = useUpsellContext({
     dataUri: '/journey/comments',
     feature: 'comments',
+    mode: useCommentsMode(),
   })
 
   return (
