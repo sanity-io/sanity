@@ -7,7 +7,7 @@ import {useDocumentVersions} from './useDocumentVersions'
  * @param documentId - document id related to the document version list
  * @returns if the document has only versions
  *
- * @beta
+ * @internal
  */
 export const useOnlyHasVersions = ({documentId}: {documentId: string}): boolean => {
   const {data: documentVersions} = useDocumentVersions({documentId})

@@ -18,7 +18,7 @@ export interface useDocumentVersionTypeSortedListState {
  * @param documentId - document id related to the document version list
  * @returns object with sortedDocumentList
  *
- * @beta
+ * @internal
  */
 export const useDocumentVersionTypeSortedList = ({
   documentId,

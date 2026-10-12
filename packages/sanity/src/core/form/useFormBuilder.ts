@@ -5,8 +5,7 @@ import {type FormBuilderContextValue} from './FormBuilderContext'
 
 /**
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function useFormBuilder(): FormBuilderContextValue {
   const formBuilder = useContext(FormBuilderContext)

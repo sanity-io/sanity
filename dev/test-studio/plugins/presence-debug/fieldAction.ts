@@ -2,8 +2,11 @@ import {UserIcon} from '@sanity/icons/User'
 import {UsersIcon} from '@sanity/icons/Users'
 import {isEqual, startsWith} from '@sanity/util/paths'
 import {useEffect, useMemo, useRef} from 'react'
-import {defineDocumentFieldAction, usePresenceStore} from 'sanity'
-import {type PresenceLocation} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {defineDocumentFieldAction} from 'sanity'
+import {
+  type PresenceLocation,
+  usePresenceStore,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {usePresenceDebug} from './context'
 

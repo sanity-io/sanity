@@ -29,8 +29,7 @@ import {
 } from './types'
 import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
 /**
- * @beta
- * @hidden
+ * @internal
  */
 export const CopyPasteProvider: React.FC<{
   children: ReactNode
@@ -364,8 +363,7 @@ export const CopyPasteProvider: React.FC<{
 }
 
 /**
- * @beta
- * @hidden
+ * @internal
  */
 export const useCopyPaste = () => {
   const context = useContext(CopyPasteContext)

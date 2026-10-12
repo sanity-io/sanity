@@ -65,7 +65,7 @@ export interface FormProviderProps {
  * one; a consumer that renders them under this provider directly wraps them in `<Suspense>`
  * itself, since a Components API component may be `lazy()`.
  *
- * @alpha This API might change.
+ * @internal This API might change.
  */
 export function FormProvider(props: FormProviderProps) {
   const {

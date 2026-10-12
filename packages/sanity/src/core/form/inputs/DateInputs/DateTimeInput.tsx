@@ -137,8 +137,7 @@ function enforceTimeStep(dateString: string, timeStep: number) {
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function DateTimeInput(props: DateTimeInputProps) {
   const {
     onChange,

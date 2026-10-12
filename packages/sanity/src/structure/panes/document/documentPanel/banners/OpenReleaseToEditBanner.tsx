@@ -5,8 +5,6 @@ import {
   getVersionFromId,
   isVersionId,
   Translate,
-  useDocumentVersions,
-  useOnlyHasVersions,
   useTranslation,
 } from 'sanity'
 import {Flex} from 'ui5'
@@ -14,6 +12,8 @@ import {Flex} from 'ui5'
 import {useSetPerspective} from '../../../../../core/perspective/useSetPerspective'
 import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
 import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {useDocumentVersions} from '../../../../../core/releases/hooks/useDocumentVersions'
+import {useOnlyHasVersions} from '../../../../../core/releases/hooks/useOnlyHasVersions'
 import {useActiveReleases} from '../../../../../core/releases/store/useActiveReleases'
 import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
 import {isCardinalityOneRelease} from '../../../../../core/util/releaseUtils'

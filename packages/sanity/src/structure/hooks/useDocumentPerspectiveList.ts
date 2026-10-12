@@ -6,7 +6,6 @@ import {
   isPublishedId,
   isVersionId,
   type TargetPerspective,
-  useDocumentVersions,
   usePerspective,
   useSchema,
   useWorkspace,
@@ -14,6 +13,7 @@ import {
 
 import {useFilteredReleases} from '../../core/hooks/useFilteredReleases'
 import {useSetVariant} from '../../core/perspective/useSetVariant'
+import {useDocumentVersions} from '../../core/releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../core/releases/store/types'
 import {isGoingToUnpublish} from '../../core/releases/util/isGoingToUnpublish'
 import {isPublishedPerspective} from '../../core/releases/util/util'

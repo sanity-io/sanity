@@ -32,8 +32,7 @@ const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, siz
 `
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function CompactPreview(props: CompactPreviewProps) {
   const {children, isPlaceholder, media, status, title} = props
 

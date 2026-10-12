@@ -135,8 +135,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
 /**
  * This provider sets the addon dataset client, currently called `comments` dataset.
  * It also exposes a `createAddonDataset` function that can be used to create the addon dataset if it does not exist.
- * @beta
- * @hidden
+ * @internal
  */
 export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
   const context = useContext(AddonDatasetContext)

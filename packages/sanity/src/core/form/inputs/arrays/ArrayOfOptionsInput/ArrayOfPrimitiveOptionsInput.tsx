@@ -43,8 +43,7 @@ function getMemberTypeOfItem(schemaType: ArraySchemaType, option: NormalizedPrim
  * Note: this input can only handle primitive values
  *
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps) {
   const {

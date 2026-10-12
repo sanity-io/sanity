@@ -7,7 +7,6 @@ import memoize from 'lodash-es/memoize.js'
 import noop from 'lodash-es/noop.js'
 import {type ComponentProps, type ReactNode, Suspense, use, useState} from 'react'
 import {
-  CopyPasteProvider,
   defineConfig,
   type LocaleResourceBundle,
   type PluginOptions,
@@ -16,6 +15,7 @@ import {
   type WorkspaceOptions,
 } from 'sanity'
 import {
+  CopyPasteProvider,
   ChangeConnectorRoot,
   ColorSchemeProvider,
   EMPTY_ARRAY,

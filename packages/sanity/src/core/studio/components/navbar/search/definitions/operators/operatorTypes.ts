@@ -98,7 +98,7 @@ export interface ValuelessSearchOperatorBuilder<TType extends string> extends Se
 }
 
 /**
- * @alpha
+ * @internal
  */
 export function defineSearchOperator<
   TType extends string,

@@ -10,6 +10,7 @@ import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
 
+/** @internal */
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
     documentId: string

@@ -14,7 +14,6 @@ import {
   getPreviewValueWithFallback,
   getPublishedId,
   SanityDefaultPreview,
-  useDocumentVersions,
   usePerspective,
 } from 'sanity'
 import {Flex} from 'ui5'
@@ -22,6 +21,7 @@ import {Flex} from 'ui5'
 import {DocumentVersionsStatus} from '../../../core/components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
+import {useDocumentVersions} from '../../../core/releases/hooks/useDocumentVersions'
 import {type DocumentPresence} from '../../../core/store/presence/types'
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 

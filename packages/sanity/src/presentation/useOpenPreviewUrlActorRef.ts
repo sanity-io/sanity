@@ -1,8 +1,9 @@
 import {useActorRef} from '@xstate/react'
 import {useEffect} from 'react'
-import {useClient, useCurrentUser, useGrantsStore} from 'sanity'
+import {useClient, useCurrentUser} from 'sanity'
 import {fromObservable} from 'xstate'
 
+import {useGrantsStore} from '../core/store/datastores'
 import {defineCreatePreviewSecretActor} from './actors/create-preview-secret'
 import {defineResolvePreviewModeActor} from './actors/resolve-preview-mode'
 import {defineWatchSharedSecretActor} from './actors/watch-shared-secret'

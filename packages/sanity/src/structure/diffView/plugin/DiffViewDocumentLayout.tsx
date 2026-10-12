@@ -1,9 +1,10 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
 import {type ComponentType, type PropsWithChildren} from 'react'
-import {type DocumentVariantType, getDocumentVariantType, useTranslation} from 'sanity'
+import {type DocumentVariantType, useTranslation} from 'sanity'
 
 import {type DocumentLayoutProps} from '../../../core/config/types'
+import {getDocumentVariantType} from '../../../core/util/getDocumentVariantType'
 import {structureLocaleNamespace} from '../../i18n'
 import {
   DiffViewEntered,

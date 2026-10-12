@@ -15,8 +15,7 @@ export type TagsArrayInputProps = ArrayOfPrimitivesInputProps<string>
 
 /**
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function TagsArrayInput(props: TagsArrayInputProps) {
   const {onChange, readOnly, value = [], elementProps, path, changed} = props
