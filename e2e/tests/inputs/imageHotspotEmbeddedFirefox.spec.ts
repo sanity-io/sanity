@@ -76,15 +76,17 @@ function authBootstrapHtml(studioUrl: string): string {
   return `<!doctype html><html><body><script>window.${SESSION_TOKEN_BINDING}().then((token) => {localStorage.setItem(${JSON.stringify(key)}, JSON.stringify({token, time: new Date().toISOString()}));location.replace(${JSON.stringify(studioUrl)})})</script></body></html>`
 }
 
-function describeCdnResponse(response: Response | undefined, body: string): string {
+/**
+ * Describes a CDN response for the assertion message. On a 200 it stays short: Playwright keeps
+ * the custom message in the report for passing assertions too, and the body there is the image.
+ */
+async function describeCdnResponse(response: Response | undefined): Promise<string> {
   if (!response) return 'no CDN response was observed'
+  if (response.status() === 200) return '200'
   const acao = response.headers()['access-control-allow-origin']
-  return `${response.status()} ${response.url()} (access-control-allow-origin: ${acao ?? 'absent'}) ${body}`
-}
-
-async function readBody(response: Response | undefined): Promise<string> {
   // Firefox does not hand a body to the test when Opaque Response Blocking dropped it.
-  return response ? await response.text().catch(() => '') : ''
+  const body = await response.text().catch(() => '')
+  return `${response.status()} ${response.url()} (access-control-allow-origin: ${acao ?? 'absent'}) ${body}`
 }
 
 /** Collects CDN image responses for `assetUrl`, ignoring the query string (`?w=…` previews). */
@@ -131,10 +133,9 @@ test.describe('CLDX-5653: image hotspot in a Studio embedded cross-site (Firefox
       .evaluate(loadImageLikeUseLoadImage, `${productionCdnImage}?cldx-5653=${Date.now()}`)
 
     const [response] = cdnResponses
-    const body = await readBody(response)
     expect(
       response?.status(),
-      `cdn.sanity.io answered a Firefox <img> request carrying "Origin: null" with ${describeCdnResponse(response, body)}`,
+      `cdn.sanity.io answered a Firefox <img> request carrying "Origin: null" with ${await describeCdnResponse(response)}`,
     ).toBe(200)
     expect(outcome).toBe('loaded')
   })
@@ -194,10 +195,9 @@ test.describe('CLDX-5653: image hotspot in a Studio embedded cross-site (Firefox
     // The dialog requests the bare asset URL; the form's thumbnail requests it with `?w=…`.
     const response =
       cdnResponses.find((candidate) => !candidate.url().includes('?')) ?? cdnResponses.at(-1)
-    const body = await readBody(response)
     expect(
       response?.status(),
-      `cdn.sanity.work answered the hotspot dialog's image request with ${describeCdnResponse(response, body)}`,
+      `cdn.sanity.work answered the hotspot dialog's image request with ${await describeCdnResponse(response)}`,
     ).toBe(200)
     await expect(loadError).toHaveCount(0)
     await expect(hotspotTool).toBeVisible()
