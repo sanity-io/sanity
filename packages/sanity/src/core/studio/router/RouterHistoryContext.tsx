@@ -1,4 +1,4 @@
-import {type ReactNode, useContext} from 'react'
+import {type ReactNode, use} from 'react'
 import {RouterHistoryContext} from 'sanity/_singletons'
 
 import {type RouterHistory} from './types'
@@ -16,7 +16,7 @@ export function RouterHistoryProvider({
 
 /** @internal */
 export function useRouterHistory(): RouterHistory {
-  const value = useContext(RouterHistoryContext)
+  const value = use(RouterHistoryContext)
   if (!value) throw new Error('Could not find `RouterHistoryProvider` context')
   return value
 }

@@ -1,5 +1,5 @@
 import {isKeySegment, type Path} from '@sanity/types'
-import {type HTMLProps, type SyntheticEvent, useCallback, useContext, useMemo} from 'react'
+import {type HTMLProps, type SyntheticEvent, useCallback, use, useMemo} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -37,8 +37,8 @@ export function Text({
 }
 
 function TextWithDiff({diff, childDiff, children, path, segment, ...restProps}: TextProps) {
-  const {onSetFocus} = useContext(ReviewChangesContext)
-  const {path: fullPath} = useContext(DiffContext)
+  const {onSetFocus} = use(ReviewChangesContext)
+  const {path: fullPath} = use(DiffContext)
   const spanSegment = useMemo(() => path.slice(-2, 1)[0], [path])
   const {t} = useTranslation()
   const isRemoved = diff && diff.action === 'removed'

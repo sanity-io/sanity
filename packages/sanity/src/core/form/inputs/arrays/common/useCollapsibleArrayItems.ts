@@ -1,5 +1,5 @@
 import {type ArraySchemaType, isKeySegment, type Path} from '@sanity/types'
-import {useCallback, useContext, useMemo, useState} from 'react'
+import {useCallback, use, useMemo, useState} from 'react'
 import {SourceContext} from 'sanity/_singletons'
 
 import {initialCollapseArrayItems} from '../../../../config/configPropertyReducers'
@@ -46,7 +46,7 @@ function isUsableLimit(value: unknown): value is number {
  * turning collapsing off, which is what `false` is for.
  */
 function useItemLimit(schemaType: ArraySchemaType, layout: 'list' | 'grid'): number {
-  const source = useContext(SourceContext)
+  const source = use(SourceContext)
   const collapseItems = source?.form?.arrays?.collapseItems ?? initialCollapseArrayItems
   const fieldLimit = schemaType.options?.collapseItemsAfter
 

@@ -1,5 +1,5 @@
 import {SDKStudioContext} from '@sanity/sdk-react'
-import {useContext} from 'react'
+import {use} from 'react'
 import {WorkspaceContext} from 'sanity/_singletons'
 
 import {type Workspace} from '../config/types'
@@ -33,7 +33,7 @@ export function WorkspaceProvider({
  * @hidden
  * @beta */
 export function useWorkspace(): Workspace {
-  const workspace = useContext(WorkspaceContext)
+  const workspace = use(WorkspaceContext)
 
   if (!workspace) throw new Error('Workspace: missing context value')
 

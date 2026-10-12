@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
 import {type ReleasesUpsellContextValue} from './types'
@@ -8,7 +8,7 @@ import {type ReleasesUpsellContextValue} from './types'
  * @hidden
  */
 export function useReleasesUpsell(): ReleasesUpsellContextValue {
-  const value = useContext(ReleasesUpsellContext)
+  const value = use(ReleasesUpsellContext)
 
   if (!value) return FALLBACK_CONTEXT_VALUE
 

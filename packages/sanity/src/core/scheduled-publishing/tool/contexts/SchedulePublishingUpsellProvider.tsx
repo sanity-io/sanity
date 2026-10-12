@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {
   SchedulePublishUpsellContext,
   type SchedulePublishUpsellContextValue,
@@ -25,6 +25,6 @@ export function SchedulePublishingUpsellProvider(props: {children: React.ReactNo
 }
 
 export function useSchedulePublishingUpsell(): SchedulePublishUpsellContextValue {
-  const context = useContext(SchedulePublishUpsellContext)
+  const context = use(SchedulePublishUpsellContext)
   return context
 }

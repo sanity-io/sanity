@@ -1,4 +1,4 @@
-import {type ComponentType, type PropsWithChildren, useCallback, useContext, useState} from 'react'
+import {type ComponentType, type PropsWithChildren, useCallback, use, useState} from 'react'
 import {TableContext} from 'sanity/_singletons'
 
 import {type SortDirection} from './types'
@@ -47,7 +47,7 @@ export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: Tab
  * @internal
  */
 export const useTableContext = (): TableContextValue => {
-  const context = useContext(TableContext)
+  const context = use(TableContext)
   if (!context) {
     throw new Error('useTableContext must be used within a TableProvider')
   }

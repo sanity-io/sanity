@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {CommentsEnabledContextV2} from 'sanity/_singletons'
 
 import {type CommentsEnabledContextValue} from '../context/enabled/types'
@@ -8,5 +8,5 @@ import {type CommentsEnabledContextValue} from '../context/enabled/types'
  * @hidden
  */
 export function useCommentsEnabled(): CommentsEnabledContextValue {
-  return useContext(CommentsEnabledContextV2)
+  return use(CommentsEnabledContextV2)
 }

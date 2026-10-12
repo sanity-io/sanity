@@ -1,4 +1,4 @@
-import {type ReactNode, useContext} from 'react'
+import {type ReactNode, use} from 'react'
 import {SourceContext} from 'sanity/_singletons'
 
 import {type Source} from '../config/types'
@@ -11,7 +11,7 @@ export type SourceProviderProps =
 
 /** @internal */
 export function SourceProvider({children, ...props}: SourceProviderProps) {
-  const parentSource = useContext(SourceContext)
+  const parentSource = use(SourceContext)
   const {unstable_sources: sources} = useWorkspace()
 
   if ('source' in props) {
@@ -40,7 +40,7 @@ export function SourceProvider({children, ...props}: SourceProviderProps) {
  * @deprecated INTERNAL USE ONLY
  */
 export function useSource(): Source {
-  const source = useContext(SourceContext)
+  const source = use(SourceContext)
   if (!source) throw new Error('Could not find `source` context')
   return source
 }
