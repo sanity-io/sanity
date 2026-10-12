@@ -2281,7 +2281,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       player.style:
-        specifier: ^0.3.4
+        specifier: ^0.3.5
         version: 0.3.5(react@19.3.0)
       polished:
         specifier: ^4.3.1
