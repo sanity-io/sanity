@@ -1,4 +1,4 @@
-import {createVar, style} from '@vanilla-extract/css'
+import {createVar, globalStyle, style} from '@vanilla-extract/css'
 
 /** `color.input.default.enabled.placeholder` */
 export const inputPlaceholderColorVar = createVar()
@@ -16,11 +16,14 @@ export const focusableCard = style({
     "&&[data-as='button']:focus-within": {
       border: '1px solid var(--card-focus-ring-color)',
     },
-    "&&[data-as='button'][data-selected]": {
-      vars: {
-        '--text-color-muted': 'light-dark(var(--blue-200), var(--blue-800))',
-        '--text-color': 'light-dark(var(--white), var(--black))',
-      },
-    },
+  },
+})
+
+// `Text` assigns `--text-color` (and the muted variant) on its own element, so the open-menu
+// contrast colors have to be declared there rather than inherited from the card.
+globalStyle(`${focusableCard}[data-as='button'][data-selected] [data-ui='Text']`, {
+  vars: {
+    '--text-color-muted': 'light-dark(var(--blue-200), var(--blue-800))',
+    '--text-color': 'light-dark(var(--white), var(--black))',
   },
 })
