@@ -35,6 +35,34 @@ describe('failOnReactDomPropWarnings', () => {
     ])
   })
 
+  it('captures an array that reaches an attribute', () => {
+    render(
+      <div
+        // @ts-expect-error -- a prop that no DOM element has, here the tuple form of intent parameters
+        leakedparams={[{id: 'author'}, {view: 'json'}]}
+      />,
+    )
+
+    expect(takeDomPropWarnings()).toEqual([
+      'Attribute `leakedparams` on <div> was set to "[object Object],[object Object]" (Array): an object-valued prop reached the DOM element.',
+    ])
+  })
+
+  it('captures a date that reaches an attribute', () => {
+    render(
+      <div
+        // @ts-expect-error -- a prop that no DOM element has
+        leakeddate={new Date(0)}
+      />,
+    )
+
+    expect(takeDomPropWarnings()).toEqual([
+      expect.stringMatching(
+        /^Attribute `leakeddate` on <div> was set to "[^"]+" \(Date\): an object-valued prop/,
+      ),
+    ])
+  })
+
   it('captures what styled-components reports about a prop it passes to the DOM', () => {
     const Box = styled.div<{leakedtone: string}>``
     // styled-components only warns in development.

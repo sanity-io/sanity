@@ -582,13 +582,13 @@ browser-mode setup files and by the `@sanity/vision` and `@sanity/access-ui` con
 current test when a non-DOM prop reaches a DOM element: react-dom's development-build warnings
 (`React does not recognize the … prop on a DOM element`, `Received true for a non-boolean
 attribute`, invalid event handler / ARIA names, …), styled-components' `unknown prop … is being
-sent through to the DOM` warning, and any `setAttribute` call that writes an object
-(`params="[object Object]"` — react-dom renders all-lowercase unknown props like `intent` or
-`params` silently, so the attribute write is the only trace). The failure lists the offending
-prop; fix the component rather than the test: strip the prop before the `{...rest}` spread, or
-make it a transient `$prop` on a `styled.<tag>`. Every `@sanity/ui` primitive forwards unknown
-props to a `styled.<tag>`, so `<Button {...props} as="a">` leaks whatever `props` carries that the
-component never consumed. A test that leaks a prop on purpose takes the report with
+sent through to the DOM` warning, and any `setAttribute` call that writes an object, an array or a
+`Date` (`params="[object Object]"`, `tags="a,b"` — react-dom renders all-lowercase unknown props
+like `intent` or `params` silently, so the attribute write is the only trace). The failure lists
+the offending prop; fix the component rather than the test: strip the prop before the `{...rest}`
+spread, or make it a transient `$prop` on a `styled.<tag>`. Every `@sanity/ui` primitive forwards
+unknown props to a `styled.<tag>`, so `<Button {...props} as="a">` leaks whatever `props` carries
+that the component never consumed. A test that leaks a prop on purpose takes the report with
 `takeDomPropWarnings()` from the same module and asserts on it instead of failing;
 `packages/sanity/test/setup/failOnReactDomPropWarnings.test.tsx` checks the guard itself against
 the react-dom and styled-components builds the suite renders with.

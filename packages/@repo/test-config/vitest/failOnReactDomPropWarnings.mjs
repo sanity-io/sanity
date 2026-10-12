@@ -6,7 +6,8 @@
 // 2. styled-components' "unknown prop is being sent through to the DOM" `console.warn`.
 // 3. `Element.prototype.setAttribute` receiving an object: react-dom validates neither the name
 //    nor the value of an all-lowercase unknown prop (`params={{…}}` renders silently as
-//    `params="[object Object]"`), so the attribute write is the only trace such a leak leaves.
+//    `params="[object Object]"`, `tags={['a', 'b']}` as `tags="a,b"`), so the attribute write is
+//    the only trace such a leak leaves.
 //
 // Register it through `setupFiles`, or import it from an existing setup file. Works in jsdom and
 // in vitest browser mode alike — both run the development build of react-dom, which is the only
@@ -55,9 +56,9 @@ export const STYLED_COMPONENTS_UNKNOWN_PROP_PATTERN =
   /styled-components: it looks like an unknown prop "[^"]+" is being sent through to the DOM/
 
 /**
- * What react-dom writes when an object-valued prop reaches an unknown attribute (`'' + value`).
- * Lowercase leaks such as `params={{type: 'author'}}` produce no console output at all, so the
- * attribute value is the only trace they leave; no real attribute ever holds this string.
+ * What a plain object turns into as an attribute value. Lowercase leaks such as
+ * `params={{type: 'author'}}` produce no console output at all, so the attribute value is the only
+ * trace they leave; no real attribute ever holds this string.
  */
 export const OBJECT_ATTRIBUTE_VALUE = '[object Object]'
 
@@ -142,20 +143,37 @@ console.warn = (...args) => {
 }
 
 /**
- * react-dom hands the raw prop value to `setAttribute` and lets the DOM coerce it, so both the
- * object itself and an already-coerced string count.
+ * react-dom hands every attribute value to `setAttribute` as it is and lets the DOM convert it, so
+ * any object counts (a plain object, an array, a `Date`), and so does a plain object that was
+ * already converted to a string on its way there.
  *
  * @param {unknown} value
  * @returns {boolean}
  */
 export function isObjectAttributeValue(value) {
-  if (value === OBJECT_ATTRIBUTE_VALUE) return true
-  if (typeof value !== 'object' || value === null) return false
+  return value === OBJECT_ATTRIBUTE_VALUE || (typeof value === 'object' && value !== null)
+}
+
+/**
+ * The attribute value the DOM writes for `value`, followed by the kind of object when that string
+ * does not show it (`"a,b" (Array)`).
+ *
+ * @param {unknown} value
+ * @returns {string}
+ */
+function describeAttributeValue(value) {
+  let text
   try {
-    return String(value) === OBJECT_ATTRIBUTE_VALUE
+    text = String(value)
   } catch {
-    return false
+    text = '[unprintable]'
   }
+  if (text.length > 60) text = `${text.slice(0, 57)}...`
+  const kind =
+    typeof value === 'object' && value !== null && text !== OBJECT_ATTRIBUTE_VALUE
+      ? ` (${Object.prototype.toString.call(value).slice(8, -1)})`
+      : ''
+  return `"${text}"${kind}`
 }
 
 if (typeof Element !== 'undefined') {
@@ -163,7 +181,7 @@ if (typeof Element !== 'undefined') {
   Element.prototype.setAttribute = function patchedSetAttribute(name, value) {
     if (isObjectAttributeValue(value)) {
       captured.push(
-        `Attribute \`${name}\` on <${this.tagName.toLowerCase()}> was set to "${OBJECT_ATTRIBUTE_VALUE}": an object-valued prop reached the DOM element.`,
+        `Attribute \`${name}\` on <${this.tagName.toLowerCase()}> was set to ${describeAttributeValue(value)}: an object-valued prop reached the DOM element.`,
       )
     }
     return setAttribute.call(this, name, value)
