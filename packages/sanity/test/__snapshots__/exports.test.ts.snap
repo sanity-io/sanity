@@ -1401,6 +1401,7 @@ exports[`exports snapshot 1`] = `
     "PresentationDisplayedDocumentContext": "object",
     "PresentationDocumentContext": "object",
     "PresentationNavigateContext": "object",
+    "PresentationPaneLinksContext": "object",
     "PresentationPanelsContext": "object",
     "PresentationParamsContext": "object",
     "PresentationSharedStateContext": "object",
