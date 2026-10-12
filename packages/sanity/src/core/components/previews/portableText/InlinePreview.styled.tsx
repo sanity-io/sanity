@@ -26,7 +26,7 @@ export function MediaSpan(props: ComponentProps<'span'>) {
     <span
       {...rest}
       className={clsx(mediaSpan, className)}
-      style={{...assignInlineVars({[mediaSpanRadiusVar]: `${rem(radius[1])}`}), ...style}}
+      style={{...style, ...assignInlineVars({[mediaSpanRadiusVar]: `${rem(radius[1])}`})}}
     />
   )
 }
@@ -43,12 +43,12 @@ export function TextSpan(props: Omit<TextProps<'span'>, 'as'>) {
       as="span"
       className={clsx(textSpan, className)}
       style={{
+        ...style,
         ...assignInlineVars({
           [textSpanFontSizeVar]: `${textSize.fontSize}`,
           [textSpanFontWeightVar]: `${textFont.weights.medium}`,
           [textSpanLineHeightVar]: `${textSize.lineHeight / textSize.fontSize}`,
         }),
-        ...style,
       }}
     />
   )

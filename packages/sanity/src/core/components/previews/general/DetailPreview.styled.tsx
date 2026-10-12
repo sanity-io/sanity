@@ -84,8 +84,8 @@ export function DescriptionText(props: ComponentProps<typeof Text>) {
       {...rest}
       className={clsx(descriptionText, className)}
       style={{
-        ...assignInlineVars({[descriptionTextMaxHeightVar]: `${rem(maxHeight)}`}),
         ...style,
+        ...assignInlineVars({[descriptionTextMaxHeightVar]: `${rem(maxHeight)}`}),
       }}
     />
   )

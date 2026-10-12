@@ -23,7 +23,7 @@ export function MediaCard(props: ComponentProps<typeof Card> & {$ratio: number})
     <Card
       {...rest}
       className={clsx(mediaCard, className)}
-      style={{...assignInlineVars({[mediaCardRatioVar]: `${$ratio}%`}), ...style}}
+      style={{...style, ...assignInlineVars({[mediaCardRatioVar]: `${$ratio}%`})}}
     />
   )
 }
@@ -38,7 +38,7 @@ export function RootBox(props: RootBoxProps) {
       {...rest}
       overflow="hidden"
       className={clsx(rootBox, className)}
-      style={{...assignInlineVars({[rootBoxRadiusVar]: `${radius[1]}px`}), ...style}}
+      style={{...style, ...assignInlineVars({[rootBoxRadiusVar]: `${radius[1]}px`})}}
     />
   )
 }

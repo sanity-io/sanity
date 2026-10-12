@@ -25,8 +25,8 @@ function CircleSvg(props: ComponentProps<'svg'>) {
       {...rest}
       className={clsx(circleSvg, className)}
       style={{
-        ...assignInlineVars({[circleStrokeVar]: color.border}),
         ...style,
+        ...assignInlineVars({[circleStrokeVar]: color.border}),
       }}
     />
   )

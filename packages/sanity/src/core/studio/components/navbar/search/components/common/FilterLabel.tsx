@@ -27,7 +27,7 @@ function CustomBox(props: ComponentProps<typeof Box> & {$flexShrink?: number}) {
     <Box
       {...rest}
       className={clsx(filterLabelBox, className)}
-      style={{...assignInlineVars({[flexShrinkVar]: String($flexShrink)}), ...style}}
+      style={{...style, ...assignInlineVars({[flexShrinkVar]: String($flexShrink)})}}
     />
   )
 }
