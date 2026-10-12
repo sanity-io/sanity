@@ -101,11 +101,39 @@ function describeValue(value: unknown): string {
   return JSON.stringify(value) ?? 'undefined'
 }
 
-// `validatePropertiesInDevelopment` also warns about these, which are not about prop names.
-const OTHER_WARNINGS = /^error: (?:`value` prop on|A component is `contentEditable`)/
+// react-dom also logs these, which are not about prop names: the `value` and `contentEditable`
+// checks of `validatePropertiesInDevelopment`, and the check that an event prop is a function.
+const OTHER_WARNINGS =
+  /^error: (?:`value` prop on|A component is `contentEditable`|Expected `[^`]+` listener to be a function)/
 
-/** What react-dom's development build logs for `<type name={value} />`, as `level: message`. */
-function reactDomWarnings(type: string, name: string, value: unknown): string[] {
+// What `setPropOnCustomElement` reads from the element: whether it has a property of the prop's
+// name, and the methods it writes attributes and adds listeners with.
+const fakeCustomElements = new Map(
+  [false, true].map((hasProperty) => [
+    hasProperty,
+    new Proxy(
+      {
+        setAttribute() {},
+        removeAttribute() {},
+        hasAttribute: () => false,
+        addEventListener() {},
+        removeEventListener() {},
+      },
+      {has: () => hasProperty, set: () => true},
+    ),
+  ]),
+)
+
+/**
+ * What react-dom's development build logs for `<type name={value} />`, as `level: message`. A
+ * custom element has a property of that name when `hasProperty` is set.
+ */
+function reactDomWarnings(
+  type: string,
+  name: string,
+  value: unknown,
+  hasProperty: boolean,
+): string[] {
   const warnings: string[] = []
   react.resetWarnings()
   const restore = react.setConsoleSink((level, args) => {
@@ -114,13 +142,30 @@ function reactDomWarnings(type: string, name: string, value: unknown): string[] 
   })
   try {
     react.validatePropertiesInDevelopment(type, {[name]: value})
-    // `setProp` writes every other prop with a value as an attribute, checking its name first.
-    const isEventLike =
-      name.length > 2 &&
-      (name[0] === 'o' || name[0] === 'O') &&
-      (name[1] === 'n' || name[1] === 'N')
-    if (!react.isCustomElement(type) && value !== null && value !== undefined && !isEventLike) {
-      react.isAttributeNameSafe(react.getAttributeAlias(name))
+    if (react.isCustomElement(type)) {
+      if (value !== undefined) {
+        try {
+          react.setPropOnCustomElement(
+            fakeCustomElements.get(hasProperty)!,
+            type,
+            name,
+            value,
+            {[name]: value},
+            undefined,
+          )
+        } catch {
+          // `style` and `dangerouslySetInnerHTML` throw for values of the wrong shape.
+        }
+      }
+    } else {
+      // `setProp` writes every other prop with a value as an attribute, checking its name first.
+      const isEventLike =
+        name.length > 2 &&
+        (name[0] === 'o' || name[0] === 'O') &&
+        (name[1] === 'n' || name[1] === 'N')
+      if (value !== null && value !== undefined && !isEventLike) {
+        react.isAttributeNameSafe(react.getAttributeAlias(name))
+      }
     }
   } finally {
     restore()
@@ -128,26 +173,33 @@ function reactDomWarnings(type: string, name: string, value: unknown): string[] 
   return warnings
 }
 
+/** Every combination of the types, names and values above, one prop at a time. */
+function* singlePropCases() {
+  for (const type of TYPES) {
+    for (const hasProperty of react.isCustomElement(type) ? [false, true] : [false]) {
+      for (const name of NAMES) {
+        for (const value of VALUES) yield {type, hasProperty, name, value}
+      }
+    }
+  }
+}
+
 describe('createDomPropClassifier', () => {
   test('flags a prop exactly when react-dom warns about it, with one of its messages', () => {
     const mismatches: string[] = []
-    for (const type of TYPES) {
-      for (const name of NAMES) {
-        for (const value of VALUES) {
-          const expected = reactDomWarnings(type, name, value)
-          const actual = classify({type, props: {[name]: value}})
-            .filter((issue) => issue.rule === 'react')
-            .map((issue) => `error: ${issue.message}`)
-          const agrees =
-            expected.length === 0
-              ? actual.length === 0
-              : actual.length === 1 && expected.includes(actual[0])
-          if (!agrees) {
-            mismatches.push(
-              `<${type} ${JSON.stringify(name)}={${describeValue(value)}}>: react-dom ${JSON.stringify(expected)}, classifier ${JSON.stringify(actual)}`,
-            )
-          }
-        }
+    for (const {type, hasProperty, name, value} of singlePropCases()) {
+      const expected = reactDomWarnings(type, name, value, hasProperty)
+      const actual = classify({type, props: {[name]: value}, hasProperty: () => hasProperty})
+        .filter((issue) => issue.rule === 'react')
+        .map((issue) => `error: ${issue.message}`)
+      const agrees =
+        expected.length === 0
+          ? actual.length === 0
+          : actual.length === 1 && expected.includes(actual[0])
+      if (!agrees) {
+        mismatches.push(
+          `<${type} ${JSON.stringify(name)}={${describeValue(value)}}>${hasProperty ? ' with that property' : ''}: react-dom ${JSON.stringify(expected)}, classifier ${JSON.stringify(actual)}`,
+        )
       }
     }
     expect(mismatches.slice(0, 20)).toEqual([])
@@ -257,6 +309,17 @@ describe('createDomPropClassifier', () => {
     expect(classify({type: 'div', props: {is: 'my-div', isOpen: true}})).toEqual([])
   })
 
+  test('checks the name of a custom element prop that React writes as an attribute', () => {
+    // React writes `true` without checking the name and adds an `on…` function as a listener.
+    const props = {$tone: 'primary', $open: true, on$change: () => {}, config: {a: 1}}
+    expect(classify({type: 'my-element', props, hasProperty: () => false})).toEqual([
+      {rule: 'react', prop: '$tone', message: 'Invalid attribute name: `$tone`'},
+    ])
+    expect(classify({type: 'my-element', props, hasProperty: (name) => name === '$tone'})).toEqual(
+      [],
+    )
+  })
+
   test('runs from its serialized source, as the init script runs it', () => {
     const serialized = vm.runInNewContext(
       `(${createDomPropClassifier.toString()})`,
@@ -265,7 +328,12 @@ describe('createDomPropClassifier', () => {
     for (const type of ['div', 'my-element']) {
       for (const name of NAMES) {
         for (const value of VALUES) {
-          const host = {type, props: {[name]: value}, styledTag: type === 'div'}
+          const host = {
+            type,
+            props: {[name]: value},
+            styledTag: type === 'div',
+            hasProperty: () => false,
+          }
           expect(JSON.stringify(isolated(host))).toBe(JSON.stringify(classify(host)))
         }
       }

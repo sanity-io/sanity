@@ -22,6 +22,12 @@ export interface DomPropHost {
    * the global `part` or `ping` on `<a>`.
    */
   reflects?: (lowerCasedName: string) => boolean
+  /**
+   * Whether the element has a property of that name. react-dom sets such a prop of a custom
+   * element as the property and writes the others as attributes. Without this, every prop of a
+   * custom element counts as a property.
+   */
+  hasProperty?: (name: string) => boolean
 }
 
 export interface DomPropIssue {
@@ -176,6 +182,18 @@ export function createDomPropClassifier(vocabulary: DomPropVocabulary): DomPropC
     (name.charCodeAt(0) === 111 && name.charCodeAt(1) === 110 && name.charCodeAt(2) < 91)
   const isDeliberate = (name: string, props: Record<string, unknown>) =>
     hasOwn(deliberateAttributes, name) && props[deliberateAttributes[name]] !== undefined
+  // Whether react-dom writes the prop as an attribute, which it checks the name of first.
+  // `setProp` writes every prop of a plain element that has a value and is not named like an event
+  // handler; `setPropOnCustomElement` writes every prop that is not `undefined`, `true` (written
+  // without a check), an `on…` listener or a property of the element. The props it handles itself
+  // all have valid names.
+  const writesAttribute = (host: DomPropHost, custom: boolean, name: string, value: unknown) =>
+    custom
+      ? value !== undefined &&
+        value !== true &&
+        !(typeof value === 'function' && name[0] === 'o' && name[1] === 'n') &&
+        host.hasProperty?.(name) === false
+      : value !== null && value !== undefined && !isEventLike(name)
 
   function ariaMessage(type: string, name: string): string | null {
     if (ariaCamel.test(name)) {
@@ -287,10 +305,8 @@ export function createDomPropClassifier(vocabulary: DomPropVocabulary): DomPropC
       const reactMessage =
         ariaMessage(type, name) ??
         (validatesUnknownProps ? unknownPropertyMessage(type, name, value) : null) ??
-        (!custom && value !== null && value !== undefined && !isEventLike(name)
-          ? validAttributeName.test(name)
-            ? null
-            : `Invalid attribute name: \`${name}\``
+        (writesAttribute(host, custom, name, value) && !validAttributeName.test(name)
+          ? `Invalid attribute name: \`${name}\``
           : null)
       if (reactMessage !== null) {
         issues.push({rule: 'react', prop: name, message: reactMessage})

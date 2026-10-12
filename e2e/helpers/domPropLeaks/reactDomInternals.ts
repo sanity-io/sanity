@@ -31,6 +31,7 @@ const INTERNAL_NAMES = [
   'getAttributeAlias',
   'isAttributeNameSafe',
   'validatePropertiesInDevelopment',
+  'setPropOnCustomElement',
   'warnedProperties',
   'warnedProperties$1',
   'illegalAttributeNameCache',
@@ -68,6 +69,18 @@ export interface ReactDomInternals {
   isAttributeNameSafe: (name: string) => boolean
   /** What react-dom runs on the props of every host element it creates or updates. */
   validatePropertiesInDevelopment: (type: string, props: Record<string, unknown>) => void
+  /**
+   * How react-dom applies one prop of a custom element: it sets a property of that name if the
+   * element has one, adds an `on…` function as a listener, and otherwise writes an attribute.
+   */
+  setPropOnCustomElement: (
+    element: object,
+    tag: string,
+    key: string,
+    value: unknown,
+    props: Record<string, unknown>,
+    prevValue: unknown,
+  ) => void
   /** Forget which names react-dom has already warned about (it warns once per name). */
   resetWarnings: () => void
   /** Receives the bundle's `console` calls. Returns a function that restores the previous sink. */

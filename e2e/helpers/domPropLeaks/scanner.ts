@@ -220,6 +220,7 @@ function installDomPropLeakScanner(
         typeof styled.styledComponentId === 'string' &&
         typeof styled.shouldForwardProp !== 'function',
       reflects: (name) => reflects(element, name),
+      hasProperty: (name) => name in element,
     })
     if (issues.length === 0) return
 

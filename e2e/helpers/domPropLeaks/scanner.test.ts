@@ -264,6 +264,28 @@ describe('DOM prop leak scanner', () => {
     expect(link.text).toBe('')
   })
 
+  test('checks the names of custom element props that React writes as attributes', () => {
+    class FakeTonedElement extends FakeElement {
+      $tone = ''
+    }
+    const page = createDocument()
+    const props = {$tone: 'primary', $open: true, on$change: () => {}, config: {a: 1}}
+    page.add(
+      render(new FakeElement('my-widget'), props, intentLinkFiber),
+      render(new FakeTonedElement('my-toned-widget'), props, intentLinkFiber),
+    )
+
+    // React sets a prop as the property when the element has one.
+    expect(page.logged()).toEqual([
+      expect.objectContaining({
+        rule: 'react',
+        prop: '$tone',
+        tag: 'my-widget',
+        message: 'Invalid attribute name: `$tone`',
+      }),
+    ])
+  })
+
   test('checks props React updates without changing the DOM', () => {
     const page = createDocument()
     const button = render(new FakeElement('button'), {type: 'button'}, intentLinkFiber)
