@@ -28,13 +28,13 @@ catalog:
   '@sanity/client': ^8.9.0
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.28.6
+  '@sanity/tsdown-config': ^0.28.8
   '@sanity/ui': ^4.4.0
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
   '@types/react-is': ^19.3.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.2.24
+  '@sanity/vanilla-extract-vite-plugin': ^0.2.26
   '@vanilla-extract/css': ^1.21.3
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.2
@@ -54,7 +54,7 @@ catalog:
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
   ui5: npm:@sanity/ui@5.0.0-alpha.14
-  tsdown: ^0.23.0
+  tsdown: ^0.23.1
   typescript: ^7.0.2
   vite: ^8.3.4
   vitest: ^5.0.3
@@ -87,6 +87,9 @@ minimumReleaseAgeExclude:
   - '@vanilla-extract/*'
   - '@vercel/stega'
   - '@yuku-toolchain/*'
+  # Fresh TanStack patch and its lockstep core release
+  - '@tanstack/react-virtual@3.14.15'
+  - '@tanstack/virtual-core@3.19.0'
   - '@codemirror/search'
   - '@codemirror/state'
   - '@codemirror/view'
@@ -142,6 +145,8 @@ minimumReleaseAgeExclude:
   - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
+  # Fresh patch; exclude so 4.6.6 can install before the age gate
+  - 'zod@4.6.6'
 
 overrides:
   vitest: 'catalog:'
