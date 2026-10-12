@@ -15,29 +15,18 @@ import {
   DiffViewDocumentSelectionChanged,
 } from '../__telemetry__/diffView.telemetry'
 import {DiffView} from '../components/DiffView'
-import {
-  type DiffViewStateErrorWithInput,
-  selectActiveTransition,
-  useDiffViewState,
-} from '../hooks/useDiffViewState'
+import {selectActiveTransition, useDiffViewState} from '../hooks/useDiffViewState'
 
-function ParamsErrorDescription({errors}: {errors: DiffViewStateErrorWithInput[]}) {
-  const {t} = useTranslation(structureLocaleNamespace)
+// Toast content renders above `LocaleProvider`, so it cannot translate anything itself - the
+// caller, which does render under the active workspace's i18n context, passes translated messages.
+function paramsErrorDescription(messages: {error: string; message: string}[]) {
   return (
     <ul>
-      {errors.map(([error, input]) => (
-        <li key={error}>
-          {t(`compare-version.error.${error}`, {
-            input,
-          })}
-        </li>
+      {messages.map(({error, message}) => (
+        <li key={error}>{message}</li>
       ))}
     </ul>
   )
-}
-
-function paramsErrorDescription(errors: DiffViewStateErrorWithInput[]) {
-  return <ParamsErrorDescription errors={errors} />
 }
 
 export const DiffViewDocumentLayout: ComponentType<
@@ -52,7 +41,14 @@ export const DiffViewDocumentLayout: ComponentType<
         id: 'diffViewParamsParsingError',
         status: 'error',
         title: t('compare-version.error.invalidParams.title'),
-        description: paramsErrorDescription(errors),
+        description: paramsErrorDescription(
+          errors.map(([error, input]) => ({
+            error,
+            message: t(`compare-version.error.${error}`, {
+              input,
+            }),
+          })),
+        ),
       })
     },
     onActiveChanged: (previousState, state) => {
