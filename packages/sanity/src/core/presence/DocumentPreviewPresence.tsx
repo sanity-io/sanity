@@ -30,7 +30,9 @@ const AvatarStackBox = styled.div((props) => {
   `
 })
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const {presence} = props
   const {t} = useTranslation(releasesLocaleNamespace)

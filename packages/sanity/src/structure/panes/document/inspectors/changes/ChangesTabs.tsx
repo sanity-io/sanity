@@ -4,16 +4,16 @@ import {Card, TabList, TabPanel, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {
   type DocumentInspectorProps,
-  isReleaseDocument,
   type TargetPerspective,
   type TFunction,
   Translate,
   usePerspective,
-  useSource,
   useTranslation,
 } from 'sanity'
 import {Flex, Box} from 'ui5'
 
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {useSource} from '../../../../../core/studio/source'
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tab} from '../../../../../ui-components/tab/Tab'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'

@@ -1,10 +1,11 @@
 import {rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useContext} from 'react'
-import {FormRow, type ObjectSchemaType, type PublishedId} from 'sanity'
+import {type ObjectSchemaType, type PublishedId} from 'sanity'
 import {PresentationDocumentContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
+import {FormRow} from '../../core/form/components/layout/FormRow'
 import {type PresentationPluginOptions} from '../types'
 import {LocationsBanner} from './LocationsBanner'
 

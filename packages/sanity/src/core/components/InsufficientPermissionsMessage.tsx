@@ -31,7 +31,9 @@ export interface InsufficientPermissionsMessageProps {
 
 const EMPTY_ARRAY = [] as never[]
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function InsufficientPermissionsMessage({
   currentUser,
   context,

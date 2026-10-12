@@ -1,6 +1,6 @@
-import {type ReferenceInputOptions} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
+import {type ReferenceInputOptions} from '../../../core/form/studio/contexts/ReferenceInputOptions'
 import {link} from './EditReferenceLinkComponent.css'
 
 export const EditReferenceLinkComponent: ReferenceInputOptions['EditReferenceLinkComponent'] = ({
