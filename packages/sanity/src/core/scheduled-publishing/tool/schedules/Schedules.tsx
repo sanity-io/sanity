@@ -1,11 +1,11 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card} from '@sanity/ui'
 import {Suspense, use} from 'react'
+import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Text, Container, Flex, Box, Icon} from 'ui5'
 
 import {NO_UPSELL_DATA} from '../../../hooks/useUpsellData'
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useSchedulePublishingUpsell} from '../contexts/SchedulePublishingUpsellProvider'
 import {useSchedules} from '../contexts/schedules'
@@ -18,7 +18,8 @@ const Panel = styled(Container)`
 
 export const Schedules = () => {
   const {activeSchedules, selectedDate, scheduleState} = useSchedules()
-  const {mode} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
   const showWarning = mode === 'upsell' && scheduleState === 'scheduled'
   return (
     <Box style={{height: '100%'}}>
