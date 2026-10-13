@@ -3,8 +3,9 @@ import {type AssetSource} from '@sanity/types'
  * Tests for drag-and-drop and paste upload via uploadTarget/fileTarget.
  * Shared behavior used by FileInput, ImageInput, and VideoInput.
  */
-import {fireEvent, screen, waitFor} from '@testing-library/react'
+import {act, fireEvent, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {type ReactNode, useSyncExternalStore} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {
@@ -13,12 +14,16 @@ import {
   observeImageAssetStub,
   observeVideoAssetStub,
 } from '../../../../../../../test/fixtures/assetSourceMocks'
+import {renderArrayOfObjectsInput} from '../../../../../../../test/form/renderArrayOfObjectsInput'
 import {renderFileInput} from '../../../../../../../test/form/renderFileInput'
 import {renderImageInput} from '../../../../../../../test/form/renderImageInput'
 import {renderVideoInput} from '../../../../../../../test/form/renderVideoInput'
 import {BaseVideoInput} from '../../../../../../media-library/plugin/VideoInput/VideoInput'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {ListArrayInput} from '../../../arrays/ArrayOfObjectsInput/List/ListArrayInput'
 import {BaseFileInput} from '../../FileInput/FileInput'
 import {BaseImageInput} from '../../ImageInput/ImageInput'
+import type * as ExtractFilesModule from '../fileTarget/utils/extractFiles'
 
 // Mock useVideoPlaybackInfo and VideoPlayer for video tests (VideoInput uses these)
 vi.mock('../../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo', () => ({
@@ -40,6 +45,18 @@ vi.mock('../../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo'
 vi.mock('../../../../../../media-library/plugin/VideoInput/VideoPlayer', () => ({
   default: () => null,
 }))
+
+// Lets a test hold the asynchronous file extraction of a drop (a directory drop walks its tree)
+// until it has changed the input, the way a real extraction can outlive a read-only transition.
+const deferredExtraction = vi.hoisted(() => ({pending: null as Promise<File[]> | null}))
+vi.mock('../fileTarget/utils/extractFiles', async (importOriginal) => {
+  const actual = await importOriginal<typeof ExtractFilesModule>()
+  return {
+    ...actual,
+    extractDroppedFiles: (dataTransfer: DataTransfer) =>
+      deferredExtraction.pending ?? actual.extractDroppedFiles(dataTransfer),
+  }
+})
 
 /**
  * Creates a DataTransfer-like object for drag/drop tests.
@@ -567,6 +584,278 @@ describe('uploadTarget - drag and drop', () => {
       expect(addEventListenerSpy).not.toHaveBeenCalledWith('keydown', expect.anything(), true)
     } finally {
       addEventListenerSpy.mockRestore()
+    }
+  })
+})
+
+// A read-only flag the test flips from outside React, the way a form does when a document pair
+// replayed from cache (`ready: false`) receives its fresh snapshot and becomes editable.
+function createReadOnlyStore(initial: boolean) {
+  let readOnly = initial
+  const listeners = new Set<() => void>()
+  return {
+    get: () => readOnly,
+    set: (next: boolean) => {
+      readOnly = next
+      listeners.forEach((listener) => listener())
+    },
+    subscribe: (listener: () => void) => {
+      listeners.add(listener)
+      return () => listeners.delete(listener)
+    },
+  }
+}
+
+function WithReadOnly(props: {
+  children: (readOnly: boolean) => ReactNode
+  store: ReturnType<typeof createReadOnlyStore>
+}) {
+  const {children, store} = props
+  const readOnly = useSyncExternalStore(store.subscribe, store.get)
+  return children(readOnly)
+}
+
+function fileTargetTone(): string | null | undefined {
+  return document.querySelector('[data-test-id="file-target"]')?.getAttribute('data-tone')
+}
+
+describe('uploadTarget - tone and read-only transitions', () => {
+  it('follows the read-only state of the input after mount', async () => {
+    const readOnly = createReadOnlyStore(true)
+
+    await renderArrayOfObjectsInput({
+      fieldDefinition: {
+        name: 'items',
+        type: 'array',
+        of: [{type: 'object', name: 'item', fields: [{name: 'title', type: 'string'}]}],
+      },
+      render: (inputProps) => (
+        <WithReadOnly store={readOnly}>
+          {(isReadOnly) => <ListArrayInput {...inputProps} readOnly={isReadOnly} />}
+        </WithReadOnly>
+      ),
+    })
+
+    expect(fileTargetTone()).toBe('transparent')
+
+    await act(async () => {
+      readOnly.set(false)
+    })
+    expect(fileTargetTone()).toBe('default')
+
+    await act(async () => {
+      readOnly.set(true)
+    })
+    expect(fileTargetTone()).toBe('transparent')
+  })
+
+  it('uses the hover tone while files are dragged over the target and the base tone afterwards', async () => {
+    const assetSource = createMockAssetSourceWithMediaLibraryUploader()
+
+    await renderFileInput({
+      assetSources: [assetSource],
+      configOverrides: {mediaLibrary: {enabled: false}},
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'PDF only',
+        type: 'file',
+        options: {accept: 'application/pdf'},
+      },
+      observeAsset: observeFileAssetStub,
+      render: (inputProps) => <BaseFileInput {...inputProps} />,
+    })
+
+    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    expect(fileTarget).toBeInTheDocument()
+    expect(fileTargetTone()).toBe('default')
+
+    const accepted = {
+      items: [{kind: 'file' as const, type: 'application/pdf'}],
+      files: [] as File[],
+    }
+    fireEvent.dragEnter(fileTarget!, {dataTransfer: accepted})
+    await waitFor(() => expect(fileTargetTone()).toBe('primary'))
+
+    fireEvent.dragLeave(fileTarget!, {dataTransfer: accepted})
+    await waitFor(() => expect(fileTargetTone()).toBe('default'))
+
+    const rejected = {items: [{kind: 'file' as const, type: 'text/plain'}], files: [] as File[]}
+    fireEvent.dragEnter(fileTarget!, {dataTransfer: rejected})
+    await waitFor(() => expect(fileTargetTone()).toBe('critical'))
+
+    fireEvent.dragLeave(fileTarget!, {dataTransfer: rejected})
+    await waitFor(() => expect(fileTargetTone()).toBe('default'))
+  })
+
+  it('drops the hover state when the input turns read-only during a drag', async () => {
+    const readOnly = createReadOnlyStore(false)
+    const assetSource = createMockAssetSourceWithMediaLibraryUploader()
+
+    await renderFileInput({
+      assetSources: [assetSource],
+      configOverrides: {mediaLibrary: {enabled: false}},
+      fieldDefinition: {name: 'someFile', title: 'A file', type: 'file'},
+      observeAsset: observeFileAssetStub,
+      render: (inputProps) => (
+        <WithReadOnly store={readOnly}>
+          {(isReadOnly) => <BaseFileInput {...inputProps} readOnly={isReadOnly} />}
+        </WithReadOnly>
+      ),
+    })
+
+    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    expect(fileTarget).toBeInTheDocument()
+
+    fireEvent.dragEnter(fileTarget!, {
+      dataTransfer: {
+        items: [{kind: 'file' as const, type: 'application/pdf'}],
+        files: [] as File[],
+      },
+    })
+    await waitFor(() => expect(fileTargetTone()).toBe('primary'))
+    expect(screen.getByTestId('upload-target-drop-message')).toBeInTheDocument()
+
+    await act(async () => {
+      readOnly.set(true)
+    })
+    expect(fileTargetTone()).toBe('transparent')
+    expect(screen.queryByTestId('upload-target-drop-message')).not.toBeInTheDocument()
+
+    // The drag ended while read-only, so nothing hover-related comes back with editability
+    await act(async () => {
+      readOnly.set(false)
+    })
+    expect(fileTargetTone()).toBe('default')
+    expect(screen.queryByTestId('upload-target-drop-message')).not.toBeInTheDocument()
+  })
+
+  it('does not swallow Escape for a drag that ended while the input was read-only', async () => {
+    const readOnly = createReadOnlyStore(false)
+    const assetSource = createMockAssetSourceWithMediaLibraryUploader()
+    const globalEscape = vi.fn()
+    window.addEventListener('keydown', globalEscape)
+
+    try {
+      await renderFileInput({
+        assetSources: [assetSource],
+        configOverrides: {mediaLibrary: {enabled: false}},
+        fieldDefinition: {name: 'someFile', title: 'A file', type: 'file'},
+        observeAsset: observeFileAssetStub,
+        render: (inputProps) => (
+          <WithReadOnly store={readOnly}>
+            {(isReadOnly) => <BaseFileInput {...inputProps} readOnly={isReadOnly} />}
+          </WithReadOnly>
+        ),
+      })
+
+      const fileTarget = document.querySelector('[data-test-id="file-target"]')
+      expect(fileTarget).toBeInTheDocument()
+
+      fireEvent.dragEnter(fileTarget!, {
+        dataTransfer: {
+          items: [{kind: 'file' as const, type: 'application/pdf'}],
+          files: [] as File[],
+        },
+      })
+      await waitFor(() => {
+        expect(screen.getByTestId('upload-target-drop-message')).toBeInTheDocument()
+      })
+
+      // Read-only while the drag ends outside the window, then editable again
+      await act(async () => {
+        readOnly.set(true)
+      })
+      await act(async () => {
+        readOnly.set(false)
+      })
+
+      await userEvent.keyboard('{Escape}')
+      expect(globalEscape).toHaveBeenCalledTimes(1)
+    } finally {
+      window.removeEventListener('keydown', globalEscape)
+    }
+  })
+
+  it('closes the destination picker and drops the queued files when the input turns read-only', async () => {
+    const readOnly = createReadOnlyStore(false)
+    const source1 = createMockAssetSourceWithMediaLibraryUploader({name: 'source-a'})
+    const source2 = createMockAssetSourceWithMediaLibraryUploader({name: 'source-b'})
+
+    const {onChange} = await renderFileInput({
+      assetSources: [source1, source2],
+      configOverrides: {mediaLibrary: {enabled: false}},
+      fieldDefinition: {name: 'someFile', title: 'A file', type: 'file'},
+      observeAsset: observeFileAssetStub,
+      render: (inputProps) => (
+        <WithReadOnly store={readOnly}>
+          {(isReadOnly) => <BaseFileInput {...inputProps} readOnly={isReadOnly} />}
+        </WithReadOnly>
+      ),
+    })
+
+    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    expect(fileTarget).toBeInTheDocument()
+
+    const file = new File(['content'], 'test.pdf', {type: 'application/pdf'})
+    fireEvent.drop(fileTarget!, {dataTransfer: createMockDataTransfer([file])})
+    await waitFor(() => {
+      expect(screen.getByTestId('upload-destination-source-a')).toBeInTheDocument()
+    })
+
+    await act(async () => {
+      readOnly.set(true)
+    })
+    expect(screen.queryByTestId('upload-destination-source-a')).not.toBeInTheDocument()
+
+    // Nothing queued survives into the editable state either
+    await act(async () => {
+      readOnly.set(false)
+    })
+    expect(screen.queryByTestId('upload-destination-source-a')).not.toBeInTheDocument()
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('ignores a drop whose file extraction finishes after the input turned read-only', async () => {
+    const readOnly = createReadOnlyStore(false)
+    const source1 = createMockAssetSourceWithMediaLibraryUploader({name: 'source-a'})
+    const source2 = createMockAssetSourceWithMediaLibraryUploader({name: 'source-b'})
+    let finishExtraction!: (files: File[]) => void
+    deferredExtraction.pending = new Promise<File[]>((resolve) => {
+      finishExtraction = resolve
+    })
+
+    try {
+      const {onChange} = await renderFileInput({
+        assetSources: [source1, source2],
+        configOverrides: {mediaLibrary: {enabled: false}},
+        fieldDefinition: {name: 'someFile', title: 'A file', type: 'file'},
+        observeAsset: observeFileAssetStub,
+        render: (inputProps) => (
+          <WithReadOnly store={readOnly}>
+            {(isReadOnly) => <BaseFileInput {...inputProps} readOnly={isReadOnly} />}
+          </WithReadOnly>
+        ),
+      })
+
+      const fileTarget = document.querySelector('[data-test-id="file-target"]')
+      expect(fileTarget).toBeInTheDocument()
+
+      const file = new File(['content'], 'test.pdf', {type: 'application/pdf'})
+      fireEvent.drop(fileTarget!, {dataTransfer: createMockDataTransfer([file])})
+
+      // The input turns read-only while the extraction is still running
+      await act(async () => {
+        readOnly.set(true)
+      })
+      await act(async () => {
+        finishExtraction([file])
+      })
+
+      // With two sources an accepted drop would have opened the destination picker
+      expect(screen.queryByTestId('upload-destination-source-a')).not.toBeInTheDocument()
+      expect(onChange).not.toHaveBeenCalled()
+    } finally {
+      deferredExtraction.pending = null
     }
   })
 })
