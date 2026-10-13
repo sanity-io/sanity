@@ -98,9 +98,8 @@ minimumReleaseAgeExclude:
   - '@vanilla-extract/*'
   - '@vercel/stega'
   - '@yuku-toolchain/*'
-  # Fresh TanStack patch and its lockstep core release
-  - '@tanstack/react-virtual@3.14.17'
-  - '@tanstack/virtual-core@3.19.2'
+  - '@tanstack/react-virtual@3.14.18'
+  - '@tanstack/virtual-core@3.19.3'
   - '@codemirror/search'
   - '@codemirror/state'
   - '@codemirror/view'
