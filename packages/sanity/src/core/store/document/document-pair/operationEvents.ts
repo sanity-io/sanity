@@ -105,6 +105,9 @@ export function emitOperation(
 // These are the operations that cannot be performed while the document is in an inconsistent state
 const REQUIRES_CONSISTENCY = ['publish', 'unpublish', 'discardChanges', 'delete']
 
+// Patches are committed at most this often per document
+const AUTOCOMMIT_INTERVAL = 1000
+
 /**
  * @hidden
  * @beta */
@@ -194,10 +197,18 @@ export const operationEvents = memoize(
     )
 
     // this enables autocommit after patch operations
-    const AUTOCOMMIT_INTERVAL = 1000
     const autoCommit$ = result$.pipe(
       filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
-      throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
+      // Throttled per document, so that patching another document within the interval doesn't
+      // replace the pending trailing commit of the previous one
+      groupBy((result) =>
+        createMemoKey([result.args.idPair.publishedId, result.args.idPair.versionId]),
+      ),
+      mergeMap((documentPatches$) =>
+        documentPatches$.pipe(
+          throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
+        ),
+      ),
       concatMap((result) =>
         (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
       ),
@@ -207,7 +218,12 @@ export const operationEvents = memoize(
     )
 
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY)))
+    return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY))).pipe(
+      // One autocommit for all subscribers, kept running for an interval after the last one
+      // leaves: a form flushes its pending patches while its document pane unmounts, and the
+      // trailing commit for those must still fire after the pane's subscription is gone.
+      share({resetOnRefCountZero: () => timer(AUTOCOMMIT_INTERVAL)}),
+    )
   },
   (ctx) =>
     // Per credential (token+dataset+projectId): this captures `ctx.client` and
