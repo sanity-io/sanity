@@ -6,7 +6,7 @@ import {
   Spinner,
 } from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ComponentProps, type ComponentType, useId} from 'react'
+import {type ComponentProps, type ComponentType, type CSSProperties, useId} from 'react'
 import {Text, Box, Flex, Icon} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
@@ -133,13 +133,34 @@ export function ConditionMenuButton(props: ConditionMenuButtonProps): React.JSX.
           className={menuButton}
         >
           <Flex alignItems="center" gap={3}>
-            {SelectedIcon ? <Icon icon={SelectedIcon} size={1} /> : null}
+            {SelectedIcon ? (
+              <Icon icon={SelectedIcon} size={1} style={{margin: '-0.375rem'}} />
+            ) : null}
             <Box flexGrow={1} style={{minWidth: 0}}>
-              <Text muted={!selected} size={1} truncate={1} weight="medium" as="div" trim={true}>
+              <Text
+                muted={!selected}
+                size={1}
+                truncate={1}
+                weight="medium"
+                as="div"
+                trim={true}
+                tone={invalid ? 'critical' : undefined}
+                style={disabled || loading ? {color: 'var(--inert-foreground)'} : {}}
+              >
                 {selected ? selected.title : placeholder}
               </Text>
             </Box>
-            {loading ? <Spinner size={1} /> : <Icon icon={ChevronDownIcon} size={1} />}
+            {loading ? (
+              <Spinner size={1} />
+            ) : (
+              <Icon
+                icon={ChevronDownIcon}
+                size={1}
+                style={
+                  {'margin': '-0.375rem', '--icon-color': 'var(--card-icon-color)'} as CSSProperties
+                }
+              />
+            )}
           </Flex>
         </UIButton>
       }
