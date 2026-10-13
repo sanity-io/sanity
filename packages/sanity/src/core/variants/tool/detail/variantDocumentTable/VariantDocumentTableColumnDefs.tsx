@@ -7,6 +7,7 @@ import {type TFunction} from 'i18next'
 import {memo} from 'react'
 import {Text, Flex, Box, Icon} from 'ui5'
 
+import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {EditedByCell} from '../../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../../components/RelativeTime'
@@ -86,7 +87,7 @@ function ValidationStatusIndicator({
         content={
           <Text muted size={1} as="div" trim={true}>
             <Flex alignItems="center" gap={3} padding={1}>
-              <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />
+              <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
               {t(
                 validationErrorCount === 1
                   ? 'detail.documents.table.validation.error_one'
@@ -98,10 +99,9 @@ function ValidationStatusIndicator({
         }
       >
         <Icon
-          icon={ErrorOutlineIcon}
           size={1}
+          icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
           data-testid="variant-document-validation-error"
-          tone="critical"
         />
       </Tooltip>
     )
@@ -119,9 +119,8 @@ function ValidationStatusIndicator({
         }
       >
         <Icon
-          icon={ClockIcon}
-          muted
           size={1}
+          icon={<ToneIcon icon={ClockIcon} tone="default" />}
           data-testid="variant-document-validation-validating"
         />
       </Tooltip>
@@ -139,11 +138,9 @@ function ValidationStatusIndicator({
       }
     >
       <Icon
-        icon={CheckmarkCircleIcon}
-        muted
         size={1}
+        icon={<ToneIcon icon={CheckmarkCircleIcon} tone="positive" />}
         data-testid="variant-document-validation-valid"
-        tone="positive"
       />
     </Tooltip>
   )

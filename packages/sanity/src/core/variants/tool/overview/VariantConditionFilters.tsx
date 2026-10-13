@@ -4,7 +4,15 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
 import {Card, TextInput, useClickOutsideEvent} from '@sanity/ui'
-import {type ComponentType, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type ComponentType,
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -196,7 +204,13 @@ function FilterChip({
           <Icon
             icon={ChipIcon}
             size={1}
-            style={{color: 'var(--card-icon-color)', margin: '-0.375rem', display: 'block'}}
+            style={
+              {
+                '--icon-color': 'var(--card-icon-color)',
+                'margin': '-0.375rem',
+                'display': 'block',
+              } as CSSProperties
+            }
           />
         </Box>
         {!iconOnly && (
