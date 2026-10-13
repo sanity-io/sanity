@@ -1,5 +1,5 @@
+import {createContext} from 'react'
 import type {ObservablePromise} from 'react-rx'
-import {createContext} from 'sanity/_createContext'
 
 import type {UpsellDialogViewedInfo} from '../../core/studio/upsell/__telemetry__/upsell.telemetry'
 import type {UpsellDataResult} from '../../core/studio/upsell/types'
@@ -20,7 +20,4 @@ export interface AssetLimitUpsellContextValue {
 /**
  * @internal
  */
-export const AssetLimitUpsellContext = createContext<AssetLimitUpsellContextValue | null>(
-  'sanity/_singletons/context/asset-limit-upsell',
-  null,
-)
+export const AssetLimitUpsellContext = createContext<AssetLimitUpsellContextValue | null>(null)

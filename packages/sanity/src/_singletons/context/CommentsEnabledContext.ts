@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * Whether comments are enabled for the document being rendered, as the `CommentsEnabledProvider`
@@ -8,7 +8,4 @@ import {createContext} from 'sanity/_createContext'
  * to `false` so that document UI rendered without the provider shows no comments.
  * @internal
  */
-export const CommentsEnabledContext = createContext<boolean>(
-  'sanity/_singletons/context/comments-enabled',
-  false,
-)
+export const CommentsEnabledContext = createContext<boolean>(false)

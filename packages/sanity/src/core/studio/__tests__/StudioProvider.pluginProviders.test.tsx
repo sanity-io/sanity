@@ -1,6 +1,11 @@
 import {act, render, screen, waitFor} from '@testing-library/react'
-import {type ComponentType, lazy, use} from 'react'
-import {createContext} from 'sanity/_createContext'
+import {
+  type ComponentType,
+  // oxlint-disable-next-line no-restricted-imports -- a context that exists only in this test
+  createContext,
+  lazy,
+  use,
+} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
@@ -19,10 +24,7 @@ vi.mock('../components/navbar/presence/PresenceMenu')
  * nothing else mounting it.
  */
 
-const AnswerPromiseContext = createContext<Promise<string> | null>(
-  'sanity/_singletons/context/test-studio-provider-answer-promise',
-  null,
-)
+const AnswerPromiseContext = createContext<Promise<string> | null>(null)
 
 const log: string[] = []
 let resolveAnswer!: (answer: string) => void

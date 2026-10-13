@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * @internal
@@ -13,7 +13,4 @@ export interface SingleDocReleaseContextValue {
 /**
  * @internal
  */
-export const SingleDocReleaseContext = createContext<SingleDocReleaseContextValue | null>(
-  'sanity/_singletons/context/single-doc-release-context',
-  null,
-)
+export const SingleDocReleaseContext = createContext<SingleDocReleaseContextValue | null>(null)

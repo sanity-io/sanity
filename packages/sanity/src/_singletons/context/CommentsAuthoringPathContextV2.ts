@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {CommentsAuthoringPathContextValue} from '../../core/comments-v2/context/authoring-path/types'
 
@@ -7,7 +7,4 @@ import type {CommentsAuthoringPathContextValue} from '../../core/comments-v2/con
  * @hidden
  */
 export const CommentsAuthoringPathContextV2 =
-  createContext<CommentsAuthoringPathContextValue | null>(
-    'sanity/_singletons/context/comments-v2-authoring-path',
-    null,
-  )
+  createContext<CommentsAuthoringPathContextValue | null>(null)
