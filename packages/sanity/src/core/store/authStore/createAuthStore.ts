@@ -597,6 +597,9 @@ function createStandaloneAuthStore({
       ? EMPTY
       : fromEvent(window, 'hashchange').pipe(
           tap(() => {
+            // A `#sid=` pasted into an open tab is not exchanged (the callback flow runs once,
+            // when the studio mounts), but it must not stay in the URL.
+            clearHashSessionId()
             consumeHashClaimUrl(projectId)
             const hashToken = consumeHashToken()
             if (hashToken) {

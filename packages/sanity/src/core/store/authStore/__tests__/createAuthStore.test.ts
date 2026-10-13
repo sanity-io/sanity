@@ -1913,6 +1913,37 @@ describe('createAuthStore: workbench OS token', () => {
   })
 })
 
+describe('createAuthStore: hash session id', () => {
+  afterEach(() => {
+    window.location.hash = ''
+  })
+
+  it('removes a #sid= fragment pasted into an open tab from the URL', async () => {
+    const mock = createMockClientFactory()
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'token',
+      clientFactory: mock.factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+    const sub = store.state.subscribe(() => {})
+
+    try {
+      window.location.hash = '#sid=12345678901234567890&keep=me'
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+
+      await vi.waitFor(() => {
+        expect(window.location.hash).toBe('#keep=me')
+      })
+    } finally {
+      sub.unsubscribe()
+    }
+  })
+})
+
 describe('createAuthStore: hash claim intake', () => {
   const CLAIM_URL = 'https://www.sanity.io/manage/claim/some-claim-token'
   const CLAIM_STORAGE_KEY = `__studio_unclaimed_${PROJECT_ID}`
