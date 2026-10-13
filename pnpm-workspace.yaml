@@ -116,10 +116,13 @@ minimumReleaseAgeExclude:
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'
   - 'lightningcss-*'
-  # Fresh motion patch and its lockstep packages
-  - 'framer-motion@14.1.1'
-  - 'motion@14.1.1'
-  - 'motion-dom@14.1.1'
+  # motion, framer-motion and motion-dom release in lockstep, often several times a week, so new
+  # versions are routinely younger than minimumReleaseAge
+  - 'framer-motion'
+  - 'motion'
+  - 'motion-dom'
+  # motion-utils does not ship a release for every motion version; 14.1.1 is the one the current
+  # motion releases depend on, and it is still younger than the age gate
   - 'motion-utils@14.1.1'
   # oxc-transform-react and its per-platform native bindings (@oxc-transform-react/binding-*)
   # release in lockstep with the oxc toolchain; @vitejs/plugin-react and
