@@ -1285,7 +1285,7 @@ importers:
     dependencies:
       '@anthropic-ai/sdk':
         specifier: ^0.112.3
-        version: 0.112.5(zod@4.6.6)
+        version: 0.112.5(zod@4.6.7)
       '@conventional-changelog/git-client':
         specifier: ^3.2.0
         version: 3.2.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.3)
@@ -1433,8 +1433,8 @@ importers:
         specifier: ^5.0.3
         version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.4)
       zod:
-        specifier: ^4.6.6
-        version: 4.6.6
+        specifier: ^4.6.7
+        version: 4.6.7
 
   packages/@repo/test-exports:
     dependencies:
@@ -15391,8 +15391,8 @@ packages:
   zod@4.1.11:
     resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
 
-  zod@4.6.6:
-    resolution: {integrity: sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==}
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
   zustand@5.0.15:
     resolution: {integrity: sha512-MpSEjRiBkA9crSYeOUH32rJC7SVqAbm0Fqcqge/bUi2PPoLcBWKOsG+C8mevmpr8TwXHBVkChbbJiyvkE+i/3A==}
@@ -15434,20 +15434,20 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
-  '@ai-sdk/gateway@3.0.212(zod@4.6.6)':
+  '@ai-sdk/gateway@3.0.212(zod@4.6.7)':
     dependencies:
       '@ai-sdk/provider': 3.0.18
-      '@ai-sdk/provider-utils': 4.0.57(zod@4.6.6)
+      '@ai-sdk/provider-utils': 4.0.57(zod@4.6.7)
       '@vercel/oidc': 3.2.0
-      zod: 4.6.6
+      zod: 4.6.7
 
-  '@ai-sdk/provider-utils@4.0.57(zod@4.6.6)':
+  '@ai-sdk/provider-utils@4.0.57(zod@4.6.7)':
     dependencies:
       '@ai-sdk/provider': 3.0.18
       '@standard-schema/spec': 1.1.0
       eventsource-parser: 3.1.1
       undici: 6.29.0
-      zod: 4.6.6
+      zod: 4.6.7
 
   '@ai-sdk/provider@3.0.18':
     dependencies:
@@ -15491,11 +15491,11 @@ snapshots:
   '@anthropic-ai/claude-agent-sdk-win32-x64@0.2.141':
     optional: true
 
-  '@anthropic-ai/claude-agent-sdk@0.2.141(supports-color@8.1.1)(zod@4.6.6)':
+  '@anthropic-ai/claude-agent-sdk@0.2.141(supports-color@8.1.1)(zod@4.6.7)':
     dependencies:
-      '@anthropic-ai/sdk': 0.93.0(zod@4.6.6)
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@8.1.1)(zod@4.6.6)
-      zod: 4.6.6
+      '@anthropic-ai/sdk': 0.93.0(zod@4.6.7)
+      '@modelcontextprotocol/sdk': 1.32.1(supports-color@8.1.1)(zod@4.6.7)
+      zod: 4.6.7
     optionalDependencies:
       '@anthropic-ai/claude-agent-sdk-darwin-arm64': 0.2.141
       '@anthropic-ai/claude-agent-sdk-darwin-x64': 0.2.141
@@ -15510,24 +15510,24 @@ snapshots:
       - supports-color
     optional: true
 
-  '@anthropic-ai/sdk@0.112.5(zod@4.6.6)':
+  '@anthropic-ai/sdk@0.112.5(zod@4.6.7)':
     dependencies:
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.1.1
     optionalDependencies:
-      zod: 4.6.6
+      zod: 4.6.7
 
-  '@anthropic-ai/sdk@0.78.0(zod@4.6.6)':
+  '@anthropic-ai/sdk@0.78.0(zod@4.6.7)':
     dependencies:
       json-schema-to-ts: 3.1.1
     optionalDependencies:
-      zod: 4.6.6
+      zod: 4.6.7
 
-  '@anthropic-ai/sdk@0.93.0(zod@4.6.6)':
+  '@anthropic-ai/sdk@0.93.0(zod@4.6.7)':
     dependencies:
       json-schema-to-ts: 3.1.1
     optionalDependencies:
-      zod: 4.6.6
+      zod: 4.6.7
     optional: true
 
   '@apidevtools/json-schema-ref-parser@15.5.2(@types/json-schema@7.0.15)':
@@ -15907,7 +15907,7 @@ snapshots:
       - supports-color
     optional: true
 
-  '@azure/ai-projects@1.0.1(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)':
+  '@azure/ai-projects@1.0.1(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)':
     dependencies:
       '@azure-rest/core-client': 2.9.0(supports-color@8.1.1)
       '@azure/abort-controller': 2.2.0
@@ -15921,7 +15921,7 @@ snapshots:
       '@azure/core-util': 1.14.0(supports-color@8.1.1)
       '@azure/logger': 1.4.0(supports-color@8.1.1)
       '@azure/storage-blob': 12.34.0(supports-color@8.1.1)
-      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.6)
+      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.7)
       tslib: 2.8.1
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
@@ -17174,9 +17174,9 @@ snapshots:
 
   '@devframes/json-render@1.2.3(@devframes/hub@1.2.3)(devframe@1.2.3)':
     dependencies:
-      '@json-render/core': 0.21.0(zod@4.6.6)
+      '@json-render/core': 0.21.0(zod@4.6.7)
       devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-      zod: 4.6.6
+      zod: 4.6.7
     optionalDependencies:
       '@devframes/hub': 1.2.3(@devframes/agentic@1.2.3)(crossws@0.4.15)(devframe@1.2.3)
 
@@ -18236,9 +18236,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@json-render/core@0.21.0(zod@4.6.6)':
+  '@json-render/core@0.21.0(zod@4.6.7)':
     dependencies:
-      zod: 4.6.6
+      zod: 4.6.7
 
   '@keyv/bigmap@1.3.1(keyv@5.6.0)':
     dependencies:
@@ -18383,11 +18383,11 @@ snapshots:
       eventsource-parser: 3.1.1
       jose: 6.2.12
       pkce-challenge: 5.0.1
-      zod: 4.6.6
+      zod: 4.6.7
 
   '@modelcontextprotocol/core@2.3.1':
     dependencies:
-      zod: 4.6.6
+      zod: 4.6.7
 
   '@modelcontextprotocol/sdk@1.32.1(supports-color@8.1.1)(zod@3.25.76)':
     dependencies:
@@ -18411,7 +18411,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@modelcontextprotocol/sdk@1.32.1(supports-color@8.1.1)(zod@4.6.6)':
+  '@modelcontextprotocol/sdk@1.32.1(supports-color@8.1.1)(zod@4.6.7)':
     dependencies:
       '@hono/node-server': 2.1.4(hono@4.13.13)
       ajv: 8.20.0
@@ -18428,15 +18428,15 @@ snapshots:
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
-      zod: 4.6.6
-      zod-to-json-schema: 3.25.2(zod@4.6.6)
+      zod: 4.6.7
+      zod-to-json-schema: 3.25.2(zod@4.6.7)
     transitivePeerDependencies:
       - supports-color
 
   '@modelcontextprotocol/server@2.3.1':
     dependencies:
       '@modelcontextprotocol/core': 2.3.1
-      zod: 4.6.6
+      zod: 4.6.7
 
   '@module-federation/dts-plugin@2.9.2(typescript@7.0.2)':
     dependencies:
@@ -18797,13 +18797,13 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 29.0.1
 
-  '@openai/agents-core@0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)':
+  '@openai/agents-core@0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)':
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
-      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.6)
+      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.7)
     optionalDependencies:
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@8.1.1)(zod@4.6.6)
-      zod: 4.6.6
+      '@modelcontextprotocol/sdk': 1.32.1(supports-color@8.1.1)(zod@4.6.7)
+      zod: 4.6.7
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - '@cfworker/json-schema'
@@ -18812,12 +18812,12 @@ snapshots:
       - supports-color
       - ws
 
-  '@openai/agents-openai@0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)':
+  '@openai/agents-openai@0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)':
     dependencies:
-      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)
+      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)
       debug: 4.4.3(supports-color@8.1.1)
-      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.6)
-      zod: 4.6.6
+      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.7)
+      zod: 4.6.7
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - '@cfworker/json-schema'
@@ -18826,13 +18826,13 @@ snapshots:
       - supports-color
       - ws
 
-  '@openai/agents-realtime@0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(zod@4.6.6)':
+  '@openai/agents-realtime@0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(zod@4.6.7)':
     dependencies:
-      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)
+      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)
       '@types/ws': 8.18.2
       debug: 4.4.3(supports-color@8.1.1)
       ws: 8.22.0
-      zod: 4.6.6
+      zod: 4.6.7
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - '@cfworker/json-schema'
@@ -18842,14 +18842,14 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@openai/agents@0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)':
+  '@openai/agents@0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)':
     dependencies:
-      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)
-      '@openai/agents-openai': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)
-      '@openai/agents-realtime': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(zod@4.6.6)
+      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)
+      '@openai/agents-openai': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)
+      '@openai/agents-realtime': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(zod@4.6.7)
       debug: 4.4.3(supports-color@8.1.1)
-      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.6)
-      zod: 4.6.6
+      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.7)
+      zod: 4.6.7
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - '@cfworker/json-schema'
@@ -19993,7 +19993,7 @@ snapshots:
       '@google-cloud/storage': 7.22.0(supports-color@8.1.1)
       '@googleapis/drive': 20.2.0(supports-color@8.1.1)
       '@inquirer/prompts': 8.7.3(@types/node@24.19.2)
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@8.1.1)(zod@4.6.6)
+      '@modelcontextprotocol/sdk': 1.32.1(supports-color@8.1.1)(zod@4.6.7)
       '@portabletext/markdown': 1.5.0
       '@sanity/client': 7.27.0
       ajv: 8.20.0
@@ -20006,7 +20006,7 @@ snapshots:
       js-yaml: 4.3.2
       oxc-parser: 0.129.0
       promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.85)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.4)(@types/json-schema@7.0.15)(@types/node@24.19.2)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.1)(playwright-core@1.64.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)
-      zod: 4.6.6
+      zod: 4.6.7
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
       - '@aws-sdk/credential-provider-node'
@@ -20132,7 +20132,7 @@ snapshots:
       react-is: 19.3.0
       semver: 7.8.5
       vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-      zod: 4.6.6
+      zod: 4.6.7
     optionalDependencies:
       oxc-transform-react: 0.153.0
       sanity: link:packages/sanity
@@ -20180,7 +20180,7 @@ snapshots:
       rxjs: 7.8.2
       vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       wrap-ansi: 9.0.2
-      zod: 4.6.6
+      zod: 4.6.7
     optionalDependencies:
       oxc-transform-react: 0.153.0
     transitivePeerDependencies:
@@ -20263,7 +20263,7 @@ snapshots:
       which: 6.0.1
       wrap-ansi: 9.0.2
       yaml: 2.9.1
-      zod: 4.6.6
+      zod: 4.6.7
     optionalDependencies:
       oxc-transform-react: 0.153.0
     transitivePeerDependencies:
@@ -20918,7 +20918,7 @@ snapshots:
       semver: 7.8.5
       tar: 7.5.22
       vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-      zod: 4.6.6
+      zod: 4.6.7
     transitivePeerDependencies:
       - '@noble/hashes'
       - '@rolldown/plugin-babel'
@@ -22246,7 +22246,7 @@ snapshots:
       tar-stream: 3.1.7
       undici: 7.30.0
       xdg-app-paths: 5.1.0
-      zod: 4.6.6
+      zod: 4.6.7
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
@@ -22682,13 +22682,13 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  ai@6.0.303(zod@4.6.6):
+  ai@6.0.303(zod@4.6.7):
     dependencies:
-      '@ai-sdk/gateway': 3.0.212(zod@4.6.6)
+      '@ai-sdk/gateway': 3.0.212(zod@4.6.7)
       '@ai-sdk/provider': 3.0.18
-      '@ai-sdk/provider-utils': 4.0.57(zod@4.6.6)
+      '@ai-sdk/provider-utils': 4.0.57(zod@4.6.7)
       '@opentelemetry/api': 1.9.1
-      zod: 4.6.6
+      zod: 4.6.7
 
   ajv-draft-04@1.0.0(ajv@8.20.0):
     optionalDependencies:
@@ -25498,7 +25498,7 @@ snapshots:
       tinyglobby: 0.2.17
       unbash: 5.0.0
       yaml: 2.9.1
-      zod: 4.6.6
+      zod: 4.6.7
 
   kuler@2.0.0: {}
 
@@ -26232,12 +26232,12 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openai@6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.6):
+  openai@6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.7):
     optionalDependencies:
       '@aws-sdk/credential-provider-node': 3.972.85
       '@smithy/signature-v4': 5.7.4
       ws: 8.22.0
-      zod: 4.6.6
+      zod: 4.6.7
 
   openapi-fetch@0.8.2:
     dependencies:
@@ -26879,7 +26879,7 @@ snapshots:
 
   promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.85)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.4)(@types/json-schema@7.0.15)(@types/node@24.19.2)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.1)(playwright-core@1.64.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1):
     dependencies:
-      '@anthropic-ai/sdk': 0.78.0(zod@4.6.6)
+      '@anthropic-ai/sdk': 0.78.0(zod@4.6.7)
       '@apidevtools/json-schema-ref-parser': 15.5.2(@types/json-schema@7.0.15)
       '@googleapis/sheets': 13.0.2(supports-color@8.1.1)
       '@inquirer/checkbox': 5.2.6(@types/node@24.19.2)
@@ -26888,8 +26888,8 @@ snapshots:
       '@inquirer/editor': 5.3.4(@types/node@24.19.2)
       '@inquirer/input': 5.1.7(@types/node@24.19.2)
       '@inquirer/select': 5.2.6(@types/node@24.19.2)
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@8.1.1)(zod@4.6.6)
-      '@openai/agents': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)
+      '@modelcontextprotocol/sdk': 1.32.1(supports-color@8.1.1)(zod@4.6.7)
+      '@openai/agents': 0.5.4(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)
       '@opencode-ai/sdk': 1.19.0
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.12.0(@opentelemetry/api@1.9.1)
@@ -26899,7 +26899,7 @@ snapshots:
       '@opentelemetry/sdk-trace-node': 2.12.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/semantic-conventions': 1.43.0
       '@types/ws': 8.18.2
-      ai: 6.0.303(zod@4.6.6)
+      ai: 6.0.303(zod@4.6.7)
       ajv: 8.20.0
       ajv-formats: 3.0.1
       async: 3.2.6
@@ -26941,7 +26941,7 @@ snapshots:
       mathjs: 15.2.0
       minimatch: 10.2.6
       nunjucks: 3.2.4(chokidar@5.0.0)
-      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.6)
+      openai: 6.49.0(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.7)
       opener: 1.5.2
       ora: 9.4.1
       pem: 1.14.8
@@ -26962,15 +26962,15 @@ snapshots:
       undici: 7.30.0
       winston: 3.19.0
       ws: 8.22.0
-      zod: 4.6.6
+      zod: 4.6.7
     optionalDependencies:
-      '@anthropic-ai/claude-agent-sdk': 0.2.141(supports-color@8.1.1)(zod@4.6.6)
+      '@anthropic-ai/claude-agent-sdk': 0.2.141(supports-color@8.1.1)(zod@4.6.7)
       '@aws-sdk/client-bedrock-agent-runtime': 3.1149.0
       '@aws-sdk/client-bedrock-runtime': 3.1149.0
       '@aws-sdk/client-s3': 3.1149.0
       '@aws-sdk/client-sagemaker-runtime': 3.1149.0
       '@aws-sdk/credential-provider-sso': 3.973.17
-      '@azure/ai-projects': 1.0.1(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.6)
+      '@azure/ai-projects': 1.0.1(@aws-sdk/credential-provider-node@3.972.85)(@smithy/signature-v4@5.7.4)(supports-color@8.1.1)(ws@8.22.0)(zod@4.6.7)
       '@azure/identity': 4.13.3(supports-color@8.1.1)
       '@azure/msal-node': 5.6.0
       '@azure/openai-assistants': 1.0.0-beta.6(supports-color@8.1.1)
@@ -27747,7 +27747,7 @@ snapshots:
       async-retry: 1.3.3
       debug: 4.4.3(supports-color@8.1.1)
       ws: 8.22.0
-      zod: 4.6.6
+      zod: 4.6.7
     transitivePeerDependencies:
       - bare-abort-controller
       - bufferutil
@@ -29237,9 +29237,9 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
-  zod-to-json-schema@3.25.2(zod@4.6.6):
+  zod-to-json-schema@3.25.2(zod@4.6.7):
     dependencies:
-      zod: 4.6.6
+      zod: 4.6.7
 
   zod@3.22.4: {}
 
@@ -29247,7 +29247,7 @@ snapshots:
 
   zod@4.1.11: {}
 
-  zod@4.6.6: {}
+  zod@4.6.7: {}
 
   zustand@5.0.15(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0):
     optionalDependencies:
