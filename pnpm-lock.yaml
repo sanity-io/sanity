@@ -2266,11 +2266,7 @@ importers:
         specifier: ^3.0.8
         version: 3.0.8
       motion:
-<<<<<<< HEAD
         specifier: ^14.2.0
-=======
-        specifier: ^14.1.1
->>>>>>> origin/main
         version: 14.2.0(react-dom@19.3.0)(react@19.3.0)
       nano-pubsub:
         specifier: ^3.0.0
