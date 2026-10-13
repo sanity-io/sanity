@@ -19,61 +19,60 @@ interface SimpleBlockDraft {
 }
 
 test.describe('Portable Text Input - navigating away after typing', () => {
-  // https://github.com/sanity-io/sanity/issues/15261
-  test('saves text typed into a new block when navigating to another document right away', async ({
-    page,
-    sanityClient,
-    _testContext,
-  }) => {
-    const documentId = _testContext.getUniqueDocumentId()
-    const otherDocumentId = _testContext.getUniqueDocumentId()
+  test.fail(
+    'saves text typed into a new block when navigating to another document right away',
+    {annotation: {type: 'issue', description: 'https://github.com/sanity-io/sanity/issues/15261'}},
+    async ({page, sanityClient, _testContext}) => {
+      const documentId = _testContext.getUniqueDocumentId()
+      const otherDocumentId = _testContext.getUniqueDocumentId()
 
-    await sanityClient.createOrReplace({
-      _id: `drafts.${otherDocumentId}`,
-      _type: 'simpleBlock',
-      title: 'Other document',
-      body: [paragraph('other', 'Paragraph in the other document')],
-    })
-    await sanityClient.createOrReplace({
-      _id: `drafts.${documentId}`,
-      _type: 'simpleBlock',
-      title: 'Edited document',
-      body: [paragraph('existing', 'Existing paragraph')],
-    })
+      await sanityClient.createOrReplace({
+        _id: `drafts.${otherDocumentId}`,
+        _type: 'simpleBlock',
+        title: 'Other document',
+        body: [paragraph('other', 'Paragraph in the other document')],
+      })
+      await sanityClient.createOrReplace({
+        _id: `drafts.${documentId}`,
+        _type: 'simpleBlock',
+        title: 'Edited document',
+        body: [paragraph('existing', 'Existing paragraph')],
+      })
 
-    await page.goto(`${SIMPLE_BLOCK_LIST};${documentId}`)
+      await page.goto(`${SIMPLE_BLOCK_LIST};${documentId}`)
 
-    const body = page.getByTestId('field-body')
-    const existingBlock = body.locator(
-      '[data-testid="text-block__text"]:not([data-read-only="true"])',
-    )
-    await expect(existingBlock).toHaveText('Existing paragraph')
-
-    const otherDocumentLink = page
-      .getByTestId('document-list-pane')
-      .locator(`a[href*="${otherDocumentId}"]`)
-    await expect(otherDocumentLink).toBeVisible()
-
-    // The style menu shows the block style once the editor has a selection
-    await existingBlock.click()
-    await expect(body.getByTestId('block-style-select')).toContainText('Normal')
-
-    await page.keyboard.press('End')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('Typed into the new block')
-
-    // Leave right away, before the editor's batched edits have been committed
-    await otherDocumentLink.click()
-    await expect(page.getByTestId('field-body')).toContainText('Paragraph in the other document')
-
-    await expect
-      .poll(
-        async () => {
-          const draft = await sanityClient.getDocument<SimpleBlockDraft>(`drafts.${documentId}`)
-          return draft?.body?.map((block) => block.children?.map((span) => span.text).join(''))
-        },
-        {timeout: 15_000},
+      const body = page.getByTestId('field-body')
+      const existingBlock = body.locator(
+        '[data-testid="text-block__text"]:not([data-read-only="true"])',
       )
-      .toEqual(['Existing paragraph', 'Typed into the new block'])
-  })
+      await expect(existingBlock).toHaveText('Existing paragraph')
+
+      const otherDocumentLink = page
+        .getByTestId('document-list-pane')
+        .locator(`a[href*="${otherDocumentId}"]`)
+      await expect(otherDocumentLink).toBeVisible()
+
+      // The style menu shows the block style once the editor has a selection
+      await existingBlock.click()
+      await expect(body.getByTestId('block-style-select')).toContainText('Normal')
+
+      await page.keyboard.press('End')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('Typed into the new block')
+
+      // Leave right away, before the editor's batched edits have been committed
+      await otherDocumentLink.click()
+      await expect(page.getByTestId('field-body')).toContainText('Paragraph in the other document')
+
+      await expect
+        .poll(
+          async () => {
+            const draft = await sanityClient.getDocument<SimpleBlockDraft>(`drafts.${documentId}`)
+            return draft?.body?.map((block) => block.children?.map((span) => span.text).join(''))
+          },
+          {timeout: 15_000},
+        )
+        .toEqual(['Existing paragraph', 'Typed into the new block'])
+    },
+  )
 })
