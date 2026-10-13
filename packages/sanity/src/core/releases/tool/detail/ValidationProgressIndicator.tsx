@@ -1,8 +1,8 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, type CardTone, Text} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {ProgressIcon} from '../../../../ui-components/progressIcon/ProgressIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -85,7 +85,7 @@ export function ValidationProgressIndicator({
       }}
     >
       <Flex gap={2}>
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           {isValidating ? (
             <ProgressIcon progress={validatedCount / totalCount} />
           ) : (
@@ -97,7 +97,7 @@ export function ValidationProgressIndicator({
           )}
         </Text>
         {!showCheckmark && !isMinimal && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {isValidating
               ? t('summary.validating-documents', {validatedCount, totalCount})
               : hasError

@@ -1,10 +1,10 @@
 import {ArrowUpIcon} from '@sanity/icons/ArrowUp'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Text, TextInput} from '@sanity/ui'
+import {Card, TextInput} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type CSSProperties, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -24,7 +24,7 @@ const HeaderSortButton = styled(Button)`
 
 const BasicHeader = ({text}: {text: string}) => (
   <Box padding={2}>
-    <Text muted size={1} weight="semibold">
+    <Text muted size={1} weight="semibold" as="div" trim={true}>
       {text}
     </Text>
   </Box>

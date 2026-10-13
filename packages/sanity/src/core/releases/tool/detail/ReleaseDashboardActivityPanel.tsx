@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Layer, Text, useLayer} from '@sanity/ui'
+import {Card, Layer, useLayer} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {AnimatePresence, motion} from 'motion/react'
 import {type ComponentProps, useEffect} from 'react'
 import TrapFocus from 'react-focus-lock'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -65,7 +65,7 @@ export function ReleaseDashboardActivityPanel({
   const content = (
     <MotionFlex flexBasis="auto" flexGrow={0} flexShrink={0} height="100%" flexDirection="column">
       <Flex alignItems="center" gap={2} justifyContent="space-between" padding={4}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('activity.panel.title')}
         </Text>
         {overlay && onClose && (
@@ -80,7 +80,9 @@ export function ReleaseDashboardActivityPanel({
       {events.error && !events.events.length && (
         <Card padding={3} tone="caution">
           <Box padding={2}>
-            <Text size={0}>{t('activity.panel.error')}</Text>
+            <Text size={0} as="div" trim={true}>
+              {t('activity.panel.error')}
+            </Text>
           </Box>
         </Card>
       )}

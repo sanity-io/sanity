@@ -1,4 +1,5 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -29,7 +30,7 @@ export function ReleaseValidationBadge({
 
   if (totalCount === 0) {
     return (
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {t('dashboard.details.metadata.status-empty')}
       </Text>
     )
@@ -49,7 +50,7 @@ export function ReleaseValidationBadge({
   // renders in the tone colour (green/red), no filled chip.
   return (
     <Card tone={tone} style={TRANSPARENT_BG}>
-      <Text size={1} weight="medium">
+      <Text size={1} weight="medium" as="div" trim={true}>
         {label}
       </Text>
     </Card>

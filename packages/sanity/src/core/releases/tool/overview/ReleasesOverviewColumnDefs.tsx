@@ -1,10 +1,10 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -130,7 +130,7 @@ export const releasesOverviewColumnDefs: (
         ),
         cell: ({cellProps, datum: release}) => (
           <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {release.publishedAt ? (
                 // Assuming releases are not updated after archiving.
                 // If we realize this is miss leading for customers and they have edited the release after archiving
@@ -165,7 +165,7 @@ export const releasesOverviewColumnDefs: (
         ),
         cell: ({cellProps, datum: release}) => (
           <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {release.state === 'archived' ? (
                 // Assuming releases are not updated after archiving.
                 // If we later realize this is miss leading for customers and they have edited the release after archiving
@@ -194,7 +194,7 @@ export const releasesOverviewColumnDefs: (
           const updatedAtDate = documentsMetadata?.updatedAt ?? _updatedAt
           return (
             <Flex {...cellProps} alignItems="center" gap={2} paddingX={2} paddingY={3}>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {updatedAtDate ? (
                   <RelativeTime time={updatedAtDate} useTemporalPhrase minimal />
                 ) : (
@@ -228,15 +228,29 @@ export const releasesOverviewColumnDefs: (
               data-testid="error-indicator"
             >
               {hasError && (
-                <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
-                  <Text size={1}>
+                <Tooltip
+                  content={
+                    <Text size={1} as="div" trim={true}>
+                      {t('failed-publish-title')}
+                    </Text>
+                  }
+                  portal
+                >
+                  <Text size={1} as="div" trim={true}>
                     <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
                   </Text>
                 </Tooltip>
               )}
               {hasWarning && (
-                <Tooltip content={<Text size={1}>{t('passed-intended-publish-date')}</Text>} portal>
-                  <Text size={1}>
+                <Tooltip
+                  content={
+                    <Text size={1} as="div" trim={true}>
+                      {t('passed-intended-publish-date')}
+                    </Text>
+                  }
+                  portal
+                >
+                  <Text size={1} as="div" trim={true}>
                     <ToneIcon icon={WarningOutlineIcon} tone="caution" />
                   </Text>
                 </Tooltip>
@@ -281,7 +295,7 @@ export const releasesOverviewColumnDefs: (
                   }}
                 >
                   <Flex gap={2}>
-                    <Text size={1}>
+                    <Text size={1} as="div" trim={true}>
                       <Tooltip content={t('summary.all-documents-validated')}>
                         <CheckmarkCircleIcon />
                       </Tooltip>

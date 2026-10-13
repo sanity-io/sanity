@@ -1,10 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {format} from 'date-fns/format'
 import {useMemo} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -44,15 +44,15 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
   return (
     <Card padding={4} radius={4} tone="primary" data-testid="retention-policy-card">
       <Flex gap={3}>
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <InfoOutlineIcon />
         </Text>
         <VStack gap={4}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="semibold" as="div" trim={true}>
             {state === 'archived' ? tRelease('archive-info.title') : tRelease('publish-info.title')}
           </Text>
           {retentionDays && (
-            <Text size={1} accent>
+            <Text size={1} tone="suggest" as="div" trim={true}>
               <Translate
                 t={tRelease}
                 i18nKey="archive-info.description"

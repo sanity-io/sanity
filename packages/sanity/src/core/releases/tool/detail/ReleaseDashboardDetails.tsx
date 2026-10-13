@@ -7,9 +7,9 @@ import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {UserIcon} from '@sanity/icons/User'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Skeleton, Text} from '@sanity/ui'
+import {Card, Skeleton} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Container, Box, Flex, VStack} from 'ui5'
+import {Text, Container, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
@@ -104,7 +104,7 @@ function ReleaseDashboardDetailsProduction({
           <ValidationProgressIndicator documents={documents} />
           {shouldDisplayError && (
             <Flex gap={2} padding={2} data-testid="release-error-details">
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
               </Text>
               <TextWithTone size={1} tone="critical">
@@ -116,7 +116,7 @@ function ReleaseDashboardDetailsProduction({
           )}
           {shouldDisplayWarnings && (
             <Flex gap={2} padding={2} data-testid="release-permission-error-details">
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <ToneIcon icon={WarningOutlineIcon} tone="caution" />
               </Text>
               <TextWithTone size={1} tone="caution">
@@ -131,17 +131,17 @@ function ReleaseDashboardDetailsProduction({
         {shouldDisplayError && (
           <Card padding={4} radius={4} tone="critical">
             <Flex gap={3}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <ErrorOutlineIcon />
               </Text>
               <VStack gap={4}>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   {isAtTimeRelease
                     ? tRelease('failed-schedule-title')
                     : tRelease('failed-publish-title')}
                 </Text>
                 <Details title={tRelease('error-details-title')}>
-                  <Text size={1} accent>
+                  <Text size={1} tone="suggest" as="div" trim={true}>
                     <code>{release.error?.message}</code>
                   </Text>
                 </Details>
@@ -153,12 +153,14 @@ function ReleaseDashboardDetailsProduction({
         {shouldDisplayWarnings && (
           <Card padding={4} radius={4} tone="caution">
             <Flex gap={3}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <WarningOutlineIcon />
               </Text>
               <VStack gap={3}>
-                <Text size={1}>{tRelease('permission-missing-title')}</Text>
-                <Text size={1} muted>
+                <Text size={1} as="div" trim={true}>
+                  {tRelease('permission-missing-title')}
+                </Text>
+                <Text size={1} muted as="div" trim={true}>
                   {tRelease('permission-missing-description')}
                 </Text>
               </VStack>
@@ -207,7 +209,9 @@ export function ReleaseDashboardDetails({
   const statusGlyph =
     documents.length === 0 ? undefined : (
       <Card tone={statusTone} style={{background: 'transparent'}}>
-        <Text size={1}>{statusGlyphIcon}</Text>
+        <Text size={1} as="div" trim={true}>
+          {statusGlyphIcon}
+        </Text>
       </Card>
     )
 
@@ -297,7 +301,7 @@ export function ReleaseDashboardDetails({
                     },
                     {
                       icon: (
-                        <Text size={1} muted>
+                        <Text size={1} muted as="div" trim={true}>
                           <DocumentsIcon />
                         </Text>
                       ),
@@ -312,13 +316,13 @@ export function ReleaseDashboardDetails({
                       icon: createAuthor ? (
                         <UserAvatar size={0} user={createAuthor} />
                       ) : (
-                        <Text size={1} muted>
+                        <Text size={1} muted as="div" trim={true}>
                           <UserIcon />
                         </Text>
                       ),
                       label: tRelease('dashboard.details.metadata.created'),
                       value: (
-                        <Text size={1}>
+                        <Text size={1} as="div" trim={true}>
                           <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
                         </Text>
                       ),
@@ -332,17 +336,17 @@ export function ReleaseDashboardDetails({
         {shouldDisplayError && (
           <Card data-testid="release-error-details" padding={4} radius={4} tone="critical">
             <Flex gap={3}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <ErrorOutlineIcon />
               </Text>
               <VStack gap={4}>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   {isAtTimeRelease
                     ? tRelease('failed-schedule-title')
                     : tRelease('failed-publish-title')}
                 </Text>
                 <Details title={tRelease('error-details-title')}>
-                  <Text size={1} accent>
+                  <Text size={1} tone="suggest" as="div" trim={true}>
                     <code>{release.error?.message}</code>
                   </Text>
                 </Details>
@@ -359,12 +363,14 @@ export function ReleaseDashboardDetails({
             tone="caution"
           >
             <Flex gap={3}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <WarningOutlineIcon />
               </Text>
               <VStack gap={3}>
-                <Text size={1}>{tRelease('permission-missing-title')}</Text>
-                <Text size={1} muted>
+                <Text size={1} as="div" trim={true}>
+                  {tRelease('permission-missing-title')}
+                </Text>
+                <Text size={1} muted as="div" trim={true}>
                   {tRelease('permission-missing-description')}
                 </Text>
               </VStack>

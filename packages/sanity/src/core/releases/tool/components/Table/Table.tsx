@@ -1,9 +1,9 @@
-import {Card, type CardProps, rem, Text, useTheme} from '@sanity/ui'
+import {Card, type CardProps, rem, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns/isValid'
 import get from 'lodash-es/get.js'
 import {type CSSProperties, type ElementType, Fragment, useMemo} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {TableEmptyState} from './TableEmptyState'
@@ -117,7 +117,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
       width: TABLE_ROW_ACTIONS_WIDTH,
       header: ({headerProps}) => (
         <Flex {...headerProps} paddingY={3} paddingX={3}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             &nbsp;
           </Text>
         </Flex>

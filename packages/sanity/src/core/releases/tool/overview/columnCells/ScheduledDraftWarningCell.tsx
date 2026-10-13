@@ -1,6 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -27,8 +26,15 @@ export const ScheduledDraftWarningCell: VisibleColumn<TableRelease>['cell'] = ({
       data-testid="warning-indicator"
     >
       {hasWarning && (
-        <Tooltip content={<Text size={1}>{t('passed-intended-publish-date-draft')}</Text>} portal>
-          <Text size={1}>
+        <Tooltip
+          content={
+            <Text size={1} as="div" trim={true}>
+              {t('passed-intended-publish-date-draft')}
+            </Text>
+          }
+          portal
+        >
+          <Text size={1} as="div" trim={true}>
             <ToneIcon icon={WarningOutlineIcon} tone="caution" />
           </Text>
         </Tooltip>

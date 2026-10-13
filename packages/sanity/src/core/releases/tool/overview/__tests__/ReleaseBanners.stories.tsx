@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {activeCardinalityOneRelease} from '../../../__fixtures__/release.fixture'
@@ -33,13 +33,13 @@ export const CautionBanners: Story = {
     <Card padding={4}>
       <VStack gap={5}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             not found
           </Text>
           <ReleaseNotFoundBanner onDismiss={() => null} />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             drafts mode disabled
           </Text>
           <DraftsDisabledBanner
@@ -49,7 +49,7 @@ export const CautionBanners: Story = {
           />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             scheduled drafts disabled
           </Text>
           <DraftsDisabledBanner
@@ -59,7 +59,7 @@ export const CautionBanners: Story = {
           />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             confirm active scheduled drafts
           </Text>
           <ConfirmActiveScheduledDraftsBanner
