@@ -28,17 +28,17 @@ catalog:
   '@sanity/client': ^8.9.0
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.28.8
-  '@sanity/ui': ^4.4.4
+  '@sanity/tsdown-config': ^0.29.0
+  '@sanity/ui': ^4.4.5
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
   '@types/react-is': ^19.3.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.2.26
+  '@sanity/vanilla-extract-vite-plugin': ^0.3.0
   '@vanilla-extract/css': ^1.21.3
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.2
-  '@vitest/browser-playwright': ^5.0.3
+  '@vitest/browser-playwright': ^5.0.4
   dequal: ^2.0.3
   get-it: ^9.6.1
   jsdom: ^29.1.1
@@ -58,7 +58,7 @@ catalog:
   tsdown: ^0.23.1
   typescript: ^7.0.2
   vite: ^8.3.4
-  vitest: ^5.0.3
+  vitest: ^5.0.4
   vitest-browser-react: ^2.3.0
 
 autoDedupe: true
@@ -117,10 +117,13 @@ minimumReleaseAgeExclude:
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'
   - 'lightningcss-*'
-  # Fresh motion patch and its lockstep packages
-  - 'framer-motion@14.1.1'
-  - 'motion@14.1.1'
-  - 'motion-dom@14.1.1'
+  # motion, framer-motion and motion-dom release in lockstep, often several times a week, so new
+  # versions are routinely younger than minimumReleaseAge
+  - 'framer-motion'
+  - 'motion'
+  - 'motion-dom'
+  # motion-utils does not ship a release for every motion version; 14.1.1 is the one the current
+  # motion releases depend on, and it is still younger than the age gate
   - 'motion-utils@14.1.1'
   # oxc-transform-react and its per-platform native bindings (@oxc-transform-react/binding-*)
   # release in lockstep with the oxc toolchain; @vitejs/plugin-react and
