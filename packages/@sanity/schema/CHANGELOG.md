@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-13)
+
+### Features
+
+* **schema:** make manifest validation aware of built-in parent types during compilation ([#15133](https://github.com/sanity-io/sanity/issues/15133)) ([e3e0fc2](https://github.com/sanity-io/sanity/commit/e3e0fc2f1300a32ffd0a1c6cc0af650a3aeccc76))
 ## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
 
 ### Bug Fixes
