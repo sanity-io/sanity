@@ -1,23 +1,13 @@
-// Token pattern used for extracting tokens from URL hash
-const tokenPattern = /token=([^&]{32,})&?/
+import {takeHashParam, takeStashedAuthHashParam} from './authHashParams'
+
+const isValidToken = (value: string | undefined): value is string =>
+  value !== undefined && value.length >= 32
 
 function readAndRemoveHashToken(): string | undefined {
-  if (typeof window === 'undefined' || typeof window.location !== 'object') {
-    return undefined
-  }
-
-  const [, tokenParam] = window.location.hash.match(tokenPattern) || []
-  if (!tokenParam) {
-    return undefined
-  }
-
-  // Remove the token from URL for security
-  const newHash = window.location.hash.replace(tokenPattern, '')
-  const newUrl = new URL(window.location.href)
-  newUrl.hash = newHash.length > 1 ? newHash : ''
-  history.replaceState(null, '', newUrl)
-
-  return tokenParam
+  // Always removed from the URL, even when the studio HTML already stashed one.
+  const fromHash = takeHashParam('token')
+  const token = takeStashedAuthHashParam('token') ?? fromHash
+  return isValidToken(token) ? token : undefined
 }
 
 // Like the session ID, the token is removed from the URL as a side-effect as soon as this

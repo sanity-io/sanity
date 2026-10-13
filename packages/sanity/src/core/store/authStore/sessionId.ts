@@ -1,29 +1,13 @@
-// Trailing '&' included so we can replace `#sid=foo&bar=baz` with `#bar=baz`
-const sidPattern = /sid=([^&]{20,})&?/
+import {takeHashParam, takeStashedAuthHashParam} from './authHashParams'
+
+const isValidSessionId = (value: string | undefined): value is string =>
+  value !== undefined && value.length >= 20
 
 function consumeSessionId(): string | undefined {
-  // Are we in a browser-like environment?
-  if (typeof window === 'undefined' || typeof window.location !== 'object') {
-    return undefined
-  }
-
-  // Does the hash contain a valid session ID?
-  const hash = window.location.hash
-
-  // The first element will be the entire match, including `sid=` - we only care about
-  // the first _group_, being the actual _value_ of the parameter, thus the leading comma
-  const [, sidParam] = hash.match(sidPattern) || []
-  if (!sidParam) {
-    return undefined
-  }
-
-  // Remove the parameter from the URL
-  const newHash = hash.replace(sidPattern, '')
-  const newUrl = new URL(window.location.href)
-  newUrl.hash = newHash.length > 1 ? newHash : ''
-  history.replaceState(null, '', newUrl)
-
-  return sidParam
+  // Always removed from the URL, even when the studio HTML already stashed one.
+  const fromHash = takeHashParam('sid')
+  const sessionId = takeStashedAuthHashParam('sid') ?? fromHash
+  return isValidSessionId(sessionId) ? sessionId : undefined
 }
 
 /**

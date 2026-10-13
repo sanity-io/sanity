@@ -9,6 +9,7 @@ import {type WorkspaceOptions} from '../../../config/types'
 
 const SESSION_ID = 'sid-abcdefghijklmnopqrstuvwxyz'
 const TOKEN = 'tok-abcdefghijklmnopqrstuvwxyz0123456789'
+const CLAIM_URL = 'https://www.sanity.io/manage/claim/some-claim-token'
 
 // A field pointing at a type that does not exist: `prepareConfig` throws a
 // `SchemaError` while resolving the workspace, before it creates the auth store.
@@ -51,6 +52,7 @@ describe('credentials in the URL hash when the studio fails to boot', {timeout: 
   afterEach(() => {
     for (const spy of consoleSpies) spy.mockRestore()
     window.location.hash = ''
+    delete globalThis.__SANITY_AUTH_HASH_PARAMS__
   })
 
   it('removes #sid= from the URL even when the schema fails to compile', async () => {
@@ -67,6 +69,14 @@ describe('credentials in the URL hash when the studio fails to boot', {timeout: 
     await bootWithBrokenSchema()
 
     expect(window.location.href).not.toContain(TOKEN)
+  })
+
+  it('removes #claim= from the URL even when the schema fails to compile', async () => {
+    window.location.hash = `#claim=${encodeURIComponent(CLAIM_URL)}`
+
+    await bootWithBrokenSchema()
+
+    expect(window.location.hash).toBe('')
   })
 
   it('keeps unrelated hash params when removing the token', async () => {
@@ -96,5 +106,39 @@ describe('credentials in the URL hash when the studio fails to boot', {timeout: 
 
     expect(consumeHashToken()).toBe(TOKEN)
     expect(window.location.href).not.toContain(TOKEN)
+  })
+
+  it('still hands a claim URL that was removed at load to the auth store', async () => {
+    window.location.hash = `#claim=${encodeURIComponent(CLAIM_URL)}`
+
+    const {consumeHashClaim} = await import('../hashClaim')
+    expect(window.location.hash).toBe('')
+
+    expect(consumeHashClaim()).toBe(CLAIM_URL)
+    expect(consumeHashClaim()).toBeUndefined()
+  })
+
+  it('takes the token and claim URL the studio HTML stashed before the bundle loaded', async () => {
+    globalThis.__SANITY_AUTH_HASH_PARAMS__ = {token: TOKEN, claim: encodeURIComponent(CLAIM_URL)}
+
+    const {consumeHashToken} = await import('../hashToken')
+    const {consumeHashClaim} = await import('../hashClaim')
+
+    expect(consumeHashToken()).toBe(TOKEN)
+    expect(consumeHashClaim()).toBe(CLAIM_URL)
+    expect(globalThis.__SANITY_AUTH_HASH_PARAMS__).toEqual({})
+  })
+
+  it('validates stashed values like hash params', async () => {
+    globalThis.__SANITY_AUTH_HASH_PARAMS__ = {
+      token: 'too-short',
+      claim: encodeURIComponent('https://evil.example.com/manage/claim/some-claim-token'),
+    }
+
+    const {consumeHashToken} = await import('../hashToken')
+    const {consumeHashClaim} = await import('../hashClaim')
+
+    expect(consumeHashToken()).toBeUndefined()
+    expect(consumeHashClaim()).toBeUndefined()
   })
 })
