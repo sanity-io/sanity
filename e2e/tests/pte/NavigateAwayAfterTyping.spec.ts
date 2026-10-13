@@ -19,7 +19,7 @@ interface SimpleBlockDraft {
 }
 
 test.describe('Portable Text Input - navigating away after typing', () => {
-  test.fail(
+  test(
     'saves text typed into a new block when navigating to another document right away',
     {annotation: {type: 'issue', description: 'https://github.com/sanity-io/sanity/issues/15261'}},
     async ({page, sanityClient, _testContext}) => {
