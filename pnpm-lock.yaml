@@ -167,10 +167,10 @@ catalogs:
   default:
     '@optique/core':
       specifier: ^1.1.1
-      version: 1.3.4
+      version: 1.3.5
     '@optique/run':
       specifier: ^1.1.1
-      version: 1.3.4
+      version: 1.3.5
     '@playwright/test':
       specifier: 1.64.0
       version: 1.64.0
@@ -767,7 +767,7 @@ importers:
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.4.0
-        version: 5.4.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.1)
+        version: 5.5.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.1)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
         version: 0.2.26(babel-plugin-macros@3.1.0)(vite@8.3.4)
@@ -1022,7 +1022,7 @@ importers:
         version: 4.18.1
       motion:
         specifier: ^14.1.0
-        version: 14.1.1(react-dom@19.3.0)(react@19.3.0)
+        version: 14.2.0(react-dom@19.3.0)(react@19.3.0)
       qs:
         specifier: ^6.16.0
         version: 6.16.0
@@ -1170,10 +1170,10 @@ importers:
         version: 7.22.0(supports-color@8.1.1)
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@repo/utils':
         specifier: workspace:*
         version: link:../utils
@@ -1210,10 +1210,10 @@ importers:
     dependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@vitejs/plugin-basic-ssl':
         specifier: ^2.3.0
         version: 2.3.0(vite@8.3.4)
@@ -1297,10 +1297,10 @@ importers:
         version: 22.0.1
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@portabletext/toolkit':
         specifier: ^6.0.0
         version: 6.0.0
@@ -2267,7 +2267,7 @@ importers:
         version: 3.0.8
       motion:
         specifier: ^14.1.1
-        version: 14.1.1(react-dom@19.3.0)(react@19.3.0)
+        version: 14.2.0(react-dom@19.3.0)(react@19.3.0)
       nano-pubsub:
         specifier: ^3.0.0
         version: 3.0.0
@@ -2505,10 +2505,10 @@ importers:
     dependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@repo/debug-proxy':
         specifier: workspace:*
         version: link:../../packages/@repo/debug-proxy
@@ -2664,10 +2664,10 @@ importers:
     devDependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../packages/@repo/tsconfig
@@ -3693,8 +3693,8 @@ packages:
     peerDependencies:
       '@playwright/test': ^1.0.0
 
-  '@chromatic-com/storybook@5.4.0':
-    resolution: {integrity: sha512-U4Rny8H6BBa8uiRMnL0CFZyqZ0MWogN/szlMugsInfSnX+PtrLCVp2kjrvaG9bv6X5xSgHpnmepOzLm8+QFseA==}
+  '@chromatic-com/storybook@5.5.0':
+    resolution: {integrity: sha512-fMdXRGtX8ebQ0+fBQ4GME0x1X6GvH0EYX5V91o1fFY/VGEyTWZsp5dEciYGGuVUu/2xd9xDoDQ6FB82pU9akeg==}
     engines: {node: '>=20.0.0', yarn: '>=1.22.18'}
     peerDependencies:
       storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0 || ^11.0.0-0
@@ -5794,12 +5794,12 @@ packages:
     resolution: {integrity: sha512-eSYWTm620tTk45EKSedaUL8MFYI8hW164hIXsgIHyxu3VobUB3fFCu5t0hQby6OoWRPsG1KkKUG2M5UadiLiVg==}
     engines: {node: '>=14'}
 
-  '@optique/core@1.3.4':
-    resolution: {integrity: sha512-/j8732xVhXUNow2PKQZluL39YFxiPwBTn0y/j6P9IbNgdzUIYaSp1Taf1v5dzyuE/Mbi4ePj1Sl8tbayo91KuA==}
+  '@optique/core@1.3.5':
+    resolution: {integrity: sha512-tZASQ0TXsuk+6aqnA+n9vO3anHJ5Vr5oZIIpU/YfCqB0+Q8p3GRQyd5giBB9EnSoOE7/++0pR0xl+q0PSwWZnA==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
-  '@optique/run@1.3.4':
-    resolution: {integrity: sha512-oyW1b6DIa4Fo/nGKT7Ph/7zsuAE96O08d9dU7BqdJb45m1vrzg4dgMeqLikKhA5jOJ2aIsJhsqKClCmepYHWug==}
+  '@optique/run@1.3.5':
+    resolution: {integrity: sha512-VDPJorzfWZHx0YWZHQ3i4O/Umo4usB5l3wJIbvovNtGeZ/+Kl1BA1ldDF08RbEWtUdUCxL0SdmdA/p5WolKkMg==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
   '@oxc-parser/binding-android-arm-eabi@0.127.0':
@@ -10479,8 +10479,8 @@ packages:
     resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
 
-  dompurify@3.4.16:
-    resolution: {integrity: sha512-sqo+pNp3qRhCIpbgRi1y8Tgk27Bo2Ry7w0dC1NBeNTdZChWjz9Xb/KOoZbRP/R6pQZ80Qw8YhXw13hWWBbMRnQ==}
+  dompurify@3.4.17:
+    resolution: {integrity: sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==}
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
@@ -11211,8 +11211,8 @@ packages:
   fraction.js@5.3.4:
     resolution: {integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==}
 
-  framer-motion@14.1.1:
-    resolution: {integrity: sha512-kPp3cepIYM8KS7Ro7+izapfcO11/qk3MCBswbEEllNRPNbq2ttekDhTJTQMuWLD8PbLi9idh5SvJbUtdxJiDzw==}
+  framer-motion@14.2.0:
+    resolution: {integrity: sha512-cD2gfFujHt4r/+dZpcn5yziu7VRwQAQDakwIm/bICYXbafnpHCYokV+PnEXqErnSdv6Eh28a+SRF+f3ndGcMsQ==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -12563,14 +12563,14 @@ packages:
     resolution: {integrity: sha512-fVtjTVACOtAb0PjDDF+O5NebcEJy5JpAH+AXk16/5i36w38YkW6MZ+KWV54bdIOJFymDz1VjjA5Xg6L2QfjQjQ==}
     engines: {node: '>=20.19.0'}
 
-  motion-dom@14.1.1:
-    resolution: {integrity: sha512-xfVexSRsNlB8kkZRK2xyMJt8xnh38Vt6iX9O3h1UScBlfhuu6cSB0sPoEwALEaRVAkcizvHYq/a1uqbrR9AuhQ==}
+  motion-dom@14.2.0:
+    resolution: {integrity: sha512-TDdxnjAavh2Qm4lQCQI3uoTx9IR/Id2PI8JNEXW3AcwwV2yvhoimAX3/TnE+x82gDHfPq2yx/cJ58TTw5mMr0A==}
 
   motion-utils@14.1.1:
     resolution: {integrity: sha512-3VvN5Uvf8B6qG+OfOui6Nht5EWp+vLuU3IqcAj7ItZGKqtmTjCebl5sGZF7/08gEHRnEl1AP/fIwbcEyVrcQGQ==}
 
-  motion@14.1.1:
-    resolution: {integrity: sha512-pKmYOtWLZJ1Nb0K7Fnw6i4AW4yNjvxXIFLxbkpx5gRZZrtQ7bXvcIk5n2dB83/waM6Z8tI1AHXjzyh3YQ+7aSA==}
+  motion@14.2.0:
+    resolution: {integrity: sha512-45cDwjZh0yOMZtnX3hIFPIPmzCWz/RC2bD/niWVIssGBjJlMmosbDILG9a+ZyoP635Z5xrbKvuo10spv9dBdnw==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -16925,7 +16925,7 @@ snapshots:
       - react
       - utf-8-validate
 
-  '@chromatic-com/storybook@5.4.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.1)':
+  '@chromatic-com/storybook@5.5.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.1)':
     dependencies:
       '@neoconfetti/react': 1.0.0
       chromatic: 18.12.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
@@ -18999,11 +18999,11 @@ snapshots:
 
   '@opentelemetry/semantic-conventions@1.43.0': {}
 
-  '@optique/core@1.3.4': {}
+  '@optique/core@1.3.5': {}
 
-  '@optique/run@1.3.4':
+  '@optique/run@1.3.5':
     dependencies:
-      '@optique/core': 1.3.4
+      '@optique/core': 1.3.5
 
   '@oxc-parser/binding-android-arm-eabi@0.127.0':
     optional: true
@@ -20120,7 +20120,7 @@ snapshots:
       '@vitejs/plugin-react': 6.1.2(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.154.0)(vite@8.3.4)
       chokidar: 5.0.0
       cjs-module-lexer: 2.3.0
-      dompurify: 3.4.16
+      dompurify: 3.4.17
       empathic: 2.1.0
       jsdom: 29.1.1(@noble/hashes@2.4.0)
       lightningcss: 1.33.0
@@ -20747,7 +20747,7 @@ snapshots:
       '@vanilla-extract/dynamic': 2.1.5
       '@xstate/react': 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)
       dequal: 2.0.3
-      motion: 14.1.1(react-dom@19.3.0)(react@19.3.0)
+      motion: 14.2.0(react-dom@19.3.0)(react@19.3.0)
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
       react-refractor: 4.0.0(react@19.3.0)
@@ -20800,7 +20800,7 @@ snapshots:
       '@vanilla-extract/dynamic': 2.1.5
       clsx: 2.1.1
       csstype: 3.2.3
-      motion: 14.1.1(react-dom@19.3.0)(react@19.3.0)
+      motion: 14.2.0(react-dom@19.3.0)(react@19.3.0)
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
       react-is: 19.3.0
@@ -23718,7 +23718,7 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@3.4.16:
+  dompurify@3.4.17:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -24527,9 +24527,9 @@ snapshots:
 
   fraction.js@5.3.4: {}
 
-  framer-motion@14.1.1(react-dom@19.3.0)(react@19.3.0):
+  framer-motion@14.2.0(react-dom@19.3.0)(react@19.3.0):
     dependencies:
-      motion-dom: 14.1.1
+      motion-dom: 14.2.0
       motion-utils: 14.1.1
       tslib: 2.8.1
     optionalDependencies:
@@ -25246,7 +25246,7 @@ snapshots:
 
   isomorphic-dompurify@2.36.0(@noble/hashes@2.4.0)(supports-color@8.1.1):
     dependencies:
-      dompurify: 3.4.16
+      dompurify: 3.4.17
       jsdom: 28.1.0(@noble/hashes@2.4.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - '@noble/hashes'
@@ -25941,15 +25941,15 @@ snapshots:
       - socks
     optional: true
 
-  motion-dom@14.1.1:
+  motion-dom@14.2.0:
     dependencies:
       motion-utils: 14.1.1
 
   motion-utils@14.1.1: {}
 
-  motion@14.1.1(react-dom@19.3.0)(react@19.3.0):
+  motion@14.2.0(react-dom@19.3.0)(react@19.3.0):
     dependencies:
-      framer-motion: 14.1.1(react-dom@19.3.0)(react@19.3.0)
+      framer-motion: 14.2.0(react-dom@19.3.0)(react@19.3.0)
       tslib: 2.8.1
     optionalDependencies:
       react: 19.3.0
