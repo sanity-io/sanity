@@ -48,6 +48,7 @@ function combine(...visitors: any) {
 }
 
 interface Options {
+  parentTypes?: _FIXME_[]
   transformTypeVisitors?: (visitors: typeof typeVisitors) => Partial<typeof typeVisitors>
   transformCommonVisitors?: (visitors: any[]) => any[]
 }
@@ -58,11 +59,12 @@ interface Options {
 export function validateSchema(
   schemaTypes: _FIXME_,
   {
+    parentTypes = [],
     transformTypeVisitors = (visitors) => visitors,
     transformCommonVisitors = (visitors) => visitors,
   }: Options = {},
 ) {
-  return traverseSanitySchema(schemaTypes, (schemaDef, visitorContext) => {
+  return traverseSanitySchema(schemaTypes, parentTypes, (schemaDef, visitorContext) => {
     const typeVisitor =
       (schemaDef &&
         schemaDef.type &&

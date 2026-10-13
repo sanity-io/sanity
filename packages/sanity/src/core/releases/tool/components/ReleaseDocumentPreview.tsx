@@ -1,6 +1,6 @@
 import {type ReleaseState} from '@sanity/client'
 import {Card} from '@sanity/ui'
-import {useMemo, type RefAttributes} from 'react'
+import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {type PreviewLayoutKey} from '../../../components/previews/types'
@@ -62,25 +62,6 @@ export function ReleaseDocumentPreview({
     ],
   )
 
-  const LinkComponent = useMemo(
-    () =>
-      function LinkComponent(
-        linkProps: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
-      ) {
-        const {ref, ...rest} = linkProps
-        return (
-          <IntentLink
-            {...rest}
-            intent="edit"
-            params={params}
-            searchParams={searchParams}
-            ref={ref}
-          />
-        )
-      },
-    [params, searchParams],
-  )
-
   const previewPresence = useMemo(
     () => documentPresence?.length > 0 && <DocumentPreviewPresence presence={documentPresence} />,
     [documentPresence],
@@ -103,7 +84,15 @@ export function ReleaseDocumentPreview({
   })
 
   return (
-    <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
+    <Card
+      tone="inherit"
+      as={IntentLink}
+      intent="edit"
+      params={params}
+      searchParams={searchParams}
+      radius={2}
+      data-as="a"
+    >
       <SanityDefaultPreview
         {...(resolvedPreview || {})}
         status={previewPresence}

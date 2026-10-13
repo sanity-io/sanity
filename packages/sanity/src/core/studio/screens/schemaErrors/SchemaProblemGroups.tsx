@@ -10,7 +10,6 @@ import {useMemo} from 'react'
 import {styled} from 'styled-components'
 import {VStack, Flex, Box} from 'ui5'
 
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getTypeInfo} from './getTypeInfo'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -32,7 +31,6 @@ const ErrorMessageText = styled(Text)`
 
 export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
-  const {t} = useTranslation()
 
   const items = useMemo(() => {
     const ret = []

@@ -2,11 +2,11 @@ import {diffInput, wrap} from '@sanity/diff'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Skeleton, Spinner, Text, useLayer} from '@sanity/ui'
+import {Card, Skeleton, Spinner, useLayer} from '@sanity/ui'
 import {fromString} from '@sanity/util/paths'
 import {type RefObject, type ComponentType, Fragment} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {Box, Flex, type Space} from 'ui5'
+import {Text, Box, Flex, type Space} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {type DiffComponent, type DiffComponentOptions} from '../../field/types'
@@ -96,7 +96,7 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
         >
           <Flex justifyContent="space-between" alignItems="center">
             <Box paddingX={sectionPadding} paddingY={sectionPadding}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 {upstreamReleaseState === 'loaded' &&
                   t('divergence.effect.summary', {
                     title: divergence.schemaType.title,
@@ -168,7 +168,7 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
                 justifyContent="flex-end"
                 alignItems="center"
               >
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   {t('divergence.pagination', {
                     position: divergenceIndex + 1,
                     count: divergenceNavigator.state.divergences.length,

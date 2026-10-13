@@ -6,6 +6,7 @@ import '../core/form/types/definitionExtensions'
 import {createAuthStore as _createAuthStorePublic} from '../core/store/authStore/createAuthStore'
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
+export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
@@ -47,6 +48,7 @@ export {type CommentsSelectedPath} from '../core/comments/context/selected-path/
 export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
 export {useComments} from '../core/comments/hooks/useComments'
 export {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
+export {useCommentsMode} from '../core/comments/hooks/useCommentsMode'
 export {useCommentsSelectedPath} from '../core/comments/hooks/useCommentsSelectedPath'
 export {useCommentsTelemetry} from '../core/comments/hooks/useCommentsTelemetry'
 export {
@@ -82,8 +84,10 @@ export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comm
 export {CommentsProvider as CommentsProviderV2} from '../core/comments-v2/context/comments/CommentsProvider'
 export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
 export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
+export {useCommentsMode as useCommentsModeV2} from '../core/comments-v2/hooks/useCommentsMode'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
+export {DashboardLink} from '../core/components/DashboardLink'
 export {
   AutoCollapseMenu,
   CollapseMenu,
@@ -241,6 +245,7 @@ export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {createConfig, defineConfig} from '../core/config/defineConfig'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {createPlugin, definePlugin, type PluginFactory} from '../core/config/definePlugin'
+export {defineSingleton} from '../core/config/defineSingleton'
 export {
   type DocumentActionComponent,
   type DocumentActionConfirmDialogProps,
@@ -303,13 +308,14 @@ export {
   resolveConfig,
 } from '../core/config/resolveConfig'
 export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
-export {SchemaError} from '../core/config/SchemaError'
+export {SchemaError, type SchemaErrorContext} from '../core/config/SchemaError'
 export {
   type ActiveToolLayoutProps,
   type LayoutProps,
   type LogoProps,
   type NavbarAction,
   type NavbarProps,
+  type ProviderProps,
   type StudioComponents,
   type StudioComponentsPluginOptions,
   type ToolMenuProps,
@@ -357,12 +363,15 @@ export {
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,
   type SchemaPluginOptions,
+  type SingletonDefinition,
+  type SingletonsResolver,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
   type SourceOptions,
   type TemplateResolver,
   type Tool,
+  type UnresolvedSingletonDefinition,
   type VariantConditionMap,
   type VariantConditions,
   type VariantConditionsContext,
@@ -1670,6 +1679,7 @@ export {
 } from '../core/templates/resolve'
 export {
   type InitialValueTemplateItem,
+  type ResolvedTemplate,
   type Template,
   type TemplateArrayFieldDefinition,
   type TemplateFieldDefinition,

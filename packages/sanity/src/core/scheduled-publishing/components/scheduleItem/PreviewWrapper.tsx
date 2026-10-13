@@ -1,7 +1,8 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Card, Text} from '@sanity/ui'
-import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, useState} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Badge, Card} from '@sanity/ui'
+import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, use, useState} from 'react'
+import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DocumentVersionsStatus} from '../../../components/documentStatus/DocumentVersionsStatus'
@@ -9,7 +10,6 @@ import {DocumentVersionsStatusIndicator} from '../../../components/documentStatu
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,
@@ -49,7 +49,8 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
     schemaType,
     useElementQueries,
   } = props
-  const {mode} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
   const [validationStatus, setValidationStatus] = useState(EMPTY_VALIDATION_STATUS)
   const {validation} = validationStatus
   const {hasError, validationTone} = useValidationState(validation)
@@ -111,13 +112,21 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
                 <VStack gap={2}>
                   {scheduleDate ? (
                     <>
-                      <Text size={1}>
+                      <Text size={1} as="div" trim={true} tone={hasError ? 'critical' : undefined}>
                         {formatDateTz({date: scheduleDate, format: 'dd/MM/yyyy'})}
                       </Text>
-                      <Text size={1}>{formatDateTz({date: scheduleDate, format: 'p'})}</Text>
+                      <Text size={1} as="div" trim={true} tone={hasError ? 'critical' : undefined}>
+                        {formatDateTz({date: scheduleDate, format: 'p'})}
+                      </Text>
                     </>
                   ) : (
-                    <Text muted size={1}>
+                    <Text
+                      muted
+                      size={1}
+                      as="div"
+                      trim={true}
+                      tone={hasError ? 'critical' : undefined}
+                    >
                       <em>No date specified</em>
                     </Text>
                   )}
@@ -130,7 +139,13 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
                 {scheduleDate ? (
                   <DateWithTooltip date={scheduleDate} useElementQueries={useElementQueries} />
                 ) : (
-                  <Text muted size={1}>
+                  <Text
+                    muted
+                    size={1}
+                    as="div"
+                    trim={true}
+                    tone={hasError ? 'critical' : undefined}
+                  >
                     <em>No date specified</em>
                   </Text>
                 )}
@@ -173,7 +188,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
                 documentId={publishedDocumentId}
                 menuHeader={
                   <Box padding={2}>
-                    <Text size={1}>
+                    <Text size={1} as="div" trim={true} tone={hasError ? 'critical' : undefined}>
                       {hasError ? DOCUMENT_HAS_ERRORS_TEXT : DOCUMENT_HAS_WARNINGS_TEXT}
                     </Text>
                   </Box>

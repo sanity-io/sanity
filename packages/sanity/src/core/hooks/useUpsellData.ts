@@ -1,7 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {catchError, map, of} from 'rxjs'
+import {catchError, map, type Observable, of} from 'rxjs'
 
 import {
   UpsellDialogDismissed,
@@ -10,7 +9,7 @@ import {
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
 } from '../studio/upsell/__telemetry__/upsell.telemetry'
-import {type UpsellData} from '../studio/upsell/types'
+import {type UpsellData, type UpsellDataResult} from '../studio/upsell/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {interpolateTemplate} from '../util/interpolateTemplate'
 import {useClient} from './useClient'
@@ -21,11 +20,47 @@ interface UpsellDataProps {
   feature: string
 }
 
-type UpsellResult = {upsellData: UpsellData | null; hasError: boolean}
+/**
+ * The telemetry loggers of an upsell feature's dialog and panel.
+ * @internal
+ */
+export interface UpsellTelemetryLogs {
+  dialogSecondaryClicked: () => void
+  dialogPrimaryClicked: () => void
+  dialogViewed: (source: UpsellDialogViewedInfo['source']) => void
+  dialogDismissed: () => void
+  panelViewed: (source: UpsellDialogViewedInfo['source']) => void
+  panelDismissed: () => void
+  panelPrimaryClicked: () => void
+  panelSecondaryClicked: () => void
+}
 
-const INITIAL_UPSELL_RESULT: UpsellResult = {upsellData: null, hasError: false}
+/**
+ * What a leaf reads where no upsell provider is mounted (its `upsellDataPromise` is `null`):
+ * `const {upsellData} = upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA`.
+ *
+ * @internal
+ */
+export const NO_UPSELL_DATA: UpsellDataResult = {upsellData: null, hasError: false}
 
-export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
+/**
+ * The upsell content for `feature` from `dataUri`, as a stable observable of the settled answer
+ * (`upsellData$`), plus the telemetry loggers for the dialog and panel. The observable is cold and
+ * never errors: a failed or empty response settles as `hasError`. Turn it into a `use()`-compatible
+ * promise with `useObservablePromise(upsellData$)` and start the request with
+ * `preloadObservablePromise(upsellData$)` in an effect, so only the leaf that renders the content
+ * (an open dialog, an upsell panel) waits for it: the provider neither suspends nor re-renders
+ * when the response arrives. `useUpsellContext` does this for the simple providers.
+ *
+ * @internal
+ */
+export const useUpsellData = ({
+  dataUri,
+  feature,
+}: UpsellDataProps): {
+  upsellData$: Observable<UpsellDataResult>
+  telemetryLogs: UpsellTelemetryLogs
+} => {
   const telemetry = useTelemetry()
   const projectId = useProjectId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -34,7 +69,7 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
   const baseUrl = `https://www.sanity.${isStaging ? 'work' : 'io'}`
 
   const telemetryLogs = useMemo(
-    () => ({
+    (): UpsellTelemetryLogs => ({
       dialogSecondaryClicked: () =>
         telemetry.log(UpsellDialogLearnMoreCtaClicked, {
           feature,
@@ -82,10 +117,10 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
     [telemetry, feature],
   )
 
-  const upsellResult$ = useMemo(
+  const upsellData$ = useMemo(
     () =>
       client.observable.request<UpsellData | null>({url: dataUri}).pipe(
-        map((data): UpsellResult => {
+        map((data): UpsellDataResult => {
           if (!data) {
             return {upsellData: null, hasError: true}
           }
@@ -100,12 +135,10 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
             return {upsellData: null, hasError: true}
           }
         }),
-        catchError(() => of({upsellData: null, hasError: true})),
+        catchError(() => of<UpsellDataResult>({upsellData: null, hasError: true})),
       ),
     [client, projectId, baseUrl, dataUri],
   )
 
-  const {upsellData, hasError} = useObservable(upsellResult$, INITIAL_UPSELL_RESULT)
-
-  return {upsellData, telemetryLogs, hasError}
+  return {upsellData$, telemetryLogs}
 }

@@ -8,13 +8,13 @@ import {
   enablePreviewAccessSharing,
 } from '@sanity/preview-url-secret/toggle-preview-access-sharing'
 import {setSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
-import {Card, Spinner, Stack, Switch, Text} from '@sanity/ui'
+import {Card, Spinner, Switch, Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
-import {Grid, Box} from 'ui5'
+import {Grid, Box, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {MenuButton} from '../../ui-components/menuButton/MenuButton'
@@ -254,7 +254,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                 </Grid>
               </label>
               <Box padding={3} paddingTop={2}>
-                <Stack gap={3}>
+                <VStack gap={3}>
                   <Card
                     tone={busy || !url ? 'transparent' : undefined}
                     style={{
@@ -308,7 +308,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                   <Text muted size={1}>
                     {t('share-preview-menu.qr-code.instructions')}
                   </Text>
-                </Stack>
+                </VStack>
               </Box>
               <MenuDivider />
               <MenuItem

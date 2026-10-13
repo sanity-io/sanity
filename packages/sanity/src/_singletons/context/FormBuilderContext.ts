@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {FormBuilderContextValue} from '../../core/form/FormBuilderContext'
 
 /**
  * @internal
  */
-export const FormBuilderContext = createContext<FormBuilderContextValue | null>(
-  'sanity/_singletons/context/form-builder',
-  null,
-)
+export const FormBuilderContext = createContext<FormBuilderContextValue | null>(null)

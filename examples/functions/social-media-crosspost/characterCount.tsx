@@ -1,6 +1,6 @@
-import {Badge, Card, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Text} from '@sanity/ui'
 import {useFormValue} from 'sanity'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {platformConfig, type Platform} from '../schemaTypes/documents/socialPost'
 
@@ -25,7 +25,7 @@ export function CharacterCount(props: any) {
 
   return (
     <Card shadow={1} padding={3} radius={2}>
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Flex gap={3} flexDirection="row" alignItems="center" flexWrap="wrap">
           {platformsToDisplay.map((platform: Platform) => {
             const platformSetting = Array.isArray(doc.platformOverrides)
@@ -49,7 +49,7 @@ export function CharacterCount(props: any) {
             )
           })}
         </Flex>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

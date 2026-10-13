@@ -5,7 +5,7 @@ import {
   searchStrategies,
   type SearchStrategy,
 } from '@sanity/types'
-import {type ErrorInfo, type ReactNode} from 'react'
+import {type ErrorInfo} from 'react'
 
 import {
   type LocaleConfigContext,
@@ -35,7 +35,9 @@ import {
   type NewDocumentOptionsContext,
   type PluginOptions,
   type ResolveProductionUrlContext,
+  type SingletonDefinition,
   type Tool,
+  type UnresolvedSingletonDefinition,
   type VariantTypesConfig,
 } from './types'
 
@@ -115,6 +117,64 @@ export const searchOperatorsReducer: ConfigPropertyReducer<
     `Expected \`operators\` to be be an array or a function, but received ${getPrintableType(operators)}`
   )
 }*/
+
+function isSingletonDefinition(
+  maybeSingletonDefinition: unknown,
+): maybeSingletonDefinition is SingletonDefinition {
+  return (
+    isRecord(maybeSingletonDefinition) &&
+    typeof maybeSingletonDefinition.id === 'string' &&
+    typeof maybeSingletonDefinition.documentId === 'string' &&
+    typeof maybeSingletonDefinition.schemaType === 'string'
+  )
+}
+
+function normalizeSingletonDefinition(
+  definition: UnresolvedSingletonDefinition,
+): SingletonDefinition {
+  if (typeof definition === 'string') {
+    return {
+      id: definition,
+      documentId: definition,
+      schemaType: definition,
+    }
+  }
+
+  if (isSingletonDefinition(definition)) {
+    return definition
+  }
+
+  return {
+    ...definition,
+    id: definition.documentId,
+  }
+}
+
+export const singletonsReducer: ConfigPropertyReducer<SingletonDefinition[], ConfigContext> = (
+  prev,
+  {document},
+  context,
+) => {
+  const singletons = document?.singletons
+
+  if (!singletons) {
+    return prev
+  }
+
+  if (typeof singletons === 'function') {
+    return singletons(prev, context).map(normalizeSingletonDefinition)
+  }
+
+  if (Array.isArray(singletons)) {
+    return [...prev, ...singletons.map(normalizeSingletonDefinition)]
+  }
+
+  throw new Error(
+    `Expected \`document.singletons\` to be an array or a function, but received ${getPrintableType(
+      singletons,
+    )}`,
+  )
+}
 
 export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigContext> = (
   prev,
@@ -488,31 +548,6 @@ export const onUncaughtErrorResolver = (opts: {
       )}`,
     )
   })
-}
-
-export const internalTasksReducer = (opts: {
-  config: PluginOptions
-}): {footerAction: ReactNode} | undefined => {
-  const {config} = opts
-  const flattenedConfig = flattenConfig(config, [])
-
-  const result = flattenedConfig.reduce(
-    (acc: {footerAction: ReactNode} | undefined, {config: innerConfig}) => {
-      const resolver = innerConfig.__internal_tasks
-
-      if (!resolver) return acc
-      if (typeof resolver === 'object' && resolver.footerAction) return resolver
-
-      throw new Error(
-        `Expected \`__internal__tasks\` to be an object with footerAction, but received ${getPrintableType(
-          resolver,
-        )}`,
-      )
-    },
-    undefined,
-  )
-
-  return result
 }
 
 export const eventsAPIReducer = (opts: {

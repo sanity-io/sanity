@@ -22,7 +22,9 @@ const MIDDLEWARE_HOOK = 'useMiddlewareComponents'
  * around each top-level block (block, inline object and annotation components), or the single
  * boundary `FormBuilder` keeps around its root input (input, field and item components). The
  * navbar and its tool menu suspend up to `StudioLayout`'s loading screen, since the navbar's
- * height depends on what it renders. Adding a site here is a decision, not a default.
+ * height depends on what it renders. `PluginProviders` renders the `studio.components.provider`
+ * chain above `StudioLayout` on purpose, so a promise a provider starts can be `use()`d below
+ * that boundary. Adding a site here is a decision, not a default.
  */
 const DEFERS_TO_ANCESTOR = [
   'core/form/inputs/PortableText/object/Plugins.tsx <RenderPlugins>',
@@ -39,6 +41,7 @@ const DEFERS_TO_ANCESTOR = [
   'core/form/studio/FormProvider.tsx <InlineBlock>',
   'core/form/studio/FormProvider.tsx <Input>',
   'core/form/studio/FormProvider.tsx <Item>',
+  'core/studio/PluginProviders.tsx <Provider>',
   'core/studio/StudioLayoutComponent.tsx <Navbar>',
   'core/studio/components/navbar/StudioNavbar.tsx <ToolMenu>',
   'core/studio/components/navbar/navDrawer/NavDrawer.tsx <ToolMenu>',

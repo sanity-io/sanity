@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {StudioThemeColorSchemeKey} from '../../core/theme/types'
 
@@ -10,4 +10,4 @@ import type {StudioThemeColorSchemeKey} from '../../core/theme/types'
 export const ColorSchemeSetValueContext = createContext<
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ((nextScheme: StudioThemeColorSchemeKey) => void) | false | null
->('sanity/_singletons/context/color-scheme-set-value', null)
+>(null)

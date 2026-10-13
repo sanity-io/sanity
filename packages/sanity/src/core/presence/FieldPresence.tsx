@@ -30,7 +30,7 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
   stack = true,
 }: FieldPresenceInnerProps) {
   const uniquePresence = uniqBy(presence || [], (item) => item.user.id)
-  const sorted = sortBy(uniquePresence, (_presence) => _presence.lastActiveAt)
+  const sorted = sortBy(uniquePresence, (_presence) => _presence.user.id)
   const [hidden, visible] = stack ? splitRight(sorted, maxAvatars) : [[], sorted]
 
   const avatars = [

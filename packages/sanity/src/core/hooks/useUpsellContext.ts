@@ -1,10 +1,9 @@
-import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {type ObservablePromise, preloadObservablePromise, useObservablePromise} from 'react-rx'
 
-import {useTranslation} from '../i18n/hooks/useTranslation'
 import {type UpsellDialogViewedInfo} from '../studio/upsell/__telemetry__/upsell.telemetry'
-import {type UpsellData} from '../studio/upsell/types'
-import {useUpsellData} from './useUpsellData'
+import {type UpsellDataResult} from '../studio/upsell/types'
+import {type UpsellTelemetryLogs, useUpsellData} from './useUpsellData'
 
 interface UseUpsellContextOptions {
   dataUri: string
@@ -15,38 +14,24 @@ export interface UpsellContextValue {
   upsellDialogOpen: boolean
   handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
   handleClose: () => void
-  upsellData: UpsellData | null
-  telemetryLogs: {
-    dialogSecondaryClicked: () => void
-    dialogPrimaryClicked: () => void
-    dialogViewed: (source: UpsellDialogViewedInfo['source']) => void
-    dialogDismissed: () => void
-    panelViewed: (source: UpsellDialogViewedInfo['source']) => void
-    panelDismissed: () => void
-    panelPrimaryClicked: () => void
-    panelSecondaryClicked: () => void
-  }
-}
-
-/**
- * Transforms context value into props for UpsellDialog component.
- * Helper function to reduce boilerplate in simple providers.
- *
- * @internal
- */
-export function getDialogPropsFromContext(contextValue: UpsellContextValue) {
-  return {
-    data: contextValue.upsellData,
-    open: contextValue.upsellDialogOpen,
-    onClose: contextValue.handleClose,
-    onPrimaryClick: () => contextValue.telemetryLogs.dialogPrimaryClicked(),
-    onSecondaryClick: () => contextValue.telemetryLogs.dialogSecondaryClicked(),
-  }
+  /**
+   * The upsell content, settled once its request has answered. Read it with `use()` in the leaf
+   * that renders the content, under a `Suspense` boundary; never on a path whose suspension would
+   * hold up a layout, and never awaited in an event handler.
+   */
+  upsellDataPromise: ObservablePromise<UpsellDataResult>
+  telemetryLogs: UpsellTelemetryLogs
 }
 
 /**
  * Creates context value for simple upsell providers.
  * Handles data fetching, dialog state management, and error handling with toast notifications.
+ *
+ * The request starts when the provider commits (`preloadObservablePromise` in an effect, which
+ * also keeps the answer cached across a remount) and is read with `use()` where its answer is
+ * rendered: `UpsellContextDialog` (which reports a failed request with a toast and closes again)
+ * and the upsell panels. The provider itself never suspends on it and does not re-render when it
+ * arrives.
  *
  * For complex providers with custom logic, use useUpsellData directly.
  *
@@ -54,12 +39,11 @@ export function getDialogPropsFromContext(contextValue: UpsellContextValue) {
  */
 export function useUpsellContext({dataUri, feature}: UseUpsellContextOptions): UpsellContextValue {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
-  const {upsellData, telemetryLogs, hasError} = useUpsellData({
-    dataUri,
-    feature,
-  })
-  const toast = useToast()
-  const {t} = useTranslation()
+  const {upsellData$, telemetryLogs} = useUpsellData({dataUri, feature})
+  const upsellDataPromise = useObservablePromise(upsellData$)
+  useEffect(() => {
+    void preloadObservablePromise(upsellData$)
+  }, [upsellData$])
 
   const handleClose = useCallback(() => {
     setUpsellDialogOpen(false)
@@ -68,18 +52,10 @@ export function useUpsellContext({dataUri, feature}: UseUpsellContextOptions): U
 
   const handleOpenDialog = useCallback(
     (source: UpsellDialogViewedInfo['source']) => {
-      if (hasError) {
-        toast.push({
-          status: 'error',
-          title: t('errors.unable-to-perform-action'),
-          closable: true,
-        })
-        return
-      }
       setUpsellDialogOpen(true)
       telemetryLogs.dialogViewed(source)
     },
-    [hasError, toast, t, telemetryLogs],
+    [telemetryLogs],
   )
 
   return useMemo(
@@ -87,9 +63,9 @@ export function useUpsellContext({dataUri, feature}: UseUpsellContextOptions): U
       upsellDialogOpen,
       handleOpenDialog,
       handleClose,
-      upsellData,
+      upsellDataPromise,
       telemetryLogs,
     }),
-    [upsellDialogOpen, handleOpenDialog, handleClose, upsellData, telemetryLogs],
+    [upsellDialogOpen, handleOpenDialog, handleClose, upsellDataPromise, telemetryLogs],
   )
 }

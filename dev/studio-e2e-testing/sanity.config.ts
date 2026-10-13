@@ -12,6 +12,7 @@ import {resolveInitialValueTemplates} from 'sanity-test-studio/initialValueTempl
 import {customInspector} from 'sanity-test-studio/inspectors/custom'
 import {languageFilter} from 'sanity-test-studio/plugins/language-filter/plugin'
 import {newDocumentOptions} from 'sanity-test-studio/structure/resolveNewDocumentOptions'
+import {singletons} from 'sanity-test-studio/structure/resolveSingletons'
 import {structure} from 'sanity-test-studio/structure/resolveStructure'
 import {defaultDocumentNode} from 'sanity-test-studio/structure/resolveStructureDocumentNode'
 import {presentationTool} from 'sanity/presentation'
@@ -80,6 +81,7 @@ const defaultConfig = defineConfig({
       return prev
     },
     newDocumentOptions,
+    singletons,
   },
   plugins: [
     diagnosticsBridge(),

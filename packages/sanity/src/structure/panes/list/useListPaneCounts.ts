@@ -127,6 +127,7 @@ export function useListPaneCounts(
   enabled = true,
 ): ListPaneCounts {
   const documentPreviewStore = useDocumentPreviewStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {perspectiveStack, selectedVariantName} = usePerspective()
 
   // Defer the initial fetch off first paint (product decision): the list must paint

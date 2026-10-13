@@ -282,10 +282,12 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
         >
           <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
             <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
+              {/* oxlint-disable react/purity -- the header falls back to the current month when nothing is focused */}
               <Text weight="medium" size={1}>
                 {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
                 {(focusedDate || new Date())?.getFullYear()}
               </Text>
+              {/* oxlint-enable react/purity */}
             </Flex>
 
             <Flex paddingRight={3} gap={2}>

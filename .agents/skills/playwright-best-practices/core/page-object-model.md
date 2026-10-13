@@ -61,6 +61,7 @@ export class LoginPage {
 ```typescript
 // tests/login.spec.ts
 import {test, expect} from '@playwright/test'
+
 import {LoginPage} from '../pages/login.page'
 
 test.describe('Login', () => {
@@ -150,8 +151,9 @@ export class ModalComponent {
 ```typescript
 // pages/dashboard.page.ts
 import {Page, Locator} from '@playwright/test'
-import {NavbarComponent} from '../components/navbar.component'
+
 import {ModalComponent} from '../components/modal.component'
+import {NavbarComponent} from '../components/navbar.component'
 
 export class DashboardPage {
   readonly page: Page
@@ -284,8 +286,9 @@ tests/
 ```typescript
 // fixtures/pages.fixture.ts
 import {test as base} from '@playwright/test'
-import {LoginPage} from '../pages/login.page'
+
 import {DashboardPage} from '../pages/dashboard.page'
+import {LoginPage} from '../pages/login.page'
 
 type Pages = {
   loginPage: LoginPage

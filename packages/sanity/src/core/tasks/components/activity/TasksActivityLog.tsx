@@ -1,9 +1,8 @@
 import {type Path, type PortableTextBlock} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useMemo, useState} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {CommentDeleteDialog as CommentDeleteDialogV2} from '../../../comments-v2/components/CommentDeleteDialog'
 import {useComments as useCommentsV2} from '../../../comments-v2/hooks/useComments'
@@ -378,7 +377,7 @@ function TasksActivityLogFeed(props: TasksActivityLogFeedProps) {
       <VStack gap={5}>
         <Flex alignItems="center">
           <Box flexBasis="0%" flexGrow={1}>
-            <Text size={2} weight="semibold">
+            <Text size={2} weight="semibold" as="div" trim={true}>
               {t('panel.activity.title')}
             </Text>
           </Box>
