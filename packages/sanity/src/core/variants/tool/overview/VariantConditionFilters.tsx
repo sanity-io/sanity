@@ -193,12 +193,18 @@ function FilterChip({
     <Card border padding={1} radius={2} style={{flex: 'none'}} tone="primary">
       <Flex alignItems="center" gap={2}>
         <Box paddingLeft={1}>
-          <Text size={1} as="div" trim={true}>
+          <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
             <Icon />
           </Text>
         </Box>
         {!iconOnly && (
-          <Text muted size={1} style={{whiteSpace: 'nowrap'}} as="div" trim={true}>
+          <Text
+            muted
+            size={1}
+            style={{whiteSpace: 'nowrap', color: 'var(--card-muted-fg-color)'}}
+            as="div"
+            trim={true}
+          >
             {chip.label}
           </Text>
         )}

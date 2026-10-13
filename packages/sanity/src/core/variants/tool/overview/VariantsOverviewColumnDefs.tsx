@@ -86,10 +86,24 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
             {/* min-width: 0 lets the flex child shrink below its content width so a long name
                 truncates with a trailing ellipsis instead of overflowing on narrow viewports. */}
             <Flex flexBasis="0%" flexGrow={1} gap={2} style={{minWidth: 0}} flexDirection="column">
-              <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
+              <Text
+                size={1}
+                truncate={1}
+                weight="medium"
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-fg-color)'}}
+              >
                 {getVariantTitle(variant)}
               </Text>
-              <Text muted size={1} truncate={1} as="div" trim={true}>
+              <Text
+                muted
+                size={1}
+                truncate={1}
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
+              >
                 {conditionsText || t('overview.table.no-conditions')}
               </Text>
             </Flex>
