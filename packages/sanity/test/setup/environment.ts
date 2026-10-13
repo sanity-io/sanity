@@ -65,6 +65,50 @@ class MockIntersectionObserver {
 
 ;(globalThis as any).IntersectionObserver = MockIntersectionObserver
 
+// jsdom exposes Node's (undici's) WebSocket as the global, so unit tests that
+// mount a workspace let `@sanity/bifur-client` open a REAL socket to
+// `wss://<projectId>.api.sanity.io/v1/socket/…` — the wildcard DNS resolves
+// even for mock project ids. When that handshake completes before the test
+// file tears down, undici fires its `open` event using the jsdom-realm `Event`
+// on a Node-realm event target, which throws `ERR_INVALID_ARG_TYPE`
+// ("The 'event' argument must be an instance of Event. Received an instance
+// of Event") and fails the whole run as an unhandled error — a race that CI
+// loses only sometimes. Unit tests must not talk to the network anyway, so
+// the global is an inert stand-in that never connects. Tests that assert on
+// socket semantics install their own fake (see bifurClientConnection.test.ts).
+class MockWebSocket extends EventTarget {
+  static readonly CONNECTING = 0
+  static readonly OPEN = 1
+  static readonly CLOSING = 2
+  static readonly CLOSED = 3
+  readonly CONNECTING = 0
+  readonly OPEN = 1
+  readonly CLOSING = 2
+  readonly CLOSED = 3
+  readonly url: string
+  readonly protocol = ''
+  readonly extensions = ''
+  readonly bufferedAmount = 0
+  binaryType: 'blob' | 'arraybuffer' = 'blob'
+  readyState = MockWebSocket.CONNECTING
+  onopen: ((event: Event) => void) | null = null
+  onclose: ((event: Event) => void) | null = null
+  onerror: ((event: Event) => void) | null = null
+  onmessage: ((event: MessageEvent) => void) | null = null
+  constructor(url: string | URL, _protocols?: string | string[]) {
+    super()
+    this.url = String(url)
+  }
+  send(): void {
+    // no-op — never connected
+  }
+  close(): void {
+    this.readyState = MockWebSocket.CLOSED
+  }
+}
+
+;(globalThis as any).WebSocket = MockWebSocket
+
 // ResizeObserver isn't available in the test browser environment
 class MockResizeObserver {
   observe(): void {
@@ -78,39 +122,6 @@ class MockResizeObserver {
   }
 }
 ;(globalThis as any).ResizeObserver = MockResizeObserver
-
-// Tests must never open a real socket. Rendering anything that subscribes to the presence store
-// makes `@sanity/bifur-client` connect to the mock client's project, and it defers closing a
-// socket that is still connecting until the handshake settles, so the socket outlives the test.
-// When it then opens, Node's WebSocket dispatches jsdom's global `Event` on itself and throws an
-// uncaught `ERR_INVALID_ARG_TYPE` that fails the run. This one stays `CONNECTING` forever.
-class MockWebSocket extends EventTarget {
-  static CONNECTING = 0
-  static OPEN = 1
-  static CLOSING = 2
-  static CLOSED = 3
-  CONNECTING = 0
-  OPEN = 1
-  CLOSING = 2
-  CLOSED = 3
-  readyState = 0
-  url: string
-  onopen = null
-  onclose = null
-  onerror = null
-  onmessage = null
-  constructor(url: string | URL) {
-    super()
-    this.url = String(url)
-  }
-  send(): void {
-    // no-op
-  }
-  close(): void {
-    this.readyState = this.CLOSED
-  }
-}
-;(globalThis as any).WebSocket = MockWebSocket
 ;(globalThis as any).matchMedia = vi.fn().mockImplementation((query) => ({
   matches: false,
   media: query,
