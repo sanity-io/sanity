@@ -19,6 +19,9 @@ interface SimpleBlockDraft {
 }
 
 test.describe('Portable Text Input - navigating away after typing', () => {
+  // Fits every pane on the way to the document, so the document list is never collapsed
+  test.use({viewport: {width: 2560, height: 1000}})
+
   test(
     'saves text typed into a new block when navigating to another document right away',
     {annotation: {type: 'issue', description: 'https://github.com/sanity-io/sanity/issues/15261'}},
@@ -39,6 +42,8 @@ test.describe('Portable Text Input - navigating away after typing', () => {
         body: [paragraph('existing', 'Existing paragraph')],
       })
 
+      // Installed before the Studio loads, so its timers can be paused while editing, see below
+      await page.clock.install()
       await page.goto(`${SIMPLE_BLOCK_LIST};${documentId}`)
 
       const body = page.getByTestId('field-body')
@@ -56,12 +61,21 @@ test.describe('Portable Text Input - navigating away after typing', () => {
       await existingBlock.click()
       await expect(body.getByTestId('block-style-select')).toContainText('Normal')
 
+      // The edits are only lost when the document is left before the editor flushes them on its
+      // own timers and before the autocommit after the first edit runs. Pausing the page's timers
+      // from the first edit until this editor is gone makes that the case however long the click
+      // takes. The document pane is keyed by document id, so leaving the document removes it.
+      const editor = await body.getByRole('textbox').elementHandle()
+      await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 1_000)
+
       await page.keyboard.press('End')
       await page.keyboard.press('Enter')
       await page.keyboard.type('Typed into the new block')
 
-      // Leave right away, before the editor's batched edits have been committed
       await otherDocumentLink.click()
+      await expect.poll(() => editor.evaluate((node) => node.isConnected)).toBe(false)
+      await page.clock.resume()
+
       await expect(page.getByTestId('field-body')).toContainText('Paragraph in the other document')
 
       await expect
