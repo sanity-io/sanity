@@ -3,6 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
+import debounce from 'lodash-es/debounce.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
@@ -19,7 +20,6 @@ import {
   useDocumentOperationEvent,
   useDocumentPairPermissions,
   useEditState,
-  useImmediateValidation,
   usePerspective,
   useRelativeTime,
   useSyncState,
@@ -27,7 +27,6 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-import {Button} from '../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
@@ -37,32 +36,19 @@ import {
   PublishButtonClicked,
 } from './__telemetry__/documentActions.telemetry'
 import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
-import {PublishProgress} from './PublishProgress'
+import {type PublishPhase, PublishProgressDialog} from './PublishProgressDialog'
 
 const PUBLISHED_STATE = {status: 'published'} as const
 
 /**
  * How long a publish may take, validation and publishing included, before a dialog takes over the
- * view to show how far it has got. A publish still waiting on validation at that point also gets
- * its own validation run without idle-callback pacing (see `useImmediateValidation`): until then
- * editing-style pacing keeps the studio responsive, after that the user is clearly waiting on the
- * result.
+ * view to show how far it has got (see `PublishProgressDialog`). Until then the publish behaves
+ * as it always has; after that the user is clearly waiting on the result.
  */
-const PUBLISH_PROGRESS_DIALOG_DELAY = 3000
+const PUBLISH_PROGRESS_DIALOG_DELAY = 5000
 
 /** How long a completed publish stays on screen in the progress dialog before it closes. */
 const PUBLISH_PROGRESS_CLOSE_DELAY = 2000
-
-/** One publish, from the click until it has been published, failed, or was dismissed. */
-interface PublishAttempt {
-  startedAt: number
-  /** The outcome of the validation this attempt is gated on, once it is complete. */
-  validation?: {errorCount: number}
-  /** Set once `publish.execute()` has been called, with the published revision at that moment. */
-  publishing?: {revision: string | undefined}
-  /** The operation event current at the click, so only a later publish error counts as this attempt's. */
-  eventAtStart: ReturnType<typeof useDocumentOperationEvent>
-}
 
 type ValidationStatus = ReturnType<typeof useValidationStatus>
 
@@ -117,82 +103,51 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const editState = useEditState(documentId, documentType, 'default', scopeId)
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const documentToValidate = editState?.version || editState?.draft || editState?.published
-  const revision = documentToValidate?._rev
+  const revision = (editState?.version || editState?.draft || editState?.published || {})._rev
   const toast = useToast()
 
-  const validationErrorCount = validationStatus.validation.filter(isValidationErrorMarker).length
-  const hasValidationErrors = validationErrorCount > 0
+  const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
   const isSyncing = syncState.isSyncing
   const isValidating = validationStatus.isValidating
 
-  // The publish in progress, and whether its progress dialog has been shown.
-  const [attempt, setAttempt] = useState<PublishAttempt | null>(null)
-  const [progressShown, setProgressShown] = useState(false)
+  // The progress dialog shows up once a publish has been going on for a while: `open` is asked
+  // for at the click and `close` when the publish is done, and the debounce lets the last call
+  // win, so a publish that is done within the delay never shows it.
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const toggleDialog = useMemo(
+    () =>
+      debounce(
+        (state: 'open' | 'close') => setDialogOpen(state === 'open'),
+        PUBLISH_PROGRESS_DIALOG_DELAY,
+      ),
+    [setDialogOpen],
+  )
+  useEffect(() => () => toggleDialog.cancel(), [toggleDialog])
+  const closeDialog = useCallback(() => {
+    toggleDialog.cancel()
+    setDialogOpen(false)
+  }, [setDialogOpen, toggleDialog])
+  // Once the dialog is up it validates the document on its own, without idle pacing; its status
+  // counts as much as the store's: whichever is a complete validation of the current revision
+  // first decides. `null` while the dialog is not running one.
+  const [immediateValidation, setImmediateValidation] = useState<ValidationStatus | null>(null)
+  const completedValidation = [immediateValidation, validationStatus].find(isCompleteFor(revision))
+  const completedValidationErrorCount =
+    completedValidation?.validation.filter(isValidationErrorMarker).length ?? 0
+  // The operation event current at the click, so that only a later publish error counts.
   const operationEvent = useDocumentOperationEvent(id, type)
   const operationEventRef = useRef(operationEvent)
   useEffect(() => {
     operationEventRef.current = operationEvent
   }, [operationEvent])
-
-  const currentPublishRevision = publishedInfo?._rev
+  const [eventAtClick, setEventAtClick] = useState(operationEvent)
   const publishError =
-    attempt !== null &&
-    operationEvent !== attempt.eventAtStart &&
+    operationEvent !== eventAtClick &&
     operationEvent?.type === 'error' &&
     operationEvent.op === 'publish'
-  const validationFailed =
-    attempt !== null && !attempt.publishing && (attempt.validation?.errorCount ?? 0) > 0
-  const publishSucceeded =
-    attempt?.publishing !== undefined && currentPublishRevision !== attempt.publishing.revision
-  const attemptOutcome = !attempt
-    ? null
-    : publishError || validationFailed
-      ? 'failed'
-      : publishSucceeded
-        ? 'succeeded'
-        : 'in-progress'
 
-  // Show the dialog once the publish has been going for a while and has not finished.
-  useEffect(() => {
-    if (!attempt || attemptOutcome !== 'in-progress' || progressShown) return undefined
-    const timer = setTimeout(
-      () => setProgressShown(true),
-      Math.max(0, PUBLISH_PROGRESS_DIALOG_DELAY - (Date.now() - attempt.startedAt)),
-    )
-    return () => clearTimeout(timer)
-  }, [attempt, attemptOutcome, progressShown])
-
-  // Escape hatch for validation that is taking long: once the dialog is up and the publish is
-  // still waiting on validation, validate the document right away, without the idle-callback
-  // pacing of the store's validation (a busy or hidden page grants few or none), blocking the
-  // main thread if need be. The dialog is committed before the run starts, so it is on screen
-  // first. The store's validation carries on untouched, and whichever of the two finishes first
-  // for the current revision decides the publish.
-  const immediateValidation = useImmediateValidation(
-    documentToValidate,
-    !release,
-    progressShown && publishScheduled,
-  )
-  const completedValidation = [immediateValidation, validationStatus].find(isCompleteFor(revision))
-
-  // A finished publish leaves the dialog up for a moment; a failed one stays until dismissed,
-  // unless the dialog never showed.
-  useEffect(() => {
-    if (attemptOutcome !== 'succeeded' && !(attemptOutcome === 'failed' && !progressShown)) {
-      return undefined
-    }
-    const timer = setTimeout(
-      () => {
-        setAttempt(null)
-        setProgressShown(false)
-      },
-      attemptOutcome === 'succeeded' && progressShown ? PUBLISH_PROGRESS_CLOSE_DELAY : 0,
-    )
-    return () => clearTimeout(timer)
-  }, [attemptOutcome, progressShown])
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
@@ -208,38 +163,47 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       ? t('action.publish.validation-issues.tooltip')
       : ''
 
+  const currentPublishRevision = publishedInfo?._rev
+
   const telemetry = useTelemetry()
 
   const doPublish = useCallback(() => {
     publish.execute(isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-    setAttempt((current) =>
-      current ? {...current, publishing: {revision: currentPublishRevision}} : current,
-    )
-  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id, setAttempt])
+  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id])
 
   useEffect(() => {
+    // make sure the validation status is about the current revision and not an earlier one
     if (!publishScheduled || isSyncing || !completedValidation) {
       return
     }
 
-    const errorCount = completedValidation.validation.filter(isValidationErrorMarker).length
-    // oxlint-disable-next-line react/set-state-in-effect -- the result arrives as hook state, not as an event; same pre-existing shape as `doPublish()` below
-    setAttempt((current) => (current ? {...current, validation: {errorCount}} : current))
-    if (errorCount === 0) {
+    if (completedValidationErrorCount === 0) {
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       doPublish()
-    } else if (!progressShown) {
-      // User tried to publish before validation was complete; the progress dialog, when it is up,
-      // already shows the errors
+    } else if (!dialogOpen) {
+      // User tried to publish before validation was complete (the progress dialog, once it is
+      // up, shows the errors itself and stays until dismissed)
       toast.push({
         title: t('action.publish.validation-issues-toast.title'),
         description: t('action.publish.validation-issues-toast.description'),
         status: 'error',
       })
+      toggleDialog.cancel()
     }
     setPublishScheduled(false)
-  }, [completedValidation, doPublish, isSyncing, progressShown, publishScheduled, t, toast])
+  }, [
+    isSyncing,
+    doPublish,
+    publishScheduled,
+    completedValidation,
+    completedValidationErrorCount,
+    dialogOpen,
+    toggleDialog,
+    toast,
+    t,
+  ])
 
   useEffect(() => {
     const didPublish =
@@ -267,6 +231,33 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     return () => clearTimeout(timer)
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [changesOpen, publishState, currentPublishRevision, telemetry, id])
+
+  // Where the publish has got to, for the progress dialog; `null` once there is nothing to show.
+  const phase: PublishPhase | null = publishError
+    ? 'publish-failed'
+    : publishScheduled
+      ? 'validating'
+      : publishState?.status === 'publishing'
+        ? 'publishing'
+        : publishState?.status === 'published'
+          ? 'published'
+          : completedValidationErrorCount > 0
+            ? 'validation-failed'
+            : null
+
+  // Closing the dialog: a publish that is done (or has failed, which is the toast's to report)
+  // before it showed never shows it; one that is done while it is up leaves both steps on screen
+  // for a moment first; a failed phase stays until dismissed.
+  useEffect(() => {
+    if (phase === 'published' && dialogOpen) {
+      const timer = setTimeout(closeDialog, PUBLISH_PROGRESS_CLOSE_DELAY)
+      return () => clearTimeout(timer)
+    }
+    if ((phase === 'published' || phase === 'publish-failed' || phase === null) && !dialogOpen) {
+      toggleDialog.cancel()
+    }
+    return undefined
+  }, [closeDialog, dialogOpen, phase, toggleDialog])
 
   const isWaitingToPublish = Boolean(
     (draft || version) &&
@@ -304,15 +295,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       publishedImmediately,
       previouslyPublished,
     })
-    const waitForValidation = shouldSetPublishScheduledRef.current
-    setAttempt({
-      startedAt: Date.now(),
-      eventAtStart: operationEventRef.current,
-      // the button is only enabled once the current document has validated without errors
-      validation: waitForValidation ? undefined : {errorCount: 0},
-    })
-    setProgressShown(false)
-    if (waitForValidation) {
+    setImmediateValidation(null)
+    setEventAtClick(operationEventRef.current)
+    setDialogOpen(false)
+    toggleDialog('open')
+    if (shouldSetPublishScheduledRef.current) {
       setPublishScheduled(true)
     } else {
       doPublish()
@@ -321,72 +308,41 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     publishedImmediately,
     previouslyPublished,
     telemetry,
-    setAttempt,
-    setProgressShown,
+    setImmediateValidation,
+    setEventAtClick,
+    setDialogOpen,
     setPublishScheduled,
     doPublish,
+    toggleDialog,
   ])
 
-  const closeProgress = useCallback(() => {
-    setAttempt(null)
-    setProgressShown(false)
-  }, [setAttempt, setProgressShown])
-
-  // While the publish is in progress nothing else should be reachable, so the dialog cannot be
-  // closed; once it has failed it can.
-  const progressDialogOpen = progressShown && attempt !== null
-  // `undefined` while the validation the attempt is gated on is still running
-  const validatedErrorCount = attempt?.validation?.errorCount
-  const publishStarted = attempt?.publishing !== undefined
+  const documentToValidate = editState?.version || editState?.draft || editState?.published
+  const requirePublishedReferences = !release
   const progressDialog = useMemo(
     () =>
-      progressDialogOpen
+      dialogOpen && phase !== null
         ? ({
-            type: 'dialog' as const,
-            header: t('action.publish.progress.title'),
-            content: (
-              <PublishProgress
-                validation={
-                  validatedErrorCount === undefined
-                    ? {status: 'running'}
-                    : validatedErrorCount > 0
-                      ? {status: 'failed', errorCount: validatedErrorCount}
-                      : {status: 'passed'}
-                }
-                publish={
-                  publishError
-                    ? 'failed'
-                    : publishSucceeded
-                      ? 'succeeded'
-                      : publishStarted
-                        ? 'running'
-                        : 'pending'
-                }
+            type: 'custom' as const,
+            component: (
+              <PublishProgressDialog
+                phase={phase}
+                errorCount={completedValidationErrorCount}
+                validationTarget={documentToValidate}
+                requirePublishedReferences={requirePublishedReferences}
+                onValidation={setImmediateValidation}
+                onClose={closeDialog}
               />
             ),
-            onClose: attemptOutcome === 'failed' ? closeProgress : () => undefined,
-            showCloseButton: attemptOutcome === 'failed',
-            footer:
-              attemptOutcome === 'failed' ? (
-                <Button
-                  mode="ghost"
-                  text={t('action.publish.progress.close')}
-                  onClick={closeProgress}
-                  data-testid="publish-progress-close"
-                />
-              ) : undefined,
-            width: 'small' as const,
           } satisfies DocumentActionDescription['dialog'])
         : undefined,
     [
-      attemptOutcome,
-      closeProgress,
-      progressDialogOpen,
-      publishError,
-      publishStarted,
-      publishSucceeded,
-      t,
-      validatedErrorCount,
+      closeDialog,
+      completedValidationErrorCount,
+      dialogOpen,
+      documentToValidate,
+      phase,
+      requirePublishedReferences,
+      setImmediateValidation,
     ],
   )
 

@@ -1,5 +1,7 @@
 import {type SanityDocument, type ValidationMarker} from '@sanity/types'
 import {act, render, renderHook, screen, waitFor} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import {cloneElement, isValidElement} from 'react'
 import deepCompare from 'react-fast-compare'
 import {
   type DocumentActionProps,
@@ -227,80 +229,114 @@ describe('usePublishAction', () => {
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
   })
 
-  function renderDialogContent(result: {current: ReturnType<typeof usePublishAction>}) {
-    const dialog = result.current?.dialog
-    if (!dialog || dialog.type !== 'dialog') throw new Error('expected a modal dialog')
-    const rendered = render(<>{dialog.content}</>, {wrapper})
+  /**
+   * Mounts the action's progress dialog the way the document pane does (a `custom` dialog is the
+   * component itself) and keeps it mounted across updates, so that its own validation run keeps
+   * feeding the action.
+   */
+  function mountDialog(result: {current: ReturnType<typeof usePublishAction>}) {
+    const element = () => {
+      const dialog = result.current?.dialog
+      if (!dialog || dialog.type !== 'custom' || !isValidElement(dialog.component)) {
+        throw new Error('expected a custom dialog')
+      }
+      // a fresh element each time: the component re-renders on its own in the studio (its
+      // validation hook has state), here the mocked hook only reports a new value on a re-render
+      return cloneElement(dialog.component)
+    }
+    const rendered = render(element(), {wrapper})
     const step = (testId: string) => {
-      const element = screen.getByTestId(testId)
-      return {status: element.getAttribute('data-status'), text: element.textContent}
+      const node = screen.getByTestId(testId)
+      return {status: node.getAttribute('data-status'), text: node.textContent}
     }
-    const steps = {
-      validation: step('publish-progress-validation'),
-      publish: step('publish-progress-publish'),
+    return {
+      update: () => rendered.rerender(element()),
+      steps: () => ({
+        validation: step('publish-progress-validation'),
+        publish: step('publish-progress-publish'),
+      }),
+      hasClose: () => screen.queryByTestId('cancel-button') !== null,
+      close: () =>
+        userEvent
+          .setup({advanceTimers: (ms) => vi.advanceTimersByTime(ms)})
+          .click(screen.getByTestId('cancel-button')),
+      unmount: rendered.unmount,
     }
-    rendered.unmount()
-    return {dialog, steps}
   }
 
-  it('waits on the store validation and only runs its own, immediate one once the dialog shows', async () => {
+  function advance(ms: number) {
+    act(() => {
+      vi.advanceTimersByTime(ms)
+    })
+  }
+
+  it('shows no dialog for five seconds, then one that validates on its own', async () => {
     const first = keystroke('1')
     applyKeystroke(first, {validating: true})
-    const {result, rerender} = await renderPublishAction(first.props)
+    const {result} = await renderPublishAction(first.props)
     vi.useFakeTimers()
 
     act(() => result.current?.onHandle?.())
     expect(result.current?.label).toBe('Validating document…')
-    expect(immediateValidationArgs()).toEqual([first.draft, true, false])
-
-    act(() => {
-      vi.advanceTimersByTime(2999)
-    })
     expect(result.current?.dialog).toBeUndefined()
-    expect(immediateValidationArgs()).toEqual([first.draft, true, false])
 
-    act(() => {
-      vi.advanceTimersByTime(1)
+    advance(4999)
+    expect(result.current?.dialog).toBeUndefined()
+
+    advance(1)
+    expect(result.current?.dialog).toMatchObject({type: 'custom'})
+    mockUseImmediateValidation.mockReturnValue({
+      isValidating: true,
+      validation: [],
+      revision: first.draft?._rev,
     })
-    const {dialog, steps} = renderDialogContent(result)
-    expect(dialog.showCloseButton).toBe(false)
-    expect(steps.validation).toEqual({status: 'running', text: 'Validating your document'})
-    expect(steps.publish).toEqual({status: 'pending', text: 'Publishing document'})
+    const dialog = mountDialog(result)
     expect(immediateValidationArgs()).toEqual([first.draft, true, true])
+    expect(dialog.steps().validation).toEqual({status: 'running', text: 'Validating your document'})
+    expect(dialog.steps().publish).toEqual({status: 'pending', text: 'Publishing document'})
+    expect(dialog.hasClose()).toBe(false)
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+    dialog.unmount()
+  })
 
-    // the immediate run finishes while the store validation is still going: the publish runs
-    // on its result and the run is switched off again
+  it('publishes on the dialog validation while the store is still validating, and closes two seconds after the publish', async () => {
+    const first = keystroke('1')
+    applyKeystroke(first, {validating: true})
+    const {result, rerender} = await renderPublishAction(first.props)
+    vi.useFakeTimers()
+    act(() => result.current?.onHandle?.())
+    advance(5000)
+    const dialog = mountDialog(result)
+
+    // the dialog's run completes without errors: the publish runs on it
     mockUseImmediateValidation.mockReturnValue({
       isValidating: false,
       validation: [],
       revision: first.draft?._rev,
     })
-    rerender(first.props)
+    dialog.update()
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
+    rerender(first.props)
+    dialog.update()
+    expect(result.current?.label).toBe('Publishing…')
+    expect(dialog.steps().validation.status).toBe('succeeded')
+    expect(dialog.steps().publish).toEqual({status: 'running', text: 'Publishing document'})
     expect(immediateValidationArgs()).toEqual([first.draft, true, false])
-    const publishing = renderDialogContent(result)
-    expect(publishing.steps.validation.status).toBe('succeeded')
-    expect(publishing.steps.publish).toEqual({status: 'running', text: 'Publishing document'})
-    expect(publishing.dialog.showCloseButton).toBe(false)
 
-    // the document is published (new published revision, draft gone): done, and the dialog
-    // stays up, through the "already published" description, for two more seconds
+    // the document is published (new published revision, draft gone): the dialog stays up,
+    // through the "already published" description, for two more seconds
     const published = keystroke('1', {publishedRev: 'published-2', withDraft: false})
     applyKeystroke(published)
     rerender(published.props)
+    advance(200)
+    dialog.update()
     expect(result.current?.disabled).toBe(true)
-    expect(renderDialogContent(result).steps.publish).toEqual({
-      status: 'succeeded',
-      text: 'Publishing document',
-    })
-    act(() => {
-      vi.advanceTimersByTime(1999)
-    })
+    expect(dialog.steps().publish).toEqual({status: 'succeeded', text: 'Publishing document'})
+    advance(1999)
     expect(result.current?.dialog).toBeDefined()
-    act(() => {
-      vi.advanceTimersByTime(1)
-    })
+    advance(1)
     expect(result.current?.dialog).toBeUndefined()
+    dialog.unmount()
   })
 
   it('publishes on the store validation when that one finishes first', async () => {
@@ -309,66 +345,64 @@ describe('usePublishAction', () => {
     const {result, rerender} = await renderPublishAction(first.props)
     vi.useFakeTimers()
     act(() => result.current?.onHandle?.())
-    act(() => {
-      vi.advanceTimersByTime(3000)
-    })
+    advance(5000)
     mockUseImmediateValidation.mockReturnValue({
       isValidating: true,
       validation: [],
       revision: first.draft?._rev,
     })
-    rerender(first.props)
+    const dialog = mountDialog(result)
     expect(operations.publish.execute).not.toHaveBeenCalled()
 
     applyKeystroke(first)
     rerender(first.props)
 
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
-    expect(immediateValidationArgs()).toEqual([first.draft, true, false])
-    expect(renderDialogContent(result).steps.validation.status).toBe('succeeded')
+    dialog.update()
+    expect(dialog.steps().validation.status).toBe('succeeded')
+    expect(dialog.steps().publish.status).toBe('running')
+    dialog.unmount()
   })
 
-  it('shows the error count and stays open until dismissed when validation fails', async () => {
+  it('keeps the dialog up with the error count until it is closed when the validation fails', async () => {
     const first = keystroke('1')
     applyKeystroke(first, {validating: true})
-    const {result, rerender} = await renderPublishAction(first.props)
-    vi.useFakeTimers()
+    const {result} = await renderPublishAction(first.props)
+    // the click on Close goes through user-event, which needs the clock to keep moving
+    vi.useFakeTimers({shouldAdvanceTime: true})
     act(() => result.current?.onHandle?.())
-    act(() => {
-      vi.advanceTimersByTime(3000)
-    })
+    advance(5000)
+    const dialog = mountDialog(result)
 
     mockUseImmediateValidation.mockReturnValue({
       isValidating: false,
       validation: [REQUIRED_NAME, {...REQUIRED_NAME, path: ['bio']}],
       revision: first.draft?._rev,
     })
-    rerender(first.props)
+    dialog.update()
+    dialog.update()
 
-    const {dialog, steps} = renderDialogContent(result)
-    expect(steps.validation).toEqual({status: 'failed', text: '2 errors'})
-    expect(steps.publish.status).toBe('pending')
-    expect(dialog.showCloseButton).toBe(true)
     expect(operations.publish.execute).not.toHaveBeenCalled()
-    expect(immediateValidationArgs()).toEqual([first.draft, true, false])
-    act(() => {
-      vi.advanceTimersByTime(10_000)
-    })
+    expect(dialog.steps().validation).toEqual({status: 'failed', text: '2 errors'})
+    expect(dialog.steps().publish.status).toBe('pending')
+    expect(dialog.hasClose()).toBe(true)
+    advance(10_000)
     expect(result.current?.dialog).toBeDefined()
 
-    act(() => dialog.onClose())
+    await dialog.close()
     expect(result.current?.dialog).toBeUndefined()
+    dialog.unmount()
   })
 
-  it('stays open until dismissed when the publish fails', async () => {
+  it('keeps the dialog up until it is closed when the publish fails', async () => {
     const first = keystroke('1')
     applyKeystroke(first, {validating: true})
     const {result, rerender} = await renderPublishAction(first.props)
-    vi.useFakeTimers()
+    // the click on Close goes through user-event, which needs the clock to keep moving
+    vi.useFakeTimers({shouldAdvanceTime: true})
     act(() => result.current?.onHandle?.())
-    act(() => {
-      vi.advanceTimersByTime(3000)
-    })
+    advance(5000)
+    const dialog = mountDialog(result)
     applyKeystroke(first)
     rerender(first.props)
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
@@ -381,40 +415,53 @@ describe('usePublishAction', () => {
       idPair: {publishedId: ID, draftId: `drafts.${ID}`},
     })
     rerender(first.props)
+    dialog.update()
 
-    const {dialog, steps} = renderDialogContent(result)
-    expect(steps.publish).toEqual({status: 'failed', text: 'Publishing failed'})
-    expect(dialog.showCloseButton).toBe(true)
-    act(() => {
-      vi.advanceTimersByTime(10_000)
-    })
+    expect(dialog.steps().publish).toEqual({status: 'failed', text: 'Publishing failed'})
+    expect(dialog.hasClose()).toBe(true)
+    advance(10_000)
     expect(result.current?.dialog).toBeDefined()
 
-    act(() => dialog.onClose())
+    await dialog.close()
     expect(result.current?.dialog).toBeUndefined()
+    dialog.unmount()
   })
 
-  it('does not show the dialog nor validate immediately when the publish finishes within three seconds', async () => {
+  it('never shows the dialog when the publish is done within five seconds', async () => {
     const first = keystroke('1')
     applyKeystroke(first, {validating: true})
     const {result, rerender} = await renderPublishAction(first.props)
     vi.useFakeTimers()
 
     act(() => result.current?.onHandle?.())
-    act(() => {
-      vi.advanceTimersByTime(1000)
-    })
+    advance(1000)
     applyKeystroke(first)
     rerender(first.props)
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
     const published = keystroke('1', {publishedRev: 'published-2', withDraft: false})
     applyKeystroke(published)
     rerender(published.props)
-    act(() => {
-      vi.advanceTimersByTime(5000)
-    })
-
+    advance(200)
     expect(result.current?.dialog).toBeUndefined()
-    expect(mockUseImmediateValidation.mock.calls.some(([, , enabled]) => enabled)).toBe(false)
+
+    advance(5000)
+    expect(result.current?.dialog).toBeUndefined()
+    expect(mockUseImmediateValidation).not.toHaveBeenCalled()
+  })
+
+  it('never shows the dialog when the validation fails within five seconds', async () => {
+    const first = keystroke('1')
+    applyKeystroke(first, {validating: true})
+    const {result, rerender} = await renderPublishAction(first.props)
+    vi.useFakeTimers()
+
+    act(() => result.current?.onHandle?.())
+    advance(1000)
+    applyKeystroke(first, {validation: [REQUIRED_NAME]})
+    rerender(first.props)
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+
+    advance(5000)
+    expect(result.current?.dialog).toBeUndefined()
   })
 })
