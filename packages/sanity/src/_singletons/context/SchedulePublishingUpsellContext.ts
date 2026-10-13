@@ -1,5 +1,5 @@
+import {createContext} from 'react'
 import type {ObservablePromise} from 'react-rx'
-import {createContext} from 'sanity/_createContext'
 
 import type {UpsellDialogViewedInfo} from '../../core/studio/upsell/__telemetry__/upsell.telemetry'
 import type {UpsellDataResult} from '../../core/studio/upsell/types'
@@ -29,20 +29,17 @@ export interface SchedulePublishUpsellContextValue {
 /**
  * @internal
  */
-export const SchedulePublishUpsellContext = createContext<SchedulePublishUpsellContextValue>(
-  'sanity/_singletons/context/schedule-publish-upsell',
-  {
-    upsellDataPromise: null,
-    handleOpenDialog: () => null,
-    handleClose: () => null,
-    upsellDialogOpen: false,
-    telemetryLogs: {
-      dialogSecondaryClicked: () => null,
-      dialogPrimaryClicked: () => null,
-      panelViewed: () => null,
-      panelDismissed: () => null,
-      panelPrimaryClicked: () => null,
-      panelSecondaryClicked: () => null,
-    },
+export const SchedulePublishUpsellContext = createContext<SchedulePublishUpsellContextValue>({
+  upsellDataPromise: null,
+  handleOpenDialog: () => null,
+  handleClose: () => null,
+  upsellDialogOpen: false,
+  telemetryLogs: {
+    dialogSecondaryClicked: () => null,
+    dialogPrimaryClicked: () => null,
+    panelViewed: () => null,
+    panelDismissed: () => null,
+    panelPrimaryClicked: () => null,
+    panelSecondaryClicked: () => null,
   },
-)
+})

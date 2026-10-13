@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {PerspectiveContextValue} from '../../core/perspective/types'
 
@@ -7,7 +7,4 @@ import type {PerspectiveContextValue} from '../../core/perspective/types'
  * @hidden
  * @beta
  */
-export const PerspectiveContext = createContext<PerspectiveContextValue | null>(
-  'sanity/_singletons/context/perspective-context',
-  null,
-)
+export const PerspectiveContext = createContext<PerspectiveContextValue | null>(null)

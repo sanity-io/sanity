@@ -771,9 +771,6 @@ exports[`exports snapshot 1`] = `
     "validation": "function",
     "visitDiff": "function",
   },
-  "./_createContext": {
-    "createContext": "function",
-  },
   "./_dangerously_use_private_internals_that_do_not_follow_semver": {
     "ActiveWorkspaceMatcher": "function",
     "ArrayOfObjectsInputMember": "function",

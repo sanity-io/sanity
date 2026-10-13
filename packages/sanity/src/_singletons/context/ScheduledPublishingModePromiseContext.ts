@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {ScheduledPublishingMode} from '../../core/scheduledPublishing/contexts/types'
 
@@ -10,7 +10,4 @@ import type {ScheduledPublishingMode} from '../../core/scheduledPublishing/conte
  * @internal
  */
 export const ScheduledPublishingModePromiseContext =
-  createContext<Promise<ScheduledPublishingMode> | null>(
-    'sanity/_singletons/context/scheduled-publishing-mode-promise',
-    null,
-  )
+  createContext<Promise<ScheduledPublishingMode> | null>(null)

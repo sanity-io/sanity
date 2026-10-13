@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {
   ChangeIndicatorTrackerContextStoreType,
@@ -7,14 +7,8 @@ import type {
 
 /** @internal */
 export const ChangeIndicatorTrackerContextStore =
-  createContext<ChangeIndicatorTrackerContextStoreType>(
-    'sanity/_singletons/context/change-indicator-tracker-store',
-    null,
-  )
+  createContext<ChangeIndicatorTrackerContextStoreType>(null)
 
 /** @internal */
 export const ChangeIndicatorTrackerContextGetSnapshot =
-  createContext<ChangeIndicatorTrackerGetSnapshotType>(
-    'sanity/_singletons/context/change-indicator-tracker-get-snapshot',
-    null,
-  )
+  createContext<ChangeIndicatorTrackerGetSnapshotType>(null)

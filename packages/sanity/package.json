@@ -39,10 +39,6 @@
       "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
-    "./_createContext": {
-      "monorepo": "./src/_exports/_createContext.ts",
-      "default": "./lib/_createContext.js"
-    },
     "./_dangerously_use_private_internals_that_do_not_follow_semver": {
       "monorepo": "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts",
       "default": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver.js"
@@ -103,7 +99,6 @@
   "publishConfig": {
     "exports": {
       ".": "./lib/index.js",
-      "./_createContext": "./lib/_createContext.js",
       "./_dangerously_use_private_internals_that_do_not_follow_semver": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver.js",
       "./_internal": "./lib/_internal.js",
       "./_singletons": "./lib/_singletons.js",

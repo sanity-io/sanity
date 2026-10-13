@@ -1,15 +1,12 @@
 import type {ReactNode} from 'react'
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {Panes} from '../../structure/structureResolvers/useResolvedPanes'
 
 /**
  * @internal
  */
-export const ResolvedPanesContext = createContext<Panes | null>(
-  'sanity/_singletons/context/resolved-panes',
-  null,
-)
+export const ResolvedPanesContext = createContext<Panes | null>(null)
 
 /**
  * @internal

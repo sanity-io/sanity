@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * Whether the dataset has ever scheduled anything, as a promise for `use()`, provided by the
@@ -7,7 +7,4 @@ import {createContext} from 'sanity/_createContext'
  * the plugin is not loaded; read it as `promise ? use(promise) : false`.
  * @internal
  */
-export const HasUsedScheduledPublishingPromiseContext = createContext<Promise<boolean> | null>(
-  'sanity/_singletons/context/has-used-scheduled-publishing-promise',
-  null,
-)
+export const HasUsedScheduledPublishingPromiseContext = createContext<Promise<boolean> | null>(null)
