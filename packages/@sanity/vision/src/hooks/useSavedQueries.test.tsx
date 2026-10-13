@@ -126,6 +126,34 @@ describe('useSavedQueries', () => {
     expect(result.current.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
   })
 
+  it('stays saving until the last of two overlapping saves has settled', async () => {
+    const {result} = setup()
+
+    // The shared save settles first (its write is the faster mock), the personal one later
+    let sharedSave: Promise<string>
+    let personalSave: Promise<string>
+    act(() => {
+      sharedSave = result.current.saveQuery({
+        shared: true,
+        url: 'https://a',
+        savedAt: '2026-01-01T00:00:00Z',
+      })
+      personalSave = result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+    })
+    expect(result.current.saving).toBe(true)
+
+    await act(async () => {
+      await sharedSave
+    })
+    expect(result.current.saving).toBe(true)
+
+    await act(async () => {
+      await personalSave
+    })
+    expect(result.current.saving).toBe(false)
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+  })
+
   it('moves both queries when unshares overlap', async () => {
     mocks.sharedDocs = [
       {_id: 'shared-a', authorId: 'user-1', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},

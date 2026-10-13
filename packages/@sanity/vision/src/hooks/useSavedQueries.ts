@@ -116,7 +116,9 @@ export function useSavedQueries(): {
 
   const [value, setValue] = useState<StoredQueries>(defaultValue)
   const [sharedQueries, setSharedQueries] = useState<QueryConfig[]>([])
-  const [saving, setSaving] = useState(false)
+  // Saves and updates may overlap (a share's save next to a user's own), so `saving` is derived
+  // from how many are in flight rather than cleared by whichever one settles first
+  const [pendingSaves, setPendingSaves] = useState(0)
   const [deleting, setDeleting] = useState<string[]>([])
   const [moving, setMoving] = useState<string[]>([])
   const [saveQueryError, setSaveQueryError] = useState<Error | undefined>()
@@ -331,21 +333,30 @@ export function useSavedQueries(): {
     })
   }, [sharedQueries, value.queries])
 
+  /**
+   * Runs a save or update as one of the saves in flight (`saving` holds until the last of them
+   * has settled) and reports its failure through `saveQueryError` before rejecting with it
+   */
+  const runSave = useCallback(<T>(task: () => Promise<T>): Promise<T> => {
+    setPendingSaves((count) => count + 1)
+    setSaveQueryError(undefined)
+    return task()
+      .catch((err: unknown) => {
+        const saveError = err instanceof Error ? err : new Error(String(err))
+        setSaveQueryError(saveError)
+        throw saveError
+      })
+      .finally(() => setPendingSaves((count) => count - 1))
+  }, [])
+
   // Resolves with the key of the saved query (the document id of a shared one)
   const saveQuery = useCallback(
-    async (query: Omit<QueryConfig, '_key'>): Promise<string> => {
-      setSaving(true)
-      setSaveQueryError(undefined)
-
-      if (query.shared) {
-        if (!currentUser?.id) {
-          const authError = new Error('No current user found. Unable to save shared query.')
-          setSaveQueryError(authError)
-          setSaving(false)
-          throw authError
-        }
-
-        try {
+    (query: Omit<QueryConfig, '_key'>): Promise<string> =>
+      runSave(async () => {
+        if (query.shared) {
+          if (!currentUser?.id) {
+            throw new Error('No current user found. Unable to save shared query.')
+          }
           const createdDoc = (await workspaceClient.create({
             _type: SHARED_QUERY_DOCUMENT_TYPE,
             authorId: currentUser.id,
@@ -354,45 +365,23 @@ export function useSavedQueries(): {
             url: query.url,
           })) as SharedQueryDocument
           setSharedQueries((prev) => [...mapSharedQueries([createdDoc]), ...prev])
-          setSaving(false)
           return createdDoc._id
-        } catch (err) {
-          const saveError = err instanceof Error ? err : new Error(String(err))
-          setSaveQueryError(saveError)
-          setSaving(false)
-          throw saveError
         }
-      }
 
-      const newQuery = {...query, _key: uuid()} // Add a unique _key to the query
-      try {
+        const newQuery = {...query, _key: uuid()}
         await writePersonalQueries((queries) => [newQuery, ...queries])
-      } catch (err) {
-        const saveError = err instanceof Error ? err : new Error(String(err))
-        setSaveQueryError(saveError)
-        setSaving(false)
-        throw saveError
-      }
-      setSaving(false)
-      return newQuery._key
-    },
-    [currentUser, workspaceClient, mapSharedQueries, writePersonalQueries],
+        return newQuery._key
+      }),
+    [currentUser, workspaceClient, mapSharedQueries, runSave, writePersonalQueries],
   )
 
   const updateQuery = useCallback(
-    async (query: QueryConfig) => {
-      setSaving(true)
-      setSaveQueryError(undefined)
-
-      if (query.shared) {
-        if (!currentUser?.id || query.authorId !== currentUser.id) {
-          const authError = new Error('Only the author can update a shared query.')
-          setSaveQueryError(authError)
-          setSaving(false)
-          throw authError
-        }
-
-        try {
+    (query: QueryConfig): Promise<void> =>
+      runSave(async () => {
+        if (query.shared) {
+          if (!currentUser?.id || query.authorId !== currentUser.id) {
+            throw new Error('Only the author can update a shared query.')
+          }
           const updatedDoc = (await workspaceClient
             .patch(query._key)
             .set({
@@ -408,29 +397,14 @@ export function useSavedQueries(): {
               existingQuery._key === query._key ? updatedSharedQuery : existingQuery,
             ),
           )
-          setSaving(false)
           return
-        } catch (err) {
-          const updateError = err instanceof Error ? err : new Error(String(err))
-          setSaveQueryError(updateError)
-          setSaving(false)
-          throw updateError
         }
-      }
 
-      try {
         await writePersonalQueries((queries) =>
           queries.map((q) => (q._key === query._key ? {...q, ...query} : q)),
         )
-      } catch (err) {
-        const updateError = err instanceof Error ? err : new Error(String(err))
-        setSaveQueryError(updateError)
-        setSaving(false)
-        throw updateError
-      }
-      setSaving(false)
-    },
-    [workspaceClient, currentUser, mapSharedQueries, writePersonalQueries],
+      }),
+    [workspaceClient, currentUser, mapSharedQueries, runSave, writePersonalQueries],
   )
 
   // Rejects when the document could not be deleted; `deleteQuery` turns that into state
@@ -593,7 +567,7 @@ export function useSavedQueries(): {
     shareQuery,
     unshareQuery,
     clearQueries,
-    saving,
+    saving: pendingSaves > 0,
     deleting,
     moving,
     saveQueryError,
