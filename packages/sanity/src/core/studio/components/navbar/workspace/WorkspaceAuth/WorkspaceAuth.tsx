@@ -1,9 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {rem} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useState} from 'react'
-import {styled} from 'styled-components'
 import {Container, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
@@ -13,17 +12,8 @@ import {useVisibleWorkspaces} from '../../../../workspaces/useVisibleWorkspaces'
 import {WORKSPACES_DOCS_URL} from '../constants'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
+import {chooserContainer, container0Var} from './WorkspaceAuth.css'
 import {WorkspaceAuthCard} from './WorkspaceAuthCard'
-
-const StyledContainer = styled(Container)((props) => {
-  const theme = getTheme_v2(props.theme)
-  const {container} = theme
-  return {
-    width: 'auto',
-    minWidth: rem(container[0]),
-    minHeight: 0,
-  }
-})
 
 export function WorkspaceAuth() {
   const {visibleWorkspaces} = useVisibleWorkspaces()
@@ -34,6 +24,7 @@ export function WorkspaceAuth() {
   // of the active workspace's login form.
   const [showChooser, setShowChooser] = useState(false)
   const {t} = useTranslation()
+  const {container} = useThemeV2()
 
   const canChooseAnotherWorkspace = visibleWorkspaces.length > 1
   const selectedWorkspace = activeWorkspace
@@ -60,7 +51,12 @@ export function WorkspaceAuth() {
 
   if (LoginComponent && selectedWorkspace && !showChooser) {
     return (
-      <StyledContainer size={0}>
+      <Container
+        className={chooserContainer}
+        // `rem()` returns `0` for a zero width; the variable needs the string form
+        style={assignInlineVars({[container0Var]: `${rem(container[0])}`})}
+        size={0}
+      >
         <VStack gap={2}>
           {canChooseAnotherWorkspace && (
             <Flex>
@@ -103,12 +99,17 @@ export function WorkspaceAuth() {
             </Flex>
           </Layout>
         </VStack>
-      </StyledContainer>
+      </Container>
     )
   }
 
   return (
-    <StyledContainer size={1}>
+    <Container
+      className={chooserContainer}
+      // `rem()` returns `0` for a zero width; the variable needs the string form
+      style={assignInlineVars({[container0Var]: `${rem(container[0])}`})}
+      size={1}
+    >
       <Layout
         header={t('workspaces.choose-your-workspace-label')}
         footer={
@@ -136,6 +137,6 @@ export function WorkspaceAuth() {
           ))}
         </Flex>
       </Layout>
-    </StyledContainer>
+    </Container>
   )
 }
