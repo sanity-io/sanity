@@ -111,10 +111,11 @@ export interface DocumentValidationContext {
 
 /**
  * Validates a document once, right away. Unlike {@link validateDocumentWithReferences} it neither
- * paces its checks on idle callbacks (the run uses the main thread as soon as it can, blocking it
- * for the duration of the synchronous checks) nor keeps watching the document or the documents it
- * references, so it completes with the markers of the document as it was passed in. For the
- * moment a user is waiting on the result, such as a publish that has been waiting on validation.
+ * paces its checks on idle callbacks (the run uses the main thread as soon as it can, handing it
+ * back only for a `scheduler.yield()` every hundred nodes where the browser has one) nor keeps
+ * watching the document or the documents it references, so it completes with the markers of the
+ * document as it was passed in. For the moment a user is waiting on the result, such as a publish
+ * that has been waiting on validation.
  *
  * `requirePublishedReferences` has the meaning it has in {@link validateDocumentWithReferences}.
  *

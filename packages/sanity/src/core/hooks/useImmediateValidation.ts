@@ -20,8 +20,9 @@ const RUNNING: Progress = {isValidating: true, validation: []}
 /**
  * Validates `document` right away while `enabled`, without the idle-callback pacing of the
  * document store's validation (see `useValidationStatus`): the run uses the main thread as soon
- * as it can and blocks it for the duration of the synchronous checks. For the moment a user is
- * waiting on the result, such as a publish that has been waiting on validation for a while.
+ * as it can, handing it back only for a `scheduler.yield()` every hundred nodes where the browser
+ * has one (see `ValidationScheduling`). For the moment a user is waiting on the result, such as a
+ * publish that has been waiting on validation for a while.
  *
  * Returns `null` while not enabled, otherwise the status of the run: validating until it has the
  * markers of the document's current content, with `revision` always the document's current
@@ -51,7 +52,7 @@ export function useImmediateValidation(
   const progress$ = useMemo((): Observable<Progress | null> => {
     if (!enabled || !content) return of(null)
     const ctx = {getClient, observeDocumentPairAvailability, schema, i18n, currentUser}
-    // The run blocks the main thread, so it waits for whatever the enabling render committed
+    // The run takes over the main thread, so it waits for whatever the enabling render committed
     // (e.g. a dialog saying the document is being validated) to be painted first. `startWith`
     // still reports the run as under way right away.
     return afterNextPaint().pipe(

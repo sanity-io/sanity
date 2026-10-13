@@ -146,8 +146,70 @@ describe('validation scheduling', () => {
     expect(page.requestIdleCallback).toHaveBeenCalled()
   })
 
+  it('yields to the browser now and then in an immediate run where it has scheduler.yield', async () => {
+    const page = createStalledPage()
+    const scheduler = {yield: vi.fn(() => Promise.resolve())}
+    vi.stubGlobal('scheduler', scheduler)
+    const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
+    const schema = SchemaBuilder.compile({
+      name: 'test',
+      parent: builtinSchema,
+      types: [articleType],
+    })
+
+    const result = await lastValueFrom(
+      evaluateDocumentObservable({
+        document: createDocument(200),
+        schema,
+        getClient: () => createMockClient(),
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+        scheduling: 'immediate',
+      }),
+    )
+
+    expect(page.requestIdleCallback).not.toHaveBeenCalled()
+    // 200 blocks are a few thousand nodes: a yield per hundred of them, and far from one per node
+    expect(scheduler.yield.mock.calls.length).toBeGreaterThan(5)
+    expect(scheduler.yield.mock.calls.length).toBeLessThan(200)
+    expect(result.status).toBe('failed')
+    expect(result.markers).toHaveLength(1 + 20)
+  })
+
+  it('holds the whole immediate run while the browser has the thread', async () => {
+    const page = createStalledPage()
+    // a browser that never hands the thread back
+    const scheduler = {yield: vi.fn(() => new Promise<void>(() => undefined))}
+    vi.stubGlobal('scheduler', scheduler)
+    const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
+    const schema = SchemaBuilder.compile({
+      name: 'test',
+      parent: builtinSchema,
+      types: [articleType],
+    })
+
+    const outcome = await Promise.race([
+      lastValueFrom(
+        evaluateDocumentObservable({
+          document: createDocument(200),
+          schema,
+          getClient: () => createMockClient(),
+          i18n: getFallbackLocaleSource(),
+          environment: 'studio',
+          scheduling: 'immediate',
+        }),
+      ).then(() => 'completed'),
+      new Promise<string>((resolve) => setTimeout(() => resolve('still validating'), 300)),
+    ])
+
+    expect(outcome).toBe('still validating')
+    // every node of the run waits for the one pending yield instead of asking for its own
+    expect(scheduler.yield).toHaveBeenCalledTimes(1)
+  })
+
   it('completes without a single idle callback when scheduling is immediate', async () => {
     const page = createStalledPage()
+    vi.stubGlobal('scheduler', undefined)
     const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
     const schema = SchemaBuilder.compile({
       name: 'test',

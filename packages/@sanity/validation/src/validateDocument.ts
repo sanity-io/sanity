@@ -14,7 +14,7 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import {concat, defer, EMPTY, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
+import {concat, defer, from, lastValueFrom, merge, type Observable, of, throwError} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
@@ -27,7 +27,7 @@ import {resolveConditionalProperty} from './resolveConditionalProperty'
 import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
-import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
+import {createPace, type ValidationScheduling} from './util/pace'
 import {typeString} from './util/typeString'
 import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
@@ -397,19 +397,7 @@ export function evaluateDocumentInternal({
   )
 }
 
-/**
- * How validation work is paced.
- *
- * - `idle` (default): every rule and nested value waits for a `requestIdleCallback` before it
- *   runs, so validation yields to rendering and input while a document is being edited. A page
- *   that is busy or hidden grants few or no idle periods, so a run can take long to finish.
- * - `immediate`: nothing waits for idle time. The run uses the thread as soon as it can, which
- *   blocks the main thread for the duration of the synchronous checks. Meant for the moment a
- *   user is waiting on the result, such as publishing.
- *
- * @internal
- */
-export type ValidationScheduling = 'idle' | 'immediate'
+export {type ValidationScheduling} from './util/pace'
 
 /**
  * @internal
@@ -531,6 +519,7 @@ function evaluateDocumentObservableWithoutCancellation({
         markIncomplete: () => {
           complete = false
         },
+        pace: createPace(scheduling),
       },
     }
 
@@ -605,9 +594,14 @@ function validateItemObservable({
   environment,
   customValidation = true,
   scheduling = 'idle',
-  __internal,
+  __internal: inheritedInternal,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
+  // The run's pacer is created once, by `evaluateDocumentObservable` or by the outermost
+  // `validateItem` call, and shared with every nested value so that the whole run is paced as one.
+  const pace = inheritedInternal?.pace ?? createPace(scheduling)
+  const __internal = inheritedInternal?.pace ? inheritedInternal : {...inheritedInternal, pace}
+
   // Track whether any ancestor in the tree is hidden.
   // It will be true if this field OR any ancestor is hidden.
   // This allows validation rules to check `context.hidden` to skip validation for hidden fields,
@@ -785,11 +779,9 @@ function validateItemObservable({
     )
   }
 
-  // `idle` scheduling waits for an idle period before every check (`idle()` registers a new
-  // callback per subscription); `immediate` runs each check as soon as its turn comes.
-  const pace = scheduling === 'immediate' ? EMPTY : idle()
+  // Every check waits for its turn as the run's pacer sees fit (see `ValidationScheduling`).
   return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
-    mergeMap((validateNode) => concat(pace, validateNode), 40),
+    mergeMap((validateNode) => concat(pace(), validateNode), 40),
     mergeAll(),
     toArray(),
     map(flatten),
@@ -833,17 +825,4 @@ function toDocumentValidationMarker(marker: ValidationMarker): DocumentValidatio
     ...marker,
     code: validationMarkerCodes.validationFailed,
   }
-}
-
-function idle(timeout?: number): Observable<never> {
-  return new Observable<never>((observer) => {
-    const handle = requestIdleCallback(
-      () => {
-        observer.complete()
-      },
-      timeout ? {timeout} : undefined,
-    )
-
-    return () => cancelIdleCallback(handle)
-  })
 }
