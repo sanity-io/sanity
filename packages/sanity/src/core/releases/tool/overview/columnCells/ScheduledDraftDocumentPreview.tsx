@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card, Skeleton} from '@sanity/ui'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -64,20 +64,17 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
                     tone={validationErrorCount ? 'critical' : undefined}
                   >
                     <Flex alignItems="center" gap={3} padding={1}>
-                      <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                      <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
                       {t('document-validation.error', {count: validationErrorCount})}
                     </Flex>
                   </Text>
                 }
               >
-                <Text
+                <Icon
                   size={1}
-                  as="div"
-                  trim={true}
+                  icon={ErrorOutlineIcon}
                   tone={validationErrorCount ? 'critical' : undefined}
-                >
-                  <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                </Text>
+                />
               </Tooltip>
             </Box>
           )}

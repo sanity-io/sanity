@@ -5,7 +5,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Checkbox} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -273,7 +273,12 @@ export const ReleasePublishAllButton = ({
     return (
       <Text muted size={1} as="div" trim={true}>
         <Flex alignItems="center" gap={3} padding={1}>
-          <ToneIcon icon={ErrorOutlineIcon} tone={isValidatingDocuments ? 'default' : 'critical'} />
+          <Icon
+            muted
+            size={1}
+            icon={ErrorOutlineIcon}
+            tone={isValidatingDocuments ? undefined : 'critical'}
+          />
           {tooltipText()}
         </Flex>
       </Text>

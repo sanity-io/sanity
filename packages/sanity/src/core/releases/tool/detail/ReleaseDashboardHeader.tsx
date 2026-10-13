@@ -7,7 +7,7 @@ import {
 } from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box, Container, Flex, Text} from 'ui5'
+import {Box, Container, Flex, Icon, Text} from 'ui5'
 
 import {DetailBackButton} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -73,9 +73,7 @@ export function ReleaseDashboardHeader(props: {
                 />
               </Flex>
               <Box paddingY={2} flexBasis="auto" flexGrow={0} flexShrink={0}>
-                <Text size={1} as="div" trim={true}>
-                  <ChevronRightIcon />
-                </Text>
+                <Icon size={1} icon={ChevronRightIcon} />
               </Box>
               <Box padding={2} style={{maxWidth: '300px'}}>
                 <Text

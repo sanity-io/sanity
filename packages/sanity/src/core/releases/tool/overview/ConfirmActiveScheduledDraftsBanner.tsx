@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -61,9 +61,7 @@ export function ConfirmActiveScheduledDraftsBanner({
       <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1} marginBottom={4}>
         <Card radius={3} paddingX={2} paddingY={2} tone="caution">
           <Flex alignItems="center" gap={3} paddingX={2}>
-            <Text size={0} as="div" trim={true} tone="caution">
-              <WarningOutlineIcon />
-            </Text>
+            <Icon size={0} icon={WarningOutlineIcon} tone="caution" />
             <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2}>
               <Text size={1} weight="medium" as="div" trim={true} tone="caution">
                 <Translate

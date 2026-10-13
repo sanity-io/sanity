@@ -2,7 +2,7 @@ import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card, type CardTone} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {ProgressIcon} from '../../../../ui-components/progressIcon/ProgressIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -92,7 +92,11 @@ export function ValidationProgressIndicator({
             <Tooltip
               content={hasError ? t('summary.errors-found') : t('summary.all-documents-validated')}
             >
-              {hasError ? <ErrorOutlineIcon /> : <CheckmarkCircleIcon />}
+              <Icon
+                size={1}
+                icon={hasError ? ErrorOutlineIcon : CheckmarkCircleIcon}
+                tone={tone === 'transparent' ? undefined : tone}
+              />
             </Tooltip>
           )}
         </Text>

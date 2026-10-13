@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -34,9 +34,7 @@ export const ScheduledDraftWarningCell: VisibleColumn<TableRelease>['cell'] = ({
           }
           portal
         >
-          <Text size={1} as="div" trim={true}>
-            <ToneIcon icon={WarningOutlineIcon} tone="caution" />
-          </Text>
+          <Icon size={1} icon={WarningOutlineIcon} tone="caution" />
         </Tooltip>
       )}
     </Flex>

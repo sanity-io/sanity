@@ -1,5 +1,5 @@
 import {LockIcon} from '@sanity/icons/Lock'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
@@ -39,9 +39,7 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
     <Flex gap={1} alignItems="center" flexWrap="wrap">
       {isScheduledOrScheduling && (
         <Box paddingY={1}>
-          <Text size={1} muted as="div" trim={true}>
-            <LockIcon data-testid="release-lock-icon" />
-          </Text>
+          <Icon size={1} muted icon={LockIcon} data-testid="release-lock-icon" />
         </Box>
       )}
       {!isInArchivedView && (

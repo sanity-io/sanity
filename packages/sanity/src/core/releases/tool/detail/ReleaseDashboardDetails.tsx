@@ -9,7 +9,7 @@ import {UserIcon} from '@sanity/icons/User'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Skeleton} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Text, Container, Box, Flex, VStack} from 'ui5'
+import {Text, Container, Box, Flex, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
@@ -104,9 +104,7 @@ function ReleaseDashboardDetailsProduction({
           <ValidationProgressIndicator documents={documents} />
           {shouldDisplayError && (
             <Flex gap={2} padding={2} data-testid="release-error-details">
-              <Text size={1} as="div" trim={true}>
-                <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-              </Text>
+              <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
               <TextWithTone size={1} tone="critical">
                 {isAtTimeRelease
                   ? tRelease('failed-schedule-title')
@@ -116,9 +114,7 @@ function ReleaseDashboardDetailsProduction({
           )}
           {shouldDisplayWarnings && (
             <Flex gap={2} padding={2} data-testid="release-permission-error-details">
-              <Text size={1} as="div" trim={true}>
-                <ToneIcon icon={WarningOutlineIcon} tone="caution" />
-              </Text>
+              <Icon size={1} icon={WarningOutlineIcon} tone="caution" />
               <TextWithTone size={1} tone="caution">
                 {tRelease('permission-missing-title')}
               </TextWithTone>
@@ -131,9 +127,7 @@ function ReleaseDashboardDetailsProduction({
         {shouldDisplayError && (
           <Card padding={4} radius={4} tone="critical">
             <Flex gap={3}>
-              <Text size={1} as="div" trim={true} tone="critical">
-                <ErrorOutlineIcon />
-              </Text>
+              <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
               <VStack gap={4}>
                 <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
                   {isAtTimeRelease
@@ -153,9 +147,7 @@ function ReleaseDashboardDetailsProduction({
         {shouldDisplayWarnings && (
           <Card padding={4} radius={4} tone="caution">
             <Flex gap={3}>
-              <Text size={1} as="div" trim={true} tone="caution">
-                <WarningOutlineIcon />
-              </Text>
+              <Icon size={1} icon={WarningOutlineIcon} tone="caution" />
               <VStack gap={3}>
                 <Text size={1} as="div" trim={true} tone="caution">
                   {tRelease('permission-missing-title')}
@@ -209,14 +201,11 @@ export function ReleaseDashboardDetails({
   const statusGlyph =
     documents.length === 0 ? undefined : (
       <Card tone={statusTone} style={{background: 'transparent'}}>
-        <Text
+        <Icon
           size={1}
-          as="div"
-          trim={true}
+          icon={statusGlyphIcon}
           tone={statusTone === 'default' ? undefined : statusTone}
-        >
-          {statusGlyphIcon}
-        </Text>
+        />
       </Card>
     )
 
@@ -305,11 +294,7 @@ export function ReleaseDashboardDetails({
                       ),
                     },
                     {
-                      icon: (
-                        <Text size={1} muted as="div" trim={true}>
-                          <DocumentsIcon />
-                        </Text>
-                      ),
+                      icon: <Icon size={1} muted icon={DocumentsIcon} />,
                       label: tRelease('dashboard.details.metadata.documents'),
                       value: loading ? (
                         <Skeleton animated radius={1} style={{width: 24, height: 11}} />
@@ -321,9 +306,7 @@ export function ReleaseDashboardDetails({
                       icon: createAuthor ? (
                         <UserAvatar size={0} user={createAuthor} />
                       ) : (
-                        <Text size={1} muted as="div" trim={true}>
-                          <UserIcon />
-                        </Text>
+                        <Icon size={1} muted icon={UserIcon} />
                       ),
                       label: tRelease('dashboard.details.metadata.created'),
                       value: (

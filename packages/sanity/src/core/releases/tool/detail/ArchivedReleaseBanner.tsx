@@ -4,7 +4,7 @@ import {Card} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {format} from 'date-fns/format'
 import {useMemo} from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -44,9 +44,7 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
   return (
     <Card padding={4} radius={4} tone="primary" data-testid="retention-policy-card">
       <Flex gap={3}>
-        <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
-          <InfoOutlineIcon />
-        </Text>
+        <Icon size={1} icon={InfoOutlineIcon} style={{color: 'var(--card-icon-color)'}} />
         <VStack gap={4}>
           <Text
             size={1}

@@ -9,7 +9,7 @@ import {type TFunction} from 'i18next'
 import {type CSSProperties, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -251,9 +251,7 @@ const VariantCell = memo(
       >
         <Flex alignItems="center" gap={2}>
           <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
-            <Text size={2} style={VARIANT_ICON_STYLE} as="div" trim={true} tone="suggest">
-              <RhombusIcon />
-            </Text>
+            <Icon size={2} icon={RhombusIcon} tone="suggest" />
           </Card>
           {/* flex + min-width:0 lets the label shrink below its content width so a long variant name
               truncates with an ellipsis instead of overflowing the column. */}
@@ -531,7 +529,7 @@ export const getDocumentTableColumnDefs: (
                 content={
                   <Text muted size={1} as="div" trim={true}>
                     <Flex alignItems={'center'} gap={3} padding={1}>
-                      <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                      <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
                       {errorLabel}
                     </Flex>
                   </Text>
@@ -545,7 +543,7 @@ export const getDocumentTableColumnDefs: (
                     aria-label={errorLabel}
                     data-testid={`validation-error-link-${datum.document._id}`}
                   >
-                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                    <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
                   </IntentLink>
                 </Text>
               </Tooltip>
@@ -562,15 +560,12 @@ export const getDocumentTableColumnDefs: (
                   </Text>
                 }
               >
-                <Text
+                <Icon
                   muted
                   size={1}
+                  icon={ClockIcon}
                   data-testid={`validation-validating-${datum.document._id}`}
-                  as="div"
-                  trim={true}
-                >
-                  <ToneIcon icon={ClockIcon} tone="default" />
-                </Text>
+                />
               </Tooltip>
             )}
             {variantsEnabled && !datum.validation.hasError && !datum.validation.isValidating && (
@@ -583,15 +578,13 @@ export const getDocumentTableColumnDefs: (
                   </Text>
                 }
               >
-                <Text
+                <Icon
                   muted
                   size={1}
+                  icon={CheckmarkCircleIcon}
+                  tone="positive"
                   data-testid={`validation-valid-${datum.document._id}`}
-                  as="div"
-                  trim={true}
-                >
-                  <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
-                </Text>
+                />
               </Tooltip>
             )}
           </Flex>

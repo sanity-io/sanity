@@ -4,7 +4,7 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -236,9 +236,7 @@ export const releasesOverviewColumnDefs: (
                   }
                   portal
                 >
-                  <Text size={1} as="div" trim={true}>
-                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                  </Text>
+                  <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
                 </Tooltip>
               )}
               {hasWarning && (
@@ -250,9 +248,7 @@ export const releasesOverviewColumnDefs: (
                   }
                   portal
                 >
-                  <Text size={1} as="div" trim={true}>
-                    <ToneIcon icon={WarningOutlineIcon} tone="caution" />
-                  </Text>
+                  <Icon size={1} icon={WarningOutlineIcon} tone="caution" />
                 </Tooltip>
               )}
             </Flex>
@@ -297,7 +293,7 @@ export const releasesOverviewColumnDefs: (
                   <Flex gap={2}>
                     <Text size={1} as="div" trim={true}>
                       <Tooltip content={t('summary.all-documents-validated')}>
-                        <CheckmarkCircleIcon />
+                        <Icon size={1} icon={CheckmarkCircleIcon} />
                       </Tooltip>
                     </Text>
                   </Flex>

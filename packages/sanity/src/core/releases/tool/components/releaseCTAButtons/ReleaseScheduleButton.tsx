@@ -11,7 +11,7 @@ import {parse} from 'date-fns/parse'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -364,7 +364,12 @@ export const ReleaseScheduleButton = ({
     return (
       <Text muted size={1} as="div" trim={true}>
         <Flex alignItems="center" gap={3} padding={1}>
-          <ToneIcon icon={ErrorOutlineIcon} tone={isValidatingDocuments ? 'default' : 'critical'} />
+          <Icon
+            muted
+            size={1}
+            icon={ErrorOutlineIcon}
+            tone={isValidatingDocuments ? undefined : 'critical'}
+          />
           {tooltipText}
         </Flex>
       </Text>
