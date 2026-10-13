@@ -80,6 +80,9 @@ minimumReleaseAgeExclude:
   - '@sanity/*'
   - '@sanity-labs/*'
   - '@yuku-codegen/*'
+  # oxc-transform-react and its native bindings are released in lockstep
+  - 'oxc-transform-react'
+  - '@oxc-transform-react/*'
   # Fresh Sentry release and its lockstep packages
   - '@sentry/browser@11.7.0'
   - '@sentry/browser-utils@11.7.0'
