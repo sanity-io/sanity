@@ -4,7 +4,6 @@ import {
   type ListenEvent,
   type MutationEvent,
   type ReleaseDocument,
-  type StackablePerspective,
 } from '@sanity/client'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
@@ -20,13 +19,13 @@ import {
   sortReleases,
   useActiveReleases,
   useClient,
+  useDidUpdate,
   usePerspective,
   useScheduledDraftsEnabled,
   useTranslation,
   useWorkspace,
 } from 'sanity'
 import {Flex, Box} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../apiVersions'
 import {groqExtensions} from '../codemirror/extensions'
@@ -75,8 +74,15 @@ const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
 
 interface Subscription {
+  closed: boolean
   unsubscribe: () => void
 }
+
+/** A completed request keeps its subscription in the ref, so the ref alone does not tell */
+function isSubscribed(subscription: Subscription | undefined): boolean {
+  return subscription?.closed === false
+}
+
 export interface Params {
   raw: string
   parsed: Record<string, unknown> | undefined
@@ -124,7 +130,12 @@ export function VisionGui(props: VisionGuiProps) {
 
   const editorQueryRef = useRef<VisionCodeMirrorHandle>(null)
   const editorParamsRef = useRef<VisionCodeMirrorHandle>(null)
+  // Keeps the element while an `<Activity>` boundary hides the tool (React detaches refs on
+  // hide), so `visionRootRef.current?.isConnected` tells a hidden tool from an unmounted one.
   const visionRootRef = useRef<HTMLDivElement | null>(null)
+  const setVisionRoot = useCallback((element: HTMLDivElement | null) => {
+    if (element) visionRootRef.current = element
+  }, [])
   const customApiVersionElementRef = useRef<HTMLInputElement | null>(null)
   const querySubscriptionRef = useRef<Subscription | undefined>(undefined)
   const listenSubscriptionRef = useRef<Subscription | undefined>(undefined)
@@ -638,39 +649,59 @@ export function VisionGui(props: VisionGuiProps) {
     }
   }, [handleKeyDown, handlePaste])
 
+  // Cancels the query and the listener when the tool unmounts. Hiding it inside an `<Activity>`
+  // boundary runs the cleanup too, with the DOM still attached, and there they stay subscribed:
+  // the result of a query that is in flight and the mutations a listener collects while hidden
+  // are there when the tool is shown again. A hidden tool can still be unmounted without this
+  // effect running again (`MAX_MOUNTED_TOOLS`), and nothing inside the boundary is told; its DOM
+  // going away is the only sign, so a hidden tool with something subscribed checks for that once
+  // a second.
+  const hiddenCheckRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
   useEffect(() => {
+    clearInterval(hiddenCheckRef.current)
     return () => {
-      cancelQuerySubscription()
-      cancelListenerSubscription()
+      const cancel = () => {
+        cancelQuerySubscription()
+        cancelListenerSubscription()
+      }
+      if (!visionRootRef.current?.isConnected) {
+        cancel()
+        return
+      }
+      if (
+        !isSubscribed(querySubscriptionRef.current) &&
+        !isSubscribed(listenSubscriptionRef.current)
+      ) {
+        return
+      }
+      hiddenCheckRef.current = setInterval(() => {
+        if (!visionRootRef.current?.isConnected) {
+          cancel()
+        } else if (
+          isSubscribed(querySubscriptionRef.current) ||
+          isSubscribed(listenSubscriptionRef.current)
+        ) {
+          return
+        }
+        clearInterval(hiddenCheckRef.current)
+      }, 1000)
     }
   }, [cancelQuerySubscription, cancelListenerSubscription])
 
-  const handleStudioVariantChange = useEffectEvent(() => {
-    if (perspective !== 'pinnedRelease') {
-      return
+  // Follow the studio's variant and perspective on mount and when they change. `useDidUpdate`
+  // compares with the value it last handled, so the effects React re-creates when an
+  // `<Activity>` boundary shows the tool again do not re-run the query.
+  useDidUpdate(activeVariant, (_previousVariant, variant) => {
+    if (variant && perspective === 'pinnedRelease') {
+      // changeApiVersion already re-runs the query with vX.
+      changeApiVersion(VARIANTS_API_VERSION)
     }
-    // changeApiVersion already re-runs the query with vX.
-    changeApiVersion(VARIANTS_API_VERSION)
   })
-
-  useEffect(() => {
-    if (!activeVariant) {
-      return
-    }
-    handleStudioVariantChange()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-  }, [activeVariant])
-
-  const handleStudioPerspectiveChange = useEffectEvent((stack: StackablePerspective[]) => {
+  useDidUpdate(perspectiveStack, (_previousStack, stack) => {
     if (stack.length > 0) {
       setPerspective('pinnedRelease')
     }
   })
-  // Handle pinned perspective changes
-  useEffect(() => {
-    handleStudioPerspectiveChange(perspectiveStack)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-  }, [perspectiveStack])
 
   const generateUrl = useCallback(
     (queryString: string, queryParams: Record<string, unknown>) => {
@@ -694,7 +725,7 @@ export function VisionGui(props: VisionGuiProps) {
     <Root
       flexDirection="column"
       height="100%"
-      ref={visionRootRef}
+      ref={setVisionRoot}
       overflow="hidden"
       data-testid="vision-root"
     >
