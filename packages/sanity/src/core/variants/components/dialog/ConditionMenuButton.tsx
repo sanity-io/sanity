@@ -134,11 +134,17 @@ export function ConditionMenuButton(props: ConditionMenuButtonProps): React.JSX.
         >
           <Flex alignItems="center" gap={3}>
             {SelectedIcon ? (
-              <Icon icon={SelectedIcon} size={1} style={{margin: '-0.375rem'}} />
+              <Icon
+                icon={SelectedIcon}
+                size={1}
+                style={
+                  {'margin': '-0.375rem', '--icon-color': 'var(--card-icon-color)'} as CSSProperties
+                }
+              />
             ) : null}
             <Box flexGrow={1} style={{minWidth: 0}}>
               <Text
-                muted={!selected}
+                muted={!selected || invalid}
                 size={1}
                 truncate={1}
                 weight="medium"
