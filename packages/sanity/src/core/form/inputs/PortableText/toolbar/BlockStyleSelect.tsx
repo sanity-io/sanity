@@ -8,7 +8,6 @@ import {
   MenuItem,
 } from '@sanity/ui/menu'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
@@ -24,6 +23,7 @@ import {
   Heading6,
   Normal,
 } from '../text/textStyles'
+import {menuItem} from './BlockStyleSelect.css'
 import {useActiveStyleKeys, useFocusBlock} from './hooks'
 import {type BlockStyleItem} from './types'
 import {useApplicableSchema} from './useApplicableSchema'
@@ -35,16 +35,6 @@ interface BlockStyleSelectProps {
   items: BlockStyleItem[]
   boundaryElement: HTMLDivElement | null
 }
-
-const StyledMenuItem = styled(MenuItem)`
-  /* Change the border color variable used by BlockQuote
-  to make the border visible when the MenuItem is selected */
-  &[data-selected] {
-    [data-option='blockquote'] {
-      --card-border-color: var(--card-muted-fg-color);
-    }
-  }
-`
 
 const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -182,14 +172,15 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         {items.map((item) => {
           const itemDisabled = _disabled || !applicable.styles.has(item.style)
           return (
-            <StyledMenuItem
+            <MenuItem
+              className={menuItem}
               disabled={itemDisabled}
               key={item.key}
               pressed={activeItems.includes(item)}
               onClick={itemDisabled ? undefined : () => handleChange(item)}
             >
               {renderOption(item)}
-            </StyledMenuItem>
+            </MenuItem>
           )
         })}
       </Menu>
