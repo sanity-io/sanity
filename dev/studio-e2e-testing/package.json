@@ -17,7 +17,6 @@
     "@repo/utils": "workspace:*",
     "@sanity/google-maps-input": "^6.1.16",
     "@sanity/icons": "^5.2.3",
-    "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
     "oxc-transform-react": "catalog:",
     "react": "catalog:",

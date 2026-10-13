@@ -550,9 +550,6 @@ importers:
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
-      vite:
-        specifier: 'catalog:'
-        version: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
   dev/preview-iframe:
     dependencies:
@@ -711,10 +708,6 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
-    devDependencies:
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
 
   dev/starter-studio:
     dependencies:
@@ -740,12 +733,6 @@ importers:
 
   dev/storybook:
     dependencies:
-      '@sanity/icons':
-        specifier: ^5.2.3
-        version: 5.2.3(react@19.3.0)
-      '@sanity/types':
-        specifier: workspace:*
-        version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
         version: 4.4.4(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
@@ -865,9 +852,6 @@ importers:
       '@sanity/icons':
         specifier: ^5.2.3
         version: 5.2.3(react@19.3.0)
-      '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.4.4(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
@@ -939,9 +923,6 @@ importers:
       '@portabletext/react':
         specifier: ^8.0.1
         version: 8.0.1(react@19.3.0)
-      '@portabletext/toolkit':
-        specifier: ^6.0.0
-        version: 6.0.0
       '@repo/utils':
         specifier: workspace:*
         version: link:../../packages/@repo/utils
@@ -978,9 +959,6 @@ importers:
       '@sanity/preview-url-secret':
         specifier: ^4.1.5
         version: 4.1.5(@sanity/client@8.9.0)
-      '@sanity/react-loader':
-        specifier: ^2.2.3
-        version: 2.2.3(@sanity/types@packages+@sanity+types)(react@19.3.0)(typescript@7.0.2)(vitest@5.0.4)
       '@sanity/themer':
         specifier: ^0.10.2
         version: 0.10.2(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(typescript@7.0.2)
@@ -999,9 +977,6 @@ importers:
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
-      '@sanity/visual-editing':
-        specifier: ^6.1.3
-        version: 6.1.3(@sanity/client@8.9.0)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)(typescript@7.0.2)(vitest@5.0.4)
       '@turf/helpers':
         specifier: ^7.4.0
         version: 7.4.0
@@ -1011,36 +986,21 @@ importers:
       '@vercel/stega':
         specifier: 1.1.0
         version: 1.1.0
-      chokidar:
-        specifier: ^5.0.0
-        version: 5.0.0
-      history:
-        specifier: ^5.3.0
-        version: 5.3.0
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
       motion:
         specifier: ^14.1.0
         version: 14.1.0(react-dom@19.3.0)(react@19.3.0)
-      qs:
-        specifier: ^6.16.0
-        version: 6.16.0
       react:
         specifier: 'catalog:'
         version: 19.3.0
       react-dom:
         specifier: 'catalog:'
         version: 19.3.0(react@19.3.0)
-      react-refractor:
-        specifier: ^4.0.0
-        version: 4.0.0(react@19.3.0)
       react-rx:
         specifier: 'catalog:'
         version: 7.0.1(react@19.3.0)(rxjs@7.8.2)
-      refractor:
-        specifier: ^5.0.0
-        version: 5.0.0
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -1432,9 +1392,6 @@ importers:
       vitest:
         specifier: ^5.0.3
         version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.4)
-      zod:
-        specifier: ^4.6.6
-        version: 4.6.6
 
   packages/@repo/test-exports:
     dependencies:
@@ -1472,9 +1429,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.19.2
-      node-test-github-reporter:
-        specifier: ^1.3.2
-        version: 1.3.2
 
   packages/@repo/tsconfig: {}
 
@@ -2470,9 +2424,6 @@ importers:
       tsdown:
         specifier: 'catalog:'
         version: 0.23.1(@vitejs/devtools@0.7.6)(oxc-resolver@11.24.2)(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
-      tsx:
-        specifier: ^4.23.15
-        version: 4.23.15
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
@@ -2488,18 +2439,6 @@ importers:
       vitest-package-exports:
         specifier: ^1.2.0
         version: 1.2.0
-
-  packages/sanity/fixtures/examples/prj-with-react-19:
-    dependencies:
-      react:
-        specifier: 'catalog:'
-        version: 19.3.0
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.3.0(react@19.3.0)
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
 
   perf/bench:
     dependencies:
@@ -2703,18 +2642,6 @@ packages:
 
   '@acemir/cssom@0.9.32':
     resolution: {integrity: sha512-OijrAUu7rrJhSIoHNg6LMPS5e344nwUHA+1EFYYjrh64D+GmytUsfBQjci45TjT+rd5Spsp8B5xsZDT+TgyXXQ==}
-
-  '@actions/core@3.0.1':
-    resolution: {integrity: sha512-a6d/Nwahm9fliVGRhdhofo40HjHQasUPusmc7vBfyky+7Z+P2A1J68zyFVaNcEclc/Se+eO595oAr5nwEIoIUA==}
-
-  '@actions/exec@3.0.0':
-    resolution: {integrity: sha512-6xH/puSoNBXb72VPlZVm7vQ+svQpFyA96qdDBvhB8eNZOE8LtPf9L4oAsfzK/crCL8YZ+19fKYVnM63Sl+Xzlw==}
-
-  '@actions/http-client@4.0.1':
-    resolution: {integrity: sha512-+Nvd1ImaOZBSoPbsUtEhv+1z99H12xzncCkz0a3RuehINE81FZSe2QTj3uvAPTcJX/SCzUQHQ0D1GrPMbrPitg==}
-
-  '@actions/io@3.0.2':
-    resolution: {integrity: sha512-nRBchcMM+QK1pdjO7/idu86rbJI5YHUKCvKs0KxnSYbVe3F51UfGxuZX4Qy/fWlp6l7gWFwIkrOzN+oUK03kfw==}
 
   '@adobe/css-tools@4.5.0':
     resolution: {integrity: sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q==}
@@ -10710,9 +10637,6 @@ packages:
   error-ex@1.3.4:
     resolution: {integrity: sha512-sqQamAnR14VgCr1A618A3sGrygcpK+HEbenA/HiEAkkUwcZIIB/tgWqHFxWgOyDh4nB4JCRimh79dR5Ywc9MDQ==}
 
-  error-stack-parser@2.1.4:
-    resolution: {integrity: sha512-Sk5V6wVazPhq5MhpO+AUxJn5x7XSXGl1R93Vn7i+zS15KDVxQijejNCrz8340/2bgLBjR9GtEG8ZVKONDjcqGQ==}
-
   es-define-property@1.0.1:
     resolution: {integrity: sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==}
     engines: {node: '>= 0.4'}
@@ -12738,12 +12662,6 @@ packages:
     resolution: {integrity: sha512-jVe6Z61gPcPjCElPZ6j8llB3wnqGcuQzefim1ERsqIakxnEy5JlzV7XKdO1KmacRG5TKwPc4vJTgSRQ0LfkbFw==}
     engines: {node: '>=8'}
 
-  node-test-github-reporter@1.3.2:
-    resolution: {integrity: sha512-NksThfLLllSslpXNxHb2El1tUBVBtWJpmN76e6X1TWDr5saP0dknGFTDE7pylZfAzvwBZk7GJEtq+27qnMfX2A==}
-
-  node-test-parser@3.1.0:
-    resolution: {integrity: sha512-e9CLgS/wOMVlpWI63U27wxv8Lq0jMiO2JWirhRKflLsUMHWVoh/ruEibsw1YDCgOwHZiSyNW/QXNTo9cuB7Qpw==}
-
   nopt@8.1.0:
     resolution: {integrity: sha512-ieGu42u/Qsa4TFktmaKEwM6MQH0pOWnaB3htzh0JRtx84+Mebc0cbZYN5bC+6WTZ4+77xrL9Pn5m7CV6VIkV7A==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -14268,9 +14186,6 @@ packages:
     resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
     engines: {node: '>=10'}
 
-  stackframe@1.3.4:
-    resolution: {integrity: sha512-oeVtt7eWQS+Na6F//S4kJ2K2VbRlS9D43mAlMyVpVWovy9o+jfgH8O9agzANzaiLjclA0oYzUXEM4PurhSUChw==}
-
   standardwebhooks@1.1.1:
     resolution: {integrity: sha512-bCbX9ZEyFkWPsRz7Bl3NuQUJohmwGSev/yhr7vhaGPlc4AfIrspIRa6cPTBuI1ItmrTDJ4d/S2hCsfe4+vQGnQ==}
 
@@ -14697,10 +14612,6 @@ packages:
 
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
-
-  tunnel@0.0.6:
-    resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
-    engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
 
   turbo@2.11.7:
     resolution: {integrity: sha512-RhXHbqfvY6o3xt/zSHCwSNwLrZlXiqHzewi4eAj9PtZ1T1CqgMJ2yIDb7SKPTG9IikTm925mfzL6hldQVdyNWw==}
@@ -15409,22 +15320,6 @@ packages:
 snapshots:
 
   '@acemir/cssom@0.9.32': {}
-
-  '@actions/core@3.0.1':
-    dependencies:
-      '@actions/exec': 3.0.0
-      '@actions/http-client': 4.0.1
-
-  '@actions/exec@3.0.0':
-    dependencies:
-      '@actions/io': 3.0.2
-
-  '@actions/http-client@4.0.1':
-    dependencies:
-      tunnel: 0.0.6
-      undici: 6.29.0
-
-  '@actions/io@3.0.2': {}
 
   '@adobe/css-tools@4.5.0': {}
 
@@ -22238,7 +22133,7 @@ snapshots:
       tar-stream: 3.1.7
       undici: 7.30.0
       xdg-app-paths: 5.1.0
-      zod: 4.6.6
+      zod: 4.1.11
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
@@ -23867,10 +23762,6 @@ snapshots:
   error-ex@1.3.4:
     dependencies:
       is-arrayish: 0.2.1
-
-  error-stack-parser@2.1.4:
-    dependencies:
-      stackframe: 1.3.4
 
   es-define-property@1.0.1: {}
 
@@ -26076,15 +25967,6 @@ snapshots:
       big-integer: 1.6.52
     optional: true
 
-  node-test-github-reporter@1.3.2:
-    dependencies:
-      '@actions/core': 3.0.1
-      error-stack-parser: 2.1.4
-      node-test-parser: 3.1.0
-      stack-utils: 2.0.6
-
-  node-test-parser@3.1.0: {}
-
   nopt@8.1.0:
     dependencies:
       abbrev: 3.0.1
@@ -27739,7 +27621,7 @@ snapshots:
       async-retry: 1.3.3
       debug: 4.4.3(supports-color@8.1.1)
       ws: 8.22.0
-      zod: 4.6.6
+      zod: 4.1.11
     transitivePeerDependencies:
       - bare-abort-controller
       - bufferutil
@@ -28139,8 +28021,6 @@ snapshots:
   stack-utils@2.0.6:
     dependencies:
       escape-string-regexp: 2.0.0
-
-  stackframe@1.3.4: {}
 
   standardwebhooks@1.1.1:
     dependencies:
@@ -28605,8 +28485,6 @@ snapshots:
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
-
-  tunnel@0.0.6: {}
 
   turbo@2.11.7:
     optionalDependencies:
