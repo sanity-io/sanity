@@ -142,7 +142,7 @@ export function ConditionMenuButton(props: ConditionMenuButtonProps): React.JSX.
                 }
               />
             ) : null}
-            <Box flexGrow={1} style={{minWidth: 0}}>
+            <Box flexGrow={1}>
               <Text
                 muted={!selected || invalid}
                 size={1}
