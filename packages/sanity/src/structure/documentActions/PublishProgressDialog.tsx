@@ -30,7 +30,8 @@ export interface PublishProgressDialogProps {
   requirePublishedReferences: boolean
   /** The status of the dialog's own validation run, `null` while it is not running one. */
   onValidation: (status: ValidationStatus | null) => void
-  onClose: () => void
+  /** Given when the dialog may be dismissed: once the publish has failed, or has gone nowhere. */
+  onClose?: () => void
 }
 
 /**
@@ -59,7 +60,7 @@ export function PublishProgressDialog(props: PublishProgressDialogProps) {
   }, [onValidation, validation])
   useEffect(() => () => onValidation(null), [onValidation])
 
-  const failed = phase === 'validation-failed' || phase === 'publish-failed'
+  const dismissible = onClose !== undefined
   const validationStep: PublishProgressValidation =
     phase === 'validating'
       ? {status: 'running'}
@@ -81,12 +82,13 @@ export function PublishProgressDialog(props: PublishProgressDialogProps) {
         id={dialogId}
         header={t('action.publish.progress.title')}
         width={0}
-        // nothing else should be reachable while the publish is in progress; once it has failed
-        // the dialog can be dismissed
-        __unstable_hideCloseButton={!failed}
-        onClose={failed ? onClose : undefined}
-        onClickOutside={failed ? onClose : undefined}
-        footer={failed ? {cancelButton: {text: t('action.publish.progress.close')}} : undefined}
+        // nothing else should be reachable while the publish is in progress
+        __unstable_hideCloseButton={!dismissible}
+        onClose={onClose}
+        onClickOutside={onClose}
+        footer={
+          dismissible ? {cancelButton: {text: t('action.publish.progress.close')}} : undefined
+        }
       >
         <PublishProgress validation={validationStep} publish={publishStep} />
       </Dialog>

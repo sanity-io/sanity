@@ -136,6 +136,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const completedValidation = [immediateValidation, validationStatus].find(isCompleteFor(revision))
   const completedValidationErrorCount =
     completedValidation?.validation.filter(isValidationErrorMarker).length ?? 0
+  // The number of errors the validation this publish waited on ended with, for the dialog. Kept
+  // apart from the statuses, which move on (the store validates again on its own).
+  const [validationFailure, setValidationFailure] = useState<number | null>(null)
   // The operation event current at the click, so that only a later publish error counts.
   const operationEvent = useDocumentOperationEvent(id, type)
   const operationEventRef = useRef(operationEvent)
@@ -147,6 +150,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     operationEvent !== eventAtClick &&
     operationEvent?.type === 'error' &&
     operationEvent.op === 'publish'
+  // The published revision when this publish was executed: the publish has landed once it has
+  // changed. `publishState` cannot tell the dialog that, as it gives up after a few seconds.
+  const [dialogPublish, setDialogPublish] = useState<{revision: string | undefined} | null>(null)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -171,7 +177,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     publish.execute(isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id])
+    setDialogPublish({revision: currentPublishRevision})
+  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id, setDialogPublish])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -182,15 +189,18 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     if (completedValidationErrorCount === 0) {
       // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       doPublish()
-    } else if (!dialogOpen) {
-      // User tried to publish before validation was complete (the progress dialog, once it is
-      // up, shows the errors itself and stays until dismissed)
-      toast.push({
-        title: t('action.publish.validation-issues-toast.title'),
-        description: t('action.publish.validation-issues-toast.description'),
-        status: 'error',
-      })
-      toggleDialog.cancel()
+    } else {
+      setValidationFailure(completedValidationErrorCount)
+      // the progress dialog, once it is up, shows the errors itself and stays until dismissed
+      if (!dialogOpen) {
+        // User tried to publish before validation was complete
+        toast.push({
+          title: t('action.publish.validation-issues-toast.title'),
+          description: t('action.publish.validation-issues-toast.description'),
+          status: 'error',
+        })
+        toggleDialog.cancel()
+      }
     }
     setPublishScheduled(false)
   }, [
@@ -233,17 +243,25 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   }, [changesOpen, publishState, currentPublishRevision, telemetry, id])
 
   // Where the publish has got to, for the progress dialog; `null` once there is nothing to show.
+  const publishLanded = dialogPublish !== null && currentPublishRevision !== dialogPublish.revision
   const phase: PublishPhase | null = publishError
     ? 'publish-failed'
     : publishScheduled
       ? 'validating'
-      : publishState?.status === 'publishing'
-        ? 'publishing'
-        : publishState?.status === 'published'
+      : dialogPublish !== null
+        ? publishLanded
           ? 'published'
-          : completedValidationErrorCount > 0
-            ? 'validation-failed'
-            : null
+          : 'publishing'
+        : validationFailure !== null
+          ? 'validation-failed'
+          : null
+  // The dialog can be dismissed once the publish has failed, and once `publishState` has given
+  // up on a publish that has not landed, so that a publish that silently went nowhere does not
+  // hold the view.
+  const dialogDismissible =
+    phase === 'validation-failed' ||
+    phase === 'publish-failed' ||
+    (phase === 'publishing' && publishState === null)
 
   // Closing the dialog: a publish that is done (or has failed, which is the toast's to report)
   // before it showed never shows it; one that is done while it is up leaves both steps on screen
@@ -296,7 +314,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       previouslyPublished,
     })
     setImmediateValidation(null)
+    setValidationFailure(null)
     setEventAtClick(operationEventRef.current)
+    setDialogPublish(null)
     setDialogOpen(false)
     toggleDialog('open')
     if (shouldSetPublishScheduledRef.current) {
@@ -309,7 +329,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     previouslyPublished,
     telemetry,
     setImmediateValidation,
+    setValidationFailure,
     setEventAtClick,
+    setDialogPublish,
     setDialogOpen,
     setPublishScheduled,
     doPublish,
@@ -326,23 +348,24 @@ export const usePublishAction: DocumentActionComponent = (props) => {
             component: (
               <PublishProgressDialog
                 phase={phase}
-                errorCount={completedValidationErrorCount}
+                errorCount={validationFailure ?? 0}
                 validationTarget={documentToValidate}
                 requirePublishedReferences={requirePublishedReferences}
                 onValidation={setImmediateValidation}
-                onClose={closeDialog}
+                onClose={dialogDismissible ? closeDialog : undefined}
               />
             ),
           } satisfies DocumentActionDescription['dialog'])
         : undefined,
     [
       closeDialog,
-      completedValidationErrorCount,
+      dialogDismissible,
       dialogOpen,
       documentToValidate,
       phase,
       requirePublishedReferences,
       setImmediateValidation,
+      validationFailure,
     ],
   )
 

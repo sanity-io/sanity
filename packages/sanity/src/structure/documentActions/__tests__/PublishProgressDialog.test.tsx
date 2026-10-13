@@ -37,9 +37,12 @@ function step(testId: string) {
   return {status: element.getAttribute('data-status'), text: element.textContent}
 }
 
+const FAILED_PHASES: PublishPhase[] = ['validation-failed', 'publish-failed']
+
 async function renderDialog(phase: PublishPhase, errorCount = 0) {
   const onValidation = vi.fn()
   const onClose = vi.fn()
+  // the action offers `onClose` once the publish has failed (or gone nowhere)
   const element = (p: PublishPhase, count: number) => (
     <PublishProgressDialog
       phase={p}
@@ -47,7 +50,7 @@ async function renderDialog(phase: PublishPhase, errorCount = 0) {
       validationTarget={DRAFT}
       requirePublishedReferences
       onValidation={onValidation}
-      onClose={onClose}
+      onClose={FAILED_PHASES.includes(p) ? onClose : undefined}
     />
   )
   const rendered = render(element(phase, errorCount), {wrapper})

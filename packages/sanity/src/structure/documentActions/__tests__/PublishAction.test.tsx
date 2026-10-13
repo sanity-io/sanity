@@ -328,10 +328,10 @@ describe('usePublishAction', () => {
     const published = keystroke('1', {publishedRev: 'published-2', withDraft: false})
     applyKeystroke(published)
     rerender(published.props)
-    advance(200)
     dialog.update()
     expect(result.current?.disabled).toBe(true)
     expect(dialog.steps().publish).toEqual({status: 'succeeded', text: 'Publishing document'})
+    expect(dialog.hasClose()).toBe(false)
     advance(1999)
     expect(result.current?.dialog).toBeDefined()
     advance(1)
@@ -421,6 +421,33 @@ describe('usePublishAction', () => {
     expect(dialog.hasClose()).toBe(true)
     advance(10_000)
     expect(result.current?.dialog).toBeDefined()
+
+    await dialog.close()
+    expect(result.current?.dialog).toBeUndefined()
+    dialog.unmount()
+  })
+
+  it('offers to close once the action has given up on a publish that has not landed', async () => {
+    const first = keystroke('1')
+    applyKeystroke(first, {validating: true})
+    const {result, rerender} = await renderPublishAction(first.props)
+    vi.useFakeTimers({shouldAdvanceTime: true})
+    act(() => result.current?.onHandle?.())
+    advance(5000)
+    const dialog = mountDialog(result)
+    applyKeystroke(first)
+    rerender(first.props)
+    expect(operations.publish.execute).toHaveBeenCalledTimes(1)
+    dialog.update()
+    expect(dialog.steps().publish.status).toBe('running')
+    expect(dialog.hasClose()).toBe(false)
+
+    // the action's own publish state gives up after four seconds; the dialog keeps showing the
+    // publish as running, since nothing says it failed, but can be dismissed from here on
+    advance(4000)
+    dialog.update()
+    expect(dialog.steps().publish.status).toBe('running')
+    expect(dialog.hasClose()).toBe(true)
 
     await dialog.close()
     expect(result.current?.dialog).toBeUndefined()
