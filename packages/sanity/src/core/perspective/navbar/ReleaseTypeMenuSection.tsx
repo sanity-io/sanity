@@ -33,7 +33,7 @@ export function ReleaseTypeMenuSection({
   range: LayerRange
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
-}): React.JSX.Element | null {
+}): React.JSX.Element {
   const {t} = useTranslation()
   const {selectedReleaseId} = usePerspective()
 
@@ -45,13 +45,11 @@ export function ReleaseTypeMenuSection({
     [currentGlobalBundleMenuItemRef, selectedReleaseId],
   )
 
-  if (releases.length === 0) return null
-
   const {lastIndex, offsets} = range
   const releaseTypeOffset = offsets[releaseType]
 
   return (
-    <Card padding={1} borderBottom>
+    <Card padding={1}>
       <VStack gap={1}>
         <GlobalPerspectiveMenuLabelIndicator
           $withinRange={releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset}

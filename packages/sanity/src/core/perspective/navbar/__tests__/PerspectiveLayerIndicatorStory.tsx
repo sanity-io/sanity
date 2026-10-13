@@ -1,5 +1,5 @@
 import {Card, Text} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type RefObject} from 'react'
 import {VStack} from 'ui5'
 
@@ -32,7 +32,7 @@ const SCROLL_REF: RefObject<ScrollElement> = {current: null}
 function ReleasesMenu({range}: {range: LayerRange}) {
   return (
     <Card radius={3} shadow={2}>
-      <Menu>
+      <Menu gap={0} padding={0}>
         <Card borderBottom padding={1}>
           <VStack gap={1}>
             <GlobalPerspectiveMenuItem
@@ -51,6 +51,7 @@ function ReleasesMenu({range}: {range: LayerRange}) {
           releases={[activeASAPRelease]}
           releaseType="asap"
         />
+        <MenuDivider />
         <ReleaseTypeMenuSection
           currentGlobalBundleMenuItemRef={SCROLL_REF}
           range={range}
