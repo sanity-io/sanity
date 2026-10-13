@@ -14,11 +14,14 @@ function readAndRemoveHashToken(): string | undefined {
 // module loads, rather than when the first auth store is created: a studio that fails to
 // boot (a schema error, a crashing plugin) never creates one, and would otherwise leave the
 // token in the address bar and the session history. It is held here until an auth store
-// consumes it, then cleared so it doesn't linger in memory.
+// consumes it, then cleared so it doesn't linger in memory. It is removed from the URL again
+// when consumed, since a host may restore the hash after load
+// (https://github.com/vercel/next.js/issues/91819).
 let pendingToken = readAndRemoveHashToken()
 
 export const consumeHashToken = (): string | undefined => {
-  const token = pendingToken ?? readAndRemoveHashToken()
+  const fromHash = readAndRemoveHashToken()
+  const token = pendingToken ?? fromHash
   pendingToken = undefined
   return token
 }

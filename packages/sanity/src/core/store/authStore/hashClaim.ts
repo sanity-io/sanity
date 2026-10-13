@@ -43,11 +43,13 @@ function readAndRemoveHashClaim(): string | undefined {
 }
 
 // Removed from the URL when this module loads, like the session ID and the token, and held
-// until an auth store records it for its project.
+// until an auth store records it for its project. Removed again when consumed, since a host may
+// restore the hash after load (https://github.com/vercel/next.js/issues/91819).
 let pendingClaimUrl = readAndRemoveHashClaim()
 
 export const consumeHashClaim = (): string | undefined => {
-  const claimUrl = pendingClaimUrl ?? readAndRemoveHashClaim()
+  const fromHash = readAndRemoveHashClaim()
+  const claimUrl = pendingClaimUrl ?? fromHash
   pendingClaimUrl = undefined
   return claimUrl
 }

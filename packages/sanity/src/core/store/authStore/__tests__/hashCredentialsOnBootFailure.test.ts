@@ -98,6 +98,17 @@ describe('credentials in the URL hash when the studio fails to boot', {timeout: 
     expect(consumeHashToken()).toBeUndefined()
   })
 
+  it('removes a token the host restored to the hash after load when it is consumed', async () => {
+    window.location.hash = `#token=${TOKEN}`
+    const {consumeHashToken} = await import('../hashToken')
+
+    // A host router restoring the hash it cached before load (vercel/next.js#91819)
+    window.location.hash = `#token=${TOKEN}&keep=me`
+
+    expect(consumeHashToken()).toBe(TOKEN)
+    expect(window.location.hash).toBe('#keep=me')
+  })
+
   it('still reads a token that arrives in a later hash change', async () => {
     window.location.hash = ''
     const {consumeHashToken} = await import('../hashToken')
@@ -116,6 +127,17 @@ describe('credentials in the URL hash when the studio fails to boot', {timeout: 
 
     expect(consumeHashClaim()).toBe(CLAIM_URL)
     expect(consumeHashClaim()).toBeUndefined()
+  })
+
+  it('removes a claim URL the host restored to the hash after load when it is consumed', async () => {
+    window.location.hash = `#claim=${encodeURIComponent(CLAIM_URL)}`
+    const {consumeHashClaim} = await import('../hashClaim')
+
+    // A host router restoring the hash it cached before load (vercel/next.js#91819)
+    window.location.hash = `#claim=${encodeURIComponent(CLAIM_URL)}&keep=me`
+
+    expect(consumeHashClaim()).toBe(CLAIM_URL)
+    expect(window.location.hash).toBe('#keep=me')
   })
 
   it('takes the token and claim URL the studio HTML stashed before the bundle loaded', async () => {
