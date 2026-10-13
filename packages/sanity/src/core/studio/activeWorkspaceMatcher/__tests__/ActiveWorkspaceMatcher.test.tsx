@@ -558,6 +558,35 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     expect(screen.queryByTestId('not-found')).toBeNull()
   })
 
+  it('does not carry auth params from a stale hash into the redirect', async () => {
+    // The auth modules remove `#sid=` with `window.history.replaceState`, which a `history`
+    // instance created earlier (`unstable_history`) never sees, so its location still has it.
+    const workspaces = [createWorkspace({name: 'a', basePath: '/a'})]
+    const contextValue = createContextValue(workspaces, {a: createAuthState()})
+
+    const history = createMemoryHistory({
+      initialEntries: ['/?foo=bar#sid=12345678901234567890&token=t&claim=c&keep=me'],
+    })
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/a')
+    })
+    expect(history.location.search).toBe('?foo=bar')
+    expect(history.location.hash).toBe('#keep=me')
+  })
+
   it('navigates to root when go-to-default is clicked from NotFoundComponent', async () => {
     const visible = createWorkspace({name: 'visible', basePath: '/common/visible'})
 
