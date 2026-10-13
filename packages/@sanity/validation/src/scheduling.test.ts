@@ -256,4 +256,53 @@ describe('validation scheduling', () => {
     expect(immediate.status).toBe(idle.status)
     expect(sortMarkers(immediate.markers)).toEqual(sortMarkers(idle.markers))
   })
+
+  it('completes a long run of array items without rules when scheduling is immediate', async () => {
+    const page = createStalledPage()
+    const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
+    const schema = SchemaBuilder.compile({
+      name: 'test',
+      parent: builtinSchema,
+      types: [
+        {type: 'object', name: 'item', fields: [{type: 'string', name: 'title'}]},
+        {type: 'object', name: 'other', fields: [{type: 'string', name: 'title'}]},
+        {
+          type: 'document',
+          name: 'list',
+          // Two member types, so items with an unknown `_type` resolve to no schema type (and no rules)
+          fields: [{type: 'array', name: 'items', of: [{type: 'item'}, {type: 'other'}]}],
+        },
+      ],
+    })
+    // Enough items with rules to fill the 40-wide `mergeMap` window, then a run that completes synchronously
+    const items = [
+      ...Array.from({length: 45}, (_, index) => ({
+        _type: 'item',
+        _key: `item${index}`,
+        title: 'a',
+      })),
+      ...Array.from({length: 5000}, (_, index) => ({_type: 'removed', _key: `removed${index}`})),
+    ]
+
+    const result = await lastValueFrom(
+      evaluateDocumentObservable({
+        document: {
+          _id: 'drafts.list',
+          _type: 'list',
+          _createdAt: '2026-01-01T00:00:00.000Z',
+          _updatedAt: '2026-01-01T00:00:00.000Z',
+          _rev: 'rev',
+          items,
+        },
+        schema,
+        getClient: () => createMockClient(),
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+        scheduling: 'immediate',
+      }),
+    )
+
+    expect(page.requestIdleCallback).not.toHaveBeenCalled()
+    expect(result).toEqual({status: 'passed', markers: []})
+  })
 })
