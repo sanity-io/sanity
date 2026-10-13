@@ -193,7 +193,11 @@ function FilterChip({
     <Card border padding={1} radius={2} style={{flex: 'none'}} tone="primary">
       <Flex alignItems="center" gap={2}>
         <Box paddingLeft={1}>
-          <Icon icon={ChipIcon} size={1} style={{color: 'var(--card-fg-color)'}} />
+          <Icon
+            icon={ChipIcon}
+            size={1}
+            style={{color: 'var(--card-icon-color)', margin: '-0.375rem', display: 'block'}}
+          />
         </Box>
         {!iconOnly && (
           <Text
@@ -357,9 +361,7 @@ export function VariantConditionFilters({
     // available width); shrink to content when there are none, so the empty bar stays compact.
     <Card border padding={1} radius={2} style={hasActive ? undefined : {display: 'inline-flex'}}>
       <Flex alignItems="center" gap={2} flexWrap="nowrap">
-        <Box paddingX={1} style={{flex: 'none'}}>
-          <Icon icon={FilterIcon} muted size={1} />
-        </Box>
+        <Icon icon={FilterIcon} muted size={1} marginRight={-1} />
 
         <Box style={{flex: 'none'}}>
           <AddFilterMenu facets={facets} onToggleValue={toggleValue} value={value} />

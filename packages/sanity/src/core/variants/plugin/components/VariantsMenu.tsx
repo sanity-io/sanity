@@ -175,7 +175,7 @@ export function VariantsMenu({
                   {/* Spacer for icon alignment */}
                   <Box className={menuIconSpacer} />
                   <Box>
-                    <SectionHeader muted size={0} weight="medium" as="div" trim={true}>
+                    <SectionHeader muted size={0} weight="medium" trim={true}>
                       {t('navbar.variant.other')}
                     </SectionHeader>
                   </Box>
