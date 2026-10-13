@@ -2,10 +2,10 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
-import {Card, Skeleton, Text} from '@sanity/ui'
+import {Card, Skeleton} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
-import {Container, Flex, Box, VStack} from 'ui5'
+import {Text, Container, Flex, Box, VStack} from 'ui5'
 
 import {
   DetailBackButton,
@@ -86,14 +86,16 @@ export function VariantDetail() {
             const mismatch = conditionMismatches.find((item) => item.key === key)
             return {
               icon: (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   <DimensionIcon />
                 </Text>
               ),
               label: key,
               value: mismatch ? (
                 <Flex alignItems="center" gap={2}>
-                  <Text size={1}>{value}</Text>
+                  <Text size={1} as="div" trim={true}>
+                    {value}
+                  </Text>
                   <ConditionMismatchIndicator mismatches={[mismatch]} />
                 </Flex>
               ) : (
@@ -105,7 +107,7 @@ export function VariantDetail() {
             {
               label: '',
               value: (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('overview.table.no-conditions')}
                 </Text>
               ),
@@ -144,7 +146,7 @@ export function VariantDetail() {
         rows: [
           {
             icon: (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <DocumentsIcon />
               </Text>
             ),
@@ -153,7 +155,7 @@ export function VariantDetail() {
           },
           {
             icon: (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <EditIcon />
               </Text>
             ),
@@ -163,7 +165,7 @@ export function VariantDetail() {
           variant &&
             showVariantType && {
               icon: (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   <DocumentsIcon />
                 </Text>
               ),
@@ -174,7 +176,7 @@ export function VariantDetail() {
             // Resolution priority — the tiebreaker when several definitions match. Shown here (it is
             // authored in the create/edit dialog) so the detail page reflects the full definition.
             icon: (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <SortIcon />
               </Text>
             ),
@@ -186,13 +188,13 @@ export function VariantDetail() {
             // isn't on the variant document yet, so this shows the relative time for now; wiring the
             // creator's name/avatar is a follow-up.
             icon: (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <UserIcon />
               </Text>
             ),
             label: t('detail.footer.created'),
             value: (
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
               </Text>
             ),
@@ -215,10 +217,10 @@ export function VariantDetail() {
         <Box padding={4}>
           <Card border padding={4} radius={3}>
             <VStack gap={3}>
-              <Text size={2} weight="semibold">
+              <Text size={2} weight="semibold" as="div" trim={true}>
                 {t('detail.not-found.title')}
               </Text>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {t('detail.not-found.description')}
               </Text>
             </VStack>
@@ -297,7 +299,7 @@ export function VariantDetail() {
       <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%" overflow="hidden">
         {variantDocumentsError ? (
           <Box padding={4}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {t('detail.documents.error')}
             </Text>
           </Box>

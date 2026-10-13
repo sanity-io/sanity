@@ -1,9 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Text, TextInput} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState, type JSX} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -51,7 +51,7 @@ function VariantMenuItem(props: {
     <MenuItem
       data-testid={`variant-${getVariantId(variant._id)}`}
       icon={
-        <Text size={2} className={suggestIconColor}>
+        <Text size={2} className={suggestIconColor} as="div" trim={true}>
           <RhombusIcon />
         </Text>
       }
@@ -70,7 +70,7 @@ function VariantMenuItem(props: {
         mismatchMessage
           ? {
               content: (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {mismatchMessage}
                 </Text>
               ),
@@ -164,7 +164,7 @@ export function VariantsMenu({
             <MenuItem
               data-testid="variant-default"
               icon={
-                <Text size={2} className={suggestIconColor}>
+                <Text size={2} className={suggestIconColor} as="div" trim={true}>
                   <RhombusOutlinedIcon />
                 </Text>
               }
@@ -183,7 +183,7 @@ export function VariantsMenu({
                   {/* Spacer for icon alignment */}
                   <Box className={menuIconSpacer} />
                   <Box>
-                    <SectionHeader muted size={0} weight="medium">
+                    <SectionHeader muted size={0} weight="medium" as="div" trim={true}>
                       {t('navbar.variant.other')}
                     </SectionHeader>
                   </Box>

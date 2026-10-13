@@ -2,11 +2,10 @@ import {type ReleaseDocument} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -55,7 +54,11 @@ const MemoDocumentType = memo(
     const schema = useSchema()
     const schemaType = schema.get(type)
 
-    return <Text size={1}>{schemaType?.title || type}</Text>
+    return (
+      <Text size={1} as="div" trim={true}>
+        {schemaType?.title || type}
+      </Text>
+    )
   },
   (prev, next) => prev.type === next.type,
 )
@@ -82,7 +85,7 @@ function ValidationStatusIndicator({
         portal
         placement="bottom-end"
         content={
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Flex alignItems="center" gap={3} padding={1}>
               <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
               {t(
@@ -95,7 +98,7 @@ function ValidationStatusIndicator({
           </Text>
         }
       >
-        <Text size={1} data-testid="variant-document-validation-error">
+        <Text size={1} data-testid="variant-document-validation-error" as="div" trim={true}>
           <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
         </Text>
       </Tooltip>
@@ -108,12 +111,18 @@ function ValidationStatusIndicator({
         portal
         placement="bottom-end"
         content={
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Box padding={1}>{t('detail.documents.table.validation.validating')}</Box>
           </Text>
         }
       >
-        <Text muted size={1} data-testid="variant-document-validation-validating">
+        <Text
+          muted
+          size={1}
+          data-testid="variant-document-validation-validating"
+          as="div"
+          trim={true}
+        >
           <ToneIcon icon={ClockIcon} tone="default" />
         </Text>
       </Tooltip>
@@ -125,12 +134,12 @@ function ValidationStatusIndicator({
       portal
       placement="bottom-end"
       content={
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           <Box padding={1}>{t('detail.documents.table.validation.valid')}</Box>
         </Text>
       }
     >
-      <Text muted size={1} data-testid="variant-document-validation-valid">
+      <Text muted size={1} data-testid="variant-document-validation-valid" as="div" trim={true}>
         <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
       </Text>
     </Tooltip>
@@ -279,7 +288,7 @@ export const getVariantDocumentTableColumnDefs = (
         }}
       >
         {!datum.isLoading && datum.document._updatedAt && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
           </Text>
         )}
@@ -296,7 +305,7 @@ export const getVariantDocumentTableColumnDefs = (
     style: {minWidth: 44, maxWidth: 170},
     header: (props) => (
       <Flex {...props.headerProps} alignItems="center" paddingX={2} paddingY={3}>
-        <Text muted size={1} textOverflow="ellipsis" weight="medium">
+        <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
           {t('detail.documents.table.edited-by')}
         </Text>
       </Flex>

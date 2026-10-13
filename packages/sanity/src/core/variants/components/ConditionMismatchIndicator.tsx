@@ -1,5 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Text} from '@sanity/ui'
+import {Text} from 'ui5'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -57,6 +57,8 @@ export function ConditionMismatchIndicator(props: {
         size={1}
         // The icon is the only place this message appears, and the tooltip opens on focus.
         tabIndex={0}
+        as="div"
+        trim={true}
       >
         <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
       </Text>

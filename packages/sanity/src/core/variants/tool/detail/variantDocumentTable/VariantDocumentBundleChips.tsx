@@ -1,8 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Badge, Text} from '@sanity/ui'
+import {Badge} from '@sanity/ui'
 import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -130,14 +130,16 @@ export function VariantDocumentBundleChips({
         <Tooltip
           content={
             <Flex gap={3} padding={1} flexDirection="column">
-              <Text muted size={0} weight="medium">
+              <Text muted size={0} weight="medium" as="div" trim={true}>
                 {t('detail.documents.appears-in.also-in')}
               </Text>
               <VStack gap={2}>
                 {overflow.map((chip) => (
                   <Flex alignItems="center" gap={2} key={chip.key}>
                     <ChipIcon chip={chip} />
-                    <Text size={1}>{getLabel(chip)}</Text>
+                    <Text size={1} as="div" trim={true}>
+                      {getLabel(chip)}
+                    </Text>
                   </Flex>
                 ))}
               </VStack>

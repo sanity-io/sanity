@@ -1,8 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -112,7 +112,7 @@ export function VariantsOverview(): React.JSX.Element {
           justifyContent="center"
           padding={4}
         >
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {t('overview.error')}
           </Text>
         </Flex>
@@ -128,7 +128,7 @@ export function VariantsOverview(): React.JSX.Element {
           justifyContent="center"
           padding={4}
         >
-          <Text data-testid="variants-filter-empty-state" muted size={1}>
+          <Text data-testid="variants-filter-empty-state" muted size={1} as="div" trim={true}>
             {t('overview.filter.no-matching-definitions')}
           </Text>
         </Flex>
@@ -147,10 +147,10 @@ export function VariantsOverview(): React.JSX.Element {
           <Card flex="none" paddingBottom={4} paddingTop={5}>
             <Flex alignItems="flex-start" gap={4} justifyContent="space-between">
               <VStack gap={2}>
-                <Text as="h1" size={4} weight="bold">
+                <Text as="h1" size={4} weight="bold" trim={true}>
                   {t('overview.title')}
                 </Text>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('overview.description')}
                 </Text>
               </VStack>
@@ -160,7 +160,9 @@ export function VariantsOverview(): React.JSX.Element {
 
           {error && (
             <Card flex="none" marginBottom={4} padding={3} tone="critical">
-              <Text size={1}>{t('overview.error')}</Text>
+              <Text size={1} as="div" trim={true}>
+                {t('overview.error')}
+              </Text>
             </Card>
           )}
         </Flex>
