@@ -251,7 +251,7 @@ const VariantCell = memo(
       >
         <Flex alignItems="center" gap={2}>
           <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
-            <Text size={2} style={VARIANT_ICON_STYLE} as="div" trim={true}>
+            <Text size={2} style={VARIANT_ICON_STYLE} as="div" trim={true} tone="suggest">
               <RhombusIcon />
             </Text>
           </Card>

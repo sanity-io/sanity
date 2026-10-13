@@ -246,7 +246,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
         <>
           {isIntendedScheduleDateInPast && (
             <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="critical">
                 {t('release.schedule-dialog.publish-date-in-past-warning')}
               </Text>
             </Card>
@@ -323,6 +323,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
       style={{opacity: isUpdating ? 0.5 : 1}}
       as="div"
       trim={true}
+      tone={tone === 'default' || tone === 'neutral' || tone === 'primary' ? undefined : tone}
     >
       {compactLabel}
     </Text>

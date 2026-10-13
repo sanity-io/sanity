@@ -267,7 +267,7 @@ const ConfirmReleaseDialog = ({
           tone="critical"
           data-testid="revert-history-unavailable-card"
         >
-          <Text muted size={1} as="div" trim={true}>
+          <Text muted size={1} as="div" trim={true} tone="critical">
             {t('revert-dialog.confirm-revert.history-unavailable-card', {
               count: historyUnavailableCount,
             })}
@@ -283,7 +283,7 @@ const ConfirmReleaseDialog = ({
           tone="critical"
           data-testid="revert-unresolved-card"
         >
-          <Text muted size={1} as="div" trim={true}>
+          <Text muted size={1} as="div" trim={true} tone="critical">
             {t('revert-dialog.confirm-revert.unresolved-card', {count: requestFailedCount})}
           </Text>
         </Card>
@@ -305,7 +305,7 @@ const ConfirmReleaseDialog = ({
       </Flex>
       {hasPostPublishTransactions && !stageNewRevertRelease && (
         <Card marginTop={4} padding={3} radius={2} shadow={1} tone="critical">
-          <Text muted size={1} as="div" trim={true}>
+          <Text muted size={1} as="div" trim={true} tone="critical">
             {t('revert-dialog.confirm-revert.warning-card')}
           </Text>
         </Card>

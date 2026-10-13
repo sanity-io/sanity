@@ -85,7 +85,7 @@ export function ValidationProgressIndicator({
       }}
     >
       <Flex gap={2}>
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone={tone === 'transparent' ? undefined : tone}>
           {isValidating ? (
             <ProgressIcon progress={validatedCount / totalCount} />
           ) : (
@@ -97,7 +97,13 @@ export function ValidationProgressIndicator({
           )}
         </Text>
         {!showCheckmark && !isMinimal && (
-          <Text muted size={1} as="div" trim={true}>
+          <Text
+            muted
+            size={1}
+            as="div"
+            trim={true}
+            tone={tone === 'transparent' ? undefined : tone}
+          >
             {isValidating
               ? t('summary.validating-documents', {validatedCount, totalCount})
               : hasError

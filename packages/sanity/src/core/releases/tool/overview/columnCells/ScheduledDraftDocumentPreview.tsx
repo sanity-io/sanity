@@ -56,7 +56,13 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
                 portal
                 placement="bottom-end"
                 content={
-                  <Text muted size={1} as="div" trim={true}>
+                  <Text
+                    muted
+                    size={1}
+                    as="div"
+                    trim={true}
+                    tone={validationErrorCount ? 'critical' : undefined}
+                  >
                     <Flex alignItems="center" gap={3} padding={1}>
                       <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
                       {t('document-validation.error', {count: validationErrorCount})}
@@ -64,7 +70,12 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
                   </Text>
                 }
               >
-                <Text size={1} as="div" trim={true}>
+                <Text
+                  size={1}
+                  as="div"
+                  trim={true}
+                  tone={validationErrorCount ? 'critical' : undefined}
+                >
                   <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
                 </Text>
               </Tooltip>

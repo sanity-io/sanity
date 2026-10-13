@@ -18,11 +18,11 @@ export function ReleaseNotFoundBanner({onDismiss}: ReleaseNotFoundBannerProps) {
     <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1} marginBottom={4}>
       <Card radius={3} paddingX={2} paddingY={2} tone="caution">
         <Flex alignItems="center" gap={3} paddingX={2}>
-          <Text size={0} as="div" trim={true}>
+          <Text size={0} as="div" trim={true} tone="caution">
             <WarningOutlineIcon />
           </Text>
           <Box flexBasis="0%" flexGrow={1} paddingY={2}>
-            <Text size={1} weight="medium" as="div" trim={true}>
+            <Text size={1} weight="medium" as="div" trim={true} tone="caution">
               {t('banner.release-not-found')}
             </Text>
           </Box>

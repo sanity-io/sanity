@@ -72,14 +72,14 @@ export function ReleaseDetail() {
             radius={4}
           >
             <Flex gap={3}>
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="critical">
                 <ErrorOutlineIcon />
               </Text>
               <VStack gap={4}>
-                <Text size={1} weight="semibold" as="div" trim={true}>
+                <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
                   {t('loading-release-documents.error.title')}
                 </Text>
-                <Text size={1} as="div" trim={true}>
+                <Text size={1} as="div" trim={true} tone="critical">
                   {t('loading-release-documents.error.description')}
                 </Text>
               </VStack>

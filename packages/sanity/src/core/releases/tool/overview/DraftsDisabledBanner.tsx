@@ -41,11 +41,11 @@ export const DraftsDisabledBanner = ({
     <Box padding={1} marginBottom={4}>
       <Card radius={3} paddingX={2} paddingY={2} tone="caution">
         <Flex alignItems="center" gap={3} paddingX={2}>
-          <Text size={0} as="div" trim={true}>
+          <Text size={0} as="div" trim={true} tone="caution">
             <WarningOutlineIcon />
           </Text>
           <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2}>
-            <Text size={1} weight="medium" as="div" trim={true}>
+            <Text size={1} weight="medium" as="div" trim={true} tone="caution">
               {getBannerMessage()}
             </Text>
           </Flex>

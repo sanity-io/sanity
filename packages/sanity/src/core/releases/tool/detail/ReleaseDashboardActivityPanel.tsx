@@ -80,7 +80,7 @@ export function ReleaseDashboardActivityPanel({
       {events.error && !events.events.length && (
         <Card padding={3} tone="caution">
           <Box padding={2}>
-            <Text size={0} as="div" trim={true}>
+            <Text size={0} as="div" trim={true} tone="caution">
               {t('activity.panel.error')}
             </Text>
           </Box>

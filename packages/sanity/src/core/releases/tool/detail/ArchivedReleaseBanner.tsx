@@ -44,11 +44,17 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
   return (
     <Card padding={4} radius={4} tone="primary" data-testid="retention-policy-card">
       <Flex gap={3}>
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
           <InfoOutlineIcon />
         </Text>
         <VStack gap={4}>
-          <Text size={1} weight="semibold" as="div" trim={true}>
+          <Text
+            size={1}
+            weight="semibold"
+            as="div"
+            trim={true}
+            style={{color: 'var(--card-fg-color)'}}
+          >
             {state === 'archived' ? tRelease('archive-info.title') : tRelease('publish-info.title')}
           </Text>
           {retentionDays && (

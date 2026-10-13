@@ -50,7 +50,13 @@ export function ReleaseValidationBadge({
   // renders in the tone colour (green/red), no filled chip.
   return (
     <Card tone={tone} style={TRANSPARENT_BG}>
-      <Text size={1} weight="medium" as="div" trim={true}>
+      <Text
+        size={1}
+        weight="medium"
+        as="div"
+        trim={true}
+        tone={tone === 'default' ? undefined : tone}
+      >
         {label}
       </Text>
     </Card>
