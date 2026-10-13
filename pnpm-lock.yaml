@@ -167,10 +167,10 @@ catalogs:
   default:
     '@optique/core':
       specifier: ^1.1.1
-      version: 1.3.4
+      version: 1.3.5
     '@optique/run':
       specifier: ^1.1.1
-      version: 1.3.4
+      version: 1.3.5
     '@playwright/test':
       specifier: 1.64.0
       version: 1.64.0
@@ -184,8 +184,8 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     '@sanity/tsdown-config':
-      specifier: ^0.28.8
-      version: 0.28.8
+      specifier: ^0.29.0
+      version: 0.29.0
     '@sanity/ui':
       specifier: ^4.4.4
       version: 4.4.4
@@ -694,11 +694,11 @@ importers:
   dev/sdk-app:
     dependencies:
       '@sanity/sdk':
-        specifier: ^3.8.0
-        version: 3.8.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+        specifier: ^3.9.1
+        version: 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/sdk-react':
-        specifier: ^3.8.0
-        version: 3.8.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+        specifier: ^3.9.1
+        version: 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       react:
         specifier: 'catalog:'
         version: 19.3.0
@@ -767,7 +767,7 @@ importers:
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.4.0
-        version: 5.4.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.1)
+        version: 5.5.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.1)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
         version: 0.2.26(babel-plugin-macros@3.1.0)(vite@8.3.4)
@@ -1170,10 +1170,10 @@ importers:
         version: 7.22.0(supports-color@8.1.1)
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@repo/utils':
         specifier: workspace:*
         version: link:../utils
@@ -1210,10 +1210,10 @@ importers:
     dependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@vitejs/plugin-basic-ssl':
         specifier: ^2.3.0
         version: 2.3.0(vite@8.3.4)
@@ -1297,10 +1297,10 @@ importers:
         version: 22.0.1
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@portabletext/toolkit':
         specifier: ^6.0.0
         version: 6.0.0
@@ -1485,7 +1485,7 @@ importers:
         version: link:../tsconfig
       '@sanity/tsdown-config':
         specifier: 'catalog:'
-        version: 0.28.8(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)
+        version: 0.29.0(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)
       '@types/node':
         specifier: 'catalog:'
         version: 24.19.2
@@ -2182,11 +2182,11 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/schema
       '@sanity/sdk':
-        specifier: ^3.8.0
-        version: 3.8.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+        specifier: ^3.9.1
+        version: 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/sdk-react':
-        specifier: ^3.8.0
-        version: 3.8.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+        specifier: ^3.9.1
+        version: 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/telemetry':
         specifier: 'catalog:'
         version: 1.1.0(react@19.3.0)
@@ -2266,7 +2266,11 @@ importers:
         specifier: ^3.0.8
         version: 3.0.8
       motion:
+<<<<<<< HEAD
         specifier: ^14.2.0
+=======
+        specifier: ^14.1.1
+>>>>>>> origin/main
         version: 14.2.0(react-dom@19.3.0)(react@19.3.0)
       nano-pubsub:
         specifier: ^3.0.0
@@ -2505,10 +2509,10 @@ importers:
     dependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@repo/debug-proxy':
         specifier: workspace:*
         version: link:../../packages/@repo/debug-proxy
@@ -2664,10 +2668,10 @@ importers:
     devDependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.4
+        version: 1.3.5
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../packages/@repo/tsconfig
@@ -3693,8 +3697,8 @@ packages:
     peerDependencies:
       '@playwright/test': ^1.0.0
 
-  '@chromatic-com/storybook@5.4.0':
-    resolution: {integrity: sha512-U4Rny8H6BBa8uiRMnL0CFZyqZ0MWogN/szlMugsInfSnX+PtrLCVp2kjrvaG9bv6X5xSgHpnmepOzLm8+QFseA==}
+  '@chromatic-com/storybook@5.5.0':
+    resolution: {integrity: sha512-fMdXRGtX8ebQ0+fBQ4GME0x1X6GvH0EYX5V91o1fFY/VGEyTWZsp5dEciYGGuVUu/2xd9xDoDQ6FB82pU9akeg==}
     engines: {node: '>=20.0.0', yarn: '>=1.22.18'}
     peerDependencies:
       storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0 || ^11.0.0-0
@@ -5794,12 +5798,12 @@ packages:
     resolution: {integrity: sha512-eSYWTm620tTk45EKSedaUL8MFYI8hW164hIXsgIHyxu3VobUB3fFCu5t0hQby6OoWRPsG1KkKUG2M5UadiLiVg==}
     engines: {node: '>=14'}
 
-  '@optique/core@1.3.4':
-    resolution: {integrity: sha512-/j8732xVhXUNow2PKQZluL39YFxiPwBTn0y/j6P9IbNgdzUIYaSp1Taf1v5dzyuE/Mbi4ePj1Sl8tbayo91KuA==}
+  '@optique/core@1.3.5':
+    resolution: {integrity: sha512-tZASQ0TXsuk+6aqnA+n9vO3anHJ5Vr5oZIIpU/YfCqB0+Q8p3GRQyd5giBB9EnSoOE7/++0pR0xl+q0PSwWZnA==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
-  '@optique/run@1.3.4':
-    resolution: {integrity: sha512-oyW1b6DIa4Fo/nGKT7Ph/7zsuAE96O08d9dU7BqdJb45m1vrzg4dgMeqLikKhA5jOJ2aIsJhsqKClCmepYHWug==}
+  '@optique/run@1.3.5':
+    resolution: {integrity: sha512-VDPJorzfWZHx0YWZHQ3i4O/Umo4usB5l3wJIbvovNtGeZ/+Kl1BA1ldDF08RbEWtUdUCxL0SdmdA/p5WolKkMg==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
   '@oxc-parser/binding-android-arm-eabi@0.127.0':
@@ -7710,14 +7714,14 @@ packages:
     resolution: {integrity: sha512-Qb5ZTHStp2jXeK+KlrbOnoD4LakdTS/JSvHwl91wnQmQVkIp/K965C5qgZsrnBKmNf5BHZ8KijPiApJWBe/KCQ==}
     engines: {node: '>=22'}
 
-  '@sanity/sdk-react@3.8.0':
-    resolution: {integrity: sha512-12VtN2C29ojQgWQE0YA6Oc0Xktgr6IbEYxo7yVr3lYyS9Q7Belj/xGqRLUOM2uRlJDC6+N9eq2335sKhgtM4zg==}
+  '@sanity/sdk-react@3.9.1':
+    resolution: {integrity: sha512-RLcDKy1ohfFWU5cYZKR6DzbafDVrXHU6hwZGg+s5MNZd0ow+i2KCv0+5qt6Poi2NGGUh+b0IYR1+CPiyC24m+g==}
     peerDependencies:
       react: ^19.2.0
       react-dom: ^19.2.0
 
-  '@sanity/sdk@3.8.0':
-    resolution: {integrity: sha512-IDq3oRmXdJ2u7ZPMLEh0jaOhALDM59yEY/ubimhSluDN/yQWdLZV+0mK+i90ixerw30kDG0Q1Esfwd8Niscetg==}
+  '@sanity/sdk@3.9.1':
+    resolution: {integrity: sha512-K5XWJAfFcFI/uOaXjOMzRLXwNtn2RloMnHtF+BhOFCu4d01cBpkna2hJNOy6zEFfetJNQYwpwkrNrve9zBrHbQ==}
 
   '@sanity/signed-urls@2.0.5':
     resolution: {integrity: sha512-kg+LrXyk8tYNuCZnXrSRpTKR6dkbjkfBimGhqUs93VlfhSr56NkbS9N6zXqYRTg2mwbPYd/CAQHNX3SsXJgPcg==}
@@ -7760,8 +7764,8 @@ packages:
       sanity:
         optional: true
 
-  '@sanity/tsdown-config@0.28.8':
-    resolution: {integrity: sha512-y7nIiYKw6PuQBP0gbvR9C3Bq+733Vdg5oBLVebleuYstsWBZXo6j2TR6zg89JzZveXJqdthO9VNKLMQeWBggqg==}
+  '@sanity/tsdown-config@0.29.0':
+    resolution: {integrity: sha512-q+03o9PZvQYiEv5sTn46Ysqbdyd1wP17rVX+/GTOk7Q7xcXy2RlF4nJqhfqgZUSKgSIfyWo0FFVQGouHiGCqPw==}
     engines: {node: ^22.18.0 || ^24.11.0 || >=26.0.0}
     peerDependencies:
       '@babel/core': '*'
@@ -7811,8 +7815,12 @@ packages:
     resolution: {integrity: sha512-7mQRN3bfLxHLwtSRaMGCjOeTCtvuk5QNXbBXu0DdG3X2ZxR0si3Zz4vNxaEi480kGtuKshvTWnjFKdpj2Yyu6g==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity/vanilla-extract-rolldown-plugin@0.4.15':
-    resolution: {integrity: sha512-IPK7mzUNE+no0ApycT/oPAYXvCUb9bzzBtKML+Tga2sTy01mn750Nx/YGYhqxhlE4rRwKtLN4d1jX/pOtd6dZg==}
+  '@sanity/vanilla-extract-integration@0.2.0':
+    resolution: {integrity: sha512-T//4u6q6LixuzgtpUbBK402ngU0S7zAfYReM+rBu5Styghgt3BGUoGzV1Tu/oBSxuoUAgZ44yBFHwC9J48v3mw==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+
+  '@sanity/vanilla-extract-rolldown-plugin@0.5.0':
+    resolution: {integrity: sha512-+EvT5zSpFfw2c98hhyzcJ4FhZh1DrL4VmDP0/fb7UjQJmh24ulTAG5gkKg8MCh49aCKsLLN/u+TkbKVKjWYYnw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       rolldown: ^1.0.0
@@ -7820,8 +7828,8 @@ packages:
       rolldown:
         optional: true
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.4.8':
-    resolution: {integrity: sha512-mlmZb5Vfm52/D6sgQEK/0DFJ/dNmH9OONiYl/Wvk5TdpDHnaMGRpQ3ANnUlcGiUkXr0jAOqqW/a04IJwKUxAsw==}
+  '@sanity/vanilla-extract-tsdown-plugin@0.5.0':
+    resolution: {integrity: sha512-8huwYfCZ8poBrxWBGkQnq7fkaHr/dCmJFyqbr80hqrFHK3zHOjYPTmbPwSHLQ2uhoN3LzUHn0vZJrPGXJd9vMQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       tsdown: ^0.23.0
@@ -10479,8 +10487,8 @@ packages:
     resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
 
-  dompurify@3.4.16:
-    resolution: {integrity: sha512-sqo+pNp3qRhCIpbgRi1y8Tgk27Bo2Ry7w0dC1NBeNTdZChWjz9Xb/KOoZbRP/R6pQZ80Qw8YhXw13hWWBbMRnQ==}
+  dompurify@3.4.17:
+    resolution: {integrity: sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==}
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
@@ -16925,7 +16933,7 @@ snapshots:
       - react
       - utf-8-validate
 
-  '@chromatic-com/storybook@5.4.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.1)':
+  '@chromatic-com/storybook@5.5.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.1)':
     dependencies:
       '@neoconfetti/react': 1.0.0
       chromatic: 18.12.0(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)
@@ -18999,11 +19007,11 @@ snapshots:
 
   '@opentelemetry/semantic-conventions@1.43.0': {}
 
-  '@optique/core@1.3.4': {}
+  '@optique/core@1.3.5': {}
 
-  '@optique/run@1.3.4':
+  '@optique/run@1.3.5':
     dependencies:
-      '@optique/core': 1.3.4
+      '@optique/core': 1.3.5
 
   '@oxc-parser/binding-android-arm-eabi@0.127.0':
     optional: true
@@ -20120,7 +20128,7 @@ snapshots:
       '@vitejs/plugin-react': 6.1.2(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.154.0)(vite@8.3.4)
       chokidar: 5.0.0
       cjs-module-lexer: 2.3.0
-      dompurify: 3.4.16
+      dompurify: 3.4.17
       empathic: 2.1.0
       jsdom: 29.1.1(@noble/hashes@2.4.0)
       lightningcss: 1.33.0
@@ -20663,12 +20671,12 @@ snapshots:
 
   '@sanity/schema-descriptor-utils@1.3.3': {}
 
-  '@sanity/sdk-react@3.8.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)':
+  '@sanity/sdk-react@3.9.1(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)':
     dependencies:
       '@module-federation/runtime': 2.9.2
       '@sanity/client': 8.9.0(vitest@5.0.4)
       '@sanity/message-protocol': 0.24.0
-      '@sanity/sdk': 3.8.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+      '@sanity/sdk': 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/types': link:packages/@sanity/types
       react: 19.3.0
       react-compiler-runtime: 1.0.0(react@19.3.0)
@@ -20682,7 +20690,7 @@ snapshots:
       - vitest
       - xstate
 
-  '@sanity/sdk@3.8.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)':
+  '@sanity/sdk@3.9.1(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
       '@sanity/client': 8.9.0(vitest@5.0.4)
@@ -20762,12 +20770,12 @@ snapshots:
       - styled-components
       - typescript
 
-  '@sanity/tsdown-config@0.28.8(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)':
+  '@sanity/tsdown-config@0.29.0(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.4)(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)':
     dependencies:
       '@microsoft/api-extractor': 7.59.4(@types/node@24.19.2)
       '@microsoft/tsdoc-config': 0.18.3
       '@sanity/browserslist-config': 1.0.5
-      '@sanity/vanilla-extract-tsdown-plugin': 0.4.8(babel-plugin-macros@3.1.0)(rolldown@1.2.13)(tsdown@0.23.1)
+      '@sanity/vanilla-extract-tsdown-plugin': 0.5.0(babel-plugin-macros@3.1.0)(rolldown@1.2.13)(tsdown@0.23.1)
       '@typescript/typescript6': 6.0.2
       '@vitejs/plugin-react': 6.1.2(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.154.0)(vite@8.3.4)
       browserslist: 4.29.3
@@ -20833,18 +20841,28 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-rolldown-plugin@0.4.15(babel-plugin-macros@3.1.0)(rolldown@1.2.13)':
+  '@sanity/vanilla-extract-integration@0.2.0(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@sanity/vanilla-extract-integration': 0.1.26(babel-plugin-macros@3.1.0)
+      '@emotion/hash': 0.9.2
+      '@vanilla-extract/css': 1.21.3(babel-plugin-macros@3.1.0)
+      javascript-stringify: 2.1.0
+      rolldown: 1.2.13
+      yuku-parser: 0.19.0
+    transitivePeerDependencies:
+      - babel-plugin-macros
+
+  '@sanity/vanilla-extract-rolldown-plugin@0.5.0(babel-plugin-macros@3.1.0)(rolldown@1.2.13)':
+    dependencies:
+      '@sanity/vanilla-extract-integration': 0.2.0(babel-plugin-macros@3.1.0)
       lightningcss: 1.33.0
     optionalDependencies:
       rolldown: 1.2.13
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.4.8(babel-plugin-macros@3.1.0)(rolldown@1.2.13)(tsdown@0.23.1)':
+  '@sanity/vanilla-extract-tsdown-plugin@0.5.0(babel-plugin-macros@3.1.0)(rolldown@1.2.13)(tsdown@0.23.1)':
     dependencies:
-      '@sanity/vanilla-extract-rolldown-plugin': 0.4.15(babel-plugin-macros@3.1.0)(rolldown@1.2.13)
+      '@sanity/vanilla-extract-rolldown-plugin': 0.5.0(babel-plugin-macros@3.1.0)(rolldown@1.2.13)
       tsdown: 0.23.1(@vitejs/devtools@0.7.6)(oxc-resolver@11.24.2)(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
     transitivePeerDependencies:
       - babel-plugin-macros
@@ -23718,7 +23736,7 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@3.4.16:
+  dompurify@3.4.17:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -25246,7 +25264,7 @@ snapshots:
 
   isomorphic-dompurify@2.36.0(@noble/hashes@2.4.0)(supports-color@8.1.1):
     dependencies:
-      dompurify: 3.4.16
+      dompurify: 3.4.17
       jsdom: 28.1.0(@noble/hashes@2.4.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - '@noble/hashes'
