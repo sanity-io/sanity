@@ -90,7 +90,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
             ) : (
               <Tooltip
                 content={<Text size={1}>{t('vista.query.auto-refetch.unsupported')}</Text>}
-                placement="left"
+                placement="top"
                 portal
               >
                 <div>{autoRefetchItem}</div>
@@ -113,7 +113,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
             />
           </Menu>
         }
-        popover={{portal: true, placement: 'left-start'}}
+        popover={{portal: true, placement: 'top-end'}}
       />
       {exportOpen && request && (
         <ExportQueryDialog

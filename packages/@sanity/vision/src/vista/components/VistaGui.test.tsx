@@ -373,7 +373,14 @@ describe('VistaGui', () => {
 
     expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
     expect(text(screen.getByTestId('vista-tab-button'))).toContain('vista.tabs.untitled')
-    expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(true)
+    const fetchButton = screen.getByTestId('vista-fetch-button')
+    expect(isDisabled(fetchButton)).toBe(true)
+    expect(text(fetchButton)).toContain('action.query-execute')
+    expect(
+      within(screen.getByTestId('vista-query-actions')).getByTestId('vista-fetch-button'),
+    ).toBe(fetchButton)
+    expect(text(screen.getByTestId('vista-export-json'))).toContain('vista.result.export-json')
+    expect(text(screen.getByTestId('vista-export-csv'))).toContain('vista.result.export-csv')
     expect(text(screen.getByTestId('vista-result'))).toContain('vista.result.empty')
   })
 

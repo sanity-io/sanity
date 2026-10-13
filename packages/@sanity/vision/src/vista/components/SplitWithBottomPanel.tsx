@@ -21,6 +21,8 @@ export interface SplitWithBottomPanelProps {
   tabs: CollapsiblePanelTab[]
   /** Initial height of the bottom panel, per layout */
   defaultBottomSize: Record<VistaLayout, number>
+  /** Rendered below the split pane, such as the bottom action bar */
+  footer?: ReactNode
 }
 
 /**
@@ -29,7 +31,7 @@ export interface SplitWithBottomPanelProps {
  * remembered per layout, since one dragged for two columns rarely suits a stacked pane.
  */
 export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
-  const {id, testId, children, tabs, defaultBottomSize} = props
+  const {id, testId, children, tabs, defaultBottomSize, footer} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {layout} = useVistaExperience()
   const [activeTabId, setActiveTabId] = useState(() => tabs[0].id)
@@ -65,6 +67,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
           </Box>
         </ResizableSplit>
       </Box>
+      {footer}
     </Flex>
   )
 }

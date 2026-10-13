@@ -68,7 +68,7 @@ export function ResultActionsMenu({
             />
           </Menu>
         }
-        popover={{portal: true, placement: 'left-start'}}
+        popover={{portal: true, placement: 'top-end'}}
       />
       {exportFormat && (
         <ExportTypesDialog

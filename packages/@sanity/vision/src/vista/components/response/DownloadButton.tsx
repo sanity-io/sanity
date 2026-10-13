@@ -20,7 +20,7 @@ export interface DownloadButtonProps {
   testId: string
 }
 
-/** An icon button on the response action rail that downloads the result as a file */
+/** A button in the response panel's bottom action bar that downloads the result as a file */
 export function DownloadButton({
   getBlobUrl,
   onUnavailable,
@@ -50,7 +50,7 @@ export function DownloadButton({
   const hintId = useId()
 
   return (
-    <Tooltip content={<Text size={1}>{tooltip || label}</Text>} placement="left" portal>
+    <Tooltip content={<Text size={1}>{tooltip || label}</Text>} placement="top" portal>
       {/*
         A disabled button gets neither pointer events nor focus, so while the download is
         unavailable the wrapper stands in for it: the tooltip listens to the wrapper, and the
@@ -69,10 +69,12 @@ export function DownloadButton({
           aria-label={label}
           data-testid={testId}
           disabled={unavailable}
+          gap={2}
           icon={icon}
-          mode="bleed"
+          mode="ghost"
           onClick={handleClick}
           padding={2}
+          text={label}
         />
         {unavailable && tooltip && <VisuallyHidden id={hintId}>{tooltip}</VisuallyHidden>}
       </span>

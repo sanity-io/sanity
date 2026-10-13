@@ -109,120 +109,124 @@ export function RequestPanel(props: RequestPanelProps) {
   const runLabel = isFetching ? t('vista.query.stop') : t('action.query-execute')
 
   return (
-    <Flex data-testid="vista-request-panel" flexDirection="column" height="100%" ref={containerRef}>
-      <Flex className={querySection}>
-        <Box
-          className={editorContainer}
-          data-testid="vista-query-editor"
-          flexBasis="0%"
-          flexGrow={1}
-          minWidth="0"
-        >
-          <Box className={editorLabel}>
-            <Label muted size={1}>
-              {t('query.label')}
-            </Label>
-          </Box>
-          <VisionCodeMirror
-            extensions={queryExtensions}
-            initialValue={tab.query}
-            onChange={onQueryChange}
-            ref={queryEditorRef}
-          />
-        </Box>
-        <ActionRail testId="vista-query-actions">
-          <Tooltip
-            content={
-              <Flex alignItems="center" gap={2} padding={1}>
-                <Text size={1}>{runLabel}</Text>
-                {!isFetching && <Hotkeys fontSize={0} keys={VISTA_SHORTCUTS.fetch.keys} />}
-              </Flex>
-            }
-            placement="left"
-            portal
+    <Flex data-testid="vista-request-panel" flexDirection="column" height="100%">
+      <Flex flexBasis="0%" flexDirection="column" flexGrow={1} minHeight="0" ref={containerRef}>
+        <Flex className={querySection}>
+          <Box
+            className={editorContainer}
+            data-testid="vista-query-editor"
+            flexBasis="0%"
+            flexGrow={1}
+            minWidth="0"
           >
-            <Button
-              aria-label={runLabel}
-              data-testid="vista-fetch-button"
-              disabled={!isFetching && !request}
-              icon={isFetching ? StopIcon : PlayIcon}
-              mode="default"
-              onClick={isFetching ? onCancel : onRun}
-              padding={2}
-              tone={isFetching ? 'critical' : 'primary'}
+            <Box className={editorLabel}>
+              <Label muted size={1}>
+                {t('query.label')}
+              </Label>
+            </Box>
+            <VisionCodeMirror
+              extensions={queryExtensions}
+              initialValue={tab.query}
+              onChange={onQueryChange}
+              ref={queryEditorRef}
             />
-          </Tooltip>
-          <QueryActionsMenu
-            buildRequest={buildRequest}
-            onCopyQuery={onCopyQuery}
-            onPrettify={onPrettify}
-            onToggleAutoRefetch={onToggleAutoRefetch}
-            request={request}
-            resolved={resolved}
-            tab={tab}
+          </Box>
+        </Flex>
+        <CollapsibleSection
+          className={cx(paramsSection, paramsResize.height !== null && paramsSectionResized)}
+          expanded={paramsExpanded}
+          handle={
+            paramsExpanded && (
+              // The focusable separator widget: drag or arrow keys resize, Enter resets
+              <div
+                aria-label={t('vista.params.resize')}
+                aria-orientation="horizontal"
+                aria-valuemax={paramsResize.measured?.max}
+                aria-valuemin={SECTION_MIN_HEIGHT}
+                aria-valuenow={paramsHeightNow}
+                aria-valuetext={
+                  paramsResize.height === null && paramsHeightNow !== undefined
+                    ? t('vista.params.fit-height', {height: paramsHeightNow})
+                    : undefined
+                }
+                className={sectionResizer}
+                data-dragging={paramsResize.dragging}
+                data-testid="vista-request-params-resizer"
+                onDoubleClick={paramsResize.reset}
+                onFocus={paramsResize.onFocus}
+                onKeyDown={paramsResize.onKeyDown}
+                onPointerDown={paramsResize.onPointerDown}
+                role="separator"
+                tabIndex={0}
+                title={t('vista.params.resize')}
+              />
+            )
+          }
+          icon={
+            params.valid ? undefined : (
+              <Text size={1}>
+                <ErrorOutlineIcon />
+              </Text>
+            )
+          }
+          id="vista-request-params"
+          onToggle={() => togglePanel('params')}
+          ref={paramsRef}
+          style={paramsResize.height === null ? undefined : {height: paramsResize.height}}
+          title={t('params.label')}
+        >
+          <ParamsPanel
+            editorRef={paramsEditorRef}
+            onChange={onParamsChange}
+            params={params}
+            value={tab.rawParams}
           />
-        </ActionRail>
+        </CollapsibleSection>
+        <CollapsibleSection
+          className={optionsSection}
+          expanded={optionsExpanded}
+          id="vista-request-options"
+          onToggle={() => togglePanel('options')}
+          ref={optionsRef}
+          title={t('vista.panel.options')}
+        >
+          <OptionsPanel onChange={onOptionsChange} options={tab.options} resolved={resolved} />
+        </CollapsibleSection>
       </Flex>
-      <CollapsibleSection
-        className={cx(paramsSection, paramsResize.height !== null && paramsSectionResized)}
-        expanded={paramsExpanded}
-        handle={
-          paramsExpanded && (
-            // The focusable separator widget: drag or arrow keys resize, Enter resets
-            <div
-              aria-label={t('vista.params.resize')}
-              aria-orientation="horizontal"
-              aria-valuemax={paramsResize.measured?.max}
-              aria-valuemin={SECTION_MIN_HEIGHT}
-              aria-valuenow={paramsHeightNow}
-              aria-valuetext={
-                paramsResize.height === null && paramsHeightNow !== undefined
-                  ? t('vista.params.fit-height', {height: paramsHeightNow})
-                  : undefined
-              }
-              className={sectionResizer}
-              data-dragging={paramsResize.dragging}
-              data-testid="vista-request-params-resizer"
-              onDoubleClick={paramsResize.reset}
-              onFocus={paramsResize.onFocus}
-              onKeyDown={paramsResize.onKeyDown}
-              onPointerDown={paramsResize.onPointerDown}
-              role="separator"
-              tabIndex={0}
-              title={t('vista.params.resize')}
-            />
-          )
-        }
-        icon={
-          params.valid ? undefined : (
-            <Text size={1}>
-              <ErrorOutlineIcon />
-            </Text>
-          )
-        }
-        id="vista-request-params"
-        onToggle={() => togglePanel('params')}
-        ref={paramsRef}
-        style={paramsResize.height === null ? undefined : {height: paramsResize.height}}
-        title={t('params.label')}
-      >
-        <ParamsPanel
-          editorRef={paramsEditorRef}
-          onChange={onParamsChange}
-          params={params}
-          value={tab.rawParams}
+      <ActionRail testId="vista-query-actions">
+        <Tooltip
+          content={
+            <Flex alignItems="center" gap={2} padding={1}>
+              <Text size={1}>{runLabel}</Text>
+              {!isFetching && <Hotkeys fontSize={0} keys={VISTA_SHORTCUTS.fetch.keys} />}
+            </Flex>
+          }
+          placement="top"
+          portal
+        >
+          <Button
+            aria-label={runLabel}
+            data-testid="vista-fetch-button"
+            disabled={!isFetching && !request}
+            gap={2}
+            icon={isFetching ? StopIcon : PlayIcon}
+            mode="default"
+            onClick={isFetching ? onCancel : onRun}
+            padding={2}
+            text={runLabel}
+            tone={isFetching ? 'critical' : 'primary'}
+          />
+        </Tooltip>
+        <QueryActionsMenu
+          buildRequest={buildRequest}
+          onCopyQuery={onCopyQuery}
+          onPrettify={onPrettify}
+          onToggleAutoRefetch={onToggleAutoRefetch}
+          request={request}
+          resolved={resolved}
+          tab={tab}
         />
-      </CollapsibleSection>
-      <CollapsibleSection
-        className={optionsSection}
-        expanded={optionsExpanded}
-        id="vista-request-options"
-        onToggle={() => togglePanel('options')}
-        ref={optionsRef}
-        title={t('vista.panel.options')}
-      >
-        <OptionsPanel onChange={onOptionsChange} options={tab.options} resolved={resolved} />
-      </CollapsibleSection>
+      </ActionRail>
     </Flex>
   )
 }

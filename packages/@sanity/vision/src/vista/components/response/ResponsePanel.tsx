@@ -148,6 +148,36 @@ export function ResponsePanel(props: ResponsePanelProps) {
   return (
     <SplitWithBottomPanel
       defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+      footer={
+        <ActionRail testId="vista-result-actions">
+          <DownloadButton
+            download="query-result.json"
+            getBlobUrl={hasResult ? getJsonUrl : undefined}
+            icon={JsonIcon}
+            label={t('vista.result.export-json')}
+            testId="vista-export-json"
+          />
+          <DownloadButton
+            download="query-result.csv"
+            getBlobUrl={canExportCsv ? getCsvUrl : undefined}
+            icon={DocumentSheetIcon}
+            label={t('vista.result.export-csv')}
+            onUnavailable={reportCsvUnavailable}
+            testId="vista-export-csv"
+            tooltip={
+              hasResult && !canExportCsv
+                ? t('result.save-result-as-csv.not-csv-encodable')
+                : undefined
+            }
+          />
+          <ResultActionsMenu
+            hasResult={hasResult}
+            result={result}
+            resultIsCurrent={resultIsCurrent}
+            tab={tab}
+          />
+        </ActionRail>
+      }
       id="vista-response"
       tabs={panelTabs}
       testId="vista-response-panel"
@@ -197,34 +227,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
           )}
         </Box>
       </Card>
-      <ActionRail testId="vista-result-actions">
-        <DownloadButton
-          download="query-result.json"
-          getBlobUrl={hasResult ? getJsonUrl : undefined}
-          icon={JsonIcon}
-          label={t('vista.result.export-json')}
-          testId="vista-export-json"
-        />
-        <DownloadButton
-          download="query-result.csv"
-          getBlobUrl={canExportCsv ? getCsvUrl : undefined}
-          icon={DocumentSheetIcon}
-          label={t('vista.result.export-csv')}
-          onUnavailable={reportCsvUnavailable}
-          testId="vista-export-csv"
-          tooltip={
-            hasResult && !canExportCsv
-              ? t('result.save-result-as-csv.not-csv-encodable')
-              : undefined
-          }
-        />
-        <ResultActionsMenu
-          hasResult={hasResult}
-          result={result}
-          resultIsCurrent={resultIsCurrent}
-          tab={tab}
-        />
-      </ActionRail>
     </SplitWithBottomPanel>
   )
 }
