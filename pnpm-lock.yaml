@@ -1221,8 +1221,8 @@ importers:
         specifier: ^1.52.0
         version: 1.52.0
       eventsource-parser:
-        specifier: ^4.1.1
-        version: 4.1.1
+        specifier: ^4.1.2
+        version: 4.1.2
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -10951,8 +10951,8 @@ packages:
     resolution: {integrity: sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ==}
     engines: {node: '>=18.0.0'}
 
-  eventsource-parser@4.1.1:
-    resolution: {integrity: sha512-zaWNqeSLeyzEAAt2Q6aDBRDRk/VnPmsKqvToyGvv6aahvLv71A4Jw7jG93Hckf11zXurbqgsffvpSgKPoeU1Qw==}
+  eventsource-parser@4.1.2:
+    resolution: {integrity: sha512-N9b0EvATDJfZj+Szg3m8WwqseQhei/mtTd6V0rCciGbI/yG24o3yBk0YVyfOZZsLVMZHWs++Zk3Aqd2y2EztnQ==}
     engines: {node: '>=22.12'}
 
   eventsource@2.0.2:
@@ -24195,7 +24195,7 @@ snapshots:
 
   eventsource-parser@3.1.1: {}
 
-  eventsource-parser@4.1.1: {}
+  eventsource-parser@4.1.2: {}
 
   eventsource@2.0.2: {}
 
@@ -24205,7 +24205,7 @@ snapshots:
 
   eventsource@5.1.2:
     dependencies:
-      eventsource-parser: 4.1.1
+      eventsource-parser: 4.1.2
 
   execa@10.1.0:
     dependencies:
