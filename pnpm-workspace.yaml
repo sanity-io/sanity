@@ -133,8 +133,8 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
-  # Fresh patch; exclude so 6.5.3 can install before the 3-day age gate
-  - 'styled-components@6.5.3'
+  # Fresh patch; exclude so 6.6.0 can install before the 3-day age gate
+  - 'styled-components@6.6.0'
   - 'tsx'
   - 'tsdown'
   # Fresh patch; exclude so 2.0.4 can install before the age gate
