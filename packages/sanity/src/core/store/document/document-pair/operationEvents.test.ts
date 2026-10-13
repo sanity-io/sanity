@@ -109,43 +109,82 @@ describe('operationEvents', () => {
       vi.useRealTimers()
     })
 
-    it('commits the last patch of a document that is handed over to another document within the autocommit interval', async () => {
-      const {client, actionRequest} = createDocumentClient('autocommit-handover')
-      const ctx = {client, historyStore: {} as any, schema}
-
+    /** Subscribes to a document's operations the way a document pane does while it is open */
+    function openDocument(client: SanityClient, id: string) {
       let operations: OperationsAPI | undefined
-      const outgoing = editOperations(
-        ctx,
-        {publishedId: 'task-1', draftId: 'drafts.task-1'},
+      const subscription = editOperations(
+        {client, historyStore: {} as any, schema},
+        {publishedId: id, draftId: `drafts.${id}`},
         'tasks.task',
       ).subscribe((value) => {
         operations = value
       })
+
+      return {
+        patch: (patches: unknown[]) =>
+          operations?.patch.execute(patches, {_id: id, _type: 'tasks.task'}),
+        close: () => subscription.unsubscribe(),
+      }
+    }
+
+    it('commits the last patch of a document that is handed over to another document within the autocommit interval', async () => {
+      const {client, actionRequest} = createDocumentClient('autocommit-handover')
+      const outgoing = openDocument(client, 'task-1')
       await vi.advanceTimersByTimeAsync(0)
 
       // The first edit is committed right away and opens the autocommit throttle window
-      operations?.patch.execute([{set: {title: 'first edit'}}], {
-        _id: 'task-1',
-        _type: 'tasks.task',
-      })
+      outgoing.patch([{set: {title: 'first edit'}}])
       await vi.advanceTimersByTimeAsync(0)
       expect(committedActions(actionRequest)).toContain('first edit')
 
       // Navigating to another document: the outgoing form flushes its last edit while unmounting,
       // the incoming document subscribes when it commits, and the outgoing subscription is
       // released after that (react-rx tears it down on the next tick).
-      operations?.patch.execute([{set: {description: 'last edit'}}])
-      const incoming = editOperations(
-        ctx,
-        {publishedId: 'task-2', draftId: 'drafts.task-2'},
-        'tasks.task',
-      ).subscribe()
-      outgoing.unsubscribe()
+      outgoing.patch([{set: {description: 'last edit'}}])
+      const incoming = openDocument(client, 'task-2')
+      outgoing.close()
 
       await vi.advanceTimersByTimeAsync(1_000)
       expect(committedActions(actionRequest)).toContain('last edit')
 
-      incoming.unsubscribe()
+      incoming.close()
+    })
+
+    it('commits the last patch of a document that is closed within the autocommit interval', async () => {
+      const {client, actionRequest} = createDocumentClient('autocommit-close')
+      const document = openDocument(client, 'task-1')
+      await vi.advanceTimersByTimeAsync(0)
+
+      document.patch([{set: {title: 'first edit'}}])
+      await vi.advanceTimersByTimeAsync(0)
+      expect(committedActions(actionRequest)).toContain('first edit')
+
+      document.patch([{set: {description: 'last edit'}}])
+      document.close()
+
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(committedActions(actionRequest)).toContain('last edit')
+    })
+
+    it('commits the pending patch of a document when another document is patched within the autocommit interval', async () => {
+      const {client, actionRequest} = createDocumentClient('autocommit-per-document')
+      const first = openDocument(client, 'task-1')
+      const second = openDocument(client, 'task-2')
+      await vi.advanceTimersByTimeAsync(0)
+
+      first.patch([{set: {title: 'first edit'}}])
+      await vi.advanceTimersByTimeAsync(0)
+      expect(committedActions(actionRequest)).toContain('first edit')
+
+      first.patch([{set: {description: 'last edit in task-1'}}])
+      second.patch([{set: {title: 'edit in task-2'}}])
+
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(committedActions(actionRequest)).toContain('last edit in task-1')
+      expect(committedActions(actionRequest)).toContain('edit in task-2')
+
+      first.close()
+      second.close()
     })
   })
 })
