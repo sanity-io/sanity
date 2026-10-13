@@ -234,6 +234,9 @@ export function SearchProvider({
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
+          // Raw so drafts, published, and release versions are all findable.
+          // Agent versions are dropped in the search GROQ — they are only
+          // readable by their author and otherwise appear as empty duplicates.
           perspective: 'raw',
         },
         terms: {
