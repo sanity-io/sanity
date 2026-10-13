@@ -41,7 +41,7 @@
     "@turf/points-within-polygon": "^7.4.0",
     "@vercel/stega": "1.1.0",
     "lodash-es": "^4.18.1",
-    "motion": "^14.0.0",
+    "motion": "^14.1.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-rx": "catalog:",

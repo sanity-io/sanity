@@ -1,5 +1,5 @@
 import {type ErrorBoundaryProps} from '@sanity/ui'
-import {lazy, type ReactNode, useCallback, useState} from 'react'
+import {type ReactNode, useCallback, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
@@ -9,20 +9,13 @@ import {isImportError} from '../error/isImportError'
 import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
 import {ImportErrorScreen} from './screens/ImportErrorScreen'
 import {SchemaErrorsScreen} from './screens/schemaErrors/SchemaErrorsScreen'
-
-const lazyDevServerStoppedErrorScreen = () => import('./ViteDevServerStoppedErrorScreen')
-const DevServerStoppedErrorScreen = lazy(lazyDevServerStoppedErrorScreen)
-
-if (import.meta.hot && process.env.NODE_ENV === 'development') {
-  // Preload the dev server stopped screen right away: once the server is gone, no chunk can be
-  // fetched anymore, so the screen that reports it has to be loaded already
-  void lazyDevServerStoppedErrorScreen()
-}
+import {DevServerStoppedErrorScreen} from './ViteDevServerStoppedErrorScreen'
 
 interface StudioErrorBoundaryProps {
   children: ReactNode
   heading?: string
-  getErrorScreen?: (error: Error) => ReactNode | null
+  /** A screen to render in place of the default ones; `onReset` clears the caught error */
+  getErrorScreen?: (error: Error, onReset: () => void) => ReactNode | null
 }
 
 type ErrorBoundaryState = {
@@ -69,14 +62,14 @@ export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
         e.message = `Encountered an additional error when reporting error: ${e.message}`
         console.error(e)
       }
-      setErrorScreen(getErrorScreen?.(params.error))
+      setErrorScreen(getErrorScreen?.(params.error, handleResetError))
       setCaughtError({
         error: params.error,
         componentStack: params.info.componentStack,
         eventId,
       })
     },
-    [getErrorScreen],
+    [getErrorScreen, handleResetError],
   )
 
   useHotModuleReload(handleResetError)

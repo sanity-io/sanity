@@ -67,7 +67,6 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
-  internalTasksReducer,
   mediaLibraryEnabledReducer,
   mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
@@ -861,9 +860,6 @@ function resolveSource({
     templates,
     auth,
     i18n: i18n.source,
-    __internal_tasks: internalTasksReducer({
-      config,
-    }),
     document: {
       actions: (partialContext) => {
         const singleton = getSingletonId(partialContext.documentId, partialContext.schemaType)

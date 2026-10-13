@@ -24,8 +24,8 @@ vi.mock('sanity', async (importOriginal) => ({
     return <>{props.children}</>
   },
   getTargetScopeId: vi.fn(() => undefined),
-  useCommentsEnabled: vi.fn(() => ({enabled: true})),
-  useCommentsEnabledV2: vi.fn(() => ({enabled: true})),
+  useCommentsEnabled: vi.fn(() => true),
+  useCommentsEnabledV2: vi.fn(() => true),
   usePerspective: vi.fn(() => ({
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,

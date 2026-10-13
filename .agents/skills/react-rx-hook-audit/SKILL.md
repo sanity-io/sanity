@@ -108,13 +108,6 @@ console.log({before, after: counts})
 await browser.close()
 ```
 
-Pitfalls seen in this repo:
-
-- `sanity dev` can serve a stale revision after two edits of one file within seconds. Confirm an
-  `hmr update` line for your last edit in its terminal, or restart the server.
-- Keep the studio in bundledDev (the default) but run the server with the PID watchdog from the
-  `AGENTS.md` gotchas. On vite 8.3 (PR #14700) one audit session pushed the server past 7 GB RSS.
-
 Pass condition: during edits, `[rx:build]` is 0 for every host whose identity inputs did not
 change, and `[rx:subscribe]` equals the number of distinct input changes per host.
 

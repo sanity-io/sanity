@@ -1,9 +1,11 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card} from '@sanity/ui'
+import {Suspense, use} from 'react'
+import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Text, Container, Flex, Box, Icon} from 'ui5'
 
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {NO_UPSELL_DATA} from '../../../hooks/useUpsellData'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useSchedulePublishingUpsell} from '../contexts/SchedulePublishingUpsellProvider'
 import {useSchedules} from '../contexts/schedules'
@@ -16,20 +18,15 @@ const Panel = styled(Container)`
 
 export const Schedules = () => {
   const {activeSchedules, selectedDate, scheduleState} = useSchedules()
-  const {upsellData, telemetryLogs} = useSchedulePublishingUpsell()
-  const {mode} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
   const showWarning = mode === 'upsell' && scheduleState === 'scheduled'
   return (
     <Box style={{height: '100%'}}>
-      {mode === 'upsell' && upsellData && (
-        <Panel size={1} padding={4} paddingBottom={1}>
-          <UpsellPanel
-            layout="horizontal"
-            data={upsellData}
-            onPrimaryClick={telemetryLogs.panelPrimaryClicked}
-            onSecondaryClick={telemetryLogs.panelSecondaryClicked}
-          />
-        </Panel>
+      {mode === 'upsell' && (
+        <Suspense>
+          <SchedulesUpsellPanel />
+        </Suspense>
       )}
       {activeSchedules.length === 0 ? (
         <Panel size={1} padding={4} paddingTop={4}>
@@ -54,5 +51,23 @@ export const Schedules = () => {
         </>
       )}
     </Box>
+  )
+}
+
+/** Waits for the upsell content at the leaf, so the schedules list renders without it */
+function SchedulesUpsellPanel() {
+  const {upsellDataPromise, telemetryLogs} = useSchedulePublishingUpsell()
+  const {upsellData} = upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA
+
+  if (!upsellData) return null
+  return (
+    <Panel size={1} padding={4} paddingBottom={1}>
+      <UpsellPanel
+        layout="horizontal"
+        data={upsellData}
+        onPrimaryClick={telemetryLogs.panelPrimaryClicked}
+        onSecondaryClick={telemetryLogs.panelSecondaryClicked}
+      />
+    </Panel>
   )
 }

@@ -18,7 +18,7 @@ export function useTasksUpsell(): TasksUpsellContextValue {
 }
 
 const FALLBACK_CONTEXT_VALUE = {
-  upsellData: null,
+  upsellDataPromise: null,
   handleOpenDialog: () => null,
   handleClose: () => null,
   upsellDialogOpen: false,
