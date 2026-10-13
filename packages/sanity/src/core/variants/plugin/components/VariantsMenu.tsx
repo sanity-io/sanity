@@ -3,7 +3,7 @@ import {TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState, type JSX} from 'react'
 import {styled} from 'styled-components'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -50,11 +50,7 @@ function VariantMenuItem(props: {
   return (
     <MenuItem
       data-testid={`variant-${getVariantId(variant._id)}`}
-      icon={
-        <Text size={2} className={suggestIconColor} as="div" trim={true}>
-          <RhombusIcon />
-        </Text>
-      }
+      icon={<Icon icon={RhombusIcon} size={2} className={suggestIconColor} />}
       iconRight={
         mismatches.length > 0 ? (
           <span data-testid="variant-condition-mismatch">
@@ -163,11 +159,7 @@ export function VariantsMenu({
           <Box paddingX={2} paddingY={1}>
             <MenuItem
               data-testid="variant-default"
-              icon={
-                <Text size={2} className={suggestIconColor} as="div" trim={true}>
-                  <RhombusOutlinedIcon />
-                </Text>
-              }
+              icon={<Icon icon={RhombusOutlinedIcon} size={2} className={suggestIconColor} />}
               onClick={handleSelectDefault}
               pressed={isDefaultSelected}
               selected={isDefaultSelected}

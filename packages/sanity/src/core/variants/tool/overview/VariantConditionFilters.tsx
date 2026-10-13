@@ -5,7 +5,7 @@ import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
 import {Card, TextInput, useClickOutsideEvent} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Text, Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -188,14 +188,12 @@ function FilterChip({
   onRemove: () => void
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const Icon = chip.icon
+  const ChipIcon = chip.icon
   const body = (
     <Card border padding={1} radius={2} style={{flex: 'none'}} tone="primary">
       <Flex alignItems="center" gap={2}>
         <Box paddingLeft={1}>
-          <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
-            <Icon />
-          </Text>
+          <Icon icon={ChipIcon} size={1} style={{color: 'var(--card-fg-color)'}} />
         </Box>
         {!iconOnly && (
           <Text
@@ -360,9 +358,7 @@ export function VariantConditionFilters({
     <Card border padding={1} radius={2} style={hasActive ? undefined : {display: 'inline-flex'}}>
       <Flex alignItems="center" gap={2} flexWrap="nowrap">
         <Box paddingX={1} style={{flex: 'none'}}>
-          <Text muted size={1} as="div" trim={true}>
-            <FilterIcon />
-          </Text>
+          <Icon icon={FilterIcon} muted size={1} />
         </Box>
 
         <Box style={{flex: 'none'}}>

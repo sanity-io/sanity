@@ -5,7 +5,7 @@ import {UserIcon} from '@sanity/icons/User'
 import {Card, Skeleton} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
-import {Text, Container, Flex, Box, VStack} from 'ui5'
+import {Text, Container, Flex, Box, VStack, Icon} from 'ui5'
 
 import {
   DetailBackButton,
@@ -85,11 +85,7 @@ export function VariantDetail() {
             const DimensionIcon = getVariantConditionIcon(key)
             const mismatch = conditionMismatches.find((item) => item.key === key)
             return {
-              icon: (
-                <Text muted size={1} as="div" trim={true}>
-                  <DimensionIcon />
-                </Text>
-              ),
+              icon: <Icon icon={DimensionIcon} size={1} muted />,
               label: key,
               value: mismatch ? (
                 <Flex alignItems="center" gap={2}>
@@ -145,41 +141,25 @@ export function VariantDetail() {
         title: t('detail.metadata.details'),
         rows: [
           {
-            icon: (
-              <Text muted size={1} as="div" trim={true}>
-                <DocumentsIcon />
-              </Text>
-            ),
+            icon: <Icon icon={DocumentsIcon} size={1} muted />,
             label: t('detail.metadata.total-documents'),
             value: countValue(tableRows.length),
           },
           {
-            icon: (
-              <Text muted size={1} as="div" trim={true}>
-                <EditIcon />
-              </Text>
-            ),
+            icon: <Icon icon={EditIcon} size={1} muted />,
             label: t('detail.metadata.unpublished-changes'),
             value: countValue(unpublishedCount),
           },
           variant &&
             showVariantType && {
-              icon: (
-                <Text muted size={1} as="div" trim={true}>
-                  <DocumentsIcon />
-                </Text>
-              ),
+              icon: <Icon icon={DocumentsIcon} size={1} muted />,
               label: t('detail.metadata.type'),
               value: getVariantType(variant),
             },
           variant && {
             // Resolution priority — the tiebreaker when several definitions match. Shown here (it is
             // authored in the create/edit dialog) so the detail page reflects the full definition.
-            icon: (
-              <Text muted size={1} as="div" trim={true}>
-                <SortIcon />
-              </Text>
-            ),
+            icon: <Icon icon={SortIcon} size={1} muted />,
             label: t('detail.metadata.priority'),
             value: String(variant.priority),
           },
@@ -187,11 +167,7 @@ export function VariantDetail() {
             // A person glyph (not a clock — a clock reads as "time/schedule"). The author identity
             // isn't on the variant document yet, so this shows the relative time for now; wiring the
             // creator's name/avatar is a follow-up.
-            icon: (
-              <Text muted size={1} as="div" trim={true}>
-                <UserIcon />
-              </Text>
-            ),
+            icon: <Icon icon={UserIcon} size={1} muted />,
             label: t('detail.footer.created'),
             value: (
               <Text size={1} as="div" trim={true}>

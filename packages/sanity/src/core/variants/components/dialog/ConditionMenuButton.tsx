@@ -7,7 +7,7 @@ import {
 } from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ComponentProps, type ComponentType, useId} from 'react'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -133,19 +133,13 @@ export function ConditionMenuButton(props: ConditionMenuButtonProps): React.JSX.
           className={menuButton}
         >
           <Flex alignItems="center" gap={3}>
-            {SelectedIcon ? (
-              <Text size={1} as="div" trim={true}>
-                <SelectedIcon />
-              </Text>
-            ) : null}
+            {SelectedIcon ? <Icon icon={SelectedIcon} size={1} /> : null}
             <Box flexGrow={1} style={{minWidth: 0}}>
               <Text muted={!selected} size={1} truncate={1} weight="medium" as="div" trim={true}>
                 {selected ? selected.title : placeholder}
               </Text>
             </Box>
-            <Text size={1} as="div" trim={true}>
-              {loading ? <Spinner /> : <ChevronDownIcon />}
-            </Text>
+            {loading ? <Spinner size={1} /> : <Icon icon={ChevronDownIcon} size={1} />}
           </Flex>
         </UIButton>
       }

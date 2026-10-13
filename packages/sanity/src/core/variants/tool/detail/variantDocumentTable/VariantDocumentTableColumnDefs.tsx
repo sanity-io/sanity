@@ -5,9 +5,8 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
-import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {EditedByCell} from '../../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../../components/RelativeTime'
@@ -87,7 +86,7 @@ function ValidationStatusIndicator({
         content={
           <Text muted size={1} as="div" trim={true}>
             <Flex alignItems="center" gap={3} padding={1}>
-              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+              <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />
               {t(
                 validationErrorCount === 1
                   ? 'detail.documents.table.validation.error_one'
@@ -98,9 +97,12 @@ function ValidationStatusIndicator({
           </Text>
         }
       >
-        <Text size={1} data-testid="variant-document-validation-error" as="div" trim={true}>
-          <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-        </Text>
+        <Icon
+          icon={ErrorOutlineIcon}
+          size={1}
+          data-testid="variant-document-validation-error"
+          tone="critical"
+        />
       </Tooltip>
     )
   }
@@ -116,15 +118,12 @@ function ValidationStatusIndicator({
           </Text>
         }
       >
-        <Text
+        <Icon
+          icon={ClockIcon}
           muted
           size={1}
           data-testid="variant-document-validation-validating"
-          as="div"
-          trim={true}
-        >
-          <ToneIcon icon={ClockIcon} tone="default" />
-        </Text>
+        />
       </Tooltip>
     )
   }
@@ -139,9 +138,13 @@ function ValidationStatusIndicator({
         </Text>
       }
     >
-      <Text muted size={1} data-testid="variant-document-validation-valid" as="div" trim={true}>
-        <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
-      </Text>
+      <Icon
+        icon={CheckmarkCircleIcon}
+        muted
+        size={1}
+        data-testid="variant-document-validation-valid"
+        tone="positive"
+      />
     </Tooltip>
   )
 }
