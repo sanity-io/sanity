@@ -80,9 +80,6 @@ minimumReleaseAgeExclude:
   - '@sanity/*'
   - '@sanity-labs/*'
   - '@yuku-codegen/*'
-  # oxc-transform-react and its native bindings are released in lockstep
-  - 'oxc-transform-react'
-  - '@oxc-transform-react/*'
   # Fresh Sentry release and its lockstep packages
   - '@sentry/browser@11.7.0'
   - '@sentry/browser-utils@11.7.0'
@@ -119,6 +116,11 @@ minimumReleaseAgeExclude:
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'
   - 'lightningcss-*'
+  # Fresh motion patch and its lockstep packages
+  - 'framer-motion@14.1.1'
+  - 'motion@14.1.1'
+  - 'motion-dom@14.1.1'
+  - 'motion-utils@14.1.1'
   # oxc-transform-react and its per-platform native bindings (@oxc-transform-react/binding-*)
   # release in lockstep with the oxc toolchain; @vitejs/plugin-react and
   # @sanity/cli/@sanity/tsdown-config pin fresh versions as peers for the React Compiler oxc transform
