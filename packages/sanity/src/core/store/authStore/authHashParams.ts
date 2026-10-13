@@ -53,14 +53,18 @@ export function takeHashParam(name: AuthHashParam): string | undefined {
   return value
 }
 
+const isAuthParam = (param: string) => AUTH_HASH_PARAMS.some((name) => param.startsWith(`${name}=`))
+
 /**
  * Removes the auth params from a hash string, for code that writes a hash back to the URL from a
- * `history` location cached before the auth modules removed them.
+ * `history` location cached before the auth modules removed them. A hash without auth params is
+ * returned unchanged.
  */
 export function removeAuthHashParams(hash: string): string {
-  const params = hash
-    .replace(/^#/, '')
-    .split('&')
-    .filter((param) => param && !AUTH_HASH_PARAMS.some((name) => param.startsWith(`${name}=`)))
-  return params.length > 0 ? `#${params.join('&')}` : ''
+  const params = hash.replace(/^#/, '').split('&')
+  if (!params.some(isAuthParam)) {
+    return hash
+  }
+  const kept = params.filter((param) => param && !isAuthParam(param))
+  return kept.length > 0 ? `#${kept.join('&')}` : ''
 }
