@@ -382,6 +382,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     __unstable_floatingBoundary,
     __unstable_referenceBoundary,
     __unstable_referenceElement,
+    changed,
     children,
     focused,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -446,6 +447,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
               value={value}
             />
           ),
+          changed,
           progress: uploadProgress,
           layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,
