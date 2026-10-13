@@ -1,56 +1,61 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Inline, rem, Text} from '@sanity/ui'
+import {Inline, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {useTranslation} from 'sanity'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../i18n'
+import {
+  chevronWrapper,
+  crossDatasetReferencesDetails,
+  crossDatasetReferencesSummary,
+  documentIdFlex,
+  space1Var,
+  space2Var,
+  table,
+} from './ConfirmDeleteDialogBody.styles.css'
 
-export const ChevronWrapper = styled(Box)`
-  margin-left: auto;
-`
+export function ChevronWrapper(props: ComponentProps<typeof Box>) {
+  const {className, ...rest} = props
+  return <Box {...rest} className={clsx(chevronWrapper, className)} />
+}
 
-export const CrossDatasetReferencesDetails = styled.details`
-  flex: none;
+export function CrossDatasetReferencesDetails(props: ComponentProps<'details'>) {
+  const {className, ...rest} = props
+  return <details {...rest} className={clsx(crossDatasetReferencesDetails, className)} />
+}
 
-  &[open] ${ChevronWrapper} {
-    transform: rotate(180deg);
-  }
-`
+export function CrossDatasetReferencesSummary(props: ComponentProps<'summary'>) {
+  const {className, ...rest} = props
+  return <summary {...rest} className={clsx(crossDatasetReferencesSummary, className)} />
+}
 
-export const CrossDatasetReferencesSummary = styled.summary`
-  list-style: none;
+export function Table(props: ComponentProps<'table'>) {
+  const {className, style, ...rest} = props
+  const {space} = useThemeV2()
 
-  &::-webkit-details-marker {
-    display: none;
-  }
-`
+  return (
+    <table
+      {...rest}
+      className={clsx(table, className)}
+      style={{
+        ...assignInlineVars({
+          [space1Var]: String(rem(space[1])),
+          [space2Var]: String(rem(space[2])),
+        }),
+        ...style,
+      }}
+    />
+  )
+}
 
-export const Table = styled.table`
-  width: 100%;
-  text-align: left;
-  padding: 0
-    ${({theme}) => rem(theme.sanity.space[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  border-collapse: collapse;
-
-  th {
-    padding: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  }
-
-  td {
-    padding: 0
-      ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  }
-
-  tr > *:last-child {
-    text-align: right;
-  }
-`
-
-export const DocumentIdFlex = styled(Flex)`
-  min-height: 33px;
-`
+export function DocumentIdFlex(props: ComponentProps<typeof Flex>) {
+  const {className, ...rest} = props
+  return <Flex {...rest} className={clsx(documentIdFlex, className)} />
+}
 
 export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
   const {t} = useTranslation(structureLocaleNamespace)
