@@ -6,6 +6,6 @@
   "type": "module",
   "dependencies": {
     "sanity": "*",
-    "styled-components": "^6.5.3"
+    "styled-components": "^6.6.0"
   }
 }
