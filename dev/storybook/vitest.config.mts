@@ -24,6 +24,9 @@ export default defineConfig({
     testTimeout: 30_000,
     retry: 1,
     expect: {poll: {timeout: 10_000}},
+    // Stylesheet load order guard, the same one the sanity-browser project
+    // runs after each test (packages/sanity/test/setup/browser.ts).
+    setupFiles: ['./vitest.setup.ts'],
     browser: {
       enabled: true,
       provider: playwright(),

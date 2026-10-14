@@ -12,8 +12,9 @@ import '@sanity/ui/styles.css'
 
 import {afterEach, beforeEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, server} from 'vitest/browser'
 
+import {assertStyleOrderIndependence} from '../browser/styleOrderGuard'
 import {parkPointer, releaseFloatingUiSnapLock, removePointerPark} from '../browser/testHelpers'
 
 // Keep this in sync with the `browser.viewport` default in
@@ -67,12 +68,25 @@ beforeEach(async () => {
 // there — so where the pointer rests between tests would depend on the
 // previous test. Nothing is mounted at this point (`cleanup()` ran), so the
 // move can only hit `body` and the park.
-afterEach(async () => {
-  await cleanup()
-  releaseFloatingUiSnapLock()
-  await page.viewport(DEFAULT_VIEWPORT.width, DEFAULT_VIEWPORT.height)
-  await parkPointer()
-  removePointerPark()
+//
+// Before any of that, while the end state is still mounted, the stylesheet
+// load order guard screenshots it with the styled-components rules moved
+// ahead of the static stylesheets and fails the test when the pixels change.
+// Chromium only, like the Chromatic capture: the cascade is the same in every
+// browser. A test that already failed is left alone, and the cleanup below
+// runs whether or not the guard throws.
+afterEach(async (context) => {
+  try {
+    if (server.browser === 'chromium' && context.task.result?.state !== 'fail') {
+      await assertStyleOrderIndependence()
+    }
+  } finally {
+    await cleanup()
+    releaseFloatingUiSnapLock()
+    await page.viewport(DEFAULT_VIEWPORT.width, DEFAULT_VIEWPORT.height)
+    await parkPointer()
+    removePointerPark()
+  }
 })
 
 // Suppress noisy warnings in test output

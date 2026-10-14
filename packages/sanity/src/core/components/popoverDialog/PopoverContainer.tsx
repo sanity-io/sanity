@@ -17,10 +17,12 @@ const StyledContainer = styled(Container)<ResponsiveWidthStyleProps>((props) => 
   const {container, media} = theme.sanity
 
   return _responsive(media, props.$width, (val) => ({
-    // Make sure that the Container gets the correct width when used inside a popover.
-    width: val === 'auto' ? 'none' : rem(container[val]),
-    // Make sure that the Container width is constrained by available space.
-    maxWidth: '100%',
+    '&&': {
+      // Make sure that the Container gets the correct width when used inside a popover.
+      width: val === 'auto' ? 'none' : rem(container[val]),
+      // Make sure that the Container width is constrained by available space.
+      maxWidth: '100%',
+    },
   }))
 })
 

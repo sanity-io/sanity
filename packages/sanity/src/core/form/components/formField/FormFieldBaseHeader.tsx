@@ -47,8 +47,10 @@ const ContentBox = styled(Box)<{
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
   return css`
-    max-width: calc(100% - ${$presenceMaxWidth + space[1]}px);
-    min-width: 75%;
+    && {
+      max-width: calc(100% - ${$presenceMaxWidth + space[1]}px);
+      min-width: 75%;
+    }
   `
 })
 

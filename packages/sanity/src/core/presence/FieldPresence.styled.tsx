@@ -11,7 +11,9 @@ export const FlexWrapper = styled(Flex)`
 `
 
 export const InnerBox = styled(Flex)`
-  height: ${AVATAR_SIZE}px;
-  min-width: 23px;
-  vertical-align: top;
+  && {
+    height: ${AVATAR_SIZE}px;
+    min-width: 23px;
+    vertical-align: top;
+  }
 `

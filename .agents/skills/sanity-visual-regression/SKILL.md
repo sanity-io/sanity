@@ -153,6 +153,11 @@ test is gone (see "Which source owns a state").
   runs, the functional `browser-tests.yml` shards and the capture run alike — has no
   reduced-motion emulation, so transitions run at full length there; wait for the settled state
   instead of assuming the media query shortened it.
+- **Every end state is also checked for stylesheet load order.** The setup file's `afterEach`
+  (and `dev/storybook/vitest.setup.ts` for stories) screenshots the end state again with the
+  styled-components rules moved ahead of the static stylesheets and fails the test when the
+  pixels change, naming the elements and properties. Fix the losing styled-components rule with
+  `&&`; see "Stylesheet load order guard" in the root `AGENTS.md`.
 - **Safe in every run.** The plugin is registered in `vitest.browser.config.mts` on every run, so
   both `@chromatic-com/vitest` helpers (`configure`, `takeSnapshot`) work in plain
   `pnpm --filter sanity test:browser` runs and in the functional `browser-tests.yml` shards; those

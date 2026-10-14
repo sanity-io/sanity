@@ -2,10 +2,10 @@ import {ElementQuery} from '@sanity/ui'
 import {styled} from 'styled-components'
 
 const TimeZoneButtonElementQuery = styled(ElementQuery)`
-  .button-small {
+  && .button-small {
     display: block;
   }
-  .button-large {
+  && .button-large {
     display: none;
   }
 

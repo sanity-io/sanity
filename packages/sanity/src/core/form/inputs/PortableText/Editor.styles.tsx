@@ -61,7 +61,7 @@ export const Scroller = styled(ScrollContainer)`
   display: flex;
   flex-direction: column;
 
-  & > * {
+  && > * {
     flex: 1;
     min-height: auto;
   }

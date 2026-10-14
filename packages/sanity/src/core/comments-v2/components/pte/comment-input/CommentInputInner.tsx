@@ -24,8 +24,10 @@ const EditableWrap = styled(Box)`
 `
 
 const ButtonDivider = styled(MenuDivider)({
-  height: 20,
-  width: 1,
+  '&&': {
+    height: 20,
+    width: 1,
+  },
 })
 
 function focusRingBorderStyle(border: {color: string; width: number}): string {

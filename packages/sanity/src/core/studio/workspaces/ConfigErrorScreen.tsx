@@ -15,8 +15,10 @@ import {type ConfigErrorClassification} from '../requestErrors/classify'
 import {useVisibleWorkspaces} from './useVisibleWorkspaces'
 
 const CenteredContainer = styled(Flex)`
-  min-height: 100vh;
-  box-sizing: border-box;
+  && {
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
 `
 
 const ContentWrapper = styled(Box)`

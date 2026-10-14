@@ -31,13 +31,15 @@ const StickyLayer = styled(Layer)((props: {theme: Theme}) => {
   const radii = props.theme.sanity.radius[3]
 
   return css`
-    position: sticky;
-    top: 0;
-    width: 100%;
-    background: var(--card-bg-color);
-    border-bottom: 1px solid var(--card-border-color);
-    border-top-left-radius: ${radii}px;
-    border-top-right-radius: ${radii}px;
+    && {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: var(--card-bg-color);
+      border-bottom: 1px solid var(--card-border-color);
+      border-top-left-radius: ${radii}px;
+      border-top-right-radius: ${radii}px;
+    }
   `
 })
 

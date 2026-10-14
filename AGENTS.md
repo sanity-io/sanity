@@ -995,6 +995,22 @@ mask real regressions):
   `configure({disableAutoSnapshot: true})`. Do not set `localStorage.debug` in browser tests —
   debug overlay noise shows up in Chromatic archives.
 
+#### Stylesheet load order guard
+
+Every browser test (chromium only) and every story run through `pnpm --filter sanity-storybook test`
+ends with `assertStyleOrderIndependence()` (`packages/sanity/test/browser/styleOrderGuard.ts`,
+wired in `test/setup/browser.ts` and `dev/storybook/vitest.setup.ts`): it screenshots the end
+state, puts the styled-components rules ahead of every static stylesheet (`ui5/styles.css`,
+`@sanity/ui/styles.css`, vanilla-extract), screenshots again, and fails the test when the pixels
+differ, listing the elements and computed styles that changed. A failure means a styled-components
+rule only wins against a static rule of equal specificity because styled-components injects its
+`<style>` last — `styled(Box)` from `ui5` setting `min-width` against `.sui-Box {min-width: 0}`,
+`styled(Layer)` setting `position` against the `@sanity/ui` Layer class. Fix the rule by doubling
+its class (`&& { … }`, or `&& .child { … }`), never by reordering imports. The live
+styled-components `<style>` cannot be moved (it is CSSOM-managed, so re-inserting it empties it);
+the guard moves the Vite-injected static `<style>` elements behind it instead, which is the same
+cascade. A test whose end state does not reproduce its own screenshot is skipped by the guard.
+
 ### E2E Tests (Playwright)
 
 ```bash
