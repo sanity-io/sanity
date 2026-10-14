@@ -318,6 +318,10 @@ describe('validation scheduling', () => {
       const page = createStalledPage()
       const scheduler = {yield: vi.fn(() => Promise.resolve())}
       vi.stubGlobal('scheduler', hasSchedulerYield ? scheduler : undefined)
+      // what Node yields through where there is no scheduler.yield; stands in for Node's
+      // setImmediate, which this package's types do not declare
+      const setImmediate = vi.fn((callback: () => void) => setTimeout(callback, 0))
+      vi.stubGlobal('setImmediate', setImmediate)
       const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
       const schema = SchemaBuilder.compile({
         name: 'test',
@@ -363,6 +367,7 @@ describe('validation scheduling', () => {
 
       expect(page.requestIdleCallback).not.toHaveBeenCalled()
       expect(scheduler.yield.mock.calls.length > 0).toBe(hasSchedulerYield)
+      expect(setImmediate.mock.calls.length > 0).toBe(!hasSchedulerYield)
       expect(result).toEqual({status: 'passed', markers: []})
     },
   )
