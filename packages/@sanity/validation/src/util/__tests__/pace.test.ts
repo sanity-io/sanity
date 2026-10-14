@@ -1,4 +1,4 @@
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {createYieldingPace, IMMEDIATE_YIELD_EVERY, type Pace} from '../pace'
 
@@ -20,6 +20,56 @@ function startNode(pace: Pace) {
     },
   })
   return node
+}
+
+/** Runs a few rounds of microtasks, but no task. */
+function flushMicrotasks(): Promise<void> {
+  let rounds = Promise.resolve()
+  for (let round = 0; round < 10; round++) rounds = rounds.then(() => undefined)
+  return rounds
+}
+
+/**
+ * Checks that an `immediate` pacer lets the nodes before its first yield through on a microtask
+ * (never synchronously), then yields once, and that the yield holds the node that asked for it
+ * and every node after it until the next task.
+ */
+async function expectYieldToNextTask(pace: Pace, yieldCount: () => number) {
+  const batch = Array.from({length: IMMEDIATE_YIELD_EVERY - 1}, () => startNode(pace))
+  expect(batch.some((node) => node.ready)).toBe(false)
+  await Promise.resolve()
+  expect(batch.every((node) => node.ready)).toBe(true)
+  expect(yieldCount()).toBe(0)
+
+  const held = [startNode(pace), startNode(pace)]
+  expect(yieldCount()).toBe(1)
+  await flushMicrotasks()
+  expect(held.some((node) => node.ready)).toBe(false)
+  await vi.waitFor(() => expect(held.every((node) => node.ready)).toBe(true))
+  expect(yieldCount()).toBe(1)
+}
+
+/** Records every `MessageChannel` created from here on, and closes them when the test is over. */
+function trackMessageChannels() {
+  const channels: MessageChannel[] = []
+  class TrackedMessageChannel extends MessageChannel {
+    constructor() {
+      super()
+      vi.spyOn(this.port2, 'postMessage')
+      channels.push(this)
+    }
+  }
+  vi.stubGlobal('MessageChannel', TrackedMessageChannel)
+  // an open port keeps a Node process alive
+  onTestFinished(() => channels.forEach((channel) => channel.port1.close()))
+  return {
+    channels,
+    messageCount: () =>
+      channels.reduce(
+        (count, channel) => count + vi.mocked(channel.port2.postMessage).mock.calls.length,
+        0,
+      ),
+  }
 }
 
 describe('createYieldingPace', () => {
@@ -110,17 +160,60 @@ describe('createPace', () => {
     await vi.waitFor(() => expect(yielding.ready).toBe(true))
   })
 
-  it('only defers every node to a microtask in immediate scheduling where the browser has no scheduler.yield', async () => {
+  it('yields through setImmediate where there is no scheduler.yield', async () => {
     vi.stubGlobal('scheduler', undefined)
     const requestIdleCallback = vi.fn((): number => 1)
     vi.stubGlobal('window', {requestIdleCallback, cancelIdleCallback: vi.fn()})
+    // stands in for Node's, which this package's types do not declare
+    const setImmediate = vi.fn((callback: () => void) => setTimeout(callback, 0))
+    vi.stubGlobal('setImmediate', setImmediate)
     const {createPace} = await importPace()
-    const pace = createPace('immediate')
 
-    const nodes = Array.from({length: IMMEDIATE_YIELD_EVERY * 3}, () => startNode(pace))
-    expect(nodes.some((node) => node.ready)).toBe(false)
-    await Promise.resolve()
-    expect(nodes.every((node) => node.ready)).toBe(true)
+    await expectYieldToNextTask(createPace('immediate'), () => setImmediate.mock.calls.length)
     expect(requestIdleCallback).not.toHaveBeenCalled()
+  })
+
+  it('yields through a MessageChannel where there is no setImmediate either, as in Safari', async () => {
+    vi.stubGlobal('scheduler', undefined)
+    vi.stubGlobal('setImmediate', undefined)
+    const {messageCount} = trackMessageChannels()
+    const {createPace} = await importPace()
+
+    await expectYieldToNextTask(createPace('immediate'), messageCount)
+  })
+
+  it('releases every run waiting on the one MessageChannel they share, longest waiting first', async () => {
+    vi.stubGlobal('scheduler', undefined)
+    vi.stubGlobal('setImmediate', undefined)
+    const {channels, messageCount} = trackMessageChannels()
+    const {createPace} = await importPace()
+    const runs = [createPace('immediate'), createPace('immediate')]
+
+    for (const pace of runs) {
+      for (let node = 1; node < IMMEDIATE_YIELD_EVERY; node++) pace().subscribe()
+    }
+    const released: string[] = []
+    runs.forEach((pace, index) => {
+      pace().subscribe({complete: () => released.push(`run ${index + 1}`)})
+    })
+
+    expect(channels).toHaveLength(1)
+    expect(messageCount()).toBe(2)
+    await vi.waitFor(() => expect(released).toEqual(['run 1', 'run 2']))
+  })
+
+  it('yields through setTimeout where there is no MessageChannel either', async () => {
+    vi.stubGlobal('scheduler', undefined)
+    vi.stubGlobal('setImmediate', undefined)
+    vi.stubGlobal('MessageChannel', undefined)
+    const yieldThroughTimeout = vi.fn(setTimeout)
+    vi.stubGlobal('setTimeout', yieldThroughTimeout)
+    const {createPace} = await importPace()
+
+    await expectYieldToNextTask(
+      createPace('immediate'),
+      () => yieldThroughTimeout.mock.calls.length,
+    )
+    expect(yieldThroughTimeout).toHaveBeenCalledWith(expect.any(Function), 0)
   })
 })

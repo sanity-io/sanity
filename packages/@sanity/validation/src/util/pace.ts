@@ -9,11 +9,11 @@ import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
  * - `idle` (default): every rule and nested value waits for a `requestIdleCallback` before it
  *   runs, so validation yields to rendering and input while a document is being edited. A page
  *   that is busy or hidden grants few or no idle periods, so a run can take long to finish.
- * - `immediate`: nothing waits for idle time. The run uses the thread as soon as it can. Where
- *   the browser has `scheduler.yield()`, the run hands the thread back once every
- *   {@link IMMEDIATE_YIELD_EVERY} nodes so that input and rendering get a turn in between;
- *   elsewhere it blocks the main thread for the duration of the synchronous checks. Meant for
- *   the moment a user is waiting on the result, such as publishing.
+ * - `immediate`: nothing waits for idle time. The run uses the thread as soon as it can, and hands
+ *   it back once every {@link IMMEDIATE_YIELD_EVERY} nodes so that input and rendering get a turn
+ *   in between: through `scheduler.yield()` where the browser has it, and elsewhere (Safari) by
+ *   waiting for the next task. Meant for the moment a user is waiting on the result, such as
+ *   publishing.
  *
  * @internal
  */
@@ -28,7 +28,7 @@ export type ValidationScheduling = 'idle' | 'immediate'
 export type Pace = () => Observable<never>
 
 /**
- * How many nodes an `immediate` run gets through between two `scheduler.yield()` calls. A node
+ * How many nodes an `immediate` run gets through between two yields to the browser. A node
  * is a rule check or a nested value, a few microseconds each for the built-in rules, so this is
  * a yield every millisecond or so of work.
  */
@@ -42,16 +42,52 @@ export const IMMEDIATE_YIELD_EVERY = 100
  */
 const microtask: Observable<never> = EMPTY.pipe(observeOn(asapScheduler))
 
-interface SchedulerLike {
-  yield?: () => Promise<void>
+// lib.dom declares `scheduler` on every global object, but Safari and Node have none, and it
+// declares no `setImmediate`, which Node has
+interface FeatureDetectedGlobals {
+  scheduler?: {yield?: () => Promise<void>}
+  setImmediate?: (callback: () => void) => unknown
 }
 
-/** `scheduler.yield()` bound to the scheduler, or `undefined` where the browser has none. */
-function getYieldToBrowser(): (() => Promise<void>) | undefined {
-  // lib.dom declares `scheduler` on every global object, but Safari and Node have none
-  const scheduler = (globalThis as {scheduler?: SchedulerLike}).scheduler
-  if (typeof scheduler?.yield !== 'function') return undefined
-  return scheduler.yield.bind(scheduler)
+/**
+ * How an `immediate` run hands the thread back. `scheduler.yield()` resumes the run ahead of the
+ * tasks that were already waiting. Where the browser has none (Safari), the run resumes in a task
+ * of its own, behind them, which it gets the way React's scheduler does: from `setImmediate` where
+ * there is one (Node), because a `MessageChannel` would keep a Node process alive; otherwise from
+ * a `MessageChannel`, because chained timeouts are clamped to 4 ms and throttled in background
+ * tabs; and from `setTimeout` as a last resort.
+ */
+function getYieldToBrowser(): () => Promise<void> {
+  const {scheduler, setImmediate} = globalThis as FeatureDetectedGlobals
+  if (typeof scheduler?.yield === 'function') return scheduler.yield.bind(scheduler)
+  if (typeof setImmediate === 'function') {
+    return () => new Promise((resolve) => setImmediate(resolve))
+  }
+  if (typeof MessageChannel === 'function') return yieldThroughMessageChannel
+  return yieldThroughTimeout
+}
+
+// One channel for every run, as React's scheduler has. Messages arrive in the order they were
+// posted, so each one resolves the yield that has waited longest.
+let messagePort: MessagePort | undefined
+const waitingForMessage: Array<() => void> = []
+
+function yieldThroughMessageChannel(): Promise<void> {
+  if (!messagePort) {
+    const channel = new MessageChannel()
+    // oxlint-disable-next-line unicorn/prefer-add-event-listener -- unlike addEventListener, this also starts the port
+    channel.port1.onmessage = () => waitingForMessage.shift()?.()
+    messagePort = channel.port2
+  }
+  const port = messagePort
+  return new Promise((resolve) => {
+    waitingForMessage.push(resolve)
+    port.postMessage(null)
+  })
+}
+
+function yieldThroughTimeout(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0))
 }
 
 function idle(): Observable<never> {
@@ -94,8 +130,5 @@ export function createYieldingPace(yieldToBrowser: () => Promise<void>, every: n
 /** The pacer for one run with the given scheduling. */
 export function createPace(scheduling: ValidationScheduling): Pace {
   if (scheduling !== 'immediate') return idle
-  const yieldToBrowser = getYieldToBrowser()
-  return yieldToBrowser
-    ? createYieldingPace(yieldToBrowser, IMMEDIATE_YIELD_EVERY)
-    : () => microtask
+  return createYieldingPace(getYieldToBrowser(), IMMEDIATE_YIELD_EVERY)
 }
