@@ -117,6 +117,7 @@ import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
 import {documentInternationalizationTest} from './externalPlugins/documentInternationalization'
 import internationalizedArray from './externalPlugins/internationalizedArray'
+import {formulariesModule, formulary} from './formulariesModule'
 import house from './house'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
@@ -352,6 +353,8 @@ export function createSchemaTypes(projectId: string) {
     internationalizedArray,
     documentInternationalizationTest,
     // Other documents
+    formulariesModule,
+    formulary,
     author,
     book,
     species,
