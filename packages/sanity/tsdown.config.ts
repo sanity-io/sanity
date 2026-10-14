@@ -32,7 +32,9 @@ export default defineConfig({
   // declares `sideEffects: true`: with `false` or a `*.css` allowlist, bundlers bypass the
   // side-effect-free barrels and eliminate the bare CSS import together with them, before the
   // stylesheet's own side-effect status is ever consulted (see #13322 and #13332)
-  vanillaExtract: true,
+  // `identifiers: 'safe'` includes the package version in the class-name hash so a release
+  // cannot reuse the previous release's names (SAPP-4639).
+  vanillaExtract: {identifiers: 'safe'},
   define: {
     // Injects the version `SANITY_VERSION` reports (see `src/core/version.ts`). An explicit
     // env var wins so preview releases can attach their own version (see pkg-pr-new.yml),
