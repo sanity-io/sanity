@@ -3,6 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
+import debounce from 'lodash-es/debounce.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
@@ -33,6 +34,7 @@ import {
   PublishButtonClicked,
 } from './__telemetry__/documentActions.telemetry'
 import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
+import {PublishValidationDialog} from './PublishValidationDialog'
 
 const PUBLISHED_STATE = {status: 'published'} as const
 
@@ -87,6 +89,18 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const scheduleDialog = useMemo(() => debounce(setDialogOpen, 5_000), [setDialogOpen])
+  const closeDialog = useCallback(() => {
+    scheduleDialog.cancel()
+    setDialogOpen(false)
+  }, [scheduleDialog, setDialogOpen])
+  useEffect(() => () => scheduleDialog.cancel(), [scheduleDialog])
+  useEffect(() => {
+    // the scheduled publish resolved (published, or stopped by validation errors) before the
+    // dialog opened
+    if (!publishScheduled) scheduleDialog.cancel()
+  }, [publishScheduled, scheduleDialog])
   const isSyncing = syncState.isSyncing
   const isValidating = validationStatus.isValidating
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -170,6 +184,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       ) {
         telemetry.log(PublishButtonClicked, {documentId: id, stage: 'failed'})
       }
+      // The dialog cannot close itself on publish: without a draft the description falls back to
+      // the already-published one, and a dialog left open would come back with the next draft
+      if (publishState?.status === 'publishing') setDialogOpen(false)
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
@@ -214,10 +231,18 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     })
     if (shouldSetPublishScheduledRef.current) {
       setPublishScheduled(true)
+      scheduleDialog(true)
     } else {
       doPublish()
     }
-  }, [publishedImmediately, previouslyPublished, telemetry, setPublishScheduled, doPublish])
+  }, [
+    publishedImmediately,
+    previouslyPublished,
+    telemetry,
+    setPublishScheduled,
+    scheduleDialog,
+    doPublish,
+  ])
 
   return useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) {
@@ -298,6 +323,19 @@ export const usePublishAction: DocumentActionComponent = (props) => {
           : title,
       shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
       onHandle: handle,
+      dialog: dialogOpen && {
+        type: 'custom',
+        component: (
+          <PublishValidationDialog
+            documentId={value._id}
+            documentType={type}
+            requirePublishedReferences={!release}
+            revision={revision}
+            publishStatus={publishState?.status}
+            onClose={closeDialog}
+          />
+        ),
+      },
     }
   }, [
     selectedPerspective,
@@ -319,6 +357,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     title,
     handle,
     currentUser,
+    dialogOpen,
+    value._id,
+    type,
+    revision,
+    closeDialog,
   ])
 }
 

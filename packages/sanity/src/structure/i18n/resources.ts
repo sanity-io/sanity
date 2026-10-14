@@ -94,6 +94,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.publish.published.label': 'Published',
   /** Label for the "Publish" document action while publish is being executed.*/
   'action.publish.running.label': 'Publishing…',
+  /** Label for the publishing step of the dialog shown when a publish has been waiting on validation for a while */
+  'action.publish.validation-dialog.publishing': 'Publishing',
+  /** Header of the dialog shown when a publish has been waiting on validation for a while */
+  'action.publish.validation-dialog.title': 'This is taking longer than expected, hold tight',
+  /** Label for the validation step of the dialog shown when a publish has been waiting on validation for a while */
+  'action.publish.validation-dialog.validating': 'Validating document',
+  /** Subtext of the validation step once the document has been validated without errors */
+  'action.publish.validation-dialog.validation-completed': 'Validation completed',
+  /** Subtext of the validation step once the document has been validated with one error */
+  'action.publish.validation-dialog.validation-failed_one': 'Validation failed: {{count}} error',
+  /** Subtext of the validation step once the document has been validated with more than one error */
+  'action.publish.validation-dialog.validation-failed_other': 'Validation failed: {{count}} errors',
   /** Label for the "Publish" document action while publish is being executed.*/
   'action.publish.validation-in-progress.label': 'Validating document…',
   /** Toast description when trying to publish with validation errors */
