@@ -1361,6 +1361,7 @@ exports[`exports snapshot 1`] = `
     "DocumentLimitUpsellContext": "object",
     "DocumentPaneContext": "object",
     "DocumentPaneInfoContext": "object",
+    "DocumentTableSelectionContext": "object",
     "EditDialogOuterBoundaryContext": "object",
     "EnhancedObjectDialogContext": "object",
     "EventsContext": "object",
