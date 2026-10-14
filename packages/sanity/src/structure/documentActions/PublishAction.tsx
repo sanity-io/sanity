@@ -74,9 +74,16 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   // Publish-state timestamps and completion tracking live on the current lane's published sibling.
   // (While the target is resolving, the action is disabled below.)
   const publishedInfo = siblings?.published
+  // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
+  const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
-  const validationStatus = useValidationStatus(value._id, type, !release)
+  const validationStatus = useValidationStatus(
+    value._id,
+    type,
+    !release,
+    publishScheduled ? {scheduling: 'immediate'} : undefined,
+  )
   const syncState = useSyncState(id, type, scopeId)
   const editState = useEditState(documentId, documentType, 'default', scopeId)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -85,8 +92,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const toast = useToast()
 
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
-  // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
-  const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
+
   const isSyncing = syncState.isSyncing
   const isValidating = validationStatus.isValidating
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
