@@ -1,7 +1,7 @@
 /* oxlint-disable i18next/no-literal-string */
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card} from '@sanity/ui'
-import {Text, Container, Flex, Box, Icon} from 'ui5'
+import {Text, Container, Flex, Box, Icon, Link} from 'ui5'
 
 export function NoToolsScreen() {
   return (
@@ -11,7 +11,13 @@ export function NoToolsScreen() {
           <Card padding={4} radius={2} shadow={1} tone="caution">
             <Flex>
               <Box>
-                <Icon muted size={1} icon={WarningOutlineIcon} tone="caution" />
+                <Icon
+                  muted
+                  size={1}
+                  icon={WarningOutlineIcon}
+                  tone="caution"
+                  style={{margin: '-0.375rem'}}
+                />
               </Box>
               <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={3} flexDirection="column">
                 <Text as="h1" size={1} weight="medium" trim={true} tone="caution">
@@ -21,13 +27,13 @@ export function NoToolsScreen() {
                   Please configure a tool in your Studio configuration.
                 </Text>
                 <Text as="p" muted size={1} trim={true} tone="caution">
-                  <a
+                  <Link
                     href="https://www.sanity.io/docs/studio-tools"
-                    rel="noreferrer"
-                    target="_blank"
+                    openInNewTab
+                    underlined={false}
                   >
                     Learn how to add a tool &rarr;
-                  </a>
+                  </Link>
                 </Text>
               </Flex>
             </Flex>

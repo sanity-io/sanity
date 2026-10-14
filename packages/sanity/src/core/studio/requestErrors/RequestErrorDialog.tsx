@@ -2,7 +2,7 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Card} from '@sanity/ui'
 import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
-import {Text, VStack, Flex, Box, Icon} from 'ui5'
+import {Text, VStack, Flex, Box, Icon, Link} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type RequestErrorClaim} from './types'
@@ -22,14 +22,14 @@ const NETWORK_TROUBLESHOOTING: {key: string; content: ReactNode}[] = [
     content: (
       <>
         Check{' '}
-        <a
+        <Link
           href="https://status.sanity.io"
-          rel="noopener noreferrer"
           style={{color: 'var(--card-link-fg-color)'}}
-          target="_blank"
+          openInNewTab
+          underlined={false}
         >
           status.sanity.io
-        </a>{' '}
+        </Link>{' '}
         for ongoing incidents.
       </>
     ),
@@ -161,17 +161,17 @@ export function RequestErrorDialog(props: {
         {claim.type === 'networkError' ? <NetworkTroubleshooting /> : null}
         {claim.type === 'serverError' ? (
           <Text size={1} as="div" trim={true}>
-            <a
+            <Link
               href="https://status.sanity.io"
-              rel="noopener noreferrer"
               style={{color: 'var(--card-link-fg-color)'}}
-              target="_blank"
+              openInNewTab
+              underlined={false}
             >
               <Flex as="span" alignItems="center" gap={2}>
                 <span>Check Sanity Status</span>
-                <Icon size={1} icon={LaunchIcon} />
+                <Icon size={1} icon={LaunchIcon} style={{margin: '-0.375rem'}} />
               </Flex>
-            </a>
+            </Link>
           </Text>
         ) : null}
       </VStack>

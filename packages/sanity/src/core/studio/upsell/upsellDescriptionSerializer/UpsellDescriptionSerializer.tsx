@@ -315,6 +315,7 @@ function IconAndTextBlock(props: PortableTextTypeComponentProps<IconAndTextValue
           <Icon
             size={1}
             tone={props.value.accent ? 'suggest' : undefined}
+            style={{margin: '-0.375rem'}}
             icon={
               props.value.sanityIcon ? (
                 <IconWrapper symbol={props.value.sanityIcon} />

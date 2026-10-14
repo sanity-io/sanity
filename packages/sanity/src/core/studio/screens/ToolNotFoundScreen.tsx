@@ -13,7 +13,13 @@ export function ToolNotFoundScreen(props: {toolName: string}) {
           <Card padding={4} radius={2} shadow={1} tone="caution">
             <Flex>
               <Box>
-                <Icon muted size={1} icon={WarningOutlineIcon} tone="caution" />
+                <Icon
+                  muted
+                  size={1}
+                  icon={WarningOutlineIcon}
+                  tone="caution"
+                  style={{margin: '-0.375rem'}}
+                />
               </Box>
               <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={3} flexDirection="column">
                 <Text as="h1" size={1} weight="medium" trim={true} tone="caution">

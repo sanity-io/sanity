@@ -15,7 +15,7 @@ export function RedirectingScreen(props: {reason?: string}) {
                 <Icon
                   size={1}
                   icon={DoubleChevronRightIcon}
-                  style={{color: 'var(--card-icon-color)'}}
+                  style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
                 />
               </Box>
               <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={3} flexDirection="column">

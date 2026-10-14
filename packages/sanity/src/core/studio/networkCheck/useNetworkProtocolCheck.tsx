@@ -62,7 +62,7 @@ export function useNetworkProtocolCheck(): undefined {
     description: (
       <Flex gap={4} paddingY={1} flexDirection="column">
         <Flex>
-          <Text size={1} as="div" trim={true}>
+          <Text size={1} as="div" trim={true} tone="caution">
             {t('network-check.slow-protocol-warning.description')}{' '}
           </Text>
         </Flex>
