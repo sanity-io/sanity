@@ -2,25 +2,29 @@ import {
   defineField,
   defineType,
   type ObjectSchemaType,
+  type Path,
   type ReferenceSchemaType,
 } from '@sanity/types'
 import {Card, TextInput} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
-import {type ComponentProps, type ReactNode} from 'react'
+import {type ComponentProps, type ReactNode, useCallback, useState} from 'react'
 import {of} from 'rxjs'
+import {FormBuilderContext} from 'sanity/_singletons'
 import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
 import {useSchema} from '../../../../hooks/useSchema'
+import {type FormBuilderContextValue} from '../../../FormBuilderContext'
 import {type StudioReferenceInputProps} from '../../../studio/inputs/reference/StudioReferenceInput'
 import {type RenderPreviewCallback} from '../../../types/renderCallback'
 import {OptionPreview} from '../OptionPreview'
+import {ReferenceAutocomplete} from '../ReferenceAutocomplete'
 import {ReferenceFinalizeAlertStrip} from '../ReferenceFinalizeAlertStrip'
 import {ReferenceInput} from '../ReferenceInput'
 import {ReferenceInputPreview} from '../ReferenceInputPreview'
@@ -145,6 +149,47 @@ function ReferenceAlertsHarness() {
   )
 }
 
+// `ReferenceAutocomplete` only reads `focusPath` from the form builder (to
+// decide whether it autofocuses), so the autocomplete renders against this
+// minimal context rather than a whole `TestForm`.
+const AUTHOR_PATH: Path = ['author']
+const FORM_BUILDER = {focusPath: [] as Path} as FormBuilderContextValue
+const NO_OPTIONS: never[] = []
+
+function ReferenceAutocompleteNoResults() {
+  const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
+  const [searchString, setSearchString] = useState('')
+  const handleQueryChange = useCallback((query: string | null) => setSearchString(query ?? ''), [])
+
+  return (
+    <FormBuilderContext.Provider value={FORM_BUILDER}>
+      <Card padding={4} style={{maxWidth: 480}}>
+        <div ref={setReferenceElement}>
+          <ReferenceAutocomplete
+            data-testid="autocomplete"
+            id="reference-autocomplete"
+            onQueryChange={handleQueryChange}
+            options={NO_OPTIONS}
+            path={AUTHOR_PATH}
+            placeholder="Type to search"
+            radius={2}
+            referenceElement={referenceElement}
+            searchString={searchString}
+          />
+        </div>
+      </Card>
+    </FormBuilderContext.Provider>
+  )
+}
+
+function ReferenceAutocompleteHarness() {
+  return (
+    <TestWrapper schemaTypes={SCHEMA}>
+      <ReferenceAutocompleteNoResults />
+    </TestWrapper>
+  )
+}
+
 describe('reference input', () => {
   test('renders an empty reference and its preview field', async () => {
     const {settleChromaticEndState} = testHelpers()
@@ -170,5 +215,20 @@ describe('reference input', () => {
     await expect.element(page.getByTestId('alert-reference-strength-mismatch')).toBeVisible()
     await expect.element(page.getByTestId('alert-reference-info-failed')).toBeVisible()
     await settleChromaticEndState()
+  })
+
+  test('renders the autocomplete "no results" popover for a search without hits', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<ReferenceAutocompleteHarness />)
+
+    await page.getByTestId('autocomplete').click()
+    await userEvent.keyboard('Ursula')
+
+    const $popover = page.getByTestId('autocomplete-popover')
+    await expect.element($popover).toBeVisible()
+    await expect.element($popover).toMatchTextContent('No results for “Ursula”')
+    // Parking the pointer leaves the input focused, so the popover stays open.
+    await settleChromaticEndState()
+    await expect.element($popover).toBeVisible()
   })
 })
