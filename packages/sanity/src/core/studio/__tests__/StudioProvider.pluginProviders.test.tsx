@@ -10,7 +10,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
 import {type LayoutProps, type ProviderProps} from '../../config/studio/types'
-import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
+import {createMockAuthStore} from '../../store/auth/mock/createMockAuthStore'
 import {StudioLayout} from '../StudioLayout'
 import {StudioProvider} from '../StudioProvider'
 

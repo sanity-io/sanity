@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {Flex, Box} from 'ui5'

@@ -1,5 +1,9 @@
 import {style} from '@vanilla-extract/css'
 
 export const menuButton = style({
-  background: 'transparent',
+  selectors: {
+    'button&': {
+      background: 'transparent',
+    },
+  },
 })

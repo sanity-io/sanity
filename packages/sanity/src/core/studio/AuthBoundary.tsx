@@ -4,8 +4,8 @@ import {useSyncObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
-import {isDashboardAuthStore} from '../store/authStore/createAuthStore'
-import {type AuthStore} from '../store/authStore/types'
+import {isDashboardAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
+import {type AuthStore} from '../store/auth/types'
 import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,

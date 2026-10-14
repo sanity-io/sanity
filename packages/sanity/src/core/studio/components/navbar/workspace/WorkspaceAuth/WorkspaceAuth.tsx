@@ -11,6 +11,7 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useVisibleWorkspaces} from '../../../../workspaces/useVisibleWorkspaces'
 import {WORKSPACES_DOCS_URL} from '../constants'
+import {type WorkspaceLoginStatus} from '../hooks/useWorkspaceLoginStatus'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
 import {WorkspaceAuthCard} from './WorkspaceAuthCard'
@@ -42,7 +43,7 @@ export function WorkspaceAuth() {
   const handleBack = useCallback(() => setShowChooser(true), [])
 
   const handleCardSelect = useCallback(
-    (workspaceName: string, state: 'loading' | 'logged-in' | 'logged-out' | 'no-access') => {
+    (workspaceName: string, state: WorkspaceLoginStatus) => {
       // While loading, navigate; the destination's auth boundary will handle login if needed.
       if (state === 'logged-in' || state === 'loading' || state === 'logged-out') {
         // Switch the active workspace so the URL reflects the chosen workspace.
