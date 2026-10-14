@@ -220,8 +220,9 @@ export function ReleaseDashboardDetails({
     documents.length === 0 ? undefined : (
       <Card tone={statusTone} style={{background: 'transparent'}}>
         <Icon
+          muted
           size={1}
-          style={{margin: '-0.375rem'}}
+          style={{margin: '-0.375rem', display: 'block'}}
           icon={statusGlyphIcon}
           tone={statusTone === 'default' ? undefined : statusTone}
         />
