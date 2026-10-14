@@ -1,3 +1,4 @@
+import {hoistInlineImages} from './hoistInlineImages'
 import {type NormalizedMarkdownBlock} from './portabletext-markdown/markdownToPortableText'
 import {type PortableTextBlock} from './portabletext-markdown/types'
 
@@ -41,7 +42,8 @@ export function toDocsArticleContent(
   }
 
   if (block._type === 'callout') {
-    // docsCallout.content only allows `block` types with `normal` style.
+    // docsCallout.content only allows `block` types with `normal` style, so
+    // images (block-level or hoisted from inline) are dropped here.
     return [
       {
         _type: 'docsCallout',
@@ -49,7 +51,11 @@ export function toDocsArticleContent(
         type: CALLOUT_TONE_TO_DOCS_TYPE[block.tone] ?? 'info',
         content: block.content.flatMap((innerBlock) =>
           innerBlock._type === 'block'
-            ? [normalizeLinkMarkDefs({...innerBlock, style: 'normal'})]
+            ? hoistInlineImages(innerBlock).flatMap((hoisted) =>
+                hoisted._type === 'block'
+                  ? [normalizeLinkMarkDefs({...hoisted, style: 'normal'})]
+                  : [],
+              )
             : [],
         ),
       },
@@ -57,7 +63,11 @@ export function toDocsArticleContent(
   }
 
   if (block._type === 'block') {
-    return [normalizeLinkMarkDefs(overrides ? {...block, ...overrides} : block)]
+    return hoistInlineImages(block).map((hoisted) =>
+      hoisted._type === 'block'
+        ? normalizeLinkMarkDefs(overrides ? {...hoisted, ...overrides} : hoisted)
+        : hoisted,
+    )
   }
 
   return [block]
