@@ -183,6 +183,7 @@ export {TasksContext} from '../_singletons/context/TasksContext'
 export {TasksModePromiseContext} from '../_singletons/context/TasksModePromiseContext'
 export {TasksNavigationContext} from '../_singletons/context/TasksNavigationContext'
 export {TasksUpsellContext} from '../_singletons/context/TasksUpsellContext'
+export {UpsellDescriptionSerializerContext} from '../_singletons/context/UpsellDescriptionSerializerContext'
 export {UserApplicationCacheContext} from '../_singletons/context/UserApplicationCacheContext'
 export {UserColorManagerContext} from '../_singletons/context/UserColorManagerContext'
 export {
