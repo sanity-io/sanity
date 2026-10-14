@@ -1,8 +1,8 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Card, Text} from '@sanity/ui'
+import {Badge, Card} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
@@ -115,7 +115,7 @@ function UnclaimedProjectNudgeInner({
     ),
     description: claimable && copy && (
       <Flex gap={4} paddingY={2} flexDirection="column">
-        <Text size={1} weight="regular">
+        <Text size={1} weight="regular" as="div" trim={true}>
           {claimable.claimUrl || claimable.claimLinkSpent
             ? copy.toast.description
             : copy.noClaimUrl.text}
@@ -176,7 +176,7 @@ function UnclaimedProjectNudgeInner({
           >
             <ClockIcon style={{display: 'block'}} />
           </Flex>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {interpolateTemplate(
               critical ? copy.banner.criticalText : copy.banner.text,
               templateValues,
@@ -204,7 +204,9 @@ function UnclaimedProjectNudgeInner({
             onClick={onClaim}
           />
         ) : !claimable.claimLinkSpent ? (
-          <Text size={1}>{copy.noClaimUrl.text}</Text>
+          <Text size={1} as="div" trim={true}>
+            {copy.noClaimUrl.text}
+          </Text>
         ) : null}
       </Flex>
     </Card>

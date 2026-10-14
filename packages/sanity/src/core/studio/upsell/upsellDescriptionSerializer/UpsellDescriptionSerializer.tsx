@@ -3,14 +3,14 @@ import {
   type PortableTextComponents,
   type PortableTextTypeComponentProps,
 } from '@portabletext/react'
-import {Icon} from '@sanity/icons'
+import {Icon as IconSymbol} from '@sanity/icons'
 import {LinkIcon} from '@sanity/icons/Link'
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Heading, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {interpolateTemplate} from '../../../util/interpolateTemplate'
 import {transformBlocks} from './helpers'
@@ -35,15 +35,6 @@ const SerializerContainer = styled.div`
   }
 `
 
-const IconTextContainer = styled(Text)((props) => {
-  if (props.accent) {
-    return `
-    --card-icon-color: var(--card-accent-fg-color);
-    `
-  }
-  return ``
-})
-
 const AccentSpan = styled.span`
   color: var(--card-accent-fg-color);
   --card-icon-color: var(--card-accent-fg-color);
@@ -62,7 +53,7 @@ interface InlineIconProps {
   $hasTextLeft: boolean
   $hasTextRight: boolean
 }
-const InlineIcon = styled(Icon)<InlineIconProps>`
+const InlineIcon = styled(IconSymbol)<InlineIconProps>`
   &[data-sanity-icon] {
     /* Forces the icon to leave the necessary space to the right or left it has surrounding text */
     margin-left: ${(props) => (props.$hasTextLeft ? '0' : '')};
@@ -125,7 +116,7 @@ function NormalBlock(props: {children: ReactNode}) {
 
   return (
     <Box paddingX={2} marginBottom={4}>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         {children}
       </Text>
     </Box>
@@ -220,6 +211,7 @@ const createComponents = ({
             display: 'list-item',
             padding: '0.5rem 0',
           }}
+          trim={true}
         >
           {interpolateChildren(children)}
         </Text>
@@ -233,11 +225,16 @@ const createComponents = ({
             display: 'list-item',
             padding: '0.5rem 0',
           }}
+          trim={true}
         >
           {interpolateChildren(children)}
         </Text>
       ),
-      checkmarks: ({children}) => <Text>{children}</Text>,
+      checkmarks: ({children}) => (
+        <Text as="div" trim={true}>
+          {children}
+        </Text>
+      ),
     },
 
     marks: {
@@ -299,19 +296,34 @@ const createComponents = ({
           gap={2}
         >
           <Flex gap={2} style={{flexShrink: 0}}>
-            <IconTextContainer size={1} accent={props.value.accent}>
-              {props.value.sanityIcon ? (
-                <Icon symbol={props.value.sanityIcon} />
-              ) : (
-                <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} />} </>
-              )}
-            </IconTextContainer>
-            <Text size={1} weight="semibold" accent={props.value.accent}>
+            <Icon
+              size={1}
+              tone={props.value.accent ? 'suggest' : undefined}
+              icon={
+                props.value.sanityIcon ? (
+                  <IconSymbol symbol={props.value.sanityIcon} />
+                ) : (
+                  <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} />} </>
+                )
+              }
+            />
+            <Text
+              size={1}
+              weight="semibold"
+              tone={props.value.accent ? 'suggest' : undefined}
+              as="div"
+              trim={true}
+            >
               {interpolateChildren(props.value.title)}
             </Text>
           </Flex>
-
-          <Text size={1} muted accent={props.value.accent}>
+          <Text
+            size={1}
+            muted
+            tone={props.value.accent ? 'suggest' : undefined}
+            as="div"
+            trim={true}
+          >
             {interpolateChildren(props.value.text)}
           </Text>
         </Flex>
