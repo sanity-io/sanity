@@ -155,7 +155,11 @@ function documentIdContextValue(documentValue: unknown): {id: string} | null {
 
 /**
  * Normalizes this bundle's PatchEvent instances to plain patch objects, so
- * class identity never crosses to the host.
+ * class identity never crosses to the host: the host's `PatchEvent.from`
+ * recognizes PatchEvent by `instanceof`, which is always false for this
+ * bundle's class. Applied to the bridged `onChange` before it reaches any
+ * input — custom inputs legitimately call `onChange(PatchEvent.from(...))`,
+ * same as in Studio.
  */
 function normalizeOnChange(hostOnChange: unknown) {
   return (event: unknown) => {
@@ -166,6 +170,24 @@ function normalizeOnChange(hostOnChange: unknown) {
       hostOnChange(event)
     }
   }
+}
+
+/**
+ * Cached per host callback: the host's `onChange` is reference-stable across
+ * pushes, and the wrapper must be too — a fresh closure per push would
+ * invalidate anything the input keys on the prop's identity.
+ */
+const normalizedOnChangeCache = new WeakMap<object, (event: unknown) => void>()
+
+function withNormalizedOnChange(inputProps: Record<string, unknown>): Record<string, unknown> {
+  const hostOnChange = inputProps.onChange
+  if (typeof hostOnChange !== 'function') return inputProps
+  let normalized = normalizedOnChangeCache.get(hostOnChange)
+  if (!normalized) {
+    normalized = normalizeOnChange(hostOnChange)
+    normalizedOnChangeCache.set(hostOnChange, normalized)
+  }
+  return {...inputProps, onChange: normalized}
 }
 
 interface DefaultInputProps {
@@ -192,7 +214,9 @@ function DefaultLeafInput(props: DefaultInputProps) {
   const schemaType = props.schemaType
   const readOnly = Boolean(props.readOnly)
   // Guarded here, not per control: don't rely on the bundled @sanity/ui
-  // version enforcing readOnly on Checkbox/Select.
+  // version enforcing readOnly on Checkbox/Select. normalizeOnChange is a
+  // second layer here (mountIsland normalizes the bridged onChange) so the
+  // default input stays safe when renderDefault is handed arbitrary props.
   const onChange = readOnly ? () => undefined : normalizeOnChange(props.onChange)
   // Focus/blur are dropped: the island container is the single forwarding
   // path (with its intra-island relatedTarget guard — see IslandFieldInput).
@@ -330,6 +354,9 @@ function DefaultNumberInput({
     <TextInput
       {...(elementProps as object)}
       type="number"
+      // Same as Studio's NumberInput: without it the browser's default step
+      // of 1 marks decimals as stepMismatch and the stepper skips them.
+      step="any"
       value={entry.text}
       readOnly={readOnly}
       onFocus={() => {
@@ -477,9 +504,12 @@ export function mountIsland(
   const Input = component
   let current = initial
   const render = () => {
+    // Normalized before the input ever sees it, so PatchEvents from custom
+    // inputs are flattened too — not just DefaultLeafInput's patches.
+    const normalizedProps = withNormalizedOnChange(current.inputProps)
     const inputProps = current.islandRenderDefault
-      ? withIslandRenderDefault(current.inputProps)
-      : current.inputProps
+      ? withIslandRenderDefault(normalizedProps)
+      : normalizedProps
     root.render(
       <RootErrorBoundary>
         <ThemeProvider theme={islandTheme} scheme={current.scheme ?? 'light'}>
