@@ -1968,9 +1968,6 @@ importers:
       ui5:
         specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.14(react-dom@19.3.0)(react@19.3.0)'
-      use-effect-event:
-        specifier: ^2.0.4
-        version: 2.0.4(react@19.3.0)
     devDependencies:
       '@repo/package.bundle':
         specifier: workspace:*
