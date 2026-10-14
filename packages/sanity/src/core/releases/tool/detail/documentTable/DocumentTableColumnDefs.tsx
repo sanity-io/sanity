@@ -529,7 +529,7 @@ export const getDocumentTableColumnDefs: (
                 content={
                   <Text muted size={1} as="div" trim={true}>
                     <Flex alignItems={'center'} gap={3} padding={1}>
-                      <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
+                      <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
                       {errorLabel}
                     </Flex>
                   </Text>
@@ -543,7 +543,10 @@ export const getDocumentTableColumnDefs: (
                     aria-label={errorLabel}
                     data-testid={`validation-error-link-${datum.document._id}`}
                   >
-                    <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
+                    <Icon
+                      size={1}
+                      icon={<Icon size={1} icon={ErrorOutlineIcon} tone="critical" />}
+                    />
                   </IntentLink>
                 </Text>
               </Tooltip>
@@ -563,7 +566,7 @@ export const getDocumentTableColumnDefs: (
                 <Icon
                   muted
                   size={1}
-                  icon={ClockIcon}
+                  icon={<ToneIcon icon={ClockIcon} tone="default" />}
                   data-testid={`validation-validating-${datum.document._id}`}
                 />
               </Tooltip>
@@ -581,8 +584,7 @@ export const getDocumentTableColumnDefs: (
                 <Icon
                   muted
                   size={1}
-                  icon={CheckmarkCircleIcon}
-                  tone="positive"
+                  icon={<ToneIcon icon={CheckmarkCircleIcon} tone="positive" />}
                   data-testid={`validation-valid-${datum.document._id}`}
                 />
               </Tooltip>

@@ -34,7 +34,7 @@ export const ScheduledDraftWarningCell: VisibleColumn<TableRelease>['cell'] = ({
           }
           portal
         >
-          <Icon size={1} icon={WarningOutlineIcon} tone="caution" />
+          <Icon size={1} icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />} />
         </Tooltip>
       )}
     </Flex>

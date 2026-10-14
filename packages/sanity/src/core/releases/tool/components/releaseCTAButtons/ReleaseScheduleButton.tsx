@@ -367,8 +367,12 @@ export const ReleaseScheduleButton = ({
           <Icon
             muted
             size={1}
-            icon={ErrorOutlineIcon}
-            tone={isValidatingDocuments ? undefined : 'critical'}
+            icon={
+              <ToneIcon
+                icon={ErrorOutlineIcon}
+                tone={isValidatingDocuments ? 'default' : 'critical'}
+              />
+            }
           />
           {tooltipText}
         </Flex>

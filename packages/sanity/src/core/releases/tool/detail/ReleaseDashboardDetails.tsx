@@ -104,7 +104,7 @@ function ReleaseDashboardDetailsProduction({
           <ValidationProgressIndicator documents={documents} />
           {shouldDisplayError && (
             <Flex gap={2} padding={2} data-testid="release-error-details">
-              <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
+              <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
               <TextWithTone size={1} tone="critical">
                 {isAtTimeRelease
                   ? tRelease('failed-schedule-title')
@@ -114,7 +114,7 @@ function ReleaseDashboardDetailsProduction({
           )}
           {shouldDisplayWarnings && (
             <Flex gap={2} padding={2} data-testid="release-permission-error-details">
-              <Icon size={1} icon={WarningOutlineIcon} tone="caution" />
+              <Icon size={1} icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />} />
               <TextWithTone size={1} tone="caution">
                 {tRelease('permission-missing-title')}
               </TextWithTone>

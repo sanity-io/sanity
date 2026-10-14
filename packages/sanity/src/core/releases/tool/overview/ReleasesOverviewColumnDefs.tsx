@@ -236,7 +236,7 @@ export const releasesOverviewColumnDefs: (
                   }
                   portal
                 >
-                  <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
+                  <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
                 </Tooltip>
               )}
               {hasWarning && (
@@ -248,7 +248,7 @@ export const releasesOverviewColumnDefs: (
                   }
                   portal
                 >
-                  <Icon size={1} icon={WarningOutlineIcon} tone="caution" />
+                  <Icon size={1} icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />} />
                 </Tooltip>
               )}
             </Flex>
