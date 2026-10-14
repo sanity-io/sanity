@@ -1,3 +1,4 @@
+import {type ValidationScheduling} from '@sanity/validation/_internal'
 import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 
@@ -11,13 +12,17 @@ export function useValidationStatus(
   validationTargetId: string,
   docTypeName: string,
   requirePublishedReferences: boolean,
+  options?: {scheduling?: ValidationScheduling},
 ): ValidationStatus {
   const documentStore = useDocumentStore()
+  const scheduling = options?.scheduling
 
   const observable = useMemo(
     () =>
-      documentStore.pair.validation(validationTargetId, docTypeName, requirePublishedReferences),
-    [docTypeName, documentStore.pair, validationTargetId, requirePublishedReferences],
+      documentStore.pair.validation(validationTargetId, docTypeName, requirePublishedReferences, {
+        scheduling,
+      }),
+    [docTypeName, documentStore.pair, validationTargetId, requirePublishedReferences, scheduling],
   )
 
   // Kept synchronous: consumers use this as a write-side gate, not just for
