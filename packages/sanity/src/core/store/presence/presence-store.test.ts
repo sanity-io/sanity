@@ -480,5 +480,29 @@ describe('presence-store', () => {
       expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
       subscription.unsubscribe()
     })
+
+    it('releases the transport once the last document presence subscriber is gone', async () => {
+      const {store, incoming$, connectionStatus$, requests} = createHarness()
+      const first = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+      const second = collect<DocumentPresence[]>(store.documentPresence('doc-2'))
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+      expect(incoming$.observed).toBe(true)
+      expect(connectionStatus$.observed).toBe(true)
+
+      // One of two consumers leaving keeps the shared pipeline up
+      first.subscription.unsubscribe()
+      expect(incoming$.observed).toBe(true)
+
+      // The last one leaving tears it down: no listener, no heartbeat watcher,
+      // and no further location announcements from a workspace that is gone
+      second.subscription.unsubscribe()
+      expect(incoming$.observed).toBe(false)
+      expect(connectionStatus$.observed).toBe(false)
+      const announcementsAtTeardown = requests.filter((r) => r.name === 'presence_announce').length
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(requests.filter((r) => r.name === 'presence_announce').length).toBe(
+        announcementsAtTeardown,
+      )
+    })
   })
 })

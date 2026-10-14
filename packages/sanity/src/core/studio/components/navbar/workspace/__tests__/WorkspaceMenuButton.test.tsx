@@ -5,6 +5,7 @@ import {userEvent} from '@testing-library/user-event'
 import {type ReactNode, Suspense, use} from 'react'
 import {type ObservablePromise} from 'react-rx'
 import {defer, NEVER, type Observable, ReplaySubject} from 'rxjs'
+import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type WorkspaceSummary} from '../../../../../config/types'
@@ -58,14 +59,18 @@ async function renderButton() {
 const workspaceA = {
   name: 'workspace-a',
   title: 'Workspace A',
+  basePath: '/workspace-a',
   projectId: 'project-a',
   dataset: 'production',
+  auth: {},
 } as unknown as WorkspaceSummary
 const workspaceB = {
   name: 'workspace-b',
   title: 'Workspace B',
+  basePath: '/workspace-b',
   projectId: 'project-b',
   dataset: 'production',
+  auth: {},
 } as unknown as WorkspaceSummary
 
 vi.mock('../../../../workspaces/useVisibleWorkspaces', () => ({
@@ -76,11 +81,50 @@ vi.mock('../../../../activeWorkspaceMatcher/useActiveWorkspace', () => ({
 }))
 
 const theme = buildTheme()
+// The active workspace's router: a sibling workspace's basePath is outside
+// it, which is exactly what `navigateUrl` receives on a switch.
+const router = route.create(workspaceA.basePath, [route.intents('/intent')])
+const onNavigate = vi.fn()
 const wrapper = ({children}: {children: ReactNode}) => (
   <ThemeProvider theme={theme}>
-    <LayerProvider>{children}</LayerProvider>
+    <LayerProvider>
+      <RouterProvider onNavigate={onNavigate} router={router} state={{}}>
+        {children}
+      </RouterProvider>
+    </LayerProvider>
   </ThemeProvider>
 )
+
+/** Opens the menu and returns the row for `name`, which is a real anchor. */
+async function openMenuAndFindWorkspaceLink(name: RegExp) {
+  await userEvent.click(screen.getByRole('button', {name: /Workspace A/}))
+  const link = await screen.findByRole('menuitem', {name, hidden: true})
+  expect(link.tagName).toBe('A')
+  return link
+}
+
+/**
+ * Clicks `link` and reports whether the anchor's own navigation was cancelled
+ * by the time the event reached `window`, i.e. after React's handlers ran.
+ * The listener then cancels it itself: jsdom cannot navigate, and would log
+ * "Not implemented: navigation" for a click the browser is meant to handle.
+ */
+function clickAndReadDefaultPrevented(link: HTMLElement, init?: MouseEventInit): boolean {
+  let defaultPrevented: boolean | undefined
+  const observe = (event: Event) => {
+    defaultPrevented = event.defaultPrevented
+    event.preventDefault()
+  }
+  window.addEventListener('click', observe)
+  try {
+    // oxlint-disable-next-line testing-library/prefer-user-event -- a modified click needs the raw MouseEventInit (metaKey) that userEvent.click does not take
+    fireEvent.click(link, init)
+  } finally {
+    window.removeEventListener('click', observe)
+  }
+  if (defaultPrevented === undefined) throw new Error('click never reached window')
+  return defaultPrevented
+}
 
 describe('WorkspaceMenuButton', () => {
   beforeEach(() => {
@@ -158,5 +202,28 @@ describe('WorkspaceMenuButton', () => {
     // Hover preload: one probe per workspace, buffered before the click.
     // The hidden menu items themselves still subscribe nothing.
     expect(probeSubscriptions.count).toBe(2)
+  })
+
+  it('switches workspace through the router instead of loading the document', async () => {
+    await renderButton()
+    const link = await openMenuAndFindWorkspaceLink(/Workspace B/)
+
+    // The row keeps the real URL so "open in new tab" and "copy link" work.
+    expect(link).toHaveAttribute('href', workspaceB.basePath)
+
+    // A plain left click is an in-place navigation: the router receives the
+    // other workspace's basePath and the anchor's own navigation (a full
+    // document load, sanity-io/sanity#7228) is cancelled.
+    expect(clickAndReadDefaultPrevented(link)).toBe(true)
+    expect(onNavigate).toHaveBeenCalledTimes(1)
+    expect(onNavigate).toHaveBeenCalledWith({path: workspaceB.basePath, replace: false})
+  })
+
+  it('leaves modified clicks to the browser so a workspace can open in a new tab', async () => {
+    await renderButton()
+    const link = await openMenuAndFindWorkspaceLink(/Workspace B/)
+
+    expect(clickAndReadDefaultPrevented(link, {metaKey: true})).toBe(false)
+    expect(onNavigate).not.toHaveBeenCalled()
   })
 })

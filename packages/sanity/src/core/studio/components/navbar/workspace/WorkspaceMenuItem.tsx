@@ -1,6 +1,7 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
+import {useLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {type WorkspaceSummary} from '../../../../config/types'
@@ -25,9 +26,18 @@ interface WorkspaceMenuItemProps {
  * - With it, the probe first fires on reveal (or via the hover/focus
  *   preload on the menu button).
  *
+ * The row stays a plain `<a href>` and routes through `useLink` instead of
+ * rendering `as={Link}`: `@sanity/ui` only sets `data-as` for a string `as`,
+ * and every selected/pressed/hover rule of a menu item is keyed on
+ * `[data-as='a']` (sanity-io/sanity#11859). An unmodified left click becomes
+ * an in-place `history.push`, so the active workspace changes without a
+ * document load; modified clicks and middle clicks keep their browser
+ * affordances (new tab, copy link).
+ *
  * @internal
  */
 export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: WorkspaceMenuItemProps) {
+  const {onClick} = useLink({href: workspace.basePath})
   const probe$ = useMemo(
     () =>
       probeWorkspaceAuth({
@@ -51,6 +61,7 @@ export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: Works
     <MenuItem
       as="a"
       href={workspace.basePath}
+      onClick={onClick}
       badgeText={STATE_TITLES[state] || undefined}
       iconRight={isSelected ? CheckmarkIcon : undefined}
       pressed={isSelected}

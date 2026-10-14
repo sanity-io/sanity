@@ -1,6 +1,17 @@
 import {type SanityClient} from '@sanity/client'
 import {type Dispatch} from 'react'
-import {catchError, concatWith, merge, type Observable, of, scan, shareReplay, Subject} from 'rxjs'
+import {
+  catchError,
+  concatWith,
+  merge,
+  type Observable,
+  of,
+  ReplaySubject,
+  scan,
+  share,
+  Subject,
+  timer,
+} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
 import {listenQuery} from '../../store/document/listenQuery'
@@ -30,6 +41,14 @@ const INITIAL_STATE: VariantStoreState = {
   variants: new Map(),
   state: 'initialising' as const,
 }
+
+/**
+ * How long the listener outlives its last subscriber. Covers a consumer that
+ * unsubscribes and resubscribes (a remount, StrictMode) without a refetch,
+ * while a store left behind by a workspace switch still lets go of its
+ * `/listen` stream.
+ */
+const TEARDOWN_GRACE_PERIOD = 5_000
 
 export interface VariantStore {
   state$: Observable<VariantStoreState>
@@ -102,7 +121,10 @@ export function createVariantsStore(context: {
   const state$ = merge(listFetch$, dispatch$).pipe(
     scan((state, action) => variantStoreReducer(state, action), INITIAL_STATE),
     startWith(INITIAL_STATE),
-    shareReplay(1),
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
+    }),
   )
 
   return {

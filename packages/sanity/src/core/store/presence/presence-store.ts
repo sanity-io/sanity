@@ -349,7 +349,11 @@ export function createPresenceStore(context: {
     ),
   )
 
-  // Create a single shared observable for all documents
+  // Create a single shared observable for all documents. `refCount` matters:
+  // without it the first document subscriber pins `allSessions$` (the bifur
+  // listener, the heartbeat watcher and the 30s location announcements) for
+  // the lifetime of the page, so a workspace that has been switched away from
+  // keeps its socket open and keeps announcing itself to the old dataset.
   const allDocumentsPresence$ = combineLatest([allSessions$, debugIntrospect$]).pipe(
     map(([userAndSessions, debugIntrospect]) =>
       userAndSessions
@@ -367,7 +371,7 @@ export function createPresenceStore(context: {
         )
         .filter((item) => debugIntrospect || item.presence.sessionId !== SESSION_ID),
     ),
-    shareReplay(1),
+    shareReplay({bufferSize: 1, refCount: true}),
   )
 
   /**
