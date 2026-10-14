@@ -4,17 +4,13 @@ import {CloseCircleIcon} from '@sanity/icons/CloseCircle'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Spinner, Text} from '@sanity/ui'
 import {useId} from 'react'
-import {useObservable} from 'react-rx'
-import {map} from 'rxjs/operators'
 import {useTranslation, useValidationStatus} from 'sanity'
 import {Box, Flex, VStack} from 'ui5'
 
 import {Dialog} from '../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../i18n'
-import {afterNextPaint} from './afterNextPaint'
 
 const IMMEDIATE = {scheduling: 'immediate'} as const
-const painted$ = afterNextPaint().pipe(map(() => true))
 
 type StepStatus = 'pending' | 'running' | 'done' | 'failed'
 
@@ -104,18 +100,13 @@ export function PublishValidationDialog({
 }: PublishValidationDialogProps) {
   const {t} = useTranslation(structureLocaleNamespace)
   const dialogId = useId()
-  // Only once the dialog has painted: the immediate run's first long task would hold back its paint
-  const painted = useObservable(painted$, false)
+  // react-rx subscribes after the dialog has committed, so the store only switches to immediate
+  // once the dialog is in the DOM; it gets painted at the latest on the run's first yield
   const {
     isValidating,
     validation,
     revision: validatedRevision,
-  } = useValidationStatus(
-    documentId,
-    documentType,
-    requirePublishedReferences,
-    painted ? IMMEDIATE : undefined,
-  )
+  } = useValidationStatus(documentId, documentType, requirePublishedReferences, IMMEDIATE)
   const validated = !isValidating && validatedRevision === revision
   const errorCount = validated ? validation.filter(isValidationErrorMarker).length : 0
 
