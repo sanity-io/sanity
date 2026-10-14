@@ -1,7 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema} from '@sanity/types'
+import {type ValidationScheduling} from '@sanity/validation/_internal'
 import omit from 'lodash-es/omit.js'
-import {asyncScheduler, combineLatest, type Observable} from 'rxjs'
+import {asyncScheduler, BehaviorSubject, combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config/types'
@@ -23,23 +24,63 @@ function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
 }
 
+interface ValidationStoreContext {
+  client: SanityClient
+  getClient: (options: SourceClientOptions) => SanityClient
+  observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
+  schema: Schema
+  i18n: LocaleSource
+  /**
+   * @deprecated Does nothing. Preserved to avoid breaking changes.
+   * Will be removed in the next major version.
+   */
+  serverActionsEnabled?: Observable<boolean>
+  pairListenerOptions?: DocumentStoreExtraOptions
+  currentUser?: Omit<CurrentUser, 'role'> | null
+}
+
+/** @internal */
+export function validationKey(
+  ctx: ValidationStoreContext,
+  idPair: IdPair,
+  typeName: string,
+  validationTarget: DocumentVariantType,
+  validatePublishedReferences: boolean,
+): string {
+  // Use the actual document ID being validated in the cache key for explicitness
+  const documentId =
+    validationTarget === 'draft'
+      ? idPair.draftId
+      : validationTarget === 'version'
+        ? idPair.versionId
+        : idPair.publishedId
+  // Include the user id so an in-place user switch gets its own cache entry;
+  // the module-level memo cache is never cleared, so without this a new user
+  // would replay the previous user's validation result.
+  const userId = ctx.currentUser?.id ?? ''
+  return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}-${userId}`
+}
+
+const validationModes = new Map<string, BehaviorSubject<ValidationScheduling>>()
+
+function getValidationMode(key: string): BehaviorSubject<ValidationScheduling> {
+  let mode = validationModes.get(key)
+  if (!mode) {
+    mode = new BehaviorSubject<ValidationScheduling>('idle')
+    validationModes.set(key, mode)
+  }
+  return mode
+}
+
+/** @internal */
+export function setValidationMode(key: string, mode: ValidationScheduling): void {
+  getValidationMode(key).next(mode)
+}
+
 /** @internal */
 export const validation = memoize(
   (
-    ctx: {
-      client: SanityClient
-      getClient: (options: SourceClientOptions) => SanityClient
-      observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
-      schema: Schema
-      i18n: LocaleSource
-      /**
-       * @deprecated Does nothing. Preserved to avoid breaking changes.
-       * Will be removed in the next major version.
-       */
-      serverActionsEnabled?: Observable<boolean>
-      pairListenerOptions?: DocumentStoreExtraOptions
-      currentUser?: Omit<CurrentUser, 'role'> | null
-    },
+    ctx: ValidationStoreContext,
     {draftId, publishedId, versionId}: IdPair,
     typeName: string,
     validationTarget: DocumentVariantType,
@@ -88,25 +129,25 @@ export const validation = memoize(
 
     return combineLatest([
       documentRevision$,
-      validateDocumentWithReferences(ctx, documentToValidate$, validatePublishedReferences),
+      validateDocumentWithReferences(
+        ctx,
+        documentToValidate$,
+        validatePublishedReferences,
+        getValidationMode(
+          validationKey(
+            ctx,
+            {draftId, publishedId, versionId},
+            typeName,
+            validationTarget,
+            validatePublishedReferences,
+          ),
+        ),
+      ),
     ]).pipe(
       map(([revision, validationStatus]) => {
         return {...validationStatus, revision}
       }),
     )
   },
-  (ctx, idPair, typeName, validationTarget, validatePublishedReferences) => {
-    // Use the actual document ID being validated in the cache key for explicitness
-    const documentId =
-      validationTarget === 'draft'
-        ? idPair.draftId
-        : validationTarget === 'version'
-          ? idPair.versionId
-          : idPair.publishedId
-    // Include the user id so an in-place user switch gets its own cache entry;
-    // the module-level memo cache is never cleared, so without this a new user
-    // would replay the previous user's validation result.
-    const userId = ctx.currentUser?.id ?? ''
-    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}-${userId}`
-  },
+  validationKey,
 )

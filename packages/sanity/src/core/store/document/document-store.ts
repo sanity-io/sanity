@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {type Observable, of} from 'rxjs'
-import {filter, map} from 'rxjs/operators'
+import {defer, type Observable, of} from 'rxjs'
+import {filter, finalize, map} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../config/types'
 import {type LocaleSource} from '../../i18n/types'
@@ -36,7 +36,7 @@ import {
 } from './document-pair/operationEvents'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {type OperationsAPI} from './document-pair/operations/types'
-import {validation} from './document-pair/validation'
+import {setValidationMode, validation, validationKey} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
 import {type InitialValueMsg} from './initialValue/types'
@@ -126,6 +126,14 @@ export interface DocumentStore {
       // if `false`, any reference to a non-published document is ok as long as it's in the same bundle
       // as the document we're validating
       validatePublishedReferences: boolean,
+      options?: {
+        /**
+         * `immediate` validates without waiting for idle callbacks while this subscription is
+         * active, for when a user waits on the result. The stream stays shared with idle
+         * subscribers, who get the results too.
+         */
+        scheduling?: 'idle' | 'immediate'
+      },
     ) => Observable<ValidationStatus>
   }
 }
@@ -291,11 +299,17 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(validationTargetId, type, requirePublishedReferences) {
+      validation(validationTargetId, type, requirePublishedReferences, options) {
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
+        const status$ = validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
+        if (options?.scheduling !== 'immediate') return status$
+        const key = validationKey(ctx, idPair, type, validationTarget, requirePublishedReferences)
+        return defer(() => {
+          setValidationMode(key, 'immediate')
+          return status$.pipe(finalize(() => setValidationMode(key, 'idle')))
+        })
       },
     },
   }
