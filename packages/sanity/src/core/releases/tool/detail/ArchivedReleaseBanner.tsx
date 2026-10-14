@@ -21,7 +21,6 @@ function HistoryExperienceLink({children}: {children?: React.ReactNode}) {
       underlined={false}
       style={{
         color: 'var(--card-link-color)',
-        borderRadius: '1px',
       }}
     >
       {children}
