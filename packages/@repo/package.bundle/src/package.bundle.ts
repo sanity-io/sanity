@@ -41,7 +41,9 @@ export function createDefaultConfig({version}: DefaultConfigOptions): UserConfig
       // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
       // as the TypeScript/JSX transform (no babel in the pipeline)
       viteReact({compiler: {target: '19'}}),
-      vanillaExtractPlugin(),
+      // `identifiers: 'safe'` includes the package version in CDN class names so a release
+      // cannot reuse the previous release's names (SAPP-4639).
+      vanillaExtractPlugin({identifiers: 'safe'}),
       cleanupCssOutputPlugin(),
       esmExternalRequirePlugin({
         // self-externals are required here in order to ensure that the presentation
