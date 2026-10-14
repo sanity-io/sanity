@@ -1,4 +1,5 @@
 import {loadEnvFiles} from '@repo/utils'
+import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
 
 loadEnvFiles()
@@ -11,6 +12,9 @@ export default defineCliConfig({
   // React Compiler on `oxc-transform-react` (no babel), see dev/test-studio/sanity.cli.ts
   reactCompiler: {transform: 'oxc', target: '19'},
   vite: {
+    // The shared sanity-test-studio schema and plugins ship .css.ts files, so this studio needs the
+    // same vanilla-extract plugin as dev/test-studio to build them
+    plugins: [vanillaExtractPlugin()],
     define: {
       'process.env.SANITY_E2E_PROJECT_ID': JSON.stringify(process.env.SANITY_E2E_PROJECT_ID),
       'process.env.SANITY_E2E_DATASET': JSON.stringify(process.env.SANITY_E2E_DATASET),
