@@ -72,7 +72,12 @@ export function ReleaseDetail() {
             radius={4}
           >
             <Flex gap={3}>
-              <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={ErrorOutlineIcon}
+                tone="critical"
+              />
               <VStack gap={4}>
                 <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
                   {t('loading-release-documents.error.title')}

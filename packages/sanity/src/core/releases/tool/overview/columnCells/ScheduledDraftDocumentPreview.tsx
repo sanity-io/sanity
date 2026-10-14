@@ -64,13 +64,21 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
                     tone={validationErrorCount ? 'critical' : undefined}
                   >
                     <Flex alignItems="center" gap={3} padding={1}>
-                      <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
+                      <Icon
+                        size={1}
+                        style={{margin: '-0.375rem'}}
+                        icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                      />
                       {t('document-validation.error', {count: validationErrorCount})}
                     </Flex>
                   </Text>
                 }
               >
-                <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
+                <Icon
+                  size={1}
+                  style={{margin: '-0.375rem'}}
+                  icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                />
               </Tooltip>
             </Box>
           )}

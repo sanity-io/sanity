@@ -236,7 +236,11 @@ export const releasesOverviewColumnDefs: (
                   }
                   portal
                 >
-                  <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
+                  <Icon
+                    size={1}
+                    style={{margin: '-0.375rem'}}
+                    icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                  />
                 </Tooltip>
               )}
               {hasWarning && (
@@ -248,7 +252,11 @@ export const releasesOverviewColumnDefs: (
                   }
                   portal
                 >
-                  <Icon size={1} icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />} />
+                  <Icon
+                    size={1}
+                    style={{margin: '-0.375rem'}}
+                    icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />}
+                  />
                 </Tooltip>
               )}
             </Flex>
@@ -293,7 +301,7 @@ export const releasesOverviewColumnDefs: (
                   <Flex gap={2}>
                     <Text size={1} as="div" trim={true}>
                       <Tooltip content={t('summary.all-documents-validated')}>
-                        <Icon size={1} icon={CheckmarkCircleIcon} />
+                        <Icon size={1} style={{margin: '-0.375rem'}} icon={CheckmarkCircleIcon} />
                       </Tooltip>
                     </Text>
                   </Flex>

@@ -39,7 +39,13 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
     <Flex gap={1} alignItems="center" flexWrap="wrap">
       {isScheduledOrScheduling && (
         <Box paddingY={1}>
-          <Icon size={1} muted icon={LockIcon} data-testid="release-lock-icon" />
+          <Icon
+            size={1}
+            muted
+            style={{margin: '-0.375rem'}}
+            icon={LockIcon}
+            data-testid="release-lock-icon"
+          />
         </Box>
       )}
       {!isInArchivedView && (

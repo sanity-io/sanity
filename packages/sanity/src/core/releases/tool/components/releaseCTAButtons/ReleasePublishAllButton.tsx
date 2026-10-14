@@ -276,6 +276,7 @@ export const ReleasePublishAllButton = ({
           <Icon
             muted
             size={1}
+            style={{margin: '-0.375rem'}}
             icon={
               <ToneIcon
                 icon={ErrorOutlineIcon}

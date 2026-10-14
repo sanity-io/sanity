@@ -73,7 +73,7 @@ export function ReleaseDashboardHeader(props: {
                 />
               </Flex>
               <Box paddingY={2} flexBasis="auto" flexGrow={0} flexShrink={0}>
-                <Icon size={1} icon={ChevronRightIcon} />
+                <Icon size={1} style={{margin: '-0.375rem'}} icon={ChevronRightIcon} />
               </Box>
               <Box padding={2} style={{maxWidth: '300px'}}>
                 <Text

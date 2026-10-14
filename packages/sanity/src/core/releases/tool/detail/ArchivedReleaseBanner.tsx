@@ -19,6 +19,11 @@ function HistoryExperienceLink({children}: {children?: React.ReactNode}) {
       href="https://www.sanity.io/docs/user-guides/history-experience"
       target="_blank"
       rel="noreferrer"
+      style={{
+        color: 'var(--card-link-color)',
+        textDecoration: 'none',
+        borderRadius: '1px',
+      }}
     >
       {children}
     </a>
@@ -44,7 +49,11 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
   return (
     <Card padding={4} radius={4} tone="primary" data-testid="retention-policy-card">
       <Flex gap={3}>
-        <Icon size={1} icon={InfoOutlineIcon} style={{color: 'var(--card-icon-color)'}} />
+        <Icon
+          size={1}
+          icon={InfoOutlineIcon}
+          style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
+        />
         <VStack gap={4}>
           <Text
             size={1}

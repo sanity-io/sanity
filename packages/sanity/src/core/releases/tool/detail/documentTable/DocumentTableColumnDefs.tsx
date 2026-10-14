@@ -208,7 +208,6 @@ const documentActionColumn: (
 // --card-badge-* vars only exist inside a Badge, so we replicate the Card approach: a transparent
 // suggest-toned wrapper, with the RhombusIcon (stroke=currentColor) picking up --card-icon-color.
 const VARIANT_ICON_CARD_STYLE: CSSProperties = {backgroundColor: 'transparent'}
-const VARIANT_ICON_STYLE: CSSProperties = {color: 'var(--card-icon-color)'}
 
 /** Resolves a document's variant definition from its `_system.variants[0]._ref` (full variant id). */
 function resolveDocumentVariant(
@@ -251,7 +250,7 @@ const VariantCell = memo(
       >
         <Flex alignItems="center" gap={2}>
           <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
-            <Icon size={2} icon={RhombusIcon} tone="suggest" />
+            <Icon size={2} style={{margin: '-0.4375rem'}} icon={RhombusIcon} tone="suggest" />
           </Card>
           {/* flex + min-width:0 lets the label shrink below its content width so a long variant name
               truncates with an ellipsis instead of overflowing the column. */}
@@ -529,7 +528,11 @@ export const getDocumentTableColumnDefs: (
                 content={
                   <Text muted size={1} as="div" trim={true}>
                     <Flex alignItems={'center'} gap={3} padding={1}>
-                      <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
+                      <Icon
+                        size={1}
+                        style={{margin: '-0.375rem'}}
+                        icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                      />
                       {errorLabel}
                     </Flex>
                   </Text>
@@ -545,7 +548,8 @@ export const getDocumentTableColumnDefs: (
                   >
                     <Icon
                       size={1}
-                      icon={<Icon size={1} icon={ErrorOutlineIcon} tone="critical" />}
+                      style={{margin: '-0.375rem'}}
+                      icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
                     />
                   </IntentLink>
                 </Text>
@@ -566,6 +570,7 @@ export const getDocumentTableColumnDefs: (
                 <Icon
                   muted
                   size={1}
+                  style={{margin: '-0.375rem'}}
                   icon={<ToneIcon icon={ClockIcon} tone="default" />}
                   data-testid={`validation-validating-${datum.document._id}`}
                 />
@@ -584,6 +589,7 @@ export const getDocumentTableColumnDefs: (
                 <Icon
                   muted
                   size={1}
+                  style={{margin: '-0.375rem'}}
                   icon={<ToneIcon icon={CheckmarkCircleIcon} tone="positive" />}
                   data-testid={`validation-valid-${datum.document._id}`}
                 />

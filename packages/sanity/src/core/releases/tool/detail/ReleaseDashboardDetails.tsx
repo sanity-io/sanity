@@ -104,7 +104,11 @@ function ReleaseDashboardDetailsProduction({
           <ValidationProgressIndicator documents={documents} />
           {shouldDisplayError && (
             <Flex gap={2} padding={2} data-testid="release-error-details">
-              <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+              />
               <TextWithTone size={1} tone="critical">
                 {isAtTimeRelease
                   ? tRelease('failed-schedule-title')
@@ -114,7 +118,11 @@ function ReleaseDashboardDetailsProduction({
           )}
           {shouldDisplayWarnings && (
             <Flex gap={2} padding={2} data-testid="release-permission-error-details">
-              <Icon size={1} icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />} />
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />}
+              />
               <TextWithTone size={1} tone="caution">
                 {tRelease('permission-missing-title')}
               </TextWithTone>
@@ -127,7 +135,12 @@ function ReleaseDashboardDetailsProduction({
         {shouldDisplayError && (
           <Card padding={4} radius={4} tone="critical">
             <Flex gap={3}>
-              <Icon size={1} icon={ErrorOutlineIcon} tone="critical" />
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={ErrorOutlineIcon}
+                tone="critical"
+              />
               <VStack gap={4}>
                 <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
                   {isAtTimeRelease
@@ -147,7 +160,12 @@ function ReleaseDashboardDetailsProduction({
         {shouldDisplayWarnings && (
           <Card padding={4} radius={4} tone="caution">
             <Flex gap={3}>
-              <Icon size={1} icon={WarningOutlineIcon} tone="caution" />
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={WarningOutlineIcon}
+                tone="caution"
+              />
               <VStack gap={3}>
                 <Text size={1} as="div" trim={true} tone="caution">
                   {tRelease('permission-missing-title')}
@@ -203,6 +221,7 @@ export function ReleaseDashboardDetails({
       <Card tone={statusTone} style={{background: 'transparent'}}>
         <Icon
           size={1}
+          style={{margin: '-0.375rem'}}
           icon={statusGlyphIcon}
           tone={statusTone === 'default' ? undefined : statusTone}
         />
@@ -294,7 +313,9 @@ export function ReleaseDashboardDetails({
                       ),
                     },
                     {
-                      icon: <Icon size={1} muted icon={DocumentsIcon} />,
+                      icon: (
+                        <Icon size={1} muted style={{margin: '-0.375rem'}} icon={DocumentsIcon} />
+                      ),
                       label: tRelease('dashboard.details.metadata.documents'),
                       value: loading ? (
                         <Skeleton animated radius={1} style={{width: 24, height: 11}} />
@@ -306,7 +327,7 @@ export function ReleaseDashboardDetails({
                       icon: createAuthor ? (
                         <UserAvatar size={0} user={createAuthor} />
                       ) : (
-                        <Icon size={1} muted icon={UserIcon} />
+                        <Icon size={1} muted style={{margin: '-0.375rem'}} icon={UserIcon} />
                       ),
                       label: tRelease('dashboard.details.metadata.created'),
                       value: (
@@ -324,9 +345,12 @@ export function ReleaseDashboardDetails({
         {shouldDisplayError && (
           <Card data-testid="release-error-details" padding={4} radius={4} tone="critical">
             <Flex gap={3}>
-              <Text size={1} as="div" trim={true} tone="critical">
-                <ErrorOutlineIcon />
-              </Text>
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={ErrorOutlineIcon}
+                tone="critical"
+              />
               <VStack gap={4}>
                 <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
                   {isAtTimeRelease
@@ -351,9 +375,12 @@ export function ReleaseDashboardDetails({
             tone="caution"
           >
             <Flex gap={3}>
-              <Text size={1} as="div" trim={true} tone="caution">
-                <WarningOutlineIcon />
-              </Text>
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={WarningOutlineIcon}
+                tone="caution"
+              />
               <VStack gap={3}>
                 <Text size={1} as="div" trim={true} tone="caution">
                   {tRelease('permission-missing-title')}
