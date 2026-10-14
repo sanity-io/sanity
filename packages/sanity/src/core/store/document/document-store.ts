@@ -36,7 +36,7 @@ import {
 } from './document-pair/operationEvents'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {type OperationsAPI} from './document-pair/operations/types'
-import {setValidationMode, validation, validationKey} from './document-pair/validation'
+import {acquireImmediateValidation, validation, validationKey} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
 import {type InitialValueMsg} from './initialValue/types'
@@ -128,9 +128,10 @@ export interface DocumentStore {
       validatePublishedReferences: boolean,
       options?: {
         /**
-         * `immediate` validates without waiting for idle callbacks while this subscription is
-         * active, for when a user waits on the result. The stream stays shared with idle
-         * subscribers, who get the results too.
+         * `immediate` validates without waiting for idle callbacks while a user waits on the
+         * result. Scheduling is shared per document: it stays `immediate` until the last
+         * immediate subscription unsubscribes, and idle subscribers on the same stream get
+         * those results too.
          */
         scheduling?: 'idle' | 'immediate'
       },
@@ -307,8 +308,8 @@ export function createDocumentStore({
         if (options?.scheduling !== 'immediate') return status$
         const key = validationKey(ctx, idPair, type, validationTarget, requirePublishedReferences)
         return defer(() => {
-          setValidationMode(key, 'immediate')
-          return status$.pipe(finalize(() => setValidationMode(key, 'idle')))
+          const release = acquireImmediateValidation(key)
+          return status$.pipe(finalize(release))
         })
       },
     },
