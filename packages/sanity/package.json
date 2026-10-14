@@ -71,6 +71,10 @@
       "monorepo": "./src/_exports/media-library.ts",
       "default": "./lib/media-library.js"
     },
+    "./media-library-island-runtime": {
+      "monorepo": "./src/_exports/media-library-island-runtime.ts",
+      "default": "./lib/media-library-island-runtime.js"
+    },
     "./migrate": {
       "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
@@ -107,6 +111,7 @@
       "./dashboard": "./lib/dashboard.js",
       "./desk": "./lib/desk.js",
       "./media-library": "./lib/media-library.js",
+      "./media-library-island-runtime": "./lib/media-library-island-runtime.js",
       "./migrate": "./lib/migrate.js",
       "./presentation": "./lib/presentation.js",
       "./router": "./lib/router.js",
