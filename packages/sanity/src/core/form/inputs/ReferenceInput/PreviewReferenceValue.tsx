@@ -1,13 +1,12 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
-import {Badge, Inline, Text} from '@sanity/ui'
+import {Badge, Inline} from '@sanity/ui'
 import {type ComponentType, Fragment, type ReactNode} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Icon, type TextProps} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
-import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useListFormat} from '../../../hooks/useListFormat'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -24,8 +23,9 @@ export function PreviewReferenceValue(props: {
   type: ReferenceSchemaType
   value: Reference
   showTypeLabel?: boolean
+  tone?: TextProps['tone']
 }) {
-  const {layout = 'default', referenceInfo, renderPreview, type, value, showTypeLabel} = props
+  const {layout = 'default', referenceInfo, renderPreview, type, value, showTypeLabel, tone} = props
   const {t} = useTranslation()
 
   // Treat missing result as loading — EMPTY_STATE and deferred lag can yield
@@ -47,6 +47,7 @@ export function PreviewReferenceValue(props: {
           documentId={value._ref}
           actualType={value._strengthenOnPublish?.type}
           declaredTypes={type.to.map((toType) => toType.name)}
+          tone={tone}
         />
       )
     }
@@ -86,7 +87,9 @@ export function PreviewReferenceValue(props: {
         <Box padding={1}>
           <Flex alignItems="center">
             <Box flexBasis="0%" flexGrow={1} paddingY={2}>
-              <Text muted>{t('inputs.reference.error.document-unavailable-title')}</Text>
+              <Text muted as="div" trim={true} tone={tone}>
+                {t('inputs.reference.error.document-unavailable-title')}
+              </Text>
             </Box>
           </Flex>
         </Box>
@@ -116,9 +119,7 @@ export function PreviewReferenceValue(props: {
                 )
               }
             >
-              <TextWithTone tone="default">
-                <HelpCircleIcon />
-              </TextWithTone>
+              <Icon size={1} icon={HelpCircleIcon} />
             </Tooltip>
           </Box>
         ) : null}
@@ -138,6 +139,7 @@ export function PreviewReferenceValue(props: {
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
         actualType={refTypeName || '<unknown>'}
         declaredTypes={type.to.map((toType) => toType.name)}
+        tone={tone}
       />
     )
   }
@@ -154,19 +156,17 @@ export function PreviewReferenceValue(props: {
 }
 
 function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
-  const Icon = props.icon
+  const MessageIcon = props.icon
   return (
     <Flex>
-      <Text size={1}>
-        <Icon />
-      </Text>
+      <Icon size={1} icon={MessageIcon} />
       <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {props.title}
         </Text>
 
         <Box marginTop={3}>
-          <Text as="p" muted size={1}>
+          <Text as="p" muted size={1} trim={true}>
             {props.children}
           </Text>
         </Box>
@@ -179,10 +179,12 @@ function InvalidType({
   declaredTypes,
   documentId,
   actualType,
+  tone,
 }: {
   documentId: string
   actualType: string
   declaredTypes: string[]
+  tone?: TextProps['tone']
 }) {
   const {t} = useTranslation()
 
@@ -191,7 +193,9 @@ function InvalidType({
       <Box padding={1}>
         <Flex alignItems="center">
           <Box flexBasis="0%" flexGrow={1} paddingY={2}>
-            <Text muted>{t('inputs.reference.error.invalid-type-title')}</Text>
+            <Text muted as="div" trim={true} tone={tone}>
+              {t('inputs.reference.error.invalid-type-title')}
+            </Text>
           </Box>
         </Flex>
       </Box>
@@ -200,7 +204,7 @@ function InvalidType({
           portal
           content={
             <VStack gap={3}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <Translate
                   t={t}
                   i18nKey="inputs.reference.error.invalid-type-description"
@@ -213,9 +217,7 @@ function InvalidType({
           }
         >
           <Box padding={2}>
-            <TextWithTone tone="default">
-              <HelpCircleIcon />
-            </TextWithTone>
+            <Icon size={1} icon={HelpCircleIcon} />
           </Box>
         </Tooltip>
       </Box>

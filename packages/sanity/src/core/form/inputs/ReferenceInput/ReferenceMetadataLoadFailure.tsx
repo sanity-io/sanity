@@ -1,5 +1,4 @@
-import {Text} from '@sanity/ui'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -27,7 +26,7 @@ export function ReferenceMetadataLoadErrorAlertStrip({
       data-testid="alert-reference-info-failed"
     >
       <VStack gap={3}>
-        <Text as="p" muted size={1}>
+        <Text as="p" muted size={1} trim={true} tone="caution">
           {errorMessage}
         </Text>
         <Button

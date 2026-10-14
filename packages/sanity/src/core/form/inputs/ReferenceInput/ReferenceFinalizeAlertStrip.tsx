@@ -1,6 +1,5 @@
 import {type ReferenceSchemaType} from '@sanity/types'
-import {Text} from '@sanity/ui'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -33,7 +32,7 @@ export function ReferenceFinalizeAlertStrip({
       data-testid="alert-reference-published"
     >
       <VStack gap={3}>
-        <Text as="p" muted size={1}>
+        <Text as="p" muted size={1} trim={true}>
           <Translate
             t={t}
             i18nKey={
