@@ -1,10 +1,9 @@
 import {type ColorTints} from '@sanity/color'
-import {Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {useCallback, useEffect, useId, useMemo, useReducer, useState} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {usePresenceReporter} from '../../../../presence/overlay/tracker'
 import {type FieldPresenceData, type FormNodePresence} from '../../../../presence/types'

@@ -12,12 +12,12 @@ import {
 } from '@portabletext/plugin-table/ui'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Switch, Text, usePortal} from '@sanity/ui'
+import {Switch, usePortal} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useId, useMemo} from 'react'
 import {createGlobalStyle, useTheme} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -203,7 +203,7 @@ function StudioTableMenu(props: TableMenuProps): React.JSX.Element {
           <label style={{cursor: 'pointer'}}>
             <Flex alignItems="center" gap={3} padding={3}>
               <Switch checked={props.hasHeader} onChange={props.onToggleHeader} />
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {t('inputs.portable-text.table.header-row')}
               </Text>
             </Flex>

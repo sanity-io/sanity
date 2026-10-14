@@ -2,9 +2,9 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type FormNodeValidation} from '@sanity/types'
-import {Text, type Theme} from '@sanity/ui'
+import {type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {type PortableTextMarker, type RenderCustomMarkers} from '../../../types/_transitional'
 import {useFormBuilder} from '../../../useFormBuilder'
@@ -66,12 +66,21 @@ export function DefaultMarkers(props: MarkersProps) {
                 data-error={level === 'error' ? '' : undefined}
                 data-warning={level === 'warning' ? '' : undefined}
                 data-info={level === 'info' ? '' : undefined}
+                forwardedAs="div"
+                trim={true}
               >
                 {getIcon(level)}
               </IconText>
             </Box>
             <Box>
-              <Text size={1}>{message || 'Error'}</Text>
+              <Text
+                size={1}
+                as="div"
+                trim={true}
+                tone={level === 'error' ? 'critical' : level === 'warning' ? 'caution' : undefined}
+              >
+                {message || 'Error'}
+              </Text>
             </Box>
           </Flex>
         ))}
