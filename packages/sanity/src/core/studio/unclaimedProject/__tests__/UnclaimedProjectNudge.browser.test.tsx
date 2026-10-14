@@ -16,6 +16,14 @@ import {ROBOT_PROVIDER, type UnclaimedProjectState} from '../useUnclaimedProject
 
 const {settleChromaticEndState} = testHelpers()
 
+// Freezing `Date` pins the countdown and critical-window math, but
+// `Intl.DateTimeFormat` still uses the host timezone for `expiresAt`. Force
+// UTC here so Chromatic archives the same banner text in every environment.
+vi.mock('../../../hooks/useDateTimeFormat', () => ({
+  useDateTimeFormat: (options: Intl.DateTimeFormatOptions = {}) =>
+    new Intl.DateTimeFormat('en-US', {...options, timeZone: 'UTC'}),
+}))
+
 // The nudge formats `expiresAt`, counts down to it every second and reads the
 // clock to decide whether the window is critical, so the test pins `Date` to a
 // fixed instant (far enough out that the window cannot expire while it runs).
@@ -23,6 +31,12 @@ const {settleChromaticEndState} = testHelpers()
 // ticking, but every read of the frozen clock produces the same value.
 const NOW = new Date('2030-03-10T12:00:00.000Z')
 const HOUR_MS = 3_600_000
+const OPEN_EXPIRES_AT = new Date(NOW.getTime() + 24 * HOUR_MS)
+const OPEN_EXPIRES_AT_TEXT = new Intl.DateTimeFormat('en-US', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'UTC',
+}).format(OPEN_EXPIRES_AT)
 
 const COPY = {
   criticalThresholdHours: 12,
@@ -121,12 +135,15 @@ it('renders the caution banner and warning toast while the claim window is open'
   await renderNudge({
     status: 'unclaimed',
     claimUrl: 'https://www.sanity.io/claim/fixture-token',
-    expiresAt: new Date(NOW.getTime() + 24 * HOUR_MS),
+    expiresAt: OPEN_EXPIRES_AT,
     claimLinkSpent: false,
   })
   await stepClockPastToastDelay()
 
-  const banner = await expectBanner('Claim this project before', '23:59:59')
+  const banner = await expectBanner(
+    `Claim this project before ${OPEN_EXPIRES_AT_TEXT}.`,
+    '23:59:59',
+  )
   expect(banner).toHaveAttribute('data-tone', 'caution')
   await expect.element(page.getByText('Keep everything you built.')).toBeVisible()
   await expect.element(page.getByRole('button', {name: 'Remind me later'})).toBeEnabled()
@@ -157,12 +174,12 @@ it('points at the original claim link when the claim URL is unknown', async () =
   await renderNudge({
     status: 'unclaimed',
     claimUrl: undefined,
-    expiresAt: new Date(NOW.getTime() + 24 * HOUR_MS),
+    expiresAt: OPEN_EXPIRES_AT,
     claimLinkSpent: false,
   })
   await stepClockPastToastDelay()
 
-  await expectBanner('Claim this project before', '23:59:59')
+  await expectBanner(`Claim this project before ${OPEN_EXPIRES_AT_TEXT}.`, '23:59:59')
   // Banner and toast both fall back to the no-claim-URL copy, with no claim button.
   await expect.poll(() => page.getByText('Open the original claim link.').elements().length).toBe(2)
   await expect.poll(() => page.getByRole('link', {name: 'Claim project'}).elements().length).toBe(0)
