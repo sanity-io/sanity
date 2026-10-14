@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {DocumentTableSelectionContextValue} from '../../core/releases/tool/components/Table/types'
 
@@ -6,7 +6,4 @@ import type {DocumentTableSelectionContextValue} from '../../core/releases/tool/
  * @internal
  */
 export const DocumentTableSelectionContext =
-  createContext<DocumentTableSelectionContextValue | null>(
-    'sanity/_singletons/context/document-table-selection',
-    null,
-  )
+  createContext<DocumentTableSelectionContextValue | null>(null)

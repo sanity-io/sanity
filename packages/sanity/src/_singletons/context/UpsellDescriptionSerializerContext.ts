@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {UpsellDescriptionSerializerContextValue} from '../../core/studio/upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
 
@@ -6,7 +6,4 @@ import type {UpsellDescriptionSerializerContextValue} from '../../core/studio/up
  * @internal
  */
 export const UpsellDescriptionSerializerContext =
-  createContext<UpsellDescriptionSerializerContextValue | null>(
-    'sanity/_singletons/context/upsell-description-serializer',
-    null,
-  )
+  createContext<UpsellDescriptionSerializerContextValue | null>(null)
