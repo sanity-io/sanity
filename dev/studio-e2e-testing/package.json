@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@repo/utils": "workspace:*",
-    "@sanity/google-maps-input": "^6.1.16",
+    "@sanity/google-maps-input": "^6.1.17",
     "@sanity/icons": "^5.2.3",
     "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
@@ -23,8 +23,8 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "sanity-plugin-internationalized-array": "^5.3.3",
-    "sanity-plugin-media": "^6.3.3",
+    "sanity-plugin-internationalized-array": "^5.3.5",
+    "sanity-plugin-media": "^6.3.5",
     "sanity-test-studio": "workspace:*",
     "styled-components": "catalog:",
     "ui5": "catalog:"
