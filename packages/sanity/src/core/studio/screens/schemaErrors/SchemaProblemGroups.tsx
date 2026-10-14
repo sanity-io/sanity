@@ -144,7 +144,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                   <ErrorMessageText
                     muted
                     size={1}
-                    as="div"
+                    forwardedAs="div"
                     trim={true}
                     tone={TONES[problem.severity] as TextProps['tone']}
                   >

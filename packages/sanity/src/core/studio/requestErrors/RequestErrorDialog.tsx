@@ -2,7 +2,7 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Card} from '@sanity/ui'
 import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
-import {Text, VStack, Flex, Box} from 'ui5'
+import {Text, VStack, Flex, Box, Icon} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type RequestErrorClaim} from './types'
@@ -169,7 +169,7 @@ export function RequestErrorDialog(props: {
             >
               <Flex as="span" alignItems="center" gap={2}>
                 <span>Check Sanity Status</span>
-                <LaunchIcon />
+                <Icon size={1} icon={LaunchIcon} />
               </Flex>
             </a>
           </Text>

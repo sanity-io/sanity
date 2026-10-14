@@ -311,17 +311,19 @@ function IconAndTextBlock(props: PortableTextTypeComponentProps<IconAndTextValue
       gap={2}
     >
       <Flex gap={2} style={{flexShrink: 0}}>
-        <Icon
-          size={1}
-          tone={props.value.accent ? 'suggest' : undefined}
-          icon={
-            props.value.sanityIcon ? (
-              <IconWrapper symbol={props.value.sanityIcon} />
-            ) : (
-              <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} />} </>
-            )
-          }
-        />
+        {(props.value.sanityIcon || props.value.icon?.url) && (
+          <Icon
+            size={1}
+            tone={props.value.accent ? 'suggest' : undefined}
+            icon={
+              props.value.sanityIcon ? (
+                <IconWrapper symbol={props.value.sanityIcon} />
+              ) : (
+                <DynamicIcon icon={props.value.icon!} />
+              )
+            }
+          />
+        )}
         <Text
           size={1}
           weight="semibold"
