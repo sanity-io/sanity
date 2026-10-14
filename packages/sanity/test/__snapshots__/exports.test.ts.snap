@@ -1559,6 +1559,9 @@ exports[`exports snapshot 1`] = `
   "./media-library": {
     "defineVideoField": "function",
   },
+  "./media-library-island-runtime": {
+    "mountIsland": "function",
+  },
   "./migrate": {
     "ALLOWED_PROPERTIES": "object",
     "DEFAULT_MUTATION_CONCURRENCY": "number",
