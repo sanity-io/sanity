@@ -4,7 +4,7 @@ import {Card} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {format} from 'date-fns/format'
 import {useMemo} from 'react'
-import {Text, Flex, VStack, Icon} from 'ui5'
+import {Text, Flex, VStack, Icon, Link} from 'ui5'
 
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -15,18 +15,17 @@ import {releasesLocaleNamespace} from '../../i18n'
 
 function HistoryExperienceLink({children}: {children?: React.ReactNode}) {
   return (
-    <a
+    <Link
       href="https://www.sanity.io/docs/user-guides/history-experience"
-      target="_blank"
-      rel="noreferrer"
+      openInNewTab
+      underlined={false}
       style={{
         color: 'var(--card-link-color)',
-        textDecoration: 'none',
         borderRadius: '1px',
       }}
     >
       {children}
-    </a>
+    </Link>
   )
 }
 
