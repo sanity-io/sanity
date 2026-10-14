@@ -1,6 +1,16 @@
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject, timer} from 'rxjs'
+import {
+  asyncScheduler,
+  debounceTime,
+  defer,
+  EMPTY,
+  merge,
+  type Observable,
+  of,
+  Subject,
+  timer,
+} from 'rxjs'
 import {
   catchError,
   concatMap,
@@ -184,7 +194,9 @@ export const operationEvents = memoize(
 
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       filter((op) => op.storeKey === storeKey || !op.storeKey),
-      groupBy((op) => op.idPair.publishedId),
+      groupBy((op) => op.idPair.publishedId, {
+        duration: (results$) => results$.pipe(debounceTime(AUTOCOMMIT_INTERVAL)),
+      }),
       mergeMap((group$) =>
         merge(
           // A commit only sends local changes to the server, so it runs on its own and never
@@ -212,8 +224,12 @@ export const operationEvents = memoize(
       filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
       // Throttled per document, so that patching another document within the interval doesn't
       // replace the pending trailing commit of the previous one
-      groupBy((result) =>
-        createMemoKey([result.args.idPair.publishedId, result.args.idPair.versionId]),
+      groupBy(
+        (result) => createMemoKey([result.args.idPair.publishedId, result.args.idPair.versionId]),
+        {
+          duration: (documentPatches$) =>
+            documentPatches$.pipe(debounceTime(AUTOCOMMIT_INTERVAL * 2)),
+        },
       ),
       mergeMap((documentPatches$) =>
         documentPatches$.pipe(
@@ -233,7 +249,7 @@ export const operationEvents = memoize(
       // One autocommit for all subscribers, kept running for an interval after the last one
       // leaves: a form flushes its pending patches while its document pane unmounts, and the
       // trailing commit for those must still fire after the pane's subscription is gone.
-      share({resetOnRefCountZero: () => timer(AUTOCOMMIT_INTERVAL)}),
+      share({resetOnRefCountZero: () => timer(AUTOCOMMIT_INTERVAL * 2)}),
     )
   },
   (ctx) =>
