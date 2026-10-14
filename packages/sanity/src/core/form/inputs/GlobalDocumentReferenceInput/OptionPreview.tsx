@@ -1,8 +1,8 @@
 import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
-import {Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Alert} from '../../components/Alert'
@@ -42,7 +42,7 @@ export function OptionPreview(props: {
     return (
       <Flex gap={2} padding={1} flexDirection="column">
         <Alert title={t('inputs.reference.error.failed-to-load-document-title')}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {error.message}
           </Text>
         </Alert>

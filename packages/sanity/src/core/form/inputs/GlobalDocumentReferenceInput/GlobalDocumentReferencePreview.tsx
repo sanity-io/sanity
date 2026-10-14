@@ -4,14 +4,13 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {type GlobalDocumentReferenceType, type PreviewValue} from '@sanity/types'
-import {Badge, Inline, Text} from '@sanity/ui'
+import {Badge, Inline} from '@sanity/ui'
 import {isValidElement as reactIsValidElement, useMemo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, type TextProps, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DefaultPreview} from '../../../components/previews/general/DefaultPreview'
 import {type PreviewMediaDimensions} from '../../../components/previews/types'
-import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type FIXME} from '../../../FIXME'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type DocumentAvailability} from '../../../preview/types'
@@ -34,6 +33,7 @@ export function GlobalDocumentReferencePreview(props: {
   resourceId: string
   refType?: GlobalDocumentReferenceType
   showTypeLabel: boolean
+  tone?: TextProps['tone']
 }): React.JSX.Element {
   const {
     refType,
@@ -45,6 +45,7 @@ export function GlobalDocumentReferencePreview(props: {
     id,
     resourceType,
     resourceId,
+    tone,
   } = props
   const notFound = availability?.reason === 'NOT_FOUND'
   const insufficientPermissions = availability?.reason === 'PERMISSION_DENIED'
@@ -81,8 +82,8 @@ export function GlobalDocumentReferencePreview(props: {
       }
     }
     if (!refType?.icon) return null
-    const Icon = refType.icon
-    return <Icon />
+    const RefTypeIcon = refType.icon
+    return <RefTypeIcon />
   }, [previewMedia, resourceType, resourceId, refType?.icon, t])
 
   return (
@@ -105,7 +106,9 @@ export function GlobalDocumentReferencePreview(props: {
         <Box flexBasis="0%" flexGrow={1}>
           <Flex alignItems="center">
             <Box flexBasis="0%" flexGrow={1} paddingY={2}>
-              <Text muted>{t('inputs.reference.error.document-unavailable-title')}</Text>
+              <Text muted as="div" trim={true} tone={tone}>
+                {t('inputs.reference.error.document-unavailable-title')}
+              </Text>
             </Box>
           </Flex>
         </Box>
@@ -126,9 +129,7 @@ export function GlobalDocumentReferencePreview(props: {
                   {documentId: id},
                 )}
               >
-                <TextWithTone tone="default">
-                  {insufficientPermissions ? <AccessDeniedIcon /> : <HelpCircleIcon />}
-                </TextWithTone>
+                <Icon size={1} icon={insufficientPermissions ? AccessDeniedIcon : HelpCircleIcon} />
               </Tooltip>
             </Box>
           )}
@@ -143,9 +144,12 @@ export function GlobalDocumentReferencePreview(props: {
                     : 'input.reference.document-cannot-be-opened.failed-to-resolve-url',
                 )}
               >
-                <TextWithTone size={1} tone="default" muted={!hasStudioUrl}>
-                  <LaunchIcon />
-                </TextWithTone>
+                <Icon
+                  size={1}
+                  icon={LaunchIcon}
+                  muted={!hasStudioUrl}
+                  data-muted={!hasStudioUrl ? '' : undefined}
+                />
               </Tooltip>
             </Box>
           )}
