@@ -1,9 +1,9 @@
 import {type Schema} from '@sanity/types'
-import {Card, Heading, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
-import {Container, Flex, Grid, VStack} from 'ui5'
+import {Text, Container, Flex, Grid, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {type SchemaErrorContext} from '../../../config/SchemaError'
@@ -22,7 +22,7 @@ interface SchemaErrorsScreenProps {
 function ContextRow(props: {label: string; value: string}) {
   return (
     <>
-      <Text size={1} weight="medium">
+      <Text size={1} weight="medium" as="div" trim={true}>
         {props.label}
       </Text>
       <Code size={1}>{props.value}</Code>
@@ -108,7 +108,7 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
               data-testid="schema-error-location"
             >
               <VStack gap={3}>
-                <Text size={1} weight="medium">
+                <Text size={1} weight="medium" as="div" trim={true}>
                   {t('schema-errors.location.title', 'Error location')}
                 </Text>
                 <Grid gap={2} gridTemplateColumns="max-content auto">

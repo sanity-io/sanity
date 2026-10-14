@@ -1,8 +1,8 @@
 /* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
-import {VStack, Flex, Box} from 'ui5'
+import {Text, VStack, Flex, Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type RequestErrorClaim} from './types'
@@ -40,13 +40,13 @@ function NetworkTroubleshooting() {
   return (
     <Card border radius={2} padding={3} tone="transparent">
       <VStack gap={3}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           Troubleshooting
         </Text>
         <VStack as="ul" gap={3} style={{margin: 0, paddingLeft: '1.25em'}}>
           {NETWORK_TROUBLESHOOTING.map((tip) => (
             <Box as="li" key={tip.key}>
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 {tip.content}
               </Text>
             </Box>
@@ -155,10 +155,12 @@ export function RequestErrorDialog(props: {
       }
     >
       <VStack gap={4}>
-        <Text>{message}</Text>
+        <Text as="div" trim={true}>
+          {message}
+        </Text>
         {claim.type === 'networkError' ? <NetworkTroubleshooting /> : null}
         {claim.type === 'serverError' ? (
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <a
               href="https://status.sanity.io"
               rel="noopener noreferrer"
@@ -216,7 +218,9 @@ function RateLimitedDialog(props: {
         }}
       >
         <VStack gap={4}>
-          <Text>Too many requests at once. Reload the Studio to try again.</Text>
+          <Text as="div" trim={true}>
+            Too many requests at once. Reload the Studio to try again.
+          </Text>
         </VStack>
       </Dialog>
     )
@@ -245,7 +249,9 @@ function RateLimitedDialog(props: {
       }}
     >
       <VStack gap={4}>
-        <Text>Too many requests at once. You can try again shortly.</Text>
+        <Text as="div" trim={true}>
+          Too many requests at once. You can try again shortly.
+        </Text>
       </VStack>
     </Dialog>
   )
