@@ -52,7 +52,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
           // oxlint-disable-next-line no-array-index-key
           <Card key={i} border padding={4} radius={2} tone={TONES[problem.severity]}>
             <Flex>
-              <Box marginRight={3}>
+              <Flex marginRight={3}>
                 <Icon
                   muted
                   size={1}
@@ -60,7 +60,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                   tone={TONES[problem.severity]}
                   style={{margin: '-0.375rem'}}
                 />
-              </Box>
+              </Flex>
 
               <Box flexBasis="0%" flexGrow={1}>
                 <Text size={1} weight="medium" as="div" trim={true} tone={TONES[problem.severity]}>
@@ -139,8 +139,13 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                   </ErrorMessageText>
 
                   {problem.helpId && (
-                    <Text muted size={1} as="div" trim={true} tone={TONES[problem.severity]}>
-                      <Link href={generateHelpUrl(problem.helpId)} openInNewTab underlined={false}>
+                    <Text size={1} as="div" trim={true}>
+                      <Link
+                        href={generateHelpUrl(problem.helpId)}
+                        openInNewTab
+                        underlined={false}
+                        style={{color: 'var(--card-link-color)'}}
+                      >
                         View documentation &rarr;
                       </Link>
                     </Text>

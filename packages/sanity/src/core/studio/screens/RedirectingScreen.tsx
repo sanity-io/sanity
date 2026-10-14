@@ -11,14 +11,12 @@ export function RedirectingScreen(props: {reason?: string}) {
         <Container size={0}>
           <Card padding={4} radius={2} shadow={1} tone="primary">
             <Flex>
-              <Box>
-                <Icon
-                  size={1}
-                  icon={DoubleChevronRightIcon}
-                  style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
-                />
-              </Box>
-              <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={3} flexDirection="column">
+              <Icon
+                size={1}
+                icon={DoubleChevronRightIcon}
+                style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
+              />
+              <Flex flexGrow={1} marginLeft={3} gap={3} flexDirection="column">
                 <Text
                   as="h1"
                   size={1}

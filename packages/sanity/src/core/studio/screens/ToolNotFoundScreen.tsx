@@ -12,18 +12,24 @@ export function ToolNotFoundScreen(props: {toolName: string}) {
         <Container size={0}>
           <Card padding={4} radius={2} shadow={1} tone="caution">
             <Flex>
-              <Box>
-                <Icon
-                  muted
-                  size={1}
-                  icon={WarningOutlineIcon}
-                  tone="caution"
-                  style={{margin: '-0.375rem'}}
-                />
-              </Box>
+              <Icon
+                muted
+                size={1}
+                icon={WarningOutlineIcon}
+                tone="caution"
+                style={{margin: '-0.375rem'}}
+              />
               <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={3} flexDirection="column">
                 <Text as="h1" size={1} weight="medium" trim={true} tone="caution">
-                  Tool not found: <code>{toolName}</code>
+                  Tool not found:{' '}
+                  <code
+                    style={{
+                      color: 'var(--card-code-fg-color)',
+                      background: 'var(--card-code-bg-color)',
+                    }}
+                  >
+                    {toolName}
+                  </code>
                 </Text>
               </Flex>
             </Flex>
