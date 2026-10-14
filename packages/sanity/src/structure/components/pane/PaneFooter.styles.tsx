@@ -1,11 +1,15 @@
 import {Card, Layer} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const Root = styled(Layer)`
-  position: sticky;
-  bottom: 0;
-`
+import {root, rootCard} from './PaneFooter.styles.css'
 
-export const RootCard = styled(Card)`
-  padding-bottom: env(safe-area-inset-bottom);
-`
+export function Root(props: ComponentProps<typeof Layer>) {
+  const {className, ...rest} = props
+  return <Layer {...rest} className={clsx(root, className)} />
+}
+
+export function RootCard(props: ComponentProps<typeof Card>) {
+  const {className, ...rest} = props
+  return <Card {...rest} className={clsx(rootCard, className)} />
+}
