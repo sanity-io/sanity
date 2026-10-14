@@ -273,17 +273,17 @@ export const ReleasePublishAllButton = ({
     return (
       <Text muted size={1} as="div" trim={true}>
         <Flex alignItems="center" gap={3} padding={1}>
-          <Icon
-            muted
-            size={1}
-            style={{margin: '-0.375rem'}}
-            icon={
-              <ToneIcon
-                icon={ErrorOutlineIcon}
-                tone={isValidatingDocuments ? 'default' : 'critical'}
-              />
-            }
-          />
+          <Flex style={{marginInline: '-0.375rem'}}>
+            <Icon
+              size={1}
+              icon={
+                <ToneIcon
+                  icon={ErrorOutlineIcon}
+                  tone={isValidatingDocuments ? 'default' : 'critical'}
+                />
+              }
+            />
+          </Flex>
           {tooltipText()}
         </Flex>
       </Text>
