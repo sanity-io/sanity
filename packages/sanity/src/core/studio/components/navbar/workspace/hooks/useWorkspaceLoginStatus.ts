@@ -14,12 +14,9 @@ export type WorkspaceLoginStatus = 'loading' | 'logged-in' | 'logged-out' | 'no-
  * `useWorkspaceAuthStates`, which subscribes to each store's full `state` to decide which
  * workspaces are visible.
  *
- * The `null` initial value is load-bearing:
- * - Closed menus keep their items mounted (`<Activity>`, @sanity/ui v4).
- * - Without an initial value, react-rx subscribes during that hidden
- *   render — putting the `/auth/id` probes on the studio boot path.
- * - With it, the probe first fires on reveal (or via the hover/focus
- *   preload on the menu button).
+ * react-rx requires an explicit initial value and renders it until the commit-time subscription
+ * emits. Hidden `<Activity>` trees do not run that subscription until reveal, while the menu
+ * button can still preload the shared probe on hover/focus.
  *
  * @internal
  */
