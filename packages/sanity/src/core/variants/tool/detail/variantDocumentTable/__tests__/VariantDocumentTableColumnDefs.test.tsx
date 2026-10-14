@@ -45,7 +45,7 @@ vi.mock('@sanity/ui', async (importOriginal) => ({
 }))
 
 vi.mock('../../../../../../ui-components/toneIcon/ToneIcon', () => ({
-  ToneIcon: () => <span data-testid="tone-icon" />,
+  ToneIcon: (props: Record<string, unknown>) => <span {...props} />,
 }))
 
 vi.mock('../../../../../../ui-components/tooltip/Tooltip', () => ({
