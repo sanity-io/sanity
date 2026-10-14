@@ -1,4 +1,4 @@
-import {Text} from '@sanity/ui'
+import {Text} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -38,7 +38,7 @@ export function DeleteVariantDialog({
       id="delete-variant-dialog"
       onClose={isDeleting ? undefined : onClose}
     >
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {t('dialog.delete.description', {title: variantTitle})}
       </Text>
     </Dialog>

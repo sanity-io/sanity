@@ -1,7 +1,7 @@
 import {RemoveIcon} from '@sanity/icons/Remove'
-import {Card, Text, type CardTone} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {AnimatedTextWidth} from '../../../perspective/navbar/AnimatedTextWidth'
@@ -40,7 +40,9 @@ export function PerspectiveFilter({
   return (
     <Flex alignItems="center" data-ui="PerspectiveFilter">
       <Box paddingX={2}>
-        <Text size={1}>{prefix}</Text>
+        <Text size={1} as="div" trim={true}>
+          {prefix}
+        </Text>
       </Box>
       <Card tone={tone} radius={2} border>
         <Flex alignItems="center">

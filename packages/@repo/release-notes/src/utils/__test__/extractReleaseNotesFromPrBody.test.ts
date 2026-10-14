@@ -92,6 +92,34 @@ Cursor summary here.`
     consoleWarn.mockRestore()
   })
 
+  it('drops the Cursor agent footer and artifacts hint, as found in a real Cursor PR body', async () => {
+    const note = 'Document lists now end their items at the same distance from the pane edge.'
+    const client = mockClient(note)
+    const prBody = `<!-- CURSOR_AGENT_PR_BODY_BEGIN -->
+### Description
+
+Something.
+
+### Notes for release
+
+Document lists now end their items at the same distance from the pane edge.
+
+<sub>To show artifacts inline, <a href="https://cursor.com/dashboard/cloud-agents#team-pull-requests">enable</a> in settings.</sub>
+<!-- CURSOR_AGENT_PR_BODY_END -->
+
+<div><a href="https://cursor.com/agents/bc-1?cursor_ref=pr_footer&cursor_cta=open_in_web"><picture><source media="(prefers-color-scheme: dark)" srcset="https://cursor.com/assets/images/open-in-web-dark.png"><img alt="Open in Web" width="114" height="28" src="https://cursor.com/assets/images/open-in-web-dark.png"></picture></a>&nbsp;<a href="https://cursor.com/background-agent?bcId=bc-1&cursor_ref=pr_footer&cursor_cta=open_in_cursor"><picture><img alt="Open in Cursor" width="131" height="28" src="https://cursor.com/assets/images/open-in-cursor-dark.png"></picture></a>&nbsp;</div>
+`
+
+    const blocks = await extractReleaseNotesFromPrBody(prBody, {client})
+    expect(portableTextToMarkdown(blocks).trim()).toEqual(note)
+    expect(blocks.some((block) => block._type === 'image')).toBe(false)
+
+    // The footer and hint are gone before the section reaches the LLM cleaner.
+    const prompt = JSON.stringify(vi.mocked(client.messages.create).mock.calls[0])
+    expect(prompt).not.toContain('cursor.com')
+    expect(prompt).not.toContain('To show artifacts inline')
+  })
+
   it('returns [] when the PR body has no Notes-for-release section', async () => {
     const client = mockClient('SHOULD NOT BE CALLED')
     const prBody = `### Description

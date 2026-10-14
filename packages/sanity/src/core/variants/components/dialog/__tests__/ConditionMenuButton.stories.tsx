@@ -1,9 +1,9 @@
 import {TranslateIcon} from '@sanity/icons/Translate'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {type ReactNode} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {ConditionMenu, ConditionMenuButton, type ConditionMenuOption} from '../ConditionMenuButton'
 
@@ -46,7 +46,7 @@ type Story = StoryObj<typeof meta>
 function Labelled({caption, children}: {caption: string; children: ReactNode}) {
   return (
     <Stack gap={2}>
-      <Text muted size={0} weight="medium">
+      <Text muted size={0} weight="medium" as="div" trim={true}>
         {caption}
       </Text>
       {children}

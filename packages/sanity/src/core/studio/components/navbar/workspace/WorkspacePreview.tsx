@@ -5,6 +5,8 @@ import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
+import {type WorkspaceLoginStatus} from './hooks/useWorkspaceLoginStatus'
+
 export const STATE_TITLES = {
   'loading': 'Checking…',
   'logged-in': '',
@@ -52,7 +54,7 @@ export interface WorkspacePreviewProps {
   icon?: ComponentType | ReactNode
   iconRight?: ComponentType | ReactNode
   selected?: boolean
-  state?: 'loading' | 'logged-in' | 'logged-out' | 'no-access'
+  state?: WorkspaceLoginStatus
   subtitle?: string
   title: string
 }
