@@ -4,15 +4,15 @@ import {
   type PortableTextMarkComponentProps,
   type PortableTextTypeComponentProps,
 } from '@portabletext/react'
-import {Icon, type IconSymbol} from '@sanity/icons'
+import {Icon as IconWrapper, type IconSymbol} from '@sanity/icons'
 import {LinkIcon} from '@sanity/icons/Link'
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Heading, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useContext, useEffect, useMemo, useState} from 'react'
 import {UpsellDescriptionSerializerContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {interpolateTemplate} from '../../../util/interpolateTemplate'
 import {transformBlocks} from './helpers'
@@ -64,7 +64,7 @@ interface InlineIconProps {
   $hasTextLeft: boolean
   $hasTextRight: boolean
 }
-const InlineIcon = styled(Icon)<InlineIconProps>`
+const InlineIcon = styled(IconWrapper)<InlineIconProps>`
   &[data-sanity-icon] {
     /* Forces the icon to leave the necessary space to the right or left it has surrounding text */
     margin-left: ${(props) => (props.$hasTextLeft ? '0' : '')};
@@ -127,7 +127,7 @@ function NormalBlock(props: {children: ReactNode}) {
 
   return (
     <Box paddingX={2} marginBottom={4}>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         {children}
       </Text>
     </Box>
@@ -220,7 +220,7 @@ const LIST_ITEM_STYLE = {display: 'list-item', padding: '0.5rem 0'} as const
 
 function ListItem({children}: {children?: ReactNode}) {
   return (
-    <Text as="li" size={1} muted style={LIST_ITEM_STYLE}>
+    <Text as="li" size={1} muted style={LIST_ITEM_STYLE} trim={true}>
       <Interpolated>{children}</Interpolated>
     </Text>
   )
@@ -311,19 +311,28 @@ function IconAndTextBlock(props: PortableTextTypeComponentProps<IconAndTextValue
       gap={2}
     >
       <Flex gap={2} style={{flexShrink: 0}}>
-        <IconTextContainer size={1} accent={value.accent}>
-          {value.sanityIcon ? (
-            <Icon symbol={value.sanityIcon} />
-          ) : (
-            <>{value.icon?.url && <DynamicIcon icon={value.icon} />} </>
-          )}
-        </IconTextContainer>
-        <Text size={1} weight="semibold" accent={value.accent}>
+        <Icon
+          size={1}
+          tone={props.value.accent ? 'suggest' : undefined}
+          icon={
+            props.value.sanityIcon ? (
+              <IconWrapper symbol={props.value.sanityIcon} />
+            ) : (
+              <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} />} </>
+            )
+          }
+        />
+        <Text
+          size={1}
+          weight="semibold"
+          tone={props.value.accent ? 'suggest' : undefined}
+          as="div"
+          trim={true}
+        >
           <Interpolated>{value.title}</Interpolated>
         </Text>
       </Flex>
-
-      <Text size={1} muted accent={value.accent}>
+      <Text size={1} muted tone={props.value.accent ? 'suggest' : undefined} as="div" trim={true}>
         <Interpolated>{value.text}</Interpolated>
       </Text>
     </Flex>
@@ -364,7 +373,11 @@ const components: PortableTextComponents = {
   listItem: {
     bullet: ListItem,
     number: ListItem,
-    checkmarks: ({children}) => <Text>{children}</Text>,
+    checkmarks: ({children}) => (
+      <Text as="div" trim={true}>
+        {children}
+      </Text>
+    ),
   },
   marks: {
     strong: ({children}) => (
