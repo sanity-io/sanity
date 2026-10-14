@@ -60,7 +60,7 @@ function getCursorDot(displayName: string): HTMLElement {
 describe('UserPresenceCursor', () => {
   it('shows the user name while the cursor dot is hovered', async () => {
     // The label animates in and out; archive it explicitly while shown and
-    // let the end state be the two bare cursors.
+    // again once the two bare cursors are the resting state.
     configure({disableAutoSnapshot: true})
     const {settleChromaticEndState} = testHelpers()
     void render(<UserPresenceCursorHarness />)
@@ -90,5 +90,6 @@ describe('UserPresenceCursor', () => {
     await expect.poll(() => $cursorA.element().textContent, {timeout: 5_000}).toBe('')
     await expect.element($cursorA).toBeVisible()
     await expect.element($cursorB).toBeVisible()
+    await takeSnapshot('bare-cursors')
   })
 })

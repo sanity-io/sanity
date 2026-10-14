@@ -128,8 +128,8 @@ function Harness() {
 
 describe('BlockStyleSelect', () => {
   it('names the focused block style and lists every applicable style', async () => {
-    // The menu open/closed state races the automatic snapshot; archive the
-    // open menu explicitly and let the end state be the closed select.
+    // The menu open/closed state races the automatic snapshot; archive both
+    // the open menu and the closed select explicitly.
     configure({disableAutoSnapshot: true})
     const {settleChromaticEndState} = testHelpers()
     void render(<Harness />)
@@ -163,5 +163,6 @@ describe('BlockStyleSelect', () => {
     await expect.poll(() => isShown(menuElement), {timeout: 5_000}).toBe(false)
     await expect.element($select).toMatchTextContent('Heading 2')
     await settleChromaticEndState()
+    await takeSnapshot('style-select-closed')
   })
 })
