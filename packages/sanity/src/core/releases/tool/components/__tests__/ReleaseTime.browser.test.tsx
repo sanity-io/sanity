@@ -67,8 +67,10 @@ describe('release time', () => {
     void render(<ReleaseTimeHarness />)
 
     await expect.element(page.getByText('As soon as possible').first()).toBeVisible()
-    await expect.element(page.getByText('Undecided')).toBeVisible()
-    await expect.element(page.getByText('Scheduled')).toBeVisible()
+    // Labels sit next to the copy and match case-insensitively, so match the
+    // rendered strings in full.
+    await expect.element(page.getByText('Undecided', {exact: true})).toBeVisible()
+    await expect.element(page.getByText('Scheduled', {exact: true})).toBeVisible()
     await expect.element(page.getByText('active asap Release')).toBeVisible()
     await settleChromaticEndState()
   })

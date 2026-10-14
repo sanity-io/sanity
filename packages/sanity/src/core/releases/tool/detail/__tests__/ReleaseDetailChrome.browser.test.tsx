@@ -1,5 +1,7 @@
 import {Card} from '@sanity/ui'
-import {type ReactNode, useEffect, useRef, useState} from 'react'
+import {createMemoryHistory} from 'history'
+import {type ReactNode, useMemo, useState} from 'react'
+import {type Observable, of} from 'rxjs'
 import {route, RouterProvider} from 'sanity/router'
 import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
@@ -8,7 +10,13 @@ import {page} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {type WorkspaceSummary} from '../../../../config/types'
+import {useClient} from '../../../../hooks/useClient'
 import {studioDefaultLocaleResources} from '../../../../i18n/bundles/studio'
+import {LocaleProvider} from '../../../../i18n/components/LocaleProvider'
+import {AppIdCacheProvider} from '../../../../store/studio-app/AppIdCacheProvider'
+import {ActiveWorkspaceMatcherProvider} from '../../../../studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
+import {useWorkspace} from '../../../../studio/workspace'
 import {createMockDocument} from '../../../__fixtures__/documentInRelease.fixture'
 import {
   activeASAPErrorRelease,
@@ -19,7 +27,8 @@ import {
   publishedASAPRelease,
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {useActiveReleases} from '../../../store/useActiveReleases'
+import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 import {isNotArchivedRelease} from '../../../util/util'
 import {ArchivedReleaseBanner} from '../ArchivedReleaseBanner'
 import {publishedReleaseEvents} from '../events/__fixtures__/release-events'
@@ -67,13 +76,49 @@ const failedEvents: ReleaseEvents = {
   hasMore: false,
 }
 
+function setActiveWorkspace() {
+  return undefined
+}
+
+/**
+ * Header copy actions and activity timestamps need the studio contexts
+ * TestWrapper does not mount: locale, the app-id cache, and the active workspace.
+ */
+function DetailProviders({children}: {children: ReactNode}) {
+  const workspace = useWorkspace()
+  const history = useMemo(() => createMemoryHistory(), [])
+  const activeWorkspace = {
+    name: workspace.name,
+    title: workspace.title,
+    basePath: workspace.basePath,
+    projectId: workspace.projectId,
+    dataset: workspace.dataset,
+  } as WorkspaceSummary
+
+  return (
+    <LocaleProvider>
+      <AppIdCacheProvider>
+        <ActiveWorkspaceMatcherProvider
+          activeWorkspace={activeWorkspace}
+          history={history}
+          setActiveWorkspace={setActiveWorkspace}
+        >
+          {children}
+        </ActiveWorkspaceMatcherProvider>
+      </AppIdCacheProvider>
+    </LocaleProvider>
+  )
+}
+
 function ChromeHarness({children}: {children: ReactNode}) {
   return (
     <TestWrapper
       i18nBundles={[studioDefaultLocaleResources, releasesUsEnglishLocaleBundle]}
       schemaTypes={[]}
     >
-      <Card padding={4}>{children}</Card>
+      <DetailProviders>
+        <Card padding={4}>{children}</Card>
+      </DetailProviders>
     </TestWrapper>
   )
 }
@@ -91,17 +136,45 @@ function HeaderHarness() {
   )
 }
 
-function SeedActiveRelease() {
-  const {loading, dispatch} = useActiveReleases()
-  const seeded = useRef(false)
+interface ReleaseQueryClient {
+  observable: {
+    fetch: (query: string) => Observable<unknown>
+    request: (options: {url?: string}) => Observable<unknown>
+  }
+}
 
-  useEffect(() => {
-    if (loading || seeded.current) return
-    seeded.current = true
-    dispatch({type: 'RELEASES_SET', payload: [activeASAPRelease]})
-  }, [dispatch, loading])
+/**
+ * The mock client answers every query with `null`. Preview observers then call
+ * `.map` / `.find` on that result and throw. List queries get an array, and
+ * the releases list gets the fixture, before `ReleaseDetail` subscribes.
+ */
+function patchReleaseClient(client: ReleaseQueryClient) {
+  const {request} = client.observable
+  // List queries have to return arrays before ReleaseDetail subscribes, so this
+  // runs on the render that mounts it. The parameter is the mock test double.
+  client.observable.fetch = (query) => {
+    if (query.includes(`_type=="${RELEASE_DOCUMENT_TYPE}"`)) {
+      return of([activeASAPRelease])
+    }
+    return of([])
+  }
+  client.observable.request = (options) => {
+    if (options.url?.includes('/doc/')) {
+      return of({omitted: []})
+    }
+    return request(options)
+  }
+}
 
-  return null
+const patchedClients = new WeakSet<object>()
+
+function ReleaseFetchPatch({children}: {children: ReactNode}) {
+  const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
+  if (!patchedClients.has(client)) {
+    patchedClients.add(client)
+    patchReleaseClient(client as ReleaseQueryClient)
+  }
+  return children
 }
 
 function ReleaseDetailHarness() {
@@ -110,16 +183,19 @@ function ReleaseDetailHarness() {
       i18nBundles={[studioDefaultLocaleResources, releasesUsEnglishLocaleBundle]}
       schemaTypes={[]}
     >
-      <RouterProvider
-        onNavigate={() => undefined}
-        router={detailRouter}
-        state={{releaseId: 'rASAP'}}
-      >
-        <SeedActiveRelease />
-        <div style={{display: 'flex', flexDirection: 'column', height: 640}}>
-          <ReleaseDetail />
-        </div>
-      </RouterProvider>
+      <DetailProviders>
+        <ReleaseFetchPatch>
+          <RouterProvider
+            onNavigate={() => undefined}
+            router={detailRouter}
+            state={{releaseId: 'rASAP'}}
+          >
+            <div style={{display: 'flex', flexDirection: 'column', height: 640}}>
+              <ReleaseDetail />
+            </div>
+          </RouterProvider>
+        </ReleaseFetchPatch>
+      </DetailProviders>
     </TestWrapper>
   )
 }
@@ -279,7 +355,7 @@ describe('release detail chrome', () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<ReleaseDetailHarness />)
 
-    await expect.element(page.getByText('active asap Release')).toBeVisible()
+    await expect.element(page.getByText('active asap Release').first()).toBeVisible()
     await expect.element(page.getByText('No documents')).toBeVisible()
     await settleChromaticEndState()
   })

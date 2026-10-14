@@ -1,4 +1,4 @@
-import {defineType} from '@sanity/types'
+import {defineField, defineType} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
@@ -20,7 +20,7 @@ const article = defineType({
   type: 'document',
   name: 'article',
   title: 'Article',
-  fields: [],
+  fields: [defineField({name: 'title', title: 'Title', type: 'string'})],
 })
 
 const articleDocument: BundleDocumentRow = {
@@ -47,7 +47,7 @@ function isVisibleColumn(
 
 function DocumentColumns() {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const columns = getDocumentTableColumnDefs('rASAP', 'active', t).filter(
+  const columns = getDocumentTableColumnDefs('_.releases.rASAP', 'active', t).filter(
     (column) => isVisibleColumn(column) && VISIBLE_COLUMN_IDS.has(column.id),
   )
 
