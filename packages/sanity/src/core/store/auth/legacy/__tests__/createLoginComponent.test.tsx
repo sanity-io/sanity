@@ -4,7 +4,7 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {of} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {createLoginComponent, getProviders} from '../createLoginComponent'
 
 interface MockClient {

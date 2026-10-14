@@ -151,10 +151,10 @@ describe('AuthBoundary login flash gate', () => {
 
   it('holds the loading screen on logged-out when a message bus host owns sign-in', async () => {
     stubMessageBusHost().publish('auth.token', null)
-    const {createAuthStore} = await import('../../store/authStore/createAuthStore')
+    const {createLegacyAuthStore} = await import('../../store/auth/legacy/createLegacyAuthStore')
     const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
     ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
-      activeWorkspace: {auth: createAuthStore({projectId: 'p', dataset: 'd'})},
+      activeWorkspace: {auth: createLegacyAuthStore({projectId: 'p', dataset: 'd'})},
     })
 
     render(
