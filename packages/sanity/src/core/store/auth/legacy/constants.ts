@@ -1,8 +1,8 @@
-import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../studioClient'
+import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 
 // Shared constants and key construction for the auth store.
 //
-// Both `createAuthStore` and `probeWorkspaceAuth` read or coordinate on the
+// Both `createLegacyAuthStore` and `probeWorkspaceAuth` read or coordinate on the
 // values defined here, so they live in one place to keep the two in sync.
 
 // API version used by all auth-related client requests.
@@ -20,7 +20,7 @@ const UNCLAIMED_PROJECT_STORAGE_PREFIX = '__studio_unclaimed_'
 /**
  * @internal
  * Timeout for the post-exchange `/users/me` probe (see
- * `applyCredentialUpdate` in `createAuthStore`): if that one request takes
+ * `applyCredentialUpdate` in `createLegacyAuthStore`): if that one request takes
  * longer than this, the callback resolves anyway — flagged via
  * `stateSettleTimedOut` — so the UI can't hang. The probe keeps running and
  * still updates the state if it completes.

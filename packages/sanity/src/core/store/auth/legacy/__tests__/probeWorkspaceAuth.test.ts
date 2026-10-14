@@ -2,14 +2,14 @@ import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanit
 import {firstValueFrom, lastValueFrom, take, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
-import {stubMessageBusHost} from '../../../../../test/testUtils/stubMessageBusHost'
+import {stubMessageBusHost} from '../../../../../../test/testUtils/stubMessageBusHost'
 import {getAuthTokenStorageKey, getCookieAuthStateKey} from '../constants'
 import {_probeWorkspaceAuthForTest, _resetProbeWorkspaceAuthCache} from '../probeWorkspaceAuth'
 
 // Match the convention from createAuthStore.test.ts: ensure localStorage is
 // considered supported in the test environment so the token-attribution code
 // path is exercised.
-vi.mock('../../../util/supportsLocalStorage', () => ({
+vi.mock('../../../../util/supportsLocalStorage', () => ({
   supportsLocalStorage: true,
 }))
 

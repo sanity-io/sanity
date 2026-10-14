@@ -8,12 +8,12 @@ import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 import {Box, Flex, VStack} from 'ui5'
 
-import {Button, type ButtonProps} from '../../../ui-components/button/Button'
-import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
-import {type AuthConfig} from '../../config/auth/types'
-import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {type AuthConfig} from '../../../config/auth/types'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type LoginComponentProps} from '../types'
 import {CustomLogo, providerLogos} from './providerLogos'
-import {type LoginComponentProps} from './types'
 
 const SANITY_LAST_USED_PROVIDER_KEY = 'sanity:last_used_provider'
 
