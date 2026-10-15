@@ -13,7 +13,7 @@ function isDocumentType(type: StudioSchemaType | undefined): boolean {
 }
 
 /** The workspace's document types, its own first and the `sanity.`/`system.` ones after */
-export function getDocumentTypeNames(schema: Schema): string[] {
+function getDocumentTypeNames(schema: Schema): string[] {
   return schema
     .getTypeNames()
     .filter((name) => name !== 'document' && isDocumentType(schema.get(name)))
