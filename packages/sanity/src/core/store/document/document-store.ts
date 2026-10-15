@@ -29,6 +29,7 @@ import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
 import {editState, type EditStateFor} from './document-pair/editState'
+import {acquireImmediateValidation} from './document-pair/getValidationMode'
 import {
   type OperationError,
   operationEvents,
@@ -36,7 +37,7 @@ import {
 } from './document-pair/operationEvents'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {type OperationsAPI} from './document-pair/operations/types'
-import {acquireImmediateValidation, validation, validationKey} from './document-pair/validation'
+import {validation, getValidationKey} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
 import {type InitialValueMsg} from './initialValue/types'
@@ -306,9 +307,15 @@ export function createDocumentStore({
         const validationTarget = getDocumentVariantType(validationTargetId)
         const status$ = validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
         if (options?.scheduling !== 'immediate') return status$
-        const key = validationKey(ctx, idPair, type, validationTarget, requirePublishedReferences)
+        const validationKey = getValidationKey(
+          ctx,
+          idPair,
+          type,
+          validationTarget,
+          requirePublishedReferences,
+        )
         return defer(() => {
-          const release = acquireImmediateValidation(key)
+          const release = acquireImmediateValidation(validationKey)
           return status$.pipe(finalize(release))
         })
       },

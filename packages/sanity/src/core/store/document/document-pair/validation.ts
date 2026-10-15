@@ -1,8 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema} from '@sanity/types'
-import {type ValidationScheduling} from '@sanity/validation/_internal'
 import omit from 'lodash-es/omit.js'
-import {asyncScheduler, BehaviorSubject, combineLatest, type Observable} from 'rxjs'
+import {asyncScheduler, combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config/types'
@@ -15,6 +14,7 @@ import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {editState} from './editState'
+import {getValidationMode} from './getValidationMode'
 import {memoizeKeyGen} from './memoizeKeyGen'
 
 // throttle delay for document updates (i.e. time between responding to changes in the current document)
@@ -40,7 +40,7 @@ interface ValidationStoreContext {
 }
 
 /** @internal */
-export function validationKey(
+export function getValidationKey(
   ctx: ValidationStoreContext,
   idPair: IdPair,
   typeName: string,
@@ -59,56 +59,6 @@ export function validationKey(
   // would replay the previous user's validation result.
   const userId = ctx.currentUser?.id ?? ''
   return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}-${userId}`
-}
-
-const validationModes = new Map<string, BehaviorSubject<ValidationScheduling>>()
-
-/**
- * How many active `immediate` subscriptions share each validation mode.
- * The mode stays `immediate` until the last of them unsubscribes, including
- * when one subscriber remounts while another is still listening.
- */
-const immediateSubscriberCounts = new Map<string, number>()
-
-function getValidationMode(key: string): BehaviorSubject<ValidationScheduling> {
-  let mode = validationModes.get(key)
-  if (!mode) {
-    mode = new BehaviorSubject<ValidationScheduling>('idle')
-    validationModes.set(key, mode)
-  }
-  return mode
-}
-
-/**
- * Retains `immediate` scheduling for `key` until the returned release runs.
- * Releasing the same retain twice does nothing.
- *
- * @internal
- */
-export function acquireImmediateValidation(key: string): () => void {
-  const count = (immediateSubscriberCounts.get(key) ?? 0) + 1
-  immediateSubscriberCounts.set(key, count)
-  if (count === 1) {
-    getValidationMode(key).next('immediate')
-  }
-
-  let released = false
-  return () => {
-    if (released) return
-    released = true
-
-    const remaining = (immediateSubscriberCounts.get(key) ?? 1) - 1
-    if (remaining > 0) {
-      immediateSubscriberCounts.set(key, remaining)
-      return
-    }
-
-    immediateSubscriberCounts.delete(key)
-    const mode = validationModes.get(key)
-    if (mode?.getValue() === 'immediate') {
-      mode.next('idle')
-    }
-  }
 }
 
 /** @internal */
@@ -160,22 +110,20 @@ export const validation = memoize(
      * and always override the revision in the emitted validation status.
      */
     const documentRevision$ = document$.pipe(map((document) => document?._rev))
-
+    const validationKey = getValidationKey(
+      ctx,
+      {draftId, publishedId, versionId},
+      typeName,
+      validationTarget,
+      validatePublishedReferences,
+    )
     return combineLatest([
       documentRevision$,
       validateDocumentWithReferences(
         ctx,
         documentToValidate$,
         validatePublishedReferences,
-        getValidationMode(
-          validationKey(
-            ctx,
-            {draftId, publishedId, versionId},
-            typeName,
-            validationTarget,
-            validatePublishedReferences,
-          ),
-        ),
+        getValidationMode(validationKey),
       ),
     ]).pipe(
       map(([revision, validationStatus]) => {
@@ -183,5 +131,5 @@ export const validation = memoize(
       }),
     )
   },
-  validationKey,
+  getValidationKey,
 )
