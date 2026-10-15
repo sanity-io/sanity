@@ -1,7 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {defer, type Observable, of} from 'rxjs'
-import {filter, finalize, map} from 'rxjs/operators'
+import {type ValidationScheduling} from '@sanity/validation/_internal'
+import {type Observable, of} from 'rxjs'
+import {filter, map} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../config/types'
 import {type LocaleSource} from '../../i18n/types'
@@ -29,7 +30,6 @@ import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
 import {editState, type EditStateFor} from './document-pair/editState'
-import {acquireImmediateValidation} from './document-pair/getValidationMode'
 import {
   type OperationError,
   operationEvents,
@@ -37,7 +37,7 @@ import {
 } from './document-pair/operationEvents'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {type OperationsAPI} from './document-pair/operations/types'
-import {validation, getValidationKey} from './document-pair/validation'
+import {validationStreams} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
 import {type InitialValueMsg} from './initialValue/types'
@@ -130,11 +130,12 @@ export interface DocumentStore {
       options?: {
         /**
          * `immediate` validates without waiting for idle callbacks while a user waits on the
-         * result. Scheduling is shared per document: it stays `immediate` until the last
-         * immediate subscription unsubscribes, and idle subscribers on the same stream get
-         * those results too.
+         * result, and speeds up a run already in flight rather than starting it over.
+         * Scheduling is shared per document: it stays `immediate` until the last immediate
+         * subscription unsubscribes, and idle subscribers on the same stream get those results
+         * too.
          */
-        scheduling?: 'idle' | 'immediate'
+        scheduling?: ValidationScheduling
       },
     ) => Observable<ValidationStatus>
   }
@@ -305,19 +306,14 @@ export function createDocumentStore({
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        const status$ = validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
-        if (options?.scheduling !== 'immediate') return status$
-        const validationKey = getValidationKey(
+        const {status$, immediate$} = validationStreams(
           ctx,
           idPair,
           type,
           validationTarget,
           requirePublishedReferences,
         )
-        return defer(() => {
-          const release = acquireImmediateValidation(validationKey)
-          return status$.pipe(finalize(release))
-        })
+        return options?.scheduling === 'immediate' ? immediate$ : status$
       },
     },
   }
