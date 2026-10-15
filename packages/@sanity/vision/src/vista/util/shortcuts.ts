@@ -51,7 +51,7 @@ const ALT_KEY = MOD_KEY === '⌘' ? '⌥' : 'Alt'
 
 /** The query editor's `EXTRACT_FUNCTION_KEY`, as the shortcuts dialog and hints show it */
 export const EXTRACT_FUNCTION_SHORTCUT: EditorShortcut = {
-  keys: [MOD_KEY, ALT_KEY, 'M'],
+  keys: [ALT_KEY, 'Enter'],
   labelKey: 'vista.shortcuts.extract-function',
 }
 

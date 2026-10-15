@@ -188,6 +188,47 @@ describe('extracting a function', () => {
     expect(view.state.doc.toString()).toContain('fn ex::author2($author) = $author->{name};')
   })
 
+  it('extracts the projection around the cursor when nothing is selected, also on Alt-Enter', () => {
+    const atCursor = EditorSelection.single(query.indexOf('name'))
+    const view = viewOf(stateOf(query, atCursor, []))
+    expect(extractSelectionToFunction(view)).toBe(true)
+    expect(view.state.doc.toString()).toBe(
+      'fn my::author($author) = $author->{name};\n\n*[_type == "post"]{title, "author": my::author(author)}',
+    )
+
+    const withKeymap = viewOf(
+      EditorState.create({
+        doc: query,
+        selection: atCursor,
+        extensions: [groq(), ...createGroqFunctionExtensions(LABELS)],
+      }),
+    )
+    withKeymap.contentDOM.dispatchEvent(
+      new KeyboardEvent('keydown', {key: 'Enter', altKey: true, bubbles: true, cancelable: true}),
+    )
+    expect(withKeymap.state.doc.toString()).toContain('fn my::author($author)')
+  })
+
+  it('reports what extracting would take as the cursor and the selection move', () => {
+    const reported: (string | null)[] = []
+    const view = viewOf(
+      EditorState.create({
+        doc: query,
+        extensions: [
+          groq(),
+          ...createGroqFunctionExtensions(LABELS, {
+            onExtractableChange: (expression) => reported.push(expression),
+          }),
+        ],
+      }),
+    )
+    view.dispatch({selection: EditorSelection.cursor(query.indexOf('name'))})
+    view.dispatch({selection: EditorSelection.cursor(query.indexOf('name') + 1)})
+    view.dispatch({selection: EditorSelection.cursor(query.indexOf('title'))})
+    view.dispatch({selection: selected})
+    expect(reported).toEqual(['author->{name}', null, 'author->{name}'])
+  })
+
   it('does nothing for a selection that cannot become a function', () => {
     const view = viewOf(stateOf(query, EditorSelection.single(0, 1)))
     expect(extractSelectionToFunction(view)).toBe(false)

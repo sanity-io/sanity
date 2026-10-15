@@ -244,6 +244,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.functions.editor.in-library': 'In your functions library, not declared in this query',
   /** Link at the end of a built-in function's hover documentation */
   'vista.functions.editor.reference': 'GROQ functions reference',
+  /** Tooltip of the extract button over the query editor, naming the expression it would extract */
+  'vista.functions.extract.button': 'Extract {{expression}} to a function',
+  /** Tooltip of the extract button while there is nothing to extract, and the toast when it is pressed then */
+  'vista.functions.extract.hint':
+    'Put the cursor in a projection, like author->{name}, to extract it to a function',
   /** Explanation under the library heading in the Functions panel */
   'vista.functions.library.description':
     'Kept in this browser for every dataset of the project. Completions offer these functions, and lint offers to declare one a query calls.',
@@ -253,7 +258,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.functions.library.title': 'Library',
   /** Shown in the Functions panel while the query declares no custom functions */
   'vista.functions.query.empty':
-    'Declare custom functions at the top of the query, or select a projection in the editor and choose Extract to function ({{shortcut}}).',
+    'Declare custom functions at the top of the query, or put the cursor in a projection, like author->{name}, and press the extract button over the editor ({{shortcut}}).',
   /** Heading of the functions the query declares in the Functions panel */
   'vista.functions.query.title': 'In this query',
   /** Removes a function from the library */
@@ -635,8 +640,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.shortcuts.complete': 'Complete a function name',
   /** Shortcut description: copy the query */
   'vista.shortcuts.copy-query': 'Copy the query',
-  /** Shortcut that turns the projection selected in the query editor into a custom function */
-  'vista.shortcuts.extract-function': 'Extract the selected projection to a function',
+  /** Shortcut that turns the selected projection, or the one around the cursor, into a custom function */
+  'vista.shortcuts.extract-function': 'Extract the projection at the cursor to a function',
   /** Shortcut description: run the query */
   'vista.shortcuts.fetch': 'Fetch the query',
   /** Shortcut description: move the cursor to the next lint finding in the query editor */

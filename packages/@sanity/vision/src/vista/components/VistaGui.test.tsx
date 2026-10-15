@@ -190,6 +190,7 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
         textarea.value = value
         onChange?.(value)
       },
+      runCommand: () => false,
       selectRange: (from: number, to: number) => {
         textareaRef.current?.setSelectionRange(from, to)
         textareaRef.current?.focus()

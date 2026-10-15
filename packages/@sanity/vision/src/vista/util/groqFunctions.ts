@@ -649,10 +649,75 @@ export function declarationInsertion(
 export interface FunctionExtraction {
   id: string
   declaration: string
+  /** The expression that becomes the function, as written */
+  expression: string
   /** In positions of the query before any of them is made */
   changes: {from: number; to: number; insert: string}[]
   /** Where the call is once the changes are made */
   call: TextRange
+}
+
+/** The selection without the whitespace and a separating comma at either end */
+function trimSelection(query: string, selection: TextRange): TextRange | null {
+  let {from, to} = selection
+  const trimWhitespace = () => {
+    while (from < to && /\s/.test(query[from])) from++
+    while (to > from && /\s/.test(query[to - 1])) to--
+  }
+  trimWhitespace()
+  if (query[to - 1] === ',') to--
+  if (query[from] === ',') from++
+  trimWhitespace()
+  return from < to ? {from, to} : null
+}
+
+/** The postfix chain `node` is part of (`author`, `->`, `{name}`), when it is in one */
+function chainOf(node: GroqNode): {first: GroqNode; last: GroqNode} | null {
+  if (!PRIMARY_NODES.has(node.name) && !POSTFIX_NODES.has(node.name)) return null
+  let first = node
+  while (POSTFIX_NODES.has(first.name)) {
+    const previous = previousSibling(first)
+    if (!previous || (!PRIMARY_NODES.has(previous.name) && !POSTFIX_NODES.has(previous.name))) {
+      return null
+    }
+    first = previous
+  }
+  let last = node
+  for (
+    let next = nextSibling(last);
+    next && POSTFIX_NODES.has(next.name);
+    next = nextSibling(last)
+  ) {
+    last = next
+  }
+  return {first, last}
+}
+
+/**
+ * The expressions around a position that end in a projection, innermost first: `author->{name}`
+ * for a cursor anywhere in it, a whole `"key": value` pair. The query's top-level expression is
+ * left out, since turning all of it into a function is a choice to make with a selection.
+ */
+function projectionsAround(tree: GroqTree, pos: number): TextRange[] {
+  const ranges = new Map<string, TextRange>()
+  for (const side of [-1, 1] as const) {
+    for (
+      let node: GroqNode | null = tree.resolveInner(pos, side);
+      node?.parent;
+      node = node.parent
+    ) {
+      if (node.parent.name === 'Query') break
+      const chain = node.name === 'PropertyPair' ? null : chainOf(node)
+      const range =
+        node.name === 'PropertyPair'
+          ? {from: node.from, to: node.to}
+          : chain?.last.name === 'Projection'
+            ? {from: chain.first.from, to: chain.last.to}
+            : null
+      if (range) ranges.set(`${range.from}:${range.to}`, range)
+    }
+  }
+  return [...ranges.values()].toSorted((a, b) => a.to - a.from - (b.to - b.from))
 }
 
 /** The sibling nodes that make up exactly `from`–`to`, with their parent */
@@ -721,11 +786,12 @@ function pickNamespace(
 }
 
 /**
- * Turns the selected expression into a custom function: a projection of something,
- * `author->{name}`, `authors[]->{name}` or `items[]{title}`, becomes a declaration at the top
+ * Turns an expression into a custom function: a projection of something, `author->{name}`,
+ * `authors[]->{name}` or `items[]{title}`, becomes a declaration at the top
  * (`fn my::author($author) = $author->{name};`) and a call where it was (`my::author(author)`,
- * keyed like the attribute was when the selection is a bare entry of a projection). `null` when
- * the selection is not such an expression, or its projection reaches outside itself with `^`.
+ * keyed like the attribute was when it is a bare entry of a projection). The expression is the
+ * selection, or with nothing selected the innermost projection around the cursor. `null` when
+ * there is no such expression, or its projection reaches outside itself with `^`.
  */
 export function extractFunction(
   query: string,
@@ -733,13 +799,27 @@ export function extractFunction(
   library: readonly VistaSavedFunction[] = [],
 ): FunctionExtraction | null {
   if (query.length > MAX_EXTRACT_QUERY_LENGTH) return null
-  let {from, to} = selection
-  while (from < to && /\s/.test(query[from])) from++
-  while (to > from && /\s/.test(query[to - 1])) to--
-  if (from === to) return null
-
   const tree = parseGroq(query)
   if (hasSyntaxErrors(tree)) return null
+  if (selection.from === selection.to) {
+    for (const range of projectionsAround(tree, selection.from)) {
+      const extraction = extractRange(tree, query, range, library)
+      if (extraction) return extraction
+    }
+    return null
+  }
+  const range = trimSelection(query, selection)
+  return range ? extractRange(tree, query, range, library) : null
+}
+
+function extractRange(
+  tree: GroqTree,
+  query: string,
+  range: TextRange,
+  library: readonly VistaSavedFunction[],
+): FunctionExtraction | null {
+  let {from} = range
+  const {to} = range
   const selected = selectedNodes(tree, from, to)
   if (!selected) return null
   let {parent, nodes} = selected
@@ -836,5 +916,11 @@ export function extractFunction(
   )
   if (broken) return null
 
-  return {id, declaration, changes, call: {from: callFrom, to: callFrom + callText.length}}
+  return {
+    id,
+    declaration,
+    expression: query.slice(from, to),
+    changes,
+    call: {from: callFrom, to: callFrom + callText.length},
+  }
 }

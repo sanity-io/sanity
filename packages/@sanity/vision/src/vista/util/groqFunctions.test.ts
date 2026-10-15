@@ -380,6 +380,32 @@ describe('extractFunction', () => {
     )
   })
 
+  it('ignores the comma that separates the selected entry from the next or the previous one', () => {
+    const query = '*{title, author->{name}, slug}'
+    expect(extract(query, 'author->{name},')?.expression).toBe('author->{name}')
+    expect(extract(query, ', author->{name}')?.expression).toBe('author->{name}')
+  })
+
+  it('takes the innermost projection around the cursor when nothing is selected', () => {
+    const query =
+      '*[_type == "post"]{title, "author": author->{name, "image": image{asset->{url}}}}'
+    const atCursor = (text: string, offset = 1) => {
+      const position = query.indexOf(text) + offset
+      return extractFunction(query, {from: position, to: position})
+    }
+    const author = 'author->{name, "image": image{asset->{url}}}'
+    expect(atCursor('name')?.expression).toBe(author)
+    expect(atCursor('url')?.expression).toBe('asset->{url}')
+    // On the key of the pair, and on the attribute the projection starts from
+    expect(atCursor('"author"')?.expression).toBe(author)
+    expect(atCursor('author->', 2)?.expression).toBe(author)
+    // Right after the closing brace
+    expect(atCursor('{url}', 5)?.expression).toBe('asset->{url}')
+    // The query's own projection is only extracted when it is selected
+    expect(atCursor('title')).toBeNull()
+    expect(extractFunction('*[_type == "post"]{title}', {from: 0, to: 0})).toBeNull()
+  })
+
   it('refuses selections that cannot become a function', () => {
     const cases: [string, string][] = [
       // Nothing projected
@@ -400,7 +426,8 @@ describe('extractFunction', () => {
       expect(extract(query, selected), `${selected} in ${query}`).toBeNull()
     }
     expect(extractFunction('*{author->{name}', {from: 2, to: 16})).toBeNull()
-    expect(extractFunction('*{author->{name}}', {from: 2, to: 2})).toBeNull()
+    // Only whitespace selected
+    expect(extractFunction('*{ author->{name}}', {from: 2, to: 3})).toBeNull()
   })
 })
 

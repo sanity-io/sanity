@@ -1,4 +1,5 @@
 import {type Extension} from '@codemirror/state'
+import {type Command} from '@codemirror/view'
 import {rem, useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
@@ -51,6 +52,8 @@ export interface VisionCodeMirrorHandle {
   resetEditorContent: (newContent: string) => void
   /** Edits the document like typing would: undoable, the selection mapped through the edits */
   applyChanges: (changes: readonly {from: number; to: number; insert: string}[]) => void
+  /** Runs an editor command, as a key binding would; `false` when it did nothing or there is no editor */
+  runCommand: (command: Command) => boolean
   /** Selects a range of the document, scrolls it into view and focuses the editor */
   selectRange: (from: number, to: number) => void
   /**
@@ -136,6 +139,11 @@ export function VisionCodeMirror({
     [],
   )
 
+  const runCommand = useCallback((command: Command) => {
+    const editorView = codeMirrorRef.current?.view
+    return editorView ? command(editorView) : false
+  }, [])
+
   const selectRange = useCallback((from: number, to: number) => {
     const editorView = codeMirrorRef.current?.view
     if (!editorView) return
@@ -158,10 +166,11 @@ export function VisionCodeMirror({
     () => ({
       resetEditorContent,
       applyChanges,
+      runCommand,
       selectRange,
       getVisibleColumns: getVisibleColumnsOfEditor,
     }),
-    [resetEditorContent, applyChanges, selectRange, getVisibleColumnsOfEditor],
+    [resetEditorContent, applyChanges, runCommand, selectRange, getVisibleColumnsOfEditor],
   )
 
   return (
