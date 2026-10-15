@@ -3,7 +3,12 @@ import {Subject} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 import {createActor, fromObservable, fromPromise, waitFor} from 'xstate'
 
-import {MAX_HISTORY_ENTRIES, queryRunnerMachine} from './queryRunnerMachine'
+import {
+  MAX_COMPARED_RESULT_BYTES,
+  MAX_HISTORY_ENTRIES,
+  MAX_KEPT_RESULTS,
+  queryRunnerMachine,
+} from './queryRunnerMachine'
 import {type QueryRequest} from './types'
 
 interface Deferred {
@@ -255,6 +260,88 @@ describe('queryRunnerMachine', () => {
       await waitFor(harness.actor, (snapshot) => snapshot.context.result === i)
     }
     expect(harness.snapshot().context.history).toHaveLength(MAX_HISTORY_ENTRIES)
+  })
+
+  async function settle(
+    harness: ReturnType<typeof createHarness>,
+    outcome: {result: unknown} | {error: Error},
+    request = harness.request(),
+  ) {
+    const entries = harness.snapshot().context.history.length
+    harness.actor.send({type: 'fetch', request, reason: {type: 'manual'}})
+    const fetch = harness.fetches[harness.fetches.length - 1]
+    if ('error' in outcome) {
+      fetch.reject(outcome.error)
+    } else {
+      fetch.resolve({result: outcome.result})
+    }
+    await waitFor(harness.actor, (snapshot) => snapshot.context.history.length > entries)
+  }
+
+  it('compares each result with the previous successful one', async () => {
+    const harness = createHarness()
+    const other = harness.request({url: 'https://example.api.sanity.io/v1/data/query/test?query=x'})
+
+    await settle(harness, {result: [{_id: 'a', title: 'One'}]})
+    await settle(harness, {result: [{title: 'One', _id: 'a'}]})
+    await settle(harness, {result: [{_id: 'a', title: 'Two'}]})
+    await settle(harness, {error: new Error('Boom')})
+    // Compared across the failure, with the last result there was
+    await settle(harness, {result: [{_id: 'a', title: 'Two'}]}, other)
+
+    const {history} = harness.snapshot().context
+    expect(history.map((entry) => entry.resultChange)).toEqual([
+      'unchanged',
+      undefined,
+      'changed',
+      'unchanged',
+      undefined,
+    ])
+    expect(history.map((entry) => entry.url)).toEqual([
+      other.url,
+      ...Array(4).fill(harness.request().url),
+    ])
+    expect(history[1].result).toBeUndefined()
+    expect(history[2].result).toEqual({
+      value: [{_id: 'a', title: 'Two'}],
+      bytes: JSON.stringify([{_id: 'a', title: 'Two'}]).length,
+    })
+  })
+
+  it('keeps the results of the most recent fetches only', async () => {
+    const harness = createHarness()
+    for (let i = 0; i < MAX_KEPT_RESULTS + 3; i++) {
+      // oxlint-disable-next-line no-await-in-loop -- each fetch must settle before the next one starts
+      await settle(harness, {result: i})
+    }
+    const {history} = harness.snapshot().context
+    // The latest result is the one on screen, and the ones before it are kept for comparison
+    expect(history.map((entry) => entry.result?.value)).toEqual([
+      ...Array.from({length: MAX_KEPT_RESULTS + 1}, (_, index) => MAX_KEPT_RESULTS + 2 - index),
+      undefined,
+      undefined,
+    ])
+  })
+
+  it('neither compares nor keeps results that are too large', async () => {
+    const harness = createHarness()
+    const large = 'x'.repeat(MAX_COMPARED_RESULT_BYTES)
+
+    await settle(harness, {result: 'a'})
+    await settle(harness, {result: large})
+    expect(harness.snapshot().context.history[0]).toMatchObject({
+      resultChange: 'too-large',
+      result: {value: large},
+    })
+
+    await settle(harness, {result: 'b'})
+    const {history} = harness.snapshot().context
+    expect(history[0].resultChange).toBe('too-large')
+    expect(history[1].result).toBeUndefined()
+    expect(history[2].result?.value).toBe('a')
+
+    await settle(harness, {result: 'b'})
+    expect(harness.snapshot().context.history[0].resultChange).toBe('unchanged')
   })
 
   it('refetches when a live event carries one of the response sync tags', async () => {

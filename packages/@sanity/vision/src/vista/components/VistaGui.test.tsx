@@ -459,6 +459,30 @@ describe('VistaGui', () => {
     expect(text(entries[0])).toContain('vista.history.reason.manual')
   })
 
+  it('tells in the history whether a refetch changed the result', async () => {
+    const {respondWith} = renderVista()
+    typeQuery('*[_type == "author"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(screen.getAllByTestId('vista-history-entry')).toHaveLength(2))
+    expect(text(screen.getAllByTestId('vista-history-entry')[0])).toContain(
+      'vista.history.unchanged',
+    )
+    expect(screen.queryByTestId('vista-history-changes-toggle')).toBeNull()
+
+    respondWith({result: [{title: 'Newer'}], ms: 34, syncTags: ['s1:abc']})
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(screen.getAllByTestId('vista-history-entry')).toHaveLength(3))
+    const [latest] = screen.getAllByTestId('vista-history-entry')
+    expect(
+      within(latest).getByTestId('vista-history-changes-toggle').getAttribute('aria-expanded'),
+    ).toBe('false')
+  })
+
   it('keeps the shown result and its actions while a refetch is in flight', async () => {
     const {fetchCalls, holdFetches, respondWith} = renderVista()
     typeQuery('*[_type == "author"]')

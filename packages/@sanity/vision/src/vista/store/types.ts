@@ -87,17 +87,36 @@ export type FetchReason =
   | {type: 'resume'}
   | {type: 'live'; matchedTags: SyncTag[]}
 
+/** A successful fetch's result, kept on its history entry to compare it with the next one */
+export interface HistoryResult {
+  value: unknown
+  /** Size of the result as compact JSON, in UTF-8 bytes */
+  bytes: number
+}
+
+/** How a result compares with the one the previous successful fetch returned */
+export type ResultChange = 'unchanged' | 'changed' | 'too-large'
+
 export interface FetchHistoryEntry {
   id: string
   /** ISO timestamp for when the fetch was requested */
   requestedAt: string
   reason: FetchReason
+  /** URL of the request that was fetched */
+  url: string
   status: 'ok' | 'error'
   /** Server-reported execution time */
   ms: number | undefined
   /** Round trip as measured by the browser */
   e2eMs: number | undefined
   errorMessage: string | undefined
+  /**
+   * The result, for as long as it is among the most recent results kept in memory; failures
+   * have none
+   */
+  result: HistoryResult | undefined
+  /** Undefined for failures and for the first result of the tab */
+  resultChange: ResultChange | undefined
 }
 
 export interface VistaResponseMeta {

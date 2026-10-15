@@ -180,6 +180,10 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 trustPolicyExclude:
   - '@sanity/cli'
+  # @sanity/vision's result diff (@pierre/diffs) depends on it. 1.0.0 was published with
+  # provenance; 1.1.0 and 2.0.0 without it, by a listed maintainer who also publishes
+  # @pierre/diffs (which has never shipped provenance)
+  - '@pierre/theme@2.0.0'
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0

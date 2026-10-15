@@ -1,9 +1,58 @@
-import {Badge, Card, Stack, Text} from '@sanity/ui'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {Badge, Button, Card, Stack, Text} from '@sanity/ui'
+import {
+  Component,
+  type ComponentProps,
+  lazy,
+  type ReactNode,
+  Suspense,
+  useId,
+  useMemo,
+  useState,
+} from 'react'
 import {type TFunction, useDateTimeFormat, useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
+import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type FetchHistoryEntry, type FetchReason} from '../../store/types'
+
+// The diff (`@pierre/diffs` and Shiki) only loads once a history entry's changes are expanded.
+// `lazy()` remembers a rejected import for good, so a failed load swaps in a fresh lazy component
+// for the boundary's Retry, as `SanityVision` does for the redesign itself
+let LazyResultDiff = lazy(loadResultDiff)
+
+function loadResultDiff() {
+  return import('./ResultDiff').catch((error: unknown) => {
+    LazyResultDiff = lazy(loadResultDiff)
+    throw error
+  })
+}
+
+function ResultDiffLoader(props: ComponentProps<typeof LazyResultDiff>) {
+  const Diff = LazyResultDiff
+  return <Diff {...props} />
+}
+
+interface ResultDiffBoundaryProps {
+  children: ReactNode
+  renderFallback: (retry: () => void) => ReactNode
+}
+
+class ResultDiffBoundary extends Component<ResultDiffBoundaryProps, {failed: boolean}> {
+  state = {failed: false}
+
+  static getDerivedStateFromError() {
+    return {failed: true}
+  }
+
+  retry = () => this.setState({failed: false})
+
+  render() {
+    return this.state.failed ? this.props.renderFallback(this.retry) : this.props.children
+  }
+}
 
 function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): string {
   switch (reason.type) {
@@ -28,10 +77,146 @@ function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): strin
   }
 }
 
-export function HistoryTab({history}: {history: FetchHistoryEntry[]}) {
+function HistoryEntry(props: {
+  entry: FetchHistoryEntry
+  /** The successful fetch before this one, which the result is compared with */
+  previous: FetchHistoryEntry | undefined
+}) {
+  const {entry, previous} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const formatTime = useDateTimeFormat({timeStyle: 'medium'})
   const notApplicable = t('result.timing-not-applicable')
+  const [expanded, setExpanded] = useState(false)
+  const changesId = useId()
+  const nextResult = entry.result
+  const previousResult = previous?.result
+  const comparable =
+    entry.resultChange === 'changed' && nextResult !== undefined && previousResult !== undefined
+
+  let change: ReactNode = null
+  if (comparable) {
+    change = (
+      <Button
+        aria-controls={changesId}
+        aria-expanded={expanded}
+        data-testid="vista-history-changes-toggle"
+        fontSize={1}
+        icon={expanded ? ChevronDownIcon : ChevronRightIcon}
+        mode="bleed"
+        onClick={() => setExpanded((value) => !value)}
+        padding={1}
+        text={t('vista.history.changes')}
+      />
+    )
+  } else if (entry.resultChange === 'changed') {
+    change = (
+      <Text muted size={1}>
+        {t('vista.history.changed')}
+      </Text>
+    )
+  } else if (entry.resultChange === 'unchanged') {
+    change = (
+      <Text muted size={1}>
+        {t('vista.history.unchanged')}
+      </Text>
+    )
+  } else if (entry.resultChange === 'too-large') {
+    change = (
+      <Text muted size={1}>
+        {t('vista.history.too-large')}
+      </Text>
+    )
+  }
+
+  return (
+    <Card
+      borderBottom
+      data-testid="vista-history-entry"
+      paddingX={3}
+      paddingY={2}
+      tone={entry.status === 'error' ? 'critical' : 'default'}
+    >
+      <Flex alignItems="center" flexWrap="wrap" gap={2}>
+        <Text muted size={1}>
+          {formatTime.format(new Date(entry.requestedAt))}
+        </Text>
+        <Text size={1} weight="medium">
+          {describeFetchReason(entry.reason, t)}
+        </Text>
+        {entry.reason.type === 'live' &&
+          entry.reason.matchedTags.map((tag) => (
+            <Badge fontSize={0} key={tag}>
+              {tag}
+            </Badge>
+          ))}
+        {change}
+        <Box flexBasis="0%" flexGrow={1} />
+        {entry.status === 'error' ? (
+          <Badge fontSize={0} tone="critical">
+            {t('vista.history.failed')}
+          </Badge>
+        ) : (
+          <Text muted size={1}>
+            {`${t('result.execution-time-label')} ${entry.ms === undefined ? notApplicable : `${entry.ms}ms`} · ${t('result.end-to-end-time-label')} ${entry.e2eMs === undefined ? notApplicable : `${entry.e2eMs}ms`}`}
+          </Text>
+        )}
+      </Flex>
+      {entry.errorMessage && (
+        <Box paddingTop={2}>
+          <Text muted size={1} textOverflow="ellipsis">
+            {entry.errorMessage}
+          </Text>
+        </Box>
+      )}
+      {comparable && expanded && previous && (
+        <Stack data-testid="vista-history-changes" gap={2} id={changesId} paddingTop={2}>
+          <Text muted size={1}>
+            {t(
+              previous.url === entry.url
+                ? 'vista.history.compared-with'
+                : 'vista.history.compared-with-other-request',
+              {time: formatTime.format(new Date(previous.requestedAt))},
+            )}
+          </Text>
+          <ResultDiffBoundary
+            renderFallback={(retry) => (
+              <Flex alignItems="center" gap={2}>
+                <Text muted size={1}>
+                  {t('vista.history.changes-failed')}
+                </Text>
+                <Button
+                  fontSize={1}
+                  mode="ghost"
+                  onClick={retry}
+                  padding={2}
+                  text={t('vista.history.changes-retry')}
+                />
+              </Flex>
+            )}
+          >
+            <Suspense fallback={<DelayedSpinner />}>
+              <ResultDiffLoader next={nextResult.value} previous={previousResult.value} />
+            </Suspense>
+          </ResultDiffBoundary>
+        </Stack>
+      )}
+    </Card>
+  )
+}
+
+export function HistoryTab({history}: {history: FetchHistoryEntry[]}) {
+  const {t} = useTranslation(visionLocaleNamespace)
+  // Newest first: the entry an entry is compared with is the next successful one in the list
+  const previousSuccess = useMemo(() => {
+    const previous = new Map<string, FetchHistoryEntry>()
+    let older: FetchHistoryEntry | undefined
+    for (let index = history.length - 1; index >= 0; index--) {
+      const entry = history[index]
+      if (older) previous.set(entry.id, older)
+      if (entry.status === 'ok') older = entry
+    }
+    return previous
+  }, [history])
 
   if (history.length === 0) {
     return (
@@ -46,46 +231,7 @@ export function HistoryTab({history}: {history: FetchHistoryEntry[]}) {
   return (
     <Stack data-testid="vista-history">
       {history.map((entry) => (
-        <Card
-          borderBottom
-          data-testid="vista-history-entry"
-          key={entry.id}
-          paddingX={3}
-          paddingY={2}
-          tone={entry.status === 'error' ? 'critical' : 'default'}
-        >
-          <Flex alignItems="center" flexWrap="wrap" gap={2}>
-            <Text muted size={1}>
-              {formatTime.format(new Date(entry.requestedAt))}
-            </Text>
-            <Text size={1} weight="medium">
-              {describeFetchReason(entry.reason, t)}
-            </Text>
-            {entry.reason.type === 'live' &&
-              entry.reason.matchedTags.map((tag) => (
-                <Badge fontSize={0} key={tag}>
-                  {tag}
-                </Badge>
-              ))}
-            <Box flexBasis="0%" flexGrow={1} />
-            {entry.status === 'error' ? (
-              <Badge fontSize={0} tone="critical">
-                {t('vista.history.failed')}
-              </Badge>
-            ) : (
-              <Text muted size={1}>
-                {`${t('result.execution-time-label')} ${entry.ms === undefined ? notApplicable : `${entry.ms}ms`} · ${t('result.end-to-end-time-label')} ${entry.e2eMs === undefined ? notApplicable : `${entry.e2eMs}ms`}`}
-              </Text>
-            )}
-          </Flex>
-          {entry.errorMessage && (
-            <Box paddingTop={2}>
-              <Text muted size={1} textOverflow="ellipsis">
-                {entry.errorMessage}
-              </Text>
-            </Box>
-          )}
-        </Card>
+        <HistoryEntry entry={entry} key={entry.id} previous={previousSuccess.get(entry.id)} />
       ))}
     </Stack>
   )

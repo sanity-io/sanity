@@ -5,6 +5,7 @@ import {
   type SyncTag,
 } from '@sanity/client'
 import {uuid} from '@sanity/uuid'
+import {dequal} from 'dequal/lite'
 import {
   type ActorRefFromLogic,
   assign,
@@ -20,11 +21,20 @@ import {getLiveRefetchTags} from '../util/syncTags'
 import {
   type FetchHistoryEntry,
   type FetchReason,
+  type HistoryResult,
   type QueryRequest,
+  type ResultChange,
   type VistaResponseMeta,
 } from './types'
 
 export const MAX_HISTORY_ENTRIES = 100
+/**
+ * Results kept on history entries besides the latest one, which is on screen anyway. Automatic
+ * refetching adds a result with every relevant change, so only the most recent ones stay
+ */
+export const MAX_KEPT_RESULTS = 10
+/** Results larger than this (as compact JSON) are neither compared nor kept once superseded */
+export const MAX_COMPARED_RESULT_BYTES = 1_000_000
 
 export interface QueryRunnerContext {
   tabId: string
@@ -70,7 +80,32 @@ function appendHistory(
   history: FetchHistoryEntry[],
   entry: FetchHistoryEntry,
 ): FetchHistoryEntry[] {
-  return [entry, ...history].slice(0, MAX_HISTORY_ENTRIES)
+  let kept = 0
+  return [entry, ...history].slice(0, MAX_HISTORY_ENTRIES).map((item, index) => {
+    if (index === 0 || item.result === undefined) return item
+    if (kept < MAX_KEPT_RESULTS && item.result.bytes <= MAX_COMPARED_RESULT_BYTES) {
+      kept++
+      return item
+    }
+    return {...item, result: undefined}
+  })
+}
+
+function compareWithPrevious(
+  history: FetchHistoryEntry[],
+  next: HistoryResult,
+): ResultChange | undefined {
+  const previous = history.find((entry) => entry.status === 'ok')
+  if (previous === undefined) return undefined
+  // The latest successful result is only dropped for its size, so a missing one is too large too
+  if (
+    previous.result === undefined ||
+    previous.result.bytes > MAX_COMPARED_RESULT_BYTES ||
+    next.bytes > MAX_COMPARED_RESULT_BYTES
+  ) {
+    return 'too-large'
+  }
+  return dequal(previous.result.value, next.value) ? 'unchanged' : 'changed'
 }
 
 /**
@@ -180,6 +215,10 @@ export const queryRunnerMachine = setup({
                   syncTags: response.syncTags || [],
                   resultSourceMap: response.resultSourceMap,
                 }
+                const historyResult: HistoryResult = {
+                  value: response.result,
+                  bytes: meta.payloadBytes,
+                }
                 return {
                   settledRequest: context.request,
                   syncTags: meta.syncTags,
@@ -191,10 +230,13 @@ export const queryRunnerMachine = setup({
                     id: uuid(),
                     requestedAt: new Date(context.startedAt).toISOString(),
                     reason: context.reason,
+                    url: meta.url,
                     status: 'ok',
                     ms: response.ms,
                     e2eMs,
                     errorMessage: undefined,
+                    result: historyResult,
+                    resultChange: compareWithPrevious(context.history, historyResult),
                   }),
                 }
               }),
@@ -218,10 +260,13 @@ export const queryRunnerMachine = setup({
                     id: uuid(),
                     requestedAt: new Date(context.startedAt).toISOString(),
                     reason: context.reason,
+                    url: context.request?.url || '',
                     status: 'error',
                     ms: undefined,
                     e2eMs: Date.now() - context.startedAt,
                     errorMessage: error.message,
+                    result: undefined,
+                    resultChange: undefined,
                   }),
                 }
               }),

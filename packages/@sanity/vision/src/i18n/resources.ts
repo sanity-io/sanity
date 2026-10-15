@@ -193,6 +193,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.export-types.title-typescript': 'Export TypeScript',
   /** Title of the dialog exporting a Zod schema for the result */
   'vista.export-types.title-zod': 'Export Zod',
+  /** A history entry whose result differs from the previous result, which is no longer kept */
+  'vista.history.changed': 'Changed',
+  /** Toggle on a history entry that shows how its result differs from the previous result */
+  'vista.history.changes': 'Changes',
+  /** Shown instead of the changes when they could not be loaded or rendered */
+  'vista.history.changes-failed': 'The changes could not be shown.',
+  /** Button retrying to show the changes of a history entry */
+  'vista.history.changes-retry': 'Retry',
+  /** Above the changes of a history entry: the result they are compared with */
+  'vista.history.compared-with': 'Compared with the result fetched at {{time}}',
+  /** Above the changes of a history entry, when the previous result was for another request */
+  'vista.history.compared-with-other-request':
+    'Compared with the result fetched at {{time}}, for a different query, params or options',
   /** Empty state of the history panel */
   'vista.history.empty': 'Nothing fetched yet',
   /** Status label for a failed fetch in the history */
@@ -211,6 +224,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.reason.resume': 'Automatic refetching resumed',
   /** History reason: the keyboard shortcut was used */
   'vista.history.reason.shortcut': 'Keyboard shortcut',
+  /** A history entry whose result, or the previous one, is too large to compare */
+  'vista.history.too-large': 'Too large to compare',
+  /** A history entry whose result is the same as the previous result */
+  'vista.history.unchanged': 'No changes',
   /** Shown in the Lint panel while the query has no lint findings */
   'vista.lint.empty':
     'No lint findings. Problems the GROQ linter spots in the query are listed here as you type; pick one to select it in the editor.',
