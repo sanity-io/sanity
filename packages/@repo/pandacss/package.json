@@ -5,7 +5,10 @@
   "description": "Panda CSS build and dev integration shared by the packages and dev studios in the sanity monorepo",
   "type": "module",
   "exports": {
-    "./layers.css": "./src/layers.css",
+    "./layers.css": {
+      "types": "./src/layers-css.d.ts",
+      "default": "./src/layers.css"
+    },
     "./tsdown": "./src/tsdown.ts",
     "./vite": "./src/vite.ts"
   },
