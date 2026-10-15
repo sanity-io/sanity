@@ -1,4 +1,5 @@
-import {studioPandaCss, unlayeredPandaCss} from '@repo/pandacss/vite'
+import {PANDA_LAYER_NAMES, studioPandaCss} from '@repo/pandacss/vite'
+import {removeCascadeLayers} from '@sanity/pandacss-tsdown-plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import {defaultClientConditions, defineConfig} from 'vite'
 
@@ -6,9 +7,9 @@ export default defineConfig(({command}) => ({
   plugins: [
     viteReact({compiler: {target: '19'}}),
     // The build resolves the built `sanity` package, which imports its own `bundle.css`; the
-    // stylesheet main.tsx imports then only carries the layer statements, which the build strips
-    // like the layers themselves (see @repo/pandacss)
-    ...(command === 'serve' ? studioPandaCss() : [unlayeredPandaCss()]),
+    // stylesheet main.tsx imports then only carries the layer statements, and the build drops
+    // Panda's like `studioPandaCss()` does, keeping `@layer sui;` (see @repo/pandacss)
+    ...(command === 'serve' ? studioPandaCss() : [removeCascadeLayers(PANDA_LAYER_NAMES)]),
   ],
   // Dev resolves the sanity package to workspace sources (same trick as the
   // dev studios' cli configs), so `pnpm dev:studio-diagnostics` works without

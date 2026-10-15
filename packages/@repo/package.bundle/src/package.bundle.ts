@@ -1,7 +1,8 @@
 import path from 'node:path'
 
 import {pandacss} from '@pandacss/vite'
-import {PANDA_LAYERS_CSS_SPECIFIER, unlayeredPandaCss} from '@repo/pandacss/vite'
+import {PANDA_LAYER_NAMES, PANDA_LAYERS_CSS_SPECIFIER} from '@repo/pandacss/vite'
+import {removeCascadeLayers} from '@sanity/pandacss-tsdown-plugin/vite'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact from '@vitejs/plugin-react'
 import {Features} from 'lightningcss'
@@ -63,10 +64,11 @@ export function createDefaultConfig({
             // rewritten to class names (content-hashed, so a release cannot reuse the previous
             // release's names for other rules, SAPP-4639) and the CSS fills the
             // `@repo/pandacss/layers.css` import that `pandaLayersCssImportPlugin` adds to every
-            // entry, without cascade layers like the package's own `bundle.css` (see
-            // @repo/pandacss)
+            // entry, without Panda's cascade layers like the package's own `bundle.css`
+            // (`removeCascadeLayers()` is the pass behind `cascadeLayers: false`; the `@layer sui;`
+            // statement `layers.css` opens with is not Panda's and stays, see @repo/pandacss)
             pandacss({transform: true}),
-            unlayeredPandaCss(),
+            removeCascadeLayers(PANDA_LAYER_NAMES),
             pandaLayersCssImportPlugin(),
           ]
         : [

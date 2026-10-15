@@ -31,6 +31,7 @@ describe('createDefaultConfig()', () => {
     expect(names).toEqual(
       expect.arrayContaining([
         'pandacss',
+        'sanity:remove-cascade-layers',
         'sanity/panda-layers-css-import',
         'sanity/cleanup-css-output',
       ]),
@@ -44,6 +45,7 @@ describe('createDefaultConfig()', () => {
       expect.arrayContaining(['sanity-vanilla-extract', 'sanity/cleanup-css-output']),
     )
     expect(names).not.toContain('pandacss')
+    expect(names).not.toContain('sanity:remove-cascade-layers')
     expect(names).not.toContain('sanity/panda-layers-css-import')
   })
 })

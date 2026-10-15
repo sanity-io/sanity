@@ -1,11 +1,9 @@
 import {fileURLToPath} from 'node:url'
 
 import {pandacss} from '@pandacss/vite'
+import {removeCascadeLayers} from '@sanity/pandacss-tsdown-plugin/vite'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {normalizePath, type Plugin} from 'vite'
-
-import {unwrapCascadeLayers} from './cascadeLayers.ts'
-import {LAYER_ORDER_STATEMENT} from './layerOrder.ts'
 
 /**
  * The stylesheet `@pandacss/vite` fills with the generated CSS, as the app imports it. An app
@@ -17,15 +15,25 @@ export const PANDA_LAYERS_CSS_SPECIFIER = '@repo/pandacss/layers.css'
 /** `layers.css` as a Vite module id: an absolute path with forward slashes on every platform. */
 const PANDA_LAYERS_CSS_ID = normalizePath(fileURLToPath(new URL('./layers.css', import.meta.url)))
 
+/**
+ * The cascade layers Panda writes its rules into (the default names, which both Panda projects
+ * use), and `layers.css` declares. `removeCascadeLayers()` takes them out of the CSS again, so the
+ * dev stylesheet cascades like the published `bundle.css` (`panda: {cascadeLayers: false}`); the
+ * `@layer sui;` statement ahead of them in `layers.css` is not Panda's and stays.
+ */
+export const PANDA_LAYER_NAMES: readonly string[] = [
+  'reset',
+  'base',
+  'tokens',
+  'recipes',
+  'utilities',
+]
+
 const SANITY_PACKAGE_DIR = fileURLToPath(new URL('../../../sanity/', import.meta.url))
 const VISION_PACKAGE_DIR = fileURLToPath(new URL('../../../@sanity/vision/', import.meta.url))
 
 /** The entry both `sanity dev` and `sanity build` write for a studio (`.sanity/runtime/app.js`). */
 const RE_SANITY_RUNTIME_ENTRY = /[\\/]\.sanity[\\/]runtime[\\/]app\.js$/
-
-function stripQuery(id: string): string {
-  return id.split('?')[0] ?? id
-}
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -77,27 +85,6 @@ export function visionVanillaExtractPlugin(): Plugin[] {
 }
 
 /**
- * Gives `layers.css`, once `@pandacss/vite` has appended the generated CSS to it, the shape of
- * the published `bundle.css`: the cascade layers removed with the rules ordered the way the
- * layers did (`unwrapCascadeLayers`, the pass behind `panda: {cascadeLayers: false}`), behind the
- * one statement the studio still declares (`LAYER_ORDER_STATEMENT`). Register it after the
- * `pandacss()` instances, as `studioPandaCss()` and `@repo/package.bundle` do.
- */
-export function unlayeredPandaCss(): Plugin {
-  return {
-    name: 'repo:unlayered-panda-css',
-    enforce: 'pre',
-    transform: {
-      filter: {id: /\.css(?:$|\?)/},
-      handler(code, id) {
-        if (stripQuery(id) !== PANDA_LAYERS_CSS_ID) return null
-        return {code: `${LAYER_ORDER_STATEMENT}\n${unwrapCascadeLayers(code)}`, map: null}
-      },
-    },
-  }
-}
-
-/**
  * Imports `layers.css` from the studio runtime entry, so the CSS the `pandacss()` instances
  * generate reaches the page: under `sanity dev` the CSS of the `sanity` sources (the `monorepo`
  * export condition), and under either command the CSS of the studio's own Panda project. A
@@ -137,7 +124,9 @@ export interface StudioPandaCssOptions {
 /**
  * The Vite plugins a studio, Storybook or test runner needs to build Panda projects from their
  * TypeScript sources: `@pandacss/vite` for each project (rewriting the `css()` calls of its
- * `.css.ts` modules to class names and generating the CSS), the layer removal, and the
+ * `.css.ts` modules to class names and generating the CSS), `removeCascadeLayers()` from
+ * `@sanity/pandacss-tsdown-plugin/vite` (the pass behind the `cascadeLayers: false` option the
+ * published `bundle.css` is built with, applied to the CSS `@pandacss/vite` generates), and the
  * `layers.css` import for the studio runtime entry.
  */
 export function studioPandaCss(options: StudioPandaCssOptions = {}): Plugin[] {
@@ -146,5 +135,9 @@ export function studioPandaCss(options: StudioPandaCssOptions = {}): Plugin[] {
     ...(options.roots ?? []),
   ]
 
-  return [...roots.map(scopedPandacss), unlayeredPandaCss(), studioRuntimeLayersCss()]
+  return [
+    ...roots.map(scopedPandacss),
+    removeCascadeLayers(PANDA_LAYER_NAMES),
+    studioRuntimeLayersCss(),
+  ]
 }

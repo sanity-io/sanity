@@ -3,7 +3,7 @@ import {defineConfig, type Config} from '@pandacss/dev'
 // The static styles of the studio: `css()` calls in the `.css.ts` modules next to the
 // components, extracted at build time (`panda` in tsdown.config.ts, `@pandacss/vite` in the dev
 // studios and test runners) and shipped as `sanity/bundle.css` — without Panda's cascade layers
-// (`cascadeLayers: false` in tsdown.config.ts, `unlayeredPandaCss()` in @repo/pandacss), so the
+// (`cascadeLayers: false` in tsdown.config.ts, `removeCascadeLayers()` in @repo/pandacss), so the
 // default layer names here never reach a page. `satisfies Config` makes the type checker reject
 // options that do not exist, which `defineConfig` alone lets through.
 export default defineConfig({

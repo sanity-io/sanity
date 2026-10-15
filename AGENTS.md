@@ -281,8 +281,9 @@ How the CSS reaches a page:
   scoped to that project's directory (the plugin itself would hand every module of the build to
   its transformer, so the first instance would rewrite another project's `.css.ts` with its own
   prefix), which rewrites the `.css.ts` modules and appends their CSS to
-  `@repo/pandacss/layers.css`, plus `unlayeredPandaCss()`, which gives that stylesheet the shape
-  of `bundle.css` (below). The app imports the stylesheet from its entry (a studio gets the import
+  `@repo/pandacss/layers.css`, plus `removeCascadeLayers()` from
+  `@sanity/pandacss-tsdown-plugin/vite`, which gives that stylesheet the shape of `bundle.css`
+  (below). The app imports the stylesheet from its entry (a studio gets the import
   injected into its `.sanity/runtime/app.js`; Storybook's `preview.tsx`, `test/setup/browser.ts`
   and the viewer's `main.tsx` import it themselves). The CDN bundle (`@repo/package.bundle`) does
   the same with its own entry injection. A `sanity build` resolves the built packages and their
@@ -298,33 +299,38 @@ How the CSS reaches a page:
   Lightning CSS has run and orders the rules the way the layers did (a layer's sublayers before
   its own rules, unlayered rules last), so every selector stays as specific as Panda wrote it and
   the studio's rules cascade like the vanilla-extract output did: by specificity, then source
-  order. The same pass runs on the dev stylesheet and the CDN bundle: `@repo/pandacss` carries a
-  copy of it (`src/cascadeLayers.ts`, kept identical to the plugin's source until the plugin
-  exports it), and `unlayeredPandaCss()` applies it to `layers.css`. `layers.css` declares
-  Panda's default layer names, which is how `@pandacss/vite` recognizes it as a project's root
-  stylesheet; with no layers on the page, both Panda projects use the default names and no
-  prefixed layer names exist. Panda's `polyfill` option is not an alternative: it emulates the
+  order. The same pass runs on the dev stylesheet and the CDN bundle: the plugin's `./vite`
+  export, `removeCascadeLayers(PANDA_LAYER_NAMES)`, registered next to the `@pandacss/vite`
+  instances by `studioPandaCss()` and by `@repo/package.bundle`, removes the named layers (and
+  their sublayers) from every CSS module after `@pandacss/vite` has filled `layers.css`, and
+  leaves other layers alone. `layers.css` declares Panda's default layer names, which is how
+  `@pandacss/vite` recognizes it as a project's root stylesheet; with no layers on the page, both
+  Panda projects use the default names and no prefixed layer names exist. Panda's `polyfill` option is not an alternative: it emulates the
   layer order with `:not(#\#…)` selector chains that inflate every rule's specificity. What this
   means when authoring: the studio's rules beat `@sanity/ui`'s on the same element by specificity
   and order alone — a plain class beats a styled-components base rule that loads later only when
   it is more specific, which is what the `&&` doubling is for.
 - **The one `@layer` statement left: `@layer sui;`** (`LAYER_ORDER_STATEMENT` in
-  `@repo/pandacss/layer-order`; `layerOrderPlugin()` prepends it to `bundle.css`,
-  `unlayeredPandaCss()` to the dev stylesheet and the CDN bundle). Other libraries still layer
-  their CSS: `ui5/styles.css` puts its universal reset in `sui.global`, and `@sanity/ui` v4.4 puts
-  its static styles in `u-tokens` and `u-utilities`. Those only compete by order, which a page
-  fixes by the first `@layer` statement it sees, so the studio declares `sui` first wherever its
-  stylesheet loads before either of theirs: the entry chunks of `sanity` import `bundle.css` on
-  their first line; the dev studios' runtime entry, Storybook's `preview.tsx`,
-  `test/setup/browser.ts` and every CDN bundle entry import `layers.css` first, and in a
-  `sanity build` of a dev studio the entry's stylesheet is the first `<link>`. What `sanity`
-  cannot order from inside the package is a plugin that `sanity.config.ts` imports before `sanity`
-  and that imports `@sanity/ui/styles.css` itself (several do): its `u-*` blocks then precede
-  `bundle.css` and `sui` lands above them, as it did before this statement existed (a v4
-  `Hotkeys` loses its 1px padding to the reset). Remove the statement once `@sanity/ui` v4 ships
-  its static styles unlayered (in progress in sanity-io/ui): unlayered v4 CSS beats `sui` by
-  itself, and a single layer has nothing to be ordered against. The ui5 team plans to drop its
-  layers too, except possibly the reset's.
+  `@repo/pandacss/layer-order`; `layerOrderPlugin()` prepends it to `bundle.css`, and
+  `layers.css` opens with it — `removeCascadeLayers()` takes only Panda's names, so it survives
+  into the dev stylesheet and the CDN bundle; keep the two in sync). Other libraries may still
+  layer their CSS: `ui5/styles.css` puts its universal reset in `sui.global`, and `@sanity/ui`
+  4.4.4–4.4.7 put their static styles in `u-tokens` and `u-utilities` (4.4.8, the catalog
+  version, ships them unlayered: [ui#3235](https://github.com/sanity-io/ui/pull/3235)). Two
+  layers only compete by order, which a page fixes by the first `@layer` statement it sees, so
+  the studio declares `sui` first wherever its stylesheet loads before either of theirs: the
+  entry chunks of `sanity` import `bundle.css` on their first line; the dev studios' runtime
+  entry, Storybook's `preview.tsx`, `test/setup/browser.ts` and every CDN bundle entry import
+  `layers.css` first, and in a `sanity build` of a dev studio the entry's stylesheet is the first
+  `<link>`. What `sanity` cannot order from inside the package is a plugin that
+  `sanity.config.ts` imports before `sanity` and that imports a layered `@sanity/ui/styles.css`
+  itself: its `u-*` blocks then precede `bundle.css` and `sui` lands above them, as it did before
+  this statement existed (a v4 `Hotkeys` loses its 1px padding to the reset). On the studio's own
+  pages nothing but `sui` is layered any more, so the statement only matters for a page that
+  still loads one of those v4 versions (a plugin's own copy); remove it, `layerOrderPlugin()`
+  and the first line of `layers.css` together once that no longer matters — a single layer has
+  nothing to be ordered against. The ui5 team plans to drop its layers too, except possibly the
+  reset's.
 - **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
   `property: value` pair once, grouped by property with the values sorted; a modifier class that
   must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)

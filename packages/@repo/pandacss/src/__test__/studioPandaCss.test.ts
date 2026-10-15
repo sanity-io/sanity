@@ -7,7 +7,7 @@ import {build, type Rolldown} from 'vite'
 import {afterAll, beforeAll, describe, expect, test} from 'vitest'
 
 import {LAYER_ORDER_STATEMENT} from '../layerOrder.ts'
-import {PANDA_LAYERS_CSS_SPECIFIER, studioPandaCss} from '../vite.ts'
+import {PANDA_LAYER_NAMES, PANDA_LAYERS_CSS_SPECIFIER, studioPandaCss} from '../vite.ts'
 
 const LAYERS_CSS_PATH = fileURLToPath(new URL('../layers.css', import.meta.url))
 
@@ -78,8 +78,8 @@ function cssOf(output: Rolldown.RolldownOutput): string {
 
 /**
  * The one statement the studio still declares has to be the first rule of the stylesheet
- * (comments aside), and nothing else in it may mention a layer: Panda's blocks are unwrapped and
- * its own declaration goes with them.
+ * (comments aside), and nothing else in it may mention a layer: `removeCascadeLayers()` unwraps
+ * Panda's blocks and drops Panda's names from the declaration, leaving `sui`.
  */
 function expectUnlayeredBehindStatement(css: string): void {
   const rules = css.replace(/\/\*[\s\S]*?\*\//g, '').trimStart()
@@ -98,10 +98,12 @@ afterAll(async () => {
   await rm(root, {recursive: true, force: true})
 })
 
-test("layers.css declares Panda's layer names, which is how @pandacss/vite recognizes it", async () => {
+test("layers.css opens with the studio's statement and declares Panda's layer names", async () => {
+  // The first statement is the one layer the studio orders, which `removeCascadeLayers()` leaves
+  // alone; the second is how `@pandacss/vite` recognizes the file as a project's root stylesheet
   const layersCss = await readFile(LAYERS_CSS_PATH, 'utf8')
   const statements = layersCss.match(/^@layer [^;]+;$/gm) ?? []
-  expect(statements).toEqual(['@layer reset, base, tokens, recipes, utilities;'])
+  expect(statements).toEqual([LAYER_ORDER_STATEMENT, `@layer ${PANDA_LAYER_NAMES.join(', ')};`])
 })
 
 describe('studioPandaCss()', () => {

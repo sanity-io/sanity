@@ -1,9 +1,11 @@
 /*
  * The stylesheet `@pandacss/vite` fills: each Panda project appends its CSS below the statement
  * that declares Panda's layers, which is also how the plugin recognizes this file as a project's
- * root stylesheet. The layers do not reach the page: `unlayeredPandaCss()` (src/vite.ts) removes
- * them again, ordering the rules the way the layers did, and prepends the one statement the studio
- * still declares (`LAYER_ORDER_STATEMENT` in src/layerOrder.ts, which `bundle.css` gets through
- * `layerOrderPlugin()`).
+ * root stylesheet. Those layers do not reach the page: `removeCascadeLayers()` from
+ * `@sanity/pandacss-tsdown-plugin/vite` (registered by `studioPandaCss()` and the CDN bundle)
+ * takes them out again, ordering the rules the way the layers did, and leaves the first statement
+ * alone — the one layer the studio still orders (`LAYER_ORDER_STATEMENT` in src/layerOrder.ts,
+ * which `bundle.css` gets through `layerOrderPlugin()`; keep the two in sync).
  */
+@layer sui;
 @layer reset, base, tokens, recipes, utilities;
