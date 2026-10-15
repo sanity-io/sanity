@@ -70,7 +70,7 @@ function runPlugin(bundle: Record<string, any>) {
 describe('cleanupCssOutputPlugin() — CSS import stripping', () => {
   it('removes imports for CSS assets produced by the build', () => {
     const bundle = {
-      // CSS asset produced by vanilla-extract
+      // CSS asset produced by Panda CSS
       'index.css': {
         type: 'asset',
         source: ':root { --color: red; }',

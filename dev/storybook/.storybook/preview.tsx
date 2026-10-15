@@ -1,3 +1,7 @@
+// The static styles of the `sanity` and `@sanity/vision` sources the stories
+// render: `@pandacss/vite` (main.ts) fills this stylesheet with the CSS of
+// their `.css.ts` modules, like the `bundle.css` the built packages import.
+import '@repo/pandacss/layers.css'
 // Both libraries ship static styles as stylesheets consumers import
 // themselves. Match the studio entry (`packages/sanity/src/_exports/index.ts`)
 // rather than relying on a story happening to import `sanity` (TestWrapper

@@ -1,3 +1,5 @@
+// The static styles of the `sanity` sources this app resolves in dev, see vite.config.ts
+import '@repo/pandacss/layers.css'
 import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
 import './styles.css'
