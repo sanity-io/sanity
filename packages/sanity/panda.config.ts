@@ -13,6 +13,17 @@ export default defineConfig({
   // the other Panda builds on the page (`@sanity/ui`, `@sanity/vision`).
   hash: true,
   prefix: 'sanity',
+  // `prefix` names classes and variables only. The cascade layers get the same prefix (the `u-`
+  // convention of `@sanity/ui`, sanity-io/ui#3228) so they cannot merge with the layers of the
+  // other Panda bundle on the page (`@sanity/ui`'s `u-*`) or with `ui5`'s `sui`. See the
+  // "Panda CSS" section of AGENTS.md for the order the studio needs between its layers and theirs.
+  layers: {
+    reset: 'sanity-reset',
+    base: 'sanity-base',
+    tokens: 'sanity-tokens',
+    recipes: 'sanity-recipes',
+    utilities: 'sanity-utilities',
+  },
   preflight: false,
   presets: [],
   // `styled` in this package is styled-components, not Panda's JSX factory.

@@ -11,6 +11,14 @@ export default defineConfig({
   importMap: '#styled-system',
   hash: true,
   prefix: 'test-studio',
+  // Prefixed like the class names, so the layers never merge with the `sanity-*` ones
+  layers: {
+    reset: 'test-studio-reset',
+    base: 'test-studio-base',
+    tokens: 'test-studio-tokens',
+    recipes: 'test-studio-recipes',
+    utilities: 'test-studio-utilities',
+  },
   preflight: false,
   presets: [],
   jsxStyleProps: 'none',

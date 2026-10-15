@@ -256,7 +256,10 @@ imported from the generated `#styled-system/css` runtime (`panda codegen` writes
 gitignored `styled-system/` directory of each Panda project on `pnpm install`, through the
 packages' `prepare` scripts). Each project has a `panda.config.ts` (`packages/sanity`,
 `dev/test-studio`) with the `} satisfies Config)` pattern, no presets, content-hashed class names
-(`sanity-HgOzd`, `test-studio-…`) and `strictPropertyValues`. The
+(`sanity-HgOzd`, `test-studio-…`), cascade layers carrying the same prefix (`layers` in the
+config: `sanity-reset` … `sanity-utilities`, the `u-` convention of
+[ui#3228](https://github.com/sanity-io/ui/pull/3228), so they never merge with `@sanity/ui`'s
+`u-*` layers or `ui5`'s `sui`) and `strictPropertyValues`. The
 `migrate-styled-components-to-panda-css` skill
 (`.agents/skills/migrate-styled-components-to-panda-css/SKILL.md`) is the authoring guide: the
 `&&` specificity trick, the cascade model, descendant selectors and dynamic values.

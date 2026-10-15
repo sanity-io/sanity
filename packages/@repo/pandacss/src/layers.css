@@ -1,1 +1,7 @@
-@layer reset, base, tokens, recipes, utilities;
+/*
+ * The stylesheet `@pandacss/vite` fills: each Panda project appends its CSS below the statement
+ * that declares its layers (the `layers` names of its panda.config.ts), which is also how the
+ * plugin recognizes this file as a project's root stylesheet.
+ */
+@layer sanity-reset, sanity-base, sanity-tokens, sanity-recipes, sanity-utilities;
+@layer test-studio-reset, test-studio-base, test-studio-tokens, test-studio-recipes, test-studio-utilities;
