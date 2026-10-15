@@ -5,6 +5,7 @@ import {useEffect, useRef} from 'react'
 import {type ApproximateLocation} from '../../util/timeZoneLocation'
 
 const SIZE = 168
+const SETTLE_MS = 1200
 
 /** cobe draws the globe; it is only fetched once the Network panel shows a response */
 const loadCobe = () => import('cobe')
@@ -46,18 +47,25 @@ export interface NetworkGlobeProps {
 /**
  * A globe with you and the region the query ran in, and an arc between them when the request
  * travelled there. cobe draws with WebGL on each `update`, so it is drawn once per change and
- * not animated; without WebGL it stays blank and the text next to it says the same.
+ * not animated; without WebGL it stays blank and the text next to it says the same. cobe moves
+ * its canvas around in the DOM and a destroyed globe leaves it unusable, so each picture gets a
+ * canvas of its own that React does not manage.
  */
 export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const dark = useThemeV2().color._dark
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas || (!you && !api)) return undefined
+    const container = containerRef.current
+    if (!container || (!you && !api)) return undefined
+    const canvas = document.createElement('canvas')
+    canvas.style.width = `${SIZE}px`
+    canvas.style.height = `${SIZE}px`
+    container.append(canvas)
     let cancelled = false
     let destroy: (() => void) | undefined
-    const devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2)
+    // Drawn at twice the size at least, so the map's dots stay visible this small
+    const devicePixelRatio = Math.max(window.devicePixelRatio || 1, 2)
     const focus = you && api ? midpoint(you, api) : (you ?? api)
     const markers: Marker[] = []
     if (you) markers.push({location: [you.latitude, you.longitude], size: 0.06, color: YOU_COLOR})
@@ -65,18 +73,22 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
     void loadCobe()
       .then(({default: createGlobe}) => {
         if (cancelled || !focus) return
+        const from = facing(you ?? focus)
+        const to = facing(focus)
         const options: COBEOptions = {
-          width: SIZE * devicePixelRatio,
-          height: SIZE * devicePixelRatio,
+          // cobe sizes the canvas in device pixels from these
+          width: SIZE,
+          height: SIZE,
           devicePixelRatio,
-          ...facing(focus),
-          dark: dark ? 1 : 0,
+          ...from,
+          // Light dots on a dark sphere, which reads at this size on either background
+          dark: 1,
           diffuse: 1.2,
-          mapSamples: 12_000,
-          mapBrightness: dark ? 4 : 6,
-          baseColor: dark ? [0.32, 0.32, 0.36] : [0.96, 0.96, 0.97],
+          mapSamples: 16_000,
+          mapBrightness: 6,
+          baseColor: [0.3, 0.3, 0.34],
           markerColor: API_COLOR,
-          glowColor: dark ? [0.25, 0.25, 0.3] : [0.92, 0.92, 0.95],
+          glowColor: dark ? [0.2, 0.2, 0.24] : [0.86, 0.87, 0.9],
           markers,
           arcs:
             you && api && reachedApi
@@ -88,8 +100,25 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
         }
         try {
           const globe = createGlobe(canvas, options)
-          globe.update({})
-          destroy = () => globe.destroy()
+          // The globe turns from you to the way the query took, and stops: drawing for a moment
+          // also picks up the map texture, which cobe loads after the first frame
+          const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+          const started = performance.now()
+          let frame = 0
+          const draw = (now: number) => {
+            const progress = Math.min((now - started) / SETTLE_MS, 1)
+            const eased = reduceMotion ? 1 : 1 - (1 - progress) ** 3
+            globe.update({
+              phi: from.phi + (to.phi - from.phi) * eased,
+              theta: from.theta + (to.theta - from.theta) * eased,
+            })
+            if (progress < 1) frame = requestAnimationFrame(draw)
+          }
+          frame = requestAnimationFrame(draw)
+          destroy = () => {
+            cancelAnimationFrame(frame)
+            globe.destroy()
+          }
         } catch {
           // No WebGL: the globe stays blank
         }
@@ -98,14 +127,15 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
     return () => {
       cancelled = true
       destroy?.()
+      container.replaceChildren()
     }
   }, [api, dark, reachedApi, you])
 
   return (
-    <canvas
+    <div
       aria-hidden
       data-testid="vista-network-globe"
-      ref={canvasRef}
+      ref={containerRef}
       style={{width: SIZE, height: SIZE, flexShrink: 0}}
     />
   )
