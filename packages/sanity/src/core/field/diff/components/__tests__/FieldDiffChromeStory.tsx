@@ -7,6 +7,7 @@ import {MissingSinceDocumentError} from '../../../../store/events/getDocumentCha
 import {ChangeBreadcrumb} from '../ChangeBreadcrumb'
 import {ChangesError} from '../ChangesError'
 import {MetaInfo} from '../MetaInfo'
+import {NoChanges} from '../NoChanges'
 import {ValueError} from '../ValueError'
 
 const TYPE_ERROR = {
@@ -18,8 +19,9 @@ const TYPE_ERROR = {
 
 /**
  * Chromatic sentinel for review-changes chrome migrated to ui5 Box: critical
- * ValueError, caution ChangesError, MetaInfo padding, and ChangeBreadcrumb
- * title segments. Shared with Storybook via a thin CSF wrapper.
+ * ValueError, caution ChangesError, MetaInfo padding, ChangeBreadcrumb
+ * title segments, and the empty-state NoChanges Flex stack. Shared with
+ * Storybook via a thin CSF wrapper.
  */
 export function FieldDiffChromeStory() {
   return (
@@ -63,6 +65,12 @@ export function FieldDiffChromeStory() {
             <ChangeBreadcrumb
               titlePath={['Article', 'Body', 'Content', 'Block', 'Image', 'Alt text']}
             />
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium">
+              no changes
+            </Text>
+            <NoChanges />
           </VStack>
         </VStack>
       </Card>
