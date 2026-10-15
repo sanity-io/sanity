@@ -220,6 +220,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.reason.live': 'Live update',
   /** History reason: the live connection asked every client to refetch */
   'vista.history.reason.live-restart': 'Live connection restarted',
+  /** History reason: the Live button was pressed, which fetches and then refetches automatically */
+  'vista.history.reason.live-start': 'Live started',
   /** History reason: a saved or pasted query was loaded into a tab that refetches automatically */
   'vista.history.reason.load': 'Query loaded',
   /** History reason: the fetch button was pressed */
@@ -253,14 +255,17 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.lint.severity.warning': 'Warning',
   /** Badge shown while a tab refetches automatically */
   'vista.live.active': 'Live',
-  /** Button in the request column's action bar turning automatic refetching on and off */
+  /** Button in the request column's action bar that fetches and then refetches automatically */
   'vista.live.button': 'Live',
   /** Tooltip of the Live button while automatic refetching is off */
-  'vista.live.button.start': 'Refetch whenever the documents in the result change',
-  /** Tooltip of the Live button while automatic refetching is on */
-  'vista.live.button.stop': 'Refetching whenever the documents in the result change; click to stop',
+  'vista.live.button.start': 'Fetch, then fetch again whenever the documents in the result change',
+  /** Tooltip of the Stop live button, while the tab refetches automatically */
+  'vista.live.button.stop':
+    'Stop fetching when the documents in the result change. Fetch still fetches on demand, for results no document change touches, like now()',
   /** Error shown when the live connection breaks */
   'vista.live.error': 'Live updates disconnected: {{message}}',
+  /** The Live button while the tab refetches automatically, stopping it */
+  'vista.live.stop': 'Stop live',
   /** Hint under the dataset field while the tab follows the workspace's dataset */
   'vista.options.dataset.follows-workspace': 'Follows the workspace',
   /** Button that pins the current dataset so the tab stops following the workspace */

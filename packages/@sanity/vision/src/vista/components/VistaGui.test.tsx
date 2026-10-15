@@ -384,21 +384,38 @@ describe('VistaGui', () => {
     expect(text(screen.getByTestId('vista-result'))).toContain('vista.result.empty')
   })
 
-  it('turns automatic refetching on and off with the Live button next to Fetch', async () => {
-    renderVista()
+  it('fetches with Live and refetches until Stop live, with Fetch still fetching meanwhile', async () => {
+    const {fetchCalls} = renderVista()
     const actions = screen.getByTestId('vista-query-actions')
     const live = within(actions).getByTestId('vista-auto-refetch')
-    expect(text(live)).toContain('vista.live.button')
-    expect(live.getAttribute('aria-pressed')).toBe('false')
+    expect(text(live)).toBe('vista.live.button')
+    // Like Fetch, it needs something to fetch
+    expect(isDisabled(live)).toBe(true)
     // It replaces the menu item
     fireEvent.click(screen.getByTestId('vista-query-menu-button'))
     expect(document.querySelectorAll('[data-testid="vista-auto-refetch"]')).toHaveLength(1)
 
+    typeQuery('{"now": now()}')
+    await waitFor(() => expect(isDisabled(live)).toBe(false))
     fireEvent.click(live)
-    expect(live.getAttribute('aria-pressed')).toBe('true')
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(text(live)).toBe('vista.live.stop')
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
+
+    // Fetch still fetches on demand, for results no document change touches, like now()
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(text(live)).toBe('vista.live.stop')
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    await waitFor(() => expect(screen.getAllByTestId('vista-history-entry')).toHaveLength(2))
+    const entries = screen.getAllByTestId('vista-history-entry')
+    expect(text(entries[0])).toContain('vista.history.reason.manual')
+    expect(text(entries[1])).toContain('vista.history.reason.live-start')
+
     fireEvent.click(live)
-    expect(live.getAttribute('aria-pressed')).toBe('false')
+    expect(text(live)).toBe('vista.live.button')
+    await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(false))
+    expect(fetchCalls).toHaveLength(2)
   })
 
   it('explains why Live is unavailable on an API version without sync tags', () => {
@@ -904,10 +921,9 @@ describe('VistaGui', () => {
   it('refetches from live events that carry one of the response sync tags', async () => {
     const {fetchCalls, liveEvents, liveSubscriptionCount, respondWith} = renderVista()
     typeQuery('*[_type == "author"]')
-    fireEvent.click(screen.getByTestId('vista-fetch-button'))
-    await waitFor(() => expect(fetchCalls).toHaveLength(1))
-
+    // Live fetches like Fetch, then follows the response's sync tags
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
     await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
     // Both the tab and the result carry the badge while the subscription is up
@@ -932,7 +948,7 @@ describe('VistaGui', () => {
     const entries = screen.getAllByTestId('vista-history-entry')
     expect(text(entries[0])).toContain('vista.history.reason.live')
     expect(text(entries[0])).toContain('s1:abc')
-    expect(text(entries[1])).toContain('vista.history.reason.manual')
+    expect(text(entries[1])).toContain('vista.history.reason.live-start')
 
     // The next response's tags are the ones that count now
     act(() => {
@@ -1014,7 +1030,7 @@ describe('VistaGui', () => {
     expect(getQueryEditor().value).toBe('*[_type == "author"')
   })
 
-  it('starts automatic refetching from the current request, not the last fetched one', async () => {
+  it('starts Live with a fetch of the current request, not the last fetched one', async () => {
     const {fetchCalls} = renderVista()
     typeQuery('*[_type == "author"]')
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
@@ -1030,11 +1046,11 @@ describe('VistaGui', () => {
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].config.dataset).toBe('staging')
 
-    // Turning it off and on again without changes does not fetch again
+    // Like Fetch, starting it again fetches again
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(3))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
-    expect(fetchCalls).toHaveLength(2)
   })
 
   it('fetches a query loaded into a tab that refetches automatically', async () => {

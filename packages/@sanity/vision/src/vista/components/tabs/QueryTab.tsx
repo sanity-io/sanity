@@ -137,13 +137,13 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   }, [actorRef, buildRequest, setParams, tab])
 
   const run = useCallback(
-    (reason: FetchReason) => {
+    (reason: FetchReason): boolean => {
       const current = buildCurrentRequest()
-      if (current) {
-        runnerRef.send({type: 'fetch', request: current, reason})
-        // On a phone the result lives behind the other pane; bring it forward
-        if (layout === 'mobile') setMobilePane('response')
-      }
+      if (!current) return false
+      runnerRef.send({type: 'fetch', request: current, reason})
+      // On a phone the result lives behind the other pane; bring it forward
+      if (layout === 'mobile') setMobilePane('response')
+      return true
     },
     [buildCurrentRequest, layout, runnerRef],
   )
@@ -153,22 +153,16 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       actorRef.send({type: 'tab.setOptions', id: tab.id, options}),
     [actorRef, tab.id],
   )
+  // Live is an alternative to Fetch: it fetches the current request (live refetches replay the
+  // runner's last one, which may date from before the options or the query changed), and then
+  // refetches automatically until stopped
   const toggleAutoRefetch = useCallback(() => {
-    const autoRefetch = !tab.autoRefetch
-    actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch})
-    if (!autoRefetch) return
-    // Live refetches replay the runner's last request, which may date from before the options
-    // (or the query) changed while refetching was off; a session starts from the current one
-    const current = buildCurrentRequest()
-    const lastRequest = runnerRef.getSnapshot().context.request
-    if (
-      current &&
-      (lastRequest?.url !== current.url ||
-        lastRequest.includeSourceMap !== current.includeSourceMap)
-    ) {
-      runnerRef.send({type: 'fetch', request: current, reason: {type: 'manual'}})
+    if (tab.autoRefetch) {
+      actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch: false})
+    } else if (run({type: 'live-start'})) {
+      actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch: true})
     }
-  }, [actorRef, buildCurrentRequest, runnerRef, tab])
+  }, [actorRef, run, tab.autoRefetch, tab.id])
 
   const prettify = useCallback(async () => {
     const {query} = tab

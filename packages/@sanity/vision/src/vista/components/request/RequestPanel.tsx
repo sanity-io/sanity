@@ -241,6 +241,7 @@ export function RequestPanel(props: RequestPanelProps) {
       <ActionRail testId="vista-query-actions">
         <LiveButton
           active={tab.autoRefetch}
+          canFetch={request !== null}
           onToggle={onToggleAutoRefetch}
           supported={resolved.supportsSyncTags}
         />

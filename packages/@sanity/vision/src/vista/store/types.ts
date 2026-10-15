@@ -100,6 +100,8 @@ export type FetchReason =
   | {type: 'load'}
   /** A tab that refetches automatically was shown again, with nothing current to replay */
   | {type: 'resume'}
+  /** The Live button, which fetches like Fetch and then refetches automatically */
+  | {type: 'live-start'}
   | {type: 'live'; matchedTags: SyncTag[]}
 
 /** A successful fetch's result, kept on its history entry to compare it with the next one */

@@ -1,3 +1,4 @@
+import {StopIcon} from '@sanity/icons/Stop'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {Button, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
@@ -12,16 +13,22 @@ export interface LiveButtonProps {
   active: boolean
   /** The tab's API version has sync tags, which automatic refetching follows */
   supported: boolean
+  /** There is a request to fetch, as for the Fetch button */
+  canFetch: boolean
   onToggle: () => void
 }
 
-/** Turns automatic refetching (through the Live Content API's sync tags) on and off */
-export function LiveButton({active, supported, onToggle}: LiveButtonProps) {
+/**
+ * An alternative to Fetch: fetches the query, then fetches again whenever the documents in the
+ * result change (through the Live Content API's sync tags), until Stop live
+ */
+export function LiveButton({active, supported, canFetch, onToggle}: LiveButtonProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const hintId = useId()
-  const label = t('vista.live.button')
+  const live = active && supported
+  const label = live ? t('vista.live.stop') : t('vista.live.button')
   let tooltip = t('vista.query.auto-refetch.unsupported')
-  if (supported) tooltip = active ? t('vista.live.button.stop') : t('vista.live.button.start')
+  if (supported) tooltip = live ? t('vista.live.button.stop') : t('vista.live.button.start')
   const unavailable = !supported
 
   return (
@@ -39,16 +46,16 @@ export function LiveButton({active, supported, onToggle}: LiveButtonProps) {
       >
         <Button
           aria-hidden={unavailable || undefined}
-          aria-pressed={unavailable ? undefined : active}
           data-testid="vista-auto-refetch"
-          disabled={unavailable}
+          // Like Fetch it needs something to fetch, but a running session can always be stopped
+          disabled={unavailable || (!live && !canFetch)}
           gap={2}
-          icon={SyncIcon}
-          mode={active && supported ? 'default' : 'ghost'}
+          icon={live ? StopIcon : SyncIcon}
+          mode={live ? 'default' : 'ghost'}
           onClick={onToggle}
           padding={2}
           text={label}
-          tone={active && supported ? 'positive' : 'default'}
+          tone={live ? 'positive' : 'default'}
         />
         {unavailable && <VisuallyHidden id={hintId}>{tooltip}</VisuallyHidden>}
       </span>
