@@ -1,10 +1,12 @@
-import postcss, {type AtRule, type ChildNode} from 'postcss'
+import postcss, {type ChildNode, type Container, type Declaration} from 'postcss'
 
 /**
  * Moves the rules of every `@layer <name> { … }` block to the layer's own position in the
  * stylesheet and drops the `@layer a, b, c;` order statements, so the output has no cascade
  * layers at all. Rule order is preserved, which is all the layer blocks contributed: Panda
- * emits `base`, `tokens`, `recipes` and `utilities` in that order already.
+ * emits `base`, `tokens`, `recipes` and `utilities` in that order already. Panda's
+ * `--made-with-panda` marker goes too (`@sanity/pandacss-tsdown-plugin` removes it from
+ * `bundle.css` itself; this keeps the CDN bundle and the dev stylesheet in line).
  *
  * Panda CSS wraps everything it generates in cascade layers. The studio's static CSS cannot
  * live in one: styles that are not in a layer beat layered styles regardless of specificity,
@@ -21,20 +23,39 @@ import postcss, {type AtRule, type ChildNode} from 'postcss'
 export function unwrapCascadeLayers(css: string): string {
   const root = postcss.parse(css)
 
-  root.walkAtRules('layer', (atRule: AtRule) => {
-    if (!atRule.nodes) {
-      atRule.remove()
-      return
-    }
-
-    const nodes: ChildNode[] = atRule.nodes.map((node) => node.clone())
-    for (const node of nodes) {
-      dedent(node)
-    }
-    atRule.replaceWith(...nodes)
+  root.walkDecls('--made-with-panda', (decl: Declaration) => {
+    const rule = decl.parent
+    decl.remove()
+    if (rule && 'nodes' in rule && rule.nodes.length === 0) rule.remove()
   })
 
+  unwrapLayersIn(root)
+
   return root.toString()
+}
+
+function unwrapLayersIn(container: Container): void {
+  for (const node of [...container.nodes]) {
+    if (node.type !== 'atrule' || node.name !== 'layer') {
+      if ('nodes' in node && node.nodes) unwrapLayersIn(node)
+      continue
+    }
+    if (!node.nodes) {
+      node.remove()
+      continue
+    }
+    unwrapLayersIn(node)
+    const children: ChildNode[] = [...node.nodes]
+    // postcss resets the `before` whitespace of nodes it moves after the first one; keep the
+    // original (dedented) whitespace so minified input stays minified and pretty input pretty
+    const before = children.map((child) => child.raws.before)
+    for (const child of children) dedent(child)
+    node.replaceWith(...children)
+    children.forEach((child, index) => {
+      const raw = before[index]
+      child.raws.before = typeof raw === 'string' ? raw.replace(/\n {2}/g, '\n') : raw
+    })
+  }
 }
 
 /**

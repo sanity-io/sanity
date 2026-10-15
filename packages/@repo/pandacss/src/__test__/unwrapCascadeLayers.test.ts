@@ -65,6 +65,14 @@ describe('unwrapCascadeLayers()', () => {
     )
   })
 
+  it('drops the --made-with-panda marker and the :root rule it leaves empty', () => {
+    expect(
+      unwrapCascadeLayers(
+        '@layer base {\n  :root {\n    --made-with-panda: "🐼";\n  }\n  #sanity {\n    --x: 1;\n  }\n}\n',
+      ),
+    ).toBe('\n#sanity {\n  --x: 1;\n}\n')
+  })
+
   it('leaves a stylesheet without layers untouched', () => {
     const css = '.a {\n  color: red;\n}\n'
     expect(unwrapCascadeLayers(css)).toBe(css)
