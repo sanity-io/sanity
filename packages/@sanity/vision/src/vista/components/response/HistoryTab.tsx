@@ -58,6 +58,8 @@ function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): strin
       return t('vista.history.reason.resume')
     case 'live-start':
       return t('vista.history.reason.live-start')
+    case 'generated':
+      return t('vista.history.reason.generated')
     case 'live':
       return reason.matchedTags.length > 0
         ? t('vista.history.reason.live')

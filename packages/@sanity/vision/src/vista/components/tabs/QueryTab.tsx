@@ -260,8 +260,15 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
     }
   })
+  // A tab opened with a generated query shows its result straight away
+  const fetchGeneratedQuery = useEffectEvent(() => {
+    if (!actorRef.getSnapshot().context.fetchOnOpen.includes(tab.id)) return
+    actorRef.send({type: 'tab.fetchedOnOpen', id: tab.id})
+    run({type: 'generated'})
+  })
   useEffect(() => {
     resumeAutoRefetch()
+    fetchGeneratedQuery()
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- once per tab mount; useEffectEvent callbacks must not be listed
   }, [])
 

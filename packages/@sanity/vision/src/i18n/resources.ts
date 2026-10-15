@@ -193,6 +193,30 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.export-types.title-typescript': 'Export TypeScript',
   /** Title of the dialog exporting a Zod schema for the result */
   'vista.export-types.title-zod': 'Export Zod',
+  /** Button next to the new tab button that opens the dialog writing a query from a description */
+  'vista.generate.button': 'Generate query',
+  /** Closes the generate query dialog */
+  'vista.generate.cancel': 'Cancel',
+  /** Explanation in the generate query dialog */
+  'vista.generate.description':
+    'Describe what to fetch. Sanity Agent Actions write the GROQ from your description and the names and fields of the document types, and the Content Lake checks each attempt. The query opens in a new tab and runs there, with the options of this one.',
+  /** Shown when no query could be generated, above the reason */
+  'vista.generate.failed': 'The query could not be generated',
+  /** Accessible label of the description field in the generate query dialog */
+  'vista.generate.label': 'What should the query fetch?',
+  /** Opens the last rejected attempt in a new tab, without running it, to fix it by hand */
+  'vista.generate.open-anyway': 'Open the last attempt',
+  /** Placeholder of the description field in the generate query dialog */
+  'vista.generate.placeholder':
+    'The 10 most recent authors, ordered by last name and then first name',
+  /** Shown while the first attempt at a query is written */
+  'vista.generate.progress': 'Writing the query…',
+  /** Shown while a rejected attempt is retried */
+  'vista.generate.progress-retry': 'Fixing the query (attempt {{attempt}} of {{max}})…',
+  /** Button generating the query */
+  'vista.generate.submit': 'Generate',
+  /** Title of the generate query dialog */
+  'vista.generate.title': 'Generate query',
   /** A history entry whose result differs from the previous result, which is no longer kept */
   'vista.history.changed': 'Changed',
   /**
@@ -229,6 +253,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.hiding': 'Hiding {{fields}}',
   /** A history entry whose result only differs from the previous one in hidden fields */
   'vista.history.only-hidden-changed': 'Only hidden fields changed',
+  /** History reason: a tab opened with a generated query fetched it */
+  'vista.history.reason.generated': 'Generated query',
   /** History reason: a live event matched the query's sync tags */
   'vista.history.reason.live': 'Live update',
   /** History reason: the live connection asked every client to refetch */

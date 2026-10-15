@@ -226,6 +226,8 @@ interface FetchCall {
 
 function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', dataset: 'test'}) {
   const fetchCalls: FetchCall[] = []
+  const promptCalls: {config: ClientConfig; request: Record<string, unknown>}[] = []
+  const promptReplies: unknown[] = []
   const liveEvents = new Subject<LiveEvent>()
   let liveSubscriptions = 0
   let nextResponse: Record<string, unknown> = {
@@ -256,11 +258,22 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
           return liveEvents
         },
       },
+      agent: {
+        action: {
+          prompt: (request: Record<string, unknown>) => {
+            promptCalls.push({config, request})
+            return Promise.resolve(promptReplies.shift())
+          },
+        },
+      },
     }) as unknown as SanityClient
 
   return {
     client: create(initial),
     fetchCalls,
+    promptCalls,
+    /** Replies the Agent Actions prompt gives, one per call */
+    replyToPrompts: (...replies: unknown[]) => promptReplies.push(...replies),
     liveEvents,
     liveSubscriptionCount: () => liveSubscriptions,
     respondWith: (response: Record<string, unknown>) => {
@@ -569,6 +582,79 @@ describe('VistaGui', () => {
     expect(
       within(latest).getByTestId('vista-history-changes-toggle').getAttribute('aria-expanded'),
     ).toBe('false')
+  })
+
+  it('generates a query from a description into a new tab that fetches it', async () => {
+    const {fetchCalls, promptCalls, replyToPrompts} = renderVista()
+    const generated = '*[_type == "author"] | order(_createdAt desc)[0...10]{_id, name}'
+    replyToPrompts({query: generated, params: {}, title: 'Recent authors'})
+    expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
+
+    fireEvent.click(screen.getByTestId('vista-generate-query'))
+    const dialog = await screen.findByTestId('vista-generate-dialog')
+    const submit = within(dialog).getByTestId('vista-generate-submit')
+    expect(isDisabled(submit)).toBe(true)
+    fireEvent.change(within(dialog).getByTestId('vista-generate-request'), {
+      target: {value: 'The 10 most recent authors'},
+    })
+    fireEvent.click(submit)
+
+    await waitFor(() => expect(screen.queryByTestId('vista-generate-dialog')).toBeNull())
+    expect(promptCalls).toHaveLength(1)
+    expect(promptCalls[0].config.apiVersion).toBe('vX')
+    expect(promptCalls[0].request).toMatchObject({
+      format: 'json',
+      instructionParams: {request: 'The 10 most recent authors'},
+    })
+    // Checked on the Content Lake without running it, with the active tab's options
+    expect(fetchCalls[0]).toMatchObject({
+      config: {apiVersion: 'v2025-02-19', dataset: 'test'},
+      query: `select(false => (\n${generated}\n))`,
+    })
+
+    // A new tab with the query, laid out by the formatter, fetches it right away
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    const tabs = screen.getAllByTestId('vista-tab')
+    expect(tabs).toHaveLength(2)
+    expect(within(tabs[1]).getByRole('tab').getAttribute('aria-selected')).toBe('true')
+    expect(text(tabs[1])).toContain('Recent authors')
+    expect(fetchCalls[1].query).toBe(getQueryEditor().value)
+    expect(fetchCalls[1].query).toContain('order(_createdAt desc)[0...10]')
+    expect(fetchCalls[1].query).not.toContain('select(false')
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    expect(text(screen.getByTestId('vista-history-entry'))).toContain(
+      'vista.history.reason.generated',
+    )
+  })
+
+  it('offers the last attempt when every generated query is rejected', async () => {
+    const {fetchCalls, failWith, replyToPrompts} = renderVista()
+    const rejected = '*[_type == "author"] limit 10'
+    replyToPrompts(...Array.from({length: 3}, () => ({query: rejected, params: {}})))
+    failWith(
+      Object.assign(new Error('GROQ query parse error'), {
+        details: {type: 'queryParseError', description: 'unexpected token "limit"'},
+      }),
+    )
+
+    fireEvent.click(screen.getByTestId('vista-generate-query'))
+    const dialog = await screen.findByTestId('vista-generate-dialog')
+    fireEvent.change(within(dialog).getByTestId('vista-generate-request'), {
+      target: {value: 'Ten authors'},
+    })
+    fireEvent.click(within(dialog).getByTestId('vista-generate-submit'))
+
+    const error = await within(dialog).findByTestId('vista-generate-error')
+    expect(text(error)).toContain('vista.generate.failed')
+    expect(text(error)).toContain('unexpected token "limit"')
+    expect(text(error)).toContain(rejected)
+    expect(fetchCalls).toHaveLength(3)
+
+    fireEvent.click(within(error).getByTestId('vista-generate-open-anyway'))
+    await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(2))
+    expect(getQueryEditor().value).toContain('limit 10')
+    // Opened to be fixed by hand, not run
+    expect(fetchCalls).toHaveLength(3)
   })
 
   it('keeps the shown result and its actions while a refetch is in flight', async () => {

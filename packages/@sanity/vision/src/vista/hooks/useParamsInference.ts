@@ -1,24 +1,10 @@
 import {type SchemaType} from 'groq-js'
 import {useMemo} from 'react'
-import {type Schema, type SchemaType as StudioSchemaType, useSchema} from 'sanity'
+import {type Schema, useSchema} from 'sanity'
 
+import {getDocumentTypeNames} from '../util/documentTypes'
 import {inferQueryParams, type ParamInference} from '../util/paramInference'
 import {getGroqSchema} from '../util/typegen/evaluateQueryType'
-
-function isDocumentType(type: StudioSchemaType | undefined): boolean {
-  for (let current = type; current; current = current.type) {
-    if (current.name === 'document') return true
-  }
-  return false
-}
-
-/** The workspace's document types, its own first and the `sanity.`/`system.` ones after */
-function getDocumentTypeNames(schema: Schema): string[] {
-  return schema
-    .getTypeNames()
-    .filter((name) => name !== 'document' && isDocumentType(schema.get(name)))
-    .toSorted((a, b) => Number(a.includes('.')) - Number(b.includes('.')) || a.localeCompare(b))
-}
 
 export interface ParamsInference extends ParamInference {
   /** The workspace schema could not be read, so the types come from the query alone */

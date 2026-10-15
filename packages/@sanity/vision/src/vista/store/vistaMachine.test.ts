@@ -235,6 +235,25 @@ describe('vistaMachine', () => {
     harness.actor.send({type: 'dialog.close'})
     harness.actor.send({type: 'dialog.open', dialog: 'shortcuts'})
     expect(selectOpenDialog(harness.snapshot())).toBe('shortcuts')
+    harness.actor.send({type: 'dialog.close'})
+    harness.actor.send({type: 'dialog.open', dialog: 'generate'})
+    expect(selectOpenDialog(harness.snapshot())).toBe('generate')
+    harness.actor.send({type: 'dialog.close'})
+    expect(selectOpenDialog(harness.snapshot())).toBeNull()
+  })
+
+  it('remembers which added tabs fetch when shown, until they have or are closed', () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'tab.add', tab: {id: 'generated', query: '*'}, fetch: true})
+    harness.actor.send({type: 'tab.add', tab: {id: 'plain', query: '*'}})
+    harness.actor.send({type: 'tab.add', tab: {id: 'closed', query: '*'}, fetch: true})
+    expect(harness.snapshot().context.fetchOnOpen).toEqual(['generated', 'closed'])
+
+    harness.actor.send({type: 'tab.fetchedOnOpen', id: 'generated'})
+    harness.actor.send({type: 'tab.close', id: 'closed'})
+    expect(harness.snapshot().context.fetchOnOpen).toEqual([])
+    // Never persisted: a reload does not fetch again
+    expect(selectPersistedState(harness.snapshot())).not.toHaveProperty('fetchOnOpen')
   })
 
   it('restores and toggles the params and options panels independently', () => {

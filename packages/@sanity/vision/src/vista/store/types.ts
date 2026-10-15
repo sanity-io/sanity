@@ -54,7 +54,7 @@ export type VistaSettings = VistaTabOptions
 
 export type VistaDrawer = 'saved' | 'shared'
 
-export type VistaDialog = 'shortcuts' | 'settings'
+export type VistaDialog = 'shortcuts' | 'settings' | 'generate'
 
 export interface VistaSidebarState {
   expanded: boolean
@@ -102,6 +102,8 @@ export type FetchReason =
   | {type: 'resume'}
   /** The Live button, which fetches like Fetch and then refetches automatically */
   | {type: 'live-start'}
+  /** A tab opened with a generated query, fetched as it is shown */
+  | {type: 'generated'}
   | {type: 'live'; matchedTags: SyncTag[]}
 
 /** A successful fetch's result, kept on its history entry to compare it with the next one */

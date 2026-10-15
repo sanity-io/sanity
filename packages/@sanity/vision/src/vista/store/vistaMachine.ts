@@ -44,6 +44,8 @@ export interface VistaContext {
    * URL), so the mounted editors know to replace their content. Not persisted.
    */
   loadRevisions: Record<string, number>
+  /** Tabs added to be fetched as soon as they are shown (a generated query). Not persisted. */
+  fetchOnOpen: string[]
   /** Sidebar state as restored from storage, consumed once by the `restoring` states */
   restoredSidebar: VistaSidebarState
   /** Panel state as restored from storage, consumed once by the `restoring` states */
@@ -51,7 +53,10 @@ export interface VistaContext {
 }
 
 export type VistaEvent =
-  | {type: 'tab.add'; tab?: VistaTabInit}
+  /** `fetch` has the tab fetch its query once it is shown */
+  | {type: 'tab.add'; tab?: VistaTabInit; fetch?: boolean}
+  /** The tab fetched on being shown, as `tab.add` asked */
+  | {type: 'tab.fetchedOnOpen'; id: string}
   | {type: 'tab.close'; id: string}
   | {type: 'tab.select'; id: string}
   /** The complete set of open tab ids in their new order */
@@ -160,6 +165,7 @@ export const vistaMachine = setup({
         tabs: [...context.tabs, tab],
         activeTabId: tab.id,
         runners: {...context.runners, [tab.id]: spawnRunner(spawn, tab.id)},
+        fetchOnOpen: event.fetch ? [...context.fetchOnOpen, tab.id] : context.fetchOnOpen,
       }
     }),
     closeTab: enqueueActions(({context, event, enqueue}) => {
@@ -176,6 +182,9 @@ export const vistaMachine = setup({
       }
       const {[event.id]: _removed, ...runners} = context.runners
       const remaining = context.tabs.filter((tab) => tab.id !== event.id)
+      if (context.fetchOnOpen.includes(event.id)) {
+        enqueue.assign({fetchOnOpen: context.fetchOnOpen.filter((id) => id !== event.id)})
+      }
 
       if (remaining.length === 0) {
         const fallback = createTab(context.settings)
@@ -207,6 +216,7 @@ export const vistaMachine = setup({
           settings: fresh.settings,
           historyDiff: fresh.historyDiff,
           runners: spawnRunners(spawn, fresh.tabs),
+          fetchOnOpen: [],
         }
       })
     }),
@@ -223,6 +233,7 @@ export const vistaMachine = setup({
     historyDiff: input.persisted.historyDiff,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
+    fetchOnOpen: [],
     restoredSidebar: input.persisted.sidebar,
     restoredPanels: input.persisted.panels,
   }),
@@ -240,6 +251,11 @@ export const vistaMachine = setup({
           const byId = new Map(context.tabs.map((tab) => [tab.id, tab]))
           return event.ids.flatMap((id) => byId.get(id) ?? [])
         },
+      }),
+    },
+    'tab.fetchedOnOpen': {
+      actions: assign({
+        fetchOnOpen: ({context, event}) => context.fetchOnOpen.filter((id) => id !== event.id),
       }),
     },
     'tab.rename': {
@@ -446,12 +462,14 @@ export const vistaMachine = setup({
           on: {
             'dialog.open': [
               {guard: {type: 'isDialog', params: {dialog: 'settings'}}, target: 'settings'},
+              {guard: {type: 'isDialog', params: {dialog: 'generate'}}, target: 'generate'},
               {target: 'shortcuts'},
             ],
           },
         },
         settings: {on: {'dialog.close': {target: 'closed'}}},
         shortcuts: {on: {'dialog.close': {target: 'closed'}}},
+        generate: {on: {'dialog.close': {target: 'closed'}}},
       },
     },
   },
@@ -514,6 +532,7 @@ export function selectProjectId(snapshot: VistaSnapshot): string {
 export function selectOpenDialog(snapshot: VistaSnapshot): VistaDialog | null {
   if (snapshot.matches({dialog: 'settings'})) return 'settings'
   if (snapshot.matches({dialog: 'shortcuts'})) return 'shortcuts'
+  if (snapshot.matches({dialog: 'generate'})) return 'generate'
   return null
 }
 
