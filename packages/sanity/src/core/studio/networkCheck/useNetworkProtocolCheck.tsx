@@ -76,7 +76,6 @@ export function useNetworkProtocolCheck(): undefined {
             size="default"
             icon={LaunchIcon}
             tooltipProps={{
-              // oxlint-disable-next-line @repo/i18n/no-missing-translation-key -- TODO(SAPP-4649): this tooltip string is not defined in the studio bundle
               content: t('network-check.slow-protocol-warning.learn-more-button.tooltip'),
             }}
             text={t('network-check.slow-protocol-warning.learn-more-button.text')}
