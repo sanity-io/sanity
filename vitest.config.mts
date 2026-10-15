@@ -51,7 +51,6 @@ export default defineConfig({
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
-      'packages/@repo/pandacss',
       'packages/@repo/utils',
       // Reporter and flake-report unit tests only (see e2e/vitest.config.mts);
       // Playwright specs stay out.

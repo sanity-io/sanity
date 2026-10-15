@@ -290,12 +290,18 @@ How the CSS reaches a page:
   own entry injection. A `sanity build` resolves the built packages and their `bundle.css`, so a
   studio registers the package instances for `sanity dev` only; the test studio keeps an instance
   for its own `roots` under both commands, since its `plugins/**/*.css.ts` have no prebuilt CSS.
-- **No cascade layers.** Panda wraps its output in `@layer` blocks; `@repo/pandacss` strips them
-  from `bundle.css` (a tsdown plugin) and from the dev stylesheet (a Vite plugin), because
-  unlayered styles beat layered ones regardless of specificity and the studio's rules exist to
-  beat the unlayered styled-components rules of `@sanity/ui` v4 and the component classes of
-  `ui5`. Panda's own `polyfill` option is not an alternative: it emulates layer order with
-  `:not(#\#…)` selector chains that inflate every rule's specificity.
+- **Cascade layers.** The studio's CSS lives in Panda's `@layer` blocks (`sanity-reset` …
+  `sanity-utilities`), in `bundle.css` and in the dev stylesheet alike. Layer order decides the
+  cascade before specificity does, so every `@sanity/ui` layer must be declared before the
+  studio's: the `u-*` layers of `@sanity/ui/styles.css`, the layer `@sanity/ui` v4 wraps its
+  styled-components rules in, and `ui5`'s `sui` (its component classes included). The studio's
+  `.css.ts` rules override those libraries' rules on the same element, which only works through
+  layer order once every side is layered; an unlayered rule beats a layered one regardless of
+  specificity, so neither library may leave rules outside its layers. The order is fixed by the
+  first `@layer` statement a page sees, i.e. the one at the top of `bundle.css` / `layers.css`,
+  which has to list the `@sanity/ui` layer names before the `sanity-*` ones. Panda's `polyfill`
+  option is not an alternative to layers: it emulates their order with `:not(#\#…)` selector
+  chains that inflate every rule's specificity.
 - **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
   `property: value` pair once, grouped by property with the values sorted; a modifier class that
   must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)

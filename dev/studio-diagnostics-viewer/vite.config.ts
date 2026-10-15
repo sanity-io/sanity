@@ -1,12 +1,13 @@
-import {studioPandaCss, unlayeredPandaCss} from '@repo/pandacss/vite'
+import {studioPandaCss} from '@repo/pandacss/vite'
 import viteReact from '@vitejs/plugin-react'
 import {defaultClientConditions, defineConfig} from 'vite'
 
 export default defineConfig(({command}) => ({
   plugins: [
     viteReact({compiler: {target: '19'}}),
-    // The build only has to strip the layer declaration of the stylesheet main.tsx imports
-    ...(command === 'serve' ? studioPandaCss() : [unlayeredPandaCss()]),
+    // The build resolves the built `sanity` package, which imports its own `bundle.css`; the
+    // stylesheet main.tsx imports then only declares the layer order
+    ...(command === 'serve' ? studioPandaCss() : []),
   ],
   // Dev resolves the sanity package to workspace sources (same trick as the
   // dev studios' cli configs), so `pnpm dev:studio-diagnostics` works without

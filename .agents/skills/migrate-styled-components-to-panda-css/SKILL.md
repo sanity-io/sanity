@@ -134,17 +134,19 @@ Three stylesheets meet on a migrated element:
 | `@sanity/ui` (styled-components, runtime) | `<style data-styled>` appended on first render      | same                                                                                                         |
 | `ui5` (`styles.css`)                      | static file                                         | static file                                                                                                  |
 
-Panda wraps its output in cascade layers; `@repo/pandacss` removes them from both `bundle.css`
-and the dev stylesheet, because unlayered styles beat layered ones regardless of specificity and
-the studio's rules exist to beat the unlayered styled-components and `ui5` component styles. Do
-not reintroduce `@layer` in a `.css.ts`.
+Panda wraps its output in cascade layers (`sanity-reset` … `sanity-utilities`, see the "Panda
+CSS" section of AGENTS.md for the order the studio needs against `@sanity/ui`'s layers). Do not
+write `@layer` in a `.css.ts`: the layer is the stylesheet's, never a rule's.
 
 Consequences:
 
-- **Never rely on order against `@sanity/ui`.** Beat the primitive's own rule by specificity:
-  `&&` (0,2,0) beats a plain component class (0,1,0). If the primitive rule you override already
-  has two classes or a pseudo-class chain (e.g. Card's `&[data-as='button']:not(:disabled)[data-selected]`),
-  count its specificity and exceed it — `&&&`, or `&&[data-as='button']`. Read the rule in
+- **Beat `@sanity/ui`'s rules by specificity, not by order.** Where the studio's layers win
+  through layer order, a plain class is enough; while a library rule is unlayered (styled-components
+  output that is not wrapped in a layer yet, `ui5` component classes), an unlayered rule beats a
+  layered one regardless of specificity, and in an unlayered build `&&` (0,2,0) beats a plain
+  component class (0,1,0). If the primitive rule you override already has two classes or a
+  pseudo-class chain (e.g. Card's `&[data-as='button']:not(:disabled)[data-selected]`), count its
+  specificity and exceed it — `&&&`, or `&&[data-as='button']`. Read the rule in
   `node_modules/@sanity/ui/dist/*.js` when unsure. `!important` stays banned.
 - **Panda emits one rule per declaration, not one per class.** `css({display: 'flex', opacity: 1})`
   returns two class names, one per declaration, and `bundle.css` holds every distinct

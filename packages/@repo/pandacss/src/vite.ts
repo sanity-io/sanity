@@ -4,8 +4,6 @@ import {pandacss} from '@pandacss/vite'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {normalizePath, type Plugin} from 'vite'
 
-import {unwrapCascadeLayers} from './unwrapCascadeLayers.ts'
-
 /**
  * The stylesheet `@pandacss/vite` fills with the generated CSS, as the app imports it. An app
  * that builds `sanity` from source imports it from its entry: a studio through
@@ -21,10 +19,6 @@ const VISION_PACKAGE_DIR = fileURLToPath(new URL('../../../@sanity/vision/', imp
 
 /** The entry both `sanity dev` and `sanity build` write for a studio (`.sanity/runtime/app.js`). */
 const RE_SANITY_RUNTIME_ENTRY = /[\\/]\.sanity[\\/]runtime[\\/]app\.js$/
-
-function stripQuery(id: string): string {
-  return id.split('?')[0] ?? id
-}
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -76,25 +70,6 @@ export function visionVanillaExtractPlugin(): Plugin[] {
 }
 
 /**
- * Drops the cascade layers from `layers.css` once `@pandacss/vite` has appended the generated
- * CSS to it. Register it after the `pandacss()` instances, as `studioPandaCss()` and
- * `@repo/package.bundle` do. See `unwrapCascadeLayers` for the reason.
- */
-export function unlayeredPandaCss(): Plugin {
-  return {
-    name: 'repo:unlayered-panda-css',
-    enforce: 'pre',
-    transform: {
-      filter: {id: /\.css(?:$|\?)/},
-      handler(code, id) {
-        if (stripQuery(id) !== PANDA_LAYERS_CSS_ID) return null
-        return {code: unwrapCascadeLayers(code), map: null}
-      },
-    },
-  }
-}
-
-/**
  * Imports `layers.css` from the studio runtime entry, so the CSS the `pandacss()` instances
  * generate reaches the page: under `sanity dev` the CSS of the `sanity` sources (the `monorepo`
  * export condition), and under either command the CSS of the studio's own Panda project. A
@@ -134,8 +109,8 @@ export interface StudioPandaCssOptions {
 /**
  * The Vite plugins a studio, Storybook or test runner needs to build Panda projects from their
  * TypeScript sources: `@pandacss/vite` for each project (rewriting the `css()` calls of its
- * `.css.ts` modules to class names and generating the CSS), the layer removal, and the
- * `layers.css` import for the studio runtime entry.
+ * `.css.ts` modules to class names and generating the CSS) and the `layers.css` import for the
+ * studio runtime entry.
  */
 export function studioPandaCss(options: StudioPandaCssOptions = {}): Plugin[] {
   const roots = [
@@ -143,5 +118,5 @@ export function studioPandaCss(options: StudioPandaCssOptions = {}): Plugin[] {
     ...(options.roots ?? []),
   ]
 
-  return [...roots.map(scopedPandacss), unlayeredPandaCss(), studioRuntimeLayersCss()]
+  return [...roots.map(scopedPandacss), studioRuntimeLayersCss()]
 }
