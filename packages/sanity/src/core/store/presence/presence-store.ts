@@ -362,7 +362,9 @@ export function createPresenceStore(context: {
         )
         .filter((item) => debugIntrospect || item.presence.sessionId !== SESSION_ID),
     ),
-    shareReplay(1),
+    // `refCount`, so presence stops once the last document using it unmounts, as when the login
+    // screen replaces the studio after a session ends.
+    shareReplay({bufferSize: 1, refCount: true}),
   )
 
   /**
