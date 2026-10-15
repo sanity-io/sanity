@@ -74,6 +74,7 @@ import {DriftFeed} from './DriftFeed'
 import {type LayerState, useLayerState} from './layers'
 import {sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
+import {SqrlBanner} from './SqrlBanner'
 import {seriesHasCalibration, TrendChart} from './TrendChart'
 import {type DriftState, useDriftState} from './useDriftState'
 import {useUrlState} from './useUrlState'
@@ -1533,6 +1534,8 @@ export function TrendsTool() {
                 </Select>
               </Flex>
             </Flex>
+
+            <SqrlBanner source={source} rangeDays={rangeDays} tags={tags} />
 
             {/* How-to-read is opt-in — returning viewers don't need the wall
                 of text, first-timers are one click away */}
