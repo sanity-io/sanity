@@ -41,6 +41,7 @@ export function createMockSanityClient(
   } = {},
   options: {
     apiVersion?: string
+    dataset?: string
   } = {},
 ) {
   const requests: Record<string, any> = {
@@ -306,4 +307,21 @@ export function createMockSanityClientAsClient(
   ...args: Parameters<typeof createMockSanityClient>
 ): SanityClient {
   return createMockSanityClient(...args) as unknown as SanityClient
+}
+
+export interface MockDocumentEditAction {
+  draftId: string
+  patch: Record<string, unknown>
+}
+
+/**
+ * The `sanity.action.document.edit` actions sent through a client created with
+ * {@link createMockSanityClientAsClient}, in the order they were sent.
+ */
+export function getDocumentEditActions(client: SanityClient): MockDocumentEditAction[] {
+  const {$log} = client as unknown as ReturnType<typeof createMockSanityClient>
+  return $log.observable.action
+    .flatMap(({actions}) => [actions].flat())
+    .filter((action) => action.actionType === 'sanity.action.document.edit')
+    .map(({draftId, patch}) => ({draftId, patch}))
 }
