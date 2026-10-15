@@ -18,6 +18,7 @@ import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayG
 import {CapabilityGate} from '../../../components/CapabilityGate'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
+import {useId} from '../../../hooks/useId'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
@@ -84,6 +85,12 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const ToolMenu = useToolMenuComponent()
+
+  // One name per cluster, unique to this navbar. A shared name collides when
+  // Themer renders two studios, and the browser then drops both from the
+  // split-screen view transition.
+  const navLeftViewTransitionName = useId()
+  const navRightViewTransitionName = useId()
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
@@ -196,7 +203,13 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
           <Grid className={navGrid} gap={1}>
             {/** Left flex */}
             <TooltipDelayGroupProvider>
-              <Flex alignItems="center" gap={2} justifyContent="flex-start">
+              <Flex
+                alignItems="center"
+                data-testid="studio-navbar-left"
+                gap={2}
+                justifyContent="flex-start"
+                style={{viewTransitionName: navLeftViewTransitionName}}
+              >
                 <Flex alignItems="center" gap={2}>
                   {/* Menu button */}
                   {!shouldRender.tools && (
@@ -243,7 +256,13 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
             {/** Right flex */}
             <TooltipDelayGroupProvider>
-              <Flex alignItems="center" gap={1} justifyContent="flex-end">
+              <Flex
+                alignItems="center"
+                data-testid="studio-navbar-right"
+                gap={1}
+                justifyContent="flex-end"
+                style={{viewTransitionName: navRightViewTransitionName}}
+              >
                 {/* Search */}
                 <LayerProvider>
                   <SearchProvider fullscreen={shouldRender.searchFullscreen}>
