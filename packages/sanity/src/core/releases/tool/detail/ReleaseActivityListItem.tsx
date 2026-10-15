@@ -139,7 +139,7 @@ export const ReleaseActivityListItem = memo(
           <UserAvatar user={event.author} />
           <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
             <Flex gap={2} alignItems="center">
-              <StatusText muted size={1} trim={true}>
+              <StatusText muted size={1} trim={true} forwardedAs="div">
                 <Translate
                   t={t}
                   components={{ScheduleTarget}}

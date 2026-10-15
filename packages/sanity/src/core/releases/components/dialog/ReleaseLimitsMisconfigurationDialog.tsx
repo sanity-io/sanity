@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -35,7 +34,9 @@ export function ReleaseLimitsMisconfigurationDialog(
       }}
     >
       <VStack gap={4}>
-        <Text>{t('releases.upsell.misconfiguration.message')}</Text>
+        <Text as="div" trim={true}>
+          {t('releases.upsell.misconfiguration.message')}
+        </Text>
       </VStack>
     </Dialog>
   )
