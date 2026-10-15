@@ -1,6 +1,6 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Fragment} from 'react'
-import {Text, Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
@@ -32,15 +32,15 @@ export function FilterDetails({filter}: FilterDetailsProps) {
                 >
                   <span>{pathTitle}</span>
                   {index !== fieldDefinition.titlePath.length - 2 && (
-                    <span
+                    <Icon
+                      size={0}
+                      icon={ChevronRightIcon}
                       style={{
                         opacity: 0.75,
                         paddingLeft: '0.25em',
                         paddingRight: '0.25em',
                       }}
-                    >
-                      <ChevronRightIcon />
-                    </span>
+                    />
                   )}
                 </Fragment>
               )
@@ -51,9 +51,7 @@ export function FilterDetails({filter}: FilterDetailsProps) {
 
       <Flex alignItems="flex-start" gap={3}>
         <Box style={{flexShrink: 0}}>
-          <Text size={1} as="div" trim={true}>
-            <FilterIcon filter={filter} />
-          </Text>
+          <Icon size={1} icon={<FilterIcon filter={filter} />} />
         </Box>
         <Text size={1} weight="medium" as="div" trim={true}>
           <FilterTitle filter={filter} />

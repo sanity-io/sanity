@@ -12,7 +12,15 @@ export const MenuItemHeader = memo(function MenuItemHeader({item}: MenuItemHeade
   return (
     <Box paddingTop={1}>
       <Card borderBottom paddingX={2} paddingY={3} tone={item?.tone}>
-        <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
+        <Text
+          muted
+          size={1}
+          truncate={1}
+          weight="medium"
+          as="div"
+          trim={true}
+          style={{color: 'var(--card-muted-fg-color)'}}
+        >
           {item.title}
         </Text>
       </Card>

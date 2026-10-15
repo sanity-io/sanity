@@ -1,12 +1,12 @@
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {Inline} from '@sanity/ui'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
 
 function PaddedControlsIcon() {
-  return <ControlsIcon style={{padding: '0 0.25rem'}} />
+  return <Icon icon={ControlsIcon} style={{padding: '0 0.25rem'}} />
 }
 
 export function Instructions() {

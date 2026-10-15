@@ -9,7 +9,7 @@ import {
 } from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Text, Box, Flex, type MarginProps, type PaddingProps} from 'ui5'
+import {Text, Box, Flex, type MarginProps, type PaddingProps, Icon} from 'ui5'
 
 import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -101,9 +101,7 @@ export function RecentSearchItem({
         <Flex alignItems="stretch">
           {/* Combination of <Inline> and a zero-width character to ensure icon is optically aligned with adjacent text */}
           <Inline paddingY={2}>
-            <Text muted size={1} as="div" trim={true}>
-              <ClockIcon />
-            </Text>
+            <Icon muted size={1} icon={ClockIcon} />
             <Text as="div" trim={true}>
               &#8203;
             </Text>
@@ -142,9 +140,7 @@ export function RecentSearchItem({
           <Flex alignItems="center">
             <CloseButtonDiv onClick={handleDelete}>
               <Flex padding={2}>
-                <Text size={1} as="div" trim={true}>
-                  <CloseIcon />
-                </Text>
+                <Icon size={1} icon={CloseIcon} />
               </Flex>
             </CloseButtonDiv>
           </Flex>

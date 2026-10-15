@@ -2,7 +2,7 @@ import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {type FileAsset, type ReferenceValue} from '@sanity/types'
 import {Card, TextSkeleton} from '@sanity/ui'
 import {useCallback} from 'react'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {formatBytes} from '../../../../../../../../../../form/inputs/common/helper'
 import {observeFileAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
@@ -36,9 +36,7 @@ function FilePreview({asset}: {asset: FileAsset}) {
     <Card padding={2} shadow={1}>
       <Flex alignItems="center" justifyContent="space-between" flexWrap="nowrap">
         <Card padding={3} radius={1} shadow={1} tone="transparent">
-          <Text as="div" trim={true}>
-            <BinaryDocumentIcon />
-          </Text>
+          <Icon icon={BinaryDocumentIcon} />
         </Card>
         <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
           <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
@@ -58,9 +56,7 @@ function FileSkeleton() {
     <Card padding={2} shadow={1}>
       <Flex alignItems="center" justifyContent="flex-start">
         <Card padding={3} radius={1} shadow={1} tone="transparent">
-          <Text as="div" trim={true}>
-            <BinaryDocumentIcon />
-          </Text>
+          <Icon icon={BinaryDocumentIcon} />
         </Card>
         <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
           <TextSkeleton animated style={{width: '100%'}} radius={1} />
