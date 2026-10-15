@@ -206,6 +206,21 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip of the API version button while a selected variant forces the experimental API */
   'vista.api-version.tooltip-locked':
     'Queries run against API version {{version}}, which the selected variant needs.',
+  /** Explanation at the top of the Explain panel */
+  'vista.explain.description':
+    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words.',
+  /** Shown in the Explain panel while there is no valid query to explain */
+  'vista.explain.empty': 'Write a query to explain it.',
+  /** Button in the Explain panel asking Agent Actions to explain the query and its plan */
+  'vista.explain.explain': 'Explain this to me',
+  /** Shown when the explanation could not be written */
+  'vista.explain.failed': 'The query could not be explained: {{message}}',
+  /** Button in the Explain panel fetching the query plan */
+  'vista.explain.plan': 'Show the query plan',
+  /** Shown when the query plan could not be fetched */
+  'vista.explain.plan-failed': 'The query plan could not be fetched: {{message}}',
+  /** Heading of the query plan in the Explain panel */
+  'vista.explain.plan-title': 'Query plan',
   /** Button over the query editor that opens the bar writing a query from a description */
   'vista.generate.button': 'Generate query',
   /** Closes the generate query bar */
@@ -348,6 +363,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.panel.collapse': 'Collapse panel',
   /** Accessible label for expanding a bottom panel */
   'vista.panel.expand': 'Expand panel',
+  /** Label of the "Explain" tab in the response panel: the query plan and an explanation */
+  'vista.panel.explain': 'Explain',
   /** Label of the "History" tab in the response panel */
   'vista.panel.history': 'History',
   /** Label of the "Lint" tab in the response panel, listing the query's lint findings */

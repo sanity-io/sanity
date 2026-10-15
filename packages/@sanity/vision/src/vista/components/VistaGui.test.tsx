@@ -230,6 +230,8 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
   const fetchCalls: FetchCall[] = []
   const promptCalls: {config: ClientConfig; request: Record<string, unknown>}[] = []
   const promptReplies: unknown[] = []
+  const requestCalls: {config: ClientConfig; options: {url: string}}[] = []
+  let nextRequestResponse: unknown
   const liveEvents = new Subject<LiveEvent>()
   let liveSubscriptions = 0
   let nextResponse: Record<string, unknown> = {
@@ -260,6 +262,10 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
           return liveEvents
         },
       },
+      request: (options: {url: string}) => {
+        requestCalls.push({config, options})
+        return Promise.resolve(nextRequestResponse)
+      },
       agent: {
         action: {
           prompt: (request: Record<string, unknown>) => {
@@ -276,6 +282,11 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
     promptCalls,
     /** Replies the Agent Actions prompt gives, one per call */
     replyToPrompts: (...replies: unknown[]) => promptReplies.push(...replies),
+    requestCalls,
+    /** The body `client.request` resolves with */
+    respondToRequests: (response: unknown) => {
+      nextRequestResponse = response
+    },
     liveEvents,
     liveSubscriptionCount: () => liveSubscriptions,
     respondWith: (response: Record<string, unknown>) => {
@@ -594,6 +605,45 @@ describe('VistaGui', () => {
     expect(
       within(latest).getByTestId('vista-history-changes-toggle').getAttribute('aria-expanded'),
     ).toBe('false')
+  })
+
+  it('shows the query plan and an explanation of the query in the Explain panel', async () => {
+    const {promptCalls, replyToPrompts, requestCalls, respondToRequests} = renderVista()
+    const plan = 'Pipeline {\n  r1: StreamStep {\n    $0: Fetch {Filter: (_type == "post")}\n  }\n}'
+    respondToRequests({result: [], explain: plan})
+    replyToPrompts('It fetches every post.\n\nThe filter is applied while reading.')
+
+    fireEvent.click(document.getElementById('vista-response-explain-tab') as HTMLElement)
+    expect(isDisabled(screen.getByTestId('vista-explain-button'))).toBe(true)
+    expect(text(screen.getByTestId('vista-explain'))).toContain('vista.explain.empty')
+
+    typeQuery('*[_type == "post"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-explain-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vista-explain-plan-button'))
+    await waitFor(() => expect(screen.getByTestId('vista-query-plan')).toBeTruthy())
+    expect(text(screen.getByTestId('vista-query-plan'))).toContain(
+      'Fetch {Filter: (_type == "post")}',
+    )
+    expect(new URL(requestCalls[0].options.url, 'https://x.io').searchParams.get('explain')).toBe(
+      'true',
+    )
+
+    // The explanation reuses the plan it already has
+    fireEvent.click(screen.getByTestId('vista-explain-button'))
+    await waitFor(() => expect(screen.getByTestId('vista-explanation')).toBeTruthy())
+    expect(requestCalls).toHaveLength(1)
+    expect(promptCalls[0].config.apiVersion).toBe('vX')
+    expect(promptCalls[0].request).toMatchObject({instructionParams: {plan}})
+    expect(
+      within(screen.getByTestId('vista-explanation'))
+        .getAllByText(/./)
+        .map((paragraph) => paragraph.textContent),
+    ).toEqual(['It fetches every post.', 'The filter is applied while reading.'])
+
+    // Both belong to the query they were made for
+    typeQuery('*[_type == "author"]')
+    await waitFor(() => expect(screen.queryByTestId('vista-explanation')).toBeNull())
+    expect(screen.queryByTestId('vista-query-plan')).toBeNull()
   })
 
   it('shows the result as JSON text to select and copy from, and remembers the choice', async () => {

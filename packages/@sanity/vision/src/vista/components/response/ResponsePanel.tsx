@@ -16,6 +16,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {describeKeypath} from '../../../util/getAtKeypath'
 import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
+import {useQueryExplain} from '../../hooks/useQueryExplain'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
 import {type QueryRequest, type VistaResultView, type VistaTab} from '../../store/types'
@@ -28,6 +29,7 @@ import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {resultContainer, resultLabel, labelActions} from '../vista.css'
 import {DownloadButton} from './DownloadButton'
+import {ExplainTab} from './ExplainTab'
 import {HistoryTab} from './HistoryTab'
 import {LintTab} from './LintTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
@@ -102,6 +104,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
     [t, toast],
   )
 
+  const queryExplain = useQueryExplain(request)
   const actorRef = useVistaActor()
   const resultView = useVistaSelector(selectResultView)
   const setResultView = useCallback(
@@ -175,8 +178,32 @@ export function ResponsePanel(props: ResponsePanelProps) {
           ),
         content: <HistoryTab hiddenFields={hiddenDiffFields} history={history} />,
       },
+      {
+        id: 'explain',
+        label: t('vista.panel.explain'),
+        content: (
+          <ExplainTab
+            canExplain={request !== null}
+            explanation={queryExplain.explanation}
+            onExplain={() => void queryExplain.explain()}
+            onShowPlan={queryExplain.showPlan}
+            plan={queryExplain.plan}
+          />
+        ),
+      },
     ],
-    [hiddenDiffFields, history, lintFindings, meta, onRevealLintFinding, resultDataset, t, url],
+    [
+      hiddenDiffFields,
+      history,
+      lintFindings,
+      meta,
+      onRevealLintFinding,
+      queryExplain,
+      request,
+      resultDataset,
+      t,
+      url,
+    ],
   )
 
   return (
