@@ -1,4 +1,5 @@
 import {type SanityDocument, type Schema, type ValidationMarker} from '@sanity/types'
+import {type ValidationScheduling} from '@sanity/validation/_internal'
 import {BehaviorSubject, Observable, type Subscription} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -18,13 +19,13 @@ vi.mock('@sanity/validation/_internal', () => ({
 
 /**
  * One call to the validation engine. The observable stays open until the test
- * emits a result, so an idle run can be observed in flight and then cancelled.
+ * emits a result, so a run can be observed in flight.
  */
 interface RecordedRun {
-  scheduling: 'idle' | 'immediate'
+  scheduling: unknown
   revision: string
   cancelled: boolean
-  emit: (markers: ValidationMarker[]) => void
+  finish: (markers: ValidationMarker[]) => void
 }
 
 function movie(revision: string, title: string): SanityDocument {
@@ -38,25 +39,30 @@ function movie(revision: string, title: string): SanityDocument {
   }
 }
 
-function emitBeforeSubscribe(): void {
-  throw new Error('validation run emitted before it was subscribed')
+function finishBeforeSubscribe(): void {
+  throw new Error('validation run finished before it was subscribed')
 }
 
 function installRuns(): RecordedRun[] {
   const runs: RecordedRun[] = []
   evaluateDocumentObservable.mockImplementation(
-    (options: {scheduling?: 'idle' | 'immediate'; document: SanityDocument}) => {
+    (options: {scheduling?: unknown; document: SanityDocument}) => {
       const run: RecordedRun = {
-        scheduling: options.scheduling ?? 'idle',
+        scheduling: options.scheduling,
         revision: options.document._rev,
         cancelled: false,
-        emit: emitBeforeSubscribe,
+        finish: finishBeforeSubscribe,
       }
       runs.push(run)
       return new Observable<{markers: ValidationMarker[]}>((subscriber) => {
-        run.emit = (markers) => subscriber.next({markers})
+        let finished = false
+        run.finish = (markers) => {
+          finished = true
+          subscriber.next({markers})
+          subscriber.complete()
+        }
         return () => {
-          run.cancelled = true
+          if (!finished) run.cancelled = true
         }
       })
     },
@@ -67,6 +73,13 @@ function installRuns(): RecordedRun[] {
 async function flushScheduled() {
   // exhaustMapWithTrailing subscribes on RxJS asyncScheduler (setInterval(0)).
   await vi.advanceTimersByTimeAsync(1)
+  await vi.advanceTimersByTimeAsync(1)
+}
+
+const titleRequired: ValidationMarker = {
+  level: 'error',
+  message: 'Title is required',
+  path: ['title'],
 }
 
 describe('validateDocumentWithReferences scheduling', () => {
@@ -82,15 +95,10 @@ describe('validateDocumentWithReferences scheduling', () => {
     vi.useRealTimers()
   })
 
-  it('cancels an in-flight idle run when scheduling switches to immediate and revalidates the latest document on the shared stream', async () => {
-    const runs = installRuns()
-    const original = movie('rev-1', 'Original')
-    const latest = movie('rev-2', 'Latest')
-    const document$ = new BehaviorSubject<SanityDocument | null>(original)
-    const scheduling$ = new BehaviorSubject<'idle' | 'immediate'>('idle')
-    const firstSubscriber: ValidationStatus[] = []
-    const secondSubscriber: ValidationStatus[] = []
-
+  function validate(
+    document$: Observable<SanityDocument | null>,
+    scheduling: BehaviorSubject<ValidationScheduling>,
+  ) {
     const status$ = validateDocumentWithReferences(
       {
         getClient: () => {
@@ -104,57 +112,90 @@ describe('validateDocumentWithReferences scheduling', () => {
       },
       document$,
       false,
-      scheduling$,
+      scheduling,
     )
+    const first: ValidationStatus[] = []
+    const second: ValidationStatus[] = []
     subscriptions.push(
-      status$.subscribe((status) => firstSubscriber.push(status)),
-      status$.subscribe((status) => secondSubscriber.push(status)),
+      status$.subscribe((status) => first.push(status)),
+      status$.subscribe((status) => second.push(status)),
     )
+    return {first, second}
+  }
 
-    await flushScheduled()
+  it('lets the run in flight follow a switch to immediate instead of starting another one', async () => {
+    const runs = installRuns()
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
+    const {first, second} = validate(new BehaviorSubject(movie('rev-1', 'Original')), scheduling)
     await flushScheduled()
 
     expect(runs).toHaveLength(1)
-    expect(runs[0]).toMatchObject({scheduling: 'idle', revision: 'rev-1', cancelled: false})
-    expect(firstSubscriber.at(-1)).toMatchObject({isValidating: true, revision: 'rev-1'})
-    expect(secondSubscriber.at(-1)).toEqual(firstSubscriber.at(-1))
+    expect(runs[0].scheduling).toBe(scheduling)
+    expect(first.at(-1)).toMatchObject({isValidating: true, revision: 'rev-1'})
 
-    document$.next(latest)
+    const emissionsBeforeSwitch = first.length
+    scheduling.next('immediate')
     await flushScheduled()
+
     expect(runs).toHaveLength(1)
+    expect(runs[0].cancelled).toBe(false)
+    expect(first).toHaveLength(emissionsBeforeSwitch)
 
-    scheduling$.next('immediate')
-    await flushScheduled()
-    await flushScheduled()
-
-    expect(runs[0].cancelled).toBe(true)
-    expect(runs).toHaveLength(2)
-    expect(runs[1]).toMatchObject({scheduling: 'immediate', revision: 'rev-2', cancelled: false})
-
-    const idleMarker: ValidationMarker = {
-      level: 'error',
-      message: 'from the cancelled idle run',
-      path: ['title'],
-    }
-    const emissionsBeforeCancelledResult = firstSubscriber.length
-    runs[0].emit([idleMarker])
-    await flushScheduled()
-    expect(firstSubscriber).toHaveLength(emissionsBeforeCancelledResult)
-
-    const immediateMarker: ValidationMarker = {
-      level: 'error',
-      message: 'Title is required',
-      path: ['title'],
-    }
-    runs[1].emit([immediateMarker])
+    runs[0].finish([titleRequired])
     await flushScheduled()
 
-    const published = {
+    expect(first.at(-1)).toMatchObject({
+      isValidating: false,
+      revision: 'rev-1',
+      validation: [titleRequired],
+    })
+    expect(second.at(-1)).toEqual(first.at(-1))
+  })
+
+  it('does not validate again when the scheduling switches to immediate after a run has finished', async () => {
+    const runs = installRuns()
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
+    const {first} = validate(new BehaviorSubject(movie('rev-1', 'Original')), scheduling)
+    await flushScheduled()
+    runs[0].finish([])
+    await flushScheduled()
+    const settled = first.at(-1)
+    expect(settled).toMatchObject({isValidating: false, revision: 'rev-1'})
+
+    scheduling.next('immediate')
+    await flushScheduled()
+
+    expect(runs).toHaveLength(1)
+    expect(first.at(-1)).toBe(settled)
+  })
+
+  it('validates the latest document once the run in flight has finished', async () => {
+    const runs = installRuns()
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
+    const document$ = new BehaviorSubject<SanityDocument | null>(movie('rev-1', 'Original'))
+    const {first, second} = validate(document$, scheduling)
+    await flushScheduled()
+
+    document$.next(movie('rev-2', 'Latest'))
+    scheduling.next('immediate')
+    await flushScheduled()
+    expect(runs.map(({revision}) => revision)).toEqual(['rev-1'])
+
+    runs[0].finish([])
+    await flushScheduled()
+
+    expect(runs.map(({revision}) => revision)).toEqual(['rev-1', 'rev-2'])
+    expect(runs[1].scheduling).toBe(scheduling)
+    expect(first.at(-1)).toMatchObject({isValidating: true, revision: 'rev-2'})
+
+    runs[1].finish([titleRequired])
+    await flushScheduled()
+
+    expect(first.at(-1)).toMatchObject({
       isValidating: false,
       revision: 'rev-2',
-      validation: [immediateMarker],
-    }
-    expect(firstSubscriber.at(-1)).toMatchObject(published)
-    expect(secondSubscriber.at(-1)).toEqual(firstSubscriber.at(-1))
+      validation: [titleRequired],
+    })
+    expect(second.at(-1)).toEqual(first.at(-1))
   })
 })

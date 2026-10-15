@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {builtinTypes} from '@sanity/schema/_internal'
 import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity/types'
-import {lastValueFrom, of} from 'rxjs'
+import {BehaviorSubject, lastValueFrom, of} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {validationMarkerCodes} from './codes'
@@ -272,6 +272,54 @@ describe('validation scheduling', () => {
         ...TITLE_TOO_SHORT,
         details: {actualLength: 2, minimumLength: 3},
       }),
+    )
+  })
+
+  it('finishes an idle run in flight once its scheduling switches to immediate', async () => {
+    const page = createStalledPage()
+    vi.stubGlobal('scheduler', {yield: vi.fn(() => Promise.resolve())})
+    const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
+    const blockCount = 200
+    const scheduling = new BehaviorSubject<'idle' | 'immediate'>('idle')
+    let settled = false
+    const result = lastValueFrom(
+      evaluateDocumentObservable({
+        document: createDocument(blockCount),
+        schema: createSchema(),
+        getClient: () => createMockClient(),
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+        scheduling,
+      }),
+    ).finally(() => {
+      settled = true
+    })
+
+    await vi.waitFor(() => {
+      expect(page.requestIdleCallback).toHaveBeenCalled()
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(settled).toBe(false)
+    const requested = page.requestIdleCallback.mock.results.map(({value}) => value)
+
+    scheduling.next('immediate')
+    const {status, markers} = await result
+
+    // The stalled page never ran an idle callback: the nodes that were waiting for one went ahead,
+    // and nothing after the switch asked for one.
+    expect(page.requestIdleCallback).toHaveBeenCalledTimes(requested.length)
+    expect(page.cancelIdleCallback.mock.calls.map(([handle]) => handle).toSorted(byHandle)).toEqual(
+      requested.toSorted(byHandle),
+    )
+    const linkMarkers: MarkerIdentity[] = emptyLinkPaths(blockCount).map((path) => ({
+      path,
+      level: 'error',
+      code: validationMarkerCodes.custom,
+      message: 'Link requires a URL',
+    }))
+    expect(status).toBe('failed')
+    expect(sortMarkers(markers).map(markerIdentity)).toEqual(
+      sortMarkers([TITLE_TOO_SHORT, ...linkMarkers]).map(markerIdentity),
     )
   })
 

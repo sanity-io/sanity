@@ -1,158 +1,121 @@
-import {type SanityClient} from '@sanity/client'
-import {type Schema} from '@sanity/types'
-import {NEVER, type Observable, type Subscription} from 'rxjs'
+import {type ValidationScheduling} from '@sanity/validation/_internal'
+import {BehaviorSubject, NEVER} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../i18n/fallback'
-import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
+import {createDocumentPreviewStore} from '../../preview/documentPreviewStore'
+import {createSchema} from '../../schema/createSchema'
 import {validateDocumentWithReferences} from '../../validation'
-import {type HistoryStore} from '../history/createHistoryStore'
-import {createDocumentStore, type DocumentStore} from './document-store'
+import {createHistoryStore} from '../history/createHistoryStore'
+import {createDocumentStore} from './document-store'
 
 vi.mock('./document-pair/editState', () => ({editState: vi.fn(() => NEVER)}))
 vi.mock('../../validation', () => ({
   validateDocumentWithReferences: vi.fn(() => NEVER),
 }))
 
-const schema = {} as Schema
-
 let testId = 0
 
 /**
- * The scheduling observable handed to reference validation. That observable is
- * the shared per-document mode, so its latest value is what the next run paces as.
+ * A document store, and the scheduling its validation hands to every run of one document. The
+ * memoized streams outlive a test, so each test validates a document of its own.
  */
-function watchScheduling(scheduling$: Observable<'idle' | 'immediate'>): {
-  current: () => 'idle' | 'immediate'
-  values: Array<'idle' | 'immediate'>
-  unsubscribe: () => void
-} {
-  const values: Array<'idle' | 'immediate'> = []
-  const subscription = scheduling$.subscribe((value) => {
-    values.push(value)
-  })
-  return {
-    current: () => values[values.length - 1],
-    values,
-    unsubscribe: () => subscription.unsubscribe(),
-  }
-}
-
-function setup(): {
-  store: DocumentStore
-  documentId: string
-  immediate: () => Observable<unknown>
-  idle: () => Observable<unknown>
-  scheduling: ReturnType<typeof watchScheduling>
-} {
+function setup() {
   const documentId = `doc-${testId}`
-  const config = {projectId: `project-${testId}`, dataset: 'dataset', token: 'token'}
   testId += 1
-  const client = {config: () => config} as unknown as SanityClient
-
+  const client = createMockSanityClientAsClient()
   const store = createDocumentStore({
     getClient: () => client,
-    documentPreviewStore: {
-      unstable_observeDocumentPairAvailability: vi.fn(),
-    } as unknown as DocumentPreviewStore,
-    historyStore: {} as unknown as HistoryStore,
+    documentPreviewStore: createDocumentPreviewStore({client}),
+    historyStore: createHistoryStore({client}),
     initialValueTemplates: [],
-    schema,
+    schema: createSchema({name: 'test', types: []}),
     i18n: getFallbackLocaleSource(),
   })
+  const validate = (scheduling?: ValidationScheduling) =>
+    store.pair.validation(documentId, 'movie', false, {scheduling}).subscribe()
 
-  // Creating the stream builds the shared mode and passes it to validation.
-  const immediate = () =>
-    store.pair.validation(documentId, 'movie', false, {scheduling: 'immediate'})
-  const idle = () => store.pair.validation(documentId, 'movie', false, {scheduling: 'idle'})
-  immediate()
-
-  const scheduling$ = vi.mocked(validateDocumentWithReferences).mock.calls.at(-1)?.[3]
-  if (!scheduling$) throw new Error('validation did not receive a scheduling observable')
-
-  return {store, documentId, immediate, idle, scheduling: watchScheduling(scheduling$)}
+  store.pair.validation(documentId, 'movie', false)
+  const scheduling = vi.mocked(validateDocumentWithReferences).mock.lastCall?.[3]
+  if (!(scheduling instanceof BehaviorSubject)) {
+    throw new Error('validation was not handed a scheduling that runs can follow')
+  }
+  const switches: ValidationScheduling[] = []
+  scheduling.subscribe((mode) => switches.push(mode))
+  return {validate, scheduling, switches}
 }
 
 describe('documentStore.pair.validation immediate scheduling', () => {
   it('keeps immediate pacing while another immediate subscriber is still active', () => {
-    const {immediate, scheduling} = setup()
-    const subscriptions: Subscription[] = []
+    const {validate, scheduling} = setup()
 
-    subscriptions.push(immediate().subscribe())
-    expect(scheduling.current()).toBe('immediate')
+    const first = validate('immediate')
+    expect(scheduling.getValue()).toBe('immediate')
+    const second = validate('immediate')
 
-    subscriptions.push(immediate().subscribe())
-    const first = subscriptions[0]
     first.unsubscribe()
+    expect(scheduling.getValue()).toBe('immediate')
 
-    expect(scheduling.current()).toBe('immediate')
-
-    subscriptions[1].unsubscribe()
-    expect(scheduling.current()).toBe('idle')
-    scheduling.unsubscribe()
+    second.unsubscribe()
+    expect(scheduling.getValue()).toBe('idle')
   })
 
   it('stays immediate when one subscriber remounts while another is still active', () => {
-    const {immediate, scheduling} = setup()
-    const other = immediate().subscribe()
-    const first = immediate().subscribe()
-    expect(scheduling.current()).toBe('immediate')
+    const {validate, scheduling, switches} = setup()
+    const other = validate('immediate')
+    const first = validate('immediate')
+    const switchesBeforeRemount = switches.length
 
-    const lengthBeforeRemount = scheduling.values.length
     first.unsubscribe()
-    const remounted = immediate().subscribe()
-
-    expect(scheduling.values).toHaveLength(lengthBeforeRemount)
-    expect(scheduling.current()).toBe('immediate')
-
-    // The clobber order: the replacement subscribes before the old one finalizes.
-    const replacement = immediate().subscribe()
+    const remounted = validate('immediate')
+    // the replacement subscribes before the one it replaces finalizes
+    const replacement = validate('immediate')
     remounted.unsubscribe()
-    expect(scheduling.current()).toBe('immediate')
+
+    expect(switches).toHaveLength(switchesBeforeRemount)
+    expect(scheduling.getValue()).toBe('immediate')
 
     replacement.unsubscribe()
     other.unsubscribe()
-    expect(scheduling.current()).toBe('idle')
-    scheduling.unsubscribe()
+    expect(scheduling.getValue()).toBe('idle')
   })
 
   it('returns to idle when the only immediate subscriber unsubscribes', () => {
-    const {immediate, scheduling} = setup()
-    const subscription = immediate().subscribe()
+    const {validate, scheduling, switches} = setup()
+    const subscription = validate('immediate')
 
-    expect(scheduling.current()).toBe('immediate')
+    expect(scheduling.getValue()).toBe('immediate')
     subscription.unsubscribe()
-    expect(scheduling.current()).toBe('idle')
-    scheduling.unsubscribe()
+    expect(switches).toEqual(['idle', 'immediate', 'idle'])
   })
 
   it('keeps immediate pacing when an idle subscriber unsubscribes first', () => {
-    const {immediate, idle, scheduling} = setup()
-    const waiting = immediate().subscribe()
-    const background = idle().subscribe()
+    const {validate, scheduling} = setup()
+    const waiting = validate('immediate')
+    const background = validate('idle')
+    const plain = validate()
 
     background.unsubscribe()
-    expect(scheduling.current()).toBe('immediate')
+    plain.unsubscribe()
+    expect(scheduling.getValue()).toBe('immediate')
 
     waiting.unsubscribe()
-    expect(scheduling.current()).toBe('idle')
-    scheduling.unsubscribe()
+    expect(scheduling.getValue()).toBe('idle')
   })
 
   it('tracks immediate subscribers separately per document', () => {
     const first = setup()
     const second = setup()
-    const firstSubscription = first.immediate().subscribe()
-    const secondSubscription = second.immediate().subscribe()
+    const firstSubscription = first.validate('immediate')
+    const secondSubscription = second.validate('immediate')
 
     firstSubscription.unsubscribe()
 
-    expect(first.scheduling.current()).toBe('idle')
-    expect(second.scheduling.current()).toBe('immediate')
+    expect(first.scheduling.getValue()).toBe('idle')
+    expect(second.scheduling.getValue()).toBe('immediate')
 
     secondSubscription.unsubscribe()
-    expect(second.scheduling.current()).toBe('idle')
-    first.scheduling.unsubscribe()
-    second.scheduling.unsubscribe()
+    expect(second.scheduling.getValue()).toBe('idle')
   })
 })
