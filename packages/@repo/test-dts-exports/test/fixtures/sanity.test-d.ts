@@ -334,6 +334,7 @@ import type {
   CurrentUserAttribute,
   CustomValidator,
   CustomValidatorResult,
+  DashboardLink,
   DashboardNotificationPayload,
   DateComponents,
   DateDefinition,
@@ -1217,6 +1218,7 @@ import type {
   ProjectOrganizationData,
   ProjectStore,
   ProvenanceDiffAnnotation,
+  ProviderProps,
   PublishDocumentVersionEvent,
   PUBLISHED,
   PublishedId,
@@ -1603,6 +1605,7 @@ import type {
   useAnnotationColor,
   useArchivedReleases,
   useCanvasCompanionDoc,
+  useCanvasNavigate,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
   useClient,
@@ -1615,6 +1618,8 @@ import type {
   useComments,
   useCommentsEnabled,
   useCommentsEnabledV2,
+  useCommentsMode,
+  useCommentsModeV2,
   useCommentsSelectedPath,
   useCommentsTelemetry,
   useConditionalToast,
@@ -2863,6 +2868,9 @@ describe('sanity', () => {
   })
   test('CustomValidatorResult', () => {
     expectTypeOf<CustomValidatorResult>().not.toBeNever()
+  })
+  test('DashboardLink', () => {
+    expectTypeOf<typeof DashboardLink>().toBeFunction()
   })
   test('DashboardNotificationPayload', () => {
     expectTypeOf<DashboardNotificationPayload>().toBeObject()
@@ -5525,6 +5533,9 @@ describe('sanity', () => {
   test('ProvenanceDiffAnnotation', () => {
     expectTypeOf<ProvenanceDiffAnnotation>().toBeObject()
   })
+  test('ProviderProps', () => {
+    expectTypeOf<ProviderProps>().toBeObject()
+  })
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
   })
@@ -5786,7 +5797,7 @@ describe('sanity', () => {
     expectTypeOf<typeof resolveDiffComponent>().toBeFunction()
   })
   test('ResolvedTemplate', () => {
-    expectTypeOf<ResolvedTemplate>().not.toBeNever()
+    expectTypeOf<ResolvedTemplate<any, any>>().toBeObject()
   })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()
@@ -6689,6 +6700,9 @@ describe('sanity', () => {
   test('useCanvasCompanionDoc', () => {
     expectTypeOf<typeof useCanvasCompanionDoc>().not.toBeNever()
   })
+  test('useCanvasNavigate', () => {
+    expectTypeOf<typeof useCanvasNavigate>().toBeFunction()
+  })
   test('useChangeIndicatorsReportedValues', () => {
     expectTypeOf<typeof useChangeIndicatorsReportedValues>().toBeFunction()
   })
@@ -6725,6 +6739,12 @@ describe('sanity', () => {
   })
   test('useCommentsEnabledV2', () => {
     expectTypeOf<typeof useCommentsEnabledV2>().toBeFunction()
+  })
+  test('useCommentsMode', () => {
+    expectTypeOf<typeof useCommentsMode>().toBeFunction()
+  })
+  test('useCommentsModeV2', () => {
+    expectTypeOf<typeof useCommentsModeV2>().toBeFunction()
   })
   test('useCommentsSelectedPath', () => {
     expectTypeOf<typeof useCommentsSelectedPath>().toBeFunction()

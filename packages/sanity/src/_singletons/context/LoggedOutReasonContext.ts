@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * Why the studio last logged the user out, surfaced on the auth screen as a
@@ -14,7 +14,4 @@ import {createContext} from 'sanity/_createContext'
 export type LoggedOutReason = 'session-expired' | 'session-not-found'
 
 /** @internal */
-export const LoggedOutReasonContext = createContext<LoggedOutReason | undefined>(
-  'sanity/_singletons/context/logged-out-reason',
-  undefined,
-)
+export const LoggedOutReasonContext = createContext<LoggedOutReason | undefined>(undefined)

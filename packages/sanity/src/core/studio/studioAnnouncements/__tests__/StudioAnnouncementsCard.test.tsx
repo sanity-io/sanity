@@ -109,9 +109,10 @@ describe('StudioAnnouncementsCard', () => {
       {wrapper},
     )
 
-    // The card renders in a popover, which keeps its content mounted (hidden) while closed.
-    expect(screen.getByText("What's new")).not.toBeVisible()
-    expect(screen.getByText(announcementCardProps.title)).not.toBeVisible()
+    // The card renders in a popover, which doesn't render its content until it opens (or the
+    // reference element shows intent to open it).
+    expect(screen.queryByText("What's new")).not.toBeInTheDocument()
+    expect(screen.queryByText(announcementCardProps.title)).not.toBeInTheDocument()
   })
   test('calls onCardClick when the card is clicked', async () => {
     const onCardClickMock = vi.fn()

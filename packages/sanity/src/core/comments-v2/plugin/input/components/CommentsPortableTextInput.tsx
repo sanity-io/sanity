@@ -14,7 +14,9 @@ import debounce from 'lodash-es/debounce.js'
 import {AnimatePresence} from 'motion/react'
 import {
   memo,
+  type PropsWithChildren,
   startTransition,
+  use,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -32,6 +34,7 @@ import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineH
 import {isTextSelectionComment, parseCommentFieldPath} from '../../../helpers'
 import {useComments} from '../../../hooks/useComments'
 import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
+import {useCommentsMode} from '../../../hooks/useCommentsMode'
 import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
 import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
 import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
@@ -39,7 +42,6 @@ import {
   type CommentDocument,
   type CommentFieldCreatePayload,
   type CommentMessage,
-  type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../../types'
 import {buildCommentRangeDecorations} from '../../../utils/inline-comments/buildCommentRangeDecorations'
@@ -58,7 +60,7 @@ const EMPTY_ARRAY: [] = []
 const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
-  const {enabled, mode} = useCommentsEnabled()
+  const enabled = useCommentsEnabled()
   const fieldActions = useFieldActions()
 
   // This is a workaround solution to disable comments for the AI assist type.
@@ -77,13 +79,16 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     return props.renderDefault(props)
   }
 
-  return <CommentsPortableTextInputInner {...props} mode={mode} />
+  return <CommentsPortableTextInputInner {...props} />
 }
 
 const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
-  props: PortableTextInputProps & {mode: CommentsUIMode},
+  props: PortableTextInputProps,
 ) {
-  const {mode, onItemClose, onItemOpen} = props
+  const {onItemClose, onItemOpen} = props
+  // Settled in place by the plugin's provider long before a form renders, so this reads
+  // synchronously; a form that does get here first waits under the document pane's boundary
+  const mode = use(useCommentsMode())
   const currentUser = useCurrentUser()
   const portal = usePortal()
 
@@ -163,6 +168,11 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   // Set the next comment selection to the current selection so that we can
   // render the comment input popover on the current selection using a range decoration.
   const handleSelectCurrentSelection = useCallback(() => {
+    if (mode === null) {
+      // The feature check failed: the inspector explains that comments are unavailable
+      onCommentsOpen?.()
+      return
+    }
     // When trying to add a comment in "upsell" mode, we want to
     // display the upsell dialog instead of the comment input popover.
     if (mode === 'upsell') {
@@ -172,7 +182,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     const currentFragment = getFragment() || null
     setFragment(currentFragment)
     setNextCommentSelection(currentSelection)
-  }, [currentSelection, getFragment, handleOpenDialog, mode])
+  }, [currentSelection, getFragment, handleOpenDialog, mode, onCommentsOpen])
 
   // Clear the selection and close the popover when discarding the comment
   const handleCommentDiscardConfirm = useCallback(() => {
@@ -536,6 +546,19 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     [debounceCommentRangeUpdate, debounceSelectionChange, updateCommentRange],
   )
 
+  // The editor invokes a range decoration's `component` as a plain render
+  // callback (`rangeDecoration.component({children})`), so this is not a
+  // component type and a stable identity is enough. The state setter it
+  // captures never changes.
+  const renderAuthoringDecoration = useCallback(
+    ({children}: PropsWithChildren) => (
+      <CommentInlineHighlightSpan isAuthoring ref={setAuthoringDecorationElement}>
+        {children}
+      </CommentInlineHighlightSpan>
+    ),
+    [],
+  )
+
   // The range decoration for the comment input. This is used to position the
   // comment input popover on the current selection and to highlight the
   // selected text.
@@ -543,14 +566,10 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     if (!nextCommentSelection) return null
 
     return {
-      component: ({children}) => (
-        <CommentInlineHighlightSpan isAuthoring ref={setAuthoringDecorationElement}>
-          {children}
-        </CommentInlineHighlightSpan>
-      ),
+      component: renderAuthoringDecoration,
       selection: nextCommentSelection,
     }
-  }, [nextCommentSelection])
+  }, [nextCommentSelection, renderAuthoringDecoration])
 
   // All the range decorations
   const rangeDecorations: RangeDecoration[] = [

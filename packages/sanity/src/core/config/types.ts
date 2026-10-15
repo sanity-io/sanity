@@ -23,7 +23,7 @@ import {
   type FormBuilderMarkersComponent,
 } from '../form/types/_transitional'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
-import {type AuthStore} from '../store/authStore/types'
+import {type AuthStore} from '../store/auth/types'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {
@@ -605,10 +605,6 @@ export interface PluginOptions {
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   form?: SanityFormConfig
 
-  __internal_tasks?: {
-    footerAction: ReactNode
-  }
-
   studio?: {
     /**
      * Components for the studio.
@@ -1091,9 +1087,6 @@ export interface Source {
       enabled: (props: DocumentAskToEditEnabledContext) => boolean
     }
   }
-
-  /** @internal */
-  __internal_tasks?: {footerAction: ReactNode}
 
   /**
    * Form-related functionality.

@@ -1,5 +1,5 @@
-import {Card, Text} from '@sanity/ui'
-import {Flex, VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, Flex, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../../ui-components/button/Button'
@@ -20,7 +20,7 @@ export function VariantsEmptyStateStory() {
       <Card padding={4}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               docs link only
             </Text>
             <Flex justifyContent="center">
@@ -28,7 +28,7 @@ export function VariantsEmptyStateStory() {
             </Flex>
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               with create action
             </Text>
             <Flex justifyContent="center">

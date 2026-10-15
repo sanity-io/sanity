@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-13)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#15229](https://github.com/sanity-io/sanity/issues/15229)) ([ccdaec4](https://github.com/sanity-io/sanity/commit/ccdaec4b6a6a9fa31b3cdc80a5fdd3cea2db1db6))
+* **vision:** align sanity peer dependency with workspace version ([#15108](https://github.com/sanity-io/sanity/issues/15108)) ([338f3b1](https://github.com/sanity-io/sanity/commit/338f3b1faf08b9418959b02225a31ecc445cc193))
+## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.3 ([#15086](https://github.com/sanity-io/sanity/issues/15086)) ([5ecaf30](https://github.com/sanity-io/sanity/commit/5ecaf300efa8821379892e4eb12c9accd7d15f55))
 ## [6.17.0](https://github.com/sanity-io/sanity/compare/v6.16.0...v6.17.0) (2026-09-29)
 
 ### Features

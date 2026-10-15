@@ -1,5 +1,5 @@
 import type {Path} from '@sanity/types'
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * Entry in the dialog stack.
@@ -42,7 +42,4 @@ export interface DialogStackContextValue {
  *
  * @beta
  */
-export const DialogStackContext = createContext<DialogStackContextValue | null>(
-  'sanity/_singletons/context/dialog-stack',
-  null,
-)
+export const DialogStackContext = createContext<DialogStackContextValue | null>(null)

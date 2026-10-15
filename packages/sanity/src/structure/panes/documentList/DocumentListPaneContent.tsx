@@ -18,6 +18,7 @@ import {
 } from 'sanity'
 import {Flex, Box} from 'ui5'
 
+import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
@@ -278,6 +279,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             activeItemDataAttr="data-hovered"
             ariaLabel={paneTitle}
             canReceiveFocus
+            className={paneCommandList}
             inputElement={searchInputElement}
             itemHeight={51}
             items={items}
@@ -285,7 +287,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             onlyShowSelectionWhenActive
             overscan={10}
             paddingBottom={1}
-            paddingX={3}
+            paddingLeft={3}
             renderItem={renderItem}
             wrapAround={false}
           />

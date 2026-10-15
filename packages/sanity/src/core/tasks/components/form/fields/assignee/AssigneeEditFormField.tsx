@@ -3,11 +3,10 @@ import {
   Badge,
   // oxlint-disable-next-line no-restricted-imports
   Button,
-  Text,
   TextSkeleton,
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../../../ui-components/tooltip/Tooltip'
 import {useFormValue} from '../../../../../form/contexts/FormValue'
@@ -73,7 +72,7 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
               <Flex alignItems="center" gap={2} flexBasis="0%" flexGrow={1}>
                 <TasksUserAvatar user={mentionedUser} size={0} />
                 <Box>
-                  <Text size={1} textOverflow="ellipsis">
+                  <Text size={1} truncate={1} as="div" trim={true}>
                     {displayText}
                   </Text>
                 </Box>

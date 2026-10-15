@@ -1,6 +1,6 @@
 import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Button as UIButton} from '@sanity/ui'
+import {BoundaryElementProvider, Button as UIButton} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -38,43 +38,52 @@ const menuFor = (testId: string) => (
 function Fixture({withRemove}: {withRemove?: boolean}) {
   return (
     <TestWrapper schemaTypes={[]}>
-      {/* The control: the chevron-only trigger the menus ship by default. */}
-      <MenuButton
-        button={
-          <UIButton
-            data-testid="control-trigger"
-            iconRight={ChevronDownIcon}
-            mode="bleed"
-            padding={2}
-            radius="full"
-          />
-        }
-        id="control-menu"
-        menu={menuFor('control-menu-content')}
-        popover={POPOVER}
-      />
-
-      {/* Ours: a labelled button filling the pill, optionally beside a remove segment. */}
-      <PerspectiveFilter
-        prefix="Version"
-        tone="default"
-        onRemove={withRemove ? () => {} : undefined}
-        removeLabel="Clear version selection"
-      >
+      {/* The perspective bar sits in the navbar, which has no pane above it, so
+          these menus measure `constrainSize` against the viewport in the studio
+          (`StudioNavbar` provides the same boundary for its own overlays). The
+          wrapper's pane is only as tall as its content — one pill — and leaves
+          them no room below the trigger: @sanity/ui clamps that to
+          `max-height: 0` since 4.4.2, collapsing the open menu to an empty card
+          that still reads as visible. */}
+      <BoundaryElementProvider element={window.document.body}>
+        {/* The control: the chevron-only trigger the menus ship by default. */}
         <MenuButton
           button={
-            <Button
-              data-testid="pill-trigger"
+            <UIButton
+              data-testid="control-trigger"
               iconRight={ChevronDownIcon}
               mode="bleed"
-              text="Drafts"
+              padding={2}
+              radius="full"
             />
           }
-          id="pill-menu"
-          menu={menuFor('pill-menu-content')}
+          id="control-menu"
+          menu={menuFor('control-menu-content')}
           popover={POPOVER}
         />
-      </PerspectiveFilter>
+
+        {/* Ours: a labelled button filling the pill, optionally beside a remove segment. */}
+        <PerspectiveFilter
+          prefix="Version"
+          tone="default"
+          onRemove={withRemove ? () => {} : undefined}
+          removeLabel="Clear version selection"
+        >
+          <MenuButton
+            button={
+              <Button
+                data-testid="pill-trigger"
+                iconRight={ChevronDownIcon}
+                mode="bleed"
+                text="Drafts"
+              />
+            }
+            id="pill-menu"
+            menu={menuFor('pill-menu-content')}
+            popover={POPOVER}
+          />
+        </PerspectiveFilter>
+      </BoundaryElementProvider>
     </TestWrapper>
   )
 }
@@ -95,6 +104,27 @@ const parseBox = (box: string) => {
   return {left, top, right, bottom}
 }
 
+/**
+ * The menu is open *and* showing its items. `toBeVisible()` alone passes on a
+ * popover the `constrainSize` middleware has given no height: the card and the
+ * items keep their boxes, clipped out of sight inside it, which is how a blank
+ * menu reached Chromatic.
+ */
+const expectMenuShowsItems = async (testId: string) => {
+  const menu = page.getByTestId(testId)
+  await expect.element(menu).toBeVisible()
+  const lastItem = menu.getByRole('menuitem', {name: 'Published'})
+  await expect.element(lastItem).toBeVisible()
+  await expect
+    .poll(() => {
+      const clipped =
+        lastItem.element().getBoundingClientRect().bottom -
+        menu.element().getBoundingClientRect().bottom
+      return clipped <= 0 ? 'shown' : `clipped by ${Math.round(clipped)}px`
+    })
+    .toBe('shown')
+}
+
 describe('perspective bar filter pill as a menu trigger', () => {
   const {settleChromaticEndState} = testHelpers()
 
@@ -103,12 +133,12 @@ describe('perspective bar filter pill as a menu trigger', () => {
 
     await page.getByTestId('control-trigger').click()
 
-    await expect.element(page.getByTestId('control-menu-content')).toBeVisible()
+    await expectMenuShowsItems('control-menu-content')
 
     // Park the pointer (it is still on the trigger) and require the menu to
     // stay open and stop moving before the auto snapshot.
     await settleChromaticEndState()
-    await expect.element(page.getByTestId('control-menu-content')).toBeVisible()
+    await expectMenuShowsItems('control-menu-content')
   })
 
   it('opens the menu from the labelled pill trigger and keeps it open', async () => {
@@ -119,12 +149,12 @@ describe('perspective bar filter pill as a menu trigger', () => {
 
     await page.getByTestId('pill-trigger').click()
 
-    await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
+    await expectMenuShowsItems('pill-menu-content')
     // Parks the real pointer (so `pill-trigger` is not archived `:hover`ed),
     // requires the open menu to stay open with a stable rectangle, and snaps
     // its Floating UI transform to whole pixels.
     await settleChromaticEndState()
-    await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
+    await expectMenuShowsItems('pill-menu-content')
     await takeSnapshot('pill-menu-open')
   })
 
@@ -133,9 +163,9 @@ describe('perspective bar filter pill as a menu trigger', () => {
 
     await page.getByTestId('pill-trigger').click()
 
-    await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
+    await expectMenuShowsItems('pill-menu-content')
     await settleChromaticEndState()
-    await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
+    await expectMenuShowsItems('pill-menu-content')
   })
 
   it('anchors the menu to the pill rather than elsewhere on screen', async () => {
@@ -143,7 +173,7 @@ describe('perspective bar filter pill as a menu trigger', () => {
 
     const trigger = page.getByTestId('pill-trigger')
     await trigger.click()
-    await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
+    await expectMenuShowsItems('pill-menu-content')
 
     const triggerRect = trigger.element().getBoundingClientRect()
 
@@ -162,6 +192,6 @@ describe('perspective bar filter pill as a menu trigger', () => {
     expect(menuRect.left).toBeLessThan(triggerRect.right + 320)
 
     await settleChromaticEndState()
-    await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
+    await expectMenuShowsItems('pill-menu-content')
   })
 })

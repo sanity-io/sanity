@@ -1,15 +1,17 @@
-import {Card, Text, useTheme} from '@sanity/ui'
+import {Card, useTheme} from '@sanity/ui'
 import {parse} from 'date-fns/parse'
-import {useEffect, useMemo, useRef} from 'react'
+import {use, useEffect, useMemo, useRef} from 'react'
+import {
+  HasUsedScheduledPublishingPromiseContext,
+  ScheduledPublishingModePromiseContext,
+} from 'sanity/_singletons'
 import {Link, type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Container, Box, Flex} from 'ui5'
+import {Text, Container, Box, Flex} from 'ui5'
 
-import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 import {useWorkspace} from '../../studio/workspace'
@@ -48,7 +50,7 @@ function ScheduledDraftsBanner() {
     return (
       <Card padding={4} tone="caution">
         <Flex gap={3} alignItems="center" justifyContent="center">
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true} tone="caution">
             Scheduled Drafts is enabled for this Studio. All new Scheduled Drafts will be{' '}
             <Link href={releasesUrl}>available here</Link>
           </Text>
@@ -65,14 +67,22 @@ export default function Tool() {
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
   const {t} = useTranslation()
-  const {enabled, hasUsedScheduledPublishing} = useScheduledPublishingEnabled()
+  // Both settle under the tool's own loading block (`RenderTool` wraps each tool in a `Suspense`)
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const hasUsedPromise = use(HasUsedScheduledPublishingPromiseContext)
+  const mode = modePromise ? use(modePromise) : null
+  // A failed feature check settles the answer on its own: the probe is not waited for then
+  const hasUsed = mode !== null && hasUsedPromise ? use(hasUsedPromise) : false
+  const enabled = mode !== null && hasUsed
 
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
   const scheduleState: ScheduleState = router.state.state as ScheduleState
+  // oxlint-disable react/purity -- `new Date()` is only date-fns `parse`'s reference date; kept as-is rather than changing the parser input
   const selectedDate = router.state.date
     ? parse(router.state.date as string, DATE_SLUG_FORMAT, new Date())
     : undefined
+  // oxlint-enable react/purity
 
   //Store last active schedule state
   useEffect(() => {
@@ -125,7 +135,7 @@ export default function Tool() {
     return (
       <Container size={1} paddingTop={4}>
         <Box paddingTop={4} paddingX={4}>
-          {hasUsedScheduledPublishing.loading ? <LoadingBlock /> : <InfoCallout />}
+          <InfoCallout />
         </Box>
       </Container>
     )
@@ -210,7 +220,9 @@ export default function Tool() {
               <Box flexBasis="0%" flexGrow={1} overflow="auto">
                 {isInitialLoading ? (
                   <Box padding={4}>
-                    <Text muted>Loading...</Text>
+                    <Text muted as="div" trim={true}>
+                      Loading...
+                    </Text>
                   </Box>
                 ) : (
                   // Loaded schedules

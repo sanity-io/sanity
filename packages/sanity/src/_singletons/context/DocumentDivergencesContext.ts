@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {DivergenceNavigator} from '../../core/divergence/divergenceNavigator'
 
@@ -12,10 +12,7 @@ export type DocumentDivergencesContextValue =
 /**
  * @internal
  */
-export const DocumentDivergencesContext = createContext<DocumentDivergencesContextValue>(
-  'sanity/_singletons/context/document-divergences',
-  {
-    enabled: false,
-    sessionId: null,
-  },
-)
+export const DocumentDivergencesContext = createContext<DocumentDivergencesContextValue>({
+  enabled: false,
+  sessionId: null,
+})

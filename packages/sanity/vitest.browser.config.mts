@@ -4,7 +4,7 @@ import viteReact from '@vitejs/plugin-react'
 import {playwright} from '@vitest/browser-playwright'
 import {defaultClientConditions, defineConfig} from 'vite'
 
-import {readFileAsBase64} from './test/browser/commands'
+import {holdRequests, readFileAsBase64, releaseRequests} from './test/browser/commands'
 
 const ALL_BROWSERS = ['chromium', 'firefox', 'webkit'] as const
 
@@ -123,7 +123,7 @@ export default defineConfig({
       enabled: true,
       provider: playwright(),
       headless: true,
-      commands: {readFileAsBase64},
+      commands: {holdRequests, readFileAsBase64, releaseRequests},
       // Vitest 5 made `getByText`/`getByRole({name})`/`getByLabelText`/... match the full,
       // case-sensitive string by default. The suite was written against the substring,
       // case-insensitive matching of Vitest 4 (e.g. `getByText('Lorem:Lore')`,

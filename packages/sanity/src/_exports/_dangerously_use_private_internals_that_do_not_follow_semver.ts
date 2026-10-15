@@ -19,6 +19,7 @@
  */
 
 // From `sanity`
+export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
@@ -56,6 +57,7 @@ export {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils
 export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
+export {DashboardLink} from '../core/components/DashboardLink'
 export {
   AutoCollapseMenu,
   CollapseMenu,
@@ -654,19 +656,17 @@ export {
   useAgentVersionDisplay,
 } from '../core/store/agent/useAgentVersionDisplay'
 export {
-  _createAuthStore,
+  _createLegacyAuthStore as _createAuthStore,
   type AuthStoreOptions,
-  type RequestFailureDiagnostics,
-} from '../core/store/authStore/createAuthStore'
+} from '../core/store/auth/legacy/createLegacyAuthStore'
+export {type RequestFailureDiagnostics} from '../core/studio/requestErrors/diagnoseRequestFailure'
 export {
   createMockAuthStore,
   type MockAuthStoreOptions,
-} from '../core/store/authStore/createMockAuthStore'
-export {type HandleCallbackResult} from '../core/store/authStore/types'
-export {
-  isAuthStore,
-  isCookielessCompatibleLoginMethod,
-} from '../core/store/authStore/utils/asserters'
+} from '../core/store/auth/mock/createMockAuthStore'
+export {type HandleCallbackResult} from '../core/store/auth/types'
+export {isCookielessCompatibleLoginMethod} from '../core/store/auth/legacy/asserters'
+export {isAuthStore} from '../core/store/auth/utils/asserters'
 export {
   type ConnectedStatus,
   CONNECTING,

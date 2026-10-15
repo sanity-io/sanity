@@ -6,7 +6,6 @@ import {
   type UriValidationOptions,
 } from '@sanity/types'
 import cloneDeep from 'lodash-es/cloneDeep.js'
-import isObject from 'lodash-es/isObject.js'
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
@@ -14,6 +13,7 @@ import {groupProblems} from '../sanity/groupProblems'
 import {type SchemaValidationResult} from '../sanity/typedefs'
 import {validateSchema} from '../sanity/validateSchema'
 import {ValidationError} from '../sanity/validation/ValidationError'
+import {isObject} from '../utils/isObject'
 
 const builtinSchema = Schema.compile({
   name: 'studio',
@@ -27,7 +27,7 @@ const unavailableValidator: CustomValidator & MediaValidator = () => {
 }
 
 export function createSchemaFromManifestTypes(schemaDef: {name: string; types: unknown[]}) {
-  const validated = validateSchema(schemaDef.types).getTypes()
+  const validated = validateSchema(schemaDef.types, {parentTypes: builtinTypes}).getTypes()
   const validation = groupProblems(validated)
   const problems = validation.filter((group) =>
     group.problems.some((problem: SchemaValidationResult) => problem.severity === 'error'),

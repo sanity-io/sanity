@@ -4,7 +4,8 @@ import {useSyncObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
-import {type AuthStore} from '../store/authStore/types'
+import {isDashboardAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
+import {type AuthStore} from '../store/auth/types'
 import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,
@@ -166,6 +167,11 @@ export function AuthBoundary({
   // gate prevents. handleCallbackUrl resolves only after the state reflects
   // the exchange, so once the gate opens, `loggedIn` can be trusted.
   if (loggedIn === 'logged-out' && !callbackSettled) return <LoadingComponent />
+
+  // A message bus host owns sign-in and hands Studio a new token once the user signs in again.
+  if (loggedIn === 'logged-out' && isDashboardAuthStore(activeWorkspace.auth)) {
+    return <LoadingComponent />
+  }
 
   if (loggedIn === 'logged-out') return <AuthenticateComponent />
 

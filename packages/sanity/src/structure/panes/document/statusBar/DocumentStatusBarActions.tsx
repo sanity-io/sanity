@@ -1,5 +1,5 @@
 import {LayerProvider, Text} from '@sanity/ui'
-import {memo, useCallback, useMemo, useState} from 'react'
+import {lazy, memo, Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentGroupInventory,
@@ -19,6 +19,7 @@ import {
   useSource,
   type VersionInfoDocumentStub,
 } from 'sanity'
+import {TasksModePromiseContext} from 'sanity/_singletons'
 import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -46,6 +47,25 @@ const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   VersionsPreviewList,
 }
 
+// The open-tasks footer button needs the tasks store and navigation internals, which stay
+// private to `src/core/tasks` rather than becoming an entry point other plugins could reach.
+// Loading the module here, instead of through the plugin's `__internal_tasks` config, keeps
+// that access inside the package while still deferring the chunk until tasks are known to be on.
+const loadTasksFooterOpenTasks = () =>
+  // oxlint-disable-next-line boundaries/dependencies -- deliberately bypasses the `sanity` entry: exporting this component would make it an entry point other plugins could reach, which is what the direct import avoids. A proper API for footer actions is the long-term alternative.
+  import('../../../../core/tasks/plugin/TasksFooterOpenTasks')
+
+const TasksFooterOpenTasks = lazy(loadTasksFooterOpenTasks)
+
+function MaybeTasksFooter() {
+  const tasksModePromise = use(TasksModePromiseContext)
+  // `TasksStudioProvider` only provides the promise when the tasks plugin is part of the workspace.
+  if (tasksModePromise === null) return null
+  const tasksMode = use(tasksModePromise)
+  if (tasksMode === null) return null
+  return <TasksFooterOpenTasks />
+}
+
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
   states: ResolvedAction[]
@@ -56,7 +76,16 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, states} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {__internal_tasks, beta} = useSource()
+  const {beta} = useSource()
+  const tasksModePromise = use(TasksModePromiseContext)
+
+  // `MaybeTasksFooter` suspends on this promise before it can render the lazy footer, so the
+  // chunk would not start until the feature check settled. The status bar itself commits either
+  // way, and this effect starts the import alongside that check.
+  useEffect(() => {
+    if (tasksModePromise === null) return
+    void loadTasksFooterOpenTasks()
+  }, [tasksModePromise])
 
   const {
     displayed,
@@ -171,7 +200,9 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 
   return (
     <Flex alignItems="center" gap={3}>
-      {__internal_tasks && __internal_tasks.footerAction}
+      <Suspense>
+        <MaybeTasksFooter />
+      </Suspense>
       {hasDocumentGroupInventory && typeof targetDocumentId !== 'undefined' && (
         <DocumentGroupInventoryAction
           documentId={targetDocumentId}

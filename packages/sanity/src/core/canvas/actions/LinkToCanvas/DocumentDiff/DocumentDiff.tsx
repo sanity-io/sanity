@@ -1,6 +1,6 @@
 import {diffInput, wrap} from '@sanity/diff'
-import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
-import {useMemo} from 'react'
+import {type ObjectSchemaType, type Path, type SanityDocument} from '@sanity/types'
+import {type ReactNode, useMemo} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {ChangeList} from '../../../../field/diff/components/ChangeList'
@@ -8,6 +8,14 @@ import {type ObjectDiff} from '../../../../field/types'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useSource} from '../../../../studio/source'
 import {getPublishedId} from '../../../../util/draftUtils'
+
+function PassThroughFieldWrapper(props: {
+  path: Path
+  children: ReactNode
+  hasRevertHover: boolean
+}) {
+  return props.children
+}
 
 const buildDocumentForDiffInput = (document: Partial<SanityDocument>) => {
   // Remove internal fields and undefined values
@@ -52,7 +60,7 @@ export function DocumentDiff({
         schemaType,
         rootDiff,
         isComparingCurrent: false,
-        FieldWrapper: (props) => props.children,
+        FieldWrapper: PassThroughFieldWrapper,
         value: document,
         showFromValue: true,
       }}

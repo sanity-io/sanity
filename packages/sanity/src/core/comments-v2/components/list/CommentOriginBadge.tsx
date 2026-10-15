@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {CircleSmallIcon} from '../../../components/temporary-icons/CircleSmall'
 import {RingIcon} from '../../../components/temporary-icons/Ring'
@@ -10,9 +10,10 @@ import {commentsLocaleNamespace} from '../../i18n'
 export type CommentOrigin = 'draft' | 'published'
 
 /**
- * Same slot as `DocumentVersionsStatusIndicator`: `@sanity/ui` Text sizes the
- * 1em glyphs and applies `--card-icon-color`. ui5 `Icon` paints
- * `--foreground-high` and drops the draft orange / published green.
+ * Centers draft/published status glyphs beside the origin label. Draft and published slots set
+ * `--icon-color` on the svg (ui5 `Icon` shadows an ancestor value) and `--card-icon-color` on the
+ * root, same tokens as `DocumentVersionsStatusIndicator`. Glyphs use ui5 `Icon size={2}`, not v4
+ * `Text` descendant icon sizing.
  */
 const IconSlotRoot = styled.div`
   display: flex;
@@ -23,8 +24,14 @@ const IconSlotRoot = styled.div`
   &[data-status='published'] {
     --card-icon-color: var(--card-badge-positive-dot-color);
   }
+  &[data-status='published'] svg {
+    --icon-color: var(--card-badge-positive-dot-color);
+  }
   &[data-status='draft'] {
     --card-icon-color: var(--card-badge-caution-dot-color);
+  }
+  &[data-status='draft'] svg {
+    --icon-color: var(--card-badge-caution-dot-color);
   }
 `
 
@@ -48,10 +55,10 @@ export function CommentOriginBadge({origin}: {origin: CommentOrigin}) {
       <Card border padding={1} radius={3}>
         <Flex alignItems="center" gap={1} paddingRight={1}>
           <IconSlotRoot data-status={origin}>
-            <Text size={2}>{origin === 'draft' ? <RingIcon /> : <CircleSmallIcon />}</Text>
+            <Icon icon={origin === 'draft' ? RingIcon : CircleSmallIcon} size={2} />
           </IconSlotRoot>
 
-          <Text size={0} muted weight="medium">
+          <Text size={0} muted weight="medium" as="div" trim={true}>
             {t(getOriginI18nKey(origin))}
           </Text>
         </Flex>

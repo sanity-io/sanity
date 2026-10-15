@@ -21,8 +21,8 @@ export {CommentsAuthoringPathContextV2} from '../_singletons/context/CommentsAut
 export {CommentsContext} from '../_singletons/context/CommentsContext'
 export {CommentsContextV2} from '../_singletons/context/CommentsContextV2'
 export {CommentsEnabledContext} from '../_singletons/context/CommentsEnabledContext'
-export {CommentsEnabledContextV2} from '../_singletons/context/CommentsEnabledContextV2'
 export {CommentsIntentContext} from '../_singletons/context/CommentsIntentContext'
+export {CommentsModePromiseContext} from '../_singletons/context/CommentsModePromiseContext'
 export {CommentsOnboardingContext} from '../_singletons/context/CommentsOnboardingContext'
 export {CommentsOnboardingContextV2} from '../_singletons/context/CommentsOnboardingContextV2'
 export {CommentsSelectedPathContext} from '../_singletons/context/CommentsSelectedPathContext'
@@ -48,6 +48,7 @@ export {
   DocumentFieldActionsContext,
   type DocumentFieldActionsContextValue,
 } from '../_singletons/context/DocumentFieldActionsContext'
+export {DocumentHistoryContext} from '../_singletons/context/DocumentHistoryContext'
 export {
   DocumentIdContext,
   type DocumentIdContextValue,
@@ -58,6 +59,7 @@ export {
 } from '../_singletons/context/DocumentLimitContext'
 export {DocumentPaneContext} from '../_singletons/context/DocumentPaneContext'
 export {DocumentPaneInfoContext} from '../_singletons/context/DocumentPaneInfoContext'
+export {DocumentTableSelectionContext} from '../_singletons/context/DocumentTableSelectionContext'
 // oxlint-disable-next-line no-deprecated -- kept exported to avoid a breaking change; remove in the next major
 export {EditDialogOuterBoundaryContext} from '../_singletons/context/EditDialogOuterBoundaryContext'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -78,6 +80,7 @@ export {
   GetFormValueContext,
   type GetFormValueContextValue,
 } from '../_singletons/context/GetFormValueContext'
+export {HasUsedScheduledPublishingPromiseContext} from '../_singletons/context/HasUsedScheduledPublishingPromiseContext'
 export {
   HoveredFieldContext,
   type HoveredFieldContextValue,
@@ -125,6 +128,7 @@ export {PresentationContext} from '../_singletons/context/PresentationContext'
 export {PresentationDisplayedDocumentContext} from '../_singletons/context/PresentationDisplayedDocumentContext'
 export {PresentationDocumentContext} from '../_singletons/context/PresentationDocumentContext'
 export {PresentationNavigateContext} from '../_singletons/context/PresentationNavigateContext'
+export {PresentationPaneLinksContext} from '../_singletons/context/PresentationPaneLinksContext'
 export {PresentationPanelsContext} from '../_singletons/context/PresentationPanelsContext'
 export {PresentationParamsContext} from '../_singletons/context/PresentationParamsContext'
 export {PresentationSharedStateContext} from '../_singletons/context/PresentationSharedStateContext'
@@ -145,10 +149,8 @@ export {ResourceCacheContext} from '../_singletons/context/ResourceCacheContext'
 export {ReviewChangesContext} from '../_singletons/context/ReviewChangesContext'
 export {RouterContext} from '../_singletons/context/RouterContext'
 export {RouterHistoryContext} from '../_singletons/context/RouterHistoryContext'
-export {
-  ScheduledPublishingEnabledContext,
-  type ScheduledPublishingEnabledContextValue,
-} from '../_singletons/context/ScheduledPublishingEnabledContext'
+export {ScheduledPublishingEnabledContext} from '../_singletons/context/ScheduledPublishingEnabledContext'
+export {ScheduledPublishingModePromiseContext} from '../_singletons/context/ScheduledPublishingModePromiseContext'
 export {
   SchedulePublishUpsellContext,
   type SchedulePublishUpsellContextValue,
@@ -180,9 +182,10 @@ export {StructureToolContext} from '../_singletons/context/StructureToolContext'
 export {StudioAnnouncementContext} from '../_singletons/context/StudioAnnouncementsContext'
 export {StudioErrorHandlerContext} from '../_singletons/context/StudioErrorHandlerContext'
 export {TasksContext} from '../_singletons/context/TasksContext'
-export {TasksEnabledContext} from '../_singletons/context/TasksEnabledContext'
+export {TasksModePromiseContext} from '../_singletons/context/TasksModePromiseContext'
 export {TasksNavigationContext} from '../_singletons/context/TasksNavigationContext'
 export {TasksUpsellContext} from '../_singletons/context/TasksUpsellContext'
+export {UpsellDescriptionSerializerContext} from '../_singletons/context/UpsellDescriptionSerializerContext'
 export {UserApplicationCacheContext} from '../_singletons/context/UserApplicationCacheContext'
 export {UserColorManagerContext} from '../_singletons/context/UserColorManagerContext'
 export {

@@ -290,6 +290,14 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     // and `benchexp.127.0.0.1` is not a valid URL host.)
     apiHost: 'bench.invalid',
     tls: config.tls,
+    // Node's HTTP/2 rapid reset protection closes the whole session when a
+    // client cancels more than 1000 streams in a burst (then 33 per second).
+    // A studio that builds a listenQuery during render (the listenQueryPane
+    // scenario) cancels a /data/listen stream on every render, so the session
+    // closed mid-run and every other listener failed with
+    // ERR_CONNECTION_CLOSED. The mock only listens on loopback, so the
+    // protection is not needed here.
+    http2Options: {streamResetBurst: 1_000_000, streamResetRate: 1_000_000},
     routes: [],
     // bifur presence socket: accept-and-park (see websocket.ts)
     upgradeHandler: parkWebSocket,

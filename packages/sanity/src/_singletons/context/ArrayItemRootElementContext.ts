@@ -1,5 +1,5 @@
 import type {RefObject} from 'react'
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * Holds a ref to the root DOM element of the closest array item wrapper.
@@ -12,6 +12,5 @@ import {createContext} from 'sanity/_createContext'
  * @internal
  */
 export const ArrayItemRootElementContext = createContext<RefObject<HTMLDivElement | null> | null>(
-  'sanity/_singletons/context/array-item-root-element',
   null,
 )

@@ -1,5 +1,6 @@
 import {describe, expect, test} from 'vitest'
 
+import {DashboardLink} from '../../components/DashboardLink'
 import {transformChildren} from '../utils/transform-children'
 import {onClick} from '../utils/transform-children/linkMiddleware'
 
@@ -9,7 +10,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'My link ',
-      <a
+      <DashboardLink
         key="https://www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -17,7 +18,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.sanity.io
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -28,7 +29,7 @@ describe('comments: transformChildren', () => {
     expect(result).toEqual([
       'My link ',
       '',
-      <a
+      <DashboardLink
         key="https://www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -36,7 +37,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.sanity.io
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -46,7 +47,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'My link (',
-      <a
+      <DashboardLink
         key="https://www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -54,7 +55,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.sanity.io
-      </a>,
+      </DashboardLink>,
       ')',
     ])
   })
@@ -64,7 +65,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'My link [',
-      <a
+      <DashboardLink
         key="https://www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -72,7 +73,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.sanity.io
-      </a>,
+      </DashboardLink>,
       ']',
     ])
   })
@@ -82,7 +83,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'My link (Sanity, ',
-      <a
+      <DashboardLink
         key="https://www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -90,7 +91,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.sanity.io
-      </a>,
+      </DashboardLink>,
       ')',
     ])
   })
@@ -106,7 +107,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'My link ',
-      <a
+      <DashboardLink
         key="https://www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -114,7 +115,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.sanity.io
-      </a>,
+      </DashboardLink>,
       ', is a cool website',
     ])
   })
@@ -124,7 +125,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       '',
-      <a
+      <DashboardLink
         key="https://www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -132,7 +133,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.sanity.io
-      </a>,
+      </DashboardLink>,
       ' is a cool website',
     ])
   })
@@ -142,7 +143,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check out this cool website ',
-      <a
+      <DashboardLink
         key="https://www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -150,7 +151,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.sanity.io
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -160,7 +161,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check ',
-      <a
+      <DashboardLink
         key="https://www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -168,9 +169,9 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.sanity.io
-      </a>,
+      </DashboardLink>,
       ' and ',
-      <a
+      <DashboardLink
         key="https://example.com"
         href="https://example.com"
         onClick={onClick}
@@ -178,7 +179,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://example.com
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -188,7 +189,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check this link ',
-      <a
+      <DashboardLink
         key="https://example.com/?query=1&sort=asc"
         href="https://example.com/?query=1&sort=asc"
         onClick={onClick}
@@ -196,7 +197,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://example.com/?query=1&sort=asc
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -218,7 +219,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check this link ',
-      <a
+      <DashboardLink
         key="http://www.sanity.io"
         href="http://www.sanity.io"
         onClick={onClick}
@@ -226,7 +227,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         http://www.sanity.io
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -236,7 +237,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check this link ',
-      <a
+      <DashboardLink
         key="www.sanity.io"
         href="https://www.sanity.io"
         onClick={onClick}
@@ -244,7 +245,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         www.sanity.io
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -254,7 +255,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Visit ',
-      <a
+      <DashboardLink
         key="http://example.com"
         href="http://example.com"
         onClick={onClick}
@@ -262,9 +263,9 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         http://example.com
-      </a>,
+      </DashboardLink>,
       ' and ',
-      <a
+      <DashboardLink
         key="https://sanity.io"
         href="https://sanity.io"
         onClick={onClick}
@@ -272,7 +273,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://sanity.io
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -282,7 +283,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check this link ',
-      <a
+      <DashboardLink
         key="https://blog.sanity.io"
         href="https://blog.sanity.io"
         onClick={onClick}
@@ -290,7 +291,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://blog.sanity.io
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -300,7 +301,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Visit ',
-      <a
+      <DashboardLink
         key="http://localhost:3000"
         href="http://localhost:3000"
         onClick={onClick}
@@ -308,7 +309,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         http://localhost:3000
-      </a>,
+      </DashboardLink>,
       ' for local development',
     ])
   })
@@ -318,7 +319,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Go to ',
-      <a
+      <DashboardLink
         key="https://sanity.io#features"
         href="https://sanity.io#features"
         onClick={onClick}
@@ -326,7 +327,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://sanity.io#features
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -338,7 +339,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check ',
-      <a
+      <DashboardLink
         key="https://sanity.io"
         href="https://sanity.io"
         onClick={onClick}
@@ -346,9 +347,9 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://sanity.io
-      </a>,
+      </DashboardLink>,
       ' for info and ',
-      <a
+      <DashboardLink
         key="http://example.com"
         href="http://example.com"
         onClick={onClick}
@@ -356,7 +357,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         http://example.com
-      </a>,
+      </DashboardLink>,
       ' for examples',
     ])
   })
@@ -366,7 +367,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check this link ',
-      <a
+      <DashboardLink
         key="https://example-site.com"
         href="https://example-site.com"
         onClick={onClick}
@@ -374,7 +375,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://example-site.com
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -384,7 +385,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check this link ',
-      <a
+      <DashboardLink
         key="https://example_site.com"
         href="https://example_site.com"
         onClick={onClick}
@@ -392,7 +393,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://example_site.com
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -402,7 +403,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check this link ',
-      <a
+      <DashboardLink
         key="https://example.website"
         href="https://example.website"
         onClick={onClick}
@@ -410,7 +411,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://example.website
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -422,7 +423,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Visit ',
-      <a
+      <DashboardLink
         key="http://example.com"
         href="http://example.com"
         onClick={onClick}
@@ -430,9 +431,9 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         http://example.com
-      </a>,
+      </DashboardLink>,
       ', ',
-      <a
+      <DashboardLink
         key="https://sanity.io"
         href="https://sanity.io"
         onClick={onClick}
@@ -440,9 +441,9 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://sanity.io
-      </a>,
+      </DashboardLink>,
       ' and ',
-      <a
+      <DashboardLink
         key="www.google.com"
         href="https://www.google.com"
         onClick={onClick}
@@ -450,7 +451,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         www.google.com
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -465,7 +466,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Hey, check out this cool site: ',
-      <a
+      <DashboardLink
         key="https://www.example.com"
         href="https://www.example.com"
         onClick={onClick}
@@ -473,11 +474,11 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://www.example.com
-      </a>,
+      </DashboardLink>,
       '.',
       'I found some useful info here as well, ',
       '',
-      <a
+      <DashboardLink
         key="www.another-example.com"
         href="https://www.another-example.com"
         onClick={onClick}
@@ -485,7 +486,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         www.another-example.com
-      </a>,
+      </DashboardLink>,
       '',
       'Let me know what you think!',
     ])
@@ -496,7 +497,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check this out ',
-      <a
+      <DashboardLink
         key="https://example.com/path?query=1#section"
         href="https://example.com/path?query=1#section"
         onClick={onClick}
@@ -504,7 +505,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         https://example.com/path?query=1#section
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })
@@ -514,7 +515,7 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check server at ',
-      <a
+      <DashboardLink
         key="http://192.168.1.1"
         href="http://192.168.1.1"
         onClick={onClick}
@@ -522,7 +523,7 @@ describe('comments: transformChildren', () => {
         target="_blank"
       >
         http://192.168.1.1
-      </a>,
+      </DashboardLink>,
       '',
     ])
   })

@@ -68,10 +68,11 @@ DEBUG=pw:api npx playwright test              # verbose logging
 ## Production-Ready Config
 
 ```ts
+import path from 'path'
+
 // playwright.config.ts
 import {defineConfig, devices} from '@playwright/test'
 import dotenv from 'dotenv'
-import path from 'path'
 
 dotenv.config({path: path.resolve(__dirname, '.env')})
 
@@ -128,10 +129,11 @@ export default defineConfig({
 **Use when**: Tests run against dev, staging, and production environments.
 
 ```ts
+import path from 'path'
+
 // playwright.config.ts
 import {defineConfig} from '@playwright/test'
 import dotenv from 'dotenv'
-import path from 'path'
 
 const ENV = process.env.TEST_ENV || 'local'
 dotenv.config({path: path.resolve(__dirname, `.env.${ENV}`)})

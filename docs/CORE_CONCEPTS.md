@@ -476,6 +476,7 @@ export const myPlugin = definePlugin<MyPluginOptions>((options) => ({
 
 ```typescript
 import {defineConfig} from 'sanity'
+
 import {myPlugin} from './plugins/myPlugin'
 
 export default defineConfig({

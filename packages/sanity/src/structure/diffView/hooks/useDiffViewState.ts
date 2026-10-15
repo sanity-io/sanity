@@ -128,7 +128,7 @@ type DiffViewStateError =
   | 'invalidPreviousDocumentParam'
   | 'invalidNextDocumentParam'
 
-type DiffViewStateErrorWithInput = [error: DiffViewStateError, input: unknown]
+export type DiffViewStateErrorWithInput = [error: DiffViewStateError, input: unknown]
 
 interface ParamsSuccess {
   result: 'success'
