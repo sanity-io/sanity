@@ -278,10 +278,12 @@ How the CSS reaches a page:
   its transformer, so the first instance would rewrite another project's `.css.ts` with its own
   prefix), which rewrites the `.css.ts` modules and appends their CSS to
   `@repo/pandacss/layers.css`. The
-  app imports that stylesheet from its entry (`sanity dev` gets the import injected into its
-  runtime entry; Storybook's `preview.tsx`, `test/setup/browser.ts` and the viewer's `main.tsx`
-  import it themselves). The CDN bundle (`@repo/package.bundle`) does the same with its own entry
-  injection.
+  app imports that stylesheet from its entry (a studio gets the import injected into its
+  `.sanity/runtime/app.js`; Storybook's `preview.tsx`, `test/setup/browser.ts` and the viewer's
+  `main.tsx` import it themselves). The CDN bundle (`@repo/package.bundle`) does the same with its
+  own entry injection. A `sanity build` resolves the built packages and their `bundle.css`, so a
+  studio registers the package instances for `sanity dev` only; the test studio keeps an instance
+  for its own `roots` under both commands, since its `plugins/**/*.css.ts` have no prebuilt CSS.
 - **No cascade layers.** Panda wraps its output in `@layer` blocks; `@repo/pandacss` strips them
   from `bundle.css` (a tsdown plugin) and from the dev stylesheet (a Vite plugin), because
   unlayered styles beat layered ones regardless of specificity and the studio's rules exist to
