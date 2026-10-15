@@ -1,5 +1,5 @@
 import {useSelector} from '@xstate/react'
-import {createContext, useContext, useEffect} from 'react'
+import {createContext, useContext, useLayoutEffect} from 'react'
 
 import {type useSavedQueries} from '../../hooks/useSavedQueries'
 import {onLocalStorageCleared} from '../../util/localStorage'
@@ -104,7 +104,10 @@ export function useSavedQueriesApi(): SavedQueriesApi {
  * put the state that was just cleared straight back.
  */
 export function usePersistVistaState(actorRef: VistaActorRef, projectId: string): void {
-  useEffect(() => {
+  // A layout effect, so the subscription exists before the passive effects of the first commit
+  // run: those of the tool's children run before this component's own, and a change one of them
+  // makes as the tool mounts (opening a request linked from the URL) would otherwise not be saved
+  useLayoutEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined
     const dropPendingWrite = () => {
       clearTimeout(timer)

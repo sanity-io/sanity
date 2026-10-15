@@ -39,6 +39,11 @@ const sanityMocks = vi.hoisted(() => {
     saveQuery: vi.fn((_query: {url: string}) => Promise.resolve('saved-key')),
     // What the mocked saved queries hook lists and reports as being moved
     savedQueries: {queries: [] as unknown[], moving: [] as string[]},
+    // The tool's router: its state as the URL gives it, and the navigations made
+    router: {
+      state: {} as {_searchParams?: [string, string][]},
+      navigate: vi.fn(),
+    },
   }
 })
 
@@ -134,6 +139,7 @@ vi.mock('sanity', async () => {
 
 vi.mock('sanity/router', () => ({
   IntentLink: ({children}: {children: ReactNode}) => <a href="#intent">{children}</a>,
+  useRouter: () => sanityMocks.router,
 }))
 
 vi.mock('../../hooks/useSavedQueries', () => ({
@@ -391,6 +397,7 @@ describe('VistaGui', () => {
     localStorage.clear()
     sanityMocks.setPerspective(BASE_PERSPECTIVE)
     sanityMocks.savedQueries = {queries: [], moving: []}
+    sanityMocks.router.state = {}
     editorMocks.visibleColumns = undefined
   })
 
@@ -605,6 +612,48 @@ describe('VistaGui', () => {
     expect(
       within(latest).getByTestId('vista-history-changes-toggle').getAttribute('aria-expanded'),
     ).toBe('false')
+  })
+
+  it('keeps the active request in the tool URL once typing settles, replacing the entry', async () => {
+    renderVista()
+    typeQuery('*[_type == "post"]')
+    await waitFor(
+      () => {
+        const [state] = sanityMocks.router.navigate.mock.lastCall ?? []
+        const [[key, value]] = (state as {_searchParams: [string, string][]})._searchParams
+        expect(key).toBe('url')
+        expect(new URL(value).searchParams.get('query')).toBe('*[_type == "post"]')
+      },
+      {timeout: 2000},
+    )
+    expect(sanityMocks.router.navigate.mock.lastCall?.[1]).toEqual({replace: true})
+  })
+
+  it('opens the request a link to the tool names, in a tab of its own', async () => {
+    sanityMocks.router.state = {
+      _searchParams: [
+        [
+          'url',
+          `https://test.api.sanity.io/v2025-02-19/data/query/test?${new URLSearchParams({
+            query: '*[_type == "movie"]',
+            $limit: '3',
+            perspective: 'drafts',
+          })}`,
+        ],
+      ],
+    }
+    renderVista()
+
+    await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(2))
+    expect(getQueryEditor().value).toBe('*[_type == "movie"]')
+    await waitFor(() => expect(getStoredState()?.tabs).toHaveLength(2))
+    expect(JSON.parse(getStoredState().tabs[1].rawParams)).toEqual({limit: 3})
+    expect(getStoredState().tabs[1].options).toMatchObject({
+      apiVersion: 'v2025-02-19',
+      datasetMode: 'pinned',
+      dataset: 'test',
+      perspective: 'drafts',
+    })
   })
 
   it('shows the query plan and an explanation of the query in the Explain panel', async () => {
