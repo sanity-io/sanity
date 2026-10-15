@@ -23,7 +23,12 @@ const STATE_VERSION = 1
 export const DEFAULT_PARAMS = '{\n  \n}'
 
 /** Every panel starts out expanded */
-const DEFAULT_PANELS: VistaPanelsState = {params: true, options: true, paramsView: 'json'}
+const DEFAULT_PANELS: VistaPanelsState = {
+  params: true,
+  options: true,
+  paramsView: 'json',
+  resultView: 'tree',
+}
 
 /** Fields that change with every revision, so a diff of them says nothing about the content */
 export const DEFAULT_HIDDEN_DIFF_FIELDS = ['_rev', '_updatedAt', '_system.base.rev']
@@ -187,8 +192,9 @@ function sanitizeSidebar(value: unknown): VistaSidebarState {
 }
 
 /**
- * A panel stays expanded unless it was explicitly collapsed, and the params show as JSON unless
- * the form was chosen; state saved before either existed reads that way
+ * A panel stays expanded unless it was explicitly collapsed, the params show as JSON unless the
+ * form was chosen, and the result as a tree unless JSON was; state saved before any of them
+ * existed reads that way
  */
 function sanitizePanels(value: unknown): VistaPanelsState {
   const panels = isPlainObject(value) ? value : {}
@@ -196,6 +202,7 @@ function sanitizePanels(value: unknown): VistaPanelsState {
     params: panels.params !== false,
     options: panels.options !== false,
     paramsView: panels.paramsView === 'form' ? 'form' : 'json',
+    resultView: panels.resultView === 'json' ? 'json' : 'tree',
   }
 }
 

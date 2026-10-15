@@ -1,7 +1,9 @@
+import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
 import {JsonIcon} from '@sanity/icons/Json'
-import {Badge, Card, Label, Text} from '@sanity/ui'
+import {Badge, Button, Card, Label, Tab, TabList, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
+import {Tooltip} from '@sanity/ui/tooltip'
 import {useSelector} from '@xstate/react'
 import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
@@ -9,24 +11,28 @@ import {Box, Flex} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {QueryErrorDialog} from '../../../components/QueryErrorDialog'
-import {ResultView} from '../../../components/ResultView'
+import {ResultView, type ResultViewCopy} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
+import {describeKeypath} from '../../../util/getAtKeypath'
 import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
+import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
-import {type QueryRequest, type VistaTab} from '../../store/types'
-import {useVistaSelector} from '../../store/VistaActorContext'
+import {type QueryRequest, type VistaResultView, type VistaTab} from '../../store/types'
+import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
+import {selectResultView} from '../../store/vistaMachine'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
-import {resultContainer, resultLabel} from '../vista.css'
+import {resultContainer, resultLabel, resultLabelActions} from '../vista.css'
 import {DownloadButton} from './DownloadButton'
 import {HistoryTab} from './HistoryTab'
 import {LintTab} from './LintTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
+import {ResultJson} from './ResultJson'
 import {SourceMapTab} from './SourceMapTab'
 
 const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
@@ -94,6 +100,32 @@ export function ResponsePanel(props: ResponsePanelProps) {
         title: t('result.save-result-as-csv.not-csv-encodable'),
       }),
     [t, toast],
+  )
+
+  const actorRef = useVistaActor()
+  const resultView = useVistaSelector(selectResultView)
+  const setResultView = useCallback(
+    (view: VistaResultView) => actorRef.send({type: 'result.view', view}),
+    [actorRef],
+  )
+  const copyToClipboard = useCopyToClipboard()
+  const copyResult = useCallback(
+    () => void copyToClipboard(JSON.stringify(result, null, 2), t('vista.result.copied')),
+    [copyToClipboard, result, t],
+  )
+  // Text is copied as it is (an ID, a slug) and everything else as indented JSON
+  const copyValue = useMemo(
+    (): ResultViewCopy => ({
+      label: t('vista.result.copy-value'),
+      onCopy: (value, keypath) =>
+        void copyToClipboard(
+          typeof value === 'string' ? value : JSON.stringify(value, null, 2),
+          keypath
+            ? t('vista.result.copied-value', {path: describeKeypath(keypath)})
+            : t('vista.result.copied'),
+        ),
+    }),
+    [copyToClipboard, t],
   )
 
   const panelTabs = useMemo(
@@ -199,35 +231,82 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 {t('vista.live.active')}
               </Badge>
             )}
+            <Box flexBasis="0%" flexGrow={1} />
+            {hasResult && (
+              <Flex alignItems="center" className={resultLabelActions} gap={1}>
+                <TabList aria-label={t('vista.result.view.label')} gap={1}>
+                  <Tab
+                    aria-controls="vista-result-content"
+                    fontSize={1}
+                    id="vista-result-view-tree"
+                    label={t('vista.result.view.tree')}
+                    onClick={() => setResultView('tree')}
+                    padding={2}
+                    selected={resultView === 'tree'}
+                  />
+                  <Tab
+                    aria-controls="vista-result-content"
+                    fontSize={1}
+                    id="vista-result-view-json"
+                    label={t('vista.result.view.json')}
+                    onClick={() => setResultView('json')}
+                    padding={2}
+                    selected={resultView === 'json'}
+                  />
+                </TabList>
+                <Tooltip
+                  animate
+                  content={<Text size={1}>{t('vista.result.copy')}</Text>}
+                  placement="bottom"
+                  portal
+                >
+                  <Button
+                    aria-label={t('vista.result.copy')}
+                    data-testid="vista-copy-result"
+                    fontSize={1}
+                    icon={CopyIcon}
+                    mode="bleed"
+                    onClick={copyResult}
+                    padding={2}
+                  />
+                </Tooltip>
+              </Flex>
+            )}
           </Flex>
         </Box>
-        <Box padding={3} paddingTop={5}>
-          {status === 'fetching' && (
-            <Box marginTop={3}>
-              <DelayedSpinner />
-            </Box>
-          )}
-          {status === 'failed' && error && (
-            <QueryErrorDialog
-              apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
-              error={error}
-              perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
-              variant={
-                failedConfig
-                  ? typeof failedConfig.variant === 'string'
-                    ? failedConfig.variant
-                    : undefined
-                  : resolved.variant
-              }
-            />
-          )}
-          {hasResult && <ResultView data={result} datasetName={resultDataset} />}
-          {status === 'idle' && (
-            <Text muted size={1}>
-              {t('vista.result.empty')}
-            </Text>
-          )}
-        </Box>
+        {hasResult && resultView === 'json' ? (
+          <ResultJson id="vista-result-content" value={result} />
+        ) : (
+          <Box id="vista-result-content" padding={3} paddingTop={5}>
+            {status === 'fetching' && (
+              <Box marginTop={3}>
+                <DelayedSpinner />
+              </Box>
+            )}
+            {status === 'failed' && error && (
+              <QueryErrorDialog
+                apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
+                error={error}
+                perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
+                variant={
+                  failedConfig
+                    ? typeof failedConfig.variant === 'string'
+                      ? failedConfig.variant
+                      : undefined
+                    : resolved.variant
+                }
+              />
+            )}
+            {hasResult && resultView === 'tree' && (
+              <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
+            )}
+            {status === 'idle' && (
+              <Text muted size={1}>
+                {t('vista.result.empty')}
+              </Text>
+            )}
+          </Box>
+        )}
       </Card>
     </SplitWithBottomPanel>
   )

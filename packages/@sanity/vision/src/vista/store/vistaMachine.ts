@@ -16,6 +16,7 @@ import {
   type VistaPanelsState,
   type VistaParamsView,
   type VistaPersistedState,
+  type VistaResultView,
   type VistaSettings,
   type VistaSidebarState,
   type VistaTab,
@@ -72,6 +73,7 @@ export type VistaEvent =
   | {type: 'sidebar.toggle'}
   | {type: 'panel.toggle'; panel: VistaPanel}
   | {type: 'params.view'; view: VistaParamsView}
+  | {type: 'result.view'; view: VistaResultView}
   | {type: 'drawer.toggle'; drawer: VistaDrawer}
   | {type: 'drawer.close'}
   | {type: 'dialog.open'; dialog: VistaDialog}
@@ -141,6 +143,9 @@ export const vistaMachine = setup({
     wasPanelExpanded: ({context}, params: {panel: VistaPanel}) =>
       context.restoredPanels[params.panel],
     wasParamsForm: ({context}) => context.restoredPanels.paramsView === 'form',
+    wasResultJson: ({context}) => context.restoredPanels.resultView === 'json',
+    isResultView: ({event}, params: {view: VistaResultView}) =>
+      event.type === 'result.view' && event.view === params.view,
     isParamsView: ({event}, params: {view: VistaParamsView}) =>
       event.type === 'params.view' && event.view === params.view,
     wasDrawerOpen: ({context}, params: {drawer: VistaDrawer}) =>
@@ -327,6 +332,7 @@ export const vistaMachine = setup({
         '.sidebar.collapsed',
         '.paramsPanel.expanded',
         '.paramsView.json',
+        '.resultView.tree',
         '.optionsPanel.expanded',
         '.drawer.closed',
         '.dialog.closed',
@@ -386,6 +392,24 @@ export const vistaMachine = setup({
         form: {
           on: {
             'params.view': {guard: {type: 'isParamsView', params: {view: 'json'}}, target: 'json'},
+          },
+        },
+      },
+    },
+    resultView: {
+      initial: 'restoring',
+      states: {
+        restoring: {
+          always: [{guard: 'wasResultJson', target: 'json'}, {target: 'tree'}],
+        },
+        tree: {
+          on: {
+            'result.view': {guard: {type: 'isResultView', params: {view: 'json'}}, target: 'json'},
+          },
+        },
+        json: {
+          on: {
+            'result.view': {guard: {type: 'isResultView', params: {view: 'tree'}}, target: 'tree'},
           },
         },
       },
@@ -496,6 +520,7 @@ export function selectPersistedState(snapshot: VistaSnapshot): VistaPersistedSta
       params: isPanelExpanded(snapshot, 'params'),
       options: isPanelExpanded(snapshot, 'options'),
       paramsView: selectParamsView(snapshot),
+      resultView: selectResultView(snapshot),
     },
     historyDiff: snapshot.context.historyDiff,
   }
@@ -503,6 +528,10 @@ export function selectPersistedState(snapshot: VistaSnapshot): VistaPersistedSta
 
 export function selectParamsView(snapshot: VistaSnapshot): VistaParamsView {
   return snapshot.matches({paramsView: 'form'}) ? 'form' : 'json'
+}
+
+export function selectResultView(snapshot: VistaSnapshot): VistaResultView {
+  return snapshot.matches({resultView: 'json'}) ? 'json' : 'tree'
 }
 
 export function isPanelExpanded(snapshot: VistaSnapshot, panel: VistaPanel): boolean {

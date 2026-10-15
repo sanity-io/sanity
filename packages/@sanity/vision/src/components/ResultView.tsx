@@ -1,17 +1,21 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {LinkIcon} from '@sanity/icons/Link'
 import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import LRU from 'quick-lru'
-import {type ReactNode} from 'react'
+import {createContext, type ReactNode, use, useMemo} from 'react'
 import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
+import {getAtKeypath} from '../util/getAtKeypath'
 import {
   codeFamilyVar,
   codeFontSizeVar,
   codeLineHeightVar,
+  copyableResult,
+  copyNodeButton,
   resultViewWrapper,
   space0Var,
   space2Var,
@@ -26,13 +30,13 @@ import {
 
 const lru = new LRU({maxSize: 50000})
 
-function ResultViewWrapper({children}: {children: ReactNode}) {
+function ResultViewWrapper({children, copyable}: {children: ReactNode; copyable?: boolean}) {
   const {color, font, space} = useThemeV2()
   const codeSize = font.code.sizes[2]
 
   return (
     <div
-      className={resultViewWrapper}
+      className={copyable ? `${resultViewWrapper} ${copyableResult}` : resultViewWrapper}
       style={assignInlineVars({
         [codeFamilyVar]: font.code.family,
         [codeFontSizeVar]: `${codeSize.fontSize}px`,
@@ -53,25 +57,83 @@ function ResultViewWrapper({children}: {children: ReactNode}) {
   )
 }
 
-export function ResultView(props: {data: unknown; datasetName: string}): React.JSX.Element {
-  const {data, datasetName} = props
+/** A copy button next to every property of the tree, copying the property's value */
+export interface ResultViewCopy {
+  /** Accessible name and tooltip of the buttons */
+  label: string
+  /** `keypath` is the property's dotted path from the root, empty for the root itself */
+  onCopy: (value: unknown, keypath: string) => void
+}
+
+interface ResultLabelContextValue {
+  data: unknown
+  copy: ResultViewCopy | undefined
+  /** `_id` and `_ref` values link to their documents when the result is the workspace's */
+  linkDocuments: boolean
+}
+
+// The inspector takes one component for every label, so what it needs comes through context
+const ResultLabelContext = createContext<ResultLabelContextValue | null>(null)
+
+export function ResultView(props: {
+  data: unknown
+  datasetName: string
+  copy?: ResultViewCopy
+}): React.JSX.Element {
+  const {data, datasetName, copy} = props
   const workspaceDataset = useDataset()
+  const linkDocuments = workspaceDataset === datasetName
+  const labelContext = useMemo(() => ({data, copy, linkDocuments}), [copy, data, linkDocuments])
 
   if (isRecord(data) || Array.isArray(data)) {
     return (
-      <ResultViewWrapper>
-        <JsonInspector
-          data={data}
-          search={false}
-          isExpanded={isExpanded}
-          onClick={toggleExpanded}
-          interactiveLabel={workspaceDataset === datasetName ? DocumentEditLabel : undefined}
-        />
+      <ResultViewWrapper copyable={Boolean(copy)}>
+        <ResultLabelContext value={labelContext}>
+          <JsonInspector
+            data={data}
+            search={false}
+            isExpanded={isExpanded}
+            onClick={toggleExpanded}
+            interactiveLabel={copy || linkDocuments ? InteractiveLabel : undefined}
+          />
+        </ResultLabelContext>
       </ResultViewWrapper>
     )
   }
 
   return <Code language="json">{JSON.stringify(data)}</Code>
+}
+
+function InteractiveLabel(props: {value: string; isKey: boolean; keypath: string}) {
+  const context = use(ResultLabelContext)
+  if (props.isKey) {
+    return context?.copy ? (
+      <CopyNodeButton copy={context.copy} data={context.data} keypath={props.keypath} />
+    ) : null
+  }
+  return context?.linkDocuments ? <DocumentEditLabel {...props} /> : null
+}
+
+function CopyNodeButton(props: {copy: ResultViewCopy; data: unknown; keypath: string}) {
+  const {copy, data, keypath} = props
+  return (
+    <button
+      aria-label={copy.label}
+      className={copyNodeButton}
+      data-testid="result-copy-node"
+      onClick={(event) => {
+        // The button sits in the line's label, which toggles the node when clicked
+        event.preventDefault()
+        event.stopPropagation()
+        const found = getAtKeypath(data, keypath)
+        if (found) copy.onCopy(found.value, keypath)
+      }}
+      title={copy.label}
+      type="button"
+    >
+      <CopyIcon />
+    </button>
+  )
 }
 
 function DocumentEditLabel(props: {value: string; isKey: boolean; keypath: string}) {

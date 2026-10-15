@@ -466,7 +466,12 @@ describe('VistaGui', () => {
     expect(screen.getByTestId('vista-params-editor')).toBeTruthy()
     expect(screen.getByTestId('vista-query-editor')).toBeTruthy()
     await waitFor(() =>
-      expect(getStoredState().panels).toEqual({params: true, options: false, paramsView: 'json'}),
+      expect(getStoredState().panels).toEqual({
+        params: true,
+        options: false,
+        paramsView: 'json',
+        resultView: 'tree',
+      }),
     )
 
     unmount()
@@ -479,7 +484,12 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-request-params-toggle'))
     expect(screen.queryByTestId('vista-params-editor')).toBeNull()
     await waitFor(() =>
-      expect(getStoredState().panels).toEqual({params: false, options: true, paramsView: 'json'}),
+      expect(getStoredState().panels).toEqual({
+        params: false,
+        options: true,
+        paramsView: 'json',
+        resultView: 'tree',
+      }),
     )
 
     // Params typed right before collapsing are still in the debounce; collapsing commits them,
@@ -584,6 +594,42 @@ describe('VistaGui', () => {
     expect(
       within(latest).getByTestId('vista-history-changes-toggle').getAttribute('aria-expanded'),
     ).toBe('false')
+  })
+
+  it('shows the result as JSON text to select and copy from, and remembers the choice', async () => {
+    const {respondWith} = renderVista()
+    const result = [{_id: 'a', title: 'Copy me'}]
+    respondWith({result, ms: 3})
+    typeQuery('*[_type == "post"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
+    const writeText = vi.fn(() => Promise.resolve())
+    const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+    Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
+
+    try {
+      fireEvent.click(document.getElementById('vista-result-view-json') as HTMLElement)
+      const json = await screen.findByTestId('vista-result-json')
+      expect((within(json).getByTestId('codemirror-mock') as HTMLTextAreaElement).value).toBe(
+        JSON.stringify(result, null, 2),
+      )
+      expect(screen.queryByTestId('result-json')).toBeNull()
+      expect(document.getElementById('vista-result-view-json')?.getAttribute('aria-controls')).toBe(
+        json.id,
+      )
+      await waitFor(() => expect(getStoredState().panels.resultView).toBe('json'))
+
+      fireEvent.click(screen.getByTestId('vista-copy-result'))
+      await waitFor(() => expect(writeText).toHaveBeenCalledWith(JSON.stringify(result, null, 2)))
+
+      fireEvent.click(document.getElementById('vista-result-view-tree') as HTMLElement)
+      expect(screen.getByTestId('result-json')).toBeTruthy()
+      expect(screen.queryByTestId('vista-result-json')).toBeNull()
+    } finally {
+      if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
+      else Reflect.deleteProperty(navigator, 'clipboard')
+    }
   })
 
   it('shows the API version next to Fetch, and the field that changes it on request', async () => {

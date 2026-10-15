@@ -8,6 +8,7 @@ import {
   selectOpenDialog,
   selectOpenDrawer,
   selectParamsView,
+  selectResultView,
   selectPersistedState,
   vistaMachine,
 } from './vistaMachine'
@@ -259,7 +260,7 @@ describe('vistaMachine', () => {
   it('restores and toggles the params and options panels independently', () => {
     const harness = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: false, paramsView: 'json'},
+      panels: {params: true, options: false, paramsView: 'json', resultView: 'tree'},
     })
 
     expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
@@ -278,7 +279,7 @@ describe('vistaMachine', () => {
   it('restores, switches and persists how the params are edited', () => {
     const harness = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: true, paramsView: 'form'},
+      panels: {params: true, options: true, paramsView: 'form', resultView: 'tree'},
     })
     expect(selectParamsView(harness.snapshot())).toBe('form')
 
@@ -292,6 +293,23 @@ describe('vistaMachine', () => {
     expect(selectPersistedState(harness.snapshot()).panels.paramsView).toBe('form')
     harness.actor.send({type: 'storage.clear'})
     expect(selectParamsView(harness.snapshot())).toBe('json')
+  })
+
+  it('restores, switches and persists how the result shows', () => {
+    const harness = createHarness({
+      ...createInitialState(defaults),
+      panels: {params: true, options: true, paramsView: 'json', resultView: 'json'},
+    })
+    expect(selectResultView(harness.snapshot())).toBe('json')
+
+    harness.actor.send({type: 'result.view', view: 'tree'})
+    expect(selectResultView(harness.snapshot())).toBe('tree')
+    expect(selectPersistedState(harness.snapshot()).panels.resultView).toBe('tree')
+    harness.actor.send({type: 'result.view', view: 'json'})
+    expect(selectPersistedState(harness.snapshot()).panels.resultView).toBe('json')
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(selectResultView(harness.snapshot())).toBe('tree')
   })
 
   it('updates, persists and resets the fields hidden from history diffs', () => {
@@ -324,7 +342,7 @@ describe('vistaMachine', () => {
       activeTabId: harness.snapshot().context.activeTabId,
       settings: harness.snapshot().context.settings,
       sidebar: {expanded: true, drawer: 'saved'},
-      panels: {params: true, options: false, paramsView: 'json'},
+      panels: {params: true, options: false, paramsView: 'json', resultView: 'tree'},
       historyDiff: {hiddenFields: ['_rev', '_updatedAt', '_system.base.rev']},
     })
   })

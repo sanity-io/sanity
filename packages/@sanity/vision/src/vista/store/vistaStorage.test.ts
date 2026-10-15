@@ -100,7 +100,12 @@ describe('vistaStorage', () => {
       tabs: [tab],
       activeTabId: tab.id,
       sidebar: {expanded: true, drawer: 'saved' as const},
-      panels: {params: true, options: false, paramsView: 'form' as const},
+      panels: {
+        params: true,
+        options: false,
+        paramsView: 'form' as const,
+        resultView: 'json' as const,
+      },
       historyDiff: {hiddenFields: ['_rev', 'meta.version']},
     }
     saveVistaState('proj', saved)
@@ -126,7 +131,7 @@ describe('vistaStorage', () => {
     expect(loaded.activeTabId).toBe('dup')
   })
 
-  it('reads state saved before the panels existed as having them expanded, params as JSON', () => {
+  it('reads state saved before the panels existed as having them expanded, params as JSON, the result as a tree', () => {
     const {panels: _panels, ...withoutPanels} = createInitialState(defaults)
     localStorage.setItem(getVistaStorageKey('proj'), JSON.stringify(withoutPanels))
 
@@ -134,16 +139,21 @@ describe('vistaStorage', () => {
       params: true,
       options: true,
       paramsView: 'json',
+      resultView: 'tree',
     })
 
     localStorage.setItem(
       getVistaStorageKey('proj'),
-      JSON.stringify({...withoutPanels, panels: {params: false, paramsView: 'table'}}),
+      JSON.stringify({
+        ...withoutPanels,
+        panels: {params: false, paramsView: 'table', resultView: 'graph'},
+      }),
     )
     expect(loadVistaState('proj', defaults).panels).toEqual({
       params: false,
       options: true,
       paramsView: 'json',
+      resultView: 'tree',
     })
   })
 

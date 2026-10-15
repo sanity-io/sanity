@@ -113,6 +113,16 @@ export const editorLabel = style({
 /** Result label at the same height as the editor label, aligned with the result's own padding */
 export const resultLabel = style([editorLabel, {left: '12px'}])
 
+/** Controls in the result label's row: unlike the label they take the pointer */
+export const resultLabelActions = style({
+  pointerEvents: 'auto',
+  marginRight: '12px',
+  marginTop: '-0.5rem',
+})
+
+/** The result's JSON view fills the result pane, its editor scrolling on its own */
+export const resultJson = style({height: '100%'})
+
 /** Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
 export const panelTabs = style({
   minWidth: 0,

@@ -67,9 +67,13 @@ export type VistaPanel = 'params' | 'options'
 /** How the params panel edits the params: their JSON, or a form inferred from the query */
 export type VistaParamsView = 'json' | 'form'
 
-/** Whether each collapsible panel is expanded, and how the params panel shows the params */
+/** How the result shows: a tree to browse, or its JSON as text to select and copy from */
+export type VistaResultView = 'tree' | 'json'
+
+/** Whether each collapsible panel is expanded, and how the params and the result show */
 export interface VistaPanelsState extends Record<VistaPanel, boolean> {
   paramsView: VistaParamsView
+  resultView: VistaResultView
 }
 
 /** How the History panel diffs a result with the previous one */

@@ -500,8 +500,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.result.actions': 'Result actions',
   /** Toast shown after the result was copied */
   'vista.result.copied': 'Result copied to clipboard',
-  /** Menu item copying the result as JSON */
+  /** Toast shown after a value in the result was copied, with its path such as [0].author.name */
+  'vista.result.copied-value': 'Copied {{path}}',
+  /** Menu item and button copying the result as JSON */
   'vista.result.copy': 'Copy result',
+  /** Button next to each property in the result tree, copying its value */
+  'vista.result.copy-value': 'Copy value',
   /** Empty state of the result view */
   'vista.result.empty': 'Run the query to see its result here',
   /** Button exporting the result as CSV */
@@ -512,6 +516,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.result.export-typescript': 'Export TypeScript…',
   /** Menu item opening the Zod export dialog */
   'vista.result.export-zod': 'Export Zod…',
+  /** Tab showing the result as indented JSON text, to select and copy from */
+  'vista.result.view.json': 'JSON',
+  /** Accessible label of the tabs that switch how the result shows */
+  'vista.result.view.label': 'Result view',
+  /** Tab showing the result as a tree to browse */
+  'vista.result.view.tree': 'Tree',
   /** Empty state of the saved queries panel */
   'vista.saved.empty': 'No saved queries yet. Save the current query with the + button.',
   /** Empty state of a query list when the search matches nothing */
