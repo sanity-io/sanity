@@ -248,6 +248,49 @@ The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with 
 
 The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
 
+### Panda CSS
+
+The static styles of `sanity`, `@sanity/vision` and the test studio's plugins are
+[Panda CSS](https://panda-css.com) `css()` calls in `.css.ts` modules next to the components,
+imported from the generated `#styled-system/css` runtime (`panda codegen` writes it to the
+gitignored `styled-system/` directory of each Panda project on `pnpm install`, through the
+packages' `prepare` scripts). Each project has a `panda.config.ts` (`packages/sanity`,
+`packages/@sanity/vision`, `dev/test-studio`) with the `} satisfies Config)` pattern, no presets,
+content-hashed class names (`sanity-HgOzd`, `vision-…`, `test-studio-…`) and
+`strictPropertyValues`. The `migrate-styled-components-to-panda-css` skill
+(`.agents/skills/migrate-styled-components-to-panda-css/SKILL.md`) is the authoring guide: the
+`&&` specificity trick, the cascade model, descendant selectors and dynamic values.
+
+How the CSS reaches a page:
+
+- **Published packages:** `panda: {minify: true}` in `tsdown.config.ts` (the
+  `@sanity/pandacss-tsdown-plugin` option of `@sanity/tsdown-config`) rewrites every `css()` call
+  into its class names at build time, extracts the CSS into `lib/bundle.css`, injects
+  `import 'sanity/bundle.css'` into the entry chunks and publishes the conditional `./bundle.css`
+  export (`browser`/`style` → the stylesheet, `node`/`default` → a no-op shim). The published code
+  carries no Panda runtime, which is why the package manifests reset `imports` under
+  `publishConfig`. A `css()` call the build cannot resolve statically (computed values, loops)
+  makes it warn and bundle the runtime — keep the style objects literal.
+- **Vite apps that build the packages from source** (the dev studios through `sanity.cli.ts`,
+  Storybook, the vitest browser suite, `dev/studio-diagnostics-viewer`) register
+  `studioPandaCss()` from `@repo/pandacss/vite`: one `@pandacss/vite` instance per Panda project,
+  which rewrites the `.css.ts` modules and appends their CSS to `@repo/pandacss/layers.css`. The
+  app imports that stylesheet from its entry (`sanity dev` gets the import injected into its
+  runtime entry; Storybook's `preview.tsx`, `test/setup/browser.ts` and the viewer's `main.tsx`
+  import it themselves). The CDN bundle (`@repo/package.bundle`) does the same with its own entry
+  injection.
+- **No cascade layers.** Panda wraps its output in `@layer` blocks; `@repo/pandacss` strips them
+  from `bundle.css` (a tsdown plugin) and from the dev stylesheet (a Vite plugin), because
+  unlayered styles beat layered ones regardless of specificity and the studio's rules exist to
+  beat the unlayered styled-components rules of `@sanity/ui` v4 and the component classes of
+  `ui5`. Panda's own `polyfill` option is not an alternative: it emulates layer order with
+  `:not(#\#…)` selector chains that inflate every rule's specificity.
+- **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
+  `property: value` pair once, grouped by property with the values sorted; a modifier class that
+  must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)
+  instead of relying on being declared later, and parent-state selectors refer to a literal
+  marker class on the parent (`ElementWithChangeBar.css.ts`).
+
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
 The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
@@ -830,24 +873,24 @@ TypeScript 6 applies the augmentation in both cases. Workaround: put the side-ef
 a vitest setup file (registered via `test.setupFiles`) instead of the test file that uses the
 matchers — see `packages/@sanity/schema/test/setup.ts` and its `vitest.config.mts`.
 
-#### Vanilla-extract in jsdom tests
+#### Panda CSS in jsdom tests
 
-The `sanity` and `@sanity/vision` jsdom suites import
-[`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
-(`packages/sanity/test/setup/environment.ts`, and as a direct vitest `setupFiles` entry in
-`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips injecting real stylesheets
-into jsdom. Class name identifiers still resolve, but computed styles are not available.
+The static styles of `sanity` and `@sanity/vision` are [Panda CSS](https://panda-css.com)
+`css()` calls in `.css.ts` modules (see [Panda CSS](#panda-css) below). The `sanity` and
+`@sanity/vision` jsdom suites register `@pandacss/vite` with `transform: true`
+(`packages/sanity/vitest.config.mts`, `packages/@sanity/vision/vitest.config.mts`), which rewrites
+those calls to the class names the package build ships; no stylesheet is loaded in jsdom, so class
+name identifiers resolve but computed styles are not available.
 
 Conventions that follow from this:
 
-- **Do not assert on vanilla-extract class names or computed styles in jsdom tests.** Assert on
+- **Do not assert on Panda class names or computed styles in jsdom tests.** Assert on
   `data-testid` attributes instead. Visual/style behavior belongs in the vitest browser mode
-  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit) or the Playwright e2e tests, where
-  runtime styles stay enabled.
-- **Keep `vanillaExtractPlugin()` in the vitest configs.** The plugin's transform assigns file
-  scopes to `.css.ts` modules; without it any test that (transitively) imports a `.css.ts` file
-  throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
-  injection, not the transform.
+  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit, where `test/setup/browser.ts` loads
+  the generated stylesheet) or the Playwright e2e tests.
+- **A `.css.ts` module exports class name strings, nothing else renders.** A `css()` call outside
+  a `.css.ts` file is neither extracted nor rewritten (the Panda configs only `include` those
+  files), so it evaluates to the right class names at runtime but has no CSS behind them.
 
 #### @sanity/ui overlays stay mounted when closed
 
@@ -888,7 +931,7 @@ Visual regression runs on Chromatic via `.github/workflows/chromatic.yml` from t
 Storybook stories, and the vitest browser-mode suite captured in place by `@chromatic-com/vitest`
 (every `*.browser.test.tsx` end state becomes a snapshot, no test changes). Stories are co-located
 with their source under `packages/**/src/**/__tests__` and cover states no browser test renders:
-authored migration sentinels for `ui-components` and vanilla-extract-migrated components, plus
+authored migration sentinels for `ui-components` and Panda-migrated components, plus
 harness stories built on the same `TestWrapper` mock studio. Browser tests keep their harness
 component inline (`function FooHarness()` in the test file); every `*Story.tsx` is a Storybook
 harness owned by a `*.stories.tsx`. Do not extract a browser test's harness into a `*Story.tsx`
@@ -1296,7 +1339,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
   pnpm dlx skills list
   ```
 
-- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
+- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"` (the installed version differs between VM images — check `ls ~/.nvm/versions/node/`, e.g. `v22.23.3`).
 - **`pnpm build` can fail in the VM with `unable to spawn child process: Exec format error (os error 8)`.** Turbo itself starts (it prints its version and the task graph) but cannot spawn the per-package build, so every task fails within milliseconds. Reproducible on a clean `main` and independent of the Node version, so it is an environment artifact, not your change. Build through pnpm instead — `-r run` executes in topological order, same as turbo: `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
 - **Timezone-sensitive snapshots in `@sanity/validation`.** `test/dates.test.ts` snapshots render datetimes in `America/Los_Angeles`. The package Vitest config sets that timezone for its workers, including when run through the root suite.
@@ -1365,3 +1408,14 @@ Debugging notes:
 - To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.
 - Every branch with a PR gets its own `End-to-End Tests` run (8 shards) against the same staging project, and the shards share GitHub's runner IP range. Pushing a whole stack of PRs at once therefore rate-limits the runs against each other: the failed attempts show the studio's "Too many requests" dialog in the `error-context` page snapshot and in `studio-request-error.txt`, with dozens of flaky retries. Push (or re-run) stacked branches a few at a time instead of all at once, and treat a run whose failures all show that dialog as platform-caused, not as a regression.
 - A new Playwright version means a new browser-cache key. The `install` job creates it, but when several runs start together only one can reserve the key and the others log `Unable to reserve cache with key … another job may be creating this cache`; their `playwright-test` shards then miss the restore and fall back to installing browsers themselves. `e2e/globalSetup.ts` always launches chromium (it warms the preview with the first configured project), so that fallback installs chromium alongside the matrix browser — a firefox shard without chromium fails in global setup with `browserType.launch: Executable doesn't exist` before running a single test.
+
+<!-- BEGIN:turborepo-agent-rules -->
+
+# This is NOT the Turborepo you know
+
+Turborepo configuration, task behavior, and CLI commands can vary between installed versions and may differ from your training data. Resolve the `turbo` package from this file's directory or relevant workspace; in monorepos, it may not be visible from the repository root. For example, run `node -p "require.resolve('turbo/package.json')"` from a workspace that depends on `turbo`.
+
+Read `docs/README.md` inside that installed package first, then read the relevant pages from its `docs/` directory before changing Turborepo configuration or commands. Heed deprecation notices. These bundled docs match the installed package version and are available without network access.
+
+This block is written and re-added by `turbo` before repository-scoped commands when an AI agent is detected. In the Turborepo source repository, its template is defined in `crates/turborepo-cli/src/cli/agent_guidance.rs`. Removing the managed block while updates are enabled means a later qualifying invocation will add it again. Set `"agentGuidance": false` in the root `turbo.json` or `turbo.jsonc` to opt out; this does not remove an existing block. Keep the block committed with your work to avoid an uncommitted change on the next agent invocation.
+<!-- END:turborepo-agent-rules -->

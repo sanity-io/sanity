@@ -4,7 +4,7 @@ Storybook for visual regression testing of the Sanity Studio monorepo, snapshott
 [Chromatic](https://www.chromatic.com) on every PR and deployed to Vercel.
 
 Its primary purpose is guarding the two styling migrations — styled-components →
-vanilla-extract, and `@sanity/ui` → `ui5` — with automated visual diffs. See the
+Panda CSS, and `@sanity/ui` → `ui5` — with automated visual diffs. See the
 [`sanity-visual-regression` skill](../../.agents/skills/sanity-visual-regression/SKILL.md) for
 the full workflow, including how to add coverage.
 
@@ -38,7 +38,7 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
   render stories; it hosts no specs, fixtures, or `@chromatic-com/playwright` wiring.
 - **Authored migration sentinels:** component-local stories cover states the tests don't capture —
   `ui-components` wrapper variants (the `@sanity/ui` → `ui5` surface, with card/tone coverage
-  prioritized) and vanilla-extract-migrated components. Harness stories reuse the same
+  prioritized) and Panda-migrated components. Harness stories reuse the same
   `TestWrapper` + `TestForm` mock studio as the browser tests (deterministic, no network) through
   a story-only `*Story.tsx` harness.
 - **Every story is browsable.** Stories are written to be read — they form a living document of
@@ -50,8 +50,10 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
 
 The Vite config in [.storybook/main.ts](.storybook/main.ts) mirrors
 `packages/sanity/vitest.browser.config.mts`: the `monorepo` exports condition resolves workspace
-packages to TypeScript source, plus the vanilla-extract plugin and the React Compiler transform,
-so stories render exactly like the studio and the browser tests.
+packages to TypeScript source, plus the Panda CSS plugins (`studioPandaCss()` from
+`@repo/pandacss/vite`, whose generated stylesheet [.storybook/preview.tsx](.storybook/preview.tsx)
+imports) and the React Compiler transform, so stories render exactly like the studio and the
+browser tests.
 
 ## Chromatic
 

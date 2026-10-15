@@ -9,7 +9,7 @@ Read these root sections before writing a test. They are the authority on their 
 | Testing > Unit Tests (Vitest)                                                       | The commands, and why a build comes first                                        |
 | Testing > Types in tests                                                            | No `as unknown as T` to squeeze a value into a narrower public type              |
 | Testing > Test Timeouts                                                             | The options-object form, not the deprecated third argument                       |
-| Testing > Vanilla-extract in jsdom tests                                            | Why computed styles are unavailable, and asserting on `data-testid` instead      |
+| Testing > Panda CSS in jsdom tests                                                  | Why computed styles are unavailable, and asserting on `data-testid` instead      |
 | Testing > @sanity/ui overlays stay mounted when closed                              | Closed overlays matching your queries, and the intent routes a test router needs |
 | Testing > Testing components that suspend via `use()`                               | Mounting inside an awaited async `act`, and keeping the `use()` sequence stable  |
 | Testing > react-rx: `useObservablePromise` and `use()` live in different components | Why that pair deadlocks in one component                                         |
