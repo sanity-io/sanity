@@ -1,13 +1,10 @@
 import {BookmarkIcon} from '@sanity/icons/Bookmark'
-import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CodeIcon} from '@sanity/icons/Code'
 import {CodeBlockIcon} from '@sanity/icons/CodeBlock'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
-import {SyncIcon} from '@sanity/icons/Sync'
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 
@@ -27,11 +24,10 @@ export interface QueryActionsMenuProps {
   resolved: ResolvedRequest
   onCopyQuery: () => void
   onPrettify: () => void
-  onToggleAutoRefetch: () => void
 }
 
 export function QueryActionsMenu(props: QueryActionsMenuProps) {
-  const {tab, request, buildRequest, resolved, onCopyQuery, onPrettify, onToggleAutoRefetch} = props
+  const {tab, request, buildRequest, resolved, onCopyQuery, onPrettify} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const pendingEdits = usePendingEdits()
   const [exportOpen, setExportOpen] = useState(false)
@@ -43,18 +39,6 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
     pendingEdits.commit()
     setExportOpen(true)
   }, [pendingEdits])
-
-  const autoRefetchItem = (
-    <MenuItem
-      data-testid="vista-auto-refetch"
-      disabled={!resolved.supportsSyncTags}
-      icon={SyncIcon}
-      iconRight={tab.autoRefetch && resolved.supportsSyncTags ? CheckmarkIcon : undefined}
-      onClick={onToggleAutoRefetch}
-      pressed={tab.autoRefetch && resolved.supportsSyncTags}
-      text={t('vista.query.auto-refetch')}
-    />
-  )
 
   return (
     <>
@@ -84,19 +68,6 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
               onClick={onPrettify}
               text={t('vista.query.prettify')}
             />
-            <MenuDivider />
-            {resolved.supportsSyncTags ? (
-              autoRefetchItem
-            ) : (
-              <Tooltip
-                animate
-                content={<Text size={1}>{t('vista.query.auto-refetch.unsupported')}</Text>}
-                placement="top"
-                portal
-              >
-                <div>{autoRefetchItem}</div>
-              </Tooltip>
-            )}
             <MenuDivider />
             <MenuItem
               data-testid="vista-export-query"

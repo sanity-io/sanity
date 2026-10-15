@@ -253,6 +253,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.lint.severity.warning': 'Warning',
   /** Badge shown while a tab refetches automatically */
   'vista.live.active': 'Live',
+  /** Button in the request column's action bar turning automatic refetching on and off */
+  'vista.live.button': 'Live',
+  /** Tooltip of the Live button while automatic refetching is off */
+  'vista.live.button.start': 'Refetch whenever the documents in the result change',
+  /** Tooltip of the Live button while automatic refetching is on */
+  'vista.live.button.stop': 'Refetching whenever the documents in the result change; click to stop',
   /** Error shown when the live connection breaks */
   'vista.live.error': 'Live updates disconnected: {{message}}',
   /** Hint under the dataset field while the tab follows the workspace's dataset */
@@ -385,8 +391,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The perspective in the pasted URL is not supported here, keeping the current one.',
   /** Accessible label for the query actions menu */
   'vista.query.actions': 'Query actions',
-  /** Menu item toggling automatic refetching through sync tags */
-  'vista.query.auto-refetch': 'Refetch automatically',
   /** Tooltip when automatic refetching is not available for the API version */
   'vista.query.auto-refetch.unsupported':
     'Refetching automatically needs API version v2021-03-25 or later.',

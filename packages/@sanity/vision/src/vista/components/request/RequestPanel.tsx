@@ -36,6 +36,7 @@ import {
   querySection,
   sectionResizer,
 } from '../vista.css'
+import {LiveButton} from './LiveButton'
 import {OptionsPanel} from './OptionsPanel'
 import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
@@ -238,6 +239,11 @@ export function RequestPanel(props: RequestPanelProps) {
         </CollapsibleSection>
       </Flex>
       <ActionRail testId="vista-query-actions">
+        <LiveButton
+          active={tab.autoRefetch}
+          onToggle={onToggleAutoRefetch}
+          supported={resolved.supportsSyncTags}
+        />
         <Tooltip
           animate
           content={
@@ -266,7 +272,6 @@ export function RequestPanel(props: RequestPanelProps) {
           buildRequest={buildRequest}
           onCopyQuery={onCopyQuery}
           onPrettify={onPrettify}
-          onToggleAutoRefetch={onToggleAutoRefetch}
           request={request}
           resolved={resolved}
           tab={tab}

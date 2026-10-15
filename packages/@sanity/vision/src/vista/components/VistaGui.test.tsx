@@ -384,6 +384,40 @@ describe('VistaGui', () => {
     expect(text(screen.getByTestId('vista-result'))).toContain('vista.result.empty')
   })
 
+  it('turns automatic refetching on and off with the Live button next to Fetch', async () => {
+    renderVista()
+    const actions = screen.getByTestId('vista-query-actions')
+    const live = within(actions).getByTestId('vista-auto-refetch')
+    expect(text(live)).toContain('vista.live.button')
+    expect(live.getAttribute('aria-pressed')).toBe('false')
+    // It replaces the menu item
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    expect(document.querySelectorAll('[data-testid="vista-auto-refetch"]')).toHaveLength(1)
+
+    fireEvent.click(live)
+    expect(live.getAttribute('aria-pressed')).toBe('true')
+    await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
+    fireEvent.click(live)
+    expect(live.getAttribute('aria-pressed')).toBe('false')
+  })
+
+  it('explains why Live is unavailable on an API version without sync tags', () => {
+    const initial = createInitialState(DEFAULTS)
+    // Sync tags arrived with v2021-03-25
+    const tab = createTab(initial.settings, {id: 'old', options: {apiVersion: 'v2021-03-24'}})
+    saveVistaState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'old'})
+    renderVista()
+
+    const live = screen.getByTestId('vista-auto-refetch')
+    expect(isDisabled(live)).toBe(true)
+    expect(live.hasAttribute('aria-pressed')).toBe(false)
+    const wrapper = live.parentElement as HTMLElement
+    expect(wrapper.getAttribute('role')).toBe('button')
+    expect(wrapper.getAttribute('tabindex')).toBe('0')
+    expect(wrapper.getAttribute('aria-disabled')).toBe('true')
+    expect(describedBy(wrapper)).toBe('vista.query.auto-refetch.unsupported')
+  })
+
   it('shows the query, params and options panels at once, and remembers collapsed ones', async () => {
     const {unmount} = renderVista()
 
@@ -873,7 +907,6 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
-    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
 
     await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
@@ -992,16 +1025,13 @@ describe('VistaGui', () => {
     fireEvent.change(screen.getByTestId('vista-option-dataset-select'), {
       target: {value: 'staging'},
     })
-    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
 
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].config.dataset).toBe('staging')
 
     // Turning it off and on again without changes does not fetch again
-    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
-    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
     expect(fetchCalls).toHaveLength(2)
@@ -1010,7 +1040,6 @@ describe('VistaGui', () => {
   it('fetches a query loaded into a tab that refetches automatically', async () => {
     const {fetchCalls} = renderVista()
     typeQuery('*[_type == "author"]')
-    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
@@ -1035,7 +1064,6 @@ describe('VistaGui', () => {
     expect(fetchCalls).toHaveLength(2)
 
     // Without automatic refetching a load only replaces the query
-    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(false))
     fireEvent.paste(document.body, {clipboardData: {getData: () => url.replace('post', 'page')}})
@@ -1111,7 +1139,6 @@ describe('VistaGui', () => {
     // The same goes for turning automatic refetching on: the session starts from the params
     // typed just before, not from the ones still waiting in the debounce
     fireEvent.change(paramsEditor, {target: {value: '{"id": "fresher"}'}})
-    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].params).toEqual({id: 'fresher'})
