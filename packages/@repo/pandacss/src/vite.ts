@@ -1,14 +1,15 @@
 import {fileURLToPath} from 'node:url'
 
 import {pandacss} from '@pandacss/vite'
+import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {normalizePath, type Plugin} from 'vite'
 
 import {unwrapCascadeLayers} from './unwrapCascadeLayers.ts'
 
 /**
  * The stylesheet `@pandacss/vite` fills with the generated CSS, as the app imports it. An app
- * that builds `sanity` or `@sanity/vision` from source imports it from its entry: a studio
- * through `studioPandaCss()`, Storybook and the vitest browser setup themselves.
+ * that builds `sanity` from source imports it from its entry: a studio through
+ * `studioPandaCss()`, Storybook and the vitest browser setup themselves.
  */
 export const PANDA_LAYERS_CSS_SPECIFIER = '@repo/pandacss/layers.css'
 
@@ -53,6 +54,28 @@ function scopedPandacss(cwd: string): Plugin {
 }
 
 /**
+ * `@sanity/vanilla-extract-vite-plugin` for the `.css.ts` sources of `@sanity/vision`, which
+ * still writes them in vanilla-extract until it moves to CSS modules. A studio that resolves the
+ * workspace packages to their sources (`sanity dev`) registers it next to `studioPandaCss()`.
+ * The plugin compiles every `.css.ts` module of a build as vanilla-extract, so its transform is
+ * limited to that package's directory: the `.css.ts` modules of `sanity` and of the studios are
+ * Panda CSS and do not import `@vanilla-extract/css`.
+ */
+export function visionVanillaExtractPlugin(): Plugin[] {
+  const ids = new RegExp(
+    `^${escapeRegExp(normalizePath(VISION_PACKAGE_DIR))}.*\\.css\\.(?:js|cjs|mjs|jsx|ts|tsx)(?:\\?|$)`,
+  )
+
+  return vanillaExtractPlugin().map((plugin) => {
+    const {transform} = plugin
+    if (plugin.name !== 'sanity-vanilla-extract' || !transform || typeof transform === 'function') {
+      return plugin
+    }
+    return {...plugin, transform: {...transform, filter: {...transform.filter, id: ids}}}
+  })
+}
+
+/**
  * Drops the cascade layers from `layers.css` once `@pandacss/vite` has appended the generated
  * CSS to it. Register it after the `pandacss()` instances, as `studioPandaCss()` and
  * `@repo/package.bundle` do. See `unwrapCascadeLayers` for the reason.
@@ -73,11 +96,11 @@ export function unlayeredPandaCss(): Plugin {
 
 /**
  * Imports `layers.css` from the studio runtime entry, so the CSS the `pandacss()` instances
- * generate reaches the page: under `sanity dev` the CSS of the `sanity` and `@sanity/vision`
- * sources (the `monorepo` export condition), and under either command the CSS of the studio's own
- * Panda project. A `sanity build` resolves the built packages instead, whose entries import their
- * own `bundle.css`, which is why a studio registers instances for its own `roots` only then. The
- * specifier resolves through the studio's own `@repo/pandacss` dependency.
+ * generate reaches the page: under `sanity dev` the CSS of the `sanity` sources (the `monorepo`
+ * export condition), and under either command the CSS of the studio's own Panda project. A
+ * `sanity build` resolves the built package instead, whose entries import their own `bundle.css`,
+ * which is why a studio registers an instance for its own `roots` only then. The specifier
+ * resolves through the studio's own `@repo/pandacss` dependency.
  */
 function studioRuntimeLayersCss(): Plugin {
   return {
@@ -93,17 +116,17 @@ function studioRuntimeLayersCss(): Plugin {
 
 export interface StudioPandaCssOptions {
   /**
-   * The workspace packages whose `.css.ts` sources the app resolves. Each one gets its own
-   * `@pandacss/vite` instance, since each has its own `panda.config.ts`; all of them append
-   * their CSS to the same `layers.css`. Pass `[]` for a `sanity build`, which resolves the built
-   * packages and their `bundle.css` instead of the sources.
-   * @defaultValue `['sanity', '@sanity/vision']`
+   * Whether the app resolves the `.css.ts` sources of the `sanity` package, which then get their
+   * own `@pandacss/vite` instance. Pass `false` for a `sanity build`, which resolves the built
+   * package and its `bundle.css` instead of the sources.
+   * @defaultValue true
    */
-  packages?: Array<'sanity' | '@sanity/vision'>
+  sanity?: boolean
   /**
    * Directories with a `panda.config.ts` of their own whose `.css.ts` sources the app also
-   * builds, e.g. a dev studio that styles its own plugins with Panda. Unlike the workspace
-   * packages, these have no prebuilt `bundle.css`, so a studio passes them for `sanity build` too.
+   * builds, e.g. a dev studio that styles its own plugins with Panda. Unlike the `sanity`
+   * package, these have no prebuilt `bundle.css`, so a studio passes them for `sanity build` too.
+   * Every project appends its CSS to the same `layers.css`.
    */
   roots?: string[]
 }
@@ -115,9 +138,8 @@ export interface StudioPandaCssOptions {
  * `layers.css` import for the studio runtime entry.
  */
 export function studioPandaCss(options: StudioPandaCssOptions = {}): Plugin[] {
-  const packages = options.packages ?? ['sanity', '@sanity/vision']
   const roots = [
-    ...packages.map((name) => (name === 'sanity' ? SANITY_PACKAGE_DIR : VISION_PACKAGE_DIR)),
+    ...(options.sanity === false ? [] : [SANITY_PACKAGE_DIR]),
     ...(options.roots ?? []),
   ]
 

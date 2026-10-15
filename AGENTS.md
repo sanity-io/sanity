@@ -250,16 +250,19 @@ The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`creat
 
 ### Panda CSS
 
-The static styles of `sanity`, `@sanity/vision` and the test studio's plugins are
+The static styles of `sanity` and the test studio's plugins are
 [Panda CSS](https://panda-css.com) `css()` calls in `.css.ts` modules next to the components,
 imported from the generated `#styled-system/css` runtime (`panda codegen` writes it to the
 gitignored `styled-system/` directory of each Panda project on `pnpm install`, through the
 packages' `prepare` scripts). Each project has a `panda.config.ts` (`packages/sanity`,
-`packages/@sanity/vision`, `dev/test-studio`) with the `} satisfies Config)` pattern, no presets,
-content-hashed class names (`sanity-HgOzd`, `vision-…`, `test-studio-…`) and
-`strictPropertyValues`. The `migrate-styled-components-to-panda-css` skill
+`dev/test-studio`) with the `} satisfies Config)` pattern, no presets, content-hashed class names
+(`sanity-HgOzd`, `test-studio-…`) and `strictPropertyValues`. The
+`migrate-styled-components-to-panda-css` skill
 (`.agents/skills/migrate-styled-components-to-panda-css/SKILL.md`) is the authoring guide: the
 `&&` specificity trick, the cascade model, descendant selectors and dynamic values.
+`@sanity/vision` is the exception: its `.css.ts` modules are still vanilla-extract (the
+`vanillaExtract` tsdown option and `@sanity/vanilla-extract-vite-plugin` in the apps that build
+it from source) until it moves to CSS modules.
 
 How the CSS reaches a page:
 
@@ -878,18 +881,22 @@ TypeScript 6 applies the augmentation in both cases. Workaround: put the side-ef
 a vitest setup file (registered via `test.setupFiles`) instead of the test file that uses the
 matchers — see `packages/@sanity/schema/test/setup.ts` and its `vitest.config.mts`.
 
-#### Panda CSS in jsdom tests
+#### Panda CSS and vanilla-extract in jsdom tests
 
-The static styles of `sanity` and `@sanity/vision` are [Panda CSS](https://panda-css.com)
-`css()` calls in `.css.ts` modules (see [Panda CSS](#panda-css) below). The `sanity` and
-`@sanity/vision` jsdom suites register `@pandacss/vite` with `transform: true`
-(`packages/sanity/vitest.config.mts`, `packages/@sanity/vision/vitest.config.mts`), which rewrites
-those calls to the class names the package build ships; no stylesheet is loaded in jsdom, so class
-name identifiers resolve but computed styles are not available.
+The static styles of `sanity` are [Panda CSS](https://panda-css.com) `css()` calls in `.css.ts`
+modules (see [Panda CSS](#panda-css) below). The `sanity` jsdom suite registers `@pandacss/vite`
+with `transform: true` (`packages/sanity/vitest.config.mts`), which rewrites those calls to the
+class names the package build ships; no stylesheet is loaded in jsdom, so class name identifiers
+resolve but computed styles are not available. `@sanity/vision` is still on vanilla-extract: its
+suite keeps `vanillaExtractPlugin()` (the `.css.ts` modules need its transform to resolve) and
+imports
+[`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
+as a `setupFiles` entry (`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips
+injecting real stylesheets into jsdom — the same end state.
 
 Conventions that follow from this:
 
-- **Do not assert on Panda class names or computed styles in jsdom tests.** Assert on
+- **Do not assert on generated class names or computed styles in jsdom tests.** Assert on
   `data-testid` attributes instead. Visual/style behavior belongs in the vitest browser mode
   suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit, where `test/setup/browser.ts` loads
   the generated stylesheet) or the Playwright e2e tests.

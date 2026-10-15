@@ -6,7 +6,7 @@ export default defineConfig(({command}) => ({
   plugins: [
     viteReact({compiler: {target: '19'}}),
     // The build only has to strip the layer declaration of the stylesheet main.tsx imports
-    ...(command === 'serve' ? studioPandaCss({packages: ['sanity']}) : [unlayeredPandaCss()]),
+    ...(command === 'serve' ? studioPandaCss() : [unlayeredPandaCss()]),
   ],
   // Dev resolves the sanity package to workspace sources (same trick as the
   // dev studios' cli configs), so `pnpm dev:studio-diagnostics` works without

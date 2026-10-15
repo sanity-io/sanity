@@ -4,7 +4,7 @@ import {defineConfig, mergeConfig} from 'vite'
 import pkg from './package.json' with {type: 'json'}
 
 export default defineConfig(() => {
-  return mergeConfig(createDefaultConfig({version: pkg.version}), {
+  return mergeConfig(createDefaultConfig({version: pkg.version, styles: 'panda'}), {
     build: {
       lib: {
         entry: {

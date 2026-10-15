@@ -57,7 +57,7 @@ export default defineConfig({
     // Panda CSS for the `.css.ts` modules of this package: the `css()` calls are rewritten to class
     // names and the generated CSS fills `@repo/pandacss/layers.css`, which test/setup/browser.ts
     // loads (see @repo/pandacss for the setup)
-    ...studioPandaCss({packages: ['sanity']}),
+    ...studioPandaCss(),
     // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
     // as the TypeScript/JSX transform (no babel in the pipeline)
     viteReact({compiler: {target: '19'}}),

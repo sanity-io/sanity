@@ -1,30 +1,33 @@
-import {css, firstThatWorks} from '#styled-system/css'
+import {createVar, globalStyle, style} from '@vanilla-extract/css'
 
-// Custom properties `EditorRoot` sets inline from the theme
-export const linePaddingLeftVar = '--vision-cm-line-padding-left'
-export const contentBorderRightWidthVar = '--vision-cm-content-border-right-width'
-export const contentPaddingTopVar = '--vision-cm-content-padding-top'
+export const linePaddingLeftVar = createVar()
+export const contentBorderRightWidthVar = createVar()
+export const contentPaddingTopVar = createVar()
 
-export const editorRoot = css({
-  'width': '100%',
-  'boxSizing': 'border-box',
-  'height': '100%',
-  'overflow': firstThatWorks('clip', 'hidden'),
-  'position': 'relative',
-  'display': 'flex',
-  '& .cm-theme': {
-    width: '100%',
-  },
-  '& .cm-editor': {
-    height: '100%',
-    fontSize: '16px',
-    lineHeight: '21px',
-  },
-  '& .cm-line': {
-    paddingLeft: `var(${linePaddingLeftVar})`,
-  },
-  '& .cm-content': {
-    borderRightWidth: `var(${contentBorderRightWidthVar}) !important`,
-    paddingTop: `var(${contentPaddingTopVar})`,
-  },
+export const editorRoot = style({
+  width: '100%',
+  boxSizing: 'border-box',
+  height: '100%',
+  overflow: ['hidden', 'clip'],
+  position: 'relative',
+  display: 'flex',
+})
+
+globalStyle(`${editorRoot} .cm-theme`, {
+  width: '100%',
+})
+
+globalStyle(`${editorRoot} .cm-editor`, {
+  height: '100%',
+  fontSize: '16px',
+  lineHeight: '21px',
+})
+
+globalStyle(`${editorRoot} .cm-line`, {
+  paddingLeft: linePaddingLeftVar,
+})
+
+globalStyle(`${editorRoot} .cm-content`, {
+  borderRightWidth: `${contentBorderRightWidthVar} !important`,
+  paddingTop: contentPaddingTopVar,
 })

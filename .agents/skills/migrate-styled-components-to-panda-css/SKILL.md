@@ -10,10 +10,10 @@ Studio's legacy styling library) to [Panda CSS](https://panda-css.com). Adapted 
 `sanity-io/plugins` skill for vanilla-extract, which this repo used before Panda.
 
 **The infrastructure is already wired — never touch it during a component migration.**
-`packages/sanity` and `packages/@sanity/vision` build their `.css.ts` files into `lib/bundle.css`
-through the `panda` option of `@sanity/tsdown-config` in their `tsdown.config.ts` (each has a
-`panda.config.ts`), expose the `./bundle.css` export, register `@pandacss/vite` in their
-`vitest.config.mts`, and the dev studios, Storybook and the browser suite get the same through
+`packages/sanity` builds its `.css.ts` files into `lib/bundle.css` through the `panda` option of
+`@sanity/tsdown-config` in its `tsdown.config.ts` (`panda.config.ts` next to it), exposes the
+`./bundle.css` export, registers `@pandacss/vite` in its `vitest.config.mts`, and the dev
+studios, Storybook and the browser suite get the same through
 `studioPandaCss()` from `@repo/pandacss/vite`. A migration PR only converts component styles.
 
 ## Ground rules
@@ -22,7 +22,7 @@ through the `panda` option of `@sanity/tsdown-config` in their `tsdown.config.ts
   specificity outcome must be preserved. Copy CSS values verbatim; do not "improve" them.
 - **Small PRs.** Migrate one component (or one tightly-coupled cluster) per PR, conventional-commit
   titled, e.g. `refactor(structure): migrate Scroller to Panda CSS`.
-- **Reference implementations:** `packages/@sanity/vision`,
+- **Reference implementations:**
   `packages/sanity/src/core/changeIndicators/ElementWithChangeBar.*` (marker classes for
   parent-state selectors), `packages/sanity/src/structure/panes/document/document-layout/DocumentLayout.*`,
   and for the dynamic shapes `packages/sanity/src/core/components/popoverDialog/PopoverContainer.*`
@@ -208,7 +208,7 @@ Everything else — `color.selectable.*`, `color.solid.*`, `color.input.*`, `col
 `color.syntax.*`, `color._dark`, `space[n]`, `radius[n]`, `font.*`, `container[n]`,
 `avatar.sizes[n]`, `input.*`, `shadow[n]` — goes through Shape C: a named custom property in the
 `.css.ts`, `useTheme_v2()` + an inline `style` object in the wrapper. Keep the same theme key
-names in the property names (`--vision-space-4`, `--wrapper-radius-2`) so the intent survives. Do
+names in the property names (`--wrapper-space-4`, `--wrapper-radius-2`) so the intent survives. Do
 not hardcode scale values: a studio may build its own theme with different `space`, `radius`, or
 `font` scales.
 

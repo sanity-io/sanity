@@ -10,7 +10,7 @@ import postcss, {type ChildNode, type Container, type Declaration} from 'postcss
  *
  * Panda CSS wraps everything it generates in cascade layers. The studio's static CSS cannot
  * live in one: styles that are not in a layer beat layered styles regardless of specificity,
- * and the `.css.ts` rules of `sanity` and `@sanity/vision` are written to override exactly such
+ * and the `.css.ts` rules of `sanity` are written to override exactly such
  * unlayered styles — the styled-components rules of `@sanity/ui` v4 (injected at runtime, after
  * the static stylesheets) and the component classes of `@sanity/ui` v5, which only layers its
  * resets. The `'&&'` selectors that double a class to beat a runtime rule only work when both

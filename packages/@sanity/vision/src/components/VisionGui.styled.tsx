@@ -1,10 +1,6 @@
 import {Card, Label, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {
-  type ComponentProps,
-  type ComponentPropsWithoutRef,
-  type CSSProperties,
-  type RefAttributes,
-} from 'react'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {type ComponentProps, type ComponentPropsWithoutRef, type RefAttributes} from 'react'
 import {Flex, Box} from 'ui5'
 
 import {
@@ -130,7 +126,7 @@ export function TimingsTextContainer(props: ComponentProps<typeof Flex>) {
     <Flex
       {...props}
       className={timingsTextContainer}
-      style={{[timingsTextMinHeightVar]: `${minHeight}`} as CSSProperties}
+      style={assignInlineVars({[timingsTextMinHeightVar]: `${minHeight}`})}
     />
   )
 }
@@ -146,7 +142,7 @@ export function SaveResultLabel(props: ComponentProps<typeof Text>) {
     <Text
       {...props}
       className={saveResultLabel}
-      style={{[saveResultSpanGapVar]: `${rem(space[3])}`} as CSSProperties}
+      style={assignInlineVars({[saveResultSpanGapVar]: `${rem(space[3])}`})}
     />
   )
 }

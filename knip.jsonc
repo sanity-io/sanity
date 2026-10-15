@@ -97,10 +97,6 @@
     },
     "packages/@sanity/vision": {
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": [
-        // Optional peer of @sanity/tsdown-config, loaded by its `panda` option (tsdown.config.ts)
-        "@sanity/pandacss-tsdown-plugin",
-      ],
     },
     "packages/@sanity/util": {
       "entry": ["src/_exports/*.ts"],

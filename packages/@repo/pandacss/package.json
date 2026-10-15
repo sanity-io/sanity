@@ -19,6 +19,7 @@
     "@pandacss/vite": "catalog:",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/node": "catalog:",
     "postcss": "^8.5.30",
     "tsdown": "catalog:",

@@ -5,12 +5,12 @@ import {cleanupCssOutputPlugin, createDefaultConfig} from '../package.bundle'
 
 describe('createDefaultConfig()', () => {
   it('injects the provided version as the __PKG_VERSION__ define', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1'})
+    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
     expect(config.define?.['__PKG_VERSION__']).toBe('"9.9.9-test.1"')
   })
 
   it('excludes the Lightning CSS light-dark polyfill', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1'})
+    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
     expect(config.css?.lightningcss?.exclude).toBe(Features.LightDark)
   })
 })
@@ -45,7 +45,7 @@ describe('Lightning CSS light-dark minify', () => {
   })
 
   it('preserves light-dark() when the bundle config exclude is applied', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1'})
+    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
     const {code} = transform({
       filename: 'theme.css',
       code: Buffer.from(LIGHT_DARK_CSS),

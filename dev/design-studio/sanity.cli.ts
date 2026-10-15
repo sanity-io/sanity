@@ -1,4 +1,4 @@
-import {studioPandaCss} from '@repo/pandacss/vite'
+import {studioPandaCss, visionVanillaExtractPlugin} from '@repo/pandacss/vite'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
@@ -22,10 +22,11 @@ export default defineCliConfig({
   },
   vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const nextConfig = mergeConfig(viteConfig, {
-      // `sanity dev` resolves the `sanity` package to its sources (the `monorepo` condition
-      // below), so its Panda CSS `.css.ts` modules are built here; `sanity build` uses the built
-      // package and its `bundle.css`
-      plugins: command === 'serve' ? studioPandaCss({packages: ['sanity']}) : [],
+      // `sanity dev` resolves the workspace packages to their sources (the `monorepo` condition
+      // below), so the Panda CSS `.css.ts` modules of `sanity` and the vanilla-extract ones of
+      // `@sanity/vision` are built here; `sanity build` uses the built packages and their
+      // `bundle.css`
+      plugins: command === 'serve' ? [...visionVanillaExtractPlugin(), ...studioPandaCss()] : [],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
     } satisfies UserConfig)

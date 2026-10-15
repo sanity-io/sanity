@@ -125,5 +125,4 @@ flake-report.json
 
 # Panda CSS codegen (`panda codegen`, run by the packages' `prepare` scripts and by their builds)
 packages/sanity/styled-system
-packages/@sanity/vision/styled-system
 dev/test-studio/styled-system
