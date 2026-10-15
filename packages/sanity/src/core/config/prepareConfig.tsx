@@ -21,6 +21,7 @@ import {
 } from '../form/studio/assetSourceMediaLibrary'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
+import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
 import {type AuthStore} from '../store/auth/types'
@@ -90,6 +91,7 @@ import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
+import {resolveReleaseMetadataFields} from './releases/metadataFields'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -847,6 +849,11 @@ function resolveSource({
       })
     : Promise.resolve(undefined)
 
+  const releaseMetadataFields = acceptReleaseMetadataFields(
+    resolveReleaseMetadataFields(config),
+    schema,
+  )
+
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -1126,8 +1133,9 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
+          metadata: {fields: releaseMetadataFields},
         }
-      : {enabled: true},
+      : {enabled: true, metadata: {fields: releaseMetadataFields}},
   }
 
   return source

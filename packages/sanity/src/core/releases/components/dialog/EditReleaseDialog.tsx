@@ -7,7 +7,15 @@ import {Flex, VStack} from 'ui5'
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../studio/workspace'
+import {
+  asReleaseMetadata,
+  toReleaseMetadataRecord,
+  type ReleaseMetadataRecord,
+} from '../../metadata/mergeReleaseMetadata'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
+import {useCanEditRelease} from '../../tool/detail/useCanEditRelease'
+import {ReleaseMetadataForm} from './ReleaseMetadataForm'
 
 /**
  * Explicit edit surface for a release's title + description. The detail page is a read-only display
@@ -31,23 +39,31 @@ export function EditReleaseDialog({
   const toast = useToast()
   const titleId = useId()
   const descriptionId = useId()
+  const hasMetadataFields = (useWorkspace().releases?.metadata?.fields?.length ?? 0) > 0
+  const canEdit = useCanEditRelease(release)
 
-  const [title, setTitle] = useState(release.metadata.title ?? '')
-  const [description, setDescription] = useState(release.metadata.description ?? '')
+  const [metadata, setMetadata] = useState<ReleaseMetadataRecord>(() =>
+    toReleaseMetadataRecord(release.metadata),
+  )
+  const [metadataValid, setMetadataValid] = useState(!hasMetadataFields)
   const [isSaving, setIsSaving] = useState(false)
   // Synchronous re-entry guard. `loading={isSaving}` only disables the button after a re-render, so
   // two clicks in the same tick would both reach updateRelease. This ref blocks the second call
   // immediately.
   const isSavingRef = useRef(false)
 
+  const handleMetadataChange = useCallback((next: EditableReleaseDocument['metadata']) => {
+    setMetadata(toReleaseMetadataRecord(next))
+  }, [])
+
   const handleSave = useCallback(async () => {
-    if (isSavingRef.current) return
+    if (isSavingRef.current || !metadataValid || !canEdit) return
     isSavingRef.current = true
     setIsSaving(true)
     try {
       const next: EditableReleaseDocument = {
         ...release,
-        metadata: {...release.metadata, title, description},
+        metadata: asReleaseMetadata(metadata),
       }
       await updateRelease(next)
       onClose()
@@ -61,7 +77,7 @@ export function EditReleaseDialog({
     }
     isSavingRef.current = false
     setIsSaving(false)
-  }, [description, onClose, release, t, title, toast, updateRelease])
+  }, [canEdit, metadata, metadataValid, onClose, release, t, toast, updateRelease])
 
   // Ignore click-outside / Escape / close while a save is in flight: dismissing mid-mutation would
   // unmount the dialog while updateRelease continues, letting the user reopen and edit against a
@@ -89,10 +105,12 @@ export function EditReleaseDialog({
             <TextInput
               data-testid="release-form-title"
               id={titleId}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setTitle(event.currentTarget.value)
-              }
-              value={title}
+              readOnly={!canEdit}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                const title = event.currentTarget.value
+                setMetadata((current) => ({...current, title}))
+              }}
+              value={typeof metadata.title === 'string' ? metadata.title : ''}
             />
           </VStack>
           <VStack gap={3}>
@@ -102,17 +120,26 @@ export function EditReleaseDialog({
             <TextArea
               data-testid="release-form-description"
               id={descriptionId}
-              onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
-                setDescription(event.currentTarget.value)
-              }
+              readOnly={!canEdit}
+              onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+                const description = event.currentTarget.value
+                setMetadata((current) => ({...current, description}))
+              }}
               rows={6}
-              value={description}
+              value={typeof metadata.description === 'string' ? metadata.description : ''}
             />
           </VStack>
+          <ReleaseMetadataForm
+            metadata={asReleaseMetadata(metadata)}
+            onChange={handleMetadataChange}
+            onValidityChange={setMetadataValid}
+            readOnly={!canEdit}
+          />
         </VStack>
         <Flex justifyContent="flex-end" paddingTop={5}>
           <Button
             data-testid="save-release-details-button"
+            disabled={!metadataValid || !canEdit}
             loading={isSaving}
             onClick={handleSave}
             size="large"

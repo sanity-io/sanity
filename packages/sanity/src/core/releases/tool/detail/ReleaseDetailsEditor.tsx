@@ -1,19 +1,34 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {DetailIdentity} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../studio/workspace'
 import {ReleaseDescriptionSet} from '../../__telemetry__/releases.telemetry'
-import {getIsReleaseOpen, TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
+import {ReleaseMetadataForm} from '../../components/dialog/ReleaseMetadataForm'
+import {TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
+import {
+  asReleaseMetadata,
+  toReleaseMetadataRecord,
+  type ReleaseMetadataRecord,
+} from '../../metadata/mergeReleaseMetadata'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {getReleaseDescriptionTelemetry} from '../../util/getReleaseDescriptionTelemetry'
+import {useCanEditRelease} from './useCanEditRelease'
 
 function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): React.JSX.Element {
   const {updateRelease} = useReleaseOperations()
+  const canEdit = useCanEditRelease(release)
+  const hasMetadataFields = (useWorkspace().releases?.metadata?.fields?.length ?? 0) > 0
   const [timer, setTimer] = useState<NodeJS.Timeout | undefined>(undefined)
+  const [metadata, setMetadata] = useState<ReleaseMetadataRecord>(() =>
+    toReleaseMetadataRecord(release.metadata),
+  )
+  const [metadataValid, setMetadataValid] = useState(!hasMetadataFields)
+  const metadataValidRef = useRef(metadataValid)
+  const dirtyRef = useRef(false)
+  const pendingSave = useRef<EditableReleaseDocument | null>(null)
   const telemetry = useTelemetry()
   // Scoped to a release id because this component instance is reused across release navigation.
   const lastLoggedDescription = useRef({
@@ -21,16 +36,17 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
     description: release.metadata?.description ?? '',
   })
 
-  const {checkWithPermissionGuard} = useReleasePermissions()
-  const [hasUpdatePermission, setHasUpdatePermission] = useState<boolean | null>(null)
-
   const handleOnChange = useCallback(
     (changedValue: EditableReleaseDocument) => {
+      dirtyRef.current = true
+      pendingSave.current = changedValue
+      setMetadata(toReleaseMetadataRecord(changedValue.metadata))
       clearTimeout(timer)
 
       /** @todo I wasn't able to get this working with the debouncer that we use in other parts */
       const newTimer = setTimeout(() => {
-        if (hasUpdatePermission) {
+        if (canEdit && metadataValidRef.current) {
+          dirtyRef.current = false
           const nextDescription = changedValue.metadata?.description ?? ''
           const isSameRelease = lastLoggedDescription.current.releaseId === release._id
           const baselineDescription = isSameRelease
@@ -55,34 +71,56 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
 
       setTimer(newTimer)
     },
-    [hasUpdatePermission, timer, updateRelease, telemetry, release],
+    [canEdit, timer, updateRelease, telemetry, release],
   )
 
-  const isMounted = useRef(false)
+  const seenReleaseId = useRef(release._id)
   useEffect(() => {
-    isMounted.current = true
+    metadataValidRef.current = metadataValid
+  }, [metadataValid])
 
-    if (getIsReleaseOpen(release)) {
-      // title and description will be readOnly if release is not 'open'
-      // so only need to check permission to edit if release is 'open'
-      void checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
-        if (isMounted.current) setHasUpdatePermission(hasPermission)
-      })
-    }
+  useEffect(() => {
+    if (seenReleaseId.current === release._id) return
+    seenReleaseId.current = release._id
+    dirtyRef.current = false
+    setMetadata(toReleaseMetadataRecord(release.metadata))
+  }, [release._id, release.metadata])
 
-    return () => {
-      isMounted.current = false
-    }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-  }, [checkWithPermissionGuard, release, release._id, updateRelease])
+  useEffect(() => {
+    const pending = pendingSave.current
+    if (!metadataValid || !canEdit || !dirtyRef.current || !pending) return
+    dirtyRef.current = false
+    void updateRelease(pending)
+  }, [canEdit, metadataValid, updateRelease])
+
+  const releaseForForm = useMemo(
+    () => ({...release, metadata: asReleaseMetadata(metadata)}),
+    [metadata, release],
+  )
+
+  const handleMetadataChange = useCallback(
+    (next: EditableReleaseDocument['metadata']) => {
+      handleOnChange({...releaseForForm, metadata: next})
+    },
+    [handleOnChange, releaseForForm],
+  )
 
   return (
-    <TitleDescriptionForm
-      key={release._id}
-      release={release}
-      onChange={handleOnChange}
-      disabled={Boolean(!hasUpdatePermission)}
-    />
+    <>
+      <TitleDescriptionForm
+        key={release._id}
+        release={releaseForForm}
+        onChange={handleOnChange}
+        disabled={!canEdit}
+      />
+      <ReleaseMetadataForm
+        commitInitialValues={false}
+        metadata={releaseForForm.metadata}
+        onChange={handleMetadataChange}
+        onValidityChange={setMetadataValid}
+        readOnly={!canEdit}
+      />
+    </>
   )
 }
 

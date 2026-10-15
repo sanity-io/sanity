@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {render, screen, waitFor} from '@testing-library/react'
+import {defineField} from '@sanity/types'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -200,6 +201,55 @@ describe('ReleaseDetailsEditor', () => {
             containsUrl: false,
           },
         ])
+      })
+      vi.useRealTimers()
+    })
+
+    it('does not save an invalid metadata edit and keeps unknown keys when it becomes valid', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const release = {
+        ...initialRelease,
+        metadata: {
+          ...initialRelease.metadata,
+          reviewer: {team: 'legal'},
+        },
+      } as ReleaseDocument
+      const wrapper = await createTestProvider({
+        config: {
+          releases: {
+            metadata: {
+              fields: [
+                defineField({
+                  name: 'reviewNote',
+                  title: 'Review note',
+                  type: 'string',
+                  validation: (rule) => rule.required().min(4),
+                }),
+              ],
+            },
+          },
+        },
+      })
+      render(<ReleaseDetailsEditor release={release} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      const field = await screen.findByTestId('field-reviewNote')
+      await userEvent.type(within(field).getByRole('textbox'), 'No', {delay: null})
+      await vi.advanceTimersByTimeAsync(250)
+      expect(getUpdateReleaseMock()).not.toHaveBeenCalled()
+
+      await userEvent.type(within(field).getByRole('textbox'), 'te', {delay: null})
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getUpdateReleaseMock()).toHaveBeenCalledWith(
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              reviewNote: 'Note',
+              reviewer: {team: 'legal'},
+            }),
+          }),
+        )
       })
       vi.useRealTimers()
     })
