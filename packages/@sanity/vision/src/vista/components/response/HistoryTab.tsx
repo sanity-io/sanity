@@ -2,40 +2,20 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Badge, Button, Card, Stack, Text} from '@sanity/ui'
 import {dequal} from 'dequal/lite'
-import {
-  Component,
-  type ComponentProps,
-  lazy,
-  type ReactNode,
-  Suspense,
-  useId,
-  useMemo,
-  useState,
-} from 'react'
+import {Component, type ReactNode, Suspense, useId, useMemo, useState} from 'react'
 import {type TFunction, useDateTimeFormat, useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
+import {createRetryableLazy} from '../../../util/createRetryableLazy'
 import {type FetchHistoryEntry, type FetchReason} from '../../store/types'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 
-// The diff (`@pierre/diffs` and Shiki) only loads once a history entry's changes are expanded.
-// `lazy()` remembers a rejected import for good, so a failed load swaps in a fresh lazy component
-// for the boundary's Retry, as `SanityVision` does for the redesign itself
-let LazyResultDiff = lazy(loadResultDiff)
-
-function loadResultDiff() {
-  return import('./ResultDiff').catch((error: unknown) => {
-    LazyResultDiff = lazy(loadResultDiff)
-    throw error
-  })
-}
-
-function ResultDiffLoader(props: ComponentProps<typeof LazyResultDiff>) {
-  const Diff = LazyResultDiff
-  return <Diff {...props} />
-}
+// The diff (`@pierre/diffs` and Shiki) only loads once a history entry's changes are expanded,
+// and a failed load can be retried from the boundary
+const resultDiff = createRetryableLazy(() => import('./ResultDiff'))
+const ResultDiffLoader = resultDiff.Component
 
 interface ResultDiffBoundaryProps {
   children: ReactNode
@@ -49,7 +29,10 @@ class ResultDiffBoundary extends Component<ResultDiffBoundaryProps, {failed: boo
     return {failed: true}
   }
 
-  retry = () => this.setState({failed: false})
+  retry = () => {
+    resultDiff.retry()
+    this.setState({failed: false})
+  }
 
   render() {
     return this.state.failed ? this.props.renderFallback(this.retry) : this.props.children

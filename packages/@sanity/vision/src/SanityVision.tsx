@@ -1,4 +1,4 @@
-import {type ComponentProps, lazy, useCallback} from 'react'
+import {type ComponentProps, useCallback} from 'react'
 import {type Tool, useClient} from 'sanity'
 
 import {DEFAULT_API_VERSION} from './apiVersions'
@@ -6,32 +6,17 @@ import {VisionGui} from './components/VisionGui'
 import {VisionContainer} from './containers/VisionContainer'
 import {VisionErrorBoundary} from './containers/VisionErrorBoundary'
 import {type VisionConfig} from './types'
+import {createRetryableLazy} from './util/createRetryableLazy'
 import {RedesignToast} from './vista/components/RedesignToast'
 import {type VistaGui} from './vista/components/VistaGui'
 import {useRedesignPreference, writeRedesignPreference} from './vista/redesignPreference'
 
-type VistaGuiModule = {default: typeof VistaGui}
-
-// The redesign (XState, groq-js type evaluation, its own UI) only loads once someone opts in.
-// `lazy()` remembers a rejected import for good, so a failed load swaps in a fresh lazy
-// component: the error boundary's Retry then gets another attempt at the chunk instead of the
-// cached rejection. (The component must live at module level: a mounting render that suspends
-// is thrown away with its state, so one created in `useState` would never settle.)
-let LazyVistaGui = lazy(loadVistaGui)
-
-function loadVistaGui(): Promise<VistaGuiModule> {
-  return import('./vista/components/VistaGui')
-    .then((module) => ({default: module.VistaGui}))
-    .catch((error: unknown) => {
-      LazyVistaGui = lazy(loadVistaGui)
-      throw error
-    })
-}
-
-function VistaGuiLoader(props: ComponentProps<typeof VistaGui>) {
-  const Component = LazyVistaGui
-  return <Component {...props} />
-}
+// The redesign (XState, groq-js type evaluation, its own UI) only loads once someone opts in,
+// and a failed load can be retried from the error boundary
+const vistaGui = createRetryableLazy<ComponentProps<typeof VistaGui>>(() =>
+  import('./vista/components/VistaGui').then((module) => ({default: module.VistaGui})),
+)
+const VistaGuiLoader = vistaGui.Component
 
 interface SanityVisionProps {
   tool: Tool<VisionConfig>
@@ -62,7 +47,7 @@ function SanityVision(props: SanityVisionProps) {
   )
 
   return (
-    <VisionErrorBoundary>
+    <VisionErrorBoundary onRetry={vistaGui.retry}>
       <VisionContainer client={client} config={config}>
         {(loaded) =>
           showRedesign ? (
