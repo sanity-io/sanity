@@ -91,7 +91,7 @@ export function useRetryCountdown(claim: {retryAfterSeconds?: number}): number {
 }
 
 /**
- * Studio dialog for claimed request errors (network / 5xx / 429).
+ * Studio dialog for claimed request errors (network / 5xx / 429 / channel).
  *
  * Button policy is driven by the caller's `retryable` assertion — the
  * call site knows whether re-running its request is safe; the studio
@@ -115,16 +115,8 @@ export function RequestErrorDialog(props: {
     return <RateLimitedDialog claim={claim} onRetry={onRetry} />
   }
 
-  const heading = claim.type === 'serverError' ? 'Server error' : 'Network error'
-
-  const message =
-    claim.type === 'serverError'
-      ? claim.retryable
-        ? "The server ran into an issue and couldn't complete the request. You can try again, or reload the Studio."
-        : "The server ran into an issue and couldn't complete the request. Your last change may not have been saved. Reload the Studio to see the current state."
-      : claim.retryable
-        ? "Couldn't reach the Sanity servers. Check your network connection and try again."
-        : "Couldn't reach the Sanity servers. Your last change may not have been sent. Check your network connection and reload the Studio to see the current state."
+  const heading = getErrorHeading(claim.type)
+  const message = getErrorMessage(claim)
 
   return (
     <Dialog
@@ -157,7 +149,7 @@ export function RequestErrorDialog(props: {
       <VStack gap={4}>
         <Text>{message}</Text>
         {claim.type === 'networkError' ? <NetworkTroubleshooting /> : null}
-        {claim.type === 'serverError' ? (
+        {claim.type === 'serverError' || claim.type === 'channelError' ? (
           <Text size={1}>
             <a
               href="https://status.sanity.io"
@@ -175,6 +167,38 @@ export function RequestErrorDialog(props: {
       </VStack>
     </Dialog>
   )
+}
+
+function getErrorHeading(type: 'serverError' | 'networkError' | 'channelError'): string {
+  switch (type) {
+    case 'serverError':
+      return 'Server error'
+    case 'channelError':
+      return 'Connection error'
+    case 'networkError':
+    default:
+      return 'Network error'
+  }
+}
+
+function getErrorMessage(
+  claim: Exclude<RequestErrorClaim, {type: 'unauthorized' | 'rateLimited'}>,
+): string {
+  switch (claim.type) {
+    case 'serverError':
+      return claim.retryable
+        ? "The server ran into an issue and couldn't complete the request. You can try again, or reload the Studio."
+        : "The server ran into an issue and couldn't complete the request. Your last change may not have been saved. Reload the Studio to see the current state."
+    case 'channelError':
+      return claim.retryable
+        ? 'The real-time connection to Sanity encountered an error. You can try again, or reload the Studio.'
+        : 'The real-time connection to Sanity encountered an error. Your last change may not have been applied. Reload the Studio to see the current state.'
+    case 'networkError':
+    default:
+      return claim.retryable
+        ? "Couldn't reach the Sanity servers. Check your network connection and try again."
+        : "Couldn't reach the Sanity servers. Your last change may not have been sent. Check your network connection and reload the Studio to see the current state."
+  }
 }
 
 function RateLimitedDialog(props: {
