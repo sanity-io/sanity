@@ -241,8 +241,8 @@ catalogs:
       specifier: ^19.3.1
       version: 19.3.1
     react-rx:
-      specifier: ^7.0.1
-      version: 7.0.1
+      specifier: ^7.1.0
+      version: 7.1.0
     rimraf:
       specifier: ^6.1.3
       version: 6.1.3
@@ -655,7 +655,7 @@ importers:
         version: 19.3.1(react@19.3.1)
       react-rx:
         specifier: 'catalog:'
-        version: 7.0.1(react@19.3.1)(rxjs@7.8.2)
+        version: 7.1.0(react@19.3.1)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -1037,7 +1037,7 @@ importers:
         version: 4.0.0(react@19.3.1)
       react-rx:
         specifier: 'catalog:'
-        version: 7.0.1(react@19.3.1)(rxjs@7.8.2)
+        version: 7.1.0(react@19.3.1)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1549,7 +1549,7 @@ importers:
         version: 4.4.7(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
       react-rx:
         specifier: 'catalog:'
-        version: 7.0.1(react@19.3.1)(rxjs@7.8.2)
+        version: 7.1.0(react@19.3.1)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -1961,7 +1961,7 @@ importers:
         version: 7.3.0
       react-rx:
         specifier: 'catalog:'
-        version: 7.0.1(react@19.3.1)(rxjs@7.8.2)
+        version: 7.1.0(react@19.3.1)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -2309,7 +2309,7 @@ importers:
         version: 4.0.0(react@19.3.1)
       react-rx:
         specifier: 'catalog:'
-        version: 7.0.1(react@19.3.1)(rxjs@7.8.2)
+        version: 7.1.0(react@19.3.1)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -13678,6 +13678,13 @@ packages:
 
   react-rx@7.0.1:
     resolution: {integrity: sha512-Jid35zQmcYcar30FXdcn73XTCQtzI5+pXLzi4FwFzYZeA/Rqf5UOONdb0DMzjjzeqRv+Iq+Lz7GClzAeD8DXPg==}
+    engines: {node: '>=22.12'}
+    peerDependencies:
+      react: ^19.2
+      rxjs: ^7.2
+
+  react-rx@7.1.0:
+    resolution: {integrity: sha512-22bBSdI1KgeOZ9ucV3Wdyhs3/aZF6KSLD3iqrN2dXRXPMuXhOIDdpM1Dt2rOMZwrX6VWXJTK1RnM917HIkgUIw==}
     engines: {node: '>=22.12'}
     peerDependencies:
       react: ^19.2
@@ -27392,6 +27399,11 @@ snapshots:
       unist-util-visit-parents: 6.0.2
 
   react-rx@7.0.1(react@19.3.1)(rxjs@7.8.2):
+    dependencies:
+      react: 19.3.1
+      rxjs: 7.8.2
+
+  react-rx@7.1.0(react@19.3.1)(rxjs@7.8.2):
     dependencies:
       react: 19.3.1
       rxjs: 7.8.2
