@@ -8,6 +8,7 @@ import {
   useDocumentOperation,
   useDocumentPairPermissions,
   useEditState,
+  useSetImmediateValidation,
   useSyncState,
   useValidationStatus,
 } from 'sanity'
@@ -23,6 +24,7 @@ vi.mock('sanity', async (importOriginal) => ({
   useDocumentOperation: vi.fn(),
   useDocumentPairPermissions: vi.fn(),
   useEditState: vi.fn(),
+  useSetImmediateValidation: vi.fn(),
   useSyncState: vi.fn(),
   useValidationStatus: vi.fn(),
 }))
@@ -197,11 +199,12 @@ describe('usePublishAction', () => {
   it('validates immediately while a publish waits', async () => {
     const state = keystroke('1')
     applyKeystroke(state, {isValidating: true})
-    const {result, rerender} = await renderPublishAction(state.props)
-    const scheduling = () => mockUseValidationStatus.mock.lastCall?.[3]
+    const {result} = await renderPublishAction(state.props)
+    const immediate = () => vi.mocked(useSetImmediateValidation).mock.lastCall?.[3]
+    expect(immediate()).toEqual({enabled: false})
 
     act(() => result.current?.onHandle?.())
     expect(operations.publish.execute).not.toHaveBeenCalled()
-    expect(scheduling()).toEqual({scheduling: 'immediate'})
+    expect(immediate()).toEqual({enabled: true})
   })
 })
