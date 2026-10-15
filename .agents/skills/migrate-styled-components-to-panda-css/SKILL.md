@@ -134,23 +134,23 @@ Three stylesheets meet on a migrated element:
 | `@sanity/ui` (styled-components, runtime) | `<style data-styled>` appended on first render      | same                                                                                                         |
 | `ui5` (`styles.css`)                      | static file                                         | static file                                                                                                  |
 
-Panda wraps its output in cascade layers (`sanity-reset` … `sanity-utilities`, see the "Panda
-CSS" section of AGENTS.md for the order the studio needs against `@sanity/ui`'s layers). Until
-`@sanity/ui` layers its own rules, `@repo/pandacss` unwraps those layer blocks again in
-`bundle.css` and the dev stylesheet, so the studio's rules are unlayered today; the `@layer …;`
-order statement both open with stays, since it also orders `ui5`'s `sui` against `@sanity/ui`'s
-`u-*` layers. Do not write `@layer` in a `.css.ts`: the layer is the stylesheet's, never a rule's.
+Panda writes its rules into cascade layers; the studio ships them without any (`cascadeLayers:
+false` for `bundle.css`, the same pass for the dev stylesheet — see the "Panda CSS" section of
+AGENTS.md). CSS outside any layer beats every layered rule regardless of specificity, so layers
+would hand the studio's hover, focus and selected states to any unlayered rule that also matches.
+Unlayered, the studio's rules cascade like the vanilla-extract output did: by specificity, then
+source order. Do not write `@layer` in a `.css.ts`.
 
 Consequences:
 
-- **Beat `@sanity/ui`'s rules by specificity, not by order.** Where the studio's layers win
-  through layer order, a plain class is enough; while a library rule is unlayered (styled-components
-  output that is not wrapped in a layer yet, `ui5` component classes), an unlayered rule beats a
-  layered one regardless of specificity, and in an unlayered build `&&` (0,2,0) beats a plain
-  component class (0,1,0). If the primitive rule you override already has two classes or a
-  pseudo-class chain (e.g. Card's `&[data-as='button']:not(:disabled)[data-selected]`), count its
-  specificity and exceed it — `&&&`, or `&&[data-as='button']`. Read the rule in
-  `node_modules/@sanity/ui/dist/*.js` when unsure. `!important` stays banned.
+- **Beat `@sanity/ui`'s rules by specificity, not by order.** `@sanity/ui`'s styled-components
+  rules are injected at runtime, after the static stylesheets, and `ui5`'s component classes load
+  as static CSS too; order is theirs, so a rule of yours that must win over one of theirs has to
+  be more specific: `&&` (0,2,0) beats a plain component class (0,1,0). If the primitive rule you
+  override already has two classes or a pseudo-class chain (e.g. Card's
+  `&[data-as='button']:not(:disabled)[data-selected]`), count its specificity and exceed it —
+  `&&&`, or `&&[data-as='button']`. Read the rule in `node_modules/@sanity/ui/dist/*.js` when
+  unsure. `!important` stays banned.
 - **Panda emits one rule per declaration, not one per class.** `css({display: 'flex', opacity: 1})`
   returns two class names, one per declaration, and `bundle.css` holds every distinct
   `property: value` pair once, grouped by property with the values **sorted alphabetically**. So

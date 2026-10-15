@@ -256,10 +256,7 @@ imported from the generated `#styled-system/css` runtime (`panda codegen` writes
 gitignored `styled-system/` directory of each Panda project on `pnpm install`, through the
 packages' `prepare` scripts). Each project has a `panda.config.ts` (`packages/sanity`,
 `dev/test-studio`) with the `} satisfies Config)` pattern, no presets, content-hashed class names
-(`sanity-HgOzd`, `test-studio-…`), cascade layers carrying the same prefix (`layers` in the
-config: `sanity-reset` … `sanity-utilities`, the `u-` convention of
-[ui#3228](https://github.com/sanity-io/ui/pull/3228), so they never merge with `@sanity/ui`'s
-`u-*` layers or `ui5`'s `sui`) and `strictPropertyValues`. The
+with a prefix of its own (`sanity-HgOzd`, `test-studio-…`) and `strictPropertyValues`. The
 `migrate-styled-components-to-panda-css` skill
 (`.agents/skills/migrate-styled-components-to-panda-css/SKILL.md`) is the authoring guide: the
 `&&` specificity trick, the cascade model, descendant selectors and dynamic values.
@@ -269,87 +266,65 @@ it from source) until it moves to CSS modules.
 
 How the CSS reaches a page:
 
-- **Published packages:** `panda: {minify: false}` in `tsdown.config.ts` (the
-  `@sanity/pandacss-tsdown-plugin` option of `@sanity/tsdown-config`; unminified so the diff
-  between two published versions stays readable) rewrites every `css()` call
-  into its class names at build time, extracts the CSS into `lib/bundle.css`, injects
-  `import 'sanity/bundle.css'` into the entry chunks and publishes the conditional `./bundle.css`
-  export (`browser`/`style` → the stylesheet, `node`/`default` → a no-op shim). The published code
-  carries no Panda runtime, which is why the package manifests reset `imports` under
-  `publishConfig`. A `css()` call the build cannot resolve statically (computed values, loops)
-  makes it warn and bundle the runtime — keep the style objects literal.
+- **Published packages:** `panda: {minify: false, cascadeLayers: false}` in `tsdown.config.ts`
+  (the `@sanity/pandacss-tsdown-plugin` options of `@sanity/tsdown-config`; unminified so the
+  diff between two published versions stays readable, see below for the layers) rewrites every
+  `css()` call into its class names at build time, extracts the CSS into `lib/bundle.css`,
+  injects `import 'sanity/bundle.css'` into the entry chunks and publishes the conditional
+  `./bundle.css` export (`browser`/`style` → the stylesheet, `node`/`default` → a no-op shim).
+  The published code carries no Panda runtime, which is why the package manifests reset `imports`
+  under `publishConfig`. A `css()` call the build cannot resolve statically (computed values,
+  loops) makes it warn and bundle the runtime — keep the style objects literal.
 - **Vite apps that build the packages from source** (the dev studios through `sanity.cli.ts`,
   Storybook, the vitest browser suite, `dev/studio-diagnostics-viewer`) register
   `studioPandaCss()` from `@repo/pandacss/vite`: one `@pandacss/vite` instance per Panda project,
   scoped to that project's directory (the plugin itself would hand every module of the build to
   its transformer, so the first instance would rewrite another project's `.css.ts` with its own
   prefix), which rewrites the `.css.ts` modules and appends their CSS to
-  `@repo/pandacss/layers.css`. The
-  app imports that stylesheet from its entry (a studio gets the import injected into its
-  `.sanity/runtime/app.js`; Storybook's `preview.tsx`, `test/setup/browser.ts` and the viewer's
-  `main.tsx` import it themselves). The CDN bundle (`@repo/package.bundle`) does the same with its
-  own entry injection. A `sanity build` resolves the built packages and their `bundle.css`, so a
-  studio registers the package instances for `sanity dev` only; the test studio keeps an instance
-  for its own `roots` under both commands, since its `plugins/**/*.css.ts` have no prebuilt CSS.
-- **Cascade layers.** The studio's CSS lives in Panda's `@layer` blocks (`sanity-reset` …
-  `sanity-utilities`), in `bundle.css` and in the dev stylesheet alike. Layer order decides the
-  cascade before specificity does, so every `@sanity/ui` layer is declared before the studio's.
-  `STUDIO_LAYER_ORDER` in `@repo/pandacss/layer-order` is that order, lowest priority first:
-  `sui` (`ui5`'s stylesheet; its `sui.global` is a universal reset that has to lose to everything
-  styling the same elements, after `u-styled` it zeroes a v4 `Box`'s padding), `u-reset` …
-  `u-utilities` (the Panda layers of `@sanity/ui/styles.css`, [ui#3228](https://github.com/sanity-io/ui/pull/3228)),
-  `u-styled` (the layer `@sanity/ui` v4 wraps its styled-components rules in,
-  [ui#3233](https://github.com/sanity-io/ui/pull/3233)), then `sanity-*`, and in the test studio
-  `test-studio-*` last. `@sanity/ui` orders only its own layers (`u-tokens, u-utilities,
-  u-styled`) and never mentions `sui`: the studio is the one place v4 and `ui5` load together, so
-  it owns the cross-library order and the CSS load order that makes it stick. A page fixes the
-  order by the first `@layer` statement it sees, so the statement has to load before any of those
-  layers is mentioned — before `ui5/styles.css`, `@sanity/ui/styles.css` and styled-components'
-  `<style>` tag. It is the first rule of `bundle.css` (`pandaLayerOrder()` prepends it;
-  `@sanity/pandacss-tsdown-plugin` emits the blocks without one), which every entry chunk of
-  `sanity` imports before either stylesheet, and the first rule of `layers.css`, the first import
-  of the dev studios' runtime entry under `sanity dev` and `sanity build` (`studioPandaCss()`;
-  the entry's stylesheet is also the first `<link>` of the built HTML), of Storybook's
-  `preview.tsx`, of `test/setup/browser.ts` and of every CDN bundle entry. What `sanity` cannot
-  order from inside the package is a plugin that `sanity.config.ts` imports before `sanity` and
-  that imports `@sanity/ui/styles.css` itself (several do): its `u-tokens`/`u-utilities` blocks
-  then precede `bundle.css`, and `sui` lands above them. The studio's runtime entry has to import
-  `sanity/bundle.css` first for that — `.sanity/runtime/app.js` is written by `@sanity/cli-build`
-  (sanity-io/cli), the follow-up that goes with dropping the strip; an embedded studio's host
-  does the same by importing `sanity/bundle.css` before anything that loads `@sanity/ui`'s CSS.
-  The studio's `.css.ts` rules override the libraries' rules on the same element through that
-  order — once every side is layered: an unlayered rule beats a layered one regardless of
-  specificity, so neither library may leave rules outside its layers (`ui5`'s component classes
-  still are, a ui5 change; the studio's own styled-components too, see below). Panda's `polyfill`
-  option is not an alternative to layers: it emulates their order with `:not(#\#…)` selector
-  chains that inflate every rule's specificity.
-- **Until `@sanity/ui` ships `u-styled`, the layer blocks are stripped; the order statement
-  ships.** Today `@sanity/ui` v4 injects its styled-components rules unlayered and `ui5` keeps
-  its component classes outside `sui`, and an unlayered rule beats every layered one, so
-  `@repo/pandacss` unwraps the `@layer` blocks (`unwrapCascadeLayers`) from `bundle.css`
-  (`unlayeredPandaCss()` from `@repo/pandacss/tsdown`, merged into
-  `packages/sanity/tsdown.config.ts`), from the CDN bundle and from the dev stylesheet
-  (`unlayeredPandaCss()` from `@repo/pandacss/vite`, registered by `studioPandaCss()` and
-  `@repo/package.bundle`). The top-level `@layer …;` statement stays in all three: `sui` and
-  `u-tokens`/`u-utilities` are on the page today, and without the statement their order is
-  whichever stylesheet a bundler happens to emit first (the built `lib/index.js` imports
-  `@sanity/ui/styles.css` before `ui5/styles.css`, the sources the other way round, so `ui5`'s
-  reset used to beat `@sanity/ui`'s `u-utilities` in a built studio and lose to them under
-  `sanity dev`). That step is one commit, `build: strip the Panda
-  cascade layers until @sanity/ui layers its styled-components output` plus the follow-up that
-  keeps the statement: once the `@sanity/ui` release with `u-styled` is in the catalog,
-  `git revert` the strip (keep `pandaLayerOrder()` and the `@repo/pandacss/layer-order` export
-  where the revert conflicts with them, and let the revert delete `unwrapCascadeLayers.ts` and
-  its test). A dry run against
-  the ui#3233 build (layers kept, five studio screens pixel-identical to `main`, 60 of 62 browser
-  test files passing) showed what else that bump needs: `ReleaseAvatar.css.ts` relied on
-  _losing_ to `Text`'s `& svg {display: inline}` by specificity and now wins whether or not it
-  is layered; `PaneCommandList.css.ts`'s `&&` beat `CommandList`'s own styled-components
-  `overflow-y: auto` by specificity and loses to it once layered, because the studio's own
-  styled-components stay unlayered (either layer them too, in a `sanity-styled` layer between
-  `u-styled` and `sanity-reset`, or migrate the conflicting ones); `TasksSidebar.css.ts`'s `&&`
-  against `ui5`'s unlayered `.sui-overflow-auto` loses the same way until ui5 layers its
-  component classes.
+  `@repo/pandacss/layers.css`, plus `unlayeredPandaCss()`, which gives that stylesheet the shape
+  of `bundle.css` (below). The app imports the stylesheet from its entry (a studio gets the import
+  injected into its `.sanity/runtime/app.js`; Storybook's `preview.tsx`, `test/setup/browser.ts`
+  and the viewer's `main.tsx` import it themselves). The CDN bundle (`@repo/package.bundle`) does
+  the same with its own entry injection. A `sanity build` resolves the built packages and their
+  `bundle.css`, so a studio registers the package instances for `sanity dev` only; the test
+  studio keeps an instance for its own `roots` under both commands, since its
+  `plugins/**/*.css.ts` have no prebuilt CSS.
+- **No cascade layers.** Panda writes its rules into `@layer` blocks (`reset`, `base`, `tokens`,
+  `recipes`, `utilities`), and the studio's CSS ships without them: CSS outside any layer beats
+  every layered rule regardless of specificity, so a layered stylesheet loses its hover, focus and
+  selected states to any unlayered rule that also matches — styled-components output, a reset
+  like Tailwind's preflight, the studio's own `GlobalStyle` (the splash tests and the ui5 team's
+  write-up confirmed it). `cascadeLayers: false` removes the blocks and statements after
+  Lightning CSS has run and orders the rules the way the layers did (a layer's sublayers before
+  its own rules, unlayered rules last), so every selector stays as specific as Panda wrote it and
+  the studio's rules cascade like the vanilla-extract output did: by specificity, then source
+  order. The same pass runs on the dev stylesheet and the CDN bundle: `@repo/pandacss` carries a
+  copy of it (`src/cascadeLayers.ts`, kept identical to the plugin's source until the plugin
+  exports it), and `unlayeredPandaCss()` applies it to `layers.css`. `layers.css` declares
+  Panda's default layer names, which is how `@pandacss/vite` recognizes it as a project's root
+  stylesheet; with no layers on the page, both Panda projects use the default names and no
+  prefixed layer names exist. Panda's `polyfill` option is not an alternative: it emulates the
+  layer order with `:not(#\#…)` selector chains that inflate every rule's specificity. What this
+  means when authoring: the studio's rules beat `@sanity/ui`'s on the same element by specificity
+  and order alone — a plain class beats a styled-components base rule that loads later only when
+  it is more specific, which is what the `&&` doubling is for.
+- **The one `@layer` statement left: `@layer sui;`** (`LAYER_ORDER_STATEMENT` in
+  `@repo/pandacss/layer-order`; `layerOrderPlugin()` prepends it to `bundle.css`,
+  `unlayeredPandaCss()` to the dev stylesheet and the CDN bundle). Other libraries still layer
+  their CSS: `ui5/styles.css` puts its universal reset in `sui.global`, and `@sanity/ui` v4.4 puts
+  its static styles in `u-tokens` and `u-utilities`. Those only compete by order, which a page
+  fixes by the first `@layer` statement it sees, so the studio declares `sui` first wherever its
+  stylesheet loads before either of theirs: the entry chunks of `sanity` import `bundle.css` on
+  their first line; the dev studios' runtime entry, Storybook's `preview.tsx`,
+  `test/setup/browser.ts` and every CDN bundle entry import `layers.css` first, and in a
+  `sanity build` of a dev studio the entry's stylesheet is the first `<link>`. What `sanity`
+  cannot order from inside the package is a plugin that `sanity.config.ts` imports before `sanity`
+  and that imports `@sanity/ui/styles.css` itself (several do): its `u-*` blocks then precede
+  `bundle.css` and `sui` lands above them, as it did before this statement existed (a v4
+  `Hotkeys` loses its 1px padding to the reset). Remove the statement once `@sanity/ui` v4 ships
+  its static styles unlayered (in progress in sanity-io/ui): unlayered v4 CSS beats `sui` by
+  itself, and a single layer has nothing to be ordered against. The ui5 team plans to drop its
+  layers too, except possibly the reset's.
 - **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
   `property: value` pair once, grouped by property with the values sorted; a modifier class that
   must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)
