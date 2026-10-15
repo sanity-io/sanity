@@ -138,6 +138,7 @@ describe('savedQueryTab', () => {
         dataset: 'production',
         apiVersion: 'v2025-02-19',
         perspective: 'drafts',
+        variant: 'none',
       },
     })
     // A request that asked for a content source map turns the option on
@@ -188,13 +189,39 @@ describe('savedQueryTab', () => {
     expect(parsedQueryToTabInit(parsed)).toEqual({
       query: '*',
       rawParams: '{}',
-      options: {includeSourceMap: false, apiVersion: 'v2025-02-19'},
+      options: {includeSourceMap: false, apiVersion: 'v2025-02-19', variant: 'none'},
     })
     // The saved request went to another dataset, so no tab here is showing it
     const tab = createTab(settings, {query: '*'})
     expect(matches(tab, parsed.url, {...environment, perspectiveStack: ['rXYZ', 'drafts']})).toBe(
       false,
     )
+  })
+
+  it("loads the variant the URL states: none without one, the navbar's with one", () => {
+    const withVariant = {...environment, selectedVariantNames: ['french']}
+    const plain = url('*', {perspective: 'drafts'})
+    // A tab on global would add the navbar's variant to a request that had none
+    const loaded = createTab(settings, parsedQueryToTabInit(parse(plain)))
+    expect(loaded.options.variant).toBe('none')
+    expect(matches(loaded, plain, withVariant)).toBe(true)
+
+    const variantUrl = url(
+      '*',
+      {perspective: 'drafts', variant: 'french'},
+      'vX/data/query/production',
+    )
+    const following = createTab(settings, parsedQueryToTabInit(parse(variantUrl)))
+    expect(following.options.variant).toBe('global')
+    expect(matches(following, variantUrl, withVariant)).toBe(true)
+  })
+
+  it('matches empty and non-object params the way the request sends them, as {}', () => {
+    const saved = url('*', {perspective: 'drafts'})
+    for (const rawParams of ['', '{}', '[]', '  {  }  ']) {
+      expect(matches(createTab(settings, {query: '*', rawParams}), saved)).toBe(true)
+    }
+    expect(matches(createTab(settings, {query: '*', rawParams: '{"a": 1}'}), saved)).toBe(false)
   })
 
   it('matches a tab following the workspace against the dataset the workspace uses', () => {

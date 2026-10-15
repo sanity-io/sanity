@@ -3,6 +3,7 @@ import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
 
 import {type QueryConfig} from '../../hooks/useSavedQueries'
+import {isPlainObject} from '../../util/isPlainObject'
 import {type ParsedQueryUrl} from '../../util/parseQueryUrl'
 import {type VistaTab, type VistaTabInit, type VistaTabOptions} from '../store/types'
 
@@ -10,10 +11,11 @@ import {type VistaTab, type VistaTabInit, type VistaTabOptions} from '../store/t
  * The fields of a tab for a parsed query URL (a saved query or a paste). A URL is the request
  * that was sent, so the tab gets the perspective it states, including none: a URL without one
  * ran on the API default, which is not what a tab on `global` would send. What the tab cannot
- * represent is left to it: a dataset the tool does not know, a perspective it cannot pick (a
- * release stack), and the variant, which a tab cannot pin (the option follows the navbar or
- * sends none). The content source map follows the URL, since a request either asked for one or
- * did not.
+ * represent is left to it: a dataset the tool does not know and a perspective it cannot pick (a
+ * release stack). A tab cannot pin a variant, so one in the URL makes it follow the navbar's (the
+ * caller warns when that is another), and none sends none: on `global` with a navbar variant
+ * selected the tab would otherwise add one the request never had. The content source map follows
+ * the URL, since a request either asked for one or did not.
  */
 export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VistaTabInit {
   const options: Partial<VistaTabOptions> = {includeSourceMap: parsed.includeSourceMap}
@@ -31,6 +33,7 @@ export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VistaTabInit {
   } else if (parsed.perspective) {
     options.perspective = parsed.perspective === 'pinnedRelease' ? 'global' : parsed.perspective
   }
+  options.variant = parsed.variant === undefined ? 'none' : 'global'
 
   return {query: parsed.query, rawParams: parsed.rawParams, options}
 }
@@ -87,9 +90,11 @@ function haveSameParams(a: string, b: string): boolean {
   return dequal(parsedA, parsedB)
 }
 
+/** The params a request is sent with (`tryParseParams`): empty and non-object params are `{}` */
 function parseParamsOrNull(raw: string): unknown {
   try {
-    return JSON5.parse(raw)
+    const parsed: unknown = raw ? JSON5.parse(raw) : {}
+    return isPlainObject(parsed) ? parsed : {}
   } catch {
     return null
   }
