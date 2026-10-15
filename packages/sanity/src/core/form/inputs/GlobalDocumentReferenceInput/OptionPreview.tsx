@@ -42,7 +42,7 @@ export function OptionPreview(props: {
     return (
       <Flex gap={2} padding={1} flexDirection="column">
         <Alert title={t('inputs.reference.error.failed-to-load-document-title')}>
-          <Text muted size={1} as="div" trim={true}>
+          <Text muted size={1} as="div" trim={true} tone="caution">
             {error.message}
           </Text>
         </Alert>

@@ -70,14 +70,14 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
     &[data-list-item='number'] [data-list-prefix] {
       font-variant-numeric: tabular-nums;
 
-      & > span:before {
+      & > [data-ui='Text']:before {
         content: counter(${createListName($level)}) '.';
         content: counter(${createListName($level)}, ${numberMarker}) '.';
       }
     }
 
     &[data-list-item='bullet'] [data-list-prefix] {
-      & > span {
+      & > [data-ui='Text'] {
         position: relative;
         top: -0.1875em;
 

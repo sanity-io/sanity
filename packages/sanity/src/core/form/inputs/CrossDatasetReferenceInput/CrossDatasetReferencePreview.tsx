@@ -125,7 +125,11 @@ export function CrossDatasetReferencePreview(props: {
                   {documentId: id},
                 )}
               >
-                <Icon size={1} icon={insufficientPermissions ? AccessDeniedIcon : HelpCircleIcon} />
+                <Icon
+                  icon={insufficientPermissions ? AccessDeniedIcon : HelpCircleIcon}
+                  muted
+                  style={{margin: '-0.4375rem'}}
+                />
               </Tooltip>
             </Box>
           )}
@@ -144,7 +148,7 @@ export function CrossDatasetReferencePreview(props: {
                   size={1}
                   icon={LaunchIcon}
                   muted={!hasStudioUrl}
-                  data-muted={!hasStudioUrl ? '' : undefined}
+                  style={{margin: '-0.375rem'}}
                 />
               </Tooltip>
             </Box>

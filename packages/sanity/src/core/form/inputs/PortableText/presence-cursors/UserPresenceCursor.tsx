@@ -195,6 +195,8 @@ export function UserPresenceCursor(props: UserPresenceCursorProps): React.JSX.El
                 transition={CONTENT_TEXT_TRANSITION}
                 variants={CONTENT_TEXT_VARIANTS}
                 weight="medium"
+                forwardedAs="div"
+                trim={true}
               >
                 {user.displayName}
               </UserText>

@@ -119,7 +119,7 @@ export function PreviewReferenceValue(props: {
                 )
               }
             >
-              <Icon size={1} icon={HelpCircleIcon} />
+              <Icon icon={HelpCircleIcon} muted style={{margin: '-0.4375rem'}} />
             </Tooltip>
           </Box>
         ) : null}
@@ -159,7 +159,7 @@ function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; ti
   const MessageIcon = props.icon
   return (
     <Flex>
-      <Icon size={1} icon={MessageIcon} />
+      <Icon size={1} icon={MessageIcon} muted style={{margin: '-0.375rem'}} />
       <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
         <Text size={1} weight="medium" as="div" trim={true}>
           {props.title}
@@ -217,7 +217,7 @@ function InvalidType({
           }
         >
           <Box padding={2}>
-            <Icon size={1} icon={HelpCircleIcon} />
+            <Icon icon={HelpCircleIcon} muted style={{margin: '-0.4375rem'}} />
           </Box>
         </Tooltip>
       </Box>

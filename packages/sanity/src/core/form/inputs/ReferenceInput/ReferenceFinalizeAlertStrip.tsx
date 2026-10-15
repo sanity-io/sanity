@@ -32,7 +32,7 @@ export function ReferenceFinalizeAlertStrip({
       data-testid="alert-reference-published"
     >
       <VStack gap={3}>
-        <Text as="p" muted size={1} trim={true}>
+        <Text as="p" muted size={1} trim={true} tone="positive">
           <Translate
             t={t}
             i18nKey={
