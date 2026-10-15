@@ -48,10 +48,14 @@ export default defineCliConfig({
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     let nextConfig = mergeConfig(viteConfig, {
-      // `sanity dev` resolves the workspace packages to their sources (the `monorepo` condition
-      // below), so their Panda CSS `.css.ts` modules — and this studio's own, under plugins/ — are
-      // built here; `sanity build` uses the built packages and their `bundle.css`
-      plugins: command === 'serve' ? studioPandaCss({roots: [import.meta.dirname]}) : [],
+      // This studio styles its own plugins/ with Panda CSS, so their `.css.ts` modules are built
+      // here under both commands. `sanity dev` also resolves the workspace packages to their
+      // sources (the `monorepo` condition below), so theirs are built here too; `sanity build`
+      // uses the built packages and their `bundle.css` instead
+      plugins: studioPandaCss({
+        packages: command === 'serve' ? ['sanity', '@sanity/vision'] : [],
+        roots: [import.meta.dirname],
+      }),
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
     })

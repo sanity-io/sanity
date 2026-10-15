@@ -5,7 +5,7 @@ import {PANDA_LAYERS_CSS_SPECIFIER, unlayeredPandaCss} from '@repo/pandacss/vite
 import viteReact from '@vitejs/plugin-react'
 import {Features} from 'lightningcss'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
-import {esmExternalRequirePlugin, type Plugin, type UserConfig} from 'vite'
+import {esmExternalRequirePlugin, normalizePath, type Plugin, type UserConfig} from 'vite'
 
 export interface DefaultConfigOptions {
   /**
@@ -132,7 +132,8 @@ export function pandaLayersCssImportPlugin(): Plugin {
           : Array.isArray(entry)
             ? entry
             : Object.values(entry ?? {})
-      entries = new Set(list.map((file) => path.resolve(config.root, file)))
+      // Module ids use forward slashes on every platform
+      entries = new Set(list.map((file) => normalizePath(path.resolve(config.root, file))))
     },
     transform(code, id) {
       if (!entries.has(id)) return null
