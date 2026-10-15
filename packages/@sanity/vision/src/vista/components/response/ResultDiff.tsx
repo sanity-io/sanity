@@ -1,7 +1,7 @@
-import {type FileContents, type FileDiffOptions, MultiFileDiff} from '@pierre/diffs/react'
+import {type FileContents, FileDiff} from '@pierre/diffs'
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useMemo} from 'react'
+import {useEffect, useMemo, useRef} from 'react'
 
 export interface ResultDiffProps {
   previous: unknown
@@ -20,27 +20,37 @@ function toFile(value: unknown): FileContents {
 export default function ResultDiff({previous, next}: ResultDiffProps) {
   const {color, font} = useThemeV2()
   const codeSize = font.code.sizes[1]
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const oldFile = useMemo(() => toFile(previous), [previous])
   const newFile = useMemo(() => toFile(next), [next])
-  const options = useMemo(
-    (): FileDiffOptions<undefined, undefined> => ({
+  const themeType = color._dark ? 'dark' : 'light'
+
+  // The library's React components keep their container and hydrate whatever markup a previous
+  // instance left in it, so after StrictMode detaches and re-attaches their ref they render
+  // nothing. An instance per effect run with a container of its own (removed on clean up) has no
+  // such markup to find
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return undefined
+    const diff = new FileDiff({
       diffStyle: 'unified',
       disableFileHeader: true,
       lineDiffType: 'word',
       overflow: 'wrap',
-      themeType: color._dark ? 'dark' : 'light',
-    }),
-    [color._dark],
-  )
-  const style = useMemo(
-    () =>
-      assignInlineVars({
+      themeType,
+    })
+    diff.render({containerWrapper: wrapper, newFile, oldFile})
+    return () => diff.cleanUp()
+  }, [newFile, oldFile, themeType])
+
+  return (
+    <div
+      ref={wrapperRef}
+      style={assignInlineVars({
         '--diffs-font-family': font.code.family,
         '--diffs-font-size': `${codeSize.fontSize}px`,
         '--diffs-line-height': `${codeSize.lineHeight}px`,
-      }),
-    [codeSize.fontSize, codeSize.lineHeight, font.code.family],
+      })}
+    />
   )
-
-  return <MultiFileDiff newFile={newFile} oldFile={oldFile} options={options} style={style} />
 }
