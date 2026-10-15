@@ -128,17 +128,14 @@ export function createYieldingPace(yieldToBrowser: () => Promise<void>, every: n
 }
 
 /**
- * The pacer for one run with the given scheduling. A `BehaviorSubject` lets the scheduling change
- * while the run is in flight: each node waits the way the scheduling is when its turn comes, and a
- * switch to `immediate` lets the nodes that are waiting for idle time go ahead, so the run picks
- * up speed where it is instead of starting over.
+ * The pacer for one run, `idle` without a scheduling. The scheduling can change while the run is in
+ * flight: each node waits the way the scheduling is when its turn comes, and a switch to
+ * `immediate` lets the nodes that are waiting for idle time go ahead, so the run picks up speed
+ * where it is instead of starting over.
  */
-export function createPace(
-  scheduling: ValidationScheduling | BehaviorSubject<ValidationScheduling>,
-): Pace {
-  if (scheduling === 'idle') return idle
+export function createPace(scheduling?: BehaviorSubject<ValidationScheduling>): Pace {
+  if (!scheduling) return idle
   const immediate = createYieldingPace(getYieldToBrowser(), IMMEDIATE_YIELD_EVERY)
-  if (scheduling === 'immediate') return immediate
   const switchedToImmediate = scheduling.pipe(filter((mode) => mode === 'immediate'))
   return () =>
     scheduling.getValue() === 'immediate'

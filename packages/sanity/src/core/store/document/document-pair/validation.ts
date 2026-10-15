@@ -2,8 +2,8 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema} from '@sanity/types'
 import {type ValidationScheduling} from '@sanity/validation/_internal'
 import omit from 'lodash-es/omit.js'
-import {asyncScheduler, BehaviorSubject, combineLatest, defer, type Observable} from 'rxjs'
-import {distinctUntilChanged, finalize, map, shareReplay, throttleTime} from 'rxjs/operators'
+import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable} from 'rxjs'
+import {distinctUntilChanged, map, share, shareReplay, throttleTime} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config/types'
 import {type LocaleSource} from '../../../i18n/types'
@@ -24,39 +24,27 @@ function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
 }
 
-interface ValidationStoreContext {
-  client: SanityClient
-  getClient: (options: SourceClientOptions) => SanityClient
-  observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
-  schema: Schema
-  i18n: LocaleSource
-  /**
-   * @deprecated Does nothing. Preserved to avoid breaking changes.
-   * Will be removed in the next major version.
-   */
-  serverActionsEnabled?: Observable<boolean>
-  pairListenerOptions?: DocumentStoreExtraOptions
-  currentUser?: Omit<CurrentUser, 'role'> | null
-}
-
-interface ValidationStreams {
-  status$: Observable<ValidationStatus>
-  /**
-   * `status$`, holding the document's validation at `immediate` scheduling for as long as any
-   * subscription to it lasts. Every subscriber of `status$` gets the results of those runs.
-   */
-  immediate$: Observable<ValidationStatus>
-}
-
-/** @internal */
-export const validationStreams = memoize(
+const validationStreams = memoize(
   (
-    ctx: ValidationStoreContext,
+    ctx: {
+      client: SanityClient
+      getClient: (options: SourceClientOptions) => SanityClient
+      observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
+      schema: Schema
+      i18n: LocaleSource
+      /**
+       * @deprecated Does nothing. Preserved to avoid breaking changes.
+       * Will be removed in the next major version.
+       */
+      serverActionsEnabled?: Observable<boolean>
+      pairListenerOptions?: DocumentStoreExtraOptions
+      currentUser?: Omit<CurrentUser, 'role'> | null
+    },
     {draftId, publishedId, versionId}: IdPair,
     typeName: string,
     validationTarget: DocumentVariantType,
     validatePublishedReferences: boolean,
-  ): ValidationStreams => {
+  ) => {
     const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
       map((state) => {
         const {version, draft, published} = state
@@ -112,20 +100,13 @@ export const validationStreams = memoize(
         return {...validationStatus, revision}
       }),
     )
+    // shared: the first subscriber switches to `immediate`, the last one to leave switches back
+    const holdImmediate$ = new Observable<never>(() => {
+      scheduling.next('immediate')
+      return () => scheduling.next('idle')
+    }).pipe(share())
 
-    let immediateSubscribers = 0
-    const immediate$ = defer(() => {
-      immediateSubscribers += 1
-      if (immediateSubscribers === 1) scheduling.next('immediate')
-      return status$.pipe(
-        finalize(() => {
-          immediateSubscribers -= 1
-          if (immediateSubscribers === 0) scheduling.next('idle')
-        }),
-      )
-    })
-
-    return {status$, immediate$}
+    return {status$, immediate$: merge(holdImmediate$, status$)}
   },
   (ctx, idPair, typeName, validationTarget, validatePublishedReferences) => {
     // Use the actual document ID being validated in the cache key for explicitness
@@ -143,14 +124,26 @@ export const validationStreams = memoize(
   },
 )
 
-/** @internal */
+/**
+ * The document's validation status. Every subscriber shares one validation of the document, which
+ * runs without waiting for idle time while any subscription made with `immediate` scheduling lasts.
+ *
+ * @internal
+ */
 export function validation(
-  ctx: ValidationStoreContext,
+  ctx: Parameters<typeof validationStreams>[0],
   idPair: IdPair,
   typeName: string,
   validationTarget: DocumentVariantType,
   validatePublishedReferences: boolean,
+  scheduling?: ValidationScheduling,
 ): Observable<ValidationStatus> {
-  return validationStreams(ctx, idPair, typeName, validationTarget, validatePublishedReferences)
-    .status$
+  const {status$, immediate$} = validationStreams(
+    ctx,
+    idPair,
+    typeName,
+    validationTarget,
+    validatePublishedReferences,
+  )
+  return scheduling === 'immediate' ? immediate$ : status$
 }
