@@ -15,7 +15,6 @@ import {
   GenerateQueryError,
   MAX_GENERATE_ATTEMPTS,
 } from '../../util/generateQuery'
-import {formatGroq} from '../../util/groqWasm'
 import {summarizeSchema} from '../../util/schemaSummary'
 
 type GenerateStatus =
@@ -43,13 +42,11 @@ export function GenerateQueryDialog() {
   const close = useCallback(() => actorRef.send({type: 'dialog.close'}), [actorRef])
 
   const open = useCallback(
-    async (generated: GeneratedQuery, fetch: boolean) => {
-      // Laid out like Prettify does by default; a query the formatter rejects opens as written
-      const query = await formatGroq(generated.query).catch(() => generated.query)
+    (generated: GeneratedQuery, fetch: boolean) => {
       actorRef.send({
         type: 'tab.add',
         tab: {
-          query,
+          query: generated.query,
           rawParams: JSON.stringify(generated.params, null, 2),
           title: generated.title,
           options: activeTab.options,
@@ -76,7 +73,7 @@ export function GenerateQueryDialog() {
         signal: controller.signal,
         onAttempt: (attempt) => setStatus({type: 'generating', attempt}),
       })
-      await open(generated, true)
+      open(generated, true)
     } catch (error) {
       if (controller.signal.aborted) return
       setStatus({
@@ -162,7 +159,7 @@ export function GenerateQueryDialog() {
                         data-testid="vista-generate-open-anyway"
                         fontSize={1}
                         mode="ghost"
-                        onClick={() => void open(lastAttempt, false)}
+                        onClick={() => open(lastAttempt, false)}
                         padding={2}
                         text={t('vista.generate.open-anyway')}
                       />

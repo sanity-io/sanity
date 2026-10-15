@@ -612,15 +612,16 @@ describe('VistaGui', () => {
       query: `select(false => (\n${generated}\n))`,
     })
 
-    // A new tab with the query, laid out by the formatter, fetches it right away
+    // A new tab with the query fetches it right away, laid out for its editor first
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     const tabs = screen.getAllByTestId('vista-tab')
     expect(tabs).toHaveLength(2)
     expect(within(tabs[1]).getByRole('tab').getAttribute('aria-selected')).toBe('true')
     expect(text(tabs[1])).toContain('Recent authors')
-    expect(fetchCalls[1].query).toBe(getQueryEditor().value)
-    expect(fetchCalls[1].query).toContain('order(_createdAt desc)[0...10]')
-    expect(fetchCalls[1].query).not.toContain('select(false')
+    expect(fetchCalls[1].query).toBe(
+      '*[_type == "author"] | order(_createdAt desc)[0...10] { _id, name }',
+    )
+    expect(getQueryEditor().value).toBe(fetchCalls[1].query)
     fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
     expect(text(screen.getByTestId('vista-history-entry'))).toContain(
       'vista.history.reason.generated',

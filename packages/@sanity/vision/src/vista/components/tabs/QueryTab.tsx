@@ -54,6 +54,7 @@ function countLines(text: string): number {
 const DEFAULT_REQUEST_SHARE = {columns: 0.5, stacked: 0.6}
 /** Params are parsed on every change, so typing is debounced like in the classic tool */
 const PARAMS_DEBOUNCE_MS = 333
+const MAX_LAYOUT_FRAMES = 10
 
 type MobilePane = 'request' | 'response'
 
@@ -164,27 +165,31 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     }
   }, [actorRef, run, tab.autoRefetch, tab.id])
 
-  const prettify = useCallback(async () => {
+  // Formats the query in place, wrapping at the width the editor has so the result needs no
+  // sideways scrolling. Formatting changes the line count, and with it the line-number gutter's
+  // width and whether a vertical scrollbar takes space, so the result is measured again and
+  // formatted once more while that leaves fewer columns. Rejects when the query does not parse.
+  const formatQuery = useCallback(async () => {
     const {query} = tab
     const editor = queryEditorRef.current
+    let width = editor?.getVisibleColumns()
+    let formatted = await formatGroq(query, width)
+    for (let pass = 0; pass < 2 && width !== undefined; pass++) {
+      const nextWidth = editor?.getVisibleColumns(countLines(formatted))
+      if (nextWidth === undefined || nextWidth >= width) break
+      width = nextWidth
+      formatted = await formatGroq(query, width)
+    }
+    // The formatter loads lazily; a query edited meanwhile is not overwritten
+    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
+    if (latest?.query !== query || formatted === query) return
+    queryEditorRef.current?.resetEditorContent(formatted)
+    setQuery(formatted)
+  }, [actorRef, setQuery, tab])
+
+  const prettify = useCallback(async () => {
     try {
-      // Wrap at the width the editor has, so the result needs no sideways scrolling. Formatting
-      // changes the line count, and with it the line-number gutter's width and whether a
-      // vertical scrollbar takes space, so measure again for the result and format once more
-      // while that leaves fewer columns
-      let width = editor?.getVisibleColumns()
-      let formatted = await formatGroq(query, width)
-      for (let pass = 0; pass < 2 && width !== undefined; pass++) {
-        const nextWidth = editor?.getVisibleColumns(countLines(formatted))
-        if (nextWidth === undefined || nextWidth >= width) break
-        width = nextWidth
-        formatted = await formatGroq(query, width)
-      }
-      // The formatter loads lazily; a query edited meanwhile is not overwritten
-      const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
-      if (latest?.query !== query || formatted === query) return
-      queryEditorRef.current?.resetEditorContent(formatted)
-      setQuery(formatted)
+      await formatQuery()
     } catch (error) {
       toast.push({
         closable: true,
@@ -193,7 +198,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
         title: t('vista.query.prettify.failed'),
       })
     }
-  }, [actorRef, setQuery, t, tab, toast])
+  }, [formatQuery, t, toast])
 
   const copyQuery = useCallback(
     () => void copyToClipboard(tab.query, t('vista.query.copied')),
@@ -260,15 +265,23 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
     }
   })
-  // A tab opened with a generated query shows its result straight away
-  const fetchGeneratedQuery = useEffectEvent(() => {
+  // A tab opened with a generated query lays it out for its editor, as Prettify does, and shows
+  // its result straight away; a query the formatter cannot read runs as it was written. The
+  // editor creates its view a render after it mounts, so its width is waited for (a few frames
+  // at most; without it the query is formatted at the default width)
+  const fetchGeneratedQuery = useEffectEvent(async () => {
     if (!actorRef.getSnapshot().context.fetchOnOpen.includes(tab.id)) return
     actorRef.send({type: 'tab.fetchedOnOpen', id: tab.id})
+    for (let frame = 0; frame < MAX_LAYOUT_FRAMES; frame++) {
+      if (queryEditorRef.current?.getVisibleColumns() !== undefined) break
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    }
+    await formatQuery().catch(() => undefined)
     run({type: 'generated'})
   })
   useEffect(() => {
     resumeAutoRefetch()
-    fetchGeneratedQuery()
+    void fetchGeneratedQuery()
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- once per tab mount; useEffectEvent callbacks must not be listed
   }, [])
 
