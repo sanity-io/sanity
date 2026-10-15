@@ -32,15 +32,21 @@ export function FilterDetails({filter}: FilterDetailsProps) {
                 >
                   <span>{pathTitle}</span>
                   {index !== fieldDefinition.titlePath.length - 2 && (
-                    <Icon
-                      size={0}
-                      icon={ChevronRightIcon}
+                    <span
                       style={{
                         opacity: 0.75,
                         paddingLeft: '0.25em',
                         paddingRight: '0.25em',
                       }}
-                    />
+                    >
+                      <Icon
+                        size={0}
+                        icon={ChevronRightIcon}
+                        style={{
+                          margin: '-0.3125rem',
+                        }}
+                      />
+                    </span>
                   )}
                 </Fragment>
               )
@@ -50,10 +56,10 @@ export function FilterDetails({filter}: FilterDetailsProps) {
       )}
 
       <Flex alignItems="flex-start" gap={3}>
-        <Box style={{flexShrink: 0}}>
-          <Icon size={1} icon={<FilterIcon filter={filter} />} />
-        </Box>
-        <Text size={1} weight="medium" as="div" trim={true}>
+        <Flex style={{flexShrink: 0}}>
+          <FilterIcon filter={filter} />
+        </Flex>
+        <Text size={1} weight="medium" as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
           <FilterTitle filter={filter} />
         </Text>
       </Flex>

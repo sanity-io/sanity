@@ -116,6 +116,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
         weight={isCurrentMonth ? 'medium' : 'regular'}
         as="div"
         trim={true}
+        style={{color: `var(--card${!isSelected && !isCurrentMonth ? '-muted' : ''}-fg-color)`}}
       >
         {date.getDate()}
       </Text>

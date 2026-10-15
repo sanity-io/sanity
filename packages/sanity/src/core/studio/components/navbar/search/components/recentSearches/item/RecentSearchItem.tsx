@@ -4,7 +4,6 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
-  Inline,
   rem,
 } from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
@@ -95,17 +94,11 @@ export function RecentSearchItem({
         onClick={handleClick}
         paddingLeft={3}
         paddingRight={1}
-        paddingY={1}
+        paddingY={0}
         tabIndex={-1}
       >
-        <Flex alignItems="stretch">
-          {/* Combination of <Inline> and a zero-width character to ensure icon is optically aligned with adjacent text */}
-          <Inline paddingY={2}>
-            <Icon muted size={1} icon={ClockIcon} />
-            <Text as="div" trim={true}>
-              &#8203;
-            </Text>
-          </Inline>
+        <Flex alignItems="center">
+          <Icon muted size={1} icon={ClockIcon} style={{margin: '-0.375rem'}} />
           <Flex
             alignItems="stretch"
             flexBasis="0%"

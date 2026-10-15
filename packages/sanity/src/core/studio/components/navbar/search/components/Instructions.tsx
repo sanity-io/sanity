@@ -6,7 +6,7 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
 
 function PaddedControlsIcon() {
-  return <Icon icon={ControlsIcon} style={{padding: '0 0.25rem', margin: '-0.4375rem'}} />
+  return <Icon muted icon={ControlsIcon} style={{padding: '0 0.25rem', margin: '-0.4375rem'}} />
 }
 
 export function Instructions() {
