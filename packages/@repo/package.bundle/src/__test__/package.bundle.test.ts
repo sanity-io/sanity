@@ -1,7 +1,17 @@
 import {Features, transform} from 'lightningcss'
+import {type PluginOption, type ResolvedConfig} from 'vite'
 import {describe, expect, it} from 'vitest'
 
-import {cleanupCssOutputPlugin, createDefaultConfig} from '../package.bundle'
+import {
+  cleanupCssOutputPlugin,
+  createDefaultConfig,
+  pandaLayersCssImportPlugin,
+} from '../package.bundle'
+
+function pluginNames(plugins: PluginOption): string[] {
+  if (Array.isArray(plugins)) return plugins.flatMap(pluginNames)
+  return plugins && typeof plugins === 'object' && 'name' in plugins ? [plugins.name] : []
+}
 
 describe('createDefaultConfig()', () => {
   it('injects the provided version as the __PKG_VERSION__ define', () => {
@@ -12,6 +22,55 @@ describe('createDefaultConfig()', () => {
   it('excludes the Lightning CSS light-dark polyfill', () => {
     const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
     expect(config.css?.lightningcss?.exclude).toBe(Features.LightDark)
+  })
+
+  it('compiles the .css.ts modules of a Panda package with Panda only', () => {
+    const names = pluginNames(
+      createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'}).plugins,
+    )
+    expect(names).toEqual(
+      expect.arrayContaining([
+        'pandacss',
+        'sanity/panda-layers-css-import',
+        'sanity/cleanup-css-output',
+      ]),
+    )
+    expect(names).not.toContain('sanity-vanilla-extract')
+  })
+
+  it('compiles the .css.ts modules of a vanilla-extract package with vanilla-extract only', () => {
+    const names = pluginNames(createDefaultConfig({version: '9.9.9-test.1'}).plugins)
+    expect(names).toEqual(
+      expect.arrayContaining(['sanity-vanilla-extract', 'sanity/cleanup-css-output']),
+    )
+    expect(names).not.toContain('pandacss')
+    expect(names).not.toContain('sanity/panda-layers-css-import')
+  })
+})
+
+/** The parts of the resolved Vite config `pandaLayersCssImportPlugin()` reads. */
+type LibraryBuildConfig = Pick<ResolvedConfig, 'root'> & {
+  build: Pick<ResolvedConfig['build'], 'lib'>
+}
+
+describe('pandaLayersCssImportPlugin()', () => {
+  it('imports the Panda stylesheet from every library entry and from nothing else', () => {
+    const plugin = pandaLayersCssImportPlugin()
+    const configResolved = plugin.configResolved as (config: LibraryBuildConfig) => void
+    const transformHook = plugin.transform as (code: string, id: string) => {code: string} | null
+
+    configResolved({
+      root: '/repo/packages/sanity',
+      build: {lib: {entry: {index: './src/_exports/index.ts', desk: './src/_exports/desk.ts'}}},
+    })
+
+    expect(transformHook('export {}', '/repo/packages/sanity/src/_exports/index.ts')?.code).toBe(
+      'import "@repo/pandacss/layers.css"\nexport {}',
+    )
+    expect(transformHook('export {}', '/repo/packages/sanity/src/_exports/desk.ts')?.code).toMatch(
+      /^import "@repo\/pandacss\/layers\.css"\n/,
+    )
+    expect(transformHook('export {}', '/repo/packages/sanity/src/core/index.ts')).toBeNull()
   })
 })
 
