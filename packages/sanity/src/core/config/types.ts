@@ -1228,6 +1228,7 @@ export interface Source {
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
     /**
      * Extra metadata fields, compiled as a private object schema and edited with the studio form.
+     * Rendered on create and in the edit dialog only while `beta.variants` is enabled.
      * Empty when no workspace or plugin configured any.
      */
     metadata?: {
@@ -1442,7 +1443,8 @@ export type DefaultPluginsWorkspaceOptions = {
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
     /**
      * Field definitions stored on release metadata. The same `defineField` definitions used in
-     * Structure. Studio renders them; this is not a component slot.
+     * Structure. Studio renders them on create and in the edit-release dialog while
+     * `beta.variants` is enabled. This is not a component slot.
      *
      * @beta
      */

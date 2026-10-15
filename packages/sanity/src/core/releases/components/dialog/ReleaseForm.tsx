@@ -31,6 +31,7 @@ import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
 import {hasStoredReleaseData, useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {asReleaseMetadata, toReleaseMetadataRecord} from '../../metadata/mergeReleaseMetadata'
+import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseType} from '../../store/types'
 import {DEFAULT_RELEASE_TYPE, RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
@@ -50,9 +51,17 @@ export function ReleaseForm(props: {
   const {releaseType = DEFAULT_RELEASE_TYPE, intendedPublishAt} = value.metadata || {}
   const {t} = useTranslation()
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
-  const metadataFields = useWorkspace().releases?.metadata?.fields ?? NO_METADATA_FIELDS
+  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
+  const configuredFields = useWorkspace().releases?.metadata?.fields ?? NO_METADATA_FIELDS
+  const metadataFields = metadataFieldsEnabled ? configuredFields : NO_METADATA_FIELDS
 
   const id = value._id
+
+  useEffect(() => {
+    if (metadataFieldsEnabled) return
+    // The form is not mounted. Create must not stay disabled waiting for it.
+    onValidityChange?.(true)
+  }, [metadataFieldsEnabled, onValidityChange])
 
   useEffect(() => {
     const storedData = getStoredReleaseData()
@@ -64,10 +73,10 @@ export function ReleaseForm(props: {
         description: storedData.description,
         releaseType: storedData.releaseType ?? DEFAULT_RELEASE_TYPE,
         intendedPublishAt: storedData.intendedPublishAt,
-        ...storedData.fields,
+        ...(metadataFieldsEnabled ? storedData.fields : {}),
       }),
     })
-  }, [getStoredReleaseData, id, onChange])
+  }, [getStoredReleaseData, id, metadataFieldsEnabled, onChange])
 
   const handleOnChangeAndStorage = useCallback(
     (updatedValue: EditableReleaseDocument) => {
@@ -231,11 +240,13 @@ export function ReleaseForm(props: {
         </VStack>
       </VStack>
       <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
-      <ReleaseMetadataForm
-        metadata={value.metadata}
-        onChange={handleMetadataChange}
-        onValidityChange={onValidityChange}
-      />
+      {metadataFieldsEnabled ? (
+        <ReleaseMetadataForm
+          metadata={value.metadata}
+          onChange={handleMetadataChange}
+          onValidityChange={onValidityChange}
+        />
+      ) : null}
     </VStack>
   )
 }

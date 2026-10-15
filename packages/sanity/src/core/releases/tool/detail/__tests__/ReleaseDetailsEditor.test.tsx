@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {defineField} from '@sanity/types'
-import {render, screen, waitFor, within} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -205,15 +205,8 @@ describe('ReleaseDetailsEditor', () => {
       vi.useRealTimers()
     })
 
-    it('does not save an invalid metadata edit and keeps unknown keys when it becomes valid', async () => {
+    it('does not render metadata fields, and a title edit still saves', async () => {
       vi.useFakeTimers({shouldAdvanceTime: true})
-      const release = {
-        ...initialRelease,
-        metadata: {
-          ...initialRelease.metadata,
-          reviewer: {team: 'legal'},
-        },
-      } as ReleaseDocument
       const wrapper = await createTestProvider({
         config: {
           releases: {
@@ -223,31 +216,27 @@ describe('ReleaseDetailsEditor', () => {
                   name: 'reviewNote',
                   title: 'Review note',
                   type: 'string',
-                  validation: (rule) => rule.required().min(4),
+                  validation: (rule) => rule.required(),
                 }),
               ],
             },
           },
         },
       })
-      render(<ReleaseDetailsEditor release={release} />, {wrapper})
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
       await flushMicrotasksThisIsACodeSmell()
 
-      const field = await screen.findByTestId('field-reviewNote')
-      await userEvent.type(within(field).getByRole('textbox'), 'No', {delay: null})
-      await vi.advanceTimersByTimeAsync(250)
-      expect(getUpdateReleaseMock()).not.toHaveBeenCalled()
+      expect(screen.queryByTestId('field-reviewNote')).toBeNull()
 
-      await userEvent.type(within(field).getByRole('textbox'), 'te', {delay: null})
+      const titleInput = screen.getByTestId('release-form-title') as HTMLTextAreaElement
+      await userEvent.clear(titleInput)
+      await userEvent.type(titleInput, 'New Title', {delay: null})
       await vi.advanceTimersByTimeAsync(250)
 
       await waitFor(() => {
         expect(getUpdateReleaseMock()).toHaveBeenCalledWith(
           expect.objectContaining({
-            metadata: expect.objectContaining({
-              reviewNote: 'Note',
-              reviewer: {team: 'legal'},
-            }),
+            metadata: expect.objectContaining({title: 'New Title'}),
           }),
         )
       })
