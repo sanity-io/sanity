@@ -99,7 +99,7 @@ function TooltipUserAvatar(props: Omit<UserAvatarProps, 'user'> & {user: User}) 
   // `Avatar` also renders its `title` as a native browser tooltip, so the wrapper carries the name
   return (
     <Tooltip content={displayName} placement="top" portal>
-      <div aria-label={displayName} style={{display: 'inline-block'}}>
+      <div role="img" aria-label={displayName} style={{display: 'inline-block'}}>
         <StaticUserAvatar {...props} hideTitle />
       </div>
     </Tooltip>
