@@ -22,7 +22,7 @@ const STATE_VERSION = 1
 export const DEFAULT_PARAMS = '{\n  \n}'
 
 /** Every panel starts out expanded */
-const DEFAULT_PANELS: VistaPanelsState = {params: true, options: true}
+const DEFAULT_PANELS: VistaPanelsState = {params: true, options: true, paramsView: 'json'}
 
 export interface VistaStorageDefaults {
   datasets: string[]
@@ -181,10 +181,17 @@ function sanitizeSidebar(value: unknown): VistaSidebarState {
   }
 }
 
-/** A panel stays expanded unless it was explicitly collapsed; state saved before panels existed reads as expanded */
+/**
+ * A panel stays expanded unless it was explicitly collapsed, and the params show as JSON unless
+ * the form was chosen; state saved before either existed reads that way
+ */
 function sanitizePanels(value: unknown): VistaPanelsState {
   const panels = isPlainObject(value) ? value : {}
-  return {params: panels.params !== false, options: panels.options !== false}
+  return {
+    params: panels.params !== false,
+    options: panels.options !== false,
+    paramsView: panels.paramsView === 'form' ? 'form' : 'json',
+  }
 }
 
 /**

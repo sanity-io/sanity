@@ -14,6 +14,8 @@ export interface CollapsibleSectionProps {
   title: string
   /** Rendered after the title, for instance a warning icon */
   icon?: ReactNode
+  /** Rendered at the end of the header while expanded, for instance a view switch */
+  actions?: ReactNode
   expanded: boolean
   onToggle: () => void
   /** Sizing of the expanded section */
@@ -30,7 +32,8 @@ export interface CollapsibleSectionProps {
  * remains; its height is {@link PANEL_HEADER_HEIGHT} like the response column's tabbed panel.
  */
 export function CollapsibleSection(props: CollapsibleSectionProps) {
-  const {id, title, icon, expanded, onToggle, className, style, ref, handle, children} = props
+  const {id, title, icon, actions, expanded, onToggle, className, style, ref, handle, children} =
+    props
 
   return (
     <Flex
@@ -63,6 +66,12 @@ export function CollapsibleSection(props: CollapsibleSectionProps) {
           text={title}
         />
         {icon}
+        {expanded && actions && (
+          <>
+            <Box flexBasis="0%" flexGrow={1} />
+            {actions}
+          </>
+        )}
       </Flex>
       {expanded && (
         <Box

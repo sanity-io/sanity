@@ -282,11 +282,86 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.panel.response': 'Response',
   /** Label of the "Content Source Map" tab in the response panel */
   'vista.panel.source-map': 'Content Source Map',
+  /** Button adding an item to a list param in the params form */
+  'vista.params-form.add-item': 'Add item',
+  /** Placeholder of a params form field that takes any JSON value */
+  'vista.params-form.any-placeholder': 'Any JSON value; other text is sent as a string',
+  /** Shown in the params form when the query uses no params */
+  'vista.params-form.empty': 'The query uses no params. Each $name in it gets a field here.',
+  /** Shown in the params form while the params JSON cannot be parsed */
+  'vista.params-form.invalid-json':
+    'The params are not valid JSON. Fix them in the JSON view to edit them here.',
+  /** A boolean param's value is not true or false; it is sent anyway */
+  'vista.params-form.invalid.boolean': 'Not true or false; sent as {{value}}',
+  /** A document type param's value is not a document type of the workspace; it is sent anyway */
+  'vista.params-form.invalid.document-type': 'Not a document type in this workspace; sent anyway',
+  /** A whole number param (a slice bound) holds a fraction */
+  'vista.params-form.invalid.integer': 'Not a whole number, which slices need',
+  /** A list param's value is not a list; it is sent anyway */
+  'vista.params-form.invalid.list': 'Not a list; sent as {{value}}',
+  /** A number param's value is not a number; it is sent anyway */
+  'vista.params-form.invalid.number': 'Not a number; sent as text',
+  /** A param's value is not one of the values the schema allows; it is sent anyway */
+  'vista.params-form.invalid.option': 'Not one of the known values; sent anyway',
+  /** A text param's value is not text; it is sent anyway */
+  'vista.params-form.invalid.string': 'Not text; sent as {{value}}',
+  /** Accessible label of an item input of a list param in the params form */
+  'vista.params-form.item-label': '${{name}}, item {{index}}',
+  /** Placeholder of an item input of a list param in the params form */
+  'vista.params-form.item-placeholder': 'Item',
+  /** Under a params form field whose param has no value */
+  'vista.params-form.missing': 'Not set: the query fails until it has a value',
+  /** Shown in the params form when the workspace schema could not be read */
+  'vista.params-form.no-schema':
+    'Types come from the query alone: the workspace schema could not be read.',
+  /** Placeholder of a params form field without a value, and the unset choice of a boolean */
+  'vista.params-form.not-set': 'Not set',
+  /** Button setting a date and time param to the current time */
+  'vista.params-form.now': 'Now',
+  /** Button removing a param the query does not use from the params */
+  'vista.params-form.remove': 'Remove',
+  /** Accessible label of the button removing an item from a list param */
+  'vista.params-form.remove-item': 'Remove item',
+  /** Shown in the params form when the query does not parse */
+  'vista.params-form.syntax-error':
+    'The query does not parse, so its params are listed without types.',
+  /** Type hint of a params form field: any JSON value */
+  'vista.params-form.type.any': 'any JSON value',
+  /** Type hint of a params form field: true or false */
+  'vista.params-form.type.boolean': 'true or false',
+  /** Type hint of a params form field: an ISO 8601 date and time */
+  'vista.params-form.type.datetime': 'date and time (ISO 8601)',
+  /** Type hint of a params form field: a document ID */
+  'vista.params-form.type.document-id': 'document ID',
+  /** Type hint of a params form field: one of the workspace's document types */
+  'vista.params-form.type.document-type': 'document type',
+  /** Type hint of a params form field: a whole number */
+  'vista.params-form.type.integer': 'whole number',
+  /** Type hint of a params form field: a list of values */
+  'vista.params-form.type.list': 'list, each {{type}}',
+  /** Type hint of a params form field: a number */
+  'vista.params-form.type.number': 'number',
+  /** Type hint of a params form field: one of the values the schema allows */
+  'vista.params-form.type.options': '{{type}}, one of {{count}} values',
+  /** Type hint of a params form field: text */
+  'vista.params-form.type.string': 'text',
+  /** Heading of the params the query does not use, listed in the params form */
+  'vista.params-form.unused': 'Not used by the query',
+  /** Before the expressions that use a param, in the params form */
+  'vista.params-form.used-in': 'Used in',
   /** Value announced for the params resize handle while the panel sizes itself to its content */
   'vista.params.fit-height': 'Sized to the content, {{height}} pixels',
   /** Accessible label and tooltip of the handle for resizing the params panel */
   'vista.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
+  /** Badge on the params form view, which infers fields from the query */
+  'vista.params.view.experimental': 'Experimental',
+  /** Tab showing the params as a form inferred from the query */
+  'vista.params.view.form': 'Form',
+  /** Tab showing the params as JSON */
+  'vista.params.view.json': 'JSON',
+  /** Accessible label of the tabs switching how the params are edited */
+  'vista.params.view.label': 'Edit params as',
   /** Toast shown after a query URL was pasted and loaded into the tab */
   'vista.paste.parsed': 'Loaded query from pasted URL',
   /** Toast shown when a pasted URL used a content variant the tab does not send */

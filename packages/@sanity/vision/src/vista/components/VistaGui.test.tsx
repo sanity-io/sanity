@@ -399,7 +399,9 @@ describe('VistaGui', () => {
     // Collapsing one panel leaves the other alone, and the query editor stays put
     expect(screen.getByTestId('vista-params-editor')).toBeTruthy()
     expect(screen.getByTestId('vista-query-editor')).toBeTruthy()
-    await waitFor(() => expect(getStoredState().panels).toEqual({params: true, options: false}))
+    await waitFor(() =>
+      expect(getStoredState().panels).toEqual({params: true, options: false, paramsView: 'json'}),
+    )
 
     unmount()
     renderVista()
@@ -410,7 +412,9 @@ describe('VistaGui', () => {
     expect(screen.getByTestId('vista-options')).toBeTruthy()
     fireEvent.click(screen.getByTestId('vista-request-params-toggle'))
     expect(screen.queryByTestId('vista-params-editor')).toBeNull()
-    await waitFor(() => expect(getStoredState().panels).toEqual({params: false, options: true}))
+    await waitFor(() =>
+      expect(getStoredState().panels).toEqual({params: false, options: true, paramsView: 'json'}),
+    )
 
     // Params typed right before collapsing are still in the debounce; collapsing commits them,
     // so the editor that comes back with the panel shows them
@@ -424,6 +428,39 @@ describe('VistaGui', () => {
     await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{"id": "pending"}'))
     fireEvent.click(screen.getByTestId('vista-request-params-toggle'))
     expect(paramsEditor().value).toBe('{"id": "pending"}')
+  })
+
+  it('edits the params in the experimental form inferred from the query', async () => {
+    const {fetchCalls, unmount} = renderVista()
+    const paramsEditor = () =>
+      within(screen.getByTestId('vista-params-editor')).getByTestId(
+        'codemirror-mock',
+      ) as HTMLTextAreaElement
+    const formInput = (name: string) =>
+      screen.getByTestId(`vista-params-form-${name}`).querySelector('input') as HTMLInputElement
+
+    typeQuery('*[_type == $type][0...$limit]')
+    // An edit still waiting in the debounce comes along to the form
+    fireEvent.change(paramsEditor(), {target: {value: '{"limit": 3}'}})
+    fireEvent.click(document.getElementById('vista-params-view-form') as HTMLElement)
+    expect(screen.queryByTestId('vista-params-editor')).toBeNull()
+    expect(formInput('limit').value).toBe('3')
+    expect(text(screen.getByTestId('vista-params-form-limit-type'))).toBe(
+      'vista.params-form.type.integer',
+    )
+
+    fireEvent.change(formInput('type'), {target: {value: 'author'}})
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].params).toEqual({limit: 3, type: 'author'})
+    await waitFor(() => expect(getStoredState().panels.paramsView).toBe('form'))
+
+    unmount()
+    renderVista()
+    expect(formInput('type').value).toBe('author')
+    // The editor shows what the form wrote
+    fireEvent.click(document.getElementById('vista-params-view-json') as HTMLElement)
+    expect(JSON.parse(paramsEditor().value)).toEqual({limit: 3, type: 'author'})
   })
 
   it('fetches the raw response, shows its metadata and records the history', async () => {

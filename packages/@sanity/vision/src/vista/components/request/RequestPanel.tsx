@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Button, Hotkeys, Label, Text} from '@sanity/ui'
+import {Badge, Button, Hotkeys, Label, Tab, TabList, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type RefObject, useCallback, useMemo, useRef} from 'react'
 import {useTranslation} from 'sanity'
@@ -16,11 +16,12 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {
   type QueryRequest,
   type VistaPanel,
+  type VistaParamsView,
   type VistaTab,
   type VistaTabOptions,
 } from '../../store/types'
 import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
-import {isPanelExpanded} from '../../store/vistaMachine'
+import {isPanelExpanded, selectParamsView} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
 import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
 import {VISTA_SHORTCUTS} from '../../util/shortcuts'
@@ -36,6 +37,7 @@ import {
   sectionResizer,
 } from '../vista.css'
 import {OptionsPanel} from './OptionsPanel'
+import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
 import {SECTION_MIN_HEIGHT, useDragResize} from './useDragResize'
@@ -50,7 +52,10 @@ export interface RequestPanelProps {
   queryEditorRef: RefObject<VisionCodeMirrorHandle | null>
   paramsEditorRef: RefObject<VisionCodeMirrorHandle | null>
   onQueryChange: (query: string) => void
+  /** An edit in the params editor; committed after a debounce */
   onParamsChange: (rawParams: string) => void
+  /** Params set by the params form, committed right away since the form shows the tab's params */
+  onParamsReplace: (rawParams: string) => void
   onOptionsChange: (options: Partial<VistaTabOptions>) => void
   onRun: () => void
   onCancel: () => void
@@ -78,6 +83,7 @@ export function RequestPanel(props: RequestPanelProps) {
     paramsEditorRef,
     onQueryChange,
     onParamsChange,
+    onParamsReplace,
     onOptionsChange,
     onRun,
     onCancel,
@@ -97,6 +103,11 @@ export function RequestPanel(props: RequestPanelProps) {
   const optionsExpanded = useVistaSelector((snapshot) => isPanelExpanded(snapshot, 'options'))
   const togglePanel = useCallback(
     (panel: VistaPanel) => actorRef.send({type: 'panel.toggle', panel}),
+    [actorRef],
+  )
+  const paramsView = useVistaSelector(selectParamsView)
+  const setParamsView = useCallback(
+    (view: VistaParamsView) => actorRef.send({type: 'params.view', view}),
     [actorRef],
   )
 
@@ -169,18 +180,51 @@ export function RequestPanel(props: RequestPanelProps) {
               </Text>
             )
           }
+          actions={
+            <TabList aria-label={t('vista.params.view.label')} gap={1}>
+              <Tab
+                aria-controls="vista-request-params-content"
+                fontSize={1}
+                id="vista-params-view-json"
+                label={t('vista.params.view.json')}
+                onClick={() => setParamsView('json')}
+                padding={2}
+                selected={paramsView === 'json'}
+              />
+              <Tab
+                aria-controls="vista-request-params-content"
+                fontSize={1}
+                id="vista-params-view-form"
+                label={
+                  <Flex alignItems="center" as="span" gap={2}>
+                    {t('vista.params.view.form')}
+                    <Badge fontSize={0} tone="primary">
+                      {t('vista.params.view.experimental')}
+                    </Badge>
+                  </Flex>
+                }
+                onClick={() => setParamsView('form')}
+                padding={2}
+                selected={paramsView === 'form'}
+              />
+            </TabList>
+          }
           id="vista-request-params"
           onToggle={() => togglePanel('params')}
           ref={paramsRef}
           style={paramsResize.height === null ? undefined : {height: paramsResize.height}}
           title={t('params.label')}
         >
-          <ParamsPanel
-            editorRef={paramsEditorRef}
-            onChange={onParamsChange}
-            params={params}
-            value={tab.rawParams}
-          />
+          {paramsView === 'form' ? (
+            <ParamsForm onChange={onParamsReplace} params={params} query={tab.query} />
+          ) : (
+            <ParamsPanel
+              editorRef={paramsEditorRef}
+              onChange={onParamsChange}
+              params={params}
+              value={tab.rawParams}
+            />
+          )}
         </CollapsibleSection>
         <CollapsibleSection
           className={optionsSection}

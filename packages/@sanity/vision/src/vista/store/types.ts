@@ -64,8 +64,13 @@ export interface VistaSidebarState {
 /** The collapsible panels below the query editor */
 export type VistaPanel = 'params' | 'options'
 
-/** Whether each collapsible panel is expanded */
-export type VistaPanelsState = Record<VistaPanel, boolean>
+/** How the params panel edits the params: their JSON, or a form inferred from the query */
+export type VistaParamsView = 'json' | 'form'
+
+/** Whether each collapsible panel is expanded, and how the params panel shows the params */
+export interface VistaPanelsState extends Record<VistaPanel, boolean> {
+  paramsView: VistaParamsView
+}
 
 /** The part of the state that survives reloads (per project, in `localStorage`) */
 export interface VistaPersistedState {

@@ -7,6 +7,7 @@ import {
   selectActiveTab,
   selectOpenDialog,
   selectOpenDrawer,
+  selectParamsView,
   selectPersistedState,
   vistaMachine,
 } from './vistaMachine'
@@ -239,7 +240,7 @@ describe('vistaMachine', () => {
   it('restores and toggles the params and options panels independently', () => {
     const harness = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: false},
+      panels: {params: true, options: false, paramsView: 'json'},
     })
 
     expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
@@ -255,6 +256,25 @@ describe('vistaMachine', () => {
     expect(isPanelExpanded(harness.snapshot(), 'options')).toBe(true)
   })
 
+  it('restores, switches and persists how the params are edited', () => {
+    const harness = createHarness({
+      ...createInitialState(defaults),
+      panels: {params: true, options: true, paramsView: 'form'},
+    })
+    expect(selectParamsView(harness.snapshot())).toBe('form')
+
+    harness.actor.send({type: 'params.view', view: 'form'})
+    expect(selectParamsView(harness.snapshot())).toBe('form')
+    harness.actor.send({type: 'params.view', view: 'json'})
+    expect(selectParamsView(harness.snapshot())).toBe('json')
+    expect(selectPersistedState(harness.snapshot()).panels.paramsView).toBe('json')
+
+    harness.actor.send({type: 'params.view', view: 'form'})
+    expect(selectPersistedState(harness.snapshot()).panels.paramsView).toBe('form')
+    harness.actor.send({type: 'storage.clear'})
+    expect(selectParamsView(harness.snapshot())).toBe('json')
+  })
+
   it('derives the persisted slice from context and UI states', () => {
     const harness = createHarness()
     harness.actor.send({type: 'sidebar.toggle'})
@@ -268,7 +288,7 @@ describe('vistaMachine', () => {
       activeTabId: harness.snapshot().context.activeTabId,
       settings: harness.snapshot().context.settings,
       sidebar: {expanded: true, drawer: 'saved'},
-      panels: {params: true, options: false},
+      panels: {params: true, options: false, paramsView: 'json'},
     })
   })
 

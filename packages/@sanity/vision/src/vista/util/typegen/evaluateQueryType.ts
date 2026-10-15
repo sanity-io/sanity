@@ -4,15 +4,23 @@ import {type Schema} from 'sanity'
 
 import {inferTypeFromValue} from './inferTypeFromValue'
 
-const groqSchemaCache = new WeakMap<Schema, SchemaType>()
+const groqSchemaCache = new WeakMap<Schema, SchemaType | Error>()
 
-/** The workspace schema in groq-js form, extracted once per schema instance */
-function getGroqSchema(schema: Schema): SchemaType {
+/**
+ * The workspace schema in groq-js form, extracted once per schema instance; a schema that cannot
+ * be extracted throws the same error every time instead of being extracted again
+ */
+export function getGroqSchema(schema: Schema): SchemaType {
   let extracted = groqSchemaCache.get(schema)
   if (!extracted) {
-    extracted = extractSchema(schema)
+    try {
+      extracted = extractSchema(schema)
+    } catch (err) {
+      extracted = toError(err)
+    }
     groqSchemaCache.set(schema, extracted)
   }
+  if (extracted instanceof Error) throw extracted
   return extracted
 }
 

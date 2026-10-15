@@ -26,7 +26,7 @@ import {
   useVistaSelector,
   type VistaLayout,
 } from '../../store/VistaActorContext'
-import {isPanelExpanded, selectDatasets} from '../../store/vistaMachine'
+import {isPanelExpanded, selectDatasets, selectParamsView} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
@@ -112,6 +112,18 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   useOnValueChange(paramsExpanded, (expanded) => {
     if (!expanded) setParams.flush()
   })
+  // Switching between the editor and the form unmounts one and mounts the other from the tab
+  const paramsView = useVistaSelector(selectParamsView)
+  useOnValueChange(paramsView, () => setParams.flush())
+  // The form shows the tab's params, so its edits are committed right away; an editor edit still
+  // waiting in the debounce would write older params over them
+  const replaceParams = useCallback(
+    (rawParams: string) => {
+      setParams.cancel()
+      setParamsNow(rawParams)
+    },
+    [setParams, setParamsNow],
+  )
 
   // The request a fetch of the tab's own query should carry right now: params typed within the
   // debounce window belong to it, so they are committed first and the request is built from what
@@ -356,6 +368,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       onLintFindings={setLintFindings}
       onOptionsChange={setOptions}
       onParamsChange={setParams}
+      onParamsReplace={replaceParams}
       onPrettify={() => void prettify()}
       onQueryChange={setQuery}
       onRun={() => run({type: 'manual'})}
