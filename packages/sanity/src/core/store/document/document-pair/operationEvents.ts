@@ -195,7 +195,7 @@ export const operationEvents = memoize(
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       filter((op) => op.storeKey === storeKey || !op.storeKey),
       groupBy((op) => op.idPair.publishedId, {
-        duration: (results$) => results$.pipe(debounceTime(AUTOCOMMIT_INTERVAL)),
+        duration: (results$) => results$.pipe(debounceTime(AUTOCOMMIT_INTERVAL * 2)),
       }),
       mergeMap((group$) =>
         merge(
