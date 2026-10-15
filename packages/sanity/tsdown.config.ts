@@ -1,9 +1,11 @@
+import {unlayeredPandaCss} from '@repo/pandacss/tsdown'
 import {defineConfig} from '@repo/tsdown.config'
-import {type UserConfig} from 'tsdown'
+import {mergeConfig, type UserConfig} from 'tsdown'
 
 import pkg from './package.json' with {type: 'json'}
 
-const config: UserConfig = await defineConfig({
+const config: UserConfig = mergeConfig(
+  await defineConfig({
     // Filenames under `_exports/` map 1:1 to export names (index, cli, structure, …)
     entry: './src/_exports/*.ts',
     // Also wipe legacy root-level entry artifacts from older pkg-utils layouts (a string[] replaces
@@ -49,6 +51,11 @@ const config: UserConfig = await defineConfig({
     // Emits `lib/analyze-data.md` (LLM-friendly module/chunk breakdown). Opt-in because analysis
     // adds work to the tsdown build. Usage: `pnpm analyze:sanity` from the repo root (see AGENTS.md).
     bundleAnalyzer: process.env.ENABLE_BUNDLE_ANALYZER === 'true',
-})
+  }),
+  // `@sanity/tsdown-config` builds its own plugin list, so the plugin that strips the cascade
+  // layers from `lib/bundle.css` is merged in afterwards (see @repo/pandacss for why the studio's
+  // static CSS stays unlayered until `@sanity/ui` layers its own rules)
+  {plugins: [unlayeredPandaCss()]},
+)
 
 export default config

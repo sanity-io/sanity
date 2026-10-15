@@ -302,6 +302,16 @@ How the CSS reaches a page:
   which has to list the `@sanity/ui` layer names before the `sanity-*` ones. Panda's `polyfill`
   option is not an alternative to layers: it emulates their order with `:not(#\#…)` selector
   chains that inflate every rule's specificity.
+- **Until `@sanity/ui` layers its rules, the layers are stripped.** Today `@sanity/ui` v4 injects
+  its styled-components rules unlayered and `ui5` keeps its component classes outside `sui`, and
+  an unlayered rule beats every layered one, so `@repo/pandacss` unwraps the `@layer` blocks
+  (`unwrapCascadeLayers`) from `bundle.css` (`unlayeredPandaCss()` from `@repo/pandacss/tsdown`,
+  merged into `packages/sanity/tsdown.config.ts`), from the CDN bundle and from the dev
+  stylesheet (`unlayeredPandaCss()` from `@repo/pandacss/vite`, registered by `studioPandaCss()`
+  and `@repo/package.bundle`). That step is one commit, `build: strip the Panda cascade layers
+  until @sanity/ui layers its styled-components output`: `git revert` it once `@sanity/ui` ships
+  layered output, and prepend the layer-order statement above to `bundle.css` and `layers.css`
+  in the same change (`@sanity/pandacss-tsdown-plugin` emits the blocks without one).
 - **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
   `property: value` pair once, grouped by property with the values sorted; a modifier class that
   must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)
