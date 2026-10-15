@@ -14,8 +14,19 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import {concat, defer, EMPTY, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
-import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
+import {
+  asapScheduler,
+  concat,
+  defer,
+  EMPTY,
+  from,
+  lastValueFrom,
+  merge,
+  Observable,
+  of,
+  throwError,
+} from 'rxjs'
+import {catchError, map, mergeAll, mergeMap, observeOn, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
 import {ClientUnavailableError} from './clientUnavailable'
@@ -786,8 +797,10 @@ function validateItemObservable({
   }
 
   // `idle` scheduling waits for an idle period before every check (`idle()` registers a new
-  // callback per subscription); `immediate` runs each check as soon as its turn comes.
-  const pace = scheduling === 'immediate' ? EMPTY : idle()
+  // callback per subscription). `immediate` only defers each check to a microtask: a gate that
+  // completes synchronously lets `mergeMap` recurse through synchronously completing siblings
+  // (and nested levels) until the stack overflows, and RxJS drops that error silently.
+  const pace = scheduling === 'immediate' ? EMPTY.pipe(observeOn(asapScheduler)) : idle()
 
   return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
     mergeMap((validateNode) => concat(pace, validateNode), 40),
