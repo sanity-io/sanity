@@ -53,7 +53,7 @@ function SidebarItem({icon, label, expanded, selected, testId, onClick}: Sidebar
   }
 
   return (
-    <Tooltip content={<Text size={1}>{label}</Text>} placement="right" portal>
+    <Tooltip animate content={<Text size={1}>{label}</Text>} placement="right" portal>
       <Button
         aria-label={label}
         data-testid={testId}

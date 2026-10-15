@@ -73,6 +73,7 @@ export function SettingsDialog() {
 
   return (
     <Dialog
+      animate
       data-testid="vista-settings-dialog"
       header={t('vista.settings.title')}
       id="vista-settings-dialog"

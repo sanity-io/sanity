@@ -81,6 +81,7 @@ export function ExportTypesDialog({
 
   return (
     <Dialog
+      animate
       data-testid="vista-export-types-dialog"
       header={
         format === 'typescript'

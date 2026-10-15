@@ -94,7 +94,11 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
                   value={url}
                 />
               </Box>
-              <Tooltip content={<Text size={1}>{t('action.copy-url-to-clipboard')}</Text>} portal>
+              <Tooltip
+                animate
+                content={<Text size={1}>{t('action.copy-url-to-clipboard')}</Text>}
+                portal
+              >
                 <Button
                   aria-label={t('action.copy-url-to-clipboard')}
                   icon={CopyIcon}

@@ -195,6 +195,7 @@ export function RequestPanel(props: RequestPanelProps) {
       </Flex>
       <ActionRail testId="vista-query-actions">
         <Tooltip
+          animate
           content={
             <Flex alignItems="center" gap={2} padding={1}>
               <Text size={1}>{runLabel}</Text>

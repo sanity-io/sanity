@@ -13,6 +13,7 @@ export function ShortcutsDialog() {
 
   return (
     <Dialog
+      animate
       data-testid="vista-shortcuts-dialog"
       header={t('vista.shortcuts.title')}
       id="vista-shortcuts-dialog"

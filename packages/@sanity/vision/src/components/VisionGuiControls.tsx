@@ -33,6 +33,7 @@ export function VisionGuiControls({
     <ControlsContainer>
       <Card padding={3} paddingX={3}>
         <Tooltip
+          animate
           content={
             <Card radius={4}>
               <Text size={1} muted>
@@ -47,6 +48,7 @@ export function VisionGuiControls({
           <Flex justifyContent="space-evenly">
             <Box flexBasis="0%" flexGrow={1}>
               <Tooltip
+                animate
                 content={
                   <Card radius={4}>
                     <Hotkeys keys={['Ctrl', 'Enter']} />

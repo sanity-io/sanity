@@ -50,7 +50,7 @@ export function DownloadButton({
   const hintId = useId()
 
   return (
-    <Tooltip content={<Text size={1}>{tooltip || label}</Text>} placement="top" portal>
+    <Tooltip animate content={<Text size={1}>{tooltip || label}</Text>} placement="top" portal>
       {/*
         A disabled button gets neither pointer events nor focus, so while the download is
         unavailable the wrapper stands in for it: the tooltip listens to the wrapper, and the

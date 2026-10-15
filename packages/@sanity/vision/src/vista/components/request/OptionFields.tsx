@@ -85,7 +85,7 @@ export function DatasetField({
             ))}
           </Select>
         </Box>
-        <Tooltip content={<Text size={1}>{toggleLabel}</Text>} placement="bottom" portal>
+        <Tooltip animate content={<Text size={1}>{toggleLabel}</Text>} placement="bottom" portal>
           <Button
             aria-label={toggleLabel}
             aria-pressed={!following}
@@ -141,6 +141,7 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
     <Stack gap={2}>
       <FieldLabel htmlFor={id}>{t('settings.api-version-label')}</FieldLabel>
       <Tooltip
+        animate
         content={<Text size={1}>{t('settings.api-version-locked-for-variant')}</Text>}
         disabled={!locked}
         placement="bottom"

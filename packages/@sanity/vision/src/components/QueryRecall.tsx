@@ -551,7 +551,12 @@ export function QueryRecall({
                                 )}
                               </Menu>
                             }
-                            popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
+                            popover={{
+                              animate: true,
+                              portal: true,
+                              placement: 'bottom-end',
+                              tone: 'default',
+                            }}
                           />
                         )}
                       </Box>
@@ -560,6 +565,7 @@ export function QueryRecall({
 
                   {fullQueryPreview ? (
                     <Tooltip
+                      animate
                       content={
                         <Box
                           padding={2}
@@ -697,6 +703,7 @@ export function QueryRecall({
       </QueryList>
       {shareDialogQuery && (
         <Dialog
+          animate
           id="vision-query-recall-share-dialog"
           width={1}
           header={t('label.share')}

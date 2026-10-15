@@ -46,6 +46,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
 
   return (
     <Dialog
+      animate
       data-testid="vista-export-query-dialog"
       header={t('vista.export-query.title')}
       id="vista-export-query-dialog"

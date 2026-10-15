@@ -238,7 +238,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           />
         </Box>
         {mode === 'saved' && (
-          <Tooltip content={<Text size={1}>{t('vista.saved.save-current')}</Text>} portal>
+          <Tooltip animate content={<Text size={1}>{t('vista.saved.save-current')}</Text>} portal>
             <Button
               aria-label={t('vista.saved.save-current')}
               data-testid="vista-save-current-query"
@@ -379,7 +379,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                             )}
                           </Menu>
                         }
-                        popover={{portal: true, placement: 'bottom-end'}}
+                        popover={{animate: true, portal: true, placement: 'bottom-end'}}
                       />
                     </Box>
                   </Flex>
@@ -392,6 +392,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
 
       {shareCandidate && (
         <Dialog
+          animate
           footer={
             <Flex gap={2} justifyContent="flex-end" padding={3}>
               <Button
