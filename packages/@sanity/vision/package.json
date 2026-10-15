@@ -30,6 +30,9 @@
   "type": "module",
   "sideEffects": true,
   "types": "./lib/index.d.ts",
+  "imports": {
+    "#styled-system/*": "./styled-system/*/index.js"
+  },
   "exports": {
     ".": {
       "monorepo": "./src/index.ts",
@@ -45,6 +48,7 @@
     "./package.json": "./package.json"
   },
   "publishConfig": {
+    "imports": {},
     "exports": {
       ".": "./lib/index.js",
       "./bundle.css": {
@@ -60,6 +64,7 @@
   "scripts": {
     "build": "tsdown",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
+    "prepare": "panda codegen",
     "prepublishOnly": "turbo run build",
     "test": "vitest",
     "watch": "tsdown --watch"
@@ -82,7 +87,6 @@
     "@sanity/ui": "catalog:",
     "@sanity/uuid": "^3.0.3",
     "@uiw/react-codemirror": "^4.25.12",
-    "@vanilla-extract/dynamic": "catalog:",
     "dequal": "catalog:",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.9",
@@ -95,15 +99,17 @@
     "use-effect-event": "^2.0.4"
   },
   "devDependencies": {
+    "@pandacss/dev": "catalog:",
+    "@pandacss/vite": "catalog:",
     "@repo/package.bundle": "workspace:*",
+    "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@sanity/pandacss-tsdown-plugin": "catalog:",
     "@testing-library/react": "^16.3.3",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
-    "@vanilla-extract/css": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "jsdom": "catalog:",
     "oxc-transform-react": "catalog:",

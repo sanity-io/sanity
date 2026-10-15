@@ -122,3 +122,8 @@ dev/test-studio/.react-compiler-bailout-report.json
 # Local output of `pnpm e2e:flake-report`
 flake-report.md
 flake-report.json
+
+# Panda CSS codegen (`panda codegen`, run by the packages' `prepare` scripts and by their builds)
+packages/sanity/styled-system
+packages/@sanity/vision/styled-system
+dev/test-studio/styled-system

@@ -11,6 +11,9 @@ packages:
   - packages/sanity/fixtures/examples/*
 
 allowBuilds:
+  # Panda CSS dependency; its postinstall is only a fallback downloader, the native binary arrives
+  # through platform-specific optionalDependencies
+  '@parcel/watcher': false
   '@playwright/browser-chromium': false
   '@swc/core': false
   better-sqlite3: false
@@ -24,19 +27,19 @@ allowBuilds:
 catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
+  '@pandacss/dev': ^2.2.0
+  '@pandacss/vite': ^2.2.0
   '@playwright/test': 1.64.0
   '@sanity/client': ^8.9.0
   '@sanity/migrate': ^8.0.5
+  '@sanity/pandacss-tsdown-plugin': ^0.1.0
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.29.0
+  '@sanity/tsdown-config': ^0.30.0
   '@sanity/ui': ^4.4.6
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
   '@types/react-is': ^19.3.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.3.0
-  '@vanilla-extract/css': ^1.21.3
-  '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.2
   '@vitest/browser-playwright': ^5.0.4
   dequal: ^2.0.3
@@ -95,7 +98,6 @@ minimumReleaseAgeExclude:
   - '@yuku-toolchain/types'
   - '@types/*'
   - '@typescript/*'
-  - '@vanilla-extract/*'
   - '@vercel/stega'
   - '@yuku-toolchain/*'
   - '@tanstack/react-virtual@3.14.19'
@@ -103,8 +105,6 @@ minimumReleaseAgeExclude:
   - '@codemirror/search'
   - '@codemirror/state'
   - '@codemirror/view'
-  # Fresh patch; exclude so 18.12.0 can install before the age gate
-  - 'chromatic@18.12.0'
   - 'csstype'
   - 'eslint-plugin-boundaries'
   - 'eventsource-parser@4.1.2'

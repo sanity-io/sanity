@@ -10,9 +10,10 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "@pandacss/vite": "catalog:",
+    "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-react": "catalog:",
     "lightningcss": "^1.33.0",

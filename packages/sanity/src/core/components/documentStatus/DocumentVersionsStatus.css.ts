@@ -1,19 +1,17 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const titleStack = style({
+export const titleStack = css({
   minWidth: 0,
   width: '100%',
 })
 
-export const updatedAtText = style({
+export const updatedAtText = css({
   flex: 'none',
   whiteSpace: 'nowrap',
 })
 
-export const versionStatusItem = style({
-  selectors: {
-    '&&': {
-      padding: '2px 0',
-    },
+export const versionStatusItem = css({
+  '&&': {
+    padding: '2px 0',
   },
 })
