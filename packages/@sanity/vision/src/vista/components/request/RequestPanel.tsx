@@ -119,6 +119,8 @@ export function RequestPanel(props: RequestPanelProps) {
   const paramsHeightNow = paramsResize.height ?? paramsResize.measured?.current
 
   const runLabel = isFetching ? t('vista.query.stop') : t('action.query-execute')
+  // Next to Stop live, the tooltip and accessible name say what Stop stops
+  const runDescription = isFetching ? t('vista.query.stop.description') : runLabel
 
   return (
     <Flex data-testid="vista-request-panel" flexDirection="column" height="100%">
@@ -249,7 +251,7 @@ export function RequestPanel(props: RequestPanelProps) {
           animate
           content={
             <Flex alignItems="center" gap={2} padding={1}>
-              <Text size={1}>{runLabel}</Text>
+              <Text size={1}>{runDescription}</Text>
               {!isFetching && <Hotkeys fontSize={0} keys={VISTA_SHORTCUTS.fetch.keys} />}
             </Flex>
           }
@@ -257,7 +259,7 @@ export function RequestPanel(props: RequestPanelProps) {
           portal
         >
           <Button
-            aria-label={runLabel}
+            aria-label={runDescription}
             data-testid="vista-fetch-button"
             disabled={!isFetching && !request}
             gap={2}

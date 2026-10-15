@@ -19,8 +19,8 @@ export interface LiveButtonProps {
 }
 
 /**
- * An alternative to Fetch: fetches the query, then fetches again whenever the documents in the
- * result change (through the Live Content API's sync tags), until Stop live
+ * Live fetch, an alternative to Fetch: fetches the query, then fetches again whenever the
+ * documents in the result change (through the Live Content API's sync tags), until Stop live
  */
 export function LiveButton({active, supported, canFetch, onToggle}: LiveButtonProps) {
   const {t} = useTranslation(visionLocaleNamespace)

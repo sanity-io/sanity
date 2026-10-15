@@ -591,9 +591,14 @@ describe('VistaGui', () => {
     expect(text(screen.getByTestId('result-json'))).toContain('Variant title')
     expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(false)
     expect(isDisabled(screen.getByTestId('vista-export-csv'))).toBe(false)
+    // Fetch reads Stop meanwhile, named for what it stops next to Stop live
+    const fetchButton = screen.getByTestId('vista-fetch-button')
+    expect(text(fetchButton)).toBe('vista.query.stop')
+    expect(fetchButton.getAttribute('aria-label')).toBe('vista.query.stop.description')
 
     release()
     await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Newer'))
+    expect(text(fetchButton)).toBe('action.query-execute')
     expect(text(screen.getByTestId('vista-meta-execution'))).toContain('34ms')
     expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(false)
   })

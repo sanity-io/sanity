@@ -231,8 +231,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.reason.live': 'Live update',
   /** History reason: the live connection asked every client to refetch */
   'vista.history.reason.live-restart': 'Live connection restarted',
-  /** History reason: the Live button was pressed, which fetches and then refetches automatically */
-  'vista.history.reason.live-start': 'Live started',
+  /**
+   * History reason: the Live fetch button was pressed, which fetches and then refetches
+   * automatically
+   */
+  'vista.history.reason.live-start': 'Live fetch started',
   /** History reason: a saved or pasted query was loaded into a tab that refetches automatically */
   'vista.history.reason.load': 'Query loaded',
   /** History reason: the fetch button was pressed */
@@ -269,7 +272,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Badge shown while a tab refetches automatically */
   'vista.live.active': 'Live',
   /** Button in the request column's action bar that fetches and then refetches automatically */
-  'vista.live.button': 'Live',
+  'vista.live.button': 'Live fetch',
   /** Tooltip of the Live button while automatic refetching is off */
   'vista.live.button.start': 'Fetch, then fetch again whenever the documents in the result change',
   /** Tooltip of the Stop live button, while the tab refetches automatically */
@@ -277,7 +280,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Stop fetching when the documents in the result change. Fetch still fetches on demand, for results no document change touches, like now()',
   /** Error shown when the live connection breaks */
   'vista.live.error': 'Live updates disconnected: {{message}}',
-  /** The Live button while the tab refetches automatically, stopping it */
+  /** The Live fetch button while the tab refetches automatically, stopping it */
   'vista.live.stop': 'Stop live',
   /** Hint under the dataset field while the tab follows the workspace's dataset */
   'vista.options.dataset.follows-workspace': 'Follows the workspace',
@@ -424,8 +427,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.query.prettify.failed': 'Could not prettify the query',
   /** Menu item saving the query to the personal saved queries */
   'vista.query.save': 'Save query',
-  /** Accessible label for the button that stops a running fetch */
-  'vista.query.stop': 'Stop fetching',
+  /** The Fetch button while a fetch is running, stopping it; paired with Stop live */
+  'vista.query.stop': 'Stop',
+  /** Tooltip and accessible label of the Stop button, which stops the running fetch only */
+  'vista.query.stop.description': 'Stop fetching',
   /** Explanation in the settings section about the redesigned experience */
   'vista.redesign.settings.description':
     'You are using the redesigned Vision tool. Switching back keeps your tabs and settings in this browser for the next time you try it.',
