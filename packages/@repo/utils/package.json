@@ -9,6 +9,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./radar-ids": "./src/radarIds.ts",
+    "./soak-settle": "./src/soakSettle.ts",
     "./style-systems": "./src/styleSystems.ts"
   },
   "scripts": {
