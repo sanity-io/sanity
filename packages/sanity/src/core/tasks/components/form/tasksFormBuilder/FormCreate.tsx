@@ -81,6 +81,7 @@ export function FormCreate(props: ObjectInputProps) {
     toast.push({
       closable: true,
       status: 'error',
+      // oxlint-disable-next-line @repo/i18n/no-missing-translation-key -- TODO(SAPP-4649): this string is not defined in the tasks bundle
       title: t('form.status.error.creation-failed'),
     })
   })

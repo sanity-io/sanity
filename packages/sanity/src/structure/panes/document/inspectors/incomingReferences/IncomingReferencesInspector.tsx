@@ -14,6 +14,7 @@ export const IncomingReferencesInspector: DocumentInspectorComponent = (
     <Flex flexDirection="column" height="100%" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
+        // oxlint-disable-next-line @repo/i18n/no-missing-translation-key -- TODO(SAPP-4649): this key only exists in the validation bundle ('Close validation'), it needs its own string
         closeButtonLabel={t('panel.close-button-aria-label')}
         flex="none"
         onClose={props.onClose}

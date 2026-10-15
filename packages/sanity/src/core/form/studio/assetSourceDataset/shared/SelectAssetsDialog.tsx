@@ -241,6 +241,7 @@ function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<
       __unstable_autoFocus={hasResetAutoFocus}
       header={
         dialogHeaderTitle ||
+        // oxlint-disable-next-line @repo/i18n/no-missing-translation-key -- TODO(SAPP-4649): the default-title_* strings were removed in #12233, so this fallback title renders the raw key
         t('asset-source.dialog.default-title', {
           context: assetType === 'sanity.video' ? 'video' : assetType,
         })

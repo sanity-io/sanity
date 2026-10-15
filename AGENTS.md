@@ -469,6 +469,19 @@ this for object literals in the JSX attribute; maps built during render via `use
 functions are equally wrong even though the rule cannot see them. See the `sanity-i18n-translate`
 skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion patterns.
 
+### Locale namespaces: plugin strings stay inside the plugin
+
+Only `studio`, `validation`, `copy-paste` and `feedback` (plus `comments`, whose plugin is always
+included) are registered in every studio. Every other namespace (`releases`, `tasks`, `canvas`,
+`structure`, ...) is registered by a plugin that a studio can leave out, and a component that
+reads it while that plugin is not loaded renders raw keys. Strings for code that renders outside
+a plugin (core components, form inputs, previews, the navbar) go in the `studio` bundle. Two
+in-repo oxlint rules check this: `@repo/i18n/no-plugin-namespace-outside-plugin` and
+`@repo/i18n/no-missing-translation-key` (keys must exist in the en-US resources of the namespace
+they are read from). Both read the namespace table in
+`packages/@repo/oxlint-plugin-i18n/src/namespaces.mjs`; update it when adding a namespace or
+changing which plugin registers one.
+
 ### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
 
 React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the

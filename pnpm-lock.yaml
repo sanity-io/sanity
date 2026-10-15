@@ -225,6 +225,9 @@ catalogs:
     jsdom:
       specifier: ^29.1.1
       version: 29.1.1
+    oxc-parser:
+      specifier: ^0.153.0
+      version: 0.153.0
     oxc-transform-react:
       specifier: ^0.154.0
       version: 0.154.0
@@ -1246,7 +1249,24 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.4)
 
-  packages/@repo/oxlint-plugin-i18n: {}
+  packages/@repo/oxlint-plugin-i18n:
+    dependencies:
+      oxc-parser:
+        specifier: 'catalog:'
+        version: 0.153.0
+    devDependencies:
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../test-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      oxlint:
+        specifier: ^1.88.0
+        version: 1.88.0(oxlint-tsgolint@7.0.2004)
+      vitest:
+        specifier: ^5.0.4
+        version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.4)
 
   packages/@repo/package.bundle:
     devDependencies:
@@ -13676,13 +13696,6 @@ packages:
     peerDependencies:
       react: '>=18.0.0'
 
-  react-rx@7.0.1:
-    resolution: {integrity: sha512-Jid35zQmcYcar30FXdcn73XTCQtzI5+pXLzi4FwFzYZeA/Rqf5UOONdb0DMzjjzeqRv+Iq+Lz7GClzAeD8DXPg==}
-    engines: {node: '>=22.12'}
-    peerDependencies:
-      react: ^19.2
-      rxjs: ^7.2
-
   react-rx@7.1.0:
     resolution: {integrity: sha512-22bBSdI1KgeOZ9ucV3Wdyhs3/aZF6KSLD3iqrN2dXRXPMuXhOIDdpM1Dt2rOMZwrX6VWXJTK1RnM917HIkgUIw==}
     engines: {node: '>=22.12'}
@@ -20526,7 +20539,7 @@ snapshots:
       '@sanity/ui': 4.4.7(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
-      react-rx: 7.0.1(react@19.3.1)(rxjs@7.8.2)
+      react-rx: 7.1.0(react@19.3.1)(rxjs@7.8.2)
       rxjs: 7.8.2
       sanity: link:packages/sanity
     transitivePeerDependencies:
@@ -27397,11 +27410,6 @@ snapshots:
       refractor: 5.0.0
       unist-util-filter: 5.0.1
       unist-util-visit-parents: 6.0.2
-
-  react-rx@7.0.1(react@19.3.1)(rxjs@7.8.2):
-    dependencies:
-      react: 19.3.1
-      rxjs: 7.8.2
 
   react-rx@7.1.0(react@19.3.1)(rxjs@7.8.2):
     dependencies:

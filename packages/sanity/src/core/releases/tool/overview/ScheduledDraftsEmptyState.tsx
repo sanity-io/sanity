@@ -7,6 +7,7 @@ import {singleDocReleaseNamespace} from '../../../singleDocRelease/i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 
 export const ScheduledDraftsEmptyState = () => {
+  // oxlint-disable-next-line @repo/i18n/no-plugin-namespace-outside-plugin -- only rendered in the scheduled drafts view of the releases tool, which getInitialCardinalityView limits to studios with scheduledDrafts.enabled, ie with the singleDocRelease plugin loaded
   const {t} = useTranslation(singleDocReleaseNamespace)
   const {mode} = useSingleDocReleaseEnabled()
   if (mode === 'upsell') {

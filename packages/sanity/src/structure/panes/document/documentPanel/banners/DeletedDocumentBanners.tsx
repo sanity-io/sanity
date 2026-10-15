@@ -74,6 +74,7 @@ const ArchivedReleaseBanner = ({release}: {release: ReleaseDocument}) => {
         <Text size={1} weight="medium">
           <Translate
             t={t}
+            // oxlint-disable-next-line @repo/i18n/no-missing-translation-key -- TODO(SAPP-4649): this string is not defined in any bundle
             i18nKey="banners.deleted-release-banner.text"
             values={{
               title: release.metadata?.title || t('release.placeholder-untitled-release'),
