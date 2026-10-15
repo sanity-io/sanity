@@ -66,6 +66,7 @@ function entry(id: string, second: number, overrides: Partial<FetchHistoryEntry>
     ms: 3,
     e2eMs: 40,
     errorMessage: undefined,
+    network: undefined,
     result: undefined,
     resultChange: undefined,
     ...overrides,
@@ -151,6 +152,25 @@ describe('HistoryTab', () => {
     expect(statusOf(first)).toEqual([])
     expect(screen.getAllByTestId('vista-history-changes-toggle')).toHaveLength(1)
     expect(diffModule.loads).toBe(0)
+  })
+
+  it('marks the fetches the API CDN answered, and its cache hits', () => {
+    const network = {
+      viaCdn: true,
+      cacheHit: false,
+      shard: undefined,
+      traceId: 't',
+      cacheControl: undefined,
+    }
+    renderTab([
+      entry('hit', 3, {network: {...network, cacheHit: true}}),
+      entry('miss', 2, {network}),
+      entry('api', 1, {network: {...network, viaCdn: false}}),
+    ])
+    expect(screen.getAllByTestId('vista-history-cdn').map((badge) => badge.textContent)).toEqual([
+      'vista.history.cdn-cache-hit',
+      'vista.history.cdn',
+    ])
   })
 
   it('loads the diff when the changes are expanded, against the previous successful result', async () => {

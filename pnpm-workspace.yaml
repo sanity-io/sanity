@@ -39,6 +39,7 @@ catalog:
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.2
   '@vitest/browser-playwright': ^5.0.4
+  cobe: ^2.0.1
   dequal: ^2.0.3
   get-it: ^9.6.1
   jsdom: ^29.1.1

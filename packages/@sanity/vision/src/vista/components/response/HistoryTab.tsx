@@ -232,6 +232,15 @@ function HistoryEntry(props: {
           />
         )}
         <Box flexBasis="0%" flexGrow={1} />
+        {entry.network?.viaCdn && (
+          <Badge
+            data-testid="vista-history-cdn"
+            fontSize={0}
+            tone={entry.network.cacheHit ? 'positive' : 'default'}
+          >
+            {entry.network.cacheHit ? t('vista.history.cdn-cache-hit') : t('vista.history.cdn')}
+          </Badge>
+        )}
         {entry.status === 'error' ? (
           <Badge fontSize={0} tone="critical">
             {t('vista.history.failed')}

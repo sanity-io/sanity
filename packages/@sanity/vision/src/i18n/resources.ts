@@ -302,6 +302,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.generate.submit': 'Generate',
   /** A history entry whose result differs from the previous result, which is no longer kept */
   'vista.history.changed': 'Changed',
+  /** Badge on a history entry the API CDN answered */
+  'vista.history.cdn': 'API CDN',
+  /** Badge on a history entry the API CDN answered from its cache */
+  'vista.history.cdn-cache-hit': 'CDN cache hit',
   /**
    * Toggle on a history entry that shows how its request and result differ from the previous
    * successful fetch
@@ -393,6 +397,41 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.live.error': 'Live updates disconnected: {{message}}',
   /** The Live fetch button while the tab refetches automatically, stopping it */
   'vista.live.stop': 'Stop live',
+  /** In the Network panel: whether a cache answered the query */
+  'vista.network.cache': 'Cache',
+  /** The API CDN answered from its cache */
+  'vista.network.cache.hit': 'Hit',
+  /** Under the details of a CDN cache hit */
+  'vista.network.cache.hit-explained':
+    'The CDN answered with a response it had cached, from a location near you; the query did not reach the API.',
+  /** The API CDN answered with a response this session had not seen */
+  'vista.network.cache.miss': 'Miss, as far as this session can tell',
+  /** The API answered, which caches nothing */
+  'vista.network.cache.none': 'None, the API answers every request with fresh content',
+  /** Shown in the Network panel while there is no response */
+  'vista.network.empty':
+    'Fetch the query to see which endpoint answered it, whether from a cache, and where it ran.',
+  /** In the Network panel: the endpoint that answered */
+  'vista.network.endpoint': 'Answered by',
+  /** The live API answered */
+  'vista.network.endpoint.api': 'API',
+  /** The API CDN answered */
+  'vista.network.endpoint.cdn': 'API CDN',
+  /** In the Network panel: the region the query ran in */
+  'vista.network.region': 'Query ran in',
+  /** The response did not say where the query ran */
+  'vista.network.region.unknown': 'Not reported',
+  /** In the Network panel: the round trip and the time on the server */
+  'vista.network.timing': 'Time',
+  /** The round trip and the server's time for the query, in milliseconds */
+  'vista.network.timing.value': '{{e2e}}ms round trip, {{server}}ms on the server',
+  /** In the Network panel: the trace of the request, for Sanity support */
+  'vista.network.trace': 'Trace ID',
+  /** Hint in the Network panel while queries go to the API */
+  'vista.network.use-cdn-hint':
+    'Turn on Use the API CDN in Options to send queries through the CDN.',
+  /** Label of the browser's marker on the Network panel's globe, placed from its time zone */
+  'vista.network.you': 'You',
   /** Hint under the dataset field while the tab follows the workspace's dataset */
   'vista.options.dataset.follows-workspace': 'Follows the workspace',
   /** Button that pins the current dataset so the tab stops following the workspace */
@@ -416,7 +455,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The API CDN serves neither the drafts perspective nor a perspective stack, so this query goes to the API. Pick published or raw to use the CDN.',
   /** Description of the API CDN switch */
   'vista.options.use-cdn.description':
-    'Sends the query to the API CDN, like useCdn: true in @sanity/client. Its answers are cached, by the CDN and by the browser, for up to a minute.',
+    'Sends the query to the API CDN, like useCdn: true in @sanity/client. Its answers are cached for up to a minute; the Network panel shows when one came from the cache.',
   /** Perspective option following the studio navbar; the name is the release, published or drafts */
   'vista.options.perspective.global': 'Global ({{name}})',
   /** Variant option sending the navbar's variant, named */
@@ -435,6 +474,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.panel.explain': 'Explain',
   /** Label of the Functions tab in the response panel */
   'vista.panel.functions': 'Functions',
+  /** Label of the Network tab in the response panel */
+  'vista.panel.network': 'Network',
   /** Label of the "History" tab in the response panel */
   'vista.panel.history': 'History',
   /** Label of the "Lint" tab in the response panel, listing the query's lint findings */

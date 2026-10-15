@@ -49,6 +49,11 @@ export interface ParsedQueryUrl {
 
 const API_CDN_HOST = /(?:^|\.)apicdn\.sanity\.(?:io|work)$/
 
+/** `<project>.apicdn.sanity.io`, where `useCdn` sends queries */
+export function isApiCdnHost(hostname: string): boolean {
+  return API_CDN_HOST.test(hostname)
+}
+
 /**
  * Parses a Content Lake query (or listen) URL, as pasted from the browser's network tab, into the
  * pieces of a tab. Returns `null` when the text is not such a URL: the whole text has to be one
@@ -99,7 +104,7 @@ export function parseQueryUrl(data: string, datasets: readonly string[]): Parsed
     hasUnsupportedPerspective: Boolean(urlPerspective) && perspective === undefined,
     variant: parts.options.variant || undefined,
     includeSourceMap,
-    useCdn: API_CDN_HOST.test(url.hostname),
+    useCdn: isApiCdnHost(url.hostname),
     url: trimmed,
   }
 }

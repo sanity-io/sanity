@@ -1,5 +1,7 @@
 import {type ContentSourceMap, type SanityClient, type SyncTag} from '@sanity/client'
 
+import {type QueryNetwork} from '../util/queryNetwork'
+
 /** Whether a tab queries the workspace's dataset, following it, or one pinned by hand */
 export type VistaDatasetMode = 'workspace' | 'pinned'
 
@@ -152,6 +154,8 @@ export interface FetchHistoryEntry {
   /** Round trip as measured by the browser */
   e2eMs: number | undefined
   errorMessage: string | undefined
+  /** How the response travelled (CDN or API, a CDN cache hit, where it ran); failures have none */
+  network: QueryNetwork | undefined
   /**
    * The result, for as long as it is among the most recent results kept in memory; failures
    * have none
@@ -168,6 +172,8 @@ export interface VistaResponseMeta {
   payloadBytes: number
   syncTags: SyncTag[]
   resultSourceMap: ContentSourceMap | undefined
+  /** `undefined` when the response's headers could not be read */
+  network: QueryNetwork | undefined
 }
 
 /**

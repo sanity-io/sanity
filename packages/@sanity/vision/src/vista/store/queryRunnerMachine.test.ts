@@ -3,6 +3,7 @@ import {Subject} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 import {createActor, fromObservable, fromPromise, waitFor} from 'xstate'
 
+import {type QueryNetwork} from '../util/queryNetwork'
 import {
   MAX_COMPARED_RESULT_BYTES,
   MAX_HISTORY_ENTRIES,
@@ -15,7 +16,7 @@ interface Deferred {
   request: QueryRequest
   lastLiveEventId: string | undefined
   signal: AbortSignal
-  resolve: (response: Partial<RawQueryResponse<unknown>>) => void
+  resolve: (response: Partial<RawQueryResponse<unknown>>, network?: QueryNetwork) => void
   reject: (error: unknown) => void
 }
 
@@ -34,13 +35,19 @@ function createHarness() {
           input: {request: QueryRequest; lastLiveEventId: string | undefined}
           signal: AbortSignal
         }) => {
-          return new Promise<RawQueryResponse<unknown>>((resolve, reject) => {
+          return new Promise<{
+            response: RawQueryResponse<unknown>
+            network: QueryNetwork | undefined
+          }>((resolve, reject) => {
             fetches.push({
               request: input.request,
               lastLiveEventId: input.lastLiveEventId,
               signal,
-              resolve: (response) =>
-                resolve({query: input.request.query, ms: 1, result: null, ...response}),
+              resolve: (response, network) =>
+                resolve({
+                  response: {query: input.request.query, ms: 1, result: null, ...response},
+                  network,
+                }),
               reject,
             })
           })
@@ -86,12 +93,22 @@ describe('queryRunnerMachine', () => {
     expect(harness.snapshot().context.url).toBe(request.url)
     expect(harness.fetches).toHaveLength(1)
 
-    harness.fetches[0].resolve({
-      result: [{_id: 'a'}],
-      ms: 12,
-      syncTags: ['s1:abc'],
-      resultSourceMap: {documents: [], paths: [], mappings: {}},
-    })
+    const network = {
+      viaCdn: true,
+      cacheHit: false,
+      shard: 'gcp-eu-w1-01-prod-1028',
+      traceId: 'abc',
+      cacheControl: 'private, max-age=60',
+    }
+    harness.fetches[0].resolve(
+      {
+        result: [{_id: 'a'}],
+        ms: 12,
+        syncTags: ['s1:abc'],
+        resultSourceMap: {documents: [], paths: [], mappings: {}},
+      },
+      network,
+    )
     await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
 
     const {context} = harness.snapshot()
@@ -101,6 +118,7 @@ describe('queryRunnerMachine', () => {
       ms: 12,
       syncTags: ['s1:abc'],
       payloadBytes: JSON.stringify([{_id: 'a'}]).length,
+      network,
     })
     expect(context.meta?.resultSourceMap).toEqual({documents: [], paths: [], mappings: {}})
     expect(context.history).toHaveLength(1)
@@ -111,6 +129,7 @@ describe('queryRunnerMachine', () => {
       params: {type: 'author'},
       status: 'ok',
       ms: 12,
+      network,
     })
   })
 

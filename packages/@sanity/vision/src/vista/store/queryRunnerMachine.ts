@@ -17,6 +17,7 @@ import {
 } from 'xstate'
 
 import {getPayloadBytes} from '../util/payloadSize'
+import {fetchWithNetwork, type QueryNetwork} from '../util/queryNetwork'
 import {getLiveRefetchTags} from '../util/syncTags'
 import {
   type FetchHistoryEntry,
@@ -123,10 +124,10 @@ export const queryRunnerMachine = setup({
   },
   actors: {
     runQuery: fromPromise<
-      RawQueryResponse<unknown>,
+      {response: RawQueryResponse<unknown>; network: QueryNetwork | undefined},
       {request: QueryRequest; lastLiveEventId: string | undefined}
     >(({input, signal}) =>
-      input.request.client.fetch(input.request.query, input.request.params, {
+      fetchWithNetwork(input.request.client, input.request.query, input.request.params, {
         filterResponse: false,
         resultSourceMap: input.request.includeSourceMap || undefined,
         // Per request: the client ignores a configured `useCdn` while it signs in with a cookie
@@ -218,7 +219,7 @@ export const queryRunnerMachine = setup({
             onDone: {
               target: 'settled',
               actions: assign(({context, event}) => {
-                const response = event.output
+                const {response, network} = event.output
                 const e2eMs = Date.now() - context.startedAt
                 const meta: VistaResponseMeta = {
                   url: context.request?.url || '',
@@ -227,6 +228,7 @@ export const queryRunnerMachine = setup({
                   payloadBytes: getPayloadBytes(response.result),
                   syncTags: response.syncTags || [],
                   resultSourceMap: response.resultSourceMap,
+                  network,
                 }
                 const historyResult: HistoryResult = {
                   value: response.result,
@@ -250,6 +252,7 @@ export const queryRunnerMachine = setup({
                     ms: response.ms,
                     e2eMs,
                     errorMessage: undefined,
+                    network,
                     result: historyResult,
                     resultChange: compareWithPrevious(context.history, historyResult),
                   }),
@@ -282,6 +285,7 @@ export const queryRunnerMachine = setup({
                     ms: undefined,
                     e2eMs: Date.now() - context.startedAt,
                     errorMessage: error.message,
+                    network: undefined,
                     result: undefined,
                     resultChange: undefined,
                   }),

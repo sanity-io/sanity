@@ -39,6 +39,7 @@ import {ExplainTab} from './ExplainTab'
 import {FunctionsTab, type QueryEdit} from './FunctionsTab'
 import {HistoryTab} from './HistoryTab'
 import {LintTab} from './LintTab'
+import {NetworkTab} from './NetworkTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
 import {ResultJson} from './ResultJson'
@@ -165,6 +166,11 @@ export function ResponsePanel(props: ResponsePanelProps) {
         content: <ResponseMetaTab meta={meta} url={url} />,
       },
       {
+        id: 'network',
+        label: t('vista.panel.network'),
+        content: <NetworkTab meta={meta} resolved={resolved} />,
+      },
+      {
         id: 'lint',
         label:
           lintFindings.length > 0 ? (
@@ -253,6 +259,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
       queryExplain,
       removeFunction,
       request,
+      resolved,
       resultDataset,
       saveFunction,
       t,
