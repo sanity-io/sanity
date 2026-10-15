@@ -282,6 +282,26 @@ describe('presence-store', () => {
       expect(values.length).toBe(emissionsAfterFirst)
       subscription.unsubscribe()
     })
+
+    it('stops listening and looking up users once no document presence is subscribed', async () => {
+      // When the last form unmounts (the login screen replacing the studio after a session
+      // ends), nothing may keep presence running: every update from another session looks up
+      // users, and with a dead credential each lookup is a 401.
+      const {store, incoming$, getUsers} = createHarness()
+      const {subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
+      await settle()
+      expect(getUsers).toHaveBeenCalled()
+
+      subscription.unsubscribe()
+      getUsers.mockClear()
+      await settle()
+
+      expect(incoming$.observed).toBe(false)
+      incoming$.next(stateEvent('bob', 'session-bob', [location('doc-1')]))
+      await settle()
+      expect(getUsers).not.toHaveBeenCalled()
+    })
   })
 
   describe('globalPresence$', () => {
