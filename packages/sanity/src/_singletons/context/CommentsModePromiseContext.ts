@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {CommentsMode} from '../../core/comments/context/enabled/types'
 
@@ -8,7 +8,4 @@ import type {CommentsMode} from '../../core/comments/context/enabled/types'
  * the comments feature check has answered.
  * @internal
  */
-export const CommentsModePromiseContext = createContext<Promise<CommentsMode> | null>(
-  'sanity/_singletons/context/comments-mode-promise',
-  null,
-)
+export const CommentsModePromiseContext = createContext<Promise<CommentsMode> | null>(null)

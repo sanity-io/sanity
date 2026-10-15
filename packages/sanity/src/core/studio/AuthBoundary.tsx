@@ -3,9 +3,12 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useState} from '
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 
+import {CapabilityGate} from '../components/CapabilityGate'
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
-import {isDashboardAuthStore} from '../store/authStore/createAuthStore'
-import {type AuthStore} from '../store/authStore/types'
+import {isDashboardAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
+import {type AuthStore} from '../store/auth/types'
+import {useComlinkStore, useRenderingContextStore} from '../store/datastores'
+import {ResourceCacheProvider} from '../store/ResourceCacheProvider'
 import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,
@@ -158,8 +161,16 @@ export function AuthBoundary({
     // If using unverified `sanity` login provider, send them
     // to basic NotAuthorized component.
     if (!loginProvider || loginProvider === 'sanity') return <NotAuthenticatedComponent />
-    // Otherwise, send user to request access screen
-    return <RequestAccessScreen />
+    return (
+      <>
+        <ResourceCacheProvider>
+          <CapabilityGate capability="dashboard" condition="available">
+            <HostAccessRequest projectId={activeWorkspace.projectId} />
+          </CapabilityGate>
+        </ResourceCacheProvider>
+        <RequestAccessScreen />
+      </>
+    )
   }
 
   // While the callback exchange is unsettled, logged-out may be the stale
@@ -176,4 +187,32 @@ export function AuthBoundary({
   if (loggedIn === 'logged-out') return <AuthenticateComponent />
 
   return <>{children}</>
+}
+
+function HostAccessRequest({projectId}: {projectId: string}): null {
+  const messageBusConnection = useRenderingContextStore().getMessageBusConnection()
+  const {node} = useComlinkStore()
+
+  useEffect(() => {
+    const request = {resourceType: 'project', resourceId: projectId} as const
+
+    if (messageBusConnection) {
+      messageBusConnection.emit('access.request', request).then(
+        (reply) => {
+          if (!reply.ok) console.warn('The dashboard declined the access request', reply)
+        },
+        (error: unknown) => console.warn('Requesting access from the dashboard failed', error),
+      )
+
+      return undefined
+    }
+
+    // Comlink would deliver a request queued before the handshake even after Studio has moved on.
+    return node?.onStatus((status) => {
+      if (status !== 'connected') return
+      void node.fetch('dashboard/v1/auth/access/request', request).then(undefined, () => {})
+    })
+  }, [messageBusConnection, node, projectId])
+
+  return null
 }

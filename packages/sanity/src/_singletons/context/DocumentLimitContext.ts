@@ -1,5 +1,5 @@
+import {createContext} from 'react'
 import type {ObservablePromise} from 'react-rx'
-import {createContext} from 'sanity/_createContext'
 
 import type {UpsellDialogViewedInfo} from '../../core/studio/upsell/__telemetry__/upsell.telemetry'
 import type {UpsellDataResult} from '../../core/studio/upsell/types'
@@ -24,6 +24,5 @@ export interface DocumentLimitUpsellContextValue {
  * @internal
  */
 export const DocumentLimitUpsellContext = createContext<DocumentLimitUpsellContextValue | null>(
-  'sanity/_singletons/context/document-limit-upsell',
   null,
 )

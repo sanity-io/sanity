@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-13)
+
+### Features
+
+* **core:** add studio.components.provider and preload lazy default plugin components ([#15205](https://github.com/sanity-io/sanity/issues/15205)) ([86f8d18](https://github.com/sanity-io/sanity/commit/86f8d18a5f7e228f9e45cb6636c1e04c091e8212))
+* **schema:** make manifest validation aware of built-in parent types during compilation ([#15133](https://github.com/sanity-io/sanity/issues/15133)) ([e3e0fc2](https://github.com/sanity-io/sanity/commit/e3e0fc2f1300a32ffd0a1c6cc0af650a3aeccc76))
+
+### Bug Fixes
+
+* **access-ui:** fetch access requests once when mounted behind Suspense ([#15216](https://github.com/sanity-io/sanity/issues/15216)) ([aebd2bf](https://github.com/sanity-io/sanity/commit/aebd2bf2c181143b025f0331369794ee672b8154))
+* **core:** keep presence avatars in stable positions ([#15238](https://github.com/sanity-io/sanity/issues/15238)) ([4038f96](https://github.com/sanity-io/sanity/commit/4038f969a40cf8d37fdf18843b3e7b7af3fd94ee))
+* **core:** log out when an invalid session arrives before workspaces resolve ([#15187](https://github.com/sanity-io/sanity/issues/15187)) ([e29b442](https://github.com/sanity-io/sanity/commit/e29b442fcf2477c9fe9a37270017cde7de97715c))
+* **core:** remove initial navbar flicker on load ([#15242](https://github.com/sanity-io/sanity/issues/15242)) ([be5248d](https://github.com/sanity-io/sanity/commit/be5248d05d5e396f659e0416bda03a0f8a509bab))
+* **core:** stop remounting the studio layout when feature checks settle ([#15111](https://github.com/sanity-io/sanity/issues/15111)) ([14f139f](https://github.com/sanity-io/sanity/commit/14f139fe2adfddf4d0acf1b8285a8c8be660a375))
+* **core:** stop remounting the studio layout when scheduled publishing checks settle ([#15241](https://github.com/sanity-io/sanity/issues/15241)) ([95813c7](https://github.com/sanity-io/sanity/commit/95813c7a42ea73ae523497ef230da2908738ed21))
+* **deps:** update codemirror ([#15229](https://github.com/sanity-io/sanity/issues/15229)) ([ccdaec4](https://github.com/sanity-io/sanity/commit/ccdaec4b6a6a9fa31b3cdc80a5fdd3cea2db1db6))
+* **deps:** update dependency @sanity/cli to ^8.16.0 ([#15245](https://github.com/sanity-io/sanity/issues/15245)) ([73980e6](https://github.com/sanity-io/sanity/commit/73980e64ac34a0da69e5e88ab5f6c7909155b39e))
+* **deps:** update dependency motion to ^14.1.0 ([#15276](https://github.com/sanity-io/sanity/issues/15276)) ([50ecbf0](https://github.com/sanity-io/sanity/commit/50ecbf01a8db3a0400cdb159cbca38aa008f9703))
+* **deps:** update dependency motion to ^14.1.0 ([#15281](https://github.com/sanity-io/sanity/issues/15281)) ([7b97148](https://github.com/sanity-io/sanity/commit/7b9714850b1faae78583592dfc2d28c0614a045e))
+* **deps:** update dependency motion to ^14.1.1 ([#15328](https://github.com/sanity-io/sanity/issues/15328)) ([86f89c4](https://github.com/sanity-io/sanity/commit/86f89c4666bbaae60dbf8fb3b37c88acc5ecea42))
+* **deps:** update dev-non-major ([#15244](https://github.com/sanity-io/sanity/issues/15244)) ([8ed96f5](https://github.com/sanity-io/sanity/commit/8ed96f5d449638e6bfa398c88258d96d95381273))
+* **deps:** update dev-non-major ([#15247](https://github.com/sanity-io/sanity/issues/15247)) ([466dde4](https://github.com/sanity-io/sanity/commit/466dde4df7d66fbc70a07565029d09280920818a))
+* **deps:** update dev-non-major ([#15256](https://github.com/sanity-io/sanity/issues/15256)) ([efa15fb](https://github.com/sanity-io/sanity/commit/efa15fb8a47b190732582ece532b2d64d0b050cc))
+* **deps:** update dev-non-major ([#15320](https://github.com/sanity-io/sanity/issues/15320)) ([9eb9ed4](https://github.com/sanity-io/sanity/commit/9eb9ed46c97475cafc1197cded4605a83e62d145))
+* **deps:** update playwright monorepo to v1.64.0 ([#15230](https://github.com/sanity-io/sanity/issues/15230)) ([285b064](https://github.com/sanity-io/sanity/commit/285b064ed0f199e1e9328558788e86519b1c7e62))
+* **deps:** update portabletext ([#15251](https://github.com/sanity-io/sanity/issues/15251)) ([13bece8](https://github.com/sanity-io/sanity/commit/13bece8956123d378b6eba761ae5c2f7c4ac0c77))
+* **deps:** update typescript-tooling ([#15260](https://github.com/sanity-io/sanity/issues/15260)) ([00c8963](https://github.com/sanity-io/sanity/commit/00c89636c48d4f8b9f03781fee1e0a8f0e1a943e))
+* **form:** clear stuck file drop overlay on escape ([#14156](https://github.com/sanity-io/sanity/issues/14156)) ([982525c](https://github.com/sanity-io/sanity/commit/982525c032947a6977af79f341ffe4e8177370d2))
+* **form:** derive upload target card tone from the current read-only state ([#15305](https://github.com/sanity-io/sanity/issues/15305)) ([c8b8ad0](https://github.com/sanity-io/sanity/commit/c8b8ad0a1ba32727b3f811dc26f8937258d26892))
+* **presentation:** keep location links targeting presentation after open in structure ([#15214](https://github.com/sanity-io/sanity/issues/15214)) ([53a4678](https://github.com/sanity-io/sanity/commit/53a4678aae086bc0012c14a034bdfd0d42f40f5d))
+* **sanity:** export the VideoDefinition that defineVideoField accepts ([#15279](https://github.com/sanity-io/sanity/issues/15279)) ([3651057](https://github.com/sanity-io/sanity/commit/3651057909a7302bdb056cb985efecad60b09baa))
+* **sanity:** remove the global context registry so two versions of sanity can render on one page ([#15327](https://github.com/sanity-io/sanity/issues/15327)) ([b8f1bd5](https://github.com/sanity-io/sanity/commit/b8f1bd57587de867bfe5f2135f72c92e432c7437))
+* **structure:** align list pane items whether or not the list scrolls ([#15250](https://github.com/sanity-io/sanity/issues/15250)) ([f939bc7](https://github.com/sanity-io/sanity/commit/f939bc72d0cee5c0027e3ebd0271aca15d7ed791))
+* **vision:** align sanity peer dependency with workspace version ([#15108](https://github.com/sanity-io/sanity/issues/15108)) ([338f3b1](https://github.com/sanity-io/sanity/commit/338f3b1faf08b9418959b02225a31ecc445cc193))
 ## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
 
 ### Features

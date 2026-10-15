@@ -90,10 +90,16 @@ export function MenuItem<E extends ElementType = 'button'>({
         )}
         {Icon && (
           <Box paddingRight={1}>
-            <Text size={FONT_SIZE}>
-              {isValidElement(Icon) && Icon}
-              {isValidElementType(Icon) && <Icon />}
-            </Text>
+            {isValidElement(Icon) ? (
+              <Flex
+                alignItems="center"
+                style={{marginInline: '-0.4375rem', marginBlock: '-0.5rem'}}
+              >
+                {Icon}
+              </Flex>
+            ) : (
+              <Text size={FONT_SIZE}>{isValidElementType(Icon) && <Icon />}</Text>
+            )}
           </Box>
         )}
         {text && (

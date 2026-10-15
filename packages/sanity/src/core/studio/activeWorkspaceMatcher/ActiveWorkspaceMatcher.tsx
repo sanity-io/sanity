@@ -1,7 +1,7 @@
 import {createBrowserHistory, createMemoryHistory} from 'history'
 import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
-import {removeAuthHashParams} from '../../store/authStore/authHashParams'
+import {removeAuthHashParams} from '../../store/auth/legacy/authHashParams'
 import {type RouterHistory} from '../router/types'
 import {useVisibleWorkspaces} from '../workspaces/useVisibleWorkspaces'
 import {useWorkspaces} from '../workspaces/useWorkspaces'

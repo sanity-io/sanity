@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {StructureToolContextValue} from '../../structure/types'
 
 /**
  * @internal
  */
-export const StructureToolContext = createContext<StructureToolContextValue | null>(
-  'sanity/_singletons/context/structure-tool',
-  null,
-)
+export const StructureToolContext = createContext<StructureToolContextValue | null>(null)

@@ -3,7 +3,7 @@ import {act, render, screen, waitFor} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type Config, type WorkspaceSummary} from '../../../config/types'
-import {type AuthStore} from '../../../store/authStore/types'
+import {type AuthStore} from '../../../store/auth/types'
 import type * as RequestErrorChannelModule from '../../requestErrors/createRequestErrorChannel'
 import {WorkspacesProvider} from '../WorkspacesProvider'
 

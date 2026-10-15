@@ -1,8 +1,13 @@
 import {act, render, screen} from '@testing-library/react'
-import {use, useContext, useMemo} from 'react'
+import {
+  // oxlint-disable-next-line no-restricted-imports -- a context that exists only in this test
+  createContext,
+  use,
+  useContext,
+  useMemo,
+} from 'react'
 import {useObservablePromise} from 'react-rx'
 import {Subject} from 'rxjs'
-import {createContext} from 'sanity/_createContext'
 import {describe, expect, it} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -16,10 +21,7 @@ import {StudioLayout} from '../StudioLayout'
  * boundary, so a promise it starts can be `use()`d by `studio.components.layout`.
  */
 
-const AnswerPromiseContext = createContext<Promise<string> | null>(
-  'sanity/_singletons/context/test-studio-layout-answer-promise',
-  null,
-)
+const AnswerPromiseContext = createContext<Promise<string> | null>(null)
 
 const answer$ = new Subject<string>()
 const log: string[] = []

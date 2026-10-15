@@ -2,7 +2,7 @@ import {useNavigate} from '@sanity/sdk-react/dashboard'
 import {useEffect} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {removeAuthHashParams} from '../../store/authStore/authHashParams'
+import {removeAuthHashParams} from '../../store/auth/legacy/authHashParams'
 import {useRenderingContextStore} from '../../store/datastores'
 import {useRouterHistory} from '../router/RouterHistoryContext'
 

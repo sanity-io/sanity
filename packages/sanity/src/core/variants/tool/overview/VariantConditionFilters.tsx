@@ -3,9 +3,17 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
 import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Text, TextInput, useClickOutsideEvent} from '@sanity/ui'
-import {type ComponentType, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Flex, Box, VStack} from 'ui5'
+import {Card, TextInput, useClickOutsideEvent} from '@sanity/ui'
+import {
+  type ComponentType,
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -79,7 +87,7 @@ function AddFilterMenu({
           <Flex padding={2} gap={1} flexDirection="column">
             {matchingFacets.length === 0 ? (
               <Box padding={3}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('overview.filter.no-dimensions')}
                 </Text>
               </Box>
@@ -108,7 +116,7 @@ function AddFilterMenu({
           {activeFacet ? (
             <Flex padding={2} gap={1} flexDirection="column">
               <Box paddingBottom={1} paddingTop={1} paddingX={2}>
-                <Text muted size={0} weight="medium">
+                <Text muted size={0} weight="medium" as="div" trim={true}>
                   {facetLabel(activeFacet.key)}
                 </Text>
               </Box>
@@ -130,7 +138,7 @@ function AddFilterMenu({
             </Flex>
           ) : (
             <Flex alignItems="center" height="100%" justifyContent="center" padding={4}>
-              <Text align="center" muted size={1}>
+              <Text align="center" muted size={1} as="div" trim={true}>
                 {t('overview.filter.pick-dimension-hint')}
               </Text>
             </Flex>
@@ -188,17 +196,31 @@ function FilterChip({
   onRemove: () => void
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const Icon = chip.icon
+  const ChipIcon = chip.icon
   const body = (
     <Card border padding={1} radius={2} style={{flex: 'none'}} tone="primary">
       <Flex alignItems="center" gap={2}>
         <Box paddingLeft={1}>
-          <Text size={1}>
-            <Icon />
-          </Text>
+          <Icon
+            icon={ChipIcon}
+            size={1}
+            style={
+              {
+                '--icon-color': 'var(--card-icon-color)',
+                'margin': '-0.375rem',
+                'display': 'block',
+              } as CSSProperties
+            }
+          />
         </Box>
         {!iconOnly && (
-          <Text muted size={1} style={{whiteSpace: 'nowrap'}}>
+          <Text
+            muted
+            size={1}
+            style={{whiteSpace: 'nowrap', color: 'var(--card-muted-fg-color)'}}
+            as="div"
+            trim={true}
+          >
             {chip.label}
           </Text>
         )}
@@ -215,7 +237,14 @@ function FilterChip({
 
   // Collapsed chips are just an icon; the tooltip carries the dimension + value.
   return iconOnly ? (
-    <Tooltip content={<Text size={1}>{chip.title}</Text>} portal>
+    <Tooltip
+      content={
+        <Text size={1} as="div" trim={true}>
+          {chip.title}
+        </Text>
+      }
+      portal
+    >
       <Box style={{flex: 'none'}}>{body}</Box>
     </Tooltip>
   ) : (
@@ -346,11 +375,7 @@ export function VariantConditionFilters({
     // available width); shrink to content when there are none, so the empty bar stays compact.
     <Card border padding={1} radius={2} style={hasActive ? undefined : {display: 'inline-flex'}}>
       <Flex alignItems="center" gap={2} flexWrap="nowrap">
-        <Box paddingX={1} style={{flex: 'none'}}>
-          <Text muted size={1}>
-            <FilterIcon />
-          </Text>
-        </Box>
+        <Icon icon={FilterIcon} muted size={1} marginRight={-1} />
 
         <Box style={{flex: 'none'}}>
           <AddFilterMenu facets={facets} onToggleValue={toggleValue} value={value} />

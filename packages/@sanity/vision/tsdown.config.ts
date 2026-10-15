@@ -11,5 +11,7 @@ export default defineConfig({
   // package.json declares `sideEffects: true`: with `false` or a `*.css` allowlist, bundlers
   // bypass the side-effect-free barrel and eliminate the bare CSS import together with it, before
   // the stylesheet's own side-effect status is ever consulted (see #13322 and #13332)
-  vanillaExtract: true,
+  // `identifiers: 'safe'` includes the package version in the class-name hash so a release
+  // cannot reuse the previous release's names (SAPP-4639).
+  vanillaExtract: {identifiers: 'safe'},
 })

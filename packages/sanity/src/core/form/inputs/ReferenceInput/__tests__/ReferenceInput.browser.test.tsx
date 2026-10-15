@@ -6,7 +6,7 @@ import {
 } from '@sanity/types'
 import {Card, TextInput} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
-import {type ComponentProps, type ReactNode} from 'react'
+import {type ComponentProps} from 'react'
 import {of} from 'rxjs'
 import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
@@ -29,10 +29,6 @@ import {ReferenceStrengthMismatchAlertStrip} from '../ReferenceStrengthMismatchA
 
 const renderPreview: RenderPreviewCallback = () => <DefaultPreview title="Untitled author" />
 
-function EditReferenceLink(props: {children: ReactNode}) {
-  return props.children
-}
-
 function authorReferenceInfo() {
   return of({
     id: 'author-1',
@@ -52,7 +48,6 @@ function ReferenceSchemaInput(props: StudioReferenceInputProps) {
     <ReferenceInput
       {...(props as ComponentProps<typeof ReferenceInput>)}
       createOptions={[]}
-      editReferenceLinkComponent={EditReferenceLink}
       getReferenceInfo={authorReferenceInfo}
       onEditReference={noop}
       onSearch={emptySearch}

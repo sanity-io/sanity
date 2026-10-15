@@ -31,9 +31,10 @@ export function extractReleaseNotes(blocks: NormalizedMarkdownBlock[]) {
 // rule. Without one, tool-appended content (Cursor Bugbot, etc.) leaks in, so
 // route the raw section text through an LLM cleaner instead.
 export async function extractReleaseNotesFromPrBody(
-  prBody: string,
+  rawPrBody: string,
   options: ExtractSectionOptions = {},
 ): Promise<NormalizedMarkdownBlock[]> {
+  const prBody = stripCursorFooter(rawPrBody)
   const blocks = markdownToPortableText(prBody)
   if (sectionContainsHorizontalRule(blocks)) return extractReleaseNotes(blocks)
 
@@ -44,6 +45,17 @@ export async function extractReleaseNotesFromPrBody(
   if (cleaned === null) return extractReleaseNotes(blocks)
   if (!cleaned.trim()) return []
   return markdownToPortableText(cleaned)
+}
+
+// A PR written by a Cursor cloud agent ends with `<!-- CURSOR_AGENT_PR_BODY_END -->`
+// followed by an HTML footer of "Open in Web" / "Open in Cursor" badges, and
+// carries a `<sub>To show artifacts inline, … in settings.</sub>` line inside
+// the body. Neither is release-note content, and since the release notes are
+// usually the last section the footer would otherwise be read as part of them.
+function stripCursorFooter(prBody: string): string {
+  const endMarker = prBody.indexOf('<!-- CURSOR_AGENT_PR_BODY_END -->')
+  const body = endMarker === -1 ? prBody : prBody.slice(0, endMarker)
+  return body.replace(/<sub>To show artifacts inline,[^]*?<\/sub>/g, '')
 }
 
 function sectionContainsHorizontalRule(blocks: PortableTextMarkdownBlock[]): boolean {

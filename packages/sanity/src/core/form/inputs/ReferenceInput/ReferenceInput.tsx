@@ -75,7 +75,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const {getReferenceInfo} = useReferenceInput({
     path,
     schemaType,
-    value,
   })
 
   const {push} = useToast()
@@ -102,10 +101,16 @@ export function ReferenceInput(props: ReferenceInputProps) {
       // The strengthen-on-publish process is not necessary for documents inside a release, and in
       // fact must be skipped in order for release preflight checks to function.
       //
+      // However, fields declared with `weak: true` have opted out of referential integrity, so
+      // preflight must not treat them as strong. For those fields `_weak` must always be written,
+      // otherwise the reference is published as a strong reference, since Content Lake cannot add
+      // `_weak` back at publish time.
+      //
       // Strengthen-on-publish is still necessary for drafts, and for documents in a bundle
       // *that isn't a release* (this isn't a scenario Studio supports today, but it may need to in
       // the future).
-      const shouldStrengthenOnPublish = typeof selectedReleaseId === 'undefined'
+      const shouldStrengthenOnPublish =
+        typeof selectedReleaseId === 'undefined' || schemaType.weak === true
       const strengthenOnPublishPatches = shouldStrengthenOnPublish ? [set(true, ['_weak'])] : []
 
       // The `_strengthenOnPublish` field is always set, regardless of whether the
