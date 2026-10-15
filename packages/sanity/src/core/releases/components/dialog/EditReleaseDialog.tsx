@@ -1,8 +1,8 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
-import {Card, Text, TextArea, TextInput} from '@sanity/ui'
+import {Card, TextArea, TextInput} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type ChangeEvent, useCallback, useId, useRef, useState} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -83,7 +83,7 @@ export function EditReleaseDialog({
       <Card padding={4} borderTop>
         <VStack gap={5}>
           <VStack gap={3}>
-            <Text as="label" htmlFor={titleId} size={1} weight="medium">
+            <Text as="label" htmlFor={titleId} size={1} weight="medium" trim={true}>
               {t('release.dialog.edit.title-label')}
             </Text>
             <TextInput
@@ -96,7 +96,7 @@ export function EditReleaseDialog({
             />
           </VStack>
           <VStack gap={3}>
-            <Text as="label" htmlFor={descriptionId} size={1} weight="medium">
+            <Text as="label" htmlFor={descriptionId} size={1} weight="medium" trim={true}>
               {t('release.dialog.edit.description-label')}
             </Text>
             <TextArea

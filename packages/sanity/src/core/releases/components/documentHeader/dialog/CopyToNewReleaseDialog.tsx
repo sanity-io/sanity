@@ -1,9 +1,9 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -160,7 +160,7 @@ export function CopyToNewReleaseDialog(props: {
             }}
           >
             <ReleaseAvatar padding={1} release={sourceRelease} />
-            <Text size={1} title={displayTitle}>
+            <Text size={1} title={displayTitle} as="div" trim={true}>
               {displayTitle}
             </Text>
           </Flex>
@@ -170,7 +170,9 @@ export function CopyToNewReleaseDialog(props: {
       <Box paddingX={5} paddingY={3}>
         {isScheduledDateInPast && (
           <Card padding={3} marginBottom={3} radius={2} shadow={1} tone="critical">
-            <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+            <Text size={1} as="div" trim={true} tone="critical">
+              {t('release.schedule-dialog.publish-date-in-past-warning')}
+            </Text>
           </Card>
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />

@@ -1,8 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {type BadgeTone, Text} from '@sanity/ui'
+import {type BadgeTone} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useRef, useState} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -158,7 +158,7 @@ export function UnpublishVersionDialog(props: {
         ) : (
           <LoadingBlock />
         )}
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           <Translate
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
@@ -169,7 +169,7 @@ export function UnpublishVersionDialog(props: {
             componentProps={{tone}}
           />
         </Text>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('unpublish-dialog.description.lost-changes')}
         </Text>
       </Flex>

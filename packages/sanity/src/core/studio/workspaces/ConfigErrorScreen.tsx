@@ -1,10 +1,10 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Heading, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Container, Flex, VStack, Box} from 'ui5'
+import {Text, Container, Flex, VStack, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -205,11 +205,11 @@ function ConfigErrorLayout(props: {
             <Heading as="h1" size={2}>
               {props.heading}
             </Heading>
-            <Text size={2} muted>
+            <Text size={2} muted as="div" trim={true}>
               {props.message}
             </Text>
             {props.details}
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {props.hint}
             </Text>
             <Flex paddingTop={2}>{props.action}</Flex>
@@ -230,10 +230,10 @@ function ConfigDetails(props: {rows: Array<{label: string; value?: string}>}) {
       <VStack gap={3}>
         {rows.map((row) => (
           <VStack key={row.label} gap={2}>
-            <Text size={0} muted weight="medium">
+            <Text size={0} muted weight="medium" as="div" trim={true}>
               {row.label}
             </Text>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               <InlineCode>{row.value}</InlineCode>
             </Text>
           </VStack>
@@ -341,7 +341,7 @@ function DatasetNotFoundScreen(props: {
 function DocsLink() {
   return (
     <Flex justifyContent="flex-end" paddingTop={2}>
-      <Text size={1}>
+      <Text size={1} as="div" trim={true}>
         <HelpLink
           href="https://www.sanity.io/docs/configuration"
           rel="noopener noreferrer"

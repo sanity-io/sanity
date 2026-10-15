@@ -5,7 +5,6 @@ import {
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
   TabPanel,
-  Text,
 } from '@sanity/ui'
 import {
   Menu,
@@ -22,7 +21,7 @@ import {
   useId,
   useState,
 } from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -127,15 +126,17 @@ export function ReleaseForm(props: {
     <VStack gap={5}>
       <VStack gap={4}>
         <Flex gap={2} alignItems="center">
-          <Text as="label" htmlFor={menuButtonId}>
+          <Text as="label" htmlFor={menuButtonId} trim={true}>
             {t('release.dialog.tooltip.title')}
           </Text>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Tooltip
               content={
                 <VStack gap={3} style={{maxWidth: 320 - 16}}>
-                  <Text size={1}>{t('release.dialog.tooltip.description')}</Text>
-                  <Text muted size={1}>
+                  <Text size={1} as="div" trim={true}>
+                    {t('release.dialog.tooltip.description')}
+                  </Text>
+                  <Text muted size={1} as="div" trim={true}>
                     {t('release.dialog.tooltip.note')}
                   </Text>
                 </VStack>
@@ -144,7 +145,7 @@ export function ReleaseForm(props: {
               placement="right-start"
               portal
             >
-              <InfoOutlineIcon />
+              <Icon muted size={1} icon={InfoOutlineIcon} />
             </Tooltip>
           </Text>
         </Flex>
@@ -159,9 +160,7 @@ export function ReleaseForm(props: {
                     text={t(`release.type.${releaseType}`)}
                     releaseType={releaseType}
                   />
-                  <Text size={1}>
-                    <ChevronDownIcon />
-                  </Text>
+                  <Icon size={1} icon={ChevronDownIcon} />
                 </Flex>
               </Button>
             }
@@ -213,6 +212,8 @@ const ReleaseTypeOption: ComponentType<{
 }> = ({releaseType, text}) => (
   <Flex gap={3} alignItems="center">
     <ReleaseAvatar padding={1} releaseType={releaseType} />
-    <Text>{text}</Text>
+    <Text as="div" trim={true}>
+      {text}
+    </Text>
   </Flex>
 )
