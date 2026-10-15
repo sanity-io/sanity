@@ -334,7 +334,7 @@ How the CSS reaches a page:
   `@repo/pandacss/layer-order` export where the revert conflicts with them). A dry run against
   the ui#3233 build (layers kept, five studio screens pixel-identical to `main`, 60 of 62 browser
   test files passing) showed what else that bump needs: `ReleaseAvatar.css.ts` relied on
-  *losing* to `Text`'s `& svg {display: inline}` by specificity and now wins whether or not it
+  _losing_ to `Text`'s `& svg {display: inline}` by specificity and now wins whether or not it
   is layered; `PaneCommandList.css.ts`'s `&&` beat `CommandList`'s own styled-components
   `overflow-y: auto` by specificity and loses to it once layered, because the studio's own
   styled-components stay unlayered (either layer them too, in a `sanity-styled` layer between
