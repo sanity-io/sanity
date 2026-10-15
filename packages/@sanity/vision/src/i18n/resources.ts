@@ -221,6 +221,53 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.explain.plan-failed': 'The query plan could not be fetched: {{message}}',
   /** Heading of the query plan in the Explain panel */
   'vista.explain.plan-title': 'Query plan',
+  /** Button of a library function the query does not declare, which declares it at the top */
+  'vista.functions.add': 'Add to query',
+  /** Shown on a library function the query declares the same way */
+  'vista.functions.declared': 'In this query',
+  /** Lint action on a call of a library function the query does not declare */
+  'vista.functions.editor.add-from-library': 'Declare it',
+  /** Note in a function's hover documentation: the API version it needs */
+  'vista.functions.editor.api-version': 'Needs API version {{version}} or later',
+  /** Detail of a completion for a custom function the query declares */
+  'vista.functions.editor.completion-declared': 'in this query',
+  /** Detail of a completion for a library function, which declares it too */
+  'vista.functions.editor.completion-library': 'from your library',
+  /** Note in the hover documentation of a custom function the query declares */
+  'vista.functions.editor.declared-on': 'Custom function, declared on line {{line}}',
+  /** Note in the hover documentation of the functions that only work in delta mode */
+  'vista.functions.editor.delta-only':
+    'Only works in delta mode, where webhooks and Sanity Functions run their filters',
+  /** Button over a selected projection in the query editor, turning it into a custom function */
+  'vista.functions.editor.extract': 'Extract to function',
+  /** Note in the hover documentation of a library function the query does not declare */
+  'vista.functions.editor.in-library': 'In your functions library, not declared in this query',
+  /** Link at the end of a built-in function's hover documentation */
+  'vista.functions.editor.reference': 'GROQ functions reference',
+  /** Explanation under the library heading in the Functions panel */
+  'vista.functions.library.description':
+    'Kept in this browser for every dataset of the project. Completions offer these functions, and lint offers to declare one a query calls.',
+  /** Shown in the Functions panel while the library is empty */
+  'vista.functions.library.empty': 'Save a function the query declares to use it in other queries.',
+  /** Heading of the functions library in the Functions panel */
+  'vista.functions.library.title': 'Library',
+  /** Shown in the Functions panel while the query declares no custom functions */
+  'vista.functions.query.empty':
+    'Declare custom functions at the top of the query, or select a projection in the editor and choose Extract to function ({{shortcut}}).',
+  /** Heading of the functions the query declares in the Functions panel */
+  'vista.functions.query.title': 'In this query',
+  /** Removes a function from the library */
+  'vista.functions.remove': 'Remove from the library',
+  /** Button of a library function the query declares differently, which puts the library's version in */
+  'vista.functions.replace': 'Replace in query',
+  /** Accessible name of a declared function in the Functions panel, which selects it in the editor */
+  'vista.functions.reveal': 'Show {{name}} in the editor',
+  /** Button of a function the query declares that is not in the library yet */
+  'vista.functions.save': 'Save to library',
+  /** Shown on a function the query declares the way the library has it */
+  'vista.functions.saved': 'Saved',
+  /** Button of a function the query declares differently from the library's version */
+  'vista.functions.update': 'Update library',
   /** Button over the query editor that opens the bar writing a query from a description */
   'vista.generate.button': 'Generate query',
   /** Closes the generate query bar */
@@ -365,6 +412,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.panel.expand': 'Expand panel',
   /** Label of the "Explain" tab in the response panel: the query plan and an explanation */
   'vista.panel.explain': 'Explain',
+  /** Label of the Functions tab in the response panel */
+  'vista.panel.functions': 'Functions',
   /** Label of the "History" tab in the response panel */
   'vista.panel.history': 'History',
   /** Label of the "Lint" tab in the response panel, listing the query's lint findings */
@@ -561,7 +610,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.settings.clear-storage.confirm': 'Yes, clear storage',
   /** Explanation of what clearing the storage does */
   'vista.settings.clear-storage.description':
-    'Deletes your personal saved queries, resets the open tabs and these defaults in this browser, and returns to the classic Vision tool. Shared queries are kept.',
+    'Deletes your personal saved queries and the functions library, resets the open tabs and these defaults in this browser, and returns to the classic Vision tool. Shared queries are kept.',
   /** Toast shown when the saved queries could not be cleared */
   'vista.settings.clear-storage.error': 'Could not clear the saved queries',
   /** Toast shown after the storage was cleared */
@@ -582,8 +631,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'No shared queries yet. Share a saved query to make it available to everyone using this dataset.',
   /** Shortcut description: close dialogs and menus */
   'vista.shortcuts.close': 'Close dialogs and menus',
+  /** Shortcut that lists the functions matching the name being typed in the query editor */
+  'vista.shortcuts.complete': 'Complete a function name',
   /** Shortcut description: copy the query */
   'vista.shortcuts.copy-query': 'Copy the query',
+  /** Shortcut that turns the projection selected in the query editor into a custom function */
+  'vista.shortcuts.extract-function': 'Extract the selected projection to a function',
   /** Shortcut description: run the query */
   'vista.shortcuts.fetch': 'Fetch the query',
   /** Shortcut description: move the cursor to the next lint finding in the query editor */

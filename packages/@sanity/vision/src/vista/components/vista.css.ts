@@ -423,6 +423,11 @@ export const lintFindingButton = style({
   },
 })
 
+/** A flex item whose content truncates instead of widening it past the row */
+export const shrinkable = style({
+  minWidth: 0,
+})
+
 /** A bleed button holding a stack of texts that must truncate rather than overflow the list */
 export const listItemButton = style({
   minWidth: 0,

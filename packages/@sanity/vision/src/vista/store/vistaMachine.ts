@@ -17,6 +17,7 @@ import {
   type VistaParamsView,
   type VistaPersistedState,
   type VistaResultView,
+  type VistaSavedFunction,
   type VistaSettings,
   type VistaSidebarState,
   type VistaTab,
@@ -38,6 +39,8 @@ export interface VistaContext {
   activeTabId: string
   settings: VistaSettings
   historyDiff: VistaHistoryDiffSettings
+  /** The functions library, most recently saved first */
+  functions: VistaSavedFunction[]
   /** One query runner per open tab, keyed by tab id */
   runners: Record<string, QueryRunnerRef>
   /**
@@ -74,6 +77,9 @@ export type VistaEvent =
   | {type: 'tab.load'; id: string; tab: Omit<VistaTabInit, 'id'>; fetch?: boolean}
   | {type: 'settings.update'; settings: Partial<VistaSettings>}
   | {type: 'historyDiff.update'; settings: Partial<VistaHistoryDiffSettings>}
+  /** Saves a function to the library, replacing the one with its id */
+  | {type: 'functions.save'; fn: VistaSavedFunction}
+  | {type: 'functions.remove'; id: string}
   | {type: 'sidebar.toggle'}
   | {type: 'panel.toggle'; panel: VistaPanel}
   | {type: 'params.view'; view: VistaParamsView}
@@ -224,6 +230,7 @@ export const vistaMachine = setup({
           activeTabId: fresh.activeTabId,
           settings: fresh.settings,
           historyDiff: fresh.historyDiff,
+          functions: fresh.functions,
           runners: spawnRunners(spawn, fresh.tabs),
           fetchOnOpen: [],
         }
@@ -240,6 +247,7 @@ export const vistaMachine = setup({
     activeTabId: input.persisted.activeTabId,
     settings: input.persisted.settings,
     historyDiff: input.persisted.historyDiff,
+    functions: input.persisted.functions,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
     fetchOnOpen: [],
@@ -333,6 +341,19 @@ export const vistaMachine = setup({
     'historyDiff.update': {
       actions: assign({
         historyDiff: ({context, event}) => ({...context.historyDiff, ...event.settings}),
+      }),
+    },
+    'functions.save': {
+      actions: assign({
+        functions: ({context, event}) => [
+          event.fn,
+          ...context.functions.filter((saved) => saved.id !== event.fn.id),
+        ],
+      }),
+    },
+    'functions.remove': {
+      actions: assign({
+        functions: ({context, event}) => context.functions.filter((saved) => saved.id !== event.id),
       }),
     },
     'storage.clear': {
@@ -529,7 +550,12 @@ export function selectPersistedState(snapshot: VistaSnapshot): VistaPersistedSta
       resultView: selectResultView(snapshot),
     },
     historyDiff: snapshot.context.historyDiff,
+    functions: snapshot.context.functions,
   }
+}
+
+export function selectFunctionLibrary(snapshot: VistaSnapshot): VistaSavedFunction[] {
+  return snapshot.context.functions
 }
 
 export function selectParamsView(snapshot: VistaSnapshot): VistaParamsView {

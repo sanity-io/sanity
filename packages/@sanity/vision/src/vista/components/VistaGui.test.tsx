@@ -180,6 +180,16 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
       resetEditorContent: (content: string) => {
         if (textareaRef.current) textareaRef.current.value = content
       },
+      applyChanges: (changes) => {
+        const textarea = textareaRef.current
+        if (!textarea) return
+        let value = textarea.value
+        for (const change of changes.toSorted((a, b) => b.from - a.from)) {
+          value = value.slice(0, change.from) + change.insert + value.slice(change.to)
+        }
+        textarea.value = value
+        onChange?.(value)
+      },
       selectRange: (from: number, to: number) => {
         textareaRef.current?.setSelectionRange(from, to)
         textareaRef.current?.focus()
@@ -693,6 +703,37 @@ describe('VistaGui', () => {
     typeQuery('*[_type == "author"]')
     await waitFor(() => expect(screen.queryByTestId('vista-explanation')).toBeNull())
     expect(screen.queryByTestId('vista-query-plan')).toBeNull()
+  })
+
+  it('keeps the functions a query declares in a library, to declare in other queries', async () => {
+    renderVista()
+    const declaration = 'fn ex::author($ref) = $ref->{name}'
+    typeQuery(`${declaration};\n\n*[_type == "post"]{"author": ex::author(author)}`)
+
+    fireEvent.click(document.getElementById('vista-response-functions-tab') as HTMLElement)
+    const [declared] = screen.getAllByTestId('vista-declared-function')
+    expect(text(declared)).toContain('ex::author($ref)')
+    fireEvent.click(within(declared).getByTestId('vista-function-save'))
+    expect(within(declared).getByTestId('vista-function-saved')).toBeTruthy()
+    await waitFor(() =>
+      expect(getStoredState()?.functions).toEqual([{id: 'ex::author', declaration}]),
+    )
+
+    // Another tab declares it from the library
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    typeQuery('*[_type == "book"]{"author": ex::author(author)}')
+    fireEvent.click(document.getElementById('vista-response-functions-tab') as HTMLElement)
+    const [saved] = screen.getAllByTestId('vista-library-function')
+    fireEvent.click(within(saved).getByTestId('vista-function-add'))
+    expect(getQueryEditor().value).toBe(
+      `${declaration};\n\n*[_type == "book"]{"author": ex::author(author)}`,
+    )
+    expect(within(saved).getByTestId('vista-function-declared')).toBeTruthy()
+    await waitFor(() =>
+      expect(getStoredState()?.tabs[1].query).toBe(
+        `${declaration};\n\n*[_type == "book"]{"author": ex::author(author)}`,
+      ),
+    )
   })
 
   it('shows the result as JSON text to select and copy from, and remembers the choice', async () => {

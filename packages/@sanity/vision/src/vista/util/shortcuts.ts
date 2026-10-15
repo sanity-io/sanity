@@ -41,12 +41,25 @@ export const VISTA_SHORTCUT_LIST: VistaShortcut[] = Object.values(VISTA_SHORTCUT
 
 export interface EditorShortcut {
   keys: string[]
-  labelKey: 'vista.shortcuts.next-finding'
+  labelKey:
+    | 'vista.shortcuts.next-finding'
+    | 'vista.shortcuts.complete'
+    | 'vista.shortcuts.extract-function'
+}
+
+const ALT_KEY = MOD_KEY === '⌘' ? '⌥' : 'Alt'
+
+/** The query editor's `EXTRACT_FUNCTION_KEY`, as the shortcuts dialog and hints show it */
+export const EXTRACT_FUNCTION_SHORTCUT: EditorShortcut = {
+  keys: [MOD_KEY, ALT_KEY, 'M'],
+  labelKey: 'vista.shortcuts.extract-function',
 }
 
 /** Shortcuts CodeMirror handles inside the query editor, listed in the dialog so they can be found */
 export const EDITOR_SHORTCUTS: EditorShortcut[] = [
   {keys: ['F8'], labelKey: 'vista.shortcuts.next-finding'},
+  {keys: ['Ctrl', 'Space'], labelKey: 'vista.shortcuts.complete'},
+  EXTRACT_FUNCTION_SHORTCUT,
 ]
 
 export function matchVistaShortcut(event: KeyboardEvent): VistaShortcutId | null {

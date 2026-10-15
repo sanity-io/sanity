@@ -28,12 +28,14 @@ import {
 } from '../../store/VistaActorContext'
 import {isPanelExpanded, selectDatasets, selectParamsView} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
+import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VistaShortcutId} from '../../util/shortcuts'
 import {RequestPanel} from '../request/RequestPanel'
 import {ResizableSplit} from '../ResizableSplit'
+import {type QueryEdit} from '../response/FunctionsTab'
 import {ResponsePanel} from '../response/ResponsePanel'
 import {hiddenPane, paneFill, splitPaneContainer} from '../vista.css'
 import {getQueryTabId, QUERY_TAB_PANEL_ID} from './QueryTabBar'
@@ -205,19 +207,25 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     [copyToClipboard, t, tab.query],
   )
 
-  // A finding picked while the phone shows the response pane: the editor is still `display: none`
-  // in this render, so it cannot take focus until the request pane has been shown
-  const pendingRevealRef = useRef<QueryLintFinding | null>(null)
-  const revealLintFinding = useCallback(
-    (finding: QueryLintFinding) => {
+  // A lint finding or a function declaration picked while the phone shows the response pane: the
+  // editor is still `display: none` in this render, so it cannot take focus until the request
+  // pane has been shown
+  const pendingRevealRef = useRef<TextRange | null>(null)
+  const revealRange = useCallback(
+    (range: TextRange) => {
       if (layout === 'mobile' && mobilePane !== 'request') {
-        pendingRevealRef.current = finding
+        pendingRevealRef.current = range
         setMobilePane('request')
         return
       }
-      queryEditorRef.current?.selectRange(finding.from, finding.to)
+      queryEditorRef.current?.selectRange(range.from, range.to)
     },
     [layout, mobilePane],
+  )
+  // The Functions panel declares and replaces functions through the editor, so they can be undone
+  const editQuery = useCallback(
+    (edit: QueryEdit) => queryEditorRef.current?.applyChanges([edit]),
+    [],
   )
   useEffect(() => {
     const pending = pendingRevealRef.current
@@ -405,7 +413,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const responsePanel = (
     <ResponsePanel
       lintFindings={lintFindings}
-      onRevealLintFinding={revealLintFinding}
+      onEditQuery={editQuery}
+      onRevealRange={revealRange}
       request={request}
       resolved={resolved}
       runnerRef={runnerRef}

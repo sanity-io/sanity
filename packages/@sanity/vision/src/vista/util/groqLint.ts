@@ -8,6 +8,15 @@ import {
 import {type EditorState, type Extension} from '@codemirror/state'
 import {EditorView, keymap} from '@codemirror/view'
 
+import {functionLibrary, type GroqEditorLabels, groqEditorLabels} from './groqEditorContext'
+import {
+  checkFunctions,
+  declarationInsertion,
+  explainDeclarationSyntaxError,
+  type FunctionFinding,
+  hasSyntaxErrors,
+  parseGroq,
+} from './groqFunctions'
 import {type GroqFinding, GroqSyntaxError, lintGroq} from './groqWasm'
 
 /** Idle time after an edit before the query is linted again */
@@ -74,32 +83,87 @@ export function toDiagnostics(findings: GroqFinding[], docLength: number): Diagn
   })
 }
 
-export function syntaxErrorDiagnostic(error: GroqSyntaxError, docLength: number): Diagnostic {
+/** `explanation` replaces the parser's message where it says more about the mistake */
+export function syntaxErrorDiagnostic(
+  error: GroqSyntaxError,
+  docLength: number,
+  explanation?: string,
+): Diagnostic {
   const from = clamp(error.from, 0, docLength)
   return {
     from,
     to: clamp(error.to, from, docLength),
     severity: 'error',
-    message: error.message,
+    message: explanation ?? error.message,
+    ...(explanation ? {renderMessage: () => renderMessage(explanation)} : {}),
     source: 'groq',
   }
 }
 
 /**
+ * The checks of custom functions and function calls; an unknown function that the library has
+ * comes with an action declaring it
+ */
+function functionDiagnostics(
+  findings: FunctionFinding[],
+  labels: GroqEditorLabels | undefined,
+): Diagnostic[] {
+  return findings.map((finding) => {
+    const saved = finding.libraryFunction
+    return {
+      from: finding.from,
+      to: finding.to,
+      severity: finding.severity,
+      message: finding.message,
+      renderMessage: () => renderMessage(finding.message),
+      source: `vision/${finding.rule}`,
+      ...(saved && labels
+        ? {
+            actions: [
+              {
+                name: labels.addFromLibrary,
+                apply: (view: EditorView) =>
+                  view.dispatch({
+                    changes: declarationInsertion(view.state.doc.toString(), saved.declaration),
+                  }),
+              },
+            ],
+          }
+        : {}),
+    }
+  })
+}
+
+/**
  * The lint source for the query editor: a parse failure becomes one error diagnostic on the
- * offending token, otherwise every `groq-lint` finding gets a diagnostic. When the wasm cannot be
- * loaded the editor simply stays without diagnostics.
+ * offending token, otherwise every `groq-lint` finding gets a diagnostic, and so does every
+ * problem with the query's custom functions and function calls. When the wasm cannot be loaded,
+ * only the functions are checked, as long as the query parses for the editor's own grammar.
  */
 export async function groqLintSource(view: {state: EditorState}): Promise<Diagnostic[]> {
-  const query = view.state.doc.toString()
+  const {state} = view
+  const query = state.doc.toString()
   // CodeMirror lints the initial document too; a blank tab must not load the wasm
   if (!query.trim()) {
     return []
   }
+  const tree = parseGroq(query)
+  const checkQueryFunctions = () =>
+    functionDiagnostics(
+      checkFunctions(tree, query, state.facet(functionLibrary)),
+      state.facet(groqEditorLabels),
+    )
   try {
-    return toDiagnostics(await lintGroq(query), query.length)
+    const findings = await lintGroq(query)
+    return [...toDiagnostics(findings, query.length), ...checkQueryFunctions()].toSorted(
+      (a, b) => a.from - b.from || a.to - b.to,
+    )
   } catch (error) {
-    return error instanceof GroqSyntaxError ? [syntaxErrorDiagnostic(error, query.length)] : []
+    if (error instanceof GroqSyntaxError) {
+      const explanation = explainDeclarationSyntaxError(tree, query, error.from)
+      return [syntaxErrorDiagnostic(error, query.length, explanation)]
+    }
+    return hasSyntaxErrors(tree) ? [] : checkQueryFunctions()
   }
 }
 
@@ -130,7 +194,12 @@ export function createGroqLintExtensions(
   onFindings: (findings: QueryLintFinding[]) => void,
 ): Extension[] {
   return [
-    linter(groqLintSource, {delay: LINT_DELAY_MS}),
+    linter(groqLintSource, {
+      delay: LINT_DELAY_MS,
+      // A function saved to the library or removed from it changes what the query's calls know
+      needsRefresh: (update) =>
+        update.startState.facet(functionLibrary) !== update.state.facet(functionLibrary),
+    }),
     keymap.of(lintKeymap),
     EditorView.updateListener.of((update) => {
       const recomputed = update.transactions.some((transaction) =>

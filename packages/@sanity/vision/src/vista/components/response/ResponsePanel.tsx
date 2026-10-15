@@ -19,9 +19,15 @@ import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useQueryExplain} from '../../hooks/useQueryExplain'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
-import {type QueryRequest, type VistaResultView, type VistaTab} from '../../store/types'
+import {
+  type QueryRequest,
+  type VistaResultView,
+  type VistaSavedFunction,
+  type VistaTab,
+} from '../../store/types'
 import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
-import {selectResultView} from '../../store/vistaMachine'
+import {selectFunctionLibrary, selectResultView} from '../../store/vistaMachine'
+import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
@@ -30,6 +36,7 @@ import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {resultContainer, resultLabel, labelActions} from '../vista.css'
 import {DownloadButton} from './DownloadButton'
 import {ExplainTab} from './ExplainTab'
+import {FunctionsTab, type QueryEdit} from './FunctionsTab'
 import {HistoryTab} from './HistoryTab'
 import {LintTab} from './LintTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
@@ -47,12 +54,14 @@ export interface ResponsePanelProps {
   request: QueryRequest | null
   /** The query editor's lint diagnostics, listed in the Lint panel */
   lintFindings: QueryLintFinding[]
-  /** Shows a finding in the query editor */
-  onRevealLintFinding: (finding: QueryLintFinding) => void
+  /** Shows part of the query (a lint finding, a function declaration) in the query editor */
+  onRevealRange: (range: TextRange) => void
+  /** Changes the query through its editor */
+  onEditQuery: (edit: QueryEdit) => void
 }
 
 export function ResponsePanel(props: ResponsePanelProps) {
-  const {tab, runnerRef, resolved, request, lintFindings, onRevealLintFinding} = props
+  const {tab, runnerRef, resolved, request, lintFindings, onRevealRange, onEditQuery} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
 
@@ -107,6 +116,23 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const queryExplain = useQueryExplain(request)
   const actorRef = useVistaActor()
   const resultView = useVistaSelector(selectResultView)
+  const functionLibrary = useVistaSelector(selectFunctionLibrary)
+  const saveFunction = useCallback(
+    (fn: VistaSavedFunction) => actorRef.send({type: 'functions.save', fn}),
+    [actorRef],
+  )
+  const removeFunction = useCallback(
+    (id: string) => actorRef.send({type: 'functions.remove', id}),
+    [actorRef],
+  )
+  // A declaration without a namespace does not parse for the API; lint says so
+  const declaredFunctions = useMemo(
+    () =>
+      readQueryFunctions(parseGroq(tab.query), tab.query).declarations.filter(
+        (declaration) => declaration.namespace !== undefined,
+      ),
+    [tab.query],
+  )
   const setResultView = useCallback(
     (view: VistaResultView) => actorRef.send({type: 'result.view', view}),
     [actorRef],
@@ -158,7 +184,30 @@ export function ResponsePanel(props: ResponsePanelProps) {
           ) : (
             t('vista.panel.lint')
           ),
-        content: <LintTab findings={lintFindings} onReveal={onRevealLintFinding} />,
+        content: <LintTab findings={lintFindings} onReveal={onRevealRange} />,
+      },
+      {
+        id: 'functions',
+        label:
+          declaredFunctions.length > 0 ? (
+            <Flex alignItems="center" as="span" gap={2}>
+              {t('vista.panel.functions')}
+              <Badge fontSize={0}>{declaredFunctions.length}</Badge>
+            </Flex>
+          ) : (
+            t('vista.panel.functions')
+          ),
+        content: (
+          <FunctionsTab
+            declarations={declaredFunctions}
+            library={functionLibrary}
+            onEdit={onEditQuery}
+            onRemove={removeFunction}
+            onReveal={onRevealRange}
+            onSave={saveFunction}
+            query={tab.query}
+          />
+        ),
       },
       {
         id: 'source-map',
@@ -193,15 +242,21 @@ export function ResponsePanel(props: ResponsePanelProps) {
       },
     ],
     [
+      declaredFunctions,
+      functionLibrary,
       hiddenDiffFields,
       history,
       lintFindings,
       meta,
-      onRevealLintFinding,
+      onEditQuery,
+      onRevealRange,
       queryExplain,
+      removeFunction,
       request,
       resultDataset,
+      saveFunction,
       t,
+      tab.query,
       url,
     ],
   )

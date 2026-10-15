@@ -85,6 +85,14 @@ export interface VistaHistoryDiffSettings {
   hiddenFields: string[]
 }
 
+/** A custom GROQ function kept in the functions library, to declare in any query */
+export interface VistaSavedFunction {
+  /** `ns::name`, unique in the library */
+  id: string
+  /** `fn ns::name($param) = $param{…}`, without the closing `;` */
+  declaration: string
+}
+
 /** The part of the state that survives reloads (per project, in `localStorage`) */
 export interface VistaPersistedState {
   version: 1
@@ -94,6 +102,8 @@ export interface VistaPersistedState {
   sidebar: VistaSidebarState
   panels: VistaPanelsState
   historyDiff: VistaHistoryDiffSettings
+  /** The functions library, most recently saved first */
+  functions: VistaSavedFunction[]
 }
 
 export type FetchReason =

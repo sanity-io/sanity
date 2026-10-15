@@ -11,6 +11,7 @@ import {
   type VistaPanelsState,
   type VistaPersistedState,
   type VistaPerspective,
+  type VistaSavedFunction,
   type VistaSettings,
   type VistaSidebarState,
   type VistaTab,
@@ -100,6 +101,7 @@ export function createInitialState(defaults: VistaStorageDefaults): VistaPersist
     sidebar: {expanded: false, drawer: null},
     panels: {...DEFAULT_PANELS},
     historyDiff: {hiddenFields: [...DEFAULT_HIDDEN_DIFF_FIELDS]},
+    functions: [],
   }
 }
 
@@ -221,6 +223,25 @@ function sanitizeHistoryDiff(value: unknown): VistaHistoryDiffSettings {
   }
 }
 
+/** Saved functions with an id and a declaration, the first of each id; state saved before had none */
+function sanitizeFunctions(value: unknown): VistaSavedFunction[] {
+  if (!Array.isArray(value)) return []
+  const functions: VistaSavedFunction[] = []
+  const seenIds = new Set<string>()
+  for (const candidate of value) {
+    if (
+      isPlainObject(candidate) &&
+      typeof candidate.id === 'string' &&
+      typeof candidate.declaration === 'string' &&
+      !seenIds.has(candidate.id)
+    ) {
+      seenIds.add(candidate.id)
+      functions.push({id: candidate.id, declaration: candidate.declaration})
+    }
+  }
+  return functions
+}
+
 /**
  * Loads the persisted state for a project, dropping anything that no longer validates (unknown
  * datasets, malformed tabs, ...). Returns a fresh state when nothing usable is stored.
@@ -261,8 +282,9 @@ export function loadVistaState(
   const sidebar = sanitizeSidebar(stored.sidebar)
   const panels = sanitizePanels(stored.panels)
   const historyDiff = sanitizeHistoryDiff(stored.historyDiff)
+  const functions = sanitizeFunctions(stored.functions)
   if (tabs.length === 0) {
-    return {...initial, settings, sidebar, panels, historyDiff}
+    return {...initial, settings, sidebar, panels, historyDiff, functions}
   }
 
   const activeTabId =
@@ -278,6 +300,7 @@ export function loadVistaState(
     sidebar,
     panels,
     historyDiff,
+    functions,
   }
 }
 

@@ -107,10 +107,43 @@ describe('vistaStorage', () => {
         resultView: 'json' as const,
       },
       historyDiff: {hiddenFields: ['_rev', 'meta.version']},
+      functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
     }
     saveVistaState('proj', saved)
 
     expect(loadVistaState('proj', defaults)).toEqual(saved)
+  })
+
+  it('keeps the saved functions that have an id and a declaration, the first of each id', () => {
+    const state = createInitialState(defaults)
+    const author = {id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}
+    localStorage.setItem(
+      getVistaStorageKey('proj'),
+      JSON.stringify({
+        ...state,
+        functions: [
+          author,
+          {id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{title}'},
+          {id: 'ex::broken'},
+          'fn ex::loose($p) = $p{x}',
+          {id: 'ex::tags', declaration: 'fn ex::tags($t) = $t[]->{title}', savedBy: 'someone'},
+        ],
+      }),
+    )
+    expect(loadVistaState('proj', defaults).functions).toEqual([
+      author,
+      {id: 'ex::tags', declaration: 'fn ex::tags($t) = $t[]->{title}'},
+    ])
+
+    // State saved before the library existed has none, and unusable tabs do not drop it
+    const {functions: _functions, ...withoutFunctions} = state
+    localStorage.setItem(getVistaStorageKey('proj'), JSON.stringify(withoutFunctions))
+    expect(loadVistaState('proj', defaults).functions).toEqual([])
+    localStorage.setItem(
+      getVistaStorageKey('proj'),
+      JSON.stringify({...state, tabs: [], functions: [author]}),
+    )
+    expect(loadVistaState('proj', defaults).functions).toEqual([author])
   })
 
   it('keeps only the first of the tabs sharing an id', () => {

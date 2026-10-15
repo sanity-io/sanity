@@ -22,8 +22,10 @@ import {
   type VistaTabOptions,
 } from '../../store/types'
 import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
-import {isPanelExpanded, selectParamsView} from '../../store/vistaMachine'
+import {isPanelExpanded, selectFunctionLibrary, selectParamsView} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
+import {functionLibrary} from '../../util/groqEditorContext'
+import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
 import {VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
@@ -98,10 +100,34 @@ export function RequestPanel(props: RequestPanelProps) {
     onLintFindings,
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
-  // The GROQ editor setup plus the `groq-lint` diagnostics, reporting to the Lint panel
+  // The GROQ editor setup, the diagnostics reporting to the Lint panel, and the documentation,
+  // completions and extraction of functions, which know the library. Only the library's facet
+  // changes when a function is saved; the rest of the setup stays as it is
+  const lintExtensions = useMemo(() => createGroqLintExtensions(onLintFindings), [onLintFindings])
+  const functionExtensions = useMemo(
+    () =>
+      createGroqFunctionExtensions({
+        reference: t('vista.functions.editor.reference'),
+        apiVersion: (version) => t('vista.functions.editor.api-version', {version}),
+        deltaOnly: t('vista.functions.editor.delta-only'),
+        declaredOn: (line) => t('vista.functions.editor.declared-on', {line}),
+        inLibrary: t('vista.functions.editor.in-library'),
+        completionDeclared: t('vista.functions.editor.completion-declared'),
+        completionLibrary: t('vista.functions.editor.completion-library'),
+        extract: t('vista.functions.editor.extract'),
+        addFromLibrary: t('vista.functions.editor.add-from-library'),
+      }),
+    [t],
+  )
+  const library = useVistaSelector(selectFunctionLibrary)
   const queryExtensions = useMemo(
-    () => [...groqExtensions, ...createGroqLintExtensions(onLintFindings)],
-    [onLintFindings],
+    () => [
+      ...groqExtensions,
+      ...lintExtensions,
+      ...functionExtensions,
+      functionLibrary.of(library),
+    ],
+    [functionExtensions, library, lintExtensions],
   )
   const actorRef = useVistaActor()
   const paramsExpanded = useVistaSelector((snapshot) => isPanelExpanded(snapshot, 'params'))

@@ -49,6 +49,8 @@ function EditorRoot({autoHeight, children}: {autoHeight: boolean; children: Reac
 
 export interface VisionCodeMirrorHandle {
   resetEditorContent: (newContent: string) => void
+  /** Edits the document like typing would: undoable, the selection mapped through the edits */
+  applyChanges: (changes: readonly {from: number; to: number; insert: string}[]) => void
   /** Selects a range of the document, scrolls it into view and focuses the editor */
   selectRange: (from: number, to: number) => void
   /**
@@ -127,6 +129,13 @@ export function VisionCodeMirror({
     }
   }, [])
 
+  const applyChanges = useCallback(
+    (changes: readonly {from: number; to: number; insert: string}[]) => {
+      codeMirrorRef.current?.view?.dispatch({changes: [...changes], userEvent: 'input'})
+    },
+    [],
+  )
+
   const selectRange = useCallback((from: number, to: number) => {
     const editorView = codeMirrorRef.current?.view
     if (!editorView) return
@@ -148,10 +157,11 @@ export function VisionCodeMirror({
     ref,
     () => ({
       resetEditorContent,
+      applyChanges,
       selectRange,
       getVisibleColumns: getVisibleColumnsOfEditor,
     }),
-    [resetEditorContent, selectRange, getVisibleColumnsOfEditor],
+    [resetEditorContent, applyChanges, selectRange, getVisibleColumnsOfEditor],
   )
 
   return (

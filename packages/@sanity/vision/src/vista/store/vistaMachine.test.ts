@@ -6,6 +6,7 @@ import {
   isPanelExpanded,
   selectActiveTab,
   selectOpenDialog,
+  selectFunctionLibrary,
   selectOpenDrawer,
   selectParamsView,
   selectResultView,
@@ -345,7 +346,29 @@ describe('vistaMachine', () => {
       sidebar: {expanded: true, drawer: 'saved'},
       panels: {params: true, options: false, paramsView: 'json', resultView: 'tree'},
       historyDiff: {hiddenFields: ['_rev', '_updatedAt', '_system.base.rev']},
+      functions: [],
     })
+  })
+
+  it('saves functions to the library, newest first and one per id, and removes them', () => {
+    const harness = createHarness()
+    const author = {id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}
+    const tags = {id: 'ex::tags', declaration: 'fn ex::tags($tags) = $tags[]->{title}'}
+
+    harness.actor.send({type: 'functions.save', fn: author})
+    harness.actor.send({type: 'functions.save', fn: tags})
+    expect(selectFunctionLibrary(harness.snapshot())).toEqual([tags, author])
+
+    const updated = {...author, declaration: 'fn ex::author($ref) = $ref->{name, bio}'}
+    harness.actor.send({type: 'functions.save', fn: updated})
+    expect(selectFunctionLibrary(harness.snapshot())).toEqual([updated, tags])
+    expect(selectPersistedState(harness.snapshot()).functions).toEqual([updated, tags])
+
+    harness.actor.send({type: 'functions.remove', id: 'ex::tags'})
+    expect(selectFunctionLibrary(harness.snapshot())).toEqual([updated])
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(selectFunctionLibrary(harness.snapshot())).toEqual([])
   })
 
   it('clears storage: fresh tab, default settings, closed UI, dropped localStorage', () => {

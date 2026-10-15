@@ -1,7 +1,9 @@
 import {setDiagnostics} from '@codemirror/lint'
 import {EditorState} from '@codemirror/state'
+import {EditorView} from '@codemirror/view'
 import {describe, expect, it, vi} from 'vitest'
 
+import {functionLibrary, type GroqEditorLabels, groqEditorLabels} from './groqEditorContext'
 import {
   collectFindings,
   groqLintSource,
@@ -11,6 +13,18 @@ import {
   toDiagnostics,
 } from './groqLint'
 import * as groqWasm from './groqWasm'
+
+const EDITOR_LABELS: GroqEditorLabels = {
+  reference: 'GROQ functions reference',
+  apiVersion: (version) => `Needs API version ${version} or later`,
+  deltaOnly: 'Only in delta mode',
+  declaredOn: (line) => `Declared on line ${line}`,
+  inLibrary: 'In your library',
+  completionDeclared: 'in this query',
+  completionLibrary: 'from your library',
+  extract: 'Extract to function',
+  addFromLibrary: 'Declare it',
+}
 
 function viewOf(doc: string) {
   return {state: EditorState.create({doc})}
@@ -53,6 +67,63 @@ describe('groqLintSource', () => {
     expect(await groqLintSource(viewOf(''))).toEqual([])
     expect(await groqLintSource(viewOf('  \n'))).toEqual([])
     expect(lintSpy).not.toHaveBeenCalled()
+    lintSpy.mockRestore()
+  })
+
+  it('checks custom functions and function calls along with the groq-lint rules', async () => {
+    const query = 'fn ex::f($p) = $p{"x": $p.y};\n*{"n": count(), "f": ex::f(@)}'
+    const diagnostics = await groqLintSource(viewOf(query))
+
+    expect(
+      diagnostics.map((diagnostic) => [
+        diagnostic.source,
+        query.slice(diagnostic.from, diagnostic.to),
+      ]),
+    ).toEqual([
+      ['vision/parameter-reuse', '$p'],
+      ['vision/arity', 'count'],
+    ])
+    const rendered = diagnostics[1].renderMessage?.(new EditorView())
+    expect(rendered).toBeDefined()
+    const container = document.createElement('div')
+    container.append(rendered ?? '')
+    expect(container.innerHTML).toBe('<code>count()</code> takes one argument, not 0')
+  })
+
+  it('says what is wrong with a declaration the parser rejects', async () => {
+    const [diagnostic] = await groqLintSource(viewOf('fn foo($p) = $p{name}; *'))
+    expect(diagnostic).toMatchObject({
+      severity: 'error',
+      source: 'groq',
+      message: 'Custom functions need a namespace of their own: `fn my::foo(…)`',
+    })
+  })
+
+  it('offers to declare a library function the query calls without declaring it', async () => {
+    const library = [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}]
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: '*{"author": ex::author(author)}',
+        extensions: [functionLibrary.of(library), groqEditorLabels.of(EDITOR_LABELS)],
+      }),
+    })
+    const [diagnostic] = await groqLintSource(view)
+
+    expect(diagnostic.source).toBe('vision/unknown-function')
+    expect(diagnostic.actions?.map((action) => action.name)).toEqual(['Declare it'])
+    diagnostic.actions?.[0].apply(view, diagnostic.from, diagnostic.to)
+    expect(view.state.doc.toString()).toBe(
+      'fn ex::author($ref) = $ref->{name};\n\n*{"author": ex::author(author)}',
+    )
+    view.destroy()
+  })
+
+  it('still checks the functions of a query that parses when the wasm cannot be loaded', async () => {
+    const lintSpy = vi.spyOn(groqWasm, 'lintGroq').mockRejectedValue(new Error('offline'))
+    expect(
+      (await groqLintSource(viewOf('*{"n": count()}'))).map((diagnostic) => diagnostic.source),
+    ).toEqual(['vision/arity'])
+    expect(await groqLintSource(viewOf('*{"n": count(}'))).toEqual([])
     lintSpy.mockRestore()
   })
 })
