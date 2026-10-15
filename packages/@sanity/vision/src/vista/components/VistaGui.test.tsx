@@ -670,7 +670,8 @@ describe('VistaGui', () => {
 
   it('shows the query plan and an explanation of the query in the Explain panel', async () => {
     const {promptCalls, replyToPrompts, requestCalls, respondToRequests} = renderVista()
-    const plan = 'Pipeline {\n  r1: StreamStep {\n    $0: Fetch {Filter: (_type == "post")}\n  }\n}'
+    const plan =
+      'Pipeline {\n  r1: StreamStep {\n    $0: Fetch {Filter: (_type == "post")}\n  }\n  r2: FilterStep {\n    Source: r1, Expr: eq($1.name, "x")\n  }\n}'
     respondToRequests({result: [], explain: plan})
     replyToPrompts('It fetches every post.\n\nThe filter is applied while reading.')
 
@@ -685,6 +686,11 @@ describe('VistaGui', () => {
     expect(text(screen.getByTestId('vista-query-plan'))).toContain(
       'Fetch {Filter: (_type == "post")}',
     )
+    // What stands out in it: the filter evaluated in memory
+    expect(text(screen.getByTestId('vista-plan-insight'))).toContain(
+      'vista.explain.insight.filter-in-memory',
+    )
+    expect(text(screen.getByTestId('vista-plan-insight'))).toContain('eq($1.name, "x")')
     expect(new URL(requestCalls[0].options.url, 'https://x.io').searchParams.get('explain')).toBe(
       'true',
     )

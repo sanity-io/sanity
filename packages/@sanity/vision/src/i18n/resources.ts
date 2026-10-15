@@ -220,6 +220,27 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.explain.explain': 'Explain this to me',
   /** Shown when the explanation could not be written */
   'vista.explain.failed': 'The query could not be explained: {{message}}',
+  /** A count the index computes without reading the documents */
+  'vista.explain.insight.aggregate': 'Counted in the index, without reading the documents.',
+  /** A subquery the plan runs once for all documents */
+  'vista.explain.insight.batched-subquery':
+    'The subquery runs once for all the documents, in a single batched fetch, not once per document.',
+  /** Part of the filter runs in memory; the expression follows */
+  'vista.explain.insight.filter-in-memory':
+    'Part of the filter runs in memory, after reading: every document the index lets through is read first, which gets slow on large datasets. Joins (->) and functions in a filter cannot use the index.',
+  /** The index sorts and limits while reading */
+  'vista.explain.insight.index-sort-limit':
+    'The index sorts and limits the documents while reading them.',
+  /** The plan slices in memory */
+  'vista.explain.insight.slice-in-memory':
+    'The slice is taken in memory after reading, not as a limit while reading.',
+  /** The plan sorts in memory */
+  'vista.explain.insight.sort-in-memory':
+    'Sorting happens in memory, after reading every match. Sort by attributes the index can sort by.',
+  /** Link under the plan insights to the guide on fast queries */
+  'vista.explain.insights.guide': 'High performance GROQ',
+  /** Heading of the plan insights in the Explain panel */
+  'vista.explain.insights.title': 'What stands out',
   /** Button in the Explain panel fetching the query plan */
   'vista.explain.plan': 'Show the query plan',
   /** Shown when the query plan could not be fetched */

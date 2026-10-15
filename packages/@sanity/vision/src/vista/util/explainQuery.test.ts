@@ -59,9 +59,12 @@ describe('explainQuery', () => {
       query: '*[_type == $type]',
       params: '{"type":"author"}',
       plan: PLAN,
+      glossary: expect.stringContaining('FilterStep: filters rows in memory'),
     })
-    // Template params, so the $ of a GROQ param in them is not read as one
+    // Template params, so the $ of a GROQ param (and the plan's $0 columns) is not read as one
     expect(prompts[0].request.instruction).toContain('$plan')
+    expect(prompts[0].request.instruction).toContain('$glossary')
+    expect(prompts[0].request.instruction).not.toContain('$0')
   })
 
   it('rejects an empty explanation', async () => {

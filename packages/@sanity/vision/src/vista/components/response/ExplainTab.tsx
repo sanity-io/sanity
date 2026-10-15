@@ -1,11 +1,38 @@
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Button, Card, Label, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {useTranslation} from 'sanity'
+import {useMemo} from 'react'
+import {type TFunction, useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ExplainStep} from '../../hooks/useQueryExplain'
+import {
+  HIGH_PERFORMANCE_GROQ_URL,
+  type PlanInsight,
+  readPlanInsights,
+} from '../../util/planInsights'
+
+function describeInsight(insight: PlanInsight, t: TFunction<'vision'>): string {
+  switch (insight.kind) {
+    case 'filter-in-memory':
+      return t('vista.explain.insight.filter-in-memory')
+    case 'sort-in-memory':
+      return t('vista.explain.insight.sort-in-memory')
+    case 'slice-in-memory':
+      return t('vista.explain.insight.slice-in-memory')
+    case 'index-sort-limit':
+      return t('vista.explain.insight.index-sort-limit')
+    case 'batched-subquery':
+      return t('vista.explain.insight.batched-subquery')
+    case 'aggregate':
+      return t('vista.explain.insight.aggregate')
+    default: {
+      const unhandled: never = insight
+      return String(unhandled)
+    }
+  }
+}
 
 export interface ExplainTabProps {
   plan: ExplainStep
@@ -24,6 +51,8 @@ export function ExplainTab(props: ExplainTabProps) {
   const {plan, explanation, canExplain, onShowPlan, onExplain} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const explaining = explanation.status === 'loading'
+  const planText = plan.status === 'done' ? plan.text : undefined
+  const insights = useMemo(() => (planText ? readPlanInsights(planText) : []), [planText])
 
   return (
     <Box data-testid="vista-explain" padding={3}>
@@ -82,6 +111,37 @@ export function ExplainTab(props: ExplainTabProps) {
           <Text data-testid="vista-explain-error" size={1}>
             {t('vista.explain.plan-failed', {message: plan.message})}
           </Text>
+        )}
+        {plan.status === 'done' && insights.length > 0 && (
+          <Stack data-testid="vista-plan-insights" gap={2}>
+            <Label muted size={0}>
+              {t('vista.explain.insights.title')}
+            </Label>
+            {insights.map((insight, index) => (
+              <Card
+                border
+                data-testid="vista-plan-insight"
+                key={`${insight.kind}:${index}`}
+                padding={3}
+                radius={2}
+                tone={insight.tone}
+              >
+                <Stack gap={3}>
+                  <Text size={1}>{describeInsight(insight, t)}</Text>
+                  {insight.kind === 'filter-in-memory' && (
+                    <Code size={1}>{insight.expression}</Code>
+                  )}
+                </Stack>
+              </Card>
+            ))}
+            {insights.some((insight) => insight.tone === 'caution') && (
+              <Text muted size={1}>
+                <a href={HIGH_PERFORMANCE_GROQ_URL} rel="noreferrer" target="_blank">
+                  {t('vista.explain.insights.guide')}
+                </a>
+              </Text>
+            )}
+          </Stack>
         )}
         {plan.status === 'done' && (
           <Stack data-testid="vista-query-plan" gap={2}>
