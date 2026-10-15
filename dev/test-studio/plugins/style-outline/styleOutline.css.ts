@@ -70,19 +70,23 @@ export const header = css(handle, {
   },
 })
 
-// Panda emits one rule per declaration, ordered by where a declaration is first seen, so these
-// overrides come after the elements that wear `glass` and `handle`: their `box-shadow` and
-// `cursor` rules then follow the ones they replace while a drag is live.
+// The two drag-state overrides double their class (`&&`) to beat the `box-shadow` and `cursor`
+// of `glass` and `handle` on the same element: Panda emits one rule per declaration, ordered by
+// value within a property, so the order the classes are declared in does not decide the tie.
 
 // Worn by the panel or the trigger rather than by the wrapper around them, so the
 // shadow of a widget being carried keeps the shape it belongs to — the panel's
 // rounded corners, the collapsed trigger's circle.
 export const lifted = css({
-  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.5)',
+  '&&': {
+    boxShadow: '0 16px 36px rgba(0, 0, 0, 0.5)',
+  },
 })
 
 export const handleDragging = css({
-  cursor: 'grabbing',
+  '&&': {
+    cursor: 'grabbing',
+  },
 })
 
 export const group = css({

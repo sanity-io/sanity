@@ -6,9 +6,13 @@ export const rootBox = css({
   transition: 'opacity 0.4s',
 })
 
-// Defined after `rootBox` so it wins the equal-specificity tie on `opacity`.
+// Doubled class so it beats the `opacity` of `rootBox` when both are set: Panda orders the rules
+// of a property by value (`0.8` before `1`), so the order the classes are declared in does not
+// decide the tie the way it did with vanilla-extract.
 export const rootBoxMuted = css({
-  opacity: 0.8,
+  '&&': {
+    opacity: 0.8,
+  },
 })
 
 export const commandListBox = css({

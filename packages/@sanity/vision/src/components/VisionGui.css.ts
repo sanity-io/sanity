@@ -96,9 +96,13 @@ export const inputBackgroundContainer = css({
   },
 })
 
+// Doubled class so it beats the `left` of `inputBackgroundContainer`, which it is always combined
+// with: Panda orders the rules of a property by value, not by the order the classes are declared in.
 export const inputBackgroundContainerLeft = css({
   // This is so its aligned with the gutters of CodeMirror
-  left: '33px',
+  '&&': {
+    left: '33px',
+  },
 })
 
 export const inputContainer = css({
