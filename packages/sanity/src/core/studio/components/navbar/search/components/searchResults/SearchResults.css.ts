@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const searchResultsInnerFlex = style({
+export const searchResultsInnerFlex = css({
   opacity: 1,
   overflowX: 'hidden',
   overflowY: 'auto',
@@ -10,6 +10,6 @@ export const searchResultsInnerFlex = style({
 })
 
 // Defined after the base so it wins the equal-specificity tie
-export const loadingFirstPage = style({
+export const loadingFirstPage = css({
   opacity: 0.5,
 })

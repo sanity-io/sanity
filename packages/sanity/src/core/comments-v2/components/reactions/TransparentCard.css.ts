@@ -1,10 +1,8 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const transparentCard = style({
-  selectors: {
-    // Card sets background-color on itself
-    '&&': {
-      background: 'none',
-    },
+export const transparentCard = css({
+  // Card sets background-color on itself
+  '&&': {
+    background: 'none',
   },
 })

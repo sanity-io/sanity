@@ -1,13 +1,45 @@
-import {createVar, globalStyle, style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const root = style({})
-
-globalStyle(`${root} .sidebarPanes .Pane`, {
-  overflowY: 'auto',
-  overflowX: 'hidden',
+export const root = css({
+  '& .sidebarPanes .Pane': {
+    overflowY: 'auto',
+    overflowX: 'hidden',
+  },
+  '& .Resizer': {
+    background: 'var(--card-border-color)',
+    opacity: 1,
+    zIndex: 1,
+    boxSizing: 'border-box',
+    backgroundClip: 'padding-box',
+    border: 'solid transparent',
+  },
+  '& .Resizer:hover': {
+    borderColor: 'var(--card-shadow-ambient-color)',
+  },
+  '& .Resizer.horizontal': {
+    height: '11px',
+    margin: '-5px 0',
+    borderWidth: '5px 0',
+    cursor: 'row-resize',
+    width: '100%',
+    zIndex: 4,
+  },
+  '& .Resizer.vertical': {
+    width: '11px',
+    margin: '0 -5px',
+    borderWidth: '0 5px',
+    cursor: 'col-resize',
+    zIndex: 2 /* To prevent the resizer from being hidden behind CodeMirror scroll area */,
+  },
+  '& .Resizer.disabled': {
+    cursor: 'not-allowed',
+  },
+  '& .Resizer.disabled:hover': {
+    borderColor: 'transparent',
+  },
 })
 
-export const queryRecallPaneContainer = style({
+export const queryRecallPaneContainer = css({
   position: 'absolute',
   top: 0,
   right: 0,
@@ -15,78 +47,43 @@ export const queryRecallPaneContainer = style({
   left: 0,
 })
 
-export const queryRecallPaneWrapper = style({
+export const queryRecallPaneWrapper = css({
   minHeight: 0,
 })
 
-globalStyle(`${root} .Resizer`, {
-  background: 'var(--card-border-color)',
-  opacity: 1,
-  zIndex: 1,
-  boxSizing: 'border-box',
-  backgroundClip: 'padding-box',
-  border: 'solid transparent',
-})
+export const header = css({
+  'position': 'relative',
+  'flexShrink': 0,
+  'zIndex': 6,
+  'overflow': 'visible',
+  'borderBottom': '1px solid var(--card-border-color)',
 
-globalStyle(`${root} .Resizer:hover`, {
-  borderColor: 'var(--card-shadow-ambient-color)',
-})
-
-globalStyle(`${root} .Resizer.horizontal`, {
-  height: '11px',
-  margin: '-5px 0',
-  borderWidth: '5px 0',
-  cursor: 'row-resize',
-  width: '100%',
-  zIndex: 4,
-})
-
-globalStyle(`${root} .Resizer.vertical`, {
-  width: '11px',
-  margin: '0 -5px',
-  borderWidth: '0 5px',
-  cursor: 'col-resize',
-  zIndex: 2 /* To prevent the resizer from being hidden behind CodeMirror scroll area */,
-})
-
-globalStyle(`${root} .Resizer.disabled`, {
-  cursor: 'not-allowed',
-})
-
-globalStyle(`${root} .Resizer.disabled:hover`, {
-  borderColor: 'transparent',
-})
-
-export const header = style({
-  position: 'relative',
-  flexShrink: 0,
-  zIndex: 6,
-  overflow: 'visible',
-  borderBottom: '1px solid var(--card-border-color)',
-  selectors: {
-    // Override the background-color @sanity/ui's Card sets on itself
-    '&&': {
-      background: 'var(--card-bg-color)',
-    },
+  // Override the background-color @sanity/ui's Card sets on itself
+  '&&': {
+    background: 'var(--card-bg-color)',
   },
 })
 
-export const styledLabel = style({
-  flex: 1,
-})
+// The label's own class is atomic, so the rule `inputBackgroundContainer` has for the labels
+// inside it refers to this fixed marker class, attached next to the atomic one.
+const styledLabelMarker = 'vision-styledLabel'
 
-export const splitpaneContainer = style({
+export const styledLabel = `${styledLabelMarker} ${css({
+  flex: 1,
+})}`
+
+export const splitpaneContainer = css({
   position: 'relative',
   minHeight: 0,
   zIndex: 1,
 })
 
-export const queryCopyLink = style({
+export const queryCopyLink = css({
   cursor: 'pointer',
   marginRight: 'auto',
 })
 
-export const inputBackgroundContainer = style({
+export const inputBackgroundContainer = css({
   position: 'absolute',
   top: '1rem',
   left: 0,
@@ -94,104 +91,100 @@ export const inputBackgroundContainer = style({
   margin: 0,
   zIndex: 10,
   right: 0,
+  [`& .${styledLabelMarker}`]: {
+    userSelect: 'none',
+  },
 })
 
-globalStyle(`${inputBackgroundContainer} ${styledLabel}`, {
-  userSelect: 'none',
-})
-
-export const inputBackgroundContainerLeft = style({
+export const inputBackgroundContainerLeft = css({
   // This is so its aligned with the gutters of CodeMirror
   left: '33px',
 })
 
-export const inputContainer = style({
+export const inputContainer = css({
   width: '100%',
   height: '100%',
   position: 'relative',
   flexDirection: 'column',
 })
 
-export const resultOuterContainer = style({
+export const resultOuterContainer = css({
   height: '100%',
 })
 
-export const resultInnerContainer = style({
+export const resultInnerContainer = css({
   position: 'relative',
 })
 
-export const resultContainer = style({
+export const resultContainer = css({
   height: '100%',
   width: '100%',
   position: 'absolute',
   maxWidth: '100%',
 })
 
-export const resultContainerInvalid = style({
-  selectors: {
-    '&&::after': {
-      backgroundColor: 'var(--card-bg-color)',
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      width: '100%',
-    },
+export const resultContainerInvalid = css({
+  '&&::after': {
+    backgroundColor: 'var(--card-bg-color)',
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: '100%',
   },
 })
 
-export const result = style({
+export const result = css({
   position: 'relative',
   width: '100%',
   height: '100%',
   zIndex: 20,
 })
 
-export const resultFooter = style({
+export const resultFooter = css({
   borderTop: '1px solid var(--card-border-color)',
   flexWrap: 'wrap',
 })
 
-export const timingsCard = style({
+export const timingsCard = css({
   position: 'relative',
 })
 
-export const timingsTextMinHeightVar = createVar()
+/** Set inline by `TimingsTextContainer` from the theme */
+export const timingsTextMinHeightVar = '--vision-timings-text-min-height'
 
-export const timingsTextContainer = style({
+export const timingsTextContainer = css({
   height: '100%',
-  minHeight: timingsTextMinHeightVar,
+  minHeight: `var(${timingsTextMinHeightVar})`,
 })
 
-export const downloadsCard = style({
+export const downloadsCard = css({
   position: 'relative',
 })
 
-export const saveResultSpanGapVar = createVar()
+/** Set inline by `SaveResultLabel` from the theme */
+export const saveResultSpanGapVar = '--vision-save-result-span-gap'
 
-export const saveResultLabel = style({
-  selectors: {
-    // Override the transform/pseudo-elements @sanity/ui's Text applies for baseline trimming
-    '&&': {
-      transform: 'initial',
-    },
-    '&&::before': {
-      content: 'none',
-    },
-    '&&::after': {
-      content: 'none',
-    },
+export const saveResultLabel = css({
+  // Override the transform/pseudo-elements @sanity/ui's Text applies for baseline trimming
+  '&&': {
+    transform: 'initial',
+  },
+  '&&::before': {
+    content: 'none',
+  },
+  '&&::after': {
+    content: 'none',
+  },
+  '& > span': {
+    display: 'flex !important',
+    flexWrap: 'wrap',
+    gap: `var(${saveResultSpanGapVar})`,
+    alignItems: 'center',
   },
 })
 
-globalStyle(`${saveResultLabel} > span`, {
-  display: 'flex !important',
-  flexWrap: 'wrap',
-  gap: saveResultSpanGapVar,
-  alignItems: 'center',
-})
-
-export const controlsContainer = style({
+export const controlsContainer = css({
   borderTop: '1px solid var(--card-border-color)',
 })

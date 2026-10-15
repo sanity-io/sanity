@@ -2,9 +2,8 @@ import {JsonInspector} from '@rexxars/react-json-inspector'
 import {LinkIcon} from '@sanity/icons/Link'
 import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
 import LRU from 'quick-lru'
-import {type ReactNode} from 'react'
+import {type CSSProperties, type ReactNode} from 'react'
 import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
@@ -33,20 +32,22 @@ function ResultViewWrapper({children}: {children: ReactNode}) {
   return (
     <div
       className={resultViewWrapper}
-      style={assignInlineVars({
-        [codeFamilyVar]: font.code.family,
-        [codeFontSizeVar]: `${codeSize.fontSize}px`,
-        [codeLineHeightVar]: `${codeSize.lineHeight}px`,
-        [space0Var]: `${rem(space[0])}`,
-        [space2Var]: `${rem(space[2])}`,
-        [space4Var]: `${rem(space[4])}`,
-        [space4HalfVar]: `${rem(space[4] / 2)}`,
-        [syntaxPropertyVar]: color.syntax.property,
-        [syntaxConstantVar]: color.syntax.constant,
-        [syntaxStringVar]: color.syntax.string,
-        [syntaxBooleanVar]: color.syntax.boolean,
-        [syntaxNumberVar]: color.syntax.number,
-      })}
+      style={
+        {
+          [codeFamilyVar]: font.code.family,
+          [codeFontSizeVar]: `${codeSize.fontSize}px`,
+          [codeLineHeightVar]: `${codeSize.lineHeight}px`,
+          [space0Var]: `${rem(space[0])}`,
+          [space2Var]: `${rem(space[2])}`,
+          [space4Var]: `${rem(space[4])}`,
+          [space4HalfVar]: `${rem(space[4] / 2)}`,
+          [syntaxPropertyVar]: color.syntax.property,
+          [syntaxConstantVar]: color.syntax.constant,
+          [syntaxStringVar]: color.syntax.string,
+          [syntaxBooleanVar]: color.syntax.boolean,
+          [syntaxNumberVar]: color.syntax.number,
+        } as CSSProperties
+      }
     >
       {children}
     </div>

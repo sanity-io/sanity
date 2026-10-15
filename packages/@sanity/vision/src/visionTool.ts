@@ -1,5 +1,3 @@
-import './styles.css'
-
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {lazy} from 'react'
 import {definePlugin} from 'sanity'

@@ -1,16 +1,16 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const perspectivePopoverContent = style({
+export const perspectivePopoverContent = css({
   /* This limits the width of the popover content */
   maxWidth: '240px',
 })
 
-export const perspectivePopoverLink = style({
+export const perspectivePopoverLink = css({
   cursor: 'pointer',
   marginRight: 'auto',
 })
 
-export const dot = style({
+export const dot = css({
   width: '4px',
   height: '4px',
   borderRadius: '3px',

@@ -5,8 +5,8 @@ import CodeMirror, {
   type ReactCodeMirrorProps,
   type ReactCodeMirrorRef,
 } from '@uiw/react-codemirror'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
+  type CSSProperties,
   type ReactNode,
   useCallback,
   useImperativeHandle,
@@ -29,14 +29,16 @@ function EditorRoot({children}: {children: ReactNode}) {
   return (
     <div
       className={editorRoot}
-      style={assignInlineVars({
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        [linePaddingLeftVar]: `${rem(sanity.space[3])}`,
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        [contentBorderRightWidthVar]: `${rem(sanity.space[4])}`,
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        [contentPaddingTopVar]: `${rem(sanity.space[5])}`,
-      })}
+      style={
+        {
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+          [linePaddingLeftVar]: `${rem(sanity.space[3])}`,
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+          [contentBorderRightWidthVar]: `${rem(sanity.space[4])}`,
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+          [contentPaddingTopVar]: `${rem(sanity.space[5])}`,
+        } as CSSProperties
+      }
     >
       {children}
     </div>
