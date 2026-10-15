@@ -16,6 +16,15 @@ effect of merged work; secondary: leads scanning health weekly.
   series, `runner.calibrationMs`, git sha. Written by `bench store`
   (perf/bench/report/storeToSanity.ts); stored shape defined by
   perf/bench/report/storeShape.ts and mirrored by schemaTypes/benchRun.ts.
+- **Soak series.** A daily run stores two soak reports: `singleString`
+  (typing only) and `article` (typing into the Portable Text body between
+  menus, a tooltip and document switches, with live presence). The soak
+  charts follow the `singleString` report by name (`SOAK_SERIES_SCENARIO`),
+  since the stored scenario order is not stable; the `article` soak is stored
+  but not charted yet. Slopes are least-squares fits from the run's
+  `soak.settleMinute` on (minute 2 for runs stored before the field existed,
+  `@repo/utils/soak-settle`), because the first minutes race the studio's
+  lazy mount. End-of-run values and the in-run minute charts use every sample.
 - Volume is tiny (≤366 docs/year) but documents are heavy (per-session sample
   arrays) — **dashboard queries must project summaries, never fetch
   `sessions`**.
