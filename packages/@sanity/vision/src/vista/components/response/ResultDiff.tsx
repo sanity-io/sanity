@@ -34,6 +34,9 @@ export default function ResultDiff({previous, next}: ResultDiffProps) {
     if (!wrapper) return undefined
     const diff = new FileDiff({
       diffStyle: 'unified',
+      // Thrown from `render` in this effect, a failure reaches the History panel's error
+      // boundary and its Retry, rather than being drawn as a stack trace inside the diff
+      disableErrorHandling: true,
       disableFileHeader: true,
       lineDiffType: 'word',
       overflow: 'wrap',

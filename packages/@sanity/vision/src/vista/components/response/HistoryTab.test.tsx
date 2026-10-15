@@ -6,16 +6,20 @@ import {afterEach, describe, expect, it, vi} from 'vitest'
 import {type FetchHistoryEntry} from '../../store/types'
 import {HistoryTab} from './HistoryTab'
 
-const diffModule = vi.hoisted(() => ({loads: 0, throwOnRender: false}))
+const diffModule = vi.hoisted(() => ({loads: 0, throwOnRender: false, throwInEffect: false}))
 
-vi.mock('./ResultDiff', () => {
+vi.mock('./ResultDiff', async () => {
   diffModule.loads++
-  return {
-    default: (props: {previous: unknown; next: unknown}) => {
-      if (diffModule.throwOnRender) throw new Error('Could not render the diff')
-      return <pre data-testid="result-diff">{JSON.stringify(props)}</pre>
-    },
+  const {useEffect} = await import('react')
+  // The real diff draws in an effect, which throws there when drawing fails
+  function MockResultDiff(props: {previous: unknown; next: unknown}) {
+    useEffect(() => {
+      if (diffModule.throwInEffect) throw new Error('Could not draw the diff')
+    })
+    if (diffModule.throwOnRender) throw new Error('Could not render the diff')
+    return <pre data-testid="result-diff">{JSON.stringify(props)}</pre>
   }
+  return {default: MockResultDiff}
 })
 
 vi.mock('sanity', () => ({
@@ -217,6 +221,23 @@ describe('HistoryTab', () => {
     } finally {
       consoleError.mockRestore()
       diffModule.throwOnRender = false
+    }
+  })
+
+  it('offers the same retry when drawing the diff fails after it rendered', async () => {
+    diffModule.throwInEffect = true
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      const [changed] = renderTab()
+      fireEvent.click(within(changed).getByTestId('vista-history-changes-toggle'))
+      expect(await within(changed).findByText('vista.history.changes-failed')).toBeTruthy()
+
+      diffModule.throwInEffect = false
+      fireEvent.click(within(changed).getByText('vista.history.changes-retry'))
+      expect(await within(changed).findByTestId('result-diff')).toBeTruthy()
+    } finally {
+      consoleError.mockRestore()
+      diffModule.throwInEffect = false
     }
   })
 })
