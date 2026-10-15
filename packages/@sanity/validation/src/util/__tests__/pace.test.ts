@@ -196,6 +196,60 @@ describe('createPace', () => {
     expect(requestIdleCallback).toHaveBeenCalledTimes(2)
   })
 
+  it('subscribes to a changing scheduling once for all the nodes waiting for idle time', async () => {
+    let nextHandle = 1
+    vi.stubGlobal('window', {
+      requestIdleCallback: vi.fn((): number => nextHandle++),
+      cancelIdleCallback: vi.fn(),
+    })
+    vi.stubGlobal('scheduler', {yield: vi.fn(() => Promise.resolve())})
+    const {createPace} = await importPace()
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
+    const subscribe = vi.spyOn(scheduling, 'subscribe')
+    const pace = createPace(scheduling)
+
+    const waiting = Array.from({length: 50}, () => startNode(pace))
+    expect(subscribe).toHaveBeenCalledTimes(1)
+
+    scheduling.next('immediate')
+    expect(waiting.every((node) => node.ready)).toBe(true)
+    expect(scheduling.observed).toBe(false)
+  })
+
+  it('stops watching a changing scheduling once no node waits for idle time', async () => {
+    const idleCallbacks = new Map<number, () => void>()
+    let nextHandle = 1
+    vi.stubGlobal('window', {
+      requestIdleCallback: (callback: () => void): number => {
+        const handle = nextHandle++
+        idleCallbacks.set(handle, callback)
+        return handle
+      },
+      cancelIdleCallback: (handle: number) => idleCallbacks.delete(handle),
+    })
+    vi.stubGlobal('scheduler', {yield: vi.fn(() => Promise.resolve())})
+    const {createPace} = await importPace()
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
+    const pace = createPace(scheduling)
+
+    const goesAheadOnIdle = startNode(pace)
+    const dropped = pace().subscribe()
+    expect(scheduling.observed).toBe(true)
+
+    idleCallbacks.get(1)?.()
+    dropped.unsubscribe()
+    expect(goesAheadOnIdle.ready).toBe(true)
+    expect(idleCallbacks.size).toBe(0)
+    expect(scheduling.observed).toBe(false)
+
+    // the next node that waits for idle time watches the scheduling again
+    const later = startNode(pace)
+    expect(scheduling.observed).toBe(true)
+    scheduling.next('immediate')
+    expect(later.ready).toBe(true)
+    expect(scheduling.observed).toBe(false)
+  })
+
   it('waits for idle time again once a changing scheduling is back to idle', async () => {
     const requestIdleCallback = vi.fn((): number => 1)
     vi.stubGlobal('window', {requestIdleCallback, cancelIdleCallback: vi.fn()})

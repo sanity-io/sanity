@@ -316,6 +316,8 @@ describe('validation scheduling', () => {
     expect(page.cancelIdleCallback.mock.calls.map(([handle]) => handle).toSorted(byHandle)).toEqual(
       requested.toSorted(byHandle),
     )
+    // the scheduling outlives the run in the studio, so a finished run must not stay subscribed
+    expect(scheduling.observed).toBe(false)
     const linkMarkers: MarkerIdentity[] = emptyLinkPaths(blockCount).map((path) => ({
       path,
       level: 'error',

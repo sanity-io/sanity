@@ -1,5 +1,5 @@
-import {asapScheduler, type BehaviorSubject, EMPTY, from, Observable} from 'rxjs'
-import {filter, ignoreElements, observeOn, takeUntil} from 'rxjs/operators'
+import {asapScheduler, type BehaviorSubject, EMPTY, from, Observable, type Subscription} from 'rxjs'
+import {ignoreElements, observeOn} from 'rxjs/operators'
 
 import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 
@@ -136,9 +136,36 @@ export function createYieldingPace(yieldToBrowser: () => Promise<void>, every: n
 export function createPace(scheduling?: BehaviorSubject<ValidationScheduling>): Pace {
   if (!scheduling) return idle
   const immediate = createYieldingPace(getYieldToBrowser(), IMMEDIATE_YIELD_EVERY)
-  const switchedToImmediate = scheduling.pipe(filter((mode) => mode === 'immediate'))
+  const idleUntilImmediate = createIdleUntilImmediate(scheduling)
+  return () => (scheduling.getValue() === 'immediate' ? immediate() : idleUntilImmediate())
+}
+
+/**
+ * Waits for idle time like `idle`, and lets every node still waiting go ahead once the scheduling
+ * switches to `immediate`. The waiting nodes share one subscription to the scheduling, held while
+ * any of them waits: a subject removes an observer by searching its list for it, so with a
+ * subscription each, every node that goes ahead would pay for all the others, and nested arrays can
+ * leave tens of thousands of nodes waiting at once.
+ */
+function createIdleUntilImmediate(scheduling: BehaviorSubject<ValidationScheduling>): Pace {
+  const waiting = new Set<() => void>()
+  let watching: Subscription | undefined
+  const releaseOnImmediate = (mode: ValidationScheduling) => {
+    if (mode !== 'immediate') return
+    for (const release of waiting) release()
+  }
   return () =>
-    scheduling.getValue() === 'immediate'
-      ? immediate()
-      : idle().pipe(takeUntil(switchedToImmediate))
+    new Observable<never>((observer) => {
+      const release = () => observer.complete()
+      waiting.add(release)
+      watching ??= scheduling.subscribe(releaseOnImmediate)
+      const handle = requestIdleCallback(release)
+      return () => {
+        cancelIdleCallback(handle)
+        waiting.delete(release)
+        if (waiting.size > 0) return
+        watching?.unsubscribe()
+        watching = undefined
+      }
+    })
 }
