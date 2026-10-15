@@ -1,6 +1,6 @@
 import {type ValidationScheduling} from '@sanity/validation/_internal'
 import {act, render} from '@testing-library/react'
-import {defer, ReplaySubject} from 'rxjs'
+import {config, defer, ReplaySubject} from 'rxjs'
 import {finalize} from 'rxjs/operators'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -47,6 +47,11 @@ function Probe({id, enabled}: {id: string; enabled: boolean}) {
   return null
 }
 
+function Hold({enabled}: {enabled: boolean}) {
+  useSetImmediateValidation('doc-1', 'author', false, {enabled})
+  return null
+}
+
 describe('useSetImmediateValidation', () => {
   beforeEach(() => {
     validationSubject = new ReplaySubject<ValidationStatus>(1)
@@ -90,5 +95,25 @@ describe('useSetImmediateValidation', () => {
     // A frame of the initial status here would tell a publish gate that validation is done.
     expect(frames.length).toBeGreaterThan(framesBeforeEnabling)
     expect(frames.slice(framesBeforeEnabling).filter((frame) => !frame.isValidating)).toEqual([])
+  })
+
+  it('leaves a failed validation to useValidationStatus to report, and ends its hold with it', async () => {
+    const onUnhandledError = vi.fn()
+    config.onUnhandledError = onUnhandledError
+    try {
+      render(<Hold enabled />)
+      expect(holds('doc-1')).toBe(1)
+
+      act(() => {
+        validationSubject.error(new Error('listener failed'))
+      })
+      // RxJS reports an error that nothing handles from a timeout
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(onUnhandledError).not.toHaveBeenCalled()
+      expect(holds('doc-1')).toBe(0)
+    } finally {
+      config.onUnhandledError = null
+    }
   })
 })
