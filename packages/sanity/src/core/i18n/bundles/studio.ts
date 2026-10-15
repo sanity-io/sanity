@@ -152,6 +152,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.dialog.button.cancel': 'Cancel',
   /** Select asset dialog select-button */
   'asset-source.dialog.button.select': 'Select',
+  /** Fallback title of the select asset dialog for files, when the input provides none */
+  'asset-source.dialog.default-title_file': 'Select file',
+  /** Fallback title of the select asset dialog for images, when the input provides none */
+  'asset-source.dialog.default-title_image': 'Select image',
+  /** Fallback title of the select asset dialog for videos, when the input provides none */
+  'asset-source.dialog.default-title_video': 'Select video',
   /** Keys shared between both image asset source and file asset source */
   /** Insert asset error */
   'asset-source.dialog.insert-asset-error':
@@ -258,9 +264,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the open in source dialog */
   'asset-sources.media-library.open-in-source-dialog.title': 'Edit asset',
 
+  /** Fallback title of the Media Library select dialog for files, when the input provides none */
+  'asset-sources.media-library.select-dialog.title_file': 'Selecting file for {{targetTitle}}',
+  /** Fallback title of the Media Library select dialog for images, when the input provides none */
+  'asset-sources.media-library.select-dialog.title_image': 'Selecting image for {{targetTitle}}',
+  /** Fallback title of the Media Library select dialog for videos, when the input provides none */
+  'asset-sources.media-library.select-dialog.title_video': 'Selecting video for {{targetTitle}}',
   /** Title for the upload dialog (component mode) */
   'asset-sources.media-library.upload-dialog.title': 'Upload to Media Library',
 
+  /** Banner shown on a document when the selected release has been archived */
+  'banners.archived-release-banner.text':
+    "The '<strong>{{title}}</strong>' release has been archived.",
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
     "The '<strong>{{title}}</strong>' release has been deleted.",
@@ -819,6 +834,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Version text */
   'help-resources.version': 'v{{version}}',
+  /** Accessibility label for the close button of the incoming references inspector */
+  'incoming-references.close-button-aria-label': 'Close incoming references',
   /**Incoming references inspector title */
   'incoming-references.title': 'Incoming references',
 
@@ -869,9 +886,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
   'inputs.array.error.can-delete-but-no-edit-description':
     'You can still move or delete this item, but it cannot be edited since the schema definition for its type is nowhere to be found.',
-  /** Error label for toast when array could not resolve the initial value */
-  'inputs.array.error.cannot-resolve-initial-value-title':
+  /** Error description for toast when array could not resolve the initial value */
+  'inputs.array.error.cannot-resolve-initial-value-description':
     'Unable to resolve initial value for type: {{schemaTypeTitle}}: {{errorMessage}}.',
+  /** Error label for toast when array could not resolve the initial value */
+  'inputs.array.error.cannot-resolve-initial-value-title': 'Unable to resolve initial value',
   /** Error label for toast when trying to upload one array item of a type that cannot be converted to array */
   'inputs.array.error.cannot-upload-unable-to-convert_one':
     "The following item can't be uploaded because there's no known conversion from content type to array item:",
@@ -1520,6 +1539,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Your browser is using an outdated HTTP protocol to communicate with Sanity. This may result in substantially degraded performance.',
   /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
   'network-check.slow-protocol-warning.learn-more-button.text': 'Learn more',
+  /** Tooltip for the link that takes the user to the Sanity documentation about the HTTP1 issue */
+  'network-check.slow-protocol-warning.learn-more-button.tooltip':
+    'Opens the Sanity documentation in a new tab',
   /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
   'network-check.slow-protocol-warning.snooze-button.text': "Don't show again for this session",
   /** Title text for the warning dialog when browser is using HTTP1 to communicate with the Sanity API */
