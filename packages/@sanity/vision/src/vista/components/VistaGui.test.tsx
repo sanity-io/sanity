@@ -1543,6 +1543,37 @@ describe('VistaGui', () => {
     await waitFor(() => expect(getStoredState().tabs).toHaveLength(1))
   })
 
+  it('sets the fields hidden from history diffs in the settings', async () => {
+    renderVista()
+    fireEvent.click(screen.getByTestId('vista-sidebar-settings'))
+    const fields = (await screen.findByTestId(
+      'vista-settings-hidden-diff-fields',
+    )) as HTMLTextAreaElement
+    const reset = screen.getByTestId('vista-settings-hidden-diff-fields-reset')
+    expect(fields.value).toBe('_rev\n_updatedAt\n_system.base.rev')
+    expect(isDisabled(reset)).toBe(true)
+
+    // A line being started stays as typed while it lists the same fields
+    fireEvent.change(fields, {target: {value: '_rev\n'}})
+    expect(fields.value).toBe('_rev\n')
+    fireEvent.change(fields, {target: {value: '_rev\n meta.version , _key'}})
+    await waitFor(() =>
+      expect(getStoredState().historyDiff).toEqual({
+        hiddenFields: ['_rev', 'meta.version', '_key'],
+      }),
+    )
+
+    fireEvent.click(reset)
+    expect(fields.value).toBe('_rev\n_updatedAt\n_system.base.rev')
+    await waitFor(() =>
+      expect(getStoredState().historyDiff.hiddenFields).toEqual([
+        '_rev',
+        '_updatedAt',
+        '_system.base.rev',
+      ]),
+    )
+  })
+
   it('opens the phone drawer as a modal dialog: focus moves in, and back to the opener on Escape', async () => {
     // Without a measured root the layout follows the viewport; a phone one floats the drawer
     const {innerWidth} = window

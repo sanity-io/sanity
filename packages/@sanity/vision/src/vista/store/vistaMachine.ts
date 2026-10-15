@@ -11,6 +11,7 @@ import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
 import {
   type VistaDialog,
   type VistaDrawer,
+  type VistaHistoryDiffSettings,
   type VistaPanel,
   type VistaPanelsState,
   type VistaParamsView,
@@ -35,6 +36,7 @@ export interface VistaContext {
   tabs: VistaTab[]
   activeTabId: string
   settings: VistaSettings
+  historyDiff: VistaHistoryDiffSettings
   /** One query runner per open tab, keyed by tab id */
   runners: Record<string, QueryRunnerRef>
   /**
@@ -61,6 +63,7 @@ export type VistaEvent =
   | {type: 'tab.setOptions'; id: string; options: Partial<VistaTabOptions>}
   | {type: 'tab.load'; id: string; tab: Omit<VistaTabInit, 'id'>}
   | {type: 'settings.update'; settings: Partial<VistaSettings>}
+  | {type: 'historyDiff.update'; settings: Partial<VistaHistoryDiffSettings>}
   | {type: 'sidebar.toggle'}
   | {type: 'panel.toggle'; panel: VistaPanel}
   | {type: 'params.view'; view: VistaParamsView}
@@ -202,6 +205,7 @@ export const vistaMachine = setup({
           tabs: fresh.tabs,
           activeTabId: fresh.activeTabId,
           settings: fresh.settings,
+          historyDiff: fresh.historyDiff,
           runners: spawnRunners(spawn, fresh.tabs),
         }
       })
@@ -216,6 +220,7 @@ export const vistaMachine = setup({
     tabs: input.persisted.tabs,
     activeTabId: input.persisted.activeTabId,
     settings: input.persisted.settings,
+    historyDiff: input.persisted.historyDiff,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
     restoredSidebar: input.persisted.sidebar,
@@ -294,6 +299,11 @@ export const vistaMachine = setup({
     'settings.update': {
       actions: assign({
         settings: ({context, event}) => ({...context.settings, ...event.settings}),
+      }),
+    },
+    'historyDiff.update': {
+      actions: assign({
+        historyDiff: ({context, event}) => ({...context.historyDiff, ...event.settings}),
       }),
     },
     'storage.clear': {
@@ -469,6 +479,7 @@ export function selectPersistedState(snapshot: VistaSnapshot): VistaPersistedSta
       options: isPanelExpanded(snapshot, 'options'),
       paramsView: selectParamsView(snapshot),
     },
+    historyDiff: snapshot.context.historyDiff,
   }
 }
 

@@ -72,6 +72,15 @@ export interface VistaPanelsState extends Record<VistaPanel, boolean> {
   paramsView: VistaParamsView
 }
 
+/** How the History panel diffs a result with the previous one */
+export interface VistaHistoryDiffSettings {
+  /**
+   * Dotted field paths left out of the diffs, matched at any depth of the result: `_rev` hides
+   * the revision of every document in it, `_system.base.rev` that nested field wherever it is
+   */
+  hiddenFields: string[]
+}
+
 /** The part of the state that survives reloads (per project, in `localStorage`) */
 export interface VistaPersistedState {
   version: 1
@@ -80,6 +89,7 @@ export interface VistaPersistedState {
   settings: VistaSettings
   sidebar: VistaSidebarState
   panels: VistaPanelsState
+  historyDiff: VistaHistoryDiffSettings
 }
 
 export type FetchReason =

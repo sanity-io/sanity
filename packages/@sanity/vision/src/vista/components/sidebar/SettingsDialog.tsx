@@ -1,7 +1,8 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Button, Card, Dialog, Stack, Switch, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Stack, Switch, Text, TextArea} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
+import {dequal} from 'dequal/lite'
 import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
@@ -15,12 +16,75 @@ import {
   useVistaSelector,
 } from '../../store/VistaActorContext'
 import {selectDatasets, selectWorkspaceDataset} from '../../store/vistaMachine'
+import {DEFAULT_HIDDEN_DIFF_FIELDS} from '../../store/vistaStorage'
 import {
   ApiVersionField,
   DatasetField,
   PerspectiveSelect,
   VariantSelect,
 } from '../request/OptionFields'
+
+/** One field path per line (commas work too), each once */
+function parseFieldList(text: string): string[] {
+  return [
+    ...new Set(
+      text
+        .split(/[\n,]/)
+        .map((field) => field.trim())
+        .filter(Boolean),
+    ),
+  ]
+}
+
+function HiddenDiffFieldsSetting() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const actorRef = useVistaActor()
+  const hiddenFields = useVistaSelector((snapshot) => snapshot.context.historyDiff.hiddenFields)
+  // The text as typed, for as long as it lists the stored fields: a new line being started or a
+  // path being typed would otherwise be tidied away under the caret
+  const [draft, setDraft] = useState<{text: string; fields: string[]}>()
+  const text = draft && dequal(draft.fields, hiddenFields) ? draft.text : hiddenFields.join('\n')
+  const update = (fields: string[]) =>
+    actorRef.send({type: 'historyDiff.update', settings: {hiddenFields: fields}})
+
+  return (
+    <Stack gap={3}>
+      <Stack gap={2}>
+        <Text as="label" htmlFor="vista-settings-hidden-diff-fields" size={1} weight="medium">
+          {t('vista.settings.history-diff.title')}
+        </Text>
+        <Text muted size={1}>
+          {t('vista.settings.history-diff.description')}
+        </Text>
+      </Stack>
+      <TextArea
+        data-testid="vista-settings-hidden-diff-fields"
+        fontSize={1}
+        id="vista-settings-hidden-diff-fields"
+        onChange={(event) => {
+          const next = event.currentTarget.value
+          const fields = parseFieldList(next)
+          setDraft({text: next, fields})
+          update(fields)
+        }}
+        rows={4}
+        value={text}
+      />
+      <Flex>
+        <Button
+          data-testid="vista-settings-hidden-diff-fields-reset"
+          disabled={dequal(hiddenFields, DEFAULT_HIDDEN_DIFF_FIELDS)}
+          fontSize={1}
+          icon={RestoreIcon}
+          mode="ghost"
+          onClick={() => update([...DEFAULT_HIDDEN_DIFF_FIELDS])}
+          padding={2}
+          text={t('vista.settings.history-diff.reset')}
+        />
+      </Flex>
+    </Stack>
+  )
+}
 
 export function SettingsDialog() {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -136,6 +200,10 @@ export function SettingsDialog() {
               </Text>
             </Stack>
           </Flex>
+
+          <Card border padding={3} radius={2}>
+            <HiddenDiffFieldsSetting />
+          </Card>
 
           <Card border padding={3} radius={2}>
             <Stack gap={3}>

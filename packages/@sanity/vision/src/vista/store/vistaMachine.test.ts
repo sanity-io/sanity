@@ -275,6 +275,23 @@ describe('vistaMachine', () => {
     expect(selectParamsView(harness.snapshot())).toBe('json')
   })
 
+  it('updates, persists and resets the fields hidden from history diffs', () => {
+    const harness = createHarness()
+    expect(harness.snapshot().context.historyDiff).toEqual({
+      hiddenFields: ['_rev', '_updatedAt', '_system.base.rev'],
+    })
+
+    harness.actor.send({type: 'historyDiff.update', settings: {hiddenFields: ['_rev']}})
+    expect(selectPersistedState(harness.snapshot()).historyDiff).toEqual({hiddenFields: ['_rev']})
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.snapshot().context.historyDiff.hiddenFields).toEqual([
+      '_rev',
+      '_updatedAt',
+      '_system.base.rev',
+    ])
+  })
+
   it('derives the persisted slice from context and UI states', () => {
     const harness = createHarness()
     harness.actor.send({type: 'sidebar.toggle'})
@@ -289,6 +306,7 @@ describe('vistaMachine', () => {
       settings: harness.snapshot().context.settings,
       sidebar: {expanded: true, drawer: 'saved'},
       panels: {params: true, options: false, paramsView: 'json'},
+      historyDiff: {hiddenFields: ['_rev', '_updatedAt', '_system.base.rev']},
     })
   })
 

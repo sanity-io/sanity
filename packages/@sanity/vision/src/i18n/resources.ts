@@ -210,6 +210,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.empty': 'Nothing fetched yet',
   /** Status label for a failed fetch in the history */
   'vista.history.failed': 'Failed',
+  /** Button putting the hidden fields back into the diff out of a history entry's changes */
+  'vista.history.hide-hidden': 'Hide them',
+  /** Next to a history entry's changes: the fields the diff leaves out */
+  'vista.history.hiding': 'Hiding {{fields}}',
+  /** A history entry whose result only differs from the previous one in hidden fields */
+  'vista.history.only-hidden-changed': 'Only hidden fields changed',
   /** History reason: a live event matched the query's sync tags */
   'vista.history.reason.live': 'Live update',
   /** History reason: the live connection asked every client to refetch */
@@ -224,6 +230,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.reason.resume': 'Automatic refetching resumed',
   /** History reason: the keyboard shortcut was used */
   'vista.history.reason.shortcut': 'Keyboard shortcut',
+  /** Button showing the hidden fields in a history entry's changes */
+  'vista.history.show-hidden': 'Show them',
+  /** Next to a history entry's changes while the hidden fields are shown */
+  'vista.history.showing-hidden': 'Showing {{fields}}, hidden by default',
   /** A history entry whose result, or the previous one, is too large to compare */
   'vista.history.too-large': 'Too large to compare',
   /** A history entry whose result is the same as the previous result */
@@ -465,6 +475,13 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.settings.clear-storage.success': 'Storage cleared',
   /** Explanation at the top of the settings dialog */
   'vista.settings.description': 'Defaults for new tabs. Open tabs keep their own options.',
+  /** Explains the setting listing the fields left out of History diffs */
+  'vista.settings.history-diff.description':
+    'One field path per line. A path matches at any depth of a result, so _rev hides the revision of every document in it. Each diff can still show them.',
+  /** Button restoring the default fields left out of History diffs */
+  'vista.settings.history-diff.reset': 'Reset to the defaults',
+  /** Label of the setting listing the fields left out of History diffs */
+  'vista.settings.history-diff.title': 'Fields hidden from History diffs',
   /** Title of the settings dialog */
   'vista.settings.title': 'Settings',
   /** Empty state of the shared queries panel */

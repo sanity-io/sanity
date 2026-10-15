@@ -15,6 +15,7 @@ import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlob
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
 import {type QueryRequest, type VistaTab} from '../../store/types'
+import {useVistaSelector} from '../../store/VistaActorContext'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
@@ -65,6 +66,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
     (snapshot) => snapshot.context.meta?.url ?? snapshot.context.url,
   )
   const history = useSelector(runnerRef, (snapshot) => snapshot.context.history)
+  const hiddenDiffFields = useVistaSelector((snapshot) => snapshot.context.historyDiff.hiddenFields)
   const isLive = useSelector(runnerRef, (snapshot) => snapshot.matches({live: 'on'}))
 
   // A response stays on screen while a newer fetch is in flight, and its actions stay with it;
@@ -139,10 +141,10 @@ export function ResponsePanel(props: ResponsePanelProps) {
           ) : (
             t('vista.panel.history')
           ),
-        content: <HistoryTab history={history} />,
+        content: <HistoryTab hiddenFields={hiddenDiffFields} history={history} />,
       },
     ],
-    [history, lintFindings, meta, onRevealLintFinding, resultDataset, t, url],
+    [hiddenDiffFields, history, lintFindings, meta, onRevealLintFinding, resultDataset, t, url],
   )
 
   return (

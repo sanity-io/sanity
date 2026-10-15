@@ -101,6 +101,7 @@ describe('vistaStorage', () => {
       activeTabId: tab.id,
       sidebar: {expanded: true, drawer: 'saved' as const},
       panels: {params: true, options: false, paramsView: 'form' as const},
+      historyDiff: {hiddenFields: ['_rev', 'meta.version']},
     }
     saveVistaState('proj', saved)
 
@@ -144,6 +145,30 @@ describe('vistaStorage', () => {
       options: true,
       paramsView: 'json',
     })
+  })
+
+  it('hides the default fields from history diffs unless others were chosen', () => {
+    const {historyDiff: _historyDiff, ...withoutHistoryDiff} = createInitialState(defaults)
+    localStorage.setItem(getVistaStorageKey('proj'), JSON.stringify(withoutHistoryDiff))
+    expect(loadVistaState('proj', defaults).historyDiff).toEqual({
+      hiddenFields: ['_rev', '_updatedAt', '_system.base.rev'],
+    })
+
+    localStorage.setItem(
+      getVistaStorageKey('proj'),
+      JSON.stringify({
+        ...withoutHistoryDiff,
+        historyDiff: {hiddenFields: [' _rev ', '', 3, '_rev', 'a.b']},
+      }),
+    )
+    expect(loadVistaState('proj', defaults).historyDiff).toEqual({hiddenFields: ['_rev', 'a.b']})
+
+    // Hiding nothing is a choice too
+    localStorage.setItem(
+      getVistaStorageKey('proj'),
+      JSON.stringify({...withoutHistoryDiff, historyDiff: {hiddenFields: []}}),
+    )
+    expect(loadVistaState('proj', defaults).historyDiff).toEqual({hiddenFields: []})
   })
 
   it('returns a fresh state for missing, malformed or outdated storage', () => {

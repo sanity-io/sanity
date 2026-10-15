@@ -83,15 +83,26 @@ function createHistory(latest: Partial<FetchHistoryEntry> = {}): FetchHistoryEnt
   ]
 }
 
-function renderTab(history = createHistory()) {
+function renderTab(history = createHistory(), hiddenFields: string[] = []) {
   render(
     <ThemeProvider theme={theme}>
       <LayerProvider>
-        <HistoryTab history={history} />
+        <HistoryTab hiddenFields={hiddenFields} history={history} />
       </LayerProvider>
     </ThemeProvider>,
   )
   return screen.getAllByTestId('vista-history-entry')
+}
+
+function twoFetches(before: unknown, after: unknown): FetchHistoryEntry[] {
+  return [
+    entry('latest', 6, {result: {value: after, bytes: 1}, resultChange: 'changed'}),
+    entry('previous', 5, {result: {value: before, bytes: 1}}),
+  ]
+}
+
+async function diffedValues(row: HTMLElement) {
+  return JSON.parse((await within(row).findByTestId('result-diff')).textContent) as unknown
 }
 
 describe('HistoryTab', () => {
@@ -140,6 +151,45 @@ describe('HistoryTab', () => {
     fireEvent.click(toggle)
     expect(toggle.getAttribute('aria-expanded')).toBe('false')
     expect(within(changed).queryByTestId('vista-history-changes')).toBeNull()
+  })
+
+  it('leaves the hidden fields out of the diff, and shows them on request', async () => {
+    const [latest] = renderTab(
+      twoFetches(
+        [{_id: 'a', _rev: 'r1', _system: {base: {rev: 'b1'}}, title: 'Two'}],
+        [{_id: 'a', _rev: 'r2', _system: {base: {rev: 'b2'}}, title: 'Three'}],
+      ),
+      ['_rev', '_system.base.rev'],
+    )
+    expect(latest.textContent).not.toContain('vista.history.only-hidden-changed')
+    fireEvent.click(within(latest).getByTestId('vista-history-changes-toggle'))
+    expect(await diffedValues(latest)).toEqual({
+      previous: [{_id: 'a', _system: {base: {}}, title: 'Two'}],
+      next: [{_id: 'a', _system: {base: {}}, title: 'Three'}],
+    })
+    expect(within(latest).getByTestId('vista-history-hidden-fields').textContent).toBe(
+      'vista.history.hiding:{"fields":"_rev, _system.base.rev"}',
+    )
+
+    fireEvent.click(within(latest).getByTestId('vista-history-hidden-toggle'))
+    expect(await diffedValues(latest)).toEqual({
+      previous: [{_id: 'a', _rev: 'r1', _system: {base: {rev: 'b1'}}, title: 'Two'}],
+      next: [{_id: 'a', _rev: 'r2', _system: {base: {rev: 'b2'}}, title: 'Three'}],
+    })
+    expect(within(latest).getByTestId('vista-history-hidden-fields').textContent).toBe(
+      'vista.history.showing-hidden:{"fields":"_rev, _system.base.rev"}',
+    )
+  })
+
+  it('says when only hidden fields changed, and diffs them all then', async () => {
+    const before = [{_id: 'a', _rev: 'r1', _updatedAt: 't1', title: 'Same'}]
+    const after = [{_id: 'a', _rev: 'r2', _updatedAt: 't2', title: 'Same'}]
+    const [latest] = renderTab(twoFetches(before, after), ['_rev', '_updatedAt'])
+    expect(latest.textContent).toContain('vista.history.only-hidden-changed')
+
+    fireEvent.click(within(latest).getByTestId('vista-history-changes-toggle'))
+    expect(await diffedValues(latest)).toEqual({previous: before, next: after})
+    expect(within(latest).queryByTestId('vista-history-hidden-toggle')).toBeNull()
   })
 
   it('says when the previous result was fetched for another request', async () => {

@@ -7,6 +7,7 @@ import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {validateApiVersion} from '../../util/validateApiVersion'
 import {
   type VistaDatasetMode,
+  type VistaHistoryDiffSettings,
   type VistaPanelsState,
   type VistaPersistedState,
   type VistaPerspective,
@@ -23,6 +24,9 @@ export const DEFAULT_PARAMS = '{\n  \n}'
 
 /** Every panel starts out expanded */
 const DEFAULT_PANELS: VistaPanelsState = {params: true, options: true, paramsView: 'json'}
+
+/** Fields that change with every revision, so a diff of them says nothing about the content */
+export const DEFAULT_HIDDEN_DIFF_FIELDS = ['_rev', '_updatedAt', '_system.base.rev']
 
 export interface VistaStorageDefaults {
   datasets: string[]
@@ -90,6 +94,7 @@ export function createInitialState(defaults: VistaStorageDefaults): VistaPersist
     settings,
     sidebar: {expanded: false, drawer: null},
     panels: {...DEFAULT_PANELS},
+    historyDiff: {hiddenFields: [...DEFAULT_HIDDEN_DIFF_FIELDS]},
   }
 }
 
@@ -194,6 +199,21 @@ function sanitizePanels(value: unknown): VistaPanelsState {
   }
 }
 
+/** Unique, trimmed paths; state saved before the setting existed hides the default fields */
+function sanitizeHistoryDiff(value: unknown): VistaHistoryDiffSettings {
+  const fields = isPlainObject(value) ? value.hiddenFields : undefined
+  if (!Array.isArray(fields)) return {hiddenFields: [...DEFAULT_HIDDEN_DIFF_FIELDS]}
+  return {
+    hiddenFields: [
+      ...new Set(
+        fields.flatMap((field) =>
+          typeof field === 'string' && field.trim() ? [field.trim()] : [],
+        ),
+      ),
+    ],
+  }
+}
+
 /**
  * Loads the persisted state for a project, dropping anything that no longer validates (unknown
  * datasets, malformed tabs, ...). Returns a fresh state when nothing usable is stored.
@@ -233,8 +253,9 @@ export function loadVistaState(
 
   const sidebar = sanitizeSidebar(stored.sidebar)
   const panels = sanitizePanels(stored.panels)
+  const historyDiff = sanitizeHistoryDiff(stored.historyDiff)
   if (tabs.length === 0) {
-    return {...initial, settings, sidebar, panels}
+    return {...initial, settings, sidebar, panels, historyDiff}
   }
 
   const activeTabId =
@@ -249,6 +270,7 @@ export function loadVistaState(
     settings,
     sidebar,
     panels,
+    historyDiff,
   }
 }
 
