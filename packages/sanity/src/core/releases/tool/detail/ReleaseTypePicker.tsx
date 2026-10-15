@@ -1,13 +1,13 @@
 import {type ReleaseType} from '@sanity/client'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {Card, Spinner, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Spinner, TabList, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -246,7 +246,9 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
         <>
           {isIntendedScheduleDateInPast && (
             <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
-              <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+              <Text size={1} as="div" trim={true} tone="critical">
+                {t('release.schedule-dialog.publish-date-in-past-warning')}
+              </Text>
             </Card>
           )}
           <ReleaseDateInput
@@ -316,9 +318,12 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
       data-testid="release-type-label"
       size={1}
       weight="medium"
-      textOverflow="ellipsis"
+      truncate={1}
       title={compactLabel}
       style={{opacity: isUpdating ? 0.5 : 1}}
+      as="div"
+      trim={true}
+      tone={tone === 'default' || tone === 'neutral' || tone === 'primary' ? undefined : tone}
     >
       {compactLabel}
     </Text>
