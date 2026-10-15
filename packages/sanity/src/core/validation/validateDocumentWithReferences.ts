@@ -212,7 +212,11 @@ export function validateDocumentWithReferences(
             }).pipe(map((result) => ({validation: result.markers, isValidating: false})))
             return concat(
               of({isValidating: true, revision: document._rev}),
-              scheduling === 'idle' ? run$.pipe(takeUntil(immediateSwitches$)) : run$,
+              scheduling === 'idle'
+                ? run$.pipe(
+                    takeUntil(currentScheduling$.pipe(filter((mode) => mode === 'immediate'))),
+                  )
+                : run$,
             )
           }),
         )
