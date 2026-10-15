@@ -15,7 +15,9 @@ import {useDocumentStore} from '../store/datastores'
  *
  * It switches the document's shared validation, so pass the same arguments as
  * `useValidationStatus`: every `useValidationStatus` of that document gets the results sooner,
- * and validation stays immediate until every caller has disabled it or unmounted.
+ * and validation stays immediate until every caller has disabled it or unmounted. It reports no
+ * errors itself: if the document's validation fails, the hold ends, and `useValidationStatus`
+ * reports the failure.
  *
  * @beta
  */
@@ -33,7 +35,8 @@ export function useSetImmediateValidation(
       .validation(validationTargetId, docTypeName, requirePublishedReferences, {
         scheduling: 'immediate',
       })
-      .subscribe()
+      // `useValidationStatus` already reports a failure; reporting it here too would duplicate it
+      .subscribe({error: () => undefined})
     return () => subscription.unsubscribe()
   }, [enabled, docTypeName, documentStore.pair, validationTargetId, requirePublishedReferences])
 }
