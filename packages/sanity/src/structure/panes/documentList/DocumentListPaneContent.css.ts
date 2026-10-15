@@ -1,12 +1,13 @@
 import {css} from '#styled-system/css'
 
+// No base `opacity: 1`: Panda emits one atomic class per declaration, ordered by first
+// occurrence across the project, so composing with a later `opacity: 1` utility would let
+// that rule win over `rootBoxMuted`. The CSS initial value is already 1.
 export const rootBox = css({
   position: 'relative',
-  opacity: 1,
   transition: 'opacity 0.4s',
 })
 
-// Defined after `rootBox` so it wins the equal-specificity tie on `opacity`.
 export const rootBoxMuted = css({
   opacity: 0.8,
 })

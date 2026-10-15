@@ -44,16 +44,16 @@ export function unlayeredPandaCss(): Plugin {
 }
 
 /**
- * Imports `layers.css` from the runtime entry of `sanity dev`, so a dev studio that resolves
- * `sanity` to its sources (the `monorepo` export condition) also gets the CSS of those sources.
- * A `sanity build` resolves the built packages instead, whose entries import their own
- * `bundle.css`, so this only applies to the dev server. The specifier resolves through the
+ * Imports `layers.css` from the Sanity runtime entry (`.sanity/runtime/app.js`), so a studio
+ * that builds Panda sources through `studioPandaCss()` also gets that CSS. On `sanity dev` that
+ * covers workspace packages resolved via the `monorepo` condition; on `sanity build` those
+ * packages use their own `bundle.css`, but a studio that passes `roots` (e.g. test-studio's
+ * own `plugins/` `.css.ts` modules) still needs this import. The specifier resolves through the
  * studio's own `@repo/pandacss` dependency.
  */
 function sanityDevLayersCss(): Plugin {
   return {
     name: 'repo:sanity-dev-panda-layers-css',
-    apply: 'serve',
     transform: {
       filter: {id: RE_SANITY_RUNTIME_ENTRY},
       handler(code) {
@@ -79,10 +79,10 @@ export interface StudioPandaCssOptions {
 }
 
 /**
- * The Vite plugins a dev studio, Storybook or test runner needs to build `sanity` and
- * `@sanity/vision` from their TypeScript sources: `@pandacss/vite` for each Panda project
- * (rewriting the `css()` calls of its `.css.ts` modules to class names and generating the CSS),
- * the layer removal, and the `layers.css` import for the `sanity dev` runtime entry.
+ * The Vite plugins a studio, Storybook or test runner needs to build Panda `.css.ts` sources:
+ * `@pandacss/vite` for each Panda project (rewriting the `css()` calls to class names and
+ * generating the CSS), the layer removal, and the `layers.css` import for the Sanity runtime
+ * entry (`.sanity/runtime/app.js`).
  */
 export function studioPandaCss(options: StudioPandaCssOptions = {}): Plugin[] {
   const packages = options.packages ?? ['sanity', '@sanity/vision']
