@@ -11,18 +11,19 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {createRetryableLazy} from '../../../util/createRetryableLazy'
 import {type FetchHistoryEntry, type FetchReason} from '../../store/types'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
+import {getRequestChanges, type RequestChangeId} from '../../util/requestChanges'
 
 // The diff (`@pierre/diffs` and Shiki) only loads once a history entry's changes are expanded,
 // and a failed load can be retried from the boundary
-const resultDiff = createRetryableLazy(() => import('./ResultDiff'))
-const ResultDiffLoader = resultDiff.Component
+const codeDiff = createRetryableLazy(() => import('./CodeDiff'))
+const CodeDiffLoader = codeDiff.Component
 
-interface ResultDiffBoundaryProps {
+interface DiffBoundaryProps {
   children: ReactNode
   renderFallback: (retry: () => void) => ReactNode
 }
 
-class ResultDiffBoundary extends Component<ResultDiffBoundaryProps, {failed: boolean}> {
+class DiffBoundary extends Component<DiffBoundaryProps, {failed: boolean}> {
   state = {failed: false}
 
   static getDerivedStateFromError() {
@@ -30,7 +31,7 @@ class ResultDiffBoundary extends Component<ResultDiffBoundaryProps, {failed: boo
   }
 
   retry = () => {
-    resultDiff.retry()
+    codeDiff.retry()
     this.setState({failed: false})
   }
 
@@ -64,9 +65,49 @@ function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): strin
   }
 }
 
+function describeRequestChange(id: RequestChangeId, t: TFunction<'vision'>): string {
+  switch (id) {
+    case 'query':
+      return t('vista.history.diff.query')
+    case 'params':
+      return t('vista.history.diff.params')
+    case 'url':
+      return t('vista.history.diff.url')
+    default: {
+      const exhaustive: never = id
+      return String(exhaustive)
+    }
+  }
+}
+
+function toJson(value: unknown): string {
+  // Indented like the copied and exported JSON, so a changed value is a changed line
+  return `${JSON.stringify(value, null, 2)}\n`
+}
+
+function DiffSection(props: {
+  label: string
+  testId: string
+  actions?: ReactNode
+  children: ReactNode
+}) {
+  const {label, testId, actions, children} = props
+  return (
+    <Stack data-testid={testId} gap={2}>
+      <Flex alignItems="center" flexWrap="wrap" gap={2}>
+        <Text size={1} weight="medium">
+          {label}
+        </Text>
+        {actions}
+      </Flex>
+      {children}
+    </Stack>
+  )
+}
+
 function HistoryEntry(props: {
   entry: FetchHistoryEntry
-  /** The successful fetch before this one, which the result is compared with */
+  /** The successful fetch before this one, which the request and result are compared with */
   previous: FetchHistoryEntry | undefined
   /** Fields left out of the diff, as set in the settings, and split into path segments */
   hiddenFields: string[]
@@ -79,61 +120,42 @@ function HistoryEntry(props: {
   const [expanded, setExpanded] = useState(false)
   const [showHidden, setShowHidden] = useState(false)
   const changesId = useId()
+  const requestChanges = useMemo(
+    () => (previous ? getRequestChanges(previous, entry) : []),
+    [entry, previous],
+  )
   const nextResult = entry.result
   const previousResult = previous?.result
-  const comparable =
+  const resultComparable =
     entry.resultChange === 'changed' && nextResult !== undefined && previousResult !== undefined
+  const comparable = resultComparable || requestChanges.length > 0
   // The results without the hidden fields, which change with every revision
   const shown = useMemo(() => {
-    if (!comparable || hiddenPaths.length === 0) return undefined
+    if (!resultComparable || hiddenPaths.length === 0) return undefined
     const previousShown = omitFields(previousResult.value, hiddenPaths)
     const nextShown = omitFields(nextResult.value, hiddenPaths)
     return {previous: previousShown, next: nextShown, same: dequal(previousShown, nextShown)}
-  }, [comparable, hiddenPaths, nextResult, previousResult])
+  }, [hiddenPaths, nextResult, previousResult, resultComparable])
   const onlyHiddenChanged = shown?.same === true
   // When only hidden fields changed, the diff without them would be empty
   const diffed = shown && !showHidden && !onlyHiddenChanged ? shown : undefined
+  const resultDiff = useMemo(() => {
+    if (!resultComparable) return undefined
+    return {
+      previous: toJson(diffed ? diffed.previous : previousResult.value),
+      next: toJson(diffed ? diffed.next : nextResult.value),
+    }
+  }, [diffed, nextResult, previousResult, resultComparable])
 
-  let change: ReactNode = null
-  if (comparable) {
-    change = (
-      <>
-        {onlyHiddenChanged && (
-          <Text muted size={1}>
-            {t('vista.history.only-hidden-changed')}
-          </Text>
-        )}
-        <Button
-          aria-controls={changesId}
-          aria-expanded={expanded}
-          data-testid="vista-history-changes-toggle"
-          fontSize={1}
-          icon={expanded ? ChevronDownIcon : ChevronRightIcon}
-          mode="bleed"
-          onClick={() => setExpanded((value) => !value)}
-          padding={1}
-          text={t('vista.history.changes')}
-        />
-      </>
-    )
-  } else if (entry.resultChange === 'changed') {
-    change = (
-      <Text muted size={1}>
-        {t('vista.history.changed')}
-      </Text>
-    )
+  let status: string | undefined
+  if (onlyHiddenChanged) {
+    status = t('vista.history.only-hidden-changed')
+  } else if (entry.resultChange === 'changed' && !resultComparable) {
+    status = t('vista.history.changed')
   } else if (entry.resultChange === 'unchanged') {
-    change = (
-      <Text muted size={1}>
-        {t('vista.history.unchanged')}
-      </Text>
-    )
+    status = t(requestChanges.length > 0 ? 'vista.history.same-result' : 'vista.history.unchanged')
   } else if (entry.resultChange === 'too-large') {
-    change = (
-      <Text muted size={1}>
-        {t('vista.history.too-large')}
-      </Text>
-    )
+    status = t('vista.history.too-large')
   }
 
   return (
@@ -157,7 +179,24 @@ function HistoryEntry(props: {
               {tag}
             </Badge>
           ))}
-        {change}
+        {status && (
+          <Text muted size={1}>
+            {status}
+          </Text>
+        )}
+        {comparable && (
+          <Button
+            aria-controls={changesId}
+            aria-expanded={expanded}
+            data-testid="vista-history-changes-toggle"
+            fontSize={1}
+            icon={expanded ? ChevronDownIcon : ChevronRightIcon}
+            mode="bleed"
+            onClick={() => setExpanded((value) => !value)}
+            padding={1}
+            text={t('vista.history.changes')}
+          />
+        )}
         <Box flexBasis="0%" flexGrow={1} />
         {entry.status === 'error' ? (
           <Badge fontSize={0} tone="critical">
@@ -177,35 +216,13 @@ function HistoryEntry(props: {
         </Box>
       )}
       {comparable && expanded && previous && (
-        <Stack data-testid="vista-history-changes" gap={2} id={changesId} paddingTop={2}>
-          <Flex alignItems="center" flexWrap="wrap" gap={2}>
-            <Text muted size={1}>
-              {t(
-                previous.url === entry.url
-                  ? 'vista.history.compared-with'
-                  : 'vista.history.compared-with-other-request',
-                {time: formatTime.format(new Date(previous.requestedAt))},
-              )}
-            </Text>
-            {shown && !onlyHiddenChanged && (
-              <>
-                <Text data-testid="vista-history-hidden-fields" muted size={1}>
-                  {t(showHidden ? 'vista.history.showing-hidden' : 'vista.history.hiding', {
-                    fields: hiddenFields.join(', '),
-                  })}
-                </Text>
-                <Button
-                  data-testid="vista-history-hidden-toggle"
-                  fontSize={1}
-                  mode="bleed"
-                  onClick={() => setShowHidden((value) => !value)}
-                  padding={1}
-                  text={t(showHidden ? 'vista.history.hide-hidden' : 'vista.history.show-hidden')}
-                />
-              </>
-            )}
-          </Flex>
-          <ResultDiffBoundary
+        <Stack data-testid="vista-history-changes" gap={3} id={changesId} paddingTop={2}>
+          <Text muted size={1}>
+            {t('vista.history.compared-with', {
+              time: formatTime.format(new Date(previous.requestedAt)),
+            })}
+          </Text>
+          <DiffBoundary
             renderFallback={(retry) => (
               <Flex alignItems="center" gap={2}>
                 <Text muted size={1}>
@@ -222,12 +239,60 @@ function HistoryEntry(props: {
             )}
           >
             <Suspense fallback={<DelayedSpinner />}>
-              <ResultDiffLoader
-                next={diffed ? diffed.next : nextResult.value}
-                previous={diffed ? diffed.previous : previousResult.value}
-              />
+              <Stack gap={3}>
+                {requestChanges.map((change) => (
+                  <DiffSection
+                    key={change.id}
+                    label={describeRequestChange(change.id, t)}
+                    testId={`vista-history-diff-${change.id}`}
+                  >
+                    <CodeDiffLoader
+                      lang={change.lang}
+                      next={change.next}
+                      previous={change.previous}
+                    />
+                  </DiffSection>
+                ))}
+                {resultDiff && (
+                  <DiffSection
+                    actions={
+                      shown &&
+                      !onlyHiddenChanged && (
+                        <>
+                          <Text data-testid="vista-history-hidden-fields" muted size={1}>
+                            {t(
+                              showHidden ? 'vista.history.showing-hidden' : 'vista.history.hiding',
+                              {fields: hiddenFields.join(', ')},
+                            )}
+                          </Text>
+                          <Button
+                            data-testid="vista-history-hidden-toggle"
+                            fontSize={1}
+                            mode="bleed"
+                            onClick={() => setShowHidden((value) => !value)}
+                            padding={1}
+                            text={t(
+                              showHidden
+                                ? 'vista.history.hide-hidden'
+                                : 'vista.history.show-hidden',
+                            )}
+                          />
+                        </>
+                      )
+                    }
+                    label={t('vista.history.diff.result')}
+                    testId="vista-history-diff-result"
+                  >
+                    <CodeDiffLoader
+                      lang="json"
+                      next={resultDiff.next}
+                      previous={resultDiff.previous}
+                    />
+                  </DiffSection>
+                )}
+              </Stack>
             </Suspense>
-          </ResultDiffBoundary>
+          </DiffBoundary>
         </Stack>
       )}
     </Card>

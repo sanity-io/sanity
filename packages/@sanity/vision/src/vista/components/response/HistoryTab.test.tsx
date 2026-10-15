@@ -8,18 +8,22 @@ import {HistoryTab} from './HistoryTab'
 
 const diffModule = vi.hoisted(() => ({loads: 0, throwOnRender: false, throwInEffect: false}))
 
-vi.mock('./ResultDiff', async () => {
+vi.mock('./CodeDiff', async () => {
   diffModule.loads++
   const {useEffect} = await import('react')
   // The real diff draws in an effect, which throws there when drawing fails
-  function MockResultDiff(props: {previous: unknown; next: unknown}) {
+  function MockCodeDiff(props: {previous: string; next: string; lang: string}) {
     useEffect(() => {
       if (diffModule.throwInEffect) throw new Error('Could not draw the diff')
     })
     if (diffModule.throwOnRender) throw new Error('Could not render the diff')
-    return <pre data-testid="result-diff">{JSON.stringify(props)}</pre>
+    return (
+      <pre data-lang={props.lang} data-testid="code-diff">
+        {JSON.stringify({previous: props.previous, next: props.next})}
+      </pre>
+    )
   }
-  return {default: MockResultDiff}
+  return {default: MockCodeDiff}
 })
 
 vi.mock('sanity', () => ({
@@ -56,6 +60,8 @@ function entry(id: string, second: number, overrides: Partial<FetchHistoryEntry>
     requestedAt: `2026-10-15T10:00:0${second}.000Z`,
     reason: {type: 'manual'},
     url: URL,
+    query: '*',
+    params: {},
     status: 'ok',
     ms: 3,
     e2eMs: 40,
@@ -105,8 +111,19 @@ function twoFetches(before: unknown, after: unknown): FetchHistoryEntry[] {
   ]
 }
 
+async function diffedTexts(section: HTMLElement) {
+  const diff = await within(section).findByTestId('code-diff')
+  return {
+    lang: diff.dataset.lang,
+    ...(JSON.parse(diff.textContent) as {previous: string; next: string}),
+  }
+}
+
 async function diffedValues(row: HTMLElement) {
-  return JSON.parse((await within(row).findByTestId('result-diff')).textContent) as unknown
+  const {previous, next} = await diffedTexts(
+    await within(row).findByTestId('vista-history-diff-result'),
+  )
+  return {previous: JSON.parse(previous) as unknown, next: JSON.parse(next) as unknown}
 }
 
 describe('HistoryTab', () => {
@@ -117,6 +134,7 @@ describe('HistoryTab', () => {
     const statuses = [
       'vista.history.changed',
       'vista.history.unchanged',
+      'vista.history.same-result',
       'vista.history.too-large',
     ] as const
     const statusOf = (row: HTMLElement) =>
@@ -146,10 +164,9 @@ describe('HistoryTab', () => {
     expect(toggle.getAttribute('aria-controls')).toBe(changes.id)
     expect(changes.textContent).toContain('vista.history.compared-with:{"time":"10:00:04"}')
     // Compared across the failed fetch, with the last result there was
-    expect(JSON.parse((await within(changes).findByTestId('result-diff')).textContent)).toEqual({
-      next: three.value,
-      previous: two.value,
-    })
+    expect(await diffedValues(changed)).toEqual({next: three.value, previous: two.value})
+    // The request did not change, so only the result is diffed
+    expect(within(changes).getAllByTestId('code-diff')).toHaveLength(1)
     expect(diffModule.loads).toBe(1)
 
     fireEvent.click(toggle)
@@ -196,13 +213,85 @@ describe('HistoryTab', () => {
     expect(within(latest).queryByTestId('vista-history-hidden-toggle')).toBeNull()
   })
 
-  it('says when the previous result was fetched for another request', async () => {
-    const [changed] = renderTab(createHistory({url: `${URL}&$type=%22author%22`}))
-    fireEvent.click(within(changed).getByTestId('vista-history-changes-toggle'))
-    expect(await within(changed).findByTestId('result-diff')).toBeTruthy()
-    expect(within(changed).getByTestId('vista-history-changes').textContent).toContain(
-      'vista.history.compared-with-other-request:{"time":"10:00:04"}',
+  it('diffs the query, params and request URL that changed, before the result', async () => {
+    const [changed] = renderTab(
+      createHistory({
+        query: '*[_type == $type]',
+        params: {type: 'author'},
+        url: 'https://example.api.sanity.io/v2025-02-19/data/query/production?query=*%5B_type+%3D%3D+%24type%5D&%24type=%22author%22&perspective=drafts&resultSourceMap=true',
+      }),
     )
+    fireEvent.click(within(changed).getByTestId('vista-history-changes-toggle'))
+    const changes = within(changed).getByTestId('vista-history-changes')
+    expect(changes.textContent).toContain('vista.history.compared-with:{"time":"10:00:04"}')
+
+    const query = await within(changes).findByTestId('vista-history-diff-query')
+    expect(within(query).getByText('vista.history.diff.query')).toBeTruthy()
+    expect(await diffedTexts(query)).toEqual({
+      lang: 'text',
+      previous: '*\n',
+      next: '*[_type == $type]\n',
+    })
+    expect(await diffedTexts(within(changes).getByTestId('vista-history-diff-params'))).toEqual({
+      lang: 'json',
+      previous: '{}\n',
+      next: '{\n  "type": "author"\n}\n',
+    })
+    // The query and params have diffs of their own, and a source map does not change the result
+    expect(await diffedTexts(within(changes).getByTestId('vista-history-diff-url'))).toEqual({
+      lang: 'text',
+      previous: 'https://example.api.sanity.io/v2025-02-19/data/query/test\n',
+      next: 'https://example.api.sanity.io/v2025-02-19/data/query/production\nperspective=drafts\n',
+    })
+    expect(await diffedValues(changed)).toEqual({next: three.value, previous: two.value})
+
+    const sections = within(changes)
+      .getAllByTestId(/^vista-history-diff-/)
+      .map((section) => section.dataset.testid)
+    expect(sections).toEqual([
+      'vista-history-diff-query',
+      'vista-history-diff-params',
+      'vista-history-diff-url',
+      'vista-history-diff-result',
+    ])
+  })
+
+  it('offers the request changes of a fetch whose result stayed the same', async () => {
+    const [latest] = renderTab([
+      entry('latest', 6, {params: {limit: 5}, result: two, resultChange: 'unchanged'}),
+      entry('previous', 5, {params: {limit: 10}, result: two}),
+    ])
+    expect(latest.textContent).toContain('vista.history.same-result')
+    expect(latest.textContent).not.toContain('vista.history.unchanged')
+
+    fireEvent.click(within(latest).getByTestId('vista-history-changes-toggle'))
+    const changes = within(latest).getByTestId('vista-history-changes')
+    expect(await diffedTexts(within(changes).getByTestId('vista-history-diff-params'))).toEqual({
+      lang: 'json',
+      previous: '{\n  "limit": 10\n}\n',
+      next: '{\n  "limit": 5\n}\n',
+    })
+    expect(within(changes).queryByTestId('vista-history-diff-result')).toBeNull()
+  })
+
+  it('shows what changed in the request of a failed fetch since the last successful one', async () => {
+    const [failed] = renderTab([
+      entry('failed', 6, {
+        query: '*[',
+        status: 'error',
+        ms: undefined,
+        errorMessage: 'Parse error',
+      }),
+      entry('previous', 5, {result: two}),
+    ])
+    fireEvent.click(within(failed).getByTestId('vista-history-changes-toggle'))
+    const changes = within(failed).getByTestId('vista-history-changes')
+    expect(await diffedTexts(within(changes).getByTestId('vista-history-diff-query'))).toEqual({
+      lang: 'text',
+      previous: '*\n',
+      next: '*[\n',
+    })
+    expect(within(changes).getAllByTestId('code-diff')).toHaveLength(1)
   })
 
   it('offers a retry when the diff cannot be shown', async () => {
@@ -216,7 +305,7 @@ describe('HistoryTab', () => {
 
       diffModule.throwOnRender = false
       fireEvent.click(within(changed).getByText('vista.history.changes-retry'))
-      expect(await within(changed).findByTestId('result-diff')).toBeTruthy()
+      expect(await within(changed).findByTestId('code-diff')).toBeTruthy()
       expect(within(changed).queryByText('vista.history.changes-failed')).toBeNull()
     } finally {
       consoleError.mockRestore()
@@ -234,7 +323,7 @@ describe('HistoryTab', () => {
 
       diffModule.throwInEffect = false
       fireEvent.click(within(changed).getByText('vista.history.changes-retry'))
-      expect(await within(changed).findByTestId('result-diff')).toBeTruthy()
+      expect(await within(changed).findByTestId('code-diff')).toBeTruthy()
     } finally {
       consoleError.mockRestore()
       diffModule.throwInEffect = false

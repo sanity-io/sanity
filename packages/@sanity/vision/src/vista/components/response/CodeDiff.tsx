@@ -3,26 +3,28 @@ import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useEffect, useMemo, useRef} from 'react'
 
-export interface ResultDiffProps {
-  previous: unknown
-  next: unknown
-}
-
-function toFile(value: unknown): FileContents {
-  // Indented like the copied and exported JSON, so a changed value is a changed line
-  return {name: 'result.json', contents: `${JSON.stringify(value, null, 2)}\n`}
+export interface CodeDiffProps {
+  previous: string
+  next: string
+  lang: 'json' | 'text'
 }
 
 /**
- * Line diff of two query results, rendered by `@pierre/diffs` (Shiki highlighting in a shadow
- * root). Only loaded through `lazy()` once a history entry's changes are expanded.
+ * Line diff of two texts, rendered by `@pierre/diffs` (Shiki highlighting in a shadow root).
+ * Only loaded through `lazy()` once a history entry's changes are expanded.
  */
-export default function ResultDiff({previous, next}: ResultDiffProps) {
+export default function CodeDiff({previous, next, lang}: CodeDiffProps) {
   const {color, font} = useThemeV2()
   const codeSize = font.code.sizes[1]
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const oldFile = useMemo(() => toFile(previous), [previous])
-  const newFile = useMemo(() => toFile(next), [next])
+  const oldFile = useMemo<FileContents>(
+    () => ({name: `diff.${lang}`, contents: previous, lang}),
+    [lang, previous],
+  )
+  const newFile = useMemo<FileContents>(
+    () => ({name: `diff.${lang}`, contents: next, lang}),
+    [lang, next],
+  )
   const themeType = color._dark ? 'dark' : 'light'
 
   // The library's React components keep their container and hydrate whatever markup a previous

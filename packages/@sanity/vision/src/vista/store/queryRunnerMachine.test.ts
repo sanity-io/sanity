@@ -70,7 +70,7 @@ function createHarness() {
 describe('queryRunnerMachine', () => {
   it('runs a fetch and records the response, its metadata and a history entry', async () => {
     const harness = createHarness()
-    const request = harness.request()
+    const request = harness.request({params: {type: 'author'}})
 
     harness.actor.send({type: 'fetch', request, reason: {type: 'manual'}})
     expect(harness.snapshot().matches({request: 'fetching'})).toBe(true)
@@ -97,6 +97,9 @@ describe('queryRunnerMachine', () => {
     expect(context.history).toHaveLength(1)
     expect(context.history[0]).toMatchObject({
       reason: {type: 'manual'},
+      url: request.url,
+      query: request.query,
+      params: {type: 'author'},
       status: 'ok',
       ms: 12,
     })
@@ -109,7 +112,11 @@ describe('queryRunnerMachine', () => {
     harness.fetches[0].resolve({result: 1})
     await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
 
-    harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'shortcut'}})
+    harness.actor.send({
+      type: 'fetch',
+      request: harness.request({query: '*[', params: {limit: 1}}),
+      reason: {type: 'shortcut'},
+    })
     harness.fetches[1].reject(new Error('Syntax error'))
     await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'failed'}))
 
@@ -120,6 +127,8 @@ describe('queryRunnerMachine', () => {
     expect(context.history.map((entry) => entry.status)).toEqual(['error', 'ok'])
     expect(context.history[0]).toMatchObject({
       reason: {type: 'shortcut'},
+      query: '*[',
+      params: {limit: 1},
       errorMessage: 'Syntax error',
     })
   })

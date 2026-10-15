@@ -121,6 +121,8 @@ export interface FetchHistoryEntry {
   reason: FetchReason
   /** URL of the request that was fetched */
   url: string
+  query: string
+  params: Record<string, unknown>
   status: 'ok' | 'error'
   /** Server-reported execution time */
   ms: number | undefined
