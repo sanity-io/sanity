@@ -38,17 +38,17 @@ Classify each usage before touching code:
 rg "from 'styled-components'" packages/sanity/src <target-dir>
 ```
 
-| Usage                                               | Migration target                                                                                                     |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Static `styled.div` / `styled(Primitive)`           | `css()` in a colocated `.css.ts` + thin wrapper component (or plain `className`)                                     |
-| Overrides of `@sanity/ui` primitives' own styles    | `css()` with the `&&` specificity trick (see below)                                                                  |
+| Usage                                               | Migration target                                                                                                          |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Static `styled.div` / `styled(Primitive)`           | `css()` in a colocated `.css.ts` + thin wrapper component (or plain `className`)                                          |
+| Overrides of `@sanity/ui` primitives' own styles    | `css()` with the `&&` specificity trick (see below)                                                                       |
 | Theme reads (`({theme}) => ...`, `getTheme_v2`)     | `--card-*` CSS custom properties if one exists, else a named custom property set through inline `style` + `useTheme_v2()` |
-| Prop-driven variants (`$isInvalid`, `css` branches) | one `css()` per state + conditional `clsx()` composition (the modifier doubled with `&&`), or an object of `css()` calls |
-| `keyframes` animations                              | Panda `keyframes()` from `#styled-system/css`                                                                        |
-| Descendant selectors (`& img`, third-party classes) | class on the child directly, or a nested `'& img'` / `'& .third-party'` selector on the parent class                 |
-| `createGlobalStyle`                                 | nested selectors under a local class (never leak outside the component)                                              |
-| `*.styled.tsx` modules                              | `.css.ts` + thin wrappers; keep the `.styled.tsx` file when call sites need it                                        |
-| Computed inline `style={{}}` objects                | static parts into `css()`, changing values through custom properties (Shape C below)                                 |
+| Prop-driven variants (`$isInvalid`, `css` branches) | one `css()` per state + conditional `clsx()` composition (the modifier doubled with `&&`), or an object of `css()` calls  |
+| `keyframes` animations                              | Panda `keyframes()` from `#styled-system/css`                                                                             |
+| Descendant selectors (`& img`, third-party classes) | class on the child directly, or a nested `'& img'` / `'& .third-party'` selector on the parent class                      |
+| `createGlobalStyle`                                 | nested selectors under a local class (never leak outside the component)                                                   |
+| `*.styled.tsx` modules                              | `.css.ts` + thin wrappers; keep the `.styled.tsx` file when call sites need it                                            |
+| Computed inline `style={{}}` objects                | static parts into `css()`, changing values through custom properties (Shape C below)                                      |
 
 ## Step 2: Migrate the code
 
@@ -128,11 +128,11 @@ Where styled-components silently won specificity battles via CSSOM insertion ord
 
 Three stylesheets meet on a migrated element:
 
-| Sheet                                     | `sanity build`                                                              | `sanity dev`                                                                                    |
-| ----------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Panda (`bundle.css`)                      | one static file, imported first by the entry chunks                         | one stylesheet (`@repo/pandacss/layers.css`) filled by `@pandacss/vite`, imported first by the runtime entry |
-| `@sanity/ui` (styled-components, runtime) | `<style data-styled>` appended on first render                              | same                                                                                            |
-| `ui5` (`styles.css`)                      | static file                                                                 | static file                                                                                     |
+| Sheet                                     | `sanity build`                                      | `sanity dev`                                                                                                 |
+| ----------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Panda (`bundle.css`)                      | one static file, imported first by the entry chunks | one stylesheet (`@repo/pandacss/layers.css`) filled by `@pandacss/vite`, imported first by the runtime entry |
+| `@sanity/ui` (styled-components, runtime) | `<style data-styled>` appended on first render      | same                                                                                                         |
+| `ui5` (`styles.css`)                      | static file                                         | static file                                                                                                  |
 
 Panda wraps its output in cascade layers; `@repo/pandacss` removes them from both `bundle.css`
 and the dev stylesheet, because unlayered styles beat layered ones regardless of specificity and
@@ -250,7 +250,7 @@ position: `'& img'`, `'& > span'`, `'& .third-party-class'`, `'[data-ui="Card"] 
 preference:
 
 1. Put a class directly on the child if you render it yourself.
-2. `` [`.${parentMarker}:hover &`]: {...} `` on the child class for parent-state-dependent rules,
+2. ``[`.${parentMarker}:hover &`]: {...}`` on the child class for parent-state-dependent rules,
    with a literal marker class on the parent.
 3. `'& img': {...}` on the parent class when you don't control the child (library-rendered DOM) —
    always scoped under a local class.
