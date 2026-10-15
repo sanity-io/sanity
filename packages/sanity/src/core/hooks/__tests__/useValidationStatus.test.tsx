@@ -1,6 +1,8 @@
+import {type ValidationScheduling} from '@sanity/validation/_internal'
 import {act, render} from '@testing-library/react'
 import {useEffect, useState} from 'react'
-import {Subject} from 'rxjs'
+import {defer, ReplaySubject, Subject} from 'rxjs'
+import {finalize} from 'rxjs/operators'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ValidationStatus} from '../../validation'
@@ -25,12 +27,30 @@ import {useValidationStatus} from '../useValidationStatus'
  */
 
 let validationSubject: Subject<ValidationStatus>
+let immediateSubscribers = 0
 
 // The store must be referentially stable across renders: the hook memoizes
 // the validation observable on `documentStore.pair`, and a fresh object per
 // render would rebuild + resubscribe every render (losing subject emissions).
 const mockDocumentStore = {
-  pair: {validation: () => validationSubject.asObservable()},
+  pair: {
+    validation: (
+      _validationTargetId: string,
+      _type: string,
+      _validatePublishedReferences: boolean,
+      options?: {scheduling?: ValidationScheduling},
+    ) => {
+      if (options?.scheduling !== 'immediate') return validationSubject.asObservable()
+      return defer(() => {
+        immediateSubscribers += 1
+        return validationSubject.pipe(
+          finalize(() => {
+            immediateSubscribers -= 1
+          }),
+        )
+      })
+    },
+  },
 }
 
 vi.mock('../../store/datastores', () => ({
@@ -46,6 +66,7 @@ const errorMarker = {
 describe('useValidationStatus', () => {
   beforeEach(() => {
     validationSubject = new Subject<ValidationStatus>()
+    immediateSubscribers = 0
   })
 
   it('returns the initial status until the observable emits', () => {
@@ -100,5 +121,43 @@ describe('useValidationStatus', () => {
     expect(frames.filter((frame) => frame.tick === 1)).toEqual([
       {tick: 1, isValidating: false, errorCount: 1},
     ])
+  })
+
+  it('keeps the live status across a switch to immediate scheduling, which it holds only meanwhile', () => {
+    // the store replays the latest status to every new subscriber
+    validationSubject = new ReplaySubject<ValidationStatus>(1)
+    const frames: ValidationStatus[] = []
+    let schedule: ((scheduling: ValidationScheduling | undefined) => void) | null = null
+
+    function Probe() {
+      const [scheduling, setScheduling] = useState<ValidationScheduling>()
+      useEffect(() => {
+        schedule = setScheduling
+      }, [])
+      frames.push(useValidationStatus('doc-1', 'author', false, {scheduling}))
+      return null
+    }
+    const {unmount} = render(<Probe />)
+    act(() => {
+      validationSubject.next({validation: [], isValidating: true, revision: 'rev-1'})
+    })
+    expect(frames.at(-1)).toEqual({validation: [], isValidating: true, revision: 'rev-1'})
+    expect(immediateSubscribers).toBe(0)
+
+    const framesBeforeSwitch = frames.length
+    act(() => schedule!('immediate'))
+
+    // A frame of the initial status here would tell a publish gate that validation is done.
+    expect(frames.length).toBeGreaterThan(framesBeforeSwitch)
+    expect(frames.slice(framesBeforeSwitch).filter((frame) => !frame.isValidating)).toEqual([])
+    expect(immediateSubscribers).toBe(1)
+
+    act(() => schedule!(undefined))
+    expect(immediateSubscribers).toBe(0)
+
+    act(() => schedule!('immediate'))
+    expect(immediateSubscribers).toBe(1)
+    unmount()
+    expect(immediateSubscribers).toBe(0)
   })
 })

@@ -1,5 +1,5 @@
 import {type ValidationScheduling} from '@sanity/validation/_internal'
-import {useMemo} from 'react'
+import {useEffect, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 
 import {useDocumentStore} from '../store/datastores'
@@ -15,15 +15,26 @@ export function useValidationStatus(
   options?: {scheduling?: ValidationScheduling},
 ): ValidationStatus {
   const documentStore = useDocumentStore()
-  const scheduling = options?.scheduling
+  const immediate = options?.scheduling === 'immediate'
 
   const observable = useMemo(
     () =>
-      documentStore.pair.validation(validationTargetId, docTypeName, requirePublishedReferences, {
-        scheduling,
-      }),
-    [docTypeName, documentStore.pair, validationTargetId, requirePublishedReferences, scheduling],
+      documentStore.pair.validation(validationTargetId, docTypeName, requirePublishedReferences),
+    [docTypeName, documentStore.pair, validationTargetId, requirePublishedReferences],
   )
+
+  // Immediate scheduling is held by a subscription of its own: switching it must not change the
+  // identity of `observable`, which would render `INITIAL` for a frame in the middle of the gate
+  // described below.
+  useEffect(() => {
+    if (!immediate) return undefined
+    const subscription = documentStore.pair
+      .validation(validationTargetId, docTypeName, requirePublishedReferences, {
+        scheduling: 'immediate',
+      })
+      .subscribe()
+    return () => subscription.unsubscribe()
+  }, [immediate, docTypeName, documentStore.pair, validationTargetId, requirePublishedReferences])
 
   // Kept synchronous: consumers use this as a write-side gate, not just for
   // display. PublishAction enables publish from `hasValidationErrors` and
