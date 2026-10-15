@@ -15,7 +15,7 @@ export const PANDA_LAYERS_CSS_SPECIFIER = '@repo/pandacss/layers.css'
 const PANDA_LAYERS_CSS_PATH = fileURLToPath(new URL('./layers.css', import.meta.url))
 
 const SANITY_PACKAGE_DIR = fileURLToPath(new URL('../../../sanity/', import.meta.url))
-const VISION_PACKAGE_DIR = fileURLToPath(new URL('../../@sanity/vision/', import.meta.url))
+const VISION_PACKAGE_DIR = fileURLToPath(new URL('../../../@sanity/vision/', import.meta.url))
 
 /** The runtime entry `sanity dev` writes and serves (`.sanity/runtime/app.js`). */
 const RE_SANITY_RUNTIME_ENTRY = /[\\/]\.sanity[\\/]runtime[\\/]app\.js$/
