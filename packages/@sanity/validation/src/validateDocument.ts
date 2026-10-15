@@ -164,20 +164,32 @@ interface ValidateDocumentBaseOptions {
  *
  * @beta
  */
-export type ValidateDocumentOptions = ValidateDocumentBaseOptions &
-  (
-    | {
-        /** A configured client used for reference checks and custom validators. */
-        client: ValidationClient
-        /** Whether to run custom validation callbacks. Defaults to `true`. */
-        customValidation?: boolean
-      }
-    | {
-        /** Omit the client to perform local validation without custom callbacks. */
-        client?: undefined
-        customValidation?: false
-      }
-  )
+export type ValidateDocumentOptions = ValidateDocumentBaseOptions & ValidationClientOptions
+
+/**
+ * Options for validating a batch of documents with shared request concurrency.
+ * Custom validation is disabled when no client is provided.
+ *
+ * @beta
+ */
+export type ValidateDocumentsOptions = Omit<ValidateDocumentBaseOptions, 'document'> &
+  ValidationClientOptions & {
+    /** Documents to validate. Results are returned in the same order. */
+    documents: SanityDocument[]
+  }
+
+type ValidationClientOptions =
+  | {
+      /** A configured client used for reference checks and custom validators. */
+      client: ValidationClient
+      /** Whether to run custom validation callbacks. Defaults to `true`. */
+      customValidation?: boolean
+    }
+  | {
+      /** Omit the client to perform local validation without custom callbacks. */
+      client?: undefined
+      customValidation?: false
+    }
 
 /** A compiled schema accepted across compatible `@sanity/types` versions. @beta */
 export interface ValidationSchema {
@@ -292,18 +304,37 @@ export function validateDocumentWithWorkspace({
 export function validateDocument(
   options: ValidateDocumentOptions,
 ): Promise<DocumentValidationResult> {
+  const {document, ...sharedOptions} = options
+  return evaluateDocumentInternal({document, ...normalizeValidationOptions(sharedOptions)})
+}
+
+/**
+ * Validates documents against a compiled schema, sharing reference-check batching
+ * and the fetch concurrency limit across the batch. Results match the input order.
+ * The signal cancels the entire batch and any work it starts.
+ *
+ * @beta
+ */
+export function validateDocuments(
+  options: ValidateDocumentsOptions,
+): Promise<DocumentValidationResult[]> {
+  const {documents, ...sharedOptions} = options
+  return evaluateDocumentsInternal({documents, ...normalizeValidationOptions(sharedOptions)})
+}
+
+function normalizeValidationOptions(
+  options: Omit<ValidateDocumentOptions, 'document'>,
+): Omit<ValidateDocumentInternalOptions, 'document'> {
   const {
     client,
     customValidation = Boolean(options.client),
-    document,
     getDocumentExists,
     schema,
     ...internalOptions
   } = options
-  return evaluateDocumentInternal({
+  return {
     ...internalOptions,
     customValidation,
-    document,
     environment: 'cli',
     getClient: client
       ? // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- runtime-compatible clients may come from another major
@@ -313,7 +344,7 @@ export function validateDocument(
     i18n: getFallbackLocaleSource(),
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- compiled schemas may come from another compatible package version
     schema: schema as Schema,
-  })
+  }
 }
 
 /** @internal */
@@ -358,8 +389,17 @@ export function validateDocumentInternal(
 }
 
 /** @internal */
-export function evaluateDocumentInternal({
-  document,
+export function evaluateDocumentInternal(
+  options: ValidateDocumentInternalOptions,
+): Promise<DocumentValidationResult> {
+  const {document, ...sharedOptions} = options
+  return evaluateDocumentsInternal({documents: [document], ...sharedOptions}).then(
+    ([result]) => result,
+  )
+}
+
+function evaluateDocumentsInternal({
+  documents,
   schema,
   getClient,
   getDocumentExists,
@@ -370,30 +410,39 @@ export function evaluateDocumentInternal({
   currentUser,
   customValidation = true,
   signal,
-}: ValidateDocumentInternalOptions): Promise<DocumentValidationResult> {
+}: Omit<ValidateDocumentInternalOptions, 'document'> & {
+  documents: SanityDocument[]
+}): Promise<DocumentValidationResult[]> {
   if (signal?.aborted) return Promise.reject(signal.reason)
+  if (documents.length === 0) return Promise.resolve([])
+
   const limitConcurrency = createClientConcurrencyLimiter(
     maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
     signal,
   )
   const getConcurrencyLimitedClient = (clientOptions: {apiVersion: string}) =>
     limitConcurrency(getClient(clientOptions))
+  const sharedGetDocumentExists =
+    getDocumentExists ||
+    createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS), signal)
 
-  return lastValueFrom(
-    evaluateDocumentObservable({
-      document,
-      getClient: getConcurrencyLimitedClient,
-      i18n,
-      schema,
-      getDocumentExists:
-        getDocumentExists ||
-        createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS), signal),
-      environment,
-      maxCustomValidationConcurrency,
-      currentUser,
-      customValidation,
-      signal,
-    }),
+  return Promise.all(
+    documents.map((document) =>
+      lastValueFrom(
+        evaluateDocumentObservable({
+          document,
+          getClient: getConcurrencyLimitedClient,
+          i18n,
+          schema,
+          getDocumentExists: sharedGetDocumentExists,
+          environment,
+          maxCustomValidationConcurrency,
+          currentUser,
+          customValidation,
+          signal,
+        }),
+      ),
+    ),
   )
 }
 

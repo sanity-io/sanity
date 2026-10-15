@@ -58,6 +58,28 @@ try {
 
 The package does not apply mutations or decide whether a document may be edited or published.
 
+## Validating multiple documents
+
+Use `validateDocuments` to validate documents in parallel with shared reference-check batching and
+one fetch concurrency limit for the entire batch. `maxFetchConcurrency` defaults to 25.
+
+```ts
+import {validateDocuments} from '@sanity/validation'
+
+const results = await validateDocuments({
+  documents,
+  schema,
+  client,
+  maxFetchConcurrency: 10,
+})
+
+for (const [index, result] of results.entries()) {
+  console.log(documents[index]._id, result.status, result.markers)
+}
+```
+
+Passing a `signal` cancels the entire batch and its pending network work.
+
 ## Migrating from `sanity`
 
 Add `@sanity/validation` as a direct dependency. The workspace-based API is available as a
