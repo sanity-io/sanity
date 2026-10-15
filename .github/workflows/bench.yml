@@ -870,8 +870,12 @@ jobs:
        (github.event_name == 'workflow_dispatch' && inputs.run_suite && inputs.ab_to == ''))
     needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
-    # Soak (~10m) + INP (~10m) + settle (9 scenarios × 4 sessions, the two
-    # red-by-design ones costing the 30s cap per session — ~20m)
+    outputs:
+      # Read by alert-scheduled-failure: the article soak step never fails the job
+      article_soak_outcome: ${{ steps.article_soak.outcome }}
+    # Soak (~10m) + article soak (~11m) + INP (~10m) + settle (9 scenarios ×
+    # 4 sessions, the two red-by-design ones costing the 30s cap per session —
+    # ~20m)
     timeout-minutes: 60
     permissions:
       contents: read
@@ -948,6 +952,32 @@ jobs:
           pnpm bench run --mode soak --scenario singleString --minutes 10 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__soak.json"
 
+      # Long-session soak on the article scenario's soak plan (about 11 runner
+      # minutes). Own step and results file, and allowed to fail, so a broken
+      # run costs neither the singleString soak nor the stored run. The failure
+      # is still reported: annotation and summary line below, Slack alert via
+      # the job output.
+      - name: Run article soak check
+        id: article_soak
+        continue-on-error: true
+        timeout-minutes: 15
+        run: |
+          set -o pipefail
+          pnpm bench run --mode soak --scenario article --minutes 10 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__soak-article.json" \
+            2>&1 | tee "$RUNNER_TEMP/article-soak.log"
+
+      - name: Report article soak failure
+        if: steps.article_soak.outcome == 'failure'
+        run: |
+          log="$RUNNER_TEMP/article-soak.log"
+          reason=$(grep -m 1 -oE '\[soak-excursion\] .*' "$log" \
+            || grep -m 1 -oE 'SessionError: .*' "$log" \
+            || grep -m 1 -oE 'Error: .*' "$log" \
+            || echo "no error line in the log (step timeout?)")
+          echo "::warning title=Article soak failed::${reason}"
+          echo "- :warning: Article soak failed; the run was stored without it: \`${reason}\`" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Run INP benchmarks
         run: |
           pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
@@ -1022,11 +1052,13 @@ jobs:
     needs: [build, bench-interaction, bench-pageload, self-test, track-main]
     if: >-
       always() && github.event_name == 'schedule' &&
-      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') ||
+       needs.track-main.outputs.article_soak_outcome == 'failure')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Send Slack notification
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
@@ -1034,4 +1066,15 @@ jobs:
           payload: |
             {
               "text": ":alert-dot: Scheduled \"${{ github.workflow }}\" run failed — daily tracking or the weekly self-test is broken (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
+            }
+
+      - name: Send article soak Slack notification
+        if: needs.track-main.outputs.article_soak_outcome == 'failure'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":warning: Scheduled \"${{ github.workflow }}\" run stored without the article soak — the soak failed, see the run's annotations (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
             }
