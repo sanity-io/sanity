@@ -35,7 +35,7 @@ export function unwrapCascadeLayers(css: string): string {
 }
 
 function unwrapLayersIn(container: Container): void {
-  for (const node of [...container.nodes]) {
+  for (const node of [...(container.nodes ?? [])]) {
     if (node.type !== 'atrule' || node.name !== 'layer') {
       if ('nodes' in node && node.nodes) unwrapLayersIn(node)
       continue
