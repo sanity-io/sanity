@@ -145,6 +145,52 @@ describe('validateDocument', () => {
 })
 
 describe('validateItem', () => {
+  it.each(['string', 'object'] as const)(
+    'cancels pending idle work before running %s validators',
+    async (type) => {
+      const customValidator = vi.fn(() => true as const)
+      const validation = (rule: Rule) => rule.custom(customValidator)
+      const schema = createSchema({
+        name: 'default',
+        types: [
+          type === 'string'
+            ? {name: 'value', type, validation}
+            : {name: 'value', type, fields: [{name: 'title', type: 'string', validation}]},
+        ],
+      })
+      const controller = new AbortController()
+      const reason = new Error('cancelled')
+
+      vi.useFakeTimers()
+      try {
+        const pending = validateItem({
+          getClient,
+          schema,
+          parent: undefined,
+          path: [],
+          getDocumentExists: undefined,
+          type: schema.get('value'),
+          value: type === 'string' ? 'Hello' : {title: 'Hello'},
+          document: {_type: 'value'} as SanityDocument,
+          environment: 'studio',
+          i18n: getFallbackLocaleSource(),
+          signal: controller.signal,
+        })
+        expect(customValidator).not.toHaveBeenCalled()
+        expect(vi.getTimerCount()).toBeGreaterThan(0)
+        const rejected = expect(pending).rejects.toBe(reason)
+        controller.abort(reason)
+        await rejected
+
+        expect(vi.getTimerCount()).toBe(0)
+        await vi.runAllTimersAsync()
+        expect(customValidator).not.toHaveBeenCalled()
+      } finally {
+        vi.useRealTimers()
+      }
+    },
+  )
+
   it('passes hidden to validation for hidden parent objects', async () => {
     const contexts: Array<{
       path: ValidationContext['path']

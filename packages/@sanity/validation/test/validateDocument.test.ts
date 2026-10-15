@@ -16,7 +16,7 @@ import {
   validateDocumentWithWorkspace,
   validationMarkerCodes,
 } from '../src'
-import {getFallbackLocaleSource} from '../src/_internal'
+import {getFallbackLocaleSource, inferFromSchema} from '../src/_internal'
 
 const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
 
@@ -757,6 +757,69 @@ describe('validateDocument', () => {
       ]),
     )
   })
+
+  it.each([false, true])(
+    'preserves custom marker arrays in keyed items (compiled: %s)',
+    async (compiled) => {
+      const parent = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
+      if (compiled) inferFromSchema(parent)
+      const types: SchemaTypeDefinition[] = [
+        {
+          name: 'article',
+          type: 'document',
+          fields: [
+            {
+              name: 'items',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'string',
+                      validation: (rule: Rule) =>
+                        rule
+                          .custom(() => [
+                            {code: 'custom.first', message: 'First warning', details: {index: 1}},
+                            {code: 'custom.second', message: 'Second warning', details: {index: 2}},
+                          ])
+                          .warning(),
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ]
+      const schema = SchemaBuilder.compile({name: 'test', parent, types})
+      if (compiled) inferFromSchema(schema)
+      const document = createDocument({
+        _type: 'article',
+        items: [{_type: 'object', _key: 'one', title: 'Title'}],
+      })
+      const {client} = createMockClient()
+      const {markers} = await validateDocument({document, schema, client})
+
+      expect(markers).toMatchObject([
+        {
+          code: 'custom.first',
+          level: 'warning',
+          message: 'First warning',
+          details: {index: 1},
+          path: ['items', {_key: 'one'}, 'title'],
+        },
+        {
+          code: 'custom.second',
+          level: 'warning',
+          message: 'Second warning',
+          details: {index: 2},
+          path: ['items', {_key: 'one'}, 'title'],
+        },
+      ])
+    },
+  )
 
   it('adds a fallback code to markers from legacy compiled rules', async () => {
     const message = 'Legacy failure'
