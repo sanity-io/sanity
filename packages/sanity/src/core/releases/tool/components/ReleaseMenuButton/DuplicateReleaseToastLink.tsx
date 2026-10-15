@@ -1,6 +1,6 @@
-import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
+import {Text} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -29,6 +29,8 @@ export const DuplicateReleaseToastLink = ({actionResult}: {actionResult: ActionR
         display: 'flex',
       }}
       data-testid="duplicate-release-success-link"
+      as="div"
+      trim={true}
     >
       {t('toast.duplicate.success-link')}
     </Text>

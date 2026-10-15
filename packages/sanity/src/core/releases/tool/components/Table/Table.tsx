@@ -1,9 +1,9 @@
-import {Card, type CardProps, rem, Text, useTheme} from '@sanity/ui'
+import {Card, type CardProps, rem, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns/isValid'
 import get from 'lodash-es/get.js'
 import {type CSSProperties, type ElementType, Fragment, useMemo} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {TableEmptyState} from './TableEmptyState'

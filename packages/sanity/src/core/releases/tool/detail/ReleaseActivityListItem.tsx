@@ -1,8 +1,8 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {memo, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -139,7 +139,7 @@ export const ReleaseActivityListItem = memo(
           <UserAvatar user={event.author} />
           <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
             <Flex gap={2} alignItems="center">
-              <StatusText muted size={1}>
+              <StatusText muted size={1} trim={true}>
                 <Translate
                   t={t}
                   components={{ScheduleTarget}}
