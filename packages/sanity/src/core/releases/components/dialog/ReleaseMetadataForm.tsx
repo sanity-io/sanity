@@ -7,12 +7,18 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {validateItem} from '@sanity/validation/_internal'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 
-import {type PatchEvent} from '../../../form/patch/PatchEvent'
+import {ChangeIndicatorsTracker} from '../../../changeIndicators/tracker'
+import {createPatchChannel} from '../../../form/patch/PatchChannel'
 import {useFormState} from '../../../form/store/useFormState'
 import {FormBuilder} from '../../../form/studio/FormBuilder'
 import {type FormDocumentValue} from '../../../form/types/formDocumentValue'
+import {
+  useBindFormBuilderState,
+  useFormBuilderState,
+  useFormPatchHandler,
+} from '../../../form/useFormBuilderState'
 import {useClient} from '../../../hooks/useClient'
 import {useSchema} from '../../../hooks/useSchema'
 import {useCurrentUser} from '../../../store/user/hooks'
@@ -33,10 +39,6 @@ import {
   toReleaseMetadataRecord,
   type ReleaseMetadataRecord,
 } from '../../metadata/mergeReleaseMetadata'
-import {
-  applyReleaseMetadataPatches,
-  useReleaseMetadataFormState,
-} from '../../metadata/useReleaseMetadataFormState'
 
 const NO_FIELDS: readonly FieldDefinition[] = []
 const NO_MARKERS: ValidationMarker[] = []
@@ -105,7 +107,8 @@ function ReleaseMetadataFieldsForm(
   const {projectId, dataset, i18n} = useWorkspace()
   const currentUser = useCurrentUser()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const formStateController = useReleaseMetadataFormState()
+  const builderState = useFormBuilderState()
+  const [patchChannel] = useState(() => createPatchChannel())
   const [initialValues, setInitialValues] = useState<Record<string, unknown> | null>(null)
   const [markers, setMarkers] = useState<ValidationMarker[]>(NO_MARKERS)
   const [validationReady, setValidationReady] = useState(false)
@@ -187,22 +190,20 @@ function ReleaseMetadataFieldsForm(
     onValidityChange?.(!invalid && validationReady)
   }, [invalid, onValidityChange, validationReady])
 
-  const handleChange = useCallback(
-    (event: PatchEvent) => {
-      const nextValue = applyReleaseMetadataPatches(formValue, event.patches)
-      onChange(asReleaseMetadata(mergeReleaseMetadata(displayedMetadata, nextValue, fieldNames)))
-    },
-    [displayedMetadata, fieldNames, formValue, onChange],
-  )
+  const handleChange = useFormPatchHandler(formValue, (next) => {
+    if (!isRecord(next)) return
+    onChange(asReleaseMetadata(mergeReleaseMetadata(displayedMetadata, next, fieldNames)))
+  })
 
   const formState = useFormState({
     schemaType: compiled.schemaType,
     documentValue: formValue,
     comparisonValue: formValue,
-    focusPath: formStateController.focusPath,
-    openPath: formStateController.openPath,
-    collapsedPaths: formStateController.collapsedPaths,
-    collapsedFieldSets: formStateController.collapsedFieldSets,
+    focusPath: builderState.focusPath,
+    openPath: builderState.openPath,
+    collapsedPaths: builderState.collapsedPaths,
+    collapsedFieldSets: builderState.collapsedFieldSets,
+    fieldGroupState: builderState.fieldGroupState,
     presence: EMPTY_ARRAY,
     validation: markers,
     readOnly,
@@ -210,37 +211,40 @@ function ReleaseMetadataFieldsForm(
     hasUpstreamVersion: false,
     displayInlineChanges: false,
   })
+  useBindFormBuilderState(builderState, formState, true)
 
   if (!formState) return null
 
   return (
-    <FormBuilder
-      __internal_patchChannel={formStateController.patchChannel}
-      id="root"
-      onChange={handleChange}
-      onPathFocus={formStateController.onPathFocus}
-      onPathBlur={formStateController.onPathBlur}
-      onPathOpen={formStateController.onPathOpen}
-      onFieldGroupSelect={() => undefined}
-      onSetFieldSetCollapsed={formStateController.onSetFieldSetCollapsed}
-      onSetPathCollapsed={formStateController.onSetPathCollapsed}
-      collapsedPaths={formStateController.collapsedPaths}
-      collapsedFieldSets={formStateController.collapsedFieldSets}
-      changed={false}
-      focusPath={formState.focusPath}
-      focused={formState.focused}
-      groups={formState.groups}
-      validation={markers}
-      members={formState.members}
-      presence={EMPTY_ARRAY}
-      schemaType={compiled.schemaType}
-      value={formValue}
-      openPath={formStateController.openPath}
-      readOnly={readOnly}
-      hasUpstreamVersion={false}
-      hasBaseVariant={false}
-      changesOpen={false}
-    />
+    <ChangeIndicatorsTracker>
+      <FormBuilder
+        __internal_patchChannel={patchChannel}
+        id="root"
+        onChange={handleChange}
+        onPathFocus={builderState.onPathFocus}
+        onPathBlur={builderState.onPathBlur}
+        onPathOpen={builderState.onPathOpen}
+        onFieldGroupSelect={builderState.onFieldGroupSelect}
+        onSetFieldSetCollapsed={builderState.onSetFieldSetCollapsed}
+        onSetPathCollapsed={builderState.onSetPathCollapsed}
+        collapsedPaths={builderState.collapsedPaths}
+        collapsedFieldSets={builderState.collapsedFieldSets}
+        changed={false}
+        focusPath={formState.focusPath}
+        focused={formState.focused}
+        groups={formState.groups}
+        validation={markers}
+        members={formState.members}
+        presence={EMPTY_ARRAY}
+        schemaType={compiled.schemaType}
+        value={formValue}
+        openPath={builderState.openPath}
+        readOnly={readOnly}
+        hasUpstreamVersion={false}
+        hasBaseVariant={false}
+        changesOpen={false}
+      />
+    </ChangeIndicatorsTracker>
   )
 }
 
