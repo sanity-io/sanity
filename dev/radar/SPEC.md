@@ -593,6 +593,8 @@ effect of merged work; secondary: leads scanning health weekly.
 
 ## SQRL score
 
+The plain-language overview is `sqrl/README.md`; this section is the formula reference.
+
 SQRL (Studio Quality: Reliability & Latency) is one number per measured main commit, higher is better, stored as a `sqrlScore` document (`sqrl-score-<sha>`). The engine is `sqrl/` (pure, tested in the `radar` vitest project against golden per-commit scores recorded when formula version 1 was agreed) and `scripts/sqrl.ts` writes the documents. Radar reads the latest document by `git.committedAt` for the banner and a projected `{score, scoreCommit, git{sha, committedAt}}` series for its graph, never `inputs`.
 
 **Formula (version 1).** SQRL = 100 × the weighted geometric mean over inputs of reference ÷ current. Every input is lower-is-better and there are no targets, anchors or ceilings. Each input's reference is its median over the first 7 commits of the series (28 Jun to 18 Jul 2026), and the composite is rebased so the per-commit score over that window has a median of exactly 100.

@@ -1554,6 +1554,13 @@ export function TrendsTool() {
                     it spikes on the same day, suspect the runner, not the studio. Flat lines are
                     the goal; the ⓘ on each chart explains what it measures.
                   </Text>
+                  <Text size={1} muted>
+                    The SQRL banner at the top is one score across the metrics below, where higher
+                    is better and 100 is late June 2026. Each input counts as its late-June value
+                    divided by today's, so any metric getting faster or lighter raises it. A
+                    week-to-week move under about 7 points is noise. See{' '}
+                    <code>dev/radar/sqrl/README.md</code>.
+                  </Text>
                 </VStack>
               </Card>
             )}
