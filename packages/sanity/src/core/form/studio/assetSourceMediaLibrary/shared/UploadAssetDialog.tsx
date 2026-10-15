@@ -99,14 +99,18 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
       // isn't).
       if (message.type === 'uploadProgress' && uploader) {
         message.files.forEach(({id, status, progress, error}) => {
+          // The plugin's postMessage protocol reports progress as 0-1; the
+          // uploader contract documents `AssetSourceUploadFile.progress` as
+          // 0-100 (the federated upload surface converts the same way).
+          const scaledProgress = progress * 100
           if (status === 'complete' || status === 'alreadyExists') {
-            pendingTerminalStatusesRef.current.set(id, {status, progress, error})
-            uploader.updateFile(id, {progress})
+            pendingTerminalStatusesRef.current.set(id, {status, progress: scaledProgress, error})
+            uploader.updateFile(id, {progress: scaledProgress})
             return
           }
           uploader.updateFile(id, {
             status,
-            progress,
+            progress: scaledProgress,
             error,
           })
         })

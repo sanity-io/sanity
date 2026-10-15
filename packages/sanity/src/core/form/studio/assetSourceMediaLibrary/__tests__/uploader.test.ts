@@ -58,12 +58,12 @@ describe('MediaLibraryUploader', () => {
       }[] = []
       uploader.subscribe((e) => events.push(e))
 
-      uploader.updateFile(file.id, {status: 'complete', progress: 1})
+      uploader.updateFile(file.id, {status: 'complete', progress: 100})
 
       const allComplete = events.filter((e) => e.type === 'all-complete')
       expect(allComplete).toHaveLength(1)
       expect(allComplete[0].files?.[0].status).toBe('complete')
-      expect(allComplete[0].files?.[0].progress).toBe(1)
+      expect(allComplete[0].files?.[0].progress).toBe(100)
       // reset() clears files after all-complete
       expect(uploader.getFiles()).toHaveLength(0)
     })
@@ -87,11 +87,11 @@ describe('MediaLibraryUploader', () => {
       const events: {type?: string; files?: {status: string}[]}[] = []
       uploader.subscribe((e) => events.push(e))
 
-      uploader.updateFile(files[0].id, {status: 'complete', progress: 1})
+      uploader.updateFile(files[0].id, {status: 'complete', progress: 100})
       uploader.updateFile(files[1].id, {status: 'alreadyExists'})
       expect(events.filter((e) => e.type === 'all-complete')).toHaveLength(0)
 
-      uploader.updateFile(files[2].id, {status: 'complete', progress: 1})
+      uploader.updateFile(files[2].id, {status: 'complete', progress: 100})
 
       const allComplete = events.filter((e) => e.type === 'all-complete')
       expect(allComplete).toHaveLength(1)
@@ -120,7 +120,7 @@ describe('MediaLibraryUploader', () => {
       const events: {type?: string}[] = []
       uploader.subscribe((e) => events.push(e as {type?: string}))
 
-      uploader.updateFile(file.id, {status: 'uploading', progress: 0.5})
+      uploader.updateFile(file.id, {status: 'uploading', progress: 50})
 
       const progressEvents = events.filter((e) => e.type === 'progress')
       const statusEvents = events.filter((e) => e.type === 'status')
@@ -163,11 +163,11 @@ describe('MediaLibraryUploader', () => {
       })
 
       // 1. Upload progresses; no terminal status written yet.
-      uploader.updateFile(uploadFile.id, {status: 'uploading', progress: 0.5})
+      uploader.updateFile(uploadFile.id, {status: 'uploading', progress: 50})
       expect(allCompleteEvents).toHaveLength(0)
 
       // 2. Writer finishes linking + onSelect, then writes the terminal status.
-      uploader.updateFile(uploadFile.id, {status: 'complete', progress: 1})
+      uploader.updateFile(uploadFile.id, {status: 'complete', progress: 100})
 
       expect(allCompleteEvents).toHaveLength(1)
       expect(allCompleteEvents[0].files?.[0].status).toBe('complete')
