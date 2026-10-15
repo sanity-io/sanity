@@ -1,10 +1,9 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useClient} from '../../hooks/useClient'
@@ -63,7 +62,9 @@ export function useNetworkProtocolCheck(): undefined {
     description: (
       <Flex gap={4} paddingY={1} flexDirection="column">
         <Flex>
-          <Text size={1}>{t('network-check.slow-protocol-warning.description')} </Text>
+          <Text size={1} as="div" trim={true} tone="caution">
+            {t('network-check.slow-protocol-warning.description')}{' '}
+          </Text>
         </Flex>
         <Flex gap={3}>
           <Button
