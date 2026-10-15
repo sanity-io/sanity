@@ -12,10 +12,10 @@ interface WorkspaceMenuItemProps {
 }
 
 /**
- * A single row in the workspace switcher menu. Each row probes `/auth/id`
- * on its own: the list renders instantly on open, badges fill in as the
- * probes settle.
- * No probe goes out while the menu is closed (see `useWorkspaceLoginStatus`).
+ * A single row in the workspace switcher menu. Each row asks its workspace's auth store on its
+ * own: the list renders instantly on open, badges fill in as the answers arrive. Requests go out
+ * when the menu opens, or earlier when hovering or focusing the menu button preloads them (see
+ * `WorkspaceMenuButton`). A closed menu that was never hovered sends none.
  *
  * @internal
  */

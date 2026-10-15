@@ -47,6 +47,7 @@ import {
   type AuthStore,
   type HandleCallbackResult,
 } from '../types'
+import {createAuthIdProbe} from '../utils/createAuthIdProbe'
 import {createBroadcastState} from '../utils/createBroadcastState'
 import {getCurrentUser, withoutRequestHandler} from '../utils/getCurrentUser'
 import {isCookielessCompatibleLoginMethod} from './asserters'
@@ -59,6 +60,7 @@ import {
 } from './constants'
 import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
+import {observeCurrentUserId} from './currentUserId'
 import {
   observeDashboardToken as defaultObserveDashboardToken,
   refreshDashboardToken as defaultRefreshDashboardToken,
@@ -315,6 +317,23 @@ function createDashboardAuthStore({
     }),
     // Only reached on a forced logout (401): ask the dashboard to reissue its token.
     logout: async () => refreshDashboardToken(),
+    // Asks `/auth/id` who the dashboard's token belongs to, and asks again when the token changes.
+    currentUserId: createAuthIdProbe(
+      token$.pipe(
+        map((dashboardToken) =>
+          dashboardToken
+            ? {
+                ...AUTH_CLIENT_OPTIONS,
+                ...hostOptions,
+                projectId,
+                dataset,
+                token: dashboardToken,
+                ignoreBrowserTokenWarning: true,
+              }
+            : undefined,
+        ),
+      ),
+    ),
   }
   dashboardAuthStores.add(store)
   return store
@@ -950,6 +969,14 @@ function createStandaloneAuthStore({
     token: tokenStorage.value.pipe(map((t) => t?.token || null)),
     LoginComponent,
     logout,
+    currentUserId: observeCurrentUserId({
+      projectId,
+      dataset,
+      apiHost: hostOptions.apiHost,
+      loginMethod,
+      tokenState: tokenStorage,
+      cookieState: cookieAuthState,
+    }),
   }
 }
 

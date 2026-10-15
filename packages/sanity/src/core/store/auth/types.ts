@@ -57,6 +57,15 @@ export interface AuthStore {
    * logged-out users on the loading screen indefinitely.
    */
   handleCallbackUrl?: () => Promise<HandleCallbackResult>
+  /**
+   * Optional. A lightweight check of who is signed in: the id of the user the API accepts the
+   * store's current credential for, or `undefined` when signed out. Answers without the side
+   * effects of `state` (no writes to storage or broadcast channels, no token renewals), and asks
+   * again when the store sees its credential change.
+   *
+   * @internal
+   */
+  currentUserId?: Observable<string | undefined>
 }
 
 /**
