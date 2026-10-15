@@ -94,11 +94,18 @@ export function RecentSearchItem({
         onClick={handleClick}
         paddingLeft={3}
         paddingRight={1}
-        paddingY={0}
+        paddingY={1}
         tabIndex={-1}
       >
-        <Flex alignItems="center">
-          <Icon muted size={1} icon={ClockIcon} style={{margin: '-0.375rem'}} />
+        <Flex alignItems="stretch">
+          {/* Combination of <Flex> and a zero-width character to ensure icon is optically aligned with adjacent text */}
+          <Flex alignItems="flex-start" paddingY={2}>
+            <Icon muted size={1} icon={ClockIcon} style={{margin: '-0.3125rem -0.375rem'}} />
+            <Text as="div" trim={true}>
+              &#8203;
+            </Text>
+          </Flex>
+
           <Flex
             alignItems="stretch"
             flexBasis="0%"
@@ -111,7 +118,15 @@ export function RecentSearchItem({
             {/* Text query */}
             {value.query && (
               <SearchItemQueryFlex alignItems="center" paddingY={2}>
-                <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
+                <Text
+                  muted
+                  size={1}
+                  truncate={1}
+                  weight="medium"
+                  as="div"
+                  trim={true}
+                  style={{maxWidth: '100%'}}
+                >
                   {value.query}
                 </Text>
               </SearchItemQueryFlex>
@@ -133,7 +148,7 @@ export function RecentSearchItem({
           <Flex alignItems="center">
             <CloseButtonDiv onClick={handleDelete}>
               <Flex padding={2}>
-                <Icon size={1} icon={CloseIcon} />
+                <Icon size={1} icon={CloseIcon} style={{margin: '-0.375rem'}} />
               </Flex>
             </CloseButtonDiv>
           </Flex>
