@@ -9,7 +9,6 @@ import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
-import {useWorkspace} from '../../../studio/workspace'
 import {
   CreatedRelease,
   type OriginInfo,
@@ -18,6 +17,7 @@ import {
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
+import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsReleaseInvalid} from '../../util/getIsReleaseInvalid'
@@ -42,10 +42,11 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const createReleaseMetadata = useCreateReleaseMetadata()
   const {clearReleaseDataFromStorage} = useReleaseFormStorage()
 
-  const hasMetadataFields = (useWorkspace().releases?.metadata?.fields?.length ?? 0) > 0
+  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [metadataValid, setMetadataValid] = useState(!hasMetadataFields)
+  // True when the form is not mounted, so create is not waiting on a check that will never run.
+  const [metadataValid, setMetadataValid] = useState(!metadataFieldsEnabled)
   const invalid = getIsReleaseInvalid(release) || !metadataValid
   const handleValidityChange = useCallback((valid: boolean) => {
     setMetadataValid(valid)

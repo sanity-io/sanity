@@ -7,7 +7,8 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {validateItem} from '@sanity/validation/_internal'
-import {useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {ChangeIndicatorsTracker} from '../../../changeIndicators/tracker'
 import {createPatchChannel} from '../../../form/patch/PatchChannel'
@@ -39,6 +40,7 @@ import {
   toReleaseMetadataRecord,
   type ReleaseMetadataRecord,
 } from '../../metadata/mergeReleaseMetadata'
+import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 
 const NO_FIELDS: readonly FieldDefinition[] = []
 const NO_MARKERS: ValidationMarker[] = []
@@ -50,8 +52,7 @@ interface ReleaseMetadataFormProps {
   readOnly?: boolean
   /**
    * When true, missing keys are written back as soon as `initialValue` resolves.
-   * Create and the edit dialog need that. The inline editor leaves it false so
-   * opening a release does not save untouched initial values.
+   * Create and the edit dialog need that.
    */
   commitInitialValues?: boolean
 }
@@ -110,8 +111,11 @@ function ReleaseMetadataFieldsForm(
   const builderState = useFormBuilderState()
   const [patchChannel] = useState(() => createPatchChannel())
   const [initialValues, setInitialValues] = useState<Record<string, unknown> | null>(null)
-  const [markers, setMarkers] = useState<ValidationMarker[]>(NO_MARKERS)
-  const [validationReady, setValidationReady] = useState(false)
+  const [settled, setSettled] = useState<{
+    value: FormDocumentValue
+    markers: ValidationMarker[]
+  } | null>(null)
+  const requestId = useRef(0)
 
   const displayedMetadata = useMemo(
     () => withInitialValues(metadata, fieldNames, initialValues),
@@ -121,6 +125,15 @@ function ReleaseMetadataFieldsForm(
     () => formValueFromMetadata(displayedMetadata, fieldNames),
     [displayedMetadata, fieldNames],
   )
+  // A new value is invalid until its own check settles. Old markers must not
+  // keep create/save enabled while `validateItem` is still running.
+  const markers = settled?.value === formValue ? settled.markers : NO_MARKERS
+  const pending = settled?.value !== formValue
+  const hasError = markers.some((marker) => marker.level === 'error')
+  const valid = !pending && !hasError
+  const reportValidity = useEffectEvent((next: boolean) => {
+    onValidityChange?.(next)
+  })
 
   const context = useMemo(
     (): InitialValueResolverContext => ({
@@ -156,13 +169,19 @@ function ReleaseMetadataFieldsForm(
       (name) => metadata[name] === undefined && next[name] !== undefined,
     )
     if (!changed) return
+    onValidityChange?.(false)
     onChange(asReleaseMetadata(next))
-  }, [commitInitialValues, fieldNames, initialValues, metadata, onChange])
+  }, [commitInitialValues, fieldNames, initialValues, metadata, onChange, onValidityChange])
 
   useEffect(() => {
+    const id = ++requestId.current
+    const value = formValue
     let active = true
+    // Pending before the request starts, so a submit in this turn cannot use
+    // the previous markers with the new value.
+    reportValidity(false)
     void validateItem({
-      value: formValue,
+      value,
       path: EMPTY_ARRAY,
       schema: compiled.schema,
       type: compiled.schemaType,
@@ -175,23 +194,32 @@ function ReleaseMetadataFieldsForm(
       currentUser,
       i18n,
       getClient: () => client,
-    }).then((nextMarkers) => {
-      if (!active) return
-      setMarkers(nextMarkers)
-      setValidationReady(true)
-    })
+    }).then(
+      (nextMarkers) => {
+        if (!active || id !== requestId.current) return
+        setSettled({value, markers: nextMarkers})
+      },
+      (error: unknown) => {
+        if (!active || id !== requestId.current) return
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Release metadata validation failed', error)
+        }
+      },
+    )
     return () => {
       active = false
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- reportValidity is a useEffectEvent and must stay out of the dependency array
   }, [client, compiled.schema, compiled.schemaType, currentUser, formValue, i18n])
 
-  const invalid = markers.some((marker) => marker.level === 'error')
   useEffect(() => {
-    onValidityChange?.(!invalid && validationReady)
-  }, [invalid, onValidityChange, validationReady])
+    reportValidity(valid)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- reportValidity is a useEffectEvent and must stay out of the dependency array
+  }, [valid])
 
   const handleChange = useFormPatchHandler(formValue, (next) => {
     if (!isRecord(next)) return
+    onValidityChange?.(false)
     onChange(asReleaseMetadata(mergeReleaseMetadata(displayedMetadata, next, fieldNames)))
   })
 
@@ -251,19 +279,33 @@ function ReleaseMetadataFieldsForm(
 function ReleaseMetadataFields(
   props: ReleaseMetadataFormProps & {fields: readonly FieldDefinition[]},
 ): React.JSX.Element | null {
-  const {fields} = props
+  const {fields, onValidityChange} = props
   const schema = useSchema()
   const compiled = useMemo(() => compileReleaseMetadataSchema(fields, schema), [fields, schema])
   const fieldNames = useMemo(
     () => compiled?.schemaType.fields.map((field) => field.name) ?? [],
     [compiled],
   )
+  useEffect(() => {
+    if (compiled) return
+    // Nothing accepted, or compilation failed. Do not leave create/save waiting.
+    onValidityChange?.(true)
+  }, [compiled, onValidityChange])
   if (!compiled) return null
   return <ReleaseMetadataFieldsForm {...props} compiled={compiled} fieldNames={fieldNames} />
 }
 
 export function ReleaseMetadataForm(props: ReleaseMetadataFormProps): React.JSX.Element | null {
+  const enabled = useReleaseMetadataFieldsEnabled()
   const fields = useWorkspace().releases?.metadata?.fields ?? NO_FIELDS
-  if (fields.length === 0) return null
-  return <ReleaseMetadataFields {...props} fields={fields} />
+  const {onValidityChange} = props
+  const activeFields = enabled ? fields : NO_FIELDS
+
+  useEffect(() => {
+    if (activeFields.length > 0) return
+    onValidityChange?.(true)
+  }, [activeFields.length, onValidityChange])
+
+  if (activeFields.length === 0) return null
+  return <ReleaseMetadataFields {...props} fields={activeFields} />
 }

@@ -1,6 +1,6 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {defineField, type FieldDefinition} from '@sanity/types'
-import {render, screen, waitFor, within} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactElement, useCallback, useState} from 'react'
 import {describe, expect, it, vi} from 'vitest'
@@ -80,12 +80,17 @@ function ControlledReleaseForm(props: {
   return <ReleaseForm onChange={handleChange} value={value} />
 }
 
-async function renderWithFields(fields: FieldDefinition[], ui: ReactElement) {
+async function renderWithFields(
+  fields: FieldDefinition[],
+  ui: ReactElement,
+  variantsEnabled = true,
+) {
   const wrapper = await createTestProvider({
     config: {
       name: 'default',
       projectId: 'test',
       dataset: 'test',
+      beta: {variants: {enabled: variantsEnabled}},
       releases: {metadata: {fields}},
     },
   })
@@ -150,6 +155,58 @@ describe('ReleaseMetadataForm', () => {
     warn.mockRestore()
   })
 
+  it('stays invalid until the current check settles and ignores a stale result', async () => {
+    const gates: Array<(result: true | string) => void> = []
+    const onValidityChange = vi.fn()
+    const reviewNote = defineField({
+      name: 'reviewNote',
+      title: 'Review note',
+      type: 'string',
+      validation: (rule) =>
+        rule.custom(
+          () =>
+            new Promise((resolve) => {
+              gates.push(resolve)
+            }),
+        ),
+    })
+
+    await renderWithFields(
+      [reviewNote],
+      <ControlledMetadataForm
+        initial={{reviewNote: 'ok'}}
+        onChange={vi.fn()}
+        onValidityChange={onValidityChange}
+      />,
+    )
+
+    await waitFor(() => expect(gates.length).toBeGreaterThan(0))
+    gates.at(-1)?.(true)
+    await waitFor(() => expect(onValidityChange).toHaveBeenCalledWith(true))
+
+    const input = within(await screen.findByTestId('field-reviewNote')).getByRole('textbox')
+    onValidityChange.mockClear()
+    const afterFirst = gates.length
+    await userEvent.type(input, 'x')
+    await waitFor(() => expect(gates.length).toBeGreaterThan(afterFirst))
+    const afterSecond = gates.length
+    await userEvent.type(input, 'y')
+    await waitFor(() => expect(gates.length).toBeGreaterThan(afterSecond))
+
+    onValidityChange.mockClear()
+    const latest = gates.length - 1
+    for (let index = 0; index < latest; index++) {
+      gates[index]?.('stale')
+    }
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(onValidityChange).not.toHaveBeenCalledWith(true)
+
+    gates[latest]?.(true)
+    await waitFor(() => expect(onValidityChange).toHaveBeenCalledWith(true))
+  })
+
   it('blocks validity until a required field is filled', async () => {
     const onChange = vi.fn()
     const onValidityChange = vi.fn()
@@ -189,6 +246,31 @@ describe('ReleaseMetadataForm', () => {
 })
 
 describe('ReleaseForm metadata fields', () => {
+  it('does not render configured fields when variants are off', async () => {
+    const onChange = vi.fn()
+    const value: EditableReleaseDocument = {
+      _id: 'very-random',
+      metadata: asReleaseMetadata({
+        title: 'Spring',
+        description: '',
+        releaseType: 'asap',
+      }),
+    }
+
+    await renderWithFields(
+      [legalReviewField],
+      <ControlledReleaseForm initial={value} onChange={onChange} />,
+      false,
+    )
+
+    expect(screen.queryByTestId('field-legalReview')).toBeNull()
+    expect(onChange).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        metadata: expect.objectContaining({legalReview: 'notReviewed'}),
+      }),
+    )
+  })
+
   it('includes the configured field on the release passed to onChange', async () => {
     const onChange = vi.fn()
     const value: EditableReleaseDocument = {

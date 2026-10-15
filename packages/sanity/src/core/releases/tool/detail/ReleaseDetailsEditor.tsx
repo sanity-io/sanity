@@ -1,18 +1,12 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 
 import {DetailIdentity} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../studio/workspace'
 import {ReleaseDescriptionSet} from '../../__telemetry__/releases.telemetry'
-import {ReleaseMetadataForm} from '../../components/dialog/ReleaseMetadataForm'
 import {TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
-import {
-  asReleaseMetadata,
-  toReleaseMetadataRecord,
-  type ReleaseMetadataRecord,
-} from '../../metadata/mergeReleaseMetadata'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseDescriptionTelemetry} from '../../util/getReleaseDescriptionTelemetry'
 import {useCanEditRelease} from './useCanEditRelease'
@@ -20,15 +14,7 @@ import {useCanEditRelease} from './useCanEditRelease'
 function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): React.JSX.Element {
   const {updateRelease} = useReleaseOperations()
   const canEdit = useCanEditRelease(release)
-  const hasMetadataFields = (useWorkspace().releases?.metadata?.fields?.length ?? 0) > 0
   const [timer, setTimer] = useState<NodeJS.Timeout | undefined>(undefined)
-  const [metadata, setMetadata] = useState<ReleaseMetadataRecord>(() =>
-    toReleaseMetadataRecord(release.metadata),
-  )
-  const [metadataValid, setMetadataValid] = useState(!hasMetadataFields)
-  const metadataValidRef = useRef(metadataValid)
-  const dirtyRef = useRef(false)
-  const pendingSave = useRef<EditableReleaseDocument | null>(null)
   const telemetry = useTelemetry()
   // Scoped to a release id because this component instance is reused across release navigation.
   const lastLoggedDescription = useRef({
@@ -38,15 +24,11 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
 
   const handleOnChange = useCallback(
     (changedValue: EditableReleaseDocument) => {
-      dirtyRef.current = true
-      pendingSave.current = changedValue
-      setMetadata(toReleaseMetadataRecord(changedValue.metadata))
       clearTimeout(timer)
 
       /** @todo I wasn't able to get this working with the debouncer that we use in other parts */
       const newTimer = setTimeout(() => {
-        if (canEdit && metadataValidRef.current) {
-          dirtyRef.current = false
+        if (canEdit) {
           const nextDescription = changedValue.metadata?.description ?? ''
           const isSameRelease = lastLoggedDescription.current.releaseId === release._id
           const baselineDescription = isSameRelease
@@ -74,53 +56,13 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
     [canEdit, timer, updateRelease, telemetry, release],
   )
 
-  const seenReleaseId = useRef(release._id)
-  useEffect(() => {
-    metadataValidRef.current = metadataValid
-  }, [metadataValid])
-
-  useEffect(() => {
-    if (seenReleaseId.current === release._id) return
-    seenReleaseId.current = release._id
-    dirtyRef.current = false
-    setMetadata(toReleaseMetadataRecord(release.metadata))
-  }, [release._id, release.metadata])
-
-  useEffect(() => {
-    const pending = pendingSave.current
-    if (!metadataValid || !canEdit || !dirtyRef.current || !pending) return
-    dirtyRef.current = false
-    void updateRelease(pending)
-  }, [canEdit, metadataValid, updateRelease])
-
-  const releaseForForm = useMemo(
-    () => ({...release, metadata: asReleaseMetadata(metadata)}),
-    [metadata, release],
-  )
-
-  const handleMetadataChange = useCallback(
-    (next: EditableReleaseDocument['metadata']) => {
-      handleOnChange({...releaseForForm, metadata: next})
-    },
-    [handleOnChange, releaseForForm],
-  )
-
   return (
-    <>
-      <TitleDescriptionForm
-        key={release._id}
-        release={releaseForForm}
-        onChange={handleOnChange}
-        disabled={!canEdit}
-      />
-      <ReleaseMetadataForm
-        commitInitialValues={false}
-        metadata={releaseForForm.metadata}
-        onChange={handleMetadataChange}
-        onValidityChange={setMetadataValid}
-        readOnly={!canEdit}
-      />
-    </>
+    <TitleDescriptionForm
+      key={release._id}
+      release={release}
+      onChange={handleOnChange}
+      disabled={!canEdit}
+    />
   )
 }
 

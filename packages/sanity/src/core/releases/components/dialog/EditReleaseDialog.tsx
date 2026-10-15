@@ -7,12 +7,12 @@ import {Text, Flex, VStack} from 'ui5'
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useWorkspace} from '../../../studio/workspace'
 import {
   asReleaseMetadata,
   toReleaseMetadataRecord,
   type ReleaseMetadataRecord,
 } from '../../metadata/mergeReleaseMetadata'
+import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useCanEditRelease} from '../../tool/detail/useCanEditRelease'
 import {ReleaseMetadataForm} from './ReleaseMetadataForm'
@@ -39,13 +39,13 @@ export function EditReleaseDialog({
   const toast = useToast()
   const titleId = useId()
   const descriptionId = useId()
-  const hasMetadataFields = (useWorkspace().releases?.metadata?.fields?.length ?? 0) > 0
+  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
   const canEdit = useCanEditRelease(release)
 
   const [metadata, setMetadata] = useState<ReleaseMetadataRecord>(() =>
     toReleaseMetadataRecord(release.metadata),
   )
-  const [metadataValid, setMetadataValid] = useState(!hasMetadataFields)
+  const [metadataValid, setMetadataValid] = useState(!metadataFieldsEnabled)
   const [isSaving, setIsSaving] = useState(false)
   // Synchronous re-entry guard. `loading={isSaving}` only disables the button after a re-render, so
   // two clicks in the same tick would both reach updateRelease. This ref blocks the second call
@@ -129,12 +129,14 @@ export function EditReleaseDialog({
               value={typeof metadata.description === 'string' ? metadata.description : ''}
             />
           </VStack>
-          <ReleaseMetadataForm
-            metadata={asReleaseMetadata(metadata)}
-            onChange={handleMetadataChange}
-            onValidityChange={setMetadataValid}
-            readOnly={!canEdit}
-          />
+          {metadataFieldsEnabled ? (
+            <ReleaseMetadataForm
+              metadata={asReleaseMetadata(metadata)}
+              onChange={handleMetadataChange}
+              onValidityChange={setMetadataValid}
+              readOnly={!canEdit}
+            />
+          ) : null}
         </VStack>
         <Flex justifyContent="flex-end" paddingTop={5}>
           <Button
