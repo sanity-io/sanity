@@ -24,6 +24,33 @@ function stripQuery(id: string): string {
   return id.split('?')[0] ?? id
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
+ * A `@pandacss/vite` instance for one Panda project, transforming only the modules under that
+ * project's directory (plus `layers.css`, which every instance fills). The plugin itself hands
+ * every `.ts`/`.tsx` module of the build to its transformer, whichever project it belongs to, so
+ * with several instances the first one would rewrite another project's `.css.ts` modules with its
+ * own class name prefix — and the CSS for those names would be missing.
+ */
+function scopedPandacss(cwd: string): Plugin {
+  const plugin = pandacss({cwd, transform: true})
+  const {transform} = plugin
+  if (!transform || typeof transform === 'function') return plugin
+
+  const ids = [
+    new RegExp(`^${escapeRegExp(cwd.replaceAll('\\', '/'))}`),
+    new RegExp(`^${escapeRegExp(PANDA_LAYERS_CSS_PATH.replaceAll('\\', '/'))}(?:\\?|$)`),
+  ]
+
+  return {
+    ...plugin,
+    transform: {...transform, filter: {...transform.filter, id: ids}},
+  }
+}
+
 /**
  * Drops the cascade layers from `layers.css` once `@pandacss/vite` has appended the generated
  * CSS to it. Register it after the `pandacss()` instances, as `studioPandaCss()` and
@@ -91,9 +118,5 @@ export function studioPandaCss(options: StudioPandaCssOptions = {}): Plugin[] {
     ...(options.roots ?? []),
   ]
 
-  return [
-    ...roots.map((cwd) => pandacss({cwd, transform: true})),
-    unlayeredPandaCss(),
-    sanityDevLayersCss(),
-  ]
+  return [...roots.map(scopedPandacss), unlayeredPandaCss(), sanityDevLayersCss()]
 }

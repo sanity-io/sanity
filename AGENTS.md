@@ -274,7 +274,10 @@ How the CSS reaches a page:
 - **Vite apps that build the packages from source** (the dev studios through `sanity.cli.ts`,
   Storybook, the vitest browser suite, `dev/studio-diagnostics-viewer`) register
   `studioPandaCss()` from `@repo/pandacss/vite`: one `@pandacss/vite` instance per Panda project,
-  which rewrites the `.css.ts` modules and appends their CSS to `@repo/pandacss/layers.css`. The
+  scoped to that project's directory (the plugin itself would hand every module of the build to
+  its transformer, so the first instance would rewrite another project's `.css.ts` with its own
+  prefix), which rewrites the `.css.ts` modules and appends their CSS to
+  `@repo/pandacss/layers.css`. The
   app imports that stylesheet from its entry (`sanity dev` gets the import injected into its
   runtime entry; Storybook's `preview.tsx`, `test/setup/browser.ts` and the viewer's `main.tsx`
   import it themselves). The CDN bundle (`@repo/package.bundle`) does the same with its own entry
