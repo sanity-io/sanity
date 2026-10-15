@@ -37,7 +37,7 @@ import {
 } from './document-pair/operationEvents'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {type OperationsAPI} from './document-pair/operations/types'
-import {validationStreams} from './document-pair/validation'
+import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
 import {type InitialValueMsg} from './initialValue/types'
@@ -306,14 +306,14 @@ export function createDocumentStore({
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        const {status$, immediate$} = validationStreams(
+        return validation(
           ctx,
           idPair,
           type,
           validationTarget,
           requirePublishedReferences,
+          options?.scheduling,
         )
-        return options?.scheduling === 'immediate' ? immediate$ : status$
       },
     },
   }
