@@ -202,6 +202,17 @@ describe('HistoryTab', () => {
     )
   })
 
+  it('says nothing about hidden fields when neither result has any', async () => {
+    const [latest] = renderTab(twoFetches([{title: 'Two'}], [{title: 'Three'}]), ['_rev'])
+    fireEvent.click(within(latest).getByTestId('vista-history-changes-toggle'))
+    expect(await diffedValues(latest)).toEqual({
+      previous: [{title: 'Two'}],
+      next: [{title: 'Three'}],
+    })
+    expect(within(latest).queryByTestId('vista-history-hidden-fields')).toBeNull()
+    expect(within(latest).queryByTestId('vista-history-hidden-toggle')).toBeNull()
+  })
+
   it('says when only hidden fields changed, and diffs them all then', async () => {
     const before = [{_id: 'a', _rev: 'r1', _updatedAt: 't1', title: 'Same'}]
     const after = [{_id: 'a', _rev: 'r2', _updatedAt: 't2', title: 'Same'}]

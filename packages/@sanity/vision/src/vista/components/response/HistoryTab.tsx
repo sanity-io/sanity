@@ -134,6 +134,8 @@ function HistoryEntry(props: {
     if (!resultComparable || hiddenPaths.length === 0) return undefined
     const previousShown = omitFields(previousResult.value, hiddenPaths)
     const nextShown = omitFields(nextResult.value, hiddenPaths)
+    // Results without hidden fields come back as they are, and there is nothing to hide then
+    if (previousShown === previousResult.value && nextShown === nextResult.value) return undefined
     return {previous: previousShown, next: nextShown, same: dequal(previousShown, nextShown)}
   }, [hiddenPaths, nextResult, previousResult, resultComparable])
   const onlyHiddenChanged = shown?.same === true
