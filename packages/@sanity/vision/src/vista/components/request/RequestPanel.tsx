@@ -1,9 +1,10 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PlayIcon} from '@sanity/icons/Play'
+import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {StopIcon} from '@sanity/icons/Stop'
 import {Badge, Button, Hotkeys, Label, Tab, TabList, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type RefObject, useCallback, useMemo, useRef} from 'react'
+import {type RefObject, useCallback, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -30,6 +31,7 @@ import {CollapsibleSection} from '../CollapsibleSection'
 import {
   editorContainer,
   editorLabel,
+  labelActions,
   optionsSection,
   paramsSection,
   paramsSectionResized,
@@ -37,6 +39,7 @@ import {
   sectionResizer,
 } from '../vista.css'
 import {ApiVersionButton} from './ApiVersionButton'
+import {GenerateQueryBar} from './GenerateQueryBar'
 import {LiveButton} from './LiveButton'
 import {OptionsPanel} from './OptionsPanel'
 import {ParamsForm} from './ParamsForm'
@@ -119,6 +122,17 @@ export function RequestPanel(props: RequestPanelProps) {
   const paramsResize = useDragResize({containerRef, sectionRef: paramsRef, siblingRef: optionsRef})
   const paramsHeightNow = paramsResize.height ?? paramsResize.measured?.current
 
+  const [generatorOpen, setGeneratorOpen] = useState(false)
+  // Closing hands the keyboard back to the query editor, where the bar was opened from
+  const closeGenerator = useCallback(() => {
+    setGeneratorOpen(false)
+    requestAnimationFrame(() =>
+      containerRef.current
+        ?.querySelector<HTMLElement>('[data-testid="vista-query-editor"] .cm-content')
+        ?.focus(),
+    )
+  }, [])
+
   // The API version button shows the field that changes it: the Options panel opens if it was
   // collapsed, and once its fields have mounted the field (or, while a variant locks it, the
   // wrapper that stands in for it) takes focus
@@ -146,17 +160,43 @@ export function RequestPanel(props: RequestPanelProps) {
     <Flex data-testid="vista-request-panel" flexDirection="column" height="100%">
       <Flex flexBasis="0%" flexDirection="column" flexGrow={1} minHeight="0" ref={containerRef}>
         <Flex className={querySection}>
+          {generatorOpen && (
+            <GenerateQueryBar client={resolved.client} onClose={closeGenerator} tab={tab} />
+          )}
           <Box
             className={editorContainer}
             data-testid="vista-query-editor"
             flexBasis="0%"
             flexGrow={1}
+            minHeight="0"
             minWidth="0"
           >
             <Box className={editorLabel}>
-              <Label muted size={1}>
-                {t('query.label')}
-              </Label>
+              <Flex alignItems="center" gap={2}>
+                <Label muted size={1}>
+                  {t('query.label')}
+                </Label>
+                <Box flexBasis="0%" flexGrow={1} />
+                {!generatorOpen && (
+                  <Tooltip
+                    animate
+                    content={<Text size={1}>{t('vista.generate.button')}</Text>}
+                    placement="bottom"
+                    portal
+                  >
+                    <Button
+                      aria-label={t('vista.generate.button')}
+                      className={labelActions}
+                      data-testid="vista-generate-query"
+                      fontSize={1}
+                      icon={SparklesIcon}
+                      mode="bleed"
+                      onClick={() => setGeneratorOpen(true)}
+                      padding={2}
+                    />
+                  </Tooltip>
+                )}
+              </Flex>
             </Box>
             <VisionCodeMirror
               extensions={queryExtensions}

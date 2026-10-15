@@ -1,8 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
-import {SparklesIcon} from '@sanity/icons/Sparkles'
-import {Badge, Button, Text, TextInput} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
+import {Badge, Button, TextInput} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {Reorder, useDragControls} from 'motion/react'
 import {
@@ -340,22 +338,6 @@ export function QueryTabBar() {
           onClick={() => actorRef.send({type: 'tab.add'})}
           padding={2}
         />
-        <Tooltip
-          animate
-          content={<Text size={1}>{t('vista.generate.button')}</Text>}
-          placement="bottom"
-          portal
-        >
-          <Button
-            aria-label={t('vista.generate.button')}
-            data-testid="vista-generate-query"
-            fontSize={1}
-            icon={SparklesIcon}
-            mode="bleed"
-            onClick={() => actorRef.send({type: 'dialog.open', dialog: 'generate'})}
-            padding={2}
-          />
-        </Tooltip>
       </Flex>
     </Flex>
   )

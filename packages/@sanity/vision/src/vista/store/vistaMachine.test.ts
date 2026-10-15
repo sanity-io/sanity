@@ -236,14 +236,9 @@ describe('vistaMachine', () => {
     harness.actor.send({type: 'dialog.close'})
     harness.actor.send({type: 'dialog.open', dialog: 'shortcuts'})
     expect(selectOpenDialog(harness.snapshot())).toBe('shortcuts')
-    harness.actor.send({type: 'dialog.close'})
-    harness.actor.send({type: 'dialog.open', dialog: 'generate'})
-    expect(selectOpenDialog(harness.snapshot())).toBe('generate')
-    harness.actor.send({type: 'dialog.close'})
-    expect(selectOpenDialog(harness.snapshot())).toBeNull()
   })
 
-  it('remembers which added tabs fetch when shown, until they have or are closed', () => {
+  it('remembers which added or loaded tabs fetch when shown, until they have or are closed', () => {
     const harness = createHarness()
     harness.actor.send({type: 'tab.add', tab: {id: 'generated', query: '*'}, fetch: true})
     harness.actor.send({type: 'tab.add', tab: {id: 'plain', query: '*'}})
@@ -253,6 +248,12 @@ describe('vistaMachine', () => {
     harness.actor.send({type: 'tab.fetchedOnOpen', id: 'generated'})
     harness.actor.send({type: 'tab.close', id: 'closed'})
     expect(harness.snapshot().context.fetchOnOpen).toEqual([])
+
+    // A generated query loaded into a tab that is already shown fetches the same way
+    harness.actor.send({type: 'tab.load', id: 'plain', tab: {query: '*[0]'}, fetch: true})
+    expect(harness.snapshot().context.fetchOnOpen).toEqual(['plain'])
+    harness.actor.send({type: 'tab.load', id: 'plain', tab: {query: '*[1]'}})
+    expect(harness.snapshot().context.fetchOnOpen).toEqual(['plain'])
     // Never persisted: a reload does not fetch again
     expect(selectPersistedState(harness.snapshot())).not.toHaveProperty('fetchOnOpen')
   })

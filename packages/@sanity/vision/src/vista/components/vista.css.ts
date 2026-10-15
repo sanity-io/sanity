@@ -113,8 +113,8 @@ export const editorLabel = style({
 /** Result label at the same height as the editor label, aligned with the result's own padding */
 export const resultLabel = style([editorLabel, {left: '12px'}])
 
-/** Controls in the result label's row: unlike the label they take the pointer */
-export const resultLabelActions = style({
+/** Controls in an editor or result label's row: unlike the label they take the pointer */
+export const labelActions = style({
   pointerEvents: 'auto',
   marginRight: '12px',
   marginTop: '-0.5rem',
@@ -140,6 +140,7 @@ globalStyle(`${panelTabs} [data-ui="TabList"]`, {
 export const querySection = style({
   position: 'relative',
   display: 'flex',
+  flexDirection: 'column',
   flex: '1 1 0%',
   minHeight: '120px',
 })

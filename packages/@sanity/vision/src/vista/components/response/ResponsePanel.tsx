@@ -26,7 +26,7 @@ import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
-import {resultContainer, resultLabel, resultLabelActions} from '../vista.css'
+import {resultContainer, resultLabel, labelActions} from '../vista.css'
 import {DownloadButton} from './DownloadButton'
 import {HistoryTab} from './HistoryTab'
 import {LintTab} from './LintTab'
@@ -233,7 +233,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
             )}
             <Box flexBasis="0%" flexGrow={1} />
             {hasResult && (
-              <Flex alignItems="center" className={resultLabelActions} gap={1}>
+              <Flex alignItems="center" className={labelActions} gap={1}>
                 <TabList aria-label={t('vista.result.view.label')} gap={1}>
                   <Tab
                     aria-controls="vista-result-content"

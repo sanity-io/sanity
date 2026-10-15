@@ -45,7 +45,10 @@ export interface VistaContext {
    * URL), so the mounted editors know to replace their content. Not persisted.
    */
   loadRevisions: Record<string, number>
-  /** Tabs added to be fetched as soon as they are shown (a generated query). Not persisted. */
+  /**
+   * Tabs to fetch as soon as they are shown, or right away when they already are: a generated
+   * query added in a tab or loaded into one. Not persisted.
+   */
   fetchOnOpen: string[]
   /** Sidebar state as restored from storage, consumed once by the `restoring` states */
   restoredSidebar: VistaSidebarState
@@ -67,7 +70,8 @@ export type VistaEvent =
   | {type: 'tab.setParams'; id: string; rawParams: string}
   | {type: 'tab.setAutoRefetch'; id: string; autoRefetch: boolean}
   | {type: 'tab.setOptions'; id: string; options: Partial<VistaTabOptions>}
-  | {type: 'tab.load'; id: string; tab: Omit<VistaTabInit, 'id'>}
+  /** `fetch` has the tab fetch the loaded query (it is the active tab, so right away) */
+  | {type: 'tab.load'; id: string; tab: Omit<VistaTabInit, 'id'>; fetch?: boolean}
   | {type: 'settings.update'; settings: Partial<VistaSettings>}
   | {type: 'historyDiff.update'; settings: Partial<VistaHistoryDiffSettings>}
   | {type: 'sidebar.toggle'}
@@ -315,6 +319,10 @@ export const vistaMachine = setup({
           ...context.loadRevisions,
           [event.id]: (context.loadRevisions[event.id] || 0) + 1,
         }),
+        fetchOnOpen: ({context, event}) =>
+          event.fetch && !context.fetchOnOpen.includes(event.id)
+            ? [...context.fetchOnOpen, event.id]
+            : context.fetchOnOpen,
       }),
     },
     'settings.update': {
@@ -486,14 +494,12 @@ export const vistaMachine = setup({
           on: {
             'dialog.open': [
               {guard: {type: 'isDialog', params: {dialog: 'settings'}}, target: 'settings'},
-              {guard: {type: 'isDialog', params: {dialog: 'generate'}}, target: 'generate'},
               {target: 'shortcuts'},
             ],
           },
         },
         settings: {on: {'dialog.close': {target: 'closed'}}},
         shortcuts: {on: {'dialog.close': {target: 'closed'}}},
-        generate: {on: {'dialog.close': {target: 'closed'}}},
       },
     },
   },
@@ -561,7 +567,6 @@ export function selectProjectId(snapshot: VistaSnapshot): string {
 export function selectOpenDialog(snapshot: VistaSnapshot): VistaDialog | null {
   if (snapshot.matches({dialog: 'settings'})) return 'settings'
   if (snapshot.matches({dialog: 'shortcuts'})) return 'shortcuts'
-  if (snapshot.matches({dialog: 'generate'})) return 'generate'
   return null
 }
 

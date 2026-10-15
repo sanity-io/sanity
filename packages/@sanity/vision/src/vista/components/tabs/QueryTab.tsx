@@ -265,10 +265,14 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
     }
   })
-  // A tab opened with a generated query lays it out for its editor, as Prettify does, and shows
-  // its result straight away; a query the formatter cannot read runs as it was written. The
-  // editor creates its view a render after it mounts, so its width is waited for (a few frames
-  // at most; without it the query is formatted at the default width)
+  // A generated query, in a tab opened for it or loaded into this one, is laid out for the
+  // editor, as Prettify does, and its result shown straight away; a query the formatter cannot
+  // read runs as it was written. The editor creates its view a render after it mounts, so its
+  // width is waited for (a few frames at most; without it the query is formatted at the default
+  // width)
+  const generatedQueryPending = useVistaSelector((snapshot) =>
+    snapshot.context.fetchOnOpen.includes(tab.id),
+  )
   const fetchGeneratedQuery = useEffectEvent(async () => {
     if (!actorRef.getSnapshot().context.fetchOnOpen.includes(tab.id)) return
     actorRef.send({type: 'tab.fetchedOnOpen', id: tab.id})
@@ -281,9 +285,12 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   })
   useEffect(() => {
     resumeAutoRefetch()
-    void fetchGeneratedQuery()
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- once per tab mount; useEffectEvent callbacks must not be listed
   }, [])
+  useEffect(() => {
+    if (generatedQueryPending) void fetchGeneratedQuery()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
+  }, [generatedQueryPending])
 
   // While refetching automatically, a request that changed outside the editors is fetched right
   // away: changed options, or a loaded query (live refetches replay the runner's last request,

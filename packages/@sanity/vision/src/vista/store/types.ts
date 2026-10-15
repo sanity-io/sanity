@@ -54,7 +54,7 @@ export type VistaSettings = VistaTabOptions
 
 export type VistaDrawer = 'saved' | 'shared'
 
-export type VistaDialog = 'shortcuts' | 'settings' | 'generate'
+export type VistaDialog = 'shortcuts' | 'settings'
 
 export interface VistaSidebarState {
   expanded: boolean

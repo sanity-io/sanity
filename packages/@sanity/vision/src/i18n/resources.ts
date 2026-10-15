@@ -206,20 +206,20 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip of the API version button while a selected variant forces the experimental API */
   'vista.api-version.tooltip-locked':
     'Queries run against API version {{version}}, which the selected variant needs.',
-  /** Button next to the new tab button that opens the dialog writing a query from a description */
+  /** Button over the query editor that opens the bar writing a query from a description */
   'vista.generate.button': 'Generate query',
-  /** Closes the generate query dialog */
-  'vista.generate.cancel': 'Cancel',
-  /** Explanation in the generate query dialog */
+  /** Closes the generate query bar */
+  'vista.generate.close': 'Close',
+  /** Explanation under the generate query field */
   'vista.generate.description':
-    'Describe what to fetch. Sanity Agent Actions write the GROQ from your description and the names and fields of the document types, and the Content Lake checks each attempt. The query opens in a new tab and runs there, with the options of this one.',
+    'Sanity Agent Actions write the GROQ from your description and the document types, and the Content Lake checks each attempt. It runs in this tab while its query is empty, otherwise in a new one.',
   /** Shown when no query could be generated, above the reason */
   'vista.generate.failed': 'The query could not be generated',
-  /** Accessible label of the description field in the generate query dialog */
+  /** Accessible label of the description field in the generate query bar */
   'vista.generate.label': 'What should the query fetch?',
-  /** Opens the last rejected attempt in a new tab, without running it, to fix it by hand */
+  /** Opens the last rejected attempt, without running it, to fix it by hand */
   'vista.generate.open-anyway': 'Open the last attempt',
-  /** Placeholder of the description field in the generate query dialog */
+  /** Placeholder of the description field in the generate query bar */
   'vista.generate.placeholder':
     'The 10 most recent authors, ordered by last name and then first name',
   /** Shown while the first attempt at a query is written */
@@ -228,8 +228,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.generate.progress-retry': 'Fixing the query (attempt {{attempt}} of {{max}})…',
   /** Button generating the query */
   'vista.generate.submit': 'Generate',
-  /** Title of the generate query dialog */
-  'vista.generate.title': 'Generate query',
   /** A history entry whose result differs from the previous result, which is no longer kept */
   'vista.history.changed': 'Changed',
   /**

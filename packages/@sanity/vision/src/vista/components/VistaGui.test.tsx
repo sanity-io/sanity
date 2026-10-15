@@ -658,40 +658,38 @@ describe('VistaGui', () => {
     )
   })
 
-  it('generates a query from a description into a new tab that fetches it', async () => {
+  it('generates a query from a description into the empty tab, and fetches it', async () => {
     const {fetchCalls, promptCalls, replyToPrompts} = renderVista()
     const generated = '*[_type == "author"] | order(_createdAt desc)[0...10]{_id, name}'
     replyToPrompts({query: generated, params: {}, title: 'Recent authors'})
-    expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
 
     fireEvent.click(screen.getByTestId('vista-generate-query'))
-    const dialog = await screen.findByTestId('vista-generate-dialog')
-    const submit = within(dialog).getByTestId('vista-generate-submit')
+    const bar = screen.getByTestId('vista-generate-bar')
+    const submit = within(bar).getByTestId('vista-generate-submit')
     expect(isDisabled(submit)).toBe(true)
-    fireEvent.change(within(dialog).getByTestId('vista-generate-request'), {
+    fireEvent.change(within(bar).getByTestId('vista-generate-request'), {
       target: {value: 'The 10 most recent authors'},
     })
-    fireEvent.click(submit)
+    fireEvent.keyDown(within(bar).getByTestId('vista-generate-request'), {key: 'Enter'})
 
-    await waitFor(() => expect(screen.queryByTestId('vista-generate-dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByTestId('vista-generate-bar')).toBeNull())
     expect(promptCalls).toHaveLength(1)
     expect(promptCalls[0].config.apiVersion).toBe('vX')
     expect(promptCalls[0].request).toMatchObject({
       format: 'json',
       instructionParams: {request: 'The 10 most recent authors'},
     })
-    // Checked on the Content Lake without running it, with the active tab's options
+    // Checked on the Content Lake without running it, with the tab's options
     expect(fetchCalls[0]).toMatchObject({
       config: {apiVersion: 'v2025-02-19', dataset: 'test'},
       query: `select(false => (\n${generated}\n))`,
     })
 
-    // A new tab with the query fetches it right away, laid out for its editor first
+    // The tab had no query, so the generated one goes into it and runs, laid out for its editor
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     const tabs = screen.getAllByTestId('vista-tab')
-    expect(tabs).toHaveLength(2)
-    expect(within(tabs[1]).getByRole('tab').getAttribute('aria-selected')).toBe('true')
-    expect(text(tabs[1])).toContain('Recent authors')
+    expect(tabs).toHaveLength(1)
+    expect(text(tabs[0])).toContain('Recent authors')
     expect(fetchCalls[1].query).toBe(
       '*[_type == "author"] | order(_createdAt desc)[0...10] { _id, name }',
     )
@@ -700,6 +698,27 @@ describe('VistaGui', () => {
     expect(text(screen.getByTestId('vista-history-entry'))).toContain(
       'vista.history.reason.generated',
     )
+  })
+
+  it('generates into a new tab next to a tab that has a query, and closes on Escape', async () => {
+    const {fetchCalls, replyToPrompts} = renderVista()
+    typeQuery('*[_type == "post"]')
+    replyToPrompts({query: '*[_type == "author"]', params: {}, title: 'Authors'})
+
+    fireEvent.click(screen.getByTestId('vista-generate-query'))
+    fireEvent.keyDown(screen.getByTestId('vista-generate-request'), {key: 'Escape'})
+    expect(screen.queryByTestId('vista-generate-bar')).toBeNull()
+
+    fireEvent.click(screen.getByTestId('vista-generate-query'))
+    fireEvent.change(screen.getByTestId('vista-generate-request'), {target: {value: 'Authors'}})
+    fireEvent.click(screen.getByTestId('vista-generate-submit'))
+
+    await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(2))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    const tabs = screen.getAllByTestId('vista-tab')
+    expect(within(tabs[1]).getByRole('tab').getAttribute('aria-selected')).toBe('true')
+    expect(text(tabs[1])).toContain('Authors')
+    expect(fetchCalls[1].query).toBe('*[_type == "author"]')
   })
 
   it('offers the last attempt when every generated query is rejected', async () => {
@@ -713,21 +732,21 @@ describe('VistaGui', () => {
     )
 
     fireEvent.click(screen.getByTestId('vista-generate-query'))
-    const dialog = await screen.findByTestId('vista-generate-dialog')
-    fireEvent.change(within(dialog).getByTestId('vista-generate-request'), {
+    const bar = screen.getByTestId('vista-generate-bar')
+    fireEvent.change(within(bar).getByTestId('vista-generate-request'), {
       target: {value: 'Ten authors'},
     })
-    fireEvent.click(within(dialog).getByTestId('vista-generate-submit'))
+    fireEvent.click(within(bar).getByTestId('vista-generate-submit'))
 
-    const error = await within(dialog).findByTestId('vista-generate-error')
+    const error = await within(bar).findByTestId('vista-generate-error')
     expect(text(error)).toContain('vista.generate.failed')
     expect(text(error)).toContain('unexpected token "limit"')
     expect(text(error)).toContain(rejected)
     expect(fetchCalls).toHaveLength(3)
 
     fireEvent.click(within(error).getByTestId('vista-generate-open-anyway'))
-    await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(2))
-    expect(getQueryEditor().value).toContain('limit 10')
+    await waitFor(() => expect(getQueryEditor().value).toContain('limit 10'))
+    expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
     // Opened to be fixed by hand, not run
     expect(fetchCalls).toHaveLength(3)
   })
