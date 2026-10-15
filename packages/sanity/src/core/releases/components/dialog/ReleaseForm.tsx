@@ -21,7 +21,7 @@ import {
   useId,
   useState,
 } from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -145,7 +145,7 @@ export function ReleaseForm(props: {
               placement="right-start"
               portal
             >
-              <InfoOutlineIcon />
+              <Icon muted size={1} icon={InfoOutlineIcon} />
             </Tooltip>
           </Text>
         </Flex>
@@ -160,9 +160,7 @@ export function ReleaseForm(props: {
                     text={t(`release.type.${releaseType}`)}
                     releaseType={releaseType}
                   />
-                  <Text size={1} as="div" trim={true}>
-                    <ChevronDownIcon />
-                  </Text>
+                  <Icon size={1} icon={ChevronDownIcon} />
                 </Flex>
               </Button>
             }
