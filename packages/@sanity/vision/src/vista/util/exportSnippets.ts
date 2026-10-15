@@ -22,6 +22,8 @@ export interface ExportSnippetInput {
   perspective: ClientPerspective | undefined
   variant: string | undefined
   includeSourceMap: boolean
+  /** The query went through the API CDN */
+  useCdn: boolean
 }
 
 function toTemplateLiteral(value: string): string {
@@ -81,7 +83,7 @@ export function buildExportSnippets(input: ExportSnippetInput): ExportSnippet[] 
     `  projectId: ${toSingleQuoted(input.projectId)},`,
     `  dataset: ${toSingleQuoted(input.dataset)},`,
     `  apiVersion: ${toSingleQuoted(apiVersion)},`,
-    `  useCdn: ${input.variant ? 'false' : 'true'},`,
+    `  useCdn: ${input.useCdn ? 'true' : 'false'},`,
   ]
   if (input.perspective !== undefined) {
     clientConfig.push(`  perspective: ${toPerspectiveLiteral(input.perspective)},`)

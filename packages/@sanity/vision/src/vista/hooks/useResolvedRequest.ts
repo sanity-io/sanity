@@ -42,6 +42,15 @@ export interface ResolvedRequest {
   isApiVersionLocked: boolean
   perspective: ClientPerspective | undefined
   variant: string | undefined
+  /** Queries go through the API CDN: the tab asks for it, and the perspective is one it serves */
+  useCdn: boolean
+  /** The tab asks for the API CDN, but it serves neither the drafts perspective nor a stack */
+  isCdnBlockedByPerspective: boolean
+  /**
+   * The studio signs in with a cookie, which the API CDN never receives, so it answers queries
+   * as it would an anonymous visitor's
+   */
+  isCdnAnonymous: boolean
   /** Sync tags (and therefore automatic refetching) need a modern API version */
   supportsSyncTags: boolean
   /** Client configured for the tab: API version, dataset, perspective and variant */
@@ -59,7 +68,19 @@ export interface RequestEnvironment {
 }
 
 /** The part of a resolved request that follows from the options alone, without a client */
-export type ResolvedRequestOptions = Omit<ResolvedRequest, 'supportsSyncTags' | 'client'>
+export type ResolvedRequestOptions = Omit<
+  ResolvedRequest,
+  'supportsSyncTags' | 'client' | 'isCdnAnonymous'
+>
+
+/**
+ * Whether the API CDN serves a perspective. It rejects `drafts` and stacks, so `@sanity/client`
+ * sends those to the API even with `useCdn`; Vision does the same, and shows it
+ */
+function isServedByCdn(perspective: ClientPerspective | undefined): boolean {
+  if (Array.isArray(perspective)) return perspective.length === 0
+  return perspective !== 'drafts' && perspective !== 'previewDrafts'
+}
 
 /** Reads the studio state every tab's options are resolved against */
 export function useRequestEnvironment(): RequestEnvironment {
@@ -135,6 +156,8 @@ export function resolveRequestOptions(
     scheduledDraftsStack,
   })
 
+  const servedByCdn = isServedByCdn(perspective)
+
   return {
     dataset,
     tabPerspective,
@@ -143,6 +166,8 @@ export function resolveRequestOptions(
     isApiVersionLocked: Boolean(variant),
     perspective,
     variant,
+    useCdn: options.useCdn && servedByCdn,
+    isCdnBlockedByPerspective: options.useCdn && !servedByCdn,
   }
 }
 
@@ -171,12 +196,13 @@ export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
     [baseClient, apiVersion, dataset, perspective, variant],
   )
 
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    const {token, withCredentials} = client.config()
+    return {
       ...resolved,
+      isCdnAnonymous: resolved.useCdn && !token && Boolean(withCredentials),
       supportsSyncTags: !isApiVersionBelow(apiVersion, SYNC_TAGS_API_VERSION),
       client,
-    }),
-    [apiVersion, client, resolved],
-  )
+    }
+  }, [apiVersion, client, resolved])
 }

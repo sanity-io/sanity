@@ -25,7 +25,7 @@ export function useQueryRequestBuilder(tab: VistaTab): QueryRequestBuilder {
   const {t} = useTranslation(visionLocaleNamespace)
   const resolved = useResolvedRequest(tab.options)
   const {includeSourceMap} = tab.options
-  const {client, perspective, variant, isValidApiVersion} = resolved
+  const {client, perspective, variant, isValidApiVersion, useCdn} = resolved
 
   const buildRequest = useCallback(
     (query: string, rawParams: string): QueryRequest | null => {
@@ -40,10 +40,11 @@ export function useQueryRequestBuilder(tab: VistaTab): QueryRequestBuilder {
       }
       const url = client.getUrl(
         client.getDataUrl('query', encodeQueryString(query, params.parsed, urlOptions)),
+        useCdn,
       )
-      return {client, query, params: params.parsed || {}, includeSourceMap, url}
+      return {client, query, params: params.parsed || {}, includeSourceMap, useCdn, url}
     },
-    [client, includeSourceMap, isValidApiVersion, perspective, t, variant],
+    [client, includeSourceMap, isValidApiVersion, perspective, t, useCdn, variant],
   )
 
   const params = useMemo(() => parseParams(tab.rawParams, t), [tab.rawParams, t])

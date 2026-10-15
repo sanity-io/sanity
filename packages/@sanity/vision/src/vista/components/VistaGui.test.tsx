@@ -266,7 +266,8 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
       withConfig: (next: ClientConfig) => create({...config, ...next}),
       getDataUrl: (operation: string, qs: string) =>
         `/${String(config.apiVersion)}/data/${operation}/${String(config.dataset)}${qs}`,
-      getUrl: (path: string) => `https://test.api.sanity.io${path}`,
+      getUrl: (path: string, canUseCdn?: boolean) =>
+        `https://test.${canUseCdn ? 'apicdn' : 'api'}.sanity.io${path}`,
       fetch: (query: string, params: Record<string, unknown>, options: Record<string, unknown>) => {
         fetchCalls.push({config, query, params, options})
         const respond = () =>
@@ -704,6 +705,42 @@ describe('VistaGui', () => {
     typeQuery('*[_type == "author"]')
     await waitFor(() => expect(screen.queryByTestId('vista-explanation')).toBeNull())
     expect(screen.queryByTestId('vista-query-plan')).toBeNull()
+  })
+
+  it('sends queries to the API CDN when asked, unless the perspective is one it does not serve', async () => {
+    const {fetchCalls} = renderVista()
+    typeQuery('*[_type == "post"]')
+    fireEvent.change(screen.getByTestId('vista-option-perspective-select'), {
+      target: {value: 'published'},
+    })
+    fireEvent.click(screen.getByTestId('vista-option-use-cdn'))
+    expect(text(screen.getByTestId('vista-api-version-button'))).toBe(
+      'vista.api-version.button-cdn:v2025-02-19',
+    )
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].options).toMatchObject({useCdn: true})
+    await waitFor(() => expect(getStoredState()?.tabs[0].options.useCdn).toBe(true))
+    await waitFor(() =>
+      expect((screen.getByTestId('vista-query-url') as HTMLInputElement).value).toMatch(
+        /^https:\/\/test\.apicdn\.sanity\.io\//,
+      ),
+    )
+
+    // The CDN serves no drafts, so the query goes to the API and the option says why
+    fireEvent.change(screen.getByTestId('vista-option-perspective-select'), {
+      target: {value: 'drafts'},
+    })
+    expect(text(screen.getByTestId('vista-option-use-cdn-note'))).toBe(
+      'vista.options.use-cdn.blocked-by-perspective',
+    )
+    expect(text(screen.getByTestId('vista-api-version-button'))).toBe(
+      'vista.api-version.button:v2025-02-19',
+    )
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(fetchCalls[1].options).toMatchObject({useCdn: false})
   })
 
   it('keeps the functions a query declares in a library, to declare in other queries', async () => {

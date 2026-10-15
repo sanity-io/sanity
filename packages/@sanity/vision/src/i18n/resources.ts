@@ -195,11 +195,16 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.export-types.title-zod': 'Export Zod',
   /** Button in the request column's action bar naming the API version requests go out with */
   'vista.api-version.button': 'API {{version}}',
+  /** The API version button while queries go through the API CDN */
+  'vista.api-version.button-cdn': 'API CDN {{version}}',
   /** The API version button while the "Other" API version input holds an unfinished version */
   'vista.api-version.button-invalid': 'Unfinished API version',
   /** Tooltip of the API version button */
   'vista.api-version.tooltip':
     'Queries run against API version {{version}}. Select to change it in Options.',
+  /** Tooltip of the API version button while queries go through the API CDN */
+  'vista.api-version.tooltip-cdn':
+    'Queries run against the API CDN with API version {{version}}. Select to change it in Options.',
   /** Tooltip of the API version button while the "Other" input holds an unfinished version */
   'vista.api-version.tooltip-invalid':
     'The API version in Options is unfinished, so nothing can be fetched until it is complete.',
@@ -401,6 +406,17 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Description for the "Include content source map" switch */
   'vista.options.include-source-map.description':
     'Adds resultSourceMap to the response, shown in the Content Source Map tab.',
+  /** Label of the switch that sends queries to the API CDN */
+  'vista.options.use-cdn': 'Use the API CDN',
+  /** Note under the API CDN switch while the studio signs in with a cookie */
+  'vista.options.use-cdn.anonymous':
+    'This studio signs you in with a cookie, which the API CDN never receives: it answers as it would an anonymous visitor, with what a public dataset shows.',
+  /** Note under the API CDN switch while the perspective keeps queries on the API */
+  'vista.options.use-cdn.blocked-by-perspective':
+    'The API CDN serves neither the drafts perspective nor a perspective stack, so this query goes to the API. Pick published or raw to use the CDN.',
+  /** Description of the API CDN switch */
+  'vista.options.use-cdn.description':
+    'Sends the query to the API CDN, like useCdn: true in @sanity/client. Its answers are cached, by the CDN and by the browser, for up to a minute.',
   /** Perspective option following the studio navbar; the name is the release, published or drafts */
   'vista.options.perspective.global': 'Global ({{name}})',
   /** Variant option sending the navbar's variant, named */

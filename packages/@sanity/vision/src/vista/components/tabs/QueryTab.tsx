@@ -308,6 +308,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     resolved.dataset,
     resolved.perspective,
     resolved.variant,
+    resolved.useCdn,
     tab.options.includeSourceMap,
   ])}`
   useOnValueChange(refetchKey, (key, previous) => {

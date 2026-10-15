@@ -21,6 +21,7 @@ import {
   ApiVersionField,
   DatasetField,
   PerspectiveSelect,
+  UseCdnField,
   VariantSelect,
 } from '../request/OptionFields'
 
@@ -200,6 +201,12 @@ export function SettingsDialog() {
               </Text>
             </Stack>
           </Flex>
+
+          <UseCdnField
+            checked={settings.useCdn}
+            onChange={(useCdn) => actorRef.send({type: 'settings.update', settings: {useCdn}})}
+            testId="vista-settings-use-cdn"
+          />
 
           <Card border padding={3} radius={2}>
             <HiddenDiffFieldsSetting />

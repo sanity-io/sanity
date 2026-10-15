@@ -5,7 +5,14 @@ import {type QueryRequest} from '../store/types'
 import {haveSameQuery} from './queryRequest'
 
 function request(query: string, params: Record<string, unknown>): QueryRequest {
-  return {client: {} as SanityClient, query, params, includeSourceMap: false, url: ''}
+  return {
+    client: {} as SanityClient,
+    query,
+    params,
+    includeSourceMap: false,
+    useCdn: false,
+    url: '',
+  }
 }
 
 describe('haveSameQuery', () => {

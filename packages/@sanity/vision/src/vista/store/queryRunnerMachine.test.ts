@@ -13,6 +13,7 @@ import {type QueryRequest} from './types'
 
 interface Deferred {
   request: QueryRequest
+  lastLiveEventId: string | undefined
   signal: AbortSignal
   resolve: (response: Partial<RawQueryResponse<unknown>>) => void
   reject: (error: unknown) => void
@@ -26,10 +27,17 @@ function createHarness() {
   const machine = queryRunnerMachine.provide({
     actors: {
       runQuery: fromPromise(
-        ({input, signal}: {input: {request: QueryRequest}; signal: AbortSignal}) => {
+        ({
+          input,
+          signal,
+        }: {
+          input: {request: QueryRequest; lastLiveEventId: string | undefined}
+          signal: AbortSignal
+        }) => {
           return new Promise<RawQueryResponse<unknown>>((resolve, reject) => {
             fetches.push({
               request: input.request,
+              lastLiveEventId: input.lastLiveEventId,
               signal,
               resolve: (response) =>
                 resolve({query: input.request.query, ms: 1, result: null, ...response}),
@@ -53,6 +61,7 @@ function createHarness() {
     query: '*[_type == "author"]',
     params: {},
     includeSourceMap: false,
+    useCdn: false,
     url: 'https://example.api.sanity.io/v2025-02-19/data/query/test?query=*',
     ...overrides,
   })
@@ -234,7 +243,11 @@ describe('queryRunnerMachine', () => {
     expect(harness.fetches).toHaveLength(2)
     harness.liveEvents.next({type: 'message', id: '2', tags: ['s1:a']})
     expect(harness.fetches).toHaveLength(3)
-    expect(harness.snapshot().context.reason).toEqual({type: 'live', matchedTags: ['s1:a']})
+    expect(harness.snapshot().context.reason).toEqual({
+      type: 'live',
+      matchedTags: ['s1:a'],
+      eventId: '2',
+    })
   })
 
   it('drops the sync tags when a different request fails, so its retries are not driven by another query', async () => {
@@ -369,13 +382,20 @@ describe('queryRunnerMachine', () => {
 
     harness.liveEvents.next({type: 'message', id: '2', tags: ['s1:zzz', 's1:b']})
     expect(harness.fetches).toHaveLength(2)
-    expect(harness.snapshot().context.reason).toEqual({type: 'live', matchedTags: ['s1:b']})
+    expect(harness.snapshot().context.reason).toEqual({
+      type: 'live',
+      matchedTags: ['s1:b'],
+      eventId: '2',
+    })
+    // Only a request to the API CDN needs the event to bypass its cache
+    expect(harness.fetches[1].lastLiveEventId).toBeUndefined()
 
     harness.fetches[1].resolve({result: 2, syncTags: ['s1:c']})
     await waitFor(harness.actor, (snapshot) => snapshot.context.result === 2)
     expect(harness.snapshot().context.history[0].reason).toEqual({
       type: 'live',
       matchedTags: ['s1:b'],
+      eventId: '2',
     })
 
     // Tags from the newest response are the ones that count now
@@ -426,7 +446,29 @@ describe('queryRunnerMachine', () => {
     harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
     harness.liveEvents.next({type: 'restart', id: 'r'})
     expect(harness.fetches).toHaveLength(2)
-    expect(harness.snapshot().context.reason).toEqual({type: 'live', matchedTags: []})
+    expect(harness.snapshot().context.reason).toEqual({
+      type: 'live',
+      matchedTags: [],
+      eventId: 'r',
+    })
+  })
+
+  it('passes the live event on to a refetch through the API CDN, so it is not served cached', async () => {
+    const harness = createHarness()
+    const request = harness.request({
+      useCdn: true,
+      url: 'https://example.apicdn.sanity.io/v2025-02-19/data/query/test?query=*',
+    })
+    harness.actor.send({type: 'fetch', request, reason: {type: 'manual'}})
+    expect(harness.fetches[0].lastLiveEventId).toBeUndefined()
+    harness.fetches[0].resolve({result: 1, syncTags: ['s1:a']})
+    await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
+
+    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.liveEvents.next({type: 'message', id: 'event-7', tags: ['s1:a']})
+    expect(harness.fetches).toHaveLength(2)
+    expect(harness.fetches[1].request).toBe(request)
+    expect(harness.fetches[1].lastLiveEventId).toBe('event-7')
   })
 
   it('refetches after the live connection reconnects, since changes in between sent nothing', () => {

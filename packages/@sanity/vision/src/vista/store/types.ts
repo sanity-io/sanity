@@ -32,6 +32,12 @@ export interface VistaTabOptions {
   perspective: VistaPerspective
   variant: VistaVariantMode
   includeSourceMap: boolean
+  /**
+   * Queries go to the API CDN (`useCdn` in `@sanity/client`), whose answers are cached for up to
+   * a minute, rather than the live API. It serves neither the `drafts` perspective nor a stack,
+   * so with those the query goes to the API anyway, as it does from the client.
+   */
+  useCdn: boolean
 }
 
 export interface VistaTab {
@@ -118,7 +124,8 @@ export type FetchReason =
   | {type: 'live-start'}
   /** A tab opened with a generated query, fetched as it is shown */
   | {type: 'generated'}
-  | {type: 'live'; matchedTags: SyncTag[]}
+  /** `eventId` is the live event's, which makes the API CDN answer with content at least as new */
+  | {type: 'live'; matchedTags: SyncTag[]; eventId?: string}
 
 /** A successful fetch's result, kept on its history entry to compare it with the next one */
 export interface HistoryResult {
@@ -173,6 +180,8 @@ export interface QueryRequest {
   query: string
   params: Record<string, unknown>
   includeSourceMap: boolean
+  /** Sent to the API CDN; `url` has its host */
+  useCdn: boolean
   /** The GET URL of the request, shown in the response panel and used for saved queries */
   url: string
 }

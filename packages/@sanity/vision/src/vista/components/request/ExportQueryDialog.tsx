@@ -39,6 +39,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
         perspective: resolved.perspective,
         variant: resolved.variant,
         includeSourceMap: tab.options.includeSourceMap,
+        useCdn: request.useCdn,
       }),
     [projectId, request, resolved, tab.options.includeSourceMap],
   )

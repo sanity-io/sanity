@@ -20,8 +20,18 @@ describe('parseQueryUrl', () => {
       hasUnsupportedPerspective: false,
       variant: undefined,
       includeSourceMap: false,
+      useCdn: false,
       url,
     })
+  })
+
+  it('tells a request to the API CDN by its host', () => {
+    const useCdnFor = (host: string) =>
+      parseQueryUrl(`https://${host}/v2025-02-19/data/query/production?query=*`, datasets)?.useCdn
+    expect(useCdnFor('abc123.apicdn.sanity.io')).toBe(true)
+    expect(useCdnFor('abc123.apicdn.sanity.work')).toBe(true)
+    expect(useCdnFor('abc123.api.sanity.io')).toBe(false)
+    expect(useCdnFor('apicdn.example.com')).toBe(false)
   })
 
   it('keeps the variant and the content source map flag the request was sent with', () => {

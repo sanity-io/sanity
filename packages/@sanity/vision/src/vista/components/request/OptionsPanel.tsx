@@ -8,7 +8,13 @@ import {type VistaTabOptions} from '../../store/types'
 import {useVistaSelector} from '../../store/VistaActorContext'
 import {selectDatasets, selectWorkspaceDataset} from '../../store/vistaMachine'
 import {optionsGrid} from '../vista.css'
-import {ApiVersionField, DatasetField, PerspectiveSelect, VariantSelect} from './OptionFields'
+import {
+  ApiVersionField,
+  DatasetField,
+  PerspectiveSelect,
+  UseCdnField,
+  VariantSelect,
+} from './OptionFields'
 
 export interface OptionsPanelProps {
   options: VistaTabOptions
@@ -65,6 +71,17 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
             </Text>
           </Stack>
         </Flex>
+        <UseCdnField
+          checked={options.useCdn}
+          notes={[
+            ...(resolved.isCdnBlockedByPerspective
+              ? [t('vista.options.use-cdn.blocked-by-perspective')]
+              : []),
+            ...(resolved.isCdnAnonymous ? [t('vista.options.use-cdn.anonymous')] : []),
+          ]}
+          onChange={(useCdn) => onChange({useCdn})}
+          testId="vista-option-use-cdn"
+        />
       </Stack>
     </Box>
   )

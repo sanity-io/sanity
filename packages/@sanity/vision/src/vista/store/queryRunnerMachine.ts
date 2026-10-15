@@ -122,10 +122,17 @@ export const queryRunnerMachine = setup({
     input: QueryRunnerInput
   },
   actors: {
-    runQuery: fromPromise<RawQueryResponse<unknown>, {request: QueryRequest}>(({input, signal}) =>
+    runQuery: fromPromise<
+      RawQueryResponse<unknown>,
+      {request: QueryRequest; lastLiveEventId: string | undefined}
+    >(({input, signal}) =>
       input.request.client.fetch(input.request.query, input.request.params, {
         filterResponse: false,
         resultSourceMap: input.request.includeSourceMap || undefined,
+        // Per request: the client ignores a configured `useCdn` while it signs in with a cookie
+        useCdn: input.request.useCdn,
+        // The live event that triggered the refetch, so the CDN does not answer from its cache
+        lastLiveEventId: input.lastLiveEventId,
         tag: 'vista',
         signal,
       }),
@@ -201,7 +208,13 @@ export const queryRunnerMachine = setup({
           entry: 'markStarted',
           invoke: {
             src: 'runQuery',
-            input: ({context}) => ({request: context.request as QueryRequest}),
+            input: ({context}) => ({
+              request: context.request as QueryRequest,
+              lastLiveEventId:
+                context.request?.useCdn && context.reason.type === 'live'
+                  ? context.reason.eventId
+                  : undefined,
+            }),
             onDone: {
               target: 'settled',
               actions: assign(({context, event}) => {
@@ -310,14 +323,22 @@ export const queryRunnerMachine = setup({
                 // restart (no tags) replays whatever the current request is
                 return matched.length === 0 || context.request.url === context.syncTagsUrl
               },
-              actions: raise(({context, event}) => ({
-                type: 'fetch' as const,
-                request: context.request as QueryRequest,
-                reason: {
-                  type: 'live' as const,
-                  matchedTags: getLiveRefetchTags(event.snapshot.context, context.syncTags) || [],
-                },
-              })),
+              actions: raise(({context, event}) => {
+                const liveEvent = event.snapshot.context
+                const eventId =
+                  liveEvent && 'id' in liveEvent && typeof liveEvent.id === 'string'
+                    ? liveEvent.id
+                    : undefined
+                return {
+                  type: 'fetch' as const,
+                  request: context.request as QueryRequest,
+                  reason: {
+                    type: 'live' as const,
+                    matchedTags: getLiveRefetchTags(liveEvent, context.syncTags) || [],
+                    ...(eventId === undefined ? {} : {eventId}),
+                  },
+                }
+              }),
             },
             onError: {
               target: 'failed',

@@ -42,8 +42,12 @@ export interface ParsedQueryUrl {
   variant: string | undefined
   /** Whether the request asked for a content source map (`resultSourceMap=true`) */
   includeSourceMap: boolean
+  /** The request went to the API CDN, `<project>.apicdn.sanity.io` (a custom domain cannot tell) */
+  useCdn: boolean
   url: string
 }
+
+const API_CDN_HOST = /(?:^|\.)apicdn\.sanity\.(?:io|work)$/
 
 /**
  * Parses a Content Lake query (or listen) URL, as pasted from the browser's network tab, into the
@@ -95,6 +99,7 @@ export function parseQueryUrl(data: string, datasets: readonly string[]): Parsed
     hasUnsupportedPerspective: Boolean(urlPerspective) && perspective === undefined,
     variant: parts.options.variant || undefined,
     includeSourceMap,
+    useCdn: API_CDN_HOST.test(url.hostname),
     url: trimmed,
   }
 }

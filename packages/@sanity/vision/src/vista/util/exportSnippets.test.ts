@@ -5,13 +5,14 @@ import {buildExportSnippets, toQueryConstantName} from './exportSnippets'
 const base = {
   query: '*[_type == "author" && _id == $id]{name}',
   params: {id: 'abc'},
-  url: 'https://abc.api.sanity.io/v2025-02-19/data/query/production?query=*',
+  url: 'https://abc.apicdn.sanity.io/v2025-02-19/data/query/production?query=*',
   projectId: 'abc',
   dataset: 'production',
   apiVersion: 'v2025-02-19',
   perspective: 'published' as const,
   variant: undefined,
   includeSourceMap: false,
+  useCdn: true,
 }
 
 describe('buildExportSnippets', () => {
@@ -21,7 +22,7 @@ describe('buildExportSnippets', () => {
     expect(curl).toMatchObject({id: 'curl', language: 'bash'})
     expect(curl.code).toBe(
       [
-        `curl 'https://abc.api.sanity.io/v2025-02-19/data/query/production?query=*' \\`,
+        `curl 'https://abc.apicdn.sanity.io/v2025-02-19/data/query/production?query=*' \\`,
         '  -H "Authorization: Bearer $SANITY_API_TOKEN"',
       ].join('\n'),
     )
@@ -74,6 +75,8 @@ describe('buildExportSnippets', () => {
       variant: 'french',
       apiVersion: 'vX',
       includeSourceMap: true,
+      // A stack keeps the query on the API
+      useCdn: false,
     })
 
     expect(client.code).toContain(`  apiVersion: 'X',`)

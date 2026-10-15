@@ -33,6 +33,7 @@ describe('vistaStorage', () => {
       perspective: 'global',
       variant: 'global',
       includeSourceMap: false,
+      useCdn: false,
     })
   })
 
@@ -50,6 +51,7 @@ describe('vistaStorage', () => {
       perspective: 'global',
       variant: 'global',
       includeSourceMap: false,
+      useCdn: false,
     })
   })
 
@@ -61,6 +63,7 @@ describe('vistaStorage', () => {
       perspective: 'raw',
       variant: 'none',
       includeSourceMap: false,
+      useCdn: false,
     })
     expect(options.apiVersion).toBe('v2022-01-01')
   })
@@ -93,10 +96,11 @@ describe('vistaStorage', () => {
       query: '*[_type == "author"]',
       title: 'Authors',
       autoRefetch: true,
-      options: {perspective: 'drafts', datasetMode: 'pinned', dataset: 'staging'},
+      options: {perspective: 'published', datasetMode: 'pinned', dataset: 'staging', useCdn: true},
     })
     const saved = {
       ...state,
+      settings: {...state.settings, useCdn: true},
       tabs: [tab],
       activeTabId: tab.id,
       sidebar: {expanded: true, drawer: 'saved' as const},
@@ -112,6 +116,26 @@ describe('vistaStorage', () => {
     saveVistaState('proj', saved)
 
     expect(loadVistaState('proj', defaults)).toEqual(saved)
+  })
+
+  it('reads the API CDN option as off unless it was turned on', () => {
+    const state = createInitialState(defaults)
+    expect(state.settings.useCdn).toBe(false)
+    const {useCdn: _useCdn, ...legacyOptions} = state.tabs[0].options
+    localStorage.setItem(
+      getVistaStorageKey('proj'),
+      JSON.stringify({
+        ...state,
+        tabs: [
+          {...state.tabs[0], options: legacyOptions},
+          {...state.tabs[0], id: 'b', options: {...legacyOptions, useCdn: 'yes'}},
+        ],
+      }),
+    )
+    expect(loadVistaState('proj', defaults).tabs.map((tab) => tab.options.useCdn)).toEqual([
+      false,
+      false,
+    ])
   })
 
   it('keeps the saved functions that have an id and a declaration, the first of each id', () => {
@@ -284,6 +308,7 @@ describe('vistaStorage', () => {
       perspective: 'global',
       variant: 'global',
       includeSourceMap: false,
+      useCdn: false,
     })
     // The workspace's dataset was the old default, so it keeps following the workspace
     expect(loaded.settings).toMatchObject({

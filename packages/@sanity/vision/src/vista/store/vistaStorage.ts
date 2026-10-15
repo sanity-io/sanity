@@ -71,6 +71,7 @@ export function resolveDefaultSettings(defaults: VistaStorageDefaults): VistaSet
     perspective: 'global',
     variant: 'global',
     includeSourceMap: false,
+    useCdn: false,
   }
 }
 
@@ -152,6 +153,7 @@ function sanitizeOptions(
       typeof value.includeSourceMap === 'boolean'
         ? value.includeSourceMap
         : fallback.includeSourceMap,
+    useCdn: typeof value.useCdn === 'boolean' ? value.useCdn : fallback.useCdn,
   }
 }
 

@@ -14,11 +14,15 @@ import {type VistaTab, type VistaTabInit, type VistaTabOptions} from '../store/t
  * represent is left to it: a dataset the tool does not know and a perspective it cannot pick (a
  * release stack). A tab cannot pin a variant, so one in the URL makes it follow the navbar's (the
  * caller warns when that is another), and none sends none: on `global` with a navbar variant
- * selected the tab would otherwise add one the request never had. The content source map follows
- * the URL, since a request either asked for one or did not.
+ * selected the tab would otherwise add one the request never had. The content source map and
+ * the API CDN follow the URL, since a request either asked for one or did not, and went to the
+ * CDN's host or the API's.
  */
 export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VistaTabInit {
-  const options: Partial<VistaTabOptions> = {includeSourceMap: parsed.includeSourceMap}
+  const options: Partial<VistaTabOptions> = {
+    includeSourceMap: parsed.includeSourceMap,
+    useCdn: parsed.useCdn,
+  }
   if (parsed.isKnownDataset) {
     // A URL names its dataset, so the tab stops following the workspace's
     options.datasetMode = 'pinned'
@@ -49,15 +53,16 @@ export interface EffectiveRequestOptions {
   apiVersion: string
   perspective: ClientPerspective | undefined
   variant: string | undefined
+  useCdn: boolean
 }
 
 /**
  * Whether a tab already shows the given saved query: the same query text and params, sent to the
  * dataset, API version, perspective and variant the saved URL states, with or without a content
- * source map as it did. A saved URL is the request the tab sent, so the tab is compared through
- * the request it would send now, not through its options: a tab on the `global` perspective
- * saved `perspective=drafts` while the navbar was on drafts, and a tab with a navbar variant
- * selected saved `vX` and `variant=…` whatever its own API version.
+ * source map as it did, through the API CDN or not as it was. A saved URL is the request the tab
+ * sent, so the tab is compared through the request it would send now, not through its options: a
+ * tab on the `global` perspective saved `perspective=drafts` while the navbar was on drafts, and
+ * a tab with a navbar variant selected saved `vX` and `variant=…` whatever its own API version.
  */
 export function tabMatchesParsedQuery(
   tab: VistaTab,
@@ -71,7 +76,8 @@ export function tabMatchesParsedQuery(
     (parsed.apiVersion === undefined || parsed.apiVersion === effective.apiVersion) &&
     parsed.urlPerspective === toUrlPerspective(effective.perspective) &&
     parsed.variant === effective.variant &&
-    parsed.includeSourceMap === tab.options.includeSourceMap
+    parsed.includeSourceMap === tab.options.includeSourceMap &&
+    parsed.useCdn === effective.useCdn
   )
 }
 

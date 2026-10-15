@@ -134,6 +134,7 @@ describe('savedQueryTab', () => {
       rawParams: '{}',
       options: {
         includeSourceMap: false,
+        useCdn: false,
         datasetMode: 'pinned',
         dataset: 'production',
         apiVersion: 'v2025-02-19',
@@ -189,7 +190,12 @@ describe('savedQueryTab', () => {
     expect(parsedQueryToTabInit(parsed)).toEqual({
       query: '*',
       rawParams: '{}',
-      options: {includeSourceMap: false, apiVersion: 'v2025-02-19', variant: 'none'},
+      options: {
+        includeSourceMap: false,
+        useCdn: false,
+        apiVersion: 'v2025-02-19',
+        variant: 'none',
+      },
     })
     // The saved request went to another dataset, so no tab here is showing it
     const tab = createTab(settings, {query: '*'})
@@ -222,6 +228,34 @@ describe('savedQueryTab', () => {
       expect(matches(createTab(settings, {query: '*', rawParams}), saved)).toBe(true)
     }
     expect(matches(createTab(settings, {query: '*', rawParams: '{"a": 1}'}), saved)).toBe(false)
+  })
+
+  it('loads and matches a request to the API CDN, which serves published and raw but no drafts', () => {
+    const cdnUrl = url('*', {perspective: 'published'}).replace('.api.', '.apicdn.')
+    const loaded = createTab(settings, parsedQueryToTabInit(parse(cdnUrl)))
+    expect(loaded.options.useCdn).toBe(true)
+    expect(matches(loaded, cdnUrl)).toBe(true)
+    // The same request to the API is another one
+    expect(matches(loaded, url('*', {perspective: 'published'}))).toBe(false)
+    expect(matches({...loaded, options: {...loaded.options, useCdn: false}}, cdnUrl)).toBe(false)
+
+    // With the drafts perspective the query goes to the API, whatever the option says
+    const drafts = resolveRequestOptions({...loaded.options, perspective: 'drafts'}, environment)
+    expect(drafts).toMatchObject({useCdn: false, isCdnBlockedByPerspective: true})
+    // ...and so it does on `global` with the navbar's drafts, or a release stack
+    expect(
+      resolveRequestOptions({...loaded.options, perspective: 'global'}, environment),
+    ).toMatchObject({useCdn: false, isCdnBlockedByPerspective: true})
+    expect(
+      resolveRequestOptions({...loaded.options, perspective: 'raw'}, environment),
+    ).toMatchObject({useCdn: true, isCdnBlockedByPerspective: false})
+    expect(
+      resolveRequestOptions({...loaded.options, perspective: undefined}, environment),
+    ).toMatchObject({useCdn: true, isCdnBlockedByPerspective: false})
+    // Not asked for, nothing is blocked
+    expect(
+      resolveRequestOptions({...loaded.options, useCdn: false, perspective: 'drafts'}, environment),
+    ).toMatchObject({useCdn: false, isCdnBlockedByPerspective: false})
   })
 
   it('matches a tab following the workspace against the dataset the workspace uses', () => {
