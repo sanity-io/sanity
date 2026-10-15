@@ -28,14 +28,18 @@ export function pandaLayerNames(prefix: string): string[] {
  *   placed after `u-styled`, it zeroes the padding of a `@sanity/ui` v4 `Box`.
  * - `u-reset` … `u-utilities`, the Panda layers of `@sanity/ui/styles.css` (sanity-io/ui#3228),
  *   and `u-styled`, the layer `@sanity/ui` v4 wraps its styled-components rules in
- *   (sanity-io/ui#3233). `ThemeProvider` emits `@layer sui, u-tokens, u-utilities, u-styled;`
- *   itself, which this order agrees with.
+ *   (sanity-io/ui#3233). `@sanity/ui` orders only its own layers (`u-tokens, u-utilities,
+ *   u-styled`) and knows nothing of `ui5`; the studio, the one place both load, owns the
+ *   cross-library order and places `sui`.
  * - `sanity-*`, the studio's own Panda layers, last: the studio's `.css.ts` rules override the
  *   libraries' rules on the same elements.
  *
- * The statement goes at the top of the studio's stylesheet (`bundle.css`, and `layers.css` in
- * the apps that build the studio from source), which loads before styled-components' `<style>`
- * tag; the first statement a page sees fixes the order. The test studio's `test-studio-*`
+ * The first statement a page sees fixes the order, so this one has to load before any of those
+ * layers is mentioned: before `ui5/styles.css` and `@sanity/ui/styles.css`, and before
+ * styled-components' `<style>` tag. It is the first rule of `bundle.css`, which the entry
+ * chunks of `sanity` import before either stylesheet, and the first rule of `layers.css`, the
+ * first import of the runtime entry of the dev studios (`studioPandaCss()`), of Storybook, of
+ * the vitest browser setup and of the CDN bundle entries. The test studio's `test-studio-*`
  * layers are declared after it in `layers.css`, which appends them last.
  */
 export const STUDIO_LAYER_ORDER: readonly string[] = [

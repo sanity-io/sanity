@@ -18,9 +18,9 @@ test('every @sanity/ui layer comes before every studio layer, ui5 first', () => 
     expect(index(ui)).toBeGreaterThan(index('sui'))
     for (const studio of studioLayers) expect(index(studio)).toBeGreaterThan(index(ui))
   }
-  // `ThemeProvider` of @sanity/ui emits this order itself (sanity-io/ui#3233); the studio's longer
-  // statement has to agree with it
-  const uiStatement = ['sui', 'u-tokens', 'u-utilities', 'u-styled']
+  // @sanity/ui orders its own layers as `u-tokens, u-utilities, u-styled` (sanity-io/ui#3233); the
+  // studio's statement has to agree with it
+  const uiStatement = ['u-tokens', 'u-utilities', 'u-styled']
   expect(uiStatement.map(index)).toEqual([...uiStatement.map(index)].sort((a, b) => a - b))
   expect(layerOrderStatement(STUDIO_LAYER_ORDER)).toBe(
     '@layer sui, u-reset, u-base, u-tokens, u-recipes, u-utilities, u-styled, sanity-reset, sanity-base, sanity-tokens, sanity-recipes, sanity-utilities;',
