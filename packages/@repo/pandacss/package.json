@@ -10,7 +10,6 @@
       "default": "./src/layers.css"
     },
     "./layer-order": "./src/layerOrder.ts",
-    "./tsdown": "./src/tsdown.ts",
     "./vite": "./src/vite.ts"
   },
   "scripts": {
@@ -22,8 +21,8 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/node": "catalog:",
+    "lightningcss": "^1.33.0",
     "postcss": "^8.5.30",
-    "tsdown": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   }

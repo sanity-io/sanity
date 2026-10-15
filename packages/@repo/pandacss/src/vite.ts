@@ -4,7 +4,8 @@ import {pandacss} from '@pandacss/vite'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {normalizePath, type Plugin} from 'vite'
 
-import {unwrapCascadeLayers} from './unwrapCascadeLayers.ts'
+import {unwrapCascadeLayers} from './cascadeLayers.ts'
+import {LAYER_ORDER_STATEMENT} from './layerOrder.ts'
 
 /**
  * The stylesheet `@pandacss/vite` fills with the generated CSS, as the app imports it. An app
@@ -76,10 +77,11 @@ export function visionVanillaExtractPlugin(): Plugin[] {
 }
 
 /**
- * Unwraps the `@layer` blocks `@pandacss/vite` appends to `layers.css`, keeping the order
- * statements the file opens with. Register it after the `pandacss()` instances, as
- * `studioPandaCss()` and `@repo/package.bundle` do. See `unwrapCascadeLayers` for why, and for
- * how long.
+ * Gives `layers.css`, once `@pandacss/vite` has appended the generated CSS to it, the shape of
+ * the published `bundle.css`: the cascade layers removed with the rules ordered the way the
+ * layers did (`unwrapCascadeLayers`, the pass behind `panda: {cascadeLayers: false}`), behind the
+ * one statement the studio still declares (`LAYER_ORDER_STATEMENT`). Register it after the
+ * `pandacss()` instances, as `studioPandaCss()` and `@repo/package.bundle` do.
  */
 export function unlayeredPandaCss(): Plugin {
   return {
@@ -89,7 +91,7 @@ export function unlayeredPandaCss(): Plugin {
       filter: {id: /\.css(?:$|\?)/},
       handler(code, id) {
         if (stripQuery(id) !== PANDA_LAYERS_CSS_ID) return null
-        return {code: unwrapCascadeLayers(code), map: null}
+        return {code: `${LAYER_ORDER_STATEMENT}\n${unwrapCascadeLayers(code)}`, map: null}
       },
     },
   }

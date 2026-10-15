@@ -1,78 +1,42 @@
 import {type Rolldown} from 'vite'
 
 /**
- * The Panda cascade layers of a project, named after its class name prefix (the `u-` convention
- * of sanity-io/ui#3228), so that two Panda bundles on one page never share a layer.
+ * The one `@layer` statement the studio still declares. The studio's own CSS has no cascade
+ * layers (`panda: {cascadeLayers: false}` in packages/sanity/tsdown.config.ts, and
+ * `unlayeredPandaCss()` for the stylesheet `@pandacss/vite` fills), and unlayered CSS beats every
+ * layered rule regardless of specificity, so nothing of the studio's needs ordering. What is still
+ * layered on the page is other libraries' CSS: `ui5/styles.css` puts its universal reset
+ * (`* {margin: 0; padding: 0; …}`) in `sui.global`, and `@sanity/ui` v4.4 still puts its static
+ * styles in `u-tokens` and `u-utilities`. Two layers only compete by their order, and a page fixes
+ * the order by the first `@layer` statement it sees: declaring `sui` first keeps the reset below
+ * v4's static styles wherever this statement loads before either stylesheet (the entry chunks of
+ * `sanity` import `bundle.css` first; the dev studios, Storybook, the vitest browser setup and the
+ * CDN bundle load the stylesheet `@pandacss/vite` fills first). The v4 layers need no ordering of
+ * their own: `@sanity/ui/styles.css` declares them in the order it wants.
+ *
+ * Remove once `@sanity/ui` v4 ships its static styles unlayered (in progress in sanity-io/ui):
+ * unlayered v4 CSS beats `sui` by itself, and a single layer has nothing to be ordered against.
  */
-export function pandaLayers<Prefix extends string>(prefix: Prefix) {
-  return {
-    reset: `${prefix}-reset`,
-    base: `${prefix}-base`,
-    tokens: `${prefix}-tokens`,
-    recipes: `${prefix}-recipes`,
-    utilities: `${prefix}-utilities`,
-  } as const
-}
-
-/** The names of {@link pandaLayers}, in Panda's order. */
-export function pandaLayerNames(prefix: string): string[] {
-  return Object.values(pandaLayers(prefix))
-}
+export const LAYER_ORDER_STATEMENT = '@layer sui;'
 
 /**
- * The cascade layers a studio page orders, lowest priority first. Layer order decides the cascade
- * before specificity does, so every layer of `@sanity/ui` comes before the studio's:
- *
- * - `sui`, the layer of `ui5`'s stylesheet, first: its `sui.global` holds a universal reset
- *   (`* {margin: 0; padding: 0; …}`) that has to lose to every rule styling the same elements —
- *   placed after `u-styled`, it zeroes the padding of a `@sanity/ui` v4 `Box`.
- * - `u-reset` … `u-utilities`, the Panda layers of `@sanity/ui/styles.css` (sanity-io/ui#3228),
- *   and `u-styled`, the layer `@sanity/ui` v4 wraps its styled-components rules in
- *   (sanity-io/ui#3233). `@sanity/ui` orders only its own layers (`u-tokens, u-utilities,
- *   u-styled`) and knows nothing of `ui5`; the studio, the one place both load, owns the
- *   cross-library order and places `sui`.
- * - `sanity-*`, the studio's own Panda layers, last: the studio's `.css.ts` rules override the
- *   libraries' rules on the same elements.
- *
- * The first statement a page sees fixes the order, so this one has to load before any of those
- * layers is mentioned: before `ui5/styles.css` and `@sanity/ui/styles.css`, and before
- * styled-components' `<style>` tag. It is the first rule of `bundle.css`, which the entry
- * chunks of `sanity` import before either stylesheet, and the first rule of `layers.css`, the
- * first import of the runtime entry of the dev studios (`studioPandaCss()`), of Storybook, of
- * the vitest browser setup and of the CDN bundle entries. The test studio's `test-studio-*`
- * layers are declared after it in `layers.css`, which appends them last.
- */
-export const STUDIO_LAYER_ORDER: readonly string[] = [
-  'sui',
-  ...pandaLayerNames('u'),
-  'u-styled',
-  ...pandaLayerNames('sanity'),
-]
-
-/** The `@layer` statement that declares `layers` in that order. */
-export function layerOrderStatement(layers: readonly string[]): string {
-  return `@layer ${layers.join(', ')};`
-}
-
-/**
- * Prepends the {@link STUDIO_LAYER_ORDER} statement to the stylesheet
- * `@sanity/pandacss-tsdown-plugin` emits (the `panda` option of `@sanity/tsdown-config`), which
- * writes the `@layer` blocks without an order statement. Append it to a tsdown config after
+ * Prepends {@link LAYER_ORDER_STATEMENT} to the stylesheet `@sanity/pandacss-tsdown-plugin` emits
+ * (the `panda` option of `@sanity/tsdown-config`). Append it to a tsdown config after
  * `defineConfig()`, so that its `generateBundle` runs after the plugin has emitted the asset:
  *
  * ```ts
- * mergeConfig(await defineConfig({panda: true}), {plugins: [pandaLayerOrder()]})
+ * mergeConfig(await defineConfig({panda: {cascadeLayers: false}}), {plugins: [layerOrderPlugin()]})
  * ```
  */
-export function pandaLayerOrder(options: {fileName?: string} = {}): Rolldown.Plugin {
+export function layerOrderPlugin(options: {fileName?: string} = {}): Rolldown.Plugin {
   const fileName = options.fileName ?? 'bundle.css'
 
   return {
-    name: 'repo:panda-layer-order',
+    name: 'repo:layer-order',
     generateBundle(_options, bundle) {
       const asset = bundle[fileName]
       if (asset?.type === 'asset' && typeof asset.source === 'string') {
-        asset.source = `${layerOrderStatement(STUDIO_LAYER_ORDER)}\n${asset.source}`
+        asset.source = `${LAYER_ORDER_STATEMENT}\n${asset.source}`
       }
     },
   }

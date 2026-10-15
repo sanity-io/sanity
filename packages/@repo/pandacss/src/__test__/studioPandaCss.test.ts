@@ -6,20 +6,19 @@ import {fileURLToPath} from 'node:url'
 import {build, type Rolldown} from 'vite'
 import {afterAll, beforeAll, describe, expect, test} from 'vitest'
 
-import {layerOrderStatement, pandaLayerNames, STUDIO_LAYER_ORDER} from '../layerOrder.ts'
+import {LAYER_ORDER_STATEMENT} from '../layerOrder.ts'
 import {PANDA_LAYERS_CSS_SPECIFIER, studioPandaCss} from '../vite.ts'
 
 const LAYERS_CSS_PATH = fileURLToPath(new URL('../layers.css', import.meta.url))
 
 /**
  * Two Panda projects next to each other, the way `sanity` and the test studio's plugins meet in
- * one `sanity dev` server. Each fills the shared `layers.css` below the statement that declares
- * its own layer names, so the fixtures borrow the names that file declares; their class prefixes
- * are their own, which is what tells their output apart.
+ * one `sanity dev` server. Both fill the shared `layers.css` below the statement that declares
+ * Panda's layer names; their class prefixes are their own, which is what tells their output apart.
  */
 const PROJECTS = [
-  {name: 'alpha', layers: 'sanity', gap: '4px'},
-  {name: 'beta', layers: 'test-studio', gap: '8px'},
+  {name: 'alpha', gap: '4px'},
+  {name: 'beta', gap: '8px'},
 ] as const
 
 type ProjectName = (typeof PROJECTS)[number]['name']
@@ -27,7 +26,7 @@ type ProjectName = (typeof PROJECTS)[number]['name']
 let root: string
 const projectDirs = {} as Record<ProjectName, string>
 
-async function writeProject({name, layers, gap}: (typeof PROJECTS)[number]): Promise<string> {
+async function writeProject({name, gap}: (typeof PROJECTS)[number]): Promise<string> {
   const dir = join(root, name)
   await mkdir(join(dir, 'src'), {recursive: true})
   await writeFile(
@@ -48,13 +47,6 @@ async function writeProject({name, layers, gap}: (typeof PROJECTS)[number]): Pro
   importMap: '#styled-system',
   hash: true,
   prefix: '${name}',
-  layers: {
-    reset: '${layers}-reset',
-    base: '${layers}-base',
-    tokens: '${layers}-tokens',
-    recipes: '${layers}-recipes',
-    utilities: '${layers}-utilities',
-  },
   preflight: false,
   presets: [],
   jsxStyleProps: 'none',
@@ -85,14 +77,14 @@ function cssOf(output: Rolldown.RolldownOutput): string {
 }
 
 /**
- * The studio's order statement has to be the first rule of the stylesheet (comments aside),
- * and while the layer blocks are stripped nothing else in it may be layered.
+ * The one statement the studio still declares has to be the first rule of the stylesheet
+ * (comments aside), and nothing else in it may mention a layer: Panda's blocks are unwrapped and
+ * its own declaration goes with them.
  */
-function expectStudioLayerOrderFirst(css: string): void {
+function expectUnlayeredBehindStatement(css: string): void {
   const rules = css.replace(/\/\*[\s\S]*?\*\//g, '').trimStart()
-  const statement = /^@layer ([^;{]+);/.exec(rules)
-  expect(statement?.[1]?.split(',').map((name) => name.trim())).toEqual([...STUDIO_LAYER_ORDER])
-  expect(rules).not.toMatch(/@layer [^;]*\{/)
+  expect(rules.startsWith(LAYER_ORDER_STATEMENT)).toBe(true)
+  expect(rules.slice(LAYER_ORDER_STATEMENT.length)).not.toContain('@layer')
 }
 
 beforeAll(async () => {
@@ -106,13 +98,10 @@ afterAll(async () => {
   await rm(root, {recursive: true, force: true})
 })
 
-test("layers.css opens with the studio layer order and declares the fixtures' layer names", async () => {
+test("layers.css declares Panda's layer names, which is how @pandacss/vite recognizes it", async () => {
   const layersCss = await readFile(LAYERS_CSS_PATH, 'utf8')
   const statements = layersCss.match(/^@layer [^;]+;$/gm) ?? []
-  expect(statements[0]).toBe(layerOrderStatement(STUDIO_LAYER_ORDER))
-  for (const {layers} of PROJECTS) {
-    expect(layersCss).toContain(pandaLayerNames(layers).join(', '))
-  }
+  expect(statements).toEqual(['@layer reset, base, tokens, recipes, utilities;'])
 })
 
 describe('studioPandaCss()', () => {
@@ -165,7 +154,7 @@ describe('studioPandaCss()', () => {
       expect(chunk.code).not.toContain('#styled-system')
 
       const css = cssOf(output)
-      expectStudioLayerOrderFirst(css)
+      expectUnlayeredBehindStatement(css)
       expect(css).toMatch(/\.alpha-\w+\s*\{\s*gap:\s*4px/)
       expect(css).toMatch(/\.beta-\w+\s*\{\s*gap:\s*8px/)
     },
@@ -205,7 +194,7 @@ describe('studioPandaCss()', () => {
       const stylesheet = output.output.find((item) => item.fileName === importedCss[0])
       if (stylesheet?.type !== 'asset') throw new Error('expected the stylesheet asset')
       const css = stylesheet.source.toString()
-      expectStudioLayerOrderFirst(css)
+      expectUnlayeredBehindStatement(css)
       expect(css).toMatch(/\.alpha-\w+\s*\{\s*gap:\s*4px/)
     },
   )

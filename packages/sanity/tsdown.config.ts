@@ -1,5 +1,4 @@
-import {pandaLayerOrder} from '@repo/pandacss/layer-order'
-import {unlayeredPandaCss} from '@repo/pandacss/tsdown'
+import {layerOrderPlugin} from '@repo/pandacss/layer-order'
 import {defineConfig} from '@repo/tsdown.config'
 import {mergeConfig, type UserConfig} from 'tsdown'
 
@@ -37,8 +36,13 @@ const config: UserConfig = mergeConfig(
     // declares `sideEffects: true`: with `false` or a `*.css` allowlist, bundlers bypass the
     // side-effect-free barrels and eliminate the bare CSS import together with them, before the
     // stylesheet's own side-effect status is ever consulted (see #13322 and #13332).
-    // The stylesheet stays unminified so the diff between two published versions is readable.
-    panda: {minify: false},
+    // The stylesheet stays unminified so the diff between two published versions is readable, and
+    // ships without Panda's cascade layers: CSS outside any layer beats every layered rule
+    // regardless of specificity, so a layered stylesheet would lose its hover, focus and selected
+    // states to any unlayered rule of a consumer — styled-components output, a reset like
+    // Tailwind's preflight, the studio's own GlobalStyle. `cascadeLayers: false` orders the rules
+    // the way the layers did and leaves every selector as specific as it was.
+    panda: {minify: false, cascadeLayers: false},
     define: {
       // Injects the version `SANITY_VERSION` reports (see `src/core/version.ts`). An explicit
       // env var wins so preview releases can attach their own version (see pkg-pr-new.yml),
@@ -53,12 +57,11 @@ const config: UserConfig = mergeConfig(
     // adds work to the tsdown build. Usage: `pnpm analyze:sanity` from the repo root (see AGENTS.md).
     bundleAnalyzer: process.env.ENABLE_BUNDLE_ANALYZER === 'true',
   }),
-  // `@sanity/tsdown-config` builds its own plugin list, so the plugins that finish
-  // `lib/bundle.css` are merged in afterwards: the one that declares the order of the studio's
-  // cascade layers against `@sanity/ui`'s, and the one that strips the layers again (see
-  // @repo/pandacss for why the studio's static CSS stays unlayered until `@sanity/ui` layers its
-  // own rules)
-  {plugins: [pandaLayerOrder(), unlayeredPandaCss()]},
+  // `@sanity/tsdown-config` builds its own plugin list, so the plugin that finishes
+  // `lib/bundle.css` is merged in afterwards: it prepends the one `@layer` statement the studio
+  // still declares, which places `ui5`'s reset layer below `@sanity/ui` v4's static styles (see
+  // @repo/pandacss/layer-order for how long that is needed)
+  {plugins: [layerOrderPlugin()]},
 )
 
 export default config
