@@ -6,11 +6,16 @@ import {BehaviorSubject, lastValueFrom, of} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {validationMarkerCodes} from './codes'
+import {type ValidationScheduling} from './util/pace'
 
 /**
  * `@sanity/validation` binds `requestIdleCallback` at import time, so each test stubs `window`
  * first and imports a fresh copy of the package.
  */
+
+function immediateScheduling() {
+  return new BehaviorSubject<ValidationScheduling>('immediate')
+}
 
 const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
 
@@ -200,7 +205,7 @@ describe('validation scheduling', () => {
         getClient: () => createMockClient(),
         i18n: getFallbackLocaleSource(),
         environment: 'studio',
-        scheduling: 'immediate',
+        scheduling: immediateScheduling(),
       }),
     )
 
@@ -227,7 +232,7 @@ describe('validation scheduling', () => {
           getClient: () => createMockClient(),
           i18n: getFallbackLocaleSource(),
           environment: 'studio',
-          scheduling: 'immediate',
+          scheduling: immediateScheduling(),
         }),
       ).then(() => 'completed'),
       new Promise<string>((resolve) => setTimeout(() => resolve('still validating'), 300)),
@@ -251,7 +256,7 @@ describe('validation scheduling', () => {
         getClient: () => createMockClient(),
         i18n: getFallbackLocaleSource(),
         environment: 'studio',
-        scheduling: 'immediate',
+        scheduling: immediateScheduling(),
       }),
     )
 
@@ -280,7 +285,7 @@ describe('validation scheduling', () => {
     vi.stubGlobal('scheduler', {yield: vi.fn(() => Promise.resolve())})
     const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
     const blockCount = 200
-    const scheduling = new BehaviorSubject<'idle' | 'immediate'>('idle')
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
     let settled = false
     const result = lastValueFrom(
       evaluateDocumentObservable({
@@ -347,7 +352,7 @@ describe('validation scheduling', () => {
         getClient: () => createMockClient(),
         i18n: immediateModule.getFallbackLocaleSource(),
         environment: 'studio',
-        scheduling: 'immediate',
+        scheduling: immediateScheduling(),
       }),
     )
 
@@ -409,7 +414,7 @@ describe('validation scheduling', () => {
           getClient: () => createMockClient(),
           i18n: getFallbackLocaleSource(),
           environment: 'studio',
-          scheduling: 'immediate',
+          scheduling: immediateScheduling(),
         }),
       )
 

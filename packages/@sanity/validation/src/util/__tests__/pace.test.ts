@@ -17,6 +17,10 @@ async function importPace() {
   return import('../pace')
 }
 
+function immediateScheduling() {
+  return new BehaviorSubject<ValidationScheduling>('immediate')
+}
+
 /** Starts a node: subscribes to what it waits for, and tracks whether it may run yet. */
 function startNode(pace: Pace) {
   const node = {ready: false}
@@ -142,7 +146,7 @@ describe('createPace', () => {
     const requestIdleCallback = vi.fn((): number => 1)
     vi.stubGlobal('window', {requestIdleCallback, cancelIdleCallback: vi.fn()})
     const {createPace} = await importPace()
-    const pace = createPace('idle')
+    const pace = createPace()
 
     pace().subscribe()
     pace().subscribe()
@@ -153,7 +157,7 @@ describe('createPace', () => {
     const scheduler = {yield: vi.fn(() => Promise.resolve())}
     vi.stubGlobal('scheduler', scheduler)
     const {createPace} = await importPace()
-    const pace = createPace('immediate')
+    const pace = createPace(immediateScheduling())
 
     const batch = Array.from({length: IMMEDIATE_YIELD_EVERY - 1}, () => startNode(pace))
     expect(batch.some((node) => node.ready)).toBe(false)
@@ -219,7 +223,10 @@ describe('createPace', () => {
     vi.stubGlobal('setImmediate', setImmediate)
     const {createPace} = await importPace()
 
-    await expectYieldToNextTask(createPace('immediate'), () => setImmediate.mock.calls.length)
+    await expectYieldToNextTask(
+      createPace(immediateScheduling()),
+      () => setImmediate.mock.calls.length,
+    )
     expect(requestIdleCallback).not.toHaveBeenCalled()
   })
 
@@ -229,7 +236,7 @@ describe('createPace', () => {
     const {messageCount} = trackMessageChannels()
     const {createPace} = await importPace()
 
-    await expectYieldToNextTask(createPace('immediate'), messageCount)
+    await expectYieldToNextTask(createPace(immediateScheduling()), messageCount)
   })
 
   it('releases every run waiting on the one MessageChannel they share, longest waiting first', async () => {
@@ -237,7 +244,7 @@ describe('createPace', () => {
     vi.stubGlobal('setImmediate', undefined)
     const {channels, messageCount} = trackMessageChannels()
     const {createPace} = await importPace()
-    const runs = [createPace('immediate'), createPace('immediate')]
+    const runs = [createPace(immediateScheduling()), createPace(immediateScheduling())]
 
     for (const pace of runs) {
       for (let node = 1; node < IMMEDIATE_YIELD_EVERY; node++) pace().subscribe()
@@ -261,7 +268,7 @@ describe('createPace', () => {
     const {createPace} = await importPace()
 
     await expectYieldToNextTask(
-      createPace('immediate'),
+      createPace(immediateScheduling()),
       () => yieldThroughTimeout.mock.calls.length,
     )
     expect(yieldThroughTimeout).toHaveBeenCalledWith(expect.any(Function), 0)
