@@ -4,11 +4,12 @@ import {unwrapCascadeLayers} from './unwrapCascadeLayers.ts'
 
 /**
  * Rewrites the stylesheet `@sanity/pandacss-tsdown-plugin` emits (the `panda` option of
- * `@sanity/tsdown-config`) without its cascade layers. Append it to a tsdown config after
- * `defineConfig()`, so that its `generateBundle` runs after the plugin has emitted the asset:
+ * `@sanity/tsdown-config`) without its `@layer` blocks; the order statement `pandaLayerOrder()`
+ * prepends stays. Append both to a tsdown config after `defineConfig()`, so that their
+ * `generateBundle` runs after the plugin has emitted the asset:
  *
  * ```ts
- * mergeConfig(await defineConfig({panda: true}), {plugins: [unlayeredPandaCss()]})
+ * mergeConfig(await defineConfig({panda: true}), {plugins: [pandaLayerOrder(), unlayeredPandaCss()]})
  * ```
  *
  * See `unwrapCascadeLayers` for why the studio's static CSS stays unlayered for now.

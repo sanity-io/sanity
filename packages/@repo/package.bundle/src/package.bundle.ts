@@ -63,8 +63,8 @@ export function createDefaultConfig({
             // rewritten to class names (content-hashed, so a release cannot reuse the previous
             // release's names for other rules, SAPP-4639) and the CSS fills the
             // `@repo/pandacss/layers.css` import that `pandaLayersCssImportPlugin` adds to every
-            // entry, stripped of its cascade layers like the package's own `bundle.css` (see
-            // @repo/pandacss for why, and for how long)
+            // entry, its layer blocks unwrapped like the package's own `bundle.css` while the
+            // order statement stays (see @repo/pandacss for why, and for how long)
             pandacss({transform: true}),
             unlayeredPandaCss(),
             pandaLayersCssImportPlugin(),

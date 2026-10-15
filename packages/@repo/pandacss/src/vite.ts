@@ -76,9 +76,10 @@ export function visionVanillaExtractPlugin(): Plugin[] {
 }
 
 /**
- * Drops the cascade layers from `layers.css` once `@pandacss/vite` has appended the generated
- * CSS to it. Register it after the `pandacss()` instances, as `studioPandaCss()` and
- * `@repo/package.bundle` do. See `unwrapCascadeLayers` for why, and for how long.
+ * Unwraps the `@layer` blocks `@pandacss/vite` appends to `layers.css`, keeping the order
+ * statements the file opens with. Register it after the `pandacss()` instances, as
+ * `studioPandaCss()` and `@repo/package.bundle` do. See `unwrapCascadeLayers` for why, and for
+ * how long.
  */
 export function unlayeredPandaCss(): Plugin {
   return {

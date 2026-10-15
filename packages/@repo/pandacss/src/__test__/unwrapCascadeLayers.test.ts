@@ -3,19 +3,20 @@ import {describe, expect, it} from 'vitest'
 import {unwrapCascadeLayers} from '../unwrapCascadeLayers.ts'
 
 describe('unwrapCascadeLayers()', () => {
-  it('drops the layer order declaration', () => {
-    expect(unwrapCascadeLayers('@layer reset, base, tokens, recipes, utilities;\n')).toBe('\n')
+  it('keeps a top-level layer order statement', () => {
+    const statement = '@layer sui, u-tokens, u-utilities, sanity-base, sanity-utilities;\n'
+    expect(unwrapCascadeLayers(statement)).toBe(statement)
   })
 
   it('moves the rules of each layer block to the top level, in order', () => {
     const css = [
-      '@layer reset, base, tokens, recipes, utilities;',
-      '@layer base {',
+      '@layer sui, u-tokens, u-utilities, sanity-base, sanity-utilities;',
+      '@layer sanity-base {',
       '  #sanity {',
       '    --static-css-file-loaded-studio: true;',
       '  }',
       '}',
-      '@layer utilities {',
+      '@layer sanity-utilities {',
       '  .sanity-a {',
       '    display: flex;',
       '  }',
@@ -33,7 +34,7 @@ describe('unwrapCascadeLayers()', () => {
 
     expect(unwrapCascadeLayers(css)).toBe(
       [
-        '',
+        '@layer sui, u-tokens, u-utilities, sanity-base, sanity-utilities;',
         '#sanity {',
         '  --static-css-file-loaded-studio: true;',
         '}',
@@ -53,9 +54,11 @@ describe('unwrapCascadeLayers()', () => {
     )
   })
 
-  it('removes nested layer statements', () => {
+  it('removes a layer statement nested in a block together with the block', () => {
     expect(
-      unwrapCascadeLayers('@layer recipes { @layer base, slots, variants, compound_variants; }'),
+      unwrapCascadeLayers(
+        '@layer sanity-recipes { @layer base, slots, variants, compound_variants; }',
+      ),
     ).toBe('')
   })
 

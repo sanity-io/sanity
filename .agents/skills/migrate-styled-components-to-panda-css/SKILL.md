@@ -136,9 +136,10 @@ Three stylesheets meet on a migrated element:
 
 Panda wraps its output in cascade layers (`sanity-reset` … `sanity-utilities`, see the "Panda
 CSS" section of AGENTS.md for the order the studio needs against `@sanity/ui`'s layers). Until
-`@sanity/ui` layers its own rules, `@repo/pandacss` strips those layers again from `bundle.css`
-and the dev stylesheet, so the studio's rules are unlayered today. Do not write `@layer` in a
-`.css.ts`: the layer is the stylesheet's, never a rule's.
+`@sanity/ui` layers its own rules, `@repo/pandacss` unwraps those layer blocks again in
+`bundle.css` and the dev stylesheet, so the studio's rules are unlayered today; the `@layer …;`
+order statement both open with stays, since it also orders `ui5`'s `sui` against `@sanity/ui`'s
+`u-*` layers. Do not write `@layer` in a `.css.ts`: the layer is the stylesheet's, never a rule's.
 
 Consequences:
 

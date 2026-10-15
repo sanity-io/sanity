@@ -2,11 +2,15 @@ import postcss, {type ChildNode, type Container, type Declaration} from 'postcss
 
 /**
  * Moves the rules of every `@layer <name> { … }` block to the layer's own position in the
- * stylesheet and drops the `@layer a, b, c;` order statements, so the output has no cascade
- * layers at all. Rule order is preserved, which is all the layer blocks contributed: Panda
- * emits `base`, `tokens`, `recipes` and `utilities` in that order already. Panda's
- * `--made-with-panda` marker goes too (`@sanity/pandacss-tsdown-plugin` removes it from
- * `bundle.css` itself; this keeps the CDN bundle and the dev stylesheet in line).
+ * stylesheet, so none of the studio's own rules is layered. Rule order is preserved, which is
+ * all the layer blocks contributed: Panda emits `base`, `tokens`, `recipes` and `utilities` in
+ * that order already. Panda's `--made-with-panda` marker goes too (`@sanity/pandacss-tsdown-plugin`
+ * removes it from `bundle.css` itself; this keeps the CDN bundle and the dev stylesheet in line).
+ *
+ * Top-level `@layer a, b, c;` order statements stay. They order layers that other stylesheets
+ * fill — `ui5`'s `sui` and `@sanity/ui`'s `u-*` exist on the page whether or not the studio's
+ * rules are layered, and `STUDIO_LAYER_ORDER` (`layerOrder.ts`) is what places them. A
+ * statement nested in a block only ordered that block's sublayers and goes with it.
  *
  * Temporary, until `@sanity/ui` layers its own rules (see the "Panda CSS" section of AGENTS.md
  * for the layer order the studio then needs). Today the styled-components rules of `@sanity/ui`
@@ -34,17 +38,17 @@ export function unwrapCascadeLayers(css: string): string {
   return root.toString()
 }
 
-function unwrapLayersIn(container: Container): void {
+function unwrapLayersIn(container: Container, insideLayer = false): void {
   for (const node of [...(container.nodes ?? [])]) {
     if (node.type !== 'atrule' || node.name !== 'layer') {
-      if ('nodes' in node && node.nodes) unwrapLayersIn(node)
+      if ('nodes' in node && node.nodes) unwrapLayersIn(node, insideLayer)
       continue
     }
     if (!node.nodes) {
-      node.remove()
+      if (insideLayer) node.remove()
       continue
     }
-    unwrapLayersIn(node)
+    unwrapLayersIn(node, true)
     const children: ChildNode[] = [...node.nodes]
     // postcss resets the `before` whitespace of nodes it moves after the first one; keep the
     // original (dedented) whitespace so minified input stays minified and pretty input pretty

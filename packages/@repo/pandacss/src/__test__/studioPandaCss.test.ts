@@ -84,6 +84,17 @@ function cssOf(output: Rolldown.RolldownOutput): string {
     .join('\n')
 }
 
+/**
+ * The studio's order statement has to be the first rule of the stylesheet (comments aside),
+ * and while the layer blocks are stripped nothing else in it may be layered.
+ */
+function expectStudioLayerOrderFirst(css: string): void {
+  const rules = css.replace(/\/\*[\s\S]*?\*\//g, '').trimStart()
+  const statement = /^@layer ([^;{]+);/.exec(rules)
+  expect(statement?.[1]?.split(',').map((name) => name.trim())).toEqual([...STUDIO_LAYER_ORDER])
+  expect(rules).not.toMatch(/@layer [^;]*\{/)
+}
+
 beforeAll(async () => {
   root = await mkdtemp(join(tmpdir(), 'repo-pandacss-'))
   for (const project of PROJECTS) {
@@ -154,6 +165,7 @@ describe('studioPandaCss()', () => {
       expect(chunk.code).not.toContain('#styled-system')
 
       const css = cssOf(output)
+      expectStudioLayerOrderFirst(css)
       expect(css).toMatch(/\.alpha-\w+\s*\{\s*gap:\s*4px/)
       expect(css).toMatch(/\.beta-\w+\s*\{\s*gap:\s*8px/)
     },
@@ -192,7 +204,9 @@ describe('studioPandaCss()', () => {
       expect(importedCss).toHaveLength(1)
       const stylesheet = output.output.find((item) => item.fileName === importedCss[0])
       if (stylesheet?.type !== 'asset') throw new Error('expected the stylesheet asset')
-      expect(stylesheet.source.toString()).toMatch(/\.alpha-\w+\s*\{\s*gap:\s*4px/)
+      const css = stylesheet.source.toString()
+      expectStudioLayerOrderFirst(css)
+      expect(css).toMatch(/\.alpha-\w+\s*\{\s*gap:\s*4px/)
     },
   )
 })

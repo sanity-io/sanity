@@ -269,8 +269,9 @@ it from source) until it moves to CSS modules.
 
 How the CSS reaches a page:
 
-- **Published packages:** `panda: {minify: true}` in `tsdown.config.ts` (the
-  `@sanity/pandacss-tsdown-plugin` option of `@sanity/tsdown-config`) rewrites every `css()` call
+- **Published packages:** `panda: {minify: false}` in `tsdown.config.ts` (the
+  `@sanity/pandacss-tsdown-plugin` option of `@sanity/tsdown-config`; unminified so the diff
+  between two published versions stays readable) rewrites every `css()` call
   into its class names at build time, extracts the CSS into `lib/bundle.css`, injects
   `import 'sanity/bundle.css'` into the entry chunks and publishes the conditional `./bundle.css`
   export (`browser`/`style` → the stylesheet, `node`/`default` → a no-op shim). The published code
@@ -322,16 +323,24 @@ How the CSS reaches a page:
   still are, a ui5 change; the studio's own styled-components too, see below). Panda's `polyfill`
   option is not an alternative to layers: it emulates their order with `:not(#\#…)` selector
   chains that inflate every rule's specificity.
-- **Until `@sanity/ui` ships `u-styled`, the layers are stripped.** Today `@sanity/ui` v4 injects
-  its styled-components rules unlayered and `ui5` keeps its component classes outside `sui`, and
-  an unlayered rule beats every layered one, so `@repo/pandacss` unwraps the `@layer` blocks and
-  statements (`unwrapCascadeLayers`) from `bundle.css` (`unlayeredPandaCss()` from
-  `@repo/pandacss/tsdown`, merged into `packages/sanity/tsdown.config.ts`), from the CDN bundle
-  and from the dev stylesheet (`unlayeredPandaCss()` from `@repo/pandacss/vite`, registered by
-  `studioPandaCss()` and `@repo/package.bundle`). That step is one commit, `build: strip the Panda
-  cascade layers until @sanity/ui layers its styled-components output`: once the `@sanity/ui`
-  release with `u-styled` is in the catalog, `git revert` it (keep `pandaLayerOrder()` and the
-  `@repo/pandacss/layer-order` export where the revert conflicts with them). A dry run against
+- **Until `@sanity/ui` ships `u-styled`, the layer blocks are stripped; the order statement
+  ships.** Today `@sanity/ui` v4 injects its styled-components rules unlayered and `ui5` keeps
+  its component classes outside `sui`, and an unlayered rule beats every layered one, so
+  `@repo/pandacss` unwraps the `@layer` blocks (`unwrapCascadeLayers`) from `bundle.css`
+  (`unlayeredPandaCss()` from `@repo/pandacss/tsdown`, merged into
+  `packages/sanity/tsdown.config.ts`), from the CDN bundle and from the dev stylesheet
+  (`unlayeredPandaCss()` from `@repo/pandacss/vite`, registered by `studioPandaCss()` and
+  `@repo/package.bundle`). The top-level `@layer …;` statement stays in all three: `sui` and
+  `u-tokens`/`u-utilities` are on the page today, and without the statement their order is
+  whichever stylesheet a bundler happens to emit first (the built `lib/index.js` imports
+  `@sanity/ui/styles.css` before `ui5/styles.css`, the sources the other way round, so `ui5`'s
+  reset used to beat `@sanity/ui`'s `u-utilities` in a built studio and lose to them under
+  `sanity dev`). That step is one commit, `build: strip the Panda
+  cascade layers until @sanity/ui layers its styled-components output` plus the follow-up that
+  keeps the statement: once the `@sanity/ui` release with `u-styled` is in the catalog,
+  `git revert` the strip (keep `pandaLayerOrder()` and the `@repo/pandacss/layer-order` export
+  where the revert conflicts with them, and let the revert delete `unwrapCascadeLayers.ts` and
+  its test). A dry run against
   the ui#3233 build (layers kept, five studio screens pixel-identical to `main`, 60 of 62 browser
   test files passing) showed what else that bump needs: `ReleaseAvatar.css.ts` relied on
   _losing_ to `Text`'s `& svg {display: inline}` by specificity and now wins whether or not it
