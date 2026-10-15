@@ -267,6 +267,34 @@ describe('HistoryTab', () => {
     ])
   })
 
+  it('lays the queries out for the diff, one projection attribute per line', async () => {
+    const [latest] = renderTab([
+      entry('latest', 6, {query: '*[_type == "author"]{_id, name, bio}', result: two}),
+      entry('previous', 5, {query: '*[_type == "author"]{_id, name}', result: two}),
+    ])
+    fireEvent.click(within(latest).getByTestId('vista-history-changes-toggle'))
+    expect(
+      await diffedTexts(await within(latest).findByTestId('vista-history-diff-query')),
+    ).toEqual({
+      lang: 'text',
+      previous: '*[_type == "author"] {\n  _id,\n  name\n}\n',
+      next: '*[_type == "author"] {\n  _id,\n  name,\n  bio\n}\n',
+    })
+  })
+
+  it('says when the queries only differ in their formatting', async () => {
+    const [latest] = renderTab([
+      entry('latest', 6, {query: '*[_type == "author"] {\n  _id,\n  name\n}', result: two}),
+      entry('previous', 5, {query: '*[_type == "author"]{_id,name}', result: two}),
+    ])
+    fireEvent.click(within(latest).getByTestId('vista-history-changes-toggle'))
+    const query = await within(latest).findByTestId('vista-history-diff-query')
+    expect(
+      (await within(query).findByTestId('vista-history-query-formatting-only')).textContent,
+    ).toBe('vista.history.diff.query-formatting-only')
+    expect(within(query).queryByTestId('code-diff')).toBeNull()
+  })
+
   it('offers the request changes of a fetch whose result stayed the same', async () => {
     const [latest] = renderTab([
       entry('latest', 6, {params: {limit: 5}, result: two, resultChange: 'unchanged'}),
@@ -297,7 +325,9 @@ describe('HistoryTab', () => {
     ])
     fireEvent.click(within(failed).getByTestId('vista-history-changes-toggle'))
     const changes = within(failed).getByTestId('vista-history-changes')
-    expect(await diffedTexts(within(changes).getByTestId('vista-history-diff-query'))).toEqual({
+    expect(
+      await diffedTexts(await within(changes).findByTestId('vista-history-diff-query')),
+    ).toEqual({
       lang: 'text',
       previous: '*\n',
       next: '*[\n',

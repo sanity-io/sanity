@@ -210,6 +210,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.diff.params': 'Params',
   /** Label of the diff of the GROQ query in a history entry's changes */
   'vista.history.diff.query': 'Query',
+  /** Instead of the query diff, when the two queries only differ in whitespace and line breaks */
+  'vista.history.diff.query-formatting-only': 'Only the formatting changed',
   /** Label of the diff of the query result in a history entry's changes */
   'vista.history.diff.result': 'Result',
   /**

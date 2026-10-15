@@ -2,7 +2,7 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Badge, Button, Card, Stack, Text} from '@sanity/ui'
 import {dequal} from 'dequal/lite'
-import {Component, type ReactNode, Suspense, useId, useMemo, useState} from 'react'
+import {Component, type ReactNode, Suspense, use, useId, useMemo, useState} from 'react'
 import {type TFunction, useDateTimeFormat, useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -11,7 +11,11 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {createRetryableLazy} from '../../../util/createRetryableLazy'
 import {type FetchHistoryEntry, type FetchReason} from '../../store/types'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
-import {getRequestChanges, type RequestChangeId} from '../../util/requestChanges'
+import {
+  formatQueryForDiff,
+  getRequestChanges,
+  type RequestChangeId,
+} from '../../util/requestChanges'
 
 // The diff (`@pierre/diffs` and Shiki) only loads once a history entry's changes are expanded,
 // and a failed load can be retried from the boundary
@@ -105,6 +109,24 @@ function DiffSection(props: {
   )
 }
 
+interface QueryDiffTexts {
+  previous: string
+  next: string
+}
+
+function QueryDiff(props: {texts: Promise<QueryDiffTexts>}) {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const {previous, next} = use(props.texts)
+  if (previous === next) {
+    return (
+      <Text data-testid="vista-history-query-formatting-only" muted size={1}>
+        {t('vista.history.diff.query-formatting-only')}
+      </Text>
+    )
+  }
+  return <CodeDiffLoader lang="text" next={next} previous={previous} />
+}
+
 function HistoryEntry(props: {
   entry: FetchHistoryEntry
   /** The successful fetch before this one, which the request and result are compared with */
@@ -124,6 +146,14 @@ function HistoryEntry(props: {
     () => (previous ? getRequestChanges(previous, entry) : []),
     [entry, previous],
   )
+  // Formatted once the changes are shown. The promise is made here rather than in `QueryDiff`,
+  // which suspends on it, since a component that suspends while mounting keeps no state or memo
+  const queryTexts = useMemo(() => {
+    if (!expanded || !previous || previous.query === entry.query) return undefined
+    return Promise.all([formatQueryForDiff(previous.query), formatQueryForDiff(entry.query)]).then(
+      ([previousText, nextText]) => ({previous: previousText, next: nextText}),
+    )
+  }, [entry.query, expanded, previous])
   const nextResult = entry.result
   const previousResult = previous?.result
   const resultComparable =
@@ -248,11 +278,17 @@ function HistoryEntry(props: {
                     label={describeRequestChange(change.id, t)}
                     testId={`vista-history-diff-${change.id}`}
                   >
-                    <CodeDiffLoader
-                      lang={change.lang}
-                      next={change.next}
-                      previous={change.previous}
-                    />
+                    {change.id === 'query' && queryTexts ? (
+                      <Suspense fallback={<DelayedSpinner />}>
+                        <QueryDiff texts={queryTexts} />
+                      </Suspense>
+                    ) : (
+                      <CodeDiffLoader
+                        lang={change.lang}
+                        next={change.next}
+                        previous={change.previous}
+                      />
+                    )}
                   </DiffSection>
                 ))}
                 {resultDiff && (

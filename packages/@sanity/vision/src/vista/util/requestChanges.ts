@@ -1,6 +1,13 @@
 import {dequal} from 'dequal/lite'
 
 import {type FetchHistoryEntry} from '../store/types'
+import {formatGroq} from './groqWasm'
+
+/**
+ * Narrower than anything, so the formatter breaks every group it can: one projection attribute,
+ * condition, array item or argument per line, like the indented JSON the other diffs show
+ */
+const QUERY_DIFF_WIDTH = 1
 
 export type RequestChangeId = 'query' | 'params' | 'url'
 
@@ -36,6 +43,18 @@ export function describeRequestUrl(url: string): string {
 
 function withTrailingNewline(text: string): string {
   return text.endsWith('\n') ? text : `${text}\n`
+}
+
+/**
+ * A query laid out for a line diff with `groq-format`. One that does not parse (or a formatter
+ * that failed to load) is diffed as it was typed, so this never rejects.
+ */
+export async function formatQueryForDiff(query: string): Promise<string> {
+  try {
+    return withTrailingNewline(await formatGroq(query, QUERY_DIFF_WIDTH))
+  } catch {
+    return withTrailingNewline(query)
+  }
 }
 
 function toJson(params: Record<string, unknown>): string {

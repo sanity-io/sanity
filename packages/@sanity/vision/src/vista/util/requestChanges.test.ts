@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {encodeQueryString} from '../../util/encodeQueryString'
-import {describeRequestUrl, getRequestChanges} from './requestChanges'
+import {describeRequestUrl, formatQueryForDiff, getRequestChanges} from './requestChanges'
 
 const BASE = 'https://abc123.api.sanity.io/v2025-02-19/data/query/production'
 
@@ -29,6 +29,38 @@ describe('describeRequestUrl', () => {
 
   it('falls back to the text it was given when it is not a URL', () => {
     expect(describeRequestUrl('')).toBe('\n')
+  })
+})
+
+describe('formatQueryForDiff', () => {
+  it('breaks every group: attributes, conditions and pipes each on a line of their own', async () => {
+    expect(
+      await formatQueryForDiff(
+        '*[_type == "post" && defined(slug.current)] | order(_createdAt desc)[0...$limit]{_id, author->{name}}',
+      ),
+    ).toBe(
+      [
+        '*[_type == "post"',
+        '  && defined(slug.current)]',
+        '  | order(_createdAt desc)[0...$limit] {',
+        '  _id,',
+        '  author-> {',
+        '    name',
+        '  }',
+        '}',
+        '',
+      ].join('\n'),
+    )
+  })
+
+  it('keeps comments', async () => {
+    expect(await formatQueryForDiff('// authors\n*[_type == "author"]{name}')).toBe(
+      '// authors\n*[_type == "author"] {\n  name\n}\n',
+    )
+  })
+
+  it('leaves a query that does not parse as it was typed', async () => {
+    expect(await formatQueryForDiff('*[_type ==')).toBe('*[_type ==\n')
   })
 })
 
