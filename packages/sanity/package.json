@@ -306,8 +306,5 @@
     "@sanity/visual-editing-csm": "3.0.18",
     "rxjs-etc": "10.6.2",
     "valibot": "1.5.0"
-  },
-  "sanityCliCapabilities": {
-    "authHashStash": 1
   }
 }
