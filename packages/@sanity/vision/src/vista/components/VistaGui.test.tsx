@@ -673,7 +673,9 @@ describe('VistaGui', () => {
     const plan =
       'Pipeline {\n  r1: StreamStep {\n    $0: Fetch {Filter: (_type == "post")}\n  }\n  r2: FilterStep {\n    Source: r1, Expr: eq($1.name, "x")\n  }\n}'
     respondToRequests({result: [], explain: plan})
-    replyToPrompts('It fetches every post.\n\nThe filter is applied while reading.')
+    replyToPrompts(
+      'It fetches every post.\n\nThe filter `_type == "post"` is applied while reading.',
+    )
 
     fireEvent.click(document.getElementById('vista-response-explain-tab') as HTMLElement)
     expect(isDisabled(screen.getByTestId('vista-explain-button'))).toBe(true)
@@ -701,11 +703,14 @@ describe('VistaGui', () => {
     expect(requestCalls).toHaveLength(1)
     expect(promptCalls[0].config.apiVersion).toBe('vX')
     expect(promptCalls[0].request).toMatchObject({instructionParams: {plan}})
+    const explanation = screen.getByTestId('vista-explanation')
     expect(
-      within(screen.getByTestId('vista-explanation'))
-        .getAllByText(/./)
-        .map((paragraph) => paragraph.textContent),
-    ).toEqual(['It fetches every post.', 'The filter is applied while reading.'])
+      [...explanation.querySelectorAll('[data-ui="Text"]')].map(
+        (paragraph) => paragraph.textContent,
+      ),
+    ).toEqual(['It fetches every post.', 'The filter _type == "post" is applied while reading.'])
+    // Quoted GROQ is shown as code
+    expect(explanation.querySelector('code')?.textContent).toBe('_type == "post"')
 
     // Both belong to the query they were made for
     typeQuery('*[_type == "author"]')

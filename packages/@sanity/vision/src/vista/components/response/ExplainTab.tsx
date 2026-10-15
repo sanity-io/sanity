@@ -7,6 +7,7 @@ import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ExplainStep} from '../../hooks/useQueryExplain'
+import {splitMessage} from '../../util/groqLint'
 import {
   HIGH_PERFORMANCE_GROQ_URL,
   type PlanInsight,
@@ -96,7 +97,9 @@ export function ExplainTab(props: ExplainTabProps) {
                 .filter((paragraph) => paragraph.trim())
                 .map((paragraph, index) => (
                   <Text key={index} size={1}>
-                    {paragraph.trim()}
+                    {splitMessage(paragraph.trim()).map((segment, segmentIndex) =>
+                      segment.code ? <code key={segmentIndex}>{segment.text}</code> : segment.text,
+                    )}
                   </Text>
                 ))}
             </Stack>
