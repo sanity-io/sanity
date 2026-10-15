@@ -7,20 +7,11 @@ import {
   type SanityDocumentLike,
   type ValidationMarker,
 } from '@sanity/types'
-import {isEqual, pathFor, resolveKeyedPath} from '@sanity/util/paths'
+import {pathFor} from '@sanity/util/paths'
 import throttle from 'lodash-es/throttle.js'
-import {
-  type RefObject,
-  useCallback,
-  useEffect,
-  useInsertionEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type RefObject, useCallback, useEffect, useInsertionEffect, useMemo, useRef} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {distinctUntilChanged} from 'rxjs/operators'
-import {useEffectEvent} from 'use-effect-event'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
@@ -68,13 +59,12 @@ import {getTargetDocument} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
-import {setAtPath} from './store/stateTreeHelper'
 import {type NodeChronologyProps} from './store/types/nodes'
 import {type StateTree} from './store/types/state'
 import {type FormState, useFormState} from './store/useFormState'
-import {getExpandOperations} from './store/utils/getExpandOperations'
 import {type OnPathFocusPayload} from './types/inputProps'
 import {useDocumentViewHistory} from './useDocumentViewHistory'
+import {useBindFormBuilderState, useFormBuilderState} from './useFormBuilderState'
 import {toMutationPatches} from './utils/mutationPatch'
 
 interface DocumentFormOptions {
@@ -184,8 +174,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const isVariantTarget =
     targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
 
-  const enhancedObjectDialogEnabled = true
-
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
     throw new Error(`Schema type for '${documentType}' not found`)
@@ -207,8 +195,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   // `stalled` means it's been unsynced long enough that we lock editing to
   // stop the user piling more changes onto a document that isn't syncing.
   const syncState = useDocumentSyncState(documentId, documentType, targetScopeId)
-
-  const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
@@ -340,25 +326,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   // burst lasts. Synchronous delivery commits every update, so rendering
   // always makes progress.
   const presence = useSyncObservable(presence$, [])
-
-  const [openPath, onSetOpenPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
-  // Mirrors `openPath` so `handleFocus` sees writes made earlier in the same tick,
-  // before the state update has been rendered.
-  const openPathRef = useRef<Path>(openPath)
-  const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
-  const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
-  const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
-
-  const handleOnSetCollapsedPath = (path: Path, collapsed: boolean) => {
-    onSetCollapsedPath((prevState) => setAtPath(prevState, path, collapsed))
-  }
-
-  const handleOnSetCollapsedFieldSet = (path: Path, collapsed: boolean) => {
-    onSetCollapsedFieldSets((prevState) => setAtPath(prevState, path, collapsed))
-  }
-
-  const handleSetActiveFieldGroup = (path: Path, groupName: string) =>
-    onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName))
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
   const targetDocumentId = useMemo(() => {
@@ -588,6 +555,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const hasUpstreamVersion = selectUpstreamVersion(upstreamEditState) !== null
   const hasBaseVariant = baseVariant !== null
 
+  const formBuilderState = useFormBuilderState({initialFocusPath, onFocusPath})
+
   const formState = useFormState({
     schemaType,
     documentValue: formDocumentValue,
@@ -595,43 +564,22 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     comparisonValue: comparisonValue || value,
     baseVariantValue: baseVariant ?? undefined,
     hasBaseVariant,
-    focusPath,
-    openPath,
+    focusPath: formBuilderState.focusPath,
+    openPath: formBuilderState.openPath,
     perspective: selectedPerspective,
-    collapsedPaths,
+    collapsedPaths: formBuilderState.collapsedPaths,
     presence,
     validation,
-    collapsedFieldSets,
-    fieldGroupState,
+    collapsedFieldSets: formBuilderState.collapsedFieldSets,
+    fieldGroupState: formBuilderState.fieldGroupState,
     changesOpen,
     hasUpstreamVersion,
     displayInlineChanges,
   })
 
-  const formStateRef = useRef(formState)
-  useEffect(() => {
-    formStateRef.current = formState
-  }, [formState])
+  useBindFormBuilderState(formBuilderState, formState, ready)
 
   useDocumentViewHistory({editState})
-
-  const handleSetOpenPath = (path: Path) => {
-    if (!formStateRef.current) return
-    const ops = getExpandOperations(formStateRef.current, path)
-    ops.forEach((op) => {
-      if (op.type === 'expandPath') {
-        onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))
-      }
-      if (op.type === 'expandFieldSet') {
-        onSetCollapsedFieldSets((prevState) => setAtPath(prevState, op.path, false))
-      }
-      if (op.type === 'setSelectedGroup') {
-        onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
-      }
-    })
-    openPathRef.current = path
-    onSetOpenPath(path)
-  }
 
   const updatePresence = useCallback(
     (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
@@ -664,108 +612,45 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
   }, [updatePresenceThrottled])
 
-  const focusPathRef = useRef<Path>([])
-
-  const handleFocus = (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-    const nextFocusPath = pathFor(_nextFocusPath)
-    if (nextFocusPath !== focusPathRef.current) {
-      setFocusPath(pathFor(nextFocusPath))
-
-      // Focusing a field inside a nested object reveals the dialog that edits it, so
-      // `openPath` follows the focused field's parent. An array item reports its own
-      // path as the focus path though, so when focus lands on whatever is already open
-      // — a Portable Text block object re-reporting the editor selection, for instance —
-      // stepping one segment up from there would close the dialog editing it.
-      if (enhancedObjectDialogEnabled && !isEqual(openPathRef.current, nextFocusPath)) {
-        handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
-      }
-
-      focusPathRef.current = nextFocusPath
-      onFocusPath?.(nextFocusPath)
-    }
-    updatePresenceThrottled(nextFocusPath, payload)
+  const handleFocus = (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+    formBuilderState.onPathFocus(nextFocusPath)
+    updatePresenceThrottled(pathFor(nextFocusPath), payload)
   }
 
-  const handleBlur = (_blurredPath: Path) => {
-    setFocusPath(EMPTY_ARRAY)
-
-    if (focusPathRef.current !== EMPTY_ARRAY) {
-      focusPathRef.current = EMPTY_ARRAY
-      onFocusPath?.(EMPTY_ARRAY)
-    }
-
+  const handleBlur = (blurredPath: Path) => {
+    formBuilderState.onPathBlur(blurredPath)
     // Move presence to the document root (no specific field).
     // DocumentPanelHeader renders these — see document-level-presence cluster.
     updatePresenceThrottled(EMPTY_ARRAY)
   }
-
-  const handleProgrammaticFocus = (nextPath: Path) => {
-    // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
-
-    if (!isEqual(focusPathRef.current, nextPath)) {
-      setFocusPath(nextPath)
-      handleSetOpenPath(nextPath)
-      onFocusPath?.(nextPath)
-
-      focusPathRef.current = nextPath
-    }
-  }
-
-  const applyInitialFocusPath = useEffectEvent(() => {
-    if (!initialFocusPath || initialFocusPath.length === 0) return
-    const resolvedPath = resolveKeyedPath(formStateRef.current?.value, initialFocusPath)
-
-    // Apply unconditionally rather than through `handleProgrammaticFocus`: its change
-    // detection compares against `focusPathRef`, which may already match the target path
-    // (the state was seeded from `initialFocusPath`, and e.g. dialog autofocus can align
-    // the ref before the form is ready) — and the expand operations must still run.
-    setFocusPath(resolvedPath)
-    handleSetOpenPath(resolvedPath)
-    onFocusPath?.(resolvedPath)
-    focusPathRef.current = resolvedPath
-  })
-
-  // Seeding `focusPath`/`openPath` state from `initialFocusPath` (on mount, above) is not
-  // enough to reveal the target field: expanding collapsed ancestors (fieldsets, field
-  // groups, collapsible objects) requires running the expand operations against a form
-  // state computed from the loaded document. Apply the initial focus once, as soon as the
-  // form becomes ready. The URL→form sync in DocumentPaneProvider intentionally skips this
-  // initial case (its openPath guard sees the seeded path as already in sync).
-  const initialFocusPathAppliedRef = useRef(false)
-  useEffect(() => {
-    if (!ready || initialFocusPathAppliedRef.current) return
-    initialFocusPathAppliedRef.current = true
-    applyInitialFocusPath()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-  }, [ready])
 
   return {
     editState,
     upstreamEditState,
     connectionState,
     syncState,
-    focusPath,
+    focusPath: formBuilderState.focusPath,
     validation,
     ready,
     value,
     formState,
     permissions,
     isPermissionsLoading,
-    formStateRef,
+    formStateRef: formBuilderState.formStateRef,
     hasUpstreamVersion,
     hasBaseVariant,
 
-    collapsedFieldSets,
-    collapsedPaths,
-    openPath,
+    collapsedFieldSets: formBuilderState.collapsedFieldSets,
+    collapsedPaths: formBuilderState.collapsedPaths,
+    openPath: formBuilderState.openPath,
     schemaType,
     onChange: handleChange,
-    onPathOpen: handleSetOpenPath,
-    onProgrammaticFocus: handleProgrammaticFocus,
+    onPathOpen: formBuilderState.onPathOpen,
+    onProgrammaticFocus: formBuilderState.onProgrammaticFocus,
     onBlur: handleBlur,
     onFocus: handleFocus,
-    onSetActiveFieldGroup: handleSetActiveFieldGroup,
-    onSetCollapsedPath: handleOnSetCollapsedPath,
-    onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+    onSetActiveFieldGroup: formBuilderState.onFieldGroupSelect,
+    onSetCollapsedPath: formBuilderState.onSetPathCollapsed,
+    onSetCollapsedFieldSet: formBuilderState.onSetFieldSetCollapsed,
   }
 }
