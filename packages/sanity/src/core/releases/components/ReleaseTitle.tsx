@@ -31,7 +31,7 @@ export function ReleaseTitle(props: ReleaseTitleProps): ReactNode {
   const renderedContent: ReactElement = children ? (
     children({displayTitle, fullTitle, isTruncated})
   ) : (
-    <Text {...textProps} as="div" trim={true}>
+    <Text {...textProps} as="div" trim={true} style={{color: 'inherit', ...textProps?.style}}>
       {displayTitle}
     </Text>
   )

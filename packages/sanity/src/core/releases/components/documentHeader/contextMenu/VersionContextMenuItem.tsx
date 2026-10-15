@@ -24,7 +24,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
         <ReleaseTitle
           title={release.metadata?.title}
           fallback={t('release.placeholder-untitled-release')}
-          textProps={{size: 1, weight: 'medium', style: {color: 'inherit'}}}
+          textProps={{size: 1, weight: 'medium'}}
         />
         <Text muted size={1} as="div" trim={true}>
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
