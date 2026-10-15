@@ -6,11 +6,10 @@ import {
   Button, // Button with specific styling and children behavior.
   Inline,
   rem,
-  Text,
 } from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex, type MarginProps, type PaddingProps} from 'ui5'
+import {Text, Box, Flex, type MarginProps, type PaddingProps} from 'ui5'
 
 import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -102,10 +101,12 @@ export function RecentSearchItem({
         <Flex alignItems="stretch">
           {/* Combination of <Inline> and a zero-width character to ensure icon is optically aligned with adjacent text */}
           <Inline paddingY={2}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               <ClockIcon />
             </Text>
-            <Text>&#8203;</Text>
+            <Text as="div" trim={true}>
+              &#8203;
+            </Text>
           </Inline>
           <Flex
             alignItems="stretch"
@@ -119,7 +120,7 @@ export function RecentSearchItem({
             {/* Text query */}
             {value.query && (
               <SearchItemQueryFlex alignItems="center" paddingY={2}>
-                <Text muted size={1} textOverflow="ellipsis" weight="medium">
+                <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
                   {value.query}
                 </Text>
               </SearchItemQueryFlex>
@@ -141,7 +142,7 @@ export function RecentSearchItem({
           <Flex alignItems="center">
             <CloseButtonDiv onClick={handleDelete}>
               <Flex padding={2}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <CloseIcon />
                 </Text>
               </Flex>

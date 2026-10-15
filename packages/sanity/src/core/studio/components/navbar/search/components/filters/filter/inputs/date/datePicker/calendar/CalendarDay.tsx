@@ -1,10 +1,11 @@
-import {Card, Text, type Theme} from '@sanity/ui'
+import {Card, type Theme} from '@sanity/ui'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
+import {Text} from 'ui5'
 
 import {useCalendar} from './contexts/useDatePicker'
 
@@ -113,6 +114,8 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
         muted={!isSelected && !isCurrentMonth}
         size={1}
         weight={isCurrentMonth ? 'medium' : 'regular'}
+        as="div"
+        trim={true}
       >
         {date.getDate()}
       </Text>

@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {memo} from 'react'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {type FilterMenuItemHeader} from '../../../../types'
 
@@ -12,7 +12,7 @@ export const MenuItemHeader = memo(function MenuItemHeader({item}: MenuItemHeade
   return (
     <Box paddingTop={1}>
       <Card borderBottom paddingX={2} paddingY={3} tone={item?.tone}>
-        <Text muted size={1} textOverflow="ellipsis" weight="medium">
+        <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
           {item.title}
         </Text>
       </Card>

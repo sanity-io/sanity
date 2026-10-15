@@ -1,9 +1,8 @@
 import {type Schema, type SchemaType} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import partition from 'lodash-es/partition.js'
 import {type ChangeEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {CommandList} from '../../../../../../../components/commandList/CommandList'
@@ -90,7 +89,7 @@ export function DocumentTypesPopoverContent() {
     if (item.type === 'header') {
       return (
         <Box margin={2} padding={1}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             {item.title}
           </Text>
         </Box>
@@ -153,7 +152,7 @@ export function DocumentTypesPopoverContent() {
         {/* No results */}
         {!documentTypeItems.length && (
           <Box padding={3}>
-            <Text muted size={1} textOverflow="ellipsis">
+            <Text muted size={1} truncate={1} as="div" trim={true}>
               {t('search.document-types-no-matches-found', {filter: typeFilter})}
             </Text>
           </Box>

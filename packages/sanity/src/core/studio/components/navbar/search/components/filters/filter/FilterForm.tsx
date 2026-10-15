@@ -1,8 +1,8 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../../../../../ui-components/errorBoundary/ErrorBoundary'
@@ -103,7 +103,7 @@ export function FilterForm({filter}: FilterFormProps) {
               </Flex>
               {filterDefinition?.description && (
                 <Card border padding={3} radius={2} tone="transparent">
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     {filterDefinition.description}
                   </Text>
                 </Card>
