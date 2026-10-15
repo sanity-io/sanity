@@ -7,7 +7,7 @@ import {
   type ReferenceSchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {type ComponentProps, useCallback, useMemo, type RefAttributes} from 'react'
+import {useCallback, useMemo} from 'react'
 import {combineLatest, from, of, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
 
@@ -76,13 +76,8 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const maxFieldDepth = useSearchMaxFieldDepth()
   const documentPreviewStore = useDocumentPreviewStore()
   const {path, schemaType} = props
-  const {
-    EditReferenceLinkComponent,
-    onEditReference,
-    activePath,
-    initialValueTemplateItems,
-    ...inheritedOptions
-  } = useReferenceInputOptions()
+  const {onEditReference, activePath, initialValueTemplateItems, ...inheritedOptions} =
+    useReferenceInputOptions()
   const {strategy: searchStrategy} = source.search
 
   const documentValue = useFormValue([]) as SanityDocument
@@ -179,26 +174,6 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       }),
     )
 
-  const template = props.value?._strengthenOnPublish?.template
-  const EditReferenceLink = useMemo(
-    () =>
-      function EditReferenceLink_(
-        _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>> &
-          RefAttributes<HTMLAnchorElement>,
-      ) {
-        const {ref: forwardedRef, ...rest} = _props
-        return EditReferenceLinkComponent ? (
-          <EditReferenceLinkComponent
-            {...rest}
-            ref={forwardedRef}
-            parentRefPath={path}
-            template={template}
-          />
-        ) : null
-      },
-    [EditReferenceLinkComponent, path, template],
-  )
-
   const handleEditReference = useCallback(
     (event: EditReferenceEvent) => {
       onEditReference?.({
@@ -273,7 +248,6 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       liveEdit={isDocumentLiveEdit}
       getReferenceInfo={getReferenceInfo}
       selectedState={selectedState}
-      editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
       onEditReference={handleEditReference}
     />

@@ -4,11 +4,10 @@ import {
   // oxlint-disable-next-line no-restricted-imports -- the trigger lays out icon + title + chevron as custom children, which the studio Button wrapper does not support (same as WorkspaceMenuButton)
   Button as UIButton,
   Spinner,
-  Text,
 } from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ComponentProps, type ComponentType, useId} from 'react'
-import {Box, Flex} from 'ui5'
+import {type ComponentProps, type ComponentType, type CSSProperties, useId} from 'react'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -135,16 +134,39 @@ export function ConditionMenuButton(props: ConditionMenuButtonProps): React.JSX.
         >
           <Flex alignItems="center" gap={3}>
             {SelectedIcon ? (
-              <Text size={1}>
-                <SelectedIcon />
-              </Text>
+              <Icon
+                icon={SelectedIcon}
+                size={1}
+                style={
+                  {'margin': '-0.375rem', '--icon-color': 'var(--card-icon-color)'} as CSSProperties
+                }
+              />
             ) : null}
-            <Box flexGrow={1} style={{minWidth: 0}}>
-              <Text muted={!selected} size={1} textOverflow="ellipsis" weight="medium">
+            <Box flexGrow={1}>
+              <Text
+                muted={!selected || invalid}
+                size={1}
+                truncate={1}
+                weight="medium"
+                as="div"
+                trim={true}
+                tone={invalid ? 'critical' : undefined}
+                style={disabled || loading ? {color: 'var(--inert-foreground)'} : {}}
+              >
                 {selected ? selected.title : placeholder}
               </Text>
             </Box>
-            <Text size={1}>{loading ? <Spinner /> : <ChevronDownIcon />}</Text>
+            {loading ? (
+              <Spinner size={1} />
+            ) : (
+              <Icon
+                icon={ChevronDownIcon}
+                size={1}
+                style={
+                  {'margin': '-0.375rem', '--icon-color': 'var(--card-icon-color)'} as CSSProperties
+                }
+              />
+            )}
           </Flex>
         </UIButton>
       }

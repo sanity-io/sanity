@@ -1361,6 +1361,7 @@ exports[`exports snapshot 1`] = `
     "DocumentLimitUpsellContext": "object",
     "DocumentPaneContext": "object",
     "DocumentPaneInfoContext": "object",
+    "DocumentTableSelectionContext": "object",
     "EditDialogOuterBoundaryContext": "object",
     "EnhancedObjectDialogContext": "object",
     "EventsContext": "object",
@@ -1401,6 +1402,7 @@ exports[`exports snapshot 1`] = `
     "PresentationDisplayedDocumentContext": "object",
     "PresentationDocumentContext": "object",
     "PresentationNavigateContext": "object",
+    "PresentationPaneLinksContext": "object",
     "PresentationPanelsContext": "object",
     "PresentationParamsContext": "object",
     "PresentationSharedStateContext": "object",
@@ -1436,6 +1438,7 @@ exports[`exports snapshot 1`] = `
     "TasksNavigationContext": "object",
     "TasksUpsellContext": "object",
     "UnclaimedProjectContext": "object",
+    "UpsellDescriptionSerializerContext": "object",
     "UserApplicationCacheContext": "object",
     "UserColorManagerContext": "object",
     "ValidationContext": "object",
@@ -1555,6 +1558,9 @@ exports[`exports snapshot 1`] = `
   },
   "./media-library": {
     "defineVideoField": "function",
+  },
+  "./media-library-island-runtime": {
+    "mountIsland": "function",
   },
   "./migrate": {
     "ALLOWED_PROPERTIES": "object",

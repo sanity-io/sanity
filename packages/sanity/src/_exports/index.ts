@@ -3,7 +3,7 @@ import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
-import {createAuthStore as _createAuthStorePublic} from '../core/store/authStore/createAuthStore'
+import {createLegacyAuthStore as _createAuthStorePublic} from '../core/store/auth/legacy/createLegacyAuthStore'
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
@@ -1195,11 +1195,11 @@ export {
   useAgentVersionDisplay,
 } from '../core/store/agent/useAgentVersionDisplay'
 export {
-  _createAuthStore,
+  _createLegacyAuthStore as _createAuthStore,
   type AuthStoreOptions,
   type CreateAuthStoreOptions,
-  type RequestFailureDiagnostics,
-} from '../core/store/authStore/createAuthStore'
+} from '../core/store/auth/legacy/createLegacyAuthStore'
+export {type RequestFailureDiagnostics} from '../core/studio/requestErrors/diagnoseRequestFailure'
 /**
  * @internal
  * @deprecated Use the `auth` config key with an `AuthConfig` object instead. Deprecated since Studio v3.15.0.
@@ -1208,7 +1208,7 @@ export const createAuthStore = _createAuthStorePublic
 export {
   createMockAuthStore,
   type MockAuthStoreOptions,
-} from '../core/store/authStore/createMockAuthStore'
+} from '../core/store/auth/mock/createMockAuthStore'
 export {getProviderTitle} from '@sanity/access-ui'
 export {
   type AuthProbeResult,
@@ -1216,11 +1216,9 @@ export {
   type AuthStore,
   type HandleCallbackResult,
   type LoginComponentProps,
-} from '../core/store/authStore/types'
-export {
-  isAuthStore,
-  isCookielessCompatibleLoginMethod,
-} from '../core/store/authStore/utils/asserters'
+} from '../core/store/auth/types'
+export {isCookielessCompatibleLoginMethod} from '../core/store/auth/legacy/asserters'
+export {isAuthStore} from '../core/store/auth/utils/asserters'
 export {
   type ConnectedStatus,
   CONNECTING,

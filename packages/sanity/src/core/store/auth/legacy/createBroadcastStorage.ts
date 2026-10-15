@@ -1,9 +1,9 @@
-import {supportsLocalStorage} from '../../util/supportsLocalStorage'
+import {supportsLocalStorage} from '../../../util/supportsLocalStorage'
 import {
   createBroadcastState,
   createLocalStorageStorage,
   createMemoryStorage,
-} from './createBroadcastState'
+} from '../utils/createBroadcastState'
 
 export function createBroadcastStorage<T>(
   localStorageKey: string,

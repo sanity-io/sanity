@@ -25,6 +25,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {withFocusRing} from '../../components/withFocusRing/withFocusRing'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch/patch'
+import {EditReferenceLink} from './EditReferenceLink'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
@@ -63,12 +64,10 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
   const handleClear = useCallback(() => onChange(unset()), [onChange])
   const value: Reference | undefined = props.value as any
 
-  const {EditReferenceLink, getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} =
-    useReferenceInput({
-      path,
-      schemaType,
-      value,
-    })
+  const {getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} = useReferenceInput({
+    path,
+    schemaType,
+  })
 
   useDidUpdate(focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus && elementRef.current) {
@@ -234,6 +233,8 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
               data-selected={selected ? true : undefined}
               documentId={value?._ref}
               documentType={refType?.name}
+              parentRefPath={path}
+              template={value?._strengthenOnPublish?.template}
               flex={1}
               pressed={pressed}
               radius={2}
