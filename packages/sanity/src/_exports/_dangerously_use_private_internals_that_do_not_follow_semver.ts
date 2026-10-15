@@ -483,6 +483,7 @@ export {useManageFavorite, type UseManageFavoriteProps} from '../core/hooks/useM
 export {useReconnectingToast} from '../core/hooks/useReconnectingToast'
 export {type RelativeTimeOptions, useRelativeTime} from '../core/hooks/useRelativeTime'
 export {useReviewChanges} from '../core/hooks/useReviewChanges'
+export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
 export {useStudioUrl} from '../core/hooks/useStudioUrl'
 export {type SyncState, useSyncState} from '../core/hooks/useSyncState'
 export {

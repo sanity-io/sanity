@@ -950,6 +950,7 @@ export {type DocumentField, useReferringDocuments} from '../core/hooks/useReferr
 export {type RelativeTimeOptions, useRelativeTime} from '../core/hooks/useRelativeTime'
 export {useReviewChanges} from '../core/hooks/useReviewChanges'
 export {useSchema} from '../core/hooks/useSchema'
+export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
 export {useStudioUrl} from '../core/hooks/useStudioUrl'
 export {type SyncState, useSyncState} from '../core/hooks/useSyncState'
 export {
