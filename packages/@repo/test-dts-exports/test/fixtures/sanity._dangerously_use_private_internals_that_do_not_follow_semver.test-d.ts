@@ -815,7 +815,6 @@ import type {
   UseSearchMachineOptions,
   useSearchMaxFieldDepth,
   useSearchState,
-  useSetImmediateValidation,
   useSetPerspective,
   useSetVariant,
   useShallowUnique,
@@ -3332,9 +3331,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useSearchState', () => {
     expectTypeOf<typeof useSearchState>().toBeFunction()
-  })
-  test('useSetImmediateValidation', () => {
-    expectTypeOf<typeof useSetImmediateValidation>().toBeFunction()
   })
   test('useSetPerspective', () => {
     expectTypeOf<typeof useSetPerspective>().toBeFunction()

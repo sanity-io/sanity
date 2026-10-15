@@ -14,10 +14,10 @@ import {useDocumentStore} from '../store/datastores'
  * waiting, and disable it as soon as they no longer are.
  *
  * It switches the document's shared validation, so pass the same arguments as
- * {@link useValidationStatus}: every `useValidationStatus` of that document gets the results
- * sooner, and validation stays immediate until every caller has disabled it or unmounted.
+ * `useValidationStatus`: every `useValidationStatus` of that document gets the results sooner,
+ * and validation stays immediate until every caller has disabled it or unmounted.
  *
- * @internal
+ * @beta
  */
 export function useSetImmediateValidation(
   validationTargetId: string,
