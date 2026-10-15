@@ -53,7 +53,7 @@ const LOADING_ROW_COUNT = 3
 function RowActionsHeader({headerProps}: HeaderProps) {
   return (
     <Flex {...headerProps} paddingY={3} paddingX={3}>
-      <Text muted size={1} weight="medium">
+      <Text muted size={1} weight="medium" as="div" trim={true}>
         &nbsp;
       </Text>
     </Flex>
