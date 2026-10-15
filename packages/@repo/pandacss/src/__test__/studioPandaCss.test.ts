@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url'
 import {build, type Rolldown} from 'vite'
 import {afterAll, beforeAll, describe, expect, test} from 'vitest'
 
+import {layerOrderStatement, pandaLayerNames, STUDIO_LAYER_ORDER} from '../layerOrder.ts'
 import {PANDA_LAYERS_CSS_SPECIFIER, studioPandaCss} from '../vite.ts'
 
 const LAYERS_CSS_PATH = fileURLToPath(new URL('../layers.css', import.meta.url))
@@ -94,10 +95,12 @@ afterAll(async () => {
   await rm(root, {recursive: true, force: true})
 })
 
-test('layers.css declares the layer names the fixtures use', async () => {
+test("layers.css opens with the studio layer order and declares the fixtures' layer names", async () => {
   const layersCss = await readFile(LAYERS_CSS_PATH, 'utf8')
+  const statements = layersCss.match(/^@layer [^;]+;$/gm) ?? []
+  expect(statements[0]).toBe(layerOrderStatement(STUDIO_LAYER_ORDER))
   for (const {layers} of PROJECTS) {
-    expect(layersCss).toContain(`@layer ${layers}-reset, ${layers}-base`)
+    expect(layersCss).toContain(pandaLayerNames(layers).join(', '))
   }
 })
 

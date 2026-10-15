@@ -1,4 +1,5 @@
 import {defineConfig, type Config} from '@pandacss/dev'
+import {pandaLayers} from '@repo/pandacss/layer-order'
 import {STYLE_SYSTEMS} from '@repo/utils/style-systems'
 
 import {STYLE_OUTLINE_ATTRIBUTE} from './plugins/style-outline/styleSystems'
@@ -12,13 +13,7 @@ export default defineConfig({
   hash: true,
   prefix: 'test-studio',
   // Prefixed like the class names, so the layers never merge with the `sanity-*` ones
-  layers: {
-    reset: 'test-studio-reset',
-    base: 'test-studio-base',
-    tokens: 'test-studio-tokens',
-    recipes: 'test-studio-recipes',
-    utilities: 'test-studio-utilities',
-  },
+  layers: pandaLayers('test-studio'),
   preflight: false,
   presets: [],
   jsxStyleProps: 'none',

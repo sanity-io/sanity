@@ -292,26 +292,34 @@ How the CSS reaches a page:
   for its own `roots` under both commands, since its `plugins/**/*.css.ts` have no prebuilt CSS.
 - **Cascade layers.** The studio's CSS lives in Panda's `@layer` blocks (`sanity-reset` …
   `sanity-utilities`), in `bundle.css` and in the dev stylesheet alike. Layer order decides the
-  cascade before specificity does, so every `@sanity/ui` layer must be declared before the
-  studio's: the `u-*` layers of `@sanity/ui/styles.css`, the layer `@sanity/ui` v4 wraps its
-  styled-components rules in, and `ui5`'s `sui` (its component classes included). The studio's
-  `.css.ts` rules override those libraries' rules on the same element, which only works through
-  layer order once every side is layered; an unlayered rule beats a layered one regardless of
-  specificity, so neither library may leave rules outside its layers. The order is fixed by the
-  first `@layer` statement a page sees, i.e. the one at the top of `bundle.css` / `layers.css`,
-  which has to list the `@sanity/ui` layer names before the `sanity-*` ones. Panda's `polyfill`
-  option is not an alternative to layers: it emulates their order with `:not(#\#…)` selector
-  chains that inflate every rule's specificity.
-- **Until `@sanity/ui` layers its rules, the layers are stripped.** Today `@sanity/ui` v4 injects
+  cascade before specificity does, so every `@sanity/ui` layer is declared before the studio's.
+  `STUDIO_LAYER_ORDER` in `@repo/pandacss/layer-order` is that order, lowest priority first:
+  `sui` (`ui5`'s stylesheet; its `sui.global` is a universal reset that has to lose to everything
+  styling the same elements, after `u-styled` it zeroes a v4 `Box`'s padding), `u-reset` …
+  `u-utilities` (the Panda layers of `@sanity/ui/styles.css`, [ui#3228](https://github.com/sanity-io/ui/pull/3228)),
+  `u-styled` (the layer `@sanity/ui` v4 wraps its styled-components rules in,
+  [ui#3233](https://github.com/sanity-io/ui/pull/3233); its `ThemeProvider` emits
+  `@layer sui, u-tokens, u-utilities, u-styled;` itself), then `sanity-*`, and in the test studio
+  `test-studio-*` last. A page fixes the order by the first `@layer` statement it sees, and the
+  studio's stylesheet loads before styled-components' `<style>` tag, so the statement sits at the
+  top of `bundle.css` (`pandaLayerOrder()` prepends it; `@sanity/pandacss-tsdown-plugin` emits the
+  blocks without one) and of `layers.css`. The studio's `.css.ts` rules override the libraries'
+  rules on the same element through that order — once every side is layered: an unlayered rule
+  beats a layered one regardless of specificity, so neither library may leave rules outside its
+  layers (`ui5`'s component classes still are, a ui5 change). Panda's `polyfill` option is not an
+  alternative to layers: it emulates their order with `:not(#\#…)` selector chains that inflate
+  every rule's specificity.
+- **Until `@sanity/ui` ships `u-styled`, the layers are stripped.** Today `@sanity/ui` v4 injects
   its styled-components rules unlayered and `ui5` keeps its component classes outside `sui`, and
-  an unlayered rule beats every layered one, so `@repo/pandacss` unwraps the `@layer` blocks
-  (`unwrapCascadeLayers`) from `bundle.css` (`unlayeredPandaCss()` from `@repo/pandacss/tsdown`,
-  merged into `packages/sanity/tsdown.config.ts`), from the CDN bundle and from the dev
-  stylesheet (`unlayeredPandaCss()` from `@repo/pandacss/vite`, registered by `studioPandaCss()`
-  and `@repo/package.bundle`). That step is one commit, `build: strip the Panda cascade layers
-  until @sanity/ui layers its styled-components output`: `git revert` it once `@sanity/ui` ships
-  layered output, and prepend the layer-order statement above to `bundle.css` and `layers.css`
-  in the same change (`@sanity/pandacss-tsdown-plugin` emits the blocks without one).
+  an unlayered rule beats every layered one, so `@repo/pandacss` unwraps the `@layer` blocks and
+  statements (`unwrapCascadeLayers`) from `bundle.css` (`unlayeredPandaCss()` from
+  `@repo/pandacss/tsdown`, merged into `packages/sanity/tsdown.config.ts`), from the CDN bundle
+  and from the dev stylesheet (`unlayeredPandaCss()` from `@repo/pandacss/vite`, registered by
+  `studioPandaCss()` and `@repo/package.bundle`). That step is one commit, `build: strip the Panda
+  cascade layers until @sanity/ui layers its styled-components output`: once the `@sanity/ui`
+  release with `u-styled` is in the catalog, `git revert` it (keep `pandaLayerOrder()` and the
+  `@repo/pandacss/layer-order` export where the revert conflicts with them), and check that the
+  `&&` overrides against `@sanity/ui` still win, now through layer order.
 - **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
   `property: value` pair once, grouped by property with the values sorted; a modifier class that
   must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)

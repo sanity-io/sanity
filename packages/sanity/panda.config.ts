@@ -1,4 +1,5 @@
 import {defineConfig, type Config} from '@pandacss/dev'
+import {pandaLayers} from '@repo/pandacss/layer-order'
 
 // The static styles of the studio: `css()` calls in the `.css.ts` modules next to the
 // components, extracted at build time (`panda` in tsdown.config.ts, `@pandacss/vite` in the dev
@@ -15,15 +16,9 @@ export default defineConfig({
   prefix: 'sanity',
   // `prefix` names classes and variables only. The cascade layers get the same prefix (the `u-`
   // convention of `@sanity/ui`, sanity-io/ui#3228) so they cannot merge with the layers of the
-  // other Panda bundle on the page (`@sanity/ui`'s `u-*`) or with `ui5`'s `sui`. See the
-  // "Panda CSS" section of AGENTS.md for the order the studio needs between its layers and theirs.
-  layers: {
-    reset: 'sanity-reset',
-    base: 'sanity-base',
-    tokens: 'sanity-tokens',
-    recipes: 'sanity-recipes',
-    utilities: 'sanity-utilities',
-  },
+  // other Panda bundle on the page (`@sanity/ui`'s `u-*`) or with `ui5`'s `sui`. Their order
+  // against those layers is `STUDIO_LAYER_ORDER` in @repo/pandacss.
+  layers: pandaLayers('sanity'),
   preflight: false,
   presets: [],
   // `styled` in this package is styled-components, not Panda's JSX factory.

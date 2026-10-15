@@ -9,6 +9,7 @@
       "types": "./src/layers-css.d.ts",
       "default": "./src/layers.css"
     },
+    "./layer-order": "./src/layerOrder.ts",
     "./tsdown": "./src/tsdown.ts",
     "./vite": "./src/vite.ts"
   },

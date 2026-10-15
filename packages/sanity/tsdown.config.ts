@@ -1,3 +1,4 @@
+import {pandaLayerOrder} from '@repo/pandacss/layer-order'
 import {unlayeredPandaCss} from '@repo/pandacss/tsdown'
 import {defineConfig} from '@repo/tsdown.config'
 import {mergeConfig, type UserConfig} from 'tsdown'
@@ -52,10 +53,12 @@ const config: UserConfig = mergeConfig(
     // adds work to the tsdown build. Usage: `pnpm analyze:sanity` from the repo root (see AGENTS.md).
     bundleAnalyzer: process.env.ENABLE_BUNDLE_ANALYZER === 'true',
   }),
-  // `@sanity/tsdown-config` builds its own plugin list, so the plugin that strips the cascade
-  // layers from `lib/bundle.css` is merged in afterwards (see @repo/pandacss for why the studio's
-  // static CSS stays unlayered until `@sanity/ui` layers its own rules)
-  {plugins: [unlayeredPandaCss()]},
+  // `@sanity/tsdown-config` builds its own plugin list, so the plugins that finish
+  // `lib/bundle.css` are merged in afterwards: the one that declares the order of the studio's
+  // cascade layers against `@sanity/ui`'s, and the one that strips the layers again (see
+  // @repo/pandacss for why the studio's static CSS stays unlayered until `@sanity/ui` layers its
+  // own rules)
+  {plugins: [pandaLayerOrder(), unlayeredPandaCss()]},
 )
 
 export default config

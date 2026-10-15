@@ -1,7 +1,10 @@
 /*
  * The stylesheet `@pandacss/vite` fills: each Panda project appends its CSS below the statement
  * that declares its layers (the `layers` names of its panda.config.ts), which is also how the
- * plugin recognizes this file as a project's root stylesheet.
+ * plugin recognizes this file as a project's root stylesheet. The first statement is the order of
+ * the studio's layers against `@sanity/ui`'s (`STUDIO_LAYER_ORDER` in src/layerOrder.ts, which
+ * `bundle.css` gets through `pandaLayerOrder()`); the test studio's layers come last. A page
+ * orders layers by first mention, so the second statement only appends names.
  */
-@layer sanity-reset, sanity-base, sanity-tokens, sanity-recipes, sanity-utilities;
+@layer sui, u-reset, u-base, u-tokens, u-recipes, u-utilities, u-styled, sanity-reset, sanity-base, sanity-tokens, sanity-recipes, sanity-utilities;
 @layer test-studio-reset, test-studio-base, test-studio-tokens, test-studio-recipes, test-studio-utilities;
