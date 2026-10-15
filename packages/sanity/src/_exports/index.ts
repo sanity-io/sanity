@@ -1361,6 +1361,7 @@ export {
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
   isPublishDocumentVersionEvent,
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
