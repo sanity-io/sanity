@@ -55,7 +55,7 @@ export function LiveButton({active, supported, canFetch, onToggle}: LiveButtonPr
           onClick={onToggle}
           padding={2}
           text={label}
-          tone={live ? 'positive' : 'default'}
+          tone={live ? 'critical' : 'default'}
         />
         {unavailable && <VisuallyHidden id={hintId}>{tooltip}</VisuallyHidden>}
       </span>
