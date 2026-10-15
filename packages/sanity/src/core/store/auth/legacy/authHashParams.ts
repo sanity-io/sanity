@@ -9,6 +9,10 @@ declare global {
    * Set by an inline script that the CLI adds to the studio's `index.html`. It runs before any
    * module, removes the auth params below from the URL hash, and keeps their raw values here so
    * a studio that fails to boot never leaves them in the address bar.
+   *
+   * The CLI only adds that script when this package's `package.json` sets the
+   * `sanityCliCapabilities.authHashStash` marker: bump it if the stash contract changes
+   * incompatibly, and never remove this reader while the marker is set.
    */
   var __SANITY_AUTH_HASH_PARAMS__: StashedAuthHashParams | undefined
 }
