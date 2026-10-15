@@ -98,7 +98,6 @@ export interface SqrlChange {
 
 export interface SqrlChanges {
   sinceThirtyDays: SqrlChange | null
-  sinceQuarterStart: SqrlChange | null
 }
 
 export function shapeSqrlSeries(documents: SqrlSeriesDocument[] | null | undefined): SqrlPoint[] {
@@ -121,11 +120,6 @@ export function filterSqrlByRange(
   if (days === null) return points
   const cutoff = nowMs - days * DAY_MS
   return points.filter((point) => point.ms >= cutoff)
-}
-
-export function quarterStartMs(nowMs: number): number {
-  const now = new Date(nowMs)
-  return Date.UTC(now.getUTCFullYear(), Math.floor(now.getUTCMonth() / 3) * 3, 1)
 }
 
 export function pointAtOrBefore(points: SqrlPoint[], targetMs: number): SqrlPoint | null {
@@ -152,13 +146,7 @@ function changeSince(
 export function sqrlChanges(points: SqrlPoint[], latestScore: number, nowMs: number): SqrlChanges {
   return {
     sinceThirtyDays: changeSince(points, latestScore, nowMs - 30 * DAY_MS),
-    sinceQuarterStart: changeSince(points, latestScore, quarterStartMs(nowMs)),
   }
-}
-
-export function quarterLabel(nowMs: number): string {
-  const now = new Date(nowMs)
-  return `Q${Math.floor(now.getUTCMonth() / 3) + 1} ${now.getUTCFullYear()}`
 }
 
 export function formatScore(value: number): string {

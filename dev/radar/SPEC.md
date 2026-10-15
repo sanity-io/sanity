@@ -104,9 +104,8 @@ effect of merged work; secondary: leads scanning health weekly.
    **SQRL banner.** Above the grid sits the SQRL banner (`SqrlBanner.tsx`):
    one score for studio quality, higher is better, recorded for every main
    commit the nightly bench measures as a `sqrlScore` document (shape and formula: "SQRL score" below). It shows the latest score on main by `git.committedAt` with
-   its change since 30 days ago and since the start of the current calendar
-   quarter (UTC), each measured against the last score at or before that
-   instant (no earlier score reads "no earlier score", never a guess), and
+   its change since 30 days ago, measured against the last score at or before
+   that instant (no earlier score reads "no earlier score", never a guess), and
    the commit and date it reflects. Beside it a compact visx line chart of the
    score over time (the 7-commit median as the line, each commit's own
    `scoreCommit` as faint points, a dashed 100 reference, the same release

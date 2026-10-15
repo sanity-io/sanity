@@ -7,8 +7,6 @@ import {
   nearestPointIndex,
   orderedPillars,
   pointAtOrBefore,
-  quarterLabel,
-  quarterStartMs,
   regressedInputs,
   shapeSqrlSeries,
   sqrlChanges,
@@ -38,18 +36,6 @@ function input(key: string, trend: SqrlInput['trend'], contributionPoints: numbe
     trend,
   }
 }
-
-test('quarterStartMs is the first instant of the calendar quarter in UTC', () => {
-  expect(quarterStartMs(NOW)).toBe(Date.UTC(2026, 9, 1))
-  expect(quarterStartMs(Date.UTC(2026, 11, 31, 23, 59))).toBe(Date.UTC(2026, 9, 1))
-  expect(quarterStartMs(Date.UTC(2026, 0, 1))).toBe(Date.UTC(2026, 0, 1))
-  expect(quarterStartMs(Date.UTC(2026, 5, 30, 23, 59))).toBe(Date.UTC(2026, 3, 1))
-})
-
-test('quarterLabel names the quarter and year', () => {
-  expect(quarterLabel(NOW)).toBe('Q4 2026')
-  expect(quarterLabel(Date.UTC(2026, 6, 1))).toBe('Q3 2026')
-})
 
 test('shapeSqrlSeries sorts by commit date and drops unusable documents', () => {
   const shaped = shapeSqrlSeries([
@@ -85,31 +71,17 @@ test('pointAtOrBefore returns the closest earlier point, inclusive', () => {
   expect(pointAtOrBefore(points, NOW - 51 * DAY)).toBeNull()
 })
 
-test('sqrlChanges measures against the last score at or before each anchor', () => {
+test('sqrlChanges measures against the last score at or before 30 days ago', () => {
   const points = [point(60, 100), point(31, 104), point(29, 105), point(14, 106), point(0, 108)]
   const changes = sqrlChanges(points, 108, NOW)
   expect(changes.sinceThirtyDays?.points).toBe(4)
   expect(changes.sinceThirtyDays?.fromMs).toBe(NOW - 31 * DAY)
-  expect(changes.sinceQuarterStart?.points).toBe(3)
-  expect(changes.sinceQuarterStart?.fromMs).toBe(NOW - 29 * DAY)
-})
-
-test('sqrlChanges takes the quarter anchor from the last score before the quarter began', () => {
-  const quarterEarly = Date.UTC(2026, 9, 5, 12)
-  const points: SqrlPoint[] = [
-    {score: 100, scoreCommit: 100, sha: 'q3', ms: Date.UTC(2026, 8, 30, 12)},
-    {score: 110, scoreCommit: 110, sha: 'q4', ms: quarterEarly},
-  ]
-  const changes = sqrlChanges(points, 112, quarterEarly + 3 * DAY)
-  expect(changes.sinceQuarterStart?.points).toBe(12)
-  expect(changes.sinceThirtyDays).toBeNull()
 })
 
 test('sqrlChanges has no change where the series does not reach back', () => {
   const changes = sqrlChanges([point(5, 100), point(0, 102)], 102, NOW)
   expect(changes.sinceThirtyDays).toBeNull()
-  expect(changes.sinceQuarterStart).toBeNull()
-  expect(sqrlChanges([], 100, NOW)).toEqual({sinceThirtyDays: null, sinceQuarterStart: null})
+  expect(sqrlChanges([], 100, NOW)).toEqual({sinceThirtyDays: null})
 })
 
 test('formatSignedPoints uses a real minus and hides the sign on zero', () => {
@@ -193,9 +165,8 @@ test('the regressed variant lists regressed inputs, and is deterministic', () =>
   expect(generateSqrlDebug('regressed', NOW)).toEqual(first)
 })
 
-test('shaped debug series reaches back past the start of the quarter', () => {
+test('shaped debug series reaches back past 30 days', () => {
   const points = shapeSqrlSeries(generateSqrlDebug('dip', NOW).series)
   const changes = sqrlChanges(points, points.at(-1)!.score, NOW)
   expect(changes.sinceThirtyDays).not.toBeNull()
-  expect(changes.sinceQuarterStart).not.toBeNull()
 })

@@ -19,7 +19,6 @@ import {
   hostNote,
   orderedPillars,
   pillarLabelFor,
-  quarterLabel,
   regressedInputs,
   shapeSqrlSeries,
   SQRL_LATEST_QUERY,
@@ -108,13 +107,7 @@ function Headline(props: {latest: SqrlLatest; series: SqrlPoint[]; asOfMs: numbe
       >
         {formatScore(latest.score)}
       </div>
-      <VStack gap={2}>
-        <ChangeRow change={changes.sinceThirtyDays} label="since 30 days ago" />
-        <ChangeRow
-          change={changes.sinceQuarterStart}
-          label={`since the start of ${quarterLabel(asOfMs)}`}
-        />
-      </VStack>
+      <ChangeRow change={changes.sinceThirtyDays} label="since 30 days ago" />
       <Text size={1} muted>
         Commit{' '}
         <a href={commitUrl(latest.git.sha)} target="_blank" rel="noreferrer">
