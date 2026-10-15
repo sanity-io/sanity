@@ -101,7 +101,11 @@ function keystroke(rev: string) {
 
 function applyKeystroke(
   state: ReturnType<typeof keystroke>,
-  {syncing = false, validation = []}: {syncing?: boolean; validation?: ValidationMarker[]} = {},
+  {
+    syncing = false,
+    validation = [],
+    isValidating = false,
+  }: {syncing?: boolean; validation?: ValidationMarker[]; isValidating?: boolean} = {},
 ) {
   mockUseDocumentPane.mockReturnValue({
     changesOpen: false,
@@ -113,7 +117,7 @@ function applyKeystroke(
   mockUseEditState.mockReturnValue(state.editState)
   mockUseSyncState.mockReturnValue({isSyncing: syncing})
   mockUseValidationStatus.mockReturnValue({
-    isValidating: false,
+    isValidating,
     validation,
     revision: state.draft._rev,
   })
@@ -188,5 +192,16 @@ describe('usePublishAction', () => {
     applyKeystroke(third)
     rerender(third.props)
     expect(operations.publish.execute).toHaveBeenCalledTimes(1)
+  })
+
+  it('validates immediately while a publish waits', async () => {
+    const state = keystroke('1')
+    applyKeystroke(state, {isValidating: true})
+    const {result, rerender} = await renderPublishAction(state.props)
+    const scheduling = () => mockUseValidationStatus.mock.lastCall?.[3]
+
+    act(() => result.current?.onHandle?.())
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+    expect(scheduling()).toEqual({scheduling: 'immediate'})
   })
 })
