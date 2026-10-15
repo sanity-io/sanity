@@ -420,6 +420,17 @@ describe('queryRunnerMachine', () => {
     expect(harness.snapshot().context.reason).toEqual({type: 'live', matchedTags: []})
   })
 
+  it('refetches after the live connection reconnects, since changes in between sent nothing', () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
+    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.liveEvents.next({type: 'welcome'})
+    expect(harness.fetches).toHaveLength(1)
+    harness.liveEvents.next({type: 'reconnect'})
+    expect(harness.fetches).toHaveLength(2)
+    expect(harness.snapshot().context.reason).toEqual({type: 'live', matchedTags: []})
+  })
+
   it('resubscribes when live is re-enabled with a new client and stops when disabled', () => {
     const harness = createHarness()
     harness.actor.send({type: 'live.enable', client: {} as SanityClient})

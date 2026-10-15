@@ -16,7 +16,8 @@ describe('syncTags', () => {
   it('decides whether a live event should refetch', () => {
     expect(getLiveRefetchTags(undefined, ['s1:a'])).toBeNull()
     expect(getLiveRefetchTags({type: 'welcome'}, ['s1:a'])).toBeNull()
-    expect(getLiveRefetchTags({type: 'reconnect'}, ['s1:a'])).toBeNull()
+    // Changes made while the connection was down sent no message
+    expect(getLiveRefetchTags({type: 'reconnect'}, ['s1:a'])).toEqual([])
     expect(getLiveRefetchTags({type: 'restart', id: '1'}, undefined)).toEqual([])
     expect(getLiveRefetchTags({type: 'message', id: '1', tags: ['s1:b']}, ['s1:a'])).toBeNull()
     expect(getLiveRefetchTags({type: 'message', id: '1', tags: ['s1:a']}, ['s1:a'])).toEqual([

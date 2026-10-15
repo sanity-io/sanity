@@ -23,7 +23,9 @@ export function getMatchingSyncTags(
 
 /**
  * Whether a live event should trigger a refetch of a query whose last response carried
- * `responseTags`. `restart` events always do: the server asks every client to resync.
+ * `responseTags`. `restart` events always do (the server asks every client to resync), and so do
+ * `reconnect` events: changes made while the connection was down sent no message. Presentation's
+ * loader resets on both too.
  */
 export function getLiveRefetchTags(
   event: LiveEvent | undefined,
@@ -32,7 +34,7 @@ export function getLiveRefetchTags(
   if (!event) {
     return null
   }
-  if (event.type === 'restart') {
+  if (event.type === 'restart' || event.type === 'reconnect') {
     return []
   }
   if (event.type !== 'message') {
