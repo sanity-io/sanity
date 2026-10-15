@@ -36,6 +36,7 @@ import {
   querySection,
   sectionResizer,
 } from '../vista.css'
+import {ApiVersionButton} from './ApiVersionButton'
 import {LiveButton} from './LiveButton'
 import {OptionsPanel} from './OptionsPanel'
 import {ParamsForm} from './ParamsForm'
@@ -117,6 +118,25 @@ export function RequestPanel(props: RequestPanelProps) {
   const optionsRef = useRef<HTMLElement>(null)
   const paramsResize = useDragResize({containerRef, sectionRef: paramsRef, siblingRef: optionsRef})
   const paramsHeightNow = paramsResize.height ?? paramsResize.measured?.current
+
+  // The API version button shows the field that changes it: the Options panel opens if it was
+  // collapsed, and once its fields have mounted the field (or, while a variant locks it, the
+  // wrapper that stands in for it) takes focus
+  const revealApiVersion = useCallback(() => {
+    if (!optionsExpanded) togglePanel('options')
+    requestAnimationFrame(() => {
+      const options = optionsRef.current
+      const field =
+        options?.querySelector<HTMLElement>(
+          'input[data-testid="vista-option-api-version-custom"], [data-testid="vista-option-api-version-custom"] input',
+        ) ??
+        options?.querySelector<HTMLElement>(
+          '[data-testid="vista-option-api-version-wrap"][tabindex]',
+        ) ??
+        options?.querySelector<HTMLElement>('#vista-option-api-version')
+      field?.focus()
+    })
+  }, [optionsExpanded, togglePanel])
 
   const runLabel = isFetching ? t('vista.query.stop') : t('action.query-execute')
   // Next to Stop live, the tooltip and accessible name say what Stop stops
@@ -241,6 +261,8 @@ export function RequestPanel(props: RequestPanelProps) {
         </CollapsibleSection>
       </Flex>
       <ActionRail testId="vista-query-actions">
+        <ApiVersionButton onReveal={revealApiVersion} resolved={resolved} />
+        <Box flexBasis="0%" flexGrow={1} />
         <LiveButton
           active={tab.autoRefetch}
           canFetch={request !== null}

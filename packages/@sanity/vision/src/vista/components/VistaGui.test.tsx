@@ -109,8 +109,10 @@ vi.mock('sanity', async () => {
     useScheduledDraftsEnabled: vi.fn(() => false),
     useWorkspace: vi.fn(() => ({document: {drafts: {enabled: true}}})),
     useTranslation: () => ({
-      t: (key: string, options?: {message?: string}) =>
-        options?.message ? `${key}:${options.message}` : key,
+      t: (key: string, options?: {message?: string; version?: string}) => {
+        if (options?.message) return `${key}:${options.message}`
+        return options?.version ? `${key}:${options.version}` : key
+      },
     }),
     defineLocaleResourceBundle: (bundle: unknown) => bundle,
     defineLocalesResources: (_namespace: string, resources: unknown) => resources,
@@ -582,6 +584,32 @@ describe('VistaGui', () => {
     expect(
       within(latest).getByTestId('vista-history-changes-toggle').getAttribute('aria-expanded'),
     ).toBe('false')
+  })
+
+  it('shows the API version next to Fetch, and the field that changes it on request', async () => {
+    renderVista()
+    const button = screen.getByTestId('vista-api-version-button')
+    expect(text(button)).toBe('vista.api-version.button:v2025-02-19')
+
+    // With the Options panel collapsed, the button opens it and focuses the field
+    fireEvent.click(screen.getByTestId('vista-request-options-toggle'))
+    expect(screen.queryByTestId('vista-option-api-version-select')).toBeNull()
+    fireEvent.click(button)
+    await waitFor(() =>
+      expect(document.activeElement).toBe(screen.getByTestId('vista-option-api-version-select')),
+    )
+
+    // An unfinished "Other" version is called out, since nothing can be fetched with it
+    fireEvent.change(screen.getByTestId('vista-option-api-version-select'), {
+      target: {value: 'other'},
+    })
+    expect(text(screen.getByTestId('vista-api-version-button'))).toBe(
+      'vista.api-version.button-invalid',
+    )
+    fireEvent.click(screen.getByTestId('vista-api-version-button'))
+    await waitFor(() =>
+      expect(document.activeElement).toBe(screen.getByTestId('vista-option-api-version-custom')),
+    )
   })
 
   it('generates a query from a description into a new tab that fetches it', async () => {
@@ -1322,6 +1350,10 @@ describe('VistaGui', () => {
     expect(apiVersionWrap.getAttribute('role')).toBe('group')
     expect(apiVersionWrap.getAttribute('aria-label')).toBe('settings.api-version-label')
     expect(describedBy(apiVersionWrap)).toBe('settings.api-version-locked-for-variant')
+    // The action bar names the version requests actually use, and its button shows the lock
+    expect(text(screen.getByTestId('vista-api-version-button'))).toBe('vista.api-version.button:vX')
+    fireEvent.click(screen.getByTestId('vista-api-version-button'))
+    await waitFor(() => expect(document.activeElement).toBe(apiVersionWrap))
 
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))

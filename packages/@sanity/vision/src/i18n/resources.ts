@@ -193,6 +193,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.export-types.title-typescript': 'Export TypeScript',
   /** Title of the dialog exporting a Zod schema for the result */
   'vista.export-types.title-zod': 'Export Zod',
+  /** Button in the request column's action bar naming the API version requests go out with */
+  'vista.api-version.button': 'API {{version}}',
+  /** The API version button while the "Other" API version input holds an unfinished version */
+  'vista.api-version.button-invalid': 'Unfinished API version',
+  /** Tooltip of the API version button */
+  'vista.api-version.tooltip':
+    'Queries run against API version {{version}}. Select to change it in Options.',
+  /** Tooltip of the API version button while the "Other" input holds an unfinished version */
+  'vista.api-version.tooltip-invalid':
+    'The API version in Options is unfinished, so nothing can be fetched until it is complete.',
+  /** Tooltip of the API version button while a selected variant forces the experimental API */
+  'vista.api-version.tooltip-locked':
+    'Queries run against API version {{version}}, which the selected variant needs.',
   /** Button next to the new tab button that opens the dialog writing a query from a description */
   'vista.generate.button': 'Generate query',
   /** Closes the generate query dialog */
