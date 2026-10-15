@@ -5,7 +5,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {useContentSize} from './useContentSize'
 
 /** Records every observer the hook creates, and lets a test deliver sizes to it */
-class ResizeObserverMock {
+class ResizeObserverMock implements ResizeObserver {
   static instances: ResizeObserverMock[] = []
   observed: Element[] = []
   disconnected = false
@@ -25,8 +25,26 @@ class ResizeObserverMock {
   }
 
   resize(width: number, height: number) {
-    const entry = {contentRect: {width, height}} as unknown as ResizeObserverEntry
-    this.callback([entry], this as unknown as ResizeObserver)
+    const contentRect: DOMRectReadOnly = {
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      width,
+      height,
+      right: width,
+      bottom: height,
+      toJSON: () => ({width, height}),
+    }
+    const size: ResizeObserverSize = {inlineSize: width, blockSize: height}
+    const entry: ResizeObserverEntry = {
+      target: this.observed[0],
+      contentRect,
+      contentBoxSize: [size],
+      borderBoxSize: [size],
+      devicePixelContentBoxSize: [size],
+    }
+    this.callback([entry], this)
   }
 }
 
