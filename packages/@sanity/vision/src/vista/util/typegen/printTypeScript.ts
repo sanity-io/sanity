@@ -53,6 +53,8 @@ function printNode(node: TypeNode, depth: number, context: PrintContext): string
       return `Array<${printNode(node.of, depth, context)}>`
     case 'union': {
       const members = uniqueMembers(node.of.map((member) => printNode(member, depth, context)))
+      // Extracted schemas have empty unions (a Portable Text list item without styles)
+      if (members.length === 0) return 'never'
       return members.length === 1 ? members[0] : members.join(' | ')
     }
     case 'object':

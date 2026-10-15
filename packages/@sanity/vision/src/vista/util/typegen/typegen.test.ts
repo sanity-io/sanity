@@ -454,6 +454,26 @@ describe('printZod', () => {
     )
   })
 
+  it('prints empty unions, which extracted schemas have, as never', () => {
+    const node: TypeNode = {
+      type: 'object',
+      attributes: {
+        listItem: {type: 'objectAttribute', value: {type: 'union', of: []}, optional: true},
+        items: {type: 'objectAttribute', value: {type: 'array', of: {type: 'union', of: []}}},
+      },
+    }
+    const typescript = printTypeScript(node, {typeName: 'Block'})
+    expect(typescript).toContain('listItem?: never;')
+    expect(typescript).toContain('items: Array<never>;')
+    expect(printTypeScript({type: 'union', of: []}, {typeName: 'Empty'})).toBe(
+      'export type Empty = never;',
+    )
+
+    const zod = printZod(node, {typeName: 'Block'})
+    expect(zod).toContain('listItem: z.never().optional(),')
+    expect(zod).toContain('items: z.array(z.never()),')
+  })
+
   it('defers every reference inside a mutual cycle so no schema is read before its declaration', () => {
     const output = printZod({type: 'inline', name: 'book'}, {typeName: 'BookResult', schema})
     const chapterIndex = output.indexOf('export const ChapterSchema')

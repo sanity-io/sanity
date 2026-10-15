@@ -77,7 +77,8 @@ function printZodNode(node: TypeNode, depth: number, context: PrintContext): str
           .map((member) => printZodNode(member, depth, context)),
       )
       if (members.length === 0) {
-        return 'z.null()'
+        // Only null, or nothing at all (extracted schemas have empty unions)
+        return nullable ? 'z.null()' : 'z.never()'
       }
       const union =
         members.length === 1
