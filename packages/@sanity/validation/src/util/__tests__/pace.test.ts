@@ -1,6 +1,12 @@
+import {BehaviorSubject} from 'rxjs'
 import {afterEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
-import {createYieldingPace, IMMEDIATE_YIELD_EVERY, type Pace} from '../pace'
+import {
+  createYieldingPace,
+  IMMEDIATE_YIELD_EVERY,
+  type Pace,
+  type ValidationScheduling,
+} from '../pace'
 
 /**
  * `requestIdleCallback` is bound when the module is imported, so the `createPace` tests stub the
@@ -158,6 +164,50 @@ describe('createPace', () => {
     const yielding = startNode(pace)
     expect(scheduler.yield).toHaveBeenCalledTimes(1)
     await vi.waitFor(() => expect(yielding.ready).toBe(true))
+  })
+
+  it('lets the nodes waiting for idle time go ahead when a changing scheduling switches to immediate', async () => {
+    let nextHandle = 1
+    const requestIdleCallback = vi.fn((): number => nextHandle++)
+    const cancelIdleCallback = vi.fn()
+    vi.stubGlobal('window', {requestIdleCallback, cancelIdleCallback})
+    vi.stubGlobal('scheduler', {yield: vi.fn(() => Promise.resolve())})
+    const {createPace} = await importPace()
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
+    const pace = createPace(scheduling)
+
+    const waiting = [startNode(pace), startNode(pace)]
+    expect(requestIdleCallback).toHaveBeenCalledTimes(2)
+    expect(waiting.some((node) => node.ready)).toBe(false)
+
+    scheduling.next('immediate')
+    expect(waiting.every((node) => node.ready)).toBe(true)
+    expect(cancelIdleCallback.mock.calls).toEqual([[1], [2]])
+
+    // nodes that come along after the switch get the `immediate` pace: a microtask, no idle time
+    const later = startNode(pace)
+    expect(later.ready).toBe(false)
+    await Promise.resolve()
+    expect(later.ready).toBe(true)
+    expect(requestIdleCallback).toHaveBeenCalledTimes(2)
+  })
+
+  it('waits for idle time again once a changing scheduling is back to idle', async () => {
+    const requestIdleCallback = vi.fn((): number => 1)
+    vi.stubGlobal('window', {requestIdleCallback, cancelIdleCallback: vi.fn()})
+    vi.stubGlobal('scheduler', {yield: vi.fn(() => Promise.resolve())})
+    const {createPace} = await importPace()
+    const scheduling = new BehaviorSubject<ValidationScheduling>('immediate')
+    const pace = createPace(scheduling)
+
+    startNode(pace)
+    expect(requestIdleCallback).not.toHaveBeenCalled()
+
+    scheduling.next('idle')
+    const node = startNode(pace)
+    expect(requestIdleCallback).toHaveBeenCalledTimes(1)
+    await flushMicrotasks()
+    expect(node.ready).toBe(false)
   })
 
   it('yields through setImmediate where there is no scheduler.yield', async () => {

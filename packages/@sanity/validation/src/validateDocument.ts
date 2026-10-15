@@ -14,7 +14,17 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import {concat, defer, from, lastValueFrom, merge, type Observable, of, throwError} from 'rxjs'
+import {
+  type BehaviorSubject,
+  concat,
+  defer,
+  from,
+  lastValueFrom,
+  merge,
+  type Observable,
+  of,
+  throwError,
+} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
@@ -413,8 +423,11 @@ export interface ValidateDocumentObservableOptions extends Pick<
   maxCustomValidationConcurrency?: number
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
-  /** See {@link ValidationScheduling}. Defaults to `idle`. */
-  scheduling?: ValidationScheduling
+  /**
+   * See {@link ValidationScheduling}. Defaults to `idle`. A `BehaviorSubject` can change it while
+   * the run is in flight: a switch to `immediate` speeds the run up without restarting it.
+   */
+  scheduling?: ValidationScheduling | BehaviorSubject<ValidationScheduling>
 }
 
 const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
@@ -563,8 +576,8 @@ export type ValidateItemOptions = {
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
   signal?: AbortSignal
-  /** See {@link ValidationScheduling}. Defaults to `idle`. */
-  scheduling?: ValidationScheduling
+  /** See {@link ValidateDocumentObservableOptions.scheduling}. Defaults to `idle`. */
+  scheduling?: ValidationScheduling | BehaviorSubject<ValidationScheduling>
   __internal?: InternalValidationContext['__internal']
 } & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal'>>
 

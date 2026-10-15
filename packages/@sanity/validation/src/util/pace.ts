@@ -1,5 +1,5 @@
-import {asapScheduler, EMPTY, from, Observable} from 'rxjs'
-import {ignoreElements, observeOn} from 'rxjs/operators'
+import {asapScheduler, type BehaviorSubject, EMPTY, from, Observable} from 'rxjs'
+import {filter, ignoreElements, observeOn, takeUntil} from 'rxjs/operators'
 
 import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 
@@ -127,8 +127,21 @@ export function createYieldingPace(yieldToBrowser: () => Promise<void>, every: n
   }
 }
 
-/** The pacer for one run with the given scheduling. */
-export function createPace(scheduling: ValidationScheduling): Pace {
-  if (scheduling !== 'immediate') return idle
-  return createYieldingPace(getYieldToBrowser(), IMMEDIATE_YIELD_EVERY)
+/**
+ * The pacer for one run with the given scheduling. A `BehaviorSubject` lets the scheduling change
+ * while the run is in flight: each node waits the way the scheduling is when its turn comes, and a
+ * switch to `immediate` lets the nodes that are waiting for idle time go ahead, so the run picks
+ * up speed where it is instead of starting over.
+ */
+export function createPace(
+  scheduling: ValidationScheduling | BehaviorSubject<ValidationScheduling>,
+): Pace {
+  if (scheduling === 'idle') return idle
+  const immediate = createYieldingPace(getYieldToBrowser(), IMMEDIATE_YIELD_EVERY)
+  if (scheduling === 'immediate') return immediate
+  const switchedToImmediate = scheduling.pipe(filter((mode) => mode === 'immediate'))
+  return () =>
+    scheduling.getValue() === 'immediate'
+      ? immediate()
+      : idle().pipe(takeUntil(switchedToImmediate))
 }
