@@ -303,6 +303,12 @@ describe('buildObjectChangeList', () => {
     expect(movedFields.every((field) => field.showIndex)).toBe(true)
   })
 
+  // defaultComponents.block|image|file are undefined at runtime. ImageFieldDiff
+  // and FileFieldDiff import ChangeList, and PTDiff reaches it through
+  // PortableText → Annotation / InlineObject. ChangeList circularly loads
+  // defaultComponents before the object literal finishes, so those three
+  // properties capture undefined and Review Changes walks inner fields instead.
+  // SAPP-4648.
   it.fails('uses the registered block, image and file diff components instead of walking their inner fields', () => {
     const block = {
       _type: 'block',
