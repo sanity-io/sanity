@@ -1,8 +1,8 @@
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 
-// Shared constants and key construction for the auth store.
+// Shared constants and key construction for the legacy auth store.
 //
-// Both `createLegacyAuthStore` and `probeWorkspaceAuth` read or coordinate on the
+// Both `createLegacyAuthStore` and `observeCurrentUserId` read or coordinate on the
 // values defined here, so they live in one place to keep the two in sync.
 
 // API version used by all auth-related client requests.
@@ -29,9 +29,6 @@ export const AUTH_STATE_SETTLE_TIMEOUT_MS = 10_000
 
 /** @internal Stable reference for the "not authenticated" auth result. */
 export const UNAUTHENTICATED = {authenticated: false} as const
-
-/** @internal Stable reference for the "authenticated" auth result (without user details). */
-export const AUTHENTICATED = {authenticated: true} as const
 
 /**
  * @internal

@@ -11,7 +11,7 @@ export const STATE_TITLES = {
   'loading': 'Checking…',
   'logged-in': '',
   'logged-out': 'Signed out',
-  'no-access': '',
+  'unknown': '',
 }
 
 type PreviewIconSize = 'small' | 'large'

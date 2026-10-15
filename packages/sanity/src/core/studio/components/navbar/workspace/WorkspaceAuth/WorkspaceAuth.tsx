@@ -11,7 +11,6 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useVisibleWorkspaces} from '../../../../workspaces/useVisibleWorkspaces'
 import {WORKSPACES_DOCS_URL} from '../constants'
-import {type WorkspaceLoginStatus} from '../hooks/useWorkspaceLoginStatus'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
 import {WorkspaceAuthCard} from './WorkspaceAuthCard'
@@ -43,18 +42,15 @@ export function WorkspaceAuth() {
   const handleBack = useCallback(() => setShowChooser(true), [])
 
   const handleCardSelect = useCallback(
-    (workspaceName: string, state: WorkspaceLoginStatus) => {
-      // While loading, navigate; the destination's auth boundary will handle login if needed.
-      if (state === 'logged-in' || state === 'loading' || state === 'logged-out') {
-        // Switch the active workspace so the URL reflects the chosen workspace.
-        // For a logged-out workspace the AuthBoundary keeps us on this screen,
-        // now scoped to (and showing the login for) the new workspace at its own
-        // basePath, instead of leaving the URL pointing at the previous one.
-        if (workspaceName !== activeWorkspace.name) {
-          setActiveWorkspace(workspaceName)
-        }
-        setShowChooser(false)
+    (workspaceName: string) => {
+      // Switch the active workspace so the URL reflects the chosen workspace. Whatever its login
+      // status, the destination's auth boundary handles login if needed: for a logged-out
+      // workspace it keeps us on this screen, now scoped to (and showing the login for) the new
+      // workspace at its own basePath, instead of leaving the URL pointing at the previous one.
+      if (workspaceName !== activeWorkspace.name) {
+        setActiveWorkspace(workspaceName)
       }
+      setShowChooser(false)
     },
     [activeWorkspace.name, setActiveWorkspace],
   )
@@ -132,7 +128,7 @@ export function WorkspaceAuth() {
             <WorkspaceAuthCard
               key={workspace.name}
               workspace={workspace}
-              onSelect={(state) => handleCardSelect(workspace.name, state)}
+              onSelect={() => handleCardSelect(workspace.name)}
             />
           ))}
         </Flex>
