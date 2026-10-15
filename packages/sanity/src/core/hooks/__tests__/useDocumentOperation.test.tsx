@@ -1,4 +1,3 @@
-import {type SanityClient} from '@sanity/client'
 import {act, render} from '@testing-library/react'
 import {
   type Ref,
@@ -9,9 +8,12 @@ import {
   useInsertionEffect,
   useRef,
 } from 'react'
-import {of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {
+  createMockSanityClientAsClient,
+  getDocumentEditActions,
+} from '../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../i18n/fallback'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {createSchema} from '../../schema/createSchema'
@@ -40,27 +42,6 @@ const schema = createSchema({
     },
   ],
 })
-
-function createDocumentClient() {
-  const actionRequest = vi.fn((..._args: unknown[]) => of({transactionId: 'tx'}))
-  const client = {
-    config: () => ({
-      apiHost: 'mock.api.sanity.io',
-      projectId: 'mock-project-id',
-      dataset: 'pane-handover',
-    }),
-    observable: {
-      action: actionRequest,
-      getDocuments: vi.fn(() => of([null, null])),
-      listen: vi.fn(() => of({type: 'welcome'})),
-    },
-    dataRequest: vi.fn(() => Promise.resolve({transactionId: 'tx'})),
-    withConfig: vi.fn(),
-  }
-  client.withConfig.mockReturnValue(client)
-
-  return {client: client as unknown as SanityClient, actionRequest}
-}
 
 interface EditorHandle {
   edit: () => void
@@ -117,7 +98,7 @@ describe('useDocumentOperation', () => {
   })
 
   it('commits the edit a form flushes while unmounting when navigating to another document', async () => {
-    const {client, actionRequest} = createDocumentClient()
+    const client = createMockSanityClientAsClient({}, {dataset: 'pane-handover'})
     documentStore = createDocumentStore({
       getClient: () => client,
       documentPreviewStore: {} as unknown as DocumentPreviewStore,
@@ -138,12 +119,18 @@ describe('useDocumentOperation', () => {
     // An edit that is committed right away, which opens the autocommit throttle window
     act(() => editor.current?.edit())
     await act(() => vi.advanceTimersByTimeAsync(0))
-    expect(JSON.stringify(actionRequest.mock.calls)).toContain('first edit in movie-a')
+    expect(getDocumentEditActions(client)).toContainEqual({
+      draftId: 'drafts.movie-a',
+      patch: {set: {title: 'first edit in movie-a'}},
+    })
 
     rerender(<DocumentPane key="movie-b" documentId="movie-b" editor={editor} />)
     await act(() => vi.advanceTimersByTimeAsync(1_000))
 
-    expect(JSON.stringify(actionRequest.mock.calls)).toContain('text typed into movie-a')
+    expect(getDocumentEditActions(client)).toContainEqual({
+      draftId: 'drafts.movie-a',
+      patch: {set: {overview: 'text typed into movie-a'}},
+    })
 
     unmount()
   })

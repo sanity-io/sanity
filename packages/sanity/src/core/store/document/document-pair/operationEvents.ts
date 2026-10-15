@@ -1,16 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {
-  asyncScheduler,
-  debounceTime,
-  defer,
-  EMPTY,
-  merge,
-  type Observable,
-  of,
-  Subject,
-  timer,
-} from 'rxjs'
+import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject, timer} from 'rxjs'
 import {
   catchError,
   concatMap,
@@ -118,6 +108,12 @@ const REQUIRES_CONSISTENCY = ['publish', 'unpublish', 'discardChanges', 'delete'
 // Patches are committed at most this often per document
 const AUTOCOMMIT_INTERVAL = 1000
 
+// How long to keep the pipeline connected after the last subscriber unsubscribes. A form flushes
+// its pending patches while its document pane unmounts, so the trailing autocommit for them can
+// still be pending for up to AUTOCOMMIT_INTERVAL once the pane's subscription is gone. The
+// invariant: this must be at least AUTOCOMMIT_INTERVAL, or that trailing autocommit is dropped.
+const TEARDOWN_GRACE_PERIOD = AUTOCOMMIT_INTERVAL * 2
+
 /**
  * @hidden
  * @beta */
@@ -194,9 +190,7 @@ export const operationEvents = memoize(
 
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       filter((op) => op.storeKey === storeKey || !op.storeKey),
-      groupBy((op) => op.idPair.publishedId, {
-        duration: (results$) => results$.pipe(debounceTime(AUTOCOMMIT_INTERVAL * 2)),
-      }),
+      groupBy((op) => op.idPair.publishedId),
       mergeMap((group$) =>
         merge(
           // A commit only sends local changes to the server, so it runs on its own and never
@@ -212,6 +206,8 @@ export const operationEvents = memoize(
             // although it might look like a bug, dropping pending async operations here is actually a feature
             // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
             // should be cancelled
+            // The groups are kept for the lifetime of the pipeline on purpose: closing an idle group would
+            // let the next operation run alongside one that is still pending instead of cancelling it
             switchMap(runOperation),
           ),
         ),
@@ -224,12 +220,8 @@ export const operationEvents = memoize(
       filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
       // Throttled per document, so that patching another document within the interval doesn't
       // replace the pending trailing commit of the previous one
-      groupBy(
-        (result) => createMemoKey([result.args.idPair.publishedId, result.args.idPair.versionId]),
-        {
-          duration: (documentPatches$) =>
-            documentPatches$.pipe(debounceTime(AUTOCOMMIT_INTERVAL * 2)),
-        },
+      groupBy((result) =>
+        createMemoKey([result.args.idPair.publishedId, result.args.idPair.versionId]),
       ),
       mergeMap((documentPatches$) =>
         documentPatches$.pipe(
@@ -246,10 +238,8 @@ export const operationEvents = memoize(
 
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY))).pipe(
-      // One autocommit for all subscribers, kept running for an interval after the last one
-      // leaves: a form flushes its pending patches while its document pane unmounts, and the
-      // trailing commit for those must still fire after the pane's subscription is gone.
-      share({resetOnRefCountZero: () => timer(AUTOCOMMIT_INTERVAL * 2)}),
+      // One autocommit for all subscribers
+      share({resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD)}),
     )
   },
   (ctx) =>
