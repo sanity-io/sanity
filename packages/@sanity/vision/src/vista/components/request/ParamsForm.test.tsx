@@ -183,6 +183,20 @@ describe('ParamsForm', () => {
     expect(params()).toEqual({types: ['author']})
   })
 
+  it('sends the items of a boolean list as booleans', () => {
+    const {field, params} = renderForm('*[_type == "post" && featured in $flags]')
+    fireEvent.click(screen.getByTestId('vista-params-form-flags-add'))
+    fireEvent.click(screen.getByTestId('vista-params-form-flags-add'))
+    const items = within(field('flags')).getAllByRole('textbox')
+    fireEvent.change(items[0], {target: {value: 'true'}})
+    fireEvent.change(items[1], {target: {value: 'false'}})
+    expect(params()).toEqual({flags: [true, false]})
+    // Other text is still sent, as text, with its note
+    fireEvent.change(items[1], {target: {value: 'maybe'}})
+    expect(params()).toEqual({flags: [true, 'maybe']})
+    expect(within(field('flags')).getByTestId('vista-params-form-flags-problem')).toBeTruthy()
+  })
+
   it('lists params the query does not use, to remove them', () => {
     const {params} = renderForm('*[_type == $type]', '{"type": "post", "stale": 1}')
     const unused = screen.getByTestId('vista-params-form-unused')

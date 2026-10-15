@@ -110,6 +110,8 @@ function fromText(text: string, kind: ParamKind, empty: unknown): unknown {
     const number = Number(text)
     return text.trim() !== '' && Number.isFinite(number) ? number : text
   }
+  // The items of a boolean list are typed in; a single boolean has its select
+  if (kind === 'boolean' && (text === 'true' || text === 'false')) return text === 'true'
   if (kind === 'any') {
     try {
       return JSON5.parse(text)
