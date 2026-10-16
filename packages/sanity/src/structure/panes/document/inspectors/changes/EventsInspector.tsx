@@ -30,6 +30,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
 import {spinnerContainer} from './EventsInspector.css'
+import {getPublishedComparisonBase, getPublishedSiblingScopeId} from './getPublishedComparisonBase'
 import {scroller} from './Scroller.css'
 
 const DIFF_INITIAL_VALUE = {
@@ -52,24 +53,21 @@ function EventsFieldWrapper(props: FieldWrapperProps) {
   return props.path.length > 0 ? <ChangeFieldWrapper {...props} /> : props.children
 }
 
-const CompareWithPublishedView = () => {
+function CompareWithPublishedView() {
   const {documentId, documentType, schemaType, editState, displayed, targetDocumentState} =
     useDocumentPane()
   const {selectedPerspective, selectedPerspectiveName, selectedReleaseId} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
 
-  // For variant targets, "published" means the variant-of-published sibling, not the base
-  // published document. Its scope id checks out the sibling pair; the sibling document arrives
-  // in the `version` slot of that edit state.
-  const isVariantTarget =
-    targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
-  const siblingScopeId = isVariantTarget
-    ? getTargetSiblings(targetDocumentState)?.published?._system.scopeId
-    : undefined
+  // "Published" means this lane's published sibling, not the group's published document.
+  const siblings = getTargetSiblings(targetDocumentState)
+  const siblingScopeId = getPublishedSiblingScopeId(siblings)
   const siblingEditState = useEditState(documentId, documentType, 'default', siblingScopeId)
-  const publishedComparisonBase = isVariantTarget
-    ? (siblingScopeId && siblingEditState.version) || null
-    : editState?.published
+  const publishedComparisonBase = getPublishedComparisonBase({
+    siblings,
+    siblingVersion: siblingEditState.version,
+    published: editState?.published,
+  })
 
   const rootDiff = useMemo(() => {
     const diff = diffInput(
@@ -80,8 +78,8 @@ const CompareWithPublishedView = () => {
     return diff
   }, [publishedComparisonBase, displayed])
 
-  if (isVariantTarget && !publishedComparisonBase) {
-    // The variant has never been published — there is nothing to compare against.
+  if (!publishedComparisonBase) {
+    // This lane has never been published — there is nothing to compare against.
     return null
   }
   if (selectedReleaseId && !editState?.version) {
@@ -94,7 +92,7 @@ const CompareWithPublishedView = () => {
     return null
   }
   return (
-    <Flex gap={2} marginBottom={3} flexDirection="column">
+    <Flex gap={2} marginBottom={3} flexDirection="column" data-testid="compare-with-published">
       <Card borderBottom paddingBottom={3}>
         <Flex gap={3} paddingTop={1} flexDirection="column">
           <Text size={1} weight="medium">
@@ -131,6 +129,7 @@ const CompareWithPublishedView = () => {
     </Flex>
   )
 }
+
 export function EventsInspector({showChanges}: {showChanges: boolean}): ReactElement {
   const {documentId, schemaType, timelineError, value, formState} = useDocumentPane()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
