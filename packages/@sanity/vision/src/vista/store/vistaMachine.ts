@@ -33,6 +33,9 @@ import {
   type VistaStorageDefaults,
 } from './vistaStorage'
 
+/** Where the query a tab fetches as soon as it is shown came from */
+export type FetchOnOpenSource = 'generated' | 'paste'
+
 export interface VistaContext {
   projectId: string
   defaults: VistaStorageDefaults
@@ -50,10 +53,11 @@ export interface VistaContext {
    */
   loadRevisions: Record<string, number>
   /**
-   * Tabs to fetch as soon as they are shown, or right away when they already are: a generated
-   * query added in a tab or loaded into one. Not persisted.
+   * Tabs to fetch as soon as they are shown, or right away when they already are, by tab id: a
+   * generated query added in a tab or loaded into one, or a query URL pasted into one. The
+   * source decides how the tab runs the query. Not persisted.
    */
-  fetchOnOpen: string[]
+  fetchOnOpen: Record<string, FetchOnOpenSource>
   /** Sidebar state as restored from storage, consumed once by the `restoring` states */
   restoredSidebar: VistaSidebarState
   /** The drawer the `open` drawer state shows: the one last opened */
@@ -63,9 +67,9 @@ export interface VistaContext {
 }
 
 export type VistaEvent =
-  /** `fetch` has the tab fetch its query once it is shown */
-  | {type: 'tab.add'; tab?: VistaTabInit; fetch?: boolean}
-  /** The tab fetched on being shown, as `tab.add` asked */
+  /** `fetch` has the tab fetch its query once it is shown, as a query from that source */
+  | {type: 'tab.add'; tab?: VistaTabInit; fetch?: FetchOnOpenSource}
+  /** The tab fetched on being shown, as `tab.add` or `tab.load` asked */
   | {type: 'tab.fetchedOnOpen'; id: string}
   | {type: 'tab.close'; id: string}
   | {type: 'tab.select'; id: string}
@@ -76,8 +80,11 @@ export type VistaEvent =
   | {type: 'tab.setParams'; id: string; rawParams: string}
   | {type: 'tab.setAutoRefetch'; id: string; autoRefetch: boolean}
   | {type: 'tab.setOptions'; id: string; options: Partial<VistaTabOptions>}
-  /** `fetch` has the tab fetch the loaded query (it is the active tab, so right away) */
-  | {type: 'tab.load'; id: string; tab: Omit<VistaTabInit, 'id'>; fetch?: boolean}
+  /**
+   * `fetch` has the tab fetch the loaded query (it is the active tab, so right away), as a query
+   * from that source
+   */
+  | {type: 'tab.load'; id: string; tab: Omit<VistaTabInit, 'id'>; fetch?: FetchOnOpenSource}
   | {type: 'settings.update'; settings: Partial<VistaSettings>}
   | {type: 'historyDiff.update'; settings: Partial<VistaHistoryDiffSettings>}
   /** Saves a function to the library, replacing the one with its id */
@@ -182,7 +189,9 @@ export const vistaMachine = setup({
         tabs: [...context.tabs, tab],
         activeTabId: tab.id,
         runners: {...context.runners, [tab.id]: spawnRunner(spawn, tab.id)},
-        fetchOnOpen: event.fetch ? [...context.fetchOnOpen, tab.id] : context.fetchOnOpen,
+        fetchOnOpen: event.fetch
+          ? {...context.fetchOnOpen, [tab.id]: event.fetch}
+          : context.fetchOnOpen,
       }
     }),
     closeTab: enqueueActions(({context, event, enqueue}) => {
@@ -199,8 +208,9 @@ export const vistaMachine = setup({
       }
       const {[event.id]: _removed, ...runners} = context.runners
       const remaining = context.tabs.filter((tab) => tab.id !== event.id)
-      if (context.fetchOnOpen.includes(event.id)) {
-        enqueue.assign({fetchOnOpen: context.fetchOnOpen.filter((id) => id !== event.id)})
+      if (event.id in context.fetchOnOpen) {
+        const {[event.id]: _pending, ...fetchOnOpen} = context.fetchOnOpen
+        enqueue.assign({fetchOnOpen})
       }
 
       if (remaining.length === 0) {
@@ -234,7 +244,7 @@ export const vistaMachine = setup({
           historyDiff: fresh.historyDiff,
           functions: fresh.functions,
           runners: spawnRunners(spawn, fresh.tabs),
-          fetchOnOpen: [],
+          fetchOnOpen: {},
         }
       })
     }),
@@ -252,7 +262,7 @@ export const vistaMachine = setup({
     functions: input.persisted.functions,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
-    fetchOnOpen: [],
+    fetchOnOpen: {},
     restoredSidebar: input.persisted.sidebar,
     drawer: input.persisted.sidebar.drawer ?? 'saved',
     restoredPanels: input.persisted.panels,
@@ -275,7 +285,10 @@ export const vistaMachine = setup({
     },
     'tab.fetchedOnOpen': {
       actions: assign({
-        fetchOnOpen: ({context, event}) => context.fetchOnOpen.filter((id) => id !== event.id),
+        fetchOnOpen: ({context, event}) => {
+          const {[event.id]: _fetched, ...fetchOnOpen} = context.fetchOnOpen
+          return fetchOnOpen
+        },
       }),
     },
     'tab.rename': {
@@ -331,9 +344,7 @@ export const vistaMachine = setup({
           [event.id]: (context.loadRevisions[event.id] || 0) + 1,
         }),
         fetchOnOpen: ({context, event}) =>
-          event.fetch && !context.fetchOnOpen.includes(event.id)
-            ? [...context.fetchOnOpen, event.id]
-            : context.fetchOnOpen,
+          event.fetch ? {...context.fetchOnOpen, [event.id]: event.fetch} : context.fetchOnOpen,
       }),
     },
     'settings.update': {

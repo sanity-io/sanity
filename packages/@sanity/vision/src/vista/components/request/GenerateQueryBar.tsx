@@ -62,7 +62,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
           rawParams: JSON.stringify(generated.params, null, 2),
           ...(named ? {title: generated.title} : {}),
         },
-        fetch,
+        fetch: fetch ? 'generated' : undefined,
       })
       onClose()
     },

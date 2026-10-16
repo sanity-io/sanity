@@ -4,7 +4,6 @@ import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Badge, type BadgeTone, Button, Card, Label, Stack, Text} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {Suspense, useCallback, useId, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 import {Box, Flex, Grid} from 'ui5'
@@ -31,6 +30,7 @@ import {
   readMutations,
 } from '../../util/mutations'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
+import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import {SwitchField} from '../SwitchField'
 import {drawerScroller} from '../vista.css'
 import {GenerateMutationsBar} from './GenerateMutationsBar'
@@ -410,12 +410,7 @@ export function MutateTab(props: MutateTabProps) {
               actions={
                 <Flex alignItems="center" gap={1}>
                   {!generatorOpen && (
-                    <Tooltip
-                      animate
-                      content={<Text size={1}>{t('vista.mutate.generate.button')}</Text>}
-                      placement="bottom"
-                      portal
-                    >
+                    <AgentActionsTooltip title={t('vista.mutate.generate.button')}>
                       <Button
                         aria-label={t('vista.mutate.generate.button')}
                         data-testid="vista-mutate-generate"
@@ -425,7 +420,7 @@ export function MutateTab(props: MutateTabProps) {
                         onClick={() => setGeneratorOpen(true)}
                         padding={2}
                       />
-                    </Tooltip>
+                    </AgentActionsTooltip>
                   )}
                   <MenuButton
                     button={

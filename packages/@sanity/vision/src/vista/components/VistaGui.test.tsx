@@ -1110,6 +1110,28 @@ describe('VistaGui', () => {
     )
   })
 
+  it('says at every control that calls Agent Actions that it uses AI credits', async () => {
+    renderVista()
+    // Tooltips stay mounted while closed, so the note is in the document for every control shown:
+    // Generate query over the query editor, then Explain this to me, then Generate mutations
+    const notes = () => screen.queryAllByText('vista.agent-actions.credits')
+    await waitFor(() => expect(notes()).toHaveLength(1))
+    fireEvent.click(document.getElementById('vista-response-explain-tab') as HTMLElement)
+    await waitFor(() => expect(notes()).toHaveLength(2))
+    fireEvent.click(screen.getByTestId('vista-sidebar-mutate'))
+    await waitFor(() => expect(notes()).toHaveLength(3))
+    // The icon-only controls keep their name as the tooltip's first line; the Explain button
+    // says what it does itself
+    const tooltipTexts = notes().map((note) =>
+      text(note.closest<HTMLElement>('[data-ui="Tooltip"]') as HTMLElement),
+    )
+    expect(tooltipTexts).toEqual([
+      'vista.generate.buttonvista.agent-actions.credits',
+      'vista.agent-actions.credits',
+      'vista.mutate.generate.buttonvista.agent-actions.credits',
+    ])
+  })
+
   it('generates a query from a description into the empty tab, and fetches it', async () => {
     const {fetchCalls, promptCalls, replyToPrompts} = renderVista()
     const generated = '*[_type == "author"] | order(_createdAt desc)[0...10]{_id, name}'
@@ -1712,14 +1734,26 @@ describe('VistaGui', () => {
   })
 
   it('fetches a query loaded into a tab that refetches automatically', async () => {
+    sanityMocks.savedQueries = {
+      queries: [
+        {
+          _key: 'saved-pages',
+          shared: false,
+          title: 'Pages',
+          url: 'https://abc.api.sanity.io/v2025-02-19/data/query/staging?query=*%5B_type+%3D%3D+%22page%22%5D',
+          savedAt: '2026-01-01T00:00:00Z',
+        },
+      ],
+      moving: [],
+    }
     const {fetchCalls} = renderVista()
     typeQuery('*[_type == "author"]')
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
-    // A pasted URL loads a new query and pins its dataset in one go; live refetches replay the
-    // runner's last request, which the load clears, so the loaded query is fetched right away,
-    // once, and for the loaded options
+    // A pasted URL loads a new query and pins its dataset in one go, and runs it as pasted; live
+    // refetches replay the runner's last request, which the load clears, so it is not fetched
+    // again on top of that: once, and for the loaded options
     const url =
       'https://abc.api.sanity.io/v2025-02-19/data/query/staging?query=*%5B_type+%3D%3D+%22post%22%5D&perspective=published'
     fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
@@ -1732,18 +1766,42 @@ describe('VistaGui', () => {
     await waitFor(() => {
       const entries = screen.getAllByTestId('vista-history-entry')
       expect(entries).toHaveLength(2)
-      expect(text(entries[0])).toContain('vista.history.reason.load')
+      expect(text(entries[0])).toContain('vista.history.reason.paste')
     })
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(fetchCalls).toHaveLength(2)
 
-    // Without automatic refetching a load only replaces the query
+    // A saved query loaded into the tab has no run of its own, so the live tab fetches it in place
+    // of the runner's cleared request
+    const loadSavedQuery = async () => {
+      if (!screen.queryByTestId('vista-saved-query')) {
+        fireEvent.click(screen.getByTestId('vista-sidebar-saved'))
+      }
+      const item = await screen.findByTestId('vista-saved-query')
+      fireEvent.click(within(item).getByRole('button', {expanded: false}))
+      const load = screen
+        .getAllByRole('menuitem', {hidden: true})
+        .find((menuItem) => text(menuItem) === 'vista.saved.load-in-current-tab')
+      if (!load) throw new Error('The saved query menu has no load item')
+      fireEvent.click(load)
+    }
+    await loadSavedQuery()
+    await waitFor(() => expect(fetchCalls).toHaveLength(3))
+    expect(fetchCalls[2].query).toBe('*[_type == "page"]')
+    await waitFor(() => {
+      const entries = screen.getAllByTestId('vista-history-entry')
+      expect(entries).toHaveLength(3)
+      expect(text(entries[0])).toContain('vista.history.reason.load')
+    })
+
+    // Without automatic refetching such a load only replaces the query
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(false))
-    fireEvent.paste(document.body, {clipboardData: {getData: () => url.replace('post', 'page')}})
+    typeQuery('*[_type == "person"]')
+    await loadSavedQuery()
     await waitFor(() => expect(getQueryEditor().value).toBe('*[_type == "page"]'))
     await new Promise((resolve) => setTimeout(resolve, 50))
-    expect(fetchCalls).toHaveLength(2)
+    expect(fetchCalls).toHaveLength(3)
   })
 
   it('resumes automatic refetching with a current result when a tab is shown again', async () => {
@@ -2037,8 +2095,8 @@ describe('VistaGui', () => {
     }
   })
 
-  it('loads a pasted query URL into the active tab', async () => {
-    renderVista()
+  it('loads a pasted query URL into the active tab and runs it', async () => {
+    const {fetchCalls} = renderVista()
     const url =
       'https://abc.api.sanity.io/v2021-10-21/data/query/staging?query=*%5B_id+%3D%3D+%24id%5D&%24id=%22a%22&perspective=published'
 
@@ -2057,6 +2115,19 @@ describe('VistaGui', () => {
       }),
     )
     expect(screen.queryByText('vista.paste.unknown-dataset')).toBeNull()
+
+    // The request runs as pasted, as it does in the classic tool: the query is left as it was
+    // written, with the URL's params and under its dataset, API version and perspective
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0]).toMatchObject({
+      query: '*[_id == $id]',
+      params: {id: 'a'},
+      config: {dataset: 'staging', apiVersion: 'v2021-10-21', perspective: 'published'},
+    })
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    expect(text(screen.getByTestId('vista-history-entry'))).toContain('vista.history.reason.paste')
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(1)
   })
 
   it('puts the tab on the API default when the pasted URL has no perspective', async () => {
@@ -2071,7 +2142,6 @@ describe('VistaGui', () => {
     await waitFor(() => expect(getQueryEditor().value).toBe('*'))
     // The request ran without a perspective, so that is what the tab sends now, not the navbar's
     expect(selectValue('vista-option-perspective-select')).toBe('default')
-    fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].config.perspective).toBeUndefined()
   })
