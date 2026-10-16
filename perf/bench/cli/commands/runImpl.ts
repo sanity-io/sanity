@@ -32,7 +32,6 @@ import {type InpSessionResult, runInpSession} from '../../runner/session/inp'
 import {
   type InteractionSessionResult,
   runInteractionSession,
-  runSoakSession,
 } from '../../runner/session/interaction'
 import {
   type LoadCondition,
@@ -41,6 +40,7 @@ import {
   runPageLoadSample,
 } from '../../runner/session/pageLoad'
 import {runSettleSession, type SettleSessionResult} from '../../runner/session/settle'
+import {runSoakSession} from '../../runner/session/soak'
 import {describeStyleCensus} from '../../runner/session/styles'
 import {getScenario, SCENARIOS} from '../../scenarios'
 import {bootstrapDiffOfMedians} from '../../stats/bootstrap'
@@ -225,7 +225,8 @@ export async function runBench(argv: RunArgs): Promise<void> {
         if (first && last) {
           console.log(
             `  heap ${first.heapMb.toFixed(1)} → ${last.heapMb.toFixed(1)} MB, ` +
-              `nodes ${first.domNodes} → ${last.domNodes}, listeners ${first.listeners} → ${last.listeners}`,
+              `nodes ${first.domNodes} → ${last.domNodes}, listeners ${first.listeners} → ${last.listeners}` +
+              ` (steady state from minute ${soak.settleMinute})`,
           )
         }
         scenarioReports.push({
@@ -239,7 +240,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
           failures: [],
           interruptions: {experiment: soak.interruptions},
           loafAttribution: [],
-          soak: {minutes: soak.minutes, samples: soak.samples},
+          soak: {minutes: soak.minutes, settleMinute: soak.settleMinute, samples: soak.samples},
         })
       }
     } else if (argv.mode === 'settle') {
