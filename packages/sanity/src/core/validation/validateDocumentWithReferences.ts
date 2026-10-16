@@ -8,10 +8,11 @@ import {
   type ValidationMarker,
   type CurrentUser,
 } from '@sanity/types'
-import {evaluateDocumentObservable} from '@sanity/validation/_internal'
+import {evaluateDocumentObservable, type ValidationScheduling} from '@sanity/validation/_internal'
 import {reduce as reduceJSON} from 'json-reduce'
 import {
   asyncScheduler,
+  type BehaviorSubject,
   combineLatest,
   concat,
   defer,
@@ -97,6 +98,10 @@ function shareLatestWithRefCount<T>() {
 /**
  * @internal
  * Takes an observable of a document and validates it, including any references in the document.
+ *
+ * `scheduling` paces every run (see `ValidationScheduling`), `idle` when omitted. It can change
+ * while a run is in flight, and that run follows it: a switch to `immediate` speeds it up rather
+ * than starting it over.
  * */
 export function validateDocumentWithReferences(
   ctx: {
@@ -110,6 +115,7 @@ export function validateDocumentWithReferences(
   // whether to require all references to exist as published documents
   // set to false to allow references to versions as long they exist in the same bundle
   requirePublishedReferences: boolean,
+  scheduling?: BehaviorSubject<ValidationScheduling>,
 ): Observable<ValidationStatus> {
   const referenceIds$ = document$.pipe(
     map((document) => findReferenceIds(document)),
@@ -187,6 +193,7 @@ export function validateDocumentWithReferences(
             schema: ctx.schema,
             environment: 'studio',
             currentUser: ctx.currentUser,
+            scheduling,
           }).pipe(map((result) => ({validation: result.markers, isValidating: false}))),
         )
       })

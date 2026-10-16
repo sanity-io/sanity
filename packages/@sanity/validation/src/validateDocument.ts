@@ -14,7 +14,17 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import {concat, defer, from, lastValueFrom, merge, type Observable, of, throwError} from 'rxjs'
+import {
+  type BehaviorSubject,
+  concat,
+  defer,
+  from,
+  lastValueFrom,
+  merge,
+  type Observable,
+  of,
+  throwError,
+} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
@@ -413,8 +423,11 @@ export interface ValidateDocumentObservableOptions extends Pick<
   maxCustomValidationConcurrency?: number
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
-  /** See {@link ValidationScheduling}. Defaults to `idle`. */
-  scheduling?: ValidationScheduling
+  /**
+   * How the run is paced (see {@link ValidationScheduling}), `idle` when omitted. It can change
+   * while the run is in flight: a switch to `immediate` speeds the run up without restarting it.
+   */
+  scheduling?: BehaviorSubject<ValidationScheduling>
 }
 
 const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
@@ -454,7 +467,7 @@ function evaluateDocumentObservableWithoutCancellation({
   currentUser,
   customValidation = true,
   signal,
-  scheduling = 'idle',
+  scheduling,
 }: ValidateDocumentObservableOptions): Observable<DocumentValidationResult> {
   if (typeof document?._type !== 'string') {
     throw new Error(`Tried to validate a value without a '_type'`)
@@ -563,8 +576,8 @@ export type ValidateItemOptions = {
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
   signal?: AbortSignal
-  /** See {@link ValidationScheduling}. Defaults to `idle`. */
-  scheduling?: ValidationScheduling
+  /** See {@link ValidateDocumentObservableOptions.scheduling}. */
+  scheduling?: BehaviorSubject<ValidationScheduling>
   __internal?: InternalValidationContext['__internal']
 } & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal'>>
 
@@ -593,7 +606,7 @@ function validateItemObservable({
   customValidationConcurrencyLimiter,
   environment,
   customValidation = true,
-  scheduling = 'idle',
+  scheduling,
   __internal: inheritedInternal,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {

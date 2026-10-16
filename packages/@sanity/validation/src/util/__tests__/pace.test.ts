@@ -1,6 +1,12 @@
+import {BehaviorSubject} from 'rxjs'
 import {afterEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
-import {createYieldingPace, IMMEDIATE_YIELD_EVERY, type Pace} from '../pace'
+import {
+  createYieldingPace,
+  IMMEDIATE_YIELD_EVERY,
+  type Pace,
+  type ValidationScheduling,
+} from '../pace'
 
 /**
  * `requestIdleCallback` is bound when the module is imported, so the `createPace` tests stub the
@@ -9,6 +15,10 @@ import {createYieldingPace, IMMEDIATE_YIELD_EVERY, type Pace} from '../pace'
 async function importPace() {
   vi.resetModules()
   return import('../pace')
+}
+
+function immediateScheduling() {
+  return new BehaviorSubject<ValidationScheduling>('immediate')
 }
 
 /** Starts a node: subscribes to what it waits for, and tracks whether it may run yet. */
@@ -136,7 +146,7 @@ describe('createPace', () => {
     const requestIdleCallback = vi.fn((): number => 1)
     vi.stubGlobal('window', {requestIdleCallback, cancelIdleCallback: vi.fn()})
     const {createPace} = await importPace()
-    const pace = createPace('idle')
+    const pace = createPace()
 
     pace().subscribe()
     pace().subscribe()
@@ -147,7 +157,7 @@ describe('createPace', () => {
     const scheduler = {yield: vi.fn(() => Promise.resolve())}
     vi.stubGlobal('scheduler', scheduler)
     const {createPace} = await importPace()
-    const pace = createPace('immediate')
+    const pace = createPace(immediateScheduling())
 
     const batch = Array.from({length: IMMEDIATE_YIELD_EVERY - 1}, () => startNode(pace))
     expect(batch.some((node) => node.ready)).toBe(false)
@@ -160,6 +170,50 @@ describe('createPace', () => {
     await vi.waitFor(() => expect(yielding.ready).toBe(true))
   })
 
+  it('lets the nodes waiting for idle time go ahead when a changing scheduling switches to immediate', async () => {
+    let nextHandle = 1
+    const requestIdleCallback = vi.fn((): number => nextHandle++)
+    const cancelIdleCallback = vi.fn()
+    vi.stubGlobal('window', {requestIdleCallback, cancelIdleCallback})
+    vi.stubGlobal('scheduler', {yield: vi.fn(() => Promise.resolve())})
+    const {createPace} = await importPace()
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
+    const pace = createPace(scheduling)
+
+    const waiting = [startNode(pace), startNode(pace)]
+    expect(requestIdleCallback).toHaveBeenCalledTimes(2)
+    expect(waiting.some((node) => node.ready)).toBe(false)
+
+    scheduling.next('immediate')
+    expect(waiting.every((node) => node.ready)).toBe(true)
+    expect(cancelIdleCallback.mock.calls).toEqual([[1], [2]])
+
+    // nodes that come along after the switch get the `immediate` pace: a microtask, no idle time
+    const later = startNode(pace)
+    expect(later.ready).toBe(false)
+    await Promise.resolve()
+    expect(later.ready).toBe(true)
+    expect(requestIdleCallback).toHaveBeenCalledTimes(2)
+  })
+
+  it('waits for idle time again once a changing scheduling is back to idle', async () => {
+    const requestIdleCallback = vi.fn((): number => 1)
+    vi.stubGlobal('window', {requestIdleCallback, cancelIdleCallback: vi.fn()})
+    vi.stubGlobal('scheduler', {yield: vi.fn(() => Promise.resolve())})
+    const {createPace} = await importPace()
+    const scheduling = new BehaviorSubject<ValidationScheduling>('immediate')
+    const pace = createPace(scheduling)
+
+    startNode(pace)
+    expect(requestIdleCallback).not.toHaveBeenCalled()
+
+    scheduling.next('idle')
+    const node = startNode(pace)
+    expect(requestIdleCallback).toHaveBeenCalledTimes(1)
+    await flushMicrotasks()
+    expect(node.ready).toBe(false)
+  })
+
   it('yields through setImmediate where there is no scheduler.yield', async () => {
     vi.stubGlobal('scheduler', undefined)
     const requestIdleCallback = vi.fn((): number => 1)
@@ -169,7 +223,10 @@ describe('createPace', () => {
     vi.stubGlobal('setImmediate', setImmediate)
     const {createPace} = await importPace()
 
-    await expectYieldToNextTask(createPace('immediate'), () => setImmediate.mock.calls.length)
+    await expectYieldToNextTask(
+      createPace(immediateScheduling()),
+      () => setImmediate.mock.calls.length,
+    )
     expect(requestIdleCallback).not.toHaveBeenCalled()
   })
 
@@ -179,7 +236,7 @@ describe('createPace', () => {
     const {messageCount} = trackMessageChannels()
     const {createPace} = await importPace()
 
-    await expectYieldToNextTask(createPace('immediate'), messageCount)
+    await expectYieldToNextTask(createPace(immediateScheduling()), messageCount)
   })
 
   it('releases every run waiting on the one MessageChannel they share, longest waiting first', async () => {
@@ -187,7 +244,7 @@ describe('createPace', () => {
     vi.stubGlobal('setImmediate', undefined)
     const {channels, messageCount} = trackMessageChannels()
     const {createPace} = await importPace()
-    const runs = [createPace('immediate'), createPace('immediate')]
+    const runs = [createPace(immediateScheduling()), createPace(immediateScheduling())]
 
     for (const pace of runs) {
       for (let node = 1; node < IMMEDIATE_YIELD_EVERY; node++) pace().subscribe()
@@ -211,7 +268,7 @@ describe('createPace', () => {
     const {createPace} = await importPace()
 
     await expectYieldToNextTask(
-      createPace('immediate'),
+      createPace(immediateScheduling()),
       () => yieldThroughTimeout.mock.calls.length,
     )
     expect(yieldThroughTimeout).toHaveBeenCalledWith(expect.any(Function), 0)

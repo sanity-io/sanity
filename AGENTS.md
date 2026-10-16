@@ -395,6 +395,10 @@ Rules that follow from this:
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
   404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
   regenerates the d.ts fixture for the entry after its export list changes.
+- A change to any entry's export list also changes `packages/sanity/test/__snapshots__/exports.test.ts.snap`,
+  a unit test in the `sanity` project rather than part of `pnpm test:exports`. It imports the
+  entries from `src`, so `pnpm vitest run --project=sanity packages/sanity/test/exports.test.ts -u`
+  regenerates it without a build.
 
 ### An entry's type surface is what its barrel exports, nothing more
 

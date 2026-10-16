@@ -2,15 +2,20 @@ import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {builtinTypes} from '@sanity/schema/_internal'
 import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity/types'
-import {lastValueFrom, of} from 'rxjs'
+import {BehaviorSubject, lastValueFrom, of} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {validationMarkerCodes} from './codes'
+import {type ValidationScheduling} from './util/pace'
 
 /**
  * `@sanity/validation` binds `requestIdleCallback` at import time, so each test stubs `window`
  * first and imports a fresh copy of the package.
  */
+
+function immediateScheduling() {
+  return new BehaviorSubject<ValidationScheduling>('immediate')
+}
 
 const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
 
@@ -200,7 +205,7 @@ describe('validation scheduling', () => {
         getClient: () => createMockClient(),
         i18n: getFallbackLocaleSource(),
         environment: 'studio',
-        scheduling: 'immediate',
+        scheduling: immediateScheduling(),
       }),
     )
 
@@ -227,7 +232,7 @@ describe('validation scheduling', () => {
           getClient: () => createMockClient(),
           i18n: getFallbackLocaleSource(),
           environment: 'studio',
-          scheduling: 'immediate',
+          scheduling: immediateScheduling(),
         }),
       ).then(() => 'completed'),
       new Promise<string>((resolve) => setTimeout(() => resolve('still validating'), 300)),
@@ -251,7 +256,7 @@ describe('validation scheduling', () => {
         getClient: () => createMockClient(),
         i18n: getFallbackLocaleSource(),
         environment: 'studio',
-        scheduling: 'immediate',
+        scheduling: immediateScheduling(),
       }),
     )
 
@@ -272,6 +277,54 @@ describe('validation scheduling', () => {
         ...TITLE_TOO_SHORT,
         details: {actualLength: 2, minimumLength: 3},
       }),
+    )
+  })
+
+  it('finishes an idle run in flight once its scheduling switches to immediate', async () => {
+    const page = createStalledPage()
+    vi.stubGlobal('scheduler', {yield: vi.fn(() => Promise.resolve())})
+    const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
+    const blockCount = 200
+    const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
+    let settled = false
+    const result = lastValueFrom(
+      evaluateDocumentObservable({
+        document: createDocument(blockCount),
+        schema: createSchema(),
+        getClient: () => createMockClient(),
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+        scheduling,
+      }),
+    ).finally(() => {
+      settled = true
+    })
+
+    await vi.waitFor(() => {
+      expect(page.requestIdleCallback).toHaveBeenCalled()
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(settled).toBe(false)
+    const requested = page.requestIdleCallback.mock.results.map(({value}) => value)
+
+    scheduling.next('immediate')
+    const {status, markers} = await result
+
+    // The stalled page never ran an idle callback: the nodes that were waiting for one went ahead,
+    // and nothing after the switch asked for one.
+    expect(page.requestIdleCallback).toHaveBeenCalledTimes(requested.length)
+    expect(page.cancelIdleCallback.mock.calls.map(([handle]) => handle).toSorted(byHandle)).toEqual(
+      requested.toSorted(byHandle),
+    )
+    const linkMarkers: MarkerIdentity[] = emptyLinkPaths(blockCount).map((path) => ({
+      path,
+      level: 'error',
+      code: validationMarkerCodes.custom,
+      message: 'Link requires a URL',
+    }))
+    expect(status).toBe('failed')
+    expect(sortMarkers(markers).map(markerIdentity)).toEqual(
+      sortMarkers([TITLE_TOO_SHORT, ...linkMarkers]).map(markerIdentity),
     )
   })
 
@@ -299,7 +352,7 @@ describe('validation scheduling', () => {
         getClient: () => createMockClient(),
         i18n: immediateModule.getFallbackLocaleSource(),
         environment: 'studio',
-        scheduling: 'immediate',
+        scheduling: immediateScheduling(),
       }),
     )
 
@@ -361,7 +414,7 @@ describe('validation scheduling', () => {
           getClient: () => createMockClient(),
           i18n: getFallbackLocaleSource(),
           environment: 'studio',
-          scheduling: 'immediate',
+          scheduling: immediateScheduling(),
         }),
       )
 
