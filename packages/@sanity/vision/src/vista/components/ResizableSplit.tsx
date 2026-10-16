@@ -9,16 +9,7 @@ import {
 
 import {useContentSize} from '../hooks/useContentSize'
 import {cx} from '../util/cx'
-import {
-  splitHandle,
-  splitHandleDisabled,
-  splitHandleHorizontal,
-  splitHandleVertical,
-  splitPane,
-  splitRoot,
-  splitRootColumn,
-  splitRootRow,
-} from './vista.css'
+import styles from './vista.module.css'
 
 /** The divider's own extent along the axis; the rest of its hit area overlaps the panes */
 const SPLIT_HANDLE_SIZE = 1
@@ -161,11 +152,14 @@ export function ResizableSplit(props: ResizableSplitProps) {
   const primaryStyle = {flex: `0 0 ${shownSize}px`}
   return (
     <div
-      className={cx(splitRoot, split === 'vertical' ? splitRootRow : splitRootColumn)}
+      className={cx(
+        styles.splitRoot,
+        split === 'vertical' ? styles.splitRootRow : styles.splitRootColumn,
+      )}
       data-testid={testId}
       ref={setRoot}
     >
-      <div className={splitPane} style={primary === 'first' ? primaryStyle : undefined}>
+      <div className={styles.splitPane} style={primary === 'first' ? primaryStyle : undefined}>
         {children[0]}
       </div>
       <div
@@ -176,9 +170,9 @@ export function ResizableSplit(props: ResizableSplitProps) {
         aria-valuemin={minSize}
         aria-valuenow={shownSize}
         className={cx(
-          splitHandle,
-          split === 'vertical' ? splitHandleVertical : splitHandleHorizontal,
-          !allowResize && splitHandleDisabled,
+          styles.splitHandle,
+          split === 'vertical' ? styles.splitHandleVertical : styles.splitHandleHorizontal,
+          !allowResize && styles.splitHandleDisabled,
         )}
         data-dragging={dragging}
         data-testid={testId && `${testId}-handle`}
@@ -188,7 +182,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
         tabIndex={allowResize ? 0 : -1}
         title={label}
       />
-      <div className={splitPane} style={primary === 'second' ? primaryStyle : undefined}>
+      <div className={styles.splitPane} style={primary === 'second' ? primaryStyle : undefined}>
         {children[1]}
       </div>
     </div>

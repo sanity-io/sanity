@@ -16,8 +16,12 @@ describe.each(modules)('%s', (file) => {
     code: readFileSync(path.join(packageRoot, file)),
     cssModules: {pattern: cssModulesPattern},
   })
+  // A class that `composes` others exports their names after its own, as the build and Vite join them
   const names = Object.fromEntries(
-    Object.entries(exports ?? {}).map(([key, {name}]) => [key, name]),
+    Object.entries(exports ?? {}).map(([key, {name, composes}]) => [
+      key,
+      [name, ...composes.map((composed) => composed.name)].join(' '),
+    ]),
   )
 
   test('its typings declare exactly the names Lightning CSS exports', () => {

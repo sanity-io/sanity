@@ -27,16 +27,7 @@ import {
 } from '../../store/VistaActorContext'
 import {selectOpenDrawer} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
-import {
-  sidebarItem,
-  sidebarItemBadge,
-  sidebarItemBadgeExpanded,
-  sidebarRail,
-  sidebarRailCollapsed,
-  sidebarRailExpanded,
-  sidebarRailOverlay,
-  sidebarSlot,
-} from '../vista.css'
+import styles from '../vista.module.css'
 import {SidebarDrawer} from './SidebarDrawer'
 
 interface SidebarItemProps {
@@ -55,7 +46,7 @@ function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: 
   const count = badge && (
     <Badge
       aria-hidden
-      className={cx(sidebarItemBadge, expanded && sidebarItemBadgeExpanded)}
+      className={cx(styles.sidebarItemBadge, expanded && styles.sidebarItemBadgeExpanded)}
       data-testid={`${testId}-badge`}
       fontSize={0}
       tone={badge.tone}
@@ -65,7 +56,7 @@ function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: 
   )
   if (expanded) {
     return (
-      <div className={sidebarItem}>
+      <div className={styles.sidebarItem}>
         <Button
           aria-label={name}
           data-testid={testId}
@@ -83,7 +74,7 @@ function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: 
   }
 
   return (
-    <div className={sidebarItem}>
+    <div className={styles.sidebarItem}>
       <Tooltip animate content={<Text size={1}>{name}</Text>} placement="right" portal>
         <Button
           aria-label={name}
@@ -136,9 +127,9 @@ export function VistaSidebar() {
       as="nav"
       borderRight
       className={cx(
-        sidebarRail,
-        expanded ? sidebarRailExpanded : sidebarRailCollapsed,
-        isMobile && expanded && sidebarRailOverlay,
+        styles.sidebarRail,
+        expanded ? styles.sidebarRailExpanded : styles.sidebarRailCollapsed,
+        isMobile && expanded && styles.sidebarRailOverlay,
       )}
       data-testid="vista-sidebar"
       flexDirection="column"
@@ -243,7 +234,7 @@ export function VistaSidebar() {
 
   return (
     <Flex flexShrink={0} height="100%" minHeight="0">
-      {isMobile ? <div className={sidebarSlot}>{rail}</div> : rail}
+      {isMobile ? <div className={styles.sidebarSlot}>{rail}</div> : rail}
       {drawer && <SidebarDrawer drawer={drawer} overlay={isMobile} />}
     </Flex>
   )
