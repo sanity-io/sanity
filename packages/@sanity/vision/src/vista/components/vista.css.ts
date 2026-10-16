@@ -124,10 +124,10 @@ export const labelActions = style({
 export const resultJson = style({height: '100%'})
 
 /**
- * A JSON editor in a bottom panel (a document in Delta, the mutations in Mutate) scrolls past this
- * height, so what the panel shows next to it stays in view
+ * The box of a JSON editor (a document in Delta, the mutations in Mutate): it takes the height
+ * the drawer leaves over to it, and its document scrolls inside
  */
-export const jsonEditor = style({maxHeight: '260px', overflow: 'auto'})
+export const jsonEditorBox = style({flex: '1 1 0%', minHeight: 0, overflow: 'hidden'})
 
 /** Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
 export const panelTabs = style({

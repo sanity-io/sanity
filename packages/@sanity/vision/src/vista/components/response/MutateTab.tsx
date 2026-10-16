@@ -5,7 +5,7 @@ import {Badge, type BadgeTone, Button, Card, Label, Stack, Switch, Text} from '@
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {Suspense, useCallback, useId, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, Grid} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -333,163 +333,211 @@ export function MutateTab(props: MutateTabProps) {
     if (!run || !previewIsCurrent) return
     if (await mutate.apply(client, run, dataset)) onApplied()
   }
+  const hasOutcome =
+    state.failure !== undefined || state.applied !== undefined || state.preview !== undefined
 
   return (
-    <Box data-testid="vista-mutate" padding={3}>
-      <Stack gap={4}>
+    <Flex data-testid="vista-mutate" flexDirection="column" height="100%">
+      {/* Scrolls only in a drawer too short for the least room the editor takes */}
+      <Flex
+        flexBasis="0%"
+        flexDirection="column"
+        flexGrow={1}
+        gap={4}
+        minHeight="0"
+        overflow="auto"
+        padding={3}
+      >
         <Text muted size={1}>
           {t('vista.mutate.description')}
         </Text>
-        <Stack gap={2}>
-          <JsonEditor
-            actions={
-              <MenuButton
-                button={
-                  <Button
-                    data-testid="vista-mutate-add"
-                    disabled={!canAdd}
-                    fontSize={1}
-                    icon={AddIcon}
-                    mode="bleed"
-                    padding={2}
-                    text={t('vista.mutate.add')}
-                  />
-                }
-                id="vista-mutate-add"
-                menu={
-                  <Menu>
-                    <MenuItem
-                      data-testid="vista-mutate-add-patch"
+        {/* What a dry run or an apply returned is as tall as it needs up to half the room, and
+            scrolls past that; the editor takes the rest */}
+        <Grid
+          flexBasis="0%"
+          flexGrow={1}
+          gap={4}
+          gridTemplateRows={
+            hasOutcome ? 'minmax(140px, 1fr) fit-content(50%)' : 'minmax(140px, 1fr)'
+          }
+          minHeight="280px"
+        >
+          <Flex flexDirection="column" gap={2} minHeight="0">
+            <JsonEditor
+              actions={
+                <MenuButton
+                  button={
+                    <Button
+                      data-testid="vista-mutate-add"
+                      disabled={!canAdd}
                       fontSize={1}
-                      onClick={() => addTemplate('patch')}
-                      text={
-                        documents.length > 0
-                          ? t('vista.mutate.add.patch-result')
-                          : t('vista.mutate.add.patch')
-                      }
+                      icon={AddIcon}
+                      mode="bleed"
+                      padding={2}
+                      text={t('vista.mutate.add')}
                     />
-                    <MenuItem
-                      data-testid="vista-mutate-add-create"
-                      fontSize={1}
-                      onClick={() => addTemplate('create')}
-                      text={t('vista.mutate.add.create')}
-                    />
-                    <MenuItem
-                      data-testid="vista-mutate-add-delete"
-                      fontSize={1}
-                      onClick={() => addTemplate('delete')}
-                      text={
-                        documents.length > 0
-                          ? t('vista.mutate.add.delete-result')
-                          : t('vista.mutate.add.delete')
-                      }
-                    />
-                  </Menu>
-                }
-                popover={{placement: 'bottom-end', portal: true}}
-              />
-            }
-            label={t('vista.mutate.mutations')}
-            onChange={mutate.setText}
-            testId="vista-mutate-editor"
-            value={state.text}
-          />
-          {input.status === 'invalid-json' && (
-            <Text data-testid="vista-mutate-invalid" size={1}>
-              {t('vista.mutate.invalid-json', {message: input.message})}
-            </Text>
-          )}
-          {input.status === 'not-a-list' && (
-            <Text data-testid="vista-mutate-invalid" size={1}>
-              {t('vista.mutate.not-a-list')}
-            </Text>
-          )}
-          {input.status === 'invalid-mutation' && (
-            <Text data-testid="vista-mutate-invalid" size={1}>
-              {t('vista.mutate.invalid-mutation', {index: input.index})}
-            </Text>
-          )}
-        </Stack>
-        <Flex alignItems="flex-start" as="label" gap={3}>
-          <Box paddingTop={1}>
-            <Switch
-              checked={state.autoGenerateArrayKeys}
-              data-testid="vista-mutate-auto-keys"
-              onChange={(event) => mutate.setAutoGenerateArrayKeys(event.currentTarget.checked)}
+                  }
+                  id="vista-mutate-add"
+                  menu={
+                    <Menu>
+                      <MenuItem
+                        data-testid="vista-mutate-add-patch"
+                        fontSize={1}
+                        onClick={() => addTemplate('patch')}
+                        text={
+                          documents.length > 0
+                            ? t('vista.mutate.add.patch-result')
+                            : t('vista.mutate.add.patch')
+                        }
+                      />
+                      <MenuItem
+                        data-testid="vista-mutate-add-create"
+                        fontSize={1}
+                        onClick={() => addTemplate('create')}
+                        text={t('vista.mutate.add.create')}
+                      />
+                      <MenuItem
+                        data-testid="vista-mutate-add-delete"
+                        fontSize={1}
+                        onClick={() => addTemplate('delete')}
+                        text={
+                          documents.length > 0
+                            ? t('vista.mutate.add.delete-result')
+                            : t('vista.mutate.add.delete')
+                        }
+                      />
+                    </Menu>
+                  }
+                  popover={{placement: 'bottom-end', portal: true}}
+                />
+              }
+              label={t('vista.mutate.mutations')}
+              onChange={mutate.setText}
+              testId="vista-mutate-editor"
+              value={state.text}
             />
-          </Box>
-          <Stack gap={2}>
-            <Text size={1} weight="medium">
-              {t('vista.mutate.auto-keys')}
-            </Text>
-            <Text muted size={1}>
-              {t('vista.mutate.auto-keys.description')}
-            </Text>
-          </Stack>
-        </Flex>
-        <Flex alignItems="center" flexWrap="wrap" gap={2}>
-          <Button
-            data-testid="vista-mutate-preview"
-            disabled={!run || !canRequest || state.pending !== undefined}
-            fontSize={1}
-            loading={state.pending === 'preview'}
-            mode="ghost"
-            onClick={() => run && void mutate.preview(client, run)}
-            padding={2}
-            text={t('vista.mutate.preview')}
-          />
-          <Button
-            data-testid="vista-mutate-apply"
-            disabled={!canApply}
-            fontSize={1}
-            loading={state.pending === 'apply'}
-            onClick={() => void applyPreviewed()}
-            padding={2}
-            text={t('vista.mutate.apply', {dataset})}
-            tone="critical"
-          />
-          {run && !previewIsCurrent && (
-            <Text muted size={1}>
-              {t('vista.mutate.apply-needs-preview')}
-            </Text>
-          )}
-        </Flex>
-        {state.failure && (
-          <Card border data-testid="vista-mutate-failure" padding={3} radius={2} tone="critical">
-            <Stack gap={3}>
-              <Text size={1} weight="medium">
-                {state.failure.action === 'preview'
-                  ? t('vista.mutate.preview-failed')
-                  : t('vista.mutate.apply-failed')}
+            {input.status === 'invalid-json' && (
+              <Text data-testid="vista-mutate-invalid" size={1}>
+                {t('vista.mutate.invalid-json', {message: input.message})}
               </Text>
-              <Text size={1}>{state.failure.failure.message}</Text>
-              {state.failure.failure.items.map((item) => (
-                <Text key={`${item.index}:${item.message}`} size={1}>
-                  {t('vista.mutate.failure-item', {index: item.index, message: item.message})}
-                </Text>
-              ))}
+            )}
+            {input.status === 'not-a-list' && (
+              <Text data-testid="vista-mutate-invalid" size={1}>
+                {t('vista.mutate.not-a-list')}
+              </Text>
+            )}
+            {input.status === 'invalid-mutation' && (
+              <Text data-testid="vista-mutate-invalid" size={1}>
+                {t('vista.mutate.invalid-mutation', {index: input.index})}
+              </Text>
+            )}
+          </Flex>
+          {hasOutcome && (
+            <Box data-testid="vista-mutate-outcome" overflow="auto">
+              <Stack gap={4}>
+                {state.failure && (
+                  <Card
+                    border
+                    data-testid="vista-mutate-failure"
+                    padding={3}
+                    radius={2}
+                    tone="critical"
+                  >
+                    <Stack gap={3}>
+                      <Text size={1} weight="medium">
+                        {state.failure.action === 'preview'
+                          ? t('vista.mutate.preview-failed')
+                          : t('vista.mutate.apply-failed')}
+                      </Text>
+                      <Text size={1}>{state.failure.failure.message}</Text>
+                      {state.failure.failure.items.map((item) => (
+                        <Text key={`${item.index}:${item.message}`} size={1}>
+                          {t('vista.mutate.failure-item', {
+                            index: item.index,
+                            message: item.message,
+                          })}
+                        </Text>
+                      ))}
+                    </Stack>
+                  </Card>
+                )}
+                {state.applied && (
+                  <Card
+                    border
+                    data-testid="vista-mutate-applied"
+                    padding={3}
+                    radius={2}
+                    tone="positive"
+                  >
+                    <Text size={1}>
+                      {t('vista.mutate.applied', {
+                        dataset: state.applied.dataset,
+                        transactionId: state.applied.transactionId,
+                        count: state.applied.documentCount,
+                      })}
+                    </Text>
+                  </Card>
+                )}
+                {state.preview && (
+                  <PreviewResult
+                    hiddenFields={hiddenFields}
+                    preview={state.preview.result}
+                    stale={!previewIsCurrent}
+                  />
+                )}
+              </Stack>
+            </Box>
+          )}
+        </Grid>
+      </Flex>
+      <Box borderTop flexShrink={0} padding={3}>
+        <Stack gap={4}>
+          <Flex alignItems="flex-start" as="label" gap={3}>
+            <Box paddingTop={1}>
+              <Switch
+                checked={state.autoGenerateArrayKeys}
+                data-testid="vista-mutate-auto-keys"
+                onChange={(event) => mutate.setAutoGenerateArrayKeys(event.currentTarget.checked)}
+              />
+            </Box>
+            <Stack gap={2}>
+              <Text size={1} weight="medium">
+                {t('vista.mutate.auto-keys')}
+              </Text>
+              <Text muted size={1}>
+                {t('vista.mutate.auto-keys.description')}
+              </Text>
             </Stack>
-          </Card>
-        )}
-        {state.applied && (
-          <Card border data-testid="vista-mutate-applied" padding={3} radius={2} tone="positive">
-            <Text size={1}>
-              {t('vista.mutate.applied', {
-                dataset: state.applied.dataset,
-                transactionId: state.applied.transactionId,
-                count: state.applied.documentCount,
-              })}
-            </Text>
-          </Card>
-        )}
-        {state.preview && (
-          <PreviewResult
-            hiddenFields={hiddenFields}
-            preview={state.preview.result}
-            stale={!previewIsCurrent}
-          />
-        )}
-      </Stack>
-    </Box>
+          </Flex>
+          <Flex alignItems="center" flexWrap="wrap" gap={2}>
+            <Button
+              data-testid="vista-mutate-preview"
+              disabled={!run || !canRequest || state.pending !== undefined}
+              fontSize={1}
+              loading={state.pending === 'preview'}
+              mode="ghost"
+              onClick={() => run && void mutate.preview(client, run)}
+              padding={2}
+              text={t('vista.mutate.preview')}
+            />
+            <Button
+              data-testid="vista-mutate-apply"
+              disabled={!canApply}
+              fontSize={1}
+              loading={state.pending === 'apply'}
+              onClick={() => void applyPreviewed()}
+              padding={2}
+              text={t('vista.mutate.apply', {dataset})}
+              tone="critical"
+            />
+            {run && !previewIsCurrent && (
+              <Text muted size={1}>
+                {t('vista.mutate.apply-needs-preview')}
+              </Text>
+            )}
+          </Flex>
+        </Stack>
+      </Box>
+    </Flex>
   )
 }

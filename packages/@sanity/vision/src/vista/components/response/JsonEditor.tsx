@@ -1,12 +1,15 @@
-import {Card, Label, Stack} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
 import {type ReactNode, useEffect, useRef} from 'react'
 import {Box, Flex} from 'ui5'
 
 import {paramsExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
-import {jsonEditor} from '../vista.css'
+import {jsonEditorBox} from '../vista.css'
 
-/** A JSON editor whose text can also be replaced from outside, by a loaded document or a template */
+/**
+ * A JSON editor whose text can also be replaced from outside, by a loaded document or a template.
+ * It grows into the height its flex container leaves over.
+ */
 export function JsonEditor(props: {
   label: string
   testId: string
@@ -25,7 +28,7 @@ export function JsonEditor(props: {
     editorRef.current?.resetEditorContent(value)
   }, [value])
   return (
-    <Stack gap={2}>
+    <Flex flexBasis="0%" flexDirection="column" flexGrow={1} gap={2} minHeight="0">
       <Flex alignItems="center" gap={2}>
         <Label muted size={0}>
           {label}
@@ -33,9 +36,8 @@ export function JsonEditor(props: {
         <Box flexBasis="0%" flexGrow={1} />
         {actions}
       </Flex>
-      <Card border className={jsonEditor} data-testid={testId} radius={2}>
+      <Card border className={jsonEditorBox} data-testid={testId} radius={2}>
         <VisionCodeMirror
-          autoHeight
           extensions={paramsExtensions}
           initialValue={value}
           onChange={(text) => {
@@ -43,8 +45,9 @@ export function JsonEditor(props: {
             onChange(text)
           }}
           ref={editorRef}
+          underHeader
         />
       </Card>
-    </Stack>
+    </Flex>
   )
 }

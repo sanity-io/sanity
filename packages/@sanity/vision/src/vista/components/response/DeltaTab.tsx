@@ -228,98 +228,130 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
   ))
 
   return (
-    <Box data-testid="vista-delta" padding={3}>
-      <Stack gap={4}>
-        <Text muted size={1}>
-          {t('vista.delta.description')}
+    // Scrolls only in a drawer too short for the least room the documents take
+    <Flex
+      data-testid="vista-delta"
+      flexDirection="column"
+      gap={4}
+      height="100%"
+      overflow="auto"
+      padding={3}
+    >
+      <Text muted size={1}>
+        {t('vista.delta.description')}
+      </Text>
+      <Flex alignItems="flex-end" gap={2}>
+        <Box flexBasis="0%" flexGrow={1}>
+          <Stack gap={2}>
+            <Label muted size={0}>
+              {t('vista.delta.document-id')}
+            </Label>
+            <TextInput
+              data-testid="vista-delta-document-id"
+              fontSize={1}
+              onChange={(event) => delta.setDocumentId(event.currentTarget.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && client) void delta.load(client, state.documentId)
+              }}
+              padding={2}
+              value={state.documentId}
+            />
+          </Stack>
+        </Box>
+        <Button
+          data-testid="vista-delta-load"
+          disabled={!client || !state.documentId.trim() || state.loading}
+          fontSize={1}
+          loading={state.loading}
+          mode="ghost"
+          onClick={() => client && void delta.load(client, state.documentId)}
+          padding={2}
+          text={t('vista.delta.load')}
+        />
+      </Flex>
+      {state.loadError && (
+        <Text data-testid="vista-delta-load-error" size={1}>
+          {t('vista.delta.load-failed', {message: state.loadError})}
         </Text>
-        <Flex alignItems="flex-end" gap={2}>
-          <Box flexBasis="0%" flexGrow={1}>
-            <Stack gap={2}>
-              <Label muted size={0}>
-                {t('vista.delta.document-id')}
-              </Label>
-              <TextInput
-                data-testid="vista-delta-document-id"
-                fontSize={1}
-                onChange={(event) => delta.setDocumentId(event.currentTarget.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' && client) void delta.load(client, state.documentId)
-                }}
-                padding={2}
-                value={state.documentId}
-              />
-            </Stack>
-          </Box>
-          <Button
-            data-testid="vista-delta-load"
-            disabled={!client || !state.documentId.trim() || state.loading}
-            fontSize={1}
-            loading={state.loading}
-            mode="ghost"
-            onClick={() => client && void delta.load(client, state.documentId)}
-            padding={2}
-            text={t('vista.delta.load')}
+      )}
+      {/* The result is as tall as it needs up to two fifths of the room, and scrolls past that;
+          the two documents share the rest */}
+      <Grid
+        flexBasis="0%"
+        flexGrow={1}
+        gap={4}
+        gridTemplateRows="fit-content(40%) minmax(0, 1fr)"
+        minHeight="320px"
+      >
+        <Box overflow="auto">
+          <DeltaResult evaluation={evaluation} operation={operation} request={request} />
+        </Box>
+        <Flex flexDirection="column" gap={3} minHeight="0">
+          <JsonEditor
+            actions={
+              state.revisions && (
+                <Box flexShrink={1} minWidth="0">
+                  <Select
+                    aria-label={t('vista.delta.before')}
+                    data-testid="vista-delta-before-revision"
+                    fontSize={1}
+                    onChange={(event) =>
+                      client &&
+                      void delta.select(
+                        client,
+                        state.documentId,
+                        'before',
+                        event.currentTarget.value,
+                      )
+                    }
+                    padding={2}
+                    value={state.beforeRevision}
+                  >
+                    <option value="">{t('vista.delta.revision.none-before')}</option>
+                    {revisionOptions}
+                  </Select>
+                </Box>
+              )
+            }
+            label={t('vista.delta.before')}
+            onChange={(text) => delta.setText('before', text)}
+            testId="vista-delta-before"
+            value={state.beforeText}
+          />
+          <JsonEditor
+            actions={
+              state.revisions && (
+                <Box flexShrink={1} minWidth="0">
+                  <Select
+                    aria-label={t('vista.delta.after')}
+                    data-testid="vista-delta-after-revision"
+                    fontSize={1}
+                    onChange={(event) =>
+                      client &&
+                      void delta.select(
+                        client,
+                        state.documentId,
+                        'after',
+                        event.currentTarget.value,
+                      )
+                    }
+                    padding={2}
+                    value={state.afterRevision}
+                  >
+                    {revisionOptions}
+                    <option value="">{t('vista.delta.revision.none-after')}</option>
+                  </Select>
+                </Box>
+              )
+            }
+            label={t('vista.delta.after')}
+            onChange={(text) => delta.setText('after', text)}
+            testId="vista-delta-after"
+            value={state.afterText}
           />
         </Flex>
-        {state.loadError && (
-          <Text data-testid="vista-delta-load-error" size={1}>
-            {t('vista.delta.load-failed', {message: state.loadError})}
-          </Text>
-        )}
-        <DeltaResult evaluation={evaluation} operation={operation} request={request} />
-        <Grid gap={3} gridTemplateColumns="repeat(auto-fit, minmax(240px, 1fr))">
-          <Stack gap={2}>
-            {state.revisions && (
-              <Select
-                aria-label={t('vista.delta.before')}
-                data-testid="vista-delta-before-revision"
-                fontSize={1}
-                onChange={(event) =>
-                  client &&
-                  void delta.select(client, state.documentId, 'before', event.currentTarget.value)
-                }
-                padding={2}
-                value={state.beforeRevision}
-              >
-                <option value="">{t('vista.delta.revision.none-before')}</option>
-                {revisionOptions}
-              </Select>
-            )}
-            <JsonEditor
-              label={t('vista.delta.before')}
-              onChange={(text) => delta.setText('before', text)}
-              testId="vista-delta-before"
-              value={state.beforeText}
-            />
-          </Stack>
-          <Stack gap={2}>
-            {state.revisions && (
-              <Select
-                aria-label={t('vista.delta.after')}
-                data-testid="vista-delta-after-revision"
-                fontSize={1}
-                onChange={(event) =>
-                  client &&
-                  void delta.select(client, state.documentId, 'after', event.currentTarget.value)
-                }
-                padding={2}
-                value={state.afterRevision}
-              >
-                {revisionOptions}
-                <option value="">{t('vista.delta.revision.none-after')}</option>
-              </Select>
-            )}
-            <JsonEditor
-              label={t('vista.delta.after')}
-              onChange={(text) => delta.setText('after', text)}
-              testId="vista-delta-after"
-              value={state.afterText}
-            />
-          </Stack>
-        </Grid>
-      </Stack>
-    </Box>
+      </Grid>
+    </Flex>
   )
 }
 
