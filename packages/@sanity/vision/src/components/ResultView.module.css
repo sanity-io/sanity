@@ -92,6 +92,46 @@
   margin-left: var(--vision-result-space-4-half);
 }
 
+/*
+ * Copies the value of the property on its line. It sits at the line's end, out of the flow so
+ * the tree's layout is the same with or without it, and shows while the line is hovered or the
+ * button focused.
+ */
+.copyNodeButton {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-radius: 2px;
+  color: var(--card-muted-fg-color);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.2em;
+  line-height: var(--vision-result-code-line-height);
+  opacity: 0;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.copyNodeButton:hover {
+  color: var(--card-fg-color);
+}
+
+.copyNodeButton:focus-visible {
+  opacity: 1;
+  outline: 1px solid var(--card-focus-ring-color);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__line:hover) .copyNodeButton {
+  opacity: 1;
+}
+
+/* Set on the wrapper when every property has a copy button: long values wrap before the button */
+.copyableResult :global(.json-inspector .json-inspector__line) {
+  padding-right: 1.5em;
+}
+
 .resultViewWrapper
   :global(
     .json-inspector

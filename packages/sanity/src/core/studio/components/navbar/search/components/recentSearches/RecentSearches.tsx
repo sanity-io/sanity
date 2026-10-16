@@ -1,6 +1,6 @@
-import {Card, Text, useMediaIndex} from '@sanity/ui'
+import {Card, useMediaIndex} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {Button} from '../../../../../../../ui-components/button/Button'
 import {CommandList} from '../../../../../../components/commandList/CommandList'
@@ -82,7 +82,7 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
       {recentSearches.length > 0 ? (
         <>
           <Box paddingBottom={2} paddingTop={4} paddingX={3}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               {t('search.recent-searches-label')}
             </Text>
           </Box>

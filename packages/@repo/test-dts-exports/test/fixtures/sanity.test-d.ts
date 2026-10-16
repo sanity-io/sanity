@@ -1755,6 +1755,7 @@ import type {
   UseSearchMachineOptions,
   useSearchMaxFieldDepth,
   useSearchState,
+  useSetImmediateValidation,
   useSetPerspective,
   useSetVariant,
   useShallowUnique,
@@ -7151,6 +7152,9 @@ describe('sanity', () => {
   })
   test('useSearchState', () => {
     expectTypeOf<typeof useSearchState>().toBeFunction()
+  })
+  test('useSetImmediateValidation', () => {
+    expectTypeOf<typeof useSetImmediateValidation>().toBeFunction()
   })
   test('useSetPerspective', () => {
     expectTypeOf<typeof useSetPerspective>().toBeFunction()

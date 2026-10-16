@@ -144,6 +144,7 @@ export function VisionGuiHeader({
               <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
             </Card>
             <Tooltip
+              animate
               content={<Text size={1}>{t('settings.api-version-locked-for-variant')}</Text>}
               disabled={!isApiVersionLocked}
               placement="bottom"
@@ -273,7 +274,7 @@ export function VisionGuiHeader({
                     value={url}
                   />
                 </Box>
-                <Tooltip content={t('action.copy-url-to-clipboard')}>
+                <Tooltip animate content={t('action.copy-url-to-clipboard')}>
                   <Button
                     aria-label={t('action.copy-url-to-clipboard')}
                     type="button"
