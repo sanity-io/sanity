@@ -120,7 +120,7 @@ vi.mock('../../../../store/grants/documentPairPermissions', () => ({
   useDocumentPairPermissions: vi.fn(() => useDocumentPairPermissionsMockReturn),
 }))
 
-const VARIANT_ID = 'variant-nordic'
+const VARIANT_ID = '_.variants.nordic'
 
 const variantPublishedSibling = {
   _id: 'versions.p3n8xw2.123',
@@ -130,7 +130,7 @@ const variantPublishedSibling = {
   _updatedAt: '',
   _system: {
     scopeId: 'p3n8xw2',
-    variant: {_ref: VARIANT_ID, _weak: true as const},
+    variants: [{_ref: VARIANT_ID, _key: 'nordic'}],
     group: {_ref: '123', _weak: true as const},
   },
 } as VersionInfoDocumentStub
@@ -182,7 +182,7 @@ const variantRow = {
     _system: {
       bundleId: 'activeASAPRelease',
       scopeId: 'k7fh2qzs9m',
-      variant: {_ref: VARIANT_ID, _weak: true as const},
+      variants: [{_ref: VARIANT_ID, _key: 'nordic'}],
       group: {_ref: '123', _weak: true as const},
     },
   },

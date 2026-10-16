@@ -24,7 +24,7 @@ vi.mock('../../../../hooks/useDocumentVersions', () => ({
   useDocumentVersions: vi.fn(),
 }))
 
-const VARIANT_ID = 'variant-nordic'
+const VARIANT_ID = '_.variants.nordic'
 
 const documentRow = {
   memoKey: 'memo-1',
@@ -39,7 +39,7 @@ const documentRow = {
   },
 } as unknown as BundleDocumentRow
 
-// A variant release version: its id carries an opaque scope hash and `_system.variant` names the
+// A variant release version: its id carries an opaque scope hash and `_system.variants` names the
 // variant the row belongs to. `publishedDocumentExists` addresses the base published document, so
 // it is deliberately set against the variant's own publish state in these fixtures.
 const variantDocumentRow = {
@@ -51,7 +51,7 @@ const variantDocumentRow = {
     _system: {
       bundleId: 'release1',
       scopeId: 'k7fh2qzs9m',
-      variant: {_ref: VARIANT_ID, _weak: true},
+      variants: [{_ref: VARIANT_ID, _key: 'nordic'}],
       group: {_ref: 'doc1', _weak: true},
     },
   },
@@ -65,7 +65,7 @@ const variantPublishedSibling = {
   _updatedAt: '',
   _system: {
     scopeId: 'p3n8xw2',
-    variant: {_ref: VARIANT_ID, _weak: true},
+    variants: [{_ref: VARIANT_ID, _key: 'nordic'}],
     group: {_ref: 'doc1', _weak: true},
   },
 } as VersionInfoDocumentStub

@@ -16,7 +16,9 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../../../util/getDocumentVersionVariant'
 import {getVariantPublishedSibling} from '../../../../util/getTargetDocument'
+import {type VariantId} from '../../../../variants/types'
 import {DiscardVersionDialog} from '../../../components/dialog/DiscardVersionDialog'
 import {UnpublishVersionDialog} from '../../../components/dialog/UnpublishVersionDialog'
 import {useDocumentVersions} from '../../../hooks/useDocumentVersions'
@@ -99,7 +101,7 @@ function VariantUnpublishMenuItem({
   ...menuItemProps
 }: Omit<UnpublishMenuItemProps, 'isPublished' | 'isPublishStateResolving'> & {
   publishedId: string
-  variantId: string
+  variantId: VariantId
 }) {
   const {versions, loading} = useDocumentVersions({documentId: publishedId})
 
@@ -140,7 +142,7 @@ const DocumentActionsInner = memo(
     const type = document.document._type
     // Permission checks address the row's own version, keyed by the scope segment of its id.
     const version = getVersionFromId(document.document._id)
-    const variantId = document.document._system?.variant?._ref
+    const variantId = getDocumentVersionVariantId(document.document)
 
     const [discardVersionPermission, isDiscardVersionPermissionsLoading] =
       useDocumentPairPermissions({
