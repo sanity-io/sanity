@@ -123,6 +123,9 @@ export const labelActions = style({
 /** The result's JSON view fills the result pane, its editor scrolling on its own */
 export const resultJson = style({height: '100%'})
 
+/** A document in the Delta panel scrolls past this height, so the result above stays in view */
+export const deltaDocument = style({maxHeight: '260px', overflow: 'auto'})
+
 /** Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
 export const panelTabs = style({
   minWidth: 0,

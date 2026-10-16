@@ -16,6 +16,7 @@ import {
   loadRevision,
   loadRevisions,
 } from '../../util/deltaQuery'
+import {deltaDocument} from '../vista.css'
 
 /** Edits settle this long before the query is evaluated again */
 const EVALUATE_DELAY_MS = 300
@@ -166,7 +167,7 @@ function DocumentEditor(props: {
       <Label muted size={0}>
         {label}
       </Label>
-      <Card border data-testid={testId} radius={2}>
+      <Card border className={deltaDocument} data-testid={testId} radius={2}>
         <VisionCodeMirror
           autoHeight
           extensions={paramsExtensions}
@@ -304,6 +305,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
             {t('vista.delta.load-failed', {message: state.loadError})}
           </Text>
         )}
+        <DeltaResult evaluation={evaluation} operation={operation} request={request} />
         <Grid gap={3} gridTemplateColumns="repeat(auto-fit, minmax(240px, 1fr))">
           <Stack gap={2}>
             {state.revisions && (
@@ -354,58 +356,69 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
             />
           </Stack>
         </Grid>
-        <Stack data-testid="vista-delta-result" gap={3}>
-          <Flex alignItems="center" gap={2}>
-            <Label muted size={0}>
-              {t('vista.delta.result')}
-            </Label>
-            {operation && (
-              <Badge data-testid="vista-delta-operation" fontSize={0}>
-                {operation}
-              </Badge>
-            )}
-          </Flex>
-          {!request && (
-            <Text muted size={1}>
-              {t('vista.delta.no-request')}
-            </Text>
-          )}
-          {request && evaluation.status === 'idle' && (
-            <Text muted size={1}>
-              {t('vista.delta.empty')}
-            </Text>
-          )}
-          {evaluation.status === 'invalid' && (
-            <Text size={1}>
-              {evaluation.side === 'before'
-                ? t('vista.delta.invalid-before', {message: evaluation.message})
-                : t('vista.delta.invalid-after', {message: evaluation.message})}
-            </Text>
-          )}
-          {evaluation.status === 'failed' && (
-            <Text size={1}>{t('vista.delta.failed', {message: evaluation.message})}</Text>
-          )}
-          {evaluation.status === 'done' && typeof evaluation.value === 'boolean' && (
-            <Card
-              border
-              data-testid="vista-delta-match"
-              padding={3}
-              radius={2}
-              tone={evaluation.value ? 'positive' : 'caution'}
-            >
-              <Text size={1}>
-                {evaluation.value ? t('vista.delta.matches') : t('vista.delta.no-match')}
-              </Text>
-            </Card>
-          )}
-          {evaluation.status === 'done' && typeof evaluation.value !== 'boolean' && (
-            <Code data-testid="vista-delta-value" size={1}>
-              {JSON.stringify(evaluation.value, null, 2) ?? 'null'}
-            </Code>
-          )}
-        </Stack>
       </Stack>
     </Box>
+  )
+}
+
+function DeltaResult(props: {
+  operation: string | null
+  request: QueryRequest | null
+  evaluation: Evaluation
+}) {
+  const {operation, request, evaluation} = props
+  const {t} = useTranslation(visionLocaleNamespace)
+  return (
+    <Stack data-testid="vista-delta-result" gap={3}>
+      <Flex alignItems="center" gap={2}>
+        <Label muted size={0}>
+          {t('vista.delta.result')}
+        </Label>
+        {operation && (
+          <Badge data-testid="vista-delta-operation" fontSize={0}>
+            {operation}
+          </Badge>
+        )}
+      </Flex>
+      {!request && (
+        <Text muted size={1}>
+          {t('vista.delta.no-request')}
+        </Text>
+      )}
+      {request && evaluation.status === 'idle' && (
+        <Text muted size={1}>
+          {t('vista.delta.empty')}
+        </Text>
+      )}
+      {evaluation.status === 'invalid' && (
+        <Text size={1}>
+          {evaluation.side === 'before'
+            ? t('vista.delta.invalid-before', {message: evaluation.message})
+            : t('vista.delta.invalid-after', {message: evaluation.message})}
+        </Text>
+      )}
+      {evaluation.status === 'failed' && (
+        <Text size={1}>{t('vista.delta.failed', {message: evaluation.message})}</Text>
+      )}
+      {evaluation.status === 'done' && typeof evaluation.value === 'boolean' && (
+        <Card
+          border
+          data-testid="vista-delta-match"
+          padding={3}
+          radius={2}
+          tone={evaluation.value ? 'positive' : 'caution'}
+        >
+          <Text size={1}>
+            {evaluation.value ? t('vista.delta.matches') : t('vista.delta.no-match')}
+          </Text>
+        </Card>
+      )}
+      {evaluation.status === 'done' && typeof evaluation.value !== 'boolean' && (
+        <Code data-testid="vista-delta-value" size={1}>
+          {JSON.stringify(evaluation.value, null, 2) ?? 'null'}
+        </Code>
+      )}
+    </Stack>
   )
 }
 
