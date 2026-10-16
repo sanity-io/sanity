@@ -1,7 +1,7 @@
 import {type Browser} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
-import {type BenchScenario, scenarioFixture} from '../../scenarios/types'
+import {type BenchScenario} from '../../scenarios/types'
 import {computeInp, INP_MIN_INTERACTIONS, type InpResult} from '../../stats/inp'
 import {createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
@@ -14,8 +14,10 @@ import {
   interactionMaxDurations,
   type ReadOnlyInterruptions,
   type SessionConfig,
+  unexpectedEndpointHint,
 } from './interaction'
 import {awaitReadiness, gotoScenario} from './navigation'
+import {resetMockForScenario} from './seed'
 import {runStep, toTypeStep} from './steps'
 
 export interface InpSessionResult extends InpResult {
@@ -73,10 +75,7 @@ export async function runInpSession(options: {
   const {browser, running, scenario, instrumentation} = options
   const config = {...DEFAULT_INP_CONFIG, ...options.config}
 
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
-  running.mock.store.seed(scenarioFixture(scenario))
+  resetMockForScenario(running, scenario)
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,
@@ -144,6 +143,17 @@ export async function runInpSession(options: {
         if (driven >= config.targetInteractions || round >= config.maxRounds) break
       }
       if (runToCompletion) round += 1
+    }
+
+    // Before the readback wait, not after: an endpoint the mock lacks would otherwise
+    // surface as an anonymous readback timeout.
+    const ledgerSnapshot = running.mock.ledger.snapshot()
+    if (ledgerSnapshot.unexpected.length > 0) {
+      throw new SessionError(
+        'unexpected-endpoint',
+        ledgerSnapshot.unexpected.map((entry) => `${entry.method} ${entry.path}`).join(', '),
+        unexpectedEndpointHint(ledgerSnapshot.unexpected.map((entry) => entry.path)),
+      )
     }
 
     // Step readback: every declared check must see its effect in the mock's store.
