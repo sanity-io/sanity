@@ -34,6 +34,7 @@ import {getFallbackLocaleSource} from './i18n/fallback'
 import {type LocaleSource} from './i18n/types'
 import {markInternalValidator} from './internalValidators'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
+import {Rule as RuleClass} from './Rule'
 import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
@@ -645,27 +646,21 @@ function validateItemObservable({
   const hidden = resolveHiddenForType(type, value, parent, path, ancestorHidden)
 
   // Note: this validator is added here because it's conditional based on the
-  // environment.
-  const addUnknownFieldsValidator = (rule: Rule) => {
-    if (
-      // if the schema type is an object type
-      type?.jsonType === 'object' &&
-      // and if somewhere in it's type chain, it inherits from object or document
-      getTypeChain(type).find((t) => ['object', 'document', 'file', 'image'].includes(t.name)) &&
-      // and the environment is not the studio
-      environment !== 'studio'
-    ) {
-      // then add the validator for unknown fields
-      return rule
-        .custom(markInternalValidator(unknownFieldsValidator(type)), {
-          bypassConcurrencyLimit: true,
-        })
-        .warning()
-    }
-
-    // otherwise, leave it unchanged
-    return rule
-  }
+  // environment. It is a separate rule so that its `.warning()` level does not
+  // change the level of the schema rules.
+  const unknownFieldsRule =
+    // if the schema type is an object type
+    type?.jsonType === 'object' &&
+    // and if somewhere in it's type chain, it inherits from object or document
+    getTypeChain(type).find((t) => ['object', 'document', 'file', 'image'].includes(t.name)) &&
+    // and the environment is not the studio
+    environment !== 'studio'
+      ? new RuleClass(type)
+          .custom(markInternalValidator(unknownFieldsValidator(type)), {
+            bypassConcurrencyLimit: true,
+          })
+          .warning()
+      : undefined
 
   const rules = normalizeValidationRules(type, {
     ...restOfContext,
@@ -676,7 +671,8 @@ function validateItemObservable({
     type,
   })
   // run validation for the current value
-  const selfChecks = rules.map(addUnknownFieldsValidator).map((rule) =>
+  const selfRules = unknownFieldsRule ? [...rules, unknownFieldsRule] : rules
+  const selfChecks = selfRules.map((rule) =>
     defer(() =>
       validateRule(rule, value, {
         ...restOfContext,
@@ -729,9 +725,8 @@ function validateItemObservable({
             environment,
             hidden: resolveHiddenForType(fieldType, nestedValue, value, path.concat(name), hidden),
           }
-          return normalizeValidationRules({...fieldType, validation}, fieldContext)
-            .map(addUnknownFieldsValidator)
-            .map((subRule) => {
+          return normalizeValidationRules({...fieldType, validation}, fieldContext).map(
+            (subRule) => {
               return defer(() =>
                 validateRule(subRule, nestedValue, {
                   ...fieldContext,
@@ -742,7 +737,8 @@ function validateItemObservable({
                   },
                 }),
               )
-            })
+            },
+          )
         }),
     )
 
