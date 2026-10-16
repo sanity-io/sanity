@@ -30,6 +30,7 @@ import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLi
 import {createQuerySchema} from '../../util/schemaCheck'
 import {VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
+import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import {CollapsibleSection} from '../CollapsibleSection'
 import {
   editorContainer,
@@ -227,12 +228,7 @@ export function RequestPanel(props: RequestPanelProps) {
                 <Box flexBasis="0%" flexGrow={1} />
                 <Flex alignItems="center" className={labelActions} gap={1}>
                   {!generatorOpen && (
-                    <Tooltip
-                      animate
-                      content={<Text size={1}>{t('vista.generate.button')}</Text>}
-                      placement="bottom"
-                      portal
-                    >
+                    <AgentActionsTooltip title={t('vista.generate.button')}>
                       <Button
                         aria-label={t('vista.generate.button')}
                         data-testid="vista-generate-query"
@@ -242,7 +238,7 @@ export function RequestPanel(props: RequestPanelProps) {
                         onClick={() => setGeneratorOpen(true)}
                         padding={2}
                       />
-                    </Tooltip>
+                    </AgentActionsTooltip>
                   )}
                 </Flex>
               </Flex>

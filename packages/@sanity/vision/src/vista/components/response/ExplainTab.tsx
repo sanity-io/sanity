@@ -13,6 +13,7 @@ import {
   type PlanInsight,
   readPlanInsights,
 } from '../../util/planInsights'
+import {AgentActionsTooltip} from '../AgentActionsTooltip'
 
 /** What a plan insight means, as the Explain panel and the WebMCP explain tool say it */
 export function describeInsight(insight: PlanInsight, t: TFunction<'vision'>): string {
@@ -63,17 +64,19 @@ export function ExplainTab(props: ExplainTabProps) {
           {t('vista.explain.description')}
         </Text>
         <Flex flexWrap="wrap" gap={2}>
-          <Button
-            data-testid="vista-explain-button"
-            disabled={!canExplain || explaining}
-            fontSize={1}
-            icon={SparklesIcon}
-            loading={explaining}
-            onClick={onExplain}
-            padding={2}
-            text={t('vista.explain.explain')}
-            tone="primary"
-          />
+          <AgentActionsTooltip>
+            <Button
+              data-testid="vista-explain-button"
+              disabled={!canExplain || explaining}
+              fontSize={1}
+              icon={SparklesIcon}
+              loading={explaining}
+              onClick={onExplain}
+              padding={2}
+              text={t('vista.explain.explain')}
+              tone="primary"
+            />
+          </AgentActionsTooltip>
           <Button
             data-testid="vista-explain-plan-button"
             disabled={!canExplain || plan.status === 'loading'}

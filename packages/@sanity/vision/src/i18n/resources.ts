@@ -229,6 +229,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.export-types.title-typescript': 'Export TypeScript',
   /** Title of the dialog exporting a Zod schema for the result */
   'vista.export-types.title-zod': 'Export Zod',
+  /** Tooltip line of every control that calls Sanity Agent Actions, which bills AI credits */
+  'vista.agent-actions.credits': 'Uses AI credits',
   /** Button in the request column's action bar naming the API version requests go out with */
   'vista.api-version.button': 'API {{version}}',
   /** The API version button while queries go through the API CDN */
@@ -255,7 +257,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Queries run against API version {{version}}, which the selected variant needs.',
   /** Explanation at the top of the Explain panel */
   'vista.explain.description':
-    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words.',
+    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words, which uses AI credits.',
   /** Shown in the Explain panel while there is no valid query to explain */
   'vista.explain.empty': 'Write a query to explain it.',
   /** Button in the Explain panel asking Agent Actions to explain the query and its plan */
@@ -342,7 +344,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.generate.close': 'Close',
   /** Explanation under the generate query field */
   'vista.generate.description':
-    'Sanity Agent Actions write the GROQ from your description and the document types, and the Content Lake checks each attempt. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
+    'Sanity Agent Actions write the GROQ from your description and the document types, and the Content Lake checks each attempt; every attempt uses AI credits. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
   /** Shown when no query could be generated, above the reason */
   'vista.generate.failed': 'The query could not be generated',
   /** Accessible label of the description field in the generate query bar */
@@ -515,7 +517,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.mutate.generate.button': 'Generate mutations',
   /** Explanation under the generate mutations field */
   'vista.mutate.generate.description':
-    'Sanity Agent Actions write the mutations from your description, the documents in the result and their types, and a dry run checks each attempt. They replace the mutations here, where undo brings these back; nothing is written until you apply them.',
+    'Sanity Agent Actions write the mutations from your description, the documents in the result and their types, and a dry run checks each attempt; every attempt uses AI credits. They replace the mutations here, where undo brings these back; nothing is written until you apply them.',
   /** Shown when no mutations could be generated, above the reason */
   'vista.mutate.generate.failed': 'The mutations could not be generated',
   /** Accessible label of the description field in the generate mutations bar */

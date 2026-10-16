@@ -1110,6 +1110,28 @@ describe('VistaGui', () => {
     )
   })
 
+  it('says at every control that calls Agent Actions that it uses AI credits', async () => {
+    renderVista()
+    // Tooltips stay mounted while closed, so the note is in the document for every control shown:
+    // Generate query over the query editor, then Explain this to me, then Generate mutations
+    const notes = () => screen.queryAllByText('vista.agent-actions.credits')
+    await waitFor(() => expect(notes()).toHaveLength(1))
+    fireEvent.click(document.getElementById('vista-response-explain-tab') as HTMLElement)
+    await waitFor(() => expect(notes()).toHaveLength(2))
+    fireEvent.click(screen.getByTestId('vista-sidebar-mutate'))
+    await waitFor(() => expect(notes()).toHaveLength(3))
+    // The icon-only controls keep their name as the tooltip's first line; the Explain button
+    // says what it does itself
+    const tooltipTexts = notes().map((note) =>
+      text(note.closest<HTMLElement>('[data-ui="Tooltip"]') as HTMLElement),
+    )
+    expect(tooltipTexts).toEqual([
+      'vista.generate.buttonvista.agent-actions.credits',
+      'vista.agent-actions.credits',
+      'vista.mutate.generate.buttonvista.agent-actions.credits',
+    ])
+  })
+
   it('generates a query from a description into the empty tab, and fetches it', async () => {
     const {fetchCalls, promptCalls, replyToPrompts} = renderVista()
     const generated = '*[_type == "author"] | order(_createdAt desc)[0...10]{_id, name}'
