@@ -52,6 +52,7 @@ import type {
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentPaneInfoContext,
+  DocumentTableSelectionContext,
   EditDialogOuterBoundaryContext,
   EnhancedObjectDialogContext,
   EventsContext,
@@ -102,6 +103,7 @@ import type {
   PresentationDisplayedDocumentContext,
   PresentationDocumentContext,
   PresentationNavigateContext,
+  PresentationPaneLinksContext,
   PresentationPanelsContext,
   PresentationParamsContext,
   PresentationSharedStateContext,
@@ -145,6 +147,7 @@ import type {
   TasksUpsellContext,
   UnclaimedProjectContext,
   UnclaimedProjectContextValue,
+  UpsellDescriptionSerializerContext,
   UserApplicationCacheContext,
   UserColorManagerContext,
   ValidationContext,
@@ -305,6 +308,9 @@ describe('sanity/_singletons', () => {
   test('DocumentPaneInfoContext', () => {
     expectTypeOf<typeof DocumentPaneInfoContext>().not.toBeNever()
   })
+  test('DocumentTableSelectionContext', () => {
+    expectTypeOf<typeof DocumentTableSelectionContext>().not.toBeNever()
+  })
   test('EditDialogOuterBoundaryContext', () => {
     expectTypeOf<typeof EditDialogOuterBoundaryContext>().not.toBeNever()
   })
@@ -455,6 +461,9 @@ describe('sanity/_singletons', () => {
   test('PresentationNavigateContext', () => {
     expectTypeOf<typeof PresentationNavigateContext>().not.toBeNever()
   })
+  test('PresentationPaneLinksContext', () => {
+    expectTypeOf<typeof PresentationPaneLinksContext>().not.toBeNever()
+  })
   test('PresentationPanelsContext', () => {
     expectTypeOf<typeof PresentationPanelsContext>().not.toBeNever()
   })
@@ -583,6 +592,9 @@ describe('sanity/_singletons', () => {
   })
   test('UnclaimedProjectContextValue', () => {
     expectTypeOf<UnclaimedProjectContextValue>().toBeObject()
+  })
+  test('UpsellDescriptionSerializerContext', () => {
+    expectTypeOf<typeof UpsellDescriptionSerializerContext>().not.toBeNever()
   })
   test('UserApplicationCacheContext', () => {
     expectTypeOf<typeof UserApplicationCacheContext>().not.toBeNever()
