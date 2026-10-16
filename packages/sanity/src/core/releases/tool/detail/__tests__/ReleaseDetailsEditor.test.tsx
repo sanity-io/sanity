@@ -1,4 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {defineField} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
@@ -200,6 +201,44 @@ describe('ReleaseDetailsEditor', () => {
             containsUrl: false,
           },
         ])
+      })
+      vi.useRealTimers()
+    })
+
+    it('does not render metadata fields, and a title edit still saves', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const wrapper = await createTestProvider({
+        config: {
+          releases: {
+            metadata: {
+              fields: [
+                defineField({
+                  name: 'reviewNote',
+                  title: 'Review note',
+                  type: 'string',
+                  validation: (rule) => rule.required(),
+                }),
+              ],
+            },
+          },
+        },
+      })
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.queryByTestId('field-reviewNote')).toBeNull()
+
+      const titleInput = screen.getByTestId('release-form-title') as HTMLTextAreaElement
+      await userEvent.clear(titleInput)
+      await userEvent.type(titleInput, 'New Title', {delay: null})
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getUpdateReleaseMock()).toHaveBeenCalledWith(
+          expect.objectContaining({
+            metadata: expect.objectContaining({title: 'New Title'}),
+          }),
+        )
       })
       vi.useRealTimers()
     })

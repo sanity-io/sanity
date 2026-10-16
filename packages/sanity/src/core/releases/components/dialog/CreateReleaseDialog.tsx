@@ -17,6 +17,7 @@ import {
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
+import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsReleaseInvalid} from '../../util/getIsReleaseInvalid'
@@ -41,9 +42,15 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const createReleaseMetadata = useCreateReleaseMetadata()
   const {clearReleaseDataFromStorage} = useReleaseFormStorage()
 
+  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const invalid = getIsReleaseInvalid(release)
+  // True when the form is not mounted, so create is not waiting on a check that will never run.
+  const [metadataValid, setMetadataValid] = useState(!metadataFieldsEnabled)
+  const invalid = getIsReleaseInvalid(release) || !metadataValid
+  const handleValidityChange = useCallback((valid: boolean) => {
+    setMetadataValid(valid)
+  }, [])
 
   const {releasePromise} = useGuardWithReleaseLimitUpsell()
 
@@ -51,6 +58,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
+      if (!metadataValid) return
 
       setIsSubmitting(true)
       const inQuota = await releasePromise
@@ -110,6 +118,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       toast,
       t,
       clearReleaseDataFromStorage,
+      metadataValid,
     ],
   )
 
@@ -137,7 +146,11 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       <Card padding={4} borderTop>
         <form onSubmit={handleOnSubmit}>
           <Box paddingBottom={4}>
-            <ReleaseForm onChange={handleOnChange} value={release} />
+            <ReleaseForm
+              onChange={handleOnChange}
+              onValidityChange={handleValidityChange}
+              value={release}
+            />
           </Box>
           <Flex justifyContent="flex-end" paddingTop={5}>
             <Button

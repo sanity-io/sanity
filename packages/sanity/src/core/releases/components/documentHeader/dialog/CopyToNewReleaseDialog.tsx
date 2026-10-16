@@ -16,6 +16,7 @@ import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../../hooks/useReleaseFormStorage'
+import {useReleaseMetadataFieldsEnabled} from '../../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
@@ -62,6 +63,8 @@ export function CopyToNewReleaseDialog(props: {
    * and so date in past warning ui elements wouldn't show
    */
   const [, setRerenderDialog] = useState(0)
+  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
+  const [metadataValid, setMetadataValid] = useState(!metadataFieldsEnabled)
 
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
@@ -70,7 +73,7 @@ export function CopyToNewReleaseDialog(props: {
   const displayTitle = title || t('release.placeholder-untitled-release')
 
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
-  const invalid = getIsReleaseInvalid(release)
+  const invalid = getIsReleaseInvalid(release) || !metadataValid
 
   const handleOnChange = (releaseMetadata: EditableReleaseDocument) => {
     setRelease(releaseMetadata)
@@ -87,6 +90,7 @@ export function CopyToNewReleaseDialog(props: {
       setRerenderDialog((cur) => cur + 1)
       return // do not submit if date is in past
     }
+    if (!metadataValid) return
 
     setIsSubmitting(true)
     const inQuota = await releasePromise
@@ -175,7 +179,11 @@ export function CopyToNewReleaseDialog(props: {
             </Text>
           </Card>
         )}
-        <ReleaseForm onChange={handleOnChange} value={release} />
+        <ReleaseForm
+          onChange={handleOnChange}
+          onValidityChange={setMetadataValid}
+          value={release}
+        />
 
         <Flex gap={3} justifyContent="flex-end" paddingTop={3} alignItems="center">
           <Button
