@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {BehaviorSubject, of} from 'rxjs'
+import {BehaviorSubject, Observable, of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {collectEmissions} from './__fixtures__/collect.fixture'
@@ -10,7 +10,11 @@ import {
   publishDocumentVersionEvent,
 } from './__fixtures__/events.fixture'
 import {createMockClient} from './__fixtures__/mockClient'
-import {createTransaction, editTransaction} from './__fixtures__/transactions.fixture'
+import {
+  createTransaction,
+  editTransaction,
+  type TranslogEntry,
+} from './__fixtures__/transactions.fixture'
 import {
   buildDocumentForDiffInput,
   createTransactionsCache,
@@ -21,7 +25,7 @@ import {
 } from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
-import {type EventsStoreRevision} from './types'
+import {type EventsObservableValue, type EventsStoreRevision} from './types'
 
 vi.mock('./getDocumentTransactions', () => ({
   getDocumentTransactions: vi.fn(),
@@ -386,5 +390,44 @@ describe('getDocumentChanges', () => {
       expect.objectContaining({fromTransaction: 'rev-since', toTransaction: undefined}),
     )
     subscription.unsubscribe()
+  })
+
+  it('keeps one remote transactions subscription and releases it on unsubscribe', async () => {
+    const {client} = createMockClient()
+    const remoteTransactionsSource$ = new BehaviorSubject<TranslogEntry[]>([])
+    let openSubscriptions = 0
+    const remoteTransactions$ = new Observable<TranslogEntry[]>((subscriber) => {
+      openSubscriptions++
+      const subscription = remoteTransactionsSource$.subscribe(subscriber)
+      return () => {
+        openSubscriptions--
+        subscription.unsubscribe()
+      }
+    })
+    const eventsObservable$ = new BehaviorSubject<EventsObservableValue>({
+      events: [],
+      nextCursor: '',
+      loading: false,
+      error: null,
+    })
+
+    const changes$ = getDocumentChanges({
+      client,
+      documentId: DRAFT_ID,
+      eventsObservable$,
+      to$: of(null),
+      since$: of(revision('rev-since', sinceDoc)),
+      remoteTransactions$,
+    })
+    const {values, subscription} = collectEmissions(changes$)
+    await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+
+    // The event list re-emits on every remote edit, rebuilding the inner pipeline each time.
+    eventsObservable$.next({...eventsObservable$.value})
+    eventsObservable$.next({...eventsObservable$.value})
+    expect(openSubscriptions).toBe(1)
+
+    subscription.unsubscribe()
+    expect(openSubscriptions).toBe(0)
   })
 })
