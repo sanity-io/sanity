@@ -721,8 +721,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Accessible label and tooltip of the handle for resizing the params panel */
   'vista.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
-  /** Badge on the params form view, which infers fields from the query */
-  'vista.params.view.experimental': 'Experimental',
   /** Tab showing the params as a form inferred from the query */
   'vista.params.view.form': 'Form',
   /** Tab showing the params as JSON */

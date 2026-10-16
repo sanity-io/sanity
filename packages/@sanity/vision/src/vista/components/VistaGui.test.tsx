@@ -557,7 +557,7 @@ describe('VistaGui', () => {
     expect(paramsEditor().value).toBe('{"id": "pending"}')
   })
 
-  it('edits the params in the experimental form inferred from the query', async () => {
+  it('edits the params in the form inferred from the query', async () => {
     const {fetchCalls, unmount} = renderVista()
     const paramsEditor = () =>
       within(screen.getByTestId('vista-params-editor')).getByTestId(

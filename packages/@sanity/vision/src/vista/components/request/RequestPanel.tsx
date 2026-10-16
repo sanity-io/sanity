@@ -3,7 +3,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PlayIcon} from '@sanity/icons/Play'
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Badge, Button, Hotkeys, Label, Tab, TabList, Text} from '@sanity/ui'
+import {Button, Hotkeys, Label, Tab, TabList, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type RefObject, useCallback, useMemo, useRef, useState} from 'react'
@@ -354,14 +354,7 @@ export function RequestPanel(props: RequestPanelProps) {
                 aria-controls="vista-request-params-content"
                 fontSize={1}
                 id="vista-params-view-form"
-                label={
-                  <Flex alignItems="center" as="span" gap={2}>
-                    {t('vista.params.view.form')}
-                    <Badge fontSize={0} tone="primary">
-                      {t('vista.params.view.experimental')}
-                    </Badge>
-                  </Flex>
-                }
+                label={t('vista.params.view.form')}
                 onClick={() => setParamsView('form')}
                 padding={2}
                 selected={paramsView === 'form'}

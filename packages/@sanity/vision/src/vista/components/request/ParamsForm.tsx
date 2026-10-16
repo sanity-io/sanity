@@ -368,7 +368,7 @@ function ParamField(props: {
 }
 
 /**
- * Experimental: a form for the params a query uses, inferred from the query (and the workspace
+ * A form for the params a query uses, inferred from the query (and the workspace
  * schema, like typegen). Values that fit are easy to enter (document types and option lists are
  * suggested, numbers become numbers), and values that do not are still sent, for testing.
  */
