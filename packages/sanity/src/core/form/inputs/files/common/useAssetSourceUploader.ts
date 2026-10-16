@@ -108,12 +108,10 @@ export function useAssetSourceUploader(options: UseAssetSourceUploaderOptions) {
                   .forEach((file) => {
                     push({
                       status: 'warning',
-                      title: t('asset-sources.media-library.warning.file-already-exist.title', {
+                      title: t('asset-sources.common.warning.file-already-exist.title', {
                         filename: file.file.name,
                       }),
-                      description: t(
-                        'asset-sources.media-library.warning.file-already-exist.description',
-                      ),
+                      description: t('asset-sources.common.warning.file-already-exist.description'),
                       closable: true,
                       duration: 10000,
                     })

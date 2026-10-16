@@ -221,6 +221,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'See the console for more information.',
   'asset-sources.common.uploader.upload-failed.title': 'Upload failed',
 
+  /** Warning shown when an uploaded file already exists in the selected asset source */
+  'asset-sources.common.warning.file-already-exist.description':
+    'Using the existing file found in this source.',
+  'asset-sources.common.warning.file-already-exist.title': "File: '{{filename}}' already exists",
+
   /** Menu Items for Dataset Asset Source (will be replaced with workspace name by default) */
   'asset-sources.dataset.file.title': 'Workspace files',
   'asset-sources.dataset.image.title': 'Workspace images',
@@ -255,12 +260,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Title for the upload dialog (component mode) */
   'asset-sources.media-library.upload-dialog.title': 'Upload to Media Library',
-
-  /** Warning message shown when uploading already existing files to the Media Library Asset Source */
-  'asset-sources.media-library.warning.file-already-exist.description':
-    'Using the existing file found in the library.',
-  'asset-sources.media-library.warning.file-already-exist.title':
-    "File: '{{filename}}' already exists",
 
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
