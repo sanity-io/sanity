@@ -241,6 +241,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip of the API version button while queries go through the API CDN */
   'vista.api-version.tooltip-cdn':
     'Queries run against the API CDN with API version {{version}}. Select to change it in Options.',
+  /**
+   * Tooltip of the API version button while the API CDN is asked for but the perspective, as the
+   * perspective select names it, keeps queries on the API
+   */
+  'vista.api-version.tooltip-cdn-blocked':
+    'Queries run against the API with API version {{version}}, not the API CDN: it does not serve the {{perspective}} perspective. Select to change it in Options.',
   /** Tooltip of the API version button while the "Other" input holds an unfinished version */
   'vista.api-version.tooltip-invalid':
     'The API version in Options is unfinished, so nothing can be fetched until it is complete.',
@@ -596,12 +602,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Note under the API CDN switch while the studio signs in with a cookie */
   'vista.options.use-cdn.anonymous':
     'This studio signs you in with a cookie, which the API CDN never receives: it answers as it would an anonymous visitor, with what a public dataset shows.',
-  /** Note under the API CDN switch while the perspective keeps queries on the API */
-  'vista.options.use-cdn.blocked-by-perspective':
-    'The API CDN serves neither the drafts perspective nor a perspective stack, so this query goes to the API. Pick published or raw to use the CDN.',
+  /**
+   * Why the API CDN is asked for but not used: the perspective is the one the perspective
+   * select shows, such as "Global (drafts)"
+   */
+  'vista.options.use-cdn.blocked':
+    'The API CDN does not serve drafts or releases, so queries with the {{perspective}} perspective go to the API. With published or raw they use the CDN.',
+  /** Heading of the notice shown while the perspective keeps queries off the API CDN */
+  'vista.options.use-cdn.blocked.title': 'Queries go to the API, not the CDN',
   /** Description of the API CDN switch */
   'vista.options.use-cdn.description':
-    'Sends the query to the API CDN, like useCdn: true in @sanity/client. Its answers are cached for up to a minute; the Network panel shows when one came from the cache.',
+    'Sends the query to the API CDN, like useCdn: true in @sanity/client, with the published and raw perspectives: drafts and releases always go to the API. Its answers are cached for up to a minute; the Network panel shows when one came from the cache.',
+  /** Button in the API CDN notice switching the tab to the published perspective */
+  'vista.options.use-cdn.use-published': 'Use the published perspective',
   /** Perspective option following the studio navbar; the name is the release, published or drafts */
   'vista.options.perspective.global': 'Global ({{name}})',
   /** Variant option sending the navbar's variant, named */

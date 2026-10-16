@@ -82,6 +82,18 @@ function isServedByCdn(perspective: ClientPerspective | undefined): boolean {
   return perspective !== 'drafts' && perspective !== 'previewDrafts'
 }
 
+/**
+ * The navbar's stack for its published perspective is `['published']`, which asks for the same
+ * documents as `published` but counts as a stack, so it would never go to the API CDN
+ */
+function withoutPublishedStack(
+  perspective: ClientPerspective | undefined,
+): ClientPerspective | undefined {
+  return Array.isArray(perspective) && perspective.length === 1 && perspective[0] === 'published'
+    ? 'published'
+    : perspective
+}
+
 /** Reads the studio state every tab's options are resolved against */
 export function useRequestEnvironment(): RequestEnvironment {
   const {perspectiveStack, selectedVariantNames} = usePerspective()
@@ -150,11 +162,13 @@ export function resolveRequestOptions(
     options.perspective,
     environment.isScheduledDraftsEnabled,
   )
-  const perspective = getActivePerspective({
-    visionPerspective: tabPerspective === 'global' ? 'pinnedRelease' : tabPerspective,
-    perspectiveStack,
-    scheduledDraftsStack,
-  })
+  const perspective = withoutPublishedStack(
+    getActivePerspective({
+      visionPerspective: tabPerspective === 'global' ? 'pinnedRelease' : tabPerspective,
+      perspectiveStack,
+      scheduledDraftsStack,
+    }),
+  )
 
   const servedByCdn = isServedByCdn(perspective)
 

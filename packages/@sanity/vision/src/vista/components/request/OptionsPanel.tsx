@@ -7,12 +7,14 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type VistaTabOptions} from '../../store/types'
 import {useVistaSelector} from '../../store/VistaActorContext'
 import {selectDatasets, selectWorkspaceDataset} from '../../store/vistaMachine'
+import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {optionsGrid} from '../vista.css'
 import {
   ApiVersionField,
   DatasetField,
   PerspectiveSelect,
   UseCdnField,
+  usePerspectiveOptionName,
   VariantSelect,
 } from './OptionFields'
 
@@ -26,6 +28,7 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const datasets = useVistaSelector(selectDatasets)
   const workspaceDataset = useVistaSelector(selectWorkspaceDataset)
+  const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
 
   return (
     <Box data-testid="vista-options" padding={3}>
@@ -73,15 +76,17 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
         </Flex>
         <UseCdnField
           checked={options.useCdn}
-          notes={[
-            ...(resolved.isCdnBlockedByPerspective
-              ? [t('vista.options.use-cdn.blocked-by-perspective')]
-              : []),
-            ...(resolved.isCdnAnonymous ? [t('vista.options.use-cdn.anonymous')] : []),
-          ]}
+          notes={resolved.isCdnAnonymous ? [t('vista.options.use-cdn.anonymous')] : []}
           onChange={(useCdn) => onChange({useCdn})}
           testId="vista-option-use-cdn"
         />
+        {resolved.isCdnBlockedByPerspective && (
+          <CdnBlockedNotice
+            onUsePublished={() => onChange({perspective: 'published'})}
+            perspectiveName={perspectiveName}
+            testId="vista-option-use-cdn-blocked"
+          />
+        )}
       </Stack>
     </Box>
   )

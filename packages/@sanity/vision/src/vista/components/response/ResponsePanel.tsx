@@ -32,6 +32,7 @@ import {type QueryLintFinding} from '../../util/groqLint'
 import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
+import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {resultContainer, resultLabel, labelActions} from '../vista.css'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
@@ -129,6 +130,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
   )
 
   const queryExplain = useQueryExplain(request)
+  const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
   const delta = useDeltaPanel()
   const mutate = useMutatePanel()
   const actorRef = useVistaActor()
@@ -184,7 +186,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
       {
         id: 'network',
         label: t('vista.panel.network'),
-        content: <NetworkTab meta={meta} resolved={resolved} />,
+        content: <NetworkTab meta={meta} perspectiveName={perspectiveName} resolved={resolved} />,
       },
       {
         id: 'lint',
@@ -296,6 +298,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
       onEditQuery,
       onMutationsApplied,
       onRevealRange,
+      perspectiveName,
       queryExplain,
       removeFunction,
       request,

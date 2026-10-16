@@ -74,7 +74,11 @@ async function renderTab(
     render(
       <ThemeProvider theme={theme}>
         <LayerProvider>
-          <NetworkTab resolved={{useCdn: true, isCdnBlockedByPerspective: false}} {...props} />
+          <NetworkTab
+            perspectiveName="published"
+            resolved={{useCdn: true, isCdnBlockedByPerspective: false}}
+            {...props}
+          />
         </LayerProvider>
       </ThemeProvider>,
     )
@@ -135,9 +139,14 @@ describe('NetworkTab', () => {
     expect(screen.getByTestId('vista-network-hint').textContent).toBe('vista.network.use-cdn-hint')
 
     cleanup()
-    await renderTab({meta: api, resolved: {useCdn: false, isCdnBlockedByPerspective: true}})
-    expect(screen.getByTestId('vista-network-hint').textContent).toBe(
-      'vista.options.use-cdn.blocked-by-perspective',
+    await renderTab({
+      meta: api,
+      perspectiveName: 'Global (drafts)',
+      resolved: {useCdn: false, isCdnBlockedByPerspective: true},
+    })
+    expect(screen.queryByTestId('vista-network-hint')).toBeNull()
+    expect(screen.getByTestId('vista-network-cdn-blocked').textContent).toContain(
+      'vista.options.use-cdn.blocked:{"perspective":"Global (drafts)"}',
     )
   })
 

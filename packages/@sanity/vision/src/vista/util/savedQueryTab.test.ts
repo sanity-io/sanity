@@ -258,6 +258,31 @@ describe('savedQueryTab', () => {
     ).toMatchObject({useCdn: false, isCdnBlockedByPerspective: false})
   })
 
+  it('sends `global` on the navbar’s published perspective as published, which the API CDN serves', () => {
+    const tab = createTab(settings, {query: '*', options: {perspective: 'global', useCdn: true}})
+    const published: RequestEnvironment = {...environment, perspectiveStack: ['published']}
+    expect(resolveRequestOptions(tab.options, published)).toMatchObject({
+      perspective: 'published',
+      useCdn: true,
+      isCdnBlockedByPerspective: false,
+    })
+    // A release on top of published is a stack still
+    expect(
+      resolveRequestOptions(tab.options, {
+        ...environment,
+        perspectiveStack: ['rSpring', 'published'],
+      }),
+    ).toMatchObject({perspective: ['rSpring', 'published'], useCdn: false})
+    // Saved with `perspective=published`, the request matches either way
+    expect(
+      matches(
+        createTab(settings, {query: '*', options: {perspective: 'global'}}),
+        url('*', {perspective: 'published'}),
+        published,
+      ),
+    ).toBe(true)
+  })
+
   it('matches a tab following the workspace against the dataset the workspace uses', () => {
     const tab = createTab(settings, {query: '*', options: {perspective: undefined}})
     expect(tab.options.datasetMode).toBe('workspace')

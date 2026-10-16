@@ -211,6 +211,28 @@ function useGlobalPerspectiveName(): string {
   return releaseTitle ?? selectedPerspectiveName ?? (isDraftModelEnabled ? 'drafts' : 'published')
 }
 
+/** A tab's perspective as the perspective select names it, "Global (drafts)" for instance */
+export function usePerspectiveOptionName(perspective: VistaPerspective): string {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const globalName = useGlobalPerspectiveName()
+  switch (perspective) {
+    case 'global':
+      return t('vista.options.perspective.global', {name: globalName})
+    case 'scheduledDrafts':
+      return t('settings.perspectives.scheduled-drafts')
+    case undefined:
+      return t('settings.perspectives.default')
+    case 'raw':
+    case 'published':
+    case 'drafts':
+      return perspective
+    default: {
+      const unknownPerspective: never = perspective
+      return String(unknownPerspective)
+    }
+  }
+}
+
 interface PerspectiveSelectProps {
   id: string
   value: VistaPerspective
@@ -259,7 +281,7 @@ interface UseCdnFieldProps {
   testId: string
   checked: boolean
   onChange: (useCdn: boolean) => void
-  /** Why the query goes to the API anyway, or how the CDN answers it */
+  /** How the CDN answers the query */
   notes?: string[]
 }
 

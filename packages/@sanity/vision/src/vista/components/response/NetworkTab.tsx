@@ -9,6 +9,7 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type VistaResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
 import {browserLocation} from '../../util/timeZoneLocation'
+import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {NetworkGlobe} from './NetworkGlobe'
 
 function Row({label, children}: {label: string; children: ReactNode}) {
@@ -33,13 +34,15 @@ function isCdnUrl(url: string): boolean {
 export interface NetworkTabProps {
   meta: VistaResponseMeta | undefined
   resolved: Pick<ResolvedRequest, 'useCdn' | 'isCdnBlockedByPerspective'>
+  /** The tab's perspective as the perspective select names it, for why the CDN is not used */
+  perspectiveName: string
 }
 
 /**
  * How the shown response travelled: which endpoint answered it, whether from the CDN's cache,
  * and where the query ran, on a globe from roughly where you are
  */
-export function NetworkTab({meta, resolved}: NetworkTabProps) {
+export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const you = useMemo(() => browserLocation(), [])
   const network = meta?.network
@@ -59,9 +62,10 @@ export function NetworkTab({meta, resolved}: NetworkTabProps) {
   const cacheHit = Boolean(network?.cacheHit)
   let cache = t('vista.network.cache.none')
   if (viaCdn) cache = cacheHit ? t('vista.network.cache.hit') : t('vista.network.cache.miss')
-  let hint: string | undefined
-  if (resolved.isCdnBlockedByPerspective) hint = t('vista.options.use-cdn.blocked-by-perspective')
-  else if (!viaCdn && !resolved.useCdn) hint = t('vista.network.use-cdn-hint')
+  const hint =
+    !viaCdn && !resolved.useCdn && !resolved.isCdnBlockedByPerspective
+      ? t('vista.network.use-cdn-hint')
+      : undefined
 
   return (
     <Box data-testid="vista-network" padding={3}>
@@ -135,6 +139,12 @@ export function NetworkTab({meta, resolved}: NetworkTabProps) {
               <Text data-testid="vista-network-hint" muted size={1}>
                 {hint}
               </Text>
+            )}
+            {resolved.isCdnBlockedByPerspective && (
+              <CdnBlockedNotice
+                perspectiveName={perspectiveName}
+                testId="vista-network-cdn-blocked"
+              />
             )}
           </Stack>
         </Box>

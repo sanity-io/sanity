@@ -606,7 +606,7 @@ describe('VistaGui', () => {
       params: {},
       options: {filterResponse: false, tag: 'vista'},
       // New tabs follow the workspace dataset and the navbar perspective (published here)
-      config: {apiVersion: 'v2025-02-19', dataset: 'test', perspective: ['published']},
+      config: {apiVersion: 'v2025-02-19', dataset: 'test', perspective: 'published'},
     })
     expect(text(screen.getByTestId('result-json'))).toContain('[{"title":"Variant title"}]')
 
@@ -955,17 +955,20 @@ describe('VistaGui', () => {
   it('sends queries to the API CDN when asked, unless the perspective is one it does not serve', async () => {
     const {fetchCalls} = renderVista()
     typeQuery('*[_type == "post"]')
-    fireEvent.change(screen.getByTestId('vista-option-perspective-select'), {
-      target: {value: 'published'},
-    })
+    const perspectiveSelect = () =>
+      screen.getByTestId('vista-option-perspective-select') as HTMLSelectElement
+    const apiVersionButton = () => screen.getByTestId('vista-api-version-button')
+    // Global with the navbar on published: the navbar's `['published']` stack is sent as the
+    // published perspective, which the CDN serves
+    expect(perspectiveSelect().value).toBe('global')
     fireEvent.click(screen.getByTestId('vista-option-use-cdn'))
-    expect(text(screen.getByTestId('vista-api-version-button'))).toBe(
-      'vista.api-version.button-cdn:v2025-02-19',
-    )
+    expect(text(apiVersionButton())).toBe('vista.api-version.button-cdn:v2025-02-19')
+    expect(screen.queryByTestId('vista-option-use-cdn-blocked')).toBeNull()
     await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].options).toMatchObject({useCdn: true})
+    expect(fetchCalls[0].config.perspective).toBe('published')
     await waitFor(() => expect(getStoredState()?.tabs[0].options.useCdn).toBe(true))
     await waitFor(() =>
       expect((screen.getByTestId('vista-query-url') as HTMLInputElement).value).toMatch(
@@ -973,19 +976,26 @@ describe('VistaGui', () => {
       ),
     )
 
-    // The CDN serves no drafts, so the query goes to the API and the option says why
-    fireEvent.change(screen.getByTestId('vista-option-perspective-select'), {
-      target: {value: 'drafts'},
-    })
-    expect(text(screen.getByTestId('vista-option-use-cdn-note'))).toBe(
-      'vista.options.use-cdn.blocked-by-perspective',
-    )
-    expect(text(screen.getByTestId('vista-api-version-button'))).toBe(
-      'vista.api-version.button:v2025-02-19',
-    )
+    // The CDN serves no drafts: the query goes to the API, the option says why and offers the
+    // published perspective, and the API version button warns about it
+    fireEvent.change(perspectiveSelect(), {target: {value: 'drafts'}})
+    const notice = screen.getByTestId('vista-option-use-cdn-blocked')
+    expect(text(notice)).toContain('vista.options.use-cdn.blocked.title')
+    expect(text(notice)).toContain('vista.options.use-cdn.blocked')
+    expect(text(apiVersionButton())).toBe('vista.api-version.button:v2025-02-19')
+    expect(apiVersionButton().getAttribute('data-cdn-blocked')).toBe('true')
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].options).toMatchObject({useCdn: false})
+
+    // The button points at the perspective, and the notice switches it to published
+    fireEvent.click(apiVersionButton())
+    await waitFor(() => expect(document.activeElement).toBe(perspectiveSelect()))
+    fireEvent.click(screen.getByTestId('vista-option-use-cdn-blocked-use-published'))
+    expect(perspectiveSelect().value).toBe('published')
+    expect(screen.queryByTestId('vista-option-use-cdn-blocked')).toBeNull()
+    expect(text(apiVersionButton())).toBe('vista.api-version.button-cdn:v2025-02-19')
+    expect(apiVersionButton().getAttribute('data-cdn-blocked')).toBeNull()
   })
 
   it('keeps the functions a query declares in a library, to declare in other queries', async () => {
@@ -1709,7 +1719,7 @@ describe('VistaGui', () => {
     const {fetchCalls, liveSubscriptionCount} = renderVista()
 
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
-    expect(fetchCalls[0].config.perspective).toEqual(['published'])
+    expect(fetchCalls[0].config.perspective).toBe('published')
     await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
     fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
     expect(text(screen.getByTestId('vista-history-entry'))).toContain('vista.history.reason.resume')
@@ -1771,11 +1781,11 @@ describe('VistaGui', () => {
     // params typed just before the change, not the ones the previous fetch went out with
     fireEvent.change(paramsEditor, {target: {value: '{"id": "freshest"}'}})
     fireEvent.change(screen.getByTestId('vista-option-perspective-select'), {
-      target: {value: 'published'},
+      target: {value: 'drafts'},
     })
     await waitFor(() => expect(fetchCalls).toHaveLength(3))
     expect(fetchCalls[2].params).toEqual({id: 'freshest'})
-    expect(fetchCalls[2].config.perspective).toBe('published')
+    expect(fetchCalls[2].config.perspective).toBe('drafts')
     // The debounce settling afterwards has nothing left to fetch
     await new Promise((resolve) => setTimeout(resolve, 400))
     expect(fetchCalls).toHaveLength(3)
@@ -1847,7 +1857,7 @@ describe('VistaGui', () => {
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].config).toMatchObject({
       apiVersion: 'vX',
-      perspective: ['published'],
+      perspective: 'published',
       variant: 'french',
     })
     const url = new URL((screen.getByTestId('vista-query-url') as HTMLInputElement).value)
@@ -1960,7 +1970,7 @@ describe('VistaGui', () => {
 
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
-    expect(fetchCalls[0].config.perspective).toEqual(['published'])
+    expect(fetchCalls[0].config.perspective).toBe('published')
 
     // The navbar changing leaves the stored choice alone too: the tab already follows it here
     setPerspective({
