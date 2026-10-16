@@ -1,11 +1,15 @@
+import {studioPandaCss, visionVanillaExtractPlugin} from '@repo/pandacss/vite'
 import {defineConfig} from '@repo/test-config/vitest'
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact from '@vitejs/plugin-react'
 
-// The vanilla-extract plugin is still required in jsdom: `.css.ts` modules need its transform
-// for file scoping (they throw "Styles were unable to be assigned to a file" without it). Style
-// *injection* is skipped via `disableRuntimeStyles` below, since no jsdom test asserts on styles
-// or vanilla-extract class names.
+// Two `.css.ts` compilers meet in this suite. Vision's own `.css.ts` modules are vanilla-extract
+// and still need its transform in jsdom for file scoping (they throw "Styles were unable to be
+// assigned to a file" without it); style *injection* is skipped via `disableRuntimeStyles` below,
+// since no jsdom test asserts on styles or vanilla-extract class names. The `sanity` sources the
+// tests resolve to (the `monorepo` condition) are Panda CSS, so their `.css.ts` modules get the
+// `@pandacss/vite` instance `studioPandaCss()` registers for the package, and the vanilla-extract
+// plugin is limited to this package's directory — unscoped, it would compile them as
+// vanilla-extract and fail on the missing `@vanilla-extract/css` import.
 export default defineConfig({
   test: {
     environment: 'jsdom',
@@ -16,7 +20,8 @@ export default defineConfig({
     ],
   },
   plugins: [
-    vanillaExtractPlugin(),
+    ...visionVanillaExtractPlugin(),
+    ...studioPandaCss(),
     // React Compiler through `oxc-transform-react` (no babel), same as packages/sanity
     viteReact({compiler: {target: '19'}}),
   ],

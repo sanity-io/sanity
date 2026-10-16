@@ -968,11 +968,15 @@ modules (see [Panda CSS](#panda-css) below). The `sanity` jsdom suite registers 
 with `transform: true` (`packages/sanity/vitest.config.mts`), which rewrites those calls to the
 class names the package build ships; no stylesheet is loaded in jsdom, so class name identifiers
 resolve but computed styles are not available. `@sanity/vision` is still on vanilla-extract: its
-suite keeps `vanillaExtractPlugin()` (the `.css.ts` modules need its transform to resolve) and
-imports
+suite keeps the vanilla-extract transform for its own `.css.ts` modules (they need it to resolve)
+and imports
 [`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
 as a `setupFiles` entry (`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips
-injecting real stylesheets into jsdom — the same end state.
+injecting real stylesheets into jsdom — the same end state. Its tests also resolve `sanity` to
+source, whose `.css.ts` modules are Panda, so the config registers both compilers the way the
+dev studios do: `visionVanillaExtractPlugin()` (vanilla-extract limited to the vision directory;
+unscoped, it compiles `sanity`'s Panda modules as vanilla-extract and fails) and
+`studioPandaCss()` for the `sanity` package, both from `@repo/pandacss/vite`.
 
 Conventions that follow from this:
 
