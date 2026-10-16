@@ -1,5 +1,5 @@
 import {chromaticPlugin} from '@chromatic-com/vitest/plugin'
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
+import {studioPandaCss} from '@repo/pandacss/vite'
 import viteReact from '@vitejs/plugin-react'
 import {playwright} from '@vitest/browser-playwright'
 import {defaultClientConditions, defineConfig} from 'vite'
@@ -54,7 +54,10 @@ if (chromaticEnabled && selectedBrowser !== 'chromium') {
 
 export default defineConfig({
   plugins: [
-    vanillaExtractPlugin(),
+    // Panda CSS for the `.css.ts` modules of this package: the `css()` calls are rewritten to class
+    // names and the generated CSS fills `@repo/pandacss/layers.css`, which test/setup/browser.ts
+    // loads (see @repo/pandacss for the setup)
+    ...studioPandaCss(),
     // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
     // as the TypeScript/JSX transform (no babel in the pipeline)
     viteReact({compiler: {target: '19'}}),

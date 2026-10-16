@@ -1,0 +1,28 @@
+{
+  "name": "@repo/pandacss",
+  "version": "6.9.2",
+  "private": true,
+  "description": "Panda CSS build and dev integration shared by the packages and dev studios in the sanity monorepo",
+  "type": "module",
+  "exports": {
+    "./layers.css": {
+      "types": "./src/layers-css.d.ts",
+      "default": "./src/layers.css"
+    },
+    "./layer-order": "./src/layerOrder.ts",
+    "./vite": "./src/vite.ts"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@pandacss/vite": "catalog:",
+    "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pandacss-tsdown-plugin": "catalog:",
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@types/node": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

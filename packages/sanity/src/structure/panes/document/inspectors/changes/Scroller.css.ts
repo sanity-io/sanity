@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const scroller = style({
+export const scroller = css({
   height: '100%',
   overflow: 'auto',
   position: 'relative',

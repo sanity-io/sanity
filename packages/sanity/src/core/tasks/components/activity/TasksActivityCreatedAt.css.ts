@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const userSkeleton = style({
+export const userSkeleton = css({
   maxWidth: '15ch',
 })

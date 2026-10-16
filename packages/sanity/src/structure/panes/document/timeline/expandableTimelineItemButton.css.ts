@@ -1,10 +1,9 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const flipIcon = style({
-  transition: 'transform 200ms',
-  selectors: {
-    "&[data-expanded='true']": {
-      transform: 'rotate(-90deg)',
-    },
+export const flipIcon = css({
+  'transition': 'transform 200ms',
+
+  "&[data-expanded='true']": {
+    transform: 'rotate(-90deg)',
   },
 })

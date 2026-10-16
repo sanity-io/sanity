@@ -1,8 +1,13 @@
+import path from 'node:path'
+
+import {pandacss} from '@pandacss/vite'
+import {PANDA_LAYER_NAMES, PANDA_LAYERS_CSS_SPECIFIER} from '@repo/pandacss/vite'
+import {removeCascadeLayers} from '@sanity/pandacss-tsdown-plugin/vite'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact from '@vitejs/plugin-react'
 import {Features} from 'lightningcss'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
-import {esmExternalRequirePlugin, type Plugin, type UserConfig} from 'vite'
+import {esmExternalRequirePlugin, normalizePath, type Plugin, type UserConfig} from 'vite'
 
 export interface DefaultConfigOptions {
   /**
@@ -14,9 +19,20 @@ export interface DefaultConfigOptions {
    * studios.
    */
   version: string
+  /**
+   * How the package writes its `.css.ts` modules: Panda CSS (`sanity`, from the package's own
+   * `panda.config.ts`) or vanilla-extract (`@sanity/vision`, until it moves to CSS modules).
+   * Each compiler only runs for the packages that use it — the vanilla-extract plugin would
+   * evaluate Panda's `.css.ts` modules as its own.
+   * @defaultValue 'vanilla-extract'
+   */
+  styles?: 'panda' | 'vanilla-extract'
 }
 
-export function createDefaultConfig({version}: DefaultConfigOptions): UserConfig {
+export function createDefaultConfig({
+  version,
+  styles = 'vanilla-extract',
+}: DefaultConfigOptions): UserConfig {
   return {
     appType: 'custom',
     // Vite 8 minifies CSS with Lightning CSS against `baseline-widely-available`
@@ -41,9 +57,25 @@ export function createDefaultConfig({version}: DefaultConfigOptions): UserConfig
       // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
       // as the TypeScript/JSX transform (no babel in the pipeline)
       viteReact({compiler: {target: '19'}}),
-      // `identifiers: 'safe'` includes the package version in CDN class names so a release
-      // cannot reuse the previous release's names (SAPP-4639).
-      vanillaExtractPlugin({identifiers: 'safe'}),
+      ...(styles === 'panda'
+        ? [
+            // Panda CSS for the package's `.css.ts` modules, from the `panda.config.ts` of the
+            // package being bundled (vite runs from its directory): the `css()` calls are
+            // rewritten to class names (content-hashed, so a release cannot reuse the previous
+            // release's names for other rules, SAPP-4639) and the CSS fills the
+            // `@repo/pandacss/layers.css` import that `pandaLayersCssImportPlugin` adds to every
+            // entry, without Panda's cascade layers like the package's own `bundle.css`
+            // (`removeCascadeLayers()` is the pass behind `cascadeLayers: false`; the `@layer sui;`
+            // statement `layers.css` opens with is not Panda's and stays, see @repo/pandacss)
+            pandacss({transform: true}),
+            removeCascadeLayers(PANDA_LAYER_NAMES),
+            pandaLayersCssImportPlugin(),
+          ]
+        : [
+            // `identifiers: 'safe'` includes the package version in CDN class names so a release
+            // cannot reuse the previous release's names (SAPP-4639).
+            vanillaExtractPlugin({identifiers: 'safe'}),
+          ]),
       cleanupCssOutputPlugin(),
       esmExternalRequirePlugin({
         // self-externals are required here in order to ensure that the presentation
@@ -103,6 +135,37 @@ export function createDefaultConfig({version}: DefaultConfigOptions): UserConfig
 }
 
 /**
+ * Imports the stylesheet `@pandacss/vite` fills (`@repo/pandacss/layers.css`) from every library
+ * entry, so the generated CSS ends up in the bundle's CSS asset (`index.css`). The built packages
+ * carry an equivalent `import 'sanity/bundle.css'` in their entry chunks; the CDN bundle is built
+ * from the sources, where no such import exists. `cleanupCssOutputPlugin` strips the import from
+ * the emitted chunks again, since the CDN serves the CSS through a `<link>` tag.
+ */
+export function pandaLayersCssImportPlugin(): Plugin {
+  let entries = new Set<string>()
+
+  return {
+    name: 'sanity/panda-layers-css-import',
+    apply: 'build',
+    configResolved(config) {
+      const entry = config.build.lib ? config.build.lib.entry : undefined
+      const list =
+        typeof entry === 'string'
+          ? [entry]
+          : Array.isArray(entry)
+            ? entry
+            : Object.values(entry ?? {})
+      // Module ids use forward slashes on every platform
+      entries = new Set(list.map((file) => normalizePath(path.resolve(config.root, file))))
+    },
+    transform(code, id) {
+      if (!entries.has(id)) return null
+      return {code: `import ${JSON.stringify(PANDA_LAYERS_CSS_SPECIFIER)}\n${code}`, map: null}
+    },
+  }
+}
+
+/**
  * Matches Vite's internal "hash update marker": a CSS comment of the form
  * `$vite$:N` that Rolldown's `vite-css-post` plugin appends to finalized CSS to
  * force a different content hash (a workaround for a Chromium `crossorigin`
@@ -121,7 +184,7 @@ const VITE_HASH_UPDATE_MARKER_RE = /\/\*\$vite\$:\d+\*\//g
  * Cleans up the CSS-related output of the CDN bundle build:
  *
  * 1. Strips CSS imports from JS chunks, but ONLY for CSS files that were
- *    produced by the current build (e.g., by vanilla-extract). When building
+ *    produced by the current build (e.g., by Panda CSS or vanilla-extract). When building
  *    CDN bundles, CSS is served separately via `<link>` tags (injected by the
  *    CLI's runtime script), so the JS bundles should not contain CSS import
  *    side-effects for these extracted CSS files. CSS imports from third-party
@@ -143,7 +206,7 @@ export function cleanupCssOutputPlugin(): Plugin {
 
     generateBundle(_options, bundle) {
       // 1. Collect CSS asset filenames produced by this build (e.g.,
-      //    vanilla-extract output, Vite-processed CSS imports) and, while we're
+      //    Panda CSS or vanilla-extract output, Vite-processed CSS imports) and, while we're
       //    iterating, strip the internal Vite hash-update marker from each CSS
       //    asset's source.
       const cssAssetNames = new Set<string>()
