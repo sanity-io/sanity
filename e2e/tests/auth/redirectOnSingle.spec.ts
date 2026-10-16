@@ -1,7 +1,7 @@
 // oxlint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
 import {expect, test} from '@playwright/test'
 
-import {watchForStudioErrors} from '../../helpers/studioErrors'
+import {watchEachTestForStudioErrors} from '../../helpers/studioErrors'
 import {BASE_URL, setupMockAuth} from './helpers'
 
 // These workspaces have redirectOnSingle: true with a single provider (GitHub).
@@ -12,9 +12,7 @@ import {BASE_URL, setupMockAuth} from './helpers'
 // to the auth provider. We detect this by waiting for the URL to change.
 
 test.describe('redirectOnSingle', () => {
-  test.beforeEach(async ({context}) => {
-    watchForStudioErrors(context)
-  })
+  watchEachTestForStudioErrors(test)
 
   for (const {name, path} of [
     {name: 'cookie', path: 'cookie-redirectOnSingle'},

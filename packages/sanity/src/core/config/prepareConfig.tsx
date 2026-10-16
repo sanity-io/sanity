@@ -30,7 +30,7 @@ import {operatorDefinitions} from '../studio/components/navbar/search/definition
 import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
 import {type RequestFailureDiagnostics} from '../studio/requestErrors/diagnoseRequestFailure'
-import {type RequestErrorChannel} from '../studio/requestErrors/types'
+import {type StudioErrorHandler} from '../studio/requestErrors/types'
 import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {
@@ -290,7 +290,7 @@ export function prepareConfig(
   options?: {
     basePath?: string
     createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
-    requestErrorChannel?: RequestErrorChannel
+    requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
 ): PreparedConfig {
@@ -462,7 +462,7 @@ function getAuthStore(
     requestFailureDiagnostics,
   }: {
     createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
-    requestErrorChannel?: RequestErrorChannel
+    requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
 ): AuthStore {
