@@ -9,6 +9,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type VistaResponseMeta} from '../../store/types'
 import {formatBytes} from '../../util/payloadSize'
+import {sortSyncTags} from '../../util/syncTags'
 
 function MetaRow({label, children}: {label: string; children: ReactNode}) {
   return (
@@ -63,7 +64,7 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
           <MetaRow label={t('vista.response.sync-tags')}>
             {meta && meta.syncTags.length > 0 ? (
               <Flex data-testid="vista-meta-sync-tags" flexWrap="wrap" gap={1}>
-                {meta.syncTags.map((tag) => (
+                {sortSyncTags(meta.syncTags).map((tag) => (
                   <Badge fontSize={0} key={tag}>
                     {tag}
                   </Badge>

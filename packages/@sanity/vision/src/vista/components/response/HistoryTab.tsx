@@ -15,6 +15,7 @@ import {
   getRequestChanges,
   type RequestChangeId,
 } from '../../util/requestChanges'
+import {sortSyncTags} from '../../util/syncTags'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
 
 function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): string {
@@ -183,7 +184,7 @@ function HistoryEntry(props: {
           {describeFetchReason(entry.reason, t)}
         </Text>
         {entry.reason.type === 'live' &&
-          entry.reason.matchedTags.map((tag) => (
+          sortSyncTags(entry.reason.matchedTags).map((tag) => (
             <Badge fontSize={0} key={tag}>
               {tag}
             </Badge>

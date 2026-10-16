@@ -9,6 +9,16 @@ export const SYNC_TAGS_API_VERSION = 'v2021-03-25'
  */
 export const LIVE_EVENTS_API_VERSION = 'v2025-02-19'
 
+const tagCollator = new Intl.Collator('en')
+
+/**
+ * Sync tags in alphabetical order, for showing them: the API lists a response's tags in no
+ * particular order, so as they come the list shifts from one fetch to the next
+ */
+export function sortSyncTags(tags: readonly SyncTag[]): SyncTag[] {
+  return tags.toSorted(tagCollator.compare)
+}
+
 /** Sync tags shared by a live event and the last query response, in the order the event lists them */
 export function getMatchingSyncTags(
   eventTags: readonly SyncTag[],
