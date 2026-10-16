@@ -114,6 +114,13 @@ describe('checkQuerySchema', () => {
       ['zip', undefined],
       ['curent', 'current'],
     ])
+    // An inline object type is named by the field that holds it
+    expect(check('*[_type == "author"]{address.zip, address{town}}').map((f) => f.message)).toEqual(
+      ['`zip` is not a field of `address`.', '`town` is not a field of `address`.'],
+    )
+    expect(check('*[_type == "author"]{slug.curent}')[0].message).toBe(
+      '`curent` is not a field of `slug`. Did you mean `current`?',
+    )
   })
 
   it('flags a field read from a reference without following it, and following what is not one', () => {

@@ -41,8 +41,11 @@ type Shape =
   | {kind: 'unknown'}
   /** A string, number or boolean of this schema type */
   | {kind: 'value'; type: string}
-  /** An object of one of these types; documents are objects too */
-  | {kind: 'object'; types: readonly SchemaType[]}
+  /**
+   * An object of one of these types; documents are objects too. `label` names an inline object
+   * type, which the compiled schema just calls `object`, by the field that holds it.
+   */
+  | {kind: 'object'; types: readonly SchemaType[]; label?: string}
   /** A document whose type the query has not pinned down */
   | {kind: 'documents'}
   /** A reference to a document of one of these types */
@@ -335,7 +338,7 @@ function narrow(scope: Shape, condition: GroqNode[], context: Context): Shape {
         rule: 'unknown-type',
         from: node.from,
         to: node.to,
-        message: `Nothing here is of type \`${name}\`: it is ${quoteList(scope.types.map((type) => type.name))}.${suggestion ? ` Did you mean \`${suggestion}\`?` : ''}`,
+        message: `Nothing here is of type \`${name}\`: it is ${quoteList(typeNames(scope))}.${suggestion ? ` Did you mean \`${suggestion}\`?` : ''}`,
         ...(suggestion
           ? {suggestion: {text: JSON.stringify(suggestion), from: node.from, to: node.to}}
           : {}),
@@ -348,6 +351,22 @@ function narrow(scope: Shape, condition: GroqNode[], context: Context): Shape {
 
 function describeValue(shape: Shape): string {
   return shape.kind === 'value' ? `a ${shape.type}` : 'not an object'
+}
+
+/** The names of an object's possible types, an inline one by the field that holds it */
+function typeNames(shape: Extract<Shape, {kind: 'object'}>): string[] {
+  return [
+    ...new Set(
+      shape.types.map((type) => (type.name === 'object' ? (shape.label ?? type.name) : type.name)),
+    ),
+  ]
+}
+
+/** The shape with inline objects in it named by `label` */
+function labelled(shape: Shape, label: string): Shape {
+  if (shape.kind === 'object') return {...shape, label}
+  if (shape.kind === 'array') return {kind: 'array', of: labelled(shape.of, label)}
+  return shape
 }
 
 /** What a postfix step applies to: the chain's text so far, and the `.` of a dot access */
@@ -372,14 +391,14 @@ function field(shape: Shape, nameNode: GroqNode, context: Context, holder?: Hold
           .filter((candidate) => candidate.name === name)
           .map((candidate) => shapeOf(() => candidate.type)),
       )
-      if (matches.length > 0) return union(matches)
+      if (matches.length > 0) return labelled(union(matches), name)
       const fieldNames = new Set(shape.types.flatMap((type) => fieldsOf(type).map((f) => f.name)))
       const suggestion = closest(name, fieldNames)
       context.findings.push({
         rule: 'unknown-field',
         from: nameNode.from,
         to: nameNode.to,
-        message: `\`${name}\` is not a field of ${quoteList(shape.types.map((type) => type.name))}.${suggestion ? ` Did you mean \`${suggestion}\`?` : ''}`,
+        message: `\`${name}\` is not a field of ${quoteList(typeNames(shape))}.${suggestion ? ` Did you mean \`${suggestion}\`?` : ''}`,
         ...(suggestion
           ? {suggestion: {text: suggestion, from: nameNode.from, to: nameNode.to}}
           : {}),
