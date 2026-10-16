@@ -1,5 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ComponentType} from 'react'
+import {Text} from 'ui5'
 
 interface TableEmptyStateProps {
   emptyState: string | ComponentType
@@ -28,7 +29,7 @@ export const TableEmptyState = ({emptyState, colSpan}: TableEmptyStateProps) => 
     return (
       <Card borderBottom display="flex" padding={4} as="tr" style={emptyRowStyle}>
         <td colSpan={colSpan} style={emptyCellStyle}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {emptyState}
           </Text>
         </td>

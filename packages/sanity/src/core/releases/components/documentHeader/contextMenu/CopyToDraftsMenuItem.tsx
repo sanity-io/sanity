@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {memo} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useSchema} from '../../../../hooks/useSchema'
@@ -55,7 +54,7 @@ export const CopyToDraftsMenuItem = memo(function CopyToDraftsMenuItem(
           <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingX={2}>
             <ReleaseAvatar padding={0} release={LATEST} />
           </Box>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true} style={{color: 'inherit'}}>
             {t('release.chip.draft')}
           </Text>
         </Flex>

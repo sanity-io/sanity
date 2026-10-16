@@ -1,9 +1,6 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {WorkspacesContextValue} from '../../core/studio/workspaces/WorkspacesContext'
 
 /** @internal */
-export const WorkspacesContext = createContext<WorkspacesContextValue | null>(
-  'sanity/_singletons/context/workspaces',
-  null,
-)
+export const WorkspacesContext = createContext<WorkspacesContextValue | null>(null)

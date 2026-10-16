@@ -4,7 +4,7 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
-import {Inline, Text, TextArea, TextInput} from '@sanity/ui'
+import {Inline, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {
   type ChangeEvent,
@@ -16,7 +16,7 @@ import {
   useState,
 } from 'react'
 import {IntentLink} from 'sanity/router'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -397,7 +397,7 @@ export function VariantForm(props: {
   return (
     <VStack gap={5}>
       <VStack gap={3}>
-        <Text as="label" htmlFor={titleId} size={1} weight="medium">
+        <Text as="label" htmlFor={titleId} size={1} weight="medium" trim={true}>
           {t('dialog.create.variant-title.label')}
         </Text>
         <TextInput
@@ -429,7 +429,7 @@ export function VariantForm(props: {
       </VStack>
 
       <VStack gap={3}>
-        <Text as="label" htmlFor={descriptionId} size={1} weight="medium">
+        <Text as="label" htmlFor={descriptionId} size={1} weight="medium" trim={true}>
           {t('dialog.create.description.label')}
         </Text>
         <TextArea
@@ -445,7 +445,7 @@ export function VariantForm(props: {
 
       <VStack gap={3}>
         <Inline gap={1}>
-          <Text as="label" htmlFor={priorityId} size={1} weight="medium">
+          <Text as="label" htmlFor={priorityId} size={1} weight="medium" trim={true}>
             {t('dialog.create.priority.label')}
           </Text>
           <Tooltip content={t('dialog.create.priority.tooltip')} placement="right">
@@ -476,7 +476,7 @@ export function VariantForm(props: {
 
       {showTypePicker ? (
         <VStack gap={3}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t('dialog.create.type.label')}
           </Text>
           <ConditionMenuButton
@@ -492,7 +492,7 @@ export function VariantForm(props: {
       ) : null}
 
       <VStack gap={3}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('dialog.create.conditions.title')}
         </Text>
 

@@ -23,7 +23,7 @@ import {
   type FormBuilderMarkersComponent,
 } from '../form/types/_transitional'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
-import {type AuthStore} from '../store/authStore/types'
+import {type AuthStore} from '../store/auth/types'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {

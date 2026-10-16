@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {RecordDocumentHistoryEvent} from '../../core/hooks/useDocumentHistoryRecorder'
 
 /**
  * @internal
  */
-export const DocumentHistoryContext = createContext<RecordDocumentHistoryEvent>(
-  'sanity/_singletons/context/document-history',
-  () => {},
-)
+export const DocumentHistoryContext = createContext<RecordDocumentHistoryEvent>(() => {})

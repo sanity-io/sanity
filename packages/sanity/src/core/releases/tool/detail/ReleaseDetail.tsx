@@ -1,9 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useEffect, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -72,14 +72,19 @@ export function ReleaseDetail() {
             radius={4}
           >
             <Flex gap={3}>
-              <Text size={1}>
-                <ErrorOutlineIcon />
-              </Text>
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={ErrorOutlineIcon}
+                tone="critical"
+              />
               <VStack gap={4}>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
                   {t('loading-release-documents.error.title')}
                 </Text>
-                <Text size={1}>{t('loading-release-documents.error.description')}</Text>
+                <Text size={1} as="div" trim={true} tone="critical">
+                  {t('loading-release-documents.error.description')}
+                </Text>
               </VStack>
             </Flex>
           </MotionCard>

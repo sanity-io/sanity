@@ -4,11 +4,10 @@ import {RestoreIcon} from '@sanity/icons/Restore'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button, // Custom button with a different textWeight, consider adding textWeight to the shared
-  Text,
 } from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
-import {Container, Box, Flex} from 'ui5'
+import {Box, Container, Flex, Icon, Text} from 'ui5'
 
 import {DetailBackButton} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -74,16 +73,16 @@ export function ReleaseDashboardHeader(props: {
                 />
               </Flex>
               <Box paddingY={2} flexBasis="auto" flexGrow={0} flexShrink={0}>
-                <Text size={1}>
-                  <ChevronRightIcon />
-                </Text>
+                <Icon size={1} style={{margin: '-0.375rem'}} icon={ChevronRightIcon} />
               </Box>
               <Box padding={2} style={{maxWidth: '300px'}}>
                 <Text
                   size={1}
                   weight="semibold"
-                  textOverflow="ellipsis"
+                  truncate={1}
                   style={release.metadata.title ? undefined : {opacity: 0.5}}
+                  as="div"
+                  trim={true}
                 >
                   {title}
                 </Text>

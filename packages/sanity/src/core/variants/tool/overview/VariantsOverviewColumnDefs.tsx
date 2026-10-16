@@ -1,7 +1,6 @@
-import {Card, Skeleton, Text} from '@sanity/ui'
-import {type HTMLProps, useMemo, type RefAttributes} from 'react'
+import {Card, Skeleton} from '@sanity/ui'
 import {StateLink} from 'sanity/router'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
@@ -29,7 +28,7 @@ const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, d
   if (datum.isLoading || datum.documentCount === undefined) {
     return (
       <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <Skeleton animated radius={1} style={{width: '4ch'}} />
         </Text>
       </Flex>
@@ -38,7 +37,7 @@ const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, d
 
   return (
     <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {datum.documentCount === null ? '-' : datum.documentCount}
       </Text>
     </Flex>
@@ -54,25 +53,14 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
   const encodedVariantId = getVariantId(variant._id)
 
-  const VariantLink = useMemo(
-    () =>
-      function VariantLinkComponent(
-        linkProps: HTMLProps<HTMLAnchorElement> & RefAttributes<HTMLAnchorElement>,
-      ) {
-        const {ref, ...rest} = linkProps
-        return <StateLink {...rest} ref={ref} state={{variantId: encodedVariantId}} />
-      },
-    [encodedVariantId],
-  )
-
   if (variant.isLoading) {
     return (
       <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={2}>
         <VStack gap={2}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             <Skeleton animated radius={1} style={{width: '16ch'}} />
           </Text>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Skeleton animated radius={1} style={{width: '32ch'}} />
           </Text>
         </VStack>
@@ -85,15 +73,37 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
   return (
     <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={1}>
       <Flex alignItems="center" gap={3}>
-        <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
+        <Card
+          as={StateLink}
+          state={{variantId: encodedVariantId}}
+          data-as="a"
+          flex={1}
+          padding={2}
+          radius={2}
+          tone="inherit"
+        >
           <Flex alignItems="center" gap={3}>
             {/* min-width: 0 lets the flex child shrink below its content width so a long name
                 truncates with a trailing ellipsis instead of overflowing on narrow viewports. */}
             <Flex flexBasis="0%" flexGrow={1} gap={2} style={{minWidth: 0}} flexDirection="column">
-              <Text size={1} textOverflow="ellipsis" weight="medium">
+              <Text
+                size={1}
+                truncate={1}
+                weight="medium"
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-fg-color)'}}
+              >
                 {getVariantTitle(variant)}
               </Text>
-              <Text muted size={1} textOverflow="ellipsis">
+              <Text
+                muted
+                size={1}
+                truncate={1}
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
+              >
                 {conditionsText || t('overview.table.no-conditions')}
               </Text>
             </Flex>
@@ -147,7 +157,7 @@ export function variantsOverviewColumnDefs(
             ),
             cell: ({cellProps, datum: variant}) => (
               <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {variant.isLoading ? '' : getVariantType(variant)}
                 </Text>
               </Flex>

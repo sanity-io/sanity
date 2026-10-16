@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * Whether the workspace has scheduled publishing enabled, provided by the scheduled publishing
@@ -7,7 +7,4 @@ import {createContext} from 'sanity/_createContext'
  * `ScheduledPublishingModePromiseContext` and `HasUsedScheduledPublishingPromiseContext`.
  * @internal
  */
-export const ScheduledPublishingEnabledContext = createContext<boolean>(
-  'sanity/_singletons/context/scheduled-publishing-enabled',
-  false,
-)
+export const ScheduledPublishingEnabledContext = createContext<boolean>(false)

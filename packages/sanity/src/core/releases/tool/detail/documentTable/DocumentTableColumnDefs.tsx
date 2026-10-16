@@ -2,14 +2,14 @@ import {type ReleaseState} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Badge, Card, Skeleton, Text} from '@sanity/ui'
+import {Badge, Card, Skeleton} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type CSSProperties, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -129,14 +129,21 @@ export function DocumentType({type}: {type: string}) {
   }, [title, checkTruncation])
 
   const textElement = (
-    <Text size={1}>
+    <Text size={1} as="div" trim={true}>
       <TruncatedSpan ref={measureRef}>{title}</TruncatedSpan>
     </Text>
   )
 
   if (isTruncated) {
     return (
-      <Tooltip portal content={<Text size={1}>{title}</Text>}>
+      <Tooltip
+        portal
+        content={
+          <Text size={1} as="div" trim={true}>
+            {title}
+          </Text>
+        }
+      >
         {textElement}
       </Tooltip>
     )
@@ -201,7 +208,6 @@ const documentActionColumn: (
 // --card-badge-* vars only exist inside a Badge, so we replicate the Card approach: a transparent
 // suggest-toned wrapper, with the RhombusIcon (stroke=currentColor) picking up --card-icon-color.
 const VARIANT_ICON_CARD_STYLE: CSSProperties = {backgroundColor: 'transparent'}
-const VARIANT_ICON_STYLE: CSSProperties = {color: 'var(--card-icon-color)'}
 
 /** Resolves a document's variant definition from its `_system.variants[0]._ref` (full variant id). */
 function resolveDocumentVariant(
@@ -235,20 +241,27 @@ const VariantCell = memo(
         content={
           conditions ? (
             <Box padding={2}>
-              <Text size={1}>{conditions}</Text>
+              <Text size={1} as="div" trim={true}>
+                {conditions}
+              </Text>
             </Box>
           ) : undefined
         }
       >
         <Flex alignItems="center" gap={2}>
           <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
-            <Text size={2} style={VARIANT_ICON_STYLE}>
-              <RhombusIcon />
-            </Text>
+            <Icon size={2} style={{margin: '-0.4375rem'}} icon={RhombusIcon} tone="suggest" />
           </Card>
           {/* flex + min-width:0 lets the label shrink below its content width so a long variant name
               truncates with an ellipsis instead of overflowing the column. */}
-          <Text size={1} textOverflow="ellipsis" weight="medium" style={{flex: 1, minWidth: 0}}>
+          <Text
+            size={1}
+            truncate={1}
+            weight="medium"
+            style={{flex: 1, minWidth: 0}}
+            as="div"
+            trim={true}
+          >
             {getVariantTitle(variant)}
           </Text>
         </Flex>
@@ -419,7 +432,7 @@ export const getDocumentTableColumnDefs: (
                 }}
               >
                 {!datum.isLoading && datum.document._updatedAt && (
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
                   </Text>
                 )}
@@ -436,7 +449,7 @@ export const getDocumentTableColumnDefs: (
             style: {minWidth: 44, maxWidth: 170},
             header: ({headerProps}) => (
               <Flex {...headerProps} alignItems="center" paddingX={2} paddingY={3}>
-                <Text muted size={1} textOverflow="ellipsis" weight="medium">
+                <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
                   {t('table-header.edited-by')}
                 </Text>
               </Flex>
@@ -513,15 +526,19 @@ export const getDocumentTableColumnDefs: (
                 portal
                 placement="bottom-end"
                 content={
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     <Flex alignItems={'center'} gap={3} padding={1}>
-                      <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                      <Icon
+                        size={1}
+                        style={{margin: '-0.375rem'}}
+                        icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                      />
                       {errorLabel}
                     </Flex>
                   </Text>
                 }
               >
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <IntentLink
                     intent="edit"
                     params={intent.params}
@@ -529,7 +546,11 @@ export const getDocumentTableColumnDefs: (
                     aria-label={errorLabel}
                     data-testid={`validation-error-link-${datum.document._id}`}
                   >
-                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                    <Icon
+                      size={1}
+                      style={{margin: '-0.375rem'}}
+                      icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                    />
                   </IntentLink>
                 </Text>
               </Tooltip>
@@ -541,14 +562,18 @@ export const getDocumentTableColumnDefs: (
                 portal
                 placement="bottom-end"
                 content={
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     <Box padding={1}>{t('dashboard.details.metadata.status-validating')}</Box>
                   </Text>
                 }
               >
-                <Text muted size={1} data-testid={`validation-validating-${datum.document._id}`}>
-                  <ToneIcon icon={ClockIcon} tone="default" />
-                </Text>
+                <Icon
+                  muted
+                  size={1}
+                  style={{margin: '-0.375rem'}}
+                  icon={<ToneIcon icon={ClockIcon} tone="default" />}
+                  data-testid={`validation-validating-${datum.document._id}`}
+                />
               </Tooltip>
             )}
             {variantsEnabled && !datum.validation.hasError && !datum.validation.isValidating && (
@@ -556,14 +581,17 @@ export const getDocumentTableColumnDefs: (
                 portal
                 placement="bottom-end"
                 content={
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     <Box padding={1}>{t('document-validation.valid')}</Box>
                   </Text>
                 }
               >
-                <Text muted size={1} data-testid={`validation-valid-${datum.document._id}`}>
-                  <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
-                </Text>
+                <Icon
+                  size={1}
+                  style={{margin: '-0.375rem'}}
+                  icon={<ToneIcon icon={CheckmarkCircleIcon} tone="positive" />}
+                  data-testid={`validation-valid-${datum.document._id}`}
+                />
               </Tooltip>
             )}
           </Flex>
@@ -611,7 +639,7 @@ function UpdatedAtCell({
             {documentHistory?.lastEditedBy && (
               <UserAvatar size={0} user={documentHistory.lastEditedBy} />
             )}
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
             </Text>
           </>

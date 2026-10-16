@@ -1,6 +1,5 @@
-import {Text, type TextProps} from '@sanity/ui'
 import {type CSSProperties, type ReactElement, type ReactNode} from 'react'
-import {Box} from 'ui5'
+import {Text, type TextProps, Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {getReleaseTitleDetails} from '../util/getReleaseTitleDetails'
@@ -32,7 +31,9 @@ export function ReleaseTitle(props: ReleaseTitleProps): ReactNode {
   const renderedContent: ReactElement = children ? (
     children({displayTitle, fullTitle, isTruncated})
   ) : (
-    <Text {...textProps}>{displayTitle}</Text>
+    <Text {...textProps} as="div" trim={true} style={{color: 'inherit', ...textProps?.style}}>
+      {displayTitle}
+    </Text>
   )
 
   if (isTruncated && enableTooltip) {
@@ -40,7 +41,9 @@ export function ReleaseTitle(props: ReleaseTitleProps): ReactNode {
       <Tooltip
         content={
           <Box style={{maxWidth: tooltipMaxWidth ?? DEFAULT_TOOLTIP_MAX_WIDTH}}>
-            <Text size={1}>{fullTitle}</Text>
+            <Text size={1} as="div" trim={true}>
+              {fullTitle}
+            </Text>
           </Box>
         }
       >

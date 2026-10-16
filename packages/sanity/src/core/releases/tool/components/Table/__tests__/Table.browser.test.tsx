@@ -1,7 +1,7 @@
-import {Text, ThemeProvider} from '@sanity/ui'
+import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {useState} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 
@@ -36,7 +36,9 @@ function createColumns(showRowActions: boolean): Column<Datum>[] {
     ),
     cell: ({cellProps, datum}) => (
       <Flex alignItems="center" flexBasis="0%" flexGrow={1} paddingX={2} {...cellProps}>
-        <Text size={1}>{datum.title}</Text>
+        <Text size={1} as="div" trim={true}>
+          {datum.title}
+        </Text>
       </Flex>
     ),
   }
@@ -57,7 +59,9 @@ function createColumns(showRowActions: boolean): Column<Datum>[] {
       ),
       cell: ({cellProps}) => (
         <Flex alignItems="center" paddingX={2} {...cellProps}>
-          <Text size={1}>As soon as possible</Text>
+          <Text size={1} as="div" trim={true}>
+            As soon as possible
+          </Text>
         </Flex>
       ),
     },
@@ -71,7 +75,9 @@ function createColumns(showRowActions: boolean): Column<Datum>[] {
       ),
       cell: ({cellProps}) => (
         <Flex alignItems="center" paddingX={2} {...cellProps}>
-          <Text size={1}>5 days ago</Text>
+          <Text size={1} as="div" trim={true}>
+            5 days ago
+          </Text>
         </Flex>
       ),
     },
@@ -91,7 +97,9 @@ function createColumns(showRowActions: boolean): Column<Datum>[] {
       ),
       cell: ({cellProps}) => (
         <Flex alignItems="center" paddingX={2} {...cellProps}>
-          <Text size={1}>12</Text>
+          <Text size={1} as="div" trim={true}>
+            12
+          </Text>
         </Flex>
       ),
     },
@@ -99,6 +107,16 @@ function createColumns(showRowActions: boolean): Column<Datum>[] {
 }
 
 const theme = buildTheme()
+
+const renderRowActions = () => (
+  <button
+    type="button"
+    data-testid="release-menu-button"
+    style={{width: 25, height: 25, padding: 0, border: 0, boxSizing: 'border-box'}}
+  >
+    ...
+  </button>
+)
 
 function TableHarness({containerWidth, showRowActions = false}: TableHarnessProps = {}) {
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null)
@@ -118,19 +136,7 @@ function TableHarness({containerWidth, showRowActions = false}: TableHarnessProp
           columnDefs={columns}
           scrollContainerRef={scrollContainer}
           hideTableInlinePadding={showRowActions}
-          rowActions={
-            showRowActions
-              ? () => (
-                  <button
-                    type="button"
-                    data-testid="release-menu-button"
-                    style={{width: 25, height: 25, padding: 0, border: 0, boxSizing: 'border-box'}}
-                  >
-                    ...
-                  </button>
-                )
-              : undefined
-          }
+          rowActions={showRowActions ? renderRowActions : undefined}
         />
       </div>
     </ThemeProvider>

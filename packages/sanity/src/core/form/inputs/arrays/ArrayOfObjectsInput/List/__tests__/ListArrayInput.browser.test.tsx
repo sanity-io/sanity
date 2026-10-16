@@ -58,11 +58,21 @@ const LONG_DOCUMENT: SanityDocument = {
   })),
 }
 
-function LongListArrayInputHarness() {
+function LongListArrayInputHarness(props: {readOnly?: boolean}) {
   return (
     <TestWrapper schemaTypes={SCHEMA}>
-      <TestForm document={LONG_DOCUMENT} />
+      <TestForm document={LONG_DOCUMENT} readOnly={props.readOnly} />
     </TestWrapper>
+  )
+}
+
+// The card that wraps the item list and the "Show all / fewer items" toggle: the array's
+// upload target (`UploadTargetCard`), whose tone follows the input's read-only state.
+function listCard(): HTMLElement | null {
+  return (
+    document
+      .querySelector('[data-testid="array-items-toggle"]')
+      ?.closest<HTMLElement>('[data-test-id="file-target"]') ?? null
   )
 }
 
@@ -93,6 +103,27 @@ describe('list array input', () => {
 
     await expect.element(page.getByText('List card 7')).toBeVisible()
     await expect.element(page.getByRole('button', {name: /Show fewer items/})).toBeVisible()
+    await settleChromaticEndState()
+  })
+
+  test('blends the list card into the form once a read-only form becomes editable', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    // A document pair replayed from cache mounts the form read-only and flips it to editable
+    // when the fresh snapshot arrives; the card must follow instead of keeping the read-only tone.
+    const {rerender} = await render(<LongListArrayInputHarness readOnly />)
+
+    await expect.element(page.getByRole('button', {name: /Show all 7 items/})).toBeVisible()
+    await expect.poll(() => listCard()?.getAttribute('data-tone')).toBe('transparent')
+
+    await rerender(<LongListArrayInputHarness readOnly={false} />)
+
+    await expect.element(page.getByRole('button', {name: /Add item/})).toBeVisible()
+    await expect.poll(() => listCard()?.getAttribute('data-tone')).toBe('default')
+    const card = listCard()!
+    const formSurface = card.parentElement!.closest<HTMLElement>('[data-ui="Card"]')!
+    expect(getComputedStyle(card).backgroundColor).toBe(
+      getComputedStyle(formSurface).backgroundColor,
+    )
     await settleChromaticEndState()
   })
 })

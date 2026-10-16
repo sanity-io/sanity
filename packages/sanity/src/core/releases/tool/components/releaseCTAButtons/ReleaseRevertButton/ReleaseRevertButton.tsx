@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Checkbox, Text} from '@sanity/ui'
+import {Card, Checkbox} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
@@ -52,6 +52,8 @@ function RevertStageSuccessLink({
         display: 'flex',
       }}
       data-testid="revert-stage-success-link"
+      as="div"
+      trim={true}
     >
       {linkText}
     </Text>
@@ -128,7 +130,7 @@ const ConfirmReleaseDialog = ({
           closable: true,
           status: 'success',
           title: (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               <Translate
                 components={{Link: RevertStageSuccessLink}}
                 componentProps={{
@@ -151,7 +153,7 @@ const ConfirmReleaseDialog = ({
           closable: true,
           status: 'success',
           title: (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey="toast.immediate-revert.success"
@@ -171,7 +173,7 @@ const ConfirmReleaseDialog = ({
         toast.push({
           status: 'error',
           title: (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               <Translate t={t} i18nKey="toast.revert.error" values={{error: revertError.message}} />
             </Text>
           ),
@@ -220,7 +222,7 @@ const ConfirmReleaseDialog = ({
         },
       }}
     >
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {
           <Translate
             t={t}
@@ -233,14 +235,14 @@ const ConfirmReleaseDialog = ({
       </Text>
       {isResolvingRevertStates && (
         <Box paddingTop={3}>
-          <Text muted size={1} data-testid="revert-resolving">
+          <Text muted size={1} data-testid="revert-resolving" as="div" trim={true}>
             {t('revert-dialog.confirm-revert.resolving')}
           </Text>
         </Box>
       )}
       {documentRevertStates && documentRevertStates.revertCount > 0 && (
         <Box paddingTop={3}>
-          <Text muted size={1} data-testid="revert-summary-restore">
+          <Text muted size={1} data-testid="revert-summary-restore" as="div" trim={true}>
             {t('revert-dialog.confirm-revert.summary-restore', {
               count: documentRevertStates.revertCount,
             })}
@@ -249,7 +251,7 @@ const ConfirmReleaseDialog = ({
       )}
       {documentRevertStates && documentRevertStates.unpublishCount > 0 && (
         <Box paddingTop={3}>
-          <Text muted size={1} data-testid="revert-summary-unpublish">
+          <Text muted size={1} data-testid="revert-summary-unpublish" as="div" trim={true}>
             {t('revert-dialog.confirm-revert.summary-unpublish', {
               count: documentRevertStates.unpublishCount,
             })}
@@ -265,7 +267,7 @@ const ConfirmReleaseDialog = ({
           tone="critical"
           data-testid="revert-history-unavailable-card"
         >
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true} tone="critical">
             {t('revert-dialog.confirm-revert.history-unavailable-card', {
               count: historyUnavailableCount,
             })}
@@ -281,7 +283,7 @@ const ConfirmReleaseDialog = ({
           tone="critical"
           data-testid="revert-unresolved-card"
         >
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true} tone="critical">
             {t('revert-dialog.confirm-revert.unresolved-card', {count: requestFailedCount})}
           </Text>
         </Card>
@@ -294,7 +296,7 @@ const ConfirmReleaseDialog = ({
           checked={!stageNewRevertRelease}
         />
         <Box flexBasis="0%" flexGrow={1} paddingLeft={3}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <label htmlFor="immediate-revert-release">
               {t('revert-dialog.confirm-revert.stage-revert-checkbox-label')}
             </label>
@@ -303,7 +305,7 @@ const ConfirmReleaseDialog = ({
       </Flex>
       {hasPostPublishTransactions && !stageNewRevertRelease && (
         <Card marginTop={4} padding={3} radius={2} shadow={1} tone="critical">
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true} tone="critical">
             {t('revert-dialog.confirm-revert.warning-card')}
           </Text>
         </Card>

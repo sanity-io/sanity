@@ -1,4 +1,4 @@
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import noop from 'lodash-es/noop.js'
 import {describe, expect, it, vi} from 'vitest'
@@ -101,23 +101,29 @@ describe('IntentLink', () => {
     )
   })
 
-  it('replaces the history entry when `replace` is set instead of rendering it as an attribute', async () => {
+  it('should honor `replace` when navigating instead of forwarding it to the DOM', async () => {
     const router = route.create('/test', [route.intents('/intent')])
     const onNavigate = vi.fn()
-    const component = render(<IntentLink intent="edit" params={{id: 'doc'}} replace />, {
-      wrapper: ({children}) => (
-        <RouterProvider onNavigate={onNavigate} router={router} state={{}}>
-          {children}
-        </RouterProvider>
-      ),
-    })
-    const anchor = component.container.querySelector('a')!
-    expect(anchor.hasAttribute('replace')).toBe(false)
+    render(
+      <IntentLink intent="edit" params={{id: 'document-id-123', type: 'document-type'}} replace>
+        Edit
+      </IntentLink>,
+      {
+        wrapper: ({children}) => (
+          <RouterProvider onNavigate={onNavigate} router={router} state={{}}>
+            {children}
+          </RouterProvider>
+        ),
+      },
+    )
+
+    const anchor = screen.getByRole('link', {name: 'Edit'})
+    expect(anchor).not.toHaveAttribute('replace')
 
     await userEvent.click(anchor)
 
     expect(onNavigate).toHaveBeenCalledWith({
-      path: expect.stringContaining('/test/intent/edit/'),
+      path: '/test/intent/edit/id=document-id-123;type=document-type/',
       replace: true,
     })
   })

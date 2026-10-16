@@ -17,6 +17,7 @@ export {
   evaluateDocumentObservable,
   resolveTypeForArrayItem,
   validateDocumentInternal,
+  type ValidationScheduling,
   type ValidateDocumentInternalOptions,
   type ValidateItemOptions,
   validateDocumentObservable,

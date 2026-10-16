@@ -210,6 +210,8 @@
     "react/rules-of-hooks": "error",
     // Prefer function components; allow class-based error boundaries (no hook equivalent yet)
     "react/prefer-function-component": ["error", {"allowErrorBoundary": true}],
+    // Components defined during render get a new identity every render, remounting their subtree
+    "react/no-unstable-nested-components": "error",
     // React Compiler rules (https://oxc.rs/blog/2026-08-18-react-compiler-support.html#oxlint).
     // The old nursery `react/react-compiler` rule was replaced by 22 category-specific rules.
     // The `correctness`, `suspicious`, and `perf` rules are already enabled via `categories`
@@ -330,7 +332,6 @@
     "restrict-template-expressions": "warn",
     "unbound-method": "warn",
     // TODO(oxlint): Fix violations and set these back to error.
-    "react/no-unstable-nested-components": "warn",
     "typescript/no-unnecessary-type-conversion": "off",
     "typescript/no-useless-default-assignment": "off",
     "typescript/no-unnecessary-type-parameters": "off",
@@ -1094,132 +1095,12 @@
       }
     },
     {
-      // _createContext legitimately calls createContext, so it is exempt from that restriction
-      "files": ["packages/sanity/src/_createContext/**"],
-      "rules": {
-        "eslint/no-restricted-imports": [
-          "error",
-          {
-            "paths": [
-              {
-                "name": "styled-components",
-                "importNames": ["default"],
-                "message": "Please use `import {styled} from 'styled-components'` instead."
-              },
-              {
-                "name": "styled-components",
-                "importNames": ["ServerStyleSheet"],
-                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
-              },
-              {
-                "name": "react",
-                "importNames": ["default"],
-                "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
-              },
-              {
-                "name": "react",
-                "importNames": ["createElement"],
-                "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
-              },
-              {
-                "name": "react",
-                "importNames": ["createRef"],
-                "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
-              },
-              {
-                "name": "react",
-                "importNames": ["forwardRef"],
-                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
-              },
-              {
-                "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
-              },
-              {
-                "name": "react/jsx-runtime",
-                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
-              },
-              {
-                "name": "react/jsx-dev-runtime",
-                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
-              },
-              {
-                "name": "react/compiler-runtime",
-                "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
-              },
-              {
-                "name": "date-fns",
-                "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
-              },
-              {
-                "name": "lodash-es",
-                "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
-              },
-              {
-                "name": "@sanity/ui",
-                "importNames": [
-                  "Button",
-                  "ButtonProps",
-                  "Dialog",
-                  "DialogProps",
-                  "ErrorBoundary",
-                  "Tab",
-                  "TabProps"
-                ],
-                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
-              },
-              {
-                "name": "@sanity/ui/menu",
-                "importNames": [
-                  "MenuButton",
-                  "MenuButtonProps",
-                  "MenuGroup",
-                  "MenuGroupProps",
-                  "MenuItem",
-                  "MenuItemProps"
-                ],
-                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
-              },
-              {
-                "name": "@sanity/ui/popover",
-                "importNames": ["Popover", "PopoverProps"],
-                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
-              },
-              {
-                "name": "@sanity/ui/tooltip",
-                "importNames": [
-                  "Tooltip",
-                  "TooltipProps",
-                  "TooltipDelayGroupProvider",
-                  "TooltipDelayGroupProviderProps"
-                ],
-                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
-              }
-            ],
-            "patterns": [
-              {
-                "group": ["**/scheduled-publishing/**"],
-                "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
-              },
-              {
-                "group": ["lodash.*", "lodash/*", "lodash"],
-                "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
-              },
-              {
-                "group": ["lodash-es/*", "!lodash-es/*.js"],
-                "message": "lodash-es submodule imports must include the .js extension, e.g. `import debounce from 'lodash-es/debounce.js'`."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
       // Singletons must use relative type imports (the boundaries plugin can't track named type imports)
       "files": ["packages/sanity/src/_singletons/**"],
       "rules": {
         "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+        // Top-level type imports mean a module can be imported twice (`import type` and `import`)
+        "import/no-duplicates": ["error", {"prefer-inline": false}],
         "eslint/no-restricted-imports": [
           "error",
           {
@@ -1282,12 +1163,7 @@
               {"name": "sanity", "message": "Use relative type imports instead"},
               {"name": "sanity/presentation", "message": "Use relative type imports instead"},
               {"name": "sanity/structure", "message": "Use relative type imports instead"},
-              {"name": "sanity/router", "message": "Use relative type imports instead"},
-              {
-                "name": "react",
-                "importNames": ["createContext"],
-                "message": "Use `createContext` from 'sanity/_createContext' instead"
-              }
+              {"name": "sanity/router", "message": "Use relative type imports instead"}
             ],
             "patterns": [
               {

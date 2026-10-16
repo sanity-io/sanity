@@ -1,5 +1,5 @@
-import {Card, Text} from '@sanity/ui'
-import {VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {
@@ -33,7 +33,7 @@ export function ReleaseNameCellStory() {
       <Card padding={4} style={{maxWidth: 360}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               active
             </Text>
             <ReleaseNameCell cellProps={CELL_PROPS} datum={activeASAPRelease} sorting={false} />
@@ -44,13 +44,13 @@ export function ReleaseNameCellStory() {
             />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               untitled fallback
             </Text>
             <ReleaseNameCell cellProps={CELL_PROPS} datum={untitled} sorting={false} />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               archived / published (pin disabled)
             </Text>
             <ReleaseNameCell
@@ -61,7 +61,7 @@ export function ReleaseNameCellStory() {
             <ReleaseNameCell cellProps={CELL_PROPS} datum={publishedASAPRelease} sorting={false} />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               deleted (transparent card)
             </Text>
             <ReleaseNameCell cellProps={CELL_PROPS} datum={deleted} sorting={false} />

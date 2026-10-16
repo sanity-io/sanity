@@ -24,7 +24,7 @@ import {useEffectEvent} from 'use-effect-event'
 
 import {prepareConfig} from '../../config/prepareConfig'
 import {type Config, type WorkspaceSummary} from '../../config/types'
-import {type AuthStore} from '../../store/authStore/types'
+import {type AuthStore} from '../../store/auth/types'
 import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'

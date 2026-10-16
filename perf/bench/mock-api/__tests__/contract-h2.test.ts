@@ -178,4 +178,37 @@ describe('mock Content Lake over h2+TLS (production bench transport)', () => {
     const alive = await request('/v2025-02-19/users/me')
     expect(alive.status).toBe(200)
   })
+
+  it('keeps the session open when a client cancels many listen streams quickly', async () => {
+    // A studio that builds a listenQuery during render (the listenQueryPane
+    // scenario) opens a /data/listen stream per render and cancels the
+    // previous one. Node's HTTP/2 rapid reset protection closes the whole
+    // session once a client sends more than 1000 RST_STREAM frames in a
+    // burst (then 33 per second), and every other listener on that session
+    // fails with ERR_CONNECTION_CLOSED in the browser.
+    const longLived = openListener().stream
+    const longLivedEvents = collectSse(longLived)
+    await expect.poll(() => longLivedEvents.length).toBeGreaterThan(0)
+
+    for (let i = 0; i < 2_000; i++) {
+      const stream = session.request({':path': '/v2025-02-19/data/listen/bench?query=*'})
+      await new Promise<void>((resolve, reject) => {
+        stream.on('response', () => {
+          stream.close(http2.constants.NGHTTP2_CANCEL)
+          resolve()
+        })
+        stream.on('error', reject)
+      })
+    }
+
+    expect(session.closed).toBe(false)
+    expect(longLived.closed).toBe(false)
+    const alive = await request('/v2025-02-19/users/me')
+    expect(alive.status).toBe(200)
+
+    // Left open, the stream keeps session.close() in afterAll waiting, and
+    // mock.close() then resets it with no error listener attached
+    longLived.close(http2.constants.NGHTTP2_CANCEL)
+    await expect.poll(() => mock.hub.connectionCount).toBe(0)
+  })
 })

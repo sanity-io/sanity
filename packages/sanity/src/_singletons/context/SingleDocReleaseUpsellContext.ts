@@ -1,5 +1,5 @@
+import {createContext} from 'react'
 import type {ObservablePromise} from 'react-rx'
-import {createContext} from 'sanity/_createContext'
 
 import type {UpsellDialogViewedInfo} from '../../core/studio/upsell/__telemetry__/upsell.telemetry'
 import type {UpsellDataResult} from '../../core/studio/upsell/types'
@@ -29,20 +29,17 @@ export interface SingleDocReleaseUpsellContextValue {
 /**
  * @internal
  */
-export const SingleDocReleaseUpsellContext = createContext<SingleDocReleaseUpsellContextValue>(
-  'sanity/_singletons/context/single-doc-release-upsell',
-  {
-    upsellDataPromise: null,
-    handleOpenDialog: () => null,
-    handleClose: () => null,
-    upsellDialogOpen: false,
-    telemetryLogs: {
-      dialogSecondaryClicked: () => null,
-      dialogPrimaryClicked: () => null,
-      panelViewed: () => null,
-      panelDismissed: () => null,
-      panelPrimaryClicked: () => null,
-      panelSecondaryClicked: () => null,
-    },
+export const SingleDocReleaseUpsellContext = createContext<SingleDocReleaseUpsellContextValue>({
+  upsellDataPromise: null,
+  handleOpenDialog: () => null,
+  handleClose: () => null,
+  upsellDialogOpen: false,
+  telemetryLogs: {
+    dialogSecondaryClicked: () => null,
+    dialogPrimaryClicked: () => null,
+    panelViewed: () => null,
+    panelDismissed: () => null,
+    panelPrimaryClicked: () => null,
+    panelSecondaryClicked: () => null,
   },
-)
+})
