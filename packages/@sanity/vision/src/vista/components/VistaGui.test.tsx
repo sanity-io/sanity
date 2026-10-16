@@ -249,6 +249,7 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
   const promptReplies: unknown[] = []
   const requestCalls: {config: ClientConfig; options: {url: string}}[] = []
   let nextRequestResponse: unknown
+  let requestResponder: ((url: string) => unknown) | undefined
   const liveEvents = new Subject<LiveEvent>()
   let liveSubscriptions = 0
   let nextResponse: Record<string, unknown> = {
@@ -264,8 +265,11 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
     ({
       config: () => config,
       withConfig: (next: ClientConfig) => create({...config, ...next}),
-      getDataUrl: (operation: string, qs: string) =>
-        `/${String(config.apiVersion)}/data/${operation}/${String(config.dataset)}${qs}`,
+      // A path goes after a slash and a query string straight after the dataset, as in the client
+      getDataUrl: (operation: string, path = '') =>
+        `/${String(config.apiVersion)}/data/${operation}/${String(config.dataset)}${
+          path && !path.startsWith('?') ? `/${path}` : path
+        }`,
       getUrl: (path: string, canUseCdn?: boolean) =>
         `https://test.${canUseCdn ? 'apicdn' : 'api'}.sanity.io${path}`,
       fetch: (query: string, params: Record<string, unknown>, options: Record<string, unknown>) => {
@@ -282,7 +286,9 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
       },
       request: (options: {url: string}) => {
         requestCalls.push({config, options})
-        return Promise.resolve(nextRequestResponse)
+        return Promise.resolve(
+          requestResponder ? requestResponder(options.url) : nextRequestResponse,
+        )
       },
       agent: {
         action: {
@@ -302,6 +308,10 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
     replyToPrompts: (...replies: unknown[]) => promptReplies.push(...replies),
     requestCalls,
     /** The body `client.request` resolves with */
+    /** `client.request` answers with what `responder` gives for the URL */
+    respondToRequestsBy: (responder: (url: string) => unknown) => {
+      requestResponder = responder
+    },
     respondToRequests: (response: unknown) => {
       nextRequestResponse = response
     },
@@ -716,6 +726,54 @@ describe('VistaGui', () => {
     typeQuery('*[_type == "author"]')
     await waitFor(() => expect(screen.queryByTestId('vista-explanation')).toBeNull())
     expect(screen.queryByTestId('vista-query-plan')).toBeNull()
+  })
+
+  it('runs the query in delta mode against two documents, typed in or loaded from the history', async () => {
+    const {respondToRequestsBy, requestCalls} = renderVista()
+    typeQuery('_type == "post" && delta::changedAny(title)')
+    fireEvent.click(document.getElementById('vista-response-delta-tab') as HTMLElement)
+    const editorIn = (testId: string) =>
+      within(screen.getByTestId(testId)).getByRole('textbox') as HTMLTextAreaElement
+    expect(text(screen.getByTestId('vista-delta-result'))).toContain('vista.delta.empty')
+
+    fireEvent.change(editorIn('vista-delta-before'), {
+      target: {value: '{"_id": "a", "_type": "post", "title": "Old"}'},
+    })
+    fireEvent.change(editorIn('vista-delta-after'), {
+      target: {value: '{"_id": "a", "_type": "post", "title": "New"}'},
+    })
+    await waitFor(() =>
+      expect(text(screen.getByTestId('vista-delta-match'))).toBe('vista.delta.matches'),
+    )
+    expect(text(screen.getByTestId('vista-delta-operation'))).toBe('update')
+
+    // An empty side is no document: the change creates it
+    fireEvent.change(editorIn('vista-delta-before'), {target: {value: ''}})
+    await waitFor(() => expect(text(screen.getByTestId('vista-delta-operation'))).toBe('create'))
+    fireEvent.change(editorIn('vista-delta-before'), {target: {value: '{"_id": '}})
+    expect(text(screen.getByTestId('vista-delta-result'))).toContain('vista.delta.invalid-before')
+
+    // From the History API: the latest revision as After, the one before it as Before
+    respondToRequestsBy((url) =>
+      url.includes('/transactions/')
+        ? '{"id":"r2","timestamp":"2026-10-15T10:00:00Z"}\n{"id":"r1","timestamp":"2026-10-14T10:00:00Z"}\n'
+        : {documents: [{_id: 'a', _type: 'post', title: 'Same'}]},
+    )
+    fireEvent.change(screen.getByTestId('vista-delta-document-id'), {target: {value: 'a'}})
+    fireEvent.click(screen.getByTestId('vista-delta-load'))
+    await waitFor(() => expect(editorIn('vista-delta-after').value).toContain('"Same"'))
+    expect(requestCalls.map((call) => call.options.url)).toEqual([
+      '/v2025-02-19/data/history/test/transactions/a?excludeContent=true&reverse=true&limit=20',
+      '/v2025-02-19/data/history/test/documents/a?revision=r2',
+      '/v2025-02-19/data/history/test/documents/a?revision=r1',
+    ])
+    expect((screen.getByTestId('vista-delta-before-revision') as HTMLSelectElement).value).toBe(
+      'r1',
+    )
+    // Nothing changed between the two, so the filter does not match
+    await waitFor(() =>
+      expect(text(screen.getByTestId('vista-delta-match'))).toBe('vista.delta.no-match'),
+    )
   })
 
   it('offers WebMCP tools while it is open, which read and run queries and open them in tabs', async () => {

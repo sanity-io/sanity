@@ -34,6 +34,7 @@ import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {resultContainer, resultLabel, labelActions} from '../vista.css'
+import {DeltaTab, useDeltaPanel} from './DeltaTab'
 import {DownloadButton} from './DownloadButton'
 import {ExplainTab} from './ExplainTab'
 import {FunctionsTab, type QueryEdit} from './FunctionsTab'
@@ -116,6 +117,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
   )
 
   const queryExplain = useQueryExplain(request)
+  const delta = useDeltaPanel()
   const actorRef = useVistaActor()
   const resultView = useVistaSelector(selectResultView)
   const functionLibrary = useVistaSelector(selectFunctionLibrary)
@@ -247,9 +249,15 @@ export function ResponsePanel(props: ResponsePanelProps) {
           />
         ),
       },
+      {
+        id: 'delta',
+        label: t('vista.panel.delta'),
+        content: <DeltaTab delta={delta} request={request} />,
+      },
     ],
     [
       declaredFunctions,
+      delta,
       functionLibrary,
       hiddenDiffFields,
       history,

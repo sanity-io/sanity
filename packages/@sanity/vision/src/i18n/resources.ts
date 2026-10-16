@@ -158,6 +158,42 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Title for popover that explains what "Perspectives" are */
   'settings.perspectives.title': 'Perspectives',
 
+  /** Label of the document after the change in the Delta panel */
+  'vista.delta.after': 'After',
+  /** Label of the document before the change in the Delta panel */
+  'vista.delta.before': 'Before',
+  /** What the Delta panel does */
+  'vista.delta.description':
+    'Runs the query in delta mode, as GROQ-powered webhooks, listeners and Sanity Functions do: before() and after() are a document before and after a change, @ is the document after it, and delta::changedAny() compares them. It runs in the browser with groq-js. An empty side means no document: the change creates or deletes it.',
+  /** Label of the document ID field in the Delta panel */
+  'vista.delta.document-id': 'Document ID',
+  /** Shown when there is a query but no documents to compare */
+  'vista.delta.empty': 'Load a document’s history, or write the documents into Before and After.',
+  /** Shown when the query fails in delta mode */
+  'vista.delta.failed': 'The query could not be run in delta mode: {{message}}',
+  /** Shown when the After document is not valid JSON */
+  'vista.delta.invalid-after': 'After is not valid JSON: {{message}}',
+  /** Shown when the Before document is not valid JSON */
+  'vista.delta.invalid-before': 'Before is not valid JSON: {{message}}',
+  /** Button loading the document's revisions from the History API */
+  'vista.delta.load': 'Load history',
+  /** Shown when the history could not be loaded */
+  'vista.delta.load-failed': 'The history could not be loaded: {{message}}',
+  /** A delta filter that is true for the change */
+  'vista.delta.matches': 'Matches: a webhook or function with this filter runs for this change.',
+  /** A delta filter that is false for the change */
+  'vista.delta.no-match':
+    'Does not match: a webhook or function with this filter does not run for this change.',
+  /** Shown while the query or its params cannot be sent */
+  'vista.delta.no-request': 'Fix the query and its params to run it in delta mode.',
+  /** Heading of the delta result */
+  'vista.delta.result': 'Result',
+  /** A revision in the Before and After lists */
+  'vista.delta.revision.option': '{{time}} · {{revision}}',
+  /** The After choice for a change that deletes the document */
+  'vista.delta.revision.none-after': 'Nothing: the change deletes the document',
+  /** The Before choice for a change that creates the document */
+  'vista.delta.revision.none-before': 'Nothing: the change creates the document',
   /** Accessible label for the button that closes the sidebar drawer */
   'vista.drawer.close': 'Close panel',
   /** Toast shown after a code snippet was copied */
@@ -511,6 +547,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.panel.functions': 'Functions',
   /** Label of the Network tab in the response panel */
   'vista.panel.network': 'Network',
+  /** Label of the Delta tab in the response panel, which tests the query in delta mode */
+  'vista.panel.delta': 'Delta',
   /** Label of the "History" tab in the response panel */
   'vista.panel.history': 'History',
   /** Label of the "Lint" tab in the response panel, listing the query's lint findings */
