@@ -35,8 +35,10 @@ export interface GraphNode {
 export interface ResultGraph {
   /** Breadth first, the result first */
   nodes: GraphNode[]
-  /** Part of the result is left out: entries past `MAX_GRAPH_ROWS`, nodes past `MAX_GRAPH_NODES` */
-  truncated: boolean
+  /** The objects and arrays that list only their first `MAX_GRAPH_ROWS` entries, breadth first */
+  partialNodes: {id: string; entries: number}[]
+  /** The result holds more objects and arrays than `MAX_GRAPH_NODES`; those past it are left out */
+  nodeLimitReached: boolean
 }
 
 function isComposite(value: unknown): value is Record<string, unknown> | unknown[] {
@@ -77,12 +79,14 @@ export function buildResultGraph(value: unknown, maxNodes = MAX_GRAPH_NODES): Re
           depth: 0,
         },
       ],
-      truncated: false,
+      partialNodes: [],
+      nodeLimitReached: false,
     }
   }
 
   const nodes: GraphNode[] = []
-  let truncated = false
+  const partialNodes: ResultGraph['partialNodes'] = []
+  let nodeLimitReached = false
   let reserved = 1
   const queue: {
     value: Record<string, unknown> | unknown[]
@@ -97,7 +101,7 @@ export function buildResultGraph(value: unknown, maxNodes = MAX_GRAPH_NODES): Re
     for (const [index, [key, entry]] of entries.entries()) {
       if (index === MAX_GRAPH_ROWS) {
         rows.push({kind: 'more', count: entries.length - index})
-        truncated = true
+        partialNodes.push({id: item.id, entries: entries.length})
         break
       }
       if (!isComposite(entry)) {
@@ -110,7 +114,7 @@ export function buildResultGraph(value: unknown, maxNodes = MAX_GRAPH_NODES): Re
         child = item.id === '' ? key : `${item.id}.${key}`
         queue.push({value: entry, id: child, label: key, depth: item.depth + 1})
       } else {
-        truncated = true
+        nodeLimitReached = true
       }
       rows.push({kind: 'child', key, child, summary: summarize(entry)})
     }
@@ -123,7 +127,7 @@ export function buildResultGraph(value: unknown, maxNodes = MAX_GRAPH_NODES): Re
       depth: item.depth,
     })
   }
-  return {nodes, truncated}
+  return {nodes, partialNodes, nodeLimitReached}
 }
 
 /** Sizes of a node's parts at a zoom of 1, in pixels */

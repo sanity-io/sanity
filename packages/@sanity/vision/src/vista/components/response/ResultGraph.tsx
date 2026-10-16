@@ -17,12 +17,12 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useTranslation} from 'sanity'
+import {type TFunction, useTranslation} from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
 import {type ResultViewCopy} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
-import {getAtKeypath} from '../../../util/getAtKeypath'
+import {describeKeypath, getAtKeypath} from '../../../util/getAtKeypath'
 import {useContentSize} from '../../hooks/useContentSize'
 import {
   buildResultGraph,
@@ -73,6 +73,37 @@ const ZOOM_STEP = 1.25
 const PAN_STEP = 48
 /** A monospace character is about this wide for its size */
 const CHAR_WIDTH_RATIO = 0.62
+/** Partly listed objects and arrays the note names; any more are counted */
+const NAMED_PARTIAL_NODES = 3
+
+/** What the graph leaves out of this result, or `undefined` when it shows all of it */
+function describeLeftOut(graph: ResultGraphModel, t: TFunction<'vision'>): string | undefined {
+  const {partialNodes, nodeLimitReached} = graph
+  if (partialNodes.length === 0 && !nodeLimitReached) return undefined
+  const sentences: string[] = []
+  if (partialNodes.length > 0) {
+    const named = partialNodes.slice(0, NAMED_PARTIAL_NODES).map(({id, entries}) =>
+      t('vista.result.graph.partial.node', {
+        name: id === '' ? t('vista.result.graph.root') : describeKeypath(id),
+        entries,
+      }),
+    )
+    const others = partialNodes.length - named.length
+    const nodes = named.join(', ')
+    sentences.push(
+      t('vista.result.graph.partial', {
+        rows: MAX_GRAPH_ROWS,
+        nodes:
+          others > 0 ? `${nodes} ${t('vista.result.graph.partial.more', {count: others})}` : nodes,
+      }),
+    )
+  }
+  if (nodeLimitReached) {
+    sentences.push(t('vista.result.graph.node-limit', {nodes: MAX_GRAPH_NODES}))
+  }
+  sentences.push(t('vista.result.graph.left-out-hint'))
+  return sentences.join(' ')
+}
 
 function clampScale(scale: number): number {
   return Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale))
@@ -246,6 +277,7 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
   const charWidth = codeSize.fontSize * CHAR_WIDTH_RATIO
 
   const graph = useMemo(() => buildResultGraph(value), [value])
+  const leftOut = describeLeftOut(graph, t)
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set())
   const layout = useMemo(
     () => layoutResultGraph(graph, {collapsed, charWidth}),
@@ -408,10 +440,10 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
           />
         </div>
       )}
-      {graph.truncated && (
-        <div className={graphNotice}>
+      {leftOut && (
+        <div className={graphNotice} data-testid="vista-graph-left-out">
           <Text muted size={1}>
-            {t('vista.result.graph.truncated', {rows: MAX_GRAPH_ROWS, nodes: MAX_GRAPH_NODES})}
+            {leftOut}
           </Text>
         </div>
       )}

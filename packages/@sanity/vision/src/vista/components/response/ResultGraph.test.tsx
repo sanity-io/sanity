@@ -136,25 +136,43 @@ describe('ResultGraph', () => {
     expect(translate()).toEqual([x + 60, y - 10])
   })
 
-  it('says when it leaves part of the result out', () => {
-    const notice = 'vista.result.graph.truncated:{"rows":30,"nodes":300}'
-    // A long array lists its first entries
+  it('says what it leaves out of this result, and only when it does', () => {
+    const leftOut = () => screen.getByTestId('vista-graph-left-out').textContent ?? ''
+    // A long array lists its first entries, and the note names it with its length
     renderGraph(Array.from({length: 400}, (_, index) => ({index})))
-    expect(screen.getByText(notice)).toBeTruthy()
+    expect(leftOut()).toMatch(/^vista\.result\.graph\.partial:\{"rows":30,/)
+    expect(leftOut()).toContain('vista.result.graph.root')
+    expect(leftOut()).toContain('400')
+    expect(leftOut()).not.toContain('vista.result.graph.node-limit')
+    expect(leftOut()).toMatch(/vista\.result\.graph\.left-out-hint$/)
     expect(nodes()).toHaveLength(31)
     cleanup()
 
-    // Many nested objects reach the node cap
+    // Many nested objects reach the node cap, while no object or array is too long to list
     renderGraph(
       Array.from({length: 20}, (_, item) =>
         Object.fromEntries(Array.from({length: 20}, (_, key) => [`k${key}`, {item, key}])),
       ),
     )
-    expect(screen.getByText(notice)).toBeTruthy()
+    expect(leftOut()).toBe(
+      'vista.result.graph.node-limit:{"nodes":300} vista.result.graph.left-out-hint',
+    )
     expect(nodes()).toHaveLength(300)
     cleanup()
 
+    // Several long arrays: the first ones by their path, the others counted
+    renderGraph(
+      Object.fromEntries(
+        Array.from({length: 5}, (_, list) => [`list${list}`, Array.from({length: 31}, () => 1)]),
+      ),
+    )
+    expect(leftOut()).toContain('list0')
+    expect(leftOut()).toContain('list2')
+    expect(leftOut()).not.toContain('list3')
+    expect(leftOut()).toContain('vista.result.graph.partial.more:{\\"count\\":2}')
+    cleanup()
+
     renderGraph()
-    expect(screen.queryByText(notice)).toBeNull()
+    expect(screen.queryByTestId('vista-graph-left-out')).toBeNull()
   })
 })

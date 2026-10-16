@@ -817,9 +817,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.result.graph.more': '… {{count}} more',
   /** Title of the graph node of the result itself */
   'vista.result.graph.root': 'result',
-  /** Note on a graph that leaves part of the result out */
-  'vista.result.graph.truncated':
-    'Part of the result is left out: the graph lists up to {{rows}} entries of an object or array, and up to {{nodes}} objects and arrays. The tree and JSON views show all of it.',
+  /** Ends the note on a graph that leaves part of this result out */
+  'vista.result.graph.left-out-hint': 'The tree and JSON views show all of it.',
+  /** Note on a graph of a result with more objects and arrays than it draws */
+  'vista.result.graph.node-limit': 'Only the first {{nodes}} objects and arrays are drawn.',
+  /**
+   * Note on a graph whose objects or arrays have more entries than it lists; the nodes are the
+   * ones in this result, each with its number of entries
+   */
+  'vista.result.graph.partial': 'Only the first {{rows}} entries are listed for {{nodes}}.',
+  /** After the objects and arrays the note names, how many more list only their first entries */
+  'vista.result.graph.partial.more': 'and {{count}} more',
+  /** An object or array in the note, with how many entries it has (always more than listed) */
+  'vista.result.graph.partial.node': '{{name}} ({{entries}} entries)',
   /** Button zooming into the graph */
   'vista.result.graph.zoom-in': 'Zoom in',
   /** Button zooming out of the graph */

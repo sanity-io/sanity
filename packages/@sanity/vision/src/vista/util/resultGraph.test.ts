@@ -31,7 +31,7 @@ function overlaps(a: PlacedNode, b: PlacedNode): boolean {
 describe('buildResultGraph', () => {
   it('makes a node of every object and array, listing its values and linking its nested ones', () => {
     const graph = buildResultGraph(result)
-    expect(graph.truncated).toBe(false)
+    expect(graph).toMatchObject({partialNodes: [], nodeLimitReached: false})
     expect(graph.nodes.map((node) => [node.id, node.label, node.summary, node.depth])).toEqual([
       ['', undefined, '[2]', 0],
       ['0', '0', '{6}', 1],
@@ -65,7 +65,7 @@ describe('buildResultGraph', () => {
   it('cuts off breadth first past the node cap, and long nodes and strings', () => {
     const items = Array.from({length: 10}, (_, index) => ({index, nested: {deep: {deeper: {}}}}))
     const graph = buildResultGraph(items, 12)
-    expect(graph.truncated).toBe(true)
+    expect(graph).toMatchObject({partialNodes: [], nodeLimitReached: true})
     expect(graph.nodes).toHaveLength(12)
     // Every item is drawn before anything nested in them
     expect(graph.nodes.slice(1, 11).map((node) => node.id)).toEqual(
@@ -79,7 +79,14 @@ describe('buildResultGraph', () => {
     )
     expect(wide.nodes[0].rows).toHaveLength(MAX_GRAPH_ROWS + 1)
     expect(wide.nodes[0].rows.at(-1)).toEqual({kind: 'more', count: 10})
-    expect(wide.truncated).toBe(true)
+    expect(wide).toMatchObject({partialNodes: [{id: '', entries: 40}], nodeLimitReached: false})
+    // Exactly as many entries as it lists is all of them
+    expect(
+      buildResultGraph({
+        full: Array.from({length: MAX_GRAPH_ROWS}, (_, i) => i),
+        long: Array.from({length: MAX_GRAPH_ROWS + 5}, (_, i) => i),
+      }).partialNodes,
+    ).toEqual([{id: 'long', entries: MAX_GRAPH_ROWS + 5}])
 
     const long = buildResultGraph({text: 'x'.repeat(100)})
     const [row] = long.nodes[0].rows
