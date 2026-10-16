@@ -1,23 +1,36 @@
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {BookmarkIcon} from '@sanity/icons/Bookmark'
+import {CodeIcon} from '@sanity/icons/Code'
 import {CogIcon} from '@sanity/icons/Cog'
 import {DoubleChevronLeftIcon} from '@sanity/icons/DoubleChevronLeft'
 import {DoubleChevronRightIcon} from '@sanity/icons/DoubleChevronRight'
+import {EditIcon} from '@sanity/icons/Edit'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {RestoreIcon} from '@sanity/icons/Restore'
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Button, Text} from '@sanity/ui'
+import {Badge, Button, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type ComponentType, type MouseEvent, useCallback, useRef} from 'react'
+import {type ComponentType, type MouseEvent, useCallback, useRef, useSyncExternalStore} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {type VistaDrawer} from '../../store/types'
-import {useVistaActor, useVistaExperience, useVistaSelector} from '../../store/VistaActorContext'
+import {
+  type SidebarBadge,
+  useSidebarBadges,
+  useVistaActor,
+  useVistaExperience,
+  useVistaSelector,
+} from '../../store/VistaActorContext'
 import {selectOpenDrawer} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
 import {
+  sidebarItem,
+  sidebarItemBadge,
+  sidebarItemBadgeExpanded,
   sidebarRail,
   sidebarRailCollapsed,
   sidebarRailExpanded,
@@ -31,38 +44,58 @@ interface SidebarItemProps {
   label: string
   expanded: boolean
   selected?: boolean
+  /** A count, such as the active tab's lint findings */
+  badge?: SidebarBadge
   testId: string
   onClick: (event: MouseEvent<HTMLElement>) => void
 }
 
-function SidebarItem({icon, label, expanded, selected, testId, onClick}: SidebarItemProps) {
+function SidebarItem({icon, label, expanded, selected, badge, testId, onClick}: SidebarItemProps) {
+  const name = badge ? `${label} (${badge.count})` : label
+  const count = badge && (
+    <Badge
+      aria-hidden
+      className={cx(sidebarItemBadge, expanded && sidebarItemBadgeExpanded)}
+      data-testid={`${testId}-badge`}
+      fontSize={0}
+      tone={badge.tone}
+    >
+      {badge.count}
+    </Badge>
+  )
   if (expanded) {
     return (
-      <Button
-        aria-label={label}
-        data-testid={testId}
-        icon={icon}
-        justify="flex-start"
-        mode="bleed"
-        onClick={onClick}
-        selected={selected}
-        text={label}
-        width="fill"
-      />
+      <div className={sidebarItem}>
+        <Button
+          aria-label={name}
+          data-testid={testId}
+          icon={icon}
+          justify="flex-start"
+          mode="bleed"
+          onClick={onClick}
+          selected={selected}
+          text={label}
+          width="fill"
+        />
+        {count}
+      </div>
     )
   }
 
   return (
-    <Tooltip animate content={<Text size={1}>{label}</Text>} placement="right" portal>
-      <Button
-        aria-label={label}
-        data-testid={testId}
-        icon={icon}
-        mode="bleed"
-        onClick={onClick}
-        selected={selected}
-      />
-    </Tooltip>
+    <div className={sidebarItem}>
+      <Tooltip animate content={<Text size={1}>{name}</Text>} placement="right" portal>
+        <Button
+          aria-label={name}
+          data-testid={testId}
+          icon={icon}
+          mode="bleed"
+          onClick={onClick}
+          selected={selected}
+        />
+      </Tooltip>
+      {count}
+    </div>
   )
 }
 
@@ -72,6 +105,8 @@ export function VistaSidebar() {
   const {layout, switchToClassic} = useVistaExperience()
   const expanded = useVistaSelector((snapshot) => snapshot.matches({sidebar: 'expanded'}))
   const drawer = useVistaSelector(selectOpenDrawer)
+  const sidebarBadges = useSidebarBadges()
+  const badges = useSyncExternalStore(sidebarBadges.subscribe, sidebarBadges.get)
   const isMobile = layout === 'mobile'
 
   // The rail button that opened the drawer, remembered from its click: the drawer is a modal
@@ -131,6 +166,44 @@ export function VistaSidebar() {
           selected={drawer === 'saved'}
           testId="vista-sidebar-saved"
         />
+        <Box borderTop marginTop={1} paddingTop={1}>
+          <Flex flexDirection="column" gap={1}>
+            <SidebarItem
+              badge={badges.lint}
+              expanded={expanded}
+              icon={ErrorOutlineIcon}
+              label={t('vista.panel.lint')}
+              onClick={(event) => toggleDrawer('lint', event)}
+              selected={drawer === 'lint'}
+              testId="vista-sidebar-lint"
+            />
+            <SidebarItem
+              badge={badges.functions}
+              expanded={expanded}
+              icon={CodeIcon}
+              label={t('vista.panel.functions')}
+              onClick={(event) => toggleDrawer('functions', event)}
+              selected={drawer === 'functions'}
+              testId="vista-sidebar-functions"
+            />
+            <SidebarItem
+              expanded={expanded}
+              icon={TransferIcon}
+              label={t('vista.panel.delta')}
+              onClick={(event) => toggleDrawer('delta', event)}
+              selected={drawer === 'delta'}
+              testId="vista-sidebar-delta"
+            />
+            <SidebarItem
+              expanded={expanded}
+              icon={EditIcon}
+              label={t('vista.panel.mutate')}
+              onClick={(event) => toggleDrawer('mutate', event)}
+              selected={drawer === 'mutate'}
+              testId="vista-sidebar-mutate"
+            />
+          </Flex>
+        </Box>
       </Flex>
       <Flex flexDirection="column" gap={1}>
         <SidebarItem
@@ -144,7 +217,8 @@ export function VistaSidebar() {
           expanded={expanded}
           icon={CogIcon}
           label={t('vista.sidebar.settings')}
-          onClick={() => actorRef.send({type: 'dialog.open', dialog: 'settings'})}
+          onClick={(event) => toggleDrawer('settings', event)}
+          selected={drawer === 'settings'}
           testId="vista-sidebar-settings"
         />
         <SidebarItem

@@ -269,6 +269,26 @@ export const sidebarRailOverlay = style({
   boxShadow: '0 0 0 1px var(--card-border-color)',
 })
 
+/** A sidebar item, which a count can sit on */
+export const sidebarItem = style({
+  position: 'relative',
+})
+
+/** A count on a sidebar item: on the icon's corner in the collapsed rail */
+export const sidebarItemBadge = style({
+  position: 'absolute',
+  top: '-2px',
+  right: '-2px',
+  pointerEvents: 'none',
+})
+
+/** At the end of the item's row in the expanded rail */
+export const sidebarItemBadgeExpanded = style({
+  top: '50%',
+  right: '8px',
+  transform: 'translateY(-50%)',
+})
+
 /** Keeps the collapsed rail's room reserved while the expanded rail floats over the content */
 export const sidebarSlot = style({
   position: 'relative',
@@ -281,6 +301,11 @@ export const sidebarDrawer = style({
   flexShrink: 0,
   minHeight: 0,
   background: 'var(--card-bg-color)',
+})
+
+/** The tab's tools and the settings take more room than a list of queries */
+export const sidebarDrawerWide = style({
+  width: 'min(480px, 45vw)',
 })
 
 /**

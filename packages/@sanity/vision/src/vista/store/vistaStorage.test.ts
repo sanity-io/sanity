@@ -118,6 +118,22 @@ describe('vistaStorage', () => {
     expect(loadVistaState('proj', defaults)).toEqual(saved)
   })
 
+  it('keeps the drawers the sidebar has, and forgets any other', () => {
+    const state = createInitialState(defaults)
+    const load = (drawer: unknown) => {
+      localStorage.setItem(
+        getVistaStorageKey('proj'),
+        JSON.stringify({...state, sidebar: {expanded: false, drawer}}),
+      )
+      return loadVistaState('proj', defaults).sidebar.drawer
+    }
+    expect(load('mutate')).toBe('mutate')
+    expect(load('settings')).toBe('settings')
+    expect(load('lint')).toBe('lint')
+    expect(load('history')).toBeNull()
+    expect(load(null)).toBeNull()
+  })
+
   it('reads the API CDN option as off unless it was turned on', () => {
     const state = createInitialState(defaults)
     expect(state.settings.useCdn).toBe(false)

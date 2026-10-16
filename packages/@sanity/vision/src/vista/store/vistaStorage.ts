@@ -7,6 +7,7 @@ import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {validateApiVersion} from '../../util/validateApiVersion'
 import {
   type VistaDatasetMode,
+  type VistaDrawer,
   type VistaHistoryDiffSettings,
   type VistaPanelsState,
   type VistaPersistedState,
@@ -185,13 +186,23 @@ function sanitizeTab(
   })
 }
 
+const DRAWERS: readonly VistaDrawer[] = [
+  'saved',
+  'shared',
+  'lint',
+  'functions',
+  'delta',
+  'mutate',
+  'settings',
+]
+
 function sanitizeSidebar(value: unknown): VistaSidebarState {
   if (!isPlainObject(value)) {
     return {expanded: false, drawer: null}
   }
   return {
     expanded: value.expanded === true,
-    drawer: value.drawer === 'saved' || value.drawer === 'shared' ? value.drawer : null,
+    drawer: DRAWERS.find((drawer) => drawer === value.drawer) ?? null,
   }
 }
 

@@ -1,6 +1,6 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Button, Card, Dialog, Stack, Switch, Text, TextArea} from '@sanity/ui'
+import {Button, Card, Stack, Switch, Text, TextArea} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {dequal} from 'dequal/lite'
 import {useCallback, useState} from 'react'
@@ -87,7 +87,8 @@ function HiddenDiffFieldsSetting() {
   )
 }
 
-export function SettingsDialog() {
+/** The settings, in the sidebar's drawer */
+export function SettingsPanel() {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
   const actorRef = useVistaActor()
@@ -99,8 +100,6 @@ export function SettingsDialog() {
   const [confirmClear, setConfirmClear] = useState(false)
   // The "Other" input may hold an unfinished version; only usable ones become the default
   const [apiVersionDraft, setApiVersionDraft] = useState(settings.apiVersion)
-
-  const close = useCallback(() => actorRef.send({type: 'dialog.close'}), [actorRef])
 
   const handleApiVersionChange = useCallback(
     (apiVersion: string) => {
@@ -132,142 +131,132 @@ export function SettingsDialog() {
       status: 'success',
       title: t('vista.settings.clear-storage.success'),
     })
-    // Clearing storage also ends the redesigned experience, which unmounts this dialog
+    // Clearing storage also ends the redesigned experience, which unmounts this panel
     switchToClassic()
   }, [actorRef, clearQueries, switchToClassic, t, toast])
 
   return (
-    <Dialog
-      animate
-      data-testid="vista-settings-dialog"
-      header={t('vista.settings.title')}
-      id="vista-settings-dialog"
-      onClickOutside={close}
-      onClose={close}
-      width={0}
-    >
-      <Box padding={4}>
-        <Stack gap={5}>
-          <Text muted size={1}>
-            {t('vista.settings.description')}
-          </Text>
+    <Box data-testid="vista-settings" padding={4}>
+      <Stack gap={5}>
+        <Text muted size={1}>
+          {t('vista.settings.description')}
+        </Text>
 
-          <DatasetField
-            dataset={settings.dataset}
-            datasets={datasets}
-            id="vista-settings-dataset"
-            mode={settings.datasetMode}
-            onChange={(dataset) => actorRef.send({type: 'settings.update', settings: dataset})}
-            workspaceDataset={workspaceDataset}
-          />
+        <DatasetField
+          dataset={settings.dataset}
+          datasets={datasets}
+          id="vista-settings-dataset"
+          mode={settings.datasetMode}
+          onChange={(dataset) => actorRef.send({type: 'settings.update', settings: dataset})}
+          workspaceDataset={workspaceDataset}
+        />
 
-          <ApiVersionField
-            id="vista-settings-api-version"
-            locked={false}
-            onChange={handleApiVersionChange}
-            value={apiVersionDraft}
-          />
+        <ApiVersionField
+          id="vista-settings-api-version"
+          locked={false}
+          onChange={handleApiVersionChange}
+          value={apiVersionDraft}
+        />
 
-          <PerspectiveSelect
-            id="vista-settings-perspective"
-            onChange={(perspective) =>
-              actorRef.send({type: 'settings.update', settings: {perspective}})
+        <PerspectiveSelect
+          id="vista-settings-perspective"
+          onChange={(perspective) =>
+            actorRef.send({type: 'settings.update', settings: {perspective}})
+          }
+          value={settings.perspective}
+        />
+
+        <VariantSelect
+          id="vista-settings-variant"
+          onChange={(variant) => actorRef.send({type: 'settings.update', settings: {variant}})}
+          value={settings.variant}
+        />
+
+        <Flex alignItems="center" as="label" gap={3}>
+          <Switch
+            checked={settings.includeSourceMap}
+            onChange={(event) =>
+              actorRef.send({
+                type: 'settings.update',
+                settings: {includeSourceMap: event.currentTarget.checked},
+              })
             }
-            value={settings.perspective}
           />
+          <Stack gap={2}>
+            <Text size={1} weight="medium">
+              {t('vista.options.include-source-map')}
+            </Text>
+            <Text muted size={1}>
+              {t('vista.options.include-source-map.description')}
+            </Text>
+          </Stack>
+        </Flex>
 
-          <VariantSelect
-            id="vista-settings-variant"
-            onChange={(variant) => actorRef.send({type: 'settings.update', settings: {variant}})}
-            value={settings.variant}
-          />
+        <UseCdnField
+          checked={settings.useCdn}
+          onChange={(useCdn) => actorRef.send({type: 'settings.update', settings: {useCdn}})}
+          testId="vista-settings-use-cdn"
+        />
 
-          <Flex alignItems="center" as="label" gap={3}>
-            <Switch
-              checked={settings.includeSourceMap}
-              onChange={(event) =>
-                actorRef.send({
-                  type: 'settings.update',
-                  settings: {includeSourceMap: event.currentTarget.checked},
-                })
-              }
-            />
-            <Stack gap={2}>
-              <Text size={1} weight="medium">
-                {t('vista.options.include-source-map')}
-              </Text>
-              <Text muted size={1}>
-                {t('vista.options.include-source-map.description')}
-              </Text>
-            </Stack>
-          </Flex>
+        <Card border padding={3} radius={2}>
+          <HiddenDiffFieldsSetting />
+        </Card>
 
-          <UseCdnField
-            checked={settings.useCdn}
-            onChange={(useCdn) => actorRef.send({type: 'settings.update', settings: {useCdn}})}
-            testId="vista-settings-use-cdn"
-          />
+        <Card border padding={3} radius={2}>
+          <Stack gap={3}>
+            <Text size={1} weight="medium">
+              {t('vista.redesign.settings.title')}
+            </Text>
+            <Text muted size={1}>
+              {t('vista.redesign.settings.description')}
+            </Text>
+            <Flex>
+              <Button
+                data-testid="vista-settings-classic"
+                icon={RestoreIcon}
+                mode="ghost"
+                onClick={switchToClassic}
+                text={t('vista.redesign.switch-to-classic')}
+              />
+            </Flex>
+          </Stack>
+        </Card>
 
-          <Card border padding={3} radius={2}>
-            <HiddenDiffFieldsSetting />
-          </Card>
-
-          <Card border padding={3} radius={2}>
-            <Stack gap={3}>
-              <Text size={1} weight="medium">
-                {t('vista.redesign.settings.title')}
-              </Text>
-              <Text muted size={1}>
-                {t('vista.redesign.settings.description')}
-              </Text>
-              <Flex>
-                <Button
-                  data-testid="vista-settings-classic"
-                  icon={RestoreIcon}
-                  mode="ghost"
-                  onClick={switchToClassic}
-                  text={t('vista.redesign.switch-to-classic')}
-                />
-              </Flex>
-            </Stack>
-          </Card>
-
-          <Card border padding={3} radius={2} tone={confirmClear ? 'critical' : 'default'}>
-            <Stack gap={3}>
-              <Text muted size={1}>
-                {t('vista.settings.clear-storage.description')}
-              </Text>
-              <Flex gap={2}>
-                {confirmClear ? (
-                  <>
-                    <Button
-                      data-testid="vista-clear-storage-confirm"
-                      icon={TrashIcon}
-                      onClick={() => void handleClearStorage()}
-                      text={t('vista.settings.clear-storage.confirm')}
-                      tone="critical"
-                    />
-                    <Button
-                      mode="bleed"
-                      onClick={() => setConfirmClear(false)}
-                      text={t('action.query-cancel')}
-                    />
-                  </>
-                ) : (
+        <Card border padding={3} radius={2} tone={confirmClear ? 'critical' : 'default'}>
+          <Stack gap={3}>
+            <Text muted size={1}>
+              {t('vista.settings.clear-storage.description')}
+            </Text>
+            <Flex gap={2}>
+              {confirmClear ? (
+                <>
                   <Button
-                    data-testid="vista-clear-storage"
+                    data-testid="vista-clear-storage-confirm"
                     icon={TrashIcon}
-                    mode="ghost"
-                    onClick={() => setConfirmClear(true)}
-                    text={t('vista.settings.clear-storage')}
+                    onClick={() => void handleClearStorage()}
+                    text={t('vista.settings.clear-storage.confirm')}
                     tone="critical"
                   />
-                )}
-              </Flex>
-            </Stack>
-          </Card>
-        </Stack>
-      </Box>
-    </Dialog>
+                  <Button
+                    mode="bleed"
+                    onClick={() => setConfirmClear(false)}
+                    text={t('action.query-cancel')}
+                  />
+                </>
+              ) : (
+                <Button
+                  data-testid="vista-clear-storage"
+                  icon={TrashIcon}
+                  mode="ghost"
+                  onClick={() => setConfirmClear(true)}
+                  text={t('vista.settings.clear-storage')}
+                  tone="critical"
+                />
+              )}
+            </Flex>
+          </Stack>
+        </Card>
+      </Stack>
+    </Box>
   )
 }

@@ -60,9 +60,13 @@ export type VistaTabInit = Partial<Omit<VistaTab, 'options'>> & {
 /** Defaults applied to tabs created with the "+" button */
 export type VistaSettings = VistaTabOptions
 
-export type VistaDrawer = 'saved' | 'shared'
+/** The active tab's tools, which the tab renders into the drawer (see `TabDrawerSlot`) */
+export type VistaTabDrawer = 'lint' | 'functions' | 'delta' | 'mutate'
 
-export type VistaDialog = 'shortcuts' | 'settings'
+/** What the sidebar opens next to it: the query lists, the active tab's tools and the settings */
+export type VistaDrawer = 'saved' | 'shared' | VistaTabDrawer | 'settings'
+
+export type VistaDialog = 'shortcuts'
 
 export interface VistaSidebarState {
   expanded: boolean

@@ -742,7 +742,7 @@ describe('VistaGui', () => {
   it('runs the query in delta mode against two documents, typed in or loaded from the history', async () => {
     const {respondToRequestsBy, requestCalls} = renderVista()
     typeQuery('_type == "post" && delta::changedAny(title)')
-    fireEvent.click(document.getElementById('vista-response-delta-tab') as HTMLElement)
+    fireEvent.click(screen.getByTestId('vista-sidebar-delta'))
     const editorIn = (testId: string) =>
       within(screen.getByTestId(testId)).getByRole('textbox') as HTMLTextAreaElement
     expect(text(screen.getByTestId('vista-delta-result'))).toContain('vista.delta.empty')
@@ -803,7 +803,7 @@ describe('VistaGui', () => {
           }
         : {transactionId: 'tx-1', results: [{id: 'a', operation: 'update'}]},
     )
-    fireEvent.click(document.getElementById('vista-response-mutate-tab') as HTMLElement)
+    fireEvent.click(screen.getByTestId('vista-sidebar-mutate'))
     fireEvent.change(within(screen.getByTestId('vista-mutate-editor')).getByRole('textbox'), {
       target: {value: '[{"patch": {"id": "a", "set": {"title": "New"}}}]'},
     })
@@ -1003,8 +1003,12 @@ describe('VistaGui', () => {
     const declaration = 'fn ex::author($ref) = $ref->{name}'
     typeQuery(`${declaration};\n\n*[_type == "post"]{"author": ex::author(author)}`)
 
-    fireEvent.click(document.getElementById('vista-response-functions-tab') as HTMLElement)
-    const [declared] = screen.getAllByTestId('vista-declared-function')
+    // The sidebar counts the declared functions and opens them in its drawer
+    expect(text(screen.getByTestId('vista-sidebar-functions-badge'))).toBe('1')
+    fireEvent.click(screen.getByTestId('vista-sidebar-functions'))
+    const [declared] = within(screen.getByTestId('vista-drawer-functions')).getAllByTestId(
+      'vista-declared-function',
+    )
     expect(text(declared)).toContain('ex::author($ref)')
     fireEvent.click(within(declared).getByTestId('vista-function-save'))
     expect(within(declared).getByTestId('vista-function-saved')).toBeTruthy()
@@ -1012,10 +1016,10 @@ describe('VistaGui', () => {
       expect(getStoredState()?.functions).toEqual([{id: 'ex::author', declaration}]),
     )
 
-    // Another tab declares it from the library
+    // Another tab declares it from the library: the drawer stays open and shows that tab's
     fireEvent.click(screen.getByTestId('vista-new-tab'))
     typeQuery('*[_type == "book"]{"author": ex::author(author)}')
-    fireEvent.click(document.getElementById('vista-response-functions-tab') as HTMLElement)
+    expect(screen.queryByTestId('vista-sidebar-functions-badge')).toBeNull()
     const [saved] = screen.getAllByTestId('vista-library-function')
     fireEvent.click(within(saved).getByTestId('vista-function-add'))
     expect(getQueryEditor().value).toBe(
@@ -2218,6 +2222,13 @@ describe('VistaGui', () => {
 
   it('sets the fields hidden from history diffs in the settings', async () => {
     renderVista()
+    // The settings open in the sidebar's drawer, and close from the same button
+    fireEvent.click(screen.getByTestId('vista-sidebar-settings'))
+    const drawer = screen.getByTestId('vista-drawer-settings')
+    expect(within(drawer).getByTestId('vista-settings')).toBeTruthy()
+    expect(screen.queryByRole('dialog')).toBeNull()
+    fireEvent.click(screen.getByTestId('vista-sidebar-settings'))
+    expect(screen.queryByTestId('vista-drawer-settings')).toBeNull()
     fireEvent.click(screen.getByTestId('vista-sidebar-settings'))
     const fields = (await screen.findByTestId(
       'vista-settings-hidden-diff-fields',

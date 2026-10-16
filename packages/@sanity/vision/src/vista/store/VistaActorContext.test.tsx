@@ -3,7 +3,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {createActor, createMachine} from 'xstate'
 
 import {clearLocalStorage} from '../../util/localStorage'
-import {usePersistVistaState} from './VistaActorContext'
+import {createSidebarBadges, usePersistVistaState} from './VistaActorContext'
 import {vistaMachine} from './vistaMachine'
 import {createInitialState, getVistaStorageKey} from './vistaStorage'
 
@@ -76,5 +76,30 @@ describe('usePersistVistaState', () => {
     unmount()
     expect(storedPerspective()).toBeNull()
     actor.stop()
+  })
+})
+
+describe('createSidebarBadges', () => {
+  it('keeps the counts the tab sets, and tells the sidebar only when one changes', () => {
+    const badges = createSidebarBadges()
+    const listener = vi.fn()
+    const unsubscribe = badges.subscribe(listener)
+
+    badges.set('lint', {count: 2, tone: 'caution'})
+    expect(badges.get()).toEqual({lint: {count: 2, tone: 'caution'}})
+    const first = badges.get()
+    // The same count again is no change, and the snapshot stays the same object
+    badges.set('lint', {count: 2, tone: 'caution'})
+    expect(badges.get()).toBe(first)
+    expect(listener).toHaveBeenCalledTimes(1)
+
+    badges.set('functions', {count: 1, tone: 'default'})
+    badges.set('lint', undefined)
+    expect(badges.get()).toEqual({functions: {count: 1, tone: 'default'}})
+    expect(listener).toHaveBeenCalledTimes(3)
+
+    unsubscribe()
+    badges.set('functions', undefined)
+    expect(listener).toHaveBeenCalledTimes(3)
   })
 })

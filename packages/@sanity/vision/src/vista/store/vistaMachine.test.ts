@@ -8,6 +8,7 @@ import {
   selectOpenDialog,
   selectFunctionLibrary,
   selectOpenDrawer,
+  selectOpenTabDrawer,
   selectParamsView,
   selectResultView,
   selectPersistedState,
@@ -232,11 +233,32 @@ describe('vistaMachine', () => {
     harness.actor.send({type: 'drawer.close'})
     expect(selectOpenDrawer(harness.snapshot())).toBeNull()
 
-    harness.actor.send({type: 'dialog.open', dialog: 'settings'})
-    expect(selectOpenDialog(harness.snapshot())).toBe('settings')
-    harness.actor.send({type: 'dialog.close'})
+    // One drawer at a time: the tab's tools and the settings open in it like the query lists
+    harness.actor.send({type: 'drawer.toggle', drawer: 'lint'})
+    expect(selectOpenDrawer(harness.snapshot())).toBe('lint')
+    expect(selectOpenTabDrawer(harness.snapshot())).toBe('lint')
+    harness.actor.send({type: 'drawer.toggle', drawer: 'settings'})
+    expect(selectOpenDrawer(harness.snapshot())).toBe('settings')
+    expect(selectOpenTabDrawer(harness.snapshot())).toBeNull()
+    expect(selectPersistedState(harness.snapshot()).sidebar.drawer).toBe('settings')
+    harness.actor.send({type: 'drawer.toggle', drawer: 'mutate'})
+    expect(selectOpenTabDrawer(harness.snapshot())).toBe('mutate')
+    harness.actor.send({type: 'drawer.toggle', drawer: 'mutate'})
+    expect(selectOpenDrawer(harness.snapshot())).toBeNull()
+    expect(selectPersistedState(harness.snapshot()).sidebar.drawer).toBeNull()
+
     harness.actor.send({type: 'dialog.open', dialog: 'shortcuts'})
     expect(selectOpenDialog(harness.snapshot())).toBe('shortcuts')
+    harness.actor.send({type: 'dialog.close'})
+    expect(selectOpenDialog(harness.snapshot())).toBeNull()
+  })
+
+  it('restores any drawer, the tab’s tools included', () => {
+    const harness = createHarness({
+      ...createInitialState(defaults),
+      sidebar: {expanded: false, drawer: 'delta'},
+    })
+    expect(selectOpenTabDrawer(harness.snapshot())).toBe('delta')
   })
 
   it('remembers which added or loaded tabs fetch when shown, until they have or are closed', () => {
@@ -390,7 +412,8 @@ describe('vistaMachine', () => {
     harness.actor.send({type: 'tab.add', tab: {query: 'extra'}})
     harness.actor.send({type: 'sidebar.toggle'})
     harness.actor.send({type: 'panel.toggle', panel: 'params'})
-    harness.actor.send({type: 'dialog.open', dialog: 'settings'})
+    harness.actor.send({type: 'drawer.toggle', drawer: 'settings'})
+    harness.actor.send({type: 'dialog.open', dialog: 'shortcuts'})
 
     harness.actor.send({type: 'storage.clear'})
 
@@ -402,6 +425,7 @@ describe('vistaMachine', () => {
     expect(harness.runnerIds()).toEqual([tabs[0].id])
     expect(harness.snapshot().matches({sidebar: 'collapsed'})).toBe(true)
     expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
+    expect(selectOpenDrawer(harness.snapshot())).toBeNull()
     expect(selectOpenDialog(harness.snapshot())).toBeNull()
     expect(localStorage.getItem(getVistaStorageKey('proj'))).toBeNull()
   })

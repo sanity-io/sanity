@@ -5,7 +5,7 @@ import {Badge, Button, Card, Label, Tab, TabList, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useSelector} from '@xstate/react'
-import {useCallback, useMemo} from 'react'
+import {type ReactNode, useCallback, useEffect, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -24,9 +24,19 @@ import {
   type VistaResultView,
   type VistaSavedFunction,
   type VistaTab,
+  type VistaTabDrawer,
 } from '../../store/types'
-import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
-import {selectFunctionLibrary, selectResultView} from '../../store/vistaMachine'
+import {
+  useSidebarBadges,
+  useVistaActor,
+  useVistaExperience,
+  useVistaSelector,
+} from '../../store/VistaActorContext'
+import {
+  selectFunctionLibrary,
+  selectOpenTabDrawer,
+  selectResultView,
+} from '../../store/vistaMachine'
 import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {haveSameQuery} from '../../util/queryRequest'
@@ -34,6 +44,7 @@ import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
+import {TabDrawerPortal} from '../TabDrawerPortal'
 import {resultContainer, resultLabel, labelActions} from '../vista.css'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
 import {DownloadButton} from './DownloadButton'
@@ -189,51 +200,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
         content: <NetworkTab meta={meta} perspectiveName={perspectiveName} resolved={resolved} />,
       },
       {
-        id: 'lint',
-        label:
-          lintFindings.length > 0 ? (
-            <Flex alignItems="center" as="span" gap={2}>
-              {t('vista.panel.lint')}
-              <Badge
-                fontSize={0}
-                tone={
-                  lintFindings.some((finding) => finding.severity === 'error')
-                    ? 'critical'
-                    : 'caution'
-                }
-              >
-                {lintFindings.length}
-              </Badge>
-            </Flex>
-          ) : (
-            t('vista.panel.lint')
-          ),
-        content: <LintTab findings={lintFindings} onReveal={onRevealRange} />,
-      },
-      {
-        id: 'functions',
-        label:
-          declaredFunctions.length > 0 ? (
-            <Flex alignItems="center" as="span" gap={2}>
-              {t('vista.panel.functions')}
-              <Badge fontSize={0}>{declaredFunctions.length}</Badge>
-            </Flex>
-          ) : (
-            t('vista.panel.functions')
-          ),
-        content: (
-          <FunctionsTab
-            declarations={declaredFunctions}
-            library={functionLibrary}
-            onEdit={onEditQuery}
-            onRemove={removeFunction}
-            onReveal={onRevealRange}
-            onSave={saveFunction}
-            query={tab.query}
-          />
-        ),
-      },
-      {
         id: 'source-map',
         label: t('vista.panel.source-map'),
         content: <SourceMapTab dataset={resultDataset} meta={meta} />,
@@ -264,15 +230,52 @@ export function ResponsePanel(props: ResponsePanelProps) {
           />
         ),
       },
-      {
-        id: 'delta',
-        label: t('vista.panel.delta'),
-        content: <DeltaTab delta={delta} request={request} />,
-      },
-      {
-        id: 'mutate',
-        label: t('vista.panel.mutate'),
-        content: (
+    ],
+    [
+      hiddenDiffFields,
+      history,
+      meta,
+      perspectiveName,
+      queryExplain,
+      request,
+      resolved,
+      resultDataset,
+      t,
+      url,
+    ],
+  )
+
+  // The tab's tools open in the sidebar's drawer. On a phone the drawer covers the query editor,
+  // so showing part of the query in it closes the drawer first
+  const tabDrawer = useVistaSelector(selectOpenTabDrawer)
+  const {layout} = useVistaExperience()
+  const revealFromDrawer = useCallback(
+    (range: TextRange) => {
+      if (layout === 'mobile') actorRef.send({type: 'drawer.close'})
+      onRevealRange(range)
+    },
+    [actorRef, layout, onRevealRange],
+  )
+  const renderTabDrawer = (drawer: VistaTabDrawer): ReactNode => {
+    switch (drawer) {
+      case 'lint':
+        return <LintTab findings={lintFindings} onReveal={revealFromDrawer} />
+      case 'functions':
+        return (
+          <FunctionsTab
+            declarations={declaredFunctions}
+            library={functionLibrary}
+            onEdit={onEditQuery}
+            onRemove={removeFunction}
+            onReveal={revealFromDrawer}
+            onSave={saveFunction}
+            query={tab.query}
+          />
+        )
+      case 'delta':
+        return <DeltaTab delta={delta} request={request} />
+      case 'mutate':
+        return (
           <MutateTab
             canRequest={resolved.isValidApiVersion}
             client={resolved.client}
@@ -282,176 +285,179 @@ export function ResponsePanel(props: ResponsePanelProps) {
             onApplied={onMutationsApplied}
             result={hasResult ? result : undefined}
           />
-        ),
-      },
-    ],
-    [
-      declaredFunctions,
-      delta,
-      functionLibrary,
-      hasResult,
-      hiddenDiffFields,
-      history,
-      lintFindings,
-      meta,
-      mutate,
-      onEditQuery,
-      onMutationsApplied,
-      onRevealRange,
-      perspectiveName,
-      queryExplain,
-      removeFunction,
-      request,
-      resolved,
-      result,
-      resultDataset,
-      saveFunction,
-      t,
-      tab.query,
-      url,
-    ],
+        )
+      default: {
+        const unknownDrawer: never = drawer
+        return String(unknownDrawer)
+      }
+    }
+  }
+
+  // The sidebar shows how many lint findings and declared functions the tab has
+  const sidebarBadges = useSidebarBadges()
+  const lintCount = lintFindings.length
+  const lintTone = lintFindings.some((finding) => finding.severity === 'error')
+    ? 'critical'
+    : 'caution'
+  const functionCount = declaredFunctions.length
+  useEffect(() => {
+    sidebarBadges.set('lint', lintCount > 0 ? {count: lintCount, tone: lintTone} : undefined)
+    sidebarBadges.set(
+      'functions',
+      functionCount > 0 ? {count: functionCount, tone: 'default'} : undefined,
+    )
+  }, [functionCount, lintCount, lintTone, sidebarBadges])
+  useEffect(
+    () => () => {
+      sidebarBadges.set('lint', undefined)
+      sidebarBadges.set('functions', undefined)
+    },
+    [sidebarBadges],
   )
 
   return (
-    <SplitWithBottomPanel
-      defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
-      footer={
-        <ActionRail testId="vista-result-actions">
-          <DownloadButton
-            download="query-result.json"
-            getBlobUrl={hasResult ? getJsonUrl : undefined}
-            icon={JsonIcon}
-            label={t('vista.result.export-json')}
-            testId="vista-export-json"
-          />
-          <DownloadButton
-            download="query-result.csv"
-            getBlobUrl={canExportCsv ? getCsvUrl : undefined}
-            icon={DocumentSheetIcon}
-            label={t('vista.result.export-csv')}
-            onUnavailable={reportCsvUnavailable}
-            testId="vista-export-csv"
-            tooltip={
-              hasResult && !canExportCsv
-                ? t('result.save-result-as-csv.not-csv-encodable')
-                : undefined
-            }
-          />
-          <ResultActionsMenu
-            hasResult={hasResult}
-            result={result}
-            resultIsCurrent={resultIsCurrent}
-            tab={tab}
-          />
-        </ActionRail>
-      }
-      id="vista-response"
-      tabs={panelTabs}
-      testId="vista-response-panel"
-    >
-      <Card
-        className={resultContainer}
-        data-testid="vista-result"
-        tone={status === 'failed' ? 'critical' : 'default'}
+    <>
+      {tabDrawer && <TabDrawerPortal>{renderTabDrawer(tabDrawer)}</TabDrawerPortal>}
+      <SplitWithBottomPanel
+        defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+        footer={
+          <ActionRail testId="vista-result-actions">
+            <DownloadButton
+              download="query-result.json"
+              getBlobUrl={hasResult ? getJsonUrl : undefined}
+              icon={JsonIcon}
+              label={t('vista.result.export-json')}
+              testId="vista-export-json"
+            />
+            <DownloadButton
+              download="query-result.csv"
+              getBlobUrl={canExportCsv ? getCsvUrl : undefined}
+              icon={DocumentSheetIcon}
+              label={t('vista.result.export-csv')}
+              onUnavailable={reportCsvUnavailable}
+              testId="vista-export-csv"
+              tooltip={
+                hasResult && !canExportCsv
+                  ? t('result.save-result-as-csv.not-csv-encodable')
+                  : undefined
+              }
+            />
+            <ResultActionsMenu
+              hasResult={hasResult}
+              result={result}
+              resultIsCurrent={resultIsCurrent}
+              tab={tab}
+            />
+          </ActionRail>
+        }
+        id="vista-response"
+        tabs={panelTabs}
+        testId="vista-response-panel"
       >
-        <Box className={resultLabel}>
-          <Flex alignItems="center" gap={2}>
-            <Label muted size={1}>
-              {t('result.label')}
-            </Label>
-            {isLive && (
-              <Badge fontSize={0} tone="positive">
-                {t('vista.live.active')}
-              </Badge>
-            )}
-            <Box flexBasis="0%" flexGrow={1} />
-            {hasResult && (
-              <Flex alignItems="center" className={labelActions} gap={1}>
-                <TabList aria-label={t('vista.result.view.label')} gap={1}>
-                  <Tab
-                    aria-controls="vista-result-content"
-                    fontSize={1}
-                    id="vista-result-view-tree"
-                    label={t('vista.result.view.tree')}
-                    onClick={() => setResultView('tree')}
-                    padding={2}
-                    selected={resultView === 'tree'}
-                  />
-                  <Tab
-                    aria-controls="vista-result-content"
-                    fontSize={1}
-                    id="vista-result-view-json"
-                    label={t('vista.result.view.json')}
-                    onClick={() => setResultView('json')}
-                    padding={2}
-                    selected={resultView === 'json'}
-                  />
-                  <Tab
-                    aria-controls="vista-result-content"
-                    fontSize={1}
-                    id="vista-result-view-graph"
-                    label={t('vista.result.view.graph')}
-                    onClick={() => setResultView('graph')}
-                    padding={2}
-                    selected={resultView === 'graph'}
-                  />
-                </TabList>
-                <Tooltip
-                  animate
-                  content={<Text size={1}>{t('vista.result.copy')}</Text>}
-                  placement="bottom"
-                  portal
-                >
-                  <Button
-                    aria-label={t('vista.result.copy')}
-                    data-testid="vista-copy-result"
-                    fontSize={1}
-                    icon={CopyIcon}
-                    mode="bleed"
-                    onClick={copyResult}
-                    padding={2}
-                  />
-                </Tooltip>
-              </Flex>
-            )}
-          </Flex>
-        </Box>
-        {hasResult && resultView === 'json' ? (
-          <ResultJson id="vista-result-content" value={result} />
-        ) : hasResult && resultView === 'graph' ? (
-          <ResultGraph copy={copyValue} id="vista-result-content" value={result} />
-        ) : (
-          <Box id="vista-result-content" padding={3} paddingTop={5}>
-            {status === 'fetching' && (
-              <Box marginTop={3}>
-                <DelayedSpinner />
-              </Box>
-            )}
-            {status === 'failed' && error && (
-              <QueryErrorDialog
-                apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
-                error={error}
-                perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
-                variant={
-                  failedConfig
-                    ? typeof failedConfig.variant === 'string'
-                      ? failedConfig.variant
-                      : undefined
-                    : resolved.variant
-                }
-              />
-            )}
-            {hasResult && resultView === 'tree' && (
-              <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
-            )}
-            {status === 'idle' && (
-              <Text muted size={1}>
-                {t('vista.result.empty')}
-              </Text>
-            )}
+        <Card
+          className={resultContainer}
+          data-testid="vista-result"
+          tone={status === 'failed' ? 'critical' : 'default'}
+        >
+          <Box className={resultLabel}>
+            <Flex alignItems="center" gap={2}>
+              <Label muted size={1}>
+                {t('result.label')}
+              </Label>
+              {isLive && (
+                <Badge fontSize={0} tone="positive">
+                  {t('vista.live.active')}
+                </Badge>
+              )}
+              <Box flexBasis="0%" flexGrow={1} />
+              {hasResult && (
+                <Flex alignItems="center" className={labelActions} gap={1}>
+                  <TabList aria-label={t('vista.result.view.label')} gap={1}>
+                    <Tab
+                      aria-controls="vista-result-content"
+                      fontSize={1}
+                      id="vista-result-view-tree"
+                      label={t('vista.result.view.tree')}
+                      onClick={() => setResultView('tree')}
+                      padding={2}
+                      selected={resultView === 'tree'}
+                    />
+                    <Tab
+                      aria-controls="vista-result-content"
+                      fontSize={1}
+                      id="vista-result-view-json"
+                      label={t('vista.result.view.json')}
+                      onClick={() => setResultView('json')}
+                      padding={2}
+                      selected={resultView === 'json'}
+                    />
+                    <Tab
+                      aria-controls="vista-result-content"
+                      fontSize={1}
+                      id="vista-result-view-graph"
+                      label={t('vista.result.view.graph')}
+                      onClick={() => setResultView('graph')}
+                      padding={2}
+                      selected={resultView === 'graph'}
+                    />
+                  </TabList>
+                  <Tooltip
+                    animate
+                    content={<Text size={1}>{t('vista.result.copy')}</Text>}
+                    placement="bottom"
+                    portal
+                  >
+                    <Button
+                      aria-label={t('vista.result.copy')}
+                      data-testid="vista-copy-result"
+                      fontSize={1}
+                      icon={CopyIcon}
+                      mode="bleed"
+                      onClick={copyResult}
+                      padding={2}
+                    />
+                  </Tooltip>
+                </Flex>
+              )}
+            </Flex>
           </Box>
-        )}
-      </Card>
-    </SplitWithBottomPanel>
+          {hasResult && resultView === 'json' ? (
+            <ResultJson id="vista-result-content" value={result} />
+          ) : hasResult && resultView === 'graph' ? (
+            <ResultGraph copy={copyValue} id="vista-result-content" value={result} />
+          ) : (
+            <Box id="vista-result-content" padding={3} paddingTop={5}>
+              {status === 'fetching' && (
+                <Box marginTop={3}>
+                  <DelayedSpinner />
+                </Box>
+              )}
+              {status === 'failed' && error && (
+                <QueryErrorDialog
+                  apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
+                  error={error}
+                  perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
+                  variant={
+                    failedConfig
+                      ? typeof failedConfig.variant === 'string'
+                        ? failedConfig.variant
+                        : undefined
+                      : resolved.variant
+                  }
+                />
+              )}
+              {hasResult && resultView === 'tree' && (
+                <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
+              )}
+              {status === 'idle' && (
+                <Text muted size={1}>
+                  {t('vista.result.empty')}
+                </Text>
+              )}
+            </Box>
+          )}
+        </Card>
+      </SplitWithBottomPanel>
+    </>
   )
 }

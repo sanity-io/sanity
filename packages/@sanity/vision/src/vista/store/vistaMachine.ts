@@ -21,6 +21,7 @@ import {
   type VistaSettings,
   type VistaSidebarState,
   type VistaTab,
+  type VistaTabDrawer,
   type VistaTabInit,
   type VistaTabOptions,
 } from './types'
@@ -55,6 +56,8 @@ export interface VistaContext {
   fetchOnOpen: string[]
   /** Sidebar state as restored from storage, consumed once by the `restoring` states */
   restoredSidebar: VistaSidebarState
+  /** The drawer the `open` drawer state shows: the one last opened */
+  drawer: VistaDrawer
   /** Panel state as restored from storage, consumed once by the `restoring` states */
   restoredPanels: VistaPanelsState
 }
@@ -159,16 +162,14 @@ export const vistaMachine = setup({
       event.type === 'result.view' && event.view === params.view,
     isParamsView: ({event}, params: {view: VistaParamsView}) =>
       event.type === 'params.view' && event.view === params.view,
-    wasDrawerOpen: ({context}, params: {drawer: VistaDrawer}) =>
-      context.restoredSidebar.drawer === params.drawer,
+    wasDrawerOpen: ({context}) => context.restoredSidebar.drawer !== null,
     isPanel: ({event}, params: {panel: VistaPanel}) =>
       event.type === 'panel.toggle' && event.panel === params.panel,
-    isDrawer: ({event}, params: {drawer: VistaDrawer}) =>
-      event.type === 'drawer.toggle' && event.drawer === params.drawer,
-    isDialog: ({event}, params: {dialog: VistaDialog}) =>
-      event.type === 'dialog.open' && event.dialog === params.dialog,
+    isOpenDrawer: ({context, event}) =>
+      event.type === 'drawer.toggle' && event.drawer === context.drawer,
   },
   actions: {
+    setDrawer: assign(({event}) => (event.type === 'drawer.toggle' ? {drawer: event.drawer} : {})),
     addTab: assign(({context, event, spawn}) => {
       if (event.type !== 'tab.add') {
         return {}
@@ -253,6 +254,7 @@ export const vistaMachine = setup({
     loadRevisions: {},
     fetchOnOpen: [],
     restoredSidebar: input.persisted.sidebar,
+    drawer: input.persisted.sidebar.drawer ?? 'saved',
     restoredPanels: input.persisted.panels,
   }),
   on: {
@@ -475,39 +477,19 @@ export const vistaMachine = setup({
         },
       },
     },
+    // One drawer at a time: toggling the open one closes it, toggling another shows that one
     drawer: {
       initial: 'restoring',
       states: {
         restoring: {
-          always: [
-            {guard: {type: 'wasDrawerOpen', params: {drawer: 'saved'}}, target: 'saved'},
-            {guard: {type: 'wasDrawerOpen', params: {drawer: 'shared'}}, target: 'shared'},
-            {target: 'closed'},
-          ],
+          always: [{guard: 'wasDrawerOpen', target: 'open'}, {target: 'closed'}],
         },
         closed: {
-          on: {
-            'drawer.toggle': [
-              {guard: {type: 'isDrawer', params: {drawer: 'saved'}}, target: 'saved'},
-              {target: 'shared'},
-            ],
-          },
+          on: {'drawer.toggle': {target: 'open', actions: 'setDrawer'}},
         },
-        saved: {
+        open: {
           on: {
-            'drawer.toggle': [
-              {guard: {type: 'isDrawer', params: {drawer: 'saved'}}, target: 'closed'},
-              {target: 'shared'},
-            ],
-            'drawer.close': {target: 'closed'},
-          },
-        },
-        shared: {
-          on: {
-            'drawer.toggle': [
-              {guard: {type: 'isDrawer', params: {drawer: 'shared'}}, target: 'closed'},
-              {target: 'saved'},
-            ],
+            'drawer.toggle': [{guard: 'isOpenDrawer', target: 'closed'}, {actions: 'setDrawer'}],
             'drawer.close': {target: 'closed'},
           },
         },
@@ -516,15 +498,7 @@ export const vistaMachine = setup({
     dialog: {
       initial: 'closed',
       states: {
-        closed: {
-          on: {
-            'dialog.open': [
-              {guard: {type: 'isDialog', params: {dialog: 'settings'}}, target: 'settings'},
-              {target: 'shortcuts'},
-            ],
-          },
-        },
-        settings: {on: {'dialog.close': {target: 'closed'}}},
+        closed: {on: {'dialog.open': {target: 'shortcuts'}}},
         shortcuts: {on: {'dialog.close': {target: 'closed'}}},
       },
     },
@@ -542,11 +516,7 @@ export function selectPersistedState(snapshot: VistaSnapshot): VistaPersistedSta
     settings: snapshot.context.settings,
     sidebar: {
       expanded: snapshot.matches({sidebar: 'expanded'}),
-      drawer: snapshot.matches({drawer: 'saved'})
-        ? 'saved'
-        : snapshot.matches({drawer: 'shared'})
-          ? 'shared'
-          : null,
+      drawer: selectOpenDrawer(snapshot),
     },
     panels: {
       params: isPanelExpanded(snapshot, 'params'),
@@ -597,13 +567,17 @@ export function selectProjectId(snapshot: VistaSnapshot): string {
 }
 
 export function selectOpenDialog(snapshot: VistaSnapshot): VistaDialog | null {
-  if (snapshot.matches({dialog: 'settings'})) return 'settings'
-  if (snapshot.matches({dialog: 'shortcuts'})) return 'shortcuts'
-  return null
+  return snapshot.matches({dialog: 'shortcuts'}) ? 'shortcuts' : null
 }
 
 export function selectOpenDrawer(snapshot: VistaSnapshot): VistaDrawer | null {
-  if (snapshot.matches({drawer: 'saved'})) return 'saved'
-  if (snapshot.matches({drawer: 'shared'})) return 'shared'
-  return null
+  return snapshot.matches({drawer: 'open'}) ? snapshot.context.drawer : null
+}
+
+const TAB_DRAWERS: readonly VistaTabDrawer[] = ['lint', 'functions', 'delta', 'mutate']
+
+/** The open drawer while it shows one of the active tab's tools */
+export function selectOpenTabDrawer(snapshot: VistaSnapshot): VistaTabDrawer | null {
+  const drawer = selectOpenDrawer(snapshot)
+  return TAB_DRAWERS.find((tabDrawer) => tabDrawer === drawer) ?? null
 }
