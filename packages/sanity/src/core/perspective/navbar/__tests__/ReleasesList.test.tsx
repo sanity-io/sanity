@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {Menu} from '@sanity/ui/menu'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -23,6 +23,7 @@ import {
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {ReleasesList} from '../ReleasesList'
+import {useScheduledDraftsAvailable} from '../ScheduledDraftsMenuItem'
 
 vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
   useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
@@ -36,13 +37,14 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
-vi.mock('../ViewContentReleasesMenuItem', () => ({
-  ViewContentReleasesMenuItem: () => null,
+vi.mock('../ScheduledDraftsMenuItem', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useScheduledDraftsAvailable: vi.fn(() => false),
 }))
 
-vi.mock('../ScheduledDraftsMenuItem', () => ({
-  ScheduledDraftsMenuItem: () => null,
-}))
+const mockUseScheduledDraftsAvailable = useScheduledDraftsAvailable as Mock<
+  typeof useScheduledDraftsAvailable
+>
 
 const handleOpenBundleDialog = vi.fn()
 
@@ -235,6 +237,65 @@ describe('ReleasesList', () => {
       )
       await flushMicrotasksThisIsACodeSmell()
       await waitFor(() => expect(screen.getByTestId('create-new-release-button')).toBeDisabled())
+    })
+  })
+
+  // The other layouts, with the lines between their parts, are asserted with real styles in
+  // ReleasesList.browser.test.tsx. The scheduled drafts action depends on a project feature the
+  // mock client cannot grant, so its two combinations are covered here with the hook mocked.
+  describe('when scheduled drafts are available', () => {
+    /** Every menu item of the list, top to bottom, by test id */
+    const getMenuItems = () =>
+      screen.getAllByRole('menuitem').map((item) => item.getAttribute('data-testid'))
+
+    beforeEach(() => {
+      mockUseActiveReleases.mockReturnValue({...useActiveReleasesMockReturn, data: []})
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+      mockUseScheduledDraftsAvailable.mockReturnValue(true)
+    })
+
+    afterEach(() => {
+      mockUseScheduledDraftsAvailable.mockReturnValue(false)
+    })
+
+    async function renderList(areReleasesEnabled: boolean) {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            isRangeVisible={false}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled={areReleasesEnabled}
+          />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+    }
+
+    it('renders the scheduled drafts action on its own when releases are disabled', async () => {
+      await renderList(false)
+
+      expect(getMenuItems()).toEqual([
+        'release-published',
+        'release-drafts',
+        'scheduled-drafts-menu-item',
+      ])
+    })
+
+    it('lists the scheduled drafts action before the release actions', async () => {
+      await renderList(true)
+
+      expect(getMenuItems()).toEqual([
+        'release-published',
+        'release-drafts',
+        'scheduled-drafts-menu-item',
+        'view-content-releases-menu-item',
+        'create-new-release-button',
+      ])
     })
   })
 })
