@@ -6,18 +6,20 @@ import {Translate, useTranslation} from 'sanity'
 import {Box, VStack} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
-import {dot, perspectivePopoverContent, perspectivePopoverLink} from './PerspectivePopover.css'
+import styles from './PerspectivePopover.module.css'
 
 function PerspectivePopoverContent(props: ComponentProps<typeof Box>) {
-  return <Box {...props} className={perspectivePopoverContent} />
+  return <Box {...props} className={styles.perspectivePopoverContent} />
 }
 
 function PerspectivePopoverLink(props: ComponentProps<'a'>) {
-  return <a {...props} className={perspectivePopoverLink} />
+  return <a {...props} className={styles.perspectivePopoverLink} />
 }
 
 function Dot({tone}: {tone: CardTone}) {
-  return <div className={dot} style={{backgroundColor: `var(--card-badge-${tone}-dot-color)`}} />
+  return (
+    <div className={styles.dot} style={{backgroundColor: `var(--card-badge-${tone}-dot-color)`}} />
+  )
 }
 
 const SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION = false

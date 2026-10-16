@@ -1,4 +1,5 @@
-import {studioPandaCss, visionVanillaExtractPlugin} from '@repo/pandacss/vite'
+import {viteCssModules} from '@repo/css-modules-kit'
+import {studioPandaCss} from '@repo/pandacss/vite'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
@@ -50,13 +51,10 @@ export default defineCliConfig({
     let nextConfig = mergeConfig(viteConfig, {
       // This studio styles its own plugins/ with Panda CSS, so their `.css.ts` modules are built
       // here under both commands. `sanity dev` also resolves the workspace packages to their
-      // sources (the `monorepo` condition below), so the Panda `.css.ts` modules of `sanity` and
-      // the vanilla-extract ones of `@sanity/vision` are built here too; `sanity build` uses the
-      // built packages and their `bundle.css` instead
-      plugins: [
-        ...(command === 'serve' ? visionVanillaExtractPlugin() : []),
-        ...studioPandaCss({sanity: command === 'serve', roots: [import.meta.dirname]}),
-      ],
+      // sources (the `monorepo` condition below), so the Panda `.css.ts` modules of `sanity` are
+      // built here too, and the CSS modules of `@sanity/vision` (`css` below); `sanity build`
+      // uses the built packages and their `bundle.css` instead
+      plugins: studioPandaCss({sanity: command === 'serve', roots: [import.meta.dirname]}),
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
     })
@@ -101,6 +99,9 @@ export default defineCliConfig({
     if (mode !== 'production' && command === 'serve') {
       return mergeConfig(nextConfig, {
         resolve: {conditions: ['monorepo', ...defaultClientConditions]},
+        // `@sanity/vision` resolves to its sources here, so its `*.module.css` files compile with
+        // the Lightning CSS scoping and class names of its package build
+        css: viteCssModules,
       })
     }
 

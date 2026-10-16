@@ -16,12 +16,12 @@ import {Flex, Box, VStack} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
-import {fixedHeader, queryList, scrollContainer} from './QueryRecall.css'
+import styles from './QueryRecall.module.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
 
 function FixedHeader(props: ComponentProps<typeof VStack>) {
-  return <VStack {...props} className={fixedHeader} />
+  return <VStack {...props} className={styles.fixedHeader} />
 }
 
 function ScrollContainer(props: ComponentProps<typeof Flex>) {
@@ -32,13 +32,13 @@ function ScrollContainer(props: ComponentProps<typeof Flex>) {
       flexBasis="0%"
       flexGrow={1}
       overflow="hidden"
-      className={scrollContainer}
+      className={styles.scrollContainer}
     />
   )
 }
 
 function QueryList(props: ComponentProps<typeof Box>) {
-  return <Box {...props} flexBasis="0%" flexGrow={1} overflow="auto" className={queryList} />
+  return <Box {...props} flexBasis="0%" flexGrow={1} overflow="auto" className={styles.queryList} />
 }
 
 export function QueryRecall({

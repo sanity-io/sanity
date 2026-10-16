@@ -1,0 +1,151 @@
+/*
+ * Themes the `@rexxars/react-json-inspector` markup, from the theme values `ResultView` sets.
+ * Rules that share declarations are repeated rather than listed: Lightning CSS (with browser
+ * targets, as the build sets them) wraps a selector list containing `:global()` in `:is()`,
+ * which gives every selector in it the specificity of the most specific one.
+ */
+
+.resultViewWrapper :global(.json-inspector) {
+  font-family: var(--vision-result-code-family);
+  font-size: var(--vision-result-code-font-size);
+  line-height: var(--vision-result-code-line-height);
+  color: var(--card-code-fg-color);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__selection) {
+  font-family: var(--vision-result-code-family);
+  font-size: var(--vision-result-code-font-size);
+  line-height: var(--vision-result-code-line-height);
+  color: var(--card-code-fg-color);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__leaf) {
+  padding-left: var(--vision-result-space-4);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__leaf.json-inspector__leaf_root) {
+  padding-top: var(--vision-result-space-0);
+  padding-left: 0;
+}
+
+.resultViewWrapper
+  :global(
+    .json-inspector > .json-inspector__leaf_root > .json-inspector__line > .json-inspector__key
+  ) {
+  display: none;
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__line) {
+  display: block;
+  position: relative;
+  cursor: default;
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__line::after) {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -200px;
+  right: -50px;
+  bottom: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__line:hover::after) {
+  background: var(--card-code-bg-color);
+}
+
+.resultViewWrapper
+  :global(.json-inspector .json-inspector__leaf_composite > .json-inspector__line) {
+  cursor: pointer;
+}
+
+.resultViewWrapper
+  :global(.json-inspector .json-inspector__leaf_composite > .json-inspector__line::before) {
+  content: '▸ ';
+  margin-left: calc(0px - var(--vision-result-space-4));
+  font-size: var(--vision-result-code-font-size);
+  line-height: var(--vision-result-code-line-height);
+}
+
+.resultViewWrapper
+  :global(
+    .json-inspector
+      .json-inspector__leaf_expanded.json-inspector__leaf_composite
+      > .json-inspector__line::before
+  ) {
+  content: '▾ ';
+  font-size: var(--vision-result-code-font-size);
+  line-height: var(--vision-result-code-line-height);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__radio) {
+  display: none;
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__flatpath) {
+  display: none;
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__value) {
+  margin-left: var(--vision-result-space-4-half);
+}
+
+.resultViewWrapper
+  :global(
+    .json-inspector
+      > .json-inspector__leaf_root
+      > .json-inspector__line
+      > .json-inspector__key
+      + .json-inspector__value
+  ) {
+  margin: 0;
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__key) {
+  color: var(--vision-result-syntax-property);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__value_helper) {
+  color: var(--vision-result-syntax-constant);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__value_null) {
+  color: var(--vision-result-syntax-constant);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__not-found) {
+  padding-top: var(--vision-result-space-2);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__value_string) {
+  color: var(--vision-result-syntax-string);
+  word-break: break-word;
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__value_boolean) {
+  color: var(--vision-result-syntax-boolean);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__value_number) {
+  color: var(--vision-result-syntax-number);
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__show-original) {
+  display: inline-block;
+  padding: 0 6px;
+  cursor: pointer;
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__show-original:hover) {
+  color: inherit;
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__show-original::before) {
+  content: '↔';
+}
+
+.resultViewWrapper :global(.json-inspector .json-inspector__show-original:hover::after) {
+  content: ' expand';
+}

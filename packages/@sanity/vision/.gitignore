@@ -11,3 +11,6 @@
 # Compiled code
 /lib
 /dist
+
+# css-modules-kit typings for the `*.module.css` files (`pnpm css:types`, run by `prepare` and `build`)
+/generated

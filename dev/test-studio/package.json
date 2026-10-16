@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "@pandacss/dev": "catalog:",
+    "@repo/css-modules-kit": "workspace:*",
     "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@types/lodash-es": "^4.17.12",

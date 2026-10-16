@@ -2,52 +2,50 @@ import {JsonInspector} from '@rexxars/react-json-inspector'
 import {LinkIcon} from '@sanity/icons/Link'
 import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
 import LRU from 'quick-lru'
-import {type ReactNode} from 'react'
+import {type CSSProperties, type ReactNode} from 'react'
 import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {
-  codeFamilyVar,
-  codeFontSizeVar,
-  codeLineHeightVar,
-  resultViewWrapper,
-  space0Var,
-  space2Var,
-  space4HalfVar,
-  space4Var,
-  syntaxBooleanVar,
-  syntaxConstantVar,
-  syntaxNumberVar,
-  syntaxPropertyVar,
-  syntaxStringVar,
-} from './ResultView.css'
+import styles from './ResultView.module.css'
 
 const lru = new LRU({maxSize: 50000})
+
+interface ResultViewWrapperStyle extends CSSProperties {
+  '--vision-result-code-family': string
+  '--vision-result-code-font-size': string
+  '--vision-result-code-line-height': string
+  '--vision-result-space-0': string
+  '--vision-result-space-2': string
+  '--vision-result-space-4': string
+  '--vision-result-space-4-half': string
+  '--vision-result-syntax-property': string
+  '--vision-result-syntax-constant': string
+  '--vision-result-syntax-string': string
+  '--vision-result-syntax-boolean': string
+  '--vision-result-syntax-number': string
+}
 
 function ResultViewWrapper({children}: {children: ReactNode}) {
   const {color, font, space} = useThemeV2()
   const codeSize = font.code.sizes[2]
+  const style: ResultViewWrapperStyle = {
+    '--vision-result-code-family': font.code.family,
+    '--vision-result-code-font-size': `${codeSize.fontSize}px`,
+    '--vision-result-code-line-height': `${codeSize.lineHeight}px`,
+    '--vision-result-space-0': `${rem(space[0])}`,
+    '--vision-result-space-2': `${rem(space[2])}`,
+    '--vision-result-space-4': `${rem(space[4])}`,
+    '--vision-result-space-4-half': `${rem(space[4] / 2)}`,
+    '--vision-result-syntax-property': color.syntax.property,
+    '--vision-result-syntax-constant': color.syntax.constant,
+    '--vision-result-syntax-string': color.syntax.string,
+    '--vision-result-syntax-boolean': color.syntax.boolean,
+    '--vision-result-syntax-number': color.syntax.number,
+  }
 
   return (
-    <div
-      className={resultViewWrapper}
-      style={assignInlineVars({
-        [codeFamilyVar]: font.code.family,
-        [codeFontSizeVar]: `${codeSize.fontSize}px`,
-        [codeLineHeightVar]: `${codeSize.lineHeight}px`,
-        [space0Var]: `${rem(space[0])}`,
-        [space2Var]: `${rem(space[2])}`,
-        [space4Var]: `${rem(space[4])}`,
-        [space4HalfVar]: `${rem(space[4] / 2)}`,
-        [syntaxPropertyVar]: color.syntax.property,
-        [syntaxConstantVar]: color.syntax.constant,
-        [syntaxStringVar]: color.syntax.string,
-        [syntaxBooleanVar]: color.syntax.boolean,
-        [syntaxNumberVar]: color.syntax.number,
-      })}
-    >
+    <div className={styles.resultViewWrapper} style={style}>
       {children}
     </div>
   )
