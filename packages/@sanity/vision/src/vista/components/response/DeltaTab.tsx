@@ -1,11 +1,9 @@
 import {Badge, Button, Card, Label, Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex, Grid} from 'ui5'
 
-import {paramsExtensions} from '../../../codemirror/extensions'
-import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequest} from '../../store/types'
 import {
@@ -16,7 +14,7 @@ import {
   loadRevision,
   loadRevisions,
 } from '../../util/deltaQuery'
-import {deltaDocument} from '../vista.css'
+import {JsonEditor} from './JsonEditor'
 
 /** Edits settle this long before the query is evaluated again */
 const EVALUATE_DELAY_MS = 300
@@ -145,42 +143,6 @@ function readDocument(text: string): {value: unknown} | {error: string} {
   } catch (error) {
     return {error: error instanceof Error ? error.message : String(error)}
   }
-}
-
-function DocumentEditor(props: {
-  label: string
-  testId: string
-  value: string
-  onChange: (text: string) => void
-}) {
-  const {label, testId, value, onChange} = props
-  const editorRef = useRef<VisionCodeMirrorHandle>(null)
-  const shown = useRef(value)
-  // A loaded revision replaces the text; an edit made here is already in the editor
-  useEffect(() => {
-    if (value === shown.current) return
-    shown.current = value
-    editorRef.current?.resetEditorContent(value)
-  }, [value])
-  return (
-    <Stack gap={2}>
-      <Label muted size={0}>
-        {label}
-      </Label>
-      <Card border className={deltaDocument} data-testid={testId} radius={2}>
-        <VisionCodeMirror
-          autoHeight
-          extensions={paramsExtensions}
-          initialValue={value}
-          onChange={(text) => {
-            shown.current = text
-            onChange(text)
-          }}
-          ref={editorRef}
-        />
-      </Card>
-    </Stack>
-  )
 }
 
 export interface DeltaTabProps {
@@ -324,7 +286,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
                 {revisionOptions}
               </Select>
             )}
-            <DocumentEditor
+            <JsonEditor
               label={t('vista.delta.before')}
               onChange={(text) => delta.setText('before', text)}
               testId="vista-delta-before"
@@ -348,7 +310,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
                 <option value="">{t('vista.delta.revision.none-after')}</option>
               </Select>
             )}
-            <DocumentEditor
+            <JsonEditor
               label={t('vista.delta.after')}
               onChange={(text) => delta.setText('after', text)}
               testId="vista-delta-after"

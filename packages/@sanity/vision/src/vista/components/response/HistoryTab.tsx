@@ -2,13 +2,12 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Badge, Button, Card, Stack, Text} from '@sanity/ui'
 import {dequal} from 'dequal/lite'
-import {Component, type ReactNode, Suspense, use, useId, useMemo, useState} from 'react'
+import {type ReactNode, Suspense, use, useId, useMemo, useState} from 'react'
 import {type TFunction, useDateTimeFormat, useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
-import {createRetryableLazy} from '../../../util/createRetryableLazy'
 import {type FetchHistoryEntry, type FetchReason} from '../../store/types'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {
@@ -16,33 +15,7 @@ import {
   getRequestChanges,
   type RequestChangeId,
 } from '../../util/requestChanges'
-
-// The diff (`@pierre/diffs` and Shiki) only loads once a history entry's changes are expanded,
-// and a failed load can be retried from the boundary
-const codeDiff = createRetryableLazy(() => import('./CodeDiff'))
-const CodeDiffLoader = codeDiff.Component
-
-interface DiffBoundaryProps {
-  children: ReactNode
-  renderFallback: (retry: () => void) => ReactNode
-}
-
-class DiffBoundary extends Component<DiffBoundaryProps, {failed: boolean}> {
-  state = {failed: false}
-
-  static getDerivedStateFromError() {
-    return {failed: true}
-  }
-
-  retry = () => {
-    codeDiff.retry()
-    this.setState({failed: false})
-  }
-
-  render() {
-    return this.state.failed ? this.props.renderFallback(this.retry) : this.props.children
-  }
-}
+import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
 
 function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): string {
   switch (reason.type) {
