@@ -8,6 +8,7 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./engine-confidence": "./src/engineConfidence.ts",
     "./radar-ids": "./src/radarIds.ts",
     "./style-systems": "./src/styleSystems.ts"
   },
