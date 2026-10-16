@@ -27,6 +27,7 @@ import {
   readMutations,
 } from '../../util/mutations'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
+import {drawerScroller} from '../vista.css'
 import {JsonEditor} from './JsonEditor'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
 
@@ -236,8 +237,8 @@ function PreviewResult(props: {
   const hiddenPaths = useMemo(() => parseFieldPaths(hiddenFields), [hiddenFields])
   const changed = preview.changes.filter((change) => change.operation !== 'none').length
   return (
-    <Stack data-testid="vista-mutate-preview-result" gap={3}>
-      <Flex alignItems="center" flexWrap="wrap" gap={2}>
+    <Flex data-testid="vista-mutate-preview-result" flexDirection="column" gap={3} minHeight="0">
+      <Flex alignItems="center" flexShrink={0} flexWrap="wrap" gap={2}>
         <Label muted size={0}>
           {t('vista.mutate.preview-heading')}
         </Label>
@@ -255,7 +256,7 @@ function PreviewResult(props: {
           {t('vista.mutate.no-documents')}
         </Text>
       ) : (
-        <Card border radius={2}>
+        <Card border className={drawerScroller} radius={2}>
           {preview.changes.map((change, index) => (
             <ChangeRow
               change={change}
@@ -276,7 +277,7 @@ function PreviewResult(props: {
           {t('vista.mutate.hiding', {fields: hiddenFields.join(', ')})}
         </Text>
       )}
-    </Stack>
+    </Flex>
   )
 }
 
@@ -351,8 +352,8 @@ export function MutateTab(props: MutateTabProps) {
         <Text muted size={1}>
           {t('vista.mutate.description')}
         </Text>
-        {/* What a dry run or an apply returned is as tall as it needs up to half the room, and
-            scrolls past that; the editor takes the rest */}
+        {/* What a dry run or an apply returned is as tall as it needs up to half the room, its
+            changes scrolling past that; the editor takes the rest */}
         <Grid
           flexBasis="0%"
           flexGrow={1}
@@ -433,60 +434,66 @@ export function MutateTab(props: MutateTabProps) {
             )}
           </Flex>
           {hasOutcome && (
-            <Box data-testid="vista-mutate-outcome" overflow="auto">
-              <Stack gap={4}>
-                {state.failure && (
-                  <Card
-                    border
-                    data-testid="vista-mutate-failure"
-                    padding={3}
-                    radius={2}
-                    tone="critical"
-                  >
-                    <Stack gap={3}>
-                      <Text size={1} weight="medium">
-                        {state.failure.action === 'preview'
-                          ? t('vista.mutate.preview-failed')
-                          : t('vista.mutate.apply-failed')}
-                      </Text>
-                      <Text size={1}>{state.failure.failure.message}</Text>
-                      {state.failure.failure.items.map((item) => (
-                        <Text key={`${item.index}:${item.message}`} size={1}>
-                          {t('vista.mutate.failure-item', {
-                            index: item.index,
-                            message: item.message,
-                          })}
-                        </Text>
-                      ))}
-                    </Stack>
-                  </Card>
-                )}
-                {state.applied && (
-                  <Card
-                    border
-                    data-testid="vista-mutate-applied"
-                    padding={3}
-                    radius={2}
-                    tone="positive"
-                  >
-                    <Text size={1}>
-                      {t('vista.mutate.applied', {
-                        dataset: state.applied.dataset,
-                        transactionId: state.applied.transactionId,
-                        count: state.applied.documentCount,
-                      })}
+            <Flex
+              data-testid="vista-mutate-outcome"
+              flexDirection="column"
+              gap={4}
+              minHeight="0"
+              overflow="auto"
+              // Room for the last line of text, which Text draws a few pixels below its box
+              paddingBottom={2}
+            >
+              {state.failure && (
+                <Card
+                  border
+                  data-testid="vista-mutate-failure"
+                  padding={3}
+                  radius={2}
+                  tone="critical"
+                >
+                  <Stack gap={3}>
+                    <Text size={1} weight="medium">
+                      {state.failure.action === 'preview'
+                        ? t('vista.mutate.preview-failed')
+                        : t('vista.mutate.apply-failed')}
                     </Text>
-                  </Card>
-                )}
-                {state.preview && (
-                  <PreviewResult
-                    hiddenFields={hiddenFields}
-                    preview={state.preview.result}
-                    stale={!previewIsCurrent}
-                  />
-                )}
-              </Stack>
-            </Box>
+                    <Text size={1}>{state.failure.failure.message}</Text>
+                    {state.failure.failure.items.map((item) => (
+                      <Text key={`${item.index}:${item.message}`} size={1}>
+                        {t('vista.mutate.failure-item', {
+                          index: item.index,
+                          message: item.message,
+                        })}
+                      </Text>
+                    ))}
+                  </Stack>
+                </Card>
+              )}
+              {state.applied && (
+                <Card
+                  border
+                  data-testid="vista-mutate-applied"
+                  padding={3}
+                  radius={2}
+                  tone="positive"
+                >
+                  <Text size={1}>
+                    {t('vista.mutate.applied', {
+                      dataset: state.applied.dataset,
+                      transactionId: state.applied.transactionId,
+                      count: state.applied.documentCount,
+                    })}
+                  </Text>
+                </Card>
+              )}
+              {state.preview && (
+                <PreviewResult
+                  hiddenFields={hiddenFields}
+                  preview={state.preview.result}
+                  stale={!previewIsCurrent}
+                />
+              )}
+            </Flex>
           )}
         </Grid>
       </Flex>

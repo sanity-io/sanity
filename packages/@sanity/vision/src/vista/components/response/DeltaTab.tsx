@@ -14,6 +14,7 @@ import {
   loadRevision,
   loadRevisions,
 } from '../../util/deltaQuery'
+import {drawerScroller} from '../vista.css'
 import {JsonEditor} from './JsonEditor'
 
 /** Edits settle this long before the query is evaluated again */
@@ -240,7 +241,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
       <Text muted size={1}>
         {t('vista.delta.description')}
       </Text>
-      <Flex alignItems="flex-end" gap={2}>
+      <Flex alignItems="flex-end" flexShrink={0} gap={2}>
         <Box flexBasis="0%" flexGrow={1}>
           <Stack gap={2}>
             <Label muted size={0}>
@@ -274,8 +275,8 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
           {t('vista.delta.load-failed', {message: state.loadError})}
         </Text>
       )}
-      {/* The result is as tall as it needs up to two fifths of the room, and scrolls past that;
-          the two documents share the rest */}
+      {/* The result is as tall as it needs up to two fifths of the room, its value scrolling past
+          that; the two documents share the rest */}
       <Grid
         flexBasis="0%"
         flexGrow={1}
@@ -283,9 +284,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
         gridTemplateRows="fit-content(40%) minmax(0, 1fr)"
         minHeight="320px"
       >
-        <Box overflow="auto">
-          <DeltaResult evaluation={evaluation} operation={operation} request={request} />
-        </Box>
+        <DeltaResult evaluation={evaluation} operation={operation} request={request} />
         <Flex flexDirection="column" gap={3} minHeight="0">
           <JsonEditor
             actions={
@@ -363,8 +362,16 @@ function DeltaResult(props: {
   const {operation, request, evaluation} = props
   const {t} = useTranslation(visionLocaleNamespace)
   return (
-    <Stack data-testid="vista-delta-result" gap={3}>
-      <Flex alignItems="center" gap={2}>
+    <Flex
+      data-testid="vista-delta-result"
+      flexDirection="column"
+      gap={3}
+      minHeight="0"
+      overflow="auto"
+      // Room for the last line of text, which Text draws a few pixels below its box
+      paddingBottom={2}
+    >
+      <Flex alignItems="center" flexShrink={0} gap={2}>
         <Label muted size={0}>
           {t('vista.delta.result')}
         </Label>
@@ -408,11 +415,13 @@ function DeltaResult(props: {
         </Card>
       )}
       {evaluation.status === 'done' && typeof evaluation.value !== 'boolean' && (
-        <Code data-testid="vista-delta-value" size={1}>
-          {JSON.stringify(evaluation.value, null, 2) ?? 'null'}
-        </Code>
+        <Card border className={drawerScroller} padding={3} radius={2}>
+          <Code data-testid="vista-delta-value" size={1}>
+            {JSON.stringify(evaluation.value, null, 2) ?? 'null'}
+          </Code>
+        </Card>
       )}
-    </Stack>
+    </Flex>
   )
 }
 

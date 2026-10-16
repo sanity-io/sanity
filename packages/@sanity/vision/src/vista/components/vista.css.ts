@@ -129,6 +129,12 @@ export const resultJson = style({height: '100%'})
  */
 export const jsonEditorBox = style({flex: '1 1 0%', minHeight: 0, overflow: 'hidden'})
 
+/**
+ * The part of a drawer section that gives up height first and scrolls (the changes of a dry run,
+ * the value delta mode returned), so the section's heading and notes stay in view
+ */
+export const drawerScroller = style({flex: '0 1 auto', minHeight: 0, overflow: 'auto'})
+
 /** Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
 export const panelTabs = style({
   minWidth: 0,

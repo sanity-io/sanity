@@ -29,7 +29,7 @@ export function JsonEditor(props: {
   }, [value])
   return (
     <Flex flexBasis="0%" flexDirection="column" flexGrow={1} gap={2} minHeight="0">
-      <Flex alignItems="center" gap={2}>
+      <Flex alignItems="center" flexShrink={0} gap={2}>
         <Label muted size={0}>
           {label}
         </Label>
