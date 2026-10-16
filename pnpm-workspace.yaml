@@ -61,6 +61,8 @@ catalog:
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
   ui5: npm:@sanity/ui@5.0.0-alpha.14
   tsdown: ^0.23.1
+  # Pins its `tsdown` peer to the exact release it ships with, so bump it together with `tsdown`
+  '@tsdown/css': ^0.23.1
   typescript: ^7.0.2
   vite: ^8.3.4
   vitest: ^5.0.4
@@ -183,6 +185,8 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 trustPolicyExclude:
   - '@sanity/cli'
+  # Published without the provenance of 4.0.2; @css-modules-kit/codegen depends on ^4.0.3
+  - chokidar@4.0.3
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
