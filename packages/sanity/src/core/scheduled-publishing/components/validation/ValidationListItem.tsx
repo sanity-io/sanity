@@ -5,7 +5,7 @@ import {type Path, type ValidationMarker} from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {MenuItem} from '@sanity/ui/menu'
-import {type CSSProperties, useCallback} from 'react'
+import {useCallback} from 'react'
 import {Text, Box, Flex, Icon} from 'ui5'
 
 import {wrappingText} from './ValidationListItem.css'
@@ -14,18 +14,6 @@ const MENU_ITEM_TONES: Record<'error' | 'warning' | 'info', ButtonTone> = {
   error: 'critical',
   warning: 'caution',
   info: 'primary',
-}
-
-const PRIMARY_FOREGROUND_STYLE = {
-  '--text-color': 'var(--card-fg-color)',
-  '--text-color-muted': 'var(--card-muted-fg-color)',
-  '--icon-color': 'var(--card-fg-color)',
-  '--icon-color-muted': 'var(--card-muted-fg-color)',
-} as CSSProperties & {
-  '--text-color': string
-  '--text-color-muted': string
-  '--icon-color': string
-  '--icon-color-muted': string
 }
 
 /**
@@ -59,7 +47,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
         {marker.level === 'error' && <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />}
         {marker.level === 'warning' && <Icon icon={WarningOutlineIcon} size={1} tone="caution" />}
         {marker.level === 'info' && (
-          <Icon icon={InfoOutlineIcon} size={1} style={PRIMARY_FOREGROUND_STYLE} />
+          <Icon icon={InfoOutlineIcon} size={1} style={{color: 'var(--card-fg-color)'}} />
         )}
       </Box>
 
@@ -74,7 +62,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
             tone={
               menuItemTone === 'primary' || menuItemTone === 'default' ? undefined : menuItemTone
             }
-            style={menuItemTone === 'primary' ? PRIMARY_FOREGROUND_STYLE : undefined}
+            style={menuItemTone === 'primary' ? {color: 'var(--card-fg-color)'} : undefined}
           >
             {path}
           </Text>
@@ -90,7 +78,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
             tone={
               menuItemTone === 'primary' || menuItemTone === 'default' ? undefined : menuItemTone
             }
-            style={menuItemTone === 'primary' ? PRIMARY_FOREGROUND_STYLE : undefined}
+            style={menuItemTone === 'primary' ? {color: 'var(--card-muted-fg-color)'} : undefined}
           >
             {message}
           </Text>
