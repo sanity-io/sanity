@@ -4,11 +4,11 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {SanityMonogram} from '@sanity/logos'
-import {Badge, Card, Inline, Spinner, Text} from '@sanity/ui'
+import {Badge, Card, Inline, Spinner} from '@sanity/ui'
 import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
-import {Flex, Grid, VStack} from 'ui5'
+import {Text, Flex, Grid, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -136,7 +136,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               <Translate t={t} i18nKey="about-dialog.configuration-issue.missing-appid" />
             </TextWithTone>
             <TextWithTone size={1} tone="caution">
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <a
                   href="https://www.sanity.io/docs/studio/latest-version-of-sanity"
                   target="_blank"
@@ -182,7 +182,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
           </TextWithTone>
           {versionDeprecation.isPinned ? null : (
             <TextWithTone size={1} tone="caution">
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <a
                   href="https://www.sanity.io/docs/studio/upgrade"
                   target="_blank"
@@ -228,7 +228,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
         </Flex>
         <Grid gridTemplateColumns="repeat(2, minmax(0, 1fr))" gap={2}>
           <Flex justifyContent="flex-end" alignItems="center">
-            <Text as="h2" size={1} weight="semibold">
+            <Text as="h2" size={1} weight="semibold" trim={true}>
               Sanity Studio
             </Text>
           </Flex>
@@ -274,7 +274,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
           {isAutoUpdating && newAutoUpdateVersionAvailable ? (
             <>
               <Flex justifyContent="flex-end" alignItems="center">
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   {/* Note that this is not necessary a *higher* version than current, it's the new version made available for auto updates,
                    which in some cases could even be a downgrade compared to current */}
                   {t('about-dialog.version-info.new-version.text')}
@@ -296,7 +296,9 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                   }
                   tooltipProps={{
                     content: (
-                      <Text size={1}>{t('about-dialog.version-info.reload-to-update')}</Text>
+                      <Text size={1} as="div" trim={true}>
+                        {t('about-dialog.version-info.reload-to-update')}
+                      </Text>
                     ),
                   }}
                   icon={RefreshIcon}
@@ -306,7 +308,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
           ) : isUpToDate ? null : (
             <>
               <Flex justifyContent="flex-end" alignItems="center">
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   {t('about-dialog.version-info.latest-version.header')}
                 </Text>
               </Flex>
@@ -341,7 +343,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
           {isAutoUpdating ? (
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
               <Flex alignItems="center" justifyContent="space-evenly" gap={2}>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {t('about-dialog.version-info.auto-updates.enabled')}
                 </Text>
                 <Button
@@ -360,7 +362,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             // so instead of showing misleading info, we just don't show anything
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
               <Flex alignItems="center" justifyContent="space-evenly" gap={2}>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {t('about-dialog.version-info.auto-updates.disabled')}
                 </Text>
                 <Button

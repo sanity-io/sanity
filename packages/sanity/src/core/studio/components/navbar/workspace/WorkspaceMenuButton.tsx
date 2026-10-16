@@ -1,11 +1,11 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports
-import {Button as UIButton, Text} from '@sanity/ui'
+import {Button as UIButton} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservablePromise} from 'react-rx'
 import {take} from 'rxjs/operators'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -58,11 +58,11 @@ export function WorkspaceMenuButton() {
             <UIButton mode="bleed" padding={2} width="fill">
               <Flex alignItems="center" gap={2}>
                 <Box>
-                  <Text size={1} textOverflow="ellipsis" weight="medium">
+                  <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
                     {activeWorkspace.title}
                   </Text>
                 </Box>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <ChevronDownIcon />
                 </Text>
               </Flex>
@@ -82,7 +82,7 @@ export function WorkspaceMenuButton() {
               <MenuDivider style={{padding: 0}} />
               <Box paddingTop={2} paddingBottom={1}>
                 <Box paddingRight={5} paddingLeft={4} paddingBottom={3}>
-                  <Text size={0} weight="medium">
+                  <Text size={0} weight="medium" as="div" trim={true}>
                     {t('workspaces.action.switch-workspace')}
                   </Text>
                 </Box>

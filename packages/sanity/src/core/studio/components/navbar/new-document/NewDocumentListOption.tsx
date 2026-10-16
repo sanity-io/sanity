@@ -1,9 +1,9 @@
 import {type CurrentUser} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {isValidElement, type MouseEvent, useCallback, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {useIntentLink} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
@@ -51,13 +51,15 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
     <Flex alignItems="center" gap={3}>
       {Icon && (
         <Box>
-          <Text size={preview === 'inline' ? 1 : undefined}>
+          <Text size={preview === 'inline' ? 1 : undefined} as="div" trim={true}>
             {isValidElement(Icon) && Icon}
             {isValidElementType(Icon) && <Icon />}
           </Text>
         </Box>
       )}
-      <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
+      <Text size={preview === 'inline' ? 1 : undefined} as="div" trim={true}>
+        {title}
+      </Text>
     </Flex>
   )
 

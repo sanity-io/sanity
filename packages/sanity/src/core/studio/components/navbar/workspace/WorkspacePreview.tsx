@@ -1,9 +1,8 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Text} from '@sanity/ui'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {type WorkspaceLoginStatus} from './hooks/useWorkspaceLoginStatus'
 
@@ -69,12 +68,12 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
       <WorkspacePreviewIcon icon={icon} size="small" />
 
       <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
-        <Text size={1} textOverflow="ellipsis" weight="medium">
+        <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
           {title}
         </Text>
 
         {subtitle && (
-          <Text muted size={1} textOverflow="ellipsis">
+          <Text muted size={1} truncate={1} as="div" trim={true}>
             {subtitle}
           </Text>
         )}
@@ -82,7 +81,7 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
 
       {state && STATE_TITLES[state] && (
         <Box paddingLeft={1}>
-          <Text size={1} muted textOverflow="ellipsis">
+          <Text size={1} muted truncate={1} as="div" trim={true}>
             {STATE_TITLES[state]}
           </Text>
         </Box>
@@ -91,12 +90,16 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
       {(selected || iconRightComponent) && (
         <Flex alignItems="center" gap={4} paddingLeft={3} paddingRight={2}>
           {selected && (
-            <Text>
+            <Text as="div" trim={true}>
               <CheckmarkIcon />
             </Text>
           )}
 
-          {iconRightComponent && <Text muted>{iconRightComponent}</Text>}
+          {iconRightComponent && (
+            <Text muted as="div" trim={true}>
+              {iconRightComponent}
+            </Text>
+          )}
         </Flex>
       )}
     </Flex>

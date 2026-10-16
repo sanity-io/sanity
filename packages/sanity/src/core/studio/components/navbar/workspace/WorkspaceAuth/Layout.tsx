@@ -1,7 +1,7 @@
 import {SanityLogo} from '@sanity/logos'
-import {Card, Heading, Text, usePrefersDark} from '@sanity/ui'
+import {Card, Heading, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {footerLink} from './Layout.css'
 
@@ -68,21 +68,21 @@ export function Layout(props: LayoutProps) {
         alignItems="center"
         paddingBottom={4}
       >
-        <Text size={3}>
+        <Text size={3} as="div" trim={true}>
           <SanityLogo dark={prefersDark} />
         </Text>
 
         <Flex alignItems="center" gap={2}>
           {LINKS.map((link, index) => (
             <Fragment key={link.title}>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <a className={footerLink} href={link.url} target="_blank" rel="noopener noreferrer">
                   {link.title}
                 </a>
               </Text>
 
               {index < LINKS.length - 1 && (
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   •
                 </Text>
               )}
