@@ -15,12 +15,14 @@ import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
+import {TextWithTone} from '../../../../components/textWithTone/TextWithTone'
 import {useSchema} from '../../../../hooks/useSchema'
 import {type RenderPreviewCallback} from '../../../types/renderCallback'
 import {CrossDatasetReferencePreview} from '../../CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 import {DisabledFeatureWarning} from '../../CrossDatasetReferenceInput/DisabledFeatureWarning'
 import {GlobalDocumentReferencePreview} from '../../GlobalDocumentReferenceInput/GlobalDocumentReferencePreview'
 import {PreviewReferenceValue} from '../PreviewReferenceValue'
+import {ReferenceLinkCard} from '../ReferenceLinkCard'
 import {type ReferenceInfo} from '../types'
 import {type Loadable} from '../useReferenceInfo'
 
@@ -232,6 +234,61 @@ function ReferenceChrome() {
             }}
           />
         </Labelled>
+
+        <Labelled label="reference link card (idle, selected, pressed, unresolved type)">
+          <Row>
+            <ReferenceLinkCard
+              as="div"
+              documentId="author-1"
+              documentType="author"
+              padding={2}
+              parentRefPath={[]}
+              radius={2}
+            >
+              <TextWithTone tone="default">Ada Lovelace</TextWithTone>
+            </ReferenceLinkCard>
+          </Row>
+          <Row>
+            <ReferenceLinkCard
+              as="div"
+              data-selected
+              documentId="author-1"
+              documentType="author"
+              padding={2}
+              parentRefPath={[]}
+              radius={2}
+              selected
+            >
+              <TextWithTone tone="positive">Ada Lovelace</TextWithTone>
+            </ReferenceLinkCard>
+          </Row>
+          <Row>
+            <ReferenceLinkCard
+              as="div"
+              data-pressed
+              documentId="author-1"
+              documentType="author"
+              padding={2}
+              parentRefPath={[]}
+              pressed
+              radius={2}
+            >
+              <TextWithTone tone="positive">Ada Lovelace</TextWithTone>
+            </ReferenceLinkCard>
+          </Row>
+          <Row>
+            <ReferenceLinkCard
+              as="div"
+              documentId="author-1"
+              documentType={undefined}
+              padding={2}
+              parentRefPath={[]}
+              radius={2}
+            >
+              <TextWithTone tone="default">Resolving type…</TextWithTone>
+            </ReferenceLinkCard>
+          </Row>
+        </Labelled>
       </VStack>
     </Card>
   )
@@ -242,9 +299,11 @@ function ReferenceChrome() {
  * migration: the unavailable, invalid-type and created-in-place states of
  * `PreviewReferenceValue`, the cross-dataset and global document previews
  * whose zero-basis growing Flex hosts the preview next to the type badge and
- * status icons, and the caution card shown when cross-dataset references are
- * disabled. Reference and availability data are fixtures (no preview store);
- * tooltips and menus stay closed.
+ * status icons, the caution card shown when cross-dataset references are
+ * disabled, and ReferenceLinkCard idle/selected/pressed/unresolved-type
+ * (the selected/pressed TextWithTone color override). Reference and
+ * availability data are fixtures (no preview store); tooltips and menus
+ * stay closed.
  */
 export function ReferenceChromeStory() {
   return (

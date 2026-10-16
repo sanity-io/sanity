@@ -1,7 +1,8 @@
 import {Card} from '@sanity/ui'
-import {Text, VStack} from 'ui5'
+import {Flex, Text, VStack} from 'ui5'
 
 import {FromTo} from '../FromTo'
+import {FromToArrow} from '../FromToArrow'
 
 function DiffSide({label, detail}: {label: string; detail?: string}) {
   return (
@@ -29,8 +30,9 @@ const SHORT_TO = <DiffSide label="Current file" />
  * Chromatic sentinel for the review-changes FromTo layout after the ui5 Flex
  * migration: inline vs grid column templates, the arrow slot for from+to vs
  * to-only, and `align` (top vs center) on uneven column heights — including
- * the `align="center" layout="grid"` call ImageFieldDiff makes. Labels are
- * fixtures (no document values, no timestamps).
+ * the `align="center" layout="grid"` call ImageFieldDiff makes. Also pins
+ * FromToArrow itself (right/down, optional text-align Box) so TurboSnap sees
+ * the direct import. Labels are fixtures (no document values, no timestamps).
  */
 export function FromToLayoutStory() {
   return (
@@ -65,6 +67,17 @@ export function FromToLayoutStory() {
             to only
           </Text>
           <FromTo to={<DiffSide label="Added" />} />
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium" as="div" trim={true}>
+            arrow (right, down, aligned)
+          </Text>
+          <Flex alignItems="center" gap={4}>
+            <FromToArrow />
+            <FromToArrow direction="down" />
+            <FromToArrow align="center" />
+            <FromToArrow align="right" direction="down" />
+          </Flex>
         </VStack>
       </VStack>
     </Card>
