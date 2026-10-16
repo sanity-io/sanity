@@ -203,7 +203,7 @@ describe('vistaStorage', () => {
       getVistaStorageKey('proj'),
       JSON.stringify({
         ...withoutPanels,
-        panels: {params: false, paramsView: 'table', resultView: 'graph'},
+        panels: {params: false, paramsView: 'table', resultView: 'chart'},
       }),
     )
     expect(loadVistaState('proj', defaults).panels).toEqual({

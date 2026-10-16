@@ -76,7 +76,7 @@ export type VistaPanel = 'params' | 'options'
 export type VistaParamsView = 'json' | 'form'
 
 /** How the result shows: a tree to browse, or its JSON as text to select and copy from */
-export type VistaResultView = 'tree' | 'json'
+export type VistaResultView = 'tree' | 'json' | 'graph'
 
 /** Whether each collapsible panel is expanded, and how the params and the result show */
 export interface VistaPanelsState extends Record<VistaPanel, boolean> {

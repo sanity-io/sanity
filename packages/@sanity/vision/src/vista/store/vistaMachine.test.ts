@@ -309,9 +309,18 @@ describe('vistaMachine', () => {
     expect(selectPersistedState(harness.snapshot()).panels.resultView).toBe('tree')
     harness.actor.send({type: 'result.view', view: 'json'})
     expect(selectPersistedState(harness.snapshot()).panels.resultView).toBe('json')
+    harness.actor.send({type: 'result.view', view: 'graph'})
+    expect(selectResultView(harness.snapshot())).toBe('graph')
+    expect(selectPersistedState(harness.snapshot()).panels.resultView).toBe('graph')
 
     harness.actor.send({type: 'storage.clear'})
     expect(selectResultView(harness.snapshot())).toBe('tree')
+
+    const restored = createHarness({
+      ...createInitialState(defaults),
+      panels: {params: true, options: true, paramsView: 'json', resultView: 'graph'},
+    })
+    expect(selectResultView(restored.snapshot())).toBe('graph')
   })
 
   it('updates, persists and resets the fields hidden from history diffs', () => {

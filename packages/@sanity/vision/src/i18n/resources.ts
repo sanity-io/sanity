@@ -657,12 +657,34 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.result.empty': 'Run the query to see its result here',
   /** Button exporting the result as CSV */
   'vista.result.export-csv': 'Export CSV',
+  /** Button on a graph node hiding the objects and arrays it holds */
+  'vista.result.graph.collapse': 'Hide what it holds',
+  /** Button on a collapsed graph node showing the objects and arrays it holds again */
+  'vista.result.graph.expand': 'Show the {{count}} objects and arrays it holds',
+  /** Button fitting the whole graph in view */
+  'vista.result.graph.fit': 'Fit to view',
+  /** Accessible label of the graph, saying how to move around in it */
+  'vista.result.graph.label':
+    'Result graph: drag to move, scroll to zoom; while focused, the arrow keys move, + and - zoom, 0 fits',
+  /** The last row of a graph node with more entries than it lists */
+  'vista.result.graph.more': '… {{count}} more',
+  /** Title of the graph node of the result itself */
+  'vista.result.graph.root': 'result',
+  /** Note on a graph that leaves part of the result out */
+  'vista.result.graph.truncated':
+    'Part of the result is left out: the graph lists up to {{rows}} entries of an object or array, and up to {{nodes}} objects and arrays. The tree and JSON views show all of it.',
+  /** Button zooming into the graph */
+  'vista.result.graph.zoom-in': 'Zoom in',
+  /** Button zooming out of the graph */
+  'vista.result.graph.zoom-out': 'Zoom out',
   /** Button exporting the result as JSON */
   'vista.result.export-json': 'Export JSON',
   /** Menu item opening the TypeScript export dialog */
   'vista.result.export-typescript': 'Export TypeScript…',
   /** Menu item opening the Zod export dialog */
   'vista.result.export-zod': 'Export Zod…',
+  /** Tab showing the result as a graph of its objects and arrays */
+  'vista.result.view.graph': 'Graph',
   /** Tab showing the result as indented JSON text, to select and copy from */
   'vista.result.view.json': 'JSON',
   /** Accessible label of the tabs that switch how the result shows */

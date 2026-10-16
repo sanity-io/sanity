@@ -206,7 +206,8 @@ function sanitizePanels(value: unknown): VistaPanelsState {
     params: panels.params !== false,
     options: panels.options !== false,
     paramsView: panels.paramsView === 'form' ? 'form' : 'json',
-    resultView: panels.resultView === 'json' ? 'json' : 'tree',
+    resultView:
+      panels.resultView === 'json' || panels.resultView === 'graph' ? panels.resultView : 'tree',
   }
 }
 

@@ -153,7 +153,8 @@ export const vistaMachine = setup({
     wasPanelExpanded: ({context}, params: {panel: VistaPanel}) =>
       context.restoredPanels[params.panel],
     wasParamsForm: ({context}) => context.restoredPanels.paramsView === 'form',
-    wasResultJson: ({context}) => context.restoredPanels.resultView === 'json',
+    wasResultView: ({context}, params: {view: VistaResultView}) =>
+      context.restoredPanels.resultView === params.view,
     isResultView: ({event}, params: {view: VistaResultView}) =>
       event.type === 'result.view' && event.view === params.view,
     isParamsView: ({event}, params: {view: VistaParamsView}) =>
@@ -427,20 +428,24 @@ export const vistaMachine = setup({
     },
     resultView: {
       initial: 'restoring',
+      on: {
+        'result.view': [
+          {guard: {type: 'isResultView', params: {view: 'tree'}}, target: '.tree'},
+          {guard: {type: 'isResultView', params: {view: 'json'}}, target: '.json'},
+          {guard: {type: 'isResultView', params: {view: 'graph'}}, target: '.graph'},
+        ],
+      },
       states: {
         restoring: {
-          always: [{guard: 'wasResultJson', target: 'json'}, {target: 'tree'}],
+          always: [
+            {guard: {type: 'wasResultView', params: {view: 'json'}}, target: 'json'},
+            {guard: {type: 'wasResultView', params: {view: 'graph'}}, target: 'graph'},
+            {target: 'tree'},
+          ],
         },
-        tree: {
-          on: {
-            'result.view': {guard: {type: 'isResultView', params: {view: 'json'}}, target: 'json'},
-          },
-        },
-        json: {
-          on: {
-            'result.view': {guard: {type: 'isResultView', params: {view: 'tree'}}, target: 'tree'},
-          },
-        },
+        tree: {},
+        json: {},
+        graph: {},
       },
     },
     optionsPanel: {
@@ -563,7 +568,8 @@ export function selectParamsView(snapshot: VistaSnapshot): VistaParamsView {
 }
 
 export function selectResultView(snapshot: VistaSnapshot): VistaResultView {
-  return snapshot.matches({resultView: 'json'}) ? 'json' : 'tree'
+  if (snapshot.matches({resultView: 'json'})) return 'json'
+  return snapshot.matches({resultView: 'graph'}) ? 'graph' : 'tree'
 }
 
 export function isPanelExpanded(snapshot: VistaSnapshot, panel: VistaPanel): boolean {

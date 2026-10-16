@@ -42,6 +42,7 @@ import {LintTab} from './LintTab'
 import {NetworkTab} from './NetworkTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
+import {ResultGraph} from './ResultGraph'
 import {ResultJson} from './ResultJson'
 import {SourceMapTab} from './SourceMapTab'
 
@@ -342,6 +343,15 @@ export function ResponsePanel(props: ResponsePanelProps) {
                     padding={2}
                     selected={resultView === 'json'}
                   />
+                  <Tab
+                    aria-controls="vista-result-content"
+                    fontSize={1}
+                    id="vista-result-view-graph"
+                    label={t('vista.result.view.graph')}
+                    onClick={() => setResultView('graph')}
+                    padding={2}
+                    selected={resultView === 'graph'}
+                  />
                 </TabList>
                 <Tooltip
                   animate
@@ -365,6 +375,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
         </Box>
         {hasResult && resultView === 'json' ? (
           <ResultJson id="vista-result-content" value={result} />
+        ) : hasResult && resultView === 'graph' ? (
+          <ResultGraph copy={copyValue} id="vista-result-content" value={result} />
         ) : (
           <Box id="vista-result-content" padding={3} paddingTop={5}>
             {status === 'fetching' && (
