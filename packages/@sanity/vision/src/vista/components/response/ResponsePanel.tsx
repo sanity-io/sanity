@@ -195,11 +195,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
         content: <NetworkTab meta={meta} perspectiveName={perspectiveName} resolved={resolved} />,
       },
       {
-        id: 'source-map',
-        label: t('vista.panel.source-map'),
-        content: <SourceMapTab dataset={resultDataset} meta={meta} />,
-      },
-      {
         id: 'history',
         label:
           history.length > 0 ? (
@@ -224,6 +219,11 @@ export function ResponsePanel(props: ResponsePanelProps) {
             plan={queryExplain.plan}
           />
         ),
+      },
+      {
+        id: 'source-map',
+        label: t('vista.panel.source-map'),
+        content: <SourceMapTab dataset={resultDataset} meta={meta} />,
       },
     ],
     [
