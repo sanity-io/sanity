@@ -163,7 +163,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
         {error ? (
           <Card padding={4} radius={2} tone="critical">
             <VStack gap={4}>
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} tone="critical" as="div" trim={true}>
                 Could not gather diagnostics: {error}
               </Text>
               <Flex>

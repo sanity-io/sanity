@@ -1,7 +1,7 @@
 import {SanityLogo} from '@sanity/logos'
 import {Card, Heading, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
-import {Text, Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {footerLink} from './Layout.css'
 
@@ -68,9 +68,7 @@ export function Layout(props: LayoutProps) {
         alignItems="center"
         paddingBottom={4}
       >
-        <Text size={3} as="div" trim={true}>
-          <SanityLogo dark={prefersDark} />
-        </Text>
+        <Icon size={3} icon={<SanityLogo dark={prefersDark} />} />
 
         <Flex alignItems="center" gap={2}>
           {LINKS.map((link, index) => (

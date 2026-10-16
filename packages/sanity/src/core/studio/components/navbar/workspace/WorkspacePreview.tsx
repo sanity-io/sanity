@@ -2,7 +2,7 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {type WorkspaceLoginStatus} from './hooks/useWorkspaceLoginStatus'
 
@@ -43,9 +43,12 @@ export const WorkspacePreviewIcon = ({
   return <Media $size={size}>{iconComponent}</Media>
 }
 
-const createIcon = (Icon: ComponentType | ReactNode) => {
-  if (isValidElementType(Icon)) return <Icon />
-  if (isValidElement(Icon)) return Icon
+const createIcon = (iconSource: ComponentType | ReactNode) => {
+  if (isValidElementType(iconSource)) {
+    const Component = iconSource
+    return <Component />
+  }
+  if (isValidElement(iconSource)) return iconSource
   return undefined
 }
 
@@ -89,17 +92,9 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
 
       {(selected || iconRightComponent) && (
         <Flex alignItems="center" gap={4} paddingLeft={3} paddingRight={2}>
-          {selected && (
-            <Text as="div" trim={true}>
-              <CheckmarkIcon />
-            </Text>
-          )}
+          {selected && <Icon size={1} icon={CheckmarkIcon} style={{margin: '-0.375rem'}} />}
 
-          {iconRightComponent && (
-            <Text muted as="div" trim={true}>
-              {iconRightComponent}
-            </Text>
-          )}
+          {iconRightComponent}
         </Flex>
       )}
     </Flex>

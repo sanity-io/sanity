@@ -89,10 +89,16 @@ export function ConfigIssuesButton() {
                     tone="caution"
                   >
                     <VStack gap={2}>
-                      <Text size={1} weight="medium" as="div" trim={true}>
+                      <Text size={1} weight="medium" tone="caution" as="div" trim={true}>
                         Divergent auth config
                       </Text>
-                      <Text size={1} style={{whiteSpace: 'pre-wrap'}} as="div" trim={true}>
+                      <Text
+                        size={1}
+                        tone="caution"
+                        style={{whiteSpace: 'pre-wrap'}}
+                        as="div"
+                        trim={true}
+                      >
                         {warning.message}
                       </Text>
                     </VStack>

@@ -8,7 +8,7 @@ import {Badge, Card, Inline, Spinner} from '@sanity/ui'
 import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
-import {Text, Flex, Grid, VStack} from 'ui5'
+import {Text, Flex, Grid, VStack, Icon, Link} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -125,9 +125,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
     importMapInfo?.valid && !importMapInfo.appId ? (
       <Card padding={4} tone="caution">
         <Flex alignItems="flex-start" gap={3}>
-          <TextWithTone tone="caution">
-            <WarningOutlineIcon />
-          </TextWithTone>
+          <Icon tone="caution" size={1} icon={WarningOutlineIcon} style={{margin: '-0.375rem'}} />
           <VStack gap={4}>
             <TextWithTone size={1} tone="caution" weight="medium">
               {t('about-dialog.configuration-issue.header')}
@@ -135,17 +133,15 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             <TextWithTone size={1} tone="caution">
               <Translate t={t} i18nKey="about-dialog.configuration-issue.missing-appid" />
             </TextWithTone>
-            <TextWithTone size={1} tone="caution">
-              <Text muted size={1} as="div" trim={true}>
-                <a
-                  href="https://www.sanity.io/docs/studio/latest-version-of-sanity"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('about-dialog.configuration-issue.missing-appid.view-documentation')} &rarr;
-                </a>
-              </Text>
-            </TextWithTone>
+            <Text size={1} tone="caution" as="div" trim={true}>
+              <Link
+                href="https://www.sanity.io/docs/studio/latest-version-of-sanity"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t('about-dialog.configuration-issue.missing-appid.view-documentation')} &rarr;
+              </Link>
+            </Text>
           </VStack>
         </Flex>
         <VStack gap={2} />
@@ -155,9 +151,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
   const deprecationWarning = versionDeprecation ? (
     <Card padding={4} tone="caution" data-testid="studio-version-deprecation-warning">
       <Flex alignItems="flex-start" gap={3}>
-        <TextWithTone tone="caution">
-          <WarningOutlineIcon />
-        </TextWithTone>
+        <Icon tone="caution" size={1} icon={WarningOutlineIcon} style={{margin: '-0.375rem'}} />
         <VStack gap={4}>
           <TextWithTone size={1} tone="caution" weight="medium">
             {t('about-dialog.version-info.deprecated.header')}
@@ -181,17 +175,15 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               : t('about-dialog.version-info.deprecated.next-step.upgrade')}
           </TextWithTone>
           {versionDeprecation.isPinned ? null : (
-            <TextWithTone size={1} tone="caution">
-              <Text muted size={1} as="div" trim={true}>
-                <a
-                  href="https://www.sanity.io/docs/studio/upgrade"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('about-dialog.version-info.deprecated.next-step.upgrade.learn-how')} &rarr;
-                </a>
-              </Text>
-            </TextWithTone>
+            <Text size={1} tone="caution" as="div" trim={true}>
+              <Link
+                href="https://www.sanity.io/docs/studio/upgrade"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t('about-dialog.version-info.deprecated.next-step.upgrade.learn-how')} &rarr;
+              </Link>
+            </Text>
           )}
         </VStack>
       </Flex>

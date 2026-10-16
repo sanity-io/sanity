@@ -5,7 +5,7 @@ import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservablePromise} from 'react-rx'
 import {take} from 'rxjs/operators'
-import {Text, Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -62,9 +62,7 @@ export function WorkspaceMenuButton() {
                     {activeWorkspace.title}
                   </Text>
                 </Box>
-                <Text size={1} as="div" trim={true}>
-                  <ChevronDownIcon />
-                </Text>
+                <Icon size={1} icon={ChevronDownIcon} />
               </Flex>
             </UIButton>
           </Tooltip>
