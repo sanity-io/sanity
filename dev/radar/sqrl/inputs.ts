@@ -16,6 +16,13 @@ type ResourceKey =
   | 'listeners'
   | 'requestCount'
 
+type SoakSampleKey = 'heapMb' | 'domNodes' | 'listeners'
+
+export interface SqrlSoak {
+  settleMinute?: number | null
+  samples?: ({minute: number} & Partial<Record<SoakSampleKey, number | null>>)[] | null
+}
+
 export interface SqrlScenario {
   scenario: string
   kind: string
@@ -23,7 +30,7 @@ export interface SqrlScenario {
   calibrationMs?: number | null
   metrics?: {label: string; median?: number | null; p75?: number | null}[] | null
   resources?: Partial<Record<ResourceKey, number | null>> | null
-  soak?: {minute: number; heapMb?: number | null}[] | null
+  soak?: SqrlSoak | null
 }
 
 export interface SqrlRun {
@@ -62,7 +69,6 @@ export const RELIABILITY_WINDOW_WEEKS = 13
 const CLS_EPSILON = 0.01
 const COMMITS_EPSILON = 1
 const SOAK_GROWTH_FIRST_MINUTE = 2
-const SOAK_SCENARIO = 'singleString'
 
 /**
  * Frozen for formula version 1 so history never shifts as runs accumulate:
@@ -72,6 +78,10 @@ const SOAK_SCENARIO = 'singleString'
  * up to 2026-10-15.
  */
 const SOAK_HEAP_GROWTH_EPSILON = 0.10949710315080215
+/** The same k rule over 5 re-runs of the article soak (2026-10-16 branch dispatch): re-run sigma wins for heap, 1% of the end-of-run level for listeners and DOM nodes. */
+const ARTICLE_SOAK_HEAP_GROWTH_EPSILON = 0.9053638951766163
+const ARTICLE_SOAK_LISTENER_GROWTH_EPSILON = 3.103
+const ARTICLE_SOAK_DOM_GROWTH_EPSILON = 8.077
 export const FITTED_BETAS = {
   fcp: 0.6182903360675802,
   lcp: 0.766706973542303,
@@ -197,21 +207,32 @@ export function slopePerMinute(
   return denominator === 0 ? 0 : (count * sumXY - sumX * sumY) / denominator
 }
 
-function soakHeapGrowthInput(run: SqrlRun): SqrlPart[] | null {
-  // By name: runs can carry several soaks, in no fixed order
-  const samples =
-    (run.scenarios ?? []).find(
-      (entry) => entry.scenario === SOAK_SCENARIO && Array.isArray(entry.soak),
-    )?.soak ?? []
-  if (samples.length === 0) return null
-  // Fixed minutes 2-10 for formula v1, whatever settleMinute a soak report declares
-  const slope = slopePerMinute(
-    samples.map((sample) => ({minute: sample.minute, value: sample.heapMb})),
-    SOAK_GROWTH_FIRST_MINUTE,
-  )
-  // Shrinking heap earns no credit: the floor keeps a negative slope from reading as an improvement
-  return [{value: Math.max(slope, 0), calibrationMs: null, epsilon: SOAK_HEAP_GROWTH_EPSILON}]
+function soakGrowthInput(
+  scenario: string,
+  key: SoakSampleKey,
+  epsilon: number,
+  firstMinute: (soak: SqrlSoak) => number,
+): (run: SqrlRun) => SqrlPart[] | null {
+  return (run) => {
+    // By name: runs can carry several soaks, in no fixed order
+    const soak =
+      (run.scenarios ?? []).find(
+        (entry) => entry.scenario === scenario && Array.isArray(entry.soak?.samples),
+      )?.soak ?? null
+    const samples = soak?.samples ?? []
+    if (soak === null || samples.length === 0) return null
+    const slope = slopePerMinute(
+      samples.map((sample) => ({minute: sample.minute, value: sample[key]})),
+      firstMinute(soak),
+    )
+    // Shrinking earns no credit: the floor keeps a negative slope from reading as an improvement
+    return [{value: Math.max(slope, 0), calibrationMs: null, epsilon}]
+  }
 }
+
+// Fixed minutes 2-10 for formula v1, whatever settleMinute a soak report declares
+const fixedFirstMinute = () => SOAK_GROWTH_FIRST_MINUTE
+const declaredFirstMinute = (soak: SqrlSoak) => soak.settleMinute ?? SOAK_GROWTH_FIRST_MINUTE
 
 function singleString(
   kind: string,
@@ -412,7 +433,46 @@ export const SQRL_INPUTS: readonly SqrlInputDefinition[] = [
     pillar: 'memory',
     unit: 'perMinute',
     beta: 0,
-    extract: soakHeapGrowthInput,
+    extract: soakGrowthInput('singleString', 'heapMb', SOAK_HEAP_GROWTH_EPSILON, fixedFirstMinute),
+  },
+  {
+    key: 'articleSoakHeapGrowth',
+    label: 'Article soak heap growth, MB per minute (after settle, +k)',
+    pillar: 'memory',
+    unit: 'perMinute',
+    beta: 0,
+    extract: soakGrowthInput(
+      'article',
+      'heapMb',
+      ARTICLE_SOAK_HEAP_GROWTH_EPSILON,
+      declaredFirstMinute,
+    ),
+  },
+  {
+    key: 'articleSoakListenerGrowth',
+    label: 'Article soak listener growth, per minute (after settle, +k)',
+    pillar: 'memory',
+    unit: 'perMinute',
+    beta: 0,
+    extract: soakGrowthInput(
+      'article',
+      'listeners',
+      ARTICLE_SOAK_LISTENER_GROWTH_EPSILON,
+      declaredFirstMinute,
+    ),
+  },
+  {
+    key: 'articleSoakDomGrowth',
+    label: 'Article soak DOM node growth, per minute (after settle, +k)',
+    pillar: 'memory',
+    unit: 'perMinute',
+    beta: 0,
+    extract: soakGrowthInput(
+      'article',
+      'domNodes',
+      ARTICLE_SOAK_DOM_GROWTH_EPSILON,
+      declaredFirstMinute,
+    ),
   },
   {
     key: 'requestCount',

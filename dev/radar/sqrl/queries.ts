@@ -14,7 +14,7 @@ export const SQRL_RUNS_QUERY = `*[_type == "benchRun" && mode == "absolute" && g
     "calibrationMs": runner.calibrationMs,
     "metrics": metrics[label in $labels]{label, "median": experiment.summary.median, "p75": experiment.summary.p75},
     "resources": resources.experiment{cpuTaskMs, cpuScriptMs, heapMb, domNodes, listeners, requestCount},
-    "soak": soak.samples[]{minute, heapMb}
+    "soak": soak{settleMinute, "samples": samples[]{minute, heapMb, domNodes, listeners}}
   }
 }`
 

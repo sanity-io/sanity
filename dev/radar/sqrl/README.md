@@ -13,14 +13,16 @@ SQRL (Studio Quality: Reliability & Latency) is one score for Studio quality, re
 
 Each input is a lab measurement where lower is better. It counts as its value in the reference window divided by its value today, so any input getting faster, lighter or less frequent raises the score. The inputs are grouped into six pillars:
 
-| Pillar          | Weight | Inputs                                                                                               |
-| --------------- | ------ | ---------------------------------------------------------------------------------------------------- |
-| INP             | 35%    | article INP, singleString INP                                                                        |
-| Responsiveness  | 13%    | keystroke latency, median and p75                                                                    |
-| Load            | 13%    | time to editable (cold and warm), tool visible, login clickable, FCP, LCP, main-thread blocking, CLS |
-| CPU & rendering | 13%    | script and task CPU, CPU and React commits after the page settles                                    |
-| Memory & weight | 13%    | heap, DOM nodes, event listeners, boot JS, total JS, page CSS, soak heap growth, request count       |
-| Reliability     | 13%    | npm-deprecated releases and hot-patches published within 72 hours of a minor, over the last 13 weeks |
+| Pillar          | Weight | Inputs                                                                                                                                          |
+| --------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| INP             | 35%    | article INP, singleString INP                                                                                                                   |
+| Responsiveness  | 13%    | keystroke latency, median and p75                                                                                                               |
+| Load            | 13%    | time to editable (cold and warm), tool visible, login clickable, FCP, LCP, main-thread blocking, CLS                                            |
+| CPU & rendering | 13%    | script and task CPU, CPU and React commits after the page settles                                                                               |
+| Memory & weight | 13%    | heap, DOM nodes, event listeners, boot JS, total JS, page CSS, soak heap growth, request count, article soak heap, listener and DOM node growth |
+| Reliability     | 13%    | npm-deprecated releases and hot-patches published within 72 hours of a minor, over the last 13 weeks                                            |
+
+The article soak inputs catch leaks over a 10-minute editing session on the article document. They start with the first commit whose nightly run soaked the article, and a new input joins without moving the score, so only its later movement counts.
 
 SQRL only counts outcomes a user feels or pays for. Migration progress such as styled-components files removed is left out, so a migration only moves the score when it makes Studio faster or lighter. Production telemetry from real users is also left out, since Radar runs against a mocked API.
 

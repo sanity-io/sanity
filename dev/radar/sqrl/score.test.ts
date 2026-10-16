@@ -61,7 +61,12 @@ function scenarioFromCells(
         : null,
     soak:
       soak.length > 0
-        ? soak.map(([field, value]) => ({minute: Number(field.split(':')[1]), heapMb: value}))
+        ? {
+            samples: soak.map(([field, value]) => ({
+              minute: Number(field.split(':')[1]),
+              heapMb: value,
+            })),
+          }
         : null,
   }
 }
@@ -220,35 +225,168 @@ describe('parity with the golden formula version 1 scores', () => {
   )
 })
 
-function soakScenario(scenario: string, heapPerMinute: number): SqrlScenario {
+const ARTICLE_SOAK_KEYS = [
+  'articleSoakHeapGrowth',
+  'articleSoakListenerGrowth',
+  'articleSoakDomGrowth',
+] as const
+
+interface SoakRates {
+  heapMb: number
+  listeners?: number
+  domNodes?: number
+}
+
+function soakScenario(scenario: string, rates: SoakRates, settleMinute?: number): SqrlScenario {
   return {
     scenario,
     kind: 'interaction',
     mode: 'soak',
-    soak: Array.from({length: 11}, (_, minute) => ({minute, heapMb: 30 + heapPerMinute * minute})),
+    soak: {
+      settleMinute,
+      samples: Array.from({length: 11}, (_, minute) => ({
+        minute,
+        heapMb: 30 + rates.heapMb * minute,
+        listeners: 3000 + (rates.listeners ?? 0) * minute,
+        domNodes: 8000 + (rates.domNodes ?? 0) * minute,
+      })),
+    },
   }
 }
 
-function soakGrowthOf(scenarios: SqrlScenario[]): number | undefined {
+function extracted(key: string, scenarios: SqrlScenario[]): number | undefined {
   const run: SqrlRun = {
     _id: 'bench-run-soak',
     startedAt: '2026-10-16T05:00:00Z',
     git: {sha: 'soak'},
     scenarios,
   }
-  return SQRL_INPUTS.find((input) => input.key === 'soakHeapGrowth')?.extract(run)?.[0]?.value
+  return SQRL_INPUTS.find((input) => input.key === key)?.extract(run)?.[0]?.value
 }
 
-describe('soak heap growth', () => {
+function epsilonOf(key: string): number {
+  const run: SqrlRun = {
+    _id: 'bench-run-flat',
+    startedAt: '2026-10-16T05:00:00Z',
+    git: {sha: 'flat'},
+    scenarios: [soakScenario('article', {heapMb: 0}), soakScenario('singleString', {heapMb: 0})],
+  }
+  return SQRL_INPUTS.find((input) => input.key === key)?.extract(run)?.[0]?.epsilon ?? Number.NaN
+}
+
+const singleStringSoak = soakScenario('singleString', {heapMb: 0.5, listeners: 7, domNodes: 9})
+const articleSoak = soakScenario('article', {heapMb: 4, listeners: 20, domNodes: 60})
+
+describe('soak growth', () => {
   it.each([
-    ['singleString first', [soakScenario('singleString', 0.5), soakScenario('article', 4)]],
-    ['article first', [soakScenario('article', 4), soakScenario('singleString', 0.5)]],
-  ])('reads the singleString soak with %s', (_, scenarios) => {
-    expect(soakGrowthOf(scenarios)).toBeCloseTo(0.5, 12)
+    ['singleString first', [singleStringSoak, articleSoak]],
+    ['article first', [articleSoak, singleStringSoak]],
+  ])('maps each input to its own soak with %s', (_, scenarios) => {
+    expect(extracted('soakHeapGrowth', scenarios)).toBeCloseTo(0.5, 12)
+    expect(extracted('articleSoakHeapGrowth', scenarios)).toBeCloseTo(4, 12)
+    expect(extracted('articleSoakListenerGrowth', scenarios)).toBeCloseTo(20, 12)
+    expect(extracted('articleSoakDomGrowth', scenarios)).toBeCloseTo(60, 12)
   })
 
   it('is missing when only another scenario was soaked', () => {
-    expect(soakGrowthOf([soakScenario('article', 4)])).toBeUndefined()
+    expect(extracted('soakHeapGrowth', [articleSoak])).toBeUndefined()
+    ARTICLE_SOAK_KEYS.forEach((key) => {
+      expect(extracted(key, [singleStringSoak])).toBeUndefined()
+    })
+  })
+
+  it('fits the article soak from its declared settle minute', () => {
+    const rampBeforeSettle: SqrlScenario = {
+      ...articleSoak,
+      soak: {
+        settleMinute: 4,
+        samples: (articleSoak.soak?.samples ?? []).map((sample) => ({
+          ...sample,
+          listeners: sample.minute < 4 ? 1000 : 3000,
+        })),
+      },
+    }
+    expect(extracted('articleSoakListenerGrowth', [rampBeforeSettle])).toBe(0)
+    expect(
+      extracted('articleSoakListenerGrowth', [
+        {...rampBeforeSettle, soak: {...rampBeforeSettle.soak, settleMinute: null}},
+      ]),
+    ).toBeGreaterThan(0)
+  })
+
+  it('floors a shrinking soak at 0 before adding k', () => {
+    const shrinking = soakScenario('article', {heapMb: -2, listeners: -5, domNodes: -30})
+    ARTICLE_SOAK_KEYS.forEach((key) => {
+      expect(extracted(key, [shrinking])).toBe(0)
+    })
+    expect(epsilonOf('articleSoakHeapGrowth')).toBeCloseTo(0.9053638951766163, 12)
+    expect(epsilonOf('articleSoakListenerGrowth')).toBe(3.103)
+    expect(epsilonOf('articleSoakDomGrowth')).toBe(8.077)
+  })
+})
+
+const latestRun = runs.at(-1) as SqrlRun
+
+function laterCommit(index: number, extraScenarios: SqrlScenario[] = []): SqrlRun {
+  const committedAt = new Date(Date.UTC(2026, 9, 16, index)).toISOString()
+  return {
+    ...latestRun,
+    _id: `bench-run-later-${index}`,
+    startedAt: committedAt,
+    git: {sha: `later-${index}`, committedAt},
+    scenarios: [...(latestRun.scenarios ?? []), ...extraScenarios],
+  }
+}
+
+/** Main history, then copies of its latest run so every rolling median is flat, then the given article soaks one commit each. */
+function withArticleSoaks(soaks: (SqrlScenario | null)[]): SqrlScoreDocument[] {
+  const flat = Array.from({length: 7}, (_, index) => laterCommit(index))
+  const later = soaks.map((soak, index) => laterCommit(flat.length + index, soak ? [soak] : []))
+  return computeSqrlScores([...runs, ...flat, ...later], tags, {computedAt: COMPUTED_AT})
+}
+
+const healthyArticleSoak = soakScenario('article', {heapMb: 1, listeners: 0, domNodes: 0})
+const leakingArticleSoak = soakScenario('article', {heapMb: 1, listeners: 50, domNodes: 0})
+
+describe('article soak inputs', () => {
+  it('are absent from every commit in main history, so the golden scores stand', () => {
+    const measured = formulaVersion1.filter((document) =>
+      ARTICLE_SOAK_KEYS.some((key) => inputOf(document, key)),
+    )
+    expect(measured).toEqual([])
+  })
+
+  it('enter with zero jump on the first commit that carries an article soak', () => {
+    // Later leaking commits pull the reference away from the first value, so a direct entry would jump
+    const soaks = [healthyArticleSoak, ...Array.from({length: 4}, () => leakingArticleSoak)]
+    const withSoak = withArticleSoaks(soaks)
+    const withoutSoak = withArticleSoaks(soaks.map(() => null))
+    const first = withSoak.length - soaks.length
+    ARTICLE_SOAK_KEYS.forEach((key) => {
+      expect(inputOf(withSoak[first - 1], key)).toBeUndefined()
+      expect(inputOf(withSoak[first], key)).toBeDefined()
+    })
+    expect(inputOf(withSoak[first], 'articleSoakListenerGrowth')?.ratio).toBeGreaterThan(10)
+    expect(withSoak[first].score).toBeCloseTo(withoutSoak[first].score, 9)
+    expect(withSoak[first].scoreCommit).toBeCloseTo(withoutSoak[first].scoreCommit, 9)
+    expect(withSoak[first].scoreRaw).toBeCloseTo(withoutSoak[first].scoreRaw, 9)
+    expect(withSoak.slice(0, first).map((document) => document.score)).toEqual(
+      withoutSoak.slice(0, first).map((document) => document.score),
+    )
+  })
+
+  it('lowers the score once the article soak leaks listeners', () => {
+    const steady = withArticleSoaks(Array.from({length: 11}, () => healthyArticleSoak))
+    const leaked = withArticleSoaks([
+      ...Array.from({length: 7}, () => healthyArticleSoak),
+      ...Array.from({length: 4}, () => leakingArticleSoak),
+    ])
+    expect(leaked.at(-1)?.score).toBeLessThan(steady.at(-1)?.score ?? 0)
+    expect(leaked.at(-1)?.scoreCommit).toBeLessThan(steady.at(-1)?.scoreCommit ?? 0)
+    expect(inputOf(leaked.at(-1), 'articleSoakListenerGrowth')?.contributionPoints).toBeLessThan(0)
+    expect(leaked.slice(0, -4).map((document) => document.score)).toEqual(
+      steady.slice(0, -4).map((document) => document.score),
+    )
   })
 })
 
