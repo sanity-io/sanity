@@ -9,7 +9,7 @@ import {useVistaSelector} from '../../store/VistaActorContext'
 import {selectDatasets, selectWorkspaceDataset} from '../../store/vistaMachine'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {SwitchField} from '../SwitchField'
-import {optionsGrid} from '../vista.css'
+import styles from '../vista.module.css'
 import {
   ApiVersionField,
   DatasetField,
@@ -34,7 +34,7 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
   return (
     <Box data-testid="vista-options" padding={3}>
       <Stack gap={4}>
-        <div className={optionsGrid}>
+        <div className={styles.optionsGrid}>
           <DatasetField
             dataset={options.dataset}
             datasets={datasets}

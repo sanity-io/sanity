@@ -19,15 +19,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaTab} from '../../store/types'
 import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {deriveTabTitle} from '../../util/tabTitle'
-import {
-  tab as tabStyle,
-  tabBar,
-  tabCloseButton,
-  tabItem,
-  tabList,
-  tabTitleButton,
-  tabTitleInput,
-} from '../vista.css'
+import styles from '../vista.module.css'
 
 /** The element id of the active tab's content, referenced by every tab's `aria-controls` */
 export const QUERY_TAB_PANEL_ID = 'vista-query-tabpanel'
@@ -66,7 +58,7 @@ function TabTitleInput({title, onCommit, onCancel}: TabTitleInputProps) {
   }
 
   return (
-    <Box className={tabTitleInput} paddingY={1}>
+    <Box className={styles.tabTitleInput} paddingY={1}>
       <TextInput
         autoFocus
         data-testid="vista-tab-title-input"
@@ -148,7 +140,7 @@ function TabHandle(props: TabHandleProps) {
   return (
     <Reorder.Item
       as="div"
-      className={tabItem}
+      className={styles.tabItem}
       data-dragging={dragging ? 'true' : undefined}
       data-testid="vista-tab-item"
       // Keep the dragged tab inside the strip, which clips whatever leaves it
@@ -163,7 +155,7 @@ function TabHandle(props: TabHandleProps) {
     >
       <Flex
         alignItems="center"
-        className={tabStyle}
+        className={styles.tab}
         data-selected={selected ? 'true' : undefined}
         data-testid="vista-tab"
         gap={1}
@@ -177,7 +169,7 @@ function TabHandle(props: TabHandleProps) {
           <Button
             aria-controls={QUERY_TAB_PANEL_ID}
             aria-selected={selected}
-            className={tabTitleButton}
+            className={styles.tabTitleButton}
             data-testid="vista-tab-button"
             fontSize={1}
             id={getQueryTabId(tab.id)}
@@ -203,7 +195,7 @@ function TabHandle(props: TabHandleProps) {
         )}
         <Button
           aria-label={t('vista.tabs.close-tab')}
-          className={tabCloseButton}
+          className={styles.tabCloseButton}
           data-testid="vista-tab-close"
           fontSize={1}
           icon={CloseIcon}
@@ -294,7 +286,7 @@ export function QueryTabBar() {
   return (
     <Flex
       alignItems="stretch"
-      className={tabBar}
+      className={styles.tabBar}
       data-testid="vista-tab-bar"
       flexShrink={0}
       paddingX={1}
@@ -303,7 +295,7 @@ export function QueryTabBar() {
         aria-label={t('vista.tabs.label')}
         as="div"
         axis="x"
-        className={tabList}
+        className={styles.tabList}
         onReorder={reorder}
         ref={listRef}
         role="tablist"

@@ -31,16 +31,7 @@ import {createQuerySchema} from '../../util/schemaCheck'
 import {VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
 import {CollapsibleSection} from '../CollapsibleSection'
-import {
-  editorContainer,
-  editorLabel,
-  labelActions,
-  optionsSection,
-  paramsSection,
-  paramsSectionResized,
-  querySection,
-  sectionResizer,
-} from '../vista.css'
+import styles from '../vista.module.css'
 import {ApiVersionButton, type RevealedOption} from './ApiVersionButton'
 import {GenerateQueryBar} from './GenerateQueryBar'
 import {LiveButton} from './LiveButton'
@@ -202,7 +193,7 @@ export function RequestPanel(props: RequestPanelProps) {
   return (
     <Flex data-testid="vista-request-panel" flexDirection="column" height="100%">
       <Flex flexBasis="0%" flexDirection="column" flexGrow={1} minHeight="0" ref={containerRef}>
-        <Flex className={querySection}>
+        <Flex className={styles.querySection}>
           {generatorOpen && (
             <GenerateQueryBar
               client={resolved.client}
@@ -212,20 +203,20 @@ export function RequestPanel(props: RequestPanelProps) {
             />
           )}
           <Box
-            className={editorContainer}
+            className={styles.editorContainer}
             data-testid="vista-query-editor"
             flexBasis="0%"
             flexGrow={1}
             minHeight="0"
             minWidth="0"
           >
-            <Box className={editorLabel}>
+            <Box className={styles.editorLabel}>
               <Flex alignItems="center" gap={2}>
                 <Label muted size={1}>
                   {t('query.label')}
                 </Label>
                 <Box flexBasis="0%" flexGrow={1} />
-                <Flex alignItems="center" className={labelActions} gap={1}>
+                <Flex alignItems="center" className={styles.labelActions} gap={1}>
                   {!generatorOpen && (
                     <Tooltip
                       animate
@@ -256,7 +247,10 @@ export function RequestPanel(props: RequestPanelProps) {
           </Box>
         </Flex>
         <CollapsibleSection
-          className={cx(paramsSection, paramsResize.height !== null && paramsSectionResized)}
+          className={cx(
+            styles.paramsSection,
+            paramsResize.height !== null && styles.paramsSectionResized,
+          )}
           expanded={paramsExpanded}
           handle={
             paramsExpanded && (
@@ -272,7 +266,7 @@ export function RequestPanel(props: RequestPanelProps) {
                     ? t('vista.params.fit-height', {height: paramsHeightNow})
                     : undefined
                 }
-                className={sectionResizer}
+                className={styles.sectionResizer}
                 data-dragging={paramsResize.dragging}
                 data-testid="vista-request-params-resizer"
                 onDoubleClick={paramsResize.reset}
@@ -332,7 +326,7 @@ export function RequestPanel(props: RequestPanelProps) {
           )}
         </CollapsibleSection>
         <CollapsibleSection
-          className={optionsSection}
+          className={styles.optionsSection}
           expanded={optionsExpanded}
           id="vista-request-options"
           onToggle={() => togglePanel('options')}

@@ -1,9 +1,24 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+  // `*.module.css` is only for css-modules-kit: the TypeScript program skips files it cannot load
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "src/**/*.module.css"],
   "exclude": ["dist", "lib", "node_modules"],
   "compilerOptions": {
     "rootDir": ".",
+    // Overlays `generated` on the package, so `import styles from './X.module.css'` resolves to
+    // the `generated/src/**/X.module.css.d.ts` css-modules-kit writes for it
+    "rootDirs": [".", "generated"],
     "customConditions": ["monorepo"]
+  },
+  // css-modules-kit (`pnpm css:types`, which `cmk --check` keeps in sync). The token options match
+  // what Lightning CSS exports for a CSS module with the `cssModules` defaults that `@tsdown/css`
+  // and Vite compile vision with: classes, `@keyframes` and container names, but not custom
+  // properties. Neither renames them, so there is no `localsConvention` to mirror either
+  "cmkOptions": {
+    "enabled": true,
+    "dtsOutDir": "generated",
+    "animation": true,
+    "container": true,
+    "dashedIdents": false
   }
 }

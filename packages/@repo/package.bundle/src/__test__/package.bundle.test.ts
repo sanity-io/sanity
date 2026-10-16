@@ -1,3 +1,4 @@
+import {cssModulesPattern} from '@repo/css-modules-kit'
 import {Features, transform} from 'lightningcss'
 import {type PluginOption, type ResolvedConfig} from 'vite'
 import {describe, expect, it} from 'vitest'
@@ -36,14 +37,16 @@ describe('createDefaultConfig()', () => {
         'sanity/cleanup-css-output',
       ]),
     )
-    expect(names).not.toContain('sanity-vanilla-extract')
   })
 
-  it('compiles the .css.ts modules of a vanilla-extract package with vanilla-extract only', () => {
-    const names = pluginNames(createDefaultConfig({version: '9.9.9-test.1'}).plugins)
-    expect(names).toEqual(
-      expect.arrayContaining(['sanity-vanilla-extract', 'sanity/cleanup-css-output']),
-    )
+  it('compiles the CSS modules of a CSS modules package with Lightning CSS and no Panda', () => {
+    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'css-modules'})
+    expect(config.css).toEqual({
+      transformer: 'lightningcss',
+      lightningcss: {cssModules: {pattern: cssModulesPattern}, exclude: Features.LightDark},
+    })
+    const names = pluginNames(config.plugins)
+    expect(names).toContain('sanity/cleanup-css-output')
     expect(names).not.toContain('pandacss')
     expect(names).not.toContain('sanity:remove-cascade-layers')
     expect(names).not.toContain('sanity/panda-layers-css-import')

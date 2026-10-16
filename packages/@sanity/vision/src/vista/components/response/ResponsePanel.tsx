@@ -40,7 +40,7 @@ import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {TabDrawerPortal} from '../TabDrawerPortal'
-import {resultContainer, resultLabel, labelActions} from '../vista.css'
+import styles from '../vista.module.css'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
 import {DownloadButton} from './DownloadButton'
 import {ExplainTab} from './ExplainTab'
@@ -341,11 +341,11 @@ export function ResponsePanel(props: ResponsePanelProps) {
         testId="vista-response-panel"
       >
         <Card
-          className={resultContainer}
+          className={styles.resultContainer}
           data-testid="vista-result"
           tone={status === 'failed' ? 'critical' : 'default'}
         >
-          <Box className={resultLabel}>
+          <Box className={styles.resultLabel}>
             <Flex alignItems="center" gap={2}>
               <Label muted size={1}>
                 {t('result.label')}
@@ -357,7 +357,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
               )}
               <Box flexBasis="0%" flexGrow={1} />
               {hasResult && (
-                <Flex alignItems="center" className={labelActions} gap={1}>
+                <Flex alignItems="center" className={styles.labelActions} gap={1}>
                   <TabList aria-label={t('vista.result.view.label')} gap={1}>
                     <Tab
                       aria-controls="vista-result-content"

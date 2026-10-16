@@ -9,7 +9,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaDrawer} from '../../store/types'
 import {useTabDrawerSlot, useVistaActor} from '../../store/VistaActorContext'
 import {cx} from '../../util/cx'
-import {sidebarDrawer, sidebarDrawerOverlay, sidebarDrawerWide} from '../vista.css'
+import styles from '../vista.module.css'
 import {QueryListPanel} from './QueryListPanel'
 import {SettingsPanel} from './SettingsPanel'
 
@@ -109,9 +109,9 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
         aria-modal={overlay || undefined}
         borderRight
         className={cx(
-          sidebarDrawer,
-          drawer !== 'saved' && drawer !== 'shared' && sidebarDrawerWide,
-          overlay && sidebarDrawerOverlay,
+          styles.sidebarDrawer,
+          drawer !== 'saved' && drawer !== 'shared' && styles.sidebarDrawerWide,
+          overlay && styles.sidebarDrawerOverlay,
         )}
         data-testid={`vista-drawer-${drawer}`}
         flexDirection="column"

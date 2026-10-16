@@ -14,7 +14,7 @@ import {evaluateQueryType} from '../../util/typegen/evaluateQueryType'
 import {printTypeScript} from '../../util/typegen/printTypeScript'
 import {printZod} from '../../util/typegen/printZod'
 import {toTypeName} from '../../util/typegen/schemaTypes'
-import {codeBlock} from '../vista.css'
+import styles from '../vista.module.css'
 
 export type TypesExportFormat = 'typescript' | 'zod'
 
@@ -109,7 +109,7 @@ export function ExportTypesDialog({
             <>
               <Card
                 border
-                className={codeBlock}
+                className={styles.codeBlock}
                 overflow="auto"
                 padding={3}
                 radius={2}

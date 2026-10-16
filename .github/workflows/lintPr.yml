@@ -17,6 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
+      # The install generates them (`prepare`); this fails clearly when they are missing or stale,
+      # before the type check would report every CSS module import
+      - name: Check CSS module typings
+        run: pnpm check:css-types
       - name: Oxlint files
         run: pnpm check:oxlint
         env:

@@ -6,7 +6,7 @@ import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
-import {panelTabs} from './vista.css'
+import styles from './vista.module.css'
 
 /** Height of the tab header, which is all that remains of a collapsed panel */
 export const PANEL_HEADER_HEIGHT = 35
@@ -76,7 +76,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
         justifyContent="space-between"
         paddingX={2}
       >
-        <Box className={panelTabs} ref={stripRef}>
+        <Box className={styles.panelTabs} ref={stripRef}>
           <TabList gap={1}>
             {tabs.map((tab) => (
               <Tab
