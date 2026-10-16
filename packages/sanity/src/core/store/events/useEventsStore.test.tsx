@@ -147,8 +147,8 @@ describe('useEventsStore', () => {
       const {result, store} = setup({rev: '@release:missing'})
       // While unresolved, resolveRevisionId keeps requesting the next events page.
       expect(store.loadMoreEvents).toHaveBeenCalled()
-      // While unresolved the revision is null (latest version): the raw @release: string never
-      // reaches the history API.
+      // While unresolved the revision is null: the raw @release: string never reaches the
+      // history API.
       expect(result.current.revision).toBeNull()
       expect(mockGetDocumentAtRevision).not.toHaveBeenCalledWith(
         expect.objectContaining({revisionId: '@release:missing'}),

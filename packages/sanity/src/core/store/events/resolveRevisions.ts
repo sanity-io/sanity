@@ -20,8 +20,8 @@ function indexOfEvent(events: DocumentGroupEvent[], id: string | null | undefine
  * - `@lastPublished`: id of the newest publish event, `null` when none.
  * - `@lastEdited`: `revisionId` of the newest edit event; falls through to the raw value if none.
  * - `@release:<releaseId>`: id of the publish event for that release. While unresolved,
- *   `onLoadMore()` is invoked to fetch the next events page and `null` is returned (the UI shows
- *   the latest version, and no request is made with the raw `@release:` string). Pagination stops
+ *   `onLoadMore()` is invoked to fetch the next events page and `null` is returned, so no revision
+ *   is fetched and the raw `@release:` string never reaches the history API. Pagination stops
  *   naturally when the cursor is exhausted (`onLoadMore` no-ops); if the event never appears, the
  *   revision stays `null` with no error surfaced.
  * - `undefined`: latest state; except when the newest event is a publish (its id is used) or a
@@ -56,7 +56,7 @@ export function resolveRevisionId({
     )
     if (releaseEvent) return releaseEvent.id
     if (events.length > 0 && !loading) onLoadMore()
-    // Not resolved yet (or the publish event doesn't exist): show the latest version instead of
+    // Not resolved yet (or the publish event doesn't exist): resolve to no revision instead of
     // leaking the raw `@release:` string to the history API.
     return null
   }
