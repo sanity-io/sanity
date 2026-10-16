@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-16)
+
+### Features
+
+* **vision:** add an opt-in redesigned vision experience behind beta.redesign ([#14894](https://github.com/sanity-io/sanity/issues/14894)) ([3b90dc9](https://github.com/sanity-io/sanity/commit/3b90dc9414ff02cdeb12119931204a036f558104))
+
+### Bug Fixes
+
+* **core:** stop non-DOM props leaking to DOM elements and guard against regressions ([#15109](https://github.com/sanity-io/sanity/issues/15109)) ([5b64bab](https://github.com/sanity-io/sanity/commit/5b64bab347d6474e4f0fb537435b4f818c60cc38))
+* **css:** salt published vanilla-extract class names with the package version ([#15353](https://github.com/sanity-io/sanity/issues/15353)) ([bea9faa](https://github.com/sanity-io/sanity/commit/bea9faa386b4b93e4c377ecde54898903dd1db4a))
 ## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-13)
 
 ### Bug Fixes
