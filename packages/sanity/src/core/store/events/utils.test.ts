@@ -437,6 +437,33 @@ describe('sortEvents (paired publish/edit)', () => {
       'editDocumentVersion',
     ])
   })
+
+  it('produces the same order regardless of input order (transitive sort)', () => {
+    // A publish whose timestamp trails its paired edit, plus an unrelated event in between:
+    // the comparator-based sort used to be non-transitive here and depended on input order.
+    const edit = editDocumentVersionEvent({
+      revisionId: 'edit-rev',
+      id: 'edit-rev',
+      timestamp: minutesAfterBase(2),
+    })
+    const unrelated = createDocumentVersionEvent({id: 'unrelated', timestamp: minutesAfterBase(1)})
+    const publish = publishDocumentVersionEvent({
+      versionRevisionId: 'edit-rev',
+      timestamp: BASE_TIME,
+    })
+
+    const orderings = [
+      [edit, unrelated, publish],
+      [publish, unrelated, edit],
+      [unrelated, publish, edit],
+    ].map((events) =>
+      sortEvents({remoteEdits: [], events, expandedEvents: []}).map((event) => event.id),
+    )
+
+    expect(orderings[0]).toEqual([publish.id, 'edit-rev', 'unrelated'])
+    expect(orderings[1]).toEqual(orderings[0])
+    expect(orderings[2]).toEqual(orderings[0])
+  })
 })
 
 describe('removeDupes', () => {

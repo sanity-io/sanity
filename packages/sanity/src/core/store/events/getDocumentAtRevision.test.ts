@@ -3,7 +3,11 @@ import {firstValueFrom, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockClient} from './__fixtures__/mockClient'
-import {clearDocumentRevisionCache, getDocumentAtRevision} from './getDocumentAtRevision'
+import {
+  clearDocumentRevisionCache,
+  getDocumentAtRevision,
+  REVISION_CACHE_MAX_ENTRIES,
+} from './getDocumentAtRevision'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
 
 const document = (id: string, rev = 'rev-1'): SanityDocument => ({
@@ -85,6 +89,35 @@ describe('getDocumentAtRevision', () => {
     expect(second).toEqual([{document: doc, loading: false, revisionId: 'rev-1'}])
   })
 
+  it('evicts the least recently used entry beyond the cache cap', async () => {
+    const doc = document('doc-lru')
+    const {client, requests} = createMockClient({respond: () => ({documents: [doc]})})
+
+    const fetchRevision = (revisionId: string) =>
+      firstValueFrom(
+        getDocumentAtRevision({client, documentId: 'doc-lru', revisionId}).pipe(toArray()),
+      )
+
+    // Fill the cache up to its cap (rev-0 … rev-99).
+    for (let i = 0; i < REVISION_CACHE_MAX_ENTRIES; i++) {
+      await fetchRevision(`rev-${i}`)
+    }
+    expect(requests).toHaveLength(REVISION_CACHE_MAX_ENTRIES)
+
+    // rev-0 is still cached: no new request, and its recency is refreshed.
+    await fetchRevision('rev-0')
+    expect(requests).toHaveLength(REVISION_CACHE_MAX_ENTRIES)
+
+    // Exceeding the cap evicts the least recently used entry (rev-1); rev-0 survives.
+    await fetchRevision(`rev-${REVISION_CACHE_MAX_ENTRIES}`)
+    await fetchRevision('rev-0')
+    expect(requests).toHaveLength(REVISION_CACHE_MAX_ENTRIES + 1)
+
+    // rev-1 got evicted: requesting it refetches.
+    await fetchRevision('rev-1')
+    expect(requests).toHaveLength(REVISION_CACHE_MAX_ENTRIES + 2)
+  })
+
   it('caches per project/dataset: a client for a different dataset refetches', async () => {
     const docA = document('doc-workspace', 'rev-a')
     const docB = document('doc-workspace', 'rev-b')
@@ -149,11 +182,16 @@ describe('getDocumentAtRevision', () => {
     expect(emissions.at(-1)).toEqual({document: undefined, loading: false, revisionId: undefined})
   })
 
-  it('logs and emits null on errors — and caches the failure forever (known quirk)', async () => {
+  it('logs and emits null on errors — the failure is not cached, so a new subscriber retries', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    let failNext = true
     const {client, requests} = createMockClient({
       respond: () => {
-        throw new Error('request failed')
+        if (failNext) {
+          failNext = false
+          throw new Error('request failed')
+        }
+        return {documents: [{_id: 'doc-error', _rev: 'rev-1'}]}
       },
     })
 
@@ -166,11 +204,15 @@ describe('getDocumentAtRevision', () => {
       expect.any(Error),
     )
 
-    // A new subscriber gets the cached error result; no retry happens.
+    // The failed entry was dropped from the cache: a new subscriber retries and succeeds.
     const retry = await firstValueFrom(
       getDocumentAtRevision({client, documentId: 'doc-error', revisionId: 'rev-1'}).pipe(toArray()),
     )
-    expect(retry).toEqual([{document: null, loading: false, revisionId: 'rev-1'}])
-    expect(requests).toHaveLength(1)
+    expect(retry.at(-1)).toEqual({
+      document: {_id: 'doc-error', _rev: 'rev-1'},
+      loading: false,
+      revisionId: 'rev-1',
+    })
+    expect(requests).toHaveLength(2)
   })
 })
