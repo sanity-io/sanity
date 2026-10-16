@@ -1,6 +1,7 @@
 packages:
   - dev/*
   - perf/*
+  - engine-confidence
   - examples/*
   - scripts
   - e2e
@@ -180,3 +181,5 @@ trustPolicyExclude:
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
+patchedDependencies:
+  '@stryker-mutator/vitest-runner@10.0.0': patches/@stryker-mutator__vitest-runner@10.0.0.patch

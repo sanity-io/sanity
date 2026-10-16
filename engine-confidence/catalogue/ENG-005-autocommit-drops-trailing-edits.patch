@@ -1,0 +1,11 @@
+--- a/packages/sanity/src/core/store/document/document-pair/operationEvents.ts
++++ b/packages/sanity/src/core/store/document/document-pair/operationEvents.ts
+@@ -197,7 +197,7 @@
+     const AUTOCOMMIT_INTERVAL = 1000
+     const autoCommit$ = result$.pipe(
+       filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
+-      throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
++      throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: false}),
+       concatMap((result) =>
+         (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
+       ),

@@ -32,6 +32,9 @@ export type StrykerMutantStatus =
   | 'Ignored'
   | 'Pending'
 
+/** What a mutant counts as once the reviewed exclusion register is applied to Stryker's status. */
+export type CountedMutantStatus = StrykerMutantStatus | 'Excluded'
+
 export interface MutantCounts {
   killed: number
   timeout: number
@@ -39,7 +42,10 @@ export interface MutantCounts {
   noCoverage: number
   runtimeError: number
   compileError: number
+  /** Skipped by the ignore rules (error messages, log calls) before any test ran. */
   ignored: number
+  /** Survived or uncovered mutants a reviewer judged meaningless to test; see `exclusions.json`. */
+  excluded: number
 }
 
 export interface NotMeasured {
@@ -203,14 +209,15 @@ export function emptyMutantCounts(): MutantCounts {
     runtimeError: 0,
     compileError: 0,
     ignored: 0,
+    excluded: 0,
   }
 }
 
-export function countMutantStatuses(statuses: readonly StrykerMutantStatus[]): MutantCounts {
+export function countMutantStatuses(statuses: readonly CountedMutantStatus[]): MutantCounts {
   if (statuses.includes('Pending')) {
     throw new Error('Mutant still pending in a finished Stryker report')
   }
-  const countOf = (status: StrykerMutantStatus) =>
+  const countOf = (status: CountedMutantStatus) =>
     statuses.filter((candidate) => candidate === status).length
   return {
     killed: countOf('Killed'),
@@ -220,6 +227,7 @@ export function countMutantStatuses(statuses: readonly StrykerMutantStatus[]): M
     runtimeError: countOf('RuntimeError'),
     compileError: countOf('CompileError'),
     ignored: countOf('Ignored'),
+    excluded: countOf('Excluded'),
   }
 }
 
@@ -232,6 +240,7 @@ export function addMutantCounts(left: MutantCounts, right: MutantCounts): Mutant
     runtimeError: left.runtimeError + right.runtimeError,
     compileError: left.compileError + right.compileError,
     ignored: left.ignored + right.ignored,
+    excluded: left.excluded + right.excluded,
   }
 }
 
@@ -245,7 +254,7 @@ export function missedMutants(counts: MutantCounts): number {
   return counts.survived + counts.noCoverage
 }
 
-/** Stryker's mutation score: errors and ignored mutants are not in the denominator. */
+/** Stryker's mutation score: errors, ignored and excluded mutants are not in the denominator. */
 export function mutationScoreOf(counts: MutantCounts): number | undefined {
   const scored = detectedMutants(counts) + missedMutants(counts)
   return scored === 0 ? undefined : detectedMutants(counts) / scored

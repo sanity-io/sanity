@@ -33,7 +33,7 @@ function entry(statuses: CatalogueEntryResult['results'][number]['status'][]) {
 const notMeasured = {status: 'not-measured', reason: 'no fuzzer reports scenario cells'} as const
 
 describe('mutation scores', () => {
-  test('match Stryker: detected over detected, survived and uncovered; errors and ignored left out', () => {
+  test('match Stryker: detected over detected, survived and uncovered; errors, ignored and excluded left out', () => {
     const tier1 = counts({
       killed: 3038,
       timeout: 39,
@@ -45,17 +45,19 @@ describe('mutation scores', () => {
     })
     expect(mutationScoreOf(tier1)).toBeCloseTo(0.7113, 4)
     expect(coveredMutationScoreOf(tier1)).toBeCloseTo(0.7866, 4)
+    expect(mutationScoreOf({...tier1, excluded: 500})).toBe(mutationScoreOf(tier1))
+    expect(coveredMutationScoreOf({...tier1, excluded: 500})).toBe(coveredMutationScoreOf(tier1))
   })
 
   test('are undefined when nothing was scored', () => {
-    expect(mutationScoreOf(counts({ignored: 4}))).toBeUndefined()
+    expect(mutationScoreOf(counts({ignored: 4, excluded: 2}))).toBeUndefined()
     expect(coveredMutationScoreOf(counts({noCoverage: 4}))).toBeUndefined()
   })
 
   test('counts statuses from a Stryker report and refuses a pending mutant', () => {
-    expect(countMutantStatuses(['Killed', 'Killed', 'Timeout', 'NoCoverage', 'Ignored'])).toEqual(
-      counts({killed: 2, timeout: 1, noCoverage: 1, ignored: 1}),
-    )
+    expect(
+      countMutantStatuses(['Killed', 'Killed', 'Timeout', 'NoCoverage', 'Ignored', 'Excluded']),
+    ).toEqual(counts({killed: 2, timeout: 1, noCoverage: 1, ignored: 1, excluded: 1}))
     expect(() => countMutantStatuses(['Pending'])).toThrow(/pending/)
   })
 })

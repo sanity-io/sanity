@@ -548,6 +548,20 @@ effect of merged work; secondary: leads scanning health weekly.
      histogram is a bisect surface too. Colors are the style systems' own,
      shared with the widget's donut and outlines.
 
+## Engine confidence
+
+The Engine confidence score is the weekly share of document sync engine bugs the tests catch. It is the Engine confidence tab in Trends (`?tab=engine`), and it reads a different document type from the bench series.
+
+- Each ISO week has one `engineConfidenceRun` document, id `engine-confidence-run-<iso week>` (`engineConfidenceRunId` in `@repo/utils/radar-ids`). `engine-confidence/` builds it and `engine-confidence.yml` writes it every Thursday from main with `RADAR_SANITY_WRITE_TOKEN`. A re-run in the same week replaces the document. The stored shape is `EngineConfidenceRunDocument` in `@repo/utils/engine-confidence`, mirrored by `schemaTypes/engineConfidenceRun.ts`. Ratios are fractions and the tab multiplies them by 100 for the `percent` unit.
+- `ENGINE_CONFIDENCE_QUERY` projects every run without the per-file and per-entry arrays. `ENGINE_CONFIDENCE_DETAIL_QUERY` fetches only the newest run, with those arrays, for the two drill-downs. Both go through `listenQuery` in their own streams, so a failure here does not blank the bench tabs.
+- Generated bugs caught is the Stryker mutation score of the engine files. Known bugs caught is the share of catalogue entries at least one suite catches. Sync scenarios verified is always `not-measured` in v1. A measure that was not measured is stored as `{status: 'not-measured', reason}` and draws no point, so a gap is a gap and never a zero.
+- The headline is the geometric mean of the measured ratios (`headlineOf`), stored with `measuresUsed`. It cannot reach 100% because some planted bugs change no behaviour. The tab lists which measures fed the latest week.
+- `config.version` changes whenever the pinned measurement config changes. Weekly cards draw a dashed rule labelled `config vN` at the first week on the new version (`configBreaks`), and scores either side of it are not comparable.
+- The engine series set `drift: {recentRuns: 2, baselineRuns: 4, minimumRuns: 4}`, so a weekly series compares the last 2 weeks with the 4 before them. Bench series keep 7, 21 and 10. Drift never compares across the newest break: only the points after it count. Mutation scores barely move week to week, so the noise term is near zero and the 1-point `percent` floor decides.
+- The panel shows a weekly card for the headline and each measure (a `share` variant: caught against missed), the latest week's config version, measures used, whether each Stryker target ran `full` or `incremental`, the mutants left out of the score (ignored by rule, and excluded after review from `engine-confidence/exclusions.json`), the ten files with the most missed mutants, and the catalogue by suite with a status chip per cell. The files table has columns for ignored and excluded counts. `?range=` filters runs on `startedAt`. Drift is judged on the full history, as for the bench series.
+- `generateDebugEngineConfidenceRuns` in `debugData.ts` returns valid stored documents: 20 weeks for `demo` (a config bump at week 12, a flat stretch, a catalogue growing from 5 to 7 entries), 4 weeks with a gap for `sparse`, one for `single-run` and none for `empty`.
+- In `demo` only, a real `engineConfidenceRun` JSON in `tools/trends/__local__/` (gitignored) replaces the newest generated week. It is relabelled to that week and config version so the timeline has no phantom gap or break.
+
 ## Architecture
 
 - A custom **tool pane** (`defineTool`) in this studio, registered _first_ so

@@ -265,6 +265,27 @@ See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The 
 
 Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL.md`, running and dispatching the suite, the `trigger:perf-bench` label, dispatch inputs), `sanity-radar` (`.agents/skills/sanity-radar/SKILL.md`, the Studio Radar dashboard in `dev/radar` and how to query its dataset) and `sanity-radar-investigate` (`.agents/skills/sanity-radar-investigate/SKILL.md`, the regression-hunting procedure from a drift flag or investigation prompt to a confirmed culprit).
 
+### Engine confidence score (No Auth Required locally)
+
+The Engine confidence score measures how well the tests guard the document engine (`@sanity/mutator`, the document store, form patching, Portable Text sync). It combines two Stryker mutation runs with a catalogue of known-bug patches that the suites must still catch. The producer lives in `engine-confidence/` and `engine-confidence/README.md` carries the detail.
+
+```bash
+pnpm engine-confidence stryker --target mutator --full   # also: --target sanity; omit --full for an incremental run
+pnpm engine-confidence catalogue                         # --suites unit:mutator,unit:engine skips fuzz; --only <ids>; --check-only
+pnpm engine-confidence score                             # writes engine-confidence/reports/engine-confidence-run.json
+pnpm engine-confidence store <file> --dry-run            # prints the document id and body, needs no token
+pnpm engine-confidence pin                               # recomputes config.json's pinnedHash and bumps version when it changed
+pnpm engine-confidence unit                              # the package's unit tests
+```
+
+- **Run it in a disposable checkout.** Stryker's in-place mode rewrites the tier-1 sources until it finishes, and the catalogue applies patches to real sources. A killed run leaves them mutated; the next run refuses a dirty tree. Recover with `git checkout -- packages/sanity/src packages/@sanity/mutator/src`. Run the two Stryker targets one after the other, never at once.
+- **Local recipe:** `pnpm build`, then `stryker --target mutator --full`, `stryker --target sanity --full`, `catalogue`, `score`, and `store reports/engine-confidence-run.json --dry-run` (`pnpm engine-confidence` runs from `engine-confidence/`, so paths are relative to it). `git status --short packages/` must be empty afterwards.
+- **`config.version` is the series-break marker.** Any change to `config.json`, `tier1.json`, `exclusions.json`, `engine-confidence/stryker/`, the vitest-runner patch or the two `@stryker-mutator/*` specifiers changes the pinned hash. Run `pin` and commit the result; a unit test fails on the pull request when the hash is stale. Catalogue growth is not hashed.
+- **Workflows.** `Engine confidence` (`.github/workflows/engine-confidence.yml`) runs Thursdays 03:00 UTC on `main` only, plus manual dispatch, and stores one document per ISO week. It never runs on pull requests, and only its `store` job holds `RADAR_SANITY_WRITE_TOKEN`. `Engine confidence catalogue` (`.github/workflows/engine-confidence-catalogue.yml`) runs on pull requests that touch engine files or the catalogue and checks that every patch still applies. It is not a required check.
+- **The exclusion register** (`engine-confidence/exclusions.json`) holds reviewed mutants that no test could ever catch. `score` exits 8 when an entry is stale (matches no mutant) or matches a mutant a test detected; fix the entry, never the check. Unreachable code and assumption-based equivalence do not qualify. The README has the rules.
+- **Refreshing a patch the PR check flagged:** rebase the patch onto the changed engine code, confirm with `git apply --check`, then run `catalogue --only <id>` to confirm the verdict. `engine-confidence/README.md` has the steps.
+- **Where it shows:** the Radar "Engine confidence" tab (`dev/radar`, `/trends?tab=engine`). `?source=demo` renders it offline. To see a real local run there, copy `engine-confidence/reports/engine-confidence-run.json` into the gitignored `dev/radar/tools/trends/__local__/`; demo mode uses it as the newest week.
+
 ### E2E Tests (Token Required)
 
 E2E tests require authentication tokens. Add these to `.env.local` in the repo root:
