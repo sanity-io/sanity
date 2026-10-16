@@ -3453,7 +3453,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<typeof validateWorkspaces>().toBeFunction()
   })
   test('validation', () => {
-    expectTypeOf<typeof validation>().not.toBeNever()
+    expectTypeOf<typeof validation>().toBeFunction()
   })
   test('ValueError', () => {
     expectTypeOf<typeof ValueError>().toBeFunction()

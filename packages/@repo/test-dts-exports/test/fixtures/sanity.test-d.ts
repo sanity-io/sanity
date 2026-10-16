@@ -7316,7 +7316,7 @@ describe('sanity', () => {
     expectTypeOf<typeof validateWorkspaces>().toBeFunction()
   })
   test('validation', () => {
-    expectTypeOf<typeof validation>().not.toBeNever()
+    expectTypeOf<typeof validation>().toBeFunction()
   })
   test('ValidationBuilder', () => {
     expectTypeOf<ValidationBuilder<any, any>>().not.toBeNever()
