@@ -105,6 +105,15 @@ export function emitOperation(
 // These are the operations that cannot be performed while the document is in an inconsistent state
 const REQUIRES_CONSISTENCY = ['publish', 'unpublish', 'discardChanges', 'delete']
 
+// Patches are committed at most this often per document
+const AUTOCOMMIT_INTERVAL = 1000
+
+// How long to keep the pipeline connected after the last subscriber unsubscribes. A form flushes
+// its pending patches while its document pane unmounts, so the trailing autocommit for them can
+// still be pending for up to AUTOCOMMIT_INTERVAL once the pane's subscription is gone. The
+// invariant: this must be at least AUTOCOMMIT_INTERVAL, or that trailing autocommit is dropped.
+const TEARDOWN_GRACE_PERIOD = AUTOCOMMIT_INTERVAL * 2
+
 /**
  * @hidden
  * @beta */
@@ -161,6 +170,8 @@ export const operationEvents = memoize(
           // although it might look like a bug, dropping pending async operations here is actually a feature
           // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
           // should be cancelled
+          // The groups are kept for the lifetime of the pipeline on purpose: closing an idle group would
+          // let the next operation run alongside one that is still pending instead of cancelling it
           switchMap((args) =>
             operationArgs(ctx, args.idPair, args.typeName).pipe(
               take(1),
@@ -194,10 +205,18 @@ export const operationEvents = memoize(
     )
 
     // this enables autocommit after patch operations
-    const AUTOCOMMIT_INTERVAL = 1000
     const autoCommit$ = result$.pipe(
       filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
-      throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
+      // Throttled per document, so that patching another document within the interval doesn't
+      // replace the pending trailing commit of the previous one
+      groupBy((result) =>
+        createMemoKey([result.args.idPair.publishedId, result.args.idPair.versionId]),
+      ),
+      mergeMap((documentPatches$) =>
+        documentPatches$.pipe(
+          throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
+        ),
+      ),
       concatMap((result) =>
         (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
       ),
@@ -207,7 +226,10 @@ export const operationEvents = memoize(
     )
 
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY)))
+    return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY))).pipe(
+      // One autocommit for all subscribers
+      share({resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD)}),
+    )
   },
   (ctx) =>
     // Per credential (token+dataset+projectId): this captures `ctx.client` and
