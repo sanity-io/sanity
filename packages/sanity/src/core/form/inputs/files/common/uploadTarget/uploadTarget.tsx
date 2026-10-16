@@ -82,6 +82,9 @@ export function uploadTarget<Props>(
       onOpenSourceForUpload,
       onSelectFile,
       onSetHoveringFiles,
+      // Uploads go through `onSelectFile`. The array inputs still pass their `onUpload` along, and
+      // it must not reach the card's DOM element.
+      onUpload: _onUpload,
       assetSources: assetSourcesProp,
       types,
       tone: toneFromProps,

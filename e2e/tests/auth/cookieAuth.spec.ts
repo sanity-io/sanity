@@ -1,15 +1,13 @@
 // oxlint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
 import {expect, test} from '@playwright/test'
 
-import {watchForStudioErrors} from '../../helpers/studioErrors'
+import {watchEachTestForStudioErrors} from '../../helpers/studioErrors'
 import {BASE_URL, setupMockAuth} from './helpers'
 
 const STUDIO_URL = `${BASE_URL}/cookie`
 
 test.describe('Cookie auth: cross-tab sync', () => {
-  test.beforeEach(async ({context}) => {
-    watchForStudioErrors(context)
-  })
+  watchEachTestForStudioErrors(test)
 
   test('logout in one tab reflects in another tab via BroadcastChannel', async ({context}) => {
     const page1 = await context.newPage()

@@ -1,8 +1,7 @@
 import {type ReferenceValue, type SchemaType} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useId, useMemo, useRef, useState, type Ref, type RefAttributes} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Popover} from '../../../../../../../../../../ui-components/popover/Popover'
 import {useSchema} from '../../../../../../../../../hooks/useSchema'
@@ -158,7 +157,7 @@ export function ReferenceAutocomplete({
                 : searchState.terms.query && (
                     <Box padding={4}>
                       <Flex alignItems="center" height="100%" justifyContent="center">
-                        <Text align="center" className={styledText} muted>
+                        <Text align="center" className={styledText} muted as="div" trim={true}>
                           <Translate
                             t={t}
                             i18nKey="new-document.no-results"

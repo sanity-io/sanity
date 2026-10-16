@@ -147,10 +147,16 @@ function deriveServerViewState(
   status: AccessRequestEligibilityState,
   labels: RequestAccessLabels,
   providerTitle?: string,
+  signedInWithSso?: boolean,
 ): ViewState | null {
   switch (status.state) {
     case 'saml-required':
-      return ssoEnforcedState({labels, providerTitle, redirectUrl: status.redirectUrl})
+      return ssoEnforcedState({
+        labels,
+        providerTitle,
+        signedInWithSso,
+        redirectUrl: status.redirectUrl,
+      })
     case 'resource-not-available':
       // Nothing was submitted, so the submit-failure copy would misdescribe it.
       return {
@@ -170,14 +176,15 @@ function deriveServerViewState(
 function ssoEnforcedState(options: {
   labels: RequestAccessLabels
   providerTitle?: string
+  signedInWithSso?: boolean
   redirectUrl?: string
 }): ViewState {
-  const {labels, providerTitle, redirectUrl} = options
+  const {labels, providerTitle, signedInWithSso, redirectUrl} = options
   return {
     view: 'sso-enforced',
     title: labels.ssoEnforcedTitle,
     description: null,
-    message: labels.ssoEnforcedMessage({providerTitle}),
+    message: labels.ssoEnforcedMessage({providerTitle, signedInWithSso}),
     redirectUrl,
   }
 }
@@ -189,6 +196,7 @@ function deriveViewState(options: {
   submitAccessRequestResult: SubmitAccessRequestResult | null
   currentUser?: AccessUser | null
   providerTitle?: string
+  signedInWithSso?: boolean
   labels: RequestAccessLabels
 }): ViewState {
   const {
@@ -198,6 +206,7 @@ function deriveViewState(options: {
     submitAccessRequestResult,
     currentUser,
     providerTitle,
+    signedInWithSso,
     labels,
   } = options
   const submitFailure = (message: ReactNode): ViewState => ({
@@ -215,6 +224,7 @@ function deriveViewState(options: {
         return ssoEnforcedState({
           labels,
           providerTitle,
+          signedInWithSso,
           redirectUrl: submitAccessRequestResult.redirectUrl,
         })
       case 'denied':
@@ -234,7 +244,12 @@ function deriveViewState(options: {
   // The server's verdict outranks the request history: a pending request in an
   // enforced org is already dead, so "pending approval" would be a false
   // promise. It answers `eligible` when it has nothing to say.
-  const serverState = deriveServerViewState(accessRequestEligibilityState, labels, providerTitle)
+  const serverState = deriveServerViewState(
+    accessRequestEligibilityState,
+    labels,
+    providerTitle,
+    signedInWithSso,
+  )
   if (serverState) return serverState
 
   // TODO: `pending` and `denied` will be replaced by future content in `accessRequestEligibilityState`
@@ -285,13 +300,15 @@ function RequestAccessFormContent(
   const [isSubmitting, startSubmit] = useTransition()
 
   const providerTitle = getProviderTitle(currentUser?.provider)
+  const signedInWithSso = currentUser?.provider?.startsWith('saml-') === true
   const state = deriveViewState({
     accessRequestsHistory,
     accessRequestEligibilityState,
     resourceId,
     submitAccessRequestResult,
     currentUser,
-    providerTitle,
+    providerTitle: signedInWithSso ? undefined : providerTitle,
+    signedInWithSso,
     labels,
   })
 

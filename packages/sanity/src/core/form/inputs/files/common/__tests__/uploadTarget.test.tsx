@@ -1,3 +1,4 @@
+import {takeDomPropWarnings} from '@repo/test-config/vitest/failOnReactDomPropWarnings'
 import {type AssetSource} from '@sanity/types'
 /**
  * Tests for drag-and-drop and paste upload via uploadTarget/fileTarget.
@@ -585,6 +586,22 @@ describe('uploadTarget - drag and drop', () => {
     } finally {
       addEventListenerSpy.mockRestore()
     }
+  })
+})
+
+describe('uploadTarget - card props', () => {
+  it('keeps onUpload off the card element', async () => {
+    await renderArrayOfObjectsInput({
+      fieldDefinition: {
+        name: 'items',
+        type: 'array',
+        of: [{type: 'object', name: 'item', fields: [{name: 'title', type: 'string'}]}],
+      },
+      render: (inputProps) => <ListArrayInput {...inputProps} onUpload={vi.fn()} />,
+    })
+
+    expect(document.querySelector('[data-test-id="file-target"]')).toBeInTheDocument()
+    expect(takeDomPropWarnings()).toEqual([])
   })
 })
 

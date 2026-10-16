@@ -24,7 +24,7 @@ export interface RequestAccessLabels {
   overLimitMessage: (context: {message?: string}) => ReactNode
   expiredMessage: ReactNode
   ssoEnforcedTitle: ReactNode
-  ssoEnforcedMessage: (context: {providerTitle?: string}) => ReactNode
+  ssoEnforcedMessage: (context: {providerTitle?: string; signedInWithSso?: boolean}) => ReactNode
   ssoSignInCta: ReactNode
   resourceNotAvailableTitle: ReactNode
   resourceNotAvailableMessage: ReactNode
@@ -61,18 +61,20 @@ export const defaultLabels: RequestAccessLabels = {
     'You’ve reached the limit for access requests across all projects. Please wait before submitting more requests, or contact an admin.',
   expiredMessage: 'Your previous request has expired. You may request access again below.',
   // Reached both before and after a submit, so it must not claim a send failed.
-  ssoEnforcedTitle: 'Sign in with SSO required',
-  ssoEnforcedMessage: ({providerTitle}) =>
-    providerTitle ? (
-      <>
-        You’re signed in with <strong>{providerTitle}</strong>, but this organization requires
-        signing in with SSO. Access can’t be requested with this account.
-      </>
-    ) : (
-      <>
-        This organization requires signing in with SSO. Access can’t be requested with this account.
-      </>
-    ),
+  ssoEnforcedTitle: 'Organization SSO required',
+  ssoEnforcedMessage: ({providerTitle, signedInWithSso}) => {
+    const requirement =
+      'This organization requires you to sign in with its own SSO. If you can’t continue, contact your organization’s administrator.'
+    if (signedInWithSso) return <>You’re signed in with a different SSO provider. {requirement}</>
+    if (providerTitle) {
+      return (
+        <>
+          You’re signed in with <strong>{providerTitle}</strong>. {requirement}
+        </>
+      )
+    }
+    return requirement
+  },
   ssoSignInCta: 'Sign in with SSO',
   resourceNotAvailableTitle: 'Access can’t be requested',
   resourceNotAvailableMessage: 'The resource currently being requested is no longer available.',

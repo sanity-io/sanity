@@ -10,6 +10,10 @@ import 'blob-polyfill'
 import './clipboardItemPolyfill'
 // oxlint-disable-next-line no-unassigned-import
 import '@testing-library/jest-dom/vitest'
+// Fail any test during which react-dom reports a prop leaking onto a DOM element (see the module
+// for the matched diagnostics). Installed before the console overrides below so those wrap it.
+// oxlint-disable-next-line no-unassigned-import
+import '@repo/test-config/vitest/failOnReactDomPropWarnings'
 
 import {cleanup} from '@testing-library/react'
 import {afterEach, beforeEach, expect, vi} from 'vitest'
