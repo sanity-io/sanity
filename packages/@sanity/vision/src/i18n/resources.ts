@@ -347,7 +347,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.generate.close': 'Close',
   /** Explanation under the generate query field */
   'vista.generate.description':
-    'Sanity Agent Actions write the GROQ from your description and the document types, and the Content Lake checks each attempt. It runs in this tab while its query is empty, otherwise in a new one.',
+    'Sanity Agent Actions write the GROQ from your description and the document types, and the Content Lake checks each attempt. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
   /** Shown when no query could be generated, above the reason */
   'vista.generate.failed': 'The query could not be generated',
   /** Accessible label of the description field in the generate query bar */

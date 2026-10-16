@@ -1,3 +1,5 @@
+import {history, undo} from '@codemirror/commands'
+import {type Extension} from '@codemirror/state'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {act, render} from '@testing-library/react'
 import {Activity, type RefObject} from 'react'
@@ -5,11 +7,14 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from './VisionCodeMirror'
 
+const NO_EXTENSIONS: Extension[] = []
+
 function editor(
   mode: 'visible' | 'hidden',
   ref: RefObject<VisionCodeMirrorHandle | null>,
   onChange: () => void,
   initialValue = '',
+  extensions = NO_EXTENSIONS,
 ) {
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -19,7 +24,7 @@ function editor(
           ref={ref}
           initialValue={initialValue}
           onChange={onChange}
-          extensions={[]}
+          extensions={extensions}
         />
       </Activity>
     </ThemeProvider>
@@ -27,6 +32,27 @@ function editor(
 }
 
 describe('VisionCodeMirror', () => {
+  it('replaces its document in one step that undo takes back', () => {
+    const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
+    const {container, unmount} = render(
+      editor('visible', ref, vi.fn(), '*[_type == "post"]', [history()]),
+    )
+    const content = () => container.querySelector('.cm-content')?.textContent
+
+    // A generated query replaces the tab's query like this
+    act(() => ref.current?.resetEditorContent('*[_type == "author"] | order(name asc)'))
+    expect(content()).toBe('*[_type == "author"] | order(name asc)')
+
+    let undone: boolean | undefined
+    act(() => {
+      undone = ref.current?.runCommand(undo)
+    })
+    expect(undone).toBe(true)
+    expect(content()).toBe('*[_type == "post"]')
+    // Destroying the view cancels the measuring that undo scheduled, which jsdom cannot do
+    unmount()
+  })
+
   it('keeps its document when hidden and shown again inside an Activity boundary', () => {
     const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
     const onChange = vi.fn()

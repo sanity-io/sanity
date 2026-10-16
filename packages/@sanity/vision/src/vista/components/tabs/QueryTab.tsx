@@ -180,14 +180,13 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     }
   }, [actorRef, run, tab.autoRefetch, tab.id])
 
-  // Formats the query in place, wrapping at the width the editor has so the result needs no
-  // sideways scrolling. Formatting changes the line count, and with it the line-number gutter's
-  // width and whether a vertical scrollbar takes space, so the result is measured again and
-  // formatted once more while that leaves fewer columns. Rejects when the query does not parse.
-  const formatQuery = useCallback(async () => {
-    const {query} = tab
+  // Formats a query to wrap at the width the editor has, so it needs no sideways scrolling.
+  // Formatting changes the line count, and with it the line-number gutter's width and whether a
+  // vertical scrollbar takes space, so the result is measured again and formatted once more while
+  // that leaves fewer columns. Rejects when the query does not parse.
+  const formatForEditor = useCallback(async (query: string) => {
     const editor = queryEditorRef.current
-    let width = editor?.getVisibleColumns()
+    let width = editor?.getVisibleColumns(countLines(query))
     let formatted = await formatGroq(query, width)
     for (let pass = 0; pass < 2 && width !== undefined; pass++) {
       const nextWidth = editor?.getVisibleColumns(countLines(formatted))
@@ -195,12 +194,19 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       width = nextWidth
       formatted = await formatGroq(query, width)
     }
+    return formatted
+  }, [])
+
+  // Formats the query in place
+  const formatQuery = useCallback(async () => {
+    const {query} = tab
+    const formatted = await formatForEditor(query)
     // The formatter loads lazily; a query edited meanwhile is not overwritten
     const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
     if (latest?.query !== query || formatted === query) return
     queryEditorRef.current?.resetEditorContent(formatted)
     setQuery(formatted)
-  }, [actorRef, setQuery, tab])
+  }, [actorRef, formatForEditor, setQuery, tab])
 
   const prettify = useCallback(async () => {
     try {
@@ -414,6 +420,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const requestPanel = (
     <RequestPanel
       buildRequest={buildRequest}
+      formatForEditor={formatForEditor}
       isFetching={isFetching}
       onCancel={cancel}
       onCopyQuery={copyQuery}

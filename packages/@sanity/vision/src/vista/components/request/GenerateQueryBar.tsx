@@ -27,15 +27,16 @@ export interface GenerateQueryBarProps {
   tab: VistaTab
   /** The tab's client: attempts are checked with its dataset, API version and perspective */
   client: SanityClient
+  /** Formats the generated query for the query editor, as Prettify does */
+  formatForEditor: (query: string) => Promise<string>
   onClose: () => void
 }
 
 /**
- * Writes a query from a description with Agent Actions, above the query editor. The query goes
- * into the tab while its query is empty, otherwise into a new tab with the same options, and
- * runs there.
+ * Writes a query from a description with Agent Actions, above the query editor. The query
+ * replaces the tab's query and params, and runs.
  */
-export function GenerateQueryBar({tab, client, onClose}: GenerateQueryBarProps) {
+export function GenerateQueryBar({tab, client, formatForEditor, onClose}: GenerateQueryBarProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVistaActor()
   const schema = useSchema() as Schema | undefined
@@ -45,21 +46,28 @@ export function GenerateQueryBar({tab, client, onClose}: GenerateQueryBarProps) 
 
   useEffect(() => () => controllerRef.current?.abort(), [])
 
+  // The editors replace their content in one undoable step, so undo brings back what the tab had;
+  // the query is formatted first so that step is the only one. Undo does not bring back a title,
+  // so only an empty tab without one is named after the description: a title the tab was given
+  // stays, and one derived from its query goes on following the query.
   const open = useCallback(
-    (generated: GeneratedQuery, fetch: boolean) => {
-      const init = {
-        query: generated.query,
-        rawParams: JSON.stringify(generated.params, null, 2),
-        title: generated.title,
-      }
-      if (tab.query.trim()) {
-        actorRef.send({type: 'tab.add', tab: {...init, options: tab.options}, fetch})
-      } else {
-        actorRef.send({type: 'tab.load', id: tab.id, tab: init, fetch})
-      }
+    async (generated: GeneratedQuery, fetch: boolean, signal?: AbortSignal) => {
+      const query = await formatForEditor(generated.query).catch(() => generated.query)
+      if (signal?.aborted) return
+      const named = tab.title === undefined && !tab.query.trim()
+      actorRef.send({
+        type: 'tab.load',
+        id: tab.id,
+        tab: {
+          query,
+          rawParams: JSON.stringify(generated.params, null, 2),
+          ...(named ? {title: generated.title} : {}),
+        },
+        fetch,
+      })
       onClose()
     },
-    [actorRef, onClose, tab.id, tab.options, tab.query],
+    [actorRef, formatForEditor, onClose, tab.id, tab.query, tab.title],
   )
 
   const generate = useCallback(async () => {
@@ -77,7 +85,7 @@ export function GenerateQueryBar({tab, client, onClose}: GenerateQueryBarProps) 
         signal: controller.signal,
         onAttempt: (attempt) => setStatus({type: 'generating', attempt}),
       })
-      open(generated, true)
+      await open(generated, true, controller.signal)
     } catch (error) {
       if (controller.signal.aborted) return
       setStatus({
@@ -175,7 +183,7 @@ export function GenerateQueryBar({tab, client, onClose}: GenerateQueryBarProps) 
                       data-testid="vista-generate-open-anyway"
                       fontSize={1}
                       mode="ghost"
-                      onClick={() => open(lastAttempt, false)}
+                      onClick={() => void open(lastAttempt, false)}
                       padding={2}
                       text={t('vista.generate.open-anyway')}
                     />

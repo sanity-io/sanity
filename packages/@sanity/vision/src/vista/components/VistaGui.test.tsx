@@ -398,6 +398,13 @@ function typeQuery(query: string) {
   fireEvent.change(getQueryEditor(), {target: {value: query}})
 }
 
+/** Asks the generate query bar for a query */
+function generateFrom(description: string) {
+  fireEvent.click(screen.getByTestId('vista-generate-query'))
+  fireEvent.change(screen.getByTestId('vista-generate-request'), {target: {value: description}})
+  fireEvent.click(screen.getByTestId('vista-generate-submit'))
+}
+
 function getStoredState() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
 }
@@ -903,16 +910,24 @@ describe('VistaGui', () => {
         expect.objectContaining({line: 1, rule: 'groq-lint/join-in-filter', text: 'author->'}),
       ])
 
-      // Opens a query in a tab of its own and runs it there
+      // Opens a query in a tab of its own and runs it there, laid out for the width the new tab's
+      // editor settles at rather than the narrower one it has while its panes settle
       const fetchesBefore = fetchCalls.length
-      await read('vision_open_query', {query: '*[_type == "book"]', title: 'From the agent'})
+      let readings = 0
+      editorMocks.visibleColumns = () => (++readings <= 2 ? 30 : 80)
+      await read('vision_open_query', {
+        query: '*[_type == "book"] | order(_createdAt desc)[0...10]{_id, title}',
+        title: 'From the agent',
+      })
       await waitFor(() =>
         expect(getStoredState()?.tabs.map((tab: {title?: string}) => tab.title)).toContain(
           'From the agent',
         ),
       )
       await waitFor(() => expect(fetchCalls.length).toBeGreaterThan(fetchesBefore))
-      expect(fetchCalls.at(-1)?.query).toBe('*[_type == "book"]')
+      expect(fetchCalls.at(-1)?.query).toBe(
+        '*[_type == "book"] | order(_createdAt desc)[0...10] { _id, title }',
+      )
 
       // Mutations only run as dry runs, each document compared with what they would make it
       documents.set('a', {_id: 'a', _type: 'post', title: 'Old'})
@@ -1140,33 +1155,43 @@ describe('VistaGui', () => {
     )
   })
 
-  it('generates into a new tab next to a tab that has a query, and closes on Escape', async () => {
+  it('replaces the query of a tab that has one, keeping its title, and closes on Escape', async () => {
     const {fetchCalls, replyToPrompts} = renderVista()
     typeQuery('*[_type == "post"]')
-    const generated = '*[_type == "author"] | order(_createdAt desc)[0...10]{_id, name}'
-    replyToPrompts({query: generated, params: {}, title: 'Authors'})
-    // The new tab's editor is narrower for its first frames, while its panes settle
-    let readings = 0
-    editorMocks.visibleColumns = () => (++readings <= 2 ? 30 : 80)
+    replyToPrompts(
+      {
+        query: '*[_type == "author"] | order(_createdAt desc)[0...$limit]{_id, name}',
+        params: {limit: 10},
+        title: 'Authors',
+      },
+      {query: '*[_type == "book"]', params: {}, title: 'Books'},
+    )
 
     fireEvent.click(screen.getByTestId('vista-generate-query'))
     fireEvent.keyDown(screen.getByTestId('vista-generate-request'), {key: 'Escape'})
     expect(screen.queryByTestId('vista-generate-bar')).toBeNull()
 
-    fireEvent.click(screen.getByTestId('vista-generate-query'))
-    fireEvent.change(screen.getByTestId('vista-generate-request'), {target: {value: 'Authors'}})
-    fireEvent.click(screen.getByTestId('vista-generate-submit'))
-
-    await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(2))
+    generateFrom('Authors')
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
-    const tabs = screen.getAllByTestId('vista-tab')
-    expect(within(tabs[1]).getByRole('tab').getAttribute('aria-selected')).toBe('true')
-    expect(text(tabs[1])).toContain('Authors')
-    // Formatted for the width the editor settled at, as Prettify would, not the first one
+    expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
+    // Formatted for the editor, as Prettify would, before it replaced the query
     expect(fetchCalls[1].query).toBe(
-      '*[_type == "author"] | order(_createdAt desc)[0...10] { _id, name }',
+      '*[_type == "author"] | order(_createdAt desc)[0...$limit] { _id, name }',
     )
+    expect(fetchCalls[1].params).toEqual({limit: 10})
     expect(getQueryEditor().value).toBe(fetchCalls[1].query)
+    // The title still comes from the query, so it follows an undo in the editor too
+    expect(text(screen.getByTestId('vista-tab-button'))).toBe('author')
+
+    // A title the tab was given stays
+    fireEvent.keyDown(within(screen.getByTestId('vista-tab')).getByRole('tab'), {key: 'F2'})
+    const titleInput = screen.getByTestId('vista-tab-title-input')
+    fireEvent.change(titleInput, {target: {value: 'Reading list'}})
+    fireEvent.keyDown(titleInput, {key: 'Enter'})
+    generateFrom('Books')
+    await waitFor(() => expect(fetchCalls).toHaveLength(4))
+    expect(getQueryEditor().value).toBe('*[_type == "book"]')
+    expect(text(screen.getByTestId('vista-tab-button'))).toBe('Reading list')
   })
 
   it('offers the last attempt when every generated query is rejected', async () => {
@@ -1651,8 +1676,8 @@ describe('VistaGui', () => {
       '}',
     ].join('\n')
     await waitFor(() => expect(getQueryEditor().value).toBe(narrow))
-    // Measured for the current document, then for the 7 lines of the first pass and the 8 of the second
-    expect(widthsAsked).toEqual([undefined, 7, 8])
+    // Measured for the query's one line, then for the 7 lines of the first pass and the 8 of the second
+    expect(widthsAsked).toEqual([1, 7, 8])
 
     typeQuery('*[_type == "author"')
     fireEvent.click(screen.getByTestId('vista-query-menu-button'))

@@ -83,6 +83,11 @@ export interface RequestPanelProps {
   onRun: () => void
   onCancel: () => void
   onPrettify: () => void
+  /**
+   * Formats a query for the width of the query editor, as Prettify does; rejects when it does not
+   * parse
+   */
+  formatForEditor: (query: string) => Promise<string>
   onCopyQuery: () => void
   onToggleAutoRefetch: () => void
   /** The query editor's lint diagnostics, whenever they change */
@@ -111,6 +116,7 @@ export function RequestPanel(props: RequestPanelProps) {
     onRun,
     onCancel,
     onPrettify,
+    formatForEditor,
     onCopyQuery,
     onToggleAutoRefetch,
     onLintFindings,
@@ -229,7 +235,12 @@ export function RequestPanel(props: RequestPanelProps) {
       <Flex flexBasis="0%" flexDirection="column" flexGrow={1} minHeight="0" ref={containerRef}>
         <Flex className={querySection}>
           {generatorOpen && (
-            <GenerateQueryBar client={resolved.client} onClose={closeGenerator} tab={tab} />
+            <GenerateQueryBar
+              client={resolved.client}
+              formatForEditor={formatForEditor}
+              onClose={closeGenerator}
+              tab={tab}
+            />
           )}
           <Box
             className={editorContainer}
