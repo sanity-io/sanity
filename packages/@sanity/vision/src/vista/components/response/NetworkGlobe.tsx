@@ -6,11 +6,58 @@ import {type ApproximateLocation} from '../../util/timeZoneLocation'
 
 const SIZE = 168
 const SETTLE_MS = 1200
+/** Fewer than cobe's demo uses: at this size more read as a screen door on a 1x screen */
+const MAP_SAMPLES = 12_000
 
 /** cobe draws the globe; it is only fetched once the Network panel shows a response */
 const loadCobe = () => import('cobe')
 const YOU_COLOR: [number, number, number] = [0.25, 0.55, 1]
 const API_COLOR: [number, number, number] = [1, 0.45, 0.2]
+
+type GlobeLook = Pick<COBEOptions, 'dark' | 'diffuse' | 'mapBrightness' | 'baseColor' | 'glowColor'>
+
+/** Light dots on a dark sphere in the dark scheme, dark dots on a light one in the light scheme */
+const DARK_GLOBE: GlobeLook = {
+  dark: 1,
+  diffuse: 1.2,
+  mapBrightness: 6,
+  baseColor: [0.3, 0.3, 0.34],
+  glowColor: [0.2, 0.2, 0.24],
+}
+const LIGHT_GLOBE: GlobeLook = {
+  dark: 0,
+  diffuse: 1.6,
+  mapBrightness: 8,
+  baseColor: [0.96, 0.96, 0.98],
+  glowColor: [0.8, 0.82, 0.88],
+}
+
+/** The attributes cobe asks for, so the context made for it first is the one it gets */
+const CONTEXT_ATTRIBUTES: WebGLContextAttributes = {
+  alpha: true,
+  stencil: false,
+  antialias: true,
+  depth: false,
+  preserveDrawingBuffer: false,
+}
+const DOT_RADIUS = 'smoothstep(8e-3,0.,g)'
+const LARGER_DOT_RADIUS = 'smoothstep(8.8e-3,0.,g)'
+
+/**
+ * cobe draws every land dot with one radius in its fragment shader, with no option for it, and
+ * at this size a dot is about a pixel wide. The canvas gets the WebGL context cobe will ask for
+ * ahead of it, which hands cobe's shader on with that radius a tenth larger; a cobe whose shader
+ * reads otherwise keeps its own dots.
+ */
+function enlargeDots(canvas: HTMLCanvasElement): void {
+  const context =
+    canvas.getContext('webgl2', CONTEXT_ATTRIBUTES) ??
+    canvas.getContext('webgl', CONTEXT_ATTRIBUTES)
+  if (!context) return
+  const shaderSource = context.shaderSource.bind(context)
+  context.shaderSource = (shader, source) =>
+    shaderSource(shader, source.replace(DOT_RADIUS, LARGER_DOT_RADIUS))
+}
 
 function toRadians(degrees: number): number {
   return (degrees * Math.PI) / 180
@@ -81,14 +128,9 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
           height: SIZE,
           devicePixelRatio,
           ...from,
-          // Light dots on a dark sphere, which reads at this size on either background
-          dark: 1,
-          diffuse: 1.2,
-          mapSamples: 16_000,
-          mapBrightness: 6,
-          baseColor: [0.3, 0.3, 0.34],
+          ...(dark ? DARK_GLOBE : LIGHT_GLOBE),
+          mapSamples: MAP_SAMPLES,
           markerColor: API_COLOR,
-          glowColor: dark ? [0.2, 0.2, 0.24] : [0.86, 0.87, 0.9],
           markers,
           arcs:
             you && api && reachedApi
@@ -99,6 +141,7 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
           arcHeight: 0.3,
         }
         try {
+          enlargeDots(canvas)
           const globe = createGlobe(canvas, options)
           // The globe turns from you to the way the query took, and stops: drawing for a moment
           // also picks up the map texture, which cobe loads after the first frame
