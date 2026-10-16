@@ -139,7 +139,7 @@ describe('RequestAccessForm', () => {
     await submitRequest()
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      /requires you to sign in with its SSO/,
+      /requires you to sign in with its own SSO/,
     )
     expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
       'href',
@@ -160,7 +160,7 @@ describe('RequestAccessForm', () => {
     await renderForm({client})
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      /requires you to sign in with its SSO/,
+      /requires you to sign in with its own SSO/,
     )
     // The org's own SSO login page, which auto-submits, so this is the only click.
     expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
@@ -189,7 +189,7 @@ describe('RequestAccessForm', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/signed in with Google/)
   })
 
-  it('does not name a SAML session as satisfying the requirement', async () => {
+  it('tells a SAML session it is on a different SSO provider', async () => {
     const client = createClientStub(samlRequired())
     await renderForm({
       client,
@@ -197,9 +197,19 @@ describe('RequestAccessForm', () => {
     })
 
     const alert = await screen.findByRole('alert')
-    expect(alert).toHaveTextContent(/requires you to sign in with its SSO/)
-    expect(alert).not.toHaveTextContent(/signed in with/)
+    expect(alert).toHaveTextContent(/requires you to sign in with its own SSO/)
+    expect(alert).toHaveTextContent(/signed in with a different SSO provider/)
+    expect(alert).not.toHaveTextContent(/SAML/)
     expect(screen.getByText('ada@example.com · SAML/SSO')).toBeInTheDocument()
+  })
+
+  it('does not claim an SSO session for an unknown provider', async () => {
+    const client = createClientStub(samlRequired())
+    await renderForm({client, currentUser: {email: 'ada@example.com', provider: 'other'}})
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/requires you to sign in with its own SSO/)
+    expect(alert).not.toHaveTextContent(/signed in with/)
   })
 
   it('omits the CTA when the API resolves no login URL', async () => {
@@ -218,7 +228,7 @@ describe('RequestAccessForm', () => {
     await renderForm({client})
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      /requires you to sign in with its SSO/,
+      /requires you to sign in with its own SSO/,
     )
     expect(screen.queryByText(/pending approval/)).not.toBeInTheDocument()
   })
