@@ -1,5 +1,7 @@
 import {type ExprNode, parse, type SchemaType, typeEvaluate, type TypeNode, unparse} from 'groq-js'
 
+import {parseGroq, readQueryFunctions} from './groqFunctions'
+
 /** What a param's value is, as far as the query (and the schema) tell */
 export type ParamKind = 'string' | 'number' | 'integer' | 'boolean' | 'any'
 
@@ -41,8 +43,19 @@ const INTEGER: ParamType = {kind: 'integer', array: false}
 const IDENTIFIER_START = /[A-Za-z_]/
 const IDENTIFIER_PART = /[A-Za-z0-9_]/
 
-/** The `$name`s in a query's text, outside string literals and comments, in order */
+/**
+ * The `$name`s in a query's text, outside string literals and comments, in order. Within a custom
+ * function's declaration its own parameter is not one: the function's caller passes it.
+ */
 export function findParamNames(query: string): string[] {
+  const {declarations} = readQueryFunctions(parseGroq(query), query)
+  const isFunctionParameter = (name: string, at: number) =>
+    declarations.some(
+      ({range, parameters}) =>
+        at >= range.from &&
+        at < range.to &&
+        parameters.some((parameter) => parameter.name === `$${name}`),
+    )
   const names = new Set<string>()
   let index = 0
   while (index < query.length) {
@@ -59,7 +72,8 @@ export function findParamNames(query: string): string[] {
     } else if (char === '$' && IDENTIFIER_START.test(query[index + 1] ?? '')) {
       let end = index + 2
       while (end < query.length && IDENTIFIER_PART.test(query[end])) end++
-      names.add(query.slice(index + 1, end))
+      const name = query.slice(index + 1, end)
+      if (!isFunctionParameter(name, index)) names.add(name)
       index = end
     } else {
       index++

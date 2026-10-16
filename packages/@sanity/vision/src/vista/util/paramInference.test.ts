@@ -46,11 +46,37 @@ describe('findParamNames', () => {
       ),
     ).toEqual(['type', 'limit', 'other'])
   })
+
+  it('leaves out the parameter of a custom function within its declaration', () => {
+    expect(
+      findParamNames(
+        [
+          'fn my::asset($asset) = $asset->{url, originalFilename};',
+          'fn my::named($q) = $q{title};',
+          '*[_type == "icon" && filename match $q]{"image": my::asset(image.asset), "n": $limit}',
+        ].join('\n'),
+      ),
+    ).toEqual(['q', 'limit'])
+  })
 })
 
 describe('inferQueryParams', () => {
   it('finds nothing in a query without params', () => {
     expect(inferQueryParams('*[_type == "post"]')).toEqual({params: [], syntaxError: false})
+  })
+
+  it('does not offer the parameters of the custom functions the query declares', () => {
+    const inference = inferQueryParams(
+      [
+        'fn my::asset($asset) = $asset->{url, metadata, originalFilename, size};',
+        '*[_type == "icon"] | score(boost(filename match $q + "*", 8)) | order(_score desc)[0...10]',
+        '{_id, "image": my::asset(image.asset)}',
+      ].join('\n'),
+    )
+    expect(inference.syntaxError).toBe(false)
+    expect(inference.params.map(({name, type}) => ({name, kind: type.kind}))).toEqual([
+      {name: 'q', kind: 'string'},
+    ])
   })
 
   it('types slice bounds as whole numbers, written out as the slice', () => {
