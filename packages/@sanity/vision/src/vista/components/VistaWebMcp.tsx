@@ -12,6 +12,7 @@ import {getDocumentTypeNames} from '../util/documentTypes'
 import {fetchQueryPlan} from '../util/explainQuery'
 import {functionLibrary, querySchema} from '../util/groqEditorContext'
 import {groqLintSource} from '../util/groqLint'
+import {previewMutations, toMutations} from '../util/mutations'
 import {readPlanInsights} from '../util/planInsights'
 import {createQuerySchema} from '../util/schemaCheck'
 import {summarizeSchema} from '../util/schemaSummary'
@@ -21,7 +22,8 @@ import {describeInsight} from './response/ExplainTab'
  * WebMCP (`document.modelContext`, https://webmachinelearning.github.io/webmcp/): tools an agent
  * in the browser can call while Vision is open, acting through the user's own session the way
  * the tool does. They read: the active tab, query results, plans, lint findings and the schema;
- * the one that changes anything only opens a query in a tab of its own. Nothing writes data.
+ * the one that changes anything only opens a query in a tab of its own. Nothing writes data:
+ * mutations only run as dry runs, and applying them is left to the user, in the Mutate panel.
  */
 
 /** The parts of WebMCP Vision uses; the API is not in the DOM typings yet */
@@ -94,6 +96,7 @@ type ToolName =
   | 'vision_check_query'
   | 'vision_explain_query'
   | 'vision_describe_schema'
+  | 'vision_preview_mutations'
 
 const TOOLS: {name: ToolName; description: string; inputSchema: object; readOnly: boolean}[] = [
   {
@@ -155,6 +158,28 @@ const TOOLS: {name: ToolName; description: string; inputSchema: object; readOnly
           description: 'Document type names to describe field by field',
         },
       },
+    },
+    readOnly: true,
+  },
+  {
+    name: 'vision_preview_mutations',
+    description:
+      "Runs mutations as a dry run against the active Vision tab's dataset, which changes nothing, and returns each document they touch as it is now (before) and as they would leave it (after). No tool applies mutations: the user can, from Vision's Mutate panel.",
+    inputSchema: {
+      type: 'object',
+      properties: {
+        mutations: {
+          type: 'array',
+          items: {type: 'object'},
+          description:
+            'Mutations as the Mutations API takes them, each with one of create, createOrReplace, createIfNotExists, delete or patch (by id, or by a GROQ query)',
+        },
+        autoGenerateArrayKeys: {
+          type: 'boolean',
+          description: 'Give array items without a _key one, as the studio needs (default true)',
+        },
+      },
+      required: ['mutations'],
     },
     readOnly: true,
   },
@@ -261,6 +286,25 @@ export function VistaWebMcp({tab}: {tab: VistaTab}) {
             : `Document types: ${getDocumentTypeNames(schema).join(', ')}`,
         )
       }
+      case 'vision_preview_mutations': {
+        const mutations = toMutations(input.mutations)
+        if (mutations.status === 'empty') return text('There are no mutations to run.', true)
+        if (mutations.status === 'invalid-mutation') {
+          return text(
+            `Mutation ${mutations.index} needs exactly one of create, createOrReplace, createIfNotExists, delete or patch.`,
+            true,
+          )
+        }
+        if (mutations.status !== 'valid') return text('mutations must be a list.', true)
+        const preview = await previewMutations(resolved.client, mutations.mutations, {
+          autoGenerateArrayKeys: input.autoGenerateArrayKeys !== false,
+        })
+        return text({
+          dataset: resolved.dataset,
+          documents: preview.changes,
+          notCompared: preview.notShown,
+        })
+      }
       default: {
         const unhandled: never = name
         return text(`Unknown tool ${String(unhandled)}`, true)
@@ -283,6 +327,8 @@ export function VistaWebMcp({tab}: {tab: VistaTab}) {
         return t('vista.webmcp.explain-query')
       case 'vision_describe_schema':
         return t('vista.webmcp.describe-schema')
+      case 'vision_preview_mutations':
+        return t('vista.webmcp.preview-mutations')
       default: {
         const unhandled: never = name
         return String(unhandled)

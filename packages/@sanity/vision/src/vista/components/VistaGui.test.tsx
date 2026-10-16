@@ -846,8 +846,8 @@ describe('VistaGui', () => {
       },
     })
     try {
-      const {fetchCalls, unmount} = renderVista()
-      await waitFor(() => expect(registered).toHaveLength(6))
+      const {fetchCalls, documents, requestCalls, respondToRequestsBy, unmount} = renderVista()
+      await waitFor(() => expect(registered).toHaveLength(7))
       expect(registered.map(({tool}) => [tool.name, tool.annotations?.readOnlyHint])).toEqual([
         ['vision_get_state', true],
         ['vision_run_query', true],
@@ -855,6 +855,7 @@ describe('VistaGui', () => {
         ['vision_check_query', true],
         ['vision_explain_query', true],
         ['vision_describe_schema', true],
+        ['vision_preview_mutations', true],
       ])
       expect(registered[0].tool.title).toBe('vista.webmcp.get-state')
       const tool = (name: string) =>
@@ -912,6 +913,37 @@ describe('VistaGui', () => {
       )
       await waitFor(() => expect(fetchCalls.length).toBeGreaterThan(fetchesBefore))
       expect(fetchCalls.at(-1)?.query).toBe('*[_type == "book"]')
+
+      // Mutations only run as dry runs, each document compared with what they would make it
+      documents.set('a', {_id: 'a', _type: 'post', title: 'Old'})
+      respondToRequestsBy(() => ({
+        results: [
+          {id: 'a', operation: 'update', document: {_id: 'a', _type: 'post', title: 'New'}},
+        ],
+      }))
+      const preview = await read('vision_preview_mutations', {
+        mutations: [{patch: {id: 'a', set: {title: 'New'}}}],
+      })
+      expect(JSON.parse(preview?.content[0].text ?? '{}')).toEqual({
+        dataset: 'test',
+        documents: [
+          {
+            id: 'a',
+            operation: 'update',
+            before: {_id: 'a', _type: 'post', title: 'Old'},
+            after: {_id: 'a', _type: 'post', title: 'New'},
+          },
+        ],
+        notCompared: 0,
+      })
+      expect(requestCalls.at(-1)?.options).toMatchObject({
+        url: '/v2025-02-19/data/mutate/test',
+        method: 'POST',
+        query: {dryRun: 'true', returnDocuments: 'true'},
+      })
+      expect(await read('vision_preview_mutations', {mutations: [{upsert: {}}]})).toMatchObject({
+        isError: true,
+      })
 
       unmount()
       expect(registered.every(({signal}) => signal?.aborted)).toBe(true)

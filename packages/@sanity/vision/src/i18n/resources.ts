@@ -455,6 +455,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.webmcp.get-state': 'Read the open Vision tab',
   /** Title the browser shows for the WebMCP tool that opens a query in a new tab */
   'vista.webmcp.open-query': 'Open a GROQ query in Vision',
+  /** Title the browser shows for the WebMCP tool that runs mutations as a dry run */
+  'vista.webmcp.preview-mutations': 'Preview mutations in Vision',
   /** Title the browser shows for the WebMCP tool that runs a query */
   'vista.webmcp.run-query': 'Run a GROQ query in Vision',
   /** Badge shown while a tab refetches automatically */
