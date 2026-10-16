@@ -411,12 +411,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    * automatically
    */
   'vista.history.reason.live-start': 'Live fetch started',
-  /** History reason: a saved or pasted query was loaded into a tab that refetches automatically */
+  /** History reason: a saved query was loaded into a tab that refetches automatically */
   'vista.history.reason.load': 'Query loaded',
   /** History reason: the fetch button was pressed */
   'vista.history.reason.manual': 'Fetch button',
   /** History reason: dataset, API version or perspective changed while refetching automatically */
   'vista.history.reason.options': 'Options changed',
+  /** History reason: a query URL was pasted into the tab, which runs it */
+  'vista.history.reason.paste': 'Pasted URL',
   /** History reason: a tab that refetches automatically was opened again, or the studio reloaded */
   'vista.history.reason.resume': 'Automatic refetching resumed',
   /** History reason: the keyboard shortcut was used */

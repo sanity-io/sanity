@@ -235,7 +235,7 @@ export function VistaWebMcp({tab}: {tab: VistaTab}) {
         actorRef.send({
           type: 'tab.add',
           tab: {query, rawParams: JSON.stringify(params, null, 2), title, options: tab.options},
-          fetch: input.run !== false,
+          fetch: input.run === false ? undefined : 'generated',
         })
         return text(`Opened the query in a new tab${input.run === false ? '' : ' and ran it'}.`)
       }
