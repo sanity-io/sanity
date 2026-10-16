@@ -23,6 +23,7 @@ const LABELS: GroqEditorLabels = {
   completionLibrary: 'from your library',
   extract: 'Extract to function',
   addFromLibrary: 'Declare it',
+  useSuggestion: (suggestion) => `Use ${suggestion}`,
 }
 
 const LIBRARY: VistaSavedFunction[] = [

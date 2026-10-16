@@ -405,6 +405,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.lint.severity.info': 'Info',
   /** Severity badge of a lint finding */
   'vista.lint.severity.warning': 'Warning',
+  /** Lint action writing the type, field or operator a schema finding suggests */
+  'vista.lint.use-suggestion': 'Use {{suggestion}}',
   /** Badge shown while a tab refetches automatically */
   'vista.live.active': 'Live',
   /** Button in the request column's action bar that fetches and then refetches automatically */

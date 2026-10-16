@@ -15,7 +15,7 @@ import {
  * `text::query()`) without knowing every function.
  */
 
-type GroqTree = ReturnType<typeof parser.parse>
+export type GroqTree = ReturnType<typeof parser.parse>
 export type GroqNode = GroqTree['topNode']
 
 export interface TextRange {
@@ -158,7 +158,7 @@ function nextSibling(node: GroqNode): GroqNode | null {
   return sibling
 }
 
-function textOf(query: string, node: {from: number; to: number}): string {
+export function textOf(query: string, node: {from: number; to: number}): string {
   return query.slice(node.from, node.to)
 }
 

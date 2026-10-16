@@ -7,7 +7,7 @@ import {Badge, Button, Hotkeys, Label, Tab, TabList, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type RefObject, useCallback, useMemo, useRef, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {type Schema, useSchema, useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {groqExtensions} from '../../../codemirror/extensions'
@@ -26,12 +26,13 @@ import {
 import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {isPanelExpanded, selectFunctionLibrary, selectParamsView} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
-import {functionLibrary} from '../../util/groqEditorContext'
+import {functionLibrary, querySchema} from '../../util/groqEditorContext'
 import {
   createGroqFunctionExtensions,
   extractSelectionToFunction,
 } from '../../util/groqFunctionEditor'
 import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
+import {createQuerySchema} from '../../util/schemaCheck'
 import {EXTRACT_FUNCTION_SHORTCUT, VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
 import {CollapsibleSection} from '../CollapsibleSection'
@@ -135,6 +136,7 @@ export function RequestPanel(props: RequestPanelProps) {
           completionLibrary: t('vista.functions.editor.completion-library'),
           extract: t('vista.functions.editor.extract'),
           addFromLibrary: t('vista.functions.editor.add-from-library'),
+          useSuggestion: (suggestion) => t('vista.lint.use-suggestion', {suggestion}),
         },
         {onExtractableChange: setExtractable},
       ),
@@ -151,14 +153,17 @@ export function RequestPanel(props: RequestPanelProps) {
     })
   }, [queryEditorRef, t, toast])
   const library = useVistaSelector(selectFunctionLibrary)
+  const schema = useSchema() as Schema | undefined
+  const workspaceSchema = useMemo(() => (schema ? createQuerySchema(schema) : undefined), [schema])
   const queryExtensions = useMemo(
     () => [
       ...groqExtensions,
       ...lintExtensions,
       ...functionExtensions,
       functionLibrary.of(library),
+      ...(workspaceSchema ? [querySchema.of(workspaceSchema)] : []),
     ],
-    [functionExtensions, library, lintExtensions],
+    [functionExtensions, library, lintExtensions, workspaceSchema],
   )
   const actorRef = useVistaActor()
   const paramsExpanded = useVistaSelector((snapshot) => isPanelExpanded(snapshot, 'params'))

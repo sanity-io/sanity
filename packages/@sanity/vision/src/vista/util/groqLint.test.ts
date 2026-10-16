@@ -1,9 +1,15 @@
 import {setDiagnostics} from '@codemirror/lint'
 import {EditorState} from '@codemirror/state'
 import {EditorView} from '@codemirror/view'
+import {Schema} from '@sanity/schema'
 import {describe, expect, it, vi} from 'vitest'
 
-import {functionLibrary, type GroqEditorLabels, groqEditorLabels} from './groqEditorContext'
+import {
+  functionLibrary,
+  type GroqEditorLabels,
+  groqEditorLabels,
+  querySchema,
+} from './groqEditorContext'
 import {
   collectFindings,
   groqLintSource,
@@ -13,6 +19,7 @@ import {
   toDiagnostics,
 } from './groqLint'
 import * as groqWasm from './groqWasm'
+import {createQuerySchema} from './schemaCheck'
 
 const EDITOR_LABELS: GroqEditorLabels = {
   reference: 'GROQ functions reference',
@@ -24,11 +31,73 @@ const EDITOR_LABELS: GroqEditorLabels = {
   completionLibrary: 'from your library',
   extract: 'Extract to function',
   addFromLibrary: 'Declare it',
+  useSuggestion: (suggestion) => `Use ${suggestion}`,
 }
 
 function viewOf(doc: string) {
   return {state: EditorState.create({doc})}
 }
+
+const SCHEMA = createQuerySchema(
+  Schema.compile({
+    name: 'test',
+    types: [
+      {
+        name: 'author',
+        type: 'document',
+        fields: [
+          {name: 'name', type: 'string'},
+          {name: 'bestFriend', type: 'reference', to: [{type: 'author'}]},
+        ],
+      },
+    ],
+  }),
+)
+
+describe('schema findings', () => {
+  it('lints the types and fields the schema does not have, with an action writing the suggestion', async () => {
+    const query = '*[_type == "athor"]{nmae, "f": bestFriend.name}'
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: query,
+        extensions: [groqEditorLabels.of(EDITOR_LABELS), querySchema.of(SCHEMA)],
+      }),
+    })
+    const diagnostics = await groqLintSource(view)
+    expect(
+      diagnostics.map((diagnostic) => [
+        query.slice(diagnostic.from, diagnostic.to),
+        diagnostic.source,
+        diagnostic.severity,
+        diagnostic.actions?.map((action) => action.name),
+      ]),
+    ).toEqual([['"athor"', 'vision/unknown-type', 'warning', ['Use "author"']]])
+
+    // With the type fixed, its fields are checked
+    const fixed = diagnostics[0]
+    fixed.actions?.[0].apply(view, fixed.from, fixed.to)
+    expect(view.state.doc.toString()).toBe('*[_type == "author"]{nmae, "f": bestFriend.name}')
+    const next = await groqLintSource(view)
+    expect(next.map((diagnostic) => [diagnostic.source, diagnostic.actions?.[0].name])).toEqual([
+      ['vision/unknown-field', 'Use name'],
+      ['vision/not-a-reference', 'Use ->'],
+    ])
+    // The dot becomes an arrow, though the diagnostic is on the name after it
+    const reference = next[1]
+    reference.actions?.[0].apply(view, reference.from, reference.to)
+    expect(view.state.doc.toString()).toBe('*[_type == "author"]{nmae, "f": bestFriend->name}')
+    view.destroy()
+  })
+
+  it('checks nothing against a schema the editor was not given', async () => {
+    const query = '*[_type == "athor"]{nmae}'
+    expect(
+      (await groqLintSource(viewOf(query))).filter((diagnostic) =>
+        diagnostic.source?.startsWith('vision/'),
+      ),
+    ).toEqual([])
+  })
+})
 
 describe('groqLintSource', () => {
   it('turns groq-lint findings into diagnostics on the offending ranges', async () => {
