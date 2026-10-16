@@ -1,9 +1,9 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Heading, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Flex, VStack, Grid, Box} from 'ui5'
+import {Text, Flex, VStack, Grid, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isProd} from '../../environment'
@@ -79,7 +79,7 @@ interface DocsHelpLinkProps {
 function DocsHelpLink(props: DocsHelpLinkProps) {
   const {children, href, testId} = props
   return (
-    <Text size={1}>
+    <Text size={1} as="div" trim={true}>
       <HelpLink
         data-testid={testId}
         href={href}
@@ -158,7 +158,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                 Enable credentials for this Studio
               </Heading>
 
-              <Text size={2} muted>
+              <Text size={2} muted as="div" trim={true}>
                 This origin is registered with your project, but the existing CORS entry
                 doesn&apos;t allow credentialed requests. The Studio needs them for login, drafts,
                 and mutations. CORS entries can&apos;t be edited, so remove the existing entry for
@@ -197,7 +197,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
             <Heading as="h1" size={2}>
               Connect this Studio to your project
             </Heading>
-            <Text size={2} muted>
+            <Text size={2} muted as="div" trim={true}>
               This Studio isn&apos;t connected to your project yet. Pick an option below to connect
               it.
             </Text>
@@ -219,15 +219,15 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                 <Card border padding={4} radius={4}>
                   <Flex flexDirection="column" gap={4} height="100%">
                     <Flex gap={4} flexBasis="0%" flexGrow={1} flexDirection="column">
-                      <Text size={2} weight="medium">
+                      <Text size={2} weight="medium" as="div" trim={true}>
                         Register Studio
                       </Text>
                       {isProd && (
-                        <Text size={1} weight="medium">
+                        <Text size={1} weight="medium" as="div" trim={true}>
                           Recommended for production and editor-facing deploys.
                         </Text>
                       )}
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         Adds a CORS origin for this URL and registers the Studio so it can sync its
                         schema and manifest with the project. Required for schema-aware search,
                         Content Agent, and other features that read the deployed schema.
@@ -250,11 +250,11 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               <Card border padding={4} radius={4}>
                 <Flex flexDirection="column" gap={4} height="100%">
                   <Flex gap={4} flexBasis="0%" flexGrow={1} flexDirection="column">
-                    <Text size={2} weight="medium">
+                    <Text size={2} weight="medium" as="div" trim={true}>
                       Add CORS origin
                     </Text>
 
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       For URLs that don&apos;t need schema syncing or other registered-Studio
                       features (localhost, preview deploys, and other one-off origins).
                     </Text>

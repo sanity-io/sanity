@@ -1,8 +1,7 @@
 import {getVersionNameFromId, type VersionId} from '@sanity/id-utils'
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -167,7 +166,7 @@ export function DiscardVersionDialog(props: {
           <LoadingBlock />
         )}
         <Box paddingX={2} style={{maxWidth: '400px'}}>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             <Translate
               t={t}
               i18nKey={`discard-version-dialog.description-${discardType}`}

@@ -1,8 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {LockIcon} from '@sanity/icons/Lock'
-import {Text} from '@sanity/ui'
 import {memo} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useFormatRelativeLocalePublishDate} from '../../../hooks/useFormatRelativeLocalePublishDate'
@@ -27,7 +26,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
           fallback={t('release.placeholder-untitled-release')}
           textProps={{size: 1, weight: 'medium'}}
         />
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&
             (release.metadata.intendedPublishAt ? (
