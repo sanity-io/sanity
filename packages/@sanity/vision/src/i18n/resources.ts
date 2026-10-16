@@ -770,6 +770,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.redesign.switch-to-classic': 'Switch to classic Vision',
   /** Toast button that switches to the redesigned tool */
   'vista.redesign.toast.accept': 'Try it now',
+  /** Button next to Fetch in the classic tool that switches to the redesigned one */
+  'vista.redesign.try': 'Try the redesign',
+  /** Tooltip of the button next to Fetch in the classic tool that switches to the redesign */
+  'vista.redesign.try.description':
+    'Switch to the redesigned Vision, in beta. You can switch back at any time from its sidebar.',
   /** Body of the toast inviting users of the classic tool to try the redesign */
   'vista.redesign.toast.description':
     'Query tabs, live refetching, response details and exports. You can switch back at any time.',

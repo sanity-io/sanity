@@ -10,22 +10,29 @@ import {visionLocaleNamespace} from '../../i18n'
 const TOAST_ID = 'vision-redesign-invitation'
 
 interface RedesignToastActionsProps {
+  description: string
+  acceptLabel: string
+  dismissLabel: string
   onAccept: () => void
   onDismiss: () => void
 }
 
-function RedesignToastActions({onAccept, onDismiss}: RedesignToastActionsProps) {
-  const {t} = useTranslation(visionLocaleNamespace)
+/**
+ * The toast's body. It renders in the studio's toast layer, which can sit outside the locale
+ * provider that has Vision's strings, so it is handed them translated
+ */
+function RedesignToastActions(props: RedesignToastActionsProps) {
+  const {description, acceptLabel, dismissLabel, onAccept, onDismiss} = props
   return (
     <Stack gap={3} paddingTop={1}>
-      <Text size={1}>{t('vista.redesign.toast.description')}</Text>
+      <Text size={1}>{description}</Text>
       <Flex gap={2}>
         <Button
           data-testid="vision-redesign-accept"
           fontSize={1}
           onClick={onAccept}
           padding={2}
-          text={t('vista.redesign.toast.accept')}
+          text={acceptLabel}
           tone="primary"
         />
         <Button
@@ -34,7 +41,7 @@ function RedesignToastActions({onAccept, onDismiss}: RedesignToastActionsProps) 
           mode="bleed"
           onClick={onDismiss}
           padding={2}
-          text={t('vista.redesign.toast.dismiss')}
+          text={dismissLabel}
         />
       </Flex>
     </Stack>
@@ -71,6 +78,9 @@ export function RedesignToast({onAccept, onDismiss}: RedesignToastProps) {
       title: t('vista.redesign.toast.title'),
       description: (
         <RedesignToastActions
+          acceptLabel={t('vista.redesign.toast.accept')}
+          description={t('vista.redesign.toast.description')}
+          dismissLabel={t('vista.redesign.toast.dismiss')}
           onAccept={() => {
             remove()
             accept()

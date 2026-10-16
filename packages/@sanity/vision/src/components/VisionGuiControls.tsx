@@ -1,4 +1,5 @@
 import {PlayIcon} from '@sanity/icons/Play'
+import {RocketIcon} from '@sanity/icons/Rocket'
 import {StopIcon} from '@sanity/icons/Stop'
 import {Button, Card, Hotkeys, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
@@ -14,6 +15,11 @@ export interface VisionGuiControlsProps {
   listenInProgress: boolean
   onQueryExecution: () => void
   onListenExecution: () => void
+  /**
+   * Opens the redesigned Vision. Offered here for good while the beta flag is on, since the
+   * invitation toast stays away once dismissed
+   */
+  onSwitchToRedesign?: () => void
 }
 
 /**
@@ -26,6 +32,7 @@ export function VisionGuiControls({
   queryInProgress,
   onQueryExecution,
   onListenExecution,
+  onSwitchToRedesign,
 }: VisionGuiControlsProps) {
   const {t} = useTranslation(visionLocaleNamespace)
 
@@ -80,6 +87,26 @@ export function VisionGuiControls({
                 tone={listenInProgress ? 'positive' : 'default'}
               />
             </Box>
+            {onSwitchToRedesign && (
+              <Box flexShrink={0} marginLeft={3}>
+                <Tooltip
+                  animate
+                  content={<Text size={1}>{t('vista.redesign.try.description')}</Text>}
+                  placement="top"
+                  portal
+                >
+                  <Button
+                    aria-label={t('vista.redesign.try')}
+                    data-testid="vision-try-redesign"
+                    icon={RocketIcon}
+                    mode="bleed"
+                    onClick={onSwitchToRedesign}
+                    tone="primary"
+                    type="button"
+                  />
+                </Tooltip>
+              </Box>
+            )}
           </Flex>
         </Tooltip>
       </Card>

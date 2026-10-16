@@ -79,7 +79,7 @@ export default defineConfig({
 
 ## Beta: the redesigned Vision
 
-Vision ships an opt-in redesign behind the `beta.redesign` option. It is off by default. When enabled, the classic tool shows a dismissible toast inviting users to try the redesign; users who accept get the redesigned tool, remembered per project in their browser, and can switch back at any time from its sidebar or settings (or by clearing its storage).
+Vision ships an opt-in redesign behind the `beta.redesign` option. It is off by default. When enabled, the classic tool shows a dismissible toast inviting users to try the redesign, and keeps a button next to Fetch that switches to it once the toast is dismissed; users who accept get the redesigned tool, remembered per project in their browser, and can switch back at any time from its sidebar or settings (or by clearing its storage), which brings the toast back.
 
 ```ts
 import {visionTool} from '@sanity/vision'

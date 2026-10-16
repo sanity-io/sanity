@@ -53,7 +53,12 @@ function SanityVision(props: SanityVisionProps) {
           showRedesign ? (
             <VistaGuiLoader {...loaded} config={config} onSwitchToClassic={switchToClassic} />
           ) : (
-            <VisionGui {...loaded} client={client} config={config} />
+            <VisionGui
+              {...loaded}
+              client={client}
+              config={config}
+              onSwitchToRedesign={redesignEnabled ? optIn : undefined}
+            />
           )
         }
       </VisionContainer>

@@ -96,6 +96,8 @@ interface VisionGuiProps extends VisionProps {
   datasets: string[]
   projectId: string | undefined
   defaultDataset: string
+  /** Opens the redesigned Vision; only passed while `beta.redesign.enabled` offers it */
+  onSwitchToRedesign?: () => void
 }
 
 export interface ParsedUrlState {
@@ -110,7 +112,7 @@ export interface ParsedUrlState {
 }
 
 export function VisionGui(props: VisionGuiProps) {
-  const {datasets, config, projectId, defaultDataset} = props
+  const {datasets, config, projectId, defaultDataset, onSwitchToRedesign} = props
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack, selectedVariantNames} = usePerspective()
@@ -770,6 +772,7 @@ export function VisionGui(props: VisionGuiProps) {
                       listenInProgress={listenInProgress}
                       onQueryExecution={handleQueryExecution}
                       onListenExecution={handleListenExecution}
+                      onSwitchToRedesign={onSwitchToRedesign}
                     />
                   </InputContainer>
                 </SplitPane>

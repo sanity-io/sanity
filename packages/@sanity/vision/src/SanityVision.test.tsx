@@ -45,7 +45,13 @@ vi.mock('./containers/VisionContainer', () => ({
 }))
 
 vi.mock('./components/VisionGui', () => ({
-  VisionGui: () => <div data-testid="classic-vision" />,
+  VisionGui: ({onSwitchToRedesign}: {onSwitchToRedesign?: () => void}) => (
+    <div data-testid="classic-vision">
+      {onSwitchToRedesign && (
+        <button data-testid="classic-try-redesign" onClick={onSwitchToRedesign} type="button" />
+      )}
+    </div>
+  ),
 }))
 
 vi.mock('./vista/components/VistaGui', () => ({
@@ -84,6 +90,7 @@ describe('SanityVision experience switch', () => {
     renderTool({})
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
     expect(screen.queryByText('vista.redesign.toast.title')).toBeNull()
+    expect(screen.queryByTestId('classic-try-redesign')).toBeNull()
   })
 
   it('renders the classic tool even for a stored opt-in when the beta flag is off', () => {
@@ -128,6 +135,27 @@ describe('SanityVision experience switch', () => {
     renderTool({beta: {redesign: {enabled: true}}})
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
     expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
+  })
+
+  it('keeps the redesign one click away in the classic tool after the invitation is dismissed', async () => {
+    writeRedesignPreference('switch-project', {dismissed: true})
+    renderTool({beta: {redesign: {enabled: true}}})
+    expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('classic-try-redesign'))
+    })
+    await waitFor(() => expect(screen.getByTestId('vista')).toBeTruthy())
+    expect(
+      JSON.parse(localStorage.getItem('sanityVision:redesign:switch-project') || '{}'),
+    ).toEqual({optedIn: true, dismissed: false})
+
+    // Back in the classic tool, the invitation shows again
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('vista'))
+    })
+    expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
+    expect(screen.getByTestId('classic-try-redesign')).toBeTruthy()
   })
 
   it('opens the redesign directly for an opted-in project and can switch back', async () => {
