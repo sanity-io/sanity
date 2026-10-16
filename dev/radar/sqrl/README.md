@@ -34,4 +34,4 @@ SQRL only counts outcomes a user feels or pays for. Migration progress such as s
 
 ## Changing the formula
 
-The formula, its frozen constants and the host adjustment are in `dev/radar/SPEC.md` under "SQRL score". Any change to an input, a weight or a constant bumps `FORMULA_VERSION` in `inputs.ts`, and a backfill run then rewrites every stored score, so the history always uses one formula.
+The formula, its frozen constants and the host adjustment are in `dev/radar/SPEC.md` under "SQRL score". Any change to an input, a weight or a constant bumps `FORMULA_VERSION` in `inputs.ts`, and the next nightly run rewrites every stored score, so the history always uses one formula.

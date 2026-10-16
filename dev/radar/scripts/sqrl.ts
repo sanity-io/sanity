@@ -1,19 +1,14 @@
 // oxlint-disable no-console
 /**
  * Compute the SQRL score from the stored main-branch benchRun and gitTag
- * documents and upsert one `sqrlScore` document per commit. Run by
+ * documents and upsert one `sqrlScore` document for every commit. Run by
  * .github/workflows/bench.yml after `bench store`.
  *
- *   pnpm --filter radar sqrl -- --dry-run              # latest commit, print only
- *   pnpm --filter radar sqrl -- --backfill --dry-run   # every commit, print only
- *   pnpm --filter radar sqrl                           # upsert the latest commit
- *   pnpm --filter radar sqrl -- --backfill             # upsert every commit
+ *   pnpm --filter radar sqrl -- --dry-run   # print every commit's score, write nothing
+ *   pnpm --filter radar sqrl                # upsert every commit's document
  *
- * Every mode computes the whole series, since the 7-commit median and the
- * chain-linked index need all of history; the default writes only the newest
- * commit's document so earlier documents stay as they were published.
- * Backfill rewrites them all — the step after a backfill run or a formula
- * change (which also bumps FORMULA_VERSION).
+ * Every run rewrites the whole history, so a backfilled run, a late npm
+ * deprecation or a formula change reaches every stored score the same night.
  *
  * Writes need RADAR_SANITY_WRITE_TOKEN (CI only). A dry run reads with
  * SANITY_AUTH_TOKEN, falling back to the `sanity login` token.
@@ -106,7 +101,6 @@ async function main(): Promise<void> {
     // pnpm forwards `--` verbatim, and parseArgs would demote everything after it to positionals
     args: process.argv.slice(2).filter((arg) => arg !== '--'),
     options: {
-      'backfill': {type: 'boolean', default: false},
       'dry-run': {type: 'boolean', default: false},
     },
   })
@@ -128,31 +122,27 @@ async function main(): Promise<void> {
   const scores = computeSqrlScores(runs, tags)
   const latest = scores.at(-1)
   if (latest === undefined) throw new Error('No main-branch benchRun documents to score')
-  const documents = values.backfill ? scores : [latest]
   console.log(
-    `Computed ${scores.length} commit(s) from ${runs.length} run(s) and ${tags.length} tag(s); ` +
-      `${values.backfill ? 'backfill' : 'latest'} mode, ${documents.length} document(s) to upsert`,
+    `Computed ${scores.length} commit(s) from ${runs.length} run(s) and ${tags.length} tag(s)`,
   )
   printSummary(latest)
 
   if (dryRun) {
-    if (values.backfill) {
-      console.table(
-        scores.map((score) => ({
-          committedAt: score.git.committedAt,
-          sha: score.git.sha.slice(0, 10),
-          score: formatNumber(score.score, 1),
-          commit: formatNumber(score.scoreCommit, 1),
-          raw: formatNumber(score.scoreRaw, 1),
-        })),
-      )
-    }
-    console.log('Dry run — nothing written')
+    console.table(
+      scores.map((score) => ({
+        committedAt: score.git.committedAt,
+        sha: score.git.sha.slice(0, 10),
+        score: formatNumber(score.score, 1),
+        commit: formatNumber(score.scoreCommit, 1),
+        raw: formatNumber(score.scoreRaw, 1),
+      })),
+    )
+    console.log('Dry run - nothing written')
     return
   }
 
-  for (let offset = 0; offset < documents.length; offset += MUTATIONS_PER_TRANSACTION) {
-    const batch = documents.slice(offset, offset + MUTATIONS_PER_TRANSACTION)
+  for (let offset = 0; offset < scores.length; offset += MUTATIONS_PER_TRANSACTION) {
+    const batch = scores.slice(offset, offset + MUTATIONS_PER_TRANSACTION)
     // oxlint-disable-next-line no-await-in-loop -- one transaction at a time keeps the request rate low and a failure leaves a clean prefix
     await batch
       .reduce(
@@ -160,7 +150,7 @@ async function main(): Promise<void> {
         client.transaction(),
       )
       .commit()
-    console.log(`Upserted ${Math.min(offset + batch.length, documents.length)}/${documents.length}`)
+    console.log(`Upserted ${Math.min(offset + batch.length, scores.length)}/${scores.length}`)
   }
 }
 

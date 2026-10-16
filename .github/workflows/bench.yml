@@ -1044,14 +1044,14 @@ jobs:
           retention-days: 30
 
   # SQRL score (dev/radar/sqrl, SPEC.md "SQRL score") recomputed from the
-  # stored history once track-main has stored its benchRun. A cron or release
-  # run upserts the newest commit's sqrlScore; a backfill inserts a point into
-  # history, so it rewrites every commit's document. A dispatch from any other
+  # stored history once track-main has stored its benchRun, rewriting every
+  # commit's sqrlScore so backfills and late npm deprecations reach the whole
+  # history. A dispatch from any other
   # branch prints the score and writes nothing, so unmerged engine code never
   # lands in the dataset. Its own job so a scoring failure can never cost the
   # day its stored run.
   sqrl-score:
-    needs: [build, track-main]
+    needs: [track-main]
     if: >-
       !cancelled() && needs.track-main.result == 'success'
     runs-on: ubuntu-latest
@@ -1067,16 +1067,11 @@ jobs:
       - name: Compute and store the SQRL score
         env:
           RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
-          BACKFILL_SHA: ${{ needs.build.outputs.backfill_sha }}
           REF_NAME: ${{ github.ref_name }}
           REF_TYPE: ${{ github.ref_type }}
         run: |
           if [ "$REF_NAME" = "main" ] || [ "$REF_TYPE" = "tag" ]; then
-            if [ -n "$BACKFILL_SHA" ]; then
-              pnpm --filter radar sqrl -- --backfill
-            else
-              pnpm --filter radar sqrl
-            fi
+            pnpm --filter radar sqrl
           else
             pnpm --filter radar sqrl -- --dry-run
           fi
