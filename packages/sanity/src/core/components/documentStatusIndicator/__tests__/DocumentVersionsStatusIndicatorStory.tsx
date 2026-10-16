@@ -53,14 +53,22 @@ const DRAFTS: PerspectiveContextValue = {
   selectedPerspective: 'drafts',
   perspectiveStack: ['drafts'],
   excludedPerspectives: [],
+  selectedVariantNames: [],
+  selectedVariants: [],
+  // oxlint-disable-next-line typescript/no-deprecated -- context still requires the single-variant field
   selectedVariantName: undefined,
+  // oxlint-disable-next-line typescript/no-deprecated -- context still requires the single-variant field
   selectedVariant: undefined,
   bundle: 'drafts',
 }
 
 const DRAFTS_VARIANT: PerspectiveContextValue = {
   ...DRAFTS,
+  selectedVariantNames: ['alpha-audience'],
+  selectedVariants: [variantAlphaAudience],
+  // oxlint-disable-next-line typescript/no-deprecated -- context still requires the single-variant field
   selectedVariantName: 'alpha-audience',
+  // oxlint-disable-next-line typescript/no-deprecated -- context still requires the single-variant field
   selectedVariant: variantAlphaAudience,
 }
 
@@ -76,7 +84,11 @@ function releasePerspective(
     selectedPerspective: release,
     perspectiveStack: [releaseId, 'drafts'],
     excludedPerspectives: [],
+    selectedVariantNames: variantSelected ? ['alpha-audience'] : [],
+    selectedVariants: variantSelected ? [variantAlphaAudience] : [],
+    // oxlint-disable-next-line typescript/no-deprecated -- context still requires the single-variant field
     selectedVariantName: variantSelected ? 'alpha-audience' : undefined,
+    // oxlint-disable-next-line typescript/no-deprecated -- context still requires the single-variant field
     selectedVariant: variantSelected ? variantAlphaAudience : undefined,
     bundle: releaseId,
   }
