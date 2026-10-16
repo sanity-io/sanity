@@ -1,5 +1,5 @@
-import {Switch, Text} from '@sanity/ui'
-import {Flex, VStack} from 'ui5'
+import {Switch} from '@sanity/ui'
+import {Text, Flex, VStack} from 'ui5'
 
 import {useTranslation} from '../../../../../../../../../../i18n/hooks/useTranslation'
 import {timeLabelText} from './DateIncludeTimeFooter.css'
@@ -14,7 +14,15 @@ export function DateIncludeTimeFooter({onChange, value}: DateIncludeTimeFooterPr
   return (
     <Flex alignItems="center" gap={2} justifyContent="flex-end" marginTop={1}>
       <VStack>
-        <Text className={timeLabelText} muted onClick={onChange} size={1} weight="medium">
+        <Text
+          className={timeLabelText}
+          muted
+          onClick={onChange}
+          size={1}
+          weight="medium"
+          as="div"
+          trim={true}
+        >
           {t('calendar.action.include-time-label')}
         </Text>
       </VStack>
