@@ -502,7 +502,8 @@ function maybeValidations(obj: unknown): Validation[] | undefined {
     'options' in obj &&
     isObject(obj.options) &&
     'list' in obj.options &&
-    Array.isArray(obj.options.list)
+    Array.isArray(obj.options.list) &&
+    obj.options.list.length > 0
   ) {
     impliedRules.push({
       type: 'enum',

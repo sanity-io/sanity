@@ -154,7 +154,7 @@ export function normalizeValidationRules(
   const options = typeDef.options
   const list =
     options && typeof options === 'object' && 'list' in options ? options.list : undefined
-  if (Array.isArray(list)) {
+  if (Array.isArray(list) && list.length > 0) {
     baseRule = baseRule.valid(list.map((option) => extractValueFromListOption(option, typeDef)))
   }
 

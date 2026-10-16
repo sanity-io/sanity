@@ -220,4 +220,66 @@ describe('Rule.skip()', () => {
     expect(rule._rules).toEqual([])
     expect(rule._required).toBe('optional')
   })
+
+  it('does not add a `rule.valid` constraint for an empty schema list', () => {
+    const stringTypeWithEmptyOptions: StringSchemaType = {
+      jsonType: 'string',
+      name: 'stringTypeWithEmptyOptions',
+      options: {
+        list: [],
+      },
+    }
+
+    const rules = normalizeValidationRules(stringTypeWithEmptyOptions)
+    expect(rules).toHaveLength(1)
+    const [rule] = rules
+
+    expect(rule).toBeInstanceOf(RuleClass)
+    expect(rule._rules).toHaveLength(1)
+    expect(rule._rules).toMatchObject([
+      {
+        constraint: 'String',
+        flag: 'type',
+      },
+    ])
+    expect(rule._rules).not.toContainEqual(
+      expect.objectContaining({
+        flag: 'valid',
+      }),
+    )
+  })
+
+  it('preserves explicit validation when the schema list is empty', () => {
+    const stringTypeWithEmptyOptions: StringSchemaType = {
+      jsonType: 'string',
+      name: 'stringTypeWithEmptyOptions',
+      options: {
+        list: [],
+      },
+      validation: (rule) => rule.required(),
+    }
+
+    const rules = normalizeValidationRules(stringTypeWithEmptyOptions)
+    expect(rules).toHaveLength(1)
+    const [rule] = rules
+
+    expect(rule).toBeInstanceOf(RuleClass)
+    expect(rule._rules).toHaveLength(2)
+    expect(rule._rules).toMatchObject([
+      {
+        constraint: 'String',
+        flag: 'type',
+      },
+      {
+        constraint: 'required',
+        flag: 'presence',
+      },
+    ])
+    expect(rule._rules).not.toContainEqual(
+      expect.objectContaining({
+        flag: 'valid',
+      }),
+    )
+    expect(rule._required).toBe('required')
+  })
 })

@@ -3123,4 +3123,26 @@ describe('hoisting', () => {
     expect(encoded.typeDef.of).toHaveLength(1)
     expect(encoded.typeDef.of[0]).toMatchObject({__type: 'hoisted'})
   })
+
+  test('empty options list without validation', async () => {
+    const objectType = await justConvertType({
+      name: 'person',
+      type: 'object',
+      fields: [
+        {
+          title: 'List',
+          name: 'list',
+          type: 'string',
+          options: {
+            list: [],
+          },
+        },
+      ],
+    })
+
+    assert(objectType?.typeDef?.fields)
+    assert('name' in objectType.typeDef.fields[0])
+
+    expect(objectType.typeDef.fields[0].typeDef.validation).toBeUndefined()
+  })
 })
