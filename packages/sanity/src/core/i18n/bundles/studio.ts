@@ -1566,6 +1566,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'presence.not-in-a-document': 'Not in a document',
   /** Tooltip content text for presence menu button */
   'presence.tooltip-content': 'Who is here',
+  /** Tooltip text for document previews when one user is editing the document in a release */
+  'presence.tooltip.one':
+    '{{displayName}} is editing this document in the "{{releaseTitle}}" release right now',
+  /** Tooltip text for document previews when one user is editing a published or draft document */
+  'presence.tooltip.one-without-release': '{{displayName}} is editing this document right now',
+  /** Tooltip text for document previews when multiple users are editing the document */
+  'presence.tooltip.other': '{{count}} people are editing this document right now',
+  /** Release title used in the document preview presence tooltip when the release has no title */
+  'presence.tooltip.untitled-release': 'Untitled',
 
   /** Fallback title shown when a preview does not provide a title */
   'preview.default.title-fallback': 'Untitled',

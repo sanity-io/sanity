@@ -98,7 +98,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
   return (
     <CommandList
       activeItemDataAttr="data-hovered"
-      ariaLabel={t('new-document.new-document')}
+      ariaLabel={t('new-document.new-document-aria-label')}
       autoFocus={supportsTouch ? undefined : 'input'}
       getItemDisabled={getItemDisabled}
       inputElement={textInputElement}
