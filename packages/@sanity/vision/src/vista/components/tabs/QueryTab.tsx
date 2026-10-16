@@ -56,7 +56,12 @@ function countLines(text: string): number {
 const DEFAULT_REQUEST_SHARE = {columns: 0.5, stacked: 0.6}
 /** Params are parsed on every change, so typing is debounced like in the classic tool */
 const PARAMS_DEBOUNCE_MS = 333
-const MAX_LAYOUT_FRAMES = 10
+/**
+ * A tab opened for a generated query lays out over its first frames (the split measures its
+ * container), so the editor's width counts once it has stayed the same this many frames
+ */
+const SETTLED_LAYOUT_FRAMES = 3
+const MAX_LAYOUT_FRAMES = 30
 
 type MobilePane = 'request' | 'response'
 
@@ -278,17 +283,23 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   })
   // A generated query, in a tab opened for it or loaded into this one, is laid out for the
   // editor, as Prettify does, and its result shown straight away; a query the formatter cannot
-  // read runs as it was written. The editor creates its view a render after it mounts, so its
-  // width is waited for (a few frames at most; without it the query is formatted at the default
-  // width)
+  // read runs as it was written. The editor creates its view a render after it mounts and the
+  // tab's panes settle over the frames after that, so the query is formatted once the editor's
+  // width has stopped changing (half a second at most; without a width it is formatted at the
+  // default one)
   const generatedQueryPending = useVistaSelector((snapshot) =>
     snapshot.context.fetchOnOpen.includes(tab.id),
   )
   const fetchGeneratedQuery = useEffectEvent(async () => {
     if (!actorRef.getSnapshot().context.fetchOnOpen.includes(tab.id)) return
     actorRef.send({type: 'tab.fetchedOnOpen', id: tab.id})
+    let previousColumns: number | undefined
+    let settledFrames = 0
     for (let frame = 0; frame < MAX_LAYOUT_FRAMES; frame++) {
-      if (queryEditorRef.current?.getVisibleColumns() !== undefined) break
+      const columns = queryEditorRef.current?.getVisibleColumns()
+      settledFrames = columns !== undefined && columns === previousColumns ? settledFrames + 1 : 0
+      if (settledFrames >= SETTLED_LAYOUT_FRAMES) break
+      previousColumns = columns
       await new Promise((resolve) => requestAnimationFrame(resolve))
     }
     await formatQuery().catch(() => undefined)

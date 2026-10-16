@@ -1136,7 +1136,11 @@ describe('VistaGui', () => {
   it('generates into a new tab next to a tab that has a query, and closes on Escape', async () => {
     const {fetchCalls, replyToPrompts} = renderVista()
     typeQuery('*[_type == "post"]')
-    replyToPrompts({query: '*[_type == "author"]', params: {}, title: 'Authors'})
+    const generated = '*[_type == "author"] | order(_createdAt desc)[0...10]{_id, name}'
+    replyToPrompts({query: generated, params: {}, title: 'Authors'})
+    // The new tab's editor is narrower for its first frames, while its panes settle
+    let readings = 0
+    editorMocks.visibleColumns = () => (++readings <= 2 ? 30 : 80)
 
     fireEvent.click(screen.getByTestId('vista-generate-query'))
     fireEvent.keyDown(screen.getByTestId('vista-generate-request'), {key: 'Escape'})
@@ -1151,7 +1155,11 @@ describe('VistaGui', () => {
     const tabs = screen.getAllByTestId('vista-tab')
     expect(within(tabs[1]).getByRole('tab').getAttribute('aria-selected')).toBe('true')
     expect(text(tabs[1])).toContain('Authors')
-    expect(fetchCalls[1].query).toBe('*[_type == "author"]')
+    // Formatted for the width the editor settled at, as Prettify would, not the first one
+    expect(fetchCalls[1].query).toBe(
+      '*[_type == "author"] | order(_createdAt desc)[0...10] { _id, name }',
+    )
+    expect(getQueryEditor().value).toBe(fetchCalls[1].query)
   })
 
   it('offers the last attempt when every generated query is rejected', async () => {
