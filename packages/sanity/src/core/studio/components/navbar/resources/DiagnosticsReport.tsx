@@ -259,11 +259,15 @@ function ReportSection({
   return (
     <Card border data-testid={testId} padding={4} radius={2}>
       <VStack gap={4}>
-        <Flex alignItems="center" gap={2} justifyContent="space-between">
+        <Flex position="relative">
           <Heading as="h2" size={1}>
             {title}
           </Heading>
-          {action}
+          {action ? (
+            <Flex alignItems="center" height="100%" position="absolute" right={0} top={0}>
+              {action}
+            </Flex>
+          ) : null}
         </Flex>
         <VStack gap={3}>{children}</VStack>
       </VStack>
