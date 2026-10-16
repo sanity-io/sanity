@@ -38,8 +38,7 @@ export function PromptRow(props: PromptRowProps) {
       <Box flexBasis="0%" flexGrow={1} minWidth="0">
         <TextInput
           aria-label={label}
-          // Password managers ignore `autoComplete` and offer names in a field like this (example
-          // descriptions mention first and last names), so each of them also gets its own opt-out
+          // Password managers ignore `autoComplete`, so each of them also gets its own opt-out
           autoComplete="off"
           autoFocus
           data-1p-ignore

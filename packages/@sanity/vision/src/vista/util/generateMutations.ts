@@ -19,8 +19,8 @@ export interface GenerateMutationsClient
 const MAX_RESULT_LENGTH = 12_000
 
 /**
- * How mutations are written, for the model, including what the API turns down that models write
- * anyway (a list of IDs in `id`)
+ * How mutations are written, for the model, including what the API turns down (a list of IDs in
+ * `id`)
  */
 const MUTATIONS_REFERENCE = `The Mutations API takes a list of mutations and applies them in order, in one transaction. Each mutation is an object with exactly one of these keys:
 - {"create": {"_type": "post", "title": "…"}}: a new document; give it an "_id" only to choose its ID
