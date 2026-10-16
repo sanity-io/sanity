@@ -1984,7 +1984,7 @@ importers:
         specifier: ^4.18.1
         version: 4.18.1
       motion:
-        specifier: ^14.2.0
+        specifier: ^14.3.0
         version: 14.3.0(react-dom@19.3.1)(react@19.3.1)
       quick-lru:
         specifier: ^7.3.0
@@ -2302,7 +2302,7 @@ importers:
         specifier: ^3.0.8
         version: 3.0.8
       motion:
-        specifier: ^14.2.0
+        specifier: ^14.3.0
         version: 14.3.0(react-dom@19.3.1)(react@19.3.1)
       nano-pubsub:
         specifier: ^3.0.0
