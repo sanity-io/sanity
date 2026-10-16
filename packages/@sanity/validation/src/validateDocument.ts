@@ -14,8 +14,19 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import {concat, defer, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
-import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
+import {
+  asapScheduler,
+  concat,
+  defer,
+  EMPTY,
+  from,
+  lastValueFrom,
+  merge,
+  Observable,
+  of,
+  throwError,
+} from 'rxjs'
+import {catchError, map, mergeAll, mergeMap, observeOn, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
 import {ClientUnavailableError} from './clientUnavailable'
@@ -398,6 +409,20 @@ export function evaluateDocumentInternal({
 }
 
 /**
+ * How validation work is paced.
+ *
+ * - `idle` (default): every rule and nested value waits for a `requestIdleCallback` before it
+ *   runs, so validation yields to rendering and input while a document is being edited. A page
+ *   that is busy or hidden grants few or no idle periods, so a run can take long to finish.
+ * - `immediate`: nothing waits for idle time. The run uses the thread as soon as it can, which
+ *   blocks the main thread for the duration of the synchronous checks. Meant for the moment a
+ *   user is waiting on the result, such as publishing.
+ *
+ * @internal
+ */
+export type ValidationScheduling = 'idle' | 'immediate'
+
+/**
  * @internal
  */
 export interface ValidateDocumentObservableOptions extends Pick<
@@ -411,6 +436,8 @@ export interface ValidateDocumentObservableOptions extends Pick<
   maxCustomValidationConcurrency?: number
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
+  /** See {@link ValidationScheduling}. Defaults to `idle`. */
+  scheduling?: ValidationScheduling
 }
 
 const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
@@ -450,6 +477,7 @@ function evaluateDocumentObservableWithoutCancellation({
   currentUser,
   customValidation = true,
   signal,
+  scheduling = 'idle',
 }: ValidateDocumentObservableOptions): Observable<DocumentValidationResult> {
   if (typeof document?._type !== 'string') {
     throw new Error(`Tried to validate a value without a '_type'`)
@@ -509,6 +537,7 @@ function evaluateDocumentObservableWithoutCancellation({
       currentUser,
       customValidation,
       signal,
+      scheduling,
       __internal: {
         markIncomplete: () => {
           complete = false
@@ -556,6 +585,8 @@ export type ValidateItemOptions = {
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
   signal?: AbortSignal
+  /** See {@link ValidationScheduling}. Defaults to `idle`. */
+  scheduling?: ValidationScheduling
   __internal?: InternalValidationContext['__internal']
 } & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal'>>
 
@@ -584,6 +615,7 @@ function validateItemObservable({
   customValidationConcurrencyLimiter,
   environment,
   customValidation = true,
+  scheduling = 'idle',
   __internal,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
@@ -731,6 +763,7 @@ function validateItemObservable({
           environment,
           customValidationConcurrencyLimiter,
           customValidation,
+          scheduling,
           __internal,
         }),
       ),
@@ -756,14 +789,21 @@ function validateItemObservable({
           environment,
           customValidationConcurrencyLimiter,
           customValidation,
+          scheduling,
           __internal,
         }),
       ),
     )
   }
 
+  // `idle` scheduling waits for an idle period before every check (`idle()` registers a new
+  // callback per subscription). `immediate` only defers each check to a microtask: a gate that
+  // completes synchronously lets `mergeMap` recurse through synchronously completing siblings
+  // (and nested levels) until the stack overflows, and RxJS drops that error silently.
+  const pace = scheduling === 'immediate' ? EMPTY.pipe(observeOn(asapScheduler)) : idle()
+
   return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
-    mergeMap((validateNode) => concat(idle(), validateNode), 40),
+    mergeMap((validateNode) => concat(pace, validateNode), 40),
     mergeAll(),
     toArray(),
     map(flatten),
