@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {type ValidationScheduling} from '@sanity/validation/_internal'
 import {type Observable, of} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
@@ -126,6 +127,16 @@ export interface DocumentStore {
       // if `false`, any reference to a non-published document is ok as long as it's in the same bundle
       // as the document we're validating
       validatePublishedReferences: boolean,
+      options?: {
+        /**
+         * `immediate` validates without waiting for idle callbacks while a user waits on the
+         * result, and speeds up a run already in flight rather than starting it over.
+         * Scheduling is shared per document: it stays `immediate` until the last immediate
+         * subscription unsubscribes, and idle subscribers on the same stream get those results
+         * too.
+         */
+        scheduling?: ValidationScheduling
+      },
     ) => Observable<ValidationStatus>
   }
 }
@@ -291,11 +302,18 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(validationTargetId, type, requirePublishedReferences) {
+      validation(validationTargetId, type, requirePublishedReferences, options) {
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
+        return validation(
+          ctx,
+          idPair,
+          type,
+          validationTarget,
+          requirePublishedReferences,
+          options?.scheduling,
+        )
       },
     },
   }

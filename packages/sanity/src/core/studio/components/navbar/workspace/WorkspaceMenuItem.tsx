@@ -1,7 +1,9 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {type MouseEvent} from 'react'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {type WorkspaceSummary} from '../../../../config/types'
+import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useWorkspaceLoginStatus} from './hooks/useWorkspaceLoginStatus'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
@@ -21,11 +23,26 @@ interface WorkspaceMenuItemProps {
  */
 export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: WorkspaceMenuItemProps) {
   const state = useWorkspaceLoginStatus(workspace)
+  const {setActiveWorkspace} = useActiveWorkspace()
+
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    // The Dashboard renders every workspace in its own iframe. Its bridge prevents the default of a
+    // click on another workspace's link and opens that workspace's iframe, so don't also switch here.
+    if (event.defaultPrevented) return
+
+    if (event.button !== 0 || event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) {
+      return
+    }
+
+    event.preventDefault()
+    setActiveWorkspace(workspace.name)
+  }
 
   return (
     <MenuItem
       as="a"
       href={workspace.basePath}
+      onClick={handleClick}
       badgeText={STATE_TITLES[state] || undefined}
       iconRight={isSelected ? CheckmarkIcon : undefined}
       pressed={isSelected}

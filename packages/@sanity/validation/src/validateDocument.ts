@@ -14,7 +14,17 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import {concat, defer, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
+import {
+  type BehaviorSubject,
+  concat,
+  defer,
+  from,
+  lastValueFrom,
+  merge,
+  type Observable,
+  of,
+  throwError,
+} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
@@ -27,7 +37,7 @@ import {resolveConditionalProperty} from './resolveConditionalProperty'
 import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
-import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
+import {createPace, type ValidationScheduling} from './util/pace'
 import {typeString} from './util/typeString'
 import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
@@ -153,8 +163,10 @@ interface ValidateDocumentBaseOptions {
 
   /**
    * The current user, when available. Used when resolving schema `hidden`
-   * conditionals so validation matches what the form shows. If omitted, hidden
-   * is resolved with no user (e.g. CLI or headless validation).
+   * conditionals so validation matches what the form shows, and exposed to
+   * custom validators and schema-level `validation` functions as
+   * `context.currentUser`. If omitted, hidden is resolved with no user (e.g. CLI
+   * or headless validation).
    */
   currentUser?: Omit<CurrentUser, 'role'> | null
 }
@@ -397,20 +409,26 @@ export function evaluateDocumentInternal({
   )
 }
 
+export {type ValidationScheduling} from './util/pace'
+
 /**
  * @internal
  */
 export interface ValidateDocumentObservableOptions extends Pick<
   ValidationContext,
-  'getDocumentExists' | 'i18n' | 'signal'
+  'getDocumentExists' | 'i18n' | 'signal' | 'currentUser'
 > {
   getClient: (options: {apiVersion: string}) => SanityClient
   document: SanityDocument
   schema: Schema
   environment: 'cli' | 'studio'
   maxCustomValidationConcurrency?: number
-  currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
+  /**
+   * How the run is paced (see {@link ValidationScheduling}), `idle` when omitted. It can change
+   * while the run is in flight: a switch to `immediate` speeds the run up without restarting it.
+   */
+  scheduling?: BehaviorSubject<ValidationScheduling>
 }
 
 const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
@@ -450,6 +468,7 @@ function evaluateDocumentObservableWithoutCancellation({
   currentUser,
   customValidation = true,
   signal,
+  scheduling,
 }: ValidateDocumentObservableOptions): Observable<DocumentValidationResult> {
   if (typeof document?._type !== 'string') {
     throw new Error(`Tried to validate a value without a '_type'`)
@@ -509,10 +528,12 @@ function evaluateDocumentObservableWithoutCancellation({
       currentUser,
       customValidation,
       signal,
+      scheduling,
       __internal: {
         markIncomplete: () => {
           complete = false
         },
+        pace: createPace(scheduling),
       },
     }
 
@@ -553,11 +574,13 @@ export type ValidateItemOptions = {
   value: unknown
   customValidationConcurrencyLimiter?: ConcurrencyLimiter
   hidden?: boolean
-  currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
   signal?: AbortSignal
+  /** See {@link ValidateDocumentObservableOptions.scheduling}. */
+  scheduling?: BehaviorSubject<ValidationScheduling>
   __internal?: InternalValidationContext['__internal']
-} & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal'>>
+} & Pick<ValidationContext, 'currentUser'> &
+  ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal' | 'currentUser'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   return lastValueFrom(
@@ -584,9 +607,15 @@ function validateItemObservable({
   customValidationConcurrencyLimiter,
   environment,
   customValidation = true,
-  __internal,
+  scheduling,
+  __internal: inheritedInternal,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
+  // The run's pacer is created once, by `evaluateDocumentObservable` or by the outermost
+  // `validateItem` call, and shared with every nested value so that the whole run is paced as one.
+  const pace = inheritedInternal?.pace ?? createPace(scheduling)
+  const __internal = inheritedInternal?.pace ? inheritedInternal : {...inheritedInternal, pace}
+
   // Track whether any ancestor in the tree is hidden.
   // It will be true if this field OR any ancestor is hidden.
   // This allows validation rules to check `context.hidden` to skip validation for hidden fields,
@@ -731,6 +760,7 @@ function validateItemObservable({
           environment,
           customValidationConcurrencyLimiter,
           customValidation,
+          scheduling,
           __internal,
         }),
       ),
@@ -756,14 +786,16 @@ function validateItemObservable({
           environment,
           customValidationConcurrencyLimiter,
           customValidation,
+          scheduling,
           __internal,
         }),
       ),
     )
   }
 
+  // Every check waits for its turn as the run's pacer sees fit (see `ValidationScheduling`).
   return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
-    mergeMap((validateNode) => concat(idle(), validateNode), 40),
+    mergeMap((validateNode) => concat(pace(), validateNode), 40),
     mergeAll(),
     toArray(),
     map(flatten),
@@ -807,17 +839,4 @@ function toDocumentValidationMarker(marker: ValidationMarker): DocumentValidatio
     ...marker,
     code: validationMarkerCodes.validationFailed,
   }
-}
-
-function idle(timeout?: number): Observable<never> {
-  return new Observable<never>((observer) => {
-    const handle = requestIdleCallback(
-      () => {
-        observer.complete()
-      },
-      timeout ? {timeout} : undefined,
-    )
-
-    return () => cancelIdleCallback(handle)
-  })
 }

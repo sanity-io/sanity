@@ -4,11 +4,12 @@ import {javascriptLanguage} from '@codemirror/lang-javascript'
 import {
   bracketMatching,
   defaultHighlightStyle,
+  foldGutter,
   indentOnInput,
   syntaxHighlighting,
 } from '@codemirror/language'
 import {highlightSelectionMatches} from '@codemirror/search'
-import {type Extension} from '@codemirror/state'
+import {EditorState, type Extension} from '@codemirror/state'
 import {
   drawSelection,
   highlightActiveLine,
@@ -45,3 +46,11 @@ const sharedExtensions: Extension[] = [
 export const groqExtensions: Extension[] = [groq(), ...sharedExtensions]
 
 export const paramsExtensions: Extension[] = [javascriptLanguage, ...sharedExtensions]
+
+/** A result's JSON: read only, but focusable and selectable, with its objects and arrays foldable */
+export const resultJsonExtensions: Extension[] = [
+  javascriptLanguage,
+  ...sharedExtensions,
+  foldGutter(),
+  EditorState.readOnly.of(true),
+]
