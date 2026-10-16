@@ -20,7 +20,6 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/pandacss-tsdown-plugin": "catalog:",
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/node": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

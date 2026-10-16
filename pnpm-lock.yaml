@@ -198,9 +198,6 @@ catalogs:
     '@sanity/ui':
       specifier: ^4.4.8
       version: 4.4.8
-    '@sanity/vanilla-extract-vite-plugin':
-      specifier: ^0.3.0
-      version: 0.3.0
     '@tsdown/css':
       specifier: ^0.23.1
       version: 0.23.1
@@ -1281,6 +1278,9 @@ importers:
       '@pandacss/vite':
         specifier: 'catalog:'
         version: 2.2.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(vite@8.3.4)
+      '@repo/css-modules-kit':
+        specifier: workspace:*
+        version: link:../css-modules-kit
       '@repo/pandacss':
         specifier: workspace:*
         version: link:../pandacss
@@ -1293,9 +1293,6 @@ importers:
       '@sanity/pandacss-tsdown-plugin':
         specifier: 'catalog:'
         version: 0.3.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@pandacss/dev@2.2.0)(tsdown@0.23.1)(vite@8.3.4)
-      '@sanity/vanilla-extract-vite-plugin':
-        specifier: 'catalog:'
-        version: 0.3.0(babel-plugin-macros@3.1.0)(vite@8.3.4)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -1332,9 +1329,6 @@ importers:
       '@sanity/pandacss-tsdown-plugin':
         specifier: 'catalog:'
         version: 0.3.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@pandacss/dev@2.2.0)(tsdown@0.23.1)(vite@8.3.4)
-      '@sanity/vanilla-extract-vite-plugin':
-        specifier: 'catalog:'
-        version: 0.3.0(babel-plugin-macros@3.1.0)(vite@8.3.4)
       '@types/node':
         specifier: 'catalog:'
         version: 24.19.2
@@ -8229,12 +8223,6 @@ packages:
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       tsdown: ^0.23.0
-
-  '@sanity/vanilla-extract-vite-plugin@0.3.0':
-    resolution: {integrity: sha512-D8zM9Hs+lfUV8Vjkw3lUmG6C8tBsK4BtMcHg4/ebf1qBegCXhe3w2RBeMnOupAXugYt6/89AxPHuRKUyrVACoA==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      vite: ^8.0.0
 
   '@sanity/visual-editing-csm@3.0.18':
     resolution: {integrity: sha512-s+54hWA0g/YIVLP8Vq0JzQqRS34OP5tiV/m0AkF3ycBaaUX+9H1Lobc0lZv5w0rHc+FXwSy0Y55Kn1Rh0CvMOA==}
@@ -21623,14 +21611,6 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
       - rolldown
-
-  '@sanity/vanilla-extract-vite-plugin@0.3.0(babel-plugin-macros@3.1.0)(vite@8.3.4)':
-    dependencies:
-      '@sanity/vanilla-extract-integration': 0.2.1(babel-plugin-macros@3.1.0)
-      '@vanilla-extract/css': 1.21.3(babel-plugin-macros@3.1.0)
-      vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-    transitivePeerDependencies:
-      - babel-plugin-macros
 
   '@sanity/visual-editing-csm@3.0.18(@sanity/client@8.9.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
     dependencies:

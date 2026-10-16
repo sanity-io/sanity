@@ -1,9 +1,9 @@
 import path from 'node:path'
 
 import {pandacss} from '@pandacss/vite'
+import {viteCssModules} from '@repo/css-modules-kit'
 import {PANDA_LAYER_NAMES, PANDA_LAYERS_CSS_SPECIFIER} from '@repo/pandacss/vite'
 import {removeCascadeLayers} from '@sanity/pandacss-tsdown-plugin/vite'
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact from '@vitejs/plugin-react'
 import {Features} from 'lightningcss'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
@@ -20,19 +20,16 @@ export interface DefaultConfigOptions {
    */
   version: string
   /**
-   * How the package writes its `.css.ts` modules: Panda CSS (`sanity`, from the package's own
-   * `panda.config.ts`) or vanilla-extract (`@sanity/vision`, until it moves to CSS modules).
-   * Each compiler only runs for the packages that use it — the vanilla-extract plugin would
-   * evaluate Panda's `.css.ts` modules as its own.
-   * @defaultValue 'vanilla-extract'
+   * How the package styles its components: Panda CSS `.css.ts` modules (`sanity`, from the
+   * package's own `panda.config.ts`) or CSS modules (`@sanity/vision`, compiled with the Lightning
+   * CSS scoping and class names of its package build, see @repo/css-modules-kit).
    */
-  styles?: 'panda' | 'vanilla-extract'
+  styles: 'panda' | 'css-modules'
 }
 
-export function createDefaultConfig({
-  version,
-  styles = 'vanilla-extract',
-}: DefaultConfigOptions): UserConfig {
+export function createDefaultConfig({version, styles}: DefaultConfigOptions): UserConfig {
+  const cssModules = styles === 'css-modules' ? viteCssModules : undefined
+
   return {
     appType: 'custom',
     // Vite 8 minifies CSS with Lightning CSS against `baseline-widely-available`
@@ -43,7 +40,9 @@ export function createDefaultConfig({
     // Tailwind — rather than raising `build.cssTarget` (that would change other
     // CSS lowering). See https://github.com/parcel-bundler/lightningcss/issues/873
     css: {
+      transformer: cssModules?.transformer,
       lightningcss: {
+        ...cssModules?.lightningcss,
         exclude: Features.LightDark,
       },
     },
@@ -71,11 +70,7 @@ export function createDefaultConfig({
             removeCascadeLayers(PANDA_LAYER_NAMES),
             pandaLayersCssImportPlugin(),
           ]
-        : [
-            // `identifiers: 'safe'` includes the package version in CDN class names so a release
-            // cannot reuse the previous release's names (SAPP-4639).
-            vanillaExtractPlugin({identifiers: 'safe'}),
-          ]),
+        : []),
       cleanupCssOutputPlugin(),
       esmExternalRequirePlugin({
         // self-externals are required here in order to ensure that the presentation
@@ -184,7 +179,7 @@ const VITE_HASH_UPDATE_MARKER_RE = /\/\*\$vite\$:\d+\*\//g
  * Cleans up the CSS-related output of the CDN bundle build:
  *
  * 1. Strips CSS imports from JS chunks, but ONLY for CSS files that were
- *    produced by the current build (e.g., by Panda CSS or vanilla-extract). When building
+ *    produced by the current build (e.g., by Panda CSS or CSS modules). When building
  *    CDN bundles, CSS is served separately via `<link>` tags (injected by the
  *    CLI's runtime script), so the JS bundles should not contain CSS import
  *    side-effects for these extracted CSS files. CSS imports from third-party
@@ -206,7 +201,7 @@ export function cleanupCssOutputPlugin(): Plugin {
 
     generateBundle(_options, bundle) {
       // 1. Collect CSS asset filenames produced by this build (e.g.,
-      //    Panda CSS or vanilla-extract output, Vite-processed CSS imports) and, while we're
+      //    Panda CSS or CSS modules output, Vite-processed CSS imports) and, while we're
       //    iterating, strip the internal Vite hash-update marker from each CSS
       //    asset's source.
       const cssAssetNames = new Set<string>()

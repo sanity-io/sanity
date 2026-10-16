@@ -2,7 +2,6 @@ import {fileURLToPath} from 'node:url'
 
 import {pandacss} from '@pandacss/vite'
 import {removeCascadeLayers} from '@sanity/pandacss-tsdown-plugin/vite'
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {normalizePath, type Plugin} from 'vite'
 
 /**
@@ -30,7 +29,6 @@ export const PANDA_LAYER_NAMES: readonly string[] = [
 ]
 
 const SANITY_PACKAGE_DIR = fileURLToPath(new URL('../../../sanity/', import.meta.url))
-const VISION_PACKAGE_DIR = fileURLToPath(new URL('../../../@sanity/vision/', import.meta.url))
 
 /** The entry both `sanity dev` and `sanity build` write for a studio (`.sanity/runtime/app.js`). */
 const RE_SANITY_RUNTIME_ENTRY = /[\\/]\.sanity[\\/]runtime[\\/]app\.js$/
@@ -60,28 +58,6 @@ function scopedPandacss(cwd: string): Plugin {
     ...plugin,
     transform: {...transform, filter: {...transform.filter, id: ids}},
   }
-}
-
-/**
- * `@sanity/vanilla-extract-vite-plugin` for the `.css.ts` sources of `@sanity/vision`, which
- * still writes them in vanilla-extract until it moves to CSS modules. A studio that resolves the
- * workspace packages to their sources (`sanity dev`) registers it next to `studioPandaCss()`.
- * The plugin compiles every `.css.ts` module of a build as vanilla-extract, so its transform is
- * limited to that package's directory: the `.css.ts` modules of `sanity` and of the studios are
- * Panda CSS and do not import `@vanilla-extract/css`.
- */
-export function visionVanillaExtractPlugin(): Plugin[] {
-  const ids = new RegExp(
-    `^${escapeRegExp(normalizePath(VISION_PACKAGE_DIR))}.*\\.css\\.(?:js|cjs|mjs|jsx|ts|tsx)(?:\\?|$)`,
-  )
-
-  return vanillaExtractPlugin().map((plugin) => {
-    const {transform} = plugin
-    if (plugin.name !== 'sanity-vanilla-extract' || !transform || typeof transform === 'function') {
-      return plugin
-    }
-    return {...plugin, transform: {...transform, filter: {...transform.filter, id: ids}}}
-  })
 }
 
 /**
