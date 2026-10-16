@@ -509,6 +509,21 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Write mutations as the Mutations API takes them, in a list: create, createOrReplace, createIfNotExists, delete and patch, by ID or by a GROQ query. A dry run shows what they would do to each document without changing anything; Apply then writes them to the dataset in one transaction, with your account.',
   /** What the API says went wrong with one of the mutations */
   'vista.mutate.failure-item': 'Mutation {{index}}: {{message}}',
+  /** Tooltip and accessible label of the button opening the generate mutations field */
+  'vista.mutate.generate.button': 'Generate mutations',
+  /** Explanation under the generate mutations field */
+  'vista.mutate.generate.description':
+    'Sanity Agent Actions write the mutations from your description, the documents in the result and their types, and a dry run checks each attempt. They replace the mutations here, where undo brings these back; nothing is written until you apply them.',
+  /** Shown when no mutations could be generated, above the reason */
+  'vista.mutate.generate.failed': 'The mutations could not be generated',
+  /** Accessible label of the description field in the generate mutations bar */
+  'vista.mutate.generate.label': 'What should the mutations do?',
+  /** Placeholder of the description field in the generate mutations bar */
+  'vista.mutate.generate.placeholder': 'Change the title of the documents in the result to foobar',
+  /** Shown while the first attempt at the mutations is written */
+  'vista.mutate.generate.progress': 'Writing the mutations…',
+  /** Shown while an attempt the dry run turned down is retried */
+  'vista.mutate.generate.progress-retry': 'Fixing the mutations (attempt {{attempt}} of {{max}})…',
   /** Under the dry run: the fields the diffs leave out */
   'vista.mutate.hiding': 'The changes leave out {{fields}}, as History does.',
   /** Shown when the mutations are not valid JSON */

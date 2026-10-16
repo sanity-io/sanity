@@ -141,6 +141,18 @@ export interface MutationOptions {
   autoGenerateArrayKeys: boolean
 }
 
+/**
+ * What a dry run ran, as a key: Apply only sends mutations whose dry run has this key, so editing
+ * them, switching the dataset or changing an option asks for another dry run
+ */
+export function mutationRunKey(
+  dataset: string,
+  mutations: MutationBody[],
+  options: MutationOptions,
+): string {
+  return JSON.stringify([dataset, mutations, options])
+}
+
 export type ChangeOperation = 'create' | 'update' | 'delete' | 'none'
 
 export interface DocumentChange {

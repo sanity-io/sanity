@@ -1,11 +1,9 @@
 import {type SanityClient} from '@sanity/client'
-import {CloseIcon} from '@sanity/icons/Close'
-import {SparklesIcon} from '@sanity/icons/Sparkles'
-import {Button, Card, Stack, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {type KeyboardEvent, useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaTab} from '../../store/types'
@@ -17,6 +15,7 @@ import {
   MAX_GENERATE_ATTEMPTS,
 } from '../../util/generateQuery'
 import {summarizeSchema} from '../../util/schemaSummary'
+import {PromptRow} from '../PromptRow'
 
 type GenerateStatus =
   | {type: 'idle'}
@@ -98,61 +97,20 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
 
   const generating = status.type === 'generating'
   const lastAttempt = status.type === 'failed' ? status.lastAttempt : undefined
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      onClose()
-    } else if (event.key === 'Enter' && !generating) {
-      event.preventDefault()
-      void generate()
-    }
-  }
 
   return (
     <Card borderBottom data-testid="vista-generate-bar" padding={2}>
       <Stack gap={2}>
-        <Flex alignItems="center" gap={2}>
-          <Box flexBasis="0%" flexGrow={1} minWidth="0">
-            <TextInput
-              aria-label={t('vista.generate.label')}
-              // Password managers ignore `autoComplete` and offer names here (the placeholder
-              // mentions first and last names), so each of them also gets its own opt-out
-              autoComplete="off"
-              autoFocus
-              data-1p-ignore
-              data-bwignore
-              data-form-type="other"
-              data-lpignore="true"
-              data-testid="vista-generate-request"
-              disabled={generating}
-              fontSize={1}
-              icon={SparklesIcon}
-              onChange={(event) => setRequest(event.currentTarget.value)}
-              onKeyDown={handleKeyDown}
-              padding={2}
-              placeholder={t('vista.generate.placeholder')}
-              value={request}
-            />
-          </Box>
-          <Button
-            data-testid="vista-generate-submit"
-            disabled={!request.trim() || generating}
-            fontSize={1}
-            loading={generating}
-            onClick={() => void generate()}
-            padding={2}
-            text={t('vista.generate.submit')}
-            tone="primary"
-          />
-          <Button
-            aria-label={t('vista.generate.close')}
-            fontSize={1}
-            icon={CloseIcon}
-            mode="bleed"
-            onClick={onClose}
-            padding={2}
-          />
-        </Flex>
+        <PromptRow
+          label={t('vista.generate.label')}
+          onChange={setRequest}
+          onClose={onClose}
+          onSubmit={() => void generate()}
+          pending={generating}
+          placeholder={t('vista.generate.placeholder')}
+          testIdPrefix="vista-generate"
+          value={request}
+        />
         {status.type === 'idle' && (
           <Text muted size={0}>
             {t('vista.generate.description')}

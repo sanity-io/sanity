@@ -1,14 +1,17 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Badge, type BadgeTone, Button, Card, Label, Stack, Text} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {Tooltip} from '@sanity/ui/tooltip'
 import {Suspense, useCallback, useId, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 import {Box, Flex, Grid} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
+import {type GenerateMutationsClient} from '../../util/generateMutations'
 import {
   addMutation,
   applyMutations,
@@ -22,6 +25,7 @@ import {
   type MutationOptions,
   type MutationPreview,
   type MutationTemplate,
+  mutationRunKey,
   previewMutations,
   readMutationFailure,
   readMutations,
@@ -29,6 +33,7 @@ import {
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {SwitchField} from '../SwitchField'
 import {drawerScroller} from '../vista.css'
+import {GenerateMutationsBar} from './GenerateMutationsBar'
 import {JsonEditor} from './JsonEditor'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
 
@@ -66,6 +71,8 @@ const INITIAL_STATE: MutatePanelState = {
 export interface MutatePanel {
   state: MutatePanelState
   setText: (text: string) => void
+  /** Replaces the mutations with generated ones, and shows the dry run that checked them */
+  showGenerated: (text: string, preview: NonNullable<MutatePanelState['preview']>) => void
   setAutoGenerateArrayKeys: (autoGenerateArrayKeys: boolean) => void
   preview: (client: MutateClient, run: MutationRun) => Promise<void>
   /** Resolves with whether the mutations were applied */
@@ -78,6 +85,19 @@ export function useMutatePanel(): MutatePanel {
   const setText = useCallback((text: string) => {
     setState((current) => ({...current, text}))
   }, [])
+
+  const showGenerated = useCallback(
+    (text: string, generatedPreview: NonNullable<MutatePanelState['preview']>) => {
+      setState((current) => ({
+        ...current,
+        text,
+        preview: generatedPreview,
+        failure: undefined,
+        applied: undefined,
+      }))
+    },
+    [],
+  )
 
   const setAutoGenerateArrayKeys = useCallback((autoGenerateArrayKeys: boolean) => {
     setState((current) => ({...current, autoGenerateArrayKeys}))
@@ -129,7 +149,7 @@ export function useMutatePanel(): MutatePanel {
     }
   }, [])
 
-  return {state, setText, setAutoGenerateArrayKeys, preview, apply}
+  return {state, setText, showGenerated, setAutoGenerateArrayKeys, preview, apply}
 }
 
 function describeOperation(operation: ChangeOperation, t: TFunction<'vision'>): string {
@@ -285,7 +305,7 @@ function PreviewResult(props: {
 export interface MutateTabProps {
   mutate: MutatePanel
   /** The tab's client: its dataset is where the mutations go */
-  client: MutateClient
+  client: GenerateMutationsClient
   dataset: string
   /** Requests are refused while the tab's API version is unfinished */
   canRequest: boolean
@@ -306,17 +326,21 @@ export function MutateTab(props: MutateTabProps) {
   const {mutate, client, dataset, canRequest, result, hiddenFields, onApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {state} = mutate
+  const [generatorOpen, setGeneratorOpen] = useState(false)
 
   const input = useMemo(() => readMutations(state.text), [state.text])
+  const options = useMemo(
+    (): MutationOptions => ({autoGenerateArrayKeys: state.autoGenerateArrayKeys}),
+    [state.autoGenerateArrayKeys],
+  )
   const run = useMemo((): MutationRun | undefined => {
     if (input.status !== 'valid') return undefined
-    const options = {autoGenerateArrayKeys: state.autoGenerateArrayKeys}
     return {
-      key: JSON.stringify([dataset, input.mutations, options]),
+      key: mutationRunKey(dataset, input.mutations, options),
       mutations: input.mutations,
       options,
     }
-  }, [dataset, input, state.autoGenerateArrayKeys])
+  }, [dataset, input, options])
   const documents = useMemo(() => documentsInResult(result), [result])
 
   const previewIsCurrent = run !== undefined && state.preview?.key === run.key
@@ -353,6 +377,23 @@ export function MutateTab(props: MutateTabProps) {
         <Text muted size={1}>
           {t('vista.mutate.description')}
         </Text>
+        {generatorOpen && (
+          <GenerateMutationsBar
+            client={client}
+            dataset={dataset}
+            mutationOptions={options}
+            onClose={() => setGeneratorOpen(false)}
+            onGenerated={(text, preview) => {
+              mutate.showGenerated(text, preview)
+              setGeneratorOpen(false)
+            }}
+            onOpenAttempt={(text) => {
+              mutate.setText(text)
+              setGeneratorOpen(false)
+            }}
+            result={result}
+          />
+        )}
         {/* What a dry run or an apply returned is as tall as it needs up to half the room, its
             changes scrolling past that; the editor takes the rest */}
         <Grid
@@ -367,51 +408,71 @@ export function MutateTab(props: MutateTabProps) {
           <Flex flexDirection="column" gap={2} minHeight="0">
             <JsonEditor
               actions={
-                <MenuButton
-                  button={
-                    <Button
-                      data-testid="vista-mutate-add"
-                      disabled={!canAdd}
-                      fontSize={1}
-                      icon={AddIcon}
-                      mode="bleed"
-                      padding={2}
-                      text={t('vista.mutate.add')}
-                    />
-                  }
-                  id="vista-mutate-add"
-                  menu={
-                    <Menu>
-                      <MenuItem
-                        data-testid="vista-mutate-add-patch"
+                <Flex alignItems="center" gap={1}>
+                  {!generatorOpen && (
+                    <Tooltip
+                      animate
+                      content={<Text size={1}>{t('vista.mutate.generate.button')}</Text>}
+                      placement="bottom"
+                      portal
+                    >
+                      <Button
+                        aria-label={t('vista.mutate.generate.button')}
+                        data-testid="vista-mutate-generate"
                         fontSize={1}
-                        onClick={() => addTemplate('patch')}
-                        text={
-                          documents.length > 0
-                            ? t('vista.mutate.add.patch-result')
-                            : t('vista.mutate.add.patch')
-                        }
+                        icon={SparklesIcon}
+                        mode="bleed"
+                        onClick={() => setGeneratorOpen(true)}
+                        padding={2}
                       />
-                      <MenuItem
-                        data-testid="vista-mutate-add-create"
+                    </Tooltip>
+                  )}
+                  <MenuButton
+                    button={
+                      <Button
+                        data-testid="vista-mutate-add"
+                        disabled={!canAdd}
                         fontSize={1}
-                        onClick={() => addTemplate('create')}
-                        text={t('vista.mutate.add.create')}
+                        icon={AddIcon}
+                        mode="bleed"
+                        padding={2}
+                        text={t('vista.mutate.add')}
                       />
-                      <MenuItem
-                        data-testid="vista-mutate-add-delete"
-                        fontSize={1}
-                        onClick={() => addTemplate('delete')}
-                        text={
-                          documents.length > 0
-                            ? t('vista.mutate.add.delete-result')
-                            : t('vista.mutate.add.delete')
-                        }
-                      />
-                    </Menu>
-                  }
-                  popover={{placement: 'bottom-end', portal: true}}
-                />
+                    }
+                    id="vista-mutate-add"
+                    menu={
+                      <Menu>
+                        <MenuItem
+                          data-testid="vista-mutate-add-patch"
+                          fontSize={1}
+                          onClick={() => addTemplate('patch')}
+                          text={
+                            documents.length > 0
+                              ? t('vista.mutate.add.patch-result')
+                              : t('vista.mutate.add.patch')
+                          }
+                        />
+                        <MenuItem
+                          data-testid="vista-mutate-add-create"
+                          fontSize={1}
+                          onClick={() => addTemplate('create')}
+                          text={t('vista.mutate.add.create')}
+                        />
+                        <MenuItem
+                          data-testid="vista-mutate-add-delete"
+                          fontSize={1}
+                          onClick={() => addTemplate('delete')}
+                          text={
+                            documents.length > 0
+                              ? t('vista.mutate.add.delete-result')
+                              : t('vista.mutate.add.delete')
+                          }
+                        />
+                      </Menu>
+                    }
+                    popover={{placement: 'bottom-end', portal: true}}
+                  />
+                </Flex>
               }
               label={t('vista.mutate.mutations')}
               onChange={mutate.setText}

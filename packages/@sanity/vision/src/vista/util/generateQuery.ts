@@ -15,7 +15,7 @@ export interface GenerateQueryClient {
 }
 
 /** Agent Actions only exist on the experimental API */
-const AGENT_API_VERSION = 'vX'
+export const AGENT_API_VERSION = 'vX'
 export const MAX_GENERATE_ATTEMPTS = 3
 const MAX_TITLE_LENGTH = 60
 
@@ -139,6 +139,7 @@ export async function generateQuery(options: GenerateQueryOptions): Promise<Gene
   for (let attempt = 1; attempt <= MAX_GENERATE_ATTEMPTS; attempt++) {
     signal?.throwIfAborted()
     onAttempt?.(attempt)
+    // oxlint-disable-next-line no-await-in-loop -- each attempt is asked with the previous one's error
     const response: unknown = await agent.prompt({
       instruction: previous ? RETRY_INSTRUCTION : INSTRUCTION,
       instructionParams: {
@@ -159,6 +160,7 @@ export async function generateQuery(options: GenerateQueryOptions): Promise<Gene
       continue
     }
     try {
+      // oxlint-disable-next-line no-await-in-loop -- the check decides whether to ask again
       await checkQuery(client, generated, signal)
       return generated
     } catch (error) {

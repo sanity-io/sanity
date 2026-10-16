@@ -1,4 +1,4 @@
-import {ClientError} from '@sanity/client'
+import {ClientError, type PromptRequest} from '@sanity/client'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
@@ -6,6 +6,7 @@ import {type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
+import {type GenerateMutationsClient} from '../../util/generateMutations'
 import {type MutateClient} from '../../util/mutations'
 import {MutateTab, useMutatePanel} from './MutateTab'
 
@@ -20,6 +21,7 @@ vi.mock('./CodeDiff', () => ({
 vi.mock('sanity', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  useSchema: () => undefined,
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,
@@ -83,7 +85,7 @@ const DRY_RUN = {
 
 type RequestOptions = Parameters<MutateClient['request']>[0]
 
-function createClient(respond: (options: RequestOptions) => unknown) {
+function createClient(respond: (options: RequestOptions) => unknown, replies: unknown[] = []) {
   const request = vi.fn((options: RequestOptions) => {
     try {
       return Promise.resolve(respond(options))
@@ -91,17 +93,19 @@ function createClient(respond: (options: RequestOptions) => unknown) {
       return Promise.reject(error)
     }
   })
-  const client: MutateClient = {
+  const prompt = vi.fn((_request: PromptRequest) => Promise.resolve(replies.shift()))
+  const client: GenerateMutationsClient = {
     getDataUrl: (operation) => `/v2025-02-19/data/${operation}/test`,
     request,
     getDocuments: (ids) =>
       Promise.resolve(ids.map((id) => CURRENT.find((document) => document._id === id) ?? null)),
+    withConfig: () => ({agent: {action: {prompt}}}),
   }
-  return {client, request}
+  return {client, request, prompt}
 }
 
 function Harness(props: {
-  client: MutateClient
+  client: GenerateMutationsClient
   dataset?: string
   result?: unknown
   onApplied?: () => void
@@ -291,5 +295,89 @@ describe('MutateTab', () => {
       {patch: {query: '*[_id in $ids]', params: {ids: ['drafts.a', 'b']}, set: {}}},
       {create: {_type: 'post'}},
     ])
+  })
+
+  it('writes mutations from a description, with the dry run that checked them, to apply', async () => {
+    const generated = [{patch: {id: 'a', set: {title: 'foobar'}}}]
+    const dryRun = {
+      results: [
+        {id: 'a', operation: 'update', document: {...CURRENT[0], _rev: 'dry', title: 'foobar'}},
+      ],
+    }
+    const {client, request, prompt} = createClient(
+      (options) =>
+        options.query.dryRun ? dryRun : {transactionId: 'tx-2', results: dryRun.results},
+      [{mutations: generated}],
+    )
+    const onApplied = vi.fn()
+    renderTab({client, onApplied, result: [{_id: 'a', _type: 'post', title: 'Old'}]})
+    write('[{"delete": {"id": "b"}}]')
+
+    fireEvent.click(screen.getByTestId('vista-mutate-generate'))
+    const field = screen.getByTestId('vista-mutate-generate-request')
+    expect(field.getAttribute('autocomplete')).toBe('off')
+    fireEvent.change(field, {
+      target: {value: 'Change the title of the documents I am looking at to foobar'},
+    })
+    fireEvent.keyDown(field, {key: 'Enter'})
+
+    await waitFor(() => expect(screen.queryByTestId('vista-mutate-generate-bar')).toBeNull())
+    expect(prompt.mock.calls[0][0].instructionParams).toMatchObject({
+      request: 'Change the title of the documents I am looking at to foobar',
+      documents: '- a (post)',
+    })
+    // The generated mutations replace the ones written, and their dry run is the one shown
+    expect(JSON.parse(editor().value)).toEqual(generated)
+    const preview = screen.getByTestId('vista-mutate-preview-result')
+    expect(
+      within(preview)
+        .getAllByTestId('vista-mutate-operation')
+        .map((badge) => badge.textContent),
+    ).toEqual(['vista.mutate.operation.update'])
+    expect(request).toHaveBeenCalledTimes(1)
+
+    fireEvent.click(button('vista-mutate-apply'))
+    await screen.findByTestId('vista-mutate-applied')
+    expect(request.mock.calls[1][0]).toMatchObject({body: {mutations: generated}})
+    expect(request.mock.calls[1][0].query).not.toHaveProperty('dryRun')
+    expect(onApplied).toHaveBeenCalledTimes(1)
+  })
+
+  it('offers the last attempt when the dry run turns every generated one down', async () => {
+    const rejected = [{delete: {id: 'a'}}]
+    const {client, prompt} = createClient(
+      () => {
+        throw new ClientError({
+          statusCode: 409,
+          headers: {},
+          body: {
+            error: {
+              type: 'mutationError',
+              description:
+                'Mutation failed: Document "a" cannot be deleted as there are references to it',
+            },
+          },
+          url: 'https://test.api.sanity.io/v2025-02-19/data/mutate/test',
+          method: 'POST',
+        })
+      },
+      Array.from({length: 3}, () => ({mutations: rejected})),
+    )
+    renderTab({client, result: [{_id: 'a', _type: 'post'}]})
+
+    fireEvent.click(screen.getByTestId('vista-mutate-generate'))
+    fireEvent.change(screen.getByTestId('vista-mutate-generate-request'), {
+      target: {value: 'Delete them'},
+    })
+    fireEvent.click(button('vista-mutate-generate-submit'))
+    const error = await screen.findByTestId('vista-mutate-generate-error')
+    expect(error.textContent).toContain('vista.mutate.generate.failed')
+    expect(error.textContent).toContain('cannot be deleted as there are references to it')
+    expect(prompt).toHaveBeenCalledTimes(3)
+
+    fireEvent.click(within(error).getByTestId('vista-mutate-generate-open-anyway'))
+    expect(screen.queryByTestId('vista-mutate-generate-bar')).toBeNull()
+    expect(JSON.parse(editor().value)).toEqual(rejected)
+    expect(screen.queryByTestId('vista-mutate-preview-result')).toBeNull()
   })
 })
