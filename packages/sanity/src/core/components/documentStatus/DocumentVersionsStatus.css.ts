@@ -9,11 +9,3 @@ export const updatedAtText = style({
   flex: 'none',
   whiteSpace: 'nowrap',
 })
-
-export const versionStatusItem = style({
-  selectors: {
-    '&&': {
-      padding: '2px 0',
-    },
-  },
-})
