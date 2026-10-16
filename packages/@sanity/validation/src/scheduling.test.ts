@@ -187,8 +187,60 @@ describe('validation scheduling', () => {
     )
   })
 
+  it('yields to the browser now and then in an immediate run where it has scheduler.yield', async () => {
+    const page = createStalledPage()
+    const scheduler = {yield: vi.fn(() => Promise.resolve())}
+    vi.stubGlobal('scheduler', scheduler)
+    const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
+
+    const result = await lastValueFrom(
+      evaluateDocumentObservable({
+        document: createDocument(200),
+        schema: createSchema(),
+        getClient: () => createMockClient(),
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+        scheduling: 'immediate',
+      }),
+    )
+
+    expect(page.requestIdleCallback).not.toHaveBeenCalled()
+    // 200 blocks are a few thousand nodes: a yield per hundred of them, and far from one per node
+    expect(scheduler.yield.mock.calls.length).toBeGreaterThan(5)
+    expect(scheduler.yield.mock.calls.length).toBeLessThan(200)
+    expect(result.status).toBe('failed')
+    expect(result.markers).toHaveLength(1 + 20)
+  })
+
+  it('holds the whole immediate run while the browser has the thread', async () => {
+    const page = createStalledPage()
+    // a browser that never hands the thread back
+    const scheduler = {yield: vi.fn(() => new Promise<void>(() => undefined))}
+    vi.stubGlobal('scheduler', scheduler)
+    const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
+
+    const outcome = await Promise.race([
+      lastValueFrom(
+        evaluateDocumentObservable({
+          document: createDocument(200),
+          schema: createSchema(),
+          getClient: () => createMockClient(),
+          i18n: getFallbackLocaleSource(),
+          environment: 'studio',
+          scheduling: 'immediate',
+        }),
+      ).then(() => 'completed'),
+      new Promise<string>((resolve) => setTimeout(() => resolve('still validating'), 300)),
+    ])
+
+    expect(outcome).toBe('still validating')
+    // every node of the run waits for the one pending yield instead of asking for its own
+    expect(scheduler.yield).toHaveBeenCalledTimes(1)
+  })
+
   it('completes without a single idle callback when scheduling is immediate', async () => {
     const page = createStalledPage()
+    vi.stubGlobal('scheduler', undefined)
     const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
     const blockCount = 200
 
@@ -257,52 +309,66 @@ describe('validation scheduling', () => {
     expect(sortMarkers(immediate.markers)).toEqual(sortMarkers(idle.markers))
   })
 
-  it('completes a long run of array items without rules when scheduling is immediate', async () => {
-    const page = createStalledPage()
-    const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
-    const schema = SchemaBuilder.compile({
-      name: 'test',
-      parent: builtinSchema,
-      types: [
-        {type: 'object', name: 'item', fields: [{type: 'string', name: 'title'}]},
-        {type: 'object', name: 'other', fields: [{type: 'string', name: 'title'}]},
-        {
-          type: 'document',
-          name: 'list',
-          // Two member types, so items with an unknown `_type` resolve to no schema type (and no rules)
-          fields: [{type: 'array', name: 'items', of: [{type: 'item'}, {type: 'other'}]}],
-        },
-      ],
-    })
-    // Enough items with rules to fill the 40-wide `mergeMap` window, then a run that completes synchronously
-    const items = [
-      ...Array.from({length: 45}, (_, index) => ({
-        _type: 'item',
-        _key: `item${index}`,
-        title: 'a',
-      })),
-      ...Array.from({length: 5000}, (_, index) => ({_type: 'removed', _key: `removed${index}`})),
-    ]
+  it.each([
+    {browser: 'a browser without scheduler.yield', hasSchedulerYield: false},
+    {browser: 'a browser with scheduler.yield', hasSchedulerYield: true},
+  ])(
+    'completes a long run of array items without rules when scheduling is immediate, in $browser',
+    async ({hasSchedulerYield}) => {
+      const page = createStalledPage()
+      const scheduler = {yield: vi.fn(() => Promise.resolve())}
+      vi.stubGlobal('scheduler', hasSchedulerYield ? scheduler : undefined)
+      // what Node yields through where there is no scheduler.yield; stands in for Node's
+      // setImmediate, which this package's types do not declare
+      const setImmediate = vi.fn((callback: () => void) => setTimeout(callback, 0))
+      vi.stubGlobal('setImmediate', setImmediate)
+      const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
+      const schema = SchemaBuilder.compile({
+        name: 'test',
+        parent: builtinSchema,
+        types: [
+          {type: 'object', name: 'item', fields: [{type: 'string', name: 'title'}]},
+          {type: 'object', name: 'other', fields: [{type: 'string', name: 'title'}]},
+          {
+            type: 'document',
+            name: 'list',
+            // Two member types, so items with an unknown `_type` resolve to no schema type (and no rules)
+            fields: [{type: 'array', name: 'items', of: [{type: 'item'}, {type: 'other'}]}],
+          },
+        ],
+      })
+      // Enough items with rules to fill the 40-wide `mergeMap` window, then a run that completes synchronously
+      const items = [
+        ...Array.from({length: 45}, (_, index) => ({
+          _type: 'item',
+          _key: `item${index}`,
+          title: 'a',
+        })),
+        ...Array.from({length: 5000}, (_, index) => ({_type: 'removed', _key: `removed${index}`})),
+      ]
 
-    const result = await lastValueFrom(
-      evaluateDocumentObservable({
-        document: {
-          _id: 'drafts.list',
-          _type: 'list',
-          _createdAt: '2026-01-01T00:00:00.000Z',
-          _updatedAt: '2026-01-01T00:00:00.000Z',
-          _rev: 'rev',
-          items,
-        },
-        schema,
-        getClient: () => createMockClient(),
-        i18n: getFallbackLocaleSource(),
-        environment: 'studio',
-        scheduling: 'immediate',
-      }),
-    )
+      const result = await lastValueFrom(
+        evaluateDocumentObservable({
+          document: {
+            _id: 'drafts.list',
+            _type: 'list',
+            _createdAt: '2026-01-01T00:00:00.000Z',
+            _updatedAt: '2026-01-01T00:00:00.000Z',
+            _rev: 'rev',
+            items,
+          },
+          schema,
+          getClient: () => createMockClient(),
+          i18n: getFallbackLocaleSource(),
+          environment: 'studio',
+          scheduling: 'immediate',
+        }),
+      )
 
-    expect(page.requestIdleCallback).not.toHaveBeenCalled()
-    expect(result).toEqual({status: 'passed', markers: []})
-  })
+      expect(page.requestIdleCallback).not.toHaveBeenCalled()
+      expect(scheduler.yield.mock.calls.length > 0).toBe(hasSchedulerYield)
+      expect(setImmediate.mock.calls.length > 0).toBe(!hasSchedulerYield)
+      expect(result).toEqual({status: 'passed', markers: []})
+    },
+  )
 })
