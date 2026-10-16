@@ -1,8 +1,10 @@
+import {cpSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync} from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {RuleTester} from 'oxlint/plugins-dev'
-import {describe, it} from 'vitest'
+import {afterAll, describe, it} from 'vitest'
 
 import plugin from '../src/index.mjs'
 
@@ -132,12 +134,14 @@ tester.run('no-missing-translation-key', plugin.rules['no-missing-translation-ke
     at(
       'core/presence/DocumentPreviewPresence.tsx',
       `import {studioLocaleNamespace} from '../i18n'
-      function DocumentPreviewPresence({count, closeLabel}) {
+      function DocumentPreviewPresence({count, closeLabel, countOptions}) {
         const {t} = useTranslation()
         const {t: tCore} = useTranslation(studioLocaleNamespace)
         return [
           // plural and context variants
           t('documents.count', {count}),
+          t('documents.count', countOptions),
+          <Translate t={t} i18nKey="documents.count" values={{count}} />,
           tCore('changes.close-label'),
           <Translate t={t} i18nKey="presence.tooltip.one" />,
           // computed keys are not checked
@@ -185,6 +189,17 @@ tester.run('no-missing-translation-key', plugin.rules['no-missing-translation-ke
         }`,
       ),
       errors: [missing('presence.tooltip.missing')],
+    },
+    // A key that only has plural variants renders raw when no \`count\` or \`context\` is passed
+    {
+      ...at(
+        'core/form/Input.tsx',
+        `function Input() {
+          const {t} = useTranslation()
+          return t('documents.count')
+        }`,
+      ),
+      errors: [missing('documents.count')],
     },
     // A key read with the \`t\` of another namespace
     {
@@ -242,4 +257,44 @@ tester.run('no-missing-translation-key', plugin.rules['no-missing-translation-ke
       errors: [{messageId: 'unknownNamespace', data: {namespace: 'nope'}}],
     },
   ],
+})
+
+describe('no-missing-translation-key resource changes', () => {
+  const tempDir = mkdtempSync(path.join(os.tmpdir(), 'i18n-plugin-'))
+  const resourceFile = path.join(tempDir, 'core/i18n/studio.ts')
+  cpSync(rootDir, tempDir, {recursive: true})
+
+  afterAll(() => rmSync(tempDir, {recursive: true, force: true}))
+
+  const tempCase = {
+    code: `function Input() {
+      const {t} = useTranslation()
+      return t('added.later')
+    }`,
+    filename: path.join(tempDir, 'core/form/Input.tsx'),
+    options: [{rootDir: tempDir, namespaces}],
+  }
+
+  tester.run('before the key is added', plugin.rules['no-missing-translation-key'], {
+    valid: [],
+    invalid: [{...tempCase, errors: [missing('added.later')]}],
+  })
+
+  it('picks up a key added to a resource file', () => {
+    const source = readFileSync(resourceFile, 'utf8')
+    writeFileSync(
+      resourceFile,
+      source.replace(
+        "  'changes.close-label'",
+        "  'added.later': 'Added',\n  'changes.close-label'",
+      ),
+    )
+    const later = new Date(Date.now() + 60_000)
+    utimesSync(resourceFile, later, later)
+  })
+
+  tester.run('after the key is added', plugin.rules['no-missing-translation-key'], {
+    valid: [tempCase],
+    invalid: [],
+  })
 })

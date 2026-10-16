@@ -1,4 +1,4 @@
-import {readFileSync} from 'node:fs'
+import {readFileSync, statSync} from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
@@ -33,10 +33,22 @@ export const optionsSchema = [
 ]
 
 /**
- * Resolved configurations, so the resource files are only read and parsed once per lint run.
- * Lint runs use the default table; options (with their own cache entry) are for tests.
+ * Resolved configurations, so the table is only resolved once per process. Lint runs use the
+ * default table; options (with their own cache entry) are for tests. Each resource's `keys` is
+ * re-read when its file changes, so a long-lived process (`oxlint --lsp`) never serves stale keys.
  */
 const configCache = new Map()
+
+const resourceKeysCache = new Map()
+
+function currentResourceKeys(file) {
+  const {mtimeMs} = statSync(file)
+  const cached = resourceKeysCache.get(file)
+  if (cached?.mtimeMs === mtimeMs) return cached.keys
+  const keys = readResourceKeys(file)
+  resourceKeysCache.set(file, {mtimeMs, keys})
+  return keys
+}
 
 function getConfig(options) {
   const cacheKey = options ? JSON.stringify(options) : ''
@@ -55,7 +67,9 @@ function getConfig(options) {
       resources: entry.resources.map((file) => ({
         file,
         home: file.includes('/i18n/') ? `${file.slice(0, file.indexOf('/i18n/'))}/` : null,
-        keys: readResourceKeys(path.join(rootDir, file)),
+        get keys() {
+          return currentResourceKeys(path.join(rootDir, file))
+        },
       })),
     })
   }
@@ -122,16 +136,14 @@ function readResourceKeys(file) {
 }
 
 /**
- * Whether `key` resolves in a set of resource keys, counting i18next plural and context
- * variants (`key_one`, `key_other`, `key_draft`, ...) as the key itself.
+ * Whether `key` resolves in a set of resource keys. When the read can pass `count` or `context`
+ * (`allowsVariants`), i18next plural and context variants (`key_one`, `key_other`, `key_draft`,
+ * ...) count as the key itself; a bare read of a key that only has variants renders raw.
  */
-export function hasKey(keys, key) {
+export function hasKey(keys, key, allowsVariants) {
   if (keys.has(key)) return true
   const prefix = `${key}_`
-  for (const candidate of keys) {
-    if (candidate.startsWith(prefix)) return true
-  }
-  return false
+  return allowsVariants && [...keys].some((candidate) => candidate.startsWith(prefix))
 }
 
 /** Static string values an expression can evaluate to, or `null` when it is not static */
@@ -158,6 +170,18 @@ function getProperty(objectExpression, name) {
       (property.key.type === 'Identifier'
         ? property.key.name === name
         : property.key.value === name),
+  )
+}
+
+/**
+ * Whether a read's options can select a plural or context variant: they carry `count` or
+ * `context`, or cannot be inspected (not an object literal, or spread into one).
+ */
+function optionsAllowVariants(options) {
+  if (options?.type !== 'ObjectExpression') return Boolean(options)
+  return (
+    options.properties.some((property) => property.type === 'SpreadElement') ||
+    Boolean(getProperty(options, 'count') || getProperty(options, 'context'))
   )
 }
 
@@ -203,7 +227,7 @@ function paramNames(fn) {
  * runtime) is skipped.
  *
  * @param context - the rule context
- * @param handlers - optional `onNamespace({node, namespace, entry})` and `onKey({node, namespace, key, entry})`,
+ * @param handlers - optional `onNamespace({node, namespace, entry})` and `onKey({node, namespace, key, allowsVariants, entry})`,
  *   where `entry` is the namespace's table entry, or `undefined` for an unknown namespace
  */
 export function createTranslationVisitor(context, {onNamespace, onKey}) {
@@ -250,12 +274,18 @@ export function createTranslationVisitor(context, {onNamespace, onKey}) {
     if (namespace) onNamespace?.({node, namespace, entry: config.entries.get(namespace)})
   }
 
-  function readKeys(node, namespace, keyNode, keyPrefix) {
+  function readKeys(node, namespace, keyNode, keyPrefix, allowsVariants = false) {
     const keys = staticStrings(keyNode)
     if (!onKey || !namespace || !keys) return
     for (const rawKey of keys) {
       const key = keyPrefix ? `${keyPrefix}.${rawKey}` : rawKey
-      onKey({node: keyNode ?? node, namespace, key, entry: config.entries.get(namespace)})
+      onKey({
+        node: keyNode ?? node,
+        namespace,
+        key,
+        allowsVariants,
+        entry: config.entries.get(namespace),
+      })
     }
   }
 
@@ -302,7 +332,13 @@ export function createTranslationVisitor(context, {onNamespace, onKey}) {
       if (!staticStrings(keyNode)) return
       const nsProperty =
         optionsArg?.type === 'ObjectExpression' ? getProperty(optionsArg, 'ns') : null
-      keyReads.push({node, name: callee.name, keyNode, nsOverride: nsProperty?.value})
+      keyReads.push({
+        node,
+        name: callee.name,
+        keyNode,
+        nsOverride: nsProperty?.value,
+        allowsVariants: optionsAllowVariants(optionsArg),
+      })
     },
 
     'JSXOpeningElement'(node) {
@@ -311,7 +347,15 @@ export function createTranslationVisitor(context, {onNamespace, onKey}) {
       const keyAttribute = getJsxAttribute(node, 'i18nKey')
       const tExpression = tAttribute?.value?.expression
       if (tExpression?.type !== 'Identifier' || !keyAttribute) return
-      keyReads.push({node, name: tExpression.name, keyNode: keyAttribute.value})
+      const valuesAttribute = getJsxAttribute(node, 'values')
+      keyReads.push({
+        node,
+        name: tExpression.name,
+        keyNode: keyAttribute.value,
+        allowsVariants:
+          Boolean(getJsxAttribute(node, 'context')) ||
+          optionsAllowVariants(valuesAttribute?.value?.expression),
+      })
     },
 
     'ObjectExpression'(node) {
@@ -320,20 +364,20 @@ export function createTranslationVisitor(context, {onNamespace, onKey}) {
       if (!keyProperty || !nsProperty) return
       const namespace = resolveNamespace(nsProperty.value)
       readNamespace(nsProperty.value, namespace)
-      readKeys(node, namespace, keyProperty.value)
+      readKeys(node, namespace, keyProperty.value, undefined, optionsAllowVariants(node))
     },
 
     'Program:exit'() {
       const boundNames = new Set(bindings.map((binding) => binding.name))
-      for (const {node, name, keyNode, nsOverride} of keyReads) {
+      for (const {node, name, keyNode, nsOverride, allowsVariants} of keyReads) {
         const binding = boundNames.has(name) ? findBinding(node, name) : null
         if (!binding) continue
         if (nsOverride) {
           const namespace = resolveNamespace(nsOverride)
           readNamespace(nsOverride, namespace)
-          readKeys(node, namespace, keyNode, binding.keyPrefix)
+          readKeys(node, namespace, keyNode, binding.keyPrefix, allowsVariants)
         } else {
-          readKeys(node, binding.namespace, keyNode, binding.keyPrefix)
+          readKeys(node, binding.namespace, keyNode, binding.keyPrefix, allowsVariants)
         }
       }
     },

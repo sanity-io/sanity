@@ -111,8 +111,8 @@ const noPluginNamespaceOutsidePlugin = {
  * i18next renders a missing key as the key itself, so a typo, a key moved to another bundle or
  * a key read with the wrong `t` ships as raw text. Keys are checked against the US English
  * resources listed in `namespaces.mjs`; plural and context variants (`key_one`, `key_other`)
- * count as the key itself. Only statically known keys read through a `t` from
- * `useTranslation()` in the same file are checked.
+ * count as the key itself when the call passes `count` or `context`. Only statically known keys
+ * read through a `t` from `useTranslation()` in the same file are checked.
  */
 const noMissingTranslationKey = {
   meta: {
@@ -134,9 +134,11 @@ const noMissingTranslationKey = {
       onNamespace({node, namespace, entry}) {
         if (!entry) context.report({node, messageId: 'unknownNamespace', data: {namespace}})
       },
-      onKey({node, namespace, key, entry}) {
+      onKey({node, namespace, key, allowsVariants, entry}) {
         if (!entry) return
-        const missingFrom = resourcesFor(entry, filename).filter(({keys}) => !hasKey(keys, key))
+        const missingFrom = resourcesFor(entry, filename).filter(
+          ({keys}) => !hasKey(keys, key, allowsVariants),
+        )
         if (missingFrom.length === 0) return
         context.report({
           node,
