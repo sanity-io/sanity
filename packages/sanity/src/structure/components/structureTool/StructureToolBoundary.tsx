@@ -27,7 +27,7 @@ export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryPr
   const [{error}, setError] = useState<{error: unknown}>({error: null})
 
   // this re-throws if the error it catches is not a PaneResolutionError
-  if (error) return <StructureError error={error} />
+  if (error) return <StructureError error={error} onReload={() => setError({error: null})} />
 
   return (
     <ErrorBoundary onCatch={setError}>
