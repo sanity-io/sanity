@@ -439,6 +439,35 @@ describe('DiagnosticsReport', () => {
     expect(network.getByText('GeoIP country')).toBeInTheDocument()
     expect(network.getByText('Unknown')).toBeInTheDocument()
   })
+
+  it('omits the schema download action without a handler', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport diagnostics={diagnostics} onRunAgain={vi.fn()} />
+      </ThemeProvider>,
+    )
+
+    expect(screen.queryByRole('button', {name: 'Download schema'})).not.toBeInTheDocument()
+  })
+
+  it('calls the schema download handler from the schema section', async () => {
+    const onDownloadSchema = vi.fn()
+    const userInteraction = userEvent.setup()
+
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={diagnostics}
+          onDownloadSchema={onDownloadSchema}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const schema = within(screen.getByTestId('diagnostics-schema'))
+    await userInteraction.click(schema.getByRole('button', {name: 'Download schema'}))
+    expect(onDownloadSchema).toHaveBeenCalledTimes(1)
+  })
 })
 
 function formatUtcTime(value: string): string {
