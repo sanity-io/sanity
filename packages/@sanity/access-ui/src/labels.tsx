@@ -61,16 +61,17 @@ export const defaultLabels: RequestAccessLabels = {
     'You’ve reached the limit for access requests across all projects. Please wait before submitting more requests, or contact an admin.',
   expiredMessage: 'Your previous request has expired. You may request access again below.',
   // Reached both before and after a submit, so it must not claim a send failed.
-  ssoEnforcedTitle: 'Sign in with SSO required',
+  ssoEnforcedTitle: 'Organization SSO required',
   ssoEnforcedMessage: ({providerTitle}) =>
     providerTitle ? (
       <>
-        You’re signed in with <strong>{providerTitle}</strong>, but this organization requires
-        signing in with SSO. Access can’t be requested with this account.
+        You’re signed in with <strong>{providerTitle}</strong>, but this organization requires you
+        to sign in with its SSO. Access can’t be requested with this account.
       </>
     ) : (
       <>
-        This organization requires signing in with SSO. Access can’t be requested with this account.
+        This organization requires you to sign in with its SSO. Access can’t be requested with this
+        account.
       </>
     ),
   ssoSignInCta: 'Sign in with SSO',

@@ -291,7 +291,7 @@ function RequestAccessFormContent(
     resourceId,
     submitAccessRequestResult,
     currentUser,
-    providerTitle,
+    providerTitle: currentUser?.provider?.startsWith('saml-') ? undefined : providerTitle,
     labels,
   })
 
