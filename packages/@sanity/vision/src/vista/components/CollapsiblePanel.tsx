@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {Button, Tab, TabList, TabPanel} from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {type ReactNode, useEffect, useRef} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -37,6 +37,33 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
   const {id: idPrefix, tabs, activeTabId, collapsed, onTabChange, onToggle} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0]
+  const stripRef = useRef<HTMLDivElement>(null)
+  // Changes when the tabs do, rather than with every new array of them
+  const tabIds = tabs.map((tab) => tab.id).join(' ')
+
+  // The tab strip scrolls sideways when the tabs do not fit, and keeps the selected tab in it
+  // whole: the last tabs are otherwise cut at the edge when picked, or pushed out of it when a
+  // tab before them grows a count
+  useEffect(() => {
+    const strip = stripRef.current
+    if (!strip) return undefined
+    const tabElement = (tabId: string) => document.getElementById(`${idPrefix}-${tabId}-tab`)
+    const reveal = () => {
+      const tab = tabElement(activeTab.id)
+      if (!tab) return
+      const stripBox = strip.getBoundingClientRect()
+      const tabBox = tab.getBoundingClientRect()
+      if (tabBox.left < stripBox.left) strip.scrollLeft -= stripBox.left - tabBox.left
+      else if (tabBox.right > stripBox.right) strip.scrollLeft += tabBox.right - stripBox.right
+    }
+    reveal()
+    const observer = new ResizeObserver(reveal)
+    for (const tabId of tabIds.split(' ')) {
+      const tab = tabElement(tabId)
+      if (tab) observer.observe(tab)
+    }
+    return () => observer.disconnect()
+  }, [activeTab.id, idPrefix, tabIds])
 
   return (
     <Flex data-testid={`${idPrefix}-panel`} flexDirection="column" height="100%" minHeight="0">
@@ -49,7 +76,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
         justifyContent="space-between"
         paddingX={2}
       >
-        <Box className={panelTabs}>
+        <Box className={panelTabs} ref={stripRef}>
           <TabList gap={1}>
             {tabs.map((tab) => (
               <Tab
