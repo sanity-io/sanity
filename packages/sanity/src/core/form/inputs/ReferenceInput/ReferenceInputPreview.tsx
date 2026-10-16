@@ -248,6 +248,13 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
                 referenceInfo={loadableReferenceInfo}
                 renderPreview={renderPreview}
                 type={schemaType}
+                tone={
+                  !readOnly && tone === 'critical'
+                    ? 'critical'
+                    : !readOnly && tone === 'caution'
+                      ? 'caution'
+                      : undefined
+                }
               />
             </ReferenceLinkCard>
             <Box>{menu}</Box>
