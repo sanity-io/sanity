@@ -26,12 +26,7 @@ import {
   type VistaTab,
   type VistaTabDrawer,
 } from '../../store/types'
-import {
-  useSidebarBadges,
-  useVistaActor,
-  useVistaExperience,
-  useVistaSelector,
-} from '../../store/VistaActorContext'
+import {useSidebarBadges, useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {
   selectFunctionLibrary,
   selectOpenTabDrawer,
@@ -245,21 +240,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
     ],
   )
 
-  // The tab's tools open in the sidebar's drawer. On a phone the drawer covers the query editor,
-  // so showing part of the query in it closes the drawer first
+  // The tab's tools open in the sidebar's drawer
   const tabDrawer = useVistaSelector(selectOpenTabDrawer)
-  const {layout} = useVistaExperience()
-  const revealFromDrawer = useCallback(
-    (range: TextRange) => {
-      if (layout === 'mobile') actorRef.send({type: 'drawer.close'})
-      onRevealRange(range)
-    },
-    [actorRef, layout, onRevealRange],
-  )
   const renderTabDrawer = (drawer: VistaTabDrawer): ReactNode => {
     switch (drawer) {
       case 'lint':
-        return <LintTab findings={lintFindings} onReveal={revealFromDrawer} />
+        return <LintTab findings={lintFindings} onReveal={onRevealRange} />
       case 'functions':
         return (
           <FunctionsTab
@@ -267,7 +253,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
             library={functionLibrary}
             onEdit={onEditQuery}
             onRemove={removeFunction}
-            onReveal={revealFromDrawer}
+            onReveal={onRevealRange}
             onSave={saveFunction}
             query={tab.query}
           />

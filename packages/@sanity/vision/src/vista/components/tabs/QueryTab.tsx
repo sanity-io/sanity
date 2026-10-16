@@ -26,7 +26,12 @@ import {
   useVistaSelector,
   type VistaLayout,
 } from '../../store/VistaActorContext'
-import {isPanelExpanded, selectDatasets, selectParamsView} from '../../store/vistaMachine'
+import {
+  isPanelExpanded,
+  selectDatasets,
+  selectOpenDrawer,
+  selectParamsView,
+} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
 import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
@@ -215,20 +220,23 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     [copyToClipboard, t, tab.query],
   )
 
-  // A lint finding or a function declaration picked while the phone shows the response pane: the
-  // editor is still `display: none` in this render, so it cannot take focus until the request
-  // pane has been shown
+  // A lint finding or a function declaration picked on a phone, from the response pane or from the
+  // sidebar's drawer: the editor is `display: none` behind the one, and inert under the other,
+  // which covers the tool, so it cannot take focus until the request pane shows and the drawer
+  // has closed
   const pendingRevealRef = useRef<TextRange | null>(null)
+  const drawerOpen = useVistaSelector((snapshot) => selectOpenDrawer(snapshot) !== null)
   const revealRange = useCallback(
     (range: TextRange) => {
-      if (layout === 'mobile' && mobilePane !== 'request') {
+      if (layout === 'mobile' && (mobilePane !== 'request' || drawerOpen)) {
         pendingRevealRef.current = range
         setMobilePane('request')
+        if (drawerOpen) actorRef.send({type: 'drawer.close'})
         return
       }
       queryEditorRef.current?.selectRange(range.from, range.to)
     },
-    [layout, mobilePane],
+    [actorRef, drawerOpen, layout, mobilePane],
   )
   // The Functions panel declares and replaces functions through the editor, so they can be undone
   const editQuery = useCallback(
@@ -237,10 +245,10 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   )
   useEffect(() => {
     const pending = pendingRevealRef.current
-    if (mobilePane !== 'request' || !pending) return
+    if (mobilePane !== 'request' || drawerOpen || !pending) return
     pendingRevealRef.current = null
     queryEditorRef.current?.selectRange(pending.from, pending.to)
-  }, [mobilePane])
+  }, [drawerOpen, mobilePane])
 
   // A query loaded from outside the editors (saved query, pasted URL) replaces their content
   // and drops the previous response; an edit still waiting in the debounce belongs to the
