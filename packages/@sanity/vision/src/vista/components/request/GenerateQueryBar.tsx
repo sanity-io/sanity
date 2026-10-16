@@ -107,7 +107,14 @@ export function GenerateQueryBar({tab, client, onClose}: GenerateQueryBarProps) 
           <Box flexBasis="0%" flexGrow={1} minWidth="0">
             <TextInput
               aria-label={t('vista.generate.label')}
+              // Password managers ignore `autoComplete` and offer names here (the placeholder
+              // mentions first and last names), so each of them also gets its own opt-out
+              autoComplete="off"
               autoFocus
+              data-1p-ignore
+              data-bwignore
+              data-form-type="other"
+              data-lpignore="true"
               data-testid="vista-generate-request"
               disabled={generating}
               fontSize={1}

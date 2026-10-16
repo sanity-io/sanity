@@ -1104,10 +1104,13 @@ describe('VistaGui', () => {
     const bar = screen.getByTestId('vista-generate-bar')
     const submit = within(bar).getByTestId('vista-generate-submit')
     expect(isDisabled(submit)).toBe(true)
-    fireEvent.change(within(bar).getByTestId('vista-generate-request'), {
+    const request = within(bar).getByTestId('vista-generate-request')
+    expect(request.getAttribute('autocomplete')).toBe('off')
+    expect(request.hasAttribute('data-1p-ignore')).toBe(true)
+    fireEvent.change(request, {
       target: {value: 'The 10 most recent authors'},
     })
-    fireEvent.keyDown(within(bar).getByTestId('vista-generate-request'), {key: 'Enter'})
+    fireEvent.keyDown(request, {key: 'Enter'})
 
     await waitFor(() => expect(screen.queryByTestId('vista-generate-bar')).toBeNull())
     expect(promptCalls).toHaveLength(1)
