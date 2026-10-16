@@ -100,6 +100,39 @@ effect of merged work; secondary: leads scanning health weekly.
    tabs. The full unmerged per-shard strip lives in the Calibration tab.
    Suppressed on non-time metrics (counts/bytes/CLS don't move with a slow
    host) and when comparing branches.
+
+   **SQRL banner.** Above the grid sits the SQRL banner (`SqrlBanner.tsx`):
+   one score for studio quality, higher is better, recorded for every main
+   commit the nightly bench measures as a `sqrlScore` document (shape and formula: "SQRL score" below). It shows the latest score on main by `git.committedAt` with
+   its change since 30 days ago, measured against the last score at or before
+   that instant (no earlier score reads "no earlier score", never a guess), and
+   the commit and date it reflects. Beside it a compact visx line chart of the
+   score over time (the 7-commit median as the line, each commit's own
+   `scoreCommit` as faint points, a dashed 100 reference, the same release
+   ticks the charts use) that follows the Trends `?range=` picker; the deltas
+   ignore the range since they need history the range may hide. That is all
+   the banner shows **collapsed, which is the default**, to keep the page's
+   first screen for the charts. A red "N regressed" pill next to the title
+   appears whenever any input's `trend` is `regression` and stays visible
+   collapsed (there is no score lock, so a regression must not hide behind a
+   fold); clicking it expands. A "Show breakdown" / "Hide breakdown" button
+   toggles the rest, mirrored to `?sqrl=open` so a shared link opens expanded:
+   the six pillar scores (INP, Responsiveness, Load, CPU & rendering, Memory &
+   weight, Reliability), in red the inputs whose `trend` is `regression` with
+   their contribution in points (the drift rule's last 7 vs prior 21 runs, from
+   `perf/bench/stats/gate.ts`; with none, a muted line says so and nothing is
+   red), and the footer: "higher is better, 100 is the late-June 2026
+   reference", a chart key, and the host note. The score is host-adjusted to a
+   7.0 ms reference calibration; the note shows the commit's own calibration
+   and CPU model and the unadjusted `scoreRaw`, then repeats
+   `CALIBRATION_EXPLAINER`, so the honesty constraint holds for a number that
+   is itself a host-normalised model estimate. Data is two realtime queries, never `inputs` for the series:
+   the series projects only `{score, scoreCommit, git{sha, committedAt}}` and a
+   separate query reads the latest document's full fields. Empty (no
+   `sqrlScore` documents yet), loading and error states are explicit. The
+   banner reads no `?source=` of its own: the `sqrl*` debug sources pick its
+   dataset (see Architecture).
+
 2. **Run detail** (P2) — click-through from a dot: the PR-comment tables
    (absolute variant), soak slope chart, flake telemetry, run metadata.
    Today's run popover already carries the investigation hand-offs: the
@@ -557,6 +590,35 @@ effect of merged work; secondary: leads scanning health weekly.
      histogram is a bisect surface too. Colors are the style systems' own,
      shared with the widget's donut and outlines.
 
+## SQRL score
+
+The plain-language overview is `sqrl/README.md`; this section is the formula reference.
+
+SQRL (Studio Quality: Reliability & Latency) is one number per measured main commit, higher is better, stored as a `sqrlScore` document (`sqrl-score-<sha>`). The engine is `sqrl/` (pure, tested in the `radar` vitest project against golden per-commit scores recorded when formula version 1 was agreed) and `scripts/sqrl.ts` writes the documents. Radar reads the latest document by `git.committedAt` for the banner and a projected `{score, scoreCommit, git{sha, committedAt}}` series for its graph, never `inputs`.
+
+**Formula (version 1).** SQRL = 100 × the weighted geometric mean over inputs of reference ÷ current. Every input is lower-is-better and there are no targets, anchors or ceilings. Each input's reference is its median over the first 7 commits of the series (28 Jun to 18 Jul 2026), and the composite is rebased so the per-commit score over that window has a median of exactly 100.
+
+- **Pillars.** INP (article and singleString) weighs 0.35. Responsiveness (keystroke median and p75), Load, CPU & rendering, Memory & weight and Reliability share the other 0.65 equally, and inputs split their pillar equally. `SQRL_INPUTS` in `sqrl/inputs.ts` is the list.
+- **Memory & weight** includes soak heap growth (least-squares MB per minute over minutes 2-10, floored at 0, plus k = 0.109) and the interaction scenarios' request count. Minutes 0 and 1 are left out because they race the studio's mount. It also has three article soak leak guards: least-squares heap growth (MB per minute), listener growth and DOM node growth (per minute) from the article soak's `settleMinute` (2 when absent) to the end, each floored at 0, plus k = 0.905, 3.103 and 8.077. Each soak is picked by scenario name, `singleString` or `article`, since a run can carry both in any order. Main history has no article soak, so these three inputs chain-link in at their first commit with zero jump and every earlier score is unchanged.
+- **Excluded.** Settle documentActions and listenQueryPane are red by design and debugLoop is the detector's self-test. Settle LoAF after ready (21% per-commit noise) and latencyP50 drift (8ms quantisation) are too noisy to carry weight.
+- **Smoothing offsets.** CLS takes +0.01, settle commits +1 per scenario, soak growth +k and the reliability count +1, since each can reach 0. Stored values and references include the offset, so `ratio` is always referenceValue ÷ value.
+
+**Host adjustment.** Each timing value is normalised to a 7.0ms calibration host as value × (7.0 ÷ the scenario shard's calibration)^beta before anything else. Betas are 1.0 for INP, 1.2 for keystrokes, 0.85 for time to editable, 0.65 for tool visible and login clickable, and the within-sha re-run fit clamped to [0, 1.5] for FCP, LCP, blocking and the CPU inputs. Bytes and counts are not adjusted. `scoreRaw` is the same commit with no adjustment, rebased the same way, so the size of the adjustment is visible next to the headline.
+
+**Merging and smoothing.** Re-runs of a sha merge by median. `scoreCommit` is that commit alone and `score`, the headline, replaces each input with the median of its last 7 measured commits first. An input that starts later than the first commit is chain-linked: the composite adds weighted log changes step by step, so a new input enters with zero jump and only its later movement counts.
+
+**Reliability.** Events come from `gitTag` documents only: one per npm deprecation cluster (grouped by deprecation message, dated at the first deprecated version) and one per patch published within 72h of its minor. The patch that fixes a cluster is not an event, and a hot-patch that was itself deprecated counts once with its cluster. The input is (reference + 1) ÷ (count + 1) over the trailing 13 weeks, against the window ending 2 Apr 2026, which held 4 events.
+
+**Contribution points.** `contributionPoints` split `score - 100` across inputs as weight × ln(reference-window value ÷ current value), scaled to points, with the chain-linking residual spread by weight so they add up exactly. Reliability is measured against its count over the reference window here, since the rebase already holds its head start over the Jan-Apr reference.
+
+**Pillar scores.** Each pillar is chain-linked over its own inputs at equal weight and rebased like the headline, so its per-commit score over the reference window has a median of 100. A pillar above 100 is better than the reference window and agrees in sign with its inputs' points. Reliability reads 100 today because the trailing count (2) matches the window's, while its input `ratio` of 1.667 is against the Jan-Apr reference.
+
+**Trend.** Each input carries the drift feed's verdict (`computeDrift` in `tools/trends/drift.ts`, last 7 commits against the prior 21, on per-commit host-adjusted values) as `trend`. Fewer than 10 commits of history reads `insufficient`. The banner shows regressions in red and there is no regression lock on the score.
+
+**Versioning.** Betas, k and the reliability reference count are frozen constants of `formulaVersion` 1, measured on the 150 main runs up to 15 Oct 2026, so new runs never re-fit them. Soak k is max(same-sha re-run sigma of the floored slope, 1% of the median end-of-run level per soak minute). The article soak k values use that rule on 5 re-runs of the article soak from 16 Oct 2026: the re-run sigma sets heap, and 1% of the end-of-run level sets listeners and DOM nodes. Any change to the formula bumps `FORMULA_VERSION`. A formula change, a later npm deprecation and a backfilled benchRun all change old scores, and the next run of the `sqrl-score` job writes them, since it rewrites every commit.
+
+**Writes.** The `sqrl-score` job in `bench.yml` runs after `track-main` stores its benchRun. A run from `main` or a release tag upserts every commit's document, about 150 documents in batches of 50, since the whole series is recomputed anyway. A dispatch from any other branch prints the scores and writes nothing. Locally, `pnpm --filter radar sqrl -- --dry-run` reads with `SANITY_AUTH_TOKEN` or the `sanity login` token and writes nothing.
+
 ## Architecture
 
 - A custom **tool pane** (`defineTool`) in this studio, registered _first_ so
@@ -572,7 +634,12 @@ effect of merged work; secondary: leads scanning health weekly.
   sparse/single/empty sets, plus synthetic release tags with two interleaved
   majors and a deliberate label collision) selectable in the toolbar, so the
   charts, the drift feed and every encoding layer are testable without live
-  data.
+  data. The SQRL banner has its own synthetic scores
+  (`tools/trends/sqrlDebugData.ts`): `sqrl` (a climb with an August-style dip
+  and recovery, also what the other non-empty sources show), `sqrl-climb` (a
+  steady climb), `sqrl-regressed` (regressed inputs listed in red) and
+  `sqrl-empty` (and `empty`) for the no-documents state. The `sqrl*` sources
+  leave the rest of the page on the demo runs.
 - **Charts: visx** (`@visx/scale`, `@visx/shape`, `@visx/group`,
   `@visx/axis`, `@visx/responsive`) — low-level primitives, no chart-library
   opinions to fight inside `@sanity/ui` layout.

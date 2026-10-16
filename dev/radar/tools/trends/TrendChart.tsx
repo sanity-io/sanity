@@ -491,7 +491,7 @@ function labelFor(cluster: TagCluster): string {
  * `aria-hidden` like the other annotation layers: the capture rect's label
  * carries the count, and the tooltip names the individual release.
  */
-function ReleaseMarkers(props: {
+export function ReleaseMarkers(props: {
   tags: ResolvedTag[]
   xScale: (ms: number) => number
   /** Resting text labels above the plot — only where there is room for them. */

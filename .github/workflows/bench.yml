@@ -1043,13 +1043,46 @@ jobs:
           overwrite: true
           retention-days: 30
 
+  # SQRL score (dev/radar/sqrl, SPEC.md "SQRL score") recomputed from the
+  # stored history once track-main has stored its benchRun, rewriting every
+  # commit's sqrlScore so backfills and late npm deprecations reach the whole
+  # history. A dispatch from any other
+  # branch prints the score and writes nothing, so unmerged engine code never
+  # lands in the dataset. Its own job so a scoring failure can never cost the
+  # day its stored run.
+  sqrl-score:
+    needs: [track-main]
+    if: >-
+      !cancelled() && needs.track-main.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Compute and store the SQRL score
+        env:
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          if [ "$REF_NAME" = "main" ] || [ "$REF_TYPE" = "tag" ]; then
+            pnpm --filter radar sqrl
+          else
+            pnpm --filter radar sqrl -- --dry-run
+          fi
+
   # A failed scheduled run has no PR check to go red on and no human watching —
   # a silent failure leaves a hole in the main-branch time series. Alert the
   # CI channel instead of relying on someone opening the Actions tab.
   # `cancelled` is included because job timeouts conclude as cancelled, not
   # failure (see the report job's note).
   alert-scheduled-failure:
-    needs: [build, bench-interaction, bench-pageload, self-test, track-main]
+    needs: [build, bench-interaction, bench-pageload, self-test, track-main, sqrl-score]
     if: >-
       always() && github.event_name == 'schedule' &&
       (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') ||
