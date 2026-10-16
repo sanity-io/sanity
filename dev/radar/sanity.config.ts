@@ -47,6 +47,13 @@ export default defineConfig({
                   .defaultOrdering([{field: 'startedAt', direction: 'desc'}]),
               ),
             S.listItem()
+              .title('Engine confidence runs')
+              .child(
+                S.documentTypeList('engineConfidenceRun')
+                  .title('Engine confidence runs')
+                  .defaultOrdering([{field: 'startedAt', direction: 'desc'}]),
+              ),
+            S.listItem()
               .title('Commits')
               .child(
                 S.documentTypeList('gitCommit')

@@ -1,0 +1,12 @@
+{
+  "id": "ENG-004",
+  "title": "Listener dedupe keys on transaction id only, so the second document event of a multi-document transaction is dropped",
+  "severity": "S2",
+  "failureClass": "listener dedupe drops a real event (pair stops receiving listener events)",
+  "source": "Listener ordering and dedupe hotspot in 02-surface.md (sequentializeListenerEvents, dedupe); fuzz bypass list in 05-radar-fuzz.md",
+  "filesTouched": ["packages/sanity/src/core/store/document/utils/dedupeListenerEvents.ts"],
+  "userVisibleEffect": "Publish (one transaction touching drafts.x and x) delivers only the first of the two events; getPairListener waits for the missing one, so every later listener event for the pair is held and the pane keeps showing the pre-publish state",
+  "notApplicableSuites": ["unit:mutator", "fuzz:pt"],
+  "expectedCaughtBy": ["unit:engine"],
+  "addedOn": "2026-10-16"
+}
