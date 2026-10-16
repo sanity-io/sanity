@@ -1,3 +1,5 @@
+import {takeHashParam, takeStashedAuthHashParam} from './authHashParams'
+
 const CLAIM_URL_HOSTS = new Set(['sanity.io', 'www.sanity.io', 'sanity.work', 'www.sanity.work'])
 
 /**
@@ -22,25 +24,14 @@ export const isValidClaimUrl = (value: string): boolean => {
   }
 }
 
-export const consumeHashClaim = (): string | undefined => {
-  if (typeof window === 'undefined' || typeof window.location !== 'object') {
+function readAndRemoveHashClaim(): string | undefined {
+  // Removed from the URL even when invalid (a bad fragment must never linger), and even when the
+  // studio HTML already stashed one.
+  const fromHash = takeHashParam('claim')
+  const claimParam = takeStashedAuthHashParam('claim') ?? fromHash
+  if (claimParam === undefined) {
     return undefined
   }
-
-  // The fragment is a `&`-separated param list; take the `claim` param wherever it sits
-  // (humans re-paste and reorder URLs) and leave every other param alone.
-  const params = window.location.hash.replace(/^#/, '').split('&')
-  const claimIndex = params.findIndex((param) => param.startsWith('claim='))
-  if (claimIndex === -1) {
-    return undefined
-  }
-  const claimParam = params[claimIndex].slice('claim='.length)
-
-  // Remove the claim URL from the URL even when invalid — a bad fragment must never linger
-  params.splice(claimIndex, 1)
-  const newUrl = new URL(window.location.href)
-  newUrl.hash = params.filter(Boolean).join('&')
-  history.replaceState(null, '', newUrl)
 
   let claimUrl: string
   try {
@@ -49,4 +40,16 @@ export const consumeHashClaim = (): string | undefined => {
     return undefined
   }
   return isValidClaimUrl(claimUrl) ? claimUrl : undefined
+}
+
+// Removed from the URL when this module loads, like the session ID and the token, and held
+// until an auth store records it for its project. Removed again when consumed, since a host may
+// restore the hash after load (https://github.com/vercel/next.js/issues/91819).
+let pendingClaimUrl = readAndRemoveHashClaim()
+
+export const consumeHashClaim = (): string | undefined => {
+  const fromHash = readAndRemoveHashClaim()
+  const claimUrl = pendingClaimUrl ?? fromHash
+  pendingClaimUrl = undefined
+  return claimUrl
 }

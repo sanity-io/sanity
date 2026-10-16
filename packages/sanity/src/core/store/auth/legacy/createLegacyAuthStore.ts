@@ -493,7 +493,10 @@ function createStandaloneAuthStore({
   // Listen for hash changes and consume any token found in the hash.
   // The tap triggers tokenStorage.update() which pushes to the BehaviorSubject
   // backing tokenStorage.value — so the actual emission comes from that stream.
-  // switchMap to EMPTY so this branch produces no direct values.
+  // switchMap to EMPTY so this branch produces no direct values. Merged into
+  // existingAuthState$ outside its concat, so it listens in every login mode
+  // and from the first subscription on, including while the initial probe is
+  // in flight.
   // Guarded for SSR: `window` is undefined on the server, where we can't
   // listen for hash changes anyway.
   const hashTokenChange =
@@ -501,9 +504,14 @@ function createStandaloneAuthStore({
       ? EMPTY
       : fromEvent(window, 'hashchange').pipe(
           tap(() => {
+            // A `#sid=` pasted into an open tab is not exchanged (the callback flow runs once,
+            // when the studio mounts), but it must not stay in the URL.
+            clearHashSessionId()
             consumeHashClaimUrl(projectId)
             const hashToken = consumeHashToken()
-            if (hashToken) {
+            // A cookie-only workspace removes the token from the URL but doesn't take it in:
+            // storing it would turn on token auth for sibling workspaces and other tabs.
+            if (hashToken && isCookielessCompatibleLoginMethod(loginMethod)) {
               tokenStorage.update({token: hashToken})
             }
           }),
@@ -513,8 +521,10 @@ function createStandaloneAuthStore({
   // Derived from the live token state, not concat'ed with a pre-built
   // initial client: a positional skip would drop a token applied while the
   // initial probe is in flight (fast sid exchange), leaving the store stuck
-  // on the credential-less client. Same shape as dualClient$ below.
-  const tokenClient$ = merge(hashTokenChange, tokenStorage.value).pipe(
+  // on the credential-less client. Same shape as dualClient$ below. A token
+  // pasted into the hash reaches both through tokenStorage.value (see
+  // hashTokenChange).
+  const tokenClient$ = tokenStorage.value.pipe(
     map((nextTokenState) => {
       return clientFactory({
         ...AUTH_CLIENT_OPTIONS,
@@ -530,7 +540,7 @@ function createStandaloneAuthStore({
   )
 
   // Derive the dual client from the current token state
-  const dualClient$ = merge(hashTokenChange, tokenStorage.value).pipe(
+  const dualClient$ = tokenStorage.value.pipe(
     map((nextTokenState) => {
       return clientFactory({
         ...AUTH_CLIENT_OPTIONS,
@@ -606,29 +616,32 @@ function createStandaloneAuthStore({
         )
       : EMPTY
 
-  const existingAuthState$ = concat(
-    initial$,
-    merge(workspaceClient$.pipe(skip(1)), dualCookieRecheck$, tokenRecheck$, cookieRecheck$).pipe(
-      mergeMap(async (client): Promise<AuthState> => {
-        if (!client) {
-          // Credentials were torn down (e.g. a cross-tab logout broadcast).
-          // Same rule as logout(): an unconsumed callback snapshot is stale
-          // from this moment, and must not satisfy a later consumer that is
-          // still inside the settle window.
-          pendingCallbackState = undefined
-          return {client: cookieClient, authenticated: false, currentUser: null}
-        }
-        // This emission is the chain's reaction to a callback's credential
-        // update: consume the pre-probed state instead of repeating the
-        // /users/me request.
-        const callbackState = freshPendingCallbackState()
-        if (callbackState) {
-          pendingCallbackState = undefined
-          return callbackState
-        }
-        return probeAuthState(client, 'update')
-      }),
+  const existingAuthState$ = merge(
+    concat(
+      initial$,
+      merge(workspaceClient$.pipe(skip(1)), dualCookieRecheck$, tokenRecheck$, cookieRecheck$).pipe(
+        mergeMap(async (client): Promise<AuthState> => {
+          if (!client) {
+            // Credentials were torn down (e.g. a cross-tab logout broadcast).
+            // Same rule as logout(): an unconsumed callback snapshot is stale
+            // from this moment, and must not satisfy a later consumer that is
+            // still inside the settle window.
+            pendingCallbackState = undefined
+            return {client: cookieClient, authenticated: false, currentUser: null}
+          }
+          // This emission is the chain's reaction to a callback's credential
+          // update: consume the pre-probed state instead of repeating the
+          // /users/me request.
+          const callbackState = freshPendingCallbackState()
+          if (callbackState) {
+            pendingCallbackState = undefined
+            return callbackState
+          }
+          return probeAuthState(client, 'update')
+        }),
+      ),
     ),
+    hashTokenChange,
   )
 
   const authState$ = existingAuthState$.pipe(

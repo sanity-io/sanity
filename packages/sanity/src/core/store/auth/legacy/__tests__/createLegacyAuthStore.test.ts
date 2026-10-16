@@ -1913,6 +1913,79 @@ describe('createLegacyAuthStore: workbench OS token', () => {
   })
 })
 
+describe('createLegacyAuthStore: hash session id', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    // Not `location.hash = ''`: its queued hashchange would reach the next test's store.
+    window.history.replaceState(null, '', window.location.pathname)
+  })
+
+  it.each(['cookie', 'token', 'dual'] as const)(
+    'removes a #sid= fragment pasted into an open tab from the URL (%s, during the first probe)',
+    async (loginMethod) => {
+      const mock = createMockClientFactory()
+
+      const store = _createLegacyAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod,
+        clientFactory: mock.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+      const sub = store.state.subscribe(() => {})
+
+      try {
+        // Dispatched before any await: the initial /users/me probe is still in flight.
+        // replaceState, unlike assigning location.hash, doesn't queue jsdom's own (later)
+        // hashchange event, which would otherwise arrive after the probe settles.
+        window.history.replaceState(null, '', '#sid=12345678901234567890&keep=me')
+        window.dispatchEvent(new HashChangeEvent('hashchange'))
+
+        await vi.waitFor(() => {
+          expect(window.location.hash).toBe('#keep=me')
+        })
+      } finally {
+        sub.unsubscribe()
+      }
+    },
+  )
+
+  it('removes a #token= fragment pasted into an open tab without taking it in (cookie)', async () => {
+    const mock = createMockClientFactory()
+    // First call is the boot-time intake, second the hashchange.
+    const consumeHashToken = vi
+      .fn<() => string | undefined>()
+      .mockReturnValueOnce(undefined)
+      .mockReturnValueOnce('pasted-hash-token-0123456789abcdef')
+
+    const store = _createLegacyAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: mock.factory,
+      getSessionId: () => undefined,
+      consumeHashToken,
+    })
+    const sub = store.state.subscribe(() => {})
+
+    try {
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+
+      await vi.waitFor(() => {
+        expect(consumeHashToken).toHaveBeenCalledTimes(2)
+      })
+      expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull()
+    } finally {
+      sub.unsubscribe()
+    }
+  })
+})
+
 describe('createLegacyAuthStore: hash claim intake', () => {
   const CLAIM_URL = 'https://www.sanity.io/manage/claim/some-claim-token'
   const CLAIM_STORAGE_KEY = `__studio_unclaimed_${PROJECT_ID}`
