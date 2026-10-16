@@ -236,6 +236,13 @@ const DEFAULTS = {
 
 type ClientConfig = Record<string, unknown>
 
+interface RequestOptions {
+  url: string
+  method?: string
+  body?: unknown
+  query?: Record<string, string>
+}
+
 interface FetchCall {
   config: ClientConfig
   query: string
@@ -247,9 +254,11 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
   const fetchCalls: FetchCall[] = []
   const promptCalls: {config: ClientConfig; request: Record<string, unknown>}[] = []
   const promptReplies: unknown[] = []
-  const requestCalls: {config: ClientConfig; options: {url: string}}[] = []
+  const requestCalls: {config: ClientConfig; options: RequestOptions}[] = []
   let nextRequestResponse: unknown
-  let requestResponder: ((url: string) => unknown) | undefined
+  let requestResponder: ((url: string, options: RequestOptions) => unknown) | undefined
+  // What `getDocuments` finds, by ID
+  const documents = new Map<string, Record<string, unknown>>()
   const liveEvents = new Subject<LiveEvent>()
   let liveSubscriptions = 0
   let nextResponse: Record<string, unknown> = {
@@ -284,12 +293,13 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
           return liveEvents
         },
       },
-      request: (options: {url: string}) => {
+      request: (options: RequestOptions) => {
         requestCalls.push({config, options})
         return Promise.resolve(
-          requestResponder ? requestResponder(options.url) : nextRequestResponse,
+          requestResponder ? requestResponder(options.url, options) : nextRequestResponse,
         )
       },
+      getDocuments: (ids: string[]) => Promise.resolve(ids.map((id) => documents.get(id) ?? null)),
       agent: {
         action: {
           prompt: (request: Record<string, unknown>) => {
@@ -307,11 +317,12 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
     /** Replies the Agent Actions prompt gives, one per call */
     replyToPrompts: (...replies: unknown[]) => promptReplies.push(...replies),
     requestCalls,
-    /** The body `client.request` resolves with */
-    /** `client.request` answers with what `responder` gives for the URL */
-    respondToRequestsBy: (responder: (url: string) => unknown) => {
+    documents,
+    /** `client.request` answers with what `responder` gives for the URL and the request */
+    respondToRequestsBy: (responder: (url: string, options: RequestOptions) => unknown) => {
       requestResponder = responder
     },
+    /** The body `client.request` resolves with */
     respondToRequests: (response: unknown) => {
       nextRequestResponse = response
     },
@@ -773,6 +784,44 @@ describe('VistaGui', () => {
     // Nothing changed between the two, so the filter does not match
     await waitFor(() =>
       expect(text(screen.getByTestId('vista-delta-match'))).toBe('vista.delta.no-match'),
+    )
+  })
+
+  it('applies mutations a dry run showed, to the tab’s dataset, and fetches the query again', async () => {
+    const {fetchCalls, documents, requestCalls, respondToRequestsBy} = renderVista()
+    typeQuery('*[_type == "post"]')
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+
+    documents.set('a', {_id: 'a', _type: 'post', title: 'Old'})
+    respondToRequestsBy((_url, options) =>
+      options.query?.dryRun
+        ? {
+            results: [
+              {id: 'a', operation: 'update', document: {_id: 'a', _type: 'post', title: 'New'}},
+            ],
+          }
+        : {transactionId: 'tx-1', results: [{id: 'a', operation: 'update'}]},
+    )
+    fireEvent.click(document.getElementById('vista-response-mutate-tab') as HTMLElement)
+    fireEvent.change(within(screen.getByTestId('vista-mutate-editor')).getByRole('textbox'), {
+      target: {value: '[{"patch": {"id": "a", "set": {"title": "New"}}}]'},
+    })
+    fireEvent.click(screen.getByTestId('vista-mutate-preview'))
+    await screen.findByTestId('vista-mutate-preview-result')
+    fireEvent.click(screen.getByTestId('vista-mutate-apply'))
+    await screen.findByTestId('vista-mutate-applied')
+
+    expect(
+      requestCalls.map(({options}) => [options.url, options.method, options.query?.dryRun]),
+    ).toEqual([
+      ['/v2025-02-19/data/mutate/test', 'POST', 'true'],
+      ['/v2025-02-19/data/mutate/test', 'POST', undefined],
+    ])
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    expect(text(screen.getAllByTestId('vista-history-entry')[0])).toContain(
+      'vista.history.reason.mutation',
     )
   })
 

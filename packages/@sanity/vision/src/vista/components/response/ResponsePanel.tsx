@@ -40,6 +40,7 @@ import {ExplainTab} from './ExplainTab'
 import {FunctionsTab, type QueryEdit} from './FunctionsTab'
 import {HistoryTab} from './HistoryTab'
 import {LintTab} from './LintTab'
+import {MutateTab, useMutatePanel} from './MutateTab'
 import {NetworkTab} from './NetworkTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
@@ -61,10 +62,21 @@ export interface ResponsePanelProps {
   onRevealRange: (range: TextRange) => void
   /** Changes the query through its editor */
   onEditQuery: (edit: QueryEdit) => void
+  /** Mutations were applied from the Mutate panel, and the result may have changed */
+  onMutationsApplied: () => void
 }
 
 export function ResponsePanel(props: ResponsePanelProps) {
-  const {tab, runnerRef, resolved, request, lintFindings, onRevealRange, onEditQuery} = props
+  const {
+    tab,
+    runnerRef,
+    resolved,
+    request,
+    lintFindings,
+    onRevealRange,
+    onEditQuery,
+    onMutationsApplied,
+  } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
 
@@ -118,6 +130,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
 
   const queryExplain = useQueryExplain(request)
   const delta = useDeltaPanel()
+  const mutate = useMutatePanel()
   const actorRef = useVistaActor()
   const resultView = useVistaSelector(selectResultView)
   const functionLibrary = useVistaSelector(selectFunctionLibrary)
@@ -254,21 +267,40 @@ export function ResponsePanel(props: ResponsePanelProps) {
         label: t('vista.panel.delta'),
         content: <DeltaTab delta={delta} request={request} />,
       },
+      {
+        id: 'mutate',
+        label: t('vista.panel.mutate'),
+        content: (
+          <MutateTab
+            canRequest={resolved.isValidApiVersion}
+            client={resolved.client}
+            dataset={resolved.dataset}
+            hiddenFields={hiddenDiffFields}
+            mutate={mutate}
+            onApplied={onMutationsApplied}
+            result={hasResult ? result : undefined}
+          />
+        ),
+      },
     ],
     [
       declaredFunctions,
       delta,
       functionLibrary,
+      hasResult,
       hiddenDiffFields,
       history,
       lintFindings,
       meta,
+      mutate,
       onEditQuery,
+      onMutationsApplied,
       onRevealRange,
       queryExplain,
       removeFunction,
       request,
       resolved,
+      result,
       resultDataset,
       saveFunction,
       t,

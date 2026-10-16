@@ -151,6 +151,9 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     [buildCurrentRequest, layout, runnerRef],
   )
   const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
+  const refetchAfterMutations = useCallback(() => {
+    run({type: 'mutation'})
+  }, [run])
   const setOptions = useCallback(
     (options: Partial<VistaTabOptions>) =>
       actorRef.send({type: 'tab.setOptions', id: tab.id, options}),
@@ -415,6 +418,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     <ResponsePanel
       lintFindings={lintFindings}
       onEditQuery={editQuery}
+      onMutationsApplied={refetchAfterMutations}
       onRevealRange={revealRange}
       request={request}
       resolved={resolved}

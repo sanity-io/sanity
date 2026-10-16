@@ -399,6 +399,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.only-hidden-changed': 'Only hidden fields changed',
   /** History reason: a tab opened with a generated query fetched it */
   'vista.history.reason.generated': 'Generated query',
+  /** History reason: mutations were applied from the Mutate panel */
+  'vista.history.reason.mutation': 'Mutations applied',
   /** History reason: a live event matched the query's sync tags */
   'vista.history.reason.live': 'Live update',
   /** History reason: the live connection asked every client to refetch */
@@ -468,6 +470,77 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.live.error': 'Live updates disconnected: {{message}}',
   /** The Live fetch button while the tab refetches automatically, stopping it */
   'vista.live.stop': 'Stop live',
+  /** Button in the Mutate panel adding a mutation to the list */
+  'vista.mutate.add': 'Add mutation',
+  /** Adds a mutation creating a document, with the type of the result's first document */
+  'vista.mutate.add.create': 'Create a document',
+  /** Adds a mutation deleting a document, its ID to fill in */
+  'vista.mutate.add.delete': 'Delete a document',
+  /** Adds a mutation deleting the documents of the shown result */
+  'vista.mutate.add.delete-result': 'Delete the documents in the result',
+  /** Adds a mutation patching a document, its ID to fill in */
+  'vista.mutate.add.patch': 'Patch a document',
+  /** Adds a mutation patching the documents of the shown result */
+  'vista.mutate.add.patch-result': 'Patch the documents in the result',
+  /** Button applying the mutations a dry run showed */
+  'vista.mutate.apply': 'Apply to {{dataset}}',
+  /** Heading of the error shown when applying the mutations failed */
+  'vista.mutate.apply-failed': 'The mutations were not applied',
+  /** Next to Apply while the mutations as they are have had no dry run */
+  'vista.mutate.apply-needs-preview': 'Apply sends what a dry run showed: run one first.',
+  /** Shown once the mutations were applied */
+  'vista.mutate.applied':
+    'Applied to {{dataset}} in transaction {{transactionId}}. Documents changed: {{count}}. The query was fetched again.',
+  /** Option giving array items without a _key one */
+  'vista.mutate.auto-keys': 'Add a _key to array items that have none',
+  /** Under the option giving array items a _key */
+  'vista.mutate.auto-keys.description': 'The studio needs one on every array item to edit it.',
+  /** Button showing a document's changes in the dry run */
+  'vista.mutate.changes': 'Changes',
+  /** Shown instead of a document's changes when they could not be loaded or rendered */
+  'vista.mutate.changes-failed': 'The changes could not be shown.',
+  /** Button retrying to show a document's changes */
+  'vista.mutate.changes-retry': 'Retry',
+  /** What the Mutate panel does */
+  'vista.mutate.description':
+    'Write mutations as the Mutations API takes them, in a list: create, createOrReplace, createIfNotExists, delete and patch, by ID or by a GROQ query. A dry run shows what they would do to each document without changing anything; Apply then writes them to the dataset in one transaction, with your account.',
+  /** What the API says went wrong with one of the mutations */
+  'vista.mutate.failure-item': 'Mutation {{index}}: {{message}}',
+  /** Under the dry run: the fields the diffs leave out */
+  'vista.mutate.hiding': 'The changes leave out {{fields}}, as History does.',
+  /** Shown when the mutations are not valid JSON */
+  'vista.mutate.invalid-json': 'The mutations are not valid JSON: {{message}}',
+  /** Shown when a mutation does not name exactly one thing to do */
+  'vista.mutate.invalid-mutation':
+    'Mutation {{index}} needs exactly one of create, createOrReplace, createIfNotExists, delete or patch.',
+  /** Label of the mutations editor */
+  'vista.mutate.mutations': 'Mutations',
+  /** The dry run touched no documents */
+  'vista.mutate.no-documents': 'The mutations touch no documents.',
+  /** Shown when the JSON is not a list of mutations */
+  'vista.mutate.not-a-list':
+    'Write a list of mutations, a single mutation, or a request body with a list of mutations.',
+  /** Under the dry run when it touched more documents than it compares */
+  'vista.mutate.not-shown': 'Documents also touched, not compared here: {{count}}',
+  /** A document the mutations create */
+  'vista.mutate.operation.create': 'Create',
+  /** A document the mutations delete */
+  'vista.mutate.operation.delete': 'Delete',
+  /** A document the mutations touch without changing its content */
+  'vista.mutate.operation.none': 'No change',
+  /** A document the mutations change */
+  'vista.mutate.operation.update': 'Update',
+  /** Button running the mutations as a dry run */
+  'vista.mutate.preview': 'Dry run',
+  /** Heading of the error shown when the dry run failed */
+  'vista.mutate.preview-failed': 'The dry run failed',
+  /** Heading of the dry run's outcome */
+  'vista.mutate.preview-heading': 'Dry run',
+  /** Shown over a dry run made for other mutations, another dataset or other options */
+  'vista.mutate.stale':
+    'The mutations, the dataset or the options changed after this dry run. Run it again to apply them.',
+  /** How many documents the dry run changes and leaves as they are */
+  'vista.mutate.summary': 'Changed: {{changed}} · Unchanged: {{unchanged}}',
   /** In the Network panel: whether a cache answered the query */
   'vista.network.cache': 'Cache',
   /** The API CDN answered from its cache */
@@ -549,6 +622,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.panel.network': 'Network',
   /** Label of the Delta tab in the response panel, which tests the query in delta mode */
   'vista.panel.delta': 'Delta',
+  /** Label of the Mutate tab in the response panel, which runs and applies mutations */
+  'vista.panel.mutate': 'Mutate',
   /** Label of the "History" tab in the response panel */
   'vista.panel.history': 'History',
   /** Label of the "Lint" tab in the response panel, listing the query's lint findings */

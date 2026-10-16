@@ -126,6 +126,8 @@ export type FetchReason =
   | {type: 'live-start'}
   /** A tab opened with a generated query, fetched as it is shown */
   | {type: 'generated'}
+  /** Mutations applied from the Mutate panel, after which the result may have changed */
+  | {type: 'mutation'}
   /** `eventId` is the live event's, which makes the API CDN answer with content at least as new */
   | {type: 'live'; matchedTags: SyncTag[]; eventId?: string}
 
