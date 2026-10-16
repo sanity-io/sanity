@@ -9,7 +9,7 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentInspectorProps,
@@ -18,7 +18,7 @@ import {
   useParseErrors,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
@@ -59,7 +59,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
     editState && editState.version && isGoingToUnpublish(editState.version)
 
   return (
-    <Flex direction="column" height="fill" overflow="hidden">
+    <Flex flexDirection="column" height="100%" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
         closeButtonLabel={t('panel.close-button-aria-label')}
@@ -85,7 +85,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
               </Box>
             )}
             {mergedValidation.length > 0 && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 {mergedValidation.map((marker, i) => (
                   <ValidationCard
                     // oxlint-disable-next-line no-array-index-key
@@ -96,7 +96,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
                     value={value}
                   />
                 ))}
-              </Stack>
+              </VStack>
             )}
           </>
         )}
@@ -149,14 +149,14 @@ function ValidationCard(props: {
           style={{userSelect: 'text'}}
           tone={MARKER_TONE[marker.level]}
         >
-          <Flex align="flex-start" gap={3}>
+          <Flex alignItems="flex-start" gap={3}>
             <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
               <Text size={1}>
                 <Icon />
               </Text>
             </Box>
 
-            <Stack flex={1} gap={2}>
+            <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
               <DocumentNodePathBreadcrumbs
                 path={marker.path}
                 schemaType={schemaType}
@@ -166,7 +166,7 @@ function ValidationCard(props: {
               <Text muted size={1}>
                 {marker.message}
               </Text>
-            </Stack>
+            </Flex>
           </Flex>
         </Card>
       )}

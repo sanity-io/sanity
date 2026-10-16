@@ -18,6 +18,6 @@ export const storeCommand = command(
     ),
   }),
   {
-    description: message`Store a merged run as a benchRun document in the metrics-studio project (requires BENCH_METRICS_WRITE_TOKEN)`,
+    description: message`Store a merged run as a benchRun document in the Studio Radar project (requires RADAR_SANITY_WRITE_TOKEN)`,
   },
 )

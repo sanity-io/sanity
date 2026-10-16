@@ -1,4 +1,5 @@
 import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {
@@ -109,6 +110,10 @@ const renderDocumentActions = async ({
     {wrapper},
   )
   await flushMicrotasksThisIsACodeSmell()
+  const menuButton = screen.queryByRole('button')
+  if (menuButton) {
+    await userEvent.click(menuButton)
+  }
 }
 
 const getUnpublishMenuItem = () => screen.getByRole('menuitem', {name: /Unpublish/, hidden: true})

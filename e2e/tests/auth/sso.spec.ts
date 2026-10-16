@@ -1,7 +1,7 @@
 // oxlint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
 import {expect, test} from '@playwright/test'
 
-import {watchForStudioErrors} from '../../helpers/studioErrors'
+import {watchEachTestForStudioErrors} from '../../helpers/studioErrors'
 import {BASE_URL, setupMockAuth} from './helpers'
 
 // SSO workspaces use createAuthStore with a single SAML provider replacing
@@ -9,9 +9,7 @@ import {BASE_URL, setupMockAuth} from './helpers'
 // the SAML provider button. With redirectOnSingle, it should redirect directly.
 
 test.describe('SSO', () => {
-  test.beforeEach(async ({context}) => {
-    watchForStudioErrors(context)
-  })
+  watchEachTestForStudioErrors(test)
 
   for (const {name, path} of [
     {name: 'cookie', path: 'sso-cookie'},

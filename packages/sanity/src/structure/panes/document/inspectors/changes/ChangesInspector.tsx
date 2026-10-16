@@ -1,7 +1,8 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type ObjectDiff} from '@sanity/diff'
-import {BoundaryElementProvider, Card, Flex, Text} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {type Path} from '@sanity/types'
+import {BoundaryElementProvider, Card, Text} from '@sanity/ui'
+import {type ReactNode, useMemo, useState} from 'react'
 import {
   ChangeFieldWrapper,
   ChangeList,
@@ -15,20 +16,17 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
-import {Box, Grid} from 'ui5'
+import {Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TimelineError} from '../../timeline/TimelineError'
 import {TimelineMenu} from '../../timeline/timelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
+import {scroller} from './Scroller.css'
 
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
+function ChangesFieldWrapper(props: {path: Path; children: ReactNode; hasRevertHover: boolean}) {
+  return <ChangeFieldWrapper {...props} hasRevertHover={false} />
+}
 
 export function ChangesInspector({showChanges}: {showChanges: boolean}): React.JSX.Element {
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
@@ -52,7 +50,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
     () => ({
       documentId,
       schemaType,
-      FieldWrapper: (props) => <ChangeFieldWrapper {...props} hasRevertHover={false} />,
+      FieldWrapper: ChangesFieldWrapper,
       rootDiff: diff,
       isComparingCurrent,
       value,
@@ -63,7 +61,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
 
   if (selectedReleaseId) {
     return (
-      <Flex data-testid="review-changes-pane" direction="column" height="fill">
+      <Flex data-testid="review-changes-pane" flexDirection="column" height="100%">
         <Card flex={1} padding={2} paddingTop={0}>
           <TimelineError versionError />
         </Card>
@@ -72,7 +70,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
   }
 
   return (
-    <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
+    <Flex data-testid="review-changes-pane" flexDirection="column" height="100%" overflow="hidden">
       <Box padding={3}>
         <Grid
           paddingX={2}
@@ -94,7 +92,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
 
       <Card flex={1} paddingX={2} paddingY={2}>
         <BoundaryElementProvider element={scrollRef}>
-          <Scroller data-ui="Scroller" ref={setScrollRef}>
+          <ScrollContainer className={scroller} data-ui="Scroller" ref={setScrollRef}>
             <Box flexBasis="0%" flexGrow={1} paddingX={3} height="100%">
               {showChanges && (
                 <Content
@@ -106,7 +104,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
                 />
               )}
             </Box>
-          </Scroller>
+          </ScrollContainer>
         </BoundaryElementProvider>
       </Card>
     </Flex>

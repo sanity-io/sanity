@@ -2,6 +2,7 @@ import {type BifurClient} from '@sanity/bifur-client'
 import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
 import {
   type AssetSource,
+  type BaseSchemaType,
   type CurrentUser,
   type ObjectSchemaType,
   type SanityDocumentLike,
@@ -22,10 +23,15 @@ import {
   type FormBuilderMarkersComponent,
 } from '../form/types/_transitional'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
-import {type AuthStore} from '../store/authStore/types'
+import {type AuthStore} from '../store/auth/types'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
+import {
+  type InitialValueTemplateItem,
+  type ResolvedTemplate,
+  type Template,
+  type TemplateItem,
+} from '../templates/types'
 import {type StudioTheme} from '../theme'
 import {type AuthConfig} from './auth/types'
 import {type DocumentActionComponent} from './document/actions'
@@ -100,6 +106,25 @@ export interface SanityFormConfig {
    * @beta
    */
   components?: FormComponents
+
+  /**
+   * Array-related functionality.
+   * @hidden
+   * @beta
+   */
+  arrays?: {
+    /**
+     * Renders long arrays with a limited number of items, collapsing the rest behind a
+     * "show all items" toggle so that a single long array doesn't push the rest of the
+     * document form out of view.
+     */
+    collapseItems?: {
+      /** @defaultValue `true` */
+      enabled?: boolean
+      /** @defaultValue `4` */
+      limit?: number
+    }
+  }
 
   file?: {
     /**
@@ -301,6 +326,91 @@ export type NewDocumentCreationContext =
   | {type: 'structure'; documentId?: undefined; schemaType: string}
 
 /**
+ * Defines a singleton: a document with a fixed id that can be created exactly
+ * once.
+ *
+ * @remarks
+ * `title` and `icon` are used as the default list item title and icon by the
+ * singleton Structure Tool builder functions.
+ *
+ * `initialValue` provides the value of the singleton's generated initial value
+ * template.
+ *
+ * Each falls back to the schema type's own configuration if omitted.
+ *
+ * @hidden
+ * @beta
+ */
+export interface SingletonDefinition extends Pick<
+  BaseSchemaType,
+  'title' | 'icon' | 'initialValue'
+> {
+  /**
+   * The singleton _definition_ id: the stable identity by which structure
+   * code references the singleton. If omitted, it inherits the definition's
+   * `documentId`. Establishing a discrete id for the definition decouples
+   * the singleton's identity from its schema type and document id:
+   *
+   * - Multiple singletons can share a schema type if necessary.
+   * - Structure code (often shared across workspaces) can reference a
+   *   singleton by a value that stays constant while each workspace maps it
+   *   to a different document id (e.g. per-dataset or per-environment ids).
+   * - Developers can change `documentId` or `schemaType` over time while
+   *   preserving the semantic identity of the singleton.
+   *
+   * Must be unique across singleton definitions.
+   */
+  id: string
+
+  /**
+   * The singleton _document_ id.
+   *
+   * Must be unique across singleton definitions.
+   */
+  documentId: string
+
+  /**
+   * The name of the document schema type used by the singleton.
+   */
+  schemaType: string
+}
+
+/**
+ * A singleton definition as provided by the developer.
+ *
+ * @hidden
+ * @beta
+ */
+export type UnresolvedSingletonDefinition =
+  | (Omit<SingletonDefinition, 'id'> & {
+      /**
+       * The singleton definition id. Optional: inherits the definition's
+       * `documentId` if omitted. Set it explicitly to be verbose, to guard
+       * against future collisions, or to address a singleton universally when
+       * different workspaces or environments map it to different document
+       * ids.
+       */
+      id?: string
+    })
+  | string
+
+/**
+ * Function for composing singletons.
+ *
+ * This function receives resolved singleton definitions
+ * ({@link SingletonDefinition}) and may return unresolved definitions
+ * ({@link UnresolvedSingletonDefinition}); Studio resolves the returned
+ * definitions before the next resolver sees them.
+ *
+ * @hidden
+ * @beta
+ */
+export type SingletonsResolver = (
+  prev: SingletonDefinition[],
+  context: ConfigContext,
+) => UnresolvedSingletonDefinition[]
+
+/**
  * @hidden
  * @beta
  */
@@ -333,6 +443,21 @@ export interface DocumentPluginOptions {
    * @beta
    */
   newDocumentOptions?: NewDocumentOptionsResolver
+
+  /**
+   * The singleton configuration, surfaced at the `document.singletons`
+   * configuration path.
+   *
+   * If a singleton's `id`, `documentId`, and `schemaType` properties are
+   * identical, it can simply be provided as a single string. Studio will
+   * expand it to a full {@link SingletonDefinition} at runtime.
+   *
+   * Alternatively, a resolver function may be provided.
+   *
+   * @hidden
+   * @beta
+   */
+  singletons?: UnresolvedSingletonDefinition[] | SingletonsResolver
 
   /** @deprecated Use `comments` instead */
   unstable_comments?: {
@@ -383,6 +508,11 @@ export interface DocumentPluginOptions {
 export interface DocumentLanguageFilterContext extends ConfigContext {
   documentId?: string
   schemaType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton.
+   */
+  singleton?: string
 }
 
 /**
@@ -474,10 +604,6 @@ export interface PluginOptions {
   document?: DocumentPluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   form?: SanityFormConfig
-
-  __internal_tasks?: {
-    footerAction: ReactNode
-  }
 
   studio?: {
     /**
@@ -741,6 +867,14 @@ export interface DocumentActionsContext extends ConfigContext {
   releaseId: string | undefined
   /** the type of the currently active document. */
   versionType: DocumentActionsVersionType
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton.
+   *
+   * The context already includes `documentId` and `schemaType` properties, so
+   * the full {@link SingletonDefinition} is not provided.
+   */
+  singleton?: string
 }
 
 /**
@@ -750,24 +884,44 @@ export interface DocumentActionsContext extends ConfigContext {
 export interface DocumentBadgesContext extends ConfigContext {
   documentId?: string
   schemaType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton.
+   */
+  singleton?: string
 }
 
 /** @hidden @beta */
 export interface DocumentInspectorContext extends ConfigContext {
   documentId?: string
   documentType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton.
+   */
+  singleton?: string
 }
 
 /** @hidden @beta */
 export interface DocumentCommentsEnabledContext {
   documentId?: string
   documentType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton.
+   */
+  singleton?: string
 }
 
 /** @hidden @beta */
 export interface DocumentAskToEditEnabledContext {
   documentId?: string
   documentType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton.
+   */
+  singleton?: string
 }
 
 /**
@@ -823,7 +977,7 @@ export interface Source {
   /** The schema of the source. */
   schema: Schema
   /** The templates of the source. */
-  templates: Template[]
+  templates: ResolvedTemplate[]
   /** The tools of the source. */
   tools: Tool[]
   /** The current user of the source. */
@@ -899,6 +1053,14 @@ export interface Source {
      */
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
 
+    /**
+     * The resolved singleton definitions.
+     *
+     * @hidden
+     * @beta
+     */
+    singletons: SingletonDefinition[]
+
     /** @alpha */
     unstable_languageFilter: (
       props: PartialContext<DocumentLanguageFilterContext>,
@@ -926,15 +1088,31 @@ export interface Source {
     }
   }
 
-  /** @internal */
-  __internal_tasks?: {footerAction: ReactNode}
-
   /**
    * Form-related functionality.
    * @hidden
    * @beta
    */
   form: {
+    /**
+     * Array-related functionality.
+     * @hidden
+     * @beta
+     */
+    arrays: {
+      /** Collapsing of long arrays in the form. */
+      collapseItems: {
+        /** Whether long arrays are collapsed. */
+        enabled: boolean
+
+        /** The number of items rendered before the remaining items are collapsed. */
+        limit: number
+
+        /** The same, for arrays using the grid layout. Follows `limit` when one is configured. */
+        gridLimit: number
+      }
+    }
+
     /**
      * File-related functionality.
      * @hidden
@@ -1239,6 +1417,7 @@ export type {AuthConfig} from './auth/types'
 
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
+  comments: {v2: boolean}
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
   variants: {enabled: boolean}
@@ -1287,6 +1466,86 @@ export interface MediaLibraryConfig {
     frontendHost?: string
   }
 }
+
+/**
+ * A selectable value for a known variant condition key.
+ *
+ * @internal
+ */
+export interface VariantConditionValue {
+  value: string
+  title?: string
+  description?: string
+}
+
+/**
+ * A known variant condition key and the values it may take.
+ *
+ * @internal
+ */
+export interface VariantConditionMap {
+  /** Persisted condition key. */
+  name: string
+  /** Picker heading; falls back to {@link VariantConditionMap.name}. */
+  title?: string
+  description?: string
+  /** Allowed values. String entries and `{value, title}` objects may be mixed in one list. */
+  values: (string | VariantConditionValue)[]
+}
+
+/**
+ * Context passed to a `beta.variants.types` resolver.
+ *
+ * @internal
+ */
+export type VariantTypeContext = Pick<ConfigContext, 'projectId' | 'dataset' | 'getClient'>
+
+/**
+ * Context passed to a per-type `conditions` resolver. `type` is the variant type key
+ * (`variant`, `language`, …) whose conditions are being loaded.
+ *
+ * @internal
+ */
+export type VariantConditionsContext = VariantTypeContext & {type: string}
+
+/**
+ * Static or resolved list of known variant conditions for one variant type.
+ *
+ * @internal
+ */
+export type VariantConditions =
+  | VariantConditionMap[]
+  | ((context: VariantConditionsContext) => VariantConditionMap[] | Promise<VariantConditionMap[]>)
+
+/**
+ * One orthogonal variant dimension. Condition keys declared here must not appear on another type.
+ *
+ * @internal
+ */
+export interface VariantTypeConfig {
+  /** Navbar label. The built-in `variant` type falls back to "Variant". Other types fall back to the type key. */
+  label?: string
+  description?: string
+  /**
+   * Known condition keys for this type. Omit for free-text keys and values.
+   * A function receives {@link VariantConditionsContext}.
+   */
+  conditions?: VariantConditions
+}
+
+/**
+ * Variant types supplied in config.
+ *
+ * The object form only types `variant`. Other keys are rejected until `assertOnlyVariantType`
+ * is removed.
+ *
+ * @internal
+ */
+export type VariantTypesConfig =
+  | {variant?: VariantTypeConfig}
+  | ((
+      context: VariantTypeContext,
+    ) => Record<string, VariantTypeConfig> | Promise<Record<string, VariantTypeConfig>>)
 
 /**
  * @internal
@@ -1354,6 +1613,36 @@ export interface BetaFeatures {
    */
   variants?: {
     enabled?: boolean
+    /**
+     * Variant types and the condition keys each type owns.
+     *
+     * Omit to use a single freeform `variant` type. Only the `variant` key is accepted.
+     *
+     * A function may return a promise and is called when a variant surface first needs the
+     * types, not at studio boot. It receives {@link VariantTypeContext}.
+     *
+     * @example
+     * ```ts
+     * types: {
+     *   variant: {
+     *     label: 'Variant',
+     *     conditions: async ({getClient, type}) => {
+     *       const client = getClient({apiVersion: '2024-01-01'})
+     *       return await client.fetch(CONDITIONS_QUERY, {type})
+     *     },
+     *   },
+     * }
+     * ```
+     */
+    types?: VariantTypesConfig
+  }
+  /**
+   * Config for the opt-in Comments API implementation.
+   *
+   * @internal
+   */
+  comments?: {
+    v2?: boolean
   }
   /**
    * Control whether the preview of the new document group inventory is
@@ -1366,6 +1655,31 @@ export interface BetaFeatures {
    * It is switched on automatically when `beta.variants.enabled` is true.
    */
   documentGroupInventory?: {
+    enabled?: boolean
+  }
+  /**
+   * Keep recently used tools mounted with React's `<Activity>` while another tool is active.
+   *
+   * By default the Studio unmounts a tool as soon as you switch to another one, and mounts it
+   * again from scratch when you come back. With this switched on, the three most recently used
+   * tools stay mounted: inactive ones are hidden with an `<Activity mode="hidden">` boundary
+   * instead of being unmounted, so their state survives the round trip, and switching back to one
+   * of them restores the URL it was last at instead of resetting it to the tool's start page.
+   * Going from Presentation to Structure and back, for example, keeps the preview iframe loaded
+   * and the document you were editing open.
+   *
+   * Opening a fourth tool unmounts the one you have not used for the longest time. Hidden tools
+   * have their effects paused, as with any hidden `<Activity>` boundary.
+   *
+   * This feature is not ready for production yet. Only enable it to test in development and
+   * staging environments.
+   *
+   * Hidden `<Activity>` boundaries tear down effects and re-create them on reveal, which custom
+   * studio code and plugins may not expect. If enabling this mode causes problems in your tools,
+   * components or plugins, see the React documentation's troubleshooting guide for `<Activity>`:
+   * https://react.dev/reference/react/Activity#troubleshooting
+   */
+  reactActivityMode?: {
     enabled?: boolean
   }
 }

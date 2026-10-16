@@ -1,4 +1,4 @@
-import {Flex, Text} from '@sanity/ui'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -13,13 +13,19 @@ export const ScheduledDraftsEmptyState = () => {
     return null
   }
   return (
-    <Flex direction="column" flex={1} justify={'center'} align={'center'}>
-      <Flex gap={3} direction="column" align="center" style={{maxWidth: '300px'}}>
+    <Flex
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      justifyContent={'center'}
+      alignItems={'center'}
+    >
+      <Flex gap={3} flexDirection="column" alignItems="center" style={{maxWidth: '300px'}}>
         <ReleaseIllustration />
-        <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text">
+        <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text" trim={true}>
           {t('empty-state.title')}
         </Text>
-        <Text size={1} muted style={{textAlign: 'center'}}>
+        <Text size={1} muted align="center" as="div" trim={true}>
           {t('empty-state.description')}
         </Text>
 

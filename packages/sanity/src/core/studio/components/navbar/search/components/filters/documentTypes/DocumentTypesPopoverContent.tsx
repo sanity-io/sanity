@@ -1,10 +1,8 @@
 import {type Schema, type SchemaType} from '@sanity/types'
-import {Flex, Stack, Text} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import partition from 'lodash-es/partition.js'
 import {type ChangeEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {CommandList} from '../../../../../../../components/commandList/CommandList'
@@ -20,12 +18,6 @@ import {type DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
-
-const ClearButtonBox = styled(Box)`
-  border-top: 1px solid
-    ${({theme}) => theme.sanity.color.base.border /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  flex-shrink: 0;
-`
 
 const POPOVER_STYLES = {width: '250px'}
 
@@ -97,7 +89,7 @@ export function DocumentTypesPopoverContent() {
     if (item.type === 'header') {
       return (
         <Box margin={2} padding={1}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             {item.title}
           </Text>
         </Box>
@@ -126,7 +118,7 @@ export function DocumentTypesPopoverContent() {
   )
 
   return (
-    <Flex direction="column" style={POPOVER_STYLES}>
+    <Flex flexDirection="column" style={POPOVER_STYLES}>
       {/* Search header */}
       <FilterPopoverContentHeader
         ariaInputLabel={t('search.action.filter-by-document-type-aria-label')}
@@ -160,7 +152,7 @@ export function DocumentTypesPopoverContent() {
         {/* No results */}
         {!documentTypeItems.length && (
           <Box padding={3}>
-            <Text muted size={1} textOverflow="ellipsis">
+            <Text muted size={1} truncate={1} as="div" trim={true}>
               {t('search.document-types-no-matches-found', {filter: typeFilter})}
             </Text>
           </Box>
@@ -179,8 +171,8 @@ function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTyp
   const {t} = useTranslation()
 
   return (
-    <ClearButtonBox padding={1}>
-      <Stack>
+    <Box borderTop flexShrink={0} padding={1}>
+      <VStack>
         <Button
           aria-label={t('search.action.clear-type-filters-aria-label')}
           data-name="type-filter-button"
@@ -190,8 +182,8 @@ function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTyp
           text={t('search.action.clear-type-filters-label')}
           tone="primary"
         />
-      </Stack>
-    </ClearButtonBox>
+      </VStack>
+    </Box>
   )
 }
 

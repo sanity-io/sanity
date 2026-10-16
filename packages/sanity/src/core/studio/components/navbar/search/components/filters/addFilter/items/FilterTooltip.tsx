@@ -1,6 +1,7 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import uniq from 'lodash-es/uniq.js'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../../../../../../components/textWithTone/TextWithTone'
@@ -77,11 +78,11 @@ export function FilterTooltip({
     <Tooltip
       content={
         <Card tone="default" radius={2} style={{maxWidth: '250px'}}>
-          <Stack gap={4}>
+          <VStack gap={4}>
             {/* Field name */}
             {fieldDefinition && (
-              <Stack gap={3}>
-                <Text muted size={1} weight="medium">
+              <VStack gap={3}>
+                <Text muted size={1} weight="medium" as="div" trim={true}>
                   {t('search.filter-field-tooltip-name')}
                 </Text>
                 <TextWithTone
@@ -92,50 +93,50 @@ export function FilterTooltip({
                 >
                   {fieldDefinition?.name}
                 </TextWithTone>
-              </Stack>
+              </VStack>
             )}
 
             {/* Field description */}
             {fieldDefinitionDescription && (
-              <Stack gap={3}>
-                <Text muted size={1} weight="medium">
+              <VStack gap={3}>
+                <Text muted size={1} weight="medium" as="div" trim={true}>
                   {t('search.filter-field-tooltip-description')}
                 </Text>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {truncateString(fieldDefinitionDescription, 256)}
                 </Text>
-              </Stack>
+              </VStack>
             )}
 
             {/* Filter description */}
             {filterDefinition?.description && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {truncateString(filterDefinition.description, 256)}
               </Text>
             )}
 
             {/* Field document titles */}
             {!documentTypesNarrowed.length && fieldDefinitionDocumentTypeTitles.length > 0 && (
-              <Stack gap={2}>
-                <Flex align="center" gap={1}>
-                  <Text muted size={1} weight="medium">
+              <VStack gap={2}>
+                <Flex alignItems="center" gap={1}>
+                  <Text muted size={1} weight="medium" as="div" trim={true}>
                     {t('search.filter-field-tooltip-used-in-document-types')}
                   </Text>
                   <Card padding={1} radius={2} tone="transparent">
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {fieldDefinitionDocumentTypeTitles.length}
                     </Text>
                   </Card>
                 </Flex>
-                <Text size={1} weight="regular" muted>
+                <Text size={1} weight="regular" muted as="div" trim={true}>
                   {fieldDefinitionDocumentTypeTitles.slice(0, MAX_VISIBLE_TYPES).join(', ')}
                   {fieldDefinitionDocumentTypeTitles?.length > MAX_VISIBLE_TYPES
                     ? ` +${fieldDefinitionDocumentTypeTitles.length - MAX_VISIBLE_TYPES} more`
                     : ''}
                 </Text>
-              </Stack>
+              </VStack>
             )}
-          </Stack>
+          </VStack>
         </Card>
       }
       disabled={!visible}

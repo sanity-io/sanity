@@ -3,18 +3,16 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
-import {Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Breadcrumbs} from '@sanity/ui/breadcrumbs'
 import capitalize from 'lodash-es/capitalize.js'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, VStack, Flex, Box, type TextProps, Icon, Link} from 'ui5'
 
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getTypeInfo} from './getTypeInfo'
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
+const TONES: Record<'error' | 'warning', TextProps['tone']> = {
   error: 'critical',
   warning: 'caution',
 }
@@ -32,7 +30,6 @@ const ErrorMessageText = styled(Text)`
 
 export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
-  const {t} = useTranslation()
 
   const items = useMemo(() => {
     const ret = []
@@ -47,24 +44,26 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
   }, [problemGroups])
 
   return (
-    <Stack as="ul" gap={4}>
+    <VStack as="ul" gap={4}>
       {items.map(({group, problem}, i) => {
         const isError = problem.severity === 'error'
-        const isWarning = problem.severity === 'warning'
         const schemaType = getTypeInfo(group)
         return (
           // oxlint-disable-next-line no-array-index-key
           <Card key={i} border padding={4} radius={2} tone={TONES[problem.severity]}>
             <Flex>
-              <Box marginRight={3}>
-                <Text muted size={1}>
-                  {isError && <ErrorOutlineIcon />}
-                  {isWarning && <WarningOutlineIcon />}
-                </Text>
-              </Box>
+              <Flex marginRight={3}>
+                <Icon
+                  muted
+                  size={1}
+                  icon={isError ? ErrorOutlineIcon : WarningOutlineIcon}
+                  tone={TONES[problem.severity]}
+                  style={{margin: '-0.375rem'}}
+                />
+              </Flex>
 
               <Box flexBasis="0%" flexGrow={1}>
-                <Text size={1} weight="medium">
+                <Text size={1} weight="medium" as="div" trim={true} tone={TONES[problem.severity]}>
                   {schemaType ? (
                     <>
                       {capitalize(schemaType.type)} type "{schemaType.name}"
@@ -77,7 +76,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
               <Card border overflow="auto" padding={2} tone="inherit">
                 <Breadcrumbs
                   separator={
-                    <Text muted size={1}>
+                    <Text muted size={1} as="div" trim={true} tone={TONES[problem.severity]}>
                       &rarr;
                     </Text>
                   }
@@ -88,8 +87,16 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                         segment.name || `<anonymous ${segment.type}>`,
                       )}:${segment.type}`
                       return (
-                        // oxlint-disable-next-line no-array-index-key
-                        <Text key={j} title={text} size={1} textOverflow="ellipsis">
+                        <Text
+                          // oxlint-disable-next-line no-array-index-key
+                          key={j}
+                          title={text}
+                          size={1}
+                          truncate={1}
+                          as="div"
+                          trim={true}
+                          tone={TONES[problem.severity]}
+                        >
                           <SegmentSpan>{text}</SegmentSpan>
                         </Text>
                       )
@@ -97,8 +104,16 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
 
                     if (segment.kind === 'property') {
                       return (
-                        // oxlint-disable-next-line no-array-index-key
-                        <Text key={j} title={segment.name} size={1} textOverflow="ellipsis">
+                        <Text
+                          // oxlint-disable-next-line no-array-index-key
+                          key={j}
+                          title={segment.name}
+                          size={1}
+                          truncate={1}
+                          as="div"
+                          trim={true}
+                          tone={TONES[problem.severity]}
+                        >
                           <SegmentSpan>{segment.name}</SegmentSpan>
                         </Text>
                       )
@@ -112,29 +127,36 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
 
             <Box as="ul" marginTop={4}>
               <Box as="li">
-                <Stack gap={3}>
-                  <ErrorMessageText muted size={1}>
+                <VStack gap={3}>
+                  <ErrorMessageText
+                    muted
+                    size={1}
+                    forwardedAs="div"
+                    trim={true}
+                    tone={TONES[problem.severity]}
+                  >
                     {problem.message}
                   </ErrorMessageText>
 
                   {problem.helpId && (
-                    <Text muted size={1}>
-                      <a
+                    <Text size={1} as="div" trim={true}>
+                      <Link
                         href={generateHelpUrl(problem.helpId)}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        openInNewTab
+                        underlined={false}
+                        style={{color: 'var(--card-link-color)'}}
                       >
                         View documentation &rarr;
-                      </a>
+                      </Link>
                     </Text>
                   )}
-                </Stack>
+                </VStack>
               </Box>
             </Box>
           </Card>
         )
       })}
-    </Stack>
+    </VStack>
   )
 }
 

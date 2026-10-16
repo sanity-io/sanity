@@ -1,12 +1,14 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {
   getCreatableVariantTarget,
+  getDefaultVariant,
   isPublishedPerspective,
   isReleaseDocument,
   usePerspective,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
@@ -30,7 +32,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
   const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
-  const {selectedPerspective, selectedVariantName} = usePerspective()
+  const {selectedPerspective, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
@@ -102,14 +105,21 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     >
       {shouldRender && (
         <Flex
-          align="stretch"
+          alignItems="stretch"
           gap={1}
-          justify="space-between"
+          justifyContent="space-between"
           paddingLeft={showingRevision ? 0 : 1}
           paddingRight={showingRevision ? 0 : 1}
         >
-          <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
-            <Flex align="center">
+          <Flex
+            alignItems="center"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={collapsed ? 2 : 3}
+            flexWrap="wrap"
+            paddingRight={3}
+          >
+            <Flex alignItems="center">
               {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
               <SpacerButton />
             </Flex>
@@ -117,8 +127,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           </Flex>
 
           <Flex
-            align="flex-start"
-            justify="flex-end"
+            alignItems="flex-start"
+            justifyContent="flex-end"
             ref={actionsBoxRef}
             style={{flexShrink: 0, marginLeft: 'auto'}}
           >

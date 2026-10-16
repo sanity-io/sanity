@@ -4,11 +4,11 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {getPublishedId} from '@sanity/id-utils'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ComponentType, type ReactNode, useCallback, useMemo} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, VStack, Box, Flex, Icon} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -129,10 +129,12 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
       }}
       onClose={() => deletionRef.send({type: 'delete.cancel'})}
     >
-      <Stack gap={4}>
+      <VStack gap={4}>
         {error ? (
           <Card tone="critical" padding={3}>
-            <Text size={1}>{t('document-group.delete.error.message')}</Text>
+            <Text size={1} as="div" trim={true} tone="critical">
+              {t('document-group.delete.error.message')}
+            </Text>
           </Card>
         ) : null}
         <VersionsPreviewList documentType={documentType} documentVersions={[...variantIds]} />
@@ -140,11 +142,15 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
           <>
             <Card padding={3} radius={2} tone="caution" flex="none">
               <Flex>
-                <Text aria-hidden="true" size={1}>
-                  <WarningOutlineIcon />
-                </Text>
+                <Icon
+                  icon={WarningOutlineIcon}
+                  aria-hidden="true"
+                  size={1}
+                  style={{margin: '-0.375rem'}}
+                  tone="caution"
+                />
                 <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true} tone="caution">
                     <Translate
                       i18nKey="document-group.delete.referring-document-count.text"
                       components={{DocumentTitle}}
@@ -167,7 +173,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
             />
           </>
         )}
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }
@@ -241,7 +247,7 @@ const References: ComponentType<ReferencesProps> = ({
   return (
     <>
       <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <Translate
             i18nKey="document-group.delete.referring-documents-descriptor.text"
             t={t}
@@ -253,7 +259,7 @@ const References: ComponentType<ReferencesProps> = ({
       <Card radius={2} shadow={1} flex="auto" padding={1}>
         <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" gap={2} data-testid="internal-references">
+            <VStack as="ul" gap={2} data-testid="internal-references">
               {internalReferences.references.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
@@ -264,7 +270,7 @@ const References: ComponentType<ReferencesProps> = ({
                   <OtherReferenceCount {...internalReferences} />
                 </Box>
               )}
-            </Stack>
+            </VStack>
           )}
           {crossDatasetReferences.totalCount > 0 && (
             <CrossDatasetReferencesDetails
@@ -286,11 +292,9 @@ const References: ComponentType<ReferencesProps> = ({
                   paddingY={1}
                 >
                   <Flex alignItems="center" gap={3} paddingX={3} paddingY={1}>
-                    <Text size={1}>
-                      <DocumentsIcon />
-                    </Text>
-                    <Stack gap={2}>
-                      <Text textOverflow="ellipsis" size={1}>
+                    <Icon icon={DocumentsIcon} size={1} />
+                    <VStack gap={2}>
+                      <Text truncate={1} size={1} as="div" trim={true}>
                         {t('document-group.delete.cdr-summary.title', {
                           count: normalizedDatasetNames.length,
                           documentCount: t('document-group.delete.cdr-summary.document-count', {
@@ -298,14 +302,19 @@ const References: ComponentType<ReferencesProps> = ({
                           }),
                         })}
                       </Text>
-                      <Text title={datasetSubtitle} textOverflow="ellipsis" size={1} muted>
+                      <Text
+                        title={datasetSubtitle}
+                        truncate={1}
+                        size={1}
+                        muted
+                        as="div"
+                        trim={true}
+                      >
                         {datasetSubtitle}
                       </Text>
-                    </Stack>
+                    </VStack>
                     <ChevronWrapper>
-                      <Text muted size={1}>
-                        <ChevronDownIcon />
-                      </Text>
+                      <Icon icon={ChevronDownIcon} size={1} muted />
                     </ChevronWrapper>
                   </Flex>
                 </Card>
@@ -315,17 +324,24 @@ const References: ComponentType<ReferencesProps> = ({
                   <thead>
                     <tr>
                       <th>
-                        <Text muted size={1} style={{minWidth: '5rem'}} weight="medium">
+                        <Text
+                          muted
+                          size={1}
+                          style={{minWidth: '5rem'}}
+                          weight="medium"
+                          as="div"
+                          trim={true}
+                        >
                           {t('document-group.delete.cdr-table.project-id.label')}
                         </Text>
                       </th>
                       <th>
-                        <Text muted size={1} weight="medium">
+                        <Text muted size={1} weight="medium" as="div" trim={true}>
                           {t('document-group.delete.cdr-table.dataset.label')}
                         </Text>
                       </th>
                       <th>
-                        <Text muted size={1} weight="medium">
+                        <Text muted size={1} weight="medium" as="div" trim={true}>
                           {t('document-group.delete.cdr-table.document-id.label')}
                         </Text>
                       </th>
@@ -339,14 +355,18 @@ const References: ComponentType<ReferencesProps> = ({
                       .map(({projectId, datasetName, documentId: referenceId}, index) => (
                         <tr key={`${documentId}-${index}`}>
                           <td>
-                            <Text size={1}>{projectId}</Text>
+                            <Text size={1} as="div" trim={true}>
+                              {projectId}
+                            </Text>
                           </td>
                           <td>
-                            <Text size={1}>{datasetName || 'unavailable'}</Text>
+                            <Text size={1} as="div" trim={true}>
+                              {datasetName || 'unavailable'}
+                            </Text>
                           </td>
                           <td>
                             <DocumentIdFlex alignItems="center" gap={2} justifyContent="flex-end">
-                              <Text textOverflow="ellipsis" size={1}>
+                              <Text truncate={1} size={1} as="div" trim={true}>
                                 {referenceId || 'unavailable'}
                               </Text>
                               {referenceId && (

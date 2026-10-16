@@ -1,9 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Badge, Card, type CardTone, Inline, Label, Stack, Text} from '@sanity/ui'
+import {Badge, Card, type CardTone, Inline, Label} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isWeekend} from 'date-fns/isWeekend'
 import {useCallback, useMemo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -82,15 +82,31 @@ export function CalendarDay(props: CalendarDayProps) {
           style={{position: 'relative'}}
           tone={tone}
         >
-          <Text
-            size={1}
-            style={{
-              opacity: !selected && !isCurrentMonth ? 0.35 : 1,
-              textAlign: 'center',
-            }}
-          >
-            {selected ? <CloseIcon /> : date.getDate()}
-          </Text>
+          <Flex justifyContent="center">
+            {selected ? (
+              <Icon
+                icon={CloseIcon}
+                size={1}
+                style={{
+                  margin: '-0.375rem',
+                  display: 'block',
+                  color: 'var(--card-fg-color)',
+                }}
+              />
+            ) : (
+              <Text
+                size={1}
+                style={{
+                  opacity: !isCurrentMonth ? 0.35 : 1,
+                  color: 'var(--card-fg-color)',
+                }}
+                as="div"
+                trim={true}
+              >
+                {date.getDate()}
+              </Text>
+            )}
+          </Flex>
 
           {/* Pips */}
           <Box
@@ -139,22 +155,22 @@ function TooltipContent(props: TooltipContentProps) {
   return (
     <Box padding={3}>
       <Box marginBottom={4}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {format(date, 'd MMMM yyyy')}
         </Text>
       </Box>
-      <Stack gap={3}>
+      <VStack gap={3}>
         {(Object.keys(schedulesByState) as Array<keyof typeof schedulesByState>).map((key) => {
           const stateSchedules = schedulesByState[key]
           if (stateSchedules.length === 0) {
             return null
           }
           return (
-            <Stack key={key} gap={2}>
+            <VStack key={key} gap={2}>
               <Label muted size={0}>
                 {SCHEDULE_STATE_DICTIONARY[key].title}
               </Label>
-              <Stack gap={1}>
+              <VStack gap={1}>
                 {stateSchedules
                   .filter((schedule) => schedule.executeAt)
                   .map((schedule) => {
@@ -166,7 +182,7 @@ function TooltipContent(props: TooltipContentProps) {
                     return (
                       <Inline key={schedule.id} gap={2}>
                         <Box style={{width: '60px'}}>
-                          <Text size={1} weight="regular">
+                          <Text size={1} weight="regular" as="div" trim={true}>
                             {formatDateTz({date: new Date(executeDate), format: 'p'})}
                           </Text>
                         </Box>
@@ -185,11 +201,11 @@ function TooltipContent(props: TooltipContentProps) {
                       </Inline>
                     )
                   })}
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           )
         })}
-      </Stack>
+      </VStack>
     </Box>
   )
 }

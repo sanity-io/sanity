@@ -19,7 +19,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
-import {Grid} from '@sanity/ui'
 import {
   type ComponentProps,
   memo,
@@ -31,7 +30,7 @@ import {
 } from 'react'
 import {ArrayItemRootElementContext, SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
-import {Box, type BoxProps} from 'ui5'
+import {Grid, Box, type BoxProps} from 'ui5'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 
@@ -168,7 +167,7 @@ interface ListProps extends ComponentProps<typeof Grid> {
 }
 
 export function List(props: ListProps) {
-  const {onItemMove, onItemMoveEnd, onItemMoveStart, sortable, ...rest} = props
+  const {axis, items, onItemMove, onItemMoveEnd, onItemMoveStart, sortable, ...rest} = props
 
   // Note: this is here to make SortableList API compatible with onItemMove
   const handleSortEnd = useCallback(
@@ -180,6 +179,8 @@ export function List(props: ListProps) {
 
   return sortable ? (
     <SortableList
+      axis={axis}
+      items={items}
       onItemMove={handleSortEnd}
       onItemMoveStart={onItemMoveStart}
       onItemMoveEnd={onItemMoveEnd}

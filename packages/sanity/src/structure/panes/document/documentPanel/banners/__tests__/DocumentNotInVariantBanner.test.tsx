@@ -170,7 +170,11 @@ describe('DocumentNotInVariantBanner', () => {
       selectedReleaseId: undefined,
       perspectiveStack: ['drafts'],
       excludedPerspectives: [],
+      selectedVariantNames: ['alpha-audience'],
+      selectedVariants: [variantAlphaAudience],
+      // oxlint-disable-next-line typescript/no-deprecated
       selectedVariantName: 'alpha-audience',
+      // oxlint-disable-next-line typescript/no-deprecated
       selectedVariant: variantAlphaAudience,
       bundle: 'drafts',
     })
@@ -190,7 +194,11 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: undefined,
         perspectiveStack: ['published'],
         excludedPerspectives: [],
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variantAlphaAudience],
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariant: variantAlphaAudience,
         bundle: 'published',
       })
@@ -207,7 +215,11 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rSummer',
         perspectiveStack: ['rSummer', 'drafts'],
         excludedPerspectives: [],
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variantAlphaAudience],
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariant: variantAlphaAudience,
         bundle: 'rSummer',
       })
@@ -224,7 +236,11 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rUntitled',
         perspectiveStack: ['rUntitled', 'drafts'],
         excludedPerspectives: [],
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variantAlphaAudience],
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariant: variantAlphaAudience,
         bundle: 'rUntitled',
       })
@@ -241,7 +257,11 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rAnonymous',
         perspectiveStack: ['rAnonymous', 'drafts'],
         excludedPerspectives: [],
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variantAlphaAudience],
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariant: variantAlphaAudience,
         bundle: 'rAnonymous',
       })
@@ -263,7 +283,11 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: undefined,
         perspectiveStack: ['drafts'],
         excludedPerspectives: [],
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [untitledVariant],
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariant: untitledVariant,
         bundle: 'drafts',
       })
@@ -293,7 +317,11 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rSummer',
         perspectiveStack: ['rSummer', 'drafts'],
         excludedPerspectives: [],
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variantAlphaAudience],
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariant: variantAlphaAudience,
         bundle: 'rSummer',
       })
@@ -312,7 +340,11 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: undefined,
         perspectiveStack: ['published'],
         excludedPerspectives: [],
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variantAlphaAudience],
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariant: variantAlphaAudience,
         bundle: 'published',
       })
@@ -365,13 +397,38 @@ describe('DocumentNotInVariantBanner', () => {
       })
     })
 
+    it('creates live-edit drafts as published variants', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        documentId: DOCUMENT_ID,
+        value: existingDocumentValue,
+        schemaType: {liveEdit: true},
+      } as unknown as ReturnType<typeof useDocumentPane>)
+
+      await renderBanner()
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+      })
+      await userEvent.click(screen.getByRole('button', {name: 'Create variant'}))
+
+      await waitFor(() => {
+        expect(createVariantDocument).toHaveBeenCalledWith({
+          baseId: existingDocumentValue._id,
+          ifBaseRevisionId: existingDocumentValue._rev,
+          documentGroupId: DOCUMENT_ID,
+          variant: variantAlphaAudience,
+          selectedPerspective: 'published',
+        })
+      })
+    })
+
     it('prefers a drafts variant sibling as the create base when one exists', async () => {
       const siblingDraft = versionStub({
         _id: 'versions.alpha-scope.article-1',
         _rev: 'sibling-draft-rev',
         _system: {
           bundleId: 'drafts',
-          variant: {_ref: variantAlphaAudience._id, _weak: true},
+          variants: [{_ref: variantAlphaAudience._id, _key: 'k-123'}],
           group: {_ref: DOCUMENT_ID, _weak: true},
           scopeId: 'alpha-scope',
         },
@@ -409,7 +466,50 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rSummer',
         perspectiveStack: ['rSummer', 'drafts'],
         excludedPerspectives: [],
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variantAlphaAudience],
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
+        // oxlint-disable-next-line typescript/no-deprecated
+        selectedVariant: variantAlphaAudience,
+        bundle: 'rSummer',
+      })
+
+      await renderBanner()
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+      })
+      await userEvent.click(screen.getByRole('button', {name: 'Create variant'}))
+
+      await waitFor(() => {
+        expect(createVariantDocument).toHaveBeenCalledWith({
+          baseId: existingDocumentValue._id,
+          ifBaseRevisionId: existingDocumentValue._rev,
+          documentGroupId: DOCUMENT_ID,
+          variant: variantAlphaAudience,
+          selectedPerspective: titledRelease,
+        })
+      })
+    })
+
+    it('keeps the release perspective for live-edit creates under a release', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        documentId: DOCUMENT_ID,
+        value: existingDocumentValue,
+        schemaType: {liveEdit: true},
+      } as unknown as ReturnType<typeof useDocumentPane>)
+      mockUsePerspective.mockReturnValue({
+        selectedPerspective: titledRelease,
+        selectedPerspectiveName: 'rSummer',
+        selectedReleaseId: 'rSummer',
+        perspectiveStack: ['rSummer', 'drafts'],
+        excludedPerspectives: [],
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variantAlphaAudience],
+        // oxlint-disable-next-line typescript/no-deprecated
+        selectedVariantName: 'alpha-audience',
+        // oxlint-disable-next-line typescript/no-deprecated
         selectedVariant: variantAlphaAudience,
         bundle: 'rSummer',
       })

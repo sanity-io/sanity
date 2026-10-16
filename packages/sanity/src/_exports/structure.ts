@@ -101,11 +101,13 @@ export {
   type List,
   ListBuilder,
   type ListInput,
+  type SingletonListBuilder,
 } from '../structure/structureBuilder/List'
 export {
   type ListItem,
   ListItemBuilder,
   type ListItemChild,
+  type ListItemCount,
   type ListItemDisplayOptions,
   type ListItemInput,
   type ListItemSerializeOptions,

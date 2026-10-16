@@ -1,10 +1,10 @@
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Card, Stack} from '@sanity/ui'
+import {type AvatarSize, Card} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -172,7 +172,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         sizing="border"
         tone={readOnly ? 'transparent' : 'default'}
       >
-        <Stack>
+        <VStack>
           <EditableWrap data-ui="CommentInputEditableWrap" paddingX={1} paddingY={2}>
             <Editable
               focusLock={focusLock}
@@ -223,7 +223,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               )}
             </TooltipDelayGroupProvider>
           </Flex>
-        </Stack>
+        </VStack>
       </RootCard>
     </Flex>
   )

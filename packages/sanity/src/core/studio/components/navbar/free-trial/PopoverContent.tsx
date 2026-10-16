@@ -1,18 +1,11 @@
-import {Card, Container, Flex, Heading} from '@sanity/ui'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Card, Heading} from '@sanity/ui'
+import {Container, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {UpsellDescriptionSerializer} from '../../../upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
 import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
+import {image} from './PopoverContent.css'
 import {type FreeTrialDialog} from './types'
-
-const Image = styled.img`
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  height: 180px;
-`
 
 interface PopoverContentProps {
   content: FreeTrialDialog
@@ -23,11 +16,15 @@ interface PopoverContentProps {
 export function PopoverContent({content, handleClose, handleOpenNext}: PopoverContentProps) {
   return (
     <Card radius={3} overflow={'hidden'}>
-      <Container width={0}>
+      <Container size={0}>
         {content.image && (
-          <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
+          <img
+            className={image}
+            src={content.image.asset.url}
+            alt={content.image.asset.altText ?? ''}
+          />
         )}
-        <Flex padding={3} direction={'column'}>
+        <Flex padding={3} flexDirection={'column'}>
           <Box paddingX={2} marginTop={3}>
             <Heading size={1}>{content.headingText}</Heading>
           </Box>
@@ -35,7 +32,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
             <UpsellDescriptionSerializer blocks={content.descriptionText} />
           </Box>
         </Flex>
-        <Flex gap={3} justify="flex-end" padding={3}>
+        <Flex gap={3} justifyContent="flex-end" padding={3}>
           {content.secondaryButton?.text && (
             <Button
               mode="bleed"

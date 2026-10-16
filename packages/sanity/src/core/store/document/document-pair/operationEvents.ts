@@ -21,6 +21,7 @@ import {type HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {createMemoKey, getClientCredentialSegments} from '../utils/memoKey'
 import {consistencyStatus} from './consistencyStatus'
 import {getOperationStoreKey} from './getOperationStoreKey'
 import {operationArgs} from './operationArgs'
@@ -208,9 +209,10 @@ export const operationEvents = memoize(
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY)))
   },
-  (ctx) => {
-    const config = ctx.client.config()
-    // we only want one of these per dataset+projectid
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}`
-  },
+  (ctx) =>
+    // Per credential (token+dataset+projectId): this captures `ctx.client` and
+    // drives commits/mutations through it, so a cross-tab re-login (new token)
+    // must get a fresh entry rather than replaying the stale-token client. See
+    // getClientCredentialSegments.
+    createMemoKey(getClientCredentialSegments(ctx.client)),
 )

@@ -1,7 +1,6 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Flex, Stack, Text} from '@sanity/ui'
 import {Fragment} from 'react'
-import {Box} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
@@ -20,11 +19,11 @@ export function FilterDetails({filter}: FilterDetailsProps) {
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
 
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       {/* Path */}
       {fieldDefinition?.titlePath && fieldDefinition.titlePath?.length > 1 && (
         <Box marginLeft={4}>
-          <Text muted size={0}>
+          <Text muted size={0} as="div" trim={true}>
             {fieldDefinition.titlePath.slice(0, -1).map((pathTitle, index) => {
               return (
                 <Fragment
@@ -40,7 +39,13 @@ export function FilterDetails({filter}: FilterDetailsProps) {
                         paddingRight: '0.25em',
                       }}
                     >
-                      <ChevronRightIcon />
+                      <Icon
+                        size={0}
+                        icon={ChevronRightIcon}
+                        style={{
+                          margin: '-0.3125rem',
+                        }}
+                      />
                     </span>
                   )}
                 </Fragment>
@@ -50,16 +55,14 @@ export function FilterDetails({filter}: FilterDetailsProps) {
         </Box>
       )}
 
-      <Flex align="flex-start" gap={3}>
-        <Box style={{flexShrink: 0}}>
-          <Text size={1}>
-            <FilterIcon filter={filter} />
-          </Text>
-        </Box>
-        <Text size={1} weight="medium">
+      <Flex alignItems="flex-start" gap={3}>
+        <Flex style={{flexShrink: 0}}>
+          <FilterIcon filter={filter} />
+        </Flex>
+        <Text size={1} weight="medium" as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
           <FilterTitle filter={filter} />
         </Text>
       </Flex>
-    </Stack>
+    </VStack>
   )
 }

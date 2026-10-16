@@ -1,14 +1,36 @@
-import {Container} from '@sanity/ui'
 import {motion} from 'motion/react'
-import {useCallback} from 'react'
-import {Flex} from 'ui5'
+import {Suspense, use, useCallback} from 'react'
+import {Container, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {FallbackErrorScreen} from '../../../studio/screens/FallbackErrorScreen'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
 
-export function DocumentLimitsUpsellPanel() {
-  const {upsellData, telemetryLogs} = useDocumentLimitsUpsellContext()
+interface DocumentLimitsUpsellPanelProps {
+  /** The document limit error the tool failed on */
+  error: Error
+  /** Clears the error in the boundary that caught it */
+  onReset: () => void
+}
+
+/**
+ * The screen shown in place of a tool that failed on the document limit. Waits for the upsell
+ * content behind its own boundary, so the wait never reaches the studio's loading screen; when
+ * that content cannot be loaded, the error itself is shown the way the boundary would have shown
+ * it, so the user is never left with an empty tool area.
+ */
+export function DocumentLimitsUpsellPanel(props: DocumentLimitsUpsellPanelProps) {
+  return (
+    <Suspense fallback={<LoadingBlock title="Loading documents limit" showText />}>
+      <DocumentLimitsUpsellPanelContent {...props} />
+    </Suspense>
+  )
+}
+
+function DocumentLimitsUpsellPanelContent({error, onReset}: DocumentLimitsUpsellPanelProps) {
+  const {upsellDataPromise, telemetryLogs} = useDocumentLimitsUpsellContext()
+  const {upsellData} = use(upsellDataPromise)
 
   const handlePrimaryButtonClick = useCallback(() => {
     telemetryLogs.panelPrimaryClicked()
@@ -19,7 +41,7 @@ export function DocumentLimitsUpsellPanel() {
   }, [telemetryLogs])
 
   if (!upsellData) {
-    return <LoadingBlock title="Loading documents limit" showText />
+    return <FallbackErrorScreen error={error} onReset={onReset} />
   }
 
   return (
@@ -29,7 +51,7 @@ export function DocumentLimitsUpsellPanel() {
         animate={{opacity: 1, scale: 1}}
         transition={{duration: 0.2}}
       >
-        <Container width={0}>
+        <Container size={0}>
           <UpsellPanel
             data={upsellData}
             onPrimaryClick={handlePrimaryButtonClick}

@@ -18,11 +18,12 @@ import {
 import {
   DivergencesProvider,
   type DocumentActionsContext,
-  type DocumentActionsVersionType,
   type DocumentFieldAction,
   type EditStateFor,
   EMPTY_ARRAY,
   getCreatableVariantTarget,
+  getDefaultVariant,
+  getDocumentVersionType,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
@@ -33,7 +34,6 @@ import {
   ParseErrorsProvider,
   type PartialContext,
   pathToString,
-  type ReleaseDocument,
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
@@ -70,6 +70,7 @@ import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {useDocumentApplicationContext} from './useDocumentApplicationContext'
 import {useDocumentInitialLoadTelemetry} from './useDocumentInitialLoadTelemetry'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
 import {useDocumentPaneInspector} from './useDocumentPaneInspector'
@@ -158,6 +159,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
 
   const {data: releases = EMPTY_ARRAY} = useActiveReleases()
+  const selectedRelease = selectedReleaseId
+    ? releases.find(
+        (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedReleaseId,
+      )
+    : undefined
 
   const diffViewRouter = useDiffViewRouter()
 
@@ -239,7 +245,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
   // creates the document seeded from the published sibling.
   const isVariantTargetReadOnly =
-    Boolean(perspective.selectedVariantName) &&
+    Boolean(getDefaultVariant(perspective.selectedVariantNames)) &&
     targetDocumentState.status !== 'ready' &&
     !getCreatableVariantTarget(targetDocumentState)
 
@@ -249,10 +255,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       const seeingHistoryDocument = Boolean(params.rev)
 
       // Check if current perspective is a paused scheduled draft
-      const currentRelease = releases.find(
-        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
-      )
-      const isPaused = isPausedCardinalityOneRelease(currentRelease)
+      const isPaused = isPausedCardinalityOneRelease(selectedRelease)
 
       return (
         seeingHistoryDocument ||
@@ -275,8 +278,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       perspective.selectedPerspective,
       isVariantTargetReadOnly,
       schemaType,
-      releases,
-      selectedReleaseId,
+      selectedRelease,
     ],
   )
 
@@ -342,18 +344,18 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     isOlderRevision: onOlderRevision,
   })
 
-  const actionsVersionType = useMemo(
-    () =>
-      getDocumentVersionType(
-        params,
-        selectedReleaseId,
-        value,
-        selectedPerspectiveName,
-        draftsEnabled,
-        releases,
-      ),
-    [params, selectedReleaseId, value, selectedPerspectiveName, draftsEnabled, releases],
+  const isVersionDocument = Boolean(selectedReleaseId && isVersionId(value._id))
+  const isScheduledDraft = Boolean(
+    isVersionDocument && selectedRelease && isCardinalityOneRelease(selectedRelease),
   )
+
+  const actionsVersionType = getDocumentVersionType({
+    isRevision: Boolean(params.rev),
+    isScheduledDraft,
+    isVersionDocument,
+    perspectiveName: selectedPerspectiveName,
+    draftsEnabled,
+  })
 
   const documentActionsContext: PartialContext<DocumentActionsContext> = useMemo(
     () => ({
@@ -543,6 +545,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     }
     return displayed
   }, [editState.version, editState.published, displayed])
+
+  useDocumentApplicationContext({displayedId: currentDisplayed?._id, editState})
 
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
@@ -784,45 +788,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       </DocumentPaneContext.Provider>
     </DocumentPaneInfoContext.Provider>
   )
-}
-
-function getDocumentVersionType(
-  params: Record<string, string | undefined> | undefined,
-  selectedReleaseId: string | undefined,
-  value: SanityDocumentLike,
-  selectedPerspectiveName: string | undefined,
-  draftsEnabled: boolean,
-  releases: ReleaseDocument[],
-) {
-  let version: DocumentActionsVersionType
-  switch (true) {
-    case Boolean(params?.rev):
-      version = 'revision'
-      break
-    case selectedReleaseId && isVersionId(value._id): {
-      // Check if this is a scheduled draft (cardinality one release)
-      const releaseDocument = releases.find(
-        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
-      )
-
-      if (releaseDocument && isCardinalityOneRelease(releaseDocument)) {
-        version = 'scheduled-draft'
-      } else {
-        version = 'version'
-      }
-      break
-    }
-    case selectedPerspectiveName === 'published':
-      version = 'published'
-      break
-    case draftsEnabled:
-      version = 'draft'
-      break
-    default:
-      version = 'published'
-  }
-
-  return version
 }
 
 const DivergenceAutofocus: ComponentType<

@@ -1,6 +1,5 @@
 import {type Rule, type RuleSpec, type SchemaType} from '@sanity/types'
-
-import {normalizeValidationRules} from '../../validation/util/normalizeValidationRules'
+import {normalizeValidationRules} from '@sanity/validation/_internal'
 
 const isRuleInstance = (validation: unknown): validation is Rule =>
   typeof validation === 'object' && validation !== null && '_rules' in validation

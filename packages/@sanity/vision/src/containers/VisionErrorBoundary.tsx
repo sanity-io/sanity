@@ -1,15 +1,19 @@
 /* oxlint-disable @sanity/i18n/no-attribute-string-literals */
 /* oxlint-disable i18next/no-literal-string */
-import {Button, Card, Container, Heading, Stack} from '@sanity/ui'
+import {Button, Card, Heading} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Component, type PropsWithChildren} from 'react'
+import {Container, VStack} from 'ui5'
 
 import {clearLocalStorage} from '../util/localStorage'
 
 /**
  * @internal
  */
-export type VisionErrorBoundaryProps = PropsWithChildren
+export type VisionErrorBoundaryProps = PropsWithChildren<{
+  /** Called before the children are rendered again, so a failed lazy import gets another try */
+  onRetry?: () => void
+}>
 
 /**
  * @internal
@@ -36,8 +40,10 @@ export class VisionErrorBoundary extends Component<
     return {error: error instanceof Error ? error.message : `${error}`}
   }
 
-  handleRetryRender = () =>
+  handleRetryRender = () => {
+    this.props.onRetry?.()
     this.setState((prev) => ({error: null, numRetries: prev.numRetries + 1}))
+  }
 
   handleRetryWithCacheClear = () => {
     clearLocalStorage()
@@ -61,8 +67,8 @@ export class VisionErrorBoundary extends Component<
         sizing="border"
         tone="critical"
       >
-        <Container width={3}>
-          <Stack gap={4}>
+        <Container size={3}>
+          <VStack gap={4}>
             <div>
               <Button
                 onClick={withCacheClear ? this.handleRetryWithCacheClear : this.handleRetryRender}
@@ -74,15 +80,15 @@ export class VisionErrorBoundary extends Component<
             <Heading>An error occurred</Heading>
 
             <Card border radius={2} overflow="auto" padding={4} tone="inherit">
-              <Stack gap={4}>
+              <VStack gap={4}>
                 {message && (
                   <Code size={1}>
                     <strong>Error: {message}</strong>
                   </Code>
                 )}
-              </Stack>
+              </VStack>
             </Card>
-          </Stack>
+          </VStack>
         </Container>
       </Card>
     )

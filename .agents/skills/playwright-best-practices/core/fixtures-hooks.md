@@ -341,6 +341,7 @@ This section covers **per-test database fixtures** (isolation, transaction rollb
 
 ```typescript
 import {test as base} from '@playwright/test'
+
 import {db} from '../db'
 
 export const test = base.extend<{dbTransaction: Transaction}>({

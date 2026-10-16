@@ -1,9 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useEffect, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -72,15 +72,20 @@ export function ReleaseDetail() {
             radius={4}
           >
             <Flex gap={3}>
-              <Text size={1}>
-                <ErrorOutlineIcon />
-              </Text>
-              <Stack gap={4}>
-                <Text size={1} weight="semibold">
+              <Icon
+                size={1}
+                style={{margin: '-0.375rem'}}
+                icon={ErrorOutlineIcon}
+                tone="critical"
+              />
+              <VStack gap={4}>
+                <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
                   {t('loading-release-documents.error.title')}
                 </Text>
-                <Text size={1}>{t('loading-release-documents.error.description')}</Text>
-              </Stack>
+                <Text size={1} as="div" trim={true} tone="critical">
+                  {t('loading-release-documents.error.description')}
+                </Text>
+              </VStack>
             </Flex>
           </MotionCard>
         </Box>
@@ -109,9 +114,10 @@ export function ReleaseDetail() {
       // right-anchored drawer covers the top action rail (Run release + menu) too — not just the
       // content below it.
       <Flex
-        direction="column"
-        flex={1}
-        height="fill"
+        flexDirection="column"
+        flexBasis="0%"
+        flexGrow={1}
+        height="100%"
         overflow="hidden"
         style={{position: 'relative'}}
       >
@@ -124,8 +130,8 @@ export function ReleaseDetail() {
           />
         </Card>
 
-        <Flex flex={1}>
-          <Flex direction="column" flex={1} height="fill">
+        <Flex flexBasis="0%" flexGrow={1}>
+          <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
             <Card flex={1} overflow="auto">
               <ReleaseDashboardDetails
                 release={releaseInDetail}

@@ -1,9 +1,9 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
-import {Box} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -139,7 +139,7 @@ export function CopyToNewReleaseDialog(props: {
         marginBottom={2}
         style={{borderBottom: '1px solid var(--card-border-color)'}}
       >
-        <Flex align="center" padding={4} paddingTop={1} justify="space-between">
+        <Flex alignItems="center" padding={4} paddingTop={1} justifyContent="space-between">
           {schemaType ? (
             <Preview value={{_id: versionId}} schemaType={schemaType} />
           ) : (
@@ -147,7 +147,7 @@ export function CopyToNewReleaseDialog(props: {
           )}
 
           <Flex
-            align="center"
+            alignItems="center"
             gap={2}
             padding={1}
             paddingRight={2}
@@ -160,7 +160,7 @@ export function CopyToNewReleaseDialog(props: {
             }}
           >
             <ReleaseAvatar padding={1} release={sourceRelease} />
-            <Text size={1} title={displayTitle}>
+            <Text size={1} title={displayTitle} as="div" trim={true}>
               {displayTitle}
             </Text>
           </Flex>
@@ -170,12 +170,14 @@ export function CopyToNewReleaseDialog(props: {
       <Box paddingX={5} paddingY={3}>
         {isScheduledDateInPast && (
           <Card padding={3} marginBottom={3} radius={2} shadow={1} tone="critical">
-            <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+            <Text size={1} as="div" trim={true} tone="critical">
+              {t('release.schedule-dialog.publish-date-in-past-warning')}
+            </Text>
           </Card>
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />
 
-        <Flex gap={3} justify="flex-end" paddingTop={3} align="center">
+        <Flex gap={3} justifyContent="flex-end" paddingTop={3} alignItems="center">
           <Button
             disabled={isSubmitting}
             text={t('common.dialog.cancel-button.text')}

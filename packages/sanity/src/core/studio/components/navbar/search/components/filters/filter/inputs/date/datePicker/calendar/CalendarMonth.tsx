@@ -1,9 +1,8 @@
-import {Grid, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Grid, Box} from 'ui5'
 
 import {useTranslation} from '../../../../../../../../../../../i18n/hooks/useTranslation'
 import {CalendarDay} from './CalendarDay'
+import {customGrid} from './CalendarMonth.css'
 import {SHORT_WEEK_DAY_KEYS} from './constants'
 import {useCalendar} from './contexts/useDatePicker'
 import {useWeeksOfMonth} from './utils'
@@ -24,20 +23,16 @@ interface CalendarMonthProps {
   onSelect: (date: Date) => void
 }
 
-const CustomGrid = styled(Grid)`
-  grid-template-columns: repeat(7, minmax(44px, auto));
-`
-
 export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
   const {focusedDate, firstWeekDay} = useCalendar()
   const {t} = useTranslation()
 
   return (
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
-      <CustomGrid gapY={1}>
+      <Grid className={customGrid} rowGap={1}>
         {WEEK_DAY_NAME_KEYS[firstWeekDay].map((weekdayDay) => (
           <Box key={weekdayDay} paddingBottom={3} paddingTop={2}>
-            <Text align="center" size={1} weight="medium">
+            <Text align="center" size={1} weight="medium" as="div" trim={true}>
               {t(weekdayDay)}
             </Text>
           </Box>
@@ -50,7 +45,7 @@ export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
             )
           }),
         )}
-      </CustomGrid>
+      </Grid>
     </Box>
   )
 }

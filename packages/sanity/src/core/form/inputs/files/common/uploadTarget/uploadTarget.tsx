@@ -1,5 +1,5 @@
 import {type AssetSource, type SchemaType} from '@sanity/types'
-import {type CardTone, Flex, Text} from '@sanity/ui'
+import {type CardTone, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import uniqBy from 'lodash-es/uniqBy.js'
 import {
@@ -7,12 +7,13 @@ import {
   type ReactNode,
   type RefAttributes,
   useCallback,
+  useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type FIXME} from '../../../../../FIXME'
 import {useClient} from '../../../../../hooks/useClient'
@@ -37,12 +38,15 @@ import {DropMessage} from '../DropMessage'
 import {type FileInfo, fileTarget} from '../fileTarget/fileTarget'
 import {UploadDestinationPicker} from '../UploadDestinationPicker'
 import {Overlay} from './styles'
+import {root} from './uploadTarget.css'
 
 type FileEntry = {
   file: File
   schemaType: SchemaType | null
   assetSource: AssetSource | null
 }
+
+const EMPTY_FILE_INFOS: FileInfo[] = []
 
 export interface UploadTargetProps {
   types: SchemaType[]
@@ -65,10 +69,6 @@ export interface UploadTargetProps {
   children?: ReactNode
 }
 
-const Root = styled.div`
-  position: relative;
-`
-
 export function uploadTarget<Props>(
   Component: ComponentType<Props>,
 ): (props: UploadTargetProps & Props & RefAttributes<HTMLElement>) => ReactNode {
@@ -82,6 +82,9 @@ export function uploadTarget<Props>(
       onOpenSourceForUpload,
       onSelectFile,
       onSetHoveringFiles,
+      // Uploads go through `onSelectFile`. The array inputs still pass their `onUpload` along, and
+      // it must not reach the card's DOM element.
+      onUpload: _onUpload,
       assetSources: assetSourcesProp,
       types,
       tone: toneFromProps,
@@ -119,9 +122,6 @@ export function uploadTarget<Props>(
 
     const [filesToUpload, setFilesToUpload] = useState<File[]>([])
     const [showAssetSourceDestinationPicker, setShowAssetSourceDestinationPicker] = useState(false)
-    const [tone, setTone] = useState<CardTone>(
-      toneFromProps || (isReadOnly ? 'transparent' : 'default'),
-    )
 
     const assetSourceDestinationName = useRef<string | null>(null)
 
@@ -199,10 +199,19 @@ export function uploadTarget<Props>(
       ],
     )
 
+    const uploadsAvailable = !isReadOnly && !disableUpload
+    // `fileTarget` extracts dropped and pasted files asynchronously (a directory drop walks its
+    // tree) and then calls the `onFiles` it captured at drop time, so the check below reads the
+    // availability at that moment through a ref rather than the value captured in the closure.
+    const uploadsAvailableRef = useRef(uploadsAvailable)
+    useLayoutEffect(() => {
+      uploadsAvailableRef.current = uploadsAvailable
+    }, [uploadsAvailable])
+
     // This is called when files are dropped or pasted onto the upload target. It may show the asset source destination picker if needed.
     const handleFiles = useCallback(
       (files: File[]) => {
-        if (isReadOnly || disableUpload || types.length === 0) {
+        if (!uploadsAvailableRef.current || types.length === 0) {
           return
         }
         const filesAndAssetSources = getFilesAndAssetSources({
@@ -240,16 +249,31 @@ export function uploadTarget<Props>(
         alertRejectedFiles,
         defaultFileAssetSource,
         defaultImageAssetSource,
-        disableUpload,
         formBuilder,
         handleUploadFiles,
-        isReadOnly,
         assetSourcesProp,
         types,
       ],
     )
 
-    const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
+    const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>(EMPTY_FILE_INFOS)
+    // A drop in progress when uploads become unavailable (the form turns read-only mid-drag, or
+    // while the destination picker is open) must not keep the hover tone, the drop overlay or
+    // the picker alive, nor upload later: that state is reset on the transition.
+    const [stateUploadsAvailable, setStateUploadsAvailable] = useState(uploadsAvailable)
+    if (stateUploadsAvailable !== uploadsAvailable) {
+      setStateUploadsAvailable(uploadsAvailable)
+      setHoveringFiles(EMPTY_FILE_INFOS)
+      if (!uploadsAvailable) {
+        setShowAssetSourceDestinationPicker(false)
+        setFilesToUpload([])
+      }
+    }
+    useEffect(() => {
+      if (!uploadsAvailable) {
+        onSetHoveringFiles?.(EMPTY_FILE_INFOS)
+      }
+    }, [onSetHoveringFiles, uploadsAvailable])
 
     const isFileAccepted = useCallback(
       (file: FileInfo) => {
@@ -265,38 +289,35 @@ export function uploadTarget<Props>(
 
     const handleFilesOver = useCallback(
       (files: FileInfo[]) => {
-        if (isReadOnly || disableUpload) {
+        if (!uploadsAvailable) {
           return
         }
         setHoveringFiles(files)
-        const acceptedFiles = files.filter(isFileAccepted)
-        const rejectedFilesCount = files.length - acceptedFiles.length
-        if (rejectedFilesCount > 0) {
-          setTone('critical')
-        } else if (acceptedFiles.length > 0) {
-          setTone('primary')
-        } else {
-          setTone('default')
-        }
 
         if (onSetHoveringFiles) {
           onSetHoveringFiles(files)
         }
       },
-      [disableUpload, isFileAccepted, isReadOnly, onSetHoveringFiles],
+      [onSetHoveringFiles, uploadsAvailable],
     )
 
+    // Leaving or dropping clears the hover state even when uploads are unavailable, so a drag
+    // that started before the form turned read-only cannot leave stale hover state behind.
     const handleFilesOut = useCallback(() => {
-      if (isReadOnly || disableUpload) {
-        return
-      }
-      setHoveringFiles([])
-      setTone('default')
+      setHoveringFiles(EMPTY_FILE_INFOS)
       if (onSetHoveringFiles) {
-        onSetHoveringFiles([])
+        onSetHoveringFiles(EMPTY_FILE_INFOS)
       }
-      setFilesToUpload([])
-    }, [disableUpload, isReadOnly, onSetHoveringFiles])
+      setFilesToUpload((files) => (files.length === 0 ? files : []))
+    }, [onSetHoveringFiles])
+
+    // Derived on every render rather than stored in state: `isReadOnly` changes after mount (the
+    // form is read-only until the document pair is ready and while reconnecting), and a tone
+    // captured once at mount would keep the read-only look after the form becomes editable.
+    const tone: CardTone =
+      toneFromProps ??
+      getHoverTone(hoveringFiles, isFileAccepted) ??
+      (isReadOnly ? 'transparent' : 'default')
 
     const allAssetSourcesWithUpload = assetSourcesProp
       ? getAssetSourcesWithUpload(assetSourcesProp)
@@ -343,7 +364,7 @@ export function uploadTarget<Props>(
     )
 
     return (
-      <Root>
+      <div className={root}>
         {showAssetSourceDestinationPicker && (
           <UploadDestinationPicker
             assetSources={assetSourcesWithUploadByName}
@@ -354,10 +375,10 @@ export function uploadTarget<Props>(
         )}
         <FileTarget
           {...rest}
-          tone={toneFromProps || tone}
+          tone={tone}
           ref={forwardedRef}
           onFiles={handleFiles}
-          onFilesOver={handleFilesOver}
+          onFilesOver={uploadsAvailable ? handleFilesOver : undefined}
           onFilesOut={handleFilesOut}
           pasteTarget={pasteTarget}
         >
@@ -368,9 +389,23 @@ export function uploadTarget<Props>(
           )}
           {children}
         </FileTarget>
-      </Root>
+      </div>
     )
   }
+}
+
+/**
+ * The tone while files are dragged over the target: `critical` as soon as one of them cannot be
+ * uploaded here, `primary` when all of them can, and nothing while no files are hovering.
+ */
+function getHoverTone(
+  hoveringFiles: FileInfo[],
+  isFileAccepted: (file: FileInfo) => boolean,
+): CardTone | undefined {
+  if (hoveringFiles.length === 0) {
+    return undefined
+  }
+  return hoveringFiles.every(isFileAccepted) ? 'primary' : 'critical'
 }
 
 /**

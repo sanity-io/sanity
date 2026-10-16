@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {type Observable, of} from 'rxjs'
 
 type HTTPMethod = 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH'
@@ -294,4 +295,15 @@ export function createMockSanityClient(
 
     return tx
   }
+}
+
+/**
+ * {@link createMockSanityClient} typed as the `SanityClient` the studio's seams take (auth
+ * stores, providers, `useClient` mocks). Same object, same coverage; tests that need the
+ * request log keep the untyped factory.
+ */
+export function createMockSanityClientAsClient(
+  ...args: Parameters<typeof createMockSanityClient>
+): SanityClient {
+  return createMockSanityClient(...args) as unknown as SanityClient
 }

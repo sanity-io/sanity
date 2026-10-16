@@ -1,97 +1,34 @@
-import {diffInput} from '@sanity/diff'
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch, incremental} from 'mendoza'
 
-import {type Annotation, type ObjectDiff} from '../../field/types'
-import {wrapValue} from '../history/history/diffValue'
+import {type ObjectDiff} from '../../field/types'
+import {diffValue, type EventMeta} from './diffValue'
 import {type DocumentGroupEvent, isEditDocumentVersionEvent} from './types'
-
-type EventMeta = {
-  transactionIndex: number
-  event?: DocumentGroupEvent
-} | null
 
 function omitRev(document: SanityDocument): Omit<SanityDocument, '_rev'> {
   const {_rev, ...doc} = document
   return doc
 }
 
-function annotationForTransactionIndex(
-  transactions: TransactionLogEventWithEffects[],
-  idx: number,
-  event?: DocumentGroupEvent,
-) {
-  const tx = transactions[idx]
-  if (!tx) return null
-
-  return {
-    timestamp: tx.timestamp,
-    author: tx.author,
-    event: event,
-  }
-}
-
-function extractAnnotationForFromInput(
-  transactions: TransactionLogEventWithEffects[],
-  meta: EventMeta,
-): Annotation {
-  if (meta) {
-    // The next transaction is where it disappeared:
-    return annotationForTransactionIndex(transactions, meta.transactionIndex + 1, meta.event)
-  }
-
-  // Fallback: if meta is null, the value existed initially and was changed/removed
-  // by the first transaction in our range
-  if (transactions.length > 0) {
-    return annotationForTransactionIndex(transactions, 0)
-  }
-
-  return null
-}
-function extractAnnotationForToInput(
-  transactions: TransactionLogEventWithEffects[],
-  meta: EventMeta,
-): Annotation {
-  if (meta) {
-    return annotationForTransactionIndex(transactions, meta.transactionIndex, meta.event)
-  }
-
-  return null
-}
-
-function diffValue({
-  transactions,
-  fromValue,
-  fromRaw,
-  toValue,
-  toRaw,
-}: {
-  transactions: TransactionLogEventWithEffects[]
-  fromValue: incremental.Value<EventMeta>
-  fromRaw: Omit<SanityDocument, '_rev'>
-  toValue: incremental.Value<EventMeta>
-  toRaw: Omit<SanityDocument, '_rev'>
-}) {
-  const fromInput = wrapValue<EventMeta>(fromValue, fromRaw, {
-    fromValue(value) {
-      return extractAnnotationForFromInput(transactions, value.endMeta)
-    },
-    fromMeta(meta) {
-      return extractAnnotationForFromInput(transactions, meta)
-    },
-  })
-
-  const toInput = wrapValue<EventMeta>(toValue, toRaw, {
-    fromValue(value) {
-      return extractAnnotationForToInput(transactions, value.startMeta)
-    },
-    fromMeta(meta) {
-      return extractAnnotationForToInput(transactions, meta)
-    },
-  })
-  return diffInput(fromInput, toInput)
-}
-
+/**
+ * Computes the annotated diff between `initialDoc` and the document that results from replaying
+ * `transactions` (mendoza apply patches) on top of it.
+ *
+ * Each replayed transaction records `{transactionIndex, event}` metadata — `event` being the
+ * non-edit `DocumentGroupEvent` whose `revisionId` matches the transaction id, when one exists —
+ * so every changed value in the resulting `ObjectDiff` carries an `Annotation` with the
+ * author/timestamp of the transaction that changed it (and the related event, e.g. a publish).
+ *
+ * Annotation semantics:
+ * - "from" side: the annotation points at the transaction *after* the one recorded in the value's
+ *   end metadata (where the old value disappeared); when a value existed before the range, the
+ *   first transaction in the range is used as fallback.
+ * - "to" side: the annotation points at the transaction recorded in the value's start metadata
+ *   (where the new value appeared); values untouched within the range get no annotation.
+ *
+ * Transactions with no effect for `documentId` are skipped. `_rev` is stripped before diffing so
+ * revision churn alone never shows up as a change.
+ */
 export function calculateDiff({
   initialDoc,
   documentId,

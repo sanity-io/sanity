@@ -1,0 +1,140 @@
+import {describe, expect, test} from 'vitest'
+
+import {type CommentDocument} from '../types'
+import {buildCommentRangeUpdate} from '../utils/inline-comments/buildCommentRangeUpdate'
+
+const MARKER_START = '\uF000'
+const MARKER_END = '\uF001'
+
+function makeComment(selectionText: string): CommentDocument {
+  return {
+    _id: 'comment-1',
+    target: {
+      path: {
+        field: 'body',
+        selection: {
+          type: 'text',
+          value: [{_key: 'block-1', text: selectionText}],
+        },
+      },
+    },
+  } as unknown as CommentDocument
+}
+
+function makeValue(text: string) {
+  return [
+    {
+      _type: 'block',
+      _key: 'block-1',
+      children: [{_type: 'span', _key: 'span-1', text}],
+    },
+  ]
+}
+
+function makeBlock(key: string, text: string) {
+  return {
+    _type: 'block',
+    _key: key,
+    children: [{_type: 'span', _key: `span-${key}`, text}],
+  }
+}
+
+describe('updateCommentRange', () => {
+  test('keeps the comment on the same text after typing before it', () => {
+    // Comment created on "World" in "Hello World" (offsets 6-11).
+    // Stored marker text is the full block text with the fragment wrapped.
+    const comment = makeComment(`Hello ${MARKER_START}World${MARKER_END}`)
+
+    // User then types "XXX " at the very start of the block.
+    const editorValue = makeValue('XXX Hello World')
+
+    const {range} = buildCommentRangeUpdate({
+      comment,
+      value: editorValue,
+      documentValue: {body: editorValue},
+      basePath: ['body'],
+    })
+
+    // "World" now sits at offsets 10-15. If this yields 6-11 the client is
+    // persisting the creation-time offsets against the new fieldValue.
+    expect(range).toEqual({
+      start: {_key: 'block-1', offset: 10},
+      end: {_key: 'block-1', offset: 15},
+    })
+  })
+
+  test('still tracks the text when the document value has not caught up yet', () => {
+    const comment = makeComment(`Hello ${MARKER_START}World${MARKER_END}`)
+
+    // The editor has the typed text, but the form document value has not
+    // received the flushed patches yet. Offsets must be computed against the
+    // same value that is sent as `fieldValue` (the editor value), otherwise
+    // the API stores markers at stale positions.
+    const editorValue = makeValue('XXX Hello World')
+    const staleDocumentValue = {_id: 'doc-1', _type: 'article', body: makeValue('Hello World')}
+
+    const {range} = buildCommentRangeUpdate({
+      comment,
+      value: editorValue,
+      documentValue: staleDocumentValue,
+      basePath: ['body'],
+    })
+
+    expect(range).toEqual({
+      start: {_key: 'block-1', offset: 10},
+      end: {_key: 'block-1', offset: 15},
+    })
+  })
+
+  test('clears the range when the selected text is deleted', () => {
+    const comment = makeComment(`Hello ${MARKER_START}World${MARKER_END}`)
+    const editorValue = makeValue('Hello ')
+
+    const update = buildCommentRangeUpdate({
+      comment,
+      value: editorValue,
+      documentValue: {body: editorValue},
+      basePath: ['body'],
+    })
+
+    expect(update).toEqual({
+      range: null,
+      selection: {type: 'text', value: []},
+    })
+  })
+
+  test('drops a selection item whose block was deleted', () => {
+    const comment = {
+      _id: 'comment-1',
+      target: {
+        path: {
+          field: 'body',
+          selection: {
+            type: 'text',
+            value: [
+              {_key: 'block-1', text: `Hello ${MARKER_START}World${MARKER_END}`},
+              {_key: 'block-2', text: `${MARKER_START}Second${MARKER_END} block`},
+            ],
+          },
+        },
+      },
+    } as unknown as CommentDocument
+
+    // The second block is removed from the editor entirely.
+    const editorValue = [makeBlock('block-1', 'Hello World')]
+
+    const update = buildCommentRangeUpdate({
+      comment,
+      value: editorValue,
+      documentValue: {body: editorValue},
+      basePath: ['body'],
+    })
+
+    // Keeping `block-2` here would re-send a selection the API cannot resolve.
+    expect(update.selection.value.map((item) => item._key)).toEqual(['block-1'])
+    expect(update.range).toEqual({
+      start: {_key: 'block-1', offset: 6},
+      end: {_key: 'block-1', offset: 11},
+    })
+  })
+})

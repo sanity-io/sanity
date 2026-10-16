@@ -1,7 +1,7 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {Flex} from 'ui5'
+import {Text, Container, VStack, Flex} from 'ui5'
 
 import {ErrorActions} from '../../components/errorActions/ErrorActions'
 import {isDev, isProd} from '../../environment'
@@ -41,20 +41,22 @@ export function FallbackErrorScreen(props: {
       sizing="border"
     >
       <Flex alignItems="center" height="100%">
-        <Container width={3}>
-          <Stack gap={6}>
-            <Stack gap={4}>
+        <Container size={3}>
+          <VStack gap={6}>
+            <VStack gap={4}>
               <Heading>{heading}</Heading>
-              <Text>An error occurred that Sanity Studio was unable to recover from.</Text>
+              <Text as="div" trim={true}>
+                An error occurred that Sanity Studio was unable to recover from.
+              </Text>
               {isProd && (
-                <Text>
+                <Text as="div" trim={true}>
                   <strong>To report this error,</strong> copy the error details and share them with
                   your development team or Sanity Support.
                 </Text>
               )}
               {isDev && (
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
-                  <Stack gap={4}>
+                  <VStack gap={4}>
                     {message && (
                       <Code weight={'bold'} size={1}>
                         {message}
@@ -62,16 +64,16 @@ export function FallbackErrorScreen(props: {
                     )}
                     {stack && <Code size={1}>{stack}</Code>}
                     {eventId && <Code size={1}>Event ID: {eventId}</Code>}
-                  </Stack>
+                  </VStack>
                 </Card>
               )}
               {showRequestErrorTip && (
                 <Card border radius={2} padding={4} tone="caution">
-                  <Stack gap={3}>
-                    <Text size={1} weight="medium">
+                  <VStack gap={3}>
+                    <Text size={1} weight="medium" as="div" trim={true} tone="caution">
                       Developer tip
                     </Text>
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true} tone="caution">
                       Request errors that the Studio can recover from (network failures, 5xx, 429,
                       session expiry) shouldn&apos;t reach this screen. Handle the error where you
                       issue the request, or delegate it to the Studio&apos;s built-in error UI:
@@ -79,15 +81,15 @@ export function FallbackErrorScreen(props: {
                     <Card border radius={1} overflow="auto" padding={3} tone="transparent">
                       <Code size={1}>{TIP_SNIPPET}</Code>
                     </Card>
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true} tone="caution">
                       This tip is only shown in development.
                     </Text>
-                  </Stack>
+                  </VStack>
                 </Card>
               )}
-            </Stack>
+            </VStack>
             <ErrorActions error={error} eventId={eventId} onRetry={onReset} size="large" />
-          </Stack>
+          </VStack>
         </Container>
       </Flex>
     </Card>

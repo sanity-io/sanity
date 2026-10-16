@@ -1,5 +1,5 @@
 import {act, renderHook, waitFor} from '@testing-library/react'
-import {BehaviorSubject} from 'rxjs'
+import {BehaviorSubject, type Observable, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type EditStateFor} from '../../store/document/document-pair/editState'
@@ -20,18 +20,22 @@ const initialState: EditStateFor = {
 }
 
 const mockEditState$ = new BehaviorSubject<EditStateFor>(initialState)
-const mockEditStateFn = vi.fn(() => mockEditState$)
+const mockEditStateFn = vi.fn<
+  (publishedId: string, type: string, version?: string) => Observable<EditStateFor>
+>(() => mockEditState$)
 
 const mockDocumentStore = {
   pair: {editState: mockEditStateFn},
 }
 
 vi.mock('../../store/datastores', () => ({useDocumentStore: () => mockDocumentStore}))
+vi.mock('../useSchema', () => ({useSchema: () => ({get: () => undefined})}))
 
 describe('useEditState', () => {
   beforeEach(() => {
     mockEditState$.next(initialState)
-    mockEditStateFn.mockClear()
+    mockEditStateFn.mockReset()
+    mockEditStateFn.mockImplementation(() => mockEditState$)
   })
 
   it('returns the initial value', () => {
@@ -179,6 +183,48 @@ describe('useEditState', () => {
     await waitFor(() => {
       expect(result.current).toBe(locked)
     })
+  })
+
+  it('derives the new arguments, not the previous document, while a swapped-in stream is silent', () => {
+    const doc2$ = new Subject<EditStateFor>()
+    mockEditStateFn.mockImplementation((publishedId) =>
+      publishedId === 'doc-2' ? doc2$ : mockEditState$,
+    )
+
+    const {result, rerender} = renderHook<EditStateFor, {id: string; version?: string}>(
+      ({id, version}) => useEditState(id, 'book', 'default', version),
+      {initialProps: {id: 'doc-1'}},
+    )
+    expect(result.current).toBe(initialState)
+
+    // react-rx renders its captured initialValue (undefined) for the new identity until it emits
+    rerender({id: 'doc-2', version: 'rel'})
+
+    expect(result.current).not.toBe(initialState)
+    expect(result.current).toMatchObject({
+      id: 'doc-2',
+      type: 'book',
+      ready: false,
+      draft: null,
+      published: null,
+      version: null,
+      liveEdit: true,
+      release: 'rel',
+      scopeId: 'rel',
+    })
+
+    const emitted: EditStateFor = {
+      ...initialState,
+      id: 'doc-2',
+      ready: true,
+      liveEdit: true,
+      release: 'rel',
+      scopeId: 'rel',
+    }
+    act(() => {
+      doc2$.next(emitted)
+    })
+    expect(result.current).toBe(emitted)
   })
 
   it('keeps the result frozen across multiple structurally-equal emissions', () => {

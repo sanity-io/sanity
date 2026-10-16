@@ -1,5 +1,6 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useState} from 'react'
+import {Flex} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {Button} from '../../button/Button'
@@ -40,7 +41,7 @@ function ConfirmPopoverExample(props: {
 export function ConfirmPopoverStory() {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
-      <Flex gap={6} padding={4} wrap="wrap">
+      <Flex gap={6} padding={4} flexWrap="wrap">
         <ConfirmPopoverExample
           buttonText="Delete"
           buttonTone="critical"

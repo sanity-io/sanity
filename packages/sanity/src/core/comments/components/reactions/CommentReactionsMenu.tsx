@@ -1,14 +1,13 @@
 // oxlint-disable-next-line no-restricted-imports
-import {Button as UIButton, Grid} from '@sanity/ui'
+import {Button as UIButton} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
+import {Grid} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption} from '../../types'
 import {EmojiText} from './EmojiText.styled'
-
-const GRID_COLUMNS = 6
 
 interface CommentReactionsMenuProps {
   options: CommentReactionOption[]
@@ -63,7 +62,7 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
 
   return (
     <Grid
-      gridTemplateColumns={GRID_COLUMNS}
+      gridTemplateColumns="repeat(6, minmax(0,1fr))"
       gap={1}
       onKeyDown={handleRootKeyDown}
       ref={setRootElement}
@@ -84,7 +83,7 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
             role="menuitem"
             tabIndex={-1}
           >
-            <EmojiText align="center" size={2}>
+            <EmojiText align="center" size={2} forwardedAs="div" trim={true}>
               {emoji}
             </EmojiText>
           </UIButton>

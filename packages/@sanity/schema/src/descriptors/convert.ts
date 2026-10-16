@@ -15,12 +15,12 @@ import {
   type Schema,
   type SchemaType,
 } from '@sanity/types'
-import isEqual from 'lodash-es/isEqual.js'
-import isObject from 'lodash-es/isObject.js'
+import {dequal as isEqual} from 'dequal/lite'
 
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
 import {isType} from '../manifest/manifestTypeHelpers'
+import {isObject} from '../utils/isObject'
 import {IdleScheduler, type Scheduler, SYNC_SCHEDULER} from './scheduler'
 import {
   type ArrayElement,
@@ -590,7 +590,7 @@ function hasValueField(typeDef: unknown): boolean {
   return typeDef.fields.some((field) => field.name === 'value')
 }
 
-// This logic is pulled from extractValueFromListOption in packages/sanity/src/core/validation/util/normalizeValidationRules.ts.
+// This logic is pulled from extractValueFromListOption in packages/@sanity/validation/src/util/normalizeValidationRules.ts.
 // It has been slightly tweaked to be safer in accessing the value attribute of the option variable
 function extractValueFromListOption(option: unknown, typeDef: Record<string, unknown>): unknown {
   // If you define a `list` option with object items, where the item has a `value` field,

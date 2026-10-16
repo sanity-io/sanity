@@ -1,8 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CircleIcon} from '@sanity/icons/Circle'
-import {Card, Stack, Text, type CardTone} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Flex} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {PerspectiveFilter} from '../PerspectiveFilter'
@@ -50,18 +50,18 @@ export const Enabled: Story = {
   args: {prefix: 'Version', tone: 'default', children: null},
   render: () => (
     <Card padding={4}>
-      <Stack gap={4}>
+      <VStack gap={4}>
         {CASES.map(({tone, label, caption}) => (
           <Flex key={tone} alignItems="center" gap={4}>
             <PerspectiveFilter prefix="Version" tone={tone}>
               <TriggerButton text={label} />
             </PerspectiveFilter>
-            <Text muted size={0}>
+            <Text muted size={0} as="div" trim={true}>
               {caption}
             </Text>
           </Flex>
         ))}
-      </Stack>
+      </VStack>
     </Card>
   ),
 }
@@ -71,7 +71,7 @@ export const Selected: Story = {
   args: {prefix: 'Version', tone: 'default', children: null},
   render: () => (
     <Card padding={4}>
-      <Stack gap={4}>
+      <VStack gap={4}>
         {CASES.map(({tone, label, caption}) => (
           <Flex key={tone} alignItems="center" gap={4}>
             <PerspectiveFilter
@@ -82,12 +82,12 @@ export const Selected: Story = {
             >
               <TriggerButton text={label} />
             </PerspectiveFilter>
-            <Text muted size={0}>
+            <Text muted size={0} as="div" trim={true}>
               {caption}
             </Text>
           </Flex>
         ))}
-      </Stack>
+      </VStack>
     </Card>
   ),
 }
@@ -101,7 +101,7 @@ export const Disabled: Story = {
         <PerspectiveFilter prefix="Variant" tone="default">
           <TriggerButton text="All users (Default)" disabled />
         </PerspectiveFilter>
-        <Text muted size={0}>
+        <Text muted size={0} as="div" trim={true}>
           disabled
         </Text>
       </Flex>

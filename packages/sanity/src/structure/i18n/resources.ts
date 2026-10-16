@@ -164,6 +164,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, but a draft version of this document exists. Publish or discard the draft in order to continue live editing it.',
   /** The label for the "compare draft" action */
   'banners.obsolete-draft.actions.compare-draft.text': 'Compare draft',
+  /** Tooltip when compare draft is disabled because the published document does not exist */
+  'banners.obsolete-draft.actions.compare-draft.tooltip':
+    "The published document doesn't exist, so this draft can't be compared.",
   /** The label for the "discard draft" action */
   'banners.obsolete-draft.actions.discard-draft.text': 'Discard draft',
   /** The label for the "publish draft" action */
@@ -190,6 +193,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.permission-check-banner.request-permission-button.sent': 'Editor request sent',
   /** The text for the request permission button that appears for viewer roles */
   'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
+  /** Action that switches from the published perspective to drafts */
+  'banners.published.see-draft.action': 'View draft',
+  /** Banner shown for non-live-edit documents with a published sibling in the published perspective */
+  'banners.published.see-draft.text': 'This is a published document. Switch to drafts to edit it.',
   /** Description for the archived release banner, rendered when viewing the history of a version document from the published view */
   'banners.published-release.description':
     "You are viewing a read-only document that was published as part of <VersionBadge>{{title}}</VersionBadge>. It can't be edited",
@@ -536,6 +543,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document.favorites.add-to-favorites': 'Add to favorites',
   /** The description for the document unfavorite action */
   'document.favorites.remove-from-favorites': 'Remove from favorites',
+
+  /** Details about a singleton document */
+  'document.singleton.details': 'This is a singleton document with id "{{documentGroupId}}"',
+  /** The label describing singleton documents */
+  'document.singleton.label': 'Singleton',
 
   /** The description for the events inspector when we can't load the document so we default to compare with published */
   'events.compare-with-published.description':

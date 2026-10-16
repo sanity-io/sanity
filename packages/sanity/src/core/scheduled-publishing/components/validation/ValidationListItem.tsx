@@ -2,16 +2,13 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Path, type ValidationMarker} from '@sanity/types'
-import {type ButtonTone, Stack, Text} from '@sanity/ui'
+import {type ButtonTone} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {MenuItem} from '@sanity/ui/menu'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
-const StyledText = styled(Text)`
-  white-space: initial;
-`
+import {wrappingText} from './ValidationListItem.css'
 
 const MENU_ITEM_TONES: Record<'error' | 'warning' | 'info', ButtonTone> = {
   error: 'critical',
@@ -47,25 +44,46 @@ export function ValidationListItem(props: ValidationListItemProps) {
   const children = (
     <Flex>
       <Box>
-        <Text size={1}>
-          {marker.level === 'error' && <ErrorOutlineIcon />}
-          {marker.level === 'warning' && <WarningOutlineIcon />}
-          {marker.level === 'info' && <InfoOutlineIcon />}
-        </Text>
+        {marker.level === 'error' && <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />}
+        {marker.level === 'warning' && <Icon icon={WarningOutlineIcon} size={1} tone="caution" />}
+        {marker.level === 'info' && (
+          <Icon icon={InfoOutlineIcon} size={1} style={{color: 'var(--card-fg-color)'}} />
+        )}
       </Box>
 
-      <Stack gap={2} flex={1} paddingLeft={3}>
+      <Flex gap={2} flexBasis="0%" flexGrow={1} paddingLeft={3} flexDirection="column">
         {path && (
-          <StyledText size={1} weight="semibold">
+          <Text
+            className={wrappingText}
+            size={1}
+            weight="semibold"
+            as="div"
+            trim={true}
+            tone={
+              menuItemTone === 'primary' || menuItemTone === 'default' ? undefined : menuItemTone
+            }
+            style={menuItemTone === 'primary' ? {color: 'var(--card-fg-color)'} : undefined}
+          >
             {path}
-          </StyledText>
+          </Text>
         )}
         {message && (
-          <StyledText muted size={1} textOverflow={truncate ? 'ellipsis' : undefined}>
+          <Text
+            className={wrappingText}
+            muted
+            size={1}
+            truncate={truncate ? 1 : undefined}
+            as="div"
+            trim={true}
+            tone={
+              menuItemTone === 'primary' || menuItemTone === 'default' ? undefined : menuItemTone
+            }
+            style={menuItemTone === 'primary' ? {color: 'var(--card-muted-fg-color)'} : undefined}
+          >
             {message}
-          </StyledText>
+          </Text>
         )}
-      </Stack>
+      </Flex>
     </Flex>
   )
   return (

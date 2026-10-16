@@ -7,23 +7,23 @@ import {
 import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-import {Flex, useElementSize} from '@sanity/ui'
+import {useElementSize} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
 import {useActionGroups} from './hooks'
 import {InsertMenu} from './InsertMenu'
 import {type BlockItem, type BlockStyleItem, type PTEToolbarActionGroup} from './types'
+import {useToolbarSchemaTypes} from './useToolbarSchemaTypes'
 
 interface ToolbarProps {
   /** Whether annotation and block menu buttons should fully collapse at smaller element widths */
@@ -101,9 +101,13 @@ const InnerToolbar = memo(function InnerToolbar({
   }, [])
 
   return (
-    <RootFlex align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
+    <RootFlex
+      alignItems="center"
+      ref={setRootElement}
+      onMouseDown={preventEditorBlurOnToolbarMouseDown}
+    >
       {showBlockStyleSelect && (
-        <StyleSelectFlex flex={collapsed ? 1 : undefined}>
+        <StyleSelectFlex {...(collapsed ? {flexBasis: '0%', flexGrow: 1} : undefined)}>
           <StyleSelectBox padding={isFullscreen ? 2 : 1} data-testid="block-style-select">
             <BlockStyleSelect
               disabled={disabled}
@@ -115,7 +119,7 @@ const InnerToolbar = memo(function InnerToolbar({
         </StyleSelectFlex>
       )}
 
-      <Flex flex={1}>
+      <Flex flexBasis="0%" flexGrow={1}>
         {showActionMenu && (
           <ActionMenuBox
             {...(collapsed ? undefined : {flexBasis: '0%', flexGrow: 1})}
@@ -172,7 +176,7 @@ export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
-  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const schemaTypes = useToolbarSchemaTypes()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()

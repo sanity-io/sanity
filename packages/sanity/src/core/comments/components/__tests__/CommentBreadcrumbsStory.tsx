@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
 
@@ -13,23 +14,23 @@ export function CommentBreadcrumbsStory({
 }: CommentBreadcrumbsStoryProps) {
   return (
     <Card padding={4}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text muted size={1}>
+      <VStack gap={5}>
+        <VStack gap={2}>
+          <Text muted size={1} as="div" trim={true}>
             short path
           </Text>
           <CommentBreadcrumbs maxLength={maxLength} titlePath={titlePath} />
-        </Stack>
-        <Stack gap={2}>
-          <Text muted size={1}>
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} as="div" trim={true}>
             truncated
           </Text>
           <CommentBreadcrumbs
             maxLength={maxLength}
             titlePath={['Article', 'Body', 'Content', 'Block', 'Image', 'Alt text']}
           />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }

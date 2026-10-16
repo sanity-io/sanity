@@ -1,6 +1,7 @@
-import {Button, Grid} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {useCallback, useEffect, useRef} from 'react'
 import {defineField, type ObjectInputProps, type Path, set, unset} from 'sanity'
+import {Grid} from 'ui5'
 
 /**
  * This document renders a custom input component which patches `testValue.b` whenever the value
@@ -99,7 +100,7 @@ export function CustomComponent(props: ObjectInputProps) {
 
   return (
     <>
-      <Grid gridTemplateColumns={[2]} gap={2}>
+      <Grid gridTemplateColumns={['repeat(2, minmax(0, 1fr))']} gap={2}>
         <Button onClick={() => setRandomValue(['a'])} text="Set random value for A" />
         <Button onClick={() => clearValue(['a'])} text="Clear A" tone="critical" />
       </Grid>

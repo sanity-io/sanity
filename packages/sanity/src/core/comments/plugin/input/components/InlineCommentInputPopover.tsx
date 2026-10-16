@@ -1,7 +1,8 @@
 import {type CurrentUser} from '@sanity/types'
-import {BoundaryElementProvider, Stack, useClickOutsideEvent, usePortal} from '@sanity/ui'
+import {BoundaryElementProvider, useClickOutsideEvent, usePortal} from '@sanity/ui'
 import {useCallback, useRef} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {
@@ -13,7 +14,7 @@ import {hasCommentMessageValue} from '../../../helpers'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 
-const RootStack = styled(Stack)`
+const RootStack = styled(Flex)`
   width: 250px;
 `
 
@@ -76,7 +77,7 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
 
   const content = (
     <BoundaryElementProvider element={boundaryElement}>
-      <RootStack padding={2} ref={contentElementRef}>
+      <RootStack padding={2} ref={contentElementRef} flexDirection="column">
         <CommentInput
           currentUser={currentUser}
           focusLock

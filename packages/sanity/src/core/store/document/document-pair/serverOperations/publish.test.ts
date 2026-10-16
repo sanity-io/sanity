@@ -13,7 +13,7 @@ beforeEach(() => {
 })
 
 /**
- * A variant-scoped version snapshot: `_system.variant` set, bundle per `bundleId`. Release
+ * A variant-scoped version snapshot: `_system.variants` set, bundle per `bundleId`. Release
  * bundles carry the `_system.release` reference, matching real release-scoped variant documents.
  */
 function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocument {
@@ -27,9 +27,26 @@ function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocum
     _system: {
       ...(bundleId ? {bundleId} : {}),
       ...(isReleaseBundle ? {release: {_ref: `_.releases.${bundleId}`, _weak: true}} : {}),
-      variant: {_ref: '_.variants.french', _weak: true},
+      variants: [{_ref: '_.variants.french', _key: 'k-123'}],
       group: {_ref: 'my-id', _weak: true},
       scopeId: 'varscope',
+    },
+  }
+}
+
+/** Same as {@link variantVersion} but with the pre-migration `_system.variant` shape. */
+function unmigratedVariantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocument {
+  const migrated = variantVersion(bundleId)
+  const variantRef = migrated._system?.variants?.[0]
+  const {variants: _variants, ...system} = migrated._system ?? {
+    group: {_ref: 'my-id', _weak: true},
+  }
+  return {
+    ...migrated,
+    _system: {
+      ...system,
+      // oxlint-disable-next-line typescript/no-deprecated -- unmigrated snapshot under test.
+      variant: variantRef,
     },
   }
 }
@@ -283,6 +300,33 @@ describe('publish', () => {
       }).toThrow('cannot execute "publish" when draft or version is missing')
 
       expect(client.$log).toMatchSnapshot()
+    })
+
+    it('routes an unmigrated variant-over-drafts version to the variant publish action', () => {
+      const client = createMockSanityClient()
+
+      publish.execute({
+        client,
+        idPair: {
+          draftId: 'drafts.my-id',
+          publishedId: 'my-id',
+          versionId: 'versions.varscope.my-id',
+        },
+        snapshots: {version: unmigratedVariantVersion('drafts')},
+      } as unknown as OperationArgs)
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.variant.publish',
+            publishedId: 'my-id',
+            variantId: 'french',
+            bundleId: 'drafts',
+            ifPublishedVariantRevisionId: undefined,
+          },
+          options: {tag: 'document.publish'},
+        },
+      ])
     })
 
     it('routes a variant-over-drafts version to the variant publish action', () => {

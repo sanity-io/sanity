@@ -3,7 +3,7 @@ import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime} from 'rxjs/operators'
 import {describe, expect, it} from 'vitest'
 
-import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
+import {createMockAuthStore} from '../../store/auth/mock/createMockAuthStore'
 import {VARIANTS_NAME} from '../../variants/plugin'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
@@ -170,6 +170,31 @@ describe('resolveConfig', () => {
       {name: 'sanity/schedules'},
       {name: 'sanity/singleDocRelease'},
     ])
+  })
+  it('still registers the comments plugin as sanity/comments when v2 is enabled', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const mockPlugin = definePlugin({name: 'sanity/mock-plugin'})
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+        plugins: [mockPlugin()],
+        beta: {comments: {v2: true}},
+      }),
+    )
+    const commentsPlugins =
+      workspace.__internal.options.plugins?.filter((plugin) => plugin.name === 'sanity/comments') ??
+      []
+    expect(commentsPlugins).toHaveLength(1)
   })
   it('wont include variants default plugin by default', async () => {
     const projectId = 'ppsg7ml5'
@@ -426,6 +451,10 @@ describe('createSourceFromConfig', () => {
   })
 })
 
+const rootTypes = (context: {dataset: string}) => ({
+  variant: {conditions: [{name: 'audience', values: [context.dataset]}]},
+})
+
 describe('beta variants config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
@@ -503,6 +532,197 @@ describe('beta variants config', () => {
         },
       }),
     ).rejects.toThrow('Expected `beta.variants.enabled` to be a boolean, but received string')
+  })
+
+  it('defaults types to undefined', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true}},
+    })
+
+    expect(source.beta?.variants?.types).toBeUndefined()
+  })
+
+  it('resolves types from root config', async () => {
+    const types = {variant: {label: 'Variant', conditions: [{name: 'audience', values: ['loyal']}]}}
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true, types}},
+    })
+
+    expect(source.beta?.variants?.types).toEqual(types)
+  })
+
+  it('rejects a type other than variant', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            enabled: true,
+            types: {
+              variant: {conditions: [{name: 'audience', values: ['loyal']}]},
+              // @ts-expect-error language is not in the public types map yet
+              language: {label: 'Language', conditions: [{name: 'locale', values: ['en']}]},
+            },
+          },
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.variants.types` to only include "variant"')
+  })
+
+  it('resolves types from plugin config', async () => {
+    const types = {variant: {conditions: [{name: 'locale', values: ['en-US']}]}}
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants-conditions',
+          beta: {variants: {types}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.variants?.types).toEqual(types)
+  })
+
+  it('lets root config override plugin types', async () => {
+    const pluginTypes = {variant: {conditions: [{name: 'audience', values: ['plugin']}]}}
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants-conditions',
+          beta: {variants: {types: pluginTypes}},
+        })(),
+      ],
+      beta: {variants: {types: rootTypes}},
+    })
+
+    expect(source.beta?.variants?.types).toBe(rootTypes)
+  })
+
+  it('throws when a type key is invalid', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            types: {
+              // @ts-expect-error invalid type key
+              'Not a key': {label: 'Nope'},
+            },
+          },
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.variants.types` keys to match')
+  })
+
+  it('throws when type conditions are not an array or a function', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            types: {
+              variant: {
+                // @ts-expect-error should be an array or a function
+                conditions: 'audience',
+              },
+            },
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `beta.variants.types.variant.conditions` to be an array or a function, but received string',
+    )
+  })
+})
+
+describe('beta comments config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('defaults comments v2 to false', async () => {
+    const source = await createSourceFromConfig({projectId, dataset})
+
+    expect(source.beta?.comments?.v2).toBe(false)
+  })
+
+  it('resolves comments v2 from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {comments: {v2: true}},
+    })
+
+    expect(source.beta?.comments?.v2).toBe(true)
+  })
+
+  it('resolves comments v2 from plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-comments-v2',
+          beta: {comments: {v2: true}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.comments?.v2).toBe(true)
+  })
+
+  it('lets root config override plugin comments config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-comments-v2',
+          beta: {comments: {v2: false}},
+        })(),
+      ],
+      beta: {comments: {v2: true}},
+    })
+
+    expect(source.beta?.comments?.v2).toBe(true)
+  })
+
+  it('throws when comments is not an object', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          // @ts-expect-error should be an object
+          comments: 'v2',
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.comments` to be an object, but received string')
+  })
+
+  it('throws when comments v2 is not a boolean', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          comments: {
+            // @ts-expect-error should be a boolean
+            v2: 'enabled',
+          },
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.comments.v2` to be a boolean, but received string')
   })
 })
 
@@ -625,6 +845,88 @@ describe('beta document group inventory config', () => {
       }),
     ).rejects.toThrow(
       'Expected `beta.documentGroupInventory.enabled` to be a boolean, but received string',
+    )
+  })
+})
+
+describe('beta react activity mode config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('defaults to false', async () => {
+    const source = await createSourceFromConfig({projectId, dataset})
+
+    expect(source.beta?.reactActivityMode?.enabled).toBe(false)
+  })
+
+  it('resolves from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {reactActivityMode: {enabled: true}},
+    })
+
+    expect(source.beta?.reactActivityMode?.enabled).toBe(true)
+  })
+
+  it('resolves from plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-react-activity-mode',
+          beta: {reactActivityMode: {enabled: true}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.reactActivityMode?.enabled).toBe(true)
+  })
+
+  it('lets root config override plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-react-activity-mode',
+          beta: {reactActivityMode: {enabled: true}},
+        })(),
+      ],
+      beta: {reactActivityMode: {enabled: false}},
+    })
+
+    expect(source.beta?.reactActivityMode?.enabled).toBe(false)
+  })
+
+  it('throws when the namespace is not an object', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          // @ts-expect-error should be an object
+          reactActivityMode: true,
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.reactActivityMode` to be an object, but received boolean')
+  })
+
+  it('throws when enabled is not a boolean', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          reactActivityMode: {
+            // @ts-expect-error should be a boolean
+            enabled: 'yes',
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `beta.reactActivityMode.enabled` to be a boolean, but received string',
     )
   })
 })

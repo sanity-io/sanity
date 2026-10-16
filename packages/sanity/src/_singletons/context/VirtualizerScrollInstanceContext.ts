@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {VirtualizerScrollInstance} from '../../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
 
@@ -7,6 +7,5 @@ import type {VirtualizerScrollInstance} from '../../core/form/inputs/arrays/Arra
  * @internal
  */
 export const VirtualizerScrollInstanceContext = createContext<VirtualizerScrollInstance | null>(
-  'sanity/_singletons/context/virtualizer-scroll-instance',
   null,
 )

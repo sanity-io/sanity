@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Container, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 
@@ -10,7 +10,7 @@ export function NoDocumentTypesScreen() {
 
   return (
     <Card height="fill">
-      <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
+      <Flex alignItems="center" height="100%" justifyContent="center" padding={4}>
         <Container width={0}>
           <Card padding={4} radius={2} shadow={1} tone="caution">
             <Flex>
@@ -19,7 +19,7 @@ export function NoDocumentTypesScreen() {
                   <WarningOutlineIcon />
                 </Text>
               </Box>
-              <Stack flex={1} marginLeft={3} gap={3}>
+              <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={3} flexDirection="column">
                 <Text as="h1" size={1} weight="medium">
                   {t('no-document-types-screen.title')}
                 </Text>
@@ -35,7 +35,7 @@ export function NoDocumentTypesScreen() {
                     {t('no-document-types-screen.link-text')}
                   </a>
                 </Text>
-              </Stack>
+              </Flex>
             </Flex>
           </Card>
         </Container>

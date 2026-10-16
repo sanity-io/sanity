@@ -68,7 +68,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
   return (
     <Menu>
       {showPublishNow && <MenuItem {...actions.publishNow} />}
-      {showEditScheduleItem && <MenuItem {...actions.editSchedule} />}
+      {showEditScheduleItem && <MenuItem {...actions.pauseToEdit} />}
       <IntentLink
         intent={RELEASES_SCHEDULED_DRAFTS_INTENT}
         params={{view: 'drafts'}}

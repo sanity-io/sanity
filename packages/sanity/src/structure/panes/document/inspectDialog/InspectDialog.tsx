@@ -1,9 +1,10 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {type SanityDocument} from '@sanity/types'
-import {Card, Flex, TabList, TabPanel} from '@sanity/ui'
+import {Card, TabList, TabPanel} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 import {Translate, useTranslation} from 'sanity'
+import {Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {Tab} from '../../../../ui-components/tab/Tab'
@@ -79,7 +80,7 @@ export function InspectDialog(props: InspectDialogProps) {
       padding={false}
       width={2}
     >
-      <Flex direction="column" height="fill">
+      <Flex flexDirection="column" height="100%">
         <Card
           padding={3}
           paddingTop={0}

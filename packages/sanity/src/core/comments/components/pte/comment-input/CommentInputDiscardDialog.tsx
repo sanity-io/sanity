@@ -1,5 +1,6 @@
-import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
+import {DialogProvider, ThemeColorProvider} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
+import {Text} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -64,7 +65,9 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
             },
           }}
         >
-          <Text size={1}>{t('discard.text')}</Text>
+          <Text size={1} as="div" trim={true}>
+            {t('discard.text')}
+          </Text>
         </Dialog>
       </DialogProvider>
     </ThemeColorProvider>

@@ -4,10 +4,7 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
-  Flex,
-  Stack,
   TabPanel,
-  Text,
 } from '@sanity/ui'
 import {
   Menu,
@@ -24,6 +21,7 @@ import {
   useId,
   useState,
 } from 'react'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -125,44 +123,44 @@ export function ReleaseForm(props: {
   const [menuButton, setMenuButton] = useState<HTMLElement | null>(null)
 
   return (
-    <Stack gap={5}>
-      <Stack gap={4}>
-        <Flex gap={2} align="center">
-          <Text as="label" htmlFor={menuButtonId}>
+    <VStack gap={5}>
+      <VStack gap={4}>
+        <Flex gap={2} alignItems="center">
+          <Text as="label" htmlFor={menuButtonId} trim={true}>
             {t('release.dialog.tooltip.title')}
           </Text>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Tooltip
               content={
-                <Stack gap={3} style={{maxWidth: 320 - 16}}>
-                  <Text size={1}>{t('release.dialog.tooltip.description')}</Text>
-                  <Text muted size={1}>
+                <VStack gap={3} style={{maxWidth: 320 - 16}}>
+                  <Text size={1} as="div" trim={true}>
+                    {t('release.dialog.tooltip.description')}
+                  </Text>
+                  <Text muted size={1} as="div" trim={true}>
                     {t('release.dialog.tooltip.note')}
                   </Text>
-                </Stack>
+                </VStack>
               }
               delay={0}
               placement="right-start"
               portal
             >
-              <InfoOutlineIcon />
+              <Icon muted size={1} icon={InfoOutlineIcon} />
             </Tooltip>
           </Text>
         </Flex>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <MenuButton
             id={menuButtonId}
             ref={setMenuButton}
             button={
               <Button mode="ghost">
-                <Flex justify="space-between" align="center">
+                <Flex justifyContent="space-between" alignItems="center">
                   <ReleaseTypeOption
                     text={t(`release.type.${releaseType}`)}
                     releaseType={releaseType}
                   />
-                  <Text size={1}>
-                    <ChevronDownIcon />
-                  </Text>
+                  <Icon size={1} icon={ChevronDownIcon} />
                 </Flex>
               </Button>
             }
@@ -201,10 +199,10 @@ export function ReleaseForm(props: {
               </TabPanel>
             )}
           </Flex>
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
       <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
-    </Stack>
+    </VStack>
   )
 }
 
@@ -212,8 +210,10 @@ const ReleaseTypeOption: ComponentType<{
   text: string
   releaseType: ReleaseType
 }> = ({releaseType, text}) => (
-  <Flex gap={3} align="center">
+  <Flex gap={3} alignItems="center">
     <ReleaseAvatar padding={1} releaseType={releaseType} />
-    <Text>{text}</Text>
+    <Text as="div" trim={true}>
+      {text}
+    </Text>
   </Flex>
 )

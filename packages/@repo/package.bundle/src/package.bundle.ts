@@ -1,5 +1,6 @@
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact from '@vitejs/plugin-react'
+import {Features} from 'lightningcss'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import {esmExternalRequirePlugin, type Plugin, type UserConfig} from 'vite'
 
@@ -18,6 +19,18 @@ export interface DefaultConfigOptions {
 export function createDefaultConfig({version}: DefaultConfigOptions): UserConfig {
   return {
     appType: 'custom',
+    // Vite 8 minifies CSS with Lightning CSS against `baseline-widely-available`
+    // (Chrome 111 / Safari 16.4). That target still down-transpiles `light-dark()`
+    // into `--lightningcss-light` / `--lightningcss-dark` toggled only by
+    // `prefers-color-scheme`, so Studio theme colors follow the OS instead of
+    // `color-scheme` when the two disagree. Disable the polyfill — same as
+    // Tailwind — rather than raising `build.cssTarget` (that would change other
+    // CSS lowering). See https://github.com/parcel-bundler/lightningcss/issues/873
+    css: {
+      lightningcss: {
+        exclude: Features.LightDark,
+      },
+    },
     define: {
       '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
       '__PKG_VERSION__': JSON.stringify(version),
@@ -28,7 +41,9 @@ export function createDefaultConfig({version}: DefaultConfigOptions): UserConfig
       // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
       // as the TypeScript/JSX transform (no babel in the pipeline)
       viteReact({compiler: {target: '19'}}),
-      vanillaExtractPlugin(),
+      // `identifiers: 'safe'` includes the package version in CDN class names so a release
+      // cannot reuse the previous release's names (SAPP-4639).
+      vanillaExtractPlugin({identifiers: 'safe'}),
       cleanupCssOutputPlugin(),
       esmExternalRequirePlugin({
         // self-externals are required here in order to ensure that the presentation

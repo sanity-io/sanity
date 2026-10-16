@@ -5,7 +5,7 @@ import {
   type GlobalDocumentReferenceValue,
   isGlobalDocumentReference,
 } from '@sanity/types'
-import {Card, Flex, Inline, Stack, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Inline, useClickOutsideEvent} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {
@@ -19,20 +19,19 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useObservableEvent} from 'react-rx'
-import {concat, type Observable, of} from 'rxjs'
-import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import {Box} from 'ui5'
+import {type Observable} from 'rxjs'
+import {Box, Flex, VStack} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {DashboardLink} from '../../../components/DashboardLink'
 import {PreviewCard} from '../../../components/previewCard/PreviewCard'
 import {type FIXME} from '../../../FIXME'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useSearchMachine} from '../../../search/useSearchMachine'
 import {getPublishedId} from '../../../util/draftUtils'
-import {isNonNullable} from '../../../util/isNonNullable'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch/patch'
 import {type ObjectInputProps} from '../../types/inputProps'
@@ -42,13 +41,8 @@ import {ReferenceStrengthMismatchAlertStrip} from '../ReferenceInput/ReferenceSt
 import {OptionPreview} from './OptionPreview'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
-import {type GlobalDocumentReferenceInfo, type SearchHit, type SearchState} from './types'
+import {type GlobalDocumentReferenceInfo, type SearchHit} from './types'
 import {type GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
-
-const INITIAL_SEARCH_STATE: SearchState = {
-  hits: [],
-  isLoading: false,
-}
 
 /** @internal */
 export interface GlobalDocumentReferenceInputProps extends ObjectInputProps<
@@ -86,7 +80,23 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
 
   const {t} = useTranslation()
 
-  const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+  const {push} = useToast()
+  const inputId = useId()
+
+  const {searchState, handleQueryChange} = useSearchMachine<SearchHit>({
+    search: onSearch,
+    distinct: true,
+    onSearchFailed: (error) => {
+      push({
+        title: 'Reference search failed',
+        description: error.message,
+        status: 'error',
+        id: `reference-search-fail-${inputId}`,
+      })
+
+      console.error(error)
+    },
+  })
 
   const handleChange = useCallback(
     (id: string) => {
@@ -183,8 +193,6 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
     onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
   }, [onChange, schemaType])
 
-  const {push} = useToast()
-
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const handleFocus = useCallback(
@@ -207,41 +215,6 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
   const handleReplace = useCallback(() => {
     onPathFocus?.(REF_PATH)
   }, [onPathFocus])
-
-  const inputId = useId()
-
-  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(isNonNullable),
-      distinctUntilChanged(),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true}),
-          onSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
-            catchError((error) => {
-              push({
-                title: 'Reference search failed',
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${inputId}`,
-              })
-
-              console.error(error)
-              return of({hits: []})
-            }),
-          ),
-        ),
-      ),
-
-      scan(
-        (prevState, nextState): SearchState => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE,
-      ),
-
-      tap(setSearchState),
-    )
-  })
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')
@@ -306,9 +279,9 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
   ])
 
   return (
-    <Stack gap={1}>
+    <VStack gap={1}>
       {isEditing ? (
-        <Stack gap={2} ref={clickOutsideBoundaryRef}>
+        <VStack gap={2} ref={clickOutsideBoundaryRef}>
           <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
             <div ref={setAutocompletePopoverReferenceElement}>
               <ReferenceAutocomplete
@@ -338,7 +311,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
               />
             </div>
           </ChangeIndicator>
-        </Stack>
+        </VStack>
       ) : (
         <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
           <Card
@@ -354,10 +327,10 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                   : 'default'
             }
           >
-            <Flex align="center" padding={1}>
+            <Flex alignItems="center" padding={1}>
               {studioUrl ? (
                 <PreviewCard
-                  as="a"
+                  as={DashboardLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   href={studioUrl}
@@ -448,6 +421,6 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
           </Card>
         </ChangeIndicator>
       )}
-    </Stack>
+    </VStack>
   )
 }

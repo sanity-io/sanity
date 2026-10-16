@@ -1,10 +1,9 @@
 import {AddUserIcon} from '@sanity/icons/AddUser'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -15,17 +14,8 @@ import {useColorSchemeValue} from '../../../colorScheme'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
 import {useCanInviteProjectMembers} from '../useCanInviteMembers'
+import {footerStack, menu} from './PresenceMenu.css'
 import {PresenceMenuItem} from './PresenceMenuItem'
-
-const StyledMenu = styled(Menu)`
-  max-width: 260px;
-`
-
-const FooterStack = styled(Stack)`
-  position: sticky;
-  bottom: 0;
-  background-color: var(--card-bg-color);
-`
 
 export function PresenceMenu() {
   const presence = useGlobalPresence()
@@ -94,7 +84,7 @@ export function PresenceMenu() {
       id="global-presence-menu"
       onOpen={() => setOpen(true)}
       menu={
-        <StyledMenu>
+        <Menu className={menu}>
           {hasPresence &&
             presence.map((item) => (
               <PresenceMenuItem
@@ -108,7 +98,7 @@ export function PresenceMenu() {
 
           {!hasPresence && (
             <Box padding={3}>
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Text weight="medium" size={1}>
                   {t('presence.no-one-else-title')}
                 </Text>
@@ -116,12 +106,12 @@ export function PresenceMenu() {
                 <Text size={1} muted>
                   {t('presence.no-one-else-description')}
                 </Text>
-              </Stack>
+              </VStack>
             </Box>
           )}
 
           {canInviteMembers && (
-            <FooterStack gap={1}>
+            <VStack className={footerStack} gap={1}>
               <MenuDivider />
 
               <MenuItem
@@ -133,9 +123,9 @@ export function PresenceMenu() {
                 target="_blank"
                 text={t('presence.action.manage-members')}
               />
-            </FooterStack>
+            </VStack>
           )}
-        </StyledMenu>
+        </Menu>
       }
       onClose={handleClose}
       popover={popoverProps}

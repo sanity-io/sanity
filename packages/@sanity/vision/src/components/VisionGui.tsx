@@ -8,11 +8,12 @@ import {
 } from '@sanity/client'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Button, Flex} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
+  getDefaultVariant,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
   type PerspectiveStack,
@@ -23,12 +24,11 @@ import {
   useScheduledDraftsEnabled,
   useTranslation,
   useWorkspace,
-  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
-import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
+import {API_VERSIONS, DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../apiVersions'
 import {groqExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
@@ -44,6 +44,7 @@ import {encodeQueryString} from '../util/encodeQueryString'
 import {isVisionPasteTarget} from '../util/isVisionPasteTarget'
 import {getLocalStorage} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
+import {SANITY_QUERY_URL} from '../util/parseQueryUrl'
 import {prefixApiVersion} from '../util/prefixApiVersion'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {ParamsEditor, parseParams} from './ParamsEditor'
@@ -70,10 +71,6 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
 
-// Match Sanity API URLs with any domain (supports custom CDN domains like foolcdn.com)
-const sanityUrl = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
-const VARIANTS_API_VERSION = prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)
-
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
 
@@ -99,6 +96,8 @@ interface VisionGuiProps extends VisionProps {
   datasets: string[]
   projectId: string | undefined
   defaultDataset: string
+  /** Opens the redesigned Vision; only passed while `beta.redesign.enabled` offers it */
+  onSwitchToRedesign?: () => void
 }
 
 export interface ParsedUrlState {
@@ -113,10 +112,11 @@ export interface ParsedUrlState {
 }
 
 export function VisionGui(props: VisionGuiProps) {
-  const {datasets, config, projectId, defaultDataset} = props
+  const {datasets, config, projectId, defaultDataset, onSwitchToRedesign} = props
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()
@@ -374,7 +374,7 @@ export function VisionGui(props: VisionGuiProps) {
 
       handleQueryExecution({perspective: newPerspective})
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setPerspectiveState],
   )
 
   const handleChangeDataset = useCallback(
@@ -384,7 +384,7 @@ export function VisionGui(props: VisionGuiProps) {
       setDataset(newDataset)
       handleQueryExecution({dataset: newDataset})
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setDataset],
   )
 
   const changeApiVersion = useCallback(
@@ -503,7 +503,7 @@ export function VisionGui(props: VisionGuiProps) {
   // Get object of state values from provided URL
   const getStateFromUrl = useCallback(
     (data: string): ParsedUrlState | null => {
-      const match = data.match(sanityUrl)
+      const match = data.match(SANITY_QUERY_URL)
       if (!match) {
         return null
       }
@@ -587,7 +587,7 @@ export function VisionGui(props: VisionGuiProps) {
       // Execute query with new values
       handleQueryExecution(parsedUrlObj)
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setDataset, setPerspectiveState],
   )
 
   const handlePaste = useCallback(
@@ -692,10 +692,9 @@ export function VisionGui(props: VisionGuiProps) {
 
   return (
     <Root
-      direction="column"
-      height="fill"
+      flexDirection="column"
+      height="100%"
       ref={visionRootRef}
-      sizing="border"
       overflow="hidden"
       data-testid="vision-root"
     >
@@ -773,12 +772,20 @@ export function VisionGui(props: VisionGuiProps) {
                       listenInProgress={listenInProgress}
                       onQueryExecution={handleQueryExecution}
                       onListenExecution={handleListenExecution}
+                      onSwitchToRedesign={onSwitchToRedesign}
                     />
                   </InputContainer>
                 </SplitPane>
               </Box>
               <VisionGuiResult
                 error={error}
+                apiVersion={userApiVersion}
+                perspective={getActivePerspective({
+                  visionPerspective: perspective,
+                  perspectiveStack,
+                  scheduledDraftsStack,
+                })}
+                variant={activeVariant}
                 queryInProgress={queryInProgress}
                 queryResult={queryResult}
                 listenInProgress={listenInProgress}

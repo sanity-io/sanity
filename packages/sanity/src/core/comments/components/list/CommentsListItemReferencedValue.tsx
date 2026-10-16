@@ -2,10 +2,10 @@ import {toPlainText} from '@portabletext/react'
 import {hues} from '@sanity/color'
 import {LinkRemovedIcon} from '@sanity/icons/LinkRemoved'
 import {isPortableTextTextBlock} from '@sanity/types'
-import {Stack, Text, type Theme} from '@sanity/ui'
+import {type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -30,7 +30,7 @@ const InlineBox = styled(Box).attrs({marginLeft: 1, marginRight: 2})`
   }
 `
 
-const BlockQuoteStack = styled(Stack)<BlockQuoteStackProps>(({theme, $hasReferencedValue}) => {
+const BlockQuoteStack = styled(Flex)<BlockQuoteStackProps>(({theme, $hasReferencedValue}) => {
   const isDark = theme.sanity.v2?.color._dark
 
   const hue = $hasReferencedValue ? COMMENTS_HIGHLIGHT_HUE_KEY : 'gray'
@@ -70,18 +70,19 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
     <BlockQuoteStack
       $hasReferencedValue={Boolean(hasReferencedValue)}
       data-testid="comments-list-item-referenced-value"
-      flex={1}
+      flexBasis="0%"
+      flexGrow={1}
+      flexDirection="column"
       forwardedAs="blockquote"
       padding={1}
       paddingLeft={2}
-      sizing="border"
     >
       <Flex alignItems="flex-start">
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           {!hasReferencedValue && (
             <Tooltip content={tooltipText}>
               <InlineBox>
-                <LinkRemovedIcon />
+                <Icon size={1} icon={LinkRemovedIcon} style={{margin: '-0.375rem'}} />
               </InlineBox>
             </Tooltip>
           )}

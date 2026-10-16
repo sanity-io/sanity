@@ -3,8 +3,9 @@ import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SchemaType} from '@sanity/types'
+import {use} from 'react'
+import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
 
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
@@ -25,9 +26,20 @@ interface Props {
   schemaType: SchemaType
 }
 
+/**
+ * Edit, Delete and Clear are intentionally not gated on `document.actions`.
+ * These items call `useScheduleOperation` (schedules HTTP API), not document operations.
+ * Edit patches a schedule record; the in-pane call site is already behind
+ * `useScheduleAction.action = 'schedule'`.
+ * Delete and Clear are not `delete` (the document lives) and not `discardVersion`
+ * (legacy schedules are not versions).
+ * Publish now is a document publish, so its call site gates it on `publish`.
+ * Grant checks stay on `useDocumentPairPermissions({permission: 'publish'})`.
+ */
 const ContextMenuItems = (props: Props) => {
   const {actions, onDelete, onEdit, schedule, schemaType} = props
-  const {mode} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
   const firstDocument = getScheduledDocument(schedule)
 
   const currentUser = useCurrentUser()

@@ -1,5 +1,5 @@
-import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useCallback, useMemo, useState} from 'react'
+import {LayerProvider, Text} from '@sanity/ui'
+import {lazy, memo, Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentGroupInventory,
@@ -9,7 +9,7 @@ import {
   Hotkeys,
   isGoingToUnpublish,
   isSanityDefinedAction,
-  isVariantId,
+  getDocumentVersionVariantId,
   readVersionType,
   useClient,
   useDocumentStore,
@@ -19,6 +19,8 @@ import {
   useSource,
   type VersionInfoDocumentStub,
 } from 'sanity'
+import {TasksModePromiseContext} from 'sanity/_singletons'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -45,6 +47,25 @@ const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   VersionsPreviewList,
 }
 
+// The open-tasks footer button needs the tasks store and navigation internals, which stay
+// private to `src/core/tasks` rather than becoming an entry point other plugins could reach.
+// Loading the module here, instead of through the plugin's `__internal_tasks` config, keeps
+// that access inside the package while still deferring the chunk until tasks are known to be on.
+const loadTasksFooterOpenTasks = () =>
+  // oxlint-disable-next-line boundaries/dependencies -- deliberately bypasses the `sanity` entry: exporting this component would make it an entry point other plugins could reach, which is what the direct import avoids. A proper API for footer actions is the long-term alternative.
+  import('../../../../core/tasks/plugin/TasksFooterOpenTasks')
+
+const TasksFooterOpenTasks = lazy(loadTasksFooterOpenTasks)
+
+function MaybeTasksFooter() {
+  const tasksModePromise = use(TasksModePromiseContext)
+  // `TasksStudioProvider` only provides the promise when the tasks plugin is part of the workspace.
+  if (tasksModePromise === null) return null
+  const tasksMode = use(tasksModePromise)
+  if (tasksMode === null) return null
+  return <TasksFooterOpenTasks />
+}
+
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
   states: ResolvedAction[]
@@ -55,7 +76,16 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, states} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {__internal_tasks, beta} = useSource()
+  const {beta} = useSource()
+  const tasksModePromise = use(TasksModePromiseContext)
+
+  // `MaybeTasksFooter` suspends on this promise before it can render the lazy footer, so the
+  // chunk would not start until the feature check settled. The status bar itself commits either
+  // way, and this effect starts the import alongside that check.
+  useEffect(() => {
+    if (tasksModePromise === null) return
+    void loadTasksFooterOpenTasks()
+  }, [tasksModePromise])
 
   const {
     displayed,
@@ -103,9 +133,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           bundle = document._system.bundleId
       }
 
-      const variantId = isVariantId(document._system.variant?._ref)
-        ? document._system.variant._ref
-        : undefined
+      const variantId = getDocumentVersionVariantId(document)
 
       setVariant({variantId, perspective: bundle})
     },
@@ -123,7 +151,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null
 
     return (
-      <Flex style={{maxWidth: 300}} align="center" gap={3}>
+      <Flex style={{maxWidth: 300}} alignItems="center" gap={3}>
         {firstActionState.title && <Text size={1}>{firstActionState.title}</Text>}
         {firstActionState.shortcut && (
           <Hotkeys
@@ -171,8 +199,10 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       : displayed?._id
 
   return (
-    <Flex align="center" gap={3}>
-      {__internal_tasks && __internal_tasks.footerAction}
+    <Flex alignItems="center" gap={3}>
+      <Suspense>
+        <MaybeTasksFooter />
+      </Suspense>
       {hasDocumentGroupInventory && typeof targetDocumentId !== 'undefined' && (
         <DocumentGroupInventoryAction
           documentId={targetDocumentId}
@@ -196,7 +226,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       {showFirstActionButton && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
-            <Stack>
+            <VStack>
               <Button
                 data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
                 disabled={disabled || Boolean(firstActionState.disabled)}
@@ -206,7 +236,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 text={firstActionState.label}
                 tone={firstActionState.tone || 'primary'}
               />
-            </Stack>
+            </VStack>
           </Tooltip>
         </LayerProvider>
       )}

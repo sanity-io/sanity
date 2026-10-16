@@ -2,10 +2,10 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
-import {Card, Container, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Text, Container, Flex, Box, VStack, Icon} from 'ui5'
 
 import {
   DetailBackButton,
@@ -16,9 +16,12 @@ import {
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
+import {useVariantConditionMismatches, useVariantTypes} from '../../hooks/useVariantConditions'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
+import {getVariantType} from '../../util/variantType'
 import {
   decodeVariantIdFromRoute,
   getVariantDescription,
@@ -33,12 +36,18 @@ import {VariantDocumentsTable} from './VariantDocumentsTable'
 export function VariantDetail() {
   const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
+  const variantTypes = useVariantTypes()
+  const showVariantType = variantTypes.status === 'ready' && variantTypes.types.length > 1
   const variantIdRaw =
     typeof router.state.variantId === 'string' ? router.state.variantId : undefined
   const variantId = decodeVariantIdFromRoute(variantIdRaw)
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
+  const conditionMismatches = useVariantConditionMismatches(
+    variant?.conditions ?? {},
+    getVariantType(variant),
+  )
   const {
     loading: documentsLoading,
     results: variantDocuments,
@@ -74,21 +83,27 @@ export function VariantDetail() {
             // Each targeting dimension gets a recognizable glyph (audience → people, location →
             // pin, …) so a multi-dimension definition reads at a glance.
             const DimensionIcon = getVariantConditionIcon(key)
+            const mismatch = conditionMismatches.find((item) => item.key === key)
             return {
-              icon: (
-                <Text muted size={1}>
-                  <DimensionIcon />
-                </Text>
-              ),
+              icon: <Icon icon={DimensionIcon} size={1} muted />,
               label: key,
-              value,
+              value: mismatch ? (
+                <Flex alignItems="center" gap={2}>
+                  <Text size={1} as="div" trim={true}>
+                    {value}
+                  </Text>
+                  <ConditionMismatchIndicator mismatches={[mismatch]} />
+                </Flex>
+              ) : (
+                value
+              ),
             }
           })
         : [
             {
               label: '',
               value: (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('overview.table.no-conditions')}
                 </Text>
               ),
@@ -106,7 +121,7 @@ export function VariantDetail() {
         rows: conditionRows,
       },
     ]
-  }, [t, variant])
+  }, [conditionMismatches, t, variant])
 
   const documentSections = useMemo<DetailPropertiesSection[]>(() => {
     // While documents are still streaming in, show a skeleton rather than "0" — a literal 0
@@ -126,31 +141,25 @@ export function VariantDetail() {
         title: t('detail.metadata.details'),
         rows: [
           {
-            icon: (
-              <Text muted size={1}>
-                <DocumentsIcon />
-              </Text>
-            ),
+            icon: <Icon icon={DocumentsIcon} size={1} muted />,
             label: t('detail.metadata.total-documents'),
             value: countValue(tableRows.length),
           },
           {
-            icon: (
-              <Text muted size={1}>
-                <EditIcon />
-              </Text>
-            ),
+            icon: <Icon icon={EditIcon} size={1} muted />,
             label: t('detail.metadata.unpublished-changes'),
             value: countValue(unpublishedCount),
           },
+          variant &&
+            showVariantType && {
+              icon: <Icon icon={DocumentsIcon} size={1} muted />,
+              label: t('detail.metadata.type'),
+              value: getVariantType(variant),
+            },
           variant && {
             // Resolution priority — the tiebreaker when several definitions match. Shown here (it is
             // authored in the create/edit dialog) so the detail page reflects the full definition.
-            icon: (
-              <Text muted size={1}>
-                <SortIcon />
-              </Text>
-            ),
+            icon: <Icon icon={SortIcon} size={1} muted />,
             label: t('detail.metadata.priority'),
             value: String(variant.priority),
           },
@@ -158,14 +167,10 @@ export function VariantDetail() {
             // A person glyph (not a clock — a clock reads as "time/schedule"). The author identity
             // isn't on the variant document yet, so this shows the relative time for now; wiring the
             // creator's name/avatar is a follow-up.
-            icon: (
-              <Text muted size={1}>
-                <UserIcon />
-              </Text>
-            ),
+            icon: <Icon icon={UserIcon} size={1} muted />,
             label: t('detail.footer.created'),
             value: (
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
               </Text>
             ),
@@ -173,7 +178,7 @@ export function VariantDetail() {
         ],
       },
     ]
-  }, [documentsLoading, t, tableRows.length, unpublishedCount, variant])
+  }, [documentsLoading, showVariantType, t, tableRows.length, unpublishedCount, variant])
 
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />
@@ -187,14 +192,14 @@ export function VariantDetail() {
         </Card>
         <Box padding={4}>
           <Card border padding={4} radius={3}>
-            <Stack gap={3}>
-              <Text size={2} weight="semibold">
+            <VStack gap={3}>
+              <Text size={2} weight="semibold" as="div" trim={true}>
                 {t('detail.not-found.title')}
               </Text>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {t('detail.not-found.description')}
               </Text>
-            </Stack>
+            </VStack>
           </Card>
         </Box>
       </Flex>
@@ -213,11 +218,11 @@ export function VariantDetail() {
       <Card flex="none" paddingY={3}>
         {/* container[3] so the header aligns with the table's row content below (the shared Table
             centers rows at container[3]) instead of spreading edge-to-edge on wide screens. */}
-        <Container flex="none" width={3}>
+        <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
           {/* paddingX={2} (8px) matches the table's first-column content inset so the back button and
               actions line up with the row content below. */}
           <Box paddingX={2}>
-            <Stack gap={4}>
+            <VStack gap={4}>
               <Flex alignItems="center" gap={3}>
                 <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
                   <DetailBackButton
@@ -263,14 +268,14 @@ export function VariantDetail() {
                   testId="variant-detail-documents"
                 />
               </Flex>
-            </Stack>
+            </VStack>
           </Box>
         </Container>
       </Card>
       <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%" overflow="hidden">
         {variantDocumentsError ? (
           <Box padding={4}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {t('detail.documents.error')}
             </Text>
           </Box>

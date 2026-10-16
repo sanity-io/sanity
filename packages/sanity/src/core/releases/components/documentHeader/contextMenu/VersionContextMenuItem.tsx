@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {LockIcon} from '@sanity/icons/Lock'
-import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
+import {Text, Flex} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useFormatRelativeLocalePublishDate} from '../../../hooks/useFormatRelativeLocalePublishDate'
@@ -18,15 +18,15 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
   const isScheduled = isReleaseScheduledOrScheduling(release)
 
   return (
-    <Flex gap={3} justify="center" align="center">
+    <Flex gap={3} justifyContent="center" alignItems="center">
       <ReleaseAvatar padding={2} release={release} />
-      <Stack flex={1} gap={2}>
+      <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
         <ReleaseTitle
           title={release.metadata?.title}
           fallback={t('release.placeholder-untitled-release')}
           textProps={{size: 1, weight: 'medium'}}
         />
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&
             (release.metadata.intendedPublishAt ? (
@@ -37,7 +37,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
             ))}
           {release.metadata.releaseType === 'undecided' && <>{t('release.type.undecided')}</>}
         </Text>
-      </Stack>
+      </Flex>
       {isScheduled && <LockIcon />}
     </Flex>
   )

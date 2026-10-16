@@ -14,6 +14,7 @@ import {
   type SlugSchemaType,
 } from '../schema/types'
 import {type SlugParent} from '../slug/types'
+import {type CurrentUser} from '../user/types'
 
 /** @public */
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
@@ -187,21 +188,7 @@ export interface Rule {
   reference(): Rule
   fields(rules: FieldRules): Rule
   assetRequired(): Rule
-  validate(
-    value: unknown,
-    options: ValidationContext & {
-      /**
-       * @deprecated Internal use only
-       * @internal
-       */
-      __internal?: {
-        customValidationConcurrencyLimiter?: {
-          ready: () => Promise<void>
-          release: () => void
-        }
-      }
-    },
-  ): Promise<ValidationMarker[]>
+  validate(value: unknown, options: ValidationContext): Promise<ValidationMarker[]>
 }
 
 /** @public */
@@ -280,12 +267,18 @@ export interface ValidationContext {
   type?: SchemaType
   document?: SanityDocument
   path?: Path
-  getDocumentExists?: (options: {id: string}) => Promise<boolean>
+  getDocumentExists?: (options: {id: string; signal?: AbortSignal}) => Promise<boolean>
   environment: 'cli' | 'studio'
+  /** Signal used to cancel validation and any work it starts. */
+  signal?: AbortSignal
   /**
    * Whether this field is hidden for any reason (either itself or any of its ancestors).
    */
   hidden?: boolean
+  /**
+   * The current user, when available. Absent outside the Studio, eg CLI or headless validation.
+   */
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
 /**
@@ -293,7 +286,7 @@ export interface ValidationContext {
  * `RuleSpec`'s constraint, the value to check, an optional override message,
  * and the validation context.
  *
- * @see Rule.validate from `sanity/src/core/validation/Rule`
+ * @see Rule.validate from `@sanity/validation`
  *
  * @internal
  */
@@ -362,6 +355,15 @@ export interface ValidationErrorClass {
  * @public
  */
 export interface ValidationError {
+  /**
+   * A machine-readable identifier for the validation failure.
+   * Custom validators should namespace custom codes, for example `custom.seo-title`.
+   */
+  code?: string
+
+  /** Structured information about the validation failure. */
+  details?: Record<string, unknown>
+
   /**
    * The message describing why the value is not valid. This message will be
    * included in the validation markers after validation has finished running.

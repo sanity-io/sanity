@@ -1,7 +1,8 @@
 import {type Asset as AssetType, type SanityDocument} from '@sanity/types'
-import {Card, Flex, Text} from '@sanity/ui'
-import {type HTMLProps, useCallback} from 'react'
+import {Card, Text} from '@sanity/ui'
+import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
+import {Flex} from 'ui5'
 
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -40,18 +41,11 @@ export const AssetUsageList = ({
 
 const DocumentLink = ({document}: {document: SanityDocument}) => {
   const schema = useSchema()
-
-  const LinkComponent = useCallback(
-    (linkProps: Omit<HTMLProps<HTMLAnchorElement>, 'ref'>) => (
-      <IntentLink {...linkProps} params={{id: document._id, type: document._type}} intent="edit" />
-    ),
-
-    [document],
-  )
+  const params = useMemo(() => ({id: document._id, type: document._type}), [document])
 
   return (
-    <Card key={document._id} as={LinkComponent} radius={2} data-as="a" tabIndex={0}>
-      <Flex align="center" gap={2}>
+    <Card as={IntentLink} intent="edit" params={params} radius={2} data-as="a" tabIndex={0}>
+      <Flex alignItems="center" gap={2}>
         <Preview
           layout="default"
           value={{_type: 'reference', _ref: document._id}}

@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {TableContextValue} from '../../core/releases/tool/components/Table/TableProvider'
 
 /**
  * @internal
  */
-export const TableContext = createContext<TableContextValue | null>(
-  'sanity/_singletons/context/releases-table',
-  null,
-)
+export const TableContext = createContext<TableContextValue | null>(null)

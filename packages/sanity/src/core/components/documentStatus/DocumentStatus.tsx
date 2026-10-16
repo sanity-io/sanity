@@ -1,6 +1,7 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Flex} from 'ui5'
 
 import {useRelativeTime} from '../../hooks/useRelativeTime'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -42,10 +43,10 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
 
   return (
     <Flex
-      align={singleLine ? 'center' : 'flex-start'}
-      direction={singleLine ? 'row' : 'column'}
+      alignItems={singleLine ? 'center' : 'flex-start'}
+      flexDirection={singleLine ? 'row' : 'column'}
       gap={3}
-      wrap="nowrap"
+      flexWrap="nowrap"
     >
       {published && (
         <VersionStatus
@@ -115,7 +116,7 @@ const VersionStatus = ({
   })
 
   return (
-    <Flex align="center" gap={2}>
+    <Flex alignItems="center" gap={2}>
       <ReleaseAvatar release={release} padding={0} />
       <Text size={1}>
         {title} -{' '}

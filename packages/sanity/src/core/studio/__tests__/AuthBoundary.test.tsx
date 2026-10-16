@@ -1,7 +1,21 @@
+import {createController} from '@sanity/comlink'
+import {type FrameMessages, type WindowMessages} from '@sanity/message-protocol'
+import {type PayloadOf} from '@sanity/sdk/dashboard'
 import {act, render, screen, waitFor} from '@testing-library/react'
 import {Subject} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  onTestFinished,
+  vi,
+} from 'vitest'
 
+import {stubMessageBusHost} from '../../../../test/testUtils/stubMessageBusHost'
 import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {type StudioAuthReadyMeasured as StudioAuthReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
 import {type AuthBoundary as AuthBoundaryType} from '../AuthBoundary'
@@ -53,11 +67,13 @@ describe('AuthBoundary login flash gate', () => {
     vi.clearAllMocks()
   })
 
-  async function mockWorkspaceAuth(auth: Record<string, unknown>) {
+  async function mockWorkspaceAuth(auth: Record<string, unknown>, projectId = 'project-1') {
+    const workspaceAuth = {state: authState$, ...auth}
     const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
     ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
-      activeWorkspace: {auth: {state: authState$, ...auth}},
+      activeWorkspace: {projectId, auth: workspaceAuth},
     })
+    return workspaceAuth
   }
 
   it('holds the loading screen on logged-out while the callback is unsettled, then renders children', async () => {
@@ -143,6 +159,38 @@ describe('AuthBoundary login flash gate', () => {
       </AuthBoundary>,
     )
 
+    act(() => authState$.next({authenticated: false, currentUser: null}))
+
+    await screen.findByTestId('authenticate-screen')
+  })
+
+  it('holds the loading screen on logged-out when a message bus host owns sign-in', async () => {
+    stubMessageBusHost().publish('auth.token', null)
+    const {createLegacyAuthStore} = await import('../../store/auth/legacy/createLegacyAuthStore')
+    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
+    ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
+      activeWorkspace: {auth: createLegacyAuthStore({projectId: 'p', dataset: 'd'})},
+    })
+
+    render(
+      <AuthBoundary>
+        <div data-testid="content" />
+      </AuthBoundary>,
+    )
+
+    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.queryByTestId('authenticate-screen')).toBeNull()
+  })
+
+  it("shows a custom auth store's login screen under a message bus host", async () => {
+    stubMessageBusHost()
+    await mockWorkspaceAuth({})
+
+    render(
+      <AuthBoundary>
+        <div data-testid="content" />
+      </AuthBoundary>,
+    )
     act(() => authState$.next({authenticated: false, currentUser: null}))
 
     await screen.findByTestId('authenticate-screen')
@@ -247,6 +295,187 @@ describe('AuthBoundary login flash gate', () => {
     })
     expect(screen.getByTestId('authenticate-screen')).toBeTruthy()
     expect(screen.queryByTestId('loading-block')).toBeNull()
+  })
+
+  describe('for a user without access to the project', () => {
+    const PROBE = {resourceType: 'project', resourceId: 'probe'} as const
+    const WITHOUT_ROLES: AuthState = {
+      authenticated: true,
+      currentUser: {roles: [], provider: 'google'},
+    }
+
+    afterEach(() => {
+      window.history.replaceState(null, '', '/')
+      vi.restoreAllMocks()
+    })
+
+    // jsdom's `postMessage` takes no options object and leaves `source` unset, which Comlink needs.
+    // Comlink keeps posting while it tears down, so the shim stays for the whole block.
+    const postMessage = window.postMessage
+    beforeAll(() => {
+      window.postMessage = (data: unknown) => {
+        setTimeout(() =>
+          window.dispatchEvent(
+            new MessageEvent('message', {data, origin: location.origin, source: window}),
+          ),
+        )
+      }
+    })
+    afterAll(() => {
+      window.postMessage = postMessage
+    })
+
+    function renderWithoutAccess() {
+      const view = render(
+        <AuthBoundary>
+          <div data-testid="content" />
+        </AuthBoundary>,
+      )
+      act(() => authState$.next(WITHOUT_ROLES))
+      return view
+    }
+
+    // Renders Studio in the Dashboard's frame and records the access requests the Dashboard receives.
+    async function stubComlinkHost() {
+      window.history.replaceState(
+        null,
+        '',
+        `/?_context=${encodeURIComponent(JSON.stringify({mode: 'core-ui', env: 'test'}))}`,
+      )
+      vi.spyOn(window, 'top', 'get').mockReturnValue(null)
+      // The rendering context reads the URL once, when its module loads.
+      vi.resetModules()
+      ;({AuthBoundary} = await import('../AuthBoundary'))
+      const {createSanityInstance} = await import('@sanity/sdk')
+      const {getOrCreateNode, releaseNode} = await import('@sanity/sdk/comlink')
+
+      const controller = createController({targetOrigin: '*'})
+      controller.addTarget(window)
+      const channel = controller.createChannel<WindowMessages, FrameMessages>({
+        name: 'dashboard/channels/sdk',
+        connectTo: 'dashboard/nodes/sdk',
+      })
+      const requests: unknown[] = []
+      channel.on('dashboard/v1/auth/access/request', (request) => {
+        requests.push(request)
+        return {success: true}
+      })
+      const connected = new Promise<void>((resolve) => {
+        channel.onStatus((event) => {
+          if (event.status === 'connected') resolve()
+        })
+      })
+      onTestFinished(() => {
+        controller.destroy()
+        releaseNode(createSanityInstance(), 'dashboard/nodes/sdk')
+      })
+
+      return {
+        requests,
+        connect: () => channel.start(),
+        connected,
+        // Comlink sends in order, so a request made after connecting arrives behind any queued earlier.
+        probe: () =>
+          getOrCreateNode<FrameMessages, WindowMessages>(createSanityInstance(), {
+            name: 'dashboard/nodes/sdk',
+            connectTo: 'dashboard/channels/sdk',
+          }).fetch('dashboard/v1/auth/access/request', PROBE),
+      }
+    }
+
+    it("asks a message bus host to show its access request prompt over Studio's screen", async () => {
+      const host = stubMessageBusHost()
+      const requests: PayloadOf<'access.request'>[] = []
+      host.respond('access.request', (message) => {
+        requests.push(message.payload)
+        message.reply({ok: true})
+      })
+      await mockWorkspaceAuth({})
+
+      renderWithoutAccess()
+
+      await waitFor(() =>
+        expect(requests).toEqual([{resourceType: 'project', resourceId: 'project-1'}]),
+      )
+      expect(screen.getByTestId('request-access-screen')).toBeInTheDocument()
+    })
+
+    it("asks the Dashboard to show its access request prompt over Studio's screen once connected", async () => {
+      const dashboard = await stubComlinkHost()
+      await mockWorkspaceAuth({})
+
+      const {rerender} = renderWithoutAccess()
+      dashboard.connect()
+
+      await waitFor(() =>
+        expect(dashboard.requests).toEqual([{resourceType: 'project', resourceId: 'project-1'}]),
+      )
+      expect(screen.getByTestId('request-access-screen')).toBeInTheDocument()
+
+      // Each project has an auth store of its own.
+      const otherState$ = new Subject<AuthState>()
+      await mockWorkspaceAuth({state: otherState$}, 'project-2')
+      rerender(
+        <AuthBoundary>
+          <div data-testid="content" />
+        </AuthBoundary>,
+      )
+      act(() => otherState$.next(WITHOUT_ROLES))
+
+      await waitFor(() =>
+        expect(dashboard.requests).toEqual([
+          {resourceType: 'project', resourceId: 'project-1'},
+          {resourceType: 'project', resourceId: 'project-2'},
+        ]),
+      )
+    })
+
+    it('sends the Dashboard nothing when Studio leaves before it connects', async () => {
+      const dashboard = await stubComlinkHost()
+      await mockWorkspaceAuth({})
+      const {unmount} = renderWithoutAccess()
+
+      unmount()
+      dashboard.connect()
+      await dashboard.connected
+      await dashboard.probe()
+
+      expect(dashboard.requests).toEqual([PROBE])
+    })
+
+    it('asks for the project of another workspace once that workspace has no access', async () => {
+      const host = stubMessageBusHost()
+      const requests: PayloadOf<'access.request'>[] = []
+      host.respond('access.request', (message) => {
+        requests.push(message.payload)
+        message.reply({ok: true})
+      })
+      await mockWorkspaceAuth({}, 'project-1')
+      const {rerender} = renderWithoutAccess()
+      await waitFor(() => expect(requests).toHaveLength(1))
+
+      // Each project has an auth store of its own.
+      const otherState$ = new Subject<AuthState>()
+      await mockWorkspaceAuth({state: otherState$}, 'project-2')
+      rerender(
+        <AuthBoundary>
+          <div data-testid="content" />
+        </AuthBoundary>,
+      )
+      act(() => otherState$.next(WITHOUT_ROLES))
+
+      await waitFor(() =>
+        expect(requests.map(({resourceId}) => resourceId)).toEqual(['project-1', 'project-2']),
+      )
+    })
+
+    it("shows Studio's request access screen without a host", async () => {
+      await mockWorkspaceAuth({})
+
+      renderWithoutAccess()
+
+      expect(screen.getByTestId('request-access-screen')).toBeInTheDocument()
+    })
   })
 })
 

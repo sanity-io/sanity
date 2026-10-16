@@ -10,10 +10,12 @@ import {
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {PaneItem} from '../../components/paneItem/PaneItem'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'
+import {getCountKey, useListPaneCounts} from './useListPaneCounts'
 
 interface ListPaneContentProps {
   childItemId?: string
@@ -68,6 +70,9 @@ function DividerItem({item}: DividerItemProps) {
 export function ListPaneContent(props: ListPaneContentProps) {
   const {childItemId, items, isActive, layout, showIcons, title} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
+  // A collapsed layout shows only the active pane, so off-screen panes should not count.
+  const paneVisible = layoutCollapsed === false || Boolean(isActive)
+  const counts = useListPaneCounts(items ?? [], paneVisible)
   const getI18nText = useGetI18nText(
     items?.filter(
       (item): item is Exclude<typeof item, {type: 'divider'}> => item.type !== 'divider',
@@ -114,6 +119,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
       return (
         <PaneItem
           key={item.id}
+          count={item.count ? counts[getCountKey(item.id, item.count.type)] : undefined}
           icon={shouldShowIconForItem(item) ? item.icon : false}
           id={item.id}
           layout={layout}
@@ -126,7 +132,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
         />
       )
     },
-    [childItemId, getI18nText, isActive, layout, shouldShowIconForItem],
+    [childItemId, counts, getI18nText, isActive, layout, shouldShowIconForItem],
   )
 
   return (
@@ -136,12 +142,13 @@ export function ListPaneContent(props: ListPaneContentProps) {
           activeItemDataAttr="data-hovered"
           ariaLabel={title}
           canReceiveFocus
+          className={paneCommandList}
           getItemDisabled={getItemDisabled}
           itemHeight={51}
           items={items}
           onlyShowSelectionWhenActive
           paddingBottom={1}
-          paddingX={3}
+          paddingLeft={3}
           renderItem={renderItem}
           wrapAround={false}
         />

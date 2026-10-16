@@ -1,5 +1,5 @@
-import {rem, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {rem} from '@sanity/ui'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -27,10 +27,10 @@ export const VariantsEmptyState = ({createVariantButton}: VariantsEmptyStateProp
       paddingBottom={5}
     >
       <VariantIllustration />
-      <Text as="h1" size={1} weight="semibold" data-testid="no-variants-info-text">
+      <Text as="h1" size={1} weight="semibold" data-testid="no-variants-info-text" trim={true}>
         {t('overview.title')}
       </Text>
-      <Text size={1} muted style={{textAlign: 'center'}}>
+      <Text size={1} muted align="center" as="div" trim={true}>
         {t('overview.empty-state.description')}
       </Text>
       <Flex gap={2}>

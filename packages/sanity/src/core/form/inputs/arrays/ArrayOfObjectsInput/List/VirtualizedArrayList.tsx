@@ -8,6 +8,7 @@ import {
   type VirtualizerOptions,
 } from '@tanstack/react-virtual'
 import {useCallback, useLayoutEffect, useRef, useState} from 'react'
+import {type GapProps, type PaddingProps} from 'ui5'
 
 import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
@@ -232,8 +233,8 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     >
       <List
         axis="y"
-        gap={listGridGap}
-        paddingY={paddingY}
+        gap={listGridGap as GapProps['gap']}
+        paddingY={paddingY as PaddingProps['paddingY']}
         items={memberKeys}
         onItemMove={onItemMove}
         onItemMoveStart={onItemMoveStart}

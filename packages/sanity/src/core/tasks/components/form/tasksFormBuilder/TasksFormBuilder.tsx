@@ -34,7 +34,7 @@ const FormBuilderRoot = styled(motion.div)((props) => {
 
   return `
     // Update spacing for the form builder
-    & > [data-ui='Stack'] {
+    & > [data-ui='VStack'] {
       grid-gap: ${rem(theme.space[4])};
     }
 `

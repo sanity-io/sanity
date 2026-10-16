@@ -1,6 +1,6 @@
 // oxlint-disable no-console
 /**
- * `bench store` — write a merged BenchRunDocument to the metrics-studio
+ * `bench store` — write a merged BenchRunDocument to the Studio Radar
  * Sanity project as a `benchRun` document for the trends dashboard.
  *
  * Three writers:
@@ -14,7 +14,7 @@
  *   an investigation record for the Comparisons tool, which the trends
  *   dashboard deliberately does not plot.
  *
- * Requires BENCH_METRICS_WRITE_TOKEN — the only real secret in the suite.
+ * Requires RADAR_SANITY_WRITE_TOKEN — the only real secret in the suite.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -22,25 +22,22 @@ import process from 'node:process'
 import {fileURLToPath} from 'node:url'
 
 import {readEnv} from '@repo/utils'
+import {benchRunId} from '@repo/utils/radar-ids'
 import {createClient} from '@sanity/client'
 
 import {toStorableRun} from './storeShape'
 import {type BenchRunDocument} from './types'
 
-/** The metrics-studio project (browse the data with dev/metrics-studio). */
+/** The Studio Radar project (browse the data with dev/radar). */
 const METRICS_PROJECT_ID = 'mhfozd0z'
 const METRICS_DATASET = 'bench'
 
 /**
  * The stored document id decides overwrite-vs-append: a PR run overwrites one
- * doc per PR number (latest push wins — branch comparison wants the newest
- * build, not a pile), while main/cron runs get one doc per run (sha + CI run
- * id) so the time series accumulates.
+ * doc per PR number, main/cron runs get one doc per run — see `benchRunId`.
  */
 export function documentIdForRun(run: BenchRunDocument): string {
-  return typeof run.git.prNumber === 'number'
-    ? `benchRun-pr-${run.git.prNumber}`
-    : `benchRun-${run.git.sha}-${run.runner.runId ?? 'local'}`
+  return benchRunId(run)
 }
 
 export async function storeRun(inputPathArg?: string, options: {ab?: boolean} = {}): Promise<void> {
@@ -60,7 +57,7 @@ export async function storeRun(inputPathArg?: string, options: {ab?: boolean} = 
     projectId: METRICS_PROJECT_ID,
     dataset: METRICS_DATASET,
     apiVersion: '2025-02-19',
-    token: readEnv('BENCH_METRICS_WRITE_TOKEN'),
+    token: readEnv('RADAR_SANITY_WRITE_TOKEN'),
     useCdn: false,
   })
 

@@ -1,8 +1,9 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Card, Inline, Text, type Theme} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {Flex, VStack} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
@@ -142,10 +143,10 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
       onClose={onClose}
       width={1}
     >
-      <Stack padding={4} gap={5}>
+      <Flex padding={4} gap={5} flexDirection="column">
         <Text size={1}>{timeZoneScopeTypeToLabel[timeZoneScope.type]}</Text>
-        <Stack gap={3}>
-          <Flex align="center" justify="space-between">
+        <VStack gap={3}>
+          <Flex alignItems="center" justifyContent="space-between">
             <Inline gap={2}>
               <Text size={1} weight="semibold">
                 {t('time-zone.time-zone')}
@@ -191,8 +192,8 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             tabIndex={-1}
             value={selectedTz?.value}
           />
-        </Stack>
-      </Stack>
+        </VStack>
+      </Flex>
     </Dialog>
   )
 }

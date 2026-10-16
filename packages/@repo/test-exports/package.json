@@ -15,6 +15,7 @@
     "@sanity/schema": "workspace:*",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
+    "@sanity/validation": "workspace:*",
     "@sanity/vision": "workspace:*",
     "groq": "workspace:*",
     "sanity": "workspace:*"
