@@ -4,7 +4,8 @@ import {DetailLayoutStory} from './DetailLayoutStory'
 
 /**
  * Chromatic sentinel: post-migration ui5 releases/variants detail identity
- * (four-line clamp) and properties panel. Fixture copy only.
+ * (four-line clamp), properties panel, and DetailActionRail. Fixture copy
+ * only.
  */
 const meta = {
   title: 'Studio/Detail Layout',

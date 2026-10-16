@@ -6,6 +6,7 @@ import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
 import {UploadWarning} from '../common/UploadWarning'
 import {InvalidFileWarning} from '../FileInput/InvalidFileWarning'
+import {ImageAccessPolicy} from '../ImageInput/ImageAccessPolicy'
 import {InvalidImageWarning} from '../ImageInput/InvalidImageWarning'
 
 /**
@@ -14,8 +15,9 @@ import {InvalidImageWarning} from '../ImageInput/InvalidImageWarning'
  * Box icon gutter → Stack → ghost Button) and differ only in copy, so they
  * pin the same layout three times over different string lengths; the
  * private-access badge is shrink-wrapped in a centered Flex the way
- * FileActionsMenu renders it. Copy comes from the default studio locale
- * (no timestamps).
+ * FileActionsMenu renders it. ImageAccessPolicy is the absolute overlay
+ * that ImageInput places on a relative tile. Copy comes from the default
+ * studio locale (no timestamps).
  */
 export function FileInputWarningsStory() {
   return (
@@ -47,6 +49,19 @@ export function FileInputWarningsStory() {
             <Flex justifyContent="center" gap={2}>
               <AccessPolicyBadge />
             </Flex>
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium">
+              image access policy overlay
+            </Text>
+            <Card
+              border
+              radius={2}
+              style={{height: 88, position: 'relative', width: 160}}
+              tone="transparent"
+            >
+              <ImageAccessPolicy accessPolicy="private" />
+            </Card>
           </VStack>
         </VStack>
       </Card>

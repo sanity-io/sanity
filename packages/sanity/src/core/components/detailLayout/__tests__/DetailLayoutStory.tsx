@@ -1,9 +1,13 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
+import {EditIcon} from '@sanity/icons/Edit'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {Card, Text} from '@sanity/ui'
 import {Flex, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {Button} from '../../../../ui-components/button/Button'
+import {DetailActionRail} from '../DetailActionRail'
 import {DetailIdentity} from '../DetailIdentity'
 import {DetailPropertiesPanel} from '../DetailPropertiesPanel'
 
@@ -19,9 +23,10 @@ const CLAMPED_DESCRIPTION =
 
 /**
  * Chromatic sentinel for the post-migration ui5 detail layout: identity
- * (placeholder opacity, four-line overflow clamp) and properties panel
- * (glyph column alignment, title-leading offset). Copy is a fixture (no
- * live releases).
+ * (placeholder opacity, four-line overflow clamp), properties panel
+ * (glyph column alignment, title-leading offset), and the top-right
+ * DetailActionRail (secondary / primary / overflow gap). Copy is a fixture
+ * (no live releases).
  */
 export function DetailLayoutStory() {
   return (
@@ -61,6 +66,32 @@ export function DetailLayoutStory() {
               placeholder title
             </Text>
             <DetailIdentity title={undefined} titlePlaceholder="Untitled release" />
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium">
+              action rail (secondary, primary, menu)
+            </Text>
+            <Flex justifyContent="flex-end">
+              <DetailActionRail
+                menu={
+                  <Button
+                    icon={EllipsisHorizontalIcon}
+                    mode="bleed"
+                    tooltipProps={{content: 'More actions'}}
+                  />
+                }
+                primary={<Button text="Run release" tone="primary" />}
+                secondary={<Button icon={EditIcon} mode="ghost" text="Edit details" />}
+              />
+            </Flex>
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium">
+              action rail (primary only)
+            </Text>
+            <Flex justifyContent="flex-end">
+              <DetailActionRail primary={<Button text="Edit definition" />} />
+            </Flex>
           </VStack>
         </VStack>
       </Card>
