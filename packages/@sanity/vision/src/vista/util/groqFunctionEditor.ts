@@ -15,7 +15,6 @@ import {
   keymap,
   showTooltip,
   type Tooltip,
-  ViewPlugin,
 } from '@codemirror/view'
 
 import {type VistaSavedFunction} from '../store/types'
@@ -336,62 +335,19 @@ const functionEditorTheme = EditorView.baseTheme({
   },
 })
 
-/** Tells `onChange` what extracting would turn into a function right now, whenever that changes */
-function extractableReporter(onChange: (expression: string | null) => void): Extension {
-  return ViewPlugin.define((view) => {
-    let reported: string | null = null
-    const report = (state: EditorState) => {
-      const extraction = extractFunction(
-        state.doc.toString(),
-        state.selection.main,
-        state.facet(functionLibrary),
-      )
-      const expression = extraction?.expression ?? null
-      if (expression !== reported) {
-        reported = expression
-        onChange(expression)
-      }
-    }
-    report(view.state)
-    return {
-      update: (update) => {
-        if (
-          update.docChanged ||
-          update.selectionSet ||
-          update.startState.facet(functionLibrary) !== update.state.facet(functionLibrary)
-        ) {
-          report(update.state)
-        }
-      },
-    }
-  })
-}
-
-export interface GroqFunctionExtensionOptions {
-  /**
-   * Called with the expression extracting would turn into a function (the selection, or the
-   * projection around the cursor), and with `null` while there is none
-   */
-  onExtractableChange?: (expression: string | null) => void
-}
-
 /**
  * Custom functions in the query editor: hover documentation for every function called,
  * completions of function names (the library's declare themselves), and extracting a projection
  * to a function: with a button over a selected one, and with `Alt-Enter` for the selection or
  * the projection around the cursor
  */
-export function createGroqFunctionExtensions(
-  labels: GroqEditorLabels,
-  {onExtractableChange}: GroqFunctionExtensionOptions = {},
-): Extension[] {
+export function createGroqFunctionExtensions(labels: GroqEditorLabels): Extension[] {
   return [
     groqEditorLabels.of(labels),
     hoverTooltip((view, pos, side) => functionHoverAt(view.state, pos, side)),
     autocompletion({override: [functionCompletions], selectOnOpen: false, icons: false}),
     extractTooltip,
     keymap.of([{key: EXTRACT_FUNCTION_KEY, run: extractSelectionToFunction}]),
-    ...(onExtractableChange ? [extractableReporter(onExtractableChange)] : []),
     functionEditorTheme,
   ]
 }

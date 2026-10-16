@@ -312,11 +312,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.functions.editor.in-library': 'In your functions library, not declared in this query',
   /** Link at the end of a built-in function's hover documentation */
   'vista.functions.editor.reference': 'GROQ functions reference',
-  /** Tooltip of the extract button over the query editor, naming the expression it would extract */
-  'vista.functions.extract.button': 'Extract {{expression}} to a function',
-  /** Tooltip of the extract button while there is nothing to extract, and the toast when it is pressed then */
-  'vista.functions.extract.hint':
-    'Put the cursor in a projection, like author->{name}, to extract it to a function',
   /** Explanation under the library heading in the Functions panel */
   'vista.functions.library.description':
     'Kept in this browser for every dataset of the project. Completions offer these functions, and lint offers to declare one a query calls.',

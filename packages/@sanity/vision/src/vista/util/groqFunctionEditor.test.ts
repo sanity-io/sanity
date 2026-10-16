@@ -210,26 +210,6 @@ describe('extracting a function', () => {
     expect(withKeymap.state.doc.toString()).toContain('fn my::author($author)')
   })
 
-  it('reports what extracting would take as the cursor and the selection move', () => {
-    const reported: (string | null)[] = []
-    const view = viewOf(
-      EditorState.create({
-        doc: query,
-        extensions: [
-          groq(),
-          ...createGroqFunctionExtensions(LABELS, {
-            onExtractableChange: (expression) => reported.push(expression),
-          }),
-        ],
-      }),
-    )
-    view.dispatch({selection: EditorSelection.cursor(query.indexOf('name'))})
-    view.dispatch({selection: EditorSelection.cursor(query.indexOf('name') + 1)})
-    view.dispatch({selection: EditorSelection.cursor(query.indexOf('title'))})
-    view.dispatch({selection: selected})
-    expect(reported).toEqual(['author->{name}', null, 'author->{name}'])
-  })
-
   it('does nothing for a selection that cannot become a function', () => {
     const view = viewOf(stateOf(query, EditorSelection.single(0, 1)))
     expect(extractSelectionToFunction(view)).toBe(false)

@@ -1,10 +1,8 @@
-import {CodeBlockIcon} from '@sanity/icons/CodeBlock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PlayIcon} from '@sanity/icons/Play'
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {StopIcon} from '@sanity/icons/Stop'
 import {Button, Hotkeys, Label, Tab, TabList, Text} from '@sanity/ui'
-import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type RefObject, useCallback, useMemo, useRef, useState} from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
@@ -27,13 +25,10 @@ import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {isPanelExpanded, selectFunctionLibrary, selectParamsView} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
 import {functionLibrary, querySchema} from '../../util/groqEditorContext'
-import {
-  createGroqFunctionExtensions,
-  extractSelectionToFunction,
-} from '../../util/groqFunctionEditor'
+import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
 import {createQuerySchema} from '../../util/schemaCheck'
-import {EXTRACT_FUNCTION_SHORTCUT, VISTA_SHORTCUTS} from '../../util/shortcuts'
+import {VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
 import {CollapsibleSection} from '../CollapsibleSection'
 import {
@@ -54,16 +49,6 @@ import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
 import {SECTION_MIN_HEIGHT, useDragResize} from './useDragResize'
-
-const MAX_EXPRESSION_PREVIEW = 40
-
-/** An expression on one line, shortened for a tooltip */
-function previewExpression(expression: string): string {
-  const flat = expression.replace(/\s+/g, ' ')
-  return flat.length > MAX_EXPRESSION_PREVIEW
-    ? `${flat.slice(0, MAX_EXPRESSION_PREVIEW - 1)}…`
-    : flat
-}
 
 export interface RequestPanelProps {
   tab: VistaTab
@@ -126,38 +111,22 @@ export function RequestPanel(props: RequestPanelProps) {
   // completions and extraction of functions, which know the library. Only the library's facet
   // changes when a function is saved; the rest of the setup stays as it is
   const lintExtensions = useMemo(() => createGroqLintExtensions(onLintFindings), [onLintFindings])
-  // What the extract button would turn into a function: the selection, or the projection around
-  // the cursor
-  const [extractable, setExtractable] = useState<string | null>(null)
   const functionExtensions = useMemo(
     () =>
-      createGroqFunctionExtensions(
-        {
-          reference: t('vista.functions.editor.reference'),
-          apiVersion: (version) => t('vista.functions.editor.api-version', {version}),
-          deltaOnly: t('vista.functions.editor.delta-only'),
-          declaredOn: (line) => t('vista.functions.editor.declared-on', {line}),
-          inLibrary: t('vista.functions.editor.in-library'),
-          completionDeclared: t('vista.functions.editor.completion-declared'),
-          completionLibrary: t('vista.functions.editor.completion-library'),
-          extract: t('vista.functions.editor.extract'),
-          addFromLibrary: t('vista.functions.editor.add-from-library'),
-          useSuggestion: (suggestion) => t('vista.lint.use-suggestion', {suggestion}),
-        },
-        {onExtractableChange: setExtractable},
-      ),
+      createGroqFunctionExtensions({
+        reference: t('vista.functions.editor.reference'),
+        apiVersion: (version) => t('vista.functions.editor.api-version', {version}),
+        deltaOnly: t('vista.functions.editor.delta-only'),
+        declaredOn: (line) => t('vista.functions.editor.declared-on', {line}),
+        inLibrary: t('vista.functions.editor.in-library'),
+        completionDeclared: t('vista.functions.editor.completion-declared'),
+        completionLibrary: t('vista.functions.editor.completion-library'),
+        extract: t('vista.functions.editor.extract'),
+        addFromLibrary: t('vista.functions.editor.add-from-library'),
+        useSuggestion: (suggestion) => t('vista.lint.use-suggestion', {suggestion}),
+      }),
     [t],
   )
-  const toast = useToast()
-  const extractFromEditor = useCallback(() => {
-    if (queryEditorRef.current?.runCommand(extractSelectionToFunction)) return
-    toast.push({
-      closable: true,
-      id: 'vista-extract-function-hint',
-      status: 'info',
-      title: t('vista.functions.extract.hint'),
-    })
-  }, [queryEditorRef, t, toast])
   const library = useVistaSelector(selectFunctionLibrary)
   const schema = useSchema() as Schema | undefined
   const workspaceSchema = useMemo(() => (schema ? createQuerySchema(schema) : undefined), [schema])
@@ -257,33 +226,6 @@ export function RequestPanel(props: RequestPanelProps) {
                 </Label>
                 <Box flexBasis="0%" flexGrow={1} />
                 <Flex alignItems="center" className={labelActions} gap={1}>
-                  <Tooltip
-                    animate
-                    content={
-                      <Flex alignItems="center" gap={2} padding={1}>
-                        <Text size={1}>
-                          {extractable
-                            ? t('vista.functions.extract.button', {
-                                expression: previewExpression(extractable),
-                              })
-                            : t('vista.functions.extract.hint')}
-                        </Text>
-                        <Hotkeys fontSize={0} keys={EXTRACT_FUNCTION_SHORTCUT.keys} />
-                      </Flex>
-                    }
-                    placement="bottom"
-                    portal
-                  >
-                    <Button
-                      aria-label={t('vista.functions.editor.extract')}
-                      data-testid="vista-extract-function-button"
-                      fontSize={1}
-                      icon={CodeBlockIcon}
-                      mode="bleed"
-                      onClick={extractFromEditor}
-                      padding={2}
-                    />
-                  </Tooltip>
                   {!generatorOpen && (
                     <Tooltip
                       animate
