@@ -84,7 +84,11 @@ export function DiagnosticsReportStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4}>
-        <DiagnosticsReport diagnostics={diagnostics} onRunAgain={() => undefined} />
+        <DiagnosticsReport
+          diagnostics={diagnostics}
+          onDownloadSchema={() => undefined}
+          onRunAgain={() => undefined}
+        />
       </Card>
     </TestWrapper>
   )

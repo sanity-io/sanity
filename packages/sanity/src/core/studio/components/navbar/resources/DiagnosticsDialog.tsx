@@ -1,4 +1,5 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
+import {DownloadIcon} from '@sanity/icons/Download'
 import {Card, Spinner, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {
@@ -16,6 +17,7 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {useClient} from '../../../../hooks/useClient'
 import {SANITY_VERSION} from '../../../../version'
+import {downloadSchema} from '../../../diagnostics/downloadSchema'
 import {
   formatStudioDiagnostics,
   gatherStudioDiagnostics,
@@ -45,6 +47,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
   const client = useClient({apiVersion: '2025-02-19'})
   const [diagnostics, setDiagnostics] = useState<StudioDiagnostics>()
   const [error, setError] = useState<string>()
+  const [schemaWarningOpen, setSchemaWarningOpen] = useState(false)
   const initialDiagnosticsStartedRef = useRef(false)
   const requestIdRef = useRef(0)
   const [copiedText, copy] = useCopyToClipboard()
@@ -173,10 +176,42 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
 
         {diagnostics ? (
           <Card flex={1} overflow="auto" padding={3} radius={2} tone="transparent">
-            <DiagnosticsReport diagnostics={diagnostics} onRunAgain={handleRunAgain} />
+            <DiagnosticsReport
+              diagnostics={diagnostics}
+              onDownloadSchema={() => setSchemaWarningOpen(true)}
+              onRunAgain={handleRunAgain}
+            />
           </Card>
         ) : null}
       </Flex>
+
+      {schemaWarningOpen ? (
+        <Dialog
+          footer={{
+            confirmButton: {
+              icon: DownloadIcon,
+              onClick: () => {
+                downloadSchema(workspace)
+                setSchemaWarningOpen(false)
+              },
+              text: 'Download',
+              tone: 'caution',
+            },
+          }}
+          header="Download schema"
+          id={`${dialogId}-schema`}
+          onClickOutside={() => setSchemaWarningOpen(false)}
+          onClose={() => setSchemaWarningOpen(false)}
+          width={1}
+        >
+          <Card padding={3} radius={2} tone="caution">
+            <Text size={1}>
+              The schema may contain sensitive information, such as field names, descriptions and
+              initial values. Only share it with Sanity support.
+            </Text>
+          </Card>
+        </Dialog>
+      ) : null}
     </Dialog>
   )
 }
