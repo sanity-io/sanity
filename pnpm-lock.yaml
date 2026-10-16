@@ -1223,6 +1223,9 @@ importers:
       '@css-modules-kit/core':
         specifier: ^1.4.0
         version: 1.4.0(@typescript/typescript6@6.0.2)
+      lightningcss:
+        specifier: ^1.33.0
+        version: 1.33.0
       typescript:
         specifier: npm:@typescript/typescript6@^6.0.2
         version: '@typescript/typescript6@6.0.2'

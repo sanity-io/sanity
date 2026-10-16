@@ -14,6 +14,7 @@
   "dependencies": {
     "@css-modules-kit/codegen": "^1.4.0",
     "@css-modules-kit/core": "^1.4.0",
+    "lightningcss": "^1.33.0",
     "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
   "devDependencies": {
