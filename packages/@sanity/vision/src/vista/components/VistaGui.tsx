@@ -23,6 +23,7 @@ import {QueryTabBar} from './tabs/QueryTabBar'
 import {root} from './vista.css'
 import {VistaDialogs} from './VistaDialogs'
 import {VistaUrlState} from './VistaUrlState'
+import {VistaWebMcp} from './VistaWebMcp'
 
 /** Below this width the request and response columns stack */
 const STACKED_BREAKPOINT = 900
@@ -104,6 +105,7 @@ export function VistaGui(props: VistaGuiProps) {
             </Flex>
             <VistaDialogs />
             <VistaUrlState tab={activeTab} />
+            <VistaWebMcp tab={activeTab} />
           </PendingEditsContext.Provider>
         </SavedQueriesContext.Provider>
       </VistaExperienceContext.Provider>

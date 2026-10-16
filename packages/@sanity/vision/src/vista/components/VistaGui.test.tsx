@@ -718,6 +718,101 @@ describe('VistaGui', () => {
     expect(screen.queryByTestId('vista-query-plan')).toBeNull()
   })
 
+  it('offers WebMCP tools while it is open, which read and run queries and open them in tabs', async () => {
+    interface Registered {
+      tool: {
+        name: string
+        title?: string
+        annotations?: {readOnlyHint?: boolean}
+        execute: (input: Record<string, unknown>) => Promise<{
+          content: {text: string}[]
+          isError?: boolean
+        }>
+      }
+      signal: AbortSignal | undefined
+    }
+    const registered: Registered[] = []
+    Reflect.set(document, 'modelContext', {
+      registerTool: (tool: Registered['tool'], options?: {signal?: AbortSignal}) => {
+        registered.push({tool, signal: options?.signal})
+        return Promise.resolve()
+      },
+    })
+    try {
+      const {fetchCalls, unmount} = renderVista()
+      await waitFor(() => expect(registered).toHaveLength(6))
+      expect(registered.map(({tool}) => [tool.name, tool.annotations?.readOnlyHint])).toEqual([
+        ['vision_get_state', true],
+        ['vision_run_query', true],
+        ['vision_open_query', false],
+        ['vision_check_query', true],
+        ['vision_explain_query', true],
+        ['vision_describe_schema', true],
+      ])
+      expect(registered[0].tool.title).toBe('vista.webmcp.get-state')
+      const tool = (name: string) =>
+        registered.find((entry) => entry.tool.name === name)?.tool as Registered['tool']
+      const read = async (name: string, input: Record<string, unknown> = {}) => {
+        let output: Awaited<ReturnType<Registered['tool']['execute']>> | undefined
+        await act(async () => {
+          output = await tool(name).execute(input)
+        })
+        return output
+      }
+
+      typeQuery('*[_type == "post"]{title}')
+      const state = JSON.parse((await read('vision_get_state'))?.content[0].text ?? '{}')
+      expect(state).toMatchObject({
+        query: '*[_type == "post"]{title}',
+        dataset: 'test',
+        status: 'idle',
+      })
+
+      // Runs with the tab's options, leaving the tab as it is
+      const run = await read('vision_run_query', {
+        query: '*[_type == "author"]',
+        params: {limit: 3},
+      })
+      expect(fetchCalls.at(-1)).toMatchObject({query: '*[_type == "author"]', params: {limit: 3}})
+      expect(JSON.parse(run?.content[0].text ?? '{}')).toEqual({
+        ms: 12,
+        result: [{title: 'Variant title'}],
+      })
+      expect(getQueryEditor().value).toBe('*[_type == "post"]{title}')
+
+      // A missing query is an error the agent can read
+      expect(await read('vision_run_query', {})).toEqual({
+        content: [{type: 'text', text: 'A GROQ query is required'}],
+        isError: true,
+      })
+
+      // Lints like the editor does
+      const findings = JSON.parse(
+        (await read('vision_check_query', {query: '*[_type == "post" && author->name == "x"]'}))
+          ?.content[0].text ?? '[]',
+      )
+      expect(findings).toEqual([
+        expect.objectContaining({line: 1, rule: 'groq-lint/join-in-filter', text: 'author->'}),
+      ])
+
+      // Opens a query in a tab of its own and runs it there
+      const fetchesBefore = fetchCalls.length
+      await read('vision_open_query', {query: '*[_type == "book"]', title: 'From the agent'})
+      await waitFor(() =>
+        expect(getStoredState()?.tabs.map((tab: {title?: string}) => tab.title)).toContain(
+          'From the agent',
+        ),
+      )
+      await waitFor(() => expect(fetchCalls.length).toBeGreaterThan(fetchesBefore))
+      expect(fetchCalls.at(-1)?.query).toBe('*[_type == "book"]')
+
+      unmount()
+      expect(registered.every(({signal}) => signal?.aborted)).toBe(true)
+    } finally {
+      Reflect.deleteProperty(document, 'modelContext')
+    }
+  })
+
   it('sends queries to the API CDN when asked, unless the perspective is one it does not serve', async () => {
     const {fetchCalls} = renderVista()
     typeQuery('*[_type == "post"]')

@@ -407,6 +407,18 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.lint.severity.warning': 'Warning',
   /** Lint action writing the type, field or operator a schema finding suggests */
   'vista.lint.use-suggestion': 'Use {{suggestion}}',
+  /** Title the browser shows for the WebMCP tool that lints a query */
+  'vista.webmcp.check-query': 'Check a GROQ query in Vision',
+  /** Title the browser shows for the WebMCP tool that describes the workspace schema */
+  'vista.webmcp.describe-schema': 'Describe the schema in Vision',
+  /** Title the browser shows for the WebMCP tool that returns a query plan */
+  'vista.webmcp.explain-query': 'Explain a GROQ query in Vision',
+  /** Title the browser shows for the WebMCP tool that reads the active Vision tab */
+  'vista.webmcp.get-state': 'Read the open Vision tab',
+  /** Title the browser shows for the WebMCP tool that opens a query in a new tab */
+  'vista.webmcp.open-query': 'Open a GROQ query in Vision',
+  /** Title the browser shows for the WebMCP tool that runs a query */
+  'vista.webmcp.run-query': 'Run a GROQ query in Vision',
   /** Badge shown while a tab refetches automatically */
   'vista.live.active': 'Live',
   /** Button in the request column's action bar that fetches and then refetches automatically */

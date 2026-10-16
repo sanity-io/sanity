@@ -14,7 +14,8 @@ import {
   readPlanInsights,
 } from '../../util/planInsights'
 
-function describeInsight(insight: PlanInsight, t: TFunction<'vision'>): string {
+/** What a plan insight means, as the Explain panel and the WebMCP explain tool say it */
+export function describeInsight(insight: PlanInsight, t: TFunction<'vision'>): string {
   switch (insight.kind) {
     case 'filter-in-memory':
       return t('vista.explain.insight.filter-in-memory')
