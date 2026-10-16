@@ -72,7 +72,6 @@ function MediaLibraryAssetSourceComponent(
           pickerPersistenceKey={pickerPersistenceKey}
           dialogHeaderTitle={
             dialogHeaderTitle ||
-            // oxlint-disable-next-line @repo/i18n/no-missing-translation-key -- TODO(SAPP-4649): the select-dialog.title_* strings were removed in #12233, so this fallback title renders the raw key
             t('asset-sources.media-library.select-dialog.title', {
               context: selectAssetType,
               targetTitle: schemaType?.title,

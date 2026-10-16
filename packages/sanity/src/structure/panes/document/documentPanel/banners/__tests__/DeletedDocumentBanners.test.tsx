@@ -95,6 +95,7 @@ describe('DeletedDocumentBanners', () => {
     const bundleBanner = screen.queryByTestId('deleted-release-banner')
     expect(fallbackBanner).toBeNull()
     expect(bundleBanner).toBeInTheDocument()
+    expect(bundleBanner).toHaveTextContent("The 'Untitled release' release has been archived.")
   })
 
   it('shows the fallback document deleted banner when document was not in a release', async () => {
