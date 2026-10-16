@@ -104,6 +104,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when the "Publish" document action is disabled due to validation issues */
   'action.publish.validation-issues.tooltip':
     'There are validation errors that need to be fixed before this document can be published',
+  /** Label for the "Publish" document action when publishing a content variant */
+  'action.publish.variant.label': 'Publish variant',
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
 
