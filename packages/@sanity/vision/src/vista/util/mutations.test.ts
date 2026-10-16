@@ -84,12 +84,15 @@ describe('mutation templates', () => {
 
   it('aims at the documents of the result', () => {
     expect(createMutationTemplate('patch', documents)).toEqual({
-      patch: {id: ['drafts.a', 'b'], set: {}},
+      patch: {query: '*[_id in $ids]', params: {ids: ['drafts.a', 'b']}, set: {}},
     })
     expect(createMutationTemplate('patch', documents.slice(0, 1))).toEqual({
       patch: {id: 'drafts.a', set: {}},
     })
-    expect(createMutationTemplate('delete', documents)).toEqual({delete: {id: ['drafts.a', 'b']}})
+    expect(createMutationTemplate('delete', documents)).toEqual({
+      delete: {query: '*[_id in $ids]', params: {ids: ['drafts.a', 'b']}},
+    })
+    expect(createMutationTemplate('delete', documents.slice(1))).toEqual({delete: {id: 'b'}})
     expect(createMutationTemplate('create', documents)).toEqual({create: {_type: 'post'}})
   })
 

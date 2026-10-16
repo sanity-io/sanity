@@ -288,7 +288,7 @@ describe('MutateTab', () => {
     fireEvent.click(screen.getByTestId('vista-mutate-add'))
     fireEvent.click(screen.getByTestId('vista-mutate-add-create'))
     expect(JSON.parse(editor().value)).toEqual([
-      {patch: {id: ['drafts.a', 'b'], set: {}}},
+      {patch: {query: '*[_id in $ids]', params: {ids: ['drafts.a', 'b']}, set: {}}},
       {create: {_type: 'post'}},
     ])
   })

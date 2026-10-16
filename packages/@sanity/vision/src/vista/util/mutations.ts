@@ -91,20 +91,23 @@ export function documentsInResult(result: unknown): ResultDocument[] {
 
 export type MutationTemplate = 'patch' | 'create' | 'delete'
 
-/** A mutation to start from, aimed at the documents of the shown result where it has any */
+/**
+ * A mutation to start from, aimed at the documents of the shown result where it has any. The API
+ * takes one ID per patch or delete, so several documents are aimed at by query.
+ */
 export function createMutationTemplate(
   template: MutationTemplate,
   documents: ResultDocument[],
 ): MutationBody {
   const ids = documents.map((document) => document.id)
-  const id = ids.length > 1 ? ids : (ids[0] ?? '')
+  const target = ids.length > 1 ? {query: '*[_id in $ids]', params: {ids}} : {id: ids[0] ?? ''}
   switch (template) {
     case 'patch':
-      return {patch: {id, set: {}}}
+      return {patch: {...target, set: {}}}
     case 'create':
       return {create: {_type: documents[0]?.type ?? ''}}
     case 'delete':
-      return {delete: {id}}
+      return {delete: target}
     default: {
       const unknownTemplate: never = template
       throw new Error(`Unknown mutation template: ${String(unknownTemplate)}`)
