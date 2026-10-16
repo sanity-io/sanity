@@ -194,7 +194,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the request permission button that appears for viewer roles */
   'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
   /** Action that switches from the published perspective to drafts */
-  'banners.published.see-draft.action': 'See draft',
+  'banners.published.see-draft.action': 'View draft',
   /** Banner shown for non-live-edit documents with a published sibling in the published perspective */
   'banners.published.see-draft.text': 'This is a published document. Switch to drafts to edit it.',
   /** Description for the archived release banner, rendered when viewing the history of a version document from the published view */

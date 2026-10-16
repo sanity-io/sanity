@@ -16,7 +16,7 @@ export interface ShouldShowSeeDraftBannerContext {
 }
 
 /**
- * Show the "See draft" banner when a non-live-edit document with a published sibling
+ * Show the "View draft" banner when a non-live-edit document with a published sibling
  * is viewed in the published perspective. The banner switches to the drafts
  * perspective so the user can edit there (whether a draft already exists or not).
  *

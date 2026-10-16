@@ -146,7 +146,7 @@ describe('SeeDraftBanner', () => {
     expect(
       screen.getByText('This is a published document. Switch to drafts to edit it.'),
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'See draft'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'View draft'})).toBeInTheDocument()
   })
 
   it('renders when a draft already exists so the user can switch into it', async () => {
@@ -163,16 +163,16 @@ describe('SeeDraftBanner', () => {
     await waitFor(() => {
       expect(screen.getByTestId('see-draft-banner')).toBeInTheDocument()
     })
-    expect(screen.getByRole('button', {name: 'See draft'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'View draft'})).toBeInTheDocument()
   })
 
   it('switches to the drafts perspective without creating a document', async () => {
     await renderBanner()
 
     await waitFor(() => {
-      expect(screen.getByRole('button', {name: 'See draft'})).toBeInTheDocument()
+      expect(screen.getByRole('button', {name: 'View draft'})).toBeInTheDocument()
     })
-    await userEvent.click(screen.getByRole('button', {name: 'See draft'}))
+    await userEvent.click(screen.getByRole('button', {name: 'View draft'}))
 
     expect(setPerspective).toHaveBeenCalledTimes(1)
     expect(setPerspective).toHaveBeenCalledWith('drafts')
@@ -184,7 +184,7 @@ describe('SeeDraftBanner', () => {
     await renderBanner()
 
     expect(screen.queryByTestId('see-draft-banner')).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', {name: 'See draft'})).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', {name: 'View draft'})).not.toBeInTheDocument()
   })
 
   it('does not render in the drafts perspective', async () => {
