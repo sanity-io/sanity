@@ -1,6 +1,6 @@
-import {Stack, Switch, Text} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -8,6 +8,7 @@ import {type VistaTabOptions} from '../../store/types'
 import {useVistaSelector} from '../../store/VistaActorContext'
 import {selectDatasets, selectWorkspaceDataset} from '../../store/vistaMachine'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
+import {SwitchField} from '../SwitchField'
 import {optionsGrid} from '../vista.css'
 import {
   ApiVersionField,
@@ -59,21 +60,13 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
             value={options.variant}
           />
         </div>
-        <Flex alignItems="center" as="label" gap={3}>
-          <Switch
-            checked={options.includeSourceMap}
-            data-testid="vista-option-source-map"
-            onChange={(event) => onChange({includeSourceMap: event.currentTarget.checked})}
-          />
-          <Stack gap={2}>
-            <Text size={1} weight="medium">
-              {t('vista.options.include-source-map')}
-            </Text>
-            <Text muted size={1}>
-              {t('vista.options.include-source-map.description')}
-            </Text>
-          </Stack>
-        </Flex>
+        <SwitchField
+          checked={options.includeSourceMap}
+          description={t('vista.options.include-source-map.description')}
+          onChange={(includeSourceMap) => onChange({includeSourceMap})}
+          testId="vista-option-source-map"
+          title={t('vista.options.include-source-map')}
+        />
         <UseCdnField
           checked={options.useCdn}
           notes={resolved.isCdnAnonymous ? [t('vista.options.use-cdn.anonymous')] : []}

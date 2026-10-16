@@ -1,6 +1,6 @@
 import {PinIcon} from '@sanity/icons/Pin'
 import {PinRemovedIcon} from '@sanity/icons/PinRemoved'
-import {Button, Select, Stack, Switch, Text, TextInput} from '@sanity/ui'
+import {Button, Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ChangeEvent, useCallback, useId} from 'react'
 import {
@@ -22,6 +22,7 @@ import {
   type VistaVariantMode,
 } from '../../store/types'
 import {getEffectivePerspective} from '../../util/tabPerspective'
+import {SwitchField} from '../SwitchField'
 
 function FieldLabel({children, htmlFor}: {children: string; htmlFor: string}) {
   return (
@@ -289,28 +290,19 @@ interface UseCdnFieldProps {
 export function UseCdnField({testId, checked, onChange, notes = []}: UseCdnFieldProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   return (
-    <Flex alignItems="flex-start" as="label" gap={3}>
-      <Box paddingTop={1}>
-        <Switch
-          checked={checked}
-          data-testid={testId}
-          onChange={(event) => onChange(event.currentTarget.checked)}
-        />
-      </Box>
-      <Stack gap={2}>
-        <Text size={1} weight="medium">
-          {t('vista.options.use-cdn')}
+    <SwitchField
+      checked={checked}
+      description={t('vista.options.use-cdn.description')}
+      onChange={onChange}
+      testId={testId}
+      title={t('vista.options.use-cdn')}
+    >
+      {notes.map((note) => (
+        <Text data-testid={`${testId}-note`} key={note} size={1}>
+          {note}
         </Text>
-        <Text muted size={1}>
-          {t('vista.options.use-cdn.description')}
-        </Text>
-        {notes.map((note) => (
-          <Text data-testid={`${testId}-note`} key={note} size={1}>
-            {note}
-          </Text>
-        ))}
-      </Stack>
-    </Flex>
+      ))}
+    </SwitchField>
   )
 }
 

@@ -1,6 +1,6 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Button, Card, Stack, Switch, Text, TextArea} from '@sanity/ui'
+import {Button, Card, Stack, Text, TextArea} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {dequal} from 'dequal/lite'
 import {useCallback, useState} from 'react'
@@ -24,6 +24,7 @@ import {
   UseCdnField,
   VariantSelect,
 } from '../request/OptionFields'
+import {SwitchField} from '../SwitchField'
 
 /** One field path per line (commas work too), each once */
 function parseFieldList(text: string): string[] {
@@ -172,25 +173,14 @@ export function SettingsPanel() {
           value={settings.variant}
         />
 
-        <Flex alignItems="center" as="label" gap={3}>
-          <Switch
-            checked={settings.includeSourceMap}
-            onChange={(event) =>
-              actorRef.send({
-                type: 'settings.update',
-                settings: {includeSourceMap: event.currentTarget.checked},
-              })
-            }
-          />
-          <Stack gap={2}>
-            <Text size={1} weight="medium">
-              {t('vista.options.include-source-map')}
-            </Text>
-            <Text muted size={1}>
-              {t('vista.options.include-source-map.description')}
-            </Text>
-          </Stack>
-        </Flex>
+        <SwitchField
+          checked={settings.includeSourceMap}
+          description={t('vista.options.include-source-map.description')}
+          onChange={(includeSourceMap) =>
+            actorRef.send({type: 'settings.update', settings: {includeSourceMap}})
+          }
+          title={t('vista.options.include-source-map')}
+        />
 
         <UseCdnField
           checked={settings.useCdn}

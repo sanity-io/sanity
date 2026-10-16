@@ -1,7 +1,7 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Badge, type BadgeTone, Button, Card, Label, Stack, Switch, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Button, Card, Label, Stack, Text} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {Suspense, useCallback, useId, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
@@ -27,6 +27,7 @@ import {
   readMutations,
 } from '../../util/mutations'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
+import {SwitchField} from '../SwitchField'
 import {drawerScroller} from '../vista.css'
 import {JsonEditor} from './JsonEditor'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
@@ -499,23 +500,13 @@ export function MutateTab(props: MutateTabProps) {
       </Flex>
       <Box borderTop flexShrink={0} padding={3}>
         <Stack gap={4}>
-          <Flex alignItems="flex-start" as="label" gap={3}>
-            <Box paddingTop={1}>
-              <Switch
-                checked={state.autoGenerateArrayKeys}
-                data-testid="vista-mutate-auto-keys"
-                onChange={(event) => mutate.setAutoGenerateArrayKeys(event.currentTarget.checked)}
-              />
-            </Box>
-            <Stack gap={2}>
-              <Text size={1} weight="medium">
-                {t('vista.mutate.auto-keys')}
-              </Text>
-              <Text muted size={1}>
-                {t('vista.mutate.auto-keys.description')}
-              </Text>
-            </Stack>
-          </Flex>
+          <SwitchField
+            checked={state.autoGenerateArrayKeys}
+            description={t('vista.mutate.auto-keys.description')}
+            onChange={mutate.setAutoGenerateArrayKeys}
+            testId="vista-mutate-auto-keys"
+            title={t('vista.mutate.auto-keys')}
+          />
           <Flex alignItems="center" flexWrap="wrap" gap={2}>
             <Button
               data-testid="vista-mutate-preview"
