@@ -749,6 +749,7 @@ import type {
   useDocumentValuePermissions,
   useDocumentValues,
   useEditState,
+  useElementState,
   useEnhancedObjectDialog,
   useEvents,
   useEventsStore,
@@ -3132,6 +3133,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useEditState', () => {
     expectTypeOf<typeof useEditState>().toBeFunction()
+  })
+  test('useElementState', () => {
+    expectTypeOf<typeof useElementState>().toBeFunction()
   })
   test('useEnhancedObjectDialog', () => {
     expectTypeOf<typeof useEnhancedObjectDialog>().toBeFunction()
