@@ -17,7 +17,20 @@ const WEAK_FIELD = {
   type: 'boolean',
 }
 
-const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD]
+const STRENGTHEN_ON_PUBLISH_FIELD = {
+  name: '_strengthenOnPublish',
+  title: 'Strengthen on publish',
+  type: 'object',
+  fields: [
+    {
+      name: 'type',
+      title: 'Type',
+      type: 'string',
+    },
+  ],
+}
+
+const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD, STRENGTHEN_ON_PUBLISH_FIELD]
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
