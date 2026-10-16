@@ -272,6 +272,8 @@ const SVG_ATTRIBUTES = [
   'u2',
   'unicode',
   'values',
+  // DOMPurify allows this by default. Our ALLOWED_ATTR list replaces that default.
+  'vector-effect',
   'viewbox',
   'visibility',
   'version',
