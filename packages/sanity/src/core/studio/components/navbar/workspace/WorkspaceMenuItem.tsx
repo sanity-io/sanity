@@ -26,6 +26,10 @@ export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: Works
   const {setActiveWorkspace} = useActiveWorkspace()
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    // The Dashboard renders every workspace in its own iframe. Its bridge prevents the default of a
+    // click on another workspace's link and opens that workspace's iframe, so don't also switch here.
+    if (event.defaultPrevented) return
+
     if (event.button !== 0 || event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) {
       return
     }

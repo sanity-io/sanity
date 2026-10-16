@@ -184,6 +184,24 @@ describe('WorkspaceMenuButton', () => {
     expect(setActiveWorkspace).toHaveBeenCalledExactlyOnceWith('workspace-b')
   })
 
+  it('leaves a click the host already handled to the host', async () => {
+    await renderButton()
+    const item = await openMenuItem('Workspace B')
+    // Stands in for the Dashboard bridge, which claims links to other workspaces in the capture phase
+    const claimClick = vi.fn((event: Event) => event.preventDefault())
+    window.addEventListener('click', claimClick, true)
+
+    try {
+      // oxlint-disable-next-line testing-library/prefer-user-event -- a single click event, so the host listener sees exactly the click React handles
+      fireEvent.click(item)
+    } finally {
+      window.removeEventListener('click', claimClick, true)
+    }
+
+    expect(claimClick).toHaveBeenCalledOnce()
+    expect(setActiveWorkspace).not.toHaveBeenCalled()
+  })
+
   it.each([
     ['cmd-click', {metaKey: true}],
     ['ctrl-click', {ctrlKey: true}],
