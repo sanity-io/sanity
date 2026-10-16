@@ -1,6 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Card, Text} from '@sanity/ui'
-import {type ComponentProps, useCallback, useEffect, useState} from 'react'
+import {type ComponentProps, type SyntheticEvent, useCallback, useState} from 'react'
 
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -15,26 +15,25 @@ interface ImagePreviewProps {
 
 export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewProps) {
   const {accessPolicy = 'public', src, ...rest} = props
-  const [isLoaded, setLoaded] = useState(false)
-  const [hasError, setHasError] = useState(false)
+  // The outcome is recorded against the `src` it belongs to, so switching to another image
+  // starts over without an effect. An effect that reset the state on mount would run again each
+  // time an `<Activity>` boundary shows the input, and an image that is already complete does
+  // not fire `load` again, leaving the loading overlay over it for good.
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null)
+  const [erroredSrc, setErroredSrc] = useState<string | null>(null)
+  const isLoaded = Boolean(src) && loadedSrc === src
+  const hasError = Boolean(src) && erroredSrc === src
 
-  useEffect(() => {
-    /* set for when the src is being switched when the image input already had a image src
-    - meaning it already had an asset */
-    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
-    setLoaded(false)
-    setHasError(false)
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-  }, [src])
-
-  const onLoadChange = useCallback(() => {
-    setLoaded(true)
-    setHasError(false)
+  // The attribute is the `src` as rendered; the `src` property is the resolved absolute URL,
+  // which a relative `src` prop would never equal.
+  const onLoadChange = useCallback((event: SyntheticEvent<HTMLImageElement>) => {
+    setLoadedSrc(event.currentTarget.getAttribute('src'))
+    setErroredSrc(null)
   }, [])
 
-  const onErrorChange = useCallback(() => {
-    setHasError(true)
-    setLoaded(false)
+  const onErrorChange = useCallback((event: SyntheticEvent<HTMLImageElement>) => {
+    setErroredSrc(event.currentTarget.getAttribute('src'))
+    setLoadedSrc(null)
   }, [])
 
   const showAccessWarning = hasError && accessPolicy === 'unknown'
