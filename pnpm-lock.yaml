@@ -2335,8 +2335,8 @@ importers:
         specifier: ^2.13.7
         version: 2.13.7(@types/react@19.3.0)(react@19.3.1)
       react-i18next:
-        specifier: ^17.0.16
-        version: 17.0.16(i18next@26.4.4)(react-dom@19.3.1)(react@19.3.1)(typescript@7.0.2)
+        specifier: ^17.0.20
+        version: 17.0.20(i18next@26.4.4)(react-dom@19.3.1)(react@19.3.1)(typescript@7.0.2)
       react-is:
         specifier: 'catalog:'
         version: 19.3.1
@@ -13779,8 +13779,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-i18next@17.0.16:
-    resolution: {integrity: sha512-7uImVD9hG5yUOaP5KHVied1x0A004Di/KU031ULR35Ma+9e9H5GdnNZHgQEIByyAz+IAXBkRDTedNVzjPUH8ZA==}
+  react-i18next@17.0.20:
+    resolution: {integrity: sha512-rzSSirf0NP9vfcUXHZAksIuyMWl7L/T/7nm8S+sSIFuIzku54qcyyVAOZXbawPNpUxGkDx/eosSv4DrpzcxuOQ==}
     peerDependencies:
       i18next: '>= 26.2.0'
       react: '>= 16.8.0'
@@ -27694,7 +27694,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
-  react-i18next@17.0.16(i18next@26.4.4)(react-dom@19.3.1)(react@19.3.1)(typescript@7.0.2):
+  react-i18next@17.0.20(i18next@26.4.4)(react-dom@19.3.1)(react@19.3.1)(typescript@7.0.2):
     dependencies:
       '@babel/runtime': 7.29.10
       html-parse-stringify: 4.0.1
