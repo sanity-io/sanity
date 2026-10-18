@@ -873,6 +873,8 @@ jobs:
     outputs:
       # Read by alert-scheduled-failure: the article soak step never fails the job
       article_soak_outcome: ${{ steps.article_soak.outcome }}
+      # Read by sqrl-score: a settle mismatch fails the job after the run is stored
+      benchrun_store_outcome: ${{ steps.store.outcome }}
     # Soak (~10m) + article soak (~11m) + INP (~10m) + settle (9 scenarios ×
     # 4 sessions, the two red-by-design ones costing the 30s cap per session —
     # ~20m)
@@ -1025,6 +1027,7 @@ jobs:
         run: pnpm bench report
 
       - name: Store benchRun document
+        id: store
         env:
           RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm bench store
@@ -1053,7 +1056,7 @@ jobs:
   sqrl-score:
     needs: [track-main]
     if: >-
-      !cancelled() && needs.track-main.result == 'success'
+      !cancelled() && needs.track-main.outputs.benchrun_store_outcome == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

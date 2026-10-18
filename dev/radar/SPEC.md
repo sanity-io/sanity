@@ -617,7 +617,7 @@ SQRL (Studio Quality: Reliability & Latency) is one number per measured main com
 
 **Versioning.** Betas, k and the reliability reference count are frozen constants of `formulaVersion` 1, measured on the 150 main runs up to 15 Oct 2026, so new runs never re-fit them. Soak k is max(same-sha re-run sigma of the floored slope, 1% of the median end-of-run level per soak minute). The article soak k values use that rule on 5 re-runs of the article soak from 16 Oct 2026: the re-run sigma sets heap, and 1% of the end-of-run level sets listeners and DOM nodes. Any change to the formula bumps `FORMULA_VERSION`. A formula change, a later npm deprecation and a backfilled benchRun all change old scores, and the next run of the `sqrl-score` job writes them, since it rewrites every commit.
 
-**Writes.** The `sqrl-score` job in `bench.yml` runs after `track-main` stores its benchRun. A run from `main` or a release tag upserts every commit's document, about 150 documents in batches of 50, since the whole series is recomputed anyway. A dispatch from any other branch prints the scores and writes nothing. Locally, `pnpm --filter radar sqrl -- --dry-run` reads with `SANITY_AUTH_TOKEN` or the `sanity login` token and writes nothing.
+**Writes.** The `sqrl-score` job in `bench.yml` runs whenever `track-main` stored its benchRun, including on days a settle mismatch fails `track-main` after the store. A run from `main` or a release tag upserts every commit's document, about 150 documents in batches of 50, since the whole series is recomputed anyway. A dispatch from any other branch prints the scores and writes nothing. Locally, `pnpm --filter radar sqrl -- --dry-run` reads with `SANITY_AUTH_TOKEN` or the `sanity login` token and writes nothing.
 
 ## Architecture
 
