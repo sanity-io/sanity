@@ -4,8 +4,10 @@ import {
   failingTestsOf,
   namePatternFor,
   newFailuresOf,
+  noReportFailureOf,
   uniqueFilesOf,
   type VitestJsonReport,
+  crashedBeforeReport,
 } from './vitestReport'
 
 const report: VitestJsonReport = {
@@ -75,5 +77,15 @@ describe('uniqueFilesOf', () => {
       'packages/sanity/src/a.test.ts',
       'packages/sanity/src/b.test.ts',
     ])
+  })
+})
+
+describe('crashedBeforeReport', () => {
+  test('flags a run that crashed before writing its report', () => {
+    expect(crashedBeforeReport([noReportFailureOf('unit:engine')])).toBe(true)
+  })
+
+  test('treats failures read from a report as no crash', () => {
+    expect(crashedBeforeReport(failingTestsOf(report, '/repo'))).toBe(false)
   })
 })

@@ -24,6 +24,16 @@ export interface FailingTest {
 }
 
 const FILE_FAILED_TO_RUN = '(file failed to run)'
+const NO_REPORT = '(no report)'
+
+/** Stands in for a run that crashed before Vitest wrote its JSON report. */
+export function noReportFailureOf(runLabel: string): FailingTest {
+  return {file: runLabel, name: NO_REPORT, id: `${runLabel} > ${NO_REPORT}`}
+}
+
+export function crashedBeforeReport(failures: FailingTest[]): boolean {
+  return failures.some((failure) => failure.name === NO_REPORT)
+}
 
 export function failingTestsOf(report: VitestJsonReport, repositoryRoot: string): FailingTest[] {
   return report.testResults.flatMap((fileResult) => {

@@ -24,8 +24,10 @@ import {
   type FailingTest,
   namePatternFor,
   newFailuresOf,
+  noReportFailureOf,
   uniqueFilesOf,
   type VitestJsonReport,
+  crashedBeforeReport,
 } from './catalogue/vitestReport'
 import {without} from './collections'
 import {computePinnedHash, readPinnedConfig} from './config'
@@ -123,7 +125,7 @@ function executeRun(run: SuiteRun, reportPath: string, extraArguments: string[] 
         JSON.parse(readFileSync(reportPath, 'utf8')) as VitestJsonReport,
         repositoryRoot,
       )
-    : [{file: run.label, name: '(no report)', id: `${run.label} > (no report)`}]
+    : [noReportFailureOf(run.label)]
   return {
     label: run.label,
     suite: run.suite,
@@ -150,6 +152,9 @@ function runSuites(runs: SuiteRun[], phase: string): RunOutcome[] {
 }
 
 function rerunOnCleanTree(run: SuiteRun, newFailures: FailingTest[]): FailingTest[] {
+  if (crashedBeforeReport(newFailures)) {
+    return executeRun(run, reportPathFor('flake-check', run.label)).failing
+  }
   const pattern = namePatternFor(newFailures)
   const files = uniqueFilesOf(newFailures).map((file) => path.join(repositoryRoot, file))
   const rerun = executeRun(
