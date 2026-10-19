@@ -5,7 +5,7 @@ import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporar
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {Flex, Text} from '@sanity/ui'
 
-import {STOCK_OPTION, useOption} from '../options/store'
+import {STOCK_OPTION, useOption, useOptionState} from '../options/store'
 import {Picker} from './Picker'
 import {usePerspectiveState} from './state'
 import {DimensionButton} from './StateMenu'
@@ -37,6 +37,15 @@ export const PILL_LABEL_TOGGLES_ROW = true
  */
 export const ADD_DIMENSION_COPY = 'Add a dimension…'
 
+/** Open beta has ONE dimension, so there is nothing to add: the row asks for that one list. (Wording is a proposal.) */
+export const EXTRA_ROW_COPY_OPEN_BETA = 'View as…'
+
+/**
+ * The two top-bar controls share ONE shape. `round` matches the stock Drafts pill (full radius); `box` is the 3px
+ * control. Row chips and the row's own controls stay 3px either way (the real PerspectiveFilter).
+ */
+export const CONTROL_SHAPE: 'round' | 'box' = 'round'
+
 /**
  * Kept from the earlier rule: the pill ALWAYS opens the menu on its chevron. The Storybook exploration's rule (a
  * click on the pill minimises the row) is not implemented, because the real pill belongs to stock Studio's navbar.
@@ -51,6 +60,7 @@ export const PILL_ALWAYS_OPENS_MENU = true
 export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
   const option = useOption('c1')
   const s = usePerspectiveState()
+  const openBeta = useOptionState().stage === 'open-beta'
   if (option !== 'a') return undefined
 
   const narrowed = Object.keys(s.chosen).length > 0
@@ -64,7 +74,12 @@ export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
   }
 
   const rows = PILL_LABEL_TOGGLES_ROW ? (
-    <MenuItem data-testid="add-dimension" icon={RhombusIcon} onClick={addDimension} text={ADD_DIMENSION_COPY} />
+    <MenuItem
+      data-testid="add-dimension"
+      icon={RhombusIcon}
+      onClick={addDimension}
+      text={openBeta ? EXTRA_ROW_COPY_OPEN_BETA : ADD_DIMENSION_COPY}
+    />
   ) : (
     // The earlier rule: one row that adds, or shows or hides the row.
     <MenuItem
@@ -114,6 +129,7 @@ export function VariantsControl() {
           icon={<RhombusIcon />}
           onClick={() => (narrowed ? s.setRowShown(!s.rowShown) : setPanel(!panel))}
           open={narrowed && s.rowShown}
+          shape={CONTROL_SHAPE}
           testId="variants-button"
           text={variantsLabel(s.valueTitles)}
         />

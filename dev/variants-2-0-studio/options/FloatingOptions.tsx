@@ -15,6 +15,7 @@ import {
   resolveOption,
   setDimensionLimit,
   setGlobalChoice,
+  setStage,
   setOverride,
   useOptionState,
 } from './store'
@@ -35,7 +36,13 @@ function FloatingOptions() {
   const [hidden, setHidden] = useState(false)
   const overrideCount = Object.keys(state.overrides).length
   const choices = Array.from({length: maxOptionCount()}, (_, index) => index)
-  const label = state.global === 'final' ? 'F' : state.global === 'stock' ? 'Stock' : LETTERS[state.global]
+  // The pill says what is rendered: the resolved option of every built component, and the stage.
+  const built = COMPONENTS.filter((component) => component.built)
+  const label =
+    state.global === 'stock'
+      ? 'Stock'
+      : built.map((component) => `${component.id.toUpperCase()} ${resolveOption(component, state).toUpperCase()}`).join(' · ') +
+        ` · ${state.stage === 'open-beta' ? 'Open beta' : 'GA'}`
 
   if (hidden) return null
 
@@ -88,13 +95,31 @@ function FloatingOptions() {
             </Stack>
 
             <Stack gap={2}>
-              <Text muted size={0}>Variant dimensions shown (C1 picker form)</Text>
+              <Text muted size={0}>Stage (C1: how many dimensions)</Text>
+              <Flex gap={1}>
+                {([['open-beta', 'Open beta · 1 dimension'], ['ga', 'GA · all']] as const).map(([stage, text]) => (
+                  <Button
+                    fontSize={0}
+                    key={stage}
+                    mode={state.stage === stage ? 'default' : 'ghost'}
+                    onClick={() => setStage(stage)}
+                    padding={2}
+                    text={text}
+                    tone={state.stage === stage ? 'primary' : 'default'}
+                  />
+                ))}
+              </Flex>
+            </Stack>
+
+            <Stack gap={2}>
+              <Text muted size={0}>Variant dimensions shown in GA (C1 picker form)</Text>
               <Flex gap={1}>
                 {([[null, 'All'], [1, '1 list'], [2, '2 columns'], [5, '5 rail']] as const).map(([limit, text]) => (
                   <Button
                     fontSize={0}
                     key={text}
                     mode={state.dimensionLimit === limit ? 'default' : 'ghost'}
+                    disabled={state.stage === 'open-beta'}
                     onClick={() => setDimensionLimit(limit)}
                     padding={2}
                     text={text}
@@ -152,7 +177,7 @@ function FloatingOptions() {
             icon={ControlsIcon}
             onClick={() => setOpen(true)}
             radius="full"
-            text={overrideCount > 0 ? `Config · ${label} +${overrideCount}` : `Config · ${label}`}
+            text={`Config · ${label}`}
             tone="primary"
           />
         </Card>

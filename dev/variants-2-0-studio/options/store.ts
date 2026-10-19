@@ -9,15 +9,19 @@ export type GlobalChoice = 'final' | 'stock' | number
 /** The option id a component resolves to when the master "Stock" switch is on: render stock Studio. */
 export const STOCK_OPTION = '__stock'
 
+export type Stage = 'open-beta' | 'ga'
+
 interface State {
   global: GlobalChoice
   overrides: Record<string, string>
   /** C1 picker: show only the first N dimensions (null = all). Reaches the list, columns and rail forms. */
   dimensionLimit: number | null
+  /** C1: open beta = exactly one variant dimension (the first); GA = all of them. */
+  stage: Stage
 }
 
 const STORAGE_KEY = 'variants-2-0-studio:options'
-const DEFAULT_STATE: State = {global: 0, overrides: {}, dimensionLimit: null}
+const DEFAULT_STATE: State = {global: 0, overrides: {}, dimensionLimit: null, stage: 'open-beta'}
 
 function load(): State {
   try {
@@ -55,6 +59,10 @@ export function setOverride(componentId: string, optionId: string | null) {
   if (optionId === null) delete overrides[componentId]
   else overrides[componentId] = optionId
   commit({...state, overrides})
+}
+
+export function setStage(stage: Stage) {
+  commit({...state, stage})
 }
 
 export function setDimensionLimit(limit: number | null) {

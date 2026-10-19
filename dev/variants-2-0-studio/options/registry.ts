@@ -21,6 +21,8 @@ export interface ComponentDef {
   defaultOption: string
   /** The signed-off option, once there is one. */
   final?: string
+  /** True once the studio renders real UI for this component (not only a slot). */
+  built?: boolean
 }
 
 export const COMPONENTS: ComponentDef[] = [
@@ -28,6 +30,7 @@ export const COMPONENTS: ComponentDef[] = [
     id: 'c1',
     title: 'C1 Perspective bar',
     defaultOption: 'a',
+    built: true,
     options: [
       {
         id: 'a',
@@ -58,6 +61,7 @@ export const COMPONENTS: ComponentDef[] = [
     id: 'c3',
     title: 'C3 Document list overlay',
     defaultOption: 'a',
+    built: true,
     options: [
       {
         id: 'a',

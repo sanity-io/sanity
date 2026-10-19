@@ -21,11 +21,13 @@ interface DimensionButtonProps {
   'onClick'?: () => void
   'title'?: string
   'aria-expanded'?: boolean
+  /** `round` matches the stock Drafts pill (full radius); `box` is the 3px control the row uses. */
+  'shape'?: 'round' | 'box'
 }
 
 export const DimensionButton = forwardRef<HTMLButtonElement, DimensionButtonProps>(
   function DimensionButton(props, ref) {
-    const {icon, text, open, selected, testId, maxWidth = 260, ...rest} = props
+    const {icon, text, open, selected, testId, maxWidth = 260, shape = 'box', ...rest} = props
     return (
       <Button
         {...rest}
@@ -33,9 +35,10 @@ export const DimensionButton = forwardRef<HTMLButtonElement, DimensionButtonProp
         icon={icon}
         iconRight={open ? ChevronUpIcon : ChevronDownIcon}
         mode="ghost"
+        radius={shape === 'round' ? 'full' : undefined}
         ref={ref}
         selected={selected}
-        style={{maxWidth, borderRadius: 6}}
+        style={shape === 'round' ? {maxWidth} : {maxWidth, borderRadius: 6}}
         text={text}
         tooltipProps={null}
       />

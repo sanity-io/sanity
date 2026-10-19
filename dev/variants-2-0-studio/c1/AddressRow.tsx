@@ -1,53 +1,66 @@
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit 2700f4cf07, lib/explorations/variants-2-0/perspective/AddressRow.tsx).
-// Changes: imports point at this monorepo and ./model; LIVE: marks the few places that read live data.
-import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
+// explorations/variants-2-0, commit c9557870aa, lib/explorations/variants-2-0/perspective/AddressRow.tsx).
+// Changes: imports point at this monorepo and ./model. LIVE: the Stage setting (open beta = one dimension, no
+// "Add dimension", no pending chip) and the removed fixture `world`; marked "LIVE:" below.
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 
 import {AddIcon} from '@sanity/icons/Add'
-import {CloseIcon} from '@sanity/icons/Close'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {RemoveIcon} from '@sanity/icons/Remove'
 import {Card, Flex, Text} from '@sanity/ui'
-import {useEffect, useState} from 'react'
+import {type ReactElement, useEffect, useState} from 'react'
 
+import {SegmentDivider} from '../../../packages/sanity/src/core/variants/plugin/components/PerspectiveFilter.css'
 import {valueTitle} from './model'
 import {DimensionIcon} from './dimensionIcons'
 import {Picker} from './Picker'
+import {useOptionState} from '../options/store'
 import {usePerspectiveState} from './state'
 import {DimensionButton, StateMenu, VersionGlyph} from './StateMenu'
 
 /**
- * An address chip: the dimension and its value in one pill, a click opens the picker on that
- * dimension, the cross removes it. Composed from the real `Chip` and `Button`: the library's Address
- * Chip is not in the Studio source yet.
+ * An address chip, built as the real `PerspectiveFilter` pill is: one `Card` (radius 2 = 3px, 1px
+ * border) holding the main button, the real `SegmentDivider`, and the remove button, all one 25px
+ * control. The main button shows the dimension's icon and the value, with a chevron; the dimension's
+ * name is in its accessible name ("Market: United Kingdom"). A click on it opens the picker on that
+ * dimension; the cross removes it. `PerspectiveFilter` itself is not used: it adds a text prefix
+ * before the pill, which a chip does not have. The library's Address Chip is not in the Studio
+ * source yet.
  */
 function AddressChip(props: {
-  label: string
-  dimension: string
+  text: string
+  accessibleName: string
+  icon?: ReactElement
   testId: string
-  onOpen?: () => void
+  onOpen: () => void
   onRemove: () => void
   removeLabel: string
+  removeTestId: string
   setRef?: (el: HTMLElement | null) => void
 }) {
   return (
-    <Flex align="center" data-testid={props.testId} ref={props.setRef} style={{gap: 0}}>
-      <Chip
-        icon={<DimensionIcon name={props.dimension} />}
-        mode="ghost"
-        onClick={props.onOpen}
-        style={{borderRadius: 3}}
-        text={props.label}
-      />
-      <Button
-        aria-label={props.removeLabel}
-        data-testid={`${props.testId}-remove`}
-        icon={CloseIcon}
-        mode="bleed"
-        onClick={props.onRemove}
-        style={{borderRadius: 3}}
-        tooltipProps={null}
-      />
-    </Flex>
+    <Card border data-testid={props.testId} radius={2} ref={props.setRef}>
+      <Flex align="center">
+        <Button
+          aria-label={props.accessibleName}
+          icon={props.icon}
+          iconRight={ChevronDownIcon}
+          mode="bleed"
+          onClick={props.onOpen}
+          text={props.text}
+          tooltipProps={null}
+        />
+        <div className={SegmentDivider} />
+        <Button
+          aria-label={props.removeLabel}
+          data-testid={props.removeTestId}
+          icon={RemoveIcon}
+          mode="bleed"
+          onClick={props.onRemove}
+          tooltipProps={null}
+        />
+      </Flex>
+    </Card>
   )
 }
 
@@ -66,15 +79,25 @@ export function AddressRow() {
   const [addEl, setAddEl] = useState<HTMLElement | null>(null)
   const narrowed = Object.keys(chosen).length > 0
   const allSet = dimensions.every((d) => chosen[d.name])
+  // LIVE: open beta has exactly one dimension and no Add dimension button or pending chip.
+  const openBeta = useOptionState().stage === 'open-beta'
+  const only = dimensions[0]
 
   // "Narrow by dimension…" in the menu raises the pending chip; its picker opens on it.
   useEffect(() => {
-    if (s.pending && pendingEl) {
+    if (s.pending && pendingEl && !openBeta) {
       setAnchor(pendingEl)
       setStart(undefined)
       setOpen(true)
     }
-  }, [s.pending, pendingEl])
+    // LIVE: in open beta the menu's extra row asks for the one list; it opens on the dimension button, no chip.
+    if (s.pending && openBeta && addEl) {
+      setAnchor(addEl)
+      setStart(undefined)
+      setOpen(true)
+      s.setPending(false)
+    }
+  }, [s.pending, pendingEl, addEl, openBeta, s])
 
   // LIVE: the fixture's `world.variantsEnabled` is gone; the host only mounts this row when the design is on.
   if (!s.rowShown) return null
@@ -104,46 +127,59 @@ export function AddressRow() {
           .filter((d) => chosen[d.name])
           .map((d) => (
             <AddressChip
+              accessibleName={`${d.title}: ${valueTitle(d, chosen[d.name])}`}
+              icon={<DimensionIcon name={d.name} />}
               key={d.name}
-              dimension={d.name}
-              label={`${d.title}: ${valueTitle(d, chosen[d.name])}`}
-              onOpen={(event?: unknown) => {
-                void event
+              onOpen={() => {
                 setAnchor(document.querySelector(`[data-testid="chip-${d.name}"]`))
                 setStart(d.name)
                 setOpen(true)
               }}
               onRemove={() => remove(d.name)}
               removeLabel={`Remove ${d.title}`}
-              setRef={undefined}
+              removeTestId={`chip-${d.name}-remove`}
               testId={`chip-${d.name}`}
+              text={valueTitle(d, chosen[d.name])}
             />
           ))}
-        {s.pending ? (
-          <Flex align="center" data-testid="chip-pending" ref={setPendingEl} style={{gap: 0}}>
-            <Chip
-              mode="ghost"
-              style={{borderRadius: 3}}
-              onClick={() => {
-                setAnchor(pendingEl)
-                setStart(undefined)
-                setOpen(true)
-              }}
-              text="Pick a dimension"
-            />
-            <Button
-              aria-label="Cancel"
-              data-testid="pending-cancel"
-              icon={CloseIcon}
-              mode="bleed"
-              onClick={() => {
-                s.setPending(false)
-                close()
-              }}
-              style={{borderRadius: 3}}
-              tooltipProps={null}
-            />
-          </Flex>
+        {openBeta ? (
+          // LIVE: open beta. With nothing chosen the one dimension is a button that opens its flat list; once a
+          // value is chosen the chip above is the control. No "Add dimension", no pending chip.
+          !narrowed && only ? (
+            <div ref={setAddEl}>
+              <Button
+                data-testid="row-choose"
+                icon={<DimensionIcon name={only.name} />}
+                iconRight={ChevronDownIcon}
+                mode="ghost"
+                onClick={() => {
+                  setAnchor(addEl)
+                  setStart(undefined)
+                  setOpen(true)
+                }}
+                text={only.title}
+                tooltipProps={null}
+              />
+            </div>
+          ) : null
+        ) : s.pending ? (
+          <AddressChip
+            accessibleName="Pick a dimension"
+            onOpen={() => {
+              setAnchor(pendingEl)
+              setStart(undefined)
+              setOpen(true)
+            }}
+            onRemove={() => {
+              s.setPending(false)
+              close()
+            }}
+            removeLabel="Cancel"
+            removeTestId="pending-cancel"
+            setRef={setPendingEl}
+            testId="chip-pending"
+            text="Pick a dimension"
+          />
         ) : (
           <div ref={setAddEl}>
             <Button

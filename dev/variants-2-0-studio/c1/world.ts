@@ -43,7 +43,9 @@ export function useVariantDefinitions(): SystemVariant[] {
 /** The dimensions the definitions use, limited to the first N by the Config panel (design control, no data change). */
 export function useDimensions(): DimensionSpec[] {
   const variants = useVariantDefinitions()
-  const {dimensionLimit} = useOptionState()
+  const {dimensionLimit, stage} = useOptionState()
   const all = deriveDimensions(variants)
+  // Open beta: exactly one dimension, the first. GA: all of them (the limit is a comparison aid).
+  if (stage === 'open-beta') return all.slice(0, 1)
   return dimensionLimit === null ? all : all.slice(0, dimensionLimit)
 }
