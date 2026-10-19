@@ -41,8 +41,7 @@ function Badge({perspective, variant}: {perspective: unknown; variant?: string})
   )
 }
 
-function List() {
-  const {data} = useQuery<Book[]>(LIST, {})
+function List({data}: {data: Book[] | null}) {
   return (
     <div>
       <h1 style={{font: '600 22px system-ui'}}>Nordic Books</h1>
@@ -59,8 +58,7 @@ function List() {
   )
 }
 
-function BookPage({id}: {id: string}) {
-  const {data} = useQuery<Book | null>(ONE, {id})
+function BookPage({id, data}: {id: string; data: Book | null}) {
   if (!data) return <p style={{font: '14px system-ui'}}>Loading {id}…</p>
   const attr = createDataAttribute({id: data._id, type: data._type})
   return (
@@ -74,6 +72,13 @@ function BookPage({id}: {id: string}) {
       <small data-testid="served-text">{stegaClean(data.blurb ?? '')}</small>
     </article>
   )
+}
+
+function LiveList() {
+  return <List data={useQuery<Book[]>(LIST, {}).data ?? null} />
+}
+function LiveBook({id}: {id: string}) {
+  return <BookPage data={useQuery<Book | null>(ONE, {id}).data ?? null} id={id} />
 }
 
 function Main() {
@@ -90,10 +95,45 @@ function Main() {
   useLiveMode({})
   return (
     <main style={{margin: '0 auto', maxWidth: 720, padding: 16}}>
-      {route.startsWith('book:') ? <BookPage id={route.slice('book:'.length)} /> : <List />}
+      {route.startsWith('book:') ? <LiveBook id={route.slice('book:'.length)} /> : <LiveList />}
       <Badge perspective={perspective} variant={variant} />
     </main>
   )
 }
 
-createRoot(document.getElementById('root') as HTMLElement).render(<Main />)
+// GRID MODE (spike): the Studio's "Presentation grid" tool owns one comlink channel per iframe and pushes the page's
+// data with postMessage (no loader channel, no token in the page). The visual-editing handshake still runs, so the
+// perspective and variant arrive over this frame's own channel.
+function GridMain() {
+  const [data, setData] = useState<Book | Book[] | null>(null)
+  const [perspective, setPerspective] = useState<unknown>('published')
+  const [variant, setVariant] = useState<string | undefined>(lockedVariant)
+  const [connected, setConnected] = useState(0)
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'grid-data' && event.data.frame === params.get('frame')) setData(event.data.data)
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [])
+  useEffect(
+    () =>
+      enableVisualEditing({
+        onPerspectiveChange: (next) => {
+          setPerspective(next)
+          setConnected((n) => n + 1)
+        },
+        onVariantChange: (next) => setVariant(next),
+      }),
+    [],
+  )
+  return (
+    <main style={{margin: '0 auto', maxWidth: 720, padding: 12}}>
+      {route.startsWith('book:') ? <BookPage data={data as Book | null} id={route.slice('book:'.length)} /> : <List data={data as Book[] | null} />}
+      <Badge perspective={perspective} variant={variant} />
+      <span data-testid="grid-channel" hidden>{`perspective-updates=${connected}`}</span>
+    </main>
+  )
+}
+
+createRoot(document.getElementById('root') as HTMLElement).render(params.get('mode') === 'grid' ? <GridMain /> : <Main />)
