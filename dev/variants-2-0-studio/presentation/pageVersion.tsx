@@ -36,17 +36,17 @@ export function pageVersion(versions: readonly AudienceVersion[], variantId: str
   return {audience: title, kind: 'none', label: `Base · no ${title} version`}
 }
 
-/** Inside Presentation, with C1 A or B and a variant chosen: the audience's variant id and title; else null. */
-export function usePresentationAudience(): {variantId: string; title: string; perspective: string} | null {
+/** With C1 A or B and a variant chosen: the audience's variant id and title; else null. `presentation` = inside Presentation. */
+export function usePresentationAudience(only?: 'presentation'): {variantId: string; title: string; perspective: string; presentation: boolean} | null {
   const inPresentation = useContext(PresentationContext) !== null
   const c1 = useOption('c1')
   const router = useRouter()
   const {selectedPerspectiveName} = usePerspective()
   const definitions = useVariantDefinitions()
   const variantId = typeof router.stickyParams.variant === 'string' ? router.stickyParams.variant : undefined
-  if (!inPresentation || (c1 !== 'a' && c1 !== 'b') || !variantId) return null
+  if ((only === 'presentation' && !inPresentation) || (c1 !== 'a' && c1 !== 'b') || !variantId) return null
   const def = definitions.find((d) => d._id.replace(/^_\.variants\./, '') === variantId)
-  return {variantId, title: def?.metadata?.title ?? variantId, perspective: selectedPerspectiveName ?? 'drafts'}
+  return {variantId, title: def?.metadata?.title ?? variantId, perspective: selectedPerspectiveName ?? 'drafts', presentation: inPresentation}
 }
 
 const DOT: Record<PageVersion['kind'], string> = {

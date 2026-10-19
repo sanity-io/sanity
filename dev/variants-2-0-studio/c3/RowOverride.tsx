@@ -32,7 +32,7 @@ export const useRowOverride: UseDocumentListItemOverride = ({
   const stock = option === STOCK_OPTION
   const versions = useVersionList(documentId, !stock)
   const router = useRouter()
-  const audience = usePresentationAudience()
+  const audience = usePresentationAudience('presentation')
 
   // v2/C rows: a click on a picked version opens that document.
   const openDocument = useCallback(

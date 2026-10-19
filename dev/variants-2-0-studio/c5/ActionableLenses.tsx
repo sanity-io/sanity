@@ -8,6 +8,7 @@ import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/Menu
 
 import {type SystemVariant} from '../c1/model'
 import {applies, BulkBar, Check, ConfirmDialog, useBulk} from './Actionable'
+import {useOpenVersion} from './openVersion'
 import {type Column, DataTable} from './DataTable'
 import type {Target} from './operations'
 import type {Corpus, DocRow, VersionRow} from './useCorpus'
@@ -115,8 +116,11 @@ export function DocumentVersionsLens(props: {
   hidePin?: boolean
   /** A way back to the original document when the pin was changed (the expanded view). */
   onBack?: () => void
+  /** The lens sits in the document's own pane (the inspector): a row only switches the pane's version. */
+  inPane?: boolean
 }) {
-  const {corpus, definitions, docId, onPin, mini, onExpand, hidePin, onBack} = props
+  const {corpus, definitions, docId, onPin, mini, onExpand, hidePin, onBack, inPane} = props
+  const openVersion = useOpenVersion()
   const bulk = useBulk()
   const setVariant = useSetVariant()
   const [shown, setShown] = useState<string | null>(null)
@@ -199,7 +203,11 @@ export function DocumentVersionsLens(props: {
   // variant, set together through the shipped perspective hooks.
   const showVersion = (r: VRow) => {
     setShown(r.id)
-    setVariant({variantId: r.row.variantId ? (`_.variants.${r.row.variantId}` as never) : undefined, perspective: r.row.bundle as never})
+    if (inPane) {
+      setVariant({variantId: r.row.variantId ? (`_.variants.${r.row.variantId}` as never) : undefined, perspective: r.row.bundle as never})
+    } else {
+      openVersion(doc.id, doc.type, r.row.variantId, r.row.bundle)
+    }
   }
 
   return (
@@ -257,6 +265,7 @@ interface DRow {
 export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: SystemVariant[]; variantId: string | null; onPin: (id: string) => void}) {
   const {corpus, definitions, onPin} = props
   const bulk = useBulk()
+  const openVersion = useOpenVersion()
   const variantId = props.variantId ?? (definitions[0] ? shortId(definitions[0]._id) : null)
   const def = definitions.find((d) => shortId(d._id) === variantId)
   const title = def?.metadata?.title ?? variantId ?? ''
@@ -349,7 +358,7 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
         {absent.length ? <Chip tone="caution">{absent.length} missing</Chip> : null}
       </Flex>
       <BulkBar bulk={bulk} targets={selectedRows.map(targetOf)} variantLabel={title} />
-      <DataTable columns={columns} empty="No documents." rows={rows} testId="lens-def-docs" />
+      <DataTable columns={columns} empty="No documents." onRowClick={(r) => openVersion(r.doc.id, r.doc.type, r.version ? variantId : null, r.version?.bundle ?? 'drafts')} rows={rows} testId="lens-def-docs" />
       {dialogFor(bulk, corpus, title, definitions)}
     </Stack>
   )
@@ -407,7 +416,7 @@ export function SharedInventory(props: {corpus: Corpus; definitions: SystemVaria
   const [pin, setPin] = useState(docId)
   return (
     <Box data-testid="shared-inventory" padding={bare ? 0 : 3} style={{maxWidth: 340}}>
-      <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={docId} hidePin mini onExpand={() => { setPin(docId); setExpanded(true) }} onPin={() => undefined} />
+      <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={docId} hidePin inPane mini onExpand={() => { setPin(docId); setExpanded(true) }} onPin={() => undefined} />
       {expanded ? (
         <WideOverlay onClose={() => setExpanded(false)} title="Version inventory">
           <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={pin} onBack={pin !== docId ? () => setPin(docId) : undefined} onPin={setPin} />

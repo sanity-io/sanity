@@ -4,6 +4,7 @@ import {useRouter} from 'sanity/router'
 
 import {type DimensionSpec, type SystemVariant, valueTitle} from '../c1/model'
 import {usePerspectiveState} from '../c1/state'
+import {useOpenVersion} from './openVersion'
 import {type Column, DataTable} from './DataTable'
 import {type Corpus, type DocRow} from './useCorpus'
 
@@ -77,6 +78,7 @@ export function VisitorLens({corpus, definitions, dimensions}: {corpus: Corpus; 
   const [visitor, setVisitor] = useState<Record<string, string>>({})
   const address = usePerspectiveState()
   const router = useRouter()
+  const openVersion = useOpenVersion()
   const meets = definitions
     .filter((v) => Object.entries(v.conditions).every(([k, val]) => visitor[k] === val))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || Object.keys(b.conditions).length - Object.keys(a.conditions).length)
@@ -86,6 +88,8 @@ export function VisitorLens({corpus, definitions, dimensions}: {corpus: Corpus; 
     const unpublished = !served ? meets.find((v) => doc.list.some((r) => r.variantId === shortId(v._id))) : undefined
     return {
       id: doc.id,
+      type: doc.type,
+      servedId: served ? shortId(served._id) : null,
       title: doc.title,
       winner: served ? variantTitle(served) : 'The base document',
       grounds: served
@@ -153,7 +157,15 @@ export function VisitorLens({corpus, definitions, dimensions}: {corpus: Corpus; 
         columns={[
           {key: 'title', title: 'Document', width: 300, render: (r) => text(r.title), sort: (a, b) => a.title.localeCompare(b.title)},
           {key: 'winner', title: 'Served', width: 240, render: (r) => text(r.winner)},
-          {key: 'grounds', title: 'Grounds', width: 460, render: (r) => muted(r.grounds)},
+          {key: 'grounds', title: 'Grounds', width: 400, render: (r) => muted(r.grounds)},
+          {
+            key: 'open',
+            title: '',
+            width: 120,
+            render: (r) => (
+              <Button fontSize={1} mode="bleed" onClick={() => openVersion(r.id, r.type, r.servedId, 'published')} padding={2} style={{height: 25}} text="Open" />
+            ),
+          },
         ]}
         rows={rows}
         testId="lens-visitor"

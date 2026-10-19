@@ -20,11 +20,17 @@ export function PresentationContextLine({documentId}: {documentId: string}) {
   return (
     <Card borderBottom data-testid="presentation-context-line" paddingX={3} paddingY={2} tone="transparent">
       <Flex align="center" gap={3}>
-        <Text as="span" size={1}>
-          <Back style={{alignItems: 'center', color: 'inherit', display: 'inline-flex', gap: 4, textDecoration: 'none'}}>
-            <ArrowLeftIcon /> On this page
-          </Back>
-        </Text>
+        {audience.presentation ? (
+          <Text as="span" size={1}>
+            <Back style={{alignItems: 'center', color: 'inherit', display: 'inline-flex', gap: 4, textDecoration: 'none'}}>
+              <ArrowLeftIcon /> On this page
+            </Back>
+          </Text>
+        ) : (
+          <Text muted size={0}>
+            Showing
+          </Text>
+        )}
         <PageVersionLabel version={version} />
       </Flex>
     </Card>

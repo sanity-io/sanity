@@ -1,6 +1,6 @@
 import {Card, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {useSetPerspective} from 'sanity'
+import {useSetVariant} from 'sanity'
 
 import {usePerspectiveState} from '../../c1/state'
 import {useVariantDefinitions} from '../../c1/world'
@@ -20,7 +20,7 @@ const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 export function LiveInventory({documentId, title}: {documentId: string; title: string}) {
   const world = useLiveWorld(documentId, title)
   const s = usePerspectiveState()
-  const setPerspective = useSetPerspective()
+  const setVariant = useSetVariant()
   const variants = useVariantDefinitions()
 
   const variantFor = useCallback((variantId: string | undefined) => variants.find((v) => shortId(v._id) === variantId), [variants])
@@ -39,12 +39,13 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
 
   const onSelect = useCallback(
     (entry: InventoryEntry) => {
-      setPerspective(entry.group)
       const variant = variantFor(entry.variantId)
+      // One navigation sets the version and the variant, so the document pane shows that version (inspector stays open).
+      setVariant({variantId: variant?._id as never, perspective: entry.group as never})
       s.setChosen(variant ? variant.conditions : {})
       if (variant) s.setRowShown(true)
     },
-    [setPerspective, variantFor, s],
+    [setVariant, variantFor, s],
   )
 
   if (!world) {
