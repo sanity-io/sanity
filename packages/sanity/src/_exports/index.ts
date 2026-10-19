@@ -1796,6 +1796,10 @@ export {
   ShippedPerspectiveBarProvider,
   type UseShippedPerspectiveBar,
 } from '../core/variants/plugin/components/ShippedPerspectiveBar'
+export {
+  type VariantEditNoticeComponent,
+  VariantEditNoticeProvider,
+} from '../core/variants/components/dialog/VariantEditNotice'
 export {getVariantTitle} from '../core/variants/tool/util'
 export {isVariantId, type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'

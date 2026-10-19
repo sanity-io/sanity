@@ -5,6 +5,7 @@ import {variantsLocaleNamespace} from '../../i18n'
 import {useVariantOperations} from '../../store/useVariantOperations'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantDialog} from './VariantDialog'
+import {VariantEditNotice} from './VariantEditNotice'
 
 interface EditVariantDialogProps {
   onCancel: () => void
@@ -45,6 +46,7 @@ export function EditVariantDialog(props: EditVariantDialogProps): React.JSX.Elem
       id="edit-variant-dialog"
       initialValue={initialValue}
       onCancel={onCancel}
+      notice={<VariantEditNotice variant={initialVariant} />}
       onSubmit={handleSubmit}
       renderCancelButton
     />

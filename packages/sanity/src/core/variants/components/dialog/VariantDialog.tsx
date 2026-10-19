@@ -25,6 +25,8 @@ interface VariantDialogProps {
   onCancel: () => void
   onSubmit: (variant: EditableSystemVariant) => Promise<void>
   renderCancelButton?: boolean
+  /** PROPOSED: a notice above the form (the edit dialog passes the VariantEditNotice slot). */
+  notice?: React.ReactNode
 }
 
 export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
@@ -38,6 +40,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
     onCancel,
     onSubmit,
     renderCancelButton = false,
+    notice,
   } = props
   const toast = useToast()
   const {t} = useTranslation(variantsLocaleNamespace)
@@ -105,6 +108,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
     >
       <Card borderTop padding={4}>
         <form onSubmit={handleSubmit}>
+          {notice ? <Box paddingBottom={4}>{notice}</Box> : null}
           <Box paddingBottom={4}>
             <VariantForm
               duplicateConditionsOf={duplicateConditionsOf}
