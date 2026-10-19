@@ -1,3 +1,4 @@
+import {configure} from '@chromatic-com/vitest'
 import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
 import {type ComponentProps} from 'react'
 import {describe, expect, test} from 'vitest'
@@ -76,6 +77,10 @@ function listCard(): HTMLElement | null {
   )
 }
 
+function nextFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()))
+}
+
 describe('list array input', () => {
   test('renders an empty list array', async () => {
     const {settleChromaticEndState} = testHelpers()
@@ -104,6 +109,55 @@ describe('list array input', () => {
     await expect.element(page.getByText('List card 7')).toBeVisible()
     await expect.element(page.getByRole('button', {name: /Show fewer items/})).toBeVisible()
     await settleChromaticEndState()
+  })
+
+  // Browser scroll anchoring reacts to rows moving when the rendered range changes, and its scroll
+  // correction changes the range again, so the list could keep jumping after scrolling stopped.
+  test('keeps the virtualized list geometry stable while scrolling through it', async () => {
+    configure({disableAutoSnapshot: true})
+    void render(<LongListArrayInputHarness />)
+
+    await page.getByRole('button', {name: /Show all 7 items/}).click()
+    await expect.element(page.getByText('List card 7')).toBeInTheDocument()
+
+    const scroller = document.querySelector<HTMLElement>('[data-testid="document-panel-scroller"]')!
+    scroller.style.scrollBehavior = 'auto'
+    // Short enough that only some of the rows are rendered at a time
+    scroller.style.height = '160px'
+
+    const content = document.querySelector<HTMLElement>('[data-ui="ArrayInput__content"]')!
+    const rows = () => [...content.querySelectorAll<HTMLElement>('[data-index]')]
+    await expect.poll(() => rows().length).toBeLessThan(7)
+    const listCard = rows()[0].parentElement!.closest<HTMLElement>('[data-ui="Card"]')!
+
+    expect(getComputedStyle(listCard).overflowAnchor).toBe('none')
+
+    const cardHeights = new Set<number>()
+    const rowOffsets = new Map<string, Set<number>>()
+    const renderedCounts = new Set<number>()
+    for (let top = 0; top <= scroller.scrollHeight - scroller.clientHeight; top += 10) {
+      scroller.scrollTop = top
+      await nextFrame()
+      await nextFrame()
+
+      const cardRect = listCard.getBoundingClientRect()
+      cardHeights.add(Math.round(cardRect.height))
+      renderedCounts.add(rows().length)
+      for (const row of rows()) {
+        const offsets = rowOffsets.get(row.dataset.index!) ?? new Set<number>()
+        offsets.add(Math.round(row.getBoundingClientRect().top - cardRect.top))
+        rowOffsets.set(row.dataset.index!, offsets)
+      }
+    }
+
+    // The scroll passed through different rendered ranges
+    expect(renderedCounts.size).toBeGreaterThan(1)
+    expect(rowOffsets.size).toBe(7)
+    // Which rows are rendered must not move the list's size or the position of any row in it
+    expect([...cardHeights]).toHaveLength(1)
+    for (const [index, offsets] of rowOffsets) {
+      expect({index, offsets: [...offsets]}).toEqual({index, offsets: [expect.any(Number)]})
+    }
   })
 
   test('blends the list card into the form once a read-only form becomes editable', async () => {

@@ -8,5 +8,16 @@
   "exports": {
     ".": "./src/index.mjs"
   },
-  "scripts": {}
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "oxc-parser": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "oxlint": "^1.88.0",
+    "vitest": "catalog:"
+  }
 }

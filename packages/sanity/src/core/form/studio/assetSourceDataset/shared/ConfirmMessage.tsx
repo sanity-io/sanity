@@ -55,7 +55,7 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
                 <img
                   src={`${asset.url}?w=200`}
                   style={STYLE_ASSET_IMAGE}
-                  alt={t('asset-source.usage-list.image-alt')}
+                  alt={t('asset-source.delete-dialog.usage-list.image-preview-alt')}
                   referrerPolicy="strict-origin-when-cross-origin"
                 />
               </Flex>
@@ -85,7 +85,7 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
               <img
                 src={`${asset.url}?w=200`}
                 style={STYLE_ASSET_IMAGE}
-                alt={t('asset-source.asset-list.table.preview-alt')}
+                alt={t('asset-source.delete-dialog.usage-list.image-preview-alt')}
                 referrerPolicy="strict-origin-when-cross-origin"
               />
             </Flex>

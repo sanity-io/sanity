@@ -23,6 +23,7 @@ import {
 import {
   adoption,
   checkbox,
+  closeButton,
   cssMeter,
   cssMeterFill,
   dot,
@@ -35,6 +36,7 @@ import {
   groupHeading,
   handleDragging,
   header,
+  headerRow,
   legend,
   lifted,
   metricLabel,
@@ -73,6 +75,9 @@ const KEY_DIRECTIONS: Record<string, DragDirection | undefined> = {
 }
 
 const DEFAULT_STATE: PanelState = {open: false, active: [], corner: DEFAULT_CORNER}
+
+// This tab only. A reload re-evaluates the module and shows the panel again.
+let dismissedForSession = false
 
 function classNames(...values: (string | false | null | undefined)[]): string {
   return values.filter(Boolean).join(' ')
@@ -134,6 +139,7 @@ function readViewport(): Size {
 
 export default function StyleOutlinePanel() {
   const [state, setState] = useState(readStoredState)
+  const [dismissed, setDismissed] = useState(dismissedForSession)
   const [metrics, setMetrics] = useState<StyleCensus | null>(null)
   const [dragging, setDragging] = useState(false)
   const [initialAnchor] = useState(() => restingAnchor(state.corner, readViewport()))
@@ -295,6 +301,13 @@ export default function StyleOutlinePanel() {
     onClick: toggleOpen,
   }
 
+  const dismiss = () => {
+    dismissedForSession = true
+    setDismissed(true)
+  }
+
+  if (dismissed) return null
+
   return (
     <motion.div
       ref={widgetRef}
@@ -322,16 +335,36 @@ export default function StyleOutlinePanel() {
           aria-label="Style outline"
           data-testid="style-outline-panel"
         >
-          <button
-            type="button"
-            className={classNames(header, dragging && handleDragging)}
-            title="Drag to a corner, or click to collapse"
-            aria-expanded
-            data-testid="style-outline-collapse"
-            {...handleProps}
-          >
-            Style migrations
-          </button>
+          <div className={headerRow}>
+            <button
+              type="button"
+              className={classNames(header, dragging && handleDragging)}
+              title="Drag to a corner, or click to collapse"
+              aria-expanded
+              data-testid="style-outline-collapse"
+              {...handleProps}
+            >
+              Style migrations
+            </button>
+            <button
+              type="button"
+              className={closeButton}
+              aria-label="Close"
+              data-testid="style-outline-close"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={dismiss}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                <path
+                  d="M2.25 2.25 9.75 9.75M9.75 2.25 2.25 9.75"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          </div>
           <section className={group} aria-labelledby="style-outline-ui-adoption">
             <h2 className={groupHeading} id="style-outline-ui-adoption">
               UI v5 adoption

@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
+
+### Features
+
+* **core:** let a validation subscriber switch a document's shared validation to immediate ([#15369](https://github.com/sanity-io/sanity/issues/15369)) ([1af75fd](https://github.com/sanity-io/sanity/commit/1af75fdecfd6c9780992afd9aee941a4457a38c6))
+* **validation:** add immediate validation option ([#15317](https://github.com/sanity-io/sanity/issues/15317)) ([36610af](https://github.com/sanity-io/sanity/commit/36610aff267ec65d575ef329eb29771c9d72aef1))
+* **validation:** yield to the browser during an immediate validation run ([#15352](https://github.com/sanity-io/sanity/issues/15352)) ([dfb6f4c](https://github.com/sanity-io/sanity/commit/dfb6f4c7247c84fb147b0adc77e295e07626c1ea))
+
+### Bug Fixes
+
+* **types:** add currentUser to ValidationContext ([#14360](https://github.com/sanity-io/sanity/issues/14360)) ([ded58c4](https://github.com/sanity-io/sanity/commit/ded58c4d5e6e0c4e4dbb6b9087127e4d073b4f50))
 ## [6.15.0](https://github.com/sanity-io/sanity/compare/v6.14.1...v6.15.0) (2026-09-17)
 
 ### Bug Fixes
