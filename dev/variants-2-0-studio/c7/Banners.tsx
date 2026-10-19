@@ -83,7 +83,7 @@ export function DocumentBannerV1({documentId, option}: {documentId: string; docu
   // Option B, in Drafts: no banner, a header hint.
   if (option === 'b' && version === 'drafts') {
     return (
-      <Card data-testid="doc-banner-b-hint" paddingX={3} radius={2} paddingY={1} style={{borderBottom: '1px solid var(--card-border-color)'}} tone="transparent">
+      <Card data-testid="doc-banner-b-hint" paddingX={3} radius={3} paddingY={1} style={{borderBottom: '1px solid var(--card-border-color)'}} tone="transparent">
         <Text muted size={0}>{shown.title} · not created yet. Your first edit creates it.</Text>
       </Card>
     )
@@ -92,7 +92,7 @@ export function DocumentBannerV1({documentId, option}: {documentId: string; docu
   // Published: variants are created in Drafts or in a release, so there is no action.
   if (version === 'published') {
     return (
-      <Card data-testid={`doc-banner-${option}`} padding={3} radius={2} style={{borderBottom: '1px solid var(--card-border-color)'}} tone="caution">
+      <Card data-testid={`doc-banner-${option}`} padding={3} radius={3} style={{borderBottom: '1px solid var(--card-border-color)'}} tone="caution">
         <Text size={1}>This document has no {shown.title} variant.</Text>
         <Box paddingTop={1}>
           <Text muted size={1}>Variants are created in Drafts or in a release. Switch the version to create one.</Text>
@@ -102,7 +102,7 @@ export function DocumentBannerV1({documentId, option}: {documentId: string; docu
   }
 
   return (
-    <Card data-testid={`doc-banner-${option}`} padding={3} radius={2} style={{borderBottom: '1px solid var(--card-border-color)'}} tone="caution">
+    <Card data-testid={`doc-banner-${option}`} padding={3} radius={3} style={{borderBottom: '1px solid var(--card-border-color)'}} tone="caution">
       <Flex align="center" gap={3}>
         <Box flex={1}>
           <Text size={1}>This document has no {shown.title} variant.</Text>

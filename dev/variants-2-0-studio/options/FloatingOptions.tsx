@@ -50,7 +50,7 @@ function FloatingOptions() {
   return (
     <div style={{position: 'fixed', left: 16, bottom: 16, zIndex: 1000000}}>
       {open ? (
-        <Card radius={2} shadow={3} style={{width: 360, maxHeight: '70vh', overflow: 'auto'}}>
+        <Card radius={3} shadow={3} style={{width: 360, maxHeight: '70vh', overflow: 'auto'}}>
           <Stack gap={3} padding={3}>
             <Flex align="center" gap={2}>
               <Box flex={1}>
@@ -174,12 +174,13 @@ function FloatingOptions() {
           </Stack>
         </Card>
       ) : (
-        <Card radius="full" shadow={2}>
+        <Card radius={2} shadow={2}>
           <Button
             aria-label="Config"
+            fontSize={1}
             icon={ControlsIcon}
             onClick={() => setOpen(true)}
-            radius="full"
+            padding={2}
             text={`Config · ${label}`}
             tone="primary"
           />
