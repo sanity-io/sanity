@@ -62,19 +62,8 @@ export const defaultLabels: RequestAccessLabels = {
   expiredMessage: 'Your previous request has expired. You may request access again below.',
   // Reached both before and after a submit, so it must not claim a send failed.
   ssoEnforcedTitle: 'Organization SSO required',
-  ssoEnforcedMessage: ({providerTitle, signedInWithSso}) => {
-    const requirement =
-      'This organization requires you to sign in with its own SSO. If you can’t continue, contact your organization’s administrator.'
-    if (signedInWithSso) return <>You’re signed in with a different SSO provider. {requirement}</>
-    if (providerTitle) {
-      return (
-        <>
-          You’re signed in with <strong>{providerTitle}</strong>. {requirement}
-        </>
-      )
-    }
-    return requirement
-  },
+  ssoEnforcedMessage: () =>
+    'This organization requires you to sign in with its SSO. Sign out, then sign in again with your organization’s SSO. If that still doesn’t work, contact your organization’s administrator.',
   ssoSignInCta: 'Sign in with SSO',
   resourceNotAvailableTitle: 'Access can’t be requested',
   resourceNotAvailableMessage: 'The resource currently being requested is no longer available.',
