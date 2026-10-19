@@ -97,7 +97,7 @@ Screenshots and `run.json` go to `journeys-captures/` (not committed). The scrip
 ## Known gaps and not verified
 
 - Not verified: Andrej's original panel (C4 C) row click; the Presentation grid's own `Open in Presentation` link beyond one click.
-- The grid does not get live updates (it polls every 4 seconds), and its side panel links to the form; it does not embed it.
+- The grid does not get live updates (it polls every 4 seconds). Its side panel embeds the form as a full Studio inside a frame (with the Studio's own chrome).
 - The stand-in preview shows Nordic Books and the field-marks document only. The Northfold storefront is not wired.
 - Presentation shows the shipped header (not the C2 pills) when a variant is chosen. At a 325 px pane it truncates.
 - Field marks: the shipped mark covers fields only. Array items, removed items and portable text blocks carry nothing. C9 B and C are candidates.
