@@ -2,7 +2,7 @@ import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
 import {Inline} from '@sanity/ui'
-import {Text, Box} from 'ui5'
+import {Text, Box, Icon} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {resolveUploadAssetSources} from '../../../studio/uploads/resolveUploadAssetSources'
@@ -34,9 +34,7 @@ export function DropMessage(props: Props) {
       {acceptedFiles.length > 0 ? (
         <>
           <Inline gap={2}>
-            <Text as="div" trim={true}>
-              <UploadIcon />
-            </Text>
+            <Icon icon={UploadIcon} />
             {multiple
               ? t('inputs.files.common.drop-message.drop-to-upload-multi', {
                   count: acceptedFiles.length,
@@ -47,9 +45,7 @@ export function DropMessage(props: Props) {
           {rejectedFilesCount > 0 && (
             <Box marginTop={4}>
               <Inline gap={2}>
-                <Text muted size={1} as="div" trim={true}>
-                  <AccessDeniedIcon />
-                </Text>
+                <Icon muted size={1} icon={AccessDeniedIcon} />
                 <Text muted size={1} as="div" trim={true}>
                   {t('inputs.files.common.drop-message.drop-to-upload.rejected-file-message', {
                     count: rejectedFilesCount,
@@ -61,9 +57,7 @@ export function DropMessage(props: Props) {
         </>
       ) : (
         <Inline data-testid="upload-target-drop-message-not-allowed" gap={2}>
-          <Text as="div" trim={true}>
-            <AccessDeniedIcon />
-          </Text>
+          <Icon icon={AccessDeniedIcon} />
           <Text as="div" trim={true}>
             {t('inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message', {
               count: hoveringFiles.length,

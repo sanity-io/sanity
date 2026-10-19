@@ -162,11 +162,11 @@ export function ImageToolInput(props: ImageToolInputProps) {
         <>
           <Card padding={3} marginY={3} tone="caution" radius={2}>
             <VStack gap={4}>
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="caution">
                 {t('inputs.imagetool.vector-warning.title')}
               </Text>
               <Details title={t('inputs.imagetool.vector-warning.expand-developer-info')}>
-                <Text size={1} as="div" trim={true}>
+                <Text size={1} as="div" trim={true} tone="caution">
                   <Translate
                     t={t}
                     i18nKey="inputs.imagetool.vector-warning.developer-info"
@@ -198,7 +198,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                 <LoadStatus>
                   {imageLoadError ? (
                     <Card padding={4} radius={2} tone="critical" border>
-                      <Text as="div" trim={true}>
+                      <Text as="div" trim={true} tone="critical">
                         {t('inputs.imagetool.load-error', {
                           errorMessage: imageLoadError.message,
                         })}
