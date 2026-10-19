@@ -797,21 +797,24 @@ function validateItemObservable({
     )
 
     // Validation from each field's schema `validation: Rule => {/* ... */}` function
+    // Construct child pipelines only when the parent's scheduler starts them.
     nestedChecks = nestedChecks.concat(
       type.fields.map((field) =>
-        validateItemObservable({
-          ...restOfContext,
-          hidden,
-          parent: value,
-          value: isRecord(value) ? value[field.name] : undefined,
-          path: path.concat(field.name),
-          type: field.type,
-          environment,
-          customValidationConcurrencyLimiter,
-          customValidation,
-          scheduling,
-          __internal,
-        }),
+        defer(() =>
+          validateItemObservable({
+            ...restOfContext,
+            hidden,
+            parent: value,
+            value: isRecord(value) ? value[field.name] : undefined,
+            path: path.concat(field.name),
+            type: field.type,
+            environment,
+            customValidationConcurrencyLimiter,
+            customValidation,
+            scheduling,
+            __internal,
+          }),
+        ),
       ),
     )
   }
@@ -825,19 +828,21 @@ function validateItemObservable({
   if (shouldRunNestedValidationForArrays) {
     nestedChecks = nestedChecks.concat(
       value.map((item, index) =>
-        validateItemObservable({
-          ...restOfContext,
-          hidden,
-          parent: value,
-          value: item,
-          path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
-          type: resolveTypeForArrayItem(item, type.of),
-          environment,
-          customValidationConcurrencyLimiter,
-          customValidation,
-          scheduling,
-          __internal,
-        }),
+        defer(() =>
+          validateItemObservable({
+            ...restOfContext,
+            hidden,
+            parent: value,
+            value: item,
+            path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
+            type: resolveTypeForArrayItem(item, type.of),
+            environment,
+            customValidationConcurrencyLimiter,
+            customValidation,
+            scheduling,
+            __internal,
+          }),
+        ),
       ),
     )
   }
