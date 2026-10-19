@@ -47,7 +47,7 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
       radius={2}
       data-testid="alert-cross-dataset-reference-feature-disabled"
     >
-      <Flex gap={3} marginBottom={hasRef ? 4 : undefined}>
+      <Flex gap={4} marginBottom={hasRef ? 4 : undefined}>
         <Box>
           <Icon
             size={1}
