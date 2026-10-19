@@ -35,7 +35,7 @@ node_modules/.bin/vite --port 3334
 
 The first visit after a start can reload by itself once while the dev server prepares dependencies (30 to 90 seconds,
 sometimes a failed module fetch in the console). Open `http://localhost:3350/structure/book` once, wait for the list, and refresh.
-After that every step on the demo path loads in under 5 seconds, except Presentation (about 5 to 9 seconds to connect) and the grid (about 9 seconds).
+After that every step on the demo path loads in under 5 seconds. Presentation takes about 4.7 seconds to connect on a warm server (up to 9 seconds on the first visit after a start) and the grid about 9 seconds (three preview frames connect one by one).
 
 | Variable | Effect |
 |---|---|
@@ -87,6 +87,7 @@ node journeys/capture.mts            # all journeys; or name some: node journeys
 node journeys/verify.mts             # bulk actions, C4 lens, visitor lens
 node journeys/verify-d1.mts          # delete one version, delete all versions
 node journeys/verify-open.mts        # open a version as a document
+node journeys/verify-pills.mts       # C2 A pill order (Variants, divider, Published, Draft, Releases)
 node journeys/dryrun.mts             # the demo path above, timed, with console errors and a contrast check in light and dark
 ```
 

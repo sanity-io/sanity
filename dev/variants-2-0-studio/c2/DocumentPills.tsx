@@ -99,6 +99,13 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
     <Flex align="center" data-testid={`doc-pills-${option}`} gap={2} style={{flex: '1 1 0%', minWidth: 0}} wrap="wrap">
       {option === 'a' ? (
         <>
+          {/* Follows PR #39: Variants first, a divider, then Published, Draft and Releases. */}
+          <DropdownPill
+            items={variants.map(variantItem)}
+            testId="pills-variants"
+            text={`Variants · ${variants.length}`}
+          />
+          <div aria-hidden data-testid="pills-divider" style={{alignSelf: 'stretch', width: 1, margin: '4px 2px', background: 'var(--card-border-color)'}} />
           {published && (
             <Chip icon={<ReleaseAvatarIcon release="published" />} mode="ghost" onClick={() => setPerspective('published')} selected={current === 'published'} text="Published" />
           )}
@@ -107,12 +114,7 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
           <DropdownPill
             items={releaseItems}
             testId="pills-releases"
-            text={`Releases (${releases.length})`}
-          />
-          <DropdownPill
-            items={variants.map(variantItem)}
-            testId="pills-variants"
-            text={`Variants (${variants.length})`}
+            text={`Releases · ${releases.length}`}
           />
         </>
       ) : (

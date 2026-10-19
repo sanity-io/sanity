@@ -184,7 +184,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "One row per stored version, with address and state.",
-        "story": "explorations-variants-variant-inventory-side-panel-c4-version-inventory-pane--interactive-demo"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory"
       },
       {
         "title": "Open a version from the inventory",
@@ -193,7 +193,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The document shows that version.",
-        "story": "explorations-variants-variant-inventory-side-panel-c4-version-inventory-pane--interactive-demo"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--open-a-version"
       }
     ]
   },
@@ -449,7 +449,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The version rows are listed with states.",
-        "story": "explorations-variants-variant-inventory-side-panel-c4-version-inventory-pane--interactive-demo"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory"
       },
       {
         "title": "Delete the variant version",
@@ -586,7 +586,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The draft row is listed.",
-        "story": "explorations-variants-variant-inventory-side-panel-c4-version-inventory-pane--interactive-demo"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory"
       },
       {
         "title": "Publish the variant version",
