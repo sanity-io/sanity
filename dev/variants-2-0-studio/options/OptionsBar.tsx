@@ -16,7 +16,7 @@ function OptionsBar() {
     <Box padding={2} style={{borderBottom: '1px solid var(--card-border-color)'}}>
       <Flex align="center" gap={3}>
         <Text size={1} weight="medium">Variants 2.0 options</Text>
-        <Inline space={1}>
+        <Inline gap={1}>
           {choices.map((index) => (
             <Button
               key={index}

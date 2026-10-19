@@ -1,4 +1,4 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 
 import {getComponent} from './registry'
@@ -23,12 +23,12 @@ export function OptionSlot({component, options}: OptionSlotProps) {
   const option = def?.options.find((candidate) => candidate.id === active)
   return (
     <Card border padding={3} radius={2} tone="transparent">
-      <Stack space={2}>
+      <Stack gap={2}>
         <Text size={1} weight="medium">
           {def?.title ?? component}: option {active.toUpperCase()} is not built yet
         </Text>
         {option && <Text size={1} muted>{option.label}. {option.summary}</Text>}
-        <Code size={0}>{`<OptionSlot component="${component}" options={{${active}: …}} />`}</Code>
+        <Text as="code" muted size={0}>{`<OptionSlot component="${component}" options={{${active}: …}} />`}</Text>
       </Stack>
     </Card>
   )

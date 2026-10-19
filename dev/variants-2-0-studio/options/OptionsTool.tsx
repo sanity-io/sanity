@@ -16,8 +16,8 @@ function OptionsPanel() {
 
   return (
     <Box padding={4} style={{overflow: 'auto', height: '100%'}}>
-      <Stack space={4} style={{maxWidth: 880}}>
-        <Stack space={2}>
+      <Stack gap={4} style={{maxWidth: 880}}>
+        <Stack gap={2}>
           <Heading size={2}>Variants 2.0 options</Heading>
           <Text muted size={1}>
             The toolbar sets one choice for every component. Pick an option here to override a single
@@ -29,7 +29,7 @@ function OptionsPanel() {
           const overridden = state.overrides[component.id]
           return (
             <Card border key={component.id} padding={3} radius={2}>
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Flex align="center" gap={2}>
                   <Text size={1} weight="semibold">{component.title}</Text>
                   {component.final && <Badge tone="positive">final: {component.final.toUpperCase()}</Badge>}
