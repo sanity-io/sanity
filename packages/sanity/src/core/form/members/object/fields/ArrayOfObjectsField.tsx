@@ -22,6 +22,7 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
+import {pushAlreadyExistsWarnings} from '../../../inputs/files/common/alreadyExistsWarning'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../inputs/files/common/assetSource'
 import {applyAll} from '../../../patch/applyPatch'
 import {insert, set, setIfMissing, unset} from '../../../patch/patch'
@@ -447,6 +448,9 @@ export function ArrayOfObjectsField(props: {
                 })
                 break
               case 'all-complete':
+                // Duplicate-detection warnings must be pushed from here —
+                // see the doc comment on pushAlreadyExistsWarnings.
+                pushAlreadyExistsWarnings({files: event.files, push: toast.push, t})
                 handleChange(PatchEvent.from([unset([{_key: key}, UPLOAD_STATUS_KEY])]))
                 break
               default:

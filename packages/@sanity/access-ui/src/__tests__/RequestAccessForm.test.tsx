@@ -138,13 +138,15 @@ describe('RequestAccessForm', () => {
     await renderForm({client})
     await submitRequest()
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/requires signing in with SSO/)
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
     expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
       'href',
       'https://idp.example.com/login',
     )
     // A send did fail here, but the wall is the point, not the failure.
-    expect(screen.getByRole('heading', {name: 'Sign in with SSO required'})).toBeInTheDocument()
+    expect(screen.getByRole('heading', {name: 'Organization SSO required'})).toBeInTheDocument()
   })
 
   const SSO_LOGIN_URL = 'https://www.sanity.io/login/sso/acme?origin=https%3A%2F%2Fexample.test%2F'
@@ -157,7 +159,9 @@ describe('RequestAccessForm', () => {
     const client = createClientStub(samlRequired(SSO_LOGIN_URL))
     await renderForm({client})
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/requires signing in with SSO/)
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
     // The org's own SSO login page, which auto-submits, so this is the only click.
     expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
       'href',
@@ -173,16 +177,35 @@ describe('RequestAccessForm', () => {
     await renderForm({client})
 
     expect(
-      await screen.findByRole('heading', {name: 'Sign in with SSO required'}),
+      await screen.findByRole('heading', {name: 'Organization SSO required'}),
     ).toBeInTheDocument()
     expect(screen.queryByText('Access request couldn’t be sent')).not.toBeInTheDocument()
   })
 
-  it('names the provider the user is actually signed in with', async () => {
+  it('does not name SAML in the message for a SAML session', async () => {
     const client = createClientStub(samlRequired())
-    await renderForm({client})
+    await renderForm({
+      client,
+      currentUser: {name: 'Ada', email: 'ada@example.com', provider: 'saml-other'},
+    })
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/signed in with Google/)
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
+    expect(alert).not.toHaveTextContent(/SAML/)
+    expect(screen.getByText('ada@example.com · SAML/SSO')).toBeInTheDocument()
+  })
+
+  it('does not claim an SSO session for an unknown provider', async () => {
+    const client = createClientStub(samlRequired())
+    await renderForm({client, currentUser: {email: 'ada@example.com', provider: 'other'}})
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
+    expect(alert).not.toHaveTextContent(/signed in with/)
   })
 
   it('omits the CTA when the API resolves no login URL', async () => {
@@ -200,7 +223,9 @@ describe('RequestAccessForm', () => {
     })
     await renderForm({client})
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/requires signing in with SSO/)
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /requires you to sign in with its SSO\. Sign out, then sign in again/,
+    )
     expect(screen.queryByText(/pending approval/)).not.toBeInTheDocument()
   })
 

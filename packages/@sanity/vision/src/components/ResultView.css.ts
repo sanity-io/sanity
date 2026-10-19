@@ -102,6 +102,44 @@ globalStyle(`${resultViewWrapper} .json-inspector .json-inspector__value`, {
   marginLeft: space4HalfVar,
 })
 
+/** Set on the wrapper when every property has a copy button */
+export const copyableResult = style({})
+
+/**
+ * Copies the value of the property on its line. It sits at the line's end, out of the flow so
+ * the tree's layout is the same with or without it, and shows while the line is hovered or the
+ * button focused.
+ */
+export const copyNodeButton = style({
+  appearance: 'none',
+  background: 'none',
+  border: 0,
+  borderRadius: '2px',
+  color: 'var(--card-muted-fg-color)',
+  cursor: 'pointer',
+  display: 'inline-flex',
+  fontSize: '1.2em',
+  lineHeight: codeLineHeightVar,
+  opacity: 0,
+  padding: 0,
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  selectors: {
+    '&:hover': {color: 'var(--card-fg-color)'},
+    '&:focus-visible': {opacity: 1, outline: '1px solid var(--card-focus-ring-color)'},
+  },
+})
+
+globalStyle(`${resultViewWrapper} .json-inspector .json-inspector__line:hover ${copyNodeButton}`, {
+  opacity: 1,
+})
+
+// Long values wrap before the button rather than under it
+globalStyle(`${copyableResult} .json-inspector .json-inspector__line`, {
+  paddingRight: '1.5em',
+})
+
 globalStyle(
   `${resultViewWrapper} .json-inspector > .json-inspector__leaf_root > .json-inspector__line > .json-inspector__key + .json-inspector__value`,
   {

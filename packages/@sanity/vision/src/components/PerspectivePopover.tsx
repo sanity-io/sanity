@@ -38,6 +38,7 @@ export function PerspectivePopover() {
 
   return (
     <Popover
+      animate
       content={
         <PerspectivePopoverContent>
           <VStack gap={4}>
