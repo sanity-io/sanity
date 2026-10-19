@@ -60,8 +60,9 @@ export function buildCorpus(rows: readonly RawRow[], releases: ReleaseInfo[], de
   const groups = new Map<string, DocRow>()
   const releaseCounts: Record<string, {docs: number; variants: number}> = {}
   for (const source of rows) {
-    // A base version in a release is `versions.<release>.<id>` and carries no `_system.bundleId`.
-    const bundle = source.bundle ?? (source._id.startsWith('versions.') ? source._id.split('.')[1] : null)
+    // A BASE version in a release is `versions.<release>.<id>` and carries no `_system.bundleId`. A variant version is
+    // `versions.<scope>.<id>` whatever it is: its bundle is `_system.bundleId`, and none means published.
+    const bundle = source.bundle ?? (!source.variant && source._id.startsWith('versions.') ? source._id.split('.')[1] : null)
     const row = {...source, bundle}
     const id = row._id.split('.').at(-1) as string
     let group = groups.get(id)

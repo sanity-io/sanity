@@ -1,8 +1,11 @@
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {PackageIcon} from '@sanity/icons/Package'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {Box, Heading, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {type Tool, type ToolMenuProps} from 'sanity'
 
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {InventoryTable, DefinitionsTool, ReleasesTool} from '../c5/InventoryTable'
 import {OptionSlot} from '../options/OptionSlot'
 import {COMPONENTS} from '../options/registry'
@@ -56,6 +59,44 @@ function DesignSlots() {
   )
 }
 
+/** One navbar tool per table component, so none of them needs the Design slots tool to be found. */
+function SlotTool({component}: {component: 'c5' | 'c6' | 'c8'}) {
+  const stock = useOption(component) === STOCK_OPTION
+  const title = COMPONENTS.find((c) => c.id === component)?.title
+  return (
+    <Box padding={4} style={{height: '100%', overflow: 'auto'}}>
+      <Stack gap={3} style={{maxWidth: 1280}}>
+        <Heading size={2}>{title}</Heading>
+        {stock ? <Text muted size={1}>Stock is on: this design is not rendered.</Text> : <OptionSlot component={component} options={LIVE[component]} />}
+      </Stack>
+    </Box>
+  )
+}
+
+export const variantsTool: Tool = {
+  name: 'variants',
+  title: 'Variants',
+  icon: RhombusIcon,
+  component: () => <SlotTool component="c6" />,
+}
+
+export const inventoryTool: Tool = {
+  name: 'inventory',
+  title: 'Inventory',
+  icon: PackageIcon,
+  component: () => <SlotTool component="c5" />,
+}
+
+export const releasesViewTool: Tool = {
+  name: 'releases-view',
+  title: 'Release table',
+  icon: CalendarIcon,
+  component: () => <SlotTool component="c8" />,
+}
+
+/** Tools that belong to the designs: hidden when the master Stock switch is on. */
+const DESIGN_TOOLS = new Set(['design-slots', 'variants', 'inventory', 'releases-view'])
+
 export const designSlotsTool: Tool = {
   name: 'design-slots',
   title: 'Design slots',
@@ -66,6 +107,6 @@ export const designSlotsTool: Tool = {
 /** Hides the Design slots tool from the nav when the master Stock switch is on, so the top bar is stock. */
 export function ToolMenuWithSlots(props: ToolMenuProps) {
   const {global} = useOptionState()
-  const tools = global === 'stock' ? props.tools.filter((tool) => tool.name !== 'design-slots') : props.tools
+  const tools = global === 'stock' ? props.tools.filter((tool) => !DESIGN_TOOLS.has(tool.name)) : props.tools
   return props.renderDefault({...props, tools})
 }

@@ -1,55 +1,33 @@
 import {DocumentsIcon} from '@sanity/icons/Documents'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {type DocumentInspector, type DocumentInspectorProps, ReleaseAvatarIcon} from 'sanity'
+import {Card, Text} from '@sanity/ui'
+import {type DocumentInspector, type DocumentInspectorProps} from 'sanity'
 
-import {useVersionList} from '../data/useVersionList'
+import {SharedInventory} from '../c5/ActionableLenses'
+import {useCorpus} from '../c5/useCorpus'
+import {useVariantDefinitions} from '../c1/world'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PlaceholderSlot} from '../slots/PlaceholderSlot'
 import {LiveInventory} from './inventory/LiveInventory'
-import {VersionTime} from '../c3/time'
-import {type AudienceVersion} from '../data/versions'
 
 /**
  * C4 V1 (inventory pane), live data. Option B (engineering direction): the document INSPECTOR, a list of every
  * version of this document: base first, then variants, with state and time. Option A (a sidebar pane) arrives from
  * Andrej's inventory side panel, so it is a placeholder here.
  */
-function glyph(v: AudienceVersion) {
-  if (v.state === 'published') return <ReleaseAvatarIcon release="published" />
-  if (v.state === 'draft') return <ReleaseAvatarIcon release="drafts" />
-  return <ReleaseAvatarIcon releaseType={v.state === 'scheduled' ? 'scheduled' : v.state === 'asap' ? 'asap' : 'undecided'} />
+function SharedFromCorpus({documentId}: {documentId: string}) {
+  const corpus = useCorpus()
+  const definitions = useVariantDefinitions()
+  if (!corpus) return <Card padding={3}><Text muted size={1}>Loading versions…</Text></Card>
+  return <SharedInventory corpus={corpus} definitions={definitions} docId={documentId} />
 }
 
 function Inventory({documentId}: DocumentInspectorProps) {
   const option = useOption('c4')
-  const versions = useVersionList(documentId, option === 'c')
-  // A and B both show Andrej's panel (B opens it as a popover from the pane, but a click on a list row's control
-  // still lands here). C is the earlier simple list.
+  // A and B show Andrej's panel (B opens it as a popover from the pane, but a click on a list row's control still lands
+  // here). C is the C5 document lens, mini, with an Expand control for the full table.
   if (option === 'a' || option === 'b') return <LiveInventory documentId={documentId} title={documentId} />
-  if (option !== 'c') return <PlaceholderSlot component="c4" />
-  if (!versions) return <Card padding={3}><Text muted size={1}>Loading versions…</Text></Card>
-
-  const ordered = [...versions].sort((a, b) => (a.audience === null ? -1 : 0) - (b.audience === null ? -1 : 0))
-  return (
-    <Stack data-testid="inventory-inspector" gap={0} padding={3}>
-      <Text size={1} weight="semibold">Versions of this document ({versions.length})</Text>
-      <Stack gap={1} paddingTop={3}>
-        {ordered.map((v, i) => (
-          <Card key={`${v.audience}-${v.state}-${i}`} padding={2} radius={2} tone="transparent">
-            <Flex align="center" gap={2}>
-              <Text size={1}>{glyph(v)}</Text>
-              <Stack flex={1} gap={1}>
-                <Text size={1}>{v.audience ?? 'All users (Default)'}</Text>
-                <Text muted size={0}>
-                  <VersionTime version={v}>{(time) => [v.release, time ?? (v.release ? undefined : v.state)].filter(Boolean).join(' · ')}</VersionTime>
-                </Text>
-              </Stack>
-            </Flex>
-          </Card>
-        ))}
-      </Stack>
-    </Stack>
-  )
+  if (option === 'c') return <SharedFromCorpus documentId={documentId} />
+  return <PlaceholderSlot component="c4" />
 }
 
 export const inventoryInspector: DocumentInspector = {

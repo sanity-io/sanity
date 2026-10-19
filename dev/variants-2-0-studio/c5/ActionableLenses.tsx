@@ -1,5 +1,5 @@
-import {Box, Button, Card, Flex, Select, Stack, Text} from '@sanity/ui'
-import {type ReactNode, useMemo} from 'react'
+import {Box, Button, Card, Dialog, Flex, Select, Stack, Text} from '@sanity/ui'
+import {type ReactNode, useMemo, useState} from 'react'
 
 import {type SystemVariant} from '../c1/model'
 import {BulkBar, Check, ConfirmDialog, useBulk} from './Actionable'
@@ -104,8 +104,14 @@ export function DocumentVersionsLens(props: {
   docId: string
   onPin: (id: string) => void
   mini?: boolean
+  /** Shows an Expand control that calls this (the C4 inventory opens the full lens). */
+  onExpand?: () => void
+  /** No pin picker: the lens is pinned to the document it sits in (C4). */
+  hidePin?: boolean
+  /** A way back to the original document when the pin was changed (the expanded view). */
+  onBack?: () => void
 }) {
-  const {corpus, definitions, docId, onPin, mini} = props
+  const {corpus, definitions, docId, onPin, mini, onExpand, hidePin, onBack} = props
   const bulk = useBulk()
   const doc = corpus.docs.find((d) => d.id === docId) ?? corpus.docs[0]
   const rows: VRow[] = useMemo(() => {
@@ -153,16 +159,29 @@ export function DocumentVersionsLens(props: {
   return (
     <Stack data-testid="doc-lens" gap={3}>
       <Flex align="center" gap={2}>
-        <Text muted size={1}>
-          Pinned
-        </Text>
-        <Select fontSize={1} onChange={(e) => onPin(e.currentTarget.value)} value={doc.id}>
-          {corpus.docs.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.title}
-            </option>
-          ))}
-        </Select>
+        {hidePin ? (
+          <Box flex={1}>
+            <Text size={1} textOverflow="ellipsis" weight="medium">
+              {doc.title}
+            </Text>
+          </Box>
+        ) : (
+          <>
+            <Text muted size={1}>
+              Pinned
+            </Text>
+            <Select fontSize={1} onChange={(e) => onPin(e.currentTarget.value)} value={doc.id}>
+              {corpus.docs.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.title}
+                </option>
+              ))}
+            </Select>
+            <Box flex={1} />
+          </>
+        )}
+        {onBack ? <Button fontSize={1} mode="bleed" onClick={onBack} padding={2} style={{height: 25}} text="Back to this document" /> : null}
+        {onExpand ? <Button fontSize={1} mode="ghost" onClick={onExpand} padding={2} style={{height: 25}} text="Expand" /> : null}
       </Flex>
       <Notice bulk={bulk} />
       <BulkBar bulk={bulk} targets={selectedRows.map(targetOf)} />
@@ -279,5 +298,28 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
       <DataTable columns={columns} empty="No documents." rows={rows} testId="lens-def-docs" />
       {dialogFor(bulk, corpus, title)}
     </Stack>
+  )
+}
+
+/**
+ * The C4 version inventory IS the C5 document lens: mini (320) in the document pane, and an Expand control that opens
+ * the same lens at full width, pinned to the same document. In the expanded view the pin picker can move to another
+ * document, and "Back to this document" returns to the one the inventory sits in.
+ */
+export function SharedInventory(props: {corpus: Corpus; definitions: SystemVariant[]; docId: string}) {
+  const {corpus, definitions, docId} = props
+  const [expanded, setExpanded] = useState(false)
+  const [pin, setPin] = useState(docId)
+  return (
+    <Box data-testid="shared-inventory" padding={3} style={{maxWidth: 340}}>
+      <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={docId} hidePin mini onExpand={() => { setPin(docId); setExpanded(true) }} onPin={() => undefined} />
+      {expanded ? (
+        <Dialog header="Version inventory" id="c4-expanded" onClose={() => setExpanded(false)} width={3}>
+          <Box padding={4}>
+            <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={pin} onBack={pin !== docId ? () => setPin(docId) : undefined} onPin={setPin} />
+          </Box>
+        </Dialog>
+      ) : null}
+    </Box>
   )
 }

@@ -114,9 +114,9 @@ export const COMPONENTS: ComponentDef[] = [
       },
       {
         id: 'c',
-        label: 'List only',
-        summary: 'The earlier simple version list in the document inspector: base first, then variants, with state and time.',
-        status: 'exploration',
+        label: 'Shared document lens',
+        summary: 'The C5 document lens at mini width in the document inspector, with an Expand control that opens the same lens at full width, pinned to the same document.',
+        status: 'candidate',
       },
     ],
   },
@@ -209,7 +209,7 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
   c4: {
     a: 'Versions in the document inspector, right of the form.',
     b: 'The inventory opens as a popover from Manage versions.',
-    c: 'The versions of this document as a plain list in the inspector.',
+    c: 'The C5 document lens, mini, with an Expand control for the full table.',
   },
   c5: {a: 'One surface with a View by switch and a pin picker.', b: 'The lenses live at their pins, on one shared table.'},
   c6: {a: 'Definitions as rows, with the documents that miss each.'},
