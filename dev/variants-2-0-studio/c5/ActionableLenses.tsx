@@ -1,4 +1,4 @@
-import {Box, Button, Card, Dialog, Flex, Select, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Flex, Layer, Select, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useMemo, useState} from 'react'
 
 import {type SystemVariant} from '../c1/model'
@@ -302,23 +302,62 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
 }
 
 /**
+ * The expanded view: the same document lens at full width (about 1,112px, the spec's full surface) in an overlay above
+ * the Studio. A Layer, so the confirm dialog of a bulk action opens above it. Esc or the close button returns.
+ */
+export function WideOverlay(props: {title: string; onClose: () => void; children: ReactNode}) {
+  return (
+    <Layer zOffset={100}>
+      <div
+        onClick={props.onClose}
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') props.onClose()
+        }}
+        role="presentation"
+        style={{alignItems: 'center', background: 'rgba(0,0,0,0.45)', display: 'flex', inset: 0, justifyContent: 'center', position: 'fixed'}}
+      >
+        <Card
+          aria-label={props.title}
+          data-testid="wide-overlay"
+          onClick={(event) => event.stopPropagation()}
+          radius={3}
+          role="dialog"
+          shadow={4}
+          style={{display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 64px)', width: 'min(1112px, calc(100vw - 48px))'}}
+        >
+          <Flex align="center" gap={2} padding={3}>
+            <Box flex={1}>
+              <Text size={1} weight="medium">
+                {props.title}
+              </Text>
+            </Box>
+            <Button fontSize={1} mode="bleed" onClick={props.onClose} padding={2} style={{height: 25}} text="Close" />
+          </Flex>
+          <Box padding={4} style={{borderTop: '1px solid var(--card-border-color)', overflow: 'auto'}}>
+            {props.children}
+          </Box>
+        </Card>
+      </div>
+    </Layer>
+  )
+}
+
+/**
  * The C4 version inventory IS the C5 document lens: mini (320) in the document pane, and an Expand control that opens
  * the same lens at full width, pinned to the same document. In the expanded view the pin picker can move to another
  * document, and "Back to this document" returns to the one the inventory sits in.
  */
-export function SharedInventory(props: {corpus: Corpus; definitions: SystemVariant[]; docId: string}) {
-  const {corpus, definitions, docId} = props
+export function SharedInventory(props: {corpus: Corpus; definitions: SystemVariant[]; docId: string; bare?: boolean}) {
+  const {corpus, definitions, docId, bare} = props
   const [expanded, setExpanded] = useState(false)
   const [pin, setPin] = useState(docId)
   return (
-    <Box data-testid="shared-inventory" padding={3} style={{maxWidth: 340}}>
+    <Box data-testid="shared-inventory" padding={bare ? 0 : 3} style={{maxWidth: 340}}>
       <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={docId} hidePin mini onExpand={() => { setPin(docId); setExpanded(true) }} onPin={() => undefined} />
       {expanded ? (
-        <Dialog header="Version inventory" id="c4-expanded" onClose={() => setExpanded(false)} width={3}>
-          <Box padding={4}>
-            <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={pin} onBack={pin !== docId ? () => setPin(docId) : undefined} onPin={setPin} />
-          </Box>
-        </Dialog>
+        <WideOverlay onClose={() => setExpanded(false)} title="Version inventory">
+          <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={pin} onBack={pin !== docId ? () => setPin(docId) : undefined} onPin={setPin} />
+        </WideOverlay>
       ) : null}
     </Box>
   )

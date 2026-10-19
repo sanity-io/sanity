@@ -1,5 +1,5 @@
 import {DocumentsIcon} from '@sanity/icons/Documents'
-import {Box, Button, Flex} from '@sanity/ui'
+import {Box, Button, Flex, Text} from '@sanity/ui'
 import {useEffect, useRef, useState} from 'react'
 
 import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
@@ -7,7 +7,9 @@ import {BadgeButton, BadgedControl} from '../c3/StateBadge'
 import {baseDot} from '../c3/types'
 import {VersionsIcon} from '../c3/VersionsIcon'
 import {useVersionList} from '../data/useVersionList'
-import {LiveInventory} from './inventory/LiveInventory'
+import {useVariantDefinitions} from '../c1/world'
+import {SharedInventory} from '../c5/ActionableLenses'
+import {useCorpus} from '../c5/useCorpus'
 
 /**
  * C4 option B: the same inventory panel (Andrej's), opened as a popover from a "Manage versions" button. It sits in
@@ -16,6 +18,8 @@ import {LiveInventory} from './inventory/LiveInventory'
 export function ManageVersions({documentId, form = 'lane'}: {documentId: string; form?: 'lane' | 'icon'}) {
   const [open, setOpen] = useState(false)
   const versions = useVersionList(documentId, form === 'icon')
+  const corpus = useCorpus()
+  const definitions = useVariantDefinitions()
   const [button, setButton] = useState<HTMLElement | null>(null)
   const panel = useRef<HTMLDivElement | null>(null)
 
@@ -41,8 +45,8 @@ export function ManageVersions({documentId, form = 'lane'}: {documentId: string;
   const popover = (
       <Popover
         content={
-          <Box ref={panel} style={{height: 520, overflow: 'auto', width: 360}}>
-            <LiveInventory documentId={documentId} title={documentId} />
+          <Box padding={3} ref={panel} style={{maxHeight: 520, overflow: 'auto', width: 360}}>
+            {corpus ? <SharedInventory bare corpus={corpus} definitions={definitions} docId={documentId} /> : <Text muted size={1}>Loading versions…</Text>}
           </Box>
         }
         floatingBoundary={document.body}
