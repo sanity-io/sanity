@@ -23,6 +23,7 @@ import {
 import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useDocumentListItemOverride} from './DocumentListItemOverride'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -90,7 +91,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const isLoading = previewIsLoading
 
-  const status = isLoading ? null : (
+  const defaultStatus = isLoading ? null : (
     <TooltipDelayGroupProvider>
       <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
@@ -99,7 +100,16 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = <DocumentVersionsStatus documentGroupId={publishedId} />
+  // PROPOSED: a host (the Variants 2.0 test studio) may replace the status area and the tooltip.
+  const override = useDocumentListItemOverride({
+    documentId: publishedId,
+    documentType: schemaType.name,
+    presence,
+    defaultStatus,
+  })
+  const status = isLoading ? null : override ? override.status : defaultStatus
+
+  const tooltip = override ? override.tooltip : <DocumentVersionsStatus documentGroupId={publishedId} />
 
   return (
     <SanityDefaultPreview

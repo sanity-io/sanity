@@ -6,6 +6,13 @@ export {
   type IncomingReferenceAction,
   type IncomingReferencesOptions,
 } from '../structure/components/incomingReferencesDecoration/types'
+// PROPOSED: extension point for document list rows (Variants 2.0 test studio).
+export {
+  type DocumentListItemOverride,
+  type DocumentListItemOverrideArgs,
+  DocumentListItemOverrideProvider,
+  type UseDocumentListItemOverride,
+} from '../structure/components/paneItem/DocumentListItemOverride'
 export {Pane} from '../structure/components/pane/Pane'
 export {PaneContent} from '../structure/components/pane/PaneContent'
 export {PaneLayout} from '../structure/components/pane/PaneLayout'

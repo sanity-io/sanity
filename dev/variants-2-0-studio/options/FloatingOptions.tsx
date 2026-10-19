@@ -3,7 +3,9 @@ import {ControlsIcon} from '@sanity/icons/Controls'
 import {Badge, Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {type LayoutProps} from 'sanity'
+import {DocumentListItemOverrideProvider} from 'sanity/structure'
 
+import {useRowOverride} from '../c3/RowOverride'
 import {COMPONENTS, type OptionStatus} from './registry'
 import {maxOptionCount, resetOptions, resolveOption, setGlobalChoice, setOverride, useOptionState} from './store'
 
@@ -23,7 +25,7 @@ function FloatingOptions() {
   const [hidden, setHidden] = useState(false)
   const overrideCount = Object.keys(state.overrides).length
   const choices = Array.from({length: maxOptionCount()}, (_, index) => index)
-  const label = state.global === 'final' ? 'F' : LETTERS[state.global]
+  const label = state.global === 'final' ? 'F' : state.global === 'stock' ? 'Stock' : LETTERS[state.global]
 
   if (hidden) return null
 
@@ -63,6 +65,14 @@ function FloatingOptions() {
                   padding={2}
                   text="Final"
                   tone={state.global === 'final' ? 'positive' : 'default'}
+                />
+                <Button
+                  fontSize={1}
+                  mode={state.global === 'stock' ? 'default' : 'ghost'}
+                  onClick={() => setGlobalChoice('stock')}
+                  padding={2}
+                  text="Stock"
+                  title="Show stock Studio: every design slot renders what Studio does today"
                 />
               </Flex>
             </Stack>
@@ -126,9 +136,9 @@ function FloatingOptions() {
 
 export function LayoutWithFloatingOptions(props: LayoutProps) {
   return (
-    <>
+    <DocumentListItemOverrideProvider value={useRowOverride}>
       {props.renderDefault(props)}
       <FloatingOptions />
-    </>
+    </DocumentListItemOverrideProvider>
   )
 }

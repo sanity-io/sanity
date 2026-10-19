@@ -416,6 +416,11 @@ export function VersionMark(props: {
           open
           padding={0}
           placement="right-start"
+          // LIVE: the real list pane scrolls and clips, so the popover has to leave it (Storybook has no such pane).
+          portal
+          // LIVE: fit against the viewport, not the narrow list pane the control sits in, or it never opens to the right.
+          floatingBoundary={typeof document === 'undefined' ? null : document.body}
+          referenceBoundary={typeof document === 'undefined' ? null : document.body}
           radius={SHELL[pattern].radius}
           referenceElement={reference}
           shadow={SHELL[pattern].shadow}

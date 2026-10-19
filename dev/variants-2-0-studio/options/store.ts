@@ -4,7 +4,10 @@ import {COMPONENTS, type ComponentDef, getComponent} from './registry'
 
 // Global choice is a position in each component's option list ("first", "second", ...), or
 // 'final' to follow each component's signed-off option. A per-component override beats both.
-export type GlobalChoice = 'final' | number
+export type GlobalChoice = 'final' | 'stock' | number
+
+/** The option id a component resolves to when the master "Stock" switch is on: render stock Studio. */
+export const STOCK_OPTION = '__stock'
 
 interface State {
   global: GlobalChoice
@@ -57,6 +60,7 @@ export function resetOptions() {
 }
 
 export function resolveOption(component: ComponentDef, current: State = state): string {
+  if (current.global === 'stock') return STOCK_OPTION
   const override = current.overrides[component.id]
   if (override && component.options.some((option) => option.id === override)) return override
   if (current.global === 'final') return component.final ?? component.defaultOption
