@@ -22,6 +22,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
+import {useShippedPerspectiveBar} from '../../../variants/plugin/components/ShippedPerspectiveBar'
 import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
@@ -73,6 +74,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const {__internal_actions: actions = EMPTY_ARRAY} = props
 
   const {beta, name, tools} = useWorkspace()
+  // PROPOSED: false when a host supplies its own perspective design (the state pill stays, the shipped bar is hidden).
+  const showShippedPerspectiveBar = useShippedPerspectiveBar()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
@@ -277,7 +280,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
-                {!beta?.variants?.enabled && <ReleasesNav withReleasesToolButton />}
+                {(!beta?.variants?.enabled || !showShippedPerspectiveBar) && <ReleasesNav withReleasesToolButton />}
                 {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
                 <PresenceMenu />

@@ -34,6 +34,12 @@ export const COMPONENTS: ComponentDef[] = [
         status: 'candidate',
         refs: 'Figma C1 192:3139; E1 "Variants control · 1 · The panel" 210:10464',
       },
+      {
+        id: 'c',
+        label: 'Shipped bar',
+        summary: "The perspective bar the shipped Variants feature draws under the navbar (Version and Variant filters), kept as an option for comparison.",
+        status: 'exploration',
+      },
     ],
   },
   {
@@ -196,6 +202,7 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
   c1: {
     a: 'The version pill with a label that shows or hides the row; the menu adds a dimension.',
     b: 'A state pill plus a Variants control that opens one panel.',
+    c: 'The shipped bar: Version and Variant filters under the navbar.',
   },
   c2: {
     a: 'Published and Draft stay pills; releases and variants fold into dropdowns.',
@@ -226,6 +233,7 @@ const DIAGRAMS: Record<string, Record<string, DiagramSpec>> = {
   c1: {
     a: {shapes: [{kind: 'pill', x: 160, y: 3, w: 26}, {kind: 'box', x: 1, y: 13, w: 198, h: 8}]},
     b: {shapes: [{kind: 'pill', x: 140, y: 3, w: 16}, {kind: 'pill', x: 160, y: 3, w: 16}, {kind: 'box', x: 100, y: 14, w: 92, h: 42}]},
+    c: {shapes: [{kind: 'pill', x: 70, y: 14, w: 26, h: 7}, {kind: 'pill', x: 100, y: 14, w: 26, h: 7}]},
   },
   c2: {
     a: {shapes: [60, 88, 116, 144].map((x) => ({kind: 'pill' as const, x, y: 14.5, w: 24, h: 7}))},

@@ -22,6 +22,7 @@ import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantTitle} from '../../tool/util'
 import {getVersionFilterLabel} from './getVersionFilterLabel'
 import {PerspectiveFilter} from './PerspectiveFilter'
+import {useShippedPerspectiveBar} from './ShippedPerspectiveBar'
 import {VariantsMenu} from './VariantsMenu'
 
 export function VariantsStudioNavbar(props: NavbarProps) {
@@ -37,6 +38,8 @@ export function VariantsStudioNavbar(props: NavbarProps) {
   const defaultPerspective = useGetDefaultPerspective()
   const hasVersionSelection = selectedPerspective !== defaultPerspective
   const {bundles} = useAgentBundles()
+  // PROPOSED: a host with its own perspective design hides the shipped bar (see ShippedPerspectiveBar).
+  const showShippedBar = useShippedPerspectiveBar()
 
   const versionTitle = useMemo(
     () => getVersionFilterLabel(selectedPerspective, coreT, bundles),
@@ -54,6 +57,8 @@ export function VariantsStudioNavbar(props: NavbarProps) {
   const handleClearVariant = useCallback(() => {
     setVariant({variantId: undefined})
   }, [setVariant])
+
+  if (!showShippedBar) return props.renderDefault(props)
 
   return (
     <Flex flexDirection="column">
