@@ -3,6 +3,10 @@ export {defineDocuments, defineLocations, presentationTool} from '../presentatio
 export {type PreviewProps} from '../presentation/preview/Preview'
 export {type PreviewHeaderProps} from '../presentation/preview/PreviewHeader'
 export {
+  type PreviewHeaderExtensionComponent,
+  PreviewHeaderExtensionProvider,
+} from '../presentation/preview/PreviewHeaderExtension'
+export {
   type CombinedSearchParams,
   type ConnectionStatus,
   type ContextFn,

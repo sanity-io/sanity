@@ -1,8 +1,10 @@
 import {type LayoutProps, PerspectiveMenuExtensionProvider, ShippedPerspectiveBarProvider, VariantDetailExtensionProvider, VariantEditNoticeProvider} from 'sanity'
+import {PreviewHeaderExtensionProvider} from 'sanity/presentation'
 import {DocumentListItemOverrideProvider, DocumentPaneExtensionProvider} from 'sanity/structure'
 
 import {PerspectiveProvider} from '../c1/state'
 import {useOptionAExtension} from '../c1/Controls'
+import {PresentationVariantControl} from '../c1/PresentationControl'
 import {useRowOverride} from '../c3/RowOverride'
 import {EditNotice} from '../c6/EditNotice'
 import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
@@ -23,6 +25,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
       <PerspectiveProvider>
         <PerspectiveMenuExtensionProvider value={useOptionAExtension}>
           <ShippedPerspectiveBarProvider value={useShowShippedBar}>
+          <PreviewHeaderExtensionProvider value={PresentationVariantControl}>
           <VariantEditNoticeProvider value={EditNotice}>
           <VariantDetailExtensionProvider value={useVariantDetailOverride}>
           <DocumentPaneExtensionProvider value={useDocumentPaneOverride}>
@@ -32,6 +35,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
           </DocumentPaneExtensionProvider>
           </VariantDetailExtensionProvider>
           </VariantEditNoticeProvider>
+          </PreviewHeaderExtensionProvider>
           </ShippedPerspectiveBarProvider>
         </PerspectiveMenuExtensionProvider>
       </PerspectiveProvider>

@@ -250,12 +250,16 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
       break
     }
     case 'j07': {
-      await run(0, async () => ((await visible(page, '[data-testid=presentation-root], iframe, [data-ui=PresentationTool]', 12000)) ? ok('Presentation loads; ' + ((await page.locator('[data-ui=ReleasesNav]').count()) ? 'state pill present' : 'no state pill')) : differs('Presentation did not render')))
+      await run(0, async () => ((await visible(page, '[data-testid=presentation-variants-button]', 20000)) ? ok('Presentation loads; the dimension control is in the preview header next to the state pill') : differs('Presentation loaded without the dimension control')))
       await run(1, async () => {
-        const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ')
-        return /Variants|View as/.test(text) ? differs('a dimension control is not shown inside Presentation here (only the navbar pill): ' + text.slice(0, 100)) : missing('no dimension control in Presentation; the preview (localhost:3456) renders no variants')
+        await page.locator('[data-testid=presentation-variants-button]').click()
+        await page.locator('[data-testid^=picker-value-]').first().click()
+        await settle(page, 1500)
+        const url = decodeURIComponent(page.url())
+        const pill = (await page.locator('[data-ui=ReleasesNav]').innerText()).replace(/\s+/g, ' ')
+        return /variant=/.test(url) ? ok(`router variant set (${url.match(/variant=[^&]+/)?.[0]}); navbar pill: ${pill}. The preview app on :3456 does not react: it has no visual-editing connection ("Unable to connect")`) : differs('no variant param after choosing a value')
       })
-      await run(2, async () => missing('click-to-edit needs the storefront preview with visual editing; the preview pane is blank in this studio'))
+      await run(2, async () => missing('click-to-edit needs the storefront to run @sanity/visual-editing (the preview shows "Unable to connect"); see the storefront notes'))
       break
     }
     case 'j08': {

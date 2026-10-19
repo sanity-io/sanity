@@ -20,6 +20,7 @@ import {PreviewLocationInput} from './PreviewLocationInput'
 import {SharePreviewMenu} from './SharePreviewMenu'
 
 /** @public */
+import {PreviewHeaderExtension} from './PreviewHeaderExtension'
 export interface PreviewHeaderProps extends PreviewProps {
   iframeRef: RefObject<HTMLIFrameElement | null>
   renderDefault: (props: PreviewHeaderProps) => React.JSX.Element
@@ -218,6 +219,11 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
           value={previewLocationRoute}
         />
       </Box>
+
+      {/* PROPOSED slot: a host's dimension / variant control (see PreviewHeaderExtension). */}
+      <Flex align="center" flex="none" gap={1}>
+        <PreviewHeaderExtension />
+      </Flex>
 
       <Flex align="center" flex="none" gap={1}>
         <Tooltip
