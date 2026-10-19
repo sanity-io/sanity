@@ -1,5 +1,10 @@
-import {type StringSchemaType} from '@sanity/types'
-import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
+import {type SchemaType, type StringSchemaType} from '@sanity/types'
+import {
+  DEFAULT_DATE_FORMAT,
+  DEFAULT_TIME_FORMAT,
+  format,
+  parse,
+} from '@sanity/util/legacyDateFormat'
 import {Box} from 'ui5'
 
 import {type FieldPreviewComponent} from '../../../preview/types'
@@ -17,12 +22,22 @@ export const DatetimePreview: FieldPreviewComponent<string> = function DatetimeP
 }
 
 function formatDateTime(value: string, schemaType: StringSchemaType): string {
-  const {options, name} = schemaType
-  const dateFormat = options?.dateFormat || legacyDateFormat.DEFAULT_DATE_FORMAT
-  const timeFormat = options?.timeFormat || legacyDateFormat.DEFAULT_TIME_FORMAT
+  const dateFormat = schemaType.options?.dateFormat || DEFAULT_DATE_FORMAT
+  const timeFormat = schemaType.options?.timeFormat || DEFAULT_TIME_FORMAT
 
-  return legacyDateFormat.format(
-    new Date(value),
-    name === 'date' ? dateFormat : `${dateFormat} ${timeFormat}`,
-  )
+  // Date fields store a calendar day (`YYYY-MM-DD`) with no time or offset.
+  // `new Date('YYYY-MM-DD')` reads that as UTC midnight, so a timezone west of
+  // UTC formats the previous day. Parse it the same way the date input does.
+  if (isDateOnlyType(schemaType)) {
+    const parsed = parse(value, DEFAULT_DATE_FORMAT)
+    return parsed.isValid ? format(parsed.date, dateFormat) : value
+  }
+
+  return format(new Date(value), `${dateFormat} ${timeFormat}`)
+}
+
+function isDateOnlyType(schemaType: SchemaType): boolean {
+  if (schemaType.name === 'date') return true
+  if (schemaType.name === 'datetime') return false
+  return Boolean(schemaType.type && isDateOnlyType(schemaType.type))
 }
