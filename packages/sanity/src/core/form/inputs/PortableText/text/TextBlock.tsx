@@ -192,7 +192,9 @@ export function TextBlock(props: TextBlockProps) {
         {listItem && (
           <ListPrefixWrapper contentEditable={false}>
             <Text data-list-prefix="" as="div" trim={true}>
-              <TextContainer />
+              <span>
+                <TextContainer />
+              </span>
             </Text>
           </ListPrefixWrapper>
         )}
