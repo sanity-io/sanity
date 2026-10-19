@@ -151,6 +151,9 @@ function getArrayFieldsetAndFieldGroupOperations(
   const [segment, ...rest] = path
   if (!isKeySegment(segment)) {
     // the path can come from the URL, so it may not point at an array item
+    console.error(
+      new Error('Expected path segment to be an object with a _key property', {cause: segment}),
+    )
     return []
   }
 
