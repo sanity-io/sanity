@@ -33,7 +33,9 @@ There is no recursive nesting ("draft of a draft", "release of drafts"); do not 
 - **Mock (no extension point or not built):** composed address row with chips and dimension picker; "Narrow by variant"
   in the perspective menu; reach counts; versions mark and hover popover on list rows; missing-variant note;
   multi-dimension addresses.
-- **Unverified:** that a variant version inside a release can exist in real data today. Treat as mock until checked.
+- **Verified 2026-10-19:** a variant version inside a scheduled or ASAP release exists in real data (Black Friday lists
+  3 variant versions, scheduled 20 Nov 2026 9:00), and so does a variant whose base was never published. Stock Studio
+  (variants flag off) shows these as plain duplicate rows, which is the gap the designs fill.
 
 ## Open beta
 - **Must:** stock Studio unchanged with switches off; ONE variant dimension; state menu unchanged; row with 1 to 2 chips;
@@ -47,3 +49,18 @@ Missing: a second dimension (locale, market, channel); scheduled draft outside a
 archived or published release; variant with no published base; one document with 12 versions (max is 8);
 explicit "document lacks the active variant"; agent bundle; presence on a variant version; per-document data for the
 draftsDisabled and liveEdit worlds.
+
+## Seeded in `variants-2-0` (project ppsg7ml5, private) by `seed/seed.mts`
+
+Run `pnpm seed` (idempotent; needs a Sanity CLI login) and `node seed/verify.mts` to list what exists.
+- The 10 Nordic Books documents with every version in the fixture (7 audiences; published, draft, scheduled in
+  Halloween 31 Oct and Black Friday 20 Nov, ASAP "ASAP (Copy)").
+- **Added for the missing cases:** scheduled draft outside a release (`rSchedDraft`, cardinality one); undecided release;
+  published release; archived release; variant with no published base (`book-rail`); a second dimension, locale
+  (en-GB, de-DE, fr-FR) alone and combined with audience (`book-translations`); two live-edit books.
+- **Still missing:** a document with more than 12 versions; agent bundle; presence on a variant version; the
+  draftsDisabled world (a workspace setting, not data); a variant defined with no document that has it, beyond
+  `book-field-guide` and `book-tidewater` (no variants).
+- Times: "when" in the fixture is not reproduced; created and edited times are real (seed time). Releases are in
+  Europe/Berlin (+01:00 after 25 Oct).
+- The archived release holds no visible version (archiving discards it); only its state is seeded.

@@ -3,10 +3,10 @@ import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
-import {schemaTypes} from './schemas'
+import {schemaTypesFor} from './schemas'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'ppsg7ml5'
-const dataset = process.env.SANITY_STUDIO_DATASET || 'northfold'
+const dataset = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
 // The Northfold storefront (repos/northfold-storefront, `pnpm dev`) is the default preview.
 const previewOrigin = process.env.SANITY_STUDIO_PREVIEW_ORIGIN || 'http://localhost:3456'
 
@@ -28,7 +28,7 @@ export default defineConfig({
     }),
     variants2Options(),
   ],
-  schema: {types: schemaTypes},
+  schema: {types: schemaTypesFor(dataset)},
   scheduledDrafts: {enabled: true},
   // No `beta.variants`: the Variants flag stays off so everything is stock Studio. Variants 2.0
   // designs are added on top through OptionSlot, not by switching the flag on.

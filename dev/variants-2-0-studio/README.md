@@ -8,8 +8,9 @@ pnpm install                              # from the repo root
 pnpm --filter sanity-variants-2-0-studio dev   # http://localhost:3350
 ```
 
-Project and dataset default to Northfold (`ppsg7ml5` / `northfold`) so the schemas match the
-seeded data. Override with `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET`.
+Project `ppsg7ml5`, dataset `variants-2-0` (private): Nordic Books plus every state in `PERMUTATIONS.md`.
+Seed or refresh it with `pnpm seed` (needs `sanity login`); inspect with `node seed/verify.mts`.
+Override with `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` (`northfold` switches to the Northfold schema).
 
 ## How options work
 

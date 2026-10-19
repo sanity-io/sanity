@@ -7,9 +7,11 @@
   "scripts": {
     "build": "sanity build",
     "dev": "sanity dev --port 3350",
-    "start": "sanity preview --port 3350"
+    "start": "sanity preview --port 3350",
+    "seed": "node seed/seed.mts"
   },
   "dependencies": {
+    "@sanity/client": "catalog:",
     "@sanity/icons": "^5.2.3",
     "@sanity/ui": "catalog:",
     "oxc-transform-react": "catalog:",
