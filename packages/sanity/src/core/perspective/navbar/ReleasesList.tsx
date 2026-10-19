@@ -18,6 +18,7 @@ import {
   GlobalPerspectiveMenuItem,
   type LayerRange,
 } from './GlobalPerspectiveMenuItem'
+import {usePerspectiveMenuExtension} from './PerspectiveMenuExtension'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
@@ -57,6 +58,7 @@ export function ReleasesList({
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): JSX.Element {
   const {loading, data: allReleases} = useActiveReleases()
+  const extension = usePerspectiveMenuExtension()
   const {bundles: agentBundles} = useAgentBundles()
 
   const releases = useMemo(
@@ -165,6 +167,8 @@ export function ReleasesList({
       )}
       <StickyBottomCard borderTop paddingY={1} paddingX={2}>
         <Stack gap={1}>
+          {/* PROPOSED: a host's extra rows lead the bottom group, above View Scheduled Drafts (also with releases off). */}
+          {extension?.extraRows}
           <ScheduledDraftsMenuItem />
           {areReleasesEnabled && (
             <>

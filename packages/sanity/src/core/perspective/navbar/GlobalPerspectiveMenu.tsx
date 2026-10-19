@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Button, Card, Stack} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
@@ -10,7 +10,6 @@ import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleas
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {oversizedButtonStyle} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
-import {usePerspectiveMenuExtension} from './PerspectiveMenuExtension'
 import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
@@ -45,8 +44,6 @@ export function GlobalPerspectiveMenu({
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
     useReleasesUpsell()
   const styledMenuRef = useRef<HTMLDivElement>(null)
-  // PROPOSED: a host may add rows at the foot of the menu.
-  const extension = usePerspectiveMenuExtension()
 
   const {isRangeVisible, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
@@ -89,11 +86,6 @@ export function GlobalPerspectiveMenu({
               handleOpenBundleDialog={handleOpenBundleDialog}
               menuItemProps={menuItemProps}
             />
-            {extension?.extraRows ? (
-              <Card borderTop data-testid="perspective-menu-extra-rows" paddingX={2} paddingY={1}>
-                <Stack gap={1}>{extension.extraRows}</Stack>
-              </Card>
-            ) : null}
           </StyledMenu>
         }
         popover={{
