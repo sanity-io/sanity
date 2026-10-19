@@ -13,6 +13,7 @@ const LABEL: Record<Op, string> = {
   publish: 'Publish',
   unpublish: 'Unpublish',
   delete: 'Delete',
+  deleteAll: 'Delete all versions',
   create: 'Create',
   addToRelease: 'Add to release',
 }
@@ -22,6 +23,7 @@ export function applies(op: Op, t: Target): boolean {
   if (op === 'publish') return t.rows.some((r) => r.bundle === 'drafts')
   if (op === 'unpublish') return t.rows.some((r) => r.bundle === 'published')
   if (op === 'delete') return t.rows.length > 0
+  if (op === 'deleteAll') return t.variantId !== null && (t.all ?? t.rows).length > 0
   if (op === 'create') return t.rows.length === 0 && t.variantId !== null
   return t.rows.length > 0
 }
@@ -37,8 +39,9 @@ export interface BulkState {
   toggle: (id: string) => void
   setAll: (ids: string[], on: boolean) => void
   clear: () => void
-  dialog: {op: Op; targets: Target[]} | null
-  open: (op: Op, targets: Target[]) => void
+  dialog: {op: Op; targets: Target[]; skipped: number} | null
+  /** `skipped` = selected rows the action does not apply to (named in the dialog). */
+  open: (op: Op, targets: Target[], skipped?: number) => void
   close: () => void
   /** The last finished run, shown above the table. */
   notice: string | null
@@ -61,7 +64,7 @@ export function useBulk(): BulkState {
     setAll: (ids, on) => setSelected(on ? new Set(ids) : new Set()),
     clear: () => setSelected(new Set()),
     dialog,
-    open: (op, targets) => setDialog({op, targets}),
+    open: (op, targets, skipped = 0) => setDialog({op, targets, skipped}),
     close: () => setDialog(null),
     notice,
     setNotice,
@@ -86,21 +89,22 @@ export function Check(props: {checked: boolean; onChange: () => void; label: str
 }
 
 /** The action buttons: Publish, Unpublish, Delete, Create <variant> version, Add to release. */
-export function BulkActionButtons(props: {targets: Target[]; variantLabel?: string; onOpen: (op: Op, targets: Target[]) => void}) {
+export function BulkActionButtons(props: {targets: Target[]; variantLabel?: string; onOpen: (op: Op, targets: Target[], skipped?: number) => void}) {
   const {targets, variantLabel, onOpen} = props
-  const ops: Op[] = ['publish', 'unpublish', 'delete', 'create', 'addToRelease']
+  const ops: Op[] = ['publish', 'unpublish', 'delete', 'deleteAll', 'create', 'addToRelease']
   return (
     <>
       {ops.map((op) => {
         const usable = targets.filter((t) => applies(op, t))
         if (op === 'create' && !variantLabel) return null
+        if (op === 'deleteAll' && usable.length === 0) return null
         return (
           <Button
             disabled={usable.length === 0}
             fontSize={1}
             key={op}
             mode="ghost"
-            onClick={() => onOpen(op, usable)}
+            onClick={() => onOpen(op, usable, targets.length - usable.length)}
             padding={2}
             style={{height: 25}}
             text={op === 'create' ? `Create ${variantLabel} version` : LABEL[op]}
@@ -129,6 +133,11 @@ export function BulkBar(props: {bulk: BulkState; targets: Target[]; variantLabel
   )
 }
 
+/** "Published", "Draft" or the release's title. */
+export function versionName(row: {bundle: string}, corpus: Corpus): string {
+  return row.bundle === 'published' ? 'Published' : row.bundle === 'drafts' ? 'Draft' : (corpus.releases.find((r) => r.id === row.bundle)?.title ?? row.bundle)
+}
+
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 
 /**
@@ -155,7 +164,7 @@ export function fallbackText(target: Target, corpus: Corpus, definitions: System
 const CONSEQUENCE = (op: Op, address: string, where: string, whereLabel: string): string => {
   if (op === 'publish') return `These versions go live now. Visitors who match ${address} are served them.`
   if (op === 'unpublish') return `These versions stop being served. Visitors who match ${address} get the base document instead.`
-  if (op === 'delete') return `These versions are deleted, with any draft or release version at ${address}. This cannot be undone.`
+  if (op === 'delete') return 'Only the version named above is deleted. The document and its other versions stay. This cannot be undone.'
   if (op === 'create')
     return where === 'drafts'
       ? "Each is created from the document's base, as a draft. Nobody is served it until you publish it."
@@ -192,7 +201,7 @@ export function ConfirmDialog(props: {
   }, [bulk])
 
   if (!dialog) return null
-  const {op, targets} = dialog
+  const {op, targets, skipped} = dialog
   const n = targets.length
 
   const run = async () => {
@@ -203,7 +212,7 @@ export function ConfirmDialog(props: {
     const ok = out.filter((r) => r.ok).length
     bulk.setNotice(
       ok === out.length
-        ? `${ok} ${ok === 1 ? 'version' : 'versions'} ${{publish: 'published', unpublish: 'unpublished', delete: 'deleted', create: 'created', addToRelease: 'added'}[op]}${needsWhere ? ` in ${whereLabel}` : ''}.`
+        ? `${ok} ${ok === 1 ? 'version' : 'versions'} ${{publish: 'published', unpublish: 'unpublished', delete: 'deleted', deleteAll: 'deleted (all versions)', create: 'created', addToRelease: 'added'}[op]}${needsWhere ? ` in ${whereLabel}` : ''}.`
         : `${ok} of ${out.length} done; ${out.length - ok} failed. See the results.`,
     )
     bulk.clear()
@@ -211,11 +220,15 @@ export function ConfirmDialog(props: {
     onDone()
   }
 
+  const versionCount = op === 'deleteAll' ? targets.reduce((sum, t) => sum + (t.all ?? t.rows).length, 0) : n
   const title =
     op === 'create'
       ? `Create ${address} versions for ${n} ${n === 1 ? 'document' : 'documents'}`
-      : `${LABEL[op]} ${n} ${n === 1 ? 'version' : 'versions'}`
-  const confirm = op === 'create' ? `Create ${n} variant ${n === 1 ? 'document' : 'documents'}` : `${LABEL[op]} ${n}`
+      : op === 'deleteAll'
+        ? `Delete all ${versionCount} versions of ${address} for ${n} ${n === 1 ? 'document' : 'documents'}`
+        : `${LABEL[op]} ${n} ${n === 1 ? 'version' : 'versions'}`
+  const confirm =
+    op === 'create' ? `Create ${n} variant ${n === 1 ? 'document' : 'documents'}` : op === 'deleteAll' ? `Delete all ${versionCount} versions` : `${LABEL[op]} ${n}`
 
   let body: ReactNode
   if (results) {
@@ -267,24 +280,34 @@ export function ConfirmDialog(props: {
             </Select>
           </Flex>
         ) : null}
-        {op === 'delete' || op === 'unpublish' ? (
+        {op === 'delete' || op === 'deleteAll' || op === 'unpublish' ? (
           <Stack gap={2} data-testid="fallbacks">
-            {targets.map((t) => (
-              <Text key={`${t.docId}-${t.rows.map((r) => r._id).join()}`} size={1}>
-                {t.title}
-                <Text as="span" muted size={1}>
-                  {' · '}
-                  {fallbackText(t, corpus, definitions)}
+            {targets.map((t) => {
+              const list = op === 'deleteAll' ? (t.all ?? t.rows) : t.rows
+              const forFallback = op === 'deleteAll' ? {...t, rows: list} : t
+              return (
+                <Text key={`${t.docId}-${list.map((r) => r._id).join()}`} size={1}>
+                  {t.title}
+                  <Text as="span" muted size={1}>
+                    {op === 'deleteAll' ? ` · ${list.map((r) => versionName(r, corpus)).join(', ')}` : ''}
+                    {' · '}
+                    {fallbackText(forFallback, corpus, definitions)}
+                  </Text>
                 </Text>
-              </Text>
-            ))}
+              )
+            })}
           </Stack>
         ) : (
           <Text size={1}>{targets.map((t) => t.title).join(' · ')}</Text>
         )}
         <Text muted size={1}>
-          {CONSEQUENCE(op, address, effectiveWhere, whereLabel)}
+          {op === 'deleteAll' ? `Every version listed above is removed, including drafts and release versions. This cannot be undone.` : CONSEQUENCE(op, address, effectiveWhere, whereLabel)}
         </Text>
+        {skipped > 0 ? (
+          <Text muted size={0}>
+            {skipped} selected {skipped === 1 ? 'row is' : 'rows are'} skipped: this action does not apply to {skipped === 1 ? 'it' : 'them'}.
+          </Text>
+        ) : null}
       </Stack>
     )
   }
@@ -298,7 +321,7 @@ export function ConfirmDialog(props: {
           ) : (
             <>
               <Button disabled={running} mode="ghost" onClick={close} text="Cancel" />
-              <Button disabled={running || n === 0} onClick={() => void run()} text={running ? 'Working…' : confirm} tone={op === 'delete' ? 'critical' : 'primary'} />
+              <Button disabled={running || n === 0} onClick={() => void run()} text={running ? 'Working…' : confirm} tone={op === 'delete' || op === 'deleteAll' ? 'critical' : 'primary'} />
             </>
           )}
         </Flex>

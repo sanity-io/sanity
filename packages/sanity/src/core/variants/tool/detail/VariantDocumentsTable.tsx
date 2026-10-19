@@ -56,10 +56,23 @@ export function VariantDocumentsTable({
       resolvedActiveLane === RELEASE_LANE_ALL
         ? rows
         : rows.filter((row) => rowMatchesLane(row, resolvedActiveLane, releasesById))
-    const withAbsent =
-      resolvedActiveLane === RELEASE_LANE_ALL && extension?.absentRows ? [...filtered, ...extension.absentRows] : filtered
-    return withAbsent.map((row) => ({...row, rowKey: row.groupId}))
-  }, [rows, resolvedActiveLane, releasesById, extension?.absentRows])
+    // PROPOSED: with `perVersionRows`, a document group with several stored versions becomes several rows.
+    const expanded = extension?.perVersionRows
+      ? filtered.flatMap((row) =>
+          row.versions.map((version) => ({
+            ...row,
+            versions: [version],
+            version,
+            rowKey: `${row.groupId}|${version.bundleId ?? 'published'}`,
+          })),
+        )
+      : filtered.map((row) => ({...row, rowKey: row.groupId}))
+    const absent =
+      resolvedActiveLane === RELEASE_LANE_ALL && extension?.absentRows
+        ? extension.absentRows.map((row) => ({...row, rowKey: row.groupId}))
+        : []
+    return [...expanded, ...absent]
+  }, [rows, resolvedActiveLane, releasesById, extension?.absentRows, extension?.perVersionRows])
 
   const handleSelectLane = useCallback((laneId: string) => {
     // Clicking the already-active segment clears the filter back to "All".
@@ -100,7 +113,7 @@ export function VariantDocumentsTable({
           />
         ) : undefined
       }
-      getRowKey={(row) => row.groupId}
+      getRowKey={(row) => row.rowKey ?? row.groupId}
       id="variant-documents-table"
       loading={loading}
       rowActions={extension?.rowActions ?? renderRowActions}

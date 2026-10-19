@@ -3,7 +3,7 @@ import {useMemo, useRef} from 'react'
 import {type DocumentInVariantGroup, type UseVariantDetailExtension} from 'sanity'
 
 import {useVariantDefinitions} from '../c1/world'
-import {BulkActionButtons, ConfirmDialog, useBulk} from '../c5/Actionable'
+import {BulkActionButtons, ConfirmDialog, useBulk, versionName} from '../c5/Actionable'
 import {Notice} from '../c5/ActionableLenses'
 import type {Target} from '../c5/operations'
 import {useCorpus} from '../c5/useCorpus'
@@ -30,12 +30,16 @@ export const useVariantDetailOverride: UseVariantDetailExtension = ({variantId})
   const definition = definitions.find((d) => shortId(d._id) === short)
   const title = definition?.metadata?.title ?? short ?? ''
 
+  // Row keys are `<docId>|<bundle>` (one row per stored version) or a bare `<docId>` (an absent row).
   const targetOf = useMemo(
     () =>
-      (docId: string): Target | null => {
+      (key: string): Target | null => {
+        const [docId, bundle] = key.split('|')
         const doc = corpus?.docs.find((d) => d.id === docId)
         if (!doc || !short) return null
-        return {docId, title: doc.title, variantId: short, rows: doc.list.filter((r) => r.variantId === short)}
+        const all = doc.list.filter((r) => r.variantId === short)
+        const rows = bundle ? all.filter((r) => r.bundle === bundle) : []
+        return {docId, title: bundle ? `${doc.title} · ${versionName({bundle}, corpus!)}` : doc.title, variantId: short, rows, all}
       },
     [corpus, short],
   )
@@ -66,6 +70,7 @@ export const useVariantDetailOverride: UseVariantDetailExtension = ({variantId})
 
   return {
     absentRows,
+    perVersionRows: true,
     selection: {
       labels: {selectAll: 'Select all', selectRow: 'Select row', selectedCount: (n) => `${n} selected`, clear: 'Clear'},
       renderActions: ({selectedKeys, clear}) => {
@@ -81,7 +86,7 @@ export const useVariantDetailOverride: UseVariantDetailExtension = ({variantId})
     rowActions: ({datum}) => {
       const row = datum as DocumentInVariantGroup
       if (!row.absent) return null
-      const target = targetOf(row.groupId)
+      const target = targetOf(row.rowKey ?? row.groupId)
       return target ? <Button fontSize={1} mode="bleed" onClick={() => bulk.open('create', [target])} padding={2} style={{height: 25}} text="Create" /> : null
     },
     banner: (

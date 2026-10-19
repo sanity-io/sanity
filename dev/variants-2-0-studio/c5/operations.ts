@@ -8,15 +8,17 @@ import type {VersionRow} from './useCorpus'
 //     - bundleId = 'drafts' or a release id; OMIT bundleId to act on the published variant directly
 //   base document:    sanity.action.document.{publish,unpublish,delete,discard}, document.version.{create,discard}
 
-export type Op = 'publish' | 'unpublish' | 'delete' | 'create' | 'addToRelease'
+export type Op = 'publish' | 'unpublish' | 'delete' | 'deleteAll' | 'create' | 'addToRelease'
 
 /** One row's target: a document at one address (a variant, or the base when `variantId` is null). */
 export interface Target {
   docId: string
   title: string
   variantId: string | null
-  /** The stored versions of this document at this address (empty for an absent row). */
+  /** The stored versions this row stands for (empty for an absent row). With one row per version, exactly one. */
   rows: VersionRow[]
+  /** Every stored version of the document at this address (for "Delete all versions"). */
+  all?: VersionRow[]
 }
 
 export interface RowResult {
@@ -71,22 +73,24 @@ export async function buildActions(client: SanityClient, op: Op, target: Target,
       : [{actionType: `${A}.unpublish`, draftId: `drafts.${docId}`, publishedId: docId}]
   }
 
-  if (op === 'delete') {
-    if (!rows.length) throw new Error('Nothing to delete.')
+  if (op === 'delete' || op === 'deleteAll') {
+    // Delete removes the version(s) of this row only; "all versions" removes every version at the address.
+    const list = op === 'deleteAll' ? (target.all ?? rows) : rows
+    if (!list.length) throw new Error('Nothing to delete.')
     if (variantId) {
       // Releases and the draft first, the published variant last.
-      const order = [...rows.filter((r) => r.bundle !== 'published'), ...rows.filter((r) => r.bundle === 'published')]
+      const order = [...list.filter((r) => r.bundle !== 'published'), ...list.filter((r) => r.bundle === 'published')]
       return order.map((r) =>
         r.bundle === 'published'
           ? {actionType: `${A}.variant.delete`, publishedId: docId, variantId}
           : {actionType: `${A}.variant.delete`, publishedId: docId, variantId, bundleId: r.bundle},
       )
     }
-    const actions: Action[] = rows
+    const actions: Action[] = list
       .filter((r) => r.bundle !== 'published' && r.bundle !== 'drafts')
       .map((r) => ({actionType: `${A}.version.discard`, versionId: r._id}))
-    const draft = find(rows, 'drafts')
-    if (find(rows, 'published')) {
+    const draft = find(list, 'drafts')
+    if (find(list, 'published')) {
       actions.push({actionType: `${A}.delete`, publishedId: docId, ...(draft ? {includeDrafts: [draft._id]} : {})})
     } else if (draft) {
       actions.push({actionType: `${A}.discard`, draftId: draft._id})

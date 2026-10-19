@@ -141,7 +141,13 @@ export function DocumentVersionsLens(props: {
 
   if (!doc) return muted('No documents yet.')
 
-  const targetOf = (r: VRow): Target => ({docId: doc.id, title: `${doc.title} · ${r.address} · ${r.stateText}`, variantId: r.row.variantId, rows: [r.row]})
+  const targetOf = (r: VRow): Target => ({
+    docId: doc.id,
+    title: `${doc.title} · ${r.address} · ${r.stateText}`,
+    variantId: r.row.variantId,
+    rows: [r.row],
+    all: doc.list.filter((v) => v.variantId === r.row.variantId),
+  })
   const selectedRows = rows.filter((r) => bulk.selected.has(r.id))
   const all = rows.length > 0 && selectedRows.length === rows.length
 
@@ -167,8 +173,8 @@ export function DocumentVersionsLens(props: {
       width: 44,
       render: (r) => {
         const target = targetOf(r)
-        const items = (['publish', 'unpublish', 'delete', 'addToRelease'] as const).filter((op) => applies(op, target))
-        const label = {publish: 'Publish', unpublish: 'Unpublish', delete: 'Delete', addToRelease: 'Add to release'}
+        const items = (['publish', 'unpublish', 'delete', 'deleteAll', 'addToRelease'] as const).filter((op) => applies(op, target))
+        const label = {publish: 'Publish', unpublish: 'Unpublish', delete: 'Delete this version', deleteAll: 'Delete all versions', addToRelease: 'Add to release'}
         return (
           <span onClick={(event) => event.stopPropagation()}>
             <MenuButton
@@ -177,7 +183,7 @@ export function DocumentVersionsLens(props: {
               menu={
                 <Menu>
                   {items.map((op) => (
-                    <MenuItem key={op} onClick={() => bulk.open(op, [target])} text={label[op]} tone={op === 'delete' ? 'critical' : 'default'} />
+                    <MenuItem key={op} onClick={() => bulk.open(op, [target])} text={label[op]} tone={op === 'delete' || op === 'deleteAll' ? 'critical' : 'default'} />
                   ))}
                 </Menu>
               }
@@ -236,15 +242,17 @@ export function DocumentVersionsLens(props: {
 interface DRow {
   id: string
   doc: DocRow
-  rows: VersionRow[]
+  /** The stored version this row is (absent for a document with no version of the definition). */
+  version?: VersionRow
   kind: 'published' | 'draft' | 'release' | 'absent'
   text: string
-  updated: string
 }
 
 /**
- * Definition lens, pinned to one variant definition: every document, with the state of its version for the definition.
- * Documents that do not have it are grey, absent rows with a Create action; the block disappears once none is left.
+ * Definition lens, pinned to one variant definition. D1 (Delete = one version): one row per STORED version of every
+ * document that has one (Published, Draft, or a release), then a grey absent row for each document that has none, with
+ * a Create action; the absent block disappears once none is left. Delete removes that row's version only; "Delete all
+ * versions" is a separate, more strongly confirmed item.
  */
 export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: SystemVariant[]; variantId: string | null; onPin: (id: string) => void}) {
   const {corpus, definitions, onPin} = props
@@ -255,32 +263,37 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
 
   const rows: DRow[] = useMemo(() => {
     if (!variantId) return []
-    return corpus.docs
-      .map((doc): DRow => {
-        const mine = doc.list.filter((r) => r.variantId === variantId)
-        const hasPub = mine.some((r) => r.bundle === 'published')
-        const hasDraft = mine.some((r) => r.bundle === 'drafts')
-        const inRelease = mine.filter((r) => r.bundle !== 'published' && r.bundle !== 'drafts')
-        const kind: DRow['kind'] = hasPub ? 'published' : hasDraft ? 'draft' : inRelease.length ? 'release' : 'absent'
-        const textFor = hasPub
-          ? hasDraft
-            ? 'Published + draft'
-            : 'Published'
-          : hasDraft
-            ? 'Draft only'
-            : inRelease.length
-              ? `${releaseTitle(corpus, inRelease[0].bundle)} · draft`
-              : `No ${title} version`
-        return {id: doc.id, doc, rows: mine, kind, text: textFor, updated: mine.map((r) => r.updated).sort().at(-1) ?? ''}
-      })
-      .sort((a, b) => Number(a.kind === 'absent') - Number(b.kind === 'absent') || a.doc.title.localeCompare(b.doc.title))
+    const order = (b: string) => (b === 'published' ? 0 : b === 'drafts' ? 1 : 2)
+    const present = corpus.docs.flatMap((doc) =>
+      doc.list
+        .filter((r) => r.variantId === variantId)
+        .sort((a, b) => order(a.bundle) - order(b.bundle))
+        .map((version): DRow => ({
+          id: `${doc.id}|${version.bundle}`,
+          doc,
+          version,
+          kind: version.bundle === 'published' ? 'published' : version.bundle === 'drafts' ? 'draft' : 'release',
+          text: version.bundle === 'published' ? 'Published' : version.bundle === 'drafts' ? 'Draft' : `${releaseTitle(corpus, version.bundle)} · draft`,
+        })),
+    )
+    const absent = corpus.docs
+      .filter((d) => !d.list.some((r) => r.variantId === variantId))
+      .map((doc): DRow => ({id: doc.id, doc, kind: 'absent', text: `No ${title} version`}))
+    return [...present.sort((a, b) => a.doc.title.localeCompare(b.doc.title) || order(a.version!.bundle) - order(b.version!.bundle)), ...absent.sort((a, b) => a.doc.title.localeCompare(b.doc.title))]
   }, [corpus, variantId, title])
 
   if (!variantId) return muted('No variant definitions yet.')
 
   const present = rows.filter((r) => r.kind !== 'absent')
   const absent = rows.filter((r) => r.kind === 'absent')
-  const targetOf = (r: DRow): Target => ({docId: r.doc.id, title: r.doc.title, variantId, rows: r.rows})
+  const docsWith = new Set(present.map((r) => r.doc.id))
+  const targetOf = (r: DRow): Target => ({
+    docId: r.doc.id,
+    title: r.version ? `${r.doc.title} · ${r.text}` : r.doc.title,
+    variantId,
+    rows: r.version ? [r.version] : [],
+    all: r.doc.list.filter((v) => v.variantId === variantId),
+  })
   const selectedRows = rows.filter((r) => bulk.selected.has(r.id))
   const all = rows.length > 0 && selectedRows.length === rows.length
 
@@ -290,11 +303,11 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
       title: '',
       header: <Check checked={all} indeterminate={selectedRows.length > 0 && !all} label="Select all" onChange={() => bulk.setAll(rows.map((r) => r.id), !all)} />,
       width: 44,
-      render: (r) => <Check checked={bulk.selected.has(r.id)} label={`Select ${r.doc.title}`} onChange={() => bulk.toggle(r.id)} />,
+      render: (r) => <Check checked={bulk.selected.has(r.id)} label={`Select ${r.doc.title} ${r.text}`} onChange={() => bulk.toggle(r.id)} />,
     },
     {key: 'title', title: 'Document', width: 300, render: (r) => <Text muted={r.kind === 'absent'} size={1}>{r.doc.title}</Text>},
-    {key: 'state', title: title, width: 240, render: (r) => <State faint={r.kind === 'absent'} kind={r.kind}>{r.text}</State>},
-    {key: 'updated', title: 'Updated', width: 140, render: (r) => muted(r.kind === 'absent' ? '—' : ago(r.updated))},
+    {key: 'state', title: title, width: 260, render: (r) => <State faint={r.kind === 'absent'} kind={r.kind}>{r.text}</State>},
+    {key: 'updated', title: 'Updated', width: 140, render: (r) => muted(r.version ? ago(r.version.updated) : '—')},
     {
       key: 'act',
       title: '',
@@ -327,10 +340,11 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
       <Notice bulk={bulk} />
       <Flex gap={2} wrap="wrap">
         <Chip>
-          {present.length} of {rows.length} have {title}
+          {docsWith.size} of {corpus.docs.length} documents have {title}
         </Chip>
+        <Chip>{present.length} stored {present.length === 1 ? 'version' : 'versions'}</Chip>
         {present.filter((r) => r.kind === 'published').length ? <Chip>{present.filter((r) => r.kind === 'published').length} published</Chip> : null}
-        {present.filter((r) => r.kind === 'draft').length ? <Chip tone="caution">{present.filter((r) => r.kind === 'draft').length} draft only</Chip> : null}
+        {present.filter((r) => r.kind === 'draft').length ? <Chip tone="caution">{present.filter((r) => r.kind === 'draft').length} draft</Chip> : null}
         {present.filter((r) => r.kind === 'release').length ? <Chip tone="caution">{present.filter((r) => r.kind === 'release').length} pending in a release</Chip> : null}
         {absent.length ? <Chip tone="caution">{absent.length} missing</Chip> : null}
       </Flex>

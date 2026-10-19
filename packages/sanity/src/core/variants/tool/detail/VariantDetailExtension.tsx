@@ -27,6 +27,8 @@ export interface VariantDetailExtensionArgs {
 /** @internal */
 export interface VariantDetailExtension {
   absentRows?: DocumentInVariantGroup[]
+  /** One table row per stored version (the E5 rule) instead of one per document group. Row keys are `<groupId>|<bundle>`. */
+  perVersionRows?: boolean
   selection?: DocumentTableSelection<DocumentInVariantGroup>
   rowActions?: (props: {datum: unknown}) => ReactNode
   banner?: ReactNode
