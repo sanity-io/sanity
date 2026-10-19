@@ -3,7 +3,7 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type CrossDatasetReferenceValue} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Text, Flex, VStack, Icon, Link} from 'ui5'
+import {Text, Flex, VStack, Icon, Link, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -48,17 +48,18 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
       data-testid="alert-cross-dataset-reference-feature-disabled"
     >
       <Flex gap={3} marginBottom={hasRef ? 4 : undefined}>
-        <Icon
-          size={1}
-          muted
-          icon={WarningOutlineIcon}
-          tone="caution"
-          style={{
-            margin: '-0.3125rem',
-            marginLeft: '-0.375rem',
-            flexShrink: 0,
-          }}
-        />
+        <Box>
+          <Icon
+            size={1}
+            muted
+            icon={WarningOutlineIcon}
+            tone="caution"
+            style={{
+              margin: '-0.3125rem',
+              marginLeft: '-0.375rem',
+            }}
+          />
+        </Box>
         <VStack gap={3}>
           <Text as="h2" size={1} weight="medium" trim={true} tone="caution">
             {t('inputs.reference.cross-dataset.feature-unavailable-title')}
