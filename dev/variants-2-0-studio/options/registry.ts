@@ -107,8 +107,8 @@ export const COMPONENTS: ComponentDef[] = [
     options: [
       {
         id: 'a',
-        label: 'Sidebar / pane',
-        summary: "Andrej's inventory side panel (Storybook PR #47) as the document inspector, live data. V1: not carried over, the navbar eye and the bulk bar.",
+        label: 'Document lens, side panel',
+        summary: "The C5 document lens at mini width in the document inspector: rows grouped by publish date (Published, each release, Drafts), sort and filter in the command lane, row menu and bulk bar, Expand to the full table.",
         status: 'candidate',
         story: 'explorations-variants-variant-inventory-side-panel-c4-version-inventory-pane',
       },
@@ -120,9 +120,9 @@ export const COMPONENTS: ComponentDef[] = [
       },
       {
         id: 'c',
-        label: 'Shared document lens',
-        summary: 'The C5 document lens at mini width in the document inspector, with an Expand control that opens the same lens at full width, pinned to the same document.',
-        status: 'candidate',
+        label: "Andrej's panel (original)",
+        summary: "Andrej's inventory side panel (Storybook PR #47) as the document inspector, kept for comparison while the lens takes over its intent.",
+        status: 'exploration',
       },
     ],
   },
@@ -228,9 +228,9 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
     c: 'Exploration: the status dot is the control.',
   },
   c4: {
-    a: 'Versions in the document inspector, right of the form.',
-    b: 'The inventory opens as a popover from Manage versions.',
-    c: 'The C5 document lens, mini, with an Expand control for the full table.',
+    a: 'The document lens in the inspector: grouped by publish date, sort, filter, Expand.',
+    b: 'The same document lens, as a popover from Manage versions.',
+    c: "Andrej's original panel in the inspector, for comparison.",
   },
   c5: {a: 'One surface with a View by switch and a pin picker.', b: 'The lenses live at their pins, on one shared table.'},
   c6: {a: 'The shipped Variants tool, plus grey rows for missing documents, Create and Add to release.'},

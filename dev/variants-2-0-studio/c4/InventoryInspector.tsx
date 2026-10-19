@@ -23,10 +23,11 @@ function SharedFromCorpus({documentId}: {documentId: string}) {
 
 function Inventory({documentId}: DocumentInspectorProps) {
   const option = useOption('c4')
-  // A and B show Andrej's panel (B opens it as a popover from the pane, but a click on a list row's control still lands
-  // here). C is the C5 document lens, mini, with an Expand control for the full table.
-  if (option === 'a' || option === 'b') return <LiveInventory documentId={documentId} title={documentId} />
-  if (option === 'c') return <SharedFromCorpus documentId={documentId} />
+  // A and B are the C5 document lens (mini, with Expand) in two containers: the inspector (A) and a popover from the
+  // pane (B, whose menu entry is hidden; a click on a list row's control still lands here). C keeps Andrej's original
+  // panel, so it is not lost while the lens takes over its grouping, sorting and filtering.
+  if (option === 'a' || option === 'b') return <SharedFromCorpus documentId={documentId} />
+  if (option === 'c') return <LiveInventory documentId={documentId} title={documentId} />
   return <PlaceholderSlot component="c4" />
 }
 

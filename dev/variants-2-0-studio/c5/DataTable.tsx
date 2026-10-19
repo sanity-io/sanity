@@ -1,5 +1,7 @@
 import {ArrowDownIcon} from '@sanity/icons/ArrowDown'
 import {ArrowUpIcon} from '@sanity/icons/ArrowUp'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Button, Card, Flex, Text} from '@sanity/ui'
 import {type ReactNode, useMemo, useState} from 'react'
 
@@ -16,6 +18,14 @@ export interface Column<T> {
   sort?: (a: T, b: T) => number
 }
 
+export interface RowGroup<T> {
+  id: string
+  title: string
+  rows: T[]
+  collapsed: boolean
+  onToggle: () => void
+}
+
 export function DataTable<T extends {id: string}>(props: {
   columns: readonly Column<T>[]
   rows: readonly T[]
@@ -24,8 +34,10 @@ export function DataTable<T extends {id: string}>(props: {
   selectedId?: string | null
   onRowClick?: (row: T) => void
   empty?: string
+  /** Rows in collapsible groups (a header row with the title and the count); `rows` is then only the flat list. */
+  groups?: RowGroup<T>[]
 }) {
-  const {columns, rows, testId, height = 520, selectedId, onRowClick, empty} = props
+  const {columns, rows, testId, height = 520, selectedId, onRowClick, empty, groups} = props
   const [sort, setSort] = useState<{key: string; dir: 1 | -1} | null>(null)
   const sorted = useMemo(() => {
     const column = columns.find((c) => c.key === sort?.key)
@@ -94,17 +106,43 @@ export function DataTable<T extends {id: string}>(props: {
             </Text>
           </Card>
         ) : null}
-        {sorted.map((row) => (
-          <Card
-            borderTop
-            data-testid={`${testId}-row-${row.id}`}
-            key={row.id}
-            onClick={onRowClick ? () => onRowClick(row) : undefined}
-            selected={row.id === selectedId}
-            style={onRowClick ? {cursor: 'pointer'} : undefined}
-          >
-            <Flex>{columns.map((column, i) => cell(column, i, column.render(row)))}</Flex>
-          </Card>
+        {(groups ?? [{id: '', title: '', rows: sorted, collapsed: false, onToggle: () => undefined}]).map((group) => (
+          <div key={group.id} data-testid={groups ? `${testId}-group-${group.id}` : undefined}>
+            {groups ? (
+              <Card
+                as="button"
+                borderTop
+                onClick={group.onToggle}
+                padding={2}
+                style={{cursor: 'pointer', textAlign: 'left', width: '100%'}}
+                tone="transparent"
+              >
+                <Flex align="center" gap={2} style={{position: 'sticky', left: 0, width: 'max-content'}}>
+                  <Text size={1}>{group.collapsed ? <ChevronRightIcon /> : <ChevronDownIcon />}</Text>
+                  <Text size={1} weight="medium">
+                    {group.title}
+                  </Text>
+                  <Text muted size={1}>
+                    {group.rows.length}
+                  </Text>
+                </Flex>
+              </Card>
+            ) : null}
+            {group.collapsed
+              ? null
+              : group.rows.map((row) => (
+                  <Card
+                    borderTop
+                    data-testid={`${testId}-row-${row.id}`}
+                    key={row.id}
+                    onClick={onRowClick ? () => onRowClick(row) : undefined}
+                    selected={row.id === selectedId}
+                    style={onRowClick ? {cursor: 'pointer'} : undefined}
+                  >
+                    <Flex>{columns.map((column, i) => cell(column, i, column.render(row)))}</Flex>
+                  </Card>
+                ))}
+          </div>
         ))}
       </div>
     </Card>
