@@ -190,10 +190,10 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
         <RootCard
           className={navbar}
           tone={variantsEnabled ? 'default' : getReleaseTone(selectedPerspective)}
-          borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"
           padding={3}
+          shadow={1}
           sizing="border"
         >
           <Grid className={navGrid} gap={1}>
