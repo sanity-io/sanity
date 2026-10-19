@@ -29,6 +29,8 @@ export function ManageVersions({documentId, form = 'lane'}: {documentId: string;
     const onDown = (event: PointerEvent) => {
       const target = event.target as Node
       if (button?.contains(target) || panel.current?.contains(target)) return
+      // The lens's own menus (filter, view, row actions) and its dialogs are portalled outside the panel.
+      if ((target as Element).closest?.('[role=menu], [data-ui=MenuButton__popover], [role=dialog], [data-ui=Layer]')) return
       setOpen(false)
     }
     const onKey = (event: KeyboardEvent) => {
