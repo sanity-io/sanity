@@ -2,37 +2,13 @@
 // Two options is the rule from the calls, but nothing here assumes it: add a third by adding an
 // entry to `options`. `final` marks the chosen option once the design is signed off.
 
-export type OptionStatus = 'candidate' | 'final' | 'exploration'
+import {defineDesignOptions, getComponent} from '../design-options/config'
+import type {ComponentDef, DiagramSpec, OptionStatus} from '../design-options/types'
 
-export interface OptionDef {
-  id: string
-  label: string
-  summary: string
-  status: OptionStatus
-  /** Where the design lives: Figma node ids in the handoff file, spec docs. */
-  refs?: string
-  /** Storybook story id (opens at the Storybook base URL). */
-  story?: string
-}
+import presets from './presets.json'
 
-export interface ComponentDef {
-  id: string
-  title: string
-  options: OptionDef[]
-  /** Option shown when nothing is selected and the global choice has no match. */
-  defaultOption: string
-  /** The signed-off option, once there is one. */
-  final?: string
-  /** True once the studio renders real UI for this component (not only a slot). */
-  built?: boolean
-  /** What the component is, in the words of its Figma cover frame (placeholder text until the cover is copied). */
-  cover?: string
-  /** Scope and pick, from the Figma cover frame. */
-  scope?: string
-  pick?: string
-  /** Where it shows up in the studio. */
-  where?: string
-}
+export type {ComponentDef, OptionStatus}
+export {getComponent}
 
 export const COMPONENTS: ComponentDef[] = [
   {
@@ -132,11 +108,16 @@ export const COMPONENTS: ComponentDef[] = [
       },
       {
         id: 'b',
-        label: 'Document inspector',
-        summary: 'Attached to the document pane (engineering direction). V1: the version list for this document.',
+        label: 'Popover from Manage versions',
+        summary: "The same inventory panel (Andrej's), opened as a popover from a Manage versions button under the pane header.",
         status: 'candidate',
       },
-      {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
+      {
+        id: 'c',
+        label: 'List only',
+        summary: 'The earlier simple version list in the document inspector: base first, then variants, with state and time.',
+        status: 'exploration',
+      },
     ],
   },
   {
@@ -148,7 +129,7 @@ export const COMPONENTS: ComponentDef[] = [
     pick: "Concept; the spec frame is on this page",
     where: 'Design slots tool.',
     options: [
-      {id: 'a', label: 'Table', summary: 'The table as the primary pattern; the sidebar is its smallest slice.', status: 'candidate', refs: 'Spec frame in Figma E5'},
+      {id: 'a', label: 'Table', summary: 'The table as the primary pattern; the sidebar is its smallest slice.', status: 'not-drawn', refs: 'Spec frame in Figma E5'},
       {id: 'b', label: 'Table + flyout', summary: 'Notion-like: table primary, the document form as a flyout (future).', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -162,7 +143,7 @@ export const COMPONENTS: ComponentDef[] = [
     pick: "No change; table stakes",
     where: 'Design slots tool.',
     options: [
-      {id: 'a', label: 'As today', summary: 'The Variants tool as it is.', status: 'candidate', refs: 'Figma E6'},
+      {id: 'a', label: 'As today', summary: 'The Variants tool as it is.', status: 'not-drawn', refs: 'Figma E6'},
       {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -203,12 +184,77 @@ export const COMPONENTS: ComponentDef[] = [
     pick: "Polish only",
     where: 'Design slots tool.',
     options: [
-      {id: 'a', label: 'Table, polished', summary: 'Aligned with C6; polish only.', status: 'candidate', refs: 'Figma E8'},
+      {id: 'a', label: 'Table, polished', summary: 'Aligned with C6; polish only.', status: 'not-drawn', refs: 'Figma E8'},
       {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
   },
 ]
+
+// One line per option for the cards (from the Figma frames, 19 Oct).
+const ONE_LINERS: Record<string, Record<string, string>> = {
+  c1: {
+    a: 'The version pill with a label that shows or hides the row; the menu adds a dimension.',
+    b: 'A state pill plus a Variants control that opens one panel.',
+  },
+  c2: {
+    a: 'Published and Draft stay pills; releases and variants fold into dropdowns.',
+    b: 'One control for the version and one for the variant of this document.',
+  },
+  c3: {
+    a: 'Icon on every row; hover opens a read-only popover; click opens document and inventory.',
+    b: 'The same icon with a flyout menu of versions.',
+    c: 'Exploration: the status dot is the control.',
+  },
+  c4: {
+    a: 'Versions in the document inspector, right of the form.',
+    b: 'The inventory opens as a popover from Manage versions.',
+    c: 'The versions of this document as a plain list in the inspector.',
+  },
+  c5: {a: 'Table. Not drawn yet.'},
+  c6: {a: 'As today. Not drawn yet.'},
+  c7: {
+    a: 'A banner on a missing variant, with Create variant, in every version.',
+    b: 'No banner in Drafts; a hint in the pane header. Banner only in Published and releases.',
+  },
+  c8: {a: 'Table, polished. Not drawn yet.'},
+}
+
+// Diagram data on the 200 x 100 grid: the part that changes.
+const rows = [24, 38, 52, 66, 80]
+const DIAGRAMS: Record<string, Record<string, DiagramSpec>> = {
+  c1: {
+    a: {shapes: [{kind: 'pill', x: 160, y: 3, w: 26}, {kind: 'box', x: 1, y: 13, w: 198, h: 8}]},
+    b: {shapes: [{kind: 'pill', x: 140, y: 3, w: 16}, {kind: 'pill', x: 160, y: 3, w: 16}, {kind: 'box', x: 100, y: 14, w: 92, h: 42}]},
+  },
+  c2: {
+    a: {shapes: [60, 88, 116, 144].map((x) => ({kind: 'pill' as const, x, y: 14.5, w: 24, h: 7}))},
+    b: {shapes: [{kind: 'box', x: 60, y: 14.5, w: 40, h: 7}, {kind: 'box', x: 104, y: 14.5, w: 40, h: 7}]},
+  },
+  c3: {
+    a: {shapes: [...rows.map((y) => ({kind: 'box' as const, x: 40, y: y + 0.5, w: 7, h: 7})), {kind: 'box', x: 30, y: 34, w: 42, h: 22}]},
+    b: {
+      shapes: [
+        ...rows.map((y) => ({kind: 'box' as const, x: 40, y: y + 0.5, w: 7, h: 7})),
+        {kind: 'box', x: 30, y: 34, w: 34, h: 26},
+        {kind: 'box', x: 66, y: 34, w: 30, h: 20},
+      ],
+    },
+    c: {shapes: rows.map((y) => ({kind: 'dot' as const, x: 44, y: y + 4}))},
+  },
+  c4: {
+    a: {frame: 'inspector', shapes: [{kind: 'box', x: 144, y: 12.5, w: 55, h: 87}]},
+    b: {shapes: [{kind: 'box', x: 96, y: 26, w: 64, h: 50}]},
+    c: {frame: 'inspector', shapes: [24, 36, 48].map((y) => ({kind: 'box' as const, x: 148, y, w: 47, h: 6}))},
+  },
+  c5: {a: {dashed: true}},
+  c6: {a: {dashed: true}},
+  c7: {
+    a: {shapes: [{kind: 'box', x: 53, y: 25, w: 143, h: 10}]},
+    b: {shapes: [{kind: 'box', x: 130, y: 14.5, w: 60, h: 5}]},
+  },
+  c8: {a: {dashed: true}},
+}
 
 // Storybook story ids (from Storybook-Agent, 19 Oct). Opens at `<base>/?path=/story/<id>`.
 // Components with only one story link it from option A. C3 C is the dot-control exploration.
@@ -240,9 +286,40 @@ for (const component of COMPONENTS) {
   for (const option of component.options) {
     const story = STORIES[component.id]?.[option.id]
     if (story) option.story = story
+    const oneLiner = ONE_LINERS[component.id]?.[option.id]
+    if (oneLiner) option.oneLiner = oneLiner
+    const diagram = DIAGRAMS[component.id]?.[option.id]
+    option.diagram = diagram ?? {dashed: true}
   }
 }
 
-export function getComponent(id: string): ComponentDef | undefined {
-  return COMPONENTS.find((component) => component.id === id)
-}
+defineDesignOptions({
+  title: 'Design options',
+  storageKey: 'variants-2-0-studio',
+  components: COMPONENTS,
+  groups: [
+    {label: 'Studio chrome', ids: ['c1', 'c2', 'c3']},
+    {label: 'Inventory', ids: ['c4', 'c5', 'c6']},
+    {label: 'Document', ids: ['c7']},
+    {label: 'Releases', ids: ['c8']},
+  ],
+  scenario: {
+    stages: [
+      {id: 'open-beta', label: 'Open beta'},
+      {id: 'ga', label: 'GA'},
+    ],
+    dimensionsStage: 'ga',
+    dimensions: [
+      {value: null, label: 'All', title: 'Show every dimension'},
+      {value: 1, label: '1', title: 'One list'},
+      {value: 2, label: '2', title: 'Two columns'},
+      {value: 5, label: '5', title: 'Five and more: the rail'},
+    ],
+  },
+  presets,
+  links: {
+    figmaFile: 'https://www.figma.com/design/C1T4EUScc9PMf5tqNo09Qs',
+    storybookBase: 'https://sanity-studio-storybook-r4ildcrzv.sanity.dev',
+  },
+})
+

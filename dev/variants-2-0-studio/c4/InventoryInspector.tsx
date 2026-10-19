@@ -22,9 +22,11 @@ function glyph(v: AudienceVersion) {
 
 function Inventory({documentId}: DocumentInspectorProps) {
   const option = useOption('c4')
-  const versions = useVersionList(documentId, option === 'b')
-  if (option === 'a') return <LiveInventory documentId={documentId} title={documentId} />
-  if (option !== 'b') return <PlaceholderSlot component="c4" />
+  const versions = useVersionList(documentId, option === 'c')
+  // A and B both show Andrej's panel (B opens it as a popover from the pane, but a click on a list row's control
+  // still lands here). C is the earlier simple list.
+  if (option === 'a' || option === 'b') return <LiveInventory documentId={documentId} title={documentId} />
+  if (option !== 'c') return <PlaceholderSlot component="c4" />
   if (!versions) return <Card padding={3}><Text muted size={1}>Loading versions…</Text></Card>
 
   const ordered = [...versions].sort((a, b) => (a.audience === null ? -1 : 0) - (b.audience === null ? -1 : 0))
@@ -55,7 +57,8 @@ export const inventoryInspector: DocumentInspector = {
   component: Inventory,
   useMenuItem: () => ({
     // Stock: no inspector entry at all.
-    hidden: useOption('c4') === STOCK_OPTION,
+    // Stock: none. Option B opens the inventory as a popover instead.
+    hidden: useOption('c4') === STOCK_OPTION || useOption('c4') === 'b',
     icon: DocumentsIcon,
     title: 'Versions',
     showAsAction: true,

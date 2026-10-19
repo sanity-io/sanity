@@ -1,0 +1,7 @@
+[
+  {"id": "today", "name": "Today (Stock)", "design": "show.stock,stage.open-beta"},
+  {"id": "open-beta-a", "name": "Open beta, all A", "design": "show.a,stage.open-beta"},
+  {"id": "open-beta-b", "name": "Open beta, B options", "design": "show.b,stage.open-beta"},
+  {"id": "ga-many", "name": "GA, many dimensions", "design": "show.a,stage.ga"},
+  {"id": "handoff", "name": "Engineering handoff", "design": "show.final,stage.open-beta"}
+]
