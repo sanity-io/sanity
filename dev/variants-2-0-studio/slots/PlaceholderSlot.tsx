@@ -25,6 +25,11 @@ export function PlaceholderSlot({component}: {component: string}) {
             {option.label}. {option.summary}
           </Text>
         )}
+        {(def?.scope || def?.pick) && (
+          <Text muted size={0}>
+            {[def?.scope && `Scope: ${def.scope}`, def?.pick && `Pick: ${def.pick}`].filter(Boolean).join(' · ')}
+          </Text>
+        )}
         {(def?.where || option?.refs) && (
           <Text muted size={0}>
             {[def?.where, option?.refs].filter(Boolean).join(' · ')}
