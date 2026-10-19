@@ -3,7 +3,7 @@ import {type ReactNode, useState} from 'react'
 
 import {useDimensions, useVariantDefinitions} from '../c1/world'
 import {DefinitionDocumentsLens, DocumentVersionsLens} from './ActionableLenses'
-import {DimensionLens, ReleaseLens, ResolutionLens} from './Lenses'
+import {DimensionLens, ReleaseLens, VisitorLens} from './Lenses'
 import {useCorpus} from './useCorpus'
 
 type Lens = 'document' | 'definition' | 'dimension' | 'visitor'
@@ -12,7 +12,7 @@ const LENSES: {id: Lens; label: string; hint: string}[] = [
   {id: 'document', label: 'Document', hint: 'Pinned to one document: its stored versions, one per row.'},
   {id: 'definition', label: 'Definition', hint: 'Pinned to one variant definition: every document, with the grey rows that do not have it yet.'},
   {id: 'dimension', label: 'Dimension', hint: 'Each dimension value, with the definitions and documents that use it. Read only.'},
-  {id: 'visitor', label: 'Visitor', hint: 'Computed: which definition wins for a sample visitor. Read only.'},
+  {id: 'visitor', label: 'Visitor', hint: 'Computed: pick a visitor; for every document, which version they are served and why. Read only.'},
 ]
 
 const LOADING = (
@@ -64,7 +64,7 @@ export function InventoryTable({option}: {option: 'a' | 'b'}) {
   )
   const definitionLens = <DefinitionDocumentsLens corpus={corpus} definitions={definitions} onPin={setVariantPin} variantId={variantPin} />
   const dimensionLens = <DimensionLens corpus={corpus} definitions={definitions} dimensions={dimensions} />
-  const visitorLens = <ResolutionLens definitions={definitions} dimensions={dimensions} />
+  const visitorLens = <VisitorLens corpus={corpus} definitions={definitions} dimensions={dimensions} />
 
   if (option === 'b') {
     const section = (title: string, hint: string, body: ReactNode) => (

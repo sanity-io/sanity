@@ -5,6 +5,7 @@ import {PerspectiveProvider} from '../c1/state'
 import {useOptionAExtension} from '../c1/Controls'
 import {useRowOverride} from '../c3/RowOverride'
 import {DesignOptions} from '../design-options/DesignOptions'
+import {JourneysPanel} from '../journeys/JourneysPanel'
 import {useDocumentPaneOverride} from '../pane/useDocumentPaneOverride'
 
 export function LayoutWithFloatingOptions(props: LayoutProps) {
@@ -15,6 +16,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
           <DocumentPaneExtensionProvider value={useDocumentPaneOverride}>
             {props.renderDefault(props)}
             <DesignOptions />
+            <JourneysPanel />
           </DocumentPaneExtensionProvider>
         </PerspectiveMenuExtensionProvider>
       </PerspectiveProvider>

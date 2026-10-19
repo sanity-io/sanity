@@ -1,0 +1,157 @@
+[
+  {
+    "id": "j01",
+    "task": "T2",
+    "title": "An editor creates a first variant definition by hand",
+    "stage": "Open beta",
+    "persona": "editor",
+    "components": [
+      "C2",
+      "C6"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j02",
+    "task": "T2",
+    "title": "An editor changes a variant definition",
+    "stage": "Open beta",
+    "persona": "editor",
+    "components": [
+      "C6"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j03",
+    "task": "T3",
+    "title": "From the base document",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C1",
+      "C3",
+      "C4",
+      "C7"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j04",
+    "task": "T3",
+    "title": "From the document",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C3",
+      "C4",
+      "C7"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j05",
+    "task": "T3",
+    "title": "From a variant definition",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C6",
+      "C5"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j06",
+    "task": "T4",
+    "title": "Composing a perspective",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C1",
+      "C2"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j07",
+    "task": "T4",
+    "title": "Via the presentation tool",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C1"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j08",
+    "task": "T4",
+    "title": "An editor reads the dimension map and proposes a change",
+    "stage": "Open beta",
+    "persona": "editor",
+    "components": [
+      "C5"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j09",
+    "task": "T5",
+    "title": "Preview as an audience",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C1",
+      "C7"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j10",
+    "task": "T6",
+    "title": "Delete a variant document from the document editor",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C3",
+      "C4"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j11",
+    "task": "T6",
+    "title": "Delete a variant document from the Variants tool",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C6",
+      "C5"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j12",
+    "task": "T7",
+    "title": "Delete a variant definition that has no documents",
+    "stage": "Open beta",
+    "persona": "editor",
+    "components": [
+      "C6"
+    ],
+    "steps": []
+  },
+  {
+    "id": "j13",
+    "task": "T8",
+    "title": "Publish one variant document",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C3",
+      "C4"
+    ],
+    "steps": []
+  }
+]

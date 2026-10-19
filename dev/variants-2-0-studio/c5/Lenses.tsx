@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Select, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useMemo, useState} from 'react'
 
 import {type DimensionSpec, type SystemVariant, valueTitle} from '../c1/model'
@@ -54,12 +54,87 @@ function resolve(address: Record<string, string>, definitions: SystemVariant[]):
   return matching[0] ?? null
 }
 
-/** Resolution lens (computed): for sample addresses, which definition wins. Addresses come from the dimensions' values. */
-export function ResolutionLens({definitions, dimensions}: {definitions: SystemVariant[]; dimensions: DimensionSpec[]}) {
+/**
+ * Visitor lens (computed): pick one visitor context (one value per dimension, "Anyone" by default); for every document,
+ * which version that visitor is served and why. A document is served the highest-priority published variant whose
+ * conditions the visitor meets; with none, the base document.
+ */
+export function VisitorLens({corpus, definitions, dimensions}: {corpus: Corpus; definitions: SystemVariant[]; dimensions: DimensionSpec[]}) {
+  const [visitor, setVisitor] = useState<Record<string, string>>({})
+  const meets = definitions
+    .filter((v) => Object.entries(v.conditions).every(([k, val]) => visitor[k] === val))
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || Object.keys(b.conditions).length - Object.keys(a.conditions).length)
+
+  const rows = corpus.docs.map((doc) => {
+    const served = meets.find((v) => doc.list.some((r) => r.variantId === shortId(v._id) && r.bundle === 'published'))
+    const unpublished = !served ? meets.find((v) => doc.list.some((r) => r.variantId === shortId(v._id))) : undefined
+    return {
+      id: doc.id,
+      title: doc.title,
+      winner: served ? variantTitle(served) : 'The base document',
+      grounds: served
+        ? `Published, priority ${served.priority ?? 0}${meets.length > 1 ? `; beats ${meets.length - 1} other matching ${meets.length === 2 ? 'definition' : 'definitions'} by priority` : ''}`
+        : unpublished
+          ? `${variantTitle(unpublished)} exists but is not published`
+          : meets.length
+            ? 'No matching definition has a version of this document'
+            : 'No definition matches this visitor',
+    }
+  })
+
+  return (
+    <Stack gap={3}>
+      <Flex align="center" gap={3} wrap="wrap">
+        <Text muted size={1}>
+          Visitor
+        </Text>
+        {dimensions.map((d) => (
+          <Flex align="center" gap={2} key={d.name}>
+            <Text muted size={0}>
+              {d.title}
+            </Text>
+            <Select
+              fontSize={1}
+              onChange={(e) => {
+                const value = e.currentTarget.value
+                setVisitor((prev) => {
+                  const next = {...prev}
+                  if (value) next[d.name] = value
+                  else delete next[d.name]
+                  return next
+                })
+              }}
+              value={visitor[d.name] ?? ''}
+            >
+              <option value="">Anyone</option>
+              {d.values.map(([key, title]) => (
+                <option key={key} value={key}>
+                  {title}
+                </option>
+              ))}
+            </Select>
+          </Flex>
+        ))}
+      </Flex>
+      <DataTable
+        columns={[
+          {key: 'title', title: 'Document', width: 300, render: (r) => text(r.title), sort: (a, b) => a.title.localeCompare(b.title)},
+          {key: 'winner', title: 'Served', width: 240, render: (r) => text(r.winner)},
+          {key: 'grounds', title: 'Grounds', width: 460, render: (r) => muted(r.grounds)},
+        ]}
+        rows={rows}
+        testId="lens-visitor"
+      />
+      <ResolutionSamples definitions={definitions} dimensions={dimensions} />
+    </Stack>
+  )
+}
+
+/** Sample addresses: which definition wins for the empty address, each value, and pairs of the first values. */
+function ResolutionSamples({definitions, dimensions}: {definitions: SystemVariant[]; dimensions: DimensionSpec[]}) {
   const addresses = useMemo(() => {
     const out: Record<string, string>[] = [{}]
     for (const d of dimensions) for (const [key] of d.values) out.push({[d.name]: key})
-    // Pairs of the first value of each of the first three dimensions.
     const firsts = dimensions.slice(0, 3).map((d) => [d.name, d.values[0]?.[0]] as const)
     for (let i = 0; i < firsts.length; i++) {
       for (let j = i + 1; j < firsts.length; j++) out.push({[firsts[i][0]]: firsts[i][1], [firsts[j][0]]: firsts[j][1]})
@@ -81,14 +156,20 @@ export function ResolutionLens({definitions, dimensions}: {definitions: SystemVa
     }
   })
   return (
-    <DataTable
-      columns={[
-        {key: 'address', title: 'Address', width: 380, render: (r) => text(r.address)},
-        {key: 'winner', title: 'Resolves to', width: 320, render: (r) => muted(r.winner)},
-      ]}
-      rows={rows}
-      testId="lens-resolution"
-    />
+    <Stack gap={2}>
+      <Text muted size={0}>
+        Sample addresses
+      </Text>
+      <DataTable
+        columns={[
+          {key: 'address', title: 'Address', width: 380, render: (r) => text(r.address)},
+          {key: 'winner', title: 'Resolves to', width: 320, render: (r) => muted(r.winner)},
+        ]}
+        height={260}
+        rows={rows}
+        testId="lens-resolution"
+      />
+    </Stack>
   )
 }
 
