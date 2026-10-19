@@ -7,7 +7,8 @@ import {ReleaseAvatarIcon, usePerspective, useSetPerspective} from 'sanity'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
-import {useDimensions} from '../c1/world'
+import {usePerspectiveState} from '../c1/state'
+import {useDimensions, useVariantDefinitions} from '../c1/world'
 import {useVersionList} from '../data/useVersionList'
 import {type AudienceVersion} from '../data/versions'
 
@@ -54,11 +55,13 @@ function DropdownPill(props: {text: string; items: {key: string; text: string; i
   )
 }
 
-export function DocumentPillsV1({documentId, option}: {documentId: string; option: 'a' | 'b'}) {
+export function DocumentPillsV1({documentId, option, manage}: {documentId: string; option: 'a' | 'b'; manage?: ReactElement}) {
   const versions = useVersionList(documentId)
   const {selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
   const dimensions = useDimensions()
+  const address = usePerspectiveState()
+  const definitions = useVariantDefinitions()
   // Never render nothing: the pane header's chip scroller observes this row's element.
   if (!versions) return <Flex data-testid={`doc-pills-${option}`} gap={1} />
 
@@ -69,6 +72,20 @@ export function DocumentPillsV1({documentId, option}: {documentId: string; optio
   const releases = versions.filter((v) => v.release)
   const variants = versions.filter((v) => v.audience !== null)
   const current = selectedPerspectiveName ?? 'drafts'
+
+  // Choosing a variant sets the address (version and values) like the inventory and the C1 row do.
+  const selectVariant = (v: AudienceVersion) => () => {
+    const definition = definitions.find((d) => d._id.replace(/^_\.variants\./, '') === v.variantId)
+    setPerspective(v.bundleId ?? (v.state === 'published' ? 'published' : 'drafts'))
+    address.setChosen(definition ? definition.conditions : {})
+    if (definition) address.setRowShown(true)
+  }
+  const variantItem = (v: AudienceVersion, i: number) => ({
+    key: `${v.audience}-${i}`,
+    text: `${v.audience} · ${stateWord(v)}`,
+    icon: glyph(v),
+    onClick: selectVariant(v),
+  })
 
   const releaseItems = releases.map((v) => ({
     key: `${v.bundleId}-${v.audience ?? 'base'}`,
@@ -93,7 +110,7 @@ export function DocumentPillsV1({documentId, option}: {documentId: string; optio
             text={`Releases (${releases.length})`}
           />
           <DropdownPill
-            items={variants.map((v, i) => ({key: `${v.audience}-${i}`, text: `${v.audience} · ${stateWord(v)}`, icon: glyph(v)}))}
+            items={variants.map(variantItem)}
             testId="pills-variants"
             text={`Variants (${variants.length})`}
           />
@@ -109,7 +126,7 @@ export function DocumentPillsV1({documentId, option}: {documentId: string; optio
             const mine = variants.filter((v) => dimension.values.some(([, title]) => title === v.audience))
             return (
               <DropdownPill
-                items={mine.map((v, i) => ({key: `${v.audience}-${i}`, text: `${v.audience} · ${stateWord(v)}`, icon: glyph(v)}))}
+                items={mine.map(variantItem)}
                 key={dimension.name}
                 testId={`axis-${dimension.name}`}
                 text={`${dimension.title} (${mine.length})`}
@@ -118,6 +135,7 @@ export function DocumentPillsV1({documentId, option}: {documentId: string; optio
           })}
         </>
       )}
+      {manage}
     </Flex>
   )
 }
