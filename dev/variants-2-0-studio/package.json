@@ -1,0 +1,25 @@
+{
+  "name": "sanity-variants-2-0-studio",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "scripts": {
+    "build": "sanity build",
+    "dev": "sanity dev --port 3350",
+    "start": "sanity preview --port 3350"
+  },
+  "dependencies": {
+    "@sanity/icons": "^5.2.3",
+    "@sanity/ui": "catalog:",
+    "oxc-transform-react": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "vite": "catalog:"
+  }
+}
