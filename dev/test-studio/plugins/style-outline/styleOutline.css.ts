@@ -83,15 +83,23 @@ export const panel = style([
   },
 ])
 
+export const headerRow = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  padding: '2px 0 8px',
+})
+
 export const header = style([
   handle,
   {
     'display': 'block',
-    'width': '100%',
+    'flex': '1 1 auto',
+    'minWidth': 0,
     'font': 'inherit',
     'fontWeight': 600,
     'textAlign': 'left',
-    'padding': '2px 0 8px',
+    'padding': 0,
     'border': 0,
     'background': 'transparent',
     'color': 'inherit',
@@ -100,6 +108,28 @@ export const header = style([
     },
   },
 ])
+
+export const closeButton = style({
+  'display': 'flex',
+  'alignItems': 'center',
+  'justifyContent': 'center',
+  'flexShrink': 0,
+  'width': 22,
+  'height': 22,
+  'padding': 0,
+  'border': 0,
+  'borderRadius': 4,
+  'background': 'transparent',
+  'color': 'rgba(236, 236, 241, 0.55)',
+  'cursor': 'pointer',
+  ':hover': {
+    color: '#ffffff',
+  },
+  ':focus-visible': {
+    outline: '2px solid rgba(255, 255, 255, 0.72)',
+    outlineOffset: 1,
+  },
+})
 
 export const group = style({
   padding: '4px 0',
