@@ -27,7 +27,7 @@ ASAP (Copy) release. Not drawn in Figma yet; the studio is the first place to co
 
 ## By component
 - **C1:** 3 switches x variant count x row state x picked values (none, 1, 2, 4); Option A pill menu with and without
-  "Narrow by variant"; Option B Variants control empty or picked; document lacks the variant (show base).
+  "Add a dimension…" (GA) or "View as…" (open beta); Option B Variants control empty or picked; document lacks the variant (show base).
 - **C2 (picks not made):** base only; draft only; draft + published; variant with own draft; variant published only;
   variant scheduled in a release; variant in an ASAP release; 7 audiences; many versions; missing variant
   (dashed pill); drafts off; live edit.
@@ -38,7 +38,7 @@ ASAP (Copy) release. Not drawn in Figma yet; the studio is the first place to co
 
 ## Real or mock
 - **Real in stock Studio:** published, draft, releases, scheduled drafts.
-- **Mock (no extension point or not built):** composed address row with chips and dimension picker; "Narrow by variant"
+- **Mock (no extension point or not built):** composed address row with chips and dimension picker; "Add a dimension…" (GA) or "View as…" (open beta)
   in the perspective menu; reach counts; versions mark and hover popover on list rows; missing-variant note;
   multi-dimension addresses.
 - **Verified 2026-10-19:** a variant version inside a scheduled or ASAP release exists in real data (Black Friday lists

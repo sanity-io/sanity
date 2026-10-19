@@ -91,7 +91,7 @@ export function AddressRow() {
   const openBeta = useOptionState().stage === 'open-beta'
   const only = dimensions[0]
 
-  // "Narrow by dimension…" in the menu raises the pending chip; its picker opens on it.
+  // The extra menu row ("Add a dimension…" or "View as…") raises the pending chip; its picker opens on it.
   useEffect(() => {
     if (s.pending && pendingEl && !openBeta) {
       setAnchor(pendingEl)

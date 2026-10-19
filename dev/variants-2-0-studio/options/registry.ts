@@ -23,7 +23,7 @@ export const COMPONENTS: ComponentDef[] = [
       {
         id: 'a',
         label: 'One control',
-        summary: "Today's version pill; its menu gains \"Narrow by dimension…\", which opens the composed-address row.",
+        summary: "Today's version pill; its menu gains one row (\"Add a dimension…\" on GA, \"View as…\" in open beta), which opens the composed-address row; the pending chip reads \"Pick a dimension\".",
         status: 'candidate',
         refs: 'Figma C1 192:3135; capability matrix 197:4316; edge states 192:3143',
       },
@@ -32,7 +32,7 @@ export const COMPONENTS: ComponentDef[] = [
         label: 'Two controls',
         summary: 'Document state and Variants, top right. The chevron on Variants shows or hides the row; one panel, forms by dimension count (1, 2 to 4, 5+).',
         status: 'candidate',
-        refs: 'Figma C1 192:3139; E1 "Variants control · 1 · The panel" 210:10464',
+        refs: 'Figma C1 Option B section 192:3139 (handoff C1 page)',
       },
       {
         id: 'c',
@@ -55,14 +55,14 @@ export const COMPONENTS: ComponentDef[] = [
       {
         id: 'a',
         label: 'Grouped dropdowns',
-        summary: 'Published and Draft stay pills; releases and variants each fold into one dropdown.',
+        summary: 'Follows PR #39: Variants first, a divider, then Published, Draft and Releases; full-radius pills; each of Variants and Releases folds into one dropdown.',
         status: 'candidate',
         refs: 'Figma C2 227:1925; PARTS-C2 (DocumentPerspectiveList)',
       },
       {
         id: 'b',
         label: 'Per-axis controls',
-        summary: 'One control per axis (state, audience, locale), each listing what this document has.',
+        summary: 'Exploration: one control per axis (state, audience, locale), each listing what this document has. Asks for more axes than the page builds.',
         status: 'candidate',
         refs: 'Figma C2 227:1929',
       },
@@ -110,7 +110,7 @@ export const COMPONENTS: ComponentDef[] = [
         label: 'Document lens, side panel',
         summary: "The C5 document lens at mini width in the document inspector: rows grouped by publish date (Published, each release, Drafts), sort and filter in the command lane, row menu and bulk bar, Expand to the full table.",
         status: 'candidate',
-        story: 'explorations-variants-variant-inventory-side-panel-c4-version-inventory-pane',
+        story: 'explorations-variants-2-0-c4-version-inventory-option-a--mini',
       },
       {
         id: 'b',
@@ -219,8 +219,8 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
     c: 'The shipped bar: Version and Variant filters under the navbar.',
   },
   c2: {
-    a: 'Published and Draft stay pills; releases and variants fold into dropdowns.',
-    b: 'One control for the version and one for the variant of this document.',
+    a: 'Variants first, a divider, then Published, Draft and Releases (as in PR #39).',
+    b: 'Exploration: one control per axis (state, audience, locale).',
   },
   c3: {
     a: 'Icon on every row; hover opens a read-only popover; click opens document and inventory.',
@@ -304,14 +304,19 @@ const STORIES: Record<string, Record<string, string>> = {
     b: 'explorations-variants-2-0-c3-version-mark-popover-as-list--many',
     c: 'explorations-variants-2-0-c3-version-mark-option-b--list-default',
   },
-  c4: {a: 'explorations-variants-variant-inventory-side-panel-c4-version-inventory-pane'},
-  c5: {a: 'explorations-variants-2-0-components-c5-inventory-table--document-lens'},
-  c6: {a: 'explorations-variants-2-0-components-c6-variants-tool--definitions-list'},
+  c4: {a: 'explorations-variants-2-0-c4-version-inventory-option-a--mini'},
+  c5: {a: 'explorations-variants-2-0-c5-inventory-table-option-a--document-full'},
+  c6: {a: 'explorations-variants-2-0-c6-variants-tool-option-a--definition-detail'},
   c7: {
     a: 'explorations-variants-2-0-c7-banners-option-a--drafts-no-variant',
     b: 'explorations-variants-2-0-c7-banners-option-b--drafts-live',
   },
-  c8: {a: 'explorations-variants-2-0-components-c8-releases-view--stub'},
+  c8: {a: 'explorations-variants-2-0-c8-releases-view-option-a--autumn'},
+  c9: {
+    a: 'explorations-variants-2-0-field-marks-by-kind--marks-by-field-kind',
+    b: 'explorations-variants-2-0-field-marks-portable-text--portable-text-treatments',
+    c: 'explorations-variants-2-0-field-marks-removed-and-new-items--removed-and-new-items',
+  },
 }
 
 for (const component of COMPONENTS) {
