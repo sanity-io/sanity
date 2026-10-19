@@ -3,6 +3,7 @@ import {useRouter} from 'sanity/router'
 import {type UseDocumentListItemOverride} from 'sanity/structure'
 
 import {useVersionList} from '../data/useVersionList'
+import {PageVersionLabel, pageVersion, usePresentationAudience} from '../presentation/pageVersion'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {baseDot, hasMoreThanBase} from './types'
 import {VersionMark, type VersionPick} from './VersionMark'
@@ -31,6 +32,7 @@ export const useRowOverride: UseDocumentListItemOverride = ({
   const stock = option === STOCK_OPTION
   const versions = useVersionList(documentId, !stock)
   const router = useRouter()
+  const audience = usePresentationAudience()
 
   // v2/C rows: a click on a picked version opens that document.
   const openDocument = useCallback(
@@ -48,6 +50,10 @@ export const useRowOverride: UseDocumentListItemOverride = ({
 
   if (stock) return undefined
   if (versions === null) return {status: SLOT, tooltip: null}
+  // In Presentation with an audience chosen, the row says which version that audience gets (P2).
+  if (audience) {
+    return {status: <PageVersionLabel version={pageVersion(versions, audience.variantId, audience.title, audience.perspective)} />, tooltip: null}
+  }
   if (versions.length === 0 || (!SHOW_ON_EVERY_ROW && !hasMoreThanBase(versions))) {
     return {status: defaultStatus, tooltip: null}
   }

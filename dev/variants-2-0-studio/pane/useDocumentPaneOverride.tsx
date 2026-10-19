@@ -3,6 +3,7 @@ import {type UseDocumentPaneExtension} from 'sanity/structure'
 import {DocumentPillsV1} from '../c2/DocumentPills'
 import {ManageVersions} from '../c4/ManageVersions'
 import {DocumentBannerV1} from '../c7/Banners'
+import {PresentationContextLine} from '../presentation/PresentationContextLine'
 import {STOCK_OPTION, useOption} from '../options/store'
 
 /** C2 (pills) and C7 (banners) in the document pane, through the PROPOSED `DocumentPaneExtensionProvider`. */
@@ -16,14 +17,16 @@ export const useDocumentPaneOverride: UseDocumentPaneExtension = ({documentId, d
   const banner =
     c7 === 'a' || c7 === 'b' ? <DocumentBannerV1 documentId={documentId} documentType={documentType} option={c7} /> : undefined
   // C4 B: the inventory as a popover from "Manage versions".
+  // Presentation (P2): the version's context line and a way back to "On this page".
+  const context = <PresentationContextLine documentId={documentId} />
   const manage = c4 === 'b' && !pills ? <ManageVersions documentId={documentId} /> : undefined
-  const banners =
-    banner || manage ? (
-      <>
-        {manage}
-        {banner}
-      </>
-    ) : undefined
-  if (c2 === STOCK_OPTION && c7 === STOCK_OPTION && !manage) return undefined
+  const banners = (
+    <>
+      {context}
+      {manage}
+      {banner}
+    </>
+  )
+  if (c2 === STOCK_OPTION && c7 === STOCK_OPTION && !manage && c4 === STOCK_OPTION) return undefined
   return {pills, banners}
 }
