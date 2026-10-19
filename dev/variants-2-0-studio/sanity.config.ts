@@ -30,7 +30,6 @@ export default defineConfig({
   ],
   schema: {types: schemaTypes},
   scheduledDrafts: {enabled: true},
-  beta: {
-    variants: {enabled: true},
-  },
+  // No `beta.variants`: the Variants flag stays off so everything is stock Studio. Variants 2.0
+  // designs are added on top through OptionSlot, not by switching the flag on.
 })

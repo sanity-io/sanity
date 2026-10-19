@@ -24,6 +24,11 @@ seeded data. Override with `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET
 
 Pinned to the Studio revision Storybook uses (`21388ff`), so the real parts match.
 
+## Stock Studio first
+
+The `beta.variants` flag is off, so the Studio is stock (no Variant selector, no Variants tool,
+no inventory). Variants 2.0 designs are additions on top of it, mounted through `OptionSlot`.
+
 ## Presentation and scheduled drafts
 
 - Presentation previews `SANITY_STUDIO_PREVIEW_ORIGIN` (default `http://localhost:3456`, the Northfold storefront).
