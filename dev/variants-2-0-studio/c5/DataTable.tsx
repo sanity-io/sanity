@@ -9,6 +9,8 @@ import {type ReactNode, useMemo, useState} from 'react'
 export interface Column<T> {
   key: string
   title: string
+  /** Replaces the title in the header (for example a select-all checkbox). */
+  header?: ReactNode
   width: number
   render: (row: T) => ReactNode
   sort?: (a: T, b: T) => number
@@ -57,7 +59,9 @@ export function DataTable<T extends {id: string}>(props: {
             cell(
               column,
               i,
-              column.sort ? (
+              column.header ? (
+                column.header
+              ) : column.sort ? (
                 <Button
                   fontSize={1}
                   iconRight={sort?.key === column.key ? (sort.dir === 1 ? ArrowUpIcon : ArrowDownIcon) : undefined}

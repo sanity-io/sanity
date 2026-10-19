@@ -1,18 +1,18 @@
-import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useState} from 'react'
+import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
+import {type ReactNode, useState} from 'react'
 
 import {useDimensions, useVariantDefinitions} from '../c1/world'
-import {LiveInventory} from '../c4/inventory/LiveInventory'
-import {DefinitionLens, DimensionLens, DocumentLens, ReleaseLens, ResolutionLens} from './Lenses'
+import {DefinitionDocumentsLens, DocumentVersionsLens} from './ActionableLenses'
+import {DimensionLens, ReleaseLens, ResolutionLens} from './Lenses'
 import {useCorpus} from './useCorpus'
 
-type Lens = 'document' | 'definition' | 'dimension' | 'resolution'
+type Lens = 'document' | 'definition' | 'dimension' | 'visitor'
 
 const LENSES: {id: Lens; label: string; hint: string}[] = [
-  {id: 'document', label: 'Documents', hint: 'One row per document: versions, variants, releases.'},
-  {id: 'definition', label: 'Definitions', hint: 'One row per variant definition, with the documents that miss it.'},
-  {id: 'dimension', label: 'Dimensions', hint: 'Each dimension value, with the definitions and documents that use it.'},
-  {id: 'resolution', label: 'Resolution', hint: 'Computed: which definition wins for a sample address.'},
+  {id: 'document', label: 'Document', hint: 'Pinned to one document: its stored versions, one per row.'},
+  {id: 'definition', label: 'Definition', hint: 'Pinned to one variant definition: every document, with the grey rows that do not have it yet.'},
+  {id: 'dimension', label: 'Dimension', hint: 'Each dimension value, with the definitions and documents that use it. Read only.'},
+  {id: 'visitor', label: 'Visitor', hint: 'Computed: which definition wins for a sample visitor. Read only.'},
 ]
 
 const LOADING = (
@@ -43,61 +43,74 @@ function Segment<T extends string>(props: {value: T; options: {id: T; label: str
 }
 
 /**
- * C5, the inventory table, on real data. Four lenses (documents, definitions, dimensions, resolution). The document
- * lens has a full width and a mini width (320px, the size it has next to a form). Option A: the table. Option B: the
- * table plus a flyout: a row opens that document's inventory (Andrej's panel) to the right.
+ * C5, the inventory table, on real data (Figma E5 3:5679): one table, four lenses. The Document and Definition lenses
+ * write to the dataset (select rows, bulk bar, confirm dialog); Dimension and Visitor are read only for now.
+ *  - Option A (I1): one surface with a "View by" switch; each lens has its pin picker.
+ *  - Option B (I2): the lenses live at their pins, each in its own place, on the same table.
  */
 export function InventoryTable({option}: {option: 'a' | 'b'}) {
   const corpus = useCorpus()
   const definitions = useVariantDefinitions()
   const dimensions = useDimensions()
-  const [lens, setLens] = useState<Lens>('document')
+  const [lens, setLens] = useState<Lens>('definition')
   const [mini, setMini] = useState(false)
-  const [selected, setSelected] = useState<string | null>(null)
-  const active = LENSES.find((l) => l.id === lens)
+  const [docPin, setDocPin] = useState<string | null>(null)
+  const [variantPin, setVariantPin] = useState<string | null>(null)
 
-  const table = !corpus ? (
-    LOADING
-  ) : lens === 'document' ? (
-    <DocumentLens corpus={corpus} mini={mini} onSelect={option === 'b' ? setSelected : undefined} selectedId={selected} />
-  ) : lens === 'definition' ? (
-    <DefinitionLens corpus={corpus} definitions={definitions} />
-  ) : lens === 'dimension' ? (
-    <DimensionLens corpus={corpus} definitions={definitions} dimensions={dimensions} />
-  ) : (
-    <ResolutionLens definitions={definitions} dimensions={dimensions} />
+  if (!corpus) return LOADING
+
+  const docLens = (
+    <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={docPin ?? corpus.docs[0]?.id ?? ''} mini={mini} onPin={setDocPin} />
   )
+  const definitionLens = <DefinitionDocumentsLens corpus={corpus} definitions={definitions} onPin={setVariantPin} variantId={variantPin} />
+  const dimensionLens = <DimensionLens corpus={corpus} definitions={definitions} dimensions={dimensions} />
+  const visitorLens = <ResolutionLens definitions={definitions} dimensions={dimensions} />
 
-  const flyoutDoc = option === 'b' && lens === 'document' && selected ? corpus?.docs.find((d) => d.id === selected) : undefined
+  if (option === 'b') {
+    const section = (title: string, hint: string, body: ReactNode) => (
+      <Stack gap={2} key={title}>
+        <Text size={1} weight="medium">
+          {title}
+        </Text>
+        <Text muted size={0}>
+          {hint}
+        </Text>
+        {body}
+      </Stack>
+    )
+    return (
+      <Stack data-testid="c5-b" gap={5}>
+        {section('In the document: the Document lens', 'Mini beside the form (320), full as its own pane.', (
+          <Stack gap={3}>
+            <Segment label="Width" onChange={(id) => setMini(id === 'mini')} options={[{id: 'full', label: 'Full'}, {id: 'mini', label: 'Mini · 320'}]} value={mini ? 'mini' : 'full'} />
+            <Box style={{maxWidth: mini ? 340 : undefined}}>{docLens}</Box>
+          </Stack>
+        ))}
+        {section('In the Variants tool: the Definition lens', 'Pinned to a definition.', definitionLens)}
+        {section('In the Variants tool: the Dimension lens', LENSES[2].hint, dimensionLens)}
+        {section('In the preview: the Visitor lens', LENSES[3].hint, visitorLens)}
+      </Stack>
+    )
+  }
 
+  const active = LENSES.find((l) => l.id === lens)
   return (
-    <Stack data-testid={`c5-${option}`} gap={3}>
+    <Stack data-testid="c5-a" gap={3}>
       <Flex align="center" gap={3} wrap="wrap">
-        <Segment label="Lens" onChange={setLens} options={LENSES} value={lens} />
+        <Text muted size={1}>
+          View by
+        </Text>
+        <Segment label="View by" onChange={setLens} options={LENSES} value={lens} />
         {lens === 'document' ? (
-          <Segment
-            label="Width"
-            onChange={(id) => setMini(id === 'mini')}
-            options={[
-              {id: 'full', label: 'Full'},
-              {id: 'mini', label: 'Mini · 320'},
-            ]}
-            value={mini ? 'mini' : 'full'}
-          />
+          <Segment label="Width" onChange={(id) => setMini(id === 'mini')} options={[{id: 'full', label: 'Full'}, {id: 'mini', label: 'Mini · 320'}]} value={mini ? 'mini' : 'full'} />
         ) : null}
       </Flex>
       <Text muted size={0}>
         {active?.hint}
-        {option === 'b' && lens === 'document' ? ' Click a row to open its inventory in the flyout.' : ''}
       </Text>
-      <Flex align="flex-start" gap={3}>
-        <Box style={{flex: 1, minWidth: 0, maxWidth: mini ? 320 : undefined}}>{table}</Box>
-        {flyoutDoc ? (
-          <Card border data-testid="c5-flyout" radius={3} style={{flex: 'none', height: 520, overflow: 'auto', width: 360}}>
-            <LiveInventory documentId={flyoutDoc.id} title={flyoutDoc.title} />
-          </Card>
-        ) : null}
-      </Flex>
+      <Box style={{maxWidth: lens === 'document' && mini ? 340 : undefined}}>
+        {lens === 'document' ? docLens : lens === 'definition' ? definitionLens : lens === 'dimension' ? dimensionLens : visitorLens}
+      </Box>
     </Stack>
   )
 }
@@ -106,7 +119,8 @@ export function InventoryTable({option}: {option: 'a' | 'b'}) {
 export function DefinitionsTool() {
   const corpus = useCorpus()
   const definitions = useVariantDefinitions()
-  return corpus ? <DefinitionLens corpus={corpus} definitions={definitions} /> : LOADING
+  const [pin, setPin] = useState<string | null>(null)
+  return corpus ? <DefinitionDocumentsLens corpus={corpus} definitions={definitions} onPin={setPin} variantId={pin} /> : LOADING
 }
 
 /** C8: the Releases tool is the release lens. */

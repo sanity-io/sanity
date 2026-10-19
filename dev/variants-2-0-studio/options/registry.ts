@@ -129,8 +129,8 @@ export const COMPONENTS: ComponentDef[] = [
     pick: "Concept; the spec frame is on this page",
     where: 'Design slots tool.',
     options: [
-      {id: 'a', label: 'Table', summary: 'The table as the primary pattern; the sidebar is its smallest slice.', status: 'candidate', refs: 'Spec frame in Figma E5'},
-      {id: 'b', label: 'Table + flyout', summary: 'Notion-like: table primary, the document form as a flyout (future).', status: 'exploration'},
+      {id: 'a', label: 'One surface, a View by switch', summary: 'One table with a View by switch (Document, Definition, Dimension, Visitor) and a pin picker.', status: 'candidate', refs: 'Spec frame in Figma E5'},
+      {id: 'b', label: 'Lenses at their pins', summary: 'Each lens lives at its pin: Document in the document, Definition and Dimension in the Variants tool, Visitor in the preview.', status: 'candidate'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
   },
@@ -211,7 +211,7 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
     b: 'The inventory opens as a popover from Manage versions.',
     c: 'The versions of this document as a plain list in the inspector.',
   },
-  c5: {a: 'Table with four lenses, on real data.', b: 'The table plus a flyout: a row opens its inventory.'},
+  c5: {a: 'One surface with a View by switch and a pin picker.', b: 'The lenses live at their pins, on one shared table.'},
   c6: {a: 'Definitions as rows, with the documents that miss each.'},
   c7: {
     a: 'A banner on a missing variant, with Create variant, in every version.',

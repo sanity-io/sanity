@@ -3,6 +3,18 @@ import {useClient} from 'sanity'
 
 import {DEFINITIONS_GROQ, RELEASES_GROQ, type ReleaseInfo} from '../data/versions'
 
+/** One stored version of a document: base or variant, in published, drafts or a release. */
+export interface VersionRow {
+  /** The real document id, e.g. `drafts.book-x` or `versions.rFoo.book-x`. */
+  _id: string
+  docId: string
+  /** The variant definition id, or null for the base document. */
+  variantId: string | null
+  /** `published`, `drafts` or a release id. */
+  bundle: string
+  updated: string
+}
+
 /** One row per document group, aggregated from every version document of it. */
 export interface DocRow {
   id: string
@@ -17,6 +29,8 @@ export interface DocRow {
   /** Distinct releases that hold a version of this group. */
   releaseIds: string[]
   updated: string
+  /** Every stored version, base and variant. */
+  list: VersionRow[]
 }
 
 export interface Corpus {
@@ -52,10 +66,21 @@ export function buildCorpus(rows: readonly RawRow[], releases: ReleaseInfo[], de
     const id = row._id.split('.').at(-1) as string
     let group = groups.get(id)
     if (!group) {
-      group = {id, title: id, type: row._type, published: false, draft: false, versions: 0, variantIds: [], releaseIds: [], updated: ''}
+      group = {id, title: id, type: row._type, published: false, draft: false, versions: 0, variantIds: [], releaseIds: [], updated: '', list: []}
       groups.set(id, group)
     }
     group.versions += 1
+    {
+      const variantId = row.variant ? shortId(row.variant) : null
+      const where = variantId
+        ? (row.bundle ?? 'published')
+        : row._id === id
+          ? 'published'
+          : row._id === `drafts.${id}`
+            ? 'drafts'
+            : (row.bundle ?? 'published')
+      group.list.push({_id: row._id, docId: id, variantId, bundle: where, updated: row._updatedAt})
+    }
     if (row.bundle && row.bundle !== 'drafts' && row.bundle !== 'published') {
       const counts = (releaseCounts[row.bundle] ??= {docs: 0, variants: 0})
       if (row.variant) counts.variants += 1
