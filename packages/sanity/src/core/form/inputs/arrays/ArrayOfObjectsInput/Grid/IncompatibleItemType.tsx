@@ -104,7 +104,7 @@ export function IncompatibleItemType(props: Props) {
       >
         <Flex gap={4} marginTop={2} flexDirection="column">
           <Box margin={1}>
-            <Icon size={4} icon={UnknownIcon} />
+            <Icon size={4} icon={UnknownIcon} style={{margin: '-0.5625rem', display: 'block'}} />
           </Box>
           <Text align="center" size={1} as="div" trim={true} tone={tone}>
             <Translate

@@ -70,8 +70,13 @@ function CellPreview({title, media}: {title: string; media?: ReactNode}) {
 }
 
 const MEDIA = (
-  <Card padding={4} radius={2} tone="transparent">
-    <Icon muted size={4} icon={ImageIcon} />
+  <Card
+    padding={4}
+    radius={2}
+    tone="transparent"
+    style={{display: 'flex', justifyContent: 'center'}}
+  >
+    <Icon muted size={4} icon={ImageIcon} style={{margin: '-0.5625rem'}} />
   </Card>
 )
 

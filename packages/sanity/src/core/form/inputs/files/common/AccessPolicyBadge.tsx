@@ -11,7 +11,7 @@ export function AccessPolicyBadge(props: {hideBackground?: boolean}) {
 
   const content = (
     <Flex alignItems="center" justifyContent="center" gap={2}>
-      <Icon size={1} icon={LockIcon} />
+      <Icon size={1} icon={LockIcon} style={{margin: '-0.375rem'}} />
       <Text size={1} weight="medium" muted as="div" trim={true}>
         {t('inputs.files.common.access-policy.private.label')}
       </Text>

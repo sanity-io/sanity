@@ -48,7 +48,11 @@ export function FileActionsMenu(props: Props) {
         {/* todo: consider replacing with <SanityDefaultPreview> */}
         <Flex flexWrap="nowrap" alignItems="center">
           <Card padding={3} tone="transparent" shadow={1} radius={1}>
-            <Icon muted={muted} icon={BinaryDocumentIcon} />
+            <Icon
+              muted={muted}
+              icon={BinaryDocumentIcon}
+              style={{margin: '-0.4375rem', display: 'block'}}
+            />
           </Card>
           <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
             <Text

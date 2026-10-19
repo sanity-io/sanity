@@ -16,7 +16,16 @@ export function InvalidImageWarning({onClearValue}: Props) {
     <Card data-testid="invalid-image-warning" tone="caution" padding={4} border radius={2}>
       <Flex gap={4} marginBottom={4}>
         <Box>
-          <Icon size={1} icon={WarningOutlineIcon} tone="caution" />
+          <Icon
+            size={1}
+            icon={WarningOutlineIcon}
+            tone="caution"
+            style={{
+              margin: '-0.3125rem',
+              marginLeft: '-0.375rem',
+              display: 'block',
+            }}
+          />
         </Box>
         <VStack gap={3}>
           <Text size={1} weight="medium" as="div" trim={true} tone="caution">

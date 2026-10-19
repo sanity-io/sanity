@@ -104,7 +104,7 @@ export function IncompatibleItemType(props: Props) {
       >
         <Flex alignItems="center">
           <Box marginRight={3}>
-            <Icon icon={UnknownIcon} />
+            <Icon icon={UnknownIcon} style={{margin: '-0.4375rem', display: 'block'}} />
           </Box>
 
           <Box flexBasis="0%" flexGrow={1}>

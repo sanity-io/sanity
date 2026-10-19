@@ -64,7 +64,7 @@ export function PlaceholderText(props: Props) {
 
   return (
     <Flex alignItems="center" className={root} gap={3} justifyContent="center" paddingLeft={1}>
-      <Icon muted size={1} icon={messageIcon} />
+      <Icon muted size={1} icon={messageIcon} style={{margin: '-0.375rem'}} />
 
       <Text size={1} muted as="div" trim={true}>
         {messageText}
