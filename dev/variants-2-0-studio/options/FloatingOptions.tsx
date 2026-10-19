@@ -1,13 +1,19 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {ControlsIcon} from '@sanity/icons/Controls'
-import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {type LayoutProps} from 'sanity'
 
-import {COMPONENTS} from './registry'
+import {COMPONENTS, type OptionStatus} from './registry'
 import {maxOptionCount, resetOptions, resolveOption, setGlobalChoice, setOverride, useOptionState} from './store'
 
 const LETTERS = 'ABCDEFGH'
+
+const STATUS_TONE: Record<OptionStatus, 'positive' | 'primary' | 'caution'> = {
+  final: 'positive',
+  candidate: 'primary',
+  exploration: 'caution',
+}
 
 // Floats over the Studio instead of taking layout space, so document heights stay real. Open or
 // closed is per page load, and "hide" is deliberately not remembered: a refresh brings it back.
@@ -24,11 +30,11 @@ function FloatingOptions() {
   return (
     <div style={{position: 'fixed', left: 16, bottom: 16, zIndex: 1000000}}>
       {open ? (
-        <Card radius={3} shadow={3} style={{width: 340, maxHeight: '70vh', overflow: 'auto'}}>
+        <Card radius={3} shadow={3} style={{width: 360, maxHeight: '70vh', overflow: 'auto'}}>
           <Stack gap={3} padding={3}>
             <Flex align="center" gap={2}>
               <Box flex={1}>
-                <Text size={1} weight="semibold">Variants 2.0 options</Text>
+                <Text size={1} weight="semibold">Config</Text>
               </Box>
               {overrideCount > 0 && (
                 <Button fontSize={0} mode="bleed" onClick={resetOptions} padding={2} text={`Reset ${overrideCount}`} />
@@ -65,26 +71,34 @@ function FloatingOptions() {
               <Text muted size={0}>Per component</Text>
               {COMPONENTS.filter((component) => component.options.length > 1).map((component) => {
                 const active = resolveOption(component, state)
+                const activeOption = component.options.find((option) => option.id === active)
                 return (
-                  <Flex align="center" gap={2} key={component.id}>
-                    <Box flex={1}>
-                      <Text size={1}>{component.title}</Text>
-                    </Box>
-                    <Flex gap={1}>
-                      {component.options.map((option) => (
-                        <Button
-                          fontSize={0}
-                          key={option.id}
-                          mode={active === option.id ? 'default' : 'ghost'}
-                          onClick={() => setOverride(component.id, state.overrides[component.id] === option.id ? null : option.id)}
-                          padding={2}
-                          text={option.id.toUpperCase()}
-                          title={`${option.label}. ${option.summary}`}
-                          tone={state.overrides[component.id] === option.id ? 'primary' : 'default'}
-                        />
-                      ))}
+                  <Stack gap={1} key={component.id}>
+                    <Flex align="center" gap={2}>
+                      <Box flex={1}>
+                        <Text size={1}>{component.title}</Text>
+                      </Box>
+                      <Flex gap={1}>
+                        {component.options.map((option) => (
+                          <Button
+                            fontSize={0}
+                            key={option.id}
+                            mode={active === option.id ? 'default' : 'ghost'}
+                            onClick={() => setOverride(component.id, state.overrides[component.id] === option.id ? null : option.id)}
+                            padding={2}
+                            text={option.id.toUpperCase()}
+                            tone={state.overrides[component.id] === option.id ? 'primary' : 'default'}
+                          />
+                        ))}
+                      </Flex>
                     </Flex>
-                  </Flex>
+                    {activeOption && (
+                      <Flex align="center" gap={2}>
+                        <Badge fontSize={0} tone={STATUS_TONE[activeOption.status]}>{activeOption.status}</Badge>
+                        <Text muted size={0}>{activeOption.label}</Text>
+                      </Flex>
+                    )}
+                  </Stack>
                 )
               })}
             </Stack>
@@ -97,11 +111,11 @@ function FloatingOptions() {
       ) : (
         <Card radius="full" shadow={2}>
           <Button
-            aria-label="Variants 2.0 options"
+            aria-label="Config"
             icon={ControlsIcon}
             onClick={() => setOpen(true)}
             radius="full"
-            text={overrideCount > 0 ? `${label} +${overrideCount}` : label}
+            text={overrideCount > 0 ? `Config · ${label} +${overrideCount}` : `Config · ${label}`}
             tone="primary"
           />
         </Card>

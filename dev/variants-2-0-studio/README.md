@@ -16,10 +16,16 @@ seeded data. Override with `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET
 - `options/registry.ts` lists each component and its options. Add an option by adding an entry.
 - `OptionSlot` renders whichever option is in force; a missing renderer shows a placeholder.
 - The floating control (bottom left) picks the Nth option for every component (A, B, C, ...) or `Final`.
-- The Variants 2.0 tool overrides one component. Choices persist in localStorage.
+- Per-component overrides are in the same panel. Choices persist in localStorage.
 
 ```tsx
 <OptionSlot component="c3" options={{a: <PopoverV1 />, b: <FlyoutV2 />}} />
 ```
 
 Pinned to the Studio revision Storybook uses (`21388ff`), so the real parts match.
+
+## Presentation and scheduled drafts
+
+- Presentation previews `SANITY_STUDIO_PREVIEW_ORIGIN` (default `http://localhost:3456`, the Northfold storefront).
+  The storefront has no visual-editing or draft mode yet, so this is a plain preview without overlays.
+- Scheduled drafts is switched on explicitly in `sanity.config.ts`.
