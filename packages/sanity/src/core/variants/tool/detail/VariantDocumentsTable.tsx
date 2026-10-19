@@ -10,6 +10,7 @@ import {computeReleaseLaneSegments, RELEASE_LANE_ALL, rowMatchesLane} from './re
 import {type DocumentInVariantGroup} from './types'
 import {VariantDocumentActions} from './variantDocumentTable/VariantDocumentActions'
 import {getVariantDocumentTableColumnDefs} from './variantDocumentTable/VariantDocumentTableColumnDefs'
+import {useVariantDetailExtension} from './VariantDetailExtension'
 import {VariantReleaseLane} from './VariantReleaseLane'
 
 function searchVariantDocument(row: DocumentInVariantGroup, searchTerm: string): boolean {
@@ -28,6 +29,8 @@ export function VariantDocumentsTable({
   const {t} = useTranslation(variantsLocaleNamespace)
   const [activeLane, setActiveLane] = useState<string>(RELEASE_LANE_ALL)
   const {byId: releasesById} = useActiveReleases()
+  // PROPOSED extension point: absent rows, bulk selection, row actions and a banner (see VariantDetailExtension).
+  const extension = useVariantDetailExtension({variantId, rows})
 
   const segments = useMemo(
     () => computeReleaseLaneSegments(rows, releasesById),
@@ -53,8 +56,10 @@ export function VariantDocumentsTable({
       resolvedActiveLane === RELEASE_LANE_ALL
         ? rows
         : rows.filter((row) => rowMatchesLane(row, resolvedActiveLane, releasesById))
-    return filtered.map((row) => ({...row, rowKey: row.groupId}))
-  }, [rows, resolvedActiveLane, releasesById])
+    const withAbsent =
+      resolvedActiveLane === RELEASE_LANE_ALL && extension?.absentRows ? [...filtered, ...extension.absentRows] : filtered
+    return withAbsent.map((row) => ({...row, rowKey: row.groupId}))
+  }, [rows, resolvedActiveLane, releasesById, extension?.absentRows])
 
   const handleSelectLane = useCallback((laneId: string) => {
     // Clicking the already-active segment clears the filter back to "All".
@@ -76,6 +81,8 @@ export function VariantDocumentsTable({
   )
 
   return (
+    <>
+    {extension?.banner}
     <DocumentTable<DocumentInVariantGroup>
       // Keep the command lane (search + filter tabs) mounted during load so it doesn't pop in when
       // rows arrive — matching the release detail table and avoiding a layout jump.
@@ -96,7 +103,8 @@ export function VariantDocumentsTable({
       getRowKey={(row) => row.groupId}
       id="variant-documents-table"
       loading={loading}
-      rowActions={renderRowActions}
+      rowActions={extension?.rowActions ?? renderRowActions}
+      selection={extension?.selection}
       rows={laneRows}
       // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
       rowId="rowKey"
@@ -104,5 +112,6 @@ export function VariantDocumentsTable({
       searchPredicate={searchVariantDocument}
       searchTestId="variant-documents-search"
     />
+    </>
   )
 }

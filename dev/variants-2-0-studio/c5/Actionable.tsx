@@ -84,33 +84,43 @@ export function Check(props: {checked: boolean; onChange: () => void; label: str
   )
 }
 
+/** The action buttons: Publish, Unpublish, Delete, Create <variant> version, Add to release. */
+export function BulkActionButtons(props: {targets: Target[]; variantLabel?: string; onOpen: (op: Op, targets: Target[]) => void}) {
+  const {targets, variantLabel, onOpen} = props
+  const ops: Op[] = ['publish', 'unpublish', 'delete', 'create', 'addToRelease']
+  return (
+    <>
+      {ops.map((op) => {
+        const usable = targets.filter((t) => applies(op, t))
+        if (op === 'create' && !variantLabel) return null
+        return (
+          <Button
+            disabled={usable.length === 0}
+            fontSize={1}
+            key={op}
+            mode="ghost"
+            onClick={() => onOpen(op, usable)}
+            padding={2}
+            style={{height: 25}}
+            text={op === 'create' ? `Create ${variantLabel} version` : LABEL[op]}
+          />
+        )
+      })}
+    </>
+  )
+}
+
 /** "2 selected · Publish · Unpublish · Delete · Create German version · Add to release · Clear" */
 export function BulkBar(props: {bulk: BulkState; targets: Target[]; variantLabel?: string}) {
   const {bulk, targets, variantLabel} = props
   if (!targets.length) return null
-  const ops: Op[] = ['publish', 'unpublish', 'delete', 'create', 'addToRelease']
   return (
     <Card data-testid="bulk-bar" padding={2} radius={2} tone="primary">
       <Flex align="center" gap={2} wrap="wrap">
         <Text size={1} weight="medium">
           {targets.length} selected
         </Text>
-        {ops.map((op) => {
-          const usable = targets.filter((t) => applies(op, t))
-          if (op === 'create' && !variantLabel) return null
-          return (
-            <Button
-              disabled={usable.length === 0}
-              fontSize={1}
-              key={op}
-              mode="ghost"
-              onClick={() => bulk.open(op, usable)}
-              padding={2}
-              style={{height: 25}}
-              text={op === 'create' ? `Create ${variantLabel} version` : LABEL[op]}
-            />
-          )
-        })}
+        <BulkActionButtons onOpen={bulk.open} targets={targets} variantLabel={variantLabel} />
         <Box flex={1} />
         <Button fontSize={1} mode="bleed" onClick={bulk.clear} padding={2} style={{height: 25}} text="Clear" />
       </Flex>

@@ -1785,6 +1785,13 @@ export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatab
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
+export {
+  type UseVariantDetailExtension,
+  type VariantDetailExtension,
+  type VariantDetailExtensionArgs,
+  VariantDetailExtensionProvider,
+} from '../core/variants/tool/detail/VariantDetailExtension'
+export {type DocumentInVariantGroup} from '../core/variants/tool/detail/types'
 export {getVariantTitle} from '../core/variants/tool/util'
 export {isVariantId, type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'

@@ -143,7 +143,7 @@ export const COMPONENTS: ComponentDef[] = [
     pick: "No change; table stakes",
     where: 'Design slots tool.',
     options: [
-      {id: 'a', label: 'As today', summary: 'The Variants tool as the definition lens of the table.', status: 'candidate', refs: 'Figma E6'},
+      {id: 'a', label: 'As today', summary: 'The shipped Variants tool with the spec additions: grey rows for documents that miss the variant, Create, Add to release.', status: 'candidate', refs: 'Figma E6'},
       {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -184,7 +184,7 @@ export const COMPONENTS: ComponentDef[] = [
     pick: "Polish only",
     where: 'Design slots tool.',
     options: [
-      {id: 'a', label: 'Table, polished', summary: 'Aligned with C6; polish only.', status: 'candidate', refs: 'Figma E8'},
+      {id: 'a', label: 'Table, polished', summary: 'The shipped Releases tool, unchanged for now.', status: 'candidate', refs: 'Figma E8'},
       {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -212,12 +212,12 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
     c: 'The C5 document lens, mini, with an Expand control for the full table.',
   },
   c5: {a: 'One surface with a View by switch and a pin picker.', b: 'The lenses live at their pins, on one shared table.'},
-  c6: {a: 'Definitions as rows, with the documents that miss each.'},
+  c6: {a: 'The shipped Variants tool, plus grey rows for missing documents, Create and Add to release.'},
   c7: {
     a: 'A banner on a missing variant, with Create variant, in every version.',
     b: 'No banner in Drafts; a hint in the pane header. Banner only in Published and releases.',
   },
-  c8: {a: 'Releases as rows: documents, variants, schedule.'},
+  c8: {a: 'The shipped Releases tool, as it is.'},
 }
 
 // Diagram data on the 200 x 100 grid: the part that changes.

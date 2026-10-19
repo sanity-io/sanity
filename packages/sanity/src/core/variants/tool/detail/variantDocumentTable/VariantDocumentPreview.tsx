@@ -151,7 +151,8 @@ export function VariantDocumentPreview({
   })
 
   return (
-    <Flex alignItems="center" gap={2}>
+    // PROPOSED: an absent row (a document with no version of this variant) is drawn grey.
+    <Flex alignItems="center" data-absent={row.absent ? '' : undefined} gap={2} style={row.absent ? {opacity: 0.55} : undefined}>
       <PrimaryBundleIcon releasesById={releasesById} row={row} />
       <Card
         tone="inherit"

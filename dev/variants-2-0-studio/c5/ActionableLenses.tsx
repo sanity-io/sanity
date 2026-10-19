@@ -65,7 +65,7 @@ const dialogFor = (bulk: ReturnType<typeof useBulk>, corpus: Corpus, address: st
   <ConfirmDialog address={address} bulk={bulk} corpus={corpus} onDone={() => undefined} />
 )
 
-function Notice({bulk}: {bulk: ReturnType<typeof useBulk>}) {
+export function Notice({bulk}: {bulk: ReturnType<typeof useBulk>}) {
   if (!bulk.notice) return null
   return (
     <Card data-testid="bulk-notice" padding={3} radius={2} tone="positive">

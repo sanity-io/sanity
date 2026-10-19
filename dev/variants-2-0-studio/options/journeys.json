@@ -9,7 +9,44 @@
       "C2",
       "C6"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open the Variants tool",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The shipped overview lists definitions with document counts. An empty state offers to create the first one.",
+        "story": ""
+      },
+      {
+        "title": "Start a new definition",
+        "component": "C2",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "A dialog asks for the dimension and the definition title.",
+        "story": ""
+      },
+      {
+        "title": "Add the first condition",
+        "component": "C2",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "One condition (for example locale = de-DE) is added and saved.",
+        "story": ""
+      },
+      {
+        "title": "See the definition in the list",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The new definition shows 0 documents and a Create action.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j02",
@@ -20,7 +57,35 @@
     "components": [
       "C6"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open a definition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The detail page shows the definition, its conditions and its documents.",
+        "story": ""
+      },
+      {
+        "title": "Change a condition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The condition edits in place. The document count stays the same.",
+        "story": ""
+      },
+      {
+        "title": "Read the consequence",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "A notice names how many documents the change affects.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j03",
@@ -34,7 +99,53 @@
       "C4",
       "C7"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open a base document",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document list shows the base document with its version mark.",
+        "story": ""
+      },
+      {
+        "title": "Open the perspective control",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "Version menu and Variants control show. With no dimension set, the control opens the panel.",
+        "story": ""
+      },
+      {
+        "title": "Pick a dimension and a definition",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The perspective row appears. The studio shows the chosen variant, or the base if none exists.",
+        "story": ""
+      },
+      {
+        "title": "See the missing-variant banner",
+        "component": "C7",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "A banner says this document has no version for the shown variant and offers Create.",
+        "story": ""
+      },
+      {
+        "title": "Create the variant document",
+        "component": "C7",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The variant is created from the base as a draft. The banner disappears.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j04",
@@ -47,7 +158,44 @@
       "C4",
       "C7"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open a document list",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "Rows carry a version mark for documents that have versions.",
+        "story": ""
+      },
+      {
+        "title": "Click the mark",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The base document opens with the version inventory beside it.",
+        "story": ""
+      },
+      {
+        "title": "Read the inventory",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "One row per stored version, with address and state.",
+        "story": ""
+      },
+      {
+        "title": "Open a version from the inventory",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document shows that version.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j05",
@@ -59,7 +207,44 @@
       "C6",
       "C5"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open a definition in the Variants tool",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The detail table lists documents that have the version. Grey rows list documents that do not.",
+        "story": ""
+      },
+      {
+        "title": "Select the grey rows",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The bulk bar offers Create and Add to release.",
+        "story": ""
+      },
+      {
+        "title": "Confirm the creation",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The dialog names the address, the release and who is affected.",
+        "story": ""
+      },
+      {
+        "title": "Verify",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "Per-row results show. The grey rows are now drafts, counted as pending.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j06",
@@ -71,7 +256,53 @@
       "C1",
       "C2"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open the version menu",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "Published and Drafts show. Release sections show only if releases are on.",
+        "story": ""
+      },
+      {
+        "title": "Add a dimension",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The panel opens; one dimension in open beta.",
+        "story": ""
+      },
+      {
+        "title": "Choose a value",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The row shows one chip. The studio shows that perspective.",
+        "story": ""
+      },
+      {
+        "title": "Hide and show the row",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The version label toggles the row. The chip stays set.",
+        "story": ""
+      },
+      {
+        "title": "Clear",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The chip is removed and the studio returns to the base.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j07",
@@ -82,7 +313,35 @@
     "components": [
       "C1"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open Presentation",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/presentation",
+        "expect": "The preview loads with the same perspective control as the studio.",
+        "story": ""
+      },
+      {
+        "title": "Choose a dimension value",
+        "component": "C1",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/presentation",
+        "expect": "The preview re-renders for that audience.",
+        "story": ""
+      },
+      {
+        "title": "Click to edit",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/presentation",
+        "expect": "The document opens in the version the preview shows.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j08",
@@ -93,7 +352,35 @@
     "components": [
       "C5"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open Inventory, View by Dimension",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/inventory",
+        "expect": "One row per value with counts per lifecycle state.",
+        "story": ""
+      },
+      {
+        "title": "Find a value nobody authored",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/inventory",
+        "expect": "A value shows 0 of n documents.",
+        "story": ""
+      },
+      {
+        "title": "Open its definition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The definition lens lists the documents with a Create action.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j09",
@@ -105,7 +392,35 @@
       "C1",
       "C7"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open View by Visitor",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/inventory",
+        "expect": "The visitor picker shows one value per dimension, default Anyone.",
+        "story": ""
+      },
+      {
+        "title": "Pick a visitor",
+        "component": "C5",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/inventory",
+        "expect": "Each document shows the version served and the grounds.",
+        "story": ""
+      },
+      {
+        "title": "Open a served document",
+        "component": "C7",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The studio shows the served version. The banner appears only if the version is missing.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j10",
@@ -117,7 +432,44 @@
       "C3",
       "C4"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open a variant document",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document shows the variant version.",
+        "story": ""
+      },
+      {
+        "title": "Open the version inventory",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The version rows are listed with states.",
+        "story": ""
+      },
+      {
+        "title": "Delete the variant version",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "A dialog names the version and which audience falls back to what.",
+        "story": ""
+      },
+      {
+        "title": "Verify",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The row is gone. The base document is unchanged.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j11",
@@ -129,7 +481,44 @@
       "C6",
       "C5"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open a definition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The detail table lists its documents.",
+        "story": ""
+      },
+      {
+        "title": "Select documents",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The bulk bar shows Delete.",
+        "story": ""
+      },
+      {
+        "title": "Confirm the delete",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The dialog lists each document and the fallback per audience.",
+        "story": ""
+      },
+      {
+        "title": "Read per-row results",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "Each row reports success or failure on its own.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j12",
@@ -140,7 +529,35 @@
     "components": [
       "C6"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open a definition with no documents",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The detail page shows 0 documents.",
+        "story": ""
+      },
+      {
+        "title": "Delete the definition",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "A dialog confirms. No documents are affected.",
+        "story": ""
+      },
+      {
+        "title": "Verify",
+        "component": "C6",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/variants",
+        "expect": "The definition is gone from the overview.",
+        "story": ""
+      }
+    ]
   },
   {
     "id": "j13",
@@ -152,6 +569,43 @@
       "C3",
       "C4"
     ],
-    "steps": []
+    "steps": [
+      {
+        "title": "Open a draft variant document",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document shows the draft.",
+        "story": ""
+      },
+      {
+        "title": "Open the version inventory",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The draft row is listed.",
+        "story": ""
+      },
+      {
+        "title": "Publish the variant version",
+        "component": "C4",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The row turns Published. The base is unchanged.",
+        "story": ""
+      },
+      {
+        "title": "Check the Releases tool",
+        "component": "C8",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/releases",
+        "expect": "A variant published on its own does not appear in a release.",
+        "story": ""
+      }
+    ]
   }
 ]

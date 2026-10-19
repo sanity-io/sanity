@@ -41,4 +41,6 @@ export interface DocumentInVariantGroup extends DocumentInVariant {
   versions: VariantDocumentVersion[]
   /** Unique table row id / sort key. Equals `groupId` in the (single) flat view. */
   rowKey?: string
+  /** PROPOSED: a row for a document that has no version of this variant (added through VariantDetailExtension). */
+  absent?: boolean
 }

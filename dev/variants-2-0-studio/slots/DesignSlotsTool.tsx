@@ -1,24 +1,20 @@
-import {CalendarIcon} from '@sanity/icons/Calendar'
 import {PackageIcon} from '@sanity/icons/Package'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {Box, Heading, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {type Tool, type ToolMenuProps} from 'sanity'
 
-import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
-import {InventoryTable, DefinitionsTool, ReleasesTool} from '../c5/InventoryTable'
+import {InventoryTable} from '../c5/InventoryTable'
 import {OptionSlot} from '../options/OptionSlot'
 import {COMPONENTS} from '../options/registry'
 import {STOCK_OPTION, useOption, useOptionState} from '../options/store'
 
-/** Components whose V1 is only a slot for now; they live in this tool. */
-const SLOT_ONLY = ['c5', 'c6', 'c8']
+/** C5 lives here and in the Inventory tool. C6 is the shipped Variants tool (/variants) and C8 the shipped Releases tool (/releases), extended. */
+const SLOT_ONLY = ['c5']
 
 // Live renderers per option (C5 table, C6 definition lens, C8 release lens).
 const LIVE: Record<string, Record<string, ReactNode>> = {
   c5: {a: <InventoryTable option="a" />, b: <InventoryTable option="b" />},
-  c6: {a: <DefinitionsTool />},
-  c8: {a: <ReleasesTool />},
 }
 
 function DesignSlots() {
@@ -60,7 +56,7 @@ function DesignSlots() {
 }
 
 /** One navbar tool per table component, so none of them needs the Design slots tool to be found. */
-function SlotTool({component}: {component: 'c5' | 'c6' | 'c8'}) {
+function SlotTool({component}: {component: 'c5'}) {
   const stock = useOption(component) === STOCK_OPTION
   const title = COMPONENTS.find((c) => c.id === component)?.title
   return (
@@ -73,13 +69,6 @@ function SlotTool({component}: {component: 'c5' | 'c6' | 'c8'}) {
   )
 }
 
-export const variantsTool: Tool = {
-  name: 'variants',
-  title: 'Variants',
-  icon: RhombusIcon,
-  component: () => <SlotTool component="c6" />,
-}
-
 export const inventoryTool: Tool = {
   name: 'inventory',
   title: 'Inventory',
@@ -87,15 +76,8 @@ export const inventoryTool: Tool = {
   component: () => <SlotTool component="c5" />,
 }
 
-export const releasesViewTool: Tool = {
-  name: 'releases-view',
-  title: 'Release table',
-  icon: CalendarIcon,
-  component: () => <SlotTool component="c8" />,
-}
-
 /** Tools that belong to the designs: hidden when the master Stock switch is on. */
-const DESIGN_TOOLS = new Set(['design-slots', 'variants', 'inventory', 'releases-view'])
+const DESIGN_TOOLS = new Set(['design-slots', 'inventory'])
 
 export const designSlotsTool: Tool = {
   name: 'design-slots',
