@@ -6,6 +6,13 @@ export {
   type IncomingReferenceAction,
   type IncomingReferencesOptions,
 } from '../structure/components/incomingReferencesDecoration/types'
+// PROPOSED: extension point for the document pane's banners and pills (Variants 2.0 test studio).
+export {
+  type DocumentPaneExtension,
+  type DocumentPaneExtensionArgs,
+  DocumentPaneExtensionProvider,
+  type UseDocumentPaneExtension,
+} from '../structure/panes/document/documentPanel/DocumentPaneExtension'
 // PROPOSED: extension point for document list rows (Variants 2.0 test studio).
 export {
   type DocumentListItemOverride,

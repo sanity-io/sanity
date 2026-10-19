@@ -23,6 +23,10 @@ export interface ComponentDef {
   final?: string
   /** True once the studio renders real UI for this component (not only a slot). */
   built?: boolean
+  /** What the component is, in the words of its Figma cover frame (placeholder text until the cover is copied). */
+  cover?: string
+  /** Where it shows up in the studio. */
+  where?: string
 }
 
 export const COMPONENTS: ComponentDef[] = [
@@ -52,9 +56,25 @@ export const COMPONENTS: ComponentDef[] = [
     id: 'c2',
     title: 'C2 Document pills',
     defaultOption: 'a',
+    built: true,
+    cover: 'The document\'s versions as pills: Published, Draft, releases and variants, in the document pane.',
+    where: 'Open a document: a V1 row under the pane header.',
     options: [
-      {id: 'a', label: 'Pills + versions control', summary: 'Draft and Published pills plus one versions control.', status: 'candidate'},
-      {id: 'b', label: 'Parallel concept set', summary: 'Needs the second concept set.', status: 'candidate'},
+      {
+        id: 'a',
+        label: 'Grouped dropdowns',
+        summary: 'Published and Draft stay pills; releases and variants each fold into one dropdown.',
+        status: 'candidate',
+        refs: 'Figma C2 227:1925; PARTS-C2 (DocumentPerspectiveList)',
+      },
+      {
+        id: 'b',
+        label: 'Per-axis controls',
+        summary: 'One control per axis (state, audience, locale), each listing what this document has.',
+        status: 'candidate',
+        refs: 'Figma C2 227:1929',
+      },
+      {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
   },
   {
@@ -84,34 +104,85 @@ export const COMPONENTS: ComponentDef[] = [
     id: 'c4',
     title: 'C4 Inventory pane',
     defaultOption: 'a',
+    built: true,
+    cover: 'Every version of one document, in one place: the document-group inventory.',
+    where: 'Open a document, then the inspector "Versions" (Option B).',
     options: [
-      {id: 'a', label: 'Sidebar / pane', summary: 'Pane beside the document.', status: 'candidate'},
-      {id: 'b', label: 'Document inspector', summary: 'Attached to the document pane.', status: 'candidate'},
+      {
+        id: 'a',
+        label: 'Sidebar / pane',
+        summary: 'A pane beside the document. Arrives from the inventory side panel (Andrej, Storybook PR #47).',
+        status: 'candidate',
+      },
+      {
+        id: 'b',
+        label: 'Document inspector',
+        summary: 'Attached to the document pane (engineering direction). V1: the version list for this document.',
+        status: 'candidate',
+      },
+      {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
   },
   {
     id: 'c5',
     title: 'C5 Inventory table',
     defaultOption: 'a',
-    options: [{id: 'a', label: 'Table', summary: 'Table as the primary pattern; sidebar is its smallest slice.', status: 'candidate'}],
+    cover: 'The inventory as a table, with four lenses. The sidebar is its smallest slice.',
+    where: 'Design slots tool.',
+    options: [
+      {id: 'a', label: 'Table', summary: 'The table as the primary pattern; the sidebar is its smallest slice.', status: 'candidate', refs: 'Spec frame in Figma E5'},
+      {id: 'b', label: 'Table + flyout', summary: 'Notion-like: table primary, the document form as a flyout (future).', status: 'exploration'},
+      {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
+    ],
   },
   {
     id: 'c6',
     title: 'C6 Variants tool',
     defaultOption: 'a',
-    options: [{id: 'a', label: 'As today', summary: 'No change.', status: 'candidate'}],
+    cover: 'The Variants tool: the list of variant definitions and what uses them. No change from today.',
+    where: 'Design slots tool.',
+    options: [
+      {id: 'a', label: 'As today', summary: 'The Variants tool as it is.', status: 'candidate', refs: 'Figma E6'},
+      {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
+      {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
+    ],
   },
   {
     id: 'c7',
     title: 'C7 Banners',
     defaultOption: 'a',
-    options: [{id: 'a', label: 'Top placement', summary: 'With "publish this draft".', status: 'candidate'}],
+    built: true,
+    cover: 'What the document pane says about the version you are in: banners and header hints.',
+    where: 'Open a document: a V1 banner at the top of the pane.',
+    options: [
+      {
+        id: 'a',
+        label: 'Explicit banner',
+        summary: 'A banner always states the version and offers "Publish this draft".',
+        status: 'candidate',
+        refs: 'Figma C7 225:437',
+      },
+      {
+        id: 'b',
+        label: 'Always live in Drafts',
+        summary: 'No banner; a hint in the header says edits are live in Drafts.',
+        status: 'candidate',
+        refs: 'Figma C7 225:441',
+      },
+      {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
+    ],
   },
   {
     id: 'c8',
     title: 'C8 Releases view',
     defaultOption: 'a',
-    options: [{id: 'a', label: 'Table, polished', summary: 'Aligned with C6; polish only.', status: 'candidate'}],
+    cover: 'The releases overview, aligned with the Variants tool. Polish only; fast follow.',
+    where: 'Design slots tool.',
+    options: [
+      {id: 'a', label: 'Table, polished', summary: 'Aligned with C6; polish only.', status: 'candidate', refs: 'Figma E8'},
+      {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
+      {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
+    ],
   },
 ]
 

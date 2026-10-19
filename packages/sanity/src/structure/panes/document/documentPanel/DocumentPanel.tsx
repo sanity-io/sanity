@@ -54,6 +54,7 @@ import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
 import {FormView} from './documentViews/FormView'
+import {useDocumentPaneExtension} from './DocumentPaneExtension'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
@@ -108,6 +109,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   } = useDocumentPane()
 
   const {params} = usePaneRouter()
+  // PROPOSED: a host may add banners and a row of version pills to the pane.
+  const paneExtension = useDocumentPaneExtension({documentId, documentType: schemaType.name})
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
@@ -429,8 +432,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         >
           <Flex height="100%" flexDirection="column" flexBasis="0%" flexGrow={2}>
             <LegacyLayerProvider zOffset="paneHeader">
+              {paneExtension?.banners}
               {banners}
               <DocumentPanelSubHeader />
+              {paneExtension?.pills}
             </LegacyLayerProvider>
             <DocumentBox flexBasis="0%" flexGrow={2}>
               {/* The scroll container is the visible region for everything portaled into the pane

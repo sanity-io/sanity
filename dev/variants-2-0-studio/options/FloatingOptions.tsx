@@ -3,11 +3,12 @@ import {ControlsIcon} from '@sanity/icons/Controls'
 import {Badge, Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {type LayoutProps, PerspectiveMenuExtensionProvider} from 'sanity'
-import {DocumentListItemOverrideProvider} from 'sanity/structure'
+import {DocumentListItemOverrideProvider, DocumentPaneExtensionProvider} from 'sanity/structure'
 
 import {PerspectiveProvider} from '../c1/state'
 import {useOptionAExtension} from '../c1/Controls'
 import {useRowOverride} from '../c3/RowOverride'
+import {useDocumentPaneOverride} from '../pane/useDocumentPaneOverride'
 import {COMPONENTS, type OptionStatus} from './registry'
 import {
   maxOptionCount,
@@ -191,8 +192,10 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
     <DocumentListItemOverrideProvider value={useRowOverride}>
       <PerspectiveProvider>
         <PerspectiveMenuExtensionProvider value={useOptionAExtension}>
-          {props.renderDefault(props)}
-          <FloatingOptions />
+          <DocumentPaneExtensionProvider value={useDocumentPaneOverride}>
+            {props.renderDefault(props)}
+            <FloatingOptions />
+          </DocumentPaneExtensionProvider>
         </PerspectiveMenuExtensionProvider>
       </PerspectiveProvider>
     </DocumentListItemOverrideProvider>
