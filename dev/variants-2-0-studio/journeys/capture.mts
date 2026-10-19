@@ -366,6 +366,70 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
       })
       break
     }
+    case 'j14': {
+      const FM = '/structure/fieldMarksTest;fm-1?perspective=published&variant=aud-members'
+      const marks = () =>
+        page.evaluate(() => {
+          const ys = [...document.querySelectorAll('[data-testid="base-variant-diff-indicator"]')].map((e) => Math.round(e.getBoundingClientRect().y))
+          const label = (t: string) => {
+            const el = [...document.querySelectorAll('label, [data-testid^="field-"] *, h2, h3, div')].find((n) => (n as HTMLElement).innerText?.trim() === t && n.children.length === 0)
+            return el ? Math.round(el.getBoundingClientRect().y) : null
+          }
+          return {ys, label: Object.fromEntries(['Title', 'Subtitle', 'Settings', 'Theme', 'Meta', 'Owner', 'Region', 'Tags', 'Sections', 'Featured', 'Cover', 'Body'].map((t) => [t, label(t)]))}
+        })
+      // A mark sits level with its field's label or input, a little above or below the label's top edge.
+      const near = (m: Awaited<ReturnType<typeof marks>>, name: string, span = 70) => {
+        const y = m.label[name]
+        return y == null ? null : m.ys.filter((v) => v >= y - 30 && v <= y + span).length
+      }
+      // Marks from one field's label to the next (an array field and its items).
+      const between = (m: Awaited<ReturnType<typeof marks>>, from: string, to: string) => {
+        const a = m.label[from]
+        const b = m.label[to]
+        return a == null || b == null ? null : m.ys.filter((v) => v >= a - 30 && v < b - 30).length
+      }
+      await page.setViewportSize({width: 1500, height: 3000})
+      await page.goto(`${base}${FM}&preset=open-beta-a`)
+      await settle(page, 14000)
+      await run(0, async () => {
+        const line = (await page.locator('[data-testid=presentation-context-line]').innerText().catch(() => '')).replace(/\s+/g, ' ')
+        return /Members/.test(line) ? ok(`pane context line: ${line}`) : differs('no context line naming the variant')
+      })
+      let m = await marks()
+      await run(1, async () => {
+        await page.locator('[data-testid="base-variant-diff-indicator"]').first().hover()
+        await settle(page, 700)
+        const tip = (await page.locator('body').innerText()).includes('Changed from base variant')
+        const subtitle = near(m, 'Subtitle')
+        return m.ys.length > 0 && subtitle === 0 && tip ? ok(`${m.ys.length} marks; Subtitle (identical) has none; tooltip "Changed from base variant" shown`) : differs(`marks=${m.ys.length}, subtitle marks=${subtitle}, tooltip=${tip}`)
+      })
+      await run(2, async () => {
+        const facts = {settings: near(m, 'Settings', 10), meta: near(m, 'Meta', 10), region: near(m, 'Region', 70), tagsAndItems: between(m, 'Tags', 'Sections'), sectionsAndItems: between(m, 'Sections', 'Featured')}
+        // One mark across a whole array field and its items = the field mark only, none on the items.
+        return facts.region && facts.meta && facts.settings && facts.tagsAndItems === 1 && facts.sectionsAndItems === 1 ? ok(`leaf and both parents marked; each array shows exactly one mark for the field and its items (${JSON.stringify(facts)})`) : differs(JSON.stringify(facts))
+      })
+      await run(3, async () => {
+        const body = near(m, 'Body', 20)
+        const blocks = await page.locator('[data-testid=block-mark]').count()
+        return body === 1 && blocks === 0 ? ok('Body has one field mark and no block-level marks (C9 A, shipped)') : differs(`Body marks=${body}, block marks=${blocks}`)
+      })
+      await run(4, async () => {
+        const preview = encodeURIComponent('/variants-preview.html?route=fm:fm-1')
+        await page.setViewportSize({width: 1100, height: 1500})
+        await page.goto(`${base}/presentation?preset=open-beta-a&preview=${preview}&variant=aud-members&perspective=published`)
+        await settle(page, 15000)
+        const f = page.frames().find((x) => x.url().includes(':3334'))
+        await f?.locator('h1').first().click()
+        await settle(page, 6000)
+        const r = await page.evaluate(() => {
+          const pane = document.querySelector('[data-testid="document-pane"]')?.getBoundingClientRect()
+          const ms = [...document.querySelectorAll('[data-testid="base-variant-diff-indicator"]')].map((e) => e.getBoundingClientRect())
+          return {paneW: pane && Math.round(pane.width), count: ms.length, clipped: ms.filter((q) => pane && (q.left < pane.left || q.right > pane.right)).length}
+        })
+        return r.count > 0 && r.clipped === 0 ? ok(`pane ${r.paneW}px wide: ${r.count} marks, none clipped`) : differs(JSON.stringify(r))
+      })
+      break
+    }
     case 'j13': {
       await run(0, async () => ((await visible(page, '[data-testid^=version-mark-]')) ? differs('a draft variant document cannot be opened as its own document here (no variant route); the base opens') : missing('no list')))
       await run(1, async () => {

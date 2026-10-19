@@ -26,7 +26,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "A dialog asks for the dimension and the definition title.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--create-dialog"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition"
       },
       {
         "title": "Add the first condition",
@@ -35,7 +35,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The same dialog takes one condition (for example locale = de-DE) and saves.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--create-dialog"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition"
       },
       {
         "title": "See the definition in the list",
@@ -44,7 +44,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The detail page of the new definition shows 0 documents and a Create action.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--definition-no-documents"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition"
       }
     ]
   },
@@ -74,7 +74,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The Edit dialog opens with the conditions of the definition.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--edit-dialog"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-names-the-consequence"
       },
       {
         "title": "Read the consequence",
@@ -83,7 +83,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The dialog names how many documents the change affects before saving.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--edit-dialog"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-names-the-consequence"
       }
     ]
   },
@@ -143,7 +143,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The variant is created from the base as a draft. The banner disappears.",
-        "story": "explorations-variants-2-0-c7-banners-option-a--creating"
+        "story": "explorations-variants-2-0-c7-banners-option-a--created"
       }
     ]
   },
@@ -321,7 +321,7 @@
         "preset": "open-beta-a",
         "route": "/presentation",
         "expect": "The preview loads with the same perspective control as the studio.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--rest"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation-documents-on-this-page"
       },
       {
         "title": "Choose a dimension value",
@@ -330,7 +330,7 @@
         "preset": "open-beta-a",
         "route": "/presentation",
         "expect": "Choosing a value in the preview toolbar re-renders the preview for that audience. (Open question: the Presentation tool has only the navbar pill today.)",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation"
       },
       {
         "title": "Click to edit",
@@ -339,7 +339,7 @@
         "preset": "open-beta-a",
         "route": "/presentation",
         "expect": "The document opens in the version the preview shows.",
-        "story": "explorations-variants-2-0-components-c3-version-mark--click-opens-document-and-inspector"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation-open-document"
       }
     ]
   },
@@ -418,7 +418,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The studio shows the served version. The banner appears only if the version is missing.",
-        "story": "explorations-variants-2-0-c7-banners-option-a--published"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--served-document"
       }
     ]
   },
@@ -434,13 +434,13 @@
     ],
     "steps": [
       {
-        "title": "Open the base document and choose the variant in the perspective row",
+        "title": "Open the variant version as its own document",
         "component": "C3",
         "option": "A",
         "preset": "open-beta-a",
         "route": "/structure",
-        "expect": "The document shows the variant version. The list always opens the base document.",
-        "story": "explorations-variants-2-0-components-c3-version-mark--click-opens-document-and-inspector"
+        "expect": "The document opens on that version. The pane header names the variant and its state.",
+        "story": "explorations-variants-2-0-c3-version-mark-popover-as-list--row-click-opens-document-and-inspector"
       },
       {
         "title": "Open the version inventory",
@@ -498,7 +498,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The bulk bar shows Delete.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-consequence"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-results"
       },
       {
         "title": "Confirm the delete",
@@ -516,7 +516,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "Each row reports success or failure on its own.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-consequence"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-results"
       }
     ]
   },
@@ -537,7 +537,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The detail page shows 0 documents.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--definition-no-documents"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-from-the-detail"
       },
       {
         "title": "Delete the definition",
@@ -546,7 +546,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "A dialog confirms. No documents are affected.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--definition-no-documents"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-without-documents"
       },
       {
         "title": "Verify",
@@ -555,7 +555,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The definition is gone from the overview.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--definitions-list"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-without-documents"
       }
     ]
   },
@@ -571,13 +571,13 @@
     ],
     "steps": [
       {
-        "title": "Open the base document and choose the variant in the perspective row",
+        "title": "Open the draft variant version as its own document",
         "component": "C3",
         "option": "A",
         "preset": "open-beta-a",
         "route": "/structure",
-        "expect": "The document shows the draft variant version.",
-        "story": "explorations-variants-2-0-components-c3-version-mark--click-opens-document-and-inspector"
+        "expect": "The document opens on the draft version. The pane header names the variant and its state.",
+        "story": "explorations-variants-2-0-c3-version-mark-popover-as-list--row-click-opens-document-and-inspector"
       },
       {
         "title": "Open the version inventory",
@@ -595,7 +595,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The row turns Published. The base is unchanged.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--select-and-publish"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--publish-from-the-inventory"
       },
       {
         "title": "Check the Releases tool",
@@ -605,6 +605,64 @@
         "route": "/releases",
         "expect": "The Releases tool lists releases. A variant published on its own is not part of one.",
         "story": "explorations-variants-2-0-c8-releases-view-option-a--autumn"
+      }
+    ]
+  },
+  {
+    "id": "j14",
+    "task": "T5",
+    "title": "An editor sees which fields differ from the base",
+    "stage": "Open beta",
+    "persona": "content editor",
+    "components": [
+      "C3",
+      "C7"
+    ],
+    "steps": [
+      {
+        "title": "Open a variant version as its own document",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The document opens on the variant. The pane header names the variant and its state.",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--open-a-version"
+      },
+      {
+        "title": "Read the marks in the form gutter",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "A purple mark sits beside every field whose value differs from the base. Identical fields have none. The tooltip says Changed from base variant.",
+        "story": "explorations-variants-2-0-field-marks-by-kind--marks-by-field-kind"
+      },
+      {
+        "title": "Read a nested object and an array",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The changed leaf and its parent object are marked. An array shows one mark on the field, not on each item.",
+        "story": "explorations-variants-2-0-field-marks-by-kind--marks-by-field-kind"
+      },
+      {
+        "title": "Read a portable text field",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/structure",
+        "expect": "The field carries one mark. Which paragraph changed is not marked in open beta.",
+        "story": "explorations-variants-2-0-field-marks-portable-text--portable-text-treatments"
+      },
+      {
+        "title": "Open the same document in Presentation",
+        "component": "C3",
+        "option": "A",
+        "preset": "open-beta-a",
+        "route": "/presentation",
+        "expect": "The marks show in the narrow document pane without clipping.",
+        "story": "explorations-variants-2-0-field-marks-narrow-pane--narrow-pane"
       }
     ]
   }

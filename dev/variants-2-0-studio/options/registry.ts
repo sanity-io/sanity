@@ -195,6 +195,20 @@ export const COMPONENTS: ComponentDef[] = [
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
   },
+  {
+    id: 'c9',
+    title: 'C9 Field marks',
+    defaultOption: 'a',
+    cover: 'The gutter mark that says a field differs from the base variant. The shipped mark (a purple rhombus per field, divergence first, read only) stays; B and C are candidates drawn through the public form overrides.',
+    scope: 'Open beta',
+    pick: 'Portable text field-level for beta; block-level is a candidate',
+    where: 'The document form of a variant (try the Field marks test document).',
+    options: [
+      {id: 'a', label: 'Field-level (shipped)', summary: 'One rhombus on the field, also for portable text and arrays; array items and removed items carry nothing.', status: 'final'},
+      {id: 'b', label: 'Block-level portable text', summary: 'The same rhombus at the left edge of each changed portable text block, compared by _key. Candidate.', status: 'exploration'},
+      {id: 'c', label: 'Block-level + removed items', summary: 'B, plus a note under an array field that counts base items missing from the variant. Candidate.', status: 'exploration'},
+    ],
+  },
 ]
 
 // One line per option for the cards (from the Figma frames, 19 Oct).
@@ -225,6 +239,11 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
     b: 'No banner in Drafts; a hint in the pane header. Banner only in Published and releases.',
   },
   c8: {a: 'The shipped Releases tool, as it is.'},
+  c9: {
+    a: 'One mark on the field, for every kind; nothing on array items or removed items.',
+    b: 'A mark at the left edge of each changed portable text block.',
+    c: 'Block marks, and a note counting base items missing from the variant.',
+  },
 }
 
 // Diagram data on the 200 x 100 grid: the part that changes.
@@ -262,6 +281,11 @@ const DIAGRAMS: Record<string, Record<string, DiagramSpec>> = {
     b: {shapes: [{kind: 'box', x: 130, y: 14.5, w: 60, h: 5}]},
   },
   c8: {a: {shapes: [{kind: 'box', x: 56, y: 28, w: 140, h: 62}]}},
+  c9: {
+    a: {shapes: [{kind: 'dot', x: 58, y: 38}, {kind: 'dot', x: 58, y: 52}, {kind: 'dot', x: 58, y: 66}]},
+    b: {shapes: [{kind: 'dot', x: 58, y: 38}, {kind: 'dot', x: 58, y: 52}, {kind: 'box', x: 59, y: 62, w: 3, h: 12}]},
+    c: {shapes: [{kind: 'dot', x: 58, y: 38}, {kind: 'box', x: 59, y: 50, w: 3, h: 12}, {kind: 'box', x: 64, y: 78, w: 80, h: 8}]},
+  },
 }
 
 // Storybook story ids (from Storybook-Agent, 19 Oct). Opens at `<base>/?path=/story/<id>`.
@@ -308,7 +332,7 @@ defineDesignOptions({
   groups: [
     {label: 'Studio chrome', ids: ['c1', 'c2', 'c3']},
     {label: 'Inventory', ids: ['c4', 'c5', 'c6']},
-    {label: 'Document', ids: ['c7']},
+    {label: 'Document', ids: ['c7', 'c9']},
     {label: 'Releases', ids: ['c8']},
   ],
   scenario: {

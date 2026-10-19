@@ -96,7 +96,7 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
 
   return (
     // It replaces the stock pills in the pane header (PROPOSED slot), so it takes the header's own row, no border.
-    <Flex align="center" data-testid={`doc-pills-${option}`} gap={1}>
+    <Flex align="center" data-testid={`doc-pills-${option}`} gap={2} style={{flex: '1 1 0%', minWidth: 0}} wrap="wrap">
       {option === 'a' ? (
         <>
           {published && (

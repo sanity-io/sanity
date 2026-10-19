@@ -26,6 +26,7 @@ const route = params.get('route') ?? 'list'
 const lockedVariant = params.get('variant') ?? undefined
 
 const LIST = `*[_type == "book"] | order(title asc) {_id, _type, title, subtitle}`
+const FM = `*[_type == "fieldMarksTest" && _id == $id][0] {_id, _type, title, subtitle}`
 const ONE = `*[_type == "book" && _id == $id][0] {_id, _type, title, subtitle, blurb}`
 
 const card: React.CSSProperties = {border: '1px solid #ccc', borderRadius: 8, margin: '0 0 12px', padding: 16}
@@ -81,6 +82,18 @@ function LiveBook({id}: {id: string}) {
   return <BookPage data={useQuery<Book | null>(ONE, {id}).data ?? null} id={id} />
 }
 
+function LiveFieldMarks({id}: {id: string}) {
+  const {data} = useQuery<Book | null>(FM, {id})
+  if (!data) return <p style={{font: '14px system-ui'}}>Loading {id}…</p>
+  const attr = createDataAttribute({id: data._id, type: data._type})
+  return (
+    <article>
+      <h1 data-sanity={attr('title').toString()} style={{font: '600 26px system-ui'}}>{data.title}</h1>
+      <h2 data-sanity={attr('subtitle').toString()} style={{font: '16px system-ui', opacity: 0.7}}>{data.subtitle}</h2>
+    </article>
+  )
+}
+
 function Main() {
   const [perspective, setPerspective] = useState<unknown>('published')
   const [variant, setVariant] = useState<string | undefined>(lockedVariant)
@@ -95,7 +108,7 @@ function Main() {
   useLiveMode({})
   return (
     <main style={{margin: '0 auto', maxWidth: 720, padding: 16}}>
-      {route.startsWith('book:') ? <LiveBook id={route.slice('book:'.length)} /> : <LiveList />}
+      {route.startsWith('fm:') ? <LiveFieldMarks id={route.slice(3)} /> : route.startsWith('book:') ? <LiveBook id={route.slice('book:'.length)} /> : <LiveList />}
       <Badge perspective={perspective} variant={variant} />
     </main>
   )

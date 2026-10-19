@@ -23,5 +23,10 @@
     "id": "handoff",
     "name": "Engineering handoff",
     "design": "show.final,stage.open-beta"
+  },
+  {
+    "id": "field-marks",
+    "name": "Field marks (variant document)",
+    "design": "show.a,stage.open-beta"
   }
 ]

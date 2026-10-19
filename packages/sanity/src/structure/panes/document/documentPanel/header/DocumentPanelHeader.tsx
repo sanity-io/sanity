@@ -224,7 +224,8 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
           borderBottom
         >
           <Flex gap={3} paddingY={3} justifyContent="space-between" alignItems="center">
-            {!hasDocumentGroupInventory && (
+            {/* PROPOSED: a host's pills (C2) are drawn in both layouts and then replace the document group inventory row. */}
+            {(!hasDocumentGroupInventory || paneExtension?.pills) && (
               <HorizontalScroller $showGradient={showGradient}>
                 <Flex
                   flexBasis="0%"
@@ -240,7 +241,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                 </Flex>
               </HorizontalScroller>
             )}
-            {hasDocumentGroupInventory && (
+            {hasDocumentGroupInventory && !paneExtension?.pills && (
               <HorizontalScroller $showGradient={false}>
                 <Flex
                   flexBasis="0%"
