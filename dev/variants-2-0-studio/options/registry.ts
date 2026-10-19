@@ -11,6 +11,8 @@ export interface OptionDef {
   status: OptionStatus
   /** Where the design lives: Figma node ids in the handoff file, spec docs. */
   refs?: string
+  /** Storybook story id (opens at the Storybook base URL). */
+  story?: string
 }
 
 export interface ComponentDef {
@@ -126,6 +128,7 @@ export const COMPONENTS: ComponentDef[] = [
         label: 'Sidebar / pane',
         summary: "Andrej's inventory side panel (Storybook PR #47) as the document inspector, live data. V1: not carried over, the navbar eye and the bulk bar.",
         status: 'candidate',
+        story: 'explorations-variants-variant-inventory-side-panel-c4-version-inventory-pane',
       },
       {
         id: 'b',
@@ -206,6 +209,39 @@ export const COMPONENTS: ComponentDef[] = [
     ],
   },
 ]
+
+// Storybook story ids (from Storybook-Agent, 19 Oct). Opens at `<base>/?path=/story/<id>`.
+// Components with only one story link it from option A. C3 C is the dot-control exploration.
+const STORIES: Record<string, Record<string, string>> = {
+  c1: {
+    a: 'explorations-variants-2-0-c1-perspective-selector-option-a--rest',
+    b: 'explorations-variants-2-0-c1-perspective-selector-option-b--rest',
+  },
+  c2: {
+    a: 'explorations-variants-2-0-c2-document-pills-option-a--at-rest',
+    b: 'explorations-variants-2-0-c2-document-pills-option-b--at-rest',
+  },
+  c3: {
+    a: 'explorations-variants-2-0-components-c3-version-mark--default',
+    b: 'explorations-variants-2-0-c3-version-mark-popover-as-list--many',
+    c: 'explorations-variants-2-0-c3-version-mark-option-b--list-default',
+  },
+  c4: {a: 'explorations-variants-variant-inventory-side-panel-c4-version-inventory-pane'},
+  c5: {a: 'explorations-variants-2-0-components-c5-inventory-table--document-lens'},
+  c6: {a: 'explorations-variants-2-0-components-c6-variants-tool--definitions-list'},
+  c7: {
+    a: 'explorations-variants-2-0-c7-banners-option-a--drafts-no-variant',
+    b: 'explorations-variants-2-0-c7-banners-option-b--drafts-live',
+  },
+  c8: {a: 'explorations-variants-2-0-components-c8-releases-view--stub'},
+}
+
+for (const component of COMPONENTS) {
+  for (const option of component.options) {
+    const story = STORIES[component.id]?.[option.id]
+    if (story) option.story = story
+  }
+}
 
 export function getComponent(id: string): ComponentDef | undefined {
   return COMPONENTS.find((component) => component.id === id)

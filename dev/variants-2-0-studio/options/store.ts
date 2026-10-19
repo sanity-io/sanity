@@ -130,7 +130,21 @@ export function resolveOption(component: ComponentDef, current: State = state): 
   const override = current.overrides[component.id]
   if (override && component.options.some((option) => option.id === override)) return override
   if (current.global === 'final') return component.final ?? component.defaultOption
-  return component.options[current.global]?.id ?? component.defaultOption
+  const chosen = component.options[current.global]
+  // An option that is not drawn falls back to the default (A) instead of rendering an empty slot.
+  return chosen && chosen.label !== 'Not drawn' ? chosen.id : component.defaultOption
+}
+
+/** True when "Show" asked for a letter this component cannot give (not drawn or missing), so it fell back. */
+export function fellBack(component: ComponentDef, current: State = state): boolean {
+  if (current.global === 'stock' || current.global === 'final') return false
+  if (current.overrides[component.id]) return false
+  const chosen = component.options[current.global]
+  return !chosen || chosen.label === 'Not drawn'
+}
+
+export function getOptionState(): State {
+  return state
 }
 
 export function useOptionState(): State {
