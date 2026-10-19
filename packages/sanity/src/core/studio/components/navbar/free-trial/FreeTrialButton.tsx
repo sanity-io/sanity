@@ -80,7 +80,7 @@ export function FreeTrialButtonTopbar({
           : t('free-trial.tooltip.trial-finished'),
       }}
     >
-      <Icon size={0} icon={BoltIcon} />
+      <Icon size={0} icon={BoltIcon} style={{margin: '-0.3125rem'}} />
       {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} totalDays={totalDays} />}
     </Button>
   )

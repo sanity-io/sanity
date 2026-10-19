@@ -62,7 +62,7 @@ export function WorkspaceMenuButton() {
                     {activeWorkspace.title}
                   </Text>
                 </Box>
-                <Icon size={1} icon={ChevronDownIcon} />
+                <Icon size={1} icon={ChevronDownIcon} style={{margin: '-0.375rem'}} />
               </Flex>
             </UIButton>
           </Tooltip>

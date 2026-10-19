@@ -136,8 +136,8 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             <Text size={1} tone="caution" as="div" trim={true}>
               <Link
                 href="https://www.sanity.io/docs/studio/latest-version-of-sanity"
-                target="_blank"
-                rel="noopener noreferrer"
+                openInNewTab
+                underlined={true}
               >
                 {t('about-dialog.configuration-issue.missing-appid.view-documentation')} &rarr;
               </Link>

@@ -91,7 +91,7 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
       {(selected || iconRight) && (
         <Flex alignItems="center" gap={4} paddingLeft={3} paddingRight={2}>
           {selected && <Icon icon={CheckmarkIcon} style={{margin: '-0.4375rem'}} />}
-          {iconRight && <Icon icon={iconRight} style={{margin: '-0.4375rem'}} />}
+          {iconRight && <Icon muted icon={iconRight} style={{margin: '-0.4375rem'}} />}
         </Flex>
       )}
     </Flex>
