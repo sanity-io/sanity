@@ -3,6 +3,7 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {DragHandleIcon} from '@sanity/icons/DragHandle'
 import {RemoveIcon} from '@sanity/icons/Remove'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {createPortal} from 'react-dom'
 import {type KeyboardEvent, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState} from 'react'
 
 import {getConfig, NOT_DRAWN_LABEL} from './config'
@@ -331,75 +332,10 @@ function RailRow(props: {component: ComponentDef; state: State; selected: boolea
   )
 }
 
-// A floating window instead of a docked panel: dragged by its title bar, resized from the corner, position and
-// size remembered. No scrim, so the studio under it stays interactive. Esc minimises it.
-function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => void}) {
-  const {state, onClose, onHide} = props
-  const [rect, setRect] = useState<Rect>(loadRect)
+/** Everything under the title bar: presets, Show and scenario, the rail, the option cards, the footer. */
+function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
   const [selectedId, setSelectedId] = useState('c1')
   const [copied, setCopied] = useState(false)
-  const rectRef = useRef(rect)
-  rectRef.current = rect
-  const frame = useRef<HTMLDivElement | null>(null)
-  const drag = useRef<{dx: number; dy: number} | null>(null)
-
-  const save = (next: Rect) => {
-    setRect(next)
-    try {
-      window.localStorage.setItem(WINDOW_KEY(), JSON.stringify(next))
-    } catch {
-      // Not remembered this time.
-    }
-  }
-
-  // Keep it inside the viewport when the browser window changes size.
-  useEffect(() => {
-    const onResize = () => setRect((r) => clampRect(r))
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-
-  // Remember a resize (the native corner handle changes the element size, not our state).
-  useEffect(() => {
-    const el = frame.current
-    if (!el) return undefined
-    const observer = new ResizeObserver(() => {
-      const w = Math.round(el.offsetWidth)
-      const h = Math.round(el.offsetHeight)
-      if (w !== rectRef.current.w || h !== rectRef.current.h) save(clampRect({...rectRef.current, w, h}))
-    })
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if ((event.target as HTMLElement).closest('button')) return
-    drag.current = {dx: event.clientX - rect.x, dy: event.clientY - rect.y}
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }
-  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!drag.current) return
-    setRect(clampRect({...rectRef.current, x: event.clientX - drag.current.dx, y: event.clientY - drag.current.dy}))
-  }
-  const onPointerUp = () => {
-    if (!drag.current) return
-    drag.current = null
-    save(rectRef.current)
-  }
-  const onTitleKey = (event: KeyboardEvent) => {
-    const step = event.shiftKey ? 64 : 16
-    const move: Record<string, [number, number]> = {
-      ArrowLeft: [-step, 0],
-      ArrowRight: [step, 0],
-      ArrowUp: [0, -step],
-      ArrowDown: [0, step],
-    }
-    const delta = move[event.key]
-    if (!delta) return
-    event.preventDefault()
-    save(clampRect({...rect, x: rect.x + delta[0], y: rect.y + delta[1]}))
-  }
-
   const stock = state.global === 'stock'
   const selected = getConfig().components.find((c) => c.id === selectedId) ?? getConfig().components[0]
   const active = resolveOption(selected, state)
@@ -429,56 +365,7 @@ function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => v
   }
 
   return (
-    <div
-      aria-label="Design options"
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') {
-          event.stopPropagation()
-          onClose()
-        }
-      }}
-      ref={frame}
-      role="dialog"
-      style={{
-        height: rect.h,
-        left: rect.x,
-        maxHeight: window.innerHeight - 8,
-        maxWidth: window.innerWidth - 8,
-        minHeight: MIN_SIZE.h,
-        minWidth: MIN_SIZE.w,
-        overflow: 'hidden',
-        position: 'fixed',
-        resize: 'both',
-        top: rect.y,
-        width: rect.w,
-        zIndex: 1000000,
-      }}
-    >
-      <Card border radius={3} shadow={3} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-        <Flex
-          align="center"
-          gap={2}
-          onKeyDown={onTitleKey}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          padding={2}
-          style={{cursor: 'grab', touchAction: 'none', userSelect: 'none'}}
-          tabIndex={0}
-        >
-          <Text muted size={1}>
-            <DragHandleIcon />
-          </Text>
-          <Box flex={1}>
-            <Text size={1} weight="medium">
-              Design options
-            </Text>
-          </Box>
-          <Button fontSize={0} mode="bleed" onClick={() => save(dockedRect())} padding={2} text="Dock" title="Back to the bottom left" />
-          <Button aria-label="Minimise" icon={RemoveIcon} mode="bleed" onClick={onClose} padding={2} style={{height: 25, width: 25}} title="Minimise (Esc)" />
-          <Button aria-label="Close" icon={CloseIcon} mode="bleed" onClick={onClose} padding={2} style={{height: 25, width: 25}} />
-        </Flex>
-
+    <>
         <Card borderBottom borderTop padding={3}>
           <Stack gap={3}>
           <PresetBar state={state} />
@@ -570,6 +457,205 @@ function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => v
             <Button fontSize={1} mode="bleed" onClick={onHide} padding={2} text="Hide until refresh" />
           </Flex>
         </Card>
+    </>
+  )
+}
+
+
+/** Copy the app's styles into another document, so the panel looks the same there. */
+function copyStyles(target: Document) {
+  for (const attr of Array.from(document.documentElement.attributes)) {
+    target.documentElement.setAttribute(attr.name, attr.value)
+  }
+  for (const sheet of Array.from(document.styleSheets)) {
+    try {
+      if (sheet.href) {
+        const link = target.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = sheet.href
+        target.head.append(link)
+      } else {
+        const style = target.createElement('style')
+        style.textContent = Array.from(sheet.cssRules)
+          .map((rule) => rule.cssText)
+          .join('\n')
+        target.head.append(style)
+      }
+    } catch {
+      // A cross-origin sheet that cannot be read is skipped.
+    }
+  }
+}
+
+interface PipApi {
+  requestWindow(options: {width: number; height: number}): Promise<Window>
+}
+
+/**
+ * Open the panel in its own window: Document Picture-in-Picture where the browser has it (Chromium: a small
+ * always-on-top window that can be moved to another screen), otherwise a pop-out window. The React tree stays in
+ * this page (a portal), so it stays in sync with the app.
+ */
+async function openExternalWindow(size: {w: number; h: number}): Promise<Window | null> {
+  const pip = (window as unknown as {documentPictureInPicture?: PipApi}).documentPictureInPicture
+  let win: Window | null = null
+  try {
+    if (pip) win = await pip.requestWindow({width: size.w, height: size.h})
+  } catch {
+    win = null
+  }
+  // No Picture-in-Picture (or it was refused): a pop-out window instead.
+  if (!win) win = window.open('', 'design-options', `popup,width=${size.w},height=${size.h}`)
+  if (!win) return null
+  copyStyles(win.document)
+  win.document.title = getConfig().title ?? 'Design options'
+  win.document.body.style.margin = '0'
+  return win
+}
+
+/** The panel rendered into another window. Closing that window brings the panel back into the page. */
+function ExternalWindow(props: {win: Window; state: State; onHide: () => void; onBack: () => void}) {
+  const {win, state, onHide, onBack} = props
+  useEffect(() => {
+    win.addEventListener('pagehide', onBack)
+    return () => win.removeEventListener('pagehide', onBack)
+  }, [win, onBack])
+  return createPortal(
+    <Card style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
+      <Flex align="center" gap={2} padding={2}>
+        <Box flex={1}>
+          <Text size={1} weight="medium">
+            {getConfig().title ?? 'Design options'}
+          </Text>
+        </Box>
+        <Button fontSize={0} mode="bleed" onClick={() => { win.close(); onBack() }} padding={2} text="Bring back" title="Return the panel to the page" />
+      </Flex>
+      <ConfigBody onHide={onHide} state={state} />
+    </Card>,
+    win.document.body,
+  )
+}
+
+// A floating window instead of a docked panel: dragged by its title bar, resized from the corner, position and
+// size remembered. No scrim, so the studio under it stays interactive. Esc minimises it.
+function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => void; onPopOut: (size: {w: number; h: number}) => void}) {
+  const {state, onClose, onHide, onPopOut} = props
+  const [rect, setRect] = useState<Rect>(loadRect)
+  const rectRef = useRef(rect)
+  rectRef.current = rect
+  const frame = useRef<HTMLDivElement | null>(null)
+  const drag = useRef<{dx: number; dy: number} | null>(null)
+
+  const save = (next: Rect) => {
+    setRect(next)
+    try {
+      window.localStorage.setItem(WINDOW_KEY(), JSON.stringify(next))
+    } catch {
+      // Not remembered this time.
+    }
+  }
+
+  // Keep it inside the viewport when the browser window changes size.
+  useEffect(() => {
+    const onResize = () => setRect((r) => clampRect(r))
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // Remember a resize (the native corner handle changes the element size, not our state).
+  useEffect(() => {
+    const el = frame.current
+    if (!el) return undefined
+    const observer = new ResizeObserver(() => {
+      const w = Math.round(el.offsetWidth)
+      const h = Math.round(el.offsetHeight)
+      if (w !== rectRef.current.w || h !== rectRef.current.h) save(clampRect({...rectRef.current, w, h}))
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if ((event.target as HTMLElement).closest('button')) return
+    drag.current = {dx: event.clientX - rect.x, dy: event.clientY - rect.y}
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!drag.current) return
+    setRect(clampRect({...rectRef.current, x: event.clientX - drag.current.dx, y: event.clientY - drag.current.dy}))
+  }
+  const onPointerUp = () => {
+    if (!drag.current) return
+    drag.current = null
+    save(rectRef.current)
+  }
+  const onTitleKey = (event: KeyboardEvent) => {
+    const step = event.shiftKey ? 64 : 16
+    const move: Record<string, [number, number]> = {
+      ArrowLeft: [-step, 0],
+      ArrowRight: [step, 0],
+      ArrowUp: [0, -step],
+      ArrowDown: [0, step],
+    }
+    const delta = move[event.key]
+    if (!delta) return
+    event.preventDefault()
+    save(clampRect({...rect, x: rect.x + delta[0], y: rect.y + delta[1]}))
+  }
+
+  return (
+    <div
+      aria-label="Design options"
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') {
+          event.stopPropagation()
+          onClose()
+        }
+      }}
+      ref={frame}
+      role="dialog"
+      style={{
+        height: rect.h,
+        left: rect.x,
+        maxHeight: window.innerHeight - 8,
+        maxWidth: window.innerWidth - 8,
+        minHeight: MIN_SIZE.h,
+        minWidth: MIN_SIZE.w,
+        overflow: 'hidden',
+        position: 'fixed',
+        resize: 'both',
+        top: rect.y,
+        width: rect.w,
+        zIndex: 1000000,
+      }}
+    >
+      <Card border radius={3} shadow={3} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+        <Flex
+          align="center"
+          gap={2}
+          onKeyDown={onTitleKey}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          padding={2}
+          style={{cursor: 'grab', touchAction: 'none', userSelect: 'none'}}
+          tabIndex={0}
+        >
+          <Text muted size={1}>
+            <DragHandleIcon />
+          </Text>
+          <Box flex={1}>
+            <Text size={1} weight="medium">
+              Design options
+            </Text>
+          </Box>
+          <Button fontSize={0} mode="bleed" onClick={() => onPopOut({w: rect.w, h: rect.h})} padding={2} text="Pop out" title="Open in its own window: move it to another screen" />
+          <Button fontSize={0} mode="bleed" onClick={() => save(dockedRect())} padding={2} text="Dock" title="Back to the bottom left" />
+          <Button aria-label="Minimise" icon={RemoveIcon} mode="bleed" onClick={onClose} padding={2} style={{height: 25, width: 25}} title="Minimise (Esc)" />
+          <Button aria-label="Close" icon={CloseIcon} mode="bleed" onClick={onClose} padding={2} style={{height: 25, width: 25}} />
+        </Flex>
+
+        <ConfigBody onHide={onHide} state={state} />
       </Card>
     </div>
   )
@@ -582,7 +668,20 @@ export function DesignOptions() {
   const state = useOptionState()
   const [open, setOpen] = useState(false)
   const [hidden, setHidden] = useState(false)
+  const [external, setExternal] = useState<Window | null>(null)
   const controlRef = useRef<HTMLButtonElement | null>(null)
+
+  const popOut = async (size: {w: number; h: number}) => {
+    const win = await openExternalWindow(size)
+    if (win) {
+      setExternal(win)
+      setOpen(false)
+    }
+  }
+  const bringBack = () => {
+    setExternal(null)
+    setOpen(true)
+  }
 
   const stock = state.global === 'stock'
   const changedCount = stock
@@ -596,8 +695,10 @@ export function DesignOptions() {
 
   return (
     <>
-      {open ? (
+      {external ? <ExternalWindow onBack={bringBack} onHide={() => { external.close(); setExternal(null); setHidden(true) }} state={state} win={external} /> : null}
+      {open && !external ? (
         <ConfigWindow
+          onPopOut={(size) => void popOut(size)}
           onClose={() => {
             setOpen(false)
             controlRef.current?.focus()
@@ -621,7 +722,7 @@ export function DesignOptions() {
               </span>
             }
             mode="bleed"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => (external ? external.focus() : setOpen((v) => !v))}
             padding={2}
             ref={controlRef}
             text={label}
