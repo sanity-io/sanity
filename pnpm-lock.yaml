@@ -228,6 +228,9 @@ catalogs:
     jsdom:
       specifier: ^29.1.1
       version: 29.1.1
+    oxc-parser:
+      specifier: ^0.153.0
+      version: 0.153.0
     oxc-transform-react:
       specifier: ^0.154.0
       version: 0.154.0
@@ -1252,7 +1255,24 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.4)
 
-  packages/@repo/oxlint-plugin-i18n: {}
+  packages/@repo/oxlint-plugin-i18n:
+    dependencies:
+      oxc-parser:
+        specifier: 'catalog:'
+        version: 0.153.0
+    devDependencies:
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../test-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      oxlint:
+        specifier: ^1.88.0
+        version: 1.88.0(oxlint-tsgolint@7.0.2004)
+      vitest:
+        specifier: ^5.0.4
+        version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.4)
 
   packages/@repo/package.bundle:
     devDependencies:

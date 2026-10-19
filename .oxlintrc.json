@@ -494,7 +494,10 @@
         ],
         "@sanity/i18n/no-attribute-template-literals": "error",
         "@sanity/i18n/no-i18next-import": "error",
-        "@repo/i18n/no-inline-translate-components": "error"
+        "@repo/i18n/no-inline-translate-components": "error",
+        // Namespaces and resource files are listed in packages/@repo/oxlint-plugin-i18n/src/namespaces.mjs
+        "@repo/i18n/no-missing-translation-key": "error",
+        "@repo/i18n/no-plugin-namespace-outside-plugin": "error"
       }
     },
     {
@@ -584,7 +587,10 @@
       "rules": {
         "i18next/no-literal-string": "off",
         "@sanity/i18n/no-attribute-string-literals": "off",
-        "@sanity/i18n/no-attribute-template-literals": "off"
+        "@sanity/i18n/no-attribute-template-literals": "off",
+        // Tests use fixture namespaces and keys as plain data
+        "@repo/i18n/no-missing-translation-key": "off",
+        "@repo/i18n/no-plugin-namespace-outside-plugin": "off"
       }
     },
     {

@@ -161,6 +161,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
               } else {
                 toast.push({
                   title: t('inputs.array.error.cannot-resolve-initial-value-title'),
+                  // oxlint-disable-next-line @repo/i18n/no-missing-translation-key -- TODO(SAPP-4649): the description string was never added to the studio bundle
                   description: t('inputs.array.error.cannot-resolve-initial-value-description', {
                     schemaTypeTitle: result.schemaType.title,
                     errorMessage: result.error.message,
