@@ -20,6 +20,7 @@ function DocumentationLink({children}: {children?: React.ReactNode}) {
       href="https://www.sanity.io/docs/cross-dataset-references"
       openInNewTab
       underlined={false}
+      style={{color: 'var(--card-link-color)'}}
     >
       {children}
     </Link>
@@ -46,13 +47,17 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
       radius={2}
       data-testid="alert-cross-dataset-reference-feature-disabled"
     >
-      <Flex gap={4} marginBottom={hasRef ? 4 : undefined}>
+      <Flex gap={3} marginBottom={hasRef ? 4 : undefined}>
         <Icon
           size={1}
           muted
           icon={WarningOutlineIcon}
           tone="caution"
-          style={{margin: '-0.375rem', flexShrink: 0}}
+          style={{
+            margin: '-0.3125rem',
+            marginLeft: '-0.375rem',
+            flexShrink: 0,
+          }}
         />
         <VStack gap={3}>
           <Text as="h2" size={1} weight="medium" trim={true} tone="caution">
