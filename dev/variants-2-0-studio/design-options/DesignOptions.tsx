@@ -301,7 +301,7 @@ function RailRow(props: {component: ComponentDef; state: State; selected: boolea
       tone="default"
     >
       <Flex align="center" gap={2}>
-        <Text muted size={0}>
+        <Text muted={!selected} size={0}>
           {component.id.toUpperCase()}
         </Text>
         <Box flex={1}>

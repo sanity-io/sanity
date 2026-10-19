@@ -66,7 +66,7 @@ function JourneyRow({journey, open, onToggle}: {journey: Journey; open: boolean;
     <Stack gap={1}>
       <Card as="button" onClick={onToggle} padding={2} radius={2} selected={open} style={{cursor: 'pointer', textAlign: 'left', width: '100%'}}>
         <Flex align="center" gap={2}>
-          <Text muted size={0}>
+          <Text muted={!open} size={0}>
             {journey.id.toUpperCase()}
           </Text>
           <Box flex={1}>

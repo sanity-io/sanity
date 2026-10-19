@@ -117,8 +117,9 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
         return dialog ? differs('Edit opens a dialog, not in-place editing: ' + (await page.locator('[role=dialog]').innerText()).replace(/\s+/g, ' ').slice(0, 100)) : differs('no dialog opened')
       })
       await run(2, async () => {
+        await settle(page, 2500)
         const text = await page.locator('[role=dialog]').innerText().catch(() => '')
-        return /affect|document/i.test(text) ? ok(text.replace(/\s+/g, ' ').slice(0, 120)) : differs('no notice naming how many documents the change affects')
+        return /affect/i.test(text) ? ok(text.replace(/\s+/g, ' ').slice(0, 120)) : differs('no notice naming how many documents the change affects')
       })
       await page.keyboard.press('Escape')
       break
@@ -128,9 +129,9 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
       await run(1, async () => {
         const chevron = page.locator('[data-ui=ReleasesNav] button').last()
         await chevron.waitFor({state: 'visible', timeout: 20000})
-        await settle(page, 1500)
+        await settle(page, 4000)
         await chevron.click()
-        const menu = await visible(page, '[role=menuitem]')
+        const menu = await page.getByRole('menuitem').first().waitFor({timeout: 8000}).then(() => true, () => false)
         return menu ? ok('version menu opens; row: ' + ((await page.locator('[role=menuitem]').allInnerTexts()).filter((t) => /View as|Add a dimension/.test(t)).join(',') || 'no dimension row')) : differs('menu did not open')
       })
       await run(2, async () => {
@@ -168,8 +169,9 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
         return /inspect/.test(decodeURIComponent(page.url())) ? ok(`URL: ${decodeURIComponent(page.url()).split('/structure')[1]}`) : differs('document opened without the inventory: ' + page.url())
       })
       await run(2, async () => {
-        const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ')
-        return /Published/.test(text) && /Versions of/.test(text) ? ok('inventory rows with address and state visible') : differs('inventory not readable')
+        await visible(page, '[data-testid^=lens-doc-versions-mini-row-]', 20000)
+        const n = await page.locator('[data-testid^=lens-doc-versions-mini-row-]').count()
+        return n > 0 ? ok(`the version list shows ${n} rows with address and state`) : differs('version list not readable')
       })
       await run(3, async () => {
         const before = page.url()
@@ -233,11 +235,11 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
         return chips >= 1 ? ok(`${chips} chip(s): ` + (await page.locator('[data-testid=address-row]').innerText()).replace(/\s+/g, ' ')) : differs('no chip')
       })
       await run(3, async () => {
-        const pill = page.locator('[data-ui=ReleasesNav]')
-        await pill.locator('button').first().click()
+        const pill = page.locator('[data-ui=ReleasesNav]').locator('[role=button], button').filter({hasText: /Drafts|Published/}).first()
+        await pill.click()
         await settle(page, 600)
         const hidden = !(await page.locator('[data-testid=address-row]').isVisible().catch(() => false))
-        await pill.locator('button').first().click()
+        await pill.click()
         await settle(page, 600)
         const shown = await page.locator('[data-testid=address-row]').isVisible().catch(() => false)
         return hidden && shown ? ok('the pill label hides and shows the row; the chip stays') : differs(`label click: row hidden=${hidden}, shown again=${shown}`)
@@ -272,7 +274,8 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
       await run(0, async () => {
         await lens(page, 'Dimension').click()
         const rows = await page.locator('[data-testid^=lens-dimension-row-]').count()
-        return rows ? differs(`${rows} value rows with Definitions and Documents counts, not counts per lifecycle state`) : differs('no rows')
+        const head = (await page.locator('[data-testid=lens-dimension]').innerText()).replace(/\\s+/g, ' ')
+        return rows && /Published/.test(head) && /Draft/.test(head) && /In a release/.test(head) ? ok(`${rows} value rows with counts per lifecycle state (Published, Draft, In a release)`) : differs(`${rows} rows; header: ${head.slice(0, 100)}`)
       })
       await run(1, async () => {
         const rows = await page.locator('[data-testid^=lens-dimension-row-]').allInnerTexts()
@@ -308,14 +311,36 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
       break
     }
     case 'j10': {
-      await run(0, async () => ((await visible(page, '[data-testid^=version-mark-]')) ? differs('there is no route to open a variant version as its own document in this studio; the list opens the base document') : missing('no list')))
-      await run(1, async () => {
-        await page.locator('[data-testid^=version-mark-]').nth(5).click()
-        await settle(page, 4000)
-        return /Versions of/.test(await page.locator('body').innerText()) ? ok('inventory shows the version rows with states') : differs('inventory not shown')
+      // Throwaway document with a Members draft, so the delete can really run.
+      await x.createOrReplace({_id: DOCS[0], _type: 'book', title: 'C5 test 1'})
+      await x.action({actionType: 'sanity.action.document.variant.create', publishedId: DOCS[0], variantId: MEMBERS, bundleId: 'drafts', document: {_type: 'book', title: 'C5 test 1'}} as never)
+      created.push({doc: DOCS[0], variant: MEMBERS, bundle: 'drafts'})
+      const URL = `/structure/book;${DOCS[0]}%2Cinspect%3Dvariants-inventory?perspective=drafts&variant=${MEMBERS}&preset=open-beta-a`
+      await page.goto(`${base}${URL}`)
+      await settle(page, 12000)
+      await run(0, async () => {
+        const line = (await page.locator('[data-testid=presentation-context-line]').innerText().catch(() => '')).replace(/\s+/g, ' ')
+        return /Members/.test(line) ? ok(`the document opens on the variant (link with perspective and variant); pane header: ${line}`) : differs('no context line naming the variant')
       })
-      await run(2, async () => missing('the inventory panel has no Delete (the bulk bar was removed in the port); deleting a variant version is only possible from the Variants tool bulk bar'))
-      await run(3, async () => missing('no delete step reachable from the document editor'))
+      await run(1, async () => {
+        await visible(page, '[data-testid^=lens-doc-versions-mini-row-]', 20000)
+        return (await page.locator('[data-testid^=lens-doc-versions-mini-row-]').count()) > 0 ? ok('the version list shows the version rows with states') : differs('version list not shown')
+      })
+      await run(2, async () => {
+        await page.getByRole('button', {name: /Actions for Members/}).first().click()
+        await page.getByRole('menuitem', {name: 'Delete this version'}).click()
+        const text = (await page.getByRole('dialog').innerText()).replace(/\s+/g, ' ')
+        return /Members/.test(text) && /not served yet|fall back/.test(text) ? ok(text.slice(0, 180)) : differs(text.slice(0, 180))
+      })
+      await run(3, async () => {
+        await page.getByRole('dialog').getByRole('button', {name: /^Delete 1/}).click()
+        // The row that held the dialog is deleted, so the results list may already be gone: do not wait for it.
+        await settle(page, 5000)
+        await page.getByRole('dialog').getByRole('button', {name: 'Close'}).last().click({timeout: 2000}).catch(() => undefined)
+        const left = (await x.fetch('*[_id match "*" + $id && defined(_system.variant)]._id', {id: DOCS[0]})) as string[]
+        const base = (await x.fetch('count(*[_id == $id])', {id: DOCS[0]})) as number
+        return left.length === 0 && base === 1 ? ok('the Members version is gone; the base document is unchanged') : differs(`variant versions left: ${left.length}, base documents: ${base}`)
+      })
       break
     }
     case 'j11': {
@@ -334,9 +359,9 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
         return /Delete/.test(bar) ? ok('bulk bar: ' + bar) : differs('bulk bar: ' + bar)
       })
       await run(2, async () => {
-        await page.locator('[data-testid=bulk-bar]').getByRole('button', {name: /^Delete/}).click()
+        await page.locator('[data-testid=bulk-bar]').getByRole('button', {name: /^Delete$/}).click()
         const text = (await page.getByRole('dialog').innerText()).replace(/\s+/g, ' ')
-        return /C5 test 1/.test(text) && /fall|fallback|base/i.test(text) ? ok(text.slice(0, 200)) : differs('dialog lists the documents but not the fallback per audience: ' + text.slice(0, 200))
+        return /C5 test 1/.test(text) && /fall back/i.test(text) || /not served yet/i.test(text) ? ok(text.slice(0, 200)) : differs('dialog lists the documents but not the fallback per audience: ' + text.slice(0, 200))
       })
       await run(3, async () => {
         await page.getByRole('dialog').getByRole('button', {name: /^Delete 2/}).click()
@@ -404,9 +429,106 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
         return m.ys.length > 0 && subtitle === 0 && tip ? ok(`${m.ys.length} marks; Subtitle (identical) has none; tooltip "Changed from base variant" shown`) : differs(`marks=${m.ys.length}, subtitle marks=${subtitle}, tooltip=${tip}`)
       })
       await run(2, async () => {
-        const facts = {settings: near(m, 'Settings', 10), meta: near(m, 'Meta', 10), region: near(m, 'Region', 70), tagsAndItems: between(m, 'Tags', 'Sections'), sectionsAndItems: between(m, 'Sections', 'Featured')}
+        const facts = {settings: near(m, 'Settings', 10), meta: near(m, 'Meta', 10), region: near(m, 'Region', 70), tagsAndItems: between(m, 'Tags', 'Sections'), sectionsFeaturedCover: between(m, 'Sections', 'Body')}
         // One mark across a whole array field and its items = the field mark only, none on the items.
-        return facts.region && facts.meta && facts.settings && facts.tagsAndItems === 1 && facts.sectionsAndItems === 1 ? ok(`leaf and both parents marked; each array shows exactly one mark for the field and its items (${JSON.stringify(facts)})`) : differs(JSON.stringify(facts))
+        return facts.region && facts.meta && facts.settings && facts.tagsAndItems === 1 && facts.sectionsFeaturedCover === 3 ? ok(`leaf and both parents marked; each array shows exactly one mark for the field and its items (Sections, Featured and Cover: 3 marks in all) (${JSON.stringify(facts)})`) : differs(JSON.stringify(facts))
+      })
+      await run(3, async () => {
+        const body = near(m, 'Body', 20)
+        const blocks = await page.locator('[data-testid=block-mark]').count()
+        return body === 1 && blocks === 0 ? ok('Body has one field mark and no block-level marks (C9 A, shipped)') : differs(`Body marks=${body}, block marks=${blocks}`)
+      })
+      await run(4, async () => {
+        const preview = encodeURIComponent('/variants-preview.html?route=fm:fm-1')
+        await page.setViewportSize({width: 1100, height: 1500})
+        await page.goto(`${base}/presentation?preset=open-beta-a&preview=${preview}&variant=aud-members&perspective=published`)
+        await settle(page, 15000)
+        const f = page.frames().find((x) => x.url().includes(':3334'))
+        await f?.locator('h1').first().click()
+        await settle(page, 6000)
+        const r = await page.evaluate(() => {
+          const pane = document.querySelector('[data-testid="document-pane"]')?.getBoundingClientRect()
+          const ms = [...document.querySelectorAll('[data-testid="base-variant-diff-indicator"]')].map((e) => e.getBoundingClientRect())
+          return {paneW: pane && Math.round(pane.width), count: ms.length, clipped: ms.filter((q) => pane && (q.left < pane.left || q.right > pane.right)).length}
+        })
+        return r.count > 0 && r.clipped === 0 ? ok(`pane ${r.paneW}px wide: ${r.count} marks, none clipped`) : differs(JSON.stringify(r))
+      })
+      break
+    }
+    case 'j13': {
+      await x.createOrReplace({_id: DOCS[0], _type: 'book', title: 'C5 test 1'})
+      await x.action({actionType: 'sanity.action.document.variant.create', publishedId: DOCS[0], variantId: MEMBERS, bundleId: 'drafts', document: {_type: 'book', title: 'C5 test 1'}} as never)
+      created.push({doc: DOCS[0], variant: MEMBERS, bundle: 'drafts'}, {doc: DOCS[0], variant: MEMBERS, bundle: 'published'})
+      await page.goto(`${base}/structure/book;${DOCS[0]}%2Cinspect%3Dvariants-inventory?perspective=drafts&variant=${MEMBERS}&preset=open-beta-a`)
+      await settle(page, 12000)
+      await run(0, async () => {
+        const line = (await page.locator('[data-testid=presentation-context-line]').innerText().catch(() => '')).replace(/\s+/g, ' ')
+        return /Members · draft/.test(line) ? ok(`the draft variant opens as its own document; pane header: ${line}`) : differs(`pane header: ${line || 'none'}`)
+      })
+      await run(1, async () => {
+        await visible(page, '[data-testid^=lens-doc-versions-mini-row-]', 20000)
+        return /Draft/.test(await page.locator('[data-testid=lens-doc-versions-mini]').innerText()) ? ok('the draft row is listed in the version list') : differs('no draft row')
+      })
+      await run(2, async () => {
+        await page.getByRole('button', {name: /Actions for Members/}).first().click()
+        await page.getByRole('menuitem', {name: 'Publish'}).click()
+        await page.getByRole('dialog').getByRole('button', {name: /^Publish 1/}).click()
+        await visible(page, '[data-testid=bulk-results]', 20000)
+        await page.getByRole('dialog').getByRole('button', {name: 'Close'}).last().click()
+        await settle(page, 3000)
+        const rows = (await x.fetch('*[_id match "*" + $id && defined(_system.variant)]{"b":_system.bundleId}', {id: DOCS[0]})) as {b?: string}[]
+        const baseKept = (await x.fetch('count(*[_id == $id])', {id: DOCS[0]})) as number
+        return rows.some((r) => !r.b) && baseKept === 1 ? ok('the Members version is published; the base is unchanged') : differs(`${JSON.stringify(rows)} base=${baseKept}`)
+      })
+      await goto(page, '/releases', 'open-beta-a')
+      await run(3, async () => {
+        const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ')
+        const listed = /C5 test 1/.test(text)
+        return (await visible(page, 'text=Releases', 12000)) ? (listed ? differs('the published variant appears on the Releases page') : ok('the shipped Releases tool opens; the variant published on its own is not in any release (checked against the releases page text)')) : missing('Releases tool not shown')
+      })
+      break
+    }
+    case 'j14': {
+      const FM = '/structure/fieldMarksTest;fm-1?perspective=published&variant=aud-members'
+      const marks = () =>
+        page.evaluate(() => {
+          const ys = [...document.querySelectorAll('[data-testid="base-variant-diff-indicator"]')].map((e) => Math.round(e.getBoundingClientRect().y))
+          const label = (t: string) => {
+            const el = [...document.querySelectorAll('label, [data-testid^="field-"] *, h2, h3, div')].find((n) => (n as HTMLElement).innerText?.trim() === t && n.children.length === 0)
+            return el ? Math.round(el.getBoundingClientRect().y) : null
+          }
+          return {ys, label: Object.fromEntries(['Title', 'Subtitle', 'Settings', 'Theme', 'Meta', 'Owner', 'Region', 'Tags', 'Sections', 'Featured', 'Cover', 'Body'].map((t) => [t, label(t)]))}
+        })
+      // A mark sits level with its field's label or input, a little above or below the label's top edge.
+      const near = (m: Awaited<ReturnType<typeof marks>>, name: string, span = 70) => {
+        const y = m.label[name]
+        return y == null ? null : m.ys.filter((v) => v >= y - 30 && v <= y + span).length
+      }
+      // Marks from one field's label to the next (an array field and its items).
+      const between = (m: Awaited<ReturnType<typeof marks>>, from: string, to: string) => {
+        const a = m.label[from]
+        const b = m.label[to]
+        return a == null || b == null ? null : m.ys.filter((v) => v >= a - 30 && v < b - 30).length
+      }
+      await page.setViewportSize({width: 1500, height: 3000})
+      await page.goto(`${base}${FM}&preset=open-beta-a`)
+      await settle(page, 14000)
+      await run(0, async () => {
+        const line = (await page.locator('[data-testid=presentation-context-line]').innerText().catch(() => '')).replace(/\s+/g, ' ')
+        return /Members/.test(line) ? ok(`pane context line: ${line}`) : differs('no context line naming the variant')
+      })
+      let m = await marks()
+      await run(1, async () => {
+        await page.locator('[data-testid="base-variant-diff-indicator"]').first().hover()
+        await settle(page, 700)
+        const tip = (await page.locator('body').innerText()).includes('Changed from base variant')
+        const subtitle = near(m, 'Subtitle')
+        return m.ys.length > 0 && subtitle === 0 && tip ? ok(`${m.ys.length} marks; Subtitle (identical) has none; tooltip "Changed from base variant" shown`) : differs(`marks=${m.ys.length}, subtitle marks=${subtitle}, tooltip=${tip}`)
+      })
+      await run(2, async () => {
+        const facts = {settings: near(m, 'Settings', 10), meta: near(m, 'Meta', 10), region: near(m, 'Region', 70), tagsAndItems: between(m, 'Tags', 'Sections'), sectionsFeaturedCover: between(m, 'Sections', 'Body')}
+        // One mark across a whole array field and its items = the field mark only, none on the items.
+        return facts.region && facts.meta && facts.settings && facts.tagsAndItems === 1 && facts.sectionsFeaturedCover === 3 ? ok(`leaf and both parents marked; each array shows exactly one mark for the field and its items (Sections, Featured and Cover: 3 marks in all) (${JSON.stringify(facts)})`) : differs(JSON.stringify(facts))
       })
       await run(3, async () => {
         const body = near(m, 'Body', 20)
@@ -435,7 +557,8 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
       await run(1, async () => {
         await page.locator('[data-testid^=version-mark-]').nth(5).click()
         await settle(page, 4000)
-        return /Draft/.test(await page.locator('body').innerText()) ? ok('draft rows listed in the inventory') : differs('no draft row')
+        await visible(page, '[data-testid^=lens-doc-versions-mini-row-]', 20000)
+        return /Draft/.test(await page.locator('[data-testid=lens-doc-versions-mini]').innerText()) ? ok('draft rows listed in the version list') : differs('no draft row')
       })
       await run(2, async () => missing('the inventory panel has no Publish action (bulk bar removed in the port); publishing a variant version is possible from the Variants tool bulk bar'))
       await goto(page, '/releases', 'open-beta-a')

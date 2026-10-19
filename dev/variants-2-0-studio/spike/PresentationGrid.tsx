@@ -258,7 +258,7 @@ function GridFrame(props: {
           {(['desktop', 'tablet', 'phone'] as Viewport[]).map((v) => (
             <Button fontSize={0} key={v} mode={spec.viewport === v ? 'default' : 'ghost'} onClick={() => onChange({...spec, viewport: v})} padding={1} text={v === 'desktop' ? '1280' : v === 'tablet' ? '768' : '390'} />
           ))}
-          <Button fontSize={0} mode={spec.connected ? 'default' : 'ghost'} onClick={() => onChange({...spec, connected: !spec.connected})} padding={1} text={spec.connected ? 'Connected' : 'Static'} tone={spec.connected ? 'positive' : 'default'} />
+          <Button fontSize={0} mode="ghost" onClick={() => onChange({...spec, connected: !spec.connected})} padding={1} text={spec.connected ? 'Connected' : 'Static'} tone={spec.connected ? 'positive' : 'default'} />
           <Button fontSize={0} mode="bleed" onClick={onDuplicate} padding={1} text="Duplicate" />
           <Button fontSize={0} mode="bleed" onClick={() => onChange(null)} padding={1} text="Remove" tone="critical" />
           <a href={openInPresentation} style={{fontSize: 11}}>Open in Presentation</a>

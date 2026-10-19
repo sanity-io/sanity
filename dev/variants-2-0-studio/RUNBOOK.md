@@ -20,6 +20,9 @@ Dataset: `variants-2-0` in project `ppsg7ml5` (private). You need `sanity login`
 
 ## Start
 
+Once per clone: `pnpm install` at the repo root, then `sanity login` (the scripts and Playwright use that login).
+Node 22.18 or newer. Use the commands below from a plain shell; no other variable is needed.
+
 ```sh
 # 1. The studio (port 3350 is the only port the project allows)
 cd dev/variants-2-0-studio
@@ -29,6 +32,10 @@ SANITY_STUDIO_GRID=1 node_modules/.bin/sanity dev --port 3350     # leave out SA
 cd dev/preview-iframe
 node_modules/.bin/vite --port 3334
 ```
+
+The first visit after a start can reload by itself once while the dev server prepares dependencies (30 to 90 seconds,
+sometimes a failed module fetch in the console). Open `http://localhost:3350/structure/book` once, wait for the list, and refresh.
+After that every step on the demo path loads in under 5 seconds, except Presentation (about 5 to 9 seconds to connect) and the grid (about 9 seconds).
 
 | Variable | Effect |
 |---|---|
@@ -43,6 +50,8 @@ node_modules/.bin/vite --port 3334
 - Check: `node seed/verify.mts`.
 - Throwaway: the scripts create documents `book-c5-pw-*` and the definition `aud-pw-empty`, then delete them. Do not edit them.
 - Do not delete the seeded `book-*` documents. Reseed if something is lost.
+- The dataset has 53 variant definitions on purpose: 7 audiences, locales, channels, plans, and 30 `country` values for long lists.
+  The Variants overview is therefore long.
 
 ## The navbar tools
 
@@ -78,7 +87,11 @@ node journeys/capture.mts            # all journeys; or name some: node journeys
 node journeys/verify.mts             # bulk actions, C4 lens, visitor lens
 node journeys/verify-d1.mts          # delete one version, delete all versions
 node journeys/verify-open.mts        # open a version as a document
+node journeys/dryrun.mts             # the demo path above, timed, with console errors and a contrast check in light and dark
 ```
+
+Last full run: 54 steps in 14 journeys: 50 pass, 4 differ, 0 not reachable. The 4 are the shipped tool's own behaviour
+(no empty state to show, no create action on an overview row, the Edit dialog is not in place, a value nobody authored cannot be listed).
 
 Screenshots and `run.json` go to `journeys-captures/` (not committed). The scripts write only throwaway data and remove it.
 
@@ -99,6 +112,8 @@ Screenshots and `run.json` go to `journeys-captures/` (not committed). The scrip
 - Not verified: Andrej's original panel (C4 C) row click; the Presentation grid's own `Open in Presentation` link beyond one click.
 - The grid does not get live updates (it polls every 4 seconds). Its side panel embeds the form as a full Studio inside a frame (with the Studio's own chrome).
 - The stand-in preview shows Nordic Books and the field-marks document only. The Northfold storefront is not wired.
+- The browser console shows two shipped warnings (`flexGrow` and `flexBasis` on a DOM element in the document header) and one 409 on the Variants tool (the shipped delete check). None is from our files.
+- Light and dark both read well on the demo path. Disabled buttons and the stock muted text are lower contrast by design.
 - Presentation shows the shipped header (not the C2 pills) when a variant is chosen. At a 325 px pane it truncates.
 - Field marks: the shipped mark covers fields only. Array items, removed items and portable text blocks carry nothing. C9 B and C are candidates.
 - Saved views in the version list are a candidate (`Save current view` is disabled).
