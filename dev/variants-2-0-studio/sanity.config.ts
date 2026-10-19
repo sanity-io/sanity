@@ -11,7 +11,10 @@ import {designSlotsTool, inventoryTool, ToolMenuWithSlots} from './slots/DesignS
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'ppsg7ml5'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
 // The Northfold storefront (repos/northfold-storefront, `pnpm dev`) is the default preview.
-const previewOrigin = process.env.SANITY_STUDIO_PREVIEW_ORIGIN || 'http://localhost:3456'
+// The stand-in preview (dev/preview-iframe, `vite --port 3334`, variants-preview.html) mounts @sanity/visual-editing against
+// this dataset. Set SANITY_STUDIO_PREVIEW_ORIGIN=http://localhost:3456 to use the Northfold storefront instead.
+const previewOrigin = process.env.SANITY_STUDIO_PREVIEW_ORIGIN || 'http://localhost:3334'
+const previewPath = previewOrigin.endsWith(':3334') ? '/variants-preview.html?route=list' : '/'
 
 const variants2Options = definePlugin({
   name: 'variants-2-0-options',
@@ -29,7 +32,7 @@ export default defineConfig({
     structureTool(),
     presentationTool({
       allowOrigins: ['http://localhost:*', 'https://*.sanity.dev'],
-      previewUrl: {origin: previewOrigin, preview: '/'},
+      previewUrl: {origin: previewOrigin, preview: previewPath},
     }),
     variants2Options(),
   ],

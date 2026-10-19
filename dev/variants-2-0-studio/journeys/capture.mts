@@ -250,16 +250,22 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
       break
     }
     case 'j07': {
+      // The stand-in preview (dev/preview-iframe: vite --port 3334) is the default Presentation preview.
       await run(0, async () => ((await visible(page, '[data-testid=presentation-variants-button]', 20000)) ? ok('Presentation loads; the dimension control is in the preview header next to the state pill') : differs('Presentation loaded without the dimension control')))
+      const frame = () => page.frames().find((f) => f.url().includes(':3334'))
       await run(1, async () => {
         await page.locator('[data-testid=presentation-variants-button]').click()
-        await page.locator('[data-testid^=picker-value-]').first().click()
-        await settle(page, 1500)
-        const url = decodeURIComponent(page.url())
-        const pill = (await page.locator('[data-ui=ReleasesNav]').innerText()).replace(/\s+/g, ' ')
-        return /variant=/.test(url) ? ok(`router variant set (${url.match(/variant=[^&]+/)?.[0]}); navbar pill: ${pill}. The preview app on :3456 does not react: it has no visual-editing connection ("Unable to connect")`) : differs('no variant param after choosing a value')
+        await page.locator('[data-testid^=picker-value-]', {hasText: 'Members'}).first().click()
+        await settle(page, 6000)
+        const badge = await frame()?.locator('[data-testid=preview-state]').innerText().catch(() => '')
+        return /variant aud-members/.test(badge ?? '') ? ok(`the preview received the variant: ${badge}`) : differs(`preview badge: ${badge || 'no preview frame'}`)
       })
-      await run(2, async () => missing('click-to-edit needs the storefront to run @sanity/visual-editing (the preview shows "Unable to connect"); see the storefront notes'))
+      await run(2, async () => {
+        await frame()?.getByText('The Lighthouse Keeper').first().click()
+        await settle(page, 6000)
+        const line = (await page.locator('[data-testid=presentation-context-line]').innerText().catch(() => '')).replace(/\s+/g, ' ')
+        return line ? ok(`click-to-edit opened the document form; context line: ${line}`) : differs('clicking the title did not open a document form')
+      })
       break
     }
     case 'j08': {
