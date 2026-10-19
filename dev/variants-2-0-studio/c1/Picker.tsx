@@ -1,5 +1,5 @@
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit 53706f95a8, lib/explorations/variants-2-0/perspective/Picker.tsx).
+// explorations/variants-2-0, commit 6acf5bfa24, lib/explorations/variants-2-0/perspective/Picker.tsx).
 // Changes: imports point at this monorepo and ./model; LIVE: marks the few places that read live data.
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
@@ -157,6 +157,31 @@ export function PickerContent(props: {
     const timer = setTimeout(focus, 50)
     return () => clearTimeout(timer)
   }, [])
+  // The arrow keys inside a Menu are handled here, not by the Menu: in the live Studio the Menu moves
+  // its own highlight (`activeIndex`) but not DOM focus, so the highlight, the focus and the rail's
+  // active dimension could each be on a different item. Stopping the key in the capture phase keeps
+  // the Menu from seeing it; the item gets real focus, and in the rail it also becomes the active
+  // dimension.
+  const moveInMenu = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return
+    const here = event.target as HTMLElement
+    const menu = here.closest<HTMLElement>('[role="menu"]')
+    if (!menu) return
+    const items = [...menu.querySelectorAll<HTMLElement>(ITEM)]
+    const at = items.indexOf(here.closest<HTMLElement>(ITEM) as HTMLElement)
+    if (!items.length) return
+    event.preventDefault()
+    event.stopPropagation()
+    const next =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? items.length - 1
+          : (at + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length
+    items[next]?.focus()
+    const id = items[next]?.dataset.testid
+    if (id?.startsWith('picker-dimension-')) setActive(id.slice('picker-dimension-'.length))
+  }
   const searching = !!query.trim()
   const any = Object.keys(chosen).length > 0
   const hits = useMemo(
@@ -212,8 +237,9 @@ export function PickerContent(props: {
       onKeyDown={onKeyDown}
       onFocus={onFocus}
       // Capture: the Menu stops the arrow keys from bubbling.
-      onKeyDownCapture={() => {
+      onKeyDownCapture={(event) => {
         byKeyboard.current = true
+        moveInMenu(event)
       }}
       onPointerMove={() => {
         byKeyboard.current = false
