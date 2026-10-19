@@ -3891,25 +3891,10 @@ packages:
   '@date-fns/utc@2.1.1':
     resolution: {integrity: sha512-SlJDfG6RPeEX8wEVv6ZB3kak4MmbtyiI2qX/5zuKdordbrhB/iaJ58GVMZgJ6P1sJaM1gMgENFYYeg1JWrCFrA==}
 
-  '@devframes/agentic@1.2.3':
-    resolution: {integrity: sha512-GYFvBBPCPsbNF7H79gY6Ky4rwo7C7Gt8qWhwUTUNACEnSi3SrQQPixiTNeccrasAYJiSMPKKOy9A1XbWevpm2g==}
-    peerDependencies:
-      devframe: 1.2.3
-
   '@devframes/agentic@1.2.5':
     resolution: {integrity: sha512-2bVZFxGD7C+U1y0vkesUnLWHtrU3qD/Gq/Ri+aWkpXhDe/0EQ64ODA9gxCqFunUvJZ5z1rFvP1XLRLfUiSpvGg==}
     peerDependencies:
       devframe: 1.2.5
-
-  '@devframes/hub-ui@1.2.3':
-    resolution: {integrity: sha512-pGEAj/dUp4B7fZ73v8Ypn9c/Z9lEziz8E0fH7qTAJqZ9ZGbpQSp8aT3d36T3Ew4X9HE4vcA12IU0p40ZxjSxbw==}
-    peerDependencies:
-      '@devframes/hub': 1.2.3
-      '@devframes/json-render': 1.2.3
-      devframe: 1.2.3
-    peerDependenciesMeta:
-      '@devframes/json-render':
-        optional: true
 
   '@devframes/hub-ui@1.2.5':
     resolution: {integrity: sha512-zyQAvSGO8SM1KCAv/crlHbzA5mp1OY1UgcrHBrLaX2ocvj8SQ6Zu2D46PlgMe41zwcP5Gsc/gVxtpglstnD+ZA==}
@@ -3921,15 +3906,6 @@ packages:
       '@devframes/json-render':
         optional: true
 
-  '@devframes/hub@1.2.3':
-    resolution: {integrity: sha512-Z5WtKK0+UxEZizo1wpRFEYR3y9UtbQk50k47dvtOgn/z/F8lpj4/nbH9HfAIDH6Z7s0vfhvQQQW6U5OnaYMM0g==}
-    peerDependencies:
-      '@devframes/agentic': 1.2.3
-      devframe: 1.2.3
-    peerDependenciesMeta:
-      '@devframes/agentic':
-        optional: true
-
   '@devframes/hub@1.2.5':
     resolution: {integrity: sha512-cN/cb3uRqdSfOTkHFg3cfzsi8oWXDakvqKuENphPz7zQZPEedxtAa7E1e5Ap77wRkEsBn5gP0K7i5yL8box+vQ==}
     peerDependencies:
@@ -3937,17 +3913,6 @@ packages:
       devframe: 1.2.5
     peerDependenciesMeta:
       '@devframes/agentic':
-        optional: true
-
-  '@devframes/json-render-ui@1.2.3':
-    resolution: {integrity: sha512-WKwsLyfJ6VEpd7ji7INY6+Rbep60MOlAUpC7oUHf39RuQtqlG8jUa+lcFAgT+PhLEfB9OxLWjOZi/cgn9L29Cw==}
-    peerDependencies:
-      '@devframes/hub': 1.2.3
-      devframe: 1.2.3
-    peerDependenciesMeta:
-      '@devframes/hub':
-        optional: true
-      devframe:
         optional: true
 
   '@devframes/json-render-ui@1.2.5':
@@ -3961,15 +3926,6 @@ packages:
       devframe:
         optional: true
 
-  '@devframes/json-render@1.2.3':
-    resolution: {integrity: sha512-7sQFioOPfBt7jBTjVsGXAmnH8jMyXZfZywYd4qPnYZwTyilU5LfuI52LHiPP63CU0H2jmgqFilZQe86IRWRRXQ==}
-    peerDependencies:
-      '@devframes/hub': 1.2.3
-      devframe: 1.2.3
-    peerDependenciesMeta:
-      '@devframes/hub':
-        optional: true
-
   '@devframes/json-render@1.2.5':
     resolution: {integrity: sha512-5jF1539H3z2ZusYd4J7YoXsI1N91Djmh8H7M0E0/roNbC/El56ufjQP6VrqBsku3PSSQddedjusQbHdRuwyhqw==}
     peerDependencies:
@@ -3977,19 +3933,6 @@ packages:
       devframe: 1.2.5
     peerDependenciesMeta:
       '@devframes/hub':
-        optional: true
-
-  '@devframes/plugin-inspect@1.2.3':
-    resolution: {integrity: sha512-1HQfTiQkJ+gq0pt0ArWUPiblwCal9miDeEVgZJxFjwOFu0rTo+EkzM3jWgfkfumciVqQuxs862deJgL4F2bdpw==}
-    hasBin: true
-    peerDependencies:
-      '@devframes/plugin-inspect--assets': 1.2.3
-      devframe: 1.2.3
-      vite: ^7.0.0 || ^8.0.0
-    peerDependenciesMeta:
-      '@devframes/plugin-inspect--assets':
-        optional: true
-      vite:
         optional: true
 
   '@devframes/plugin-inspect@1.2.5':
@@ -4001,20 +3944,6 @@ packages:
       vite: ^7.0.0 || ^8.0.0
     peerDependenciesMeta:
       '@devframes/plugin-inspect--assets':
-        optional: true
-      vite:
-        optional: true
-
-  '@devframes/plugin-messages@1.2.3':
-    resolution: {integrity: sha512-bGRlw/uoBWPDhGYsY/c0aX6fz44iF9GNHDHwo5B3F4GARiXKjPOUae/UUd+WP0pEn524kjQ7NI1q4/cm30Co+g==}
-    hasBin: true
-    peerDependencies:
-      '@devframes/hub': 1.2.3
-      '@devframes/plugin-messages--assets': 1.2.3
-      devframe: 1.2.3
-      vite: ^7.0.0 || ^8.0.0
-    peerDependenciesMeta:
-      '@devframes/plugin-messages--assets':
         optional: true
       vite:
         optional: true
@@ -4033,19 +3962,6 @@ packages:
       vite:
         optional: true
 
-  '@devframes/plugin-terminals@1.2.3':
-    resolution: {integrity: sha512-y9Yla9XMkLwleYVkBlAam7ekPfgNT/vKAQ9UAIBCYGXSprcR19ZrbAco9liwoopTNsjKmd2bathFs4R5TndHeg==}
-    hasBin: true
-    peerDependencies:
-      '@devframes/plugin-terminals--assets': 1.2.3
-      devframe: 1.2.3
-      vite: ^8.0.0
-    peerDependenciesMeta:
-      '@devframes/plugin-terminals--assets':
-        optional: true
-      vite:
-        optional: true
-
   '@devframes/plugin-terminals@1.2.5':
     resolution: {integrity: sha512-IT+2fHDQYg/tkAyCCXveSpOMp5W9KG4f/eRrGZM/Tae4QMAL36k4pEKbXCWYzloVlr50jL6y+Nrj/rN56m5FSw==}
     hasBin: true
@@ -4059,30 +3975,10 @@ packages:
       vite:
         optional: true
 
-  '@devframes/service-open@1.2.3':
-    resolution: {integrity: sha512-x71jVlxkERpLnScjyhE/EuL7QvDsaxjoWRffOqp6ntwhCzQvOyWsJOPTHKE3PYrAH1kAbhZj7pBDse7jcMbyzg==}
-    peerDependencies:
-      devframe: 1.2.3
-
   '@devframes/service-open@1.2.5':
     resolution: {integrity: sha512-U4y2Ahd534uEgkni5Zv9vNZamTFcIZq3e/VSmIZp5FMjgUHajPklZlk1ljB7MNcr9BbR7CMMNhRuPxIbAUDCMg==}
     peerDependencies:
       devframe: 1.2.5
-
-  '@devframes/vite@1.2.3':
-    resolution: {integrity: sha512-VzPL2SyzN1J9YwaBQ1YIb2QLYIhUYlImnN0r/eobraUiozc6rzJwXk1B4IDaOkfCQYN7CcTwkPUIUiR+e52S6A==}
-    peerDependencies:
-      '@devframes/hub': 1.2.3
-      '@devframes/hub-ui': 1.2.3
-      devframe: 1.2.3
-      vite: ^7.0.0 || ^8.0.0
-    peerDependenciesMeta:
-      '@devframes/hub':
-        optional: true
-      '@devframes/hub-ui':
-        optional: true
-      vite:
-        optional: true
 
   '@devframes/vite@1.2.5':
     resolution: {integrity: sha512-6Xk7W9mWqyc2iAjjL9weub0IOpyEUoTFSScz9FJIwvuPGHwNcsHE0ORZE0h/qVtRCabGrVRPa4636Hn7ZmoXAw==}
@@ -10712,18 +10608,6 @@ packages:
 
   detect-node@2.1.0:
     resolution: {integrity: sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==}
-
-  devframe@1.2.3:
-    resolution: {integrity: sha512-IIe9q99/B4OS2IQ4LNk9H2NFXvWxdLteM1C2OFbpAFIQ4cWLpzmsfWsuwF3VfVclXhKl/MniNwv4vz4a+5CumA==}
-    hasBin: true
-    peerDependencies:
-      '@devframes/agentic': 1.2.3
-      cac: ^7.0.0
-    peerDependenciesMeta:
-      '@devframes/agentic':
-        optional: true
-      cac:
-        optional: true
 
   devframe@1.2.5:
     resolution: {integrity: sha512-7txhfBgFafXHN/KIyP/M6F1W5WF1VPypoB4mZtZEa4KM8n1Y57EtnVm281Y3cg7SHti/PtfCtmmmtDh/k/CS3g==}
@@ -17511,18 +17395,6 @@ snapshots:
 
   '@date-fns/utc@2.1.1': {}
 
-  '@devframes/agentic@1.2.3(crossws@0.4.15)(devframe@1.2.3)':
-    dependencies:
-      '@modelcontextprotocol/client': 2.3.1
-      '@modelcontextprotocol/server': 2.3.1
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-      h3: 2.0.2(crossws@0.4.15)
-      pathe: 2.0.3
-    transitivePeerDependencies:
-      - crossws
-      - ocache
-    optional: true
-
   '@devframes/agentic@1.2.5(crossws@0.4.15)(devframe@1.2.5)':
     dependencies:
       '@modelcontextprotocol/client': 2.3.1
@@ -17534,35 +17406,12 @@ snapshots:
       - crossws
       - ocache
 
-  '@devframes/hub-ui@1.2.3(@devframes/hub@1.2.3)(@devframes/json-render@1.2.3)(devframe@1.2.3)':
-    dependencies:
-      '@devframes/hub': 1.2.3(@devframes/agentic@1.2.3)(crossws@0.4.15)(devframe@1.2.3)
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-    optionalDependencies:
-      '@devframes/json-render': 1.2.3(@devframes/hub@1.2.3)(devframe@1.2.3)
-    optional: true
-
   '@devframes/hub-ui@1.2.5(@devframes/hub@1.2.5)(@devframes/json-render@1.2.5)(devframe@1.2.5)':
     dependencies:
       '@devframes/hub': 1.2.5(@devframes/agentic@1.2.5)(crossws@0.4.15)(devframe@1.2.5)
       devframe: 1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5)
     optionalDependencies:
       '@devframes/json-render': 1.2.5(@devframes/hub@1.2.5)(devframe@1.2.5)
-
-  '@devframes/hub@1.2.3(@devframes/agentic@1.2.3)(crossws@0.4.15)(devframe@1.2.3)':
-    dependencies:
-      destr: 2.0.5
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-      h3: 2.0.2(crossws@0.4.15)
-      pathe: 2.0.3
-      tinyexec: 1.3.1
-      zigpty: 0.2.1
-    optionalDependencies:
-      '@devframes/agentic': 1.2.3(crossws@0.4.15)(devframe@1.2.3)
-    transitivePeerDependencies:
-      - crossws
-      - ocache
-    optional: true
 
   '@devframes/hub@1.2.5(@devframes/agentic@1.2.5)(crossws@0.4.15)(devframe@1.2.5)':
     dependencies:
@@ -17578,25 +17427,10 @@ snapshots:
       - crossws
       - ocache
 
-  '@devframes/json-render-ui@1.2.3(@devframes/hub@1.2.3)(devframe@1.2.3)':
-    optionalDependencies:
-      '@devframes/hub': 1.2.3(@devframes/agentic@1.2.3)(crossws@0.4.15)(devframe@1.2.3)
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-    optional: true
-
   '@devframes/json-render-ui@1.2.5(@devframes/hub@1.2.5)(devframe@1.2.5)':
     optionalDependencies:
       '@devframes/hub': 1.2.5(@devframes/agentic@1.2.5)(crossws@0.4.15)(devframe@1.2.5)
       devframe: 1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5)
-
-  '@devframes/json-render@1.2.3(@devframes/hub@1.2.3)(devframe@1.2.3)':
-    dependencies:
-      '@json-render/core': 0.21.0(zod@4.6.7)
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-      zod: 4.6.7
-    optionalDependencies:
-      '@devframes/hub': 1.2.3(@devframes/agentic@1.2.3)(crossws@0.4.15)(devframe@1.2.3)
-    optional: true
 
   '@devframes/json-render@1.2.5(@devframes/hub@1.2.5)(devframe@1.2.5)':
     dependencies:
@@ -17606,30 +17440,12 @@ snapshots:
     optionalDependencies:
       '@devframes/hub': 1.2.5(@devframes/agentic@1.2.5)(crossws@0.4.15)(devframe@1.2.5)
 
-  '@devframes/plugin-inspect@1.2.3(devframe@1.2.3)(vite@8.3.4)':
-    dependencies:
-      cac: 7.1.0
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-    optionalDependencies:
-      vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-    optional: true
-
   '@devframes/plugin-inspect@1.2.5(devframe@1.2.5)(vite@8.3.4)':
     dependencies:
       cac: 7.1.0
       devframe: 1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5)
     optionalDependencies:
-      vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-
-  '@devframes/plugin-messages@1.2.3(@devframes/hub@1.2.3)(devframe@1.2.3)(vite@8.3.4)':
-    dependencies:
-      '@devframes/hub': 1.2.3(@devframes/agentic@1.2.3)(crossws@0.4.15)(devframe@1.2.3)
-      '@devframes/service-open': 1.2.3(devframe@1.2.3)
-      cac: 7.1.0
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-    optionalDependencies:
       vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-    optional: true
 
   '@devframes/plugin-messages@1.2.5(@devframes/hub@1.2.5)(devframe@1.2.5)(vite@8.3.4)':
     dependencies:
@@ -17638,20 +17454,7 @@ snapshots:
       cac: 7.1.0
       devframe: 1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5)
     optionalDependencies:
-      vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-
-  '@devframes/plugin-terminals@1.2.3(@devframes/hub-ui@1.2.3)(@devframes/hub@1.2.3)(devframe@1.2.3)(vite@8.3.4)':
-    dependencies:
-      '@devframes/vite': 1.2.3(@devframes/hub-ui@1.2.3)(@devframes/hub@1.2.3)(devframe@1.2.3)(vite@8.3.4)
-      cac: 7.1.0
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-      zigpty: 0.2.1
-    optionalDependencies:
       vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-    transitivePeerDependencies:
-      - '@devframes/hub'
-      - '@devframes/hub-ui'
-    optional: true
 
   '@devframes/plugin-terminals@1.2.5(@devframes/hub-ui@1.2.5)(@devframes/hub@1.2.5)(devframe@1.2.5)(vite@8.3.4)':
     dependencies:
@@ -17660,31 +17463,15 @@ snapshots:
       devframe: 1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5)
       zigpty: 0.2.1
     optionalDependencies:
-      vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
     transitivePeerDependencies:
       - '@devframes/hub'
       - '@devframes/hub-ui'
-
-  '@devframes/service-open@1.2.3(devframe@1.2.3)':
-    dependencies:
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-      pathe: 2.0.3
-    optional: true
 
   '@devframes/service-open@1.2.5(devframe@1.2.5)':
     dependencies:
       devframe: 1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5)
       pathe: 2.0.3
-
-  '@devframes/vite@1.2.3(@devframes/hub-ui@1.2.3)(@devframes/hub@1.2.3)(devframe@1.2.3)(vite@8.3.4)':
-    dependencies:
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
-      pathe: 2.0.3
-    optionalDependencies:
-      '@devframes/hub': 1.2.3(@devframes/agentic@1.2.3)(crossws@0.4.15)(devframe@1.2.3)
-      '@devframes/hub-ui': 1.2.3(@devframes/hub@1.2.3)(@devframes/json-render@1.2.3)(devframe@1.2.3)
-      vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-    optional: true
 
   '@devframes/vite@1.2.5(@devframes/hub-ui@1.2.5)(@devframes/hub@1.2.5)(devframe@1.2.5)(vite@8.3.4)':
     dependencies:
@@ -17693,7 +17480,7 @@ snapshots:
     optionalDependencies:
       '@devframes/hub': 1.2.5(@devframes/agentic@1.2.5)(crossws@0.4.15)(devframe@1.2.5)
       '@devframes/hub-ui': 1.2.5(@devframes/hub@1.2.5)(@devframes/json-render@1.2.5)(devframe@1.2.5)
-      vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
   '@dnd-kit/accessibility@3.1.1(react@19.3.1)':
     dependencies:
@@ -22921,11 +22708,11 @@ snapshots:
       d3-time-format: 4.1.0
       internmap: 2.0.3
 
-  '@vitejs/devtools-kit@0.7.6(@devframes/agentic@1.2.3)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
+  '@vitejs/devtools-kit@0.7.6(@devframes/agentic@1.2.5)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
     dependencies:
-      '@devframes/hub': 1.2.3(@devframes/agentic@1.2.3)(crossws@0.4.15)(devframe@1.2.3)
-      '@devframes/json-render': 1.2.3(@devframes/hub@1.2.3)(devframe@1.2.3)
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
+      '@devframes/hub': 1.2.5(@devframes/agentic@1.2.5)(crossws@0.4.15)(devframe@1.2.5)
+      '@devframes/json-render': 1.2.5(@devframes/hub@1.2.5)(devframe@1.2.5)
+      devframe: 1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5)
       local-pkg: 1.2.1
       nostics: 1.3.0
       package-manager-detector: 1.9.0
@@ -22953,12 +22740,12 @@ snapshots:
       - ocache
       - srvx
 
-  '@vitejs/devtools-oxc@0.7.6(@devframes/agentic@1.2.3)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
+  '@vitejs/devtools-oxc@0.7.6(@devframes/agentic@1.2.5)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
     dependencies:
       '@oxlint-config-inspector/core': 1.1.5
-      '@vitejs/devtools-kit': 0.7.6(@devframes/agentic@1.2.3)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
+      '@vitejs/devtools-kit': 0.7.6(@devframes/agentic@1.2.5)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
       cac: 7.1.0
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
+      devframe: 1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5)
       local-pkg: 1.2.1
       nostics: 1.3.0
       package-manager-detector: 1.9.0
@@ -22990,10 +22777,10 @@ snapshots:
       - srvx
       - vite
 
-  '@vitejs/devtools-rolldown@0.7.6(@devframes/agentic@1.2.3)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
+  '@vitejs/devtools-rolldown@0.7.6(@devframes/agentic@1.2.5)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
     dependencies:
       '@rolldown/debug': 1.2.13
-      '@vitejs/devtools-kit': 0.7.6(@devframes/agentic@1.2.3)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
+      '@vitejs/devtools-kit': 0.7.6(@devframes/agentic@1.2.5)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
       diff: 9.0.0
       nostics: 1.3.0
       pathe: 2.0.3
@@ -23021,9 +22808,9 @@ snapshots:
       - srvx
       - vite
 
-  '@vitejs/devtools-vite@0.7.6(@devframes/agentic@1.2.3)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
+  '@vitejs/devtools-vite@0.7.6(@devframes/agentic@1.2.5)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
     dependencies:
-      '@vitejs/devtools-kit': 0.7.6(@devframes/agentic@1.2.3)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
+      '@vitejs/devtools-kit': 0.7.6(@devframes/agentic@1.2.5)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
       envinfo: 7.21.0
       nostics: 1.3.0
       pathe: 2.0.3
@@ -23052,18 +22839,18 @@ snapshots:
       - ocache
       - srvx
 
-  '@vitejs/devtools@0.7.6(@devframes/json-render@1.2.3)(@vitejs/devtools-oxc@0.7.6)(@vitejs/devtools-rolldown@0.7.6)(@vitejs/devtools-vite@0.7.6)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
+  '@vitejs/devtools@0.7.6(@devframes/json-render@1.2.5)(@vitejs/devtools-oxc@0.7.6)(@vitejs/devtools-rolldown@0.7.6)(@vitejs/devtools-vite@0.7.6)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)':
     dependencies:
-      '@devframes/agentic': 1.2.3(crossws@0.4.15)(devframe@1.2.3)
-      '@devframes/hub': 1.2.3(@devframes/agentic@1.2.3)(crossws@0.4.15)(devframe@1.2.3)
-      '@devframes/hub-ui': 1.2.3(@devframes/hub@1.2.3)(@devframes/json-render@1.2.3)(devframe@1.2.3)
-      '@devframes/json-render-ui': 1.2.3(@devframes/hub@1.2.3)(devframe@1.2.3)
-      '@devframes/plugin-inspect': 1.2.3(devframe@1.2.3)(vite@8.3.4)
-      '@devframes/plugin-messages': 1.2.3(@devframes/hub@1.2.3)(devframe@1.2.3)(vite@8.3.4)
-      '@devframes/plugin-terminals': 1.2.3(@devframes/hub-ui@1.2.3)(@devframes/hub@1.2.3)(devframe@1.2.3)(vite@8.3.4)
-      '@vitejs/devtools-kit': 0.7.6(@devframes/agentic@1.2.3)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
+      '@devframes/agentic': 1.2.5(crossws@0.4.15)(devframe@1.2.5)
+      '@devframes/hub': 1.2.5(@devframes/agentic@1.2.5)(crossws@0.4.15)(devframe@1.2.5)
+      '@devframes/hub-ui': 1.2.5(@devframes/hub@1.2.5)(@devframes/json-render@1.2.5)(devframe@1.2.5)
+      '@devframes/json-render-ui': 1.2.5(@devframes/hub@1.2.5)(devframe@1.2.5)
+      '@devframes/plugin-inspect': 1.2.5(devframe@1.2.5)(vite@8.3.4)
+      '@devframes/plugin-messages': 1.2.5(@devframes/hub@1.2.5)(devframe@1.2.5)(vite@8.3.4)
+      '@devframes/plugin-terminals': 1.2.5(@devframes/hub-ui@1.2.5)(@devframes/hub@1.2.5)(devframe@1.2.5)(vite@8.3.4)
+      '@vitejs/devtools-kit': 0.7.6(@devframes/agentic@1.2.5)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
       cac: 7.1.0
-      devframe: 1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5)
+      devframe: 1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5)
       h3: 2.0.2(crossws@0.4.15)
       local-pkg: 1.2.1
       nostics: 1.3.0
@@ -23071,9 +22858,9 @@ snapshots:
       pathe: 2.0.3
       vite: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
     optionalDependencies:
-      '@vitejs/devtools-oxc': 0.7.6(@devframes/agentic@1.2.3)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
-      '@vitejs/devtools-rolldown': 0.7.6(@devframes/agentic@1.2.3)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
-      '@vitejs/devtools-vite': 0.7.6(@devframes/agentic@1.2.3)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
+      '@vitejs/devtools-oxc': 0.7.6(@devframes/agentic@1.2.5)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
+      '@vitejs/devtools-rolldown': 0.7.6(@devframes/agentic@1.2.5)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
+      '@vitejs/devtools-vite': 0.7.6(@devframes/agentic@1.2.5)(cac@7.1.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
     transitivePeerDependencies:
       - '@devframes/json-render'
       - '@devframes/plugin-inspect--assets'
@@ -24338,20 +24125,6 @@ snapshots:
   detect-node-es@1.1.0: {}
 
   detect-node@2.1.0:
-    optional: true
-
-  devframe@1.2.3(@devframes/agentic@1.2.3)(cac@7.1.0)(srvx@1.0.5):
-    dependencies:
-      crossws: 0.4.15(srvx@1.0.5)
-      h3: 2.0.2(crossws@0.4.15)
-      nostics: 1.3.0
-      pathe: 2.0.3
-    optionalDependencies:
-      '@devframes/agentic': 1.2.3(crossws@0.4.15)(devframe@1.2.3)
-      cac: 7.1.0
-    transitivePeerDependencies:
-      - ocache
-      - srvx
     optional: true
 
   devframe@1.2.5(@devframes/agentic@1.2.5)(cac@7.1.0)(srvx@1.0.5):
@@ -29360,7 +29133,7 @@ snapshots:
       unconfig-core: 7.5.0
       verkit: 0.5.0
     optionalDependencies:
-      '@vitejs/devtools': 0.7.6(@devframes/json-render@1.2.3)(@vitejs/devtools-oxc@0.7.6)(@vitejs/devtools-rolldown@0.7.6)(@vitejs/devtools-vite@0.7.6)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
+      '@vitejs/devtools': 0.7.6(@devframes/json-render@1.2.5)(@vitejs/devtools-oxc@0.7.6)(@vitejs/devtools-rolldown@0.7.6)(@vitejs/devtools-vite@0.7.6)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
       publint: 0.3.25
       tsx: 4.23.15
       typescript: 7.0.2
@@ -29750,7 +29523,7 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 24.19.2
-      '@vitejs/devtools': 0.7.6(@devframes/json-render@1.2.3)(@vitejs/devtools-oxc@0.7.6)(@vitejs/devtools-rolldown@0.7.6)(@vitejs/devtools-vite@0.7.6)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
+      '@vitejs/devtools': 0.7.6(@devframes/json-render@1.2.5)(@vitejs/devtools-oxc@0.7.6)(@vitejs/devtools-rolldown@0.7.6)(@vitejs/devtools-vite@0.7.6)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
       esbuild: 0.28.2
       fsevents: 2.3.3
       jiti: 2.7.0

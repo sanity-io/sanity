@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
+
+### Bug Fixes
+
+* **access-ui:** clarify the SSO-required card for SAML sessions (ID-1156) ([#15429](https://github.com/sanity-io/sanity/issues/15429)) ([71d8f39](https://github.com/sanity-io/sanity/commit/71d8f39f3212e5fd7e5984b7444edd2d2b4388b4))
+* **access-ui:** tell SSO-required users to sign out and back in (ID-1156) ([#15449](https://github.com/sanity-io/sanity/issues/15449)) ([3313340](https://github.com/sanity-io/sanity/commit/3313340220551bd0898bdc58a3dd4720645a59af))
+* **core:** stop non-DOM props leaking to DOM elements and guard against regressions ([#15109](https://github.com/sanity-io/sanity/issues/15109)) ([5b64bab](https://github.com/sanity-io/sanity/commit/5b64bab347d6474e4f0fb537435b4f818c60cc38))
 ## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-13)
 
 ### Bug Fixes
