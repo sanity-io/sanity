@@ -1,18 +1,17 @@
+import {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
+
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/VersionMark.tsx).
 // Only the imports differ from the original (they point at this monorepo and ./types).
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
-
-import {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
-
-import {type AudienceVersion, type State} from './types'
-import {VersionsIcon} from './VersionsIcon'
 import {insideTriangle, type Point} from './hoverIntent'
 import {BadgeButton, BadgedControl, DotButton} from './StateBadge'
 import {StateGlyph} from './StateGlyph'
+import {type AudienceVersion, type State} from './types'
 import {VersionDescription} from './VersionDescription'
 import {versionLines} from './versionLines'
+import {VersionsIcon} from './VersionsIcon'
 import {
   POPOVER_AUDIENCES,
   type PopoverContent,
@@ -295,7 +294,11 @@ export function VersionMark(props: {
             `${versions.length} ${versions.length === 1 ? 'version' : 'versions'}` +
             (trigger !== 'icon' && dot ? `. The base document is ${dot}` : '') +
             '. Open the document and its version inventory'
-          const onClick = () => {
+          // LIVE: in the real list the control sits inside the row's link. Stop the click here so the
+          // row's own navigation does not run after ours and drop the inspector.
+          const onClick = (event?: {preventDefault?: () => void; stopPropagation?: () => void}) => {
+            event?.preventDefault?.()
+            event?.stopPropagation?.()
             setOpen(false)
             onOpenPane(docId)
           }

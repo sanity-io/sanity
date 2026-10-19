@@ -16,18 +16,32 @@ import {VersionMark, type VersionPick} from './VersionMark'
  */
 const SHOW_ON_EVERY_ROW = true
 
+/** Name of the inspector registered in c4/InventoryInspector.tsx. */
+const INVENTORY_INSPECTOR = 'variants-inventory'
+
 /** Keeps the 25px slot while the versions load, so rows do not jump. */
 const SLOT = <span style={{display: 'block', width: 25, height: 25}} />
 
-export const useRowOverride: UseDocumentListItemOverride = ({documentId, documentType, defaultStatus}) => {
+export const useRowOverride: UseDocumentListItemOverride = ({
+  documentId,
+  documentType,
+  defaultStatus,
+}) => {
   const option = useOption('c3')
   const stock = option === STOCK_OPTION
   const versions = useVersionList(documentId, !stock)
   const router = useRouter()
 
-  // v1: a click opens the base document (the inventory pane arrives with C4). v2 rows: the picked version.
+  // v2/C rows: a click on a picked version opens that document.
   const openDocument = useCallback(
     (id: string) => router.navigateIntent('edit', {id, type: documentType}),
+    [router, documentType],
+  )
+  // v1 (A): a click on the control opens the base document AND the Versions inspector (C4), side by side.
+  // The `edit` intent forwards extra params to the pane, so `inspect` opens the inspector on arrival.
+  const openWithInventory = useCallback(
+    (id: string) =>
+      router.navigateIntent('edit', {id, type: documentType, inspect: INVENTORY_INSPECTOR}),
     [router, documentType],
   )
   const openVersion = useCallback((pick: VersionPick) => openDocument(pick.docId), [openDocument])
@@ -81,9 +95,14 @@ export const useRowOverride: UseDocumentListItemOverride = ({documentId, documen
   // v1 (A): the 25px versions control with the base-state badge; hover or focus opens a read-only popover.
   return {
     status: (
-      <VersionMark docId={documentId} dot={dot} onOpenPane={openDocument} trigger="badge" versions={versions} />
+      <VersionMark
+        docId={documentId}
+        dot={dot}
+        onOpenPane={openWithInventory}
+        trigger="badge"
+        versions={versions}
+      />
     ),
     tooltip: null,
   }
 }
-
