@@ -50,6 +50,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
+import {useDocumentPaneExtension} from '../DocumentPaneExtension'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {DocumentTargetBadges} from './DocumentTargetBadges'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
@@ -120,6 +121,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const showGradient = useChipScrollPosition(scrollContainerRef)
   const telemetry = useTelemetry()
+  const paneExtension = useDocumentPaneExtension({documentId, documentType: schemaType.name})
   const zIndex = useZIndex()
   const paneHeaderZIndex = Array.isArray(zIndex.paneHeader)
     ? zIndex.paneHeader[1]
@@ -233,7 +235,8 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                   data-testid="document-perspective-list"
                   ref={scrollContainerRef}
                 >
-                  <DocumentPerspectiveList />
+                  {/* PROPOSED: a host's pills replace the stock ones, they do not sit beside them. */}
+                  {paneExtension?.pills ?? <DocumentPerspectiveList />}
                 </Flex>
               </HorizontalScroller>
             )}

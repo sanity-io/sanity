@@ -435,7 +435,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               {paneExtension?.banners}
               {banners}
               <DocumentPanelSubHeader />
-              {paneExtension?.pills}
             </LegacyLayerProvider>
             <DocumentBox flexBasis="0%" flexGrow={2}>
               {/* The scroll container is the visible region for everything portaled into the pane

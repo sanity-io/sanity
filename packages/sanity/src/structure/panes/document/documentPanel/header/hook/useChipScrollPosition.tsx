@@ -50,7 +50,8 @@ export function useChipScrollPosition(containerRef: React.RefObject<HTMLDivEleme
 
         // Get the new last child
         const lastChip = container.children[container.children.length - 1]
-        intersectionObserver.observe(lastChip)
+        // PROPOSED: a host's pills (DocumentPaneExtension) may render nothing while they load; observe() throws on none.
+        if (lastChip) intersectionObserver.observe(lastChip)
       }
 
       // Set up initial observation

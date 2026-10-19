@@ -59,7 +59,8 @@ export function DocumentPillsV1({documentId, option}: {documentId: string; optio
   const {selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
   const dimensions = useDimensions()
-  if (!versions) return null
+  // Never render nothing: the pane header's chip scroller observes this row's element.
+  if (!versions) return <Flex data-testid={`doc-pills-${option}`} gap={1} />
 
   const base = versions.filter((v) => v.audience === null)
   const published = base.find((v) => v.state === 'published')
@@ -77,16 +78,15 @@ export function DocumentPillsV1({documentId, option}: {documentId: string; optio
   }))
 
   return (
-    <Flex align="center" data-testid={`doc-pills-${option}`} gap={2} padding={2} style={{borderBottom: '1px solid var(--card-border-color)'}} wrap="wrap">
-      <Text muted size={0}>{option === 'a' ? 'Versions' : 'View'}</Text>
+    // It replaces the stock pills in the pane header (PROPOSED slot), so it takes the header's own row, no border.
+    <Flex align="center" data-testid={`doc-pills-${option}`} gap={1}>
       {option === 'a' ? (
         <>
           {published && (
             <Chip icon={<ReleaseAvatarIcon release="published" />} mode="ghost" onClick={() => setPerspective('published')} selected={current === 'published'} text="Published" />
           )}
-          {draft && (
-            <Chip icon={<ReleaseAvatarIcon release="drafts" />} mode="ghost" onClick={() => setPerspective('drafts')} selected={current === 'drafts'} text="Draft" />
-          )}
+          {/* The stock row always offers Draft (it can be created), so this does too. */}
+          <Chip icon={<ReleaseAvatarIcon release="drafts" />} mode="ghost" onClick={() => setPerspective('drafts')} selected={current === 'drafts'} text="Draft" />
           <DropdownPill
             items={releaseItems}
             testId="pills-releases"

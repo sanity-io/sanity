@@ -3,8 +3,9 @@ import {createContext, type ReactNode, useContext} from 'react'
 /**
  * PROPOSED (Variants 2.0 test studio, branch explorations/variants-2-0-studio; not in stock Studio).
  *
- * Two slots in the document pane: `banners` renders above the pane's own banners (C7), and `pills` renders right
- * below the pane's sub header, where the document's version pills live (C2). Today the panel hard-codes both.
+ * Two slots in the document pane: `banners` renders above the pane's own banners (C7), and `pills` REPLACES the
+ * stock row of version pills in the pane header (C2), so a design supersedes today's pills instead of adding a second
+ * row. Today the panel hard-codes both.
  *
  * It is a hook, so the host can read its own state per document. The default returns `undefined`, so Studio is
  * unchanged unless a provider is mounted.
