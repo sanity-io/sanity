@@ -136,6 +136,7 @@ export function VariantsControl() {
           icon={<RhombusIcon />}
           onClick={() => (narrowed ? s.setRowShown(!s.rowShown) : setPanel(!panel))}
           open={narrowed && s.rowShown}
+          height={CONTROL_SHAPE === 'round' ? 33 : undefined}
           shape={CONTROL_SHAPE}
           testId="variants-button"
           text={variantsLabel(s.valueTitles)}
