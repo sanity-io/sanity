@@ -1,4 +1,4 @@
-import {CogIcon} from '@sanity/icons'
+import {ControlsIcon} from '@sanity/icons/Controls'
 import {Badge, Box, Button, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {type Tool} from 'sanity'
 
@@ -75,6 +75,6 @@ function OptionsPanel() {
 export const optionsTool: Tool = {
   name: 'variants-2-0',
   title: 'Variants 2.0',
-  icon: CogIcon,
+  icon: ControlsIcon,
   component: OptionsPanel,
 }
