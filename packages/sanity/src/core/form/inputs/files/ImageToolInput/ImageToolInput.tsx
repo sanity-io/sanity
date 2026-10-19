@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Card, Heading, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {
   type ReactNode,
   useCallback,
@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {Box, Flex, Grid, VStack} from 'ui5'
+import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -162,9 +162,11 @@ export function ImageToolInput(props: ImageToolInputProps) {
         <>
           <Card padding={3} marginY={3} tone="caution" radius={2}>
             <VStack gap={4}>
-              <Text size={1}>{t('inputs.imagetool.vector-warning.title')}</Text>
+              <Text size={1} as="div" trim={true}>
+                {t('inputs.imagetool.vector-warning.title')}
+              </Text>
               <Details title={t('inputs.imagetool.vector-warning.expand-developer-info')}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <Translate
                     t={t}
                     i18nKey="inputs.imagetool.vector-warning.developer-info"
@@ -196,7 +198,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                 <LoadStatus>
                   {imageLoadError ? (
                     <Card padding={4} radius={2} tone="critical" border>
-                      <Text>
+                      <Text as="div" trim={true}>
                         {t('inputs.imagetool.load-error', {
                           errorMessage: imageLoadError.message,
                         })}

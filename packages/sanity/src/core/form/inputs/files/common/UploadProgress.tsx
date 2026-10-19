@@ -1,7 +1,7 @@
 import {type UploadState} from '@sanity/types'
-import {Card, Inline, Text} from '@sanity/ui'
+import {Card, Inline} from '@sanity/ui'
 import {useEffect} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {LinearProgress} from '../../../../components/progress/LinearProgress'
@@ -47,7 +47,7 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
             gap={[3, 3, 2, 2]}
             flexDirection={['column', 'column', 'row']}
           >
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               <Inline gap={2}>
                 <Translate
                   t={t}

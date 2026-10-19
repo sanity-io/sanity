@@ -1,6 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {type Card, Text} from '@sanity/ui'
+import {type Card} from '@sanity/ui'
 import {type ComponentProps, useCallback, useEffect, useState} from 'react'
+import {Text} from 'ui5'
 
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -78,7 +79,7 @@ function AccessWarningOverlay() {
         <ErrorIconWrapper>
           <WarningOutlineIcon />
         </ErrorIconWrapper>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {t('inputs.image.error.possible-access-restriction')}
         </Text>
       </FlexOverlay>

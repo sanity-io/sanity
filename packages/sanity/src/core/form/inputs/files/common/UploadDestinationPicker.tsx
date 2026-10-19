@@ -1,8 +1,8 @@
 import {type AssetSource} from '@sanity/types'
-import {Text, useGlobalKeyDown} from '@sanity/ui'
+import {useGlobalKeyDown} from '@sanity/ui'
 import {useCallback} from 'react'
 import {isValidElementType} from 'react-is'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -52,7 +52,7 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
       onClose={onClose}
       id="upload-destination-picker"
       header={
-        <Text size={1} textOverflow="ellipsis" weight="medium">
+        <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
           {text}
         </Text>
       }
@@ -77,7 +77,9 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
                 <Flex alignItems="center">
                   {isValidElementType(Icon) && <Icon style={{fontSize: '2rem'}} />}
                   <Box>
-                    <Text>{getAssetSourceDisplayName(assetSource, t)}</Text>
+                    <Text as="div" trim={true}>
+                      {getAssetSourceDisplayName(assetSource, t)}
+                    </Text>
                   </Box>
                 </Flex>
               </Button>
