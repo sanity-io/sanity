@@ -1045,6 +1045,9 @@ importers:
 
   dev/variants-2-0-studio:
     dependencies:
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 8.6.2(vitest@4.1.11)
       '@sanity/icons':
         specifier: ^5.2.3
         version: 5.2.3(react@19.3.0)
