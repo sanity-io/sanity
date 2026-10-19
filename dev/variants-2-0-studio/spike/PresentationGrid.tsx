@@ -5,7 +5,11 @@ import {Box, Button, Card, Flex, Heading, Select, Stack, Text} from '@sanity/ui'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {type Tool, useClient} from 'sanity'
 
-import {useVariantDefinitions} from '../c1/world'
+import {type Chosen} from '../c1/model'
+import {Picker} from '../c1/Picker'
+import {DimensionButton} from '../c1/StateMenu'
+import {useDimensions, useVariantDefinitions} from '../c1/world'
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {useCorpus} from '../c5/useCorpus'
 import {useVersionList} from '../data/useVersionList'
 import {PageVersionLabel, pageVersion} from '../presentation/pageVersion'
@@ -97,6 +101,50 @@ const decode = (text: string): FrameSpec[] | null => {
 
 function previewSrc(spec: FrameSpec) {
   return `${PREVIEW}?mode=grid&frame=${spec.id}&route=${encodeURIComponent(spec.route)}`
+}
+
+/**
+ * The C1 audience control inside a frame header: the same picker as the navbar's Variants control, but it sets THIS
+ * frame's audience (variant), not the studio's.
+ */
+function FrameAudience({spec, onChange}: {spec: FrameSpec; onChange: (next: FrameSpec) => void}) {
+  const definitions = useVariantDefinitions()
+  const dimensions = useDimensions()
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+  const [open, setOpen] = useState(false)
+  const def = definitions.find((d) => d._id.replace(/^_\.variants\./, '') === spec.variant)
+  const chosen: Chosen = def?.conditions ?? {}
+  const apply = (next: Chosen) => {
+    const entries = Object.entries(next)
+    const exact = entries.length
+      ? definitions.find((v) => {
+          const own = Object.entries(v.conditions)
+          return own.length === entries.length && own.every(([name, key]) => next[name] === key)
+        })
+      : undefined
+    onChange({...spec, variant: exact ? exact._id.replace(/^_\.variants\./, '') : undefined})
+  }
+  return (
+    <div ref={setAnchor}>
+      <DimensionButton icon={<RhombusIcon />} onClick={() => setOpen(!open)} open={open} shape="box" testId={`frame-audience-${spec.id}`} text={def?.metadata?.title ?? 'Base'} />
+      <Picker
+        anchor={anchor}
+        chosen={chosen}
+        dimensions={dimensions}
+        onClear={() => apply({})}
+        onClose={() => setOpen(false)}
+        onPick={(dimension, key) => {
+          const next = {...chosen}
+          if (key === null) delete next[dimension]
+          else next[dimension] = key
+          apply(next)
+          setOpen(false)
+        }}
+        open={open}
+        placement="bottom-start"
+      />
+    </div>
+  )
 }
 
 /** One iframe with its own controller and channel. */
@@ -203,14 +251,7 @@ function GridFrame(props: {
               </option>
             ))}
           </Select>
-          <Select fontSize={0} onChange={(e) => onChange({...spec, variant: e.currentTarget.value || undefined})} value={spec.variant ?? ''}>
-            <option value="">Base (no audience)</option>
-            {audiences.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.title}
-              </option>
-            ))}
-          </Select>
+          <FrameAudience onChange={(next) => onChange(next)} spec={spec} />
         </Flex>
         <Flex align="center" gap={1} wrap="wrap">
           <Button fontSize={0} mode={spec.perspective === 'drafts' ? 'default' : 'ghost'} onClick={() => onChange({...spec, perspective: spec.perspective === 'drafts' ? 'published' : 'drafts'})} padding={1} text={spec.perspective === 'drafts' ? 'Drafts' : 'Published'} />
@@ -317,7 +358,14 @@ function Grid() {
                 <Stack gap={2}>
                   <Text size={1}>{edit.id}</Text>
                   <Text muted size={0}>From frame {edit.frameId} · {editVariantTitle} · {editSpec.perspective} · {editSpec.route}</Text>
-                  <a href={`/structure/${edit.type};${edit.id}?perspective=${editSpec.perspective}${editSpec.variant ? `&variant=${editSpec.variant}` : ''}`} style={{fontSize: 13}}>Open the form at this version</a>
+                  <a href={`/structure/${edit.type};${edit.id}?perspective=${editSpec.perspective}${editSpec.variant ? `&variant=${editSpec.variant}` : ''}`} style={{fontSize: 13}}>Open the form in the Structure tool</a>
+                  {/* The real form at this version: the Structure tool in an iframe (same session). */}
+                  <iframe
+                    data-testid="grid-edit-form"
+                    src={`/structure/${edit.type};${edit.id}?perspective=${editSpec.perspective}${editSpec.variant ? `&variant=${editSpec.variant}` : ''}&preset=open-beta-a`}
+                    style={{border: '1px solid var(--card-border-color)', borderRadius: 4, height: 620, width: '100%'}}
+                    title="Document form"
+                  />
                 </Stack>
               </Card>
             ) : (
