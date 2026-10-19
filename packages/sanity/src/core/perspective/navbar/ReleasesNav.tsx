@@ -65,8 +65,36 @@ export const ReleasesNav: ComponentType<Props> = ({
       border={border}
     >
       {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
-      <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
-      {extension?.labelSuffix}
+      {extension?.onLabelClick ? (
+        // PROPOSED: the label and suffix become one control (the host toggles something with it).
+        // The capture phase keeps a release label's own link from navigating.
+        <div
+          aria-expanded={extension.labelExpanded}
+          data-testid="perspective-label-toggle"
+          onClickCapture={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+            extension.onLabelClick?.()
+          }}
+          onKeyDown={(event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return
+            event.preventDefault()
+            extension.onLabelClick?.()
+          }}
+          role="button"
+          style={{alignItems: 'center', cursor: 'pointer', display: 'flex'}}
+          tabIndex={0}
+          title={extension.labelTitle}
+        >
+          <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
+          {extension.labelSuffix}
+        </div>
+      ) : (
+        <>
+          <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
+          {extension?.labelSuffix}
+        </>
+      )}
       <GlobalPerspectiveMenu
         selectedPerspectiveName={selectedPerspectiveName}
         areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}

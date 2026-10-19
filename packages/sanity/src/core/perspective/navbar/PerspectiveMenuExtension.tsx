@@ -18,6 +18,14 @@ export interface PerspectiveMenuExtension {
   extraRows?: ReactNode
   /** Rendered right after the perspective label in the pill. */
   labelSuffix?: ReactNode
+  /**
+   * Makes the label (and its suffix) one clickable control. The chevron keeps opening the menu. On a release
+   * perspective the label is normally a link to that release; while this is set the click goes here instead.
+   */
+  onLabelClick?: () => void
+  /** `aria-expanded` of the label control, when it toggles something. */
+  labelExpanded?: boolean
+  labelTitle?: string
 }
 
 /** @internal */

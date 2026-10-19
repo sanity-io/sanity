@@ -22,16 +22,30 @@ export function variantsLabel(titles: string[]): string {
 }
 
 /**
- * Option A's pill-click rule is still Faheem's call. The Figma agent's lean, implemented here: the pill ALWAYS opens
- * the menu, and the menu holds "Narrow by dimension…", "Show the variants row" and "Hide the variants row". The
- * Storybook exploration's rule (a click on the pill minimises the row when a variant is set) is not implemented,
- * because the real pill belongs to stock Studio's navbar.
+ * Option A's pill rules. RULE v2 (Faheem, via the Figma agent): with nothing set the stock pill is unchanged, the
+ * chevron opens the version menu, and the extra row (first in the list's bottom card) opens the composed-address row
+ * and the panel. With something set, clicking the LABEL (the summary, e.g. "Drafts, Returning visitors") shows or
+ * hides the row, and the chevron still opens the version menu. Version stays one click; show/hide is one click and
+ * never a menu item.
+ * Set to false to compare with the earlier rule: no label toggle, and the menu carries "Show / Hide the variants row".
+ */
+export const PILL_LABEL_TOGGLES_ROW = true
+
+/**
+ * Copy of the extra row. Alternatives the Figma agent listed: 'View as…', 'Variants…', 'Choose dimensions…'.
+ * (The earlier wording was 'Narrow by dimension…'.)
+ */
+export const ADD_DIMENSION_COPY = 'Add a dimension…'
+
+/**
+ * Kept from the earlier rule: the pill ALWAYS opens the menu on its chevron. The Storybook exploration's rule (a
+ * click on the pill minimises the row) is not implemented, because the real pill belongs to stock Studio's navbar.
  */
 export const PILL_ALWAYS_OPENS_MENU = true
 
 /**
  * C1 OPTION A (one control): the stock version pill, extended through the PROPOSED `PerspectiveMenuExtensionProvider`.
- * Its menu gains the row actions, and the pill shows the chosen values after "Drafts".
+ * Its menu gains the first row of the bottom card, and the pill shows the chosen values after "Drafts".
  * Must be a stable function: the Studio calls it as a hook.
  */
 export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
@@ -40,28 +54,42 @@ export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
   if (option !== 'a') return undefined
 
   const narrowed = Object.keys(s.chosen).length > 0
-  const text = s.rowShown ? 'Hide the variants row' : narrowed ? 'Show the variants row' : 'Narrow by dimension…'
+  const addDimension = () => {
+    s.setRowShown(true)
+    s.setPending(true)
+  }
+  const toggleRow = () => {
+    if (s.rowShown) s.setRowShown(false)
+    else s.setRowShown(true)
+  }
+
+  const rows = PILL_LABEL_TOGGLES_ROW ? (
+    <MenuItem data-testid="add-dimension" icon={RhombusIcon} onClick={addDimension} text={ADD_DIMENSION_COPY} />
+  ) : (
+    // The earlier rule: one row that adds, or shows or hides the row.
+    <MenuItem
+      data-testid="narrow-by-dimension"
+      icon={RhombusIcon}
+      onClick={() => (s.rowShown ? s.setRowShown(false) : narrowed ? s.setRowShown(true) : addDimension())}
+      text={s.rowShown ? 'Hide the variants row' : narrowed ? 'Show the variants row' : ADD_DIMENSION_COPY}
+    />
+  )
+
   return {
-    extraRows: (
-      <MenuItem
-        data-testid="narrow-by-dimension"
-        icon={RhombusIcon}
-        onClick={() => {
-          if (s.rowShown) {
-            s.setRowShown(false)
-            return
-          }
-          s.setRowShown(true)
-          if (!narrowed) s.setPending(true)
-        }}
-        text={text}
-      />
-    ),
+    extraRows: rows,
     labelSuffix: s.valueTitles.length ? (
       <Text data-testid="pill-values" muted size={1} style={{marginLeft: -4, whiteSpace: 'nowrap'}}>
         , {s.valueTitles.join(', ')}
       </Text>
     ) : null,
+    // Only once something is set does the label do anything.
+    ...(PILL_LABEL_TOGGLES_ROW && narrowed
+      ? {
+          onLabelClick: toggleRow,
+          labelExpanded: s.rowShown,
+          labelTitle: s.rowShown ? 'Hide the variants row' : 'Show the variants row',
+        }
+      : {}),
   }
 }
 
