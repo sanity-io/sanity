@@ -146,13 +146,13 @@ export function PresetBar({state}: {state: State}) {
                 setSaving(false)
               }
             }}
-            padding={2}
+            padding={3}
             placeholder="Name this preset"
-            style={{width: 200}}
+            style={{width: 240}}
             value={name}
           />
-          <Button fontSize={1} mode="default" onClick={doSave} padding={2} text="Save" tone="primary" />
-          <Button fontSize={1} mode="bleed" onClick={() => setSaving(false)} padding={2} text="Cancel" />
+          <Button fontSize={1} mode="default" onClick={doSave} padding={3} text="Save" tone="primary" />
+          <Button fontSize={1} mode="bleed" onClick={() => setSaving(false)} padding={3} text="Cancel" />
           {error ? (
             <Text size={0} style={{color: 'var(--card-badge-critical-dot-color)'}}>
               {error}

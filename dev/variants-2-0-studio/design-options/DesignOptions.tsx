@@ -462,28 +462,72 @@ function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
 }
 
 
-/** Copy the app's styles into another document, so the panel looks the same there. */
-function copyStyles(target: Document) {
-  for (const attr of Array.from(document.documentElement.attributes)) {
-    target.documentElement.setAttribute(attr.name, attr.value)
+/** The text of a sheet's rules, or null when it cannot be read (cross-origin). */
+function sheetText(sheet: CSSStyleSheet): string | null {
+  try {
+    return Array.from(sheet.cssRules)
+      .map((rule) => rule.cssText)
+      .join('\n')
+  } catch {
+    return null
   }
-  for (const sheet of Array.from(document.styleSheets)) {
-    try {
+}
+
+/**
+ * Keep another document's styles in step with the app's. Components inject their CSS the first time they render
+ * (for example a text input), so a one-off copy at open time misses everything that renders later. This copies new
+ * sheets, re-copies a sheet whose rule count changed, and runs on a timer and when `<head>` changes.
+ */
+function startStyleSync(target: Document): () => void {
+  const copies = new Map<CSSStyleSheet, {el: HTMLElement; rules: number}>()
+
+  const sync = () => {
+    for (const attr of Array.from(document.documentElement.attributes)) {
+      if (target.documentElement.getAttribute(attr.name) !== attr.value) {
+        target.documentElement.setAttribute(attr.name, attr.value)
+      }
+    }
+    const sheets = [...Array.from(document.styleSheets), ...Array.from(document.adoptedStyleSheets ?? [])]
+    for (const sheet of sheets) {
+      const existing = copies.get(sheet)
       if (sheet.href) {
-        const link = target.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = sheet.href
-        target.head.append(link)
+        if (!existing) {
+          const link = target.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = sheet.href
+          target.head.append(link)
+          copies.set(sheet, {el: link, rules: -1})
+        }
+        continue
+      }
+      let rules = 0
+      try {
+        rules = sheet.cssRules.length
+      } catch {
+        continue
+      }
+      if (existing && existing.rules === rules) continue
+      const text = sheetText(sheet)
+      if (text === null) continue
+      if (existing) {
+        existing.el.textContent = text
+        existing.rules = rules
       } else {
         const style = target.createElement('style')
-        style.textContent = Array.from(sheet.cssRules)
-          .map((rule) => rule.cssText)
-          .join('\n')
+        style.textContent = text
         target.head.append(style)
+        copies.set(sheet, {el: style, rules})
       }
-    } catch {
-      // A cross-origin sheet that cannot be read is skipped.
     }
+  }
+
+  sync()
+  const observer = new MutationObserver(sync)
+  observer.observe(document.head, {childList: true, subtree: true, characterData: true})
+  const timer = window.setInterval(sync, 500)
+  return () => {
+    observer.disconnect()
+    window.clearInterval(timer)
   }
 }
 
@@ -507,7 +551,6 @@ async function openExternalWindow(size: {w: number; h: number}): Promise<Window 
   // No Picture-in-Picture (or it was refused): a pop-out window instead.
   if (!win) win = window.open('', 'design-options', `popup,width=${size.w},height=${size.h}`)
   if (!win) return null
-  copyStyles(win.document)
   win.document.title = getConfig().title ?? 'Design options'
   win.document.body.style.margin = '0'
   return win
@@ -517,8 +560,12 @@ async function openExternalWindow(size: {w: number; h: number}): Promise<Window 
 function ExternalWindow(props: {win: Window; state: State; onHide: () => void; onBack: () => void}) {
   const {win, state, onHide, onBack} = props
   useEffect(() => {
+    const stopSync = startStyleSync(win.document)
     win.addEventListener('pagehide', onBack)
-    return () => win.removeEventListener('pagehide', onBack)
+    return () => {
+      stopSync()
+      win.removeEventListener('pagehide', onBack)
+    }
   }, [win, onBack])
   return createPortal(
     <Card style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
