@@ -131,7 +131,7 @@ export function SearchResults({
                 {hasSearchResults && (
                   <CommandList
                     activeItemDataAttr="data-hovered"
-                    ariaLabel={t('search.search-results-label')}
+                    ariaLabel={t('search.search-results-aria-label')}
                     data-testid="search-results"
                     fixedHeight
                     initialIndex={lastActiveIndex}

@@ -123,6 +123,10 @@
       "entry": ["scripts/*.ts", "stryker/*.{mjs,mts,ts}"],
       "project": ["**/*.{ts,mts,mjs}"],
     },
+    "packages/@repo/oxlint-plugin-i18n": {
+      // test/fixtures holds locale resource files the rule tests read from disk, not imports
+      "project": ["src/**/*.mjs", "test/*.mjs"],
+    },
     "scripts": {
       "entry": [
         // Seems genuinely unused, but important?

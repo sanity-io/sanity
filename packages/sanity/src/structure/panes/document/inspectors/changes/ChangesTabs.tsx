@@ -81,7 +81,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
             />
           </TabList>
           <Button
-            aria-label={t('changes.action.close-label')}
+            aria-label={tCore('changes.action.close-label')}
             icon={CloseIcon}
             mode="bleed"
             onClick={props.onClose}
