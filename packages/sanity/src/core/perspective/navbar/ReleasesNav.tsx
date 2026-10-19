@@ -9,6 +9,7 @@ import {ReleasesToolLink} from '../ReleasesToolLink'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
+import {usePerspectiveMenuExtension} from './PerspectiveMenuExtension'
 
 const ReleasesNavContainer = styled(Card)`
   position: relative;
@@ -53,6 +54,8 @@ export const ReleasesNav: ComponentType<Props> = ({
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
+  // PROPOSED: a host may add a suffix after the label.
+  const extension = usePerspectiveMenuExtension()
   return (
     <ReleasesNavContainer
       flex="none"
@@ -63,6 +66,7 @@ export const ReleasesNav: ComponentType<Props> = ({
     >
       {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
+      {extension?.labelSuffix}
       <GlobalPerspectiveMenu
         selectedPerspectiveName={selectedPerspectiveName}
         areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}

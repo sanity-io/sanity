@@ -1007,6 +1007,13 @@ export {
   type PerspectiveNotWriteableReason,
 } from '../core/perspective/isPerspectiveWriteable'
 export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
+// PROPOSED: extension point for the navbar's perspective control (Variants 2.0 test studio).
+export {GlobalPerspectiveMenu} from '../core/perspective/navbar/GlobalPerspectiveMenu'
+export {
+  type PerspectiveMenuExtension,
+  PerspectiveMenuExtensionProvider,
+  type UsePerspectiveMenuExtension,
+} from '../core/perspective/navbar/PerspectiveMenuExtension'
 export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
 export {
   type PerspectiveContextValue,

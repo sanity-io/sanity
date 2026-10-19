@@ -2,6 +2,7 @@ import {defineConfig, definePlugin} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
+import {NavbarWithVariants} from './c1/NavbarWithVariants'
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
 import {schemaTypesFor} from './schemas'
 
@@ -12,7 +13,7 @@ const previewOrigin = process.env.SANITY_STUDIO_PREVIEW_ORIGIN || 'http://localh
 
 const variants2Options = definePlugin({
   name: 'variants-2-0-options',
-  studio: {components: {layout: LayoutWithFloatingOptions}},
+  studio: {components: {layout: LayoutWithFloatingOptions, navbar: NavbarWithVariants}},
 })
 
 export default defineConfig({
