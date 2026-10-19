@@ -1,10 +1,10 @@
 # What the studio must be able to show
 
-Source: Figma-Agent reply, 2026-10-19, read from the handoff file (C1, E1 to E3, C3 types T1 to T6),
-`docs/initiatives/curation-perspective-selector/` (PARTS-C1, BRIEF-C1-storybook, HANDOFF-FLOWS,
-fixtures/documents.json) and the pinned Studio code. Where Figma had no source it said so; so does this file.
+Source: the Variants 2.0 design handoff (Figma pages C1, E1 to E3, list item types T1 to T6), its parts and flows
+notes, the Nordic Books fixture and the pinned Studio code, as of 2026-10-19. Where the handoff had no source it said
+so; so does this file.
 
-**Model (decided by Faheem, 19 Oct):** the Figma agent's reading is the truth. A version is
+**Model (decided 19 Oct):** the handoff's reading is the truth. A version is
 `draft | published | release` (plus scheduled drafts). A variant's version can sit inside a release.
 There is no recursive nesting ("draft of a draft", "release of drafts"); do not build one.
 

@@ -1,7 +1,6 @@
 import {defineField, defineType} from 'sanity'
 
-// Nordic Books: the mock catalogue behind the Variants 2.0 fixtures
-// (docs/initiatives/curation-perspective-selector/fixtures/documents.json).
+// Nordic Books: the mock catalogue behind the Variants 2.0 fixtures (seed/nordic-books.json).
 const fields = [
   defineField({name: 'title', type: 'string'}),
   defineField({name: 'subtitle', type: 'string'}),

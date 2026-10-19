@@ -56,7 +56,7 @@ export const COMPONENTS: ComponentDef[] = [
     defaultOption: 'a',
     options: [
       {id: 'a', label: 'Sidebar / pane', summary: 'Pane beside the document.', status: 'candidate'},
-      {id: 'b', label: 'Document inspector', summary: 'Attached to the document pane (engineering direction).', status: 'candidate'},
+      {id: 'b', label: 'Document inspector', summary: 'Attached to the document pane.', status: 'candidate'},
     ],
   },
   {
