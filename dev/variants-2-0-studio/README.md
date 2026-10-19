@@ -35,3 +35,7 @@ no inventory). Variants 2.0 designs are additions on top of it, mounted through 
 - Presentation previews `SANITY_STUDIO_PREVIEW_ORIGIN` (default `http://localhost:3456`, the Northfold storefront).
   The storefront has no visual-editing or draft mode yet, so this is a plain preview without overlays.
 - Scheduled drafts is switched on explicitly in `sanity.config.ts`.
+
+## Preview
+
+Deployed from this branch to the Sanity Sandbox Vercel team as `variants-2-0-studio` (Vercel Authentication on). The deployed origin must be in the CORS origins of project `ppsg7ml5` before the Studio can load data.
