@@ -150,7 +150,8 @@ function getArrayFieldsetAndFieldGroupOperations(
   // start at the root and make sure all groups/paths are expanded/activated along the way
   const [segment, ...rest] = path
   if (!isKeySegment(segment)) {
-    throw new Error('Expected path segment to be an object with a _key property')
+    // the path can come from the URL, so it may not point at an array item
+    return []
   }
 
   const foundMember = state.members.find(
