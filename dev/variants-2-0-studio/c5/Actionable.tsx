@@ -3,6 +3,7 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useClient} from 'sanity'
 
 import {buildActions, type Op, type RowResult, runOp, type Target} from './operations'
+import type {SystemVariant} from '../c1/model'
 import type {Corpus} from './useCorpus'
 
 // The bulk bar and the confirm dialog of the C5 table (Figma E5, node 3:5679): select rows, the bar offers what applies,
@@ -128,6 +129,29 @@ export function BulkBar(props: {bulk: BulkState; targets: Target[]; variantLabel
   )
 }
 
+const shortId = (id: string) => id.replace(/^_\.variants\./, '')
+
+/**
+ * What an audience falls back to when a version stops being served: of the document's other PUBLISHED variant versions
+ * whose conditions the audience also meets, the highest priority; else the base document. Drafts and release versions
+ * are not served, so nothing changes for anyone.
+ */
+export function fallbackText(target: Target, corpus: Corpus, definitions: SystemVariant[]): string {
+  const served = target.rows.some((r) => r.bundle === 'published')
+  if (!served) return 'not served yet: no audience changes'
+  const doc = corpus.docs.find((d) => d.id === target.docId)
+  if (!target.variantId) return 'visitors with no variant lose this document'
+  const mine = definitions.find((d) => shortId(d._id) === target.variantId)
+  const audience = mine?.metadata?.title ?? target.variantId
+  const remaining = definitions
+    .filter((d) => shortId(d._id) !== target.variantId)
+    .filter((d) => doc?.list.some((r) => r.variantId === shortId(d._id) && r.bundle === 'published'))
+    .filter((d) => Object.entries(d.conditions).every(([k, v]) => mine?.conditions[k] === v))
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
+  const next = remaining[0]
+  return `${audience} fall back to ${next ? (next.metadata?.title ?? shortId(next._id)) : 'the base document'}`
+}
+
 const CONSEQUENCE = (op: Op, address: string, where: string, whereLabel: string): string => {
   if (op === 'publish') return `These versions go live now. Visitors who match ${address} are served them.`
   if (op === 'unpublish') return `These versions stop being served. Visitors who match ${address} get the base document instead.`
@@ -143,11 +167,13 @@ const CONSEQUENCE = (op: Op, address: string, where: string, whereLabel: string)
 export function ConfirmDialog(props: {
   bulk: BulkState
   corpus: Corpus
+  /** The variant definitions, to say what an audience falls back to when a version goes away. */
+  definitions?: SystemVariant[]
   /** The address in words: the variant's title, or "the base document". */
   address: string
   onDone: () => void
 }) {
-  const {bulk, corpus, address, onDone} = props
+  const {bulk, corpus, address, onDone, definitions = []} = props
   const client = useWriteClient()
   const [where, setWhere] = useState('drafts')
   const [results, setResults] = useState<RowResult[] | null>(null)
@@ -241,7 +267,21 @@ export function ConfirmDialog(props: {
             </Select>
           </Flex>
         ) : null}
-        <Text size={1}>{targets.map((t) => t.title).join(' · ')}</Text>
+        {op === 'delete' || op === 'unpublish' ? (
+          <Stack gap={2} data-testid="fallbacks">
+            {targets.map((t) => (
+              <Text key={`${t.docId}-${t.rows.map((r) => r._id).join()}`} size={1}>
+                {t.title}
+                <Text as="span" muted size={1}>
+                  {' · '}
+                  {fallbackText(t, corpus, definitions)}
+                </Text>
+              </Text>
+            ))}
+          </Stack>
+        ) : (
+          <Text size={1}>{targets.map((t) => t.title).join(' · ')}</Text>
+        )}
         <Text muted size={1}>
           {CONSEQUENCE(op, address, effectiveWhere, whereLabel)}
         </Text>

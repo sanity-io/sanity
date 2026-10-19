@@ -87,7 +87,7 @@ export const useVariantDetailOverride: UseVariantDetailExtension = ({variantId})
     banner: (
       <>
         <Notice bulk={bulk} />
-        <ConfirmDialog address={title} bulk={bulk} corpus={corpus} onDone={() => clearTable.current()} />
+        <ConfirmDialog address={title} bulk={bulk} corpus={corpus} definitions={definitions} onDone={() => clearTable.current()} />
       </>
     ),
   }

@@ -1,8 +1,13 @@
 import {Box, Button, Card, Flex, Layer, Select, Stack, Text} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {type ReactNode, useMemo, useState} from 'react'
+import {useSetVariant} from 'sanity'
+
+import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 
 import {type SystemVariant} from '../c1/model'
-import {BulkBar, Check, ConfirmDialog, useBulk} from './Actionable'
+import {applies, BulkBar, Check, ConfirmDialog, useBulk} from './Actionable'
 import {type Column, DataTable} from './DataTable'
 import type {Target} from './operations'
 import type {Corpus, DocRow, VersionRow} from './useCorpus'
@@ -61,8 +66,8 @@ function Chip({children, tone}: {children: ReactNode; tone?: 'caution'}) {
   )
 }
 
-const dialogFor = (bulk: ReturnType<typeof useBulk>, corpus: Corpus, address: string) => (
-  <ConfirmDialog address={address} bulk={bulk} corpus={corpus} onDone={() => undefined} />
+const dialogFor = (bulk: ReturnType<typeof useBulk>, corpus: Corpus, address: string, definitions: SystemVariant[]) => (
+  <ConfirmDialog address={address} bulk={bulk} corpus={corpus} definitions={definitions} onDone={() => undefined} />
 )
 
 export function Notice({bulk}: {bulk: ReturnType<typeof useBulk>}) {
@@ -113,6 +118,8 @@ export function DocumentVersionsLens(props: {
 }) {
   const {corpus, definitions, docId, onPin, mini, onExpand, hidePin, onBack} = props
   const bulk = useBulk()
+  const setVariant = useSetVariant()
+  const [shown, setShown] = useState<string | null>(null)
   const doc = corpus.docs.find((d) => d.id === docId) ?? corpus.docs[0]
   const rows: VRow[] = useMemo(() => {
     if (!doc) return []
@@ -146,15 +153,48 @@ export function DocumentVersionsLens(props: {
       width: 44,
       render: (r) => <Check checked={bulk.selected.has(r.id)} label={`Select ${r.address}`} onChange={() => bulk.toggle(r.id)} />,
     },
-    {key: 'address', title: 'Address', width: mini ? 150 : 300, render: (r) => text(r.address)},
-    {key: 'state', title: 'State', width: mini ? 110 : 220, render: (r) => <State kind={r.stateKind}>{r.stateText}</State>},
+    {key: 'address', title: 'Address', width: mini ? 136 : 300, render: (r) => text(r.address)},
+    {key: 'state', title: 'State', width: mini ? 100 : 220, render: (r) => <State kind={r.stateKind}>{r.stateText}</State>},
     ...(mini
       ? []
       : [
           {key: 'rank', title: 'Rank', width: 100, render: (r: VRow) => muted(r.rank)},
           {key: 'updated', title: 'Updated', width: 180, render: (r: VRow) => muted(ago(r.row.updated))},
         ]),
+    {
+      key: 'act',
+      title: '',
+      width: 44,
+      render: (r) => {
+        const target = targetOf(r)
+        const items = (['publish', 'unpublish', 'delete', 'addToRelease'] as const).filter((op) => applies(op, target))
+        const label = {publish: 'Publish', unpublish: 'Unpublish', delete: 'Delete', addToRelease: 'Add to release'}
+        return (
+          <span onClick={(event) => event.stopPropagation()}>
+            <MenuButton
+              button={<Button aria-label={`Actions for ${r.address}`} fontSize={1} mode="bleed" padding={2} style={{height: 25, width: 25}} text="⋯" />}
+              id={`row-menu-${r.id}`}
+              menu={
+                <Menu>
+                  {items.map((op) => (
+                    <MenuItem key={op} onClick={() => bulk.open(op, [target])} text={label[op]} tone={op === 'delete' ? 'critical' : 'default'} />
+                  ))}
+                </Menu>
+              }
+              popover={{portal: true, placement: 'bottom-end'}}
+            />
+          </span>
+        )
+      },
+    },
   ]
+
+  // Clicking a row shows that version in the document pane: the version (published, drafts or the release) and the
+  // variant, set together through the shipped perspective hooks.
+  const showVersion = (r: VRow) => {
+    setShown(r.id)
+    setVariant({variantId: r.row.variantId ? (`_.variants.${r.row.variantId}` as never) : undefined, perspective: r.row.bundle as never})
+  }
 
   return (
     <Stack data-testid="doc-lens" gap={3}>
@@ -185,8 +225,8 @@ export function DocumentVersionsLens(props: {
       </Flex>
       <Notice bulk={bulk} />
       <BulkBar bulk={bulk} targets={selectedRows.map(targetOf)} />
-      <DataTable columns={columns} empty="This document has no versions." rows={rows} selectedId={null} testId={mini ? 'lens-doc-versions-mini' : 'lens-doc-versions'} />
-      {dialogFor(bulk, corpus, doc.title)}
+      <DataTable columns={columns} empty="This document has no versions." onRowClick={showVersion} rows={rows} selectedId={shown} testId={mini ? 'lens-doc-versions-mini' : 'lens-doc-versions'} />
+      {dialogFor(bulk, corpus, doc.title, definitions)}
     </Stack>
   )
 }
@@ -296,7 +336,7 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
       </Flex>
       <BulkBar bulk={bulk} targets={selectedRows.map(targetOf)} variantLabel={title} />
       <DataTable columns={columns} empty="No documents." rows={rows} testId="lens-def-docs" />
-      {dialogFor(bulk, corpus, title)}
+      {dialogFor(bulk, corpus, title, definitions)}
     </Stack>
   )
 }

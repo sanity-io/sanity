@@ -1,7 +1,9 @@
-import {Box, Card, Flex, Select, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Flex, Select, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useMemo, useState} from 'react'
+import {useRouter} from 'sanity/router'
 
 import {type DimensionSpec, type SystemVariant, valueTitle} from '../c1/model'
+import {usePerspectiveState} from '../c1/state'
 import {type Column, DataTable} from './DataTable'
 import {type Corpus, type DocRow} from './useCorpus'
 
@@ -17,28 +19,40 @@ const variantTitle = (v: SystemVariant) => v.metadata?.title ?? shortId(v._id)
 const dateLabel = (iso: string) =>
   iso ? new Intl.DateTimeFormat('en-GB', {day: 'numeric', hour: '2-digit', minute: '2-digit', month: 'short'}).format(new Date(iso)) : ''
 
-/** Dimension lens: each value of each dimension, with the definitions and documents that use it. */
+/**
+ * Dimension lens: each value of each dimension, with the definitions that use it and, per lifecycle state, how many
+ * documents have a version of one of those definitions: published, draft, in a release.
+ */
 export function DimensionLens({corpus, definitions, dimensions}: {corpus: Corpus; definitions: SystemVariant[]; dimensions: DimensionSpec[]}) {
   const rows = dimensions.flatMap((dimension) =>
-    dimension.values.map(([key, title]) => {
+    dimension.values.map(([key]) => {
       const defs = definitions.filter((v) => v.conditions[dimension.name] === key).map((v) => shortId(v._id))
+      const versions = corpus.docs.map((d) => d.list.filter((r) => r.variantId && defs.includes(r.variantId)))
+      const count = (pick: (bundle: string) => boolean) => versions.filter((list) => list.some((r) => pick(r.bundle))).length
       return {
         id: `${dimension.name}-${key}`,
         dimension: dimension.title,
         value: valueTitle(dimension, key),
         definitions: defs.length,
-        documents: corpus.docs.filter((d) => d.variantIds.some((id) => defs.includes(id))).length,
-        title,
+        published: count((b) => b === 'published'),
+        draft: count((b) => b === 'drafts'),
+        release: count((b) => b !== 'published' && b !== 'drafts'),
+        documents: versions.filter((list) => list.length > 0).length,
+        total: corpus.docs.length,
       }
     }),
   )
+  const num = (n: number) => (n ? text(n) : muted('0'))
   return (
     <DataTable
       columns={[
-        {key: 'value', title: 'Value', width: 240, render: (r) => text(r.value), sort: (a, b) => a.value.localeCompare(b.value)},
-        {key: 'dimension', title: 'Dimension', width: 200, render: (r) => muted(r.dimension)},
-        {key: 'definitions', title: 'Definitions using it', width: 190, render: (r) => text(r.definitions), sort: (a, b) => a.definitions - b.definitions},
-        {key: 'documents', title: 'Documents', width: 140, render: (r) => text(r.documents), sort: (a, b) => a.documents - b.documents},
+        {key: 'value', title: 'Value', width: 220, render: (r) => text(r.value), sort: (a, b) => a.value.localeCompare(b.value)},
+        {key: 'dimension', title: 'Dimension', width: 150, render: (r) => muted(r.dimension)},
+        {key: 'definitions', title: 'Definitions', width: 120, render: (r) => num(r.definitions), sort: (a, b) => a.definitions - b.definitions},
+        {key: 'published', title: 'Published', width: 110, render: (r) => num(r.published), sort: (a, b) => a.published - b.published},
+        {key: 'draft', title: 'Draft', width: 100, render: (r) => num(r.draft), sort: (a, b) => a.draft - b.draft},
+        {key: 'release', title: 'In a release', width: 130, render: (r) => num(r.release), sort: (a, b) => a.release - b.release},
+        {key: 'documents', title: 'Documents', width: 160, render: (r) => muted(`${r.documents} of ${r.total}`), sort: (a, b) => a.documents - b.documents},
       ]}
       empty="No dimensions yet."
       rows={rows}
@@ -61,6 +75,8 @@ function resolve(address: Record<string, string>, definitions: SystemVariant[]):
  */
 export function VisitorLens({corpus, definitions, dimensions}: {corpus: Corpus; definitions: SystemVariant[]; dimensions: DimensionSpec[]}) {
   const [visitor, setVisitor] = useState<Record<string, string>>({})
+  const address = usePerspectiveState()
+  const router = useRouter()
   const meets = definitions
     .filter((v) => Object.entries(v.conditions).every(([k, val]) => visitor[k] === val))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || Object.keys(b.conditions).length - Object.keys(a.conditions).length)
@@ -115,6 +131,23 @@ export function VisitorLens({corpus, definitions, dimensions}: {corpus: Corpus; 
             </Select>
           </Flex>
         ))}
+        <Box flex={1} />
+        <Button
+          fontSize={1}
+          mode="ghost"
+          onClick={() => {
+            // The studio shows what this visitor is served: Published, with the matching definition as the variant,
+            // and the address row set to the same values.
+            address.setChosen(visitor)
+            address.setRowShown(Object.keys(visitor).length > 0)
+            // The sticky perspective params live in the URL, so one navigation sets the tool, the version and the variant.
+            const variant = meets[0] ? `&variant=${shortId(meets[0]._id)}` : ''
+            router.navigateUrl({path: `/structure/book?perspective=published${variant}`})
+          }}
+          padding={2}
+          style={{height: 25}}
+          text="Open in the studio as this visitor"
+        />
       </Flex>
       <DataTable
         columns={[
