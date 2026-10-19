@@ -74,7 +74,7 @@ const ArchivedReleaseBanner = ({release}: {release: ReleaseDocument}) => {
         <Text size={1} weight="medium">
           <Translate
             t={t}
-            i18nKey="banners.deleted-release-banner.text"
+            i18nKey="banners.archived-release-banner.text"
             values={{
               title: release.metadata?.title || t('release.placeholder-untitled-release'),
             }}

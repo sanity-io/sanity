@@ -3,6 +3,7 @@ import {Code} from '@sanity/ui/code'
 import {isDev, Translate, useTranslation} from 'sanity'
 import {VStack} from 'ui5'
 
+import {structureLocaleNamespace} from '../../../i18n'
 import {ErrorPane} from '../../error'
 
 interface DocumentLayoutErrorProps {
@@ -15,7 +16,7 @@ interface DocumentLayoutErrorProps {
 
 export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
   const {documentType, value, currentMinWidth, paneKey, minWidth} = props
-  const {t} = useTranslation()
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <ErrorPane

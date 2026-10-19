@@ -2,7 +2,7 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {Badge, Card, type CardTone, Inline, Label} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isWeekend} from 'date-fns/isWeekend'
-import {type CSSProperties, useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -12,18 +12,6 @@ import {type Schedule, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {useSchedules} from '../contexts/schedules'
 import Pip from './Pip'
-
-const PRIMARY_FOREGROUND_STYLE = {
-  '--text-color': 'var(--card-fg-color)',
-  '--text-color-muted': 'var(--card-muted-fg-color)',
-  '--icon-color': 'var(--card-fg-color)',
-  '--icon-color-muted': 'var(--card-muted-fg-color)',
-} as CSSProperties & {
-  '--text-color': string
-  '--text-color-muted': string
-  '--icon-color': string
-  '--icon-color-muted': string
-}
 
 interface CalendarDayProps {
   date: Date // clock time
@@ -102,7 +90,7 @@ export function CalendarDay(props: CalendarDayProps) {
                 style={{
                   margin: '-0.375rem',
                   display: 'block',
-                  ...(tone === 'primary' && PRIMARY_FOREGROUND_STYLE),
+                  color: 'var(--card-fg-color)',
                 }}
               />
             ) : (
@@ -110,7 +98,7 @@ export function CalendarDay(props: CalendarDayProps) {
                 size={1}
                 style={{
                   opacity: !isCurrentMonth ? 0.35 : 1,
-                  ...(tone === 'primary' && PRIMARY_FOREGROUND_STYLE),
+                  color: 'var(--card-fg-color)',
                 }}
                 as="div"
                 trim={true}

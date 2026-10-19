@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {createMockDocument} from '../../../../__fixtures__/documentInRelease.fixture'
@@ -30,7 +30,7 @@ export function ReleaseDocumentFilterTabsStory() {
         <VStack gap={5}>
           {FILTER_TAB_CONFIGS.map(({key}) => (
             <VStack gap={2} key={key}>
-              <Text muted size={1} weight="medium">
+              <Text muted size={1} weight="medium" as="div" trim={true}>
                 {key} selected
               </Text>
               <ReleaseDocumentFilterTabs

@@ -1,9 +1,9 @@
 import {getProviderTitle} from '@sanity/access-ui'
 /* oxlint-disable i18next/no-literal-string */
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useObservable} from 'react-rx'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
@@ -35,12 +35,12 @@ export function NotAuthenticatedScreen() {
         }}
       >
         <VStack gap={4}>
-          <Text>
+          <Text as="div" trim={true}>
             You are not authorized to access this studio. Please contact someone with access to
             invite you to this project.
           </Text>
 
-          <Text>
+          <Text as="div" trim={true}>
             If you think this is an error, verify that you are signed in with the correct account.
             You are currently signed in as{' '}
             <strong>

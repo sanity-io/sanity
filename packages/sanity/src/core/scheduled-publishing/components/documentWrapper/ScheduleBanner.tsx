@@ -3,7 +3,7 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ValidationMarker} from '@sanity/types'
 import {Badge, Card, Inline} from '@sanity/ui'
 import {format} from 'date-fns/format'
-import {type CSSProperties, use} from 'react'
+import {use} from 'react'
 import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
 import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
@@ -12,18 +12,6 @@ import {DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
 import usePollSchedules from '../../hooks/usePollSchedules'
 import {usePublishedId} from '../../hooks/usePublishedId'
 import {useValidationState} from '../../utils/validationUtils'
-
-const PRIMARY_FOREGROUND_STYLE = {
-  '--text-color': 'var(--card-fg-color)',
-  '--text-color-muted': 'var(--card-muted-fg-color)',
-  '--icon-color': 'var(--card-fg-color)',
-  '--icon-color-muted': 'var(--card-muted-fg-color)',
-} as CSSProperties & {
-  '--text-color': string
-  '--text-color-muted': string
-  '--icon-color': string
-  '--icon-color-muted': string
-}
 
 interface Props {
   id: string
@@ -69,7 +57,7 @@ export function ScheduleBanner(props: Props) {
               muted
               size={1}
               tone={hasError ? 'critical' : undefined}
-              style={hasError ? undefined : PRIMARY_FOREGROUND_STYLE}
+              style={hasError ? undefined : {color: 'var(--card-muted-fg-color)'}}
             />
             <Text
               muted
@@ -77,7 +65,7 @@ export function ScheduleBanner(props: Props) {
               as="div"
               trim={true}
               tone={hasError ? 'critical' : undefined}
-              style={hasError ? undefined : PRIMARY_FOREGROUND_STYLE}
+              style={hasError ? undefined : {color: 'var(--card-muted-fg-color)'}}
             >
               <span style={{fontWeight: 600}}>Upcoming schedule</span> (local time)
             </Text>
@@ -97,7 +85,7 @@ export function ScheduleBanner(props: Props) {
                     as="div"
                     trim={true}
                     tone={hasError ? 'critical' : undefined}
-                    style={hasError ? undefined : PRIMARY_FOREGROUND_STYLE}
+                    style={hasError ? undefined : {color: 'var(--card-muted-fg-color)'}}
                   >
                     {formattedDateTime}
                   </Text>

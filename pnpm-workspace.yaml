@@ -28,28 +28,31 @@ catalog:
   '@sanity/client': ^8.9.0
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.29.0
-  '@sanity/ui': ^4.4.5
+  '@sanity/tsdown-config': ^0.31.1
+  '@sanity/ui': ^4.4.9
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
   '@types/react-is': ^19.3.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.3.0
+  '@sanity/vanilla-extract-vite-plugin': ^0.3.1
   '@vanilla-extract/css': ^1.21.3
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.2
   '@vitest/browser-playwright': ^5.0.4
+  cobe: ^2.0.1
   dequal: ^2.0.3
   get-it: ^9.6.1
   jsdom: ^29.1.1
+  oxc-parser: ^0.153.0
   oxc-transform-react: ^0.154.0
   playwright: 1.64.0
-  react: ^19.3.0
-  react-dom: ^19.3.0
-  react-is: ^19.3.0
-  react-rx: ^7.0.1
+  react: ^19.3.1
+  react-dom: ^19.3.1
+  react-focus-lock: ^2.13.7
+  react-is: ^19.3.1
+  react-rx: ^7.1.0
   rimraf: ^6.1.3
-  storybook: ^10.6.1
+  storybook: ^10.6.2
   styled-components: ^6.6.0
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
@@ -103,8 +106,6 @@ minimumReleaseAgeExclude:
   - '@codemirror/search'
   - '@codemirror/state'
   - '@codemirror/view'
-  # Fresh patch; exclude so 18.12.0 can install before the age gate
-  - 'chromatic@18.12.0'
   - 'csstype'
   - 'eslint-plugin-boundaries'
   - 'eventsource-parser@4.1.2'
@@ -179,6 +180,10 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 trustPolicyExclude:
   - '@sanity/cli'
+  # @sanity/vision's result diff (@pierre/diffs) depends on it. 1.0.0 was published with
+  # provenance; 1.1.0 and 2.0.0 without it, by a listed maintainer who also publishes
+  # @pierre/diffs (which has never shipped provenance)
+  - '@pierre/theme@2.0.0'
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0

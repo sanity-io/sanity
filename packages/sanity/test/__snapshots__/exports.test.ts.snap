@@ -719,6 +719,7 @@ exports[`exports snapshot 1`] = `
     "useSearchMachine": "function",
     "useSearchMaxFieldDepth": "function",
     "useSearchState": "function",
+    "useSetImmediateValidation": "function",
     "useSetPerspective": "function",
     "useSetVariant": "function",
     "useShallowUnique": "function",

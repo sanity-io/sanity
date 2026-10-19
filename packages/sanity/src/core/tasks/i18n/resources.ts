@@ -120,6 +120,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'form.input.target.search.placeholder': 'Select target document',
   /** The placeholder text for the title input */
   'form.input.title.placeholder': 'Task title',
+  /** The status error message presented when creating a task did not complete in time */
+  'form.status.error.creation-failed': 'Failed to create task, please try again',
   /** The status error message presented when the user does not supply a title */
   'form.status.error.title-required': 'Title is required',
   /** The status message upon successful creation of a task */

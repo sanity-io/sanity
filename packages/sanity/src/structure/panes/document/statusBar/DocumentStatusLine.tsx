@@ -81,8 +81,9 @@ const DocumentStatusButton = ({
     >
       <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={3}>
         {author && (
-          <div style={{margin: -5}}>
-            <UserAvatar user={author} size={0} />
+          // Flex, so the tooltip's inline-block wrapper does not add line height below the avatar
+          <div style={{display: 'flex', margin: -5}}>
+            <UserAvatar user={author} size={0} withTooltip />
           </div>
         )}
         <Text muted size={1}>

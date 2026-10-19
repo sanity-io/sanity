@@ -1,9 +1,9 @@
 import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
-import {Card, Skeleton, Text} from '@sanity/ui'
+import {Card, Skeleton} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -76,7 +76,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
       <Tooltip
         disabled={!release.isDeleted}
         content={
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <Translate t={t} i18nKey="deleted-release" values={{title: releaseTitle}} />
           </Text>
         }

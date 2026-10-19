@@ -96,19 +96,23 @@ function TooltipUserAvatar(props: Omit<UserAvatarProps, 'user'> & {user: User}) 
     user: {displayName},
   } = props
 
+  // `Avatar` also renders its `title` as a native browser tooltip, so the wrapper carries the name
   return (
     <Tooltip content={displayName} placement="top" portal>
-      <div style={{display: 'inline-block'}}>
-        <StaticUserAvatar {...props} />
+      <div role="img" aria-label={displayName} style={{display: 'inline-block'}}>
+        <StaticUserAvatar {...props} hideTitle />
       </div>
     </Tooltip>
   )
 }
 
 function StaticUserAvatar(
-  props: Omit<UserAvatarProps, 'user'> & {user: User} & RefAttributes<HTMLDivElement>,
+  props: Omit<UserAvatarProps, 'user'> & {
+    user: User
+    hideTitle?: boolean
+  } & RefAttributes<HTMLDivElement>,
 ) {
-  const {ref, user, animateArrowFrom, position, size, status, tone, ...restProps} = props
+  const {ref, user, animateArrowFrom, hideTitle, position, size, status, tone, ...restProps} = props
   const userColor = useUserColor(user.id)
 
   return (
@@ -125,7 +129,7 @@ function StaticUserAvatar(
         ref={ref}
         size={size}
         status={status}
-        title={user?.displayName}
+        title={hideTitle ? undefined : user?.displayName}
         {...restProps}
       />
     </Suspense>

@@ -1,5 +1,4 @@
-import {Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -8,6 +7,7 @@ import {singleDocReleaseNamespace} from '../../../singleDocRelease/i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 
 export const ScheduledDraftsEmptyState = () => {
+  // oxlint-disable-next-line @repo/i18n/no-plugin-namespace-outside-plugin -- only rendered in the scheduled drafts view of the releases tool, which getInitialCardinalityView limits to studios with scheduledDrafts.enabled, ie with the singleDocRelease plugin loaded
   const {t} = useTranslation(singleDocReleaseNamespace)
   const {mode} = useSingleDocReleaseEnabled()
   if (mode === 'upsell') {
@@ -23,10 +23,10 @@ export const ScheduledDraftsEmptyState = () => {
     >
       <Flex gap={3} flexDirection="column" alignItems="center" style={{maxWidth: '300px'}}>
         <ReleaseIllustration />
-        <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text">
+        <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text" trim={true}>
           {t('empty-state.title')}
         </Text>
-        <Text size={1} muted style={{textAlign: 'center'}}>
+        <Text size={1} muted align="center" as="div" trim={true}>
           {t('empty-state.description')}
         </Text>
 

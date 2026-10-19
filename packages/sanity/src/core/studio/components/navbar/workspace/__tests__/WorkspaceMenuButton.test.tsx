@@ -10,17 +10,15 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {type WorkspaceSummary} from '../../../../../config/types'
 import {WorkspaceMenuButton} from '../WorkspaceMenuButton'
 
-const {mockProbeWorkspaceAuth, probeSubscriptions, projectName$, projectNameSubscriptions} =
-  vi.hoisted(() => ({
-    mockProbeWorkspaceAuth: vi.fn(),
+const {probeSubscriptions, projectName$, projectNameSubscriptions, setActiveWorkspace} = vi.hoisted(
+  () => ({
     probeSubscriptions: {count: 0},
     projectName$: {current: null as null | Observable<string | null>},
     projectNameSubscriptions: {count: 0},
-  }))
+    setActiveWorkspace: vi.fn(),
+  }),
+)
 
-vi.mock('../../../../../store/auth/legacy/probeWorkspaceAuth', () => ({
-  probeWorkspaceAuth: mockProbeWorkspaceAuth,
-}))
 vi.mock('../../../../../store/datastores', () => {
   const projectStore = {
     getProjectName: () =>
@@ -55,14 +53,39 @@ async function renderButton() {
   })
 }
 
+async function openMenuItem(title: string) {
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- opening the menu reveals the probe that reads the project name with use()
+  await act(async () => {
+    await userEvent.click(screen.getByRole('button', {name: /Workspace A/}))
+  })
+
+  return (await screen.findByText(title)).closest('a')!
+}
+
+// One subscription = one would-be `/auth/id` request. Creating the observable is free; only
+// subscribing fires the request. So: count subscriptions.
+// Each workspace has its own auth store.
+function createAuth() {
+  return {
+    state: NEVER,
+    currentUserId: defer(() => {
+      probeSubscriptions.count += 1
+      return NEVER
+    }),
+  }
+}
 const workspaceA = {
   name: 'workspace-a',
+  basePath: '/workspace-a',
+  auth: createAuth(),
   title: 'Workspace A',
   projectId: 'project-a',
   dataset: 'production',
 } as unknown as WorkspaceSummary
 const workspaceB = {
   name: 'workspace-b',
+  basePath: '/workspace-b',
+  auth: createAuth(),
   title: 'Workspace B',
   projectId: 'project-b',
   dataset: 'production',
@@ -72,7 +95,7 @@ vi.mock('../../../../workspaces/useVisibleWorkspaces', () => ({
   useVisibleWorkspaces: () => ({visibleWorkspaces: [workspaceA, workspaceB]}),
 }))
 vi.mock('../../../../activeWorkspaceMatcher/useActiveWorkspace', () => ({
-  useActiveWorkspace: () => ({activeWorkspace: workspaceA}),
+  useActiveWorkspace: () => ({activeWorkspace: workspaceA, setActiveWorkspace}),
 }))
 
 const theme = buildTheme()
@@ -90,15 +113,6 @@ describe('WorkspaceMenuButton', () => {
     const held$ = new ReplaySubject<string | null>(1)
     held$.next('Sanity Studio Test Data')
     projectName$.current = held$
-    // One subscription = one would-be `/auth/id` request.
-    // Creating the observable is free and happens during render;
-    // only subscribing fires the request. So: count subscriptions.
-    mockProbeWorkspaceAuth.mockImplementation(() =>
-      defer(() => {
-        probeSubscriptions.count += 1
-        return NEVER
-      }),
-    )
   })
 
   it('does not render the closed menu content or subscribe any auth probe at boot', async () => {
@@ -107,7 +121,6 @@ describe('WorkspaceMenuButton', () => {
     // Closed popovers render nothing until the menu opens or its button shows
     // intent to open it (@sanity/ui v4.4). So: zero requests at boot.
     expect(screen.queryByTestId('manage-menu')).not.toBeInTheDocument()
-    expect(mockProbeWorkspaceAuth).not.toHaveBeenCalled()
     expect(probeSubscriptions.count).toBe(0)
   })
 
@@ -158,5 +171,57 @@ describe('WorkspaceMenuButton', () => {
     // Hover preload: one probe per workspace, buffered before the click.
     // The hidden menu items themselves still subscribe nothing.
     expect(probeSubscriptions.count).toBe(2)
+  })
+
+  it('switches workspace in place instead of loading the page', async () => {
+    await renderButton()
+    const item = await openMenuItem('Workspace B')
+
+    // oxlint-disable-next-line testing-library/prefer-user-event -- the return value tells whether the browser would have followed the link
+    const followedLink = fireEvent.click(item)
+
+    expect(followedLink).toBe(false)
+    expect(setActiveWorkspace).toHaveBeenCalledExactlyOnceWith('workspace-b')
+  })
+
+  it('leaves a click the host already handled to the host', async () => {
+    await renderButton()
+    const item = await openMenuItem('Workspace B')
+    // Stands in for the Dashboard bridge, which claims links to other workspaces in the capture phase
+    const claimClick = vi.fn((event: Event) => event.preventDefault())
+    window.addEventListener('click', claimClick, true)
+
+    try {
+      // oxlint-disable-next-line testing-library/prefer-user-event -- a single click event, so the host listener sees exactly the click React handles
+      fireEvent.click(item)
+    } finally {
+      window.removeEventListener('click', claimClick, true)
+    }
+
+    expect(claimClick).toHaveBeenCalledOnce()
+    expect(setActiveWorkspace).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['cmd-click', {metaKey: true}],
+    ['ctrl-click', {ctrlKey: true}],
+    ['middle click', {button: 1}],
+  ])('leaves a %s to the browser', async (_, init) => {
+    await renderButton()
+    const item = await openMenuItem('Workspace B')
+
+    let followedLink: boolean | undefined
+    // Runs after React's handler on the render container; jsdom can't navigate, so stop the link here
+    const stopNavigation = (event: Event) => {
+      followedLink = !event.defaultPrevented
+      event.preventDefault()
+    }
+    document.addEventListener('click', stopNavigation)
+    // oxlint-disable-next-line testing-library/prefer-user-event -- sets the modifier and button on a single click without userEvent's pointer sequence
+    fireEvent.click(item, init)
+    document.removeEventListener('click', stopNavigation)
+
+    expect(followedLink).toBe(true)
+    expect(setActiveWorkspace).not.toHaveBeenCalled()
   })
 })

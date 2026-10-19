@@ -60,7 +60,13 @@ vi.mock('../../../studio/useWorkspace', () => ({
 
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
-  IntentLink: vi.fn().mockImplementation((props) => <a {...props} />),
+  IntentLink: vi
+    .fn()
+    .mockImplementation(
+      ({intent, params: _params, replace: _replace, searchParams: _searchParams, ...rest}) => (
+        <a href={`/intent/${intent}`} {...rest} />
+      ),
+    ),
   StateLink: vi.fn().mockImplementation(({state, children, ...rest}) => (
     <a href="/" {...rest}>
       {children}

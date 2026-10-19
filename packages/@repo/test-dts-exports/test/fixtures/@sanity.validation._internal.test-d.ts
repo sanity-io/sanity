@@ -25,6 +25,7 @@ import type {
   ValidateItemOptions,
   ValidationContext,
   validationLocaleStrings,
+  ValidationScheduling,
 } from '@sanity/validation/_internal'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -96,5 +97,8 @@ describe('@sanity/validation/_internal', () => {
   })
   test('validationLocaleStrings', () => {
     expectTypeOf<typeof validationLocaleStrings>().not.toBeNever()
+  })
+  test('ValidationScheduling', () => {
+    expectTypeOf<ValidationScheduling>().not.toBeNever()
   })
 })

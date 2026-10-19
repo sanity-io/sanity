@@ -1,7 +1,7 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import uniq from 'lodash-es/uniq.js'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../../../../../../components/textWithTone/TextWithTone'
@@ -82,7 +82,7 @@ export function FilterTooltip({
             {/* Field name */}
             {fieldDefinition && (
               <VStack gap={3}>
-                <Text muted size={1} weight="medium">
+                <Text muted size={1} weight="medium" as="div" trim={true}>
                   {t('search.filter-field-tooltip-name')}
                 </Text>
                 <TextWithTone
@@ -99,10 +99,10 @@ export function FilterTooltip({
             {/* Field description */}
             {fieldDefinitionDescription && (
               <VStack gap={3}>
-                <Text muted size={1} weight="medium">
+                <Text muted size={1} weight="medium" as="div" trim={true}>
                   {t('search.filter-field-tooltip-description')}
                 </Text>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {truncateString(fieldDefinitionDescription, 256)}
                 </Text>
               </VStack>
@@ -110,7 +110,7 @@ export function FilterTooltip({
 
             {/* Filter description */}
             {filterDefinition?.description && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {truncateString(filterDefinition.description, 256)}
               </Text>
             )}
@@ -119,16 +119,16 @@ export function FilterTooltip({
             {!documentTypesNarrowed.length && fieldDefinitionDocumentTypeTitles.length > 0 && (
               <VStack gap={2}>
                 <Flex alignItems="center" gap={1}>
-                  <Text muted size={1} weight="medium">
+                  <Text muted size={1} weight="medium" as="div" trim={true}>
                     {t('search.filter-field-tooltip-used-in-document-types')}
                   </Text>
                   <Card padding={1} radius={2} tone="transparent">
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {fieldDefinitionDocumentTypeTitles.length}
                     </Text>
                   </Card>
                 </Flex>
-                <Text size={1} weight="regular" muted>
+                <Text size={1} weight="regular" muted as="div" trim={true}>
                   {fieldDefinitionDocumentTypeTitles.slice(0, MAX_VISIBLE_TYPES).join(', ')}
                   {fieldDefinitionDocumentTypeTitles?.length > MAX_VISIBLE_TYPES
                     ? ` +${fieldDefinitionDocumentTypeTitles.length - MAX_VISIBLE_TYPES} more`

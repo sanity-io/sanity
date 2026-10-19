@@ -1,10 +1,10 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
-import {Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {getDocumentVersionType} from '../../../config/document/useConfiguredDocumentActionIds'
@@ -230,10 +230,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         data-testid="cardinality-one-empty-state"
       >
         <VStack gap={3} style={{textAlign: 'center', maxWidth: '300px'}}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="semibold" as="div" trim={true}>
             {t('summary.no-documents-cardinality-one.title')}
           </Text>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('summary.no-documents-cardinality-one.description')}
           </Text>
         </VStack>

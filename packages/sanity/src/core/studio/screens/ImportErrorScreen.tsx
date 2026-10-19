@@ -1,12 +1,12 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Card, Heading, Inline, Text} from '@sanity/ui'
+import {Card, Heading, Inline} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useEffect, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {Container, VStack, Flex} from 'ui5'
+import {Text, Container, VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
@@ -54,7 +54,9 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
           <VStack gap={6}>
             <VStack gap={4}>
               <Heading>Import error</Heading>
-              <Text>An error occurred during dynamic import.</Text>
+              <Text as="div" trim={true}>
+                An error occurred during dynamic import.
+              </Text>
               {isDev && (
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
                   <VStack gap={4}>
@@ -69,7 +71,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
                 </Card>
               )}
               {autoReload ? (
-                <Text muted>
+                <Text muted as="div" trim={true}>
                   Reloading {countdownSeconds <= 0 ? 'now' : `in ${countdownSeconds}s`}…
                 </Text>
               ) : null}

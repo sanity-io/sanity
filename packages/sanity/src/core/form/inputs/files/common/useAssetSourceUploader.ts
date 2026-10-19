@@ -15,6 +15,7 @@ import {PatchEvent} from '../../../patch/PatchEvent'
 import {type FormPatch} from '../../../patch/types'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {createInitialUploadPatches} from '../../../studio/uploads/utils'
+import {pushAlreadyExistsWarnings} from './alreadyExistsWarning'
 
 export interface UseAssetSourceUploaderOptions {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
@@ -98,6 +99,9 @@ export function useAssetSourceUploader(options: UseAssetSourceUploaderOptions) {
                   )
                   if (hasAssetLimitError) onAssetLimitError()
                 }
+                // Duplicate-detection warnings must be pushed from here —
+                // see the doc comment on pushAlreadyExistsWarnings.
+                pushAlreadyExistsWarnings({files: event.files, push, t})
                 onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
                 onAllComplete?.()
                 handleAssetSourceResetOnComplete()

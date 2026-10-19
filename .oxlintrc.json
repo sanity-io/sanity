@@ -210,6 +210,8 @@
     "react/rules-of-hooks": "error",
     // Prefer function components; allow class-based error boundaries (no hook equivalent yet)
     "react/prefer-function-component": ["error", {"allowErrorBoundary": true}],
+    // Components defined during render get a new identity every render, remounting their subtree
+    "react/no-unstable-nested-components": "error",
     // React Compiler rules (https://oxc.rs/blog/2026-08-18-react-compiler-support.html#oxlint).
     // The old nursery `react/react-compiler` rule was replaced by 22 category-specific rules.
     // The `correctness`, `suspicious`, and `perf` rules are already enabled via `categories`
@@ -330,7 +332,6 @@
     "restrict-template-expressions": "warn",
     "unbound-method": "warn",
     // TODO(oxlint): Fix violations and set these back to error.
-    "react/no-unstable-nested-components": "warn",
     "typescript/no-unnecessary-type-conversion": "off",
     "typescript/no-useless-default-assignment": "off",
     "typescript/no-unnecessary-type-parameters": "off",
@@ -493,7 +494,10 @@
         ],
         "@sanity/i18n/no-attribute-template-literals": "error",
         "@sanity/i18n/no-i18next-import": "error",
-        "@repo/i18n/no-inline-translate-components": "error"
+        "@repo/i18n/no-inline-translate-components": "error",
+        // Namespaces and resource files are listed in packages/@repo/oxlint-plugin-i18n/src/namespaces.mjs
+        "@repo/i18n/no-missing-translation-key": "error",
+        "@repo/i18n/no-plugin-namespace-outside-plugin": "error"
       }
     },
     {
@@ -583,7 +587,10 @@
       "rules": {
         "i18next/no-literal-string": "off",
         "@sanity/i18n/no-attribute-string-literals": "off",
-        "@sanity/i18n/no-attribute-template-literals": "off"
+        "@sanity/i18n/no-attribute-template-literals": "off",
+        // Tests use fixture namespaces and keys as plain data
+        "@repo/i18n/no-missing-translation-key": "off",
+        "@repo/i18n/no-plugin-namespace-outside-plugin": "off"
       }
     },
     {

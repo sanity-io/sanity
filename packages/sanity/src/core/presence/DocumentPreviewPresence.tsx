@@ -6,7 +6,6 @@ import {css, styled} from 'styled-components'
 import {Tooltip, type TooltipProps} from '../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../components/userAvatar/UserAvatar'
 import {useTranslation} from '../i18n/hooks/useTranslation'
-import {releasesLocaleNamespace} from '../releases/i18n'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {type DocumentPresence} from '../store/presence/types'
@@ -33,7 +32,9 @@ const AvatarStackBox = styled.div((props) => {
 /** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const {presence} = props
-  const {t} = useTranslation(releasesLocaleNamespace)
+  // Previews render in every studio, with or without the releases plugin, so these strings live
+  // in the always registered `studio` namespace
+  const {t} = useTranslation()
 
   const {data: releases} = useActiveReleases()
 
@@ -62,7 +63,7 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
       const releaseTitle = release?.metadata?.title
       return t('presence.tooltip.one', {
         displayName,
-        releaseTitle: releaseTitle || t('release-placeholder.title'),
+        releaseTitle: releaseTitle || t('presence.tooltip.untitled-release'),
       })
     }
 
