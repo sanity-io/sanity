@@ -229,6 +229,12 @@ async function seedExtras() {
     await releaseVersion('rArchived', 'book-tidewater', content('Tidewater', null, 'Base · in an archived release'))
     await x.action({actionType: 'sanity.action.release.archive', releaseId: 'rArchived'} as any)
   })
+  // 4b. A document that exists only inside a release (no published base, no draft).
+  await attempt('release-only document', async () => {
+    const exists = await x.fetch(`defined(*[_id == "versions.rAsapCopy.book-release-only"][0]._id)`)
+    if (exists) return 'exists'
+    await releaseVersion('rAsapCopy', 'book-release-only', content('The Unpublished Atlas', 'edge: release only', 'Exists only in the ASAP (Copy) release'))
+  })
   // 5. A variant whose base was never published (book-rail has only a draft).
   await attempt('variant with no published base', () =>
     variantVersion('book-rail', audienceVariantId('Returning visitors'), 'drafts', content('Notes from the Northern Rail', 'By Jonas Aalto · 2018', 'Returning visitors · base never published')),

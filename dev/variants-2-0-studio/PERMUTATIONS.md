@@ -8,6 +8,14 @@ so; so does this file.
 `draft | published | release` (plus scheduled drafts). A variant's version can sit inside a release.
 There is no recursive nesting ("draft of a draft", "release of drafts"); do not build one.
 
+## C3 edge: release only (answered by the handoff, 19 Oct)
+A document that exists only inside a release (no published base, no draft) shows the SAME versions control: the mark
+appears whenever a document has more than draft and published, and a release version counts. The small base-state
+badge on the control's corner describes the base document, so with no base there is NO badge (never fake a ring). In
+the popover there is no "All users (Default)" first row; the list starts with the release version(s), newest edit
+first, with the release name and scheduled time. Seeded as `book-release-only` (subtitle "edge: release only"), in the
+ASAP (Copy) release. Not drawn in Figma yet; the studio is the first place to compare it.
+
 ## Axes
 - **State:** published; draft; release version (as soon as possible, scheduled, undecided; archived or
   published releases); scheduled draft (separate Studio feature); agent bundle (rare).
