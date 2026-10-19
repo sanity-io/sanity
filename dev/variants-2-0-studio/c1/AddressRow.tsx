@@ -16,7 +16,10 @@ import {DimensionIcon} from './dimensionIcons'
 import {Picker} from './Picker'
 import {useOptionState} from '../options/store'
 import {usePerspectiveState} from './state'
+import {CHIP_SHAPE} from './Controls'
 import {DimensionButton, StateMenu, VersionGlyph} from './StateMenu'
+
+const CHIP_INNER = {height: 23, minHeight: 23} as const
 
 /**
  * An address chip, built as the real `PerspectiveFilter` pill is: one `Card` (radius 2 = 3px, 1px
@@ -39,7 +42,8 @@ function AddressChip(props: {
   setRef?: (el: HTMLElement | null) => void
 }) {
   return (
-    <Card border data-testid={props.testId} radius={2} ref={props.setRef}>
+    // UI-CONSISTENCY section 2: 25px including the 1px border, so the buttons inside are 23px.
+    <Card border data-testid={props.testId} radius={CHIP_SHAPE === 'round' ? 'full' : 2} ref={props.setRef} style={{height: 25}}>
       <Flex align="center">
         <Button
           aria-label={props.accessibleName}
@@ -47,6 +51,8 @@ function AddressChip(props: {
           iconRight={ChevronDownIcon}
           mode="bleed"
           onClick={props.onOpen}
+          radius={CHIP_SHAPE === 'round' ? 'full' : undefined}
+          style={CHIP_INNER}
           text={props.text}
           tooltipProps={null}
         />
@@ -57,6 +63,8 @@ function AddressChip(props: {
           icon={RemoveIcon}
           mode="bleed"
           onClick={props.onRemove}
+          radius={CHIP_SHAPE === 'round' ? 'full' : undefined}
+          style={CHIP_INNER}
           tooltipProps={null}
         />
       </Flex>
@@ -118,6 +126,7 @@ export function AddressRow() {
           trigger={
             <DimensionButton
               icon={<VersionGlyph version={s.version} />}
+              shape={CHIP_SHAPE}
               testId="row-version"
               text={s.versionLabel}
             />

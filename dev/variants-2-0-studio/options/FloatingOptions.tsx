@@ -50,7 +50,7 @@ function FloatingOptions() {
   return (
     <div style={{position: 'fixed', left: 16, bottom: 16, zIndex: 1000000}}>
       {open ? (
-        <Card radius={3} shadow={3} style={{width: 360, maxHeight: '70vh', overflow: 'auto'}}>
+        <Card radius={2} shadow={3} style={{width: 360, maxHeight: '70vh', overflow: 'auto'}}>
           <Stack gap={3} padding={3}>
             <Flex align="center" gap={2}>
               <Box flex={1}>
@@ -105,6 +105,7 @@ function FloatingOptions() {
                     mode={state.stage === stage ? 'default' : 'ghost'}
                     onClick={() => setStage(stage)}
                     padding={2}
+                    radius="full"
                     text={text}
                     tone={state.stage === stage ? 'primary' : 'default'}
                   />
@@ -123,6 +124,7 @@ function FloatingOptions() {
                     disabled={state.stage === 'open-beta'}
                     onClick={() => setDimensionLimit(limit)}
                     padding={2}
+                    radius="full"
                     text={text}
                     tone={state.dimensionLimit === limit ? 'primary' : 'default'}
                   />

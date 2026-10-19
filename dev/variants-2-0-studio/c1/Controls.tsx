@@ -42,9 +42,16 @@ export const EXTRA_ROW_COPY_OPEN_BETA = 'View as…'
 
 /**
  * The two top-bar controls share ONE shape. `round` matches the stock Drafts pill (full radius); `box` is the 3px
- * control. Row chips and the row's own controls stay 3px either way (the real PerspectiveFilter).
+ * control. The row's chips follow CHIP_SHAPE, its buttons stay 3px.
  */
 export const CONTROL_SHAPE: 'round' | 'box' = 'round'
+
+/**
+ * UI-CONSISTENCY section 1: a chip shows a chosen value or a state, so it is a pill (full radius), like the stock
+ * version chips in the document header. `round` (default) covers the row's chips (dimension chip with its cross,
+ * pending chip) and the row's state button; `box` is the 3px chip. Buttons (Add dimension, Clear) stay 3px.
+ */
+export const CHIP_SHAPE: 'round' | 'box' = 'round'
 
 /**
  * Kept from the earlier rule: the pill ALWAYS opens the menu on its chevron. The Storybook exploration's rule (a
