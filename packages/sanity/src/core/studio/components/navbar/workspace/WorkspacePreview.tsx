@@ -2,7 +2,7 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
-import {Text, Box, Flex, Icon} from 'ui5'
+import {Text, Box, Flex, Icon, type IconProps} from 'ui5'
 
 import {type WorkspaceLoginStatus} from './hooks/useWorkspaceLoginStatus'
 
@@ -54,7 +54,7 @@ const createIcon = (iconSource: ComponentType | ReactNode) => {
 
 export interface WorkspacePreviewProps {
   icon?: ComponentType | ReactNode
-  iconRight?: ComponentType | ReactNode
+  iconRight?: IconProps['icon']
   selected?: boolean
   state?: WorkspaceLoginStatus
   subtitle?: string
@@ -63,8 +63,6 @@ export interface WorkspacePreviewProps {
 
 export function WorkspacePreview(props: WorkspacePreviewProps) {
   const {state, subtitle, selected, title, icon, iconRight} = props
-
-  const iconRightComponent = useMemo(() => createIcon(iconRight), [iconRight])
 
   return (
     <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={3}>
@@ -90,11 +88,10 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
         </Box>
       )}
 
-      {(selected || iconRightComponent) && (
+      {(selected || iconRight) && (
         <Flex alignItems="center" gap={4} paddingLeft={3} paddingRight={2}>
-          {selected && <Icon size={1} icon={CheckmarkIcon} style={{margin: '-0.375rem'}} />}
-
-          {iconRightComponent}
+          {selected && <Icon icon={CheckmarkIcon} style={{margin: '-0.4375rem'}} />}
+          {iconRight && <Icon icon={iconRight} style={{margin: '-0.4375rem'}} />}
         </Flex>
       )}
     </Flex>
