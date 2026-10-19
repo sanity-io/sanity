@@ -9,7 +9,15 @@ import {PerspectiveProvider} from '../c1/state'
 import {useOptionAExtension} from '../c1/Controls'
 import {useRowOverride} from '../c3/RowOverride'
 import {COMPONENTS, type OptionStatus} from './registry'
-import {maxOptionCount, resetOptions, resolveOption, setGlobalChoice, setOverride, useOptionState} from './store'
+import {
+  maxOptionCount,
+  resetOptions,
+  resolveOption,
+  setDimensionLimit,
+  setGlobalChoice,
+  setOverride,
+  useOptionState,
+} from './store'
 
 const LETTERS = 'ABCDEFGH'
 
@@ -76,6 +84,23 @@ function FloatingOptions() {
                   text="Stock"
                   title="Show stock Studio: every design slot renders what Studio does today"
                 />
+              </Flex>
+            </Stack>
+
+            <Stack gap={2}>
+              <Text muted size={0}>Variant dimensions shown (C1 picker form)</Text>
+              <Flex gap={1}>
+                {([[null, 'All'], [1, '1 list'], [2, '2 columns'], [5, '5 rail']] as const).map(([limit, text]) => (
+                  <Button
+                    fontSize={0}
+                    key={text}
+                    mode={state.dimensionLimit === limit ? 'default' : 'ghost'}
+                    onClick={() => setDimensionLimit(limit)}
+                    padding={2}
+                    text={text}
+                    tone={state.dimensionLimit === limit ? 'primary' : 'default'}
+                  />
+                ))}
               </Flex>
             </Stack>
 

@@ -1,6 +1,6 @@
 // The version list the C3 parts draw. The shape is the Storybook exploration's `AudienceVersion`
-// (doc/nordic.ts), fed live by ../data/versions.ts instead of fixtures. Additions in this branch (PROPOSED
-// upstream): state 'undecided', `scheduledDraft`, and real timestamps / bundle id for the time line.
+// (doc/nordic.ts), fed live by ../data/versions.ts instead of fixtures. 'undecided' and `scheduledDraft` are now
+// upstream (Storybook 9748ea43e0); the real timestamps and bundle id for the time line exist only here.
 export type {AudienceVersion, VersionState as State} from '../data/versions'
 import type {AudienceVersion} from '../data/versions'
 

@@ -62,6 +62,19 @@ const definitions: Definition[] = [
   {variantId: 'loc-en-gb', title: 'en-GB', conditions: {locale: 'en-GB'}, priority: 100},
   {variantId: 'loc-de-de', title: 'de-DE', conditions: {locale: 'de-DE'}, priority: 100},
   {variantId: 'loc-fr-fr', title: 'fr-FR', conditions: {locale: 'fr-FR'}, priority: 100},
+  // More dimensions, so the picker's three forms (1: list, 2 to 4: columns, 5+: rail) can all be reached by limiting
+  // how many the Config panel shows. One single-condition variant per value.
+  {variantId: 'mkt-united-kingdom', title: 'United Kingdom', conditions: {market: 'united-kingdom'}, priority: 90},
+  {variantId: 'mkt-germany', title: 'Germany', conditions: {market: 'germany'}, priority: 90},
+  {variantId: 'mkt-france', title: 'France', conditions: {market: 'france'}, priority: 90},
+  {variantId: 'chn-web', title: 'Web', conditions: {channel: 'web'}, priority: 40},
+  {variantId: 'chn-app', title: 'App', conditions: {channel: 'app'}, priority: 40},
+  {variantId: 'chn-email', title: 'Email', conditions: {channel: 'email'}, priority: 40},
+  {variantId: 'cmp-black-friday', title: 'Black Friday', conditions: {campaign: 'black-friday'}, priority: 60},
+  {variantId: 'cmp-halloween', title: 'Halloween', conditions: {campaign: 'halloween'}, priority: 60},
+  {variantId: 'plan-free', title: 'Free', conditions: {plan: 'free'}, priority: 30},
+  {variantId: 'plan-team', title: 'Team', conditions: {plan: 'team'}, priority: 30},
+  {variantId: 'plan-enterprise', title: 'Enterprise', conditions: {plan: 'enterprise'}, priority: 30},
   {variantId: 'aud-loyal-customers__loc-de-de', title: 'Loyal customers · de-DE', conditions: {audience: 'loyal-customers', locale: 'de-DE'}, priority: 100},
   {variantId: 'aud-students__loc-fr-fr', title: 'Students · fr-FR', conditions: {audience: 'students', locale: 'fr-FR'}, priority: 100},
 ]

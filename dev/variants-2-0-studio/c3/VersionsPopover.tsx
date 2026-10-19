@@ -1,6 +1,6 @@
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit ef8bd9ec7f, lib/explorations/variants-2-0/mark/VersionsPopover.tsx).
-// Changes from the original: imports point at this monorepo and ./types; nothing else, except where marked "LIVE:".
+// explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/VersionsPopover.tsx).
+// Only the imports differ from the original (they point at this monorepo and ./types).
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 

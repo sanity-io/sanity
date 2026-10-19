@@ -1,6 +1,6 @@
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit ef8bd9ec7f, lib/explorations/variants-2-0/mark/versionLines.ts).
-// Changes from the original: imports point at this monorepo and ./types; nothing else, except where marked "LIVE:".
+// explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/versionLines.ts).
+// Only the imports differ from the original (they point at this monorepo and ./types).
 import {audienceLines, type AudienceVersion} from './types'
 
 /** One line of the popover: an audience (or the base document) and its versions. */

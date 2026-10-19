@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
 import {useClient} from 'sanity'
 
+import {useOptionState} from '../options/store'
 import {deriveDimensions, type DimensionSpec, type SystemVariant} from './model'
 
 const DEFINITIONS_GROQ = `*[_type == "system.variant"]{_id, conditions, priority, metadata}`
@@ -39,7 +40,10 @@ export function useVariantDefinitions(): SystemVariant[] {
   return variants
 }
 
+/** The dimensions the definitions use, limited to the first N by the Config panel (design control, no data change). */
 export function useDimensions(): DimensionSpec[] {
   const variants = useVariantDefinitions()
-  return deriveDimensions(variants)
+  const {dimensionLimit} = useOptionState()
+  const all = deriveDimensions(variants)
+  return dimensionLimit === null ? all : all.slice(0, dimensionLimit)
 }

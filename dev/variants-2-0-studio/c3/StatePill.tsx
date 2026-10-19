@@ -1,6 +1,6 @@
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit ef8bd9ec7f, lib/explorations/variants-2-0/mark/StatePill.tsx).
-// Changes from the original: imports point at this monorepo and ./types; nothing else, except where marked "LIVE:".
+// explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/StatePill.tsx).
+// Only the imports differ from the original (they point at this monorepo and ./types).
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {ReleaseAvatarIcon} from '../../../packages/sanity/src/core/releases/components/ReleaseAvatar'
 import {LATEST, PUBLISHED} from '../../../packages/sanity/src/core/releases/util/const'
@@ -29,7 +29,6 @@ export const PILL_GLYPHS = {
   draft: {release: LATEST},
   scheduled: {releaseType: 'scheduled'},
   asap: {releaseType: 'asap'},
-  // LIVE (PROPOSED upstream): a version in a release with no type or date yet.
   undecided: {releaseType: 'undecided'},
 } as const
 
@@ -41,7 +40,8 @@ const PILLS: Record<
   draft: {label: 'Draft', tone: 'caution', glyph: {release: LATEST}},
   scheduled: {label: 'Scheduled', tone: 'suggest', glyph: {releaseType: 'scheduled'}},
   asap: {label: 'ASAP', tone: 'caution', glyph: {releaseType: 'asap'}},
-  undecided: {label: 'Undecided', tone: 'neutral', glyph: {releaseType: 'undecided'}},
+  // The Studio's own key `release.type.undecided`.
+  undecided: {label: 'Undecided', tone: 'default', glyph: {releaseType: 'undecided'}},
 }
 
 /**

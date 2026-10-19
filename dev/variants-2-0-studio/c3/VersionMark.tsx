@@ -1,6 +1,6 @@
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit ef8bd9ec7f, lib/explorations/variants-2-0/mark/VersionMark.tsx).
-// Changes from the original: imports point at this monorepo and ./types; nothing else, except where marked "LIVE:".
+// explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/VersionMark.tsx).
+// Only the imports differ from the original (they point at this monorepo and ./types).
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
 
@@ -359,6 +359,11 @@ export function VersionMark(props: {
       {live && shown && reference ? (
         <Popover
           arrow={false}
+          // In a scrolling list pane the popover must not be clipped or flipped by the pane: it is
+          // portalled and bounded by the page (found in the live Studio list).
+          floatingBoundary={document.body}
+          portal
+          referenceBoundary={document.body}
           content={
             <div
               aria-hidden={readOnly || undefined}
@@ -416,11 +421,6 @@ export function VersionMark(props: {
           open
           padding={0}
           placement="right-start"
-          // LIVE: the real list pane scrolls and clips, so the popover has to leave it (Storybook has no such pane).
-          portal
-          // LIVE: fit against the viewport, not the narrow list pane the control sits in, or it never opens to the right.
-          floatingBoundary={typeof document === 'undefined' ? null : document.body}
-          referenceBoundary={typeof document === 'undefined' ? null : document.body}
           radius={SHELL[pattern].radius}
           referenceElement={reference}
           shadow={SHELL[pattern].shadow}

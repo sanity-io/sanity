@@ -66,6 +66,8 @@ Run `pnpm seed` (idempotent; needs a Sanity CLI login) and `node seed/verify.mts
 - **Added for the missing cases:** scheduled draft outside a release (`rSchedDraft`, cardinality one); undecided release;
   published release; archived release; variant with no published base (`book-rail`); a second dimension, locale
   (en-GB, de-DE, fr-FR) alone and combined with audience (`book-translations`); two live-edit books.
+- **Dimensions for C1's three picker forms:** 23 definitions over six dimensions (Audience 7, Locale 3, Market 3, Channel 3,
+  Campaign 2, Plan 3). The Config panel limits how many the picker shows: 1 = flat list, 2 = columns, 5 = rail. Checked live.
 - **Still missing:** a document with more than 12 versions; agent bundle; presence on a variant version; the
   draftsDisabled world (a workspace setting, not data); a variant defined with no document that has it, beyond
   `book-field-guide` and `book-tidewater` (no variants).

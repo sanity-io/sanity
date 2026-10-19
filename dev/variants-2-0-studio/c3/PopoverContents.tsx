@@ -1,6 +1,6 @@
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit ef8bd9ec7f, lib/explorations/variants-2-0/mark/PopoverContents.tsx).
-// Changes from the original: imports point at this monorepo and ./types; nothing else, except where marked "LIVE:".
+// explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/PopoverContents.tsx).
+// Only the imports differ from the original (they point at this monorepo and ./types).
 import {ReleaseAvatar} from '../../../packages/sanity/src/core/releases/components/ReleaseAvatar'
 import {Tooltip} from '../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 
@@ -34,7 +34,9 @@ const STATE_WORD: Record<State, string> = {
 
 /** The name of a state: a release is named, as the Studio names a release version. */
 const stateName = (v: AudienceVersion) =>
-  v.release && (v.state === 'scheduled' || v.state === 'asap' || v.state === 'undecided') ? v.release : STATE_WORD[v.state]
+  v.release && (v.state === 'scheduled' || v.state === 'asap' || v.state === 'undecided')
+    ? v.release
+    : STATE_WORD[v.state]
 
 /** A pill's label: a scheduled bundle shows its name and date. */
 const pillLabel = (v: AudienceVersion) =>
@@ -103,7 +105,9 @@ function StateAvatar({state}: {state: State}) {
     <ReleaseAvatar
       fontSize={2}
       padding={0}
-      releaseType={state === 'scheduled' ? 'scheduled' : 'asap'}
+      releaseType={
+        state === 'scheduled' ? 'scheduled' : state === 'undecided' ? 'undecided' : 'asap'
+      }
       size="small"
     />
   )

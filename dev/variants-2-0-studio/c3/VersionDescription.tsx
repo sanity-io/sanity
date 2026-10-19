@@ -1,6 +1,6 @@
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit ef8bd9ec7f, lib/explorations/variants-2-0/mark/VersionDescription.tsx).
-// Changes from the original: imports point at this monorepo and ./types; nothing else, except where marked "LIVE:".
+// explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/VersionDescription.tsx).
+// Only the imports differ from the original (they point at this monorepo and ./types).
 import {Fragment} from 'react'
 
 import {type AudienceVersion} from './types'
@@ -23,17 +23,17 @@ function StateText({version}: {version: AudienceVersion}) {
         .join(', ')
       return <>{['Scheduled', when].filter(Boolean).join(' ') + (time ? `, ${lower(time)}` : '')}</>
     }
-    case 'asap':
-      return (
-        <>
-          {(version.release ? `ASAP, ${version.release}` : 'ASAP') +
-            (time ? `, ${lower(time)}` : '')}
-        </>
-      )
     case 'undecided':
       return (
         <>
           {(version.release ? `Undecided, ${version.release}` : 'Undecided') +
+            (time ? `, ${lower(time)}` : '')}
+        </>
+      )
+    case 'asap':
+      return (
+        <>
+          {(version.release ? `ASAP, ${version.release}` : 'ASAP') +
             (time ? `, ${lower(time)}` : '')}
         </>
       )
