@@ -15,6 +15,8 @@ export interface AudienceVersion {
   /** `null` is the base document. */
   audience: string | null
   state: VersionState
+  /** The date of a scheduled version, such as `31 Oct`. */
+  when?: string
   /** The time of day of a scheduled version, such as `9:00 AM`. */
   at?: string
   /** The release title when the version is in a release. */
@@ -23,6 +25,11 @@ export interface AudienceVersion {
   scheduledDraft?: boolean
   createdMinutesAgo?: number
   updatedMinutesAgo?: number
+  /** Real timestamps of the version document, for the time line. */
+  createdAt?: string
+  updatedAt?: string
+  /** `published`, `drafts` or a release id. */
+  bundleId?: string
 }
 
 export interface RawVersionRow {
@@ -52,6 +59,10 @@ export const RELEASES_GROQ = `*[_type == "system.release"]{"id": string::split(_
 
 const minutesBetween = (now: Date, iso: string) => Math.max(0, Math.round((now.getTime() - new Date(iso).getTime()) / 60000))
 
+function dateLabel(iso: string, timeZone: string | undefined) {
+  return new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'short', timeZone}).format(new Date(iso))
+}
+
 function timeOfDay(iso: string, timeZone: string | undefined) {
   return new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: '2-digit', timeZone}).format(new Date(iso))
 }
@@ -76,6 +87,8 @@ export function toVersions(
       audience,
       createdMinutesAgo: minutesBetween(now, row._createdAt),
       updatedMinutesAgo: minutesBetween(now, row._updatedAt),
+      createdAt: row._createdAt,
+      updatedAt: row._updatedAt,
     }
 
     // Which bundle holds this document: `published`, `drafts` or a release id.
@@ -85,8 +98,8 @@ export function toVersions(
     else if (variantId) bundle = row.bundle ?? 'published'
     else bundle = row._id.split('.')[1] ?? 'published'
 
-    if (bundle === 'published') out.push({...base, state: 'published'})
-    else if (bundle === 'drafts') out.push({...base, state: 'draft'})
+    if (bundle === 'published') out.push({...base, state: 'published', bundleId: bundle})
+    else if (bundle === 'drafts') out.push({...base, state: 'draft', bundleId: bundle})
     else {
       const release = options.releases.get(bundle)
       // Versions in archived or published releases no longer represent anything live.
@@ -95,9 +108,12 @@ export function toVersions(
       out.push({
         ...base,
         state,
+        bundleId: bundle,
         release: release.title ?? bundle,
         ...(release.cardinality === 'one' ? {scheduledDraft: true} : {}),
-        ...(state === 'scheduled' && release.at ? {at: timeOfDay(release.at, options.timeZone)} : {}),
+        ...(state === 'scheduled' && release.at
+          ? {when: dateLabel(release.at, options.timeZone), at: timeOfDay(release.at, options.timeZone)}
+          : {}),
       })
     }
   }
