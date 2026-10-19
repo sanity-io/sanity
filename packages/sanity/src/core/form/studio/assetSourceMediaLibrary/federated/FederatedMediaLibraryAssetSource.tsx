@@ -53,7 +53,26 @@ export function FederatedMediaLibraryAssetSource(
   const [unavailable, setUnavailable] = useState(false)
 
   // The React Compiler memoizes this; identity is stable across renders.
-  const handleUnavailable = () => setUnavailable(true)
+  const handleUnavailable = () => {
+    // The dying view may have left upload files mid-flight (`uploading`) or
+    // individually failed (`error`) — its writer is gone, so nothing else
+    // will ever move them, and the iframe fallback dialog only issues its
+    // `uploadRequest` when every queued file is still `pending`. Rewind those
+    // files so the fallback resumes the whole batch; the Media Library
+    // deduplicates any bytes that already landed (`alreadyExists`), and the
+    // uploader emits per-file `error` toasts only at `all-complete`, so the
+    // rewind is invisible to the user. Aborted files are left alone: an
+    // abort in this flow cancels the whole batch, which empties the file
+    // list via `all-complete` before this handler can run.
+    if (sourceProps.action === 'upload' && sourceProps.uploader) {
+      for (const file of sourceProps.uploader.getFiles()) {
+        if (file.status === 'uploading' || file.status === 'error') {
+          sourceProps.uploader.updateFile(file.id, {status: 'pending', progress: 0})
+        }
+      }
+    }
+    setUnavailable(true)
+  }
 
   if (unavailable) {
     return <MediaLibraryAssetSource {...sourceProps} libraryId={libraryId} />
