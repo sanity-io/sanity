@@ -8,6 +8,7 @@ import {Box, Flex} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
+import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
 import {parseQueryUrl} from '../../../util/parseQueryUrl'
 import {useContentSize} from '../../hooks/useContentSize'
@@ -103,6 +104,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const [lintFindings, setLintFindings] = useState<QueryLintFinding[]>([])
 
   const {resolved, params, request, buildRequest} = useQueryRequestBuilder(tab)
+  const isVariantsEnabled = useVariantsEnabled()
   const isFetching = useSelector(runnerRef, selectIsFetching)
 
   const setQuery = useCallback(
@@ -404,13 +406,17 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
         })
       }
       // A tab cannot pin a variant (its option follows the navbar or sends none), so a request
-      // made with one the navbar does not have selected cannot be reproduced as pasted
+      // made with one the navbar does not have selected cannot be reproduced as pasted; where
+      // the workspace has variants switched off there is no navbar selector to select it with
       if (parsed.variant !== undefined && parsed.variant !== resolved.variant) {
         toast.push({
           closable: true,
           id: 'vista-paste-variant',
           status: 'warning',
-          title: t('vista.paste.unavailable-variant', {variant: parsed.variant}),
+          title: t(
+            isVariantsEnabled ? 'vista.paste.unavailable-variant' : 'vista.paste.variants-disabled',
+            {variant: parsed.variant},
+          ),
         })
       }
       return true

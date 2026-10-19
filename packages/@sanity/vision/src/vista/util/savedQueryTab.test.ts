@@ -13,11 +13,12 @@ const {settings} = createInitialState({
   defaultApiVersion: '2025-02-19',
 })
 
-/** A studio on the `drafts` perspective with no variant selected */
+/** A studio on the `drafts` perspective with variants on but none selected */
 const environment: RequestEnvironment = {
   workspaceDataset: 'production',
   perspectiveStack: ['drafts'],
   selectedVariantNames: [],
+  isVariantsEnabled: true,
   scheduledDraftsStack: undefined,
   isScheduledDraftsEnabled: false,
 }
@@ -170,6 +171,11 @@ describe('savedQueryTab', () => {
     expect(
       matches(tab, url('*', {perspective: 'drafts'}, 'vX/data/query/production'), withVariant),
     ).toBe(false)
+    // Where the workspace has variants switched off, the tab sends none, whatever the navbar's
+    // URL still carries, so it sends the request without the variant and not the one with it
+    const variantsOff = {...withVariant, isVariantsEnabled: false}
+    expect(matches(tab, variantUrl, variantsOff)).toBe(false)
+    expect(matches(tab, url('*', {perspective: 'drafts'}), variantsOff)).toBe(true)
 
     const sourceMapUrl = url('*', {perspective: 'drafts', resultSourceMap: 'true'})
     const sourceMapTab = {...tab, options: {...tab.options, includeSourceMap: true}}

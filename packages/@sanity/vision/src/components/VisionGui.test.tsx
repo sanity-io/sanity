@@ -15,6 +15,8 @@ const theme = buildTheme()
 const sanityMocks = vi.hoisted(() => ({
   usePerspective: vi.fn(),
   useClient: vi.fn(),
+  // The workspace the tool runs in: variants on, as the tests of the navbar variant need
+  workspace: {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}},
 }))
 
 class ResizeObserverMock {
@@ -43,7 +45,7 @@ vi.mock('sanity', () => ({
   useClient: sanityMocks.useClient,
   useActiveReleases: vi.fn(() => ({data: [], loading: false})),
   useScheduledDraftsEnabled: vi.fn(() => false),
-  useWorkspace: vi.fn(() => ({document: {drafts: {enabled: true}}})),
+  useWorkspace: () => sanityMocks.workspace,
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
@@ -193,6 +195,40 @@ describe('VisionGui pinned release and variant', () => {
   beforeEach(() => {
     localStorage.clear()
     sanityMocks.usePerspective.mockReturnValue(BASE_PERSPECTIVE)
+    sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
+  })
+
+  it('does not attach a variant where the workspace has variants switched off', async () => {
+    // The same flag the studio hides its own variant UI behind, the navbar's selector included
+    sanityMocks.workspace = {
+      document: {drafts: {enabled: true}},
+      beta: {variants: {enabled: false}},
+    }
+    seedVisionStorage({perspective: 'pinnedRelease', apiVersion: 'v2025-02-19'})
+
+    // A variant the URL still carries for the navbar is not one the studio shows
+    const {fetchConfigs} = renderVision({
+      ...BASE_PERSPECTIVE,
+      selectedVariantNames: ['french'],
+    })
+
+    expect(getPerspectiveSelector().value).toBe('pinnedRelease')
+    // Nothing locks the API version to vX
+    expect(getApiVersionSelector().value).toBe('v2025-02-19')
+    expect(getApiVersionSelector().disabled).toBe(false)
+
+    fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
+
+    await waitFor(() => {
+      expect(getQueryUrl()).toContain('/v2025-02-19/')
+      expect(getQueryUrlParams().get('variant')).toBeNull()
+      expect(getQueryUrlParams().get('perspective')).toBe('published')
+    })
+
+    expect(fetchConfigs.at(-1)).toEqual(
+      expect.objectContaining({apiVersion: 'v2025-02-19', perspective: ['published']}),
+    )
+    expect(fetchConfigs.at(-1)?.variant).toBeUndefined()
   })
 
   it('switches to pinned release and locks vX when the navbar has a variant', async () => {
