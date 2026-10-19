@@ -1,10 +1,10 @@
 import {ImageIcon} from '@sanity/icons/Image'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type FormNodeValidation} from '@sanity/types'
-import {Card, Text, TextInput} from '@sanity/ui'
+import {Card, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ReactNode} from 'react'
-import {Box, VStack} from 'ui5'
+import {Text, Box, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
@@ -61,7 +61,7 @@ function CellPreview({title, media}: {title: string; media?: ReactNode}) {
     <Card flex={1} padding={3} tone="inherit">
       <VStack gap={3}>
         {media}
-        <Text size={1} textOverflow="ellipsis" weight="medium">
+        <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
           {title}
         </Text>
       </VStack>
@@ -71,7 +71,7 @@ function CellPreview({title, media}: {title: string; media?: ReactNode}) {
 
 const MEDIA = (
   <Card padding={4} radius={2} tone="transparent">
-    <Text align="center" muted size={4}>
+    <Text align="center" muted size={4} as="div" trim={true}>
       <ImageIcon />
     </Text>
   </Card>
@@ -93,7 +93,7 @@ export function ArrayItemLayoutsStory() {
       <Card padding={4} style={{maxWidth: 640}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               grid cells (default, presence, error + selected)
             </Text>
             <Card border padding={1} radius={1}>
@@ -137,7 +137,7 @@ export function ArrayItemLayoutsStory() {
           </VStack>
 
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               rows (default, presence + error + selected, read-only + footer)
             </Text>
             <Card border padding={1} radius={1}>
@@ -165,7 +165,7 @@ export function ArrayItemLayoutsStory() {
                     dragHandle
                     footer={
                       <Box paddingX={2} paddingBottom={2}>
-                        <Text muted size={1}>
+                        <Text muted size={1} as="div" trim={true}>
                           Footer slot
                         </Text>
                       </Box>

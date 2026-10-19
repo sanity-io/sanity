@@ -3,12 +3,12 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
-import {Card, Inline, Layer, Text} from '@sanity/ui'
+import {Card, Inline, Layer} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import sortBy from 'lodash-es/sortBy.js'
 import {type ComponentType, type ReactNode, type RefAttributes, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -90,10 +90,14 @@ function uploadTarget<Props>(
             description: rejected.map((task, i) => (
               <Flex key={i} gap={2} padding={2}>
                 <Box>
-                  <Text weight="medium">{task.file.name}</Text>
+                  <Text weight="medium" as="div" trim={true}>
+                    {task.file.name}
+                  </Text>
                 </Box>
                 <Box>
-                  <Text size={1}>({task.file.type})</Text>
+                  <Text size={1} as="div" trim={true}>
+                    ({task.file.type})
+                  </Text>
                 </Box>
               </Flex>
             )),
@@ -181,7 +185,7 @@ function DropMessage(props: DropMessageProps) {
       {acceptedFiles.length > 0 ? (
         <>
           <Inline gap={2}>
-            <Text>
+            <Text as="div" trim={true}>
               <UploadIcon />
             </Text>
             {multiple
@@ -189,15 +193,15 @@ function DropMessage(props: DropMessageProps) {
                   count: acceptedFiles.length,
                 })
               : t('inputs.files.common.drop-message.drop-to-upload')}
-            <Text />
+            <Text as="div" trim={true} />
           </Inline>
           {rejectedFilesCount > 0 && (
             <Box marginTop={4}>
               <Inline gap={2}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   <AccessDeniedIcon />
                 </Text>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('inputs.files.common.drop-message.drop-to-upload.rejected-file-message', {
                     count: rejectedFilesCount,
                   })}
@@ -208,10 +212,10 @@ function DropMessage(props: DropMessageProps) {
         </>
       ) : (
         <Inline gap={2}>
-          <Text>
+          <Text as="div" trim={true}>
             <AccessDeniedIcon />
           </Text>
-          <Text>
+          <Text as="div" trim={true}>
             {t('inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message', {
               count: hoveringFiles.length,
             })}

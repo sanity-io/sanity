@@ -1,11 +1,11 @@
 import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
 import {UnknownIcon} from '@sanity/icons/Unknown'
-import {Card, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Card, type Theme, useClickOutsideEvent} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -56,9 +56,11 @@ export function IncompatibleItemType(props: Props) {
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
           <VStack gap={4}>
             <Box>
-              <Text weight="medium">{t('inputs.array.error.type-is-incompatible-title')}</Text>
+              <Text weight="medium" as="div" trim={true}>
+                {t('inputs.array.error.type-is-incompatible-title')}
+              </Text>
             </Box>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.current-schema-not-declare-description"
@@ -66,12 +68,12 @@ export function IncompatibleItemType(props: Props) {
               />
             </Text>
             <Box>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
             <VStack gap={2}>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {t('inputs.array.error.json-representation-description')}
               </Text>
               <Card padding={2} overflow="auto" border>
@@ -100,13 +102,13 @@ export function IncompatibleItemType(props: Props) {
       >
         <Flex alignItems="center">
           <Box marginRight={3}>
-            <Text>
+            <Text as="div" trim={true}>
               <UnknownIcon />
             </Text>
           </Box>
 
           <Box flexBasis="0%" flexGrow={1}>
-            <Text size={1} textOverflow="ellipsis">
+            <Text size={1} truncate={1} as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.type-is-incompatible-prompt"
