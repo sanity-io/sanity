@@ -124,7 +124,7 @@ export const COMPONENTS: ComponentDef[] = [
       {
         id: 'a',
         label: 'Sidebar / pane',
-        summary: 'A pane beside the document. Arrives from the inventory side panel (Andrej, Storybook PR #47).',
+        summary: "Andrej's inventory side panel (Storybook PR #47) as the document inspector, live data. V1: not carried over, the navbar eye and the bulk bar.",
         status: 'candidate',
       },
       {

@@ -74,3 +74,11 @@ Run `pnpm seed` (idempotent; needs a Sanity CLI login) and `node seed/verify.mts
 - Times: "when" in the fixture is not reproduced; created and edited times are real (seed time). Releases are in
   Europe/Berlin (+01:00 after 25 Oct).
 - The archived release holds no visible version (archiving discards it); only its state is seeded.
+
+## C4 Option A: Andrej's inventory side panel, live (19 Oct)
+Ported from the Storybook Variants 2.0 branch at db53306896 (`c4/inventory/`: model, panel, menus, date span picker; each
+file has a header). His mock "Lisbon guide" fixtures are replaced by a live world (`useLiveWorld.ts`): the open
+document's versions, the real releases, the variant definitions and the dimensions the studio shows. Choosing a row sets
+the studio perspective and the C1 row's variant values. Not carried over: the navbar eye and the bulk bar that replaces
+the toolbar. His three sample saved views are removed (saved views are a fast follow). Changed fields and workflow
+stages are not computed from live data yet, so those columns and the By stage view are empty.

@@ -5,6 +5,7 @@ import {type DocumentInspector, type DocumentInspectorProps, ReleaseAvatarIcon} 
 import {useVersionList} from '../data/useVersionList'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PlaceholderSlot} from '../slots/PlaceholderSlot'
+import {LiveInventory} from './inventory/LiveInventory'
 import {VersionTime} from '../c3/time'
 import {type AudienceVersion} from '../data/versions'
 
@@ -21,7 +22,8 @@ function glyph(v: AudienceVersion) {
 
 function Inventory({documentId}: DocumentInspectorProps) {
   const option = useOption('c4')
-  const versions = useVersionList(documentId)
+  const versions = useVersionList(documentId, option === 'b')
+  if (option === 'a') return <LiveInventory documentId={documentId} title={documentId} />
   if (option !== 'b') return <PlaceholderSlot component="c4" />
   if (!versions) return <Card padding={3}><Text muted size={1}>Loading versions…</Text></Card>
 

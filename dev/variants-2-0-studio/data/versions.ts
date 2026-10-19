@@ -30,6 +30,8 @@ export interface AudienceVersion {
   updatedAt?: string
   /** `published`, `drafts` or a release id. */
   bundleId?: string
+  /** The short variant id (the `_id` after `_.variants.`), `undefined` for the base document. */
+  variantId?: string
 }
 
 export interface RawVersionRow {
@@ -89,6 +91,7 @@ export function toVersions(
       updatedMinutesAgo: minutesBetween(now, row._updatedAt),
       createdAt: row._createdAt,
       updatedAt: row._updatedAt,
+      ...(variantId ? {variantId} : {}),
     }
 
     // Which bundle holds this document: `published`, `drafts` or a release id.
