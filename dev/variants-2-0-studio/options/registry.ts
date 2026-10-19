@@ -129,7 +129,7 @@ export const COMPONENTS: ComponentDef[] = [
     pick: "Concept; the spec frame is on this page",
     where: 'Design slots tool.',
     options: [
-      {id: 'a', label: 'Table', summary: 'The table as the primary pattern; the sidebar is its smallest slice.', status: 'not-drawn', refs: 'Spec frame in Figma E5'},
+      {id: 'a', label: 'Table', summary: 'The table as the primary pattern; the sidebar is its smallest slice.', status: 'candidate', refs: 'Spec frame in Figma E5'},
       {id: 'b', label: 'Table + flyout', summary: 'Notion-like: table primary, the document form as a flyout (future).', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -143,7 +143,7 @@ export const COMPONENTS: ComponentDef[] = [
     pick: "No change; table stakes",
     where: 'Design slots tool.',
     options: [
-      {id: 'a', label: 'As today', summary: 'The Variants tool as it is.', status: 'not-drawn', refs: 'Figma E6'},
+      {id: 'a', label: 'As today', summary: 'The Variants tool as the definition lens of the table.', status: 'candidate', refs: 'Figma E6'},
       {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -184,7 +184,7 @@ export const COMPONENTS: ComponentDef[] = [
     pick: "Polish only",
     where: 'Design slots tool.',
     options: [
-      {id: 'a', label: 'Table, polished', summary: 'Aligned with C6; polish only.', status: 'not-drawn', refs: 'Figma E8'},
+      {id: 'a', label: 'Table, polished', summary: 'Aligned with C6; polish only.', status: 'candidate', refs: 'Figma E8'},
       {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -211,13 +211,13 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
     b: 'The inventory opens as a popover from Manage versions.',
     c: 'The versions of this document as a plain list in the inspector.',
   },
-  c5: {a: 'Table. Not drawn yet.'},
-  c6: {a: 'As today. Not drawn yet.'},
+  c5: {a: 'Table with four lenses, on real data.', b: 'The table plus a flyout: a row opens its inventory.'},
+  c6: {a: 'Definitions as rows, with the documents that miss each.'},
   c7: {
     a: 'A banner on a missing variant, with Create variant, in every version.',
     b: 'No banner in Drafts; a hint in the pane header. Banner only in Published and releases.',
   },
-  c8: {a: 'Table, polished. Not drawn yet.'},
+  c8: {a: 'Releases as rows: documents, variants, schedule.'},
 }
 
 // Diagram data on the 200 x 100 grid: the part that changes.
@@ -247,13 +247,13 @@ const DIAGRAMS: Record<string, Record<string, DiagramSpec>> = {
     b: {shapes: [{kind: 'box', x: 96, y: 26, w: 64, h: 50}]},
     c: {frame: 'inspector', shapes: [24, 36, 48].map((y) => ({kind: 'box' as const, x: 148, y, w: 47, h: 6}))},
   },
-  c5: {a: {dashed: true}},
-  c6: {a: {dashed: true}},
+  c5: {a: {shapes: [{kind: 'box', x: 56, y: 28, w: 140, h: 62}]}, b: {shapes: [{kind: 'box', x: 56, y: 28, w: 88, h: 62}, {kind: 'box', x: 148, y: 28, w: 48, h: 62}]}},
+  c6: {a: {shapes: [{kind: 'box', x: 56, y: 28, w: 140, h: 62}]}},
   c7: {
     a: {shapes: [{kind: 'box', x: 53, y: 25, w: 143, h: 10}]},
     b: {shapes: [{kind: 'box', x: 130, y: 14.5, w: 60, h: 5}]},
   },
-  c8: {a: {dashed: true}},
+  c8: {a: {shapes: [{kind: 'box', x: 56, y: 28, w: 140, h: 62}]}},
 }
 
 // Storybook story ids (from Storybook-Agent, 19 Oct). Opens at `<base>/?path=/story/<id>`.
