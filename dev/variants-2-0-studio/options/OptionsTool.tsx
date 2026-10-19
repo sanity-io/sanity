@@ -20,7 +20,7 @@ function OptionsPanel() {
         <Stack gap={2}>
           <Heading size={2}>Variants 2.0 options</Heading>
           <Text muted size={1}>
-            The toolbar sets one choice for every component. Pick an option here to override a single
+            The floating control (bottom left) sets one choice for every component. Pick an option here to override a single
             component; "Auto" follows the toolbar.
           </Text>
         </Stack>

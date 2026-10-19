@@ -15,7 +15,7 @@ seeded data. Override with `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET
 
 - `options/registry.ts` lists each component and its options. Add an option by adding an entry.
 - `OptionSlot` renders whichever option is in force; a missing renderer shows a placeholder.
-- The toolbar picks the Nth option for every component (A, B, C, ...) or `Final`.
+- The floating control (bottom left) picks the Nth option for every component (A, B, C, ...) or `Final`.
 - The Variants 2.0 tool overrides one component. Choices persist in localStorage.
 
 ```tsx

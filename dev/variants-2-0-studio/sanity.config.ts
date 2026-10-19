@@ -1,7 +1,7 @@
 import {definePlugin, defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
-import {LayoutWithOptionsBar} from './options/OptionsBar'
+import {LayoutWithFloatingOptions} from './options/FloatingOptions'
 import {optionsTool} from './options/OptionsTool'
 import {schemaTypes} from './schemas'
 
@@ -11,7 +11,7 @@ const dataset = process.env.SANITY_STUDIO_DATASET || 'northfold'
 const variants2Options = definePlugin({
   name: 'variants-2-0-options',
   tools: [optionsTool],
-  studio: {components: {layout: LayoutWithOptionsBar}},
+  studio: {components: {layout: LayoutWithFloatingOptions}},
 })
 
 export default defineConfig({
