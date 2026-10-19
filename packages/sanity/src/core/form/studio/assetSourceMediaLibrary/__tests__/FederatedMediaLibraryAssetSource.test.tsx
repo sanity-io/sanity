@@ -125,4 +125,71 @@ describe('FederatedMediaLibraryAssetSource upload fallback', () => {
     expect(uploader.getFiles().map((file) => file.progress)).toEqual([0, 0, 0])
     expect(third.status).toBe('pending')
   })
+
+  // BUGBOT d8636908: a `complete`/`alreadyExists` file is already linked into
+  // the document. Today's view can't leave one behind mid-batch (terminal
+  // statuses flush in one synchronous burst that ends in `all-complete`), but
+  // the picker-mode contract would permit a per-file-flushing view — and
+  // resuming such a batch through the iframe would link the finished files a
+  // second time. The swap must fail the unfinished files instead, so
+  // `all-complete` releases the field.
+  test('fails the unfinished files instead of rewinding when part of the batch is already linked', async () => {
+    vi.mocked(loadFederatedAssetSourceModule).mockRejectedValue(new Error('remote failed to load'))
+
+    const uploader = new MediaLibraryUploader()
+    const [first, second, third] = uploader.upload([
+      new File(['a'], 'a.png', {type: 'image/png'}),
+      new File(['b'], 'b.png', {type: 'image/png'}),
+      new File(['c'], 'c.png', {type: 'image/png'}),
+    ])
+    // A (hypothetical, contract-legal) per-file-flushing view linked the
+    // first file before dying mid-batch.
+    uploader.updateFile(first.id, {status: 'complete', progress: 100})
+    uploader.updateFile(second.id, {status: 'uploading', progress: 40})
+
+    const events: string[] = []
+    uploader.subscribe((event) => events.push(event.type))
+
+    const sourceProps: AssetSourceComponentProps = {
+      action: 'upload',
+      assetSource: ASSET_SOURCE,
+      assetType: 'image',
+      accept: 'image/*',
+      selectionType: 'single',
+      selectedAssets: [],
+      onClose: noop,
+      onSelect: noop,
+      uploader,
+    }
+
+    const client = createMockSanityClient() as any as SanityClient
+    const TestProvider = await createTestProvider({
+      client,
+      config: {projectId: 'p1', dataset: 'd1', name: 'ws1'},
+    })
+
+    render(
+      <TestProvider>
+        <ColorSchemeProvider>
+          <FederatedMediaLibraryAssetSource
+            {...sourceProps}
+            libraryId="test-library-id"
+            view={VIEW}
+          />
+        </ColorSchemeProvider>
+      </TestProvider>,
+    )
+
+    await waitFor(() => expect(document.querySelector('iframe')).toBeTruthy())
+
+    // The unfinished files were failed (not rewound), so every file went
+    // terminal: the error + all-complete pair fired and the uploader reset
+    // its list — the field is released rather than stuck mid-batch.
+    expect(second.status).toBe('error')
+    expect(third.status).toBe('error')
+    expect(first.status).toBe('complete')
+    expect(events).toContain('error')
+    expect(events).toContain('all-complete')
+    expect(uploader.getFiles()).toEqual([])
+  })
 })

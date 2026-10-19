@@ -53,7 +53,7 @@ export function FederatedMediaLibraryAssetSource(
   const [unavailable, setUnavailable] = useState(false)
 
   // The React Compiler memoizes this; identity is stable across renders.
-  const handleUnavailable = () => {
+  const handleUnavailable = (reason: unknown) => {
     // The dying view may have left upload files mid-flight (`uploading`) or
     // individually failed (`error`) — its writer is gone, so nothing else
     // will ever move them, and the iframe fallback dialog only issues its
@@ -65,8 +65,27 @@ export function FederatedMediaLibraryAssetSource(
     // abort in this flow cancels the whole batch, which empties the file
     // list via `all-complete` before this handler can run.
     if (sourceProps.action === 'upload' && sourceProps.uploader) {
-      for (const file of sourceProps.uploader.getFiles()) {
-        if (file.status === 'uploading' || file.status === 'error') {
+      const files = sourceProps.uploader.getFiles()
+      // A `complete`/`alreadyExists` file is already linked into the document.
+      // Today's view flushes those statuses in one synchronous batch that ends
+      // in `all-complete` (which empties this list), so they can't be seen
+      // here — but the picker-mode contract only pins the ordering of the
+      // *last* terminal status, and views ship live while Studios pin their
+      // `sanity` version. Should a future view flush per file, resuming such a
+      // mixed batch through the iframe would link the finished files a second
+      // time; instead fail the unfinished files, like the generic
+      // `FederatedAssetSourceDialog` fallback does, so `all-complete` releases
+      // the field and the error toast invites a retry.
+      const partiallyLinked = files.some(
+        (file) => file.status === 'complete' || file.status === 'alreadyExists',
+      )
+      const error = reason instanceof Error ? reason : new Error(String(reason))
+      for (const file of files) {
+        if (partiallyLinked) {
+          if (file.status === 'pending' || file.status === 'uploading') {
+            sourceProps.uploader.updateFile(file.id, {status: 'error', error})
+          }
+        } else if (file.status === 'uploading' || file.status === 'error') {
           sourceProps.uploader.updateFile(file.id, {status: 'pending', progress: 0})
         }
       }
