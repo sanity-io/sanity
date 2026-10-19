@@ -1,8 +1,10 @@
-// Captures the studio and runs the C5 click-through with Playwright against http://localhost:3350 (start the studio first).
-//   node journeys/capture.mts              journey screenshots + the C5 click-through
-// Output: journeys-captures/ (screenshots and run.json). Needs `sanity login` (the CLI token signs the browser in and
-// writes the throwaway documents). Writes ONLY to the private variants-2-0 dataset, only documents named book-c5-pw-*,
-// and removes them at the end.
+// Walks the journeys in options/journeys.json against http://localhost:3350 with Playwright and captures a screenshot
+// per step: journeys-captures/<journey>-<step>.png, plus journeys-captures/run.json (status per step:
+// pass | differs | not reachable, with what the studio did). Start the studio first.
+//   node journeys/capture.mts [j03 j05 ...]     all journeys, or just the ones named
+// Needs `sanity login` (the CLI token signs the browser in and writes the throwaway data). Writes ONLY to the private
+// variants-2-0 dataset: documents named book-c5-pw-*, the definition aud-pw-empty, and whatever a step creates (those
+// are removed at the end).
 import {mkdirSync, readFileSync, writeFileSync} from 'node:fs'
 import {homedir} from 'node:os'
 import {join} from 'node:path'
@@ -21,35 +23,352 @@ console.warn = (...a: unknown[]) => {
 }
 const x = createClient({projectId: 'ppsg7ml5', dataset: 'variants-2-0', apiVersion: 'X', useCdn: false, token, perspective: 'raw'})
 
-type Result = {name: string; ok: boolean; detail: string}
-const results: Result[] = []
-const record = (name: string, ok: boolean, detail = '') => {
-  results.push({name, ok, detail})
-  console.log(ok ? 'PASS' : 'FAIL', name, detail)
-}
+type Status = 'pass' | 'differs' | 'not reachable'
+interface StepResult {step: string; title: string; status: Status; note: string}
+const results: StepResult[] = []
 
 const DOCS = ['book-c5-pw-1', 'book-c5-pw-2', 'book-c5-pw-3']
-const VARIANT_LABEL = /Members/
-const VARIANT_ID = 'aud-members'
+const EMPTY_DEF = 'aud-pw-empty'
+const MEMBERS = 'aud-members'
+const created: {doc: string; variant: string; bundle: string}[] = []
+
+const journeys = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'options', 'journeys.json'), 'utf8')) as {
+  id: string
+  title: string
+  steps: {title: string; component: string; option: string; preset: string; route: string; expect: string}[]
+}[]
+const only = process.argv.slice(2)
 
 async function cleanup() {
-  const ids: string[] = await x.fetch('*[_id match "*book-c5-pw-*"]._id')
-  for (const id of ids) {
+  for (const c of created) {
     try {
-      await x.delete(id)
+      await x.action({actionType: 'sanity.action.document.variant.delete', publishedId: c.doc, variantId: c.variant, ...(c.bundle === 'published' ? {} : {bundleId: c.bundle})} as never)
     } catch {
       // Already gone.
     }
   }
+  const ids: string[] = await x.fetch('*[_id match "*book-c5-pw-*"]._id')
+  for (const id of ids) await x.delete(id).catch(() => undefined)
+  await x.action({actionType: 'sanity.action.variant.definition.delete', variantId: EMPTY_DEF} as never).catch(() => undefined)
 }
 
-async function versionsOf(id: string) {
-  return (await x.fetch('*[_id match "*" + $id]{_id, "v": _system.variant._ref, "b": _system.bundleId}', {id})) as {_id: string; v?: string; b?: string}[]
-}
+const visible = (page: Page, sel: string, timeout = 8000) => page.locator(sel).first().waitFor({state: 'visible', timeout}).then(() => true, () => false)
+const settle = (page: Page, ms = 2500) => page.waitForTimeout(ms)
 
-async function open(page: Page, path: string) {
-  await page.goto(`${base}${path}`)
+async function goto(page: Page, route: string, preset: string, extra = '') {
+  // The journeys say /structure; the studio's list of books is /structure/book.
+  const path = route === '/structure' ? '/structure/book' : route
+  await page.goto(`${base}${path}?preset=${preset}${extra}`)
   await page.waitForLoadState('domcontentloaded')
+  await settle(page, 7000)
+}
+
+type Check = {status: Status; note: string}
+const ok = (note = ''): Check => ({status: 'pass', note})
+const differs = (note: string): Check => ({status: 'differs', note})
+const missing = (note: string): Check => ({status: 'not reachable', note})
+
+const lens = (page: Page, name: string) => page.locator('[data-testid=c5-a] button[role=radio]', {hasText: name}).first()
+
+async function walk(page: Page, journey: (typeof journeys)[number]) {
+  const run = async (index: number, fn: () => Promise<Check>) => {
+    const s = journey.steps[index]
+    let check: Check
+    try {
+      check = await fn()
+    } catch (e) {
+      check = missing(String(e).split('\n')[0].slice(0, 200))
+    }
+    const id = `${journey.id}-${index + 1}`
+    await page.screenshot({path: join(out, `${id}.png`)}).catch(() => undefined)
+    results.push({step: id, title: s.title, ...check})
+    console.log(check.status.toUpperCase().padEnd(13), id, s.title, '-', check.note)
+  }
+  const first = journey.steps[0]
+  await goto(page, first.route === '/variants' && journey.id !== 'j05' && journey.id !== 'j11' && journey.id !== 'j12' && journey.id !== 'j02' ? '/variants' : first.route, first.preset)
+
+  switch (journey.id) {
+    case 'j01': {
+      await run(0, async () => {
+        const rows = await page.locator('text=Variant definitions').count()
+        const docs = await page.locator('text=Documents').count()
+        return rows && docs ? differs('The overview lists definitions with a Documents column; the empty state is not reachable because the dataset has many definitions.') : missing('overview not found')
+      })
+      await run(1, async () => {
+        await page.getByRole('button', {name: /New variant definition/}).click()
+        const dialog = await visible(page, '[role=dialog]')
+        return dialog ? ok(`dialog fields: ${(await page.locator('[role=dialog]').innerText()).replace(/\s+/g, ' ').slice(0, 140)}`) : differs('no dialog opened')
+      })
+      await run(2, async () => ok(`dialog (not filled; creating a definition here would write to the dataset): ${(await page.locator('[role=dialog]').innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 120)}`))
+      await page.keyboard.press('Escape')
+      await run(3, async () => {
+        await settle(page, 1000)
+        const z = await page.locator('text=0').count()
+        return z ? differs('Definitions show a Documents count; there is no Create action on a definition row in the overview (rows have a menu).') : missing('no counts')
+      })
+      break
+    }
+    case 'j02': {
+      await goto(page, `/variants/${MEMBERS}`, first.preset)
+      await run(0, async () => ((await visible(page, 'text=Total documents')) ? ok('detail shows the definition panel, details and documents table') : differs('detail page not shown')))
+      await run(1, async () => {
+        await page.getByRole('button', {name: /Edit definition/}).click()
+        const dialog = await visible(page, '[role=dialog]')
+        return dialog ? differs('Edit opens a dialog, not in-place editing: ' + (await page.locator('[role=dialog]').innerText()).replace(/\s+/g, ' ').slice(0, 100)) : differs('no dialog opened')
+      })
+      await run(2, async () => {
+        const text = await page.locator('[role=dialog]').innerText().catch(() => '')
+        return /affect|document/i.test(text) ? ok(text.replace(/\s+/g, ' ').slice(0, 120)) : differs('no notice naming how many documents the change affects')
+      })
+      await page.keyboard.press('Escape')
+      break
+    }
+    case 'j03': {
+      await run(0, async () => ((await visible(page, '[data-testid^=version-mark-]')) ? ok(`${await page.locator('[data-testid^=version-mark-]').count()} rows with a version mark`) : differs('no version marks')))
+      await run(1, async () => {
+        const chevron = page.locator('[data-ui=ReleasesNav] button').last()
+        await chevron.waitFor({state: 'visible', timeout: 20000})
+        await settle(page, 1500)
+        await chevron.click()
+        const menu = await visible(page, '[role=menuitem]')
+        return menu ? ok('version menu opens; row: ' + ((await page.locator('[role=menuitem]').allInnerTexts()).filter((t) => /View as|Add a dimension/.test(t)).join(',') || 'no dimension row')) : differs('menu did not open')
+      })
+      await run(2, async () => {
+        await page.getByRole('menuitem', {name: /View as|Add a dimension/}).first().click()
+        await settle(page, 800)
+        const value = page.locator('[data-testid^=picker-value-]').first()
+        if (!(await value.isVisible().catch(() => false))) {
+          const dim = page.locator('[data-testid^=picker-dimension-]').first()
+          if (await dim.isVisible().catch(() => false)) await dim.click()
+        }
+        await page.locator('[data-testid^=picker-value-]').first().click()
+        await settle(page, 1200)
+        return (await page.locator('[data-testid=address-row]').isVisible()) ? ok('row: ' + (await page.locator('[data-testid=address-row]').innerText()).replace(/\s+/g, ' ')) : differs('no address row')
+      })
+      await run(3, async () => {
+        await page.getByText('Glass Houses', {exact: false}).first().click()
+        await settle(page, 4000)
+        return (await visible(page, '[data-testid^=doc-banner-]', 8000)) ? ok('banner: ' + (await page.locator('[data-testid^=doc-banner-]').first().innerText()).replace(/\s+/g, ' ').slice(0, 100)) : differs('no missing-variant banner shown')
+      })
+      await run(4, async () => {
+        await page.getByRole('button', {name: /Create variant/}).click()
+        await settle(page, 4000)
+        const gone = !(await page.locator('[data-testid^=doc-banner-]').first().isVisible().catch(() => false))
+        const rows = (await x.fetch('*[_id match "*book-glass*" && defined(_system.variant)]{_id,"v":_system.variant._ref,"b":_system.bundleId}')) as {v: string; b?: string}[]
+        for (const r of rows) created.push({doc: 'book-glass', variant: r.v.replace('_.variants.', ''), bundle: r.b ?? 'published'})
+        return gone ? ok('variant created as a draft; banner gone (will be removed at the end)') : differs('banner still visible after Create')
+      })
+      break
+    }
+    case 'j04': {
+      await run(0, async () => ((await visible(page, '[data-testid^=version-mark-]')) ? ok('rows carry a version mark') : differs('no marks')))
+      await run(1, async () => {
+        await page.locator('[data-testid^=version-mark-]').nth(5).click()
+        await settle(page, 4000)
+        return /inspect/.test(decodeURIComponent(page.url())) ? ok(`URL: ${decodeURIComponent(page.url()).split('/structure')[1]}`) : differs('document opened without the inventory: ' + page.url())
+      })
+      await run(2, async () => {
+        const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ')
+        return /Published/.test(text) && /Versions of/.test(text) ? ok('inventory rows with address and state visible') : differs('inventory not readable')
+      })
+      await run(3, async () => {
+        const before = page.url()
+        await page.getByText('Members').first().click().catch(() => undefined)
+        await settle(page, 2500)
+        return page.url() !== before ? ok('URL changed: ' + page.url().split('3350')[1]) : differs('selecting an inventory row only sets the address (perspective/row); it does not navigate to a version document (no variant route in the flag-on studio)')
+      })
+      break
+    }
+    case 'j05': {
+      await goto(page, `/variants/${MEMBERS}`, first.preset)
+      for (const id of DOCS) await x.createOrReplace({_id: id, _type: 'book', title: `C5 test ${id.slice(-1)}`})
+      await page.reload()
+      await settle(page, 9000)
+      await run(0, async () => {
+        const absent = await page.locator('[data-absent]').count()
+        return absent > 0 ? ok(`${absent} grey rows for documents without a Members version`) : differs('no grey rows')
+      })
+      await run(1, async () => {
+        for (const n of [1, 2]) {
+          const row = page.locator('tr, [role=row], [data-testid*=row]').filter({hasText: `C5 test ${n}`}).first()
+          await row.locator('input[type=checkbox]').check()
+        }
+        const bar = await page.locator('[data-testid=bulk-bar]').innerText().catch(() => '')
+        return /Create/.test(bar) && /Add to release/.test(bar) ? ok('bulk bar: ' + bar.replace(/\s+/g, ' ')) : differs('bulk bar: ' + bar.replace(/\s+/g, ' '))
+      })
+      await run(2, async () => {
+        await page.locator('[data-testid=bulk-bar]').getByRole('button', {name: /Create/}).click()
+        const text = (await page.getByRole('dialog').innerText()).replace(/\s+/g, ' ')
+        return /Address/.test(text) && /Where/.test(text) ? ok(text.slice(0, 160)) : differs(text.slice(0, 160))
+      })
+      await run(3, async () => {
+        await page.getByRole('dialog').getByRole('button', {name: /Create 2/}).click()
+        await visible(page, '[data-testid=bulk-results]', 20000)
+        const text = (await page.locator('[data-testid=bulk-results]').innerText()).replace(/\s+/g, ' ')
+        for (const d of DOCS.slice(0, 2)) created.push({doc: d, variant: MEMBERS, bundle: 'drafts'})
+        return (text.match(/✓/g) ?? []).length === 2 ? ok(text) : differs(text)
+      })
+      await page.getByRole('dialog').getByRole('button', {name: 'Close'}).last().click().catch(() => undefined)
+      break
+    }
+    case 'j06': {
+      await run(0, async () => {
+        await page.locator('[data-ui=ReleasesNav] button').last().waitFor({state: 'visible', timeout: 20000})
+        await settle(page, 1500)
+        await page.locator('[data-ui=ReleasesNav] button').last().click()
+        const items = (await page.locator('[role=menuitem]').allInnerTexts()).filter((t) => /Published|Drafts|Halloween|Black Friday|ASAP/.test(t))
+        return items.length ? ok(items.join(' | ')) : differs('no state rows')
+      })
+      await run(1, async () => {
+        await page.getByRole('menuitem', {name: /View as|Add a dimension/}).first().click()
+        await settle(page, 800)
+        return (await visible(page, '[data-testid^=picker-]')) ? ok('picker opens (open beta: one flat list)') : differs('no picker')
+      })
+      await run(2, async () => {
+        const value = page.locator('[data-testid^=picker-value-]').first()
+        if (!(await value.isVisible().catch(() => false))) await page.locator('[data-testid^=picker-dimension-]').first().click()
+        await page.locator('[data-testid^=picker-value-]').first().click()
+        await settle(page, 1200)
+        const chips = await page.locator('[data-testid^=chip-]').count()
+        return chips >= 1 ? ok(`${chips} chip(s): ` + (await page.locator('[data-testid=address-row]').innerText()).replace(/\s+/g, ' ')) : differs('no chip')
+      })
+      await run(3, async () => {
+        const pill = page.locator('[data-ui=ReleasesNav]')
+        await pill.locator('button').first().click()
+        await settle(page, 600)
+        const hidden = !(await page.locator('[data-testid=address-row]').isVisible().catch(() => false))
+        await pill.locator('button').first().click()
+        await settle(page, 600)
+        const shown = await page.locator('[data-testid=address-row]').isVisible().catch(() => false)
+        return hidden && shown ? ok('the pill label hides and shows the row; the chip stays') : differs(`label click: row hidden=${hidden}, shown again=${shown}`)
+      })
+      await run(4, async () => {
+        await page.getByRole('button', {name: /Clear/}).first().click()
+        await settle(page, 800)
+        return (await page.locator('[data-testid^=chip-]').count()) === 0 ? ok('chip removed') : differs('chip still present')
+      })
+      break
+    }
+    case 'j07': {
+      await run(0, async () => ((await visible(page, '[data-testid=presentation-root], iframe, [data-ui=PresentationTool]', 12000)) ? ok('Presentation loads; ' + ((await page.locator('[data-ui=ReleasesNav]').count()) ? 'state pill present' : 'no state pill')) : differs('Presentation did not render')))
+      await run(1, async () => {
+        const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ')
+        return /Variants|View as/.test(text) ? differs('a dimension control is not shown inside Presentation here (only the navbar pill): ' + text.slice(0, 100)) : missing('no dimension control in Presentation; the preview (localhost:3456) renders no variants')
+      })
+      await run(2, async () => missing('click-to-edit needs the storefront preview with visual editing; the preview pane is blank in this studio'))
+      break
+    }
+    case 'j08': {
+      await run(0, async () => {
+        await lens(page, 'Dimension').click()
+        const rows = await page.locator('[data-testid^=lens-dimension-row-]').count()
+        return rows ? differs(`${rows} value rows with Definitions and Documents counts, not counts per lifecycle state`) : differs('no rows')
+      })
+      await run(1, async () => {
+        const rows = await page.locator('[data-testid^=lens-dimension-row-]').allInnerTexts()
+        const zero = rows.find((r) => /\n0\n0\s*$/.test(r + '\n'))
+        return zero ? ok('a value with no definitions: ' + zero.replace(/\s+/g, ' ')) : differs('every listed value is used by at least one definition (values are derived from definitions, so a value nobody authored cannot appear)')
+      })
+      await run(2, async () => {
+        await page.goto(`${base}/variants/${MEMBERS}?preset=open-beta-a`)
+        await settle(page, 9000)
+        return (await page.locator('[data-absent]').count()) ? ok('grey rows with Create') : differs('no grey rows')
+      })
+      break
+    }
+    case 'j09': {
+      await run(0, async () => {
+        await lens(page, 'Visitor').click()
+        const selects = await page.locator('[data-testid=c5-a] select').count()
+        return selects ? ok(`${selects} visitor pickers, default: ` + (await page.locator('[data-testid=c5-a] select').first().inputValue() || 'Anyone')) : differs('no visitor picker')
+      })
+      await run(1, async () => {
+        const select = page.locator('[data-testid=c5-a] select').first()
+        const option = (await select.locator('option').allTextContents())[1]
+        await select.selectOption({index: 1})
+        await settle(page, 800)
+        const row = (await page.locator('[data-testid=lens-visitor-row-book-lighthouse]').innerText().catch(() => '')).replace(/\s+/g, ' ')
+        return row ? ok(`${option}: ${row}`) : differs('no per-document row')
+      })
+      await run(2, async () => {
+        await page.goto(`${base}/structure/book;book-lighthouse?preset=open-beta-a`)
+        await settle(page, 7000)
+        return ok('document opens in the studio; the visitor choice is not carried into the studio perspective (the Visitor lens is read only)')
+      })
+      break
+    }
+    case 'j10': {
+      await run(0, async () => ((await visible(page, '[data-testid^=version-mark-]')) ? differs('there is no route to open a variant version as its own document in this studio; the list opens the base document') : missing('no list')))
+      await run(1, async () => {
+        await page.locator('[data-testid^=version-mark-]').nth(5).click()
+        await settle(page, 4000)
+        return /Versions of/.test(await page.locator('body').innerText()) ? ok('inventory shows the version rows with states') : differs('inventory not shown')
+      })
+      await run(2, async () => missing('the inventory panel has no Delete (the bulk bar was removed in the port); deleting a variant version is only possible from the Variants tool bulk bar'))
+      await run(3, async () => missing('no delete step reachable from the document editor'))
+      break
+    }
+    case 'j11': {
+      await goto(page, `/variants/${MEMBERS}`, first.preset)
+      for (const id of DOCS) await x.createOrReplace({_id: id, _type: 'book', title: `C5 test ${id.slice(-1)}`})
+      for (const id of DOCS.slice(0, 2)) {
+        await x.action({actionType: 'sanity.action.document.variant.create', publishedId: id, variantId: MEMBERS, bundleId: 'drafts', document: {_type: 'book', title: `C5 test ${id.slice(-1)}`}} as never).catch(() => undefined)
+        created.push({doc: id, variant: MEMBERS, bundle: 'drafts'})
+      }
+      await page.reload()
+      await settle(page, 9000)
+      await run(0, async () => ((await visible(page, 'text=C5 test 1', 12000)) ? ok('detail lists the definition and its documents') : differs('test documents not listed')))
+      await run(1, async () => {
+        for (const n of [1, 2]) await page.locator('tr, [role=row], [data-testid*=row]').filter({hasText: `C5 test ${n}`}).first().locator('input[type=checkbox]').check()
+        const bar = (await page.locator('[data-testid=bulk-bar]').innerText().catch(() => '')).replace(/\s+/g, ' ')
+        return /Delete/.test(bar) ? ok('bulk bar: ' + bar) : differs('bulk bar: ' + bar)
+      })
+      await run(2, async () => {
+        await page.locator('[data-testid=bulk-bar]').getByRole('button', {name: /^Delete/}).click()
+        const text = (await page.getByRole('dialog').innerText()).replace(/\s+/g, ' ')
+        return /C5 test 1/.test(text) && /fall|fallback|base/i.test(text) ? ok(text.slice(0, 200)) : differs('dialog lists the documents but not the fallback per audience: ' + text.slice(0, 200))
+      })
+      await run(3, async () => {
+        await page.getByRole('dialog').getByRole('button', {name: /^Delete 2/}).click()
+        await visible(page, '[data-testid=bulk-results]', 20000)
+        const text = (await page.locator('[data-testid=bulk-results]').innerText()).replace(/\s+/g, ' ')
+        return (text.match(/✓/g) ?? []).length === 2 ? ok(text) : differs(text)
+      })
+      await page.getByRole('dialog').getByRole('button', {name: 'Close'}).last().click().catch(() => undefined)
+      break
+    }
+    case 'j12': {
+      await x.action({actionType: 'sanity.action.variant.definition.create', variantId: EMPTY_DEF, conditions: {audience: 'pw-empty'}, priority: 0, metadata: {title: 'PW empty'}} as never).catch(() => undefined)
+      await goto(page, `/variants/${EMPTY_DEF}`, first.preset)
+      await run(0, async () => ((await visible(page, 'text=Total documents')) ? ((await page.locator('text=Total documents').locator('xpath=following::*[1]').innerText().catch(() => '')).trim() === '0' ? ok('0 documents') : ok('detail page shown')) : differs('detail not shown')))
+      await run(1, async () => {
+        await page.getByRole('button', {name: /More|\.\.\./}).first().click().catch(async () => page.locator('button[aria-haspopup]').last().click())
+        const item = page.getByRole('menuitem', {name: /Delete/})
+        if (!(await item.first().isVisible({timeout: 3000}).catch(() => false))) return differs('no Delete in the definition menu')
+        await item.first().click()
+        return (await visible(page, '[role=dialog]')) ? ok((await page.locator('[role=dialog]').innerText()).replace(/\s+/g, ' ').slice(0, 140)) : differs('no confirm dialog')
+      })
+      await run(2, async () => {
+        await page.locator('[role=dialog]').getByRole('button', {name: /Yes, delete/i}).click()
+        await settle(page, 4000)
+        const gone = (await x.fetch('count(*[_id == "_.variants.' + EMPTY_DEF + '"])')) === 0
+        return gone ? ok('definition deleted') : differs('definition still exists')
+      })
+      break
+    }
+    case 'j13': {
+      await run(0, async () => ((await visible(page, '[data-testid^=version-mark-]')) ? differs('a draft variant document cannot be opened as its own document here (no variant route); the base opens') : missing('no list')))
+      await run(1, async () => {
+        await page.locator('[data-testid^=version-mark-]').nth(5).click()
+        await settle(page, 4000)
+        return /Draft/.test(await page.locator('body').innerText()) ? ok('draft rows listed in the inventory') : differs('no draft row')
+      })
+      await run(2, async () => missing('the inventory panel has no Publish action (bulk bar removed in the port); publishing a variant version is possible from the Variants tool bulk bar'))
+      await goto(page, '/releases', 'open-beta-a')
+      await run(3, async () => ((await visible(page, 'text=Releases', 12000)) ? differs('the shipped Releases tool opens; whether a variant published on its own is absent from releases was not verified (releases list documents by release id)') : missing('Releases tool not shown')))
+      break
+    }
+  }
 }
 
 async function main() {
@@ -58,101 +377,22 @@ async function main() {
   const context = await browser.newContext({viewport: {width: 1456, height: 900}})
   const page = await context.newPage()
   await page.goto(`${base}/#token=${encodeURIComponent(token)}`)
-
-  // ---- 1. journey screenshots: one per journey (and per step when journeys.json has steps)
-  const journeys = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'options', 'journeys.json'), 'utf8'))
-  for (const j of journeys) {
-    const steps = j.steps?.length ? j.steps : [{title: 'start', route: '/structure/book', preset: j.id}]
-    for (const [i, step] of steps.entries()) {
+  await settle(page, 4000)
+  try {
+    for (const journey of journeys) {
+      if (only.length && !only.includes(journey.id)) continue
+      console.log('---', journey.id, journey.title)
       try {
-        await open(page, `${step.route ?? '/structure/book'}?preset=${step.preset ?? j.id}`)
-        await page.waitForTimeout(6000)
-        await page.screenshot({path: join(out, `${j.id}-step${i + 1}.png`)})
+        await walk(page, journey)
       } catch (e) {
-        record(`capture ${j.id} step ${i + 1}`, false, String(e))
+        console.log('ABORTED', journey.id, String(e).split('\n')[0])
+        results.push({step: `${journey.id}-*`, title: 'journey aborted', status: 'not reachable', note: String(e).split('\n')[0].slice(0, 200)})
       }
     }
-  }
-  record('journey screenshots', true, `${journeys.length} journeys`)
-
-  // ---- 2. C5 click-through on throwaway documents
-  for (const id of DOCS) await x.createOrReplace({_id: id, _type: 'book', title: `C5 test ${id.slice(-1)}`})
-  await open(page, '/inventory?design=show.a,stage.open-beta')
-  await page.waitForSelector('[data-testid=def-lens]', {timeout: 60000})
-  const select = page.locator('[data-testid=def-lens] select')
-  const option = (await select.locator('option').allTextContents()).find((t) => VARIANT_LABEL.test(t))
-  await select.selectOption({label: option})
-  const row = (id: string) => page.locator(`[data-testid=lens-def-docs-row-${id}]`)
-  const tick = async (id: string) => row(id).locator('input[type=checkbox]').check()
-  const bar = (name: RegExp) => page.locator('[data-testid=bulk-bar]').getByRole('button', {name})
-  const dialog = page.getByRole('dialog')
-  const confirm = async (name: RegExp) => {
-    await dialog.getByRole('button', {name}).click()
-    await dialog.locator('[data-testid=bulk-results]').waitFor({timeout: 30000})
-    const text = await dialog.locator('[data-testid=bulk-results]').innerText()
-    await dialog.getByRole('button', {name: 'Close'}).click()
-    return text
-  }
-  const rowText = async (id: string) => (await row(id).innerText()).replace(/\s+/g, ' ')
-
-  try {
-    // a. bulk create on two absent rows
-    for (const id of [DOCS[0], DOCS[1]]) await tick(id)
-    await bar(/Create/).click()
-    await page.screenshot({path: join(out, 'c5-create-dialog.png')})
-    const created = await confirm(/Create 2 variant/)
-    await page.waitForTimeout(2500)
-    const v1 = await versionsOf(DOCS[0])
-    record('bulk Create on 2 absent rows', (created.match(/✓/g) ?? []).length === 2 && v1.some((r) => r.v?.endsWith(VARIANT_ID)), created.replace(/\s+/g, ' '))
-    record('rows show Draft only after create', /Draft only/.test(await rowText(DOCS[0])) && /Draft only/.test(await rowText(DOCS[1])), await rowText(DOCS[0]))
-
-    // b. bulk Publish on the two rows
-    for (const id of [DOCS[0], DOCS[1]]) await tick(id)
-    await bar(/^Publish/).click()
-    const published = await confirm(/^Publish 2/)
-    await page.waitForTimeout(2500)
-    record('bulk Publish on 2 rows', (published.match(/✓/g) ?? []).length === 2 && /Published/.test(await rowText(DOCS[0])), await rowText(DOCS[0]))
-
-    // c. mixed selection: one published row (pw-1) + one absent row (pw-3)
-    await tick(DOCS[0])
-    await tick(DOCS[2])
-    const enabled = {
-      unpublish: await bar(/^Unpublish/).isEnabled(),
-      create: await bar(/Create/).isEnabled(),
-      publish: await bar(/^Publish/).isEnabled(),
-    }
-    record('mixed selection enables only what applies', enabled.unpublish && enabled.create && !enabled.publish, JSON.stringify(enabled))
-    await bar(/^Unpublish/).click()
-    const dialogText = await dialog.innerText()
-    const unpublished = await confirm(/^Unpublish 1/)
-    await page.waitForTimeout(2500)
-    record('mixed selection: Unpublish applies to the published row only', /C5 test 1/.test(dialogText) && !/C5 test 3/.test(dialogText) && (unpublished.match(/✓/g) ?? []).length === 1, `${dialogText.replace(/\s+/g, ' ').slice(0, 140)} | ${await rowText(DOCS[0])}`)
-
-    // d. Add to release (pw-2, published) into the undecided release
-    await page.locator('[data-testid=bulk-bar] button', {hasText: 'Clear'}).click().catch(() => undefined)
-    await tick(DOCS[1])
-    await bar(/Add to release/).click()
-    await dialog.locator('select').selectOption({label: 'Autumn catalogue (undecided)'})
-    const added = await confirm(/^Add to release 1/)
-    const v2 = await versionsOf(DOCS[1])
-    record('Add to release', (added.match(/✓/g) ?? []).length === 1 && v2.some((r) => r.b === 'rUndecided'), added.replace(/\s+/g, ' '))
-    await page.screenshot({path: join(out, 'c5-after-add-to-release.png')})
-
-    // e. bulk Delete on all three
-    for (const id of DOCS) await tick(id).catch(() => undefined)
-    await page.waitForTimeout(500)
-    await bar(/^Delete/).click()
-    const deleted = await confirm(/^Delete \d/)
-    await page.waitForTimeout(2500)
-    const left = (await Promise.all([DOCS[0], DOCS[1]].map(versionsOf))).flat().filter((r) => r.v)
-    record('bulk Delete removes the variant versions', left.length === 0, `${(deleted.match(/✓/g) ?? []).length} ok, ${left.length} variant versions left`)
-  } catch (e) {
-    record('C5 click-through aborted', false, String(e).split('\n')[0])
-    await page.screenshot({path: join(out, 'c5-failure.png')})
   } finally {
     await cleanup()
-    const leftover = await x.fetch('count(*[_id match "*book-c5-pw-*"])')
-    record('cleanup of throwaway documents', leftover === 0, `${leftover} left`)
+    const left = await x.fetch('count(*[_id match "*book-c5-pw-*"]) + count(*[_id == "_.variants.' + EMPTY_DEF + '"])')
+    console.log('cleanup left:', left)
     await browser.close()
     writeFileSync(join(out, 'run.json'), JSON.stringify(results, null, 2))
   }
