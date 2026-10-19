@@ -1,5 +1,5 @@
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit 2700f4cf07, lib/explorations/variants-2-0/perspective/Picker.tsx).
+// explorations/variants-2-0, commit 53706f95a8, lib/explorations/variants-2-0/perspective/Picker.tsx).
 // Changes: imports point at this monorepo and ./model; LIVE: marks the few places that read live data.
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
@@ -7,7 +7,7 @@ import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/Menu
 import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {useMemo, useState} from 'react'
+import {type FocusEvent, type KeyboardEvent, useEffect, useMemo, useRef, useState} from 'react'
 
 import {type DimensionSpec} from './model'
 import {matches, type Chosen, valueTitle} from './model'
@@ -32,6 +32,29 @@ const LIST_MAX = 336
 
 /** "42 articles. 9 show the base document." Fixture constants. */
 export const HINT = '42 articles. 9 show the base document.'
+
+const ITEM = '[data-ui="MenuItem"]'
+
+/**
+ * The panel's keyboard model. The rows are `tabindex=-1` items of real Menus, so Tab would leave
+ * the panel; instead the panel is one focus group with four stops: the search box, the rail (or the
+ * first list), the values and Clear. Tab and Shift+Tab cycle through them (a trap); the arrow keys
+ * move inside a Menu (the Menu does that); Right enters the values from the rail and Left goes back.
+ */
+function stops(root: HTMLElement): HTMLElement[] {
+  const found: HTMLElement[] = []
+  const search = root.querySelector<HTMLElement>('input')
+  if (search) found.push(search)
+  for (const menu of root.querySelectorAll<HTMLElement>('[role="menu"]')) {
+    const target =
+      menu.querySelector<HTMLElement>(`${ITEM}[data-selected]`) ??
+      menu.querySelector<HTMLElement>(ITEM)
+    if (target) found.push(target)
+  }
+  const clear = root.querySelector<HTMLElement>('[data-testid="picker-clear"]')
+  if (clear) found.push(clear)
+  return found
+}
 
 /** A definition of a dimension: the real `MenuItem` at the loose density, the real selected state. */
 function Definition(props: {
@@ -80,6 +103,60 @@ export function PickerContent(props: {
     props.start ?? dimensions.find((d) => !chosen[d.name])?.name ?? dimensions[0]?.name,
   )
   const spec = dimensions.find((d) => d.name === active) ?? dimensions[0]
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const root = rootRef.current
+    if (!root) return
+    const here = document.activeElement as HTMLElement | null
+    if (event.key === 'Tab') {
+      const all = stops(root)
+      // The current stop is the one that holds focus, or the Menu whose item holds it.
+      const at = all.findIndex((el) => el === here || el.closest('[role="menu"]')?.contains(here))
+      const next = event.shiftKey ? at - 1 : at + 1
+      event.preventDefault()
+      all[(next + all.length) % all.length]?.focus()
+    } else if (event.key === 'ArrowDown' && here?.tagName === 'INPUT') {
+      // From the search box into the first Menu: the rail, or the first list.
+      const first = stops(root).find((el) => el.matches(ITEM))
+      if (first) {
+        event.preventDefault()
+        first.focus()
+      }
+    } else if (event.key === 'ArrowRight' && here?.closest('[data-testid="picker-rail"]')) {
+      // From the rail into the values of the active dimension.
+      const values = root.querySelector<HTMLElement>(`[data-testid^="list-"] ${ITEM}`)
+      if (values) {
+        event.preventDefault()
+        values.focus()
+      }
+    } else if (event.key === 'ArrowLeft' && here?.closest('[data-testid^="list-"]')) {
+      const rail = root.querySelector<HTMLElement>(
+        `[data-testid="picker-rail"] ${ITEM}[data-selected]`,
+      )
+      if (rail) {
+        event.preventDefault()
+        rail.focus()
+      }
+    }
+  }
+  // The rail follows the keyboard: when an arrow key moves focus to a rail item, that item is the
+  // active dimension, so the highlight and the list on the right never disagree. (Pointer hover
+  // also focuses a Menu item; only keyboard focus counts here.)
+  const byKeyboard = useRef(false)
+  const onFocus = (event: FocusEvent<HTMLDivElement>) => {
+    const id = (event.target as HTMLElement).dataset.testid
+    if (byKeyboard.current && id?.startsWith('picker-dimension-')) {
+      setActive(id.slice('picker-dimension-'.length))
+    }
+  }
+  // The search box takes focus on open. The Menus below would otherwise move it to their first
+  // item as they mount, so it is set again after they have.
+  useEffect(() => {
+    const focus = () => rootRef.current?.querySelector<HTMLElement>('input')?.focus()
+    focus()
+    const timer = setTimeout(focus, 50)
+    return () => clearTimeout(timer)
+  }, [])
   const searching = !!query.trim()
   const any = Object.keys(chosen).length > 0
   const hits = useMemo(
@@ -97,6 +174,7 @@ export function PickerContent(props: {
     d.values.filter(([, title]) => !searching || matches(title, query))
   const list = (d: DimensionSpec, withDefault?: boolean) => (
     <Menu
+      shouldFocus={null}
       data-testid={`list-${d.name}`}
       padding={0}
       style={{maxHeight: LIST_MAX, overflowY: 'auto'}}
@@ -131,6 +209,16 @@ export function PickerContent(props: {
     <div
       data-form={form}
       data-testid="address-picker"
+      onKeyDown={onKeyDown}
+      onFocus={onFocus}
+      // Capture: the Menu stops the arrow keys from bubbling.
+      onKeyDownCapture={() => {
+        byKeyboard.current = true
+      }}
+      onPointerMove={() => {
+        byKeyboard.current = false
+      }}
+      ref={rootRef}
       style={{width: panelWidth(dimensions.length)}}
     >
       <Box padding={3}>
@@ -173,7 +261,7 @@ export function PickerContent(props: {
               ))}
             </Flex>
           ) : searching ? (
-            <Menu padding={0} style={{maxHeight: LIST_MAX, overflowY: 'auto'}}>
+            <Menu shouldFocus={null} padding={0} style={{maxHeight: LIST_MAX, overflowY: 'auto'}}>
               {hits.map(({d, key, title}) => (
                 <Definition
                   dimension={d.name}
@@ -193,7 +281,12 @@ export function PickerContent(props: {
             </Menu>
           ) : (
             <Flex gap={2} style={{height: LIST_MAX}}>
-              <Menu data-testid="picker-rail" padding={0} style={{width: RAIL_WIDTH, flex: 'none'}}>
+              <Menu
+                shouldFocus={null}
+                data-testid="picker-rail"
+                padding={0}
+                style={{width: RAIL_WIDTH, flex: 'none'}}
+              >
                 {dimensions.map((d) => (
                   <MenuItem
                     data-testid={`picker-dimension-${d.name}`}
@@ -253,6 +346,7 @@ export function Picker(props: {
   return (
     <MenuPopover
       anchor={props.anchor}
+      arrows={false}
       onDismiss={props.onClose}
       open={props.open}
       placement={props.placement}

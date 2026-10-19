@@ -1,4 +1,4 @@
-// MenuPopover, from the Storybook Variants 2.0 exploration (selector/primitives.tsx @ 2700f4cf07; that file is a
+// MenuPopover, from the Storybook Variants 2.0 exploration (selector/primitives.tsx @ 53706f95a8; that file is a
 // copy of address-row/AddressMenus.tsx). Unchanged apart from imports.
 import {type KeyboardEvent, type ReactNode, useEffect, useRef} from 'react'
 
@@ -16,8 +16,11 @@ export function MenuPopover(props: {
   children: ReactNode
   testId: string
   placement?: 'bottom-start' | 'bottom-end'
+  /** Arrow keys move focus between the search box and the rows (default). A panel with its own
+   * keyboard model, such as the C1 picker, turns it off. */
+  arrows?: boolean
 }) {
-  const {anchor, open, onDismiss, width, children, testId} = props
+  const {anchor, open, onDismiss, width, children, testId, arrows = true} = props
   const panelRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -29,7 +32,11 @@ export function MenuPopover(props: {
     }
     // Escape closes the menu wherever focus is: the anchor holds it as often as the panel does.
     const onEscape = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Escape') onDismiss()
+      if (event.key !== 'Escape') return
+      onDismiss()
+      // Focus goes back to the control that opened the panel.
+      const control = anchor?.matches('button') ? anchor : anchor?.querySelector('button')
+      control?.focus()
     }
     document.addEventListener('mousedown', onPress)
     document.addEventListener('keydown', onEscape)
@@ -40,7 +47,7 @@ export function MenuPopover(props: {
   }, [open, anchor, onDismiss])
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+    if (!arrows || (event.key !== 'ArrowDown' && event.key !== 'ArrowUp')) return
     const focusable = Array.from(
       panelRef.current?.querySelectorAll<HTMLElement>(
         'input, [data-menu-row], [data-ui="MenuItem"]',
