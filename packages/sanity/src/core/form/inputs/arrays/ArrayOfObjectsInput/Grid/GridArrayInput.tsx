@@ -81,7 +81,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           <VStack data-ui="ArrayInput__content" gap={2}>
             {members?.length === 0 && (
               <Card padding={3} border radius={2} tone={errorTone}>
-                <Text align="center" muted size={1} as="div" trim={true}>
+                <Text align="center" muted size={1} as="div" trim={true} tone={errorTone}>
                   {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                   {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
                 </Text>

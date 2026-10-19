@@ -4,7 +4,7 @@ import {type FormNodeValidation} from '@sanity/types'
 import {Card, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ReactNode} from 'react'
-import {Text, Box, VStack} from 'ui5'
+import {Text, Box, VStack, Icon} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
@@ -71,9 +71,7 @@ function CellPreview({title, media}: {title: string; media?: ReactNode}) {
 
 const MEDIA = (
   <Card padding={4} radius={2} tone="transparent">
-    <Text align="center" muted size={4} as="div" trim={true}>
-      <ImageIcon />
-    </Text>
+    <Icon muted size={4} icon={ImageIcon} />
   </Card>
 )
 

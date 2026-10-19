@@ -5,7 +5,7 @@ import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Text, Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, type TextProps, Icon} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -19,10 +19,11 @@ interface Props {
   value: unknown
   onFocus?: (event: FocusEvent) => void
   vertical?: boolean
+  tone?: TextProps['tone']
 }
 
 export function IncompatibleItemType(props: Props) {
-  const {value, onFocus, vertical, ...rest} = props
+  const {value, onFocus, vertical, tone, ...rest} = props
   const [showDetails, setShowDetails] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
@@ -69,7 +70,8 @@ export function IncompatibleItemType(props: Props) {
             </Text>
             <Box>
               <Text size={1} as="div" trim={true}>
-                <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
+                <Icon size={1} icon={BulbOutlineIcon} style={{margin: '-0.375rem'}} />{' '}
+                {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
             <VStack gap={2}>
@@ -102,13 +104,11 @@ export function IncompatibleItemType(props: Props) {
       >
         <Flex alignItems="center">
           <Box marginRight={3}>
-            <Text as="div" trim={true}>
-              <UnknownIcon />
-            </Text>
+            <Icon icon={UnknownIcon} />
           </Box>
 
           <Box flexBasis="0%" flexGrow={1}>
-            <Text size={1} truncate={1} as="div" trim={true}>
+            <Text size={1} truncate={1} as="div" trim={true} tone={tone}>
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.type-is-incompatible-prompt"

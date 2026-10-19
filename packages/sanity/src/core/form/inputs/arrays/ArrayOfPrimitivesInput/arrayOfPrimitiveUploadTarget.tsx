@@ -8,7 +8,7 @@ import {useToast} from '@sanity/ui/toast'
 import sortBy from 'lodash-es/sortBy.js'
 import {type ComponentType, type ReactNode, type RefAttributes, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -185,9 +185,7 @@ function DropMessage(props: DropMessageProps) {
       {acceptedFiles.length > 0 ? (
         <>
           <Inline gap={2}>
-            <Text as="div" trim={true}>
-              <UploadIcon />
-            </Text>
+            <Icon icon={UploadIcon} />
             {multiple
               ? t('inputs.files.common.drop-message.drop-to-upload-multi', {
                   count: acceptedFiles.length,
@@ -198,9 +196,7 @@ function DropMessage(props: DropMessageProps) {
           {rejectedFilesCount > 0 && (
             <Box marginTop={4}>
               <Inline gap={2}>
-                <Text muted size={1} as="div" trim={true}>
-                  <AccessDeniedIcon />
-                </Text>
+                <Icon muted size={1} icon={AccessDeniedIcon} />
                 <Text muted size={1} as="div" trim={true}>
                   {t('inputs.files.common.drop-message.drop-to-upload.rejected-file-message', {
                     count: rejectedFilesCount,
@@ -212,9 +208,7 @@ function DropMessage(props: DropMessageProps) {
         </>
       ) : (
         <Inline gap={2}>
-          <Text as="div" trim={true}>
-            <AccessDeniedIcon />
-          </Text>
+          <Icon icon={AccessDeniedIcon} />
           <Text as="div" trim={true}>
             {t('inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message', {
               count: hoveringFiles.length,
