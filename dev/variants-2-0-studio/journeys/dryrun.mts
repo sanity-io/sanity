@@ -129,10 +129,17 @@ for (const theme of ['light', 'dark'] as const) {
     const bar = (await page.locator('[data-testid=bulk-bar]').innerText()).replace(/\s+/g, ' ')
     return `${grey} grey rows; bulk bar: ${bar}`
   })
-  await step('4a Presentation: audience control', async () => {
+  await step('4a Presentation: the shared perspective bar', async () => {
     await page.goto(`${base}/presentation`)
-    await page.locator('[data-testid=presentation-variants-button]').waitFor({timeout: 30000})
-    await page.locator('[data-testid=presentation-variants-button]').click()
+    // The same perspective bar as in the other tools: the version pill's menu, then the dimension picker.
+    await page.locator('[data-ui=ReleasesNav] button').last().waitFor({timeout: 30000})
+    // Presentation re-renders while the preview connects; open the menu once it has.
+    await page.waitForFunction(() => [...document.querySelectorAll('iframe')].length > 0, null, {timeout: 30000})
+    await page.waitForTimeout(7000)
+    await page.locator('[data-ui=ReleasesNav] button').last().click()
+    await page.getByRole('menuitem', {name: /View as|Add a dimension/}).first().click()
+    const dimension = page.locator('[data-testid^=picker-dimension-]').first()
+    if (!(await page.locator('[data-testid^=picker-value-]').first().isVisible().catch(() => false)) && (await dimension.isVisible().catch(() => false))) await dimension.click()
     await page.locator('[data-testid^=picker-value-]', {hasText: 'Members'}).first().click()
     const f = page.frames().find((x) => x.url().includes(':3334'))!
     await f.locator('[data-testid=preview-state]').waitFor({timeout: 20000})
@@ -141,7 +148,7 @@ for (const theme of ['light', 'dark'] as const) {
   })
   await step('4b click title: On this page', async () => {
     const f = page.frames().find((x) => x.url().includes(':3334'))!
-    await f.getByText('The Lighthouse Keeper').first().click()
+    await f.locator('h3', {hasText: 'The Lighthouse Keeper'}).first().click()
     await page.locator('[data-testid=presentation-context-line]').waitFor({timeout: 15000})
     return (await page.locator('[data-testid=presentation-context-line]').innerText()).replace(/\s+/g, ' ')
   })

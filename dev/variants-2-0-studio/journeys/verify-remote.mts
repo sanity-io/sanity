@@ -66,7 +66,7 @@ try {
   }
   log(matched === steps, `Controller drove ${steps} steps; the studio page's own pathname and the reported preset matched on ${matched}`, misses.slice(0, 3).join(' | '))
   const others = await Promise.all(extra.map((t) => t.evaluate(() => window.location.pathname)))
-  log(others[0] === '/presentation' && others[1] === '/releases', 'The other studio tabs ignored the commands (only the most recently active tab acts)', others.join(', '))
+  log(others[0].startsWith('/presentation') && others[1] === '/releases', 'The other studio tabs ignored the commands (only the most recently active tab acts)', others.join(', '))
   log((await remote.locator('#state').getAttribute('data-tabs')) === '3', 'The status line counts the three studio tabs', await remote.locator('#state').innerText())
   // Keyboard and checks on the journeys remote.
   await remote.locator(`button.jr[data-journey="${journeys[0].id}"]`).click()

@@ -253,17 +253,22 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
     }
     case 'j07': {
       // The stand-in preview (dev/preview-iframe: vite --port 3334) is the default Presentation preview.
-      await run(0, async () => ((await visible(page, '[data-testid=presentation-variants-button]', 20000)) ? ok('Presentation loads; the dimension control is in the preview header next to the state pill') : differs('Presentation loaded without the dimension control')))
+      await run(0, async () => ((await visible(page, '[data-ui=ReleasesNav] button', 20000)) ? ok('Presentation loads; the perspective bar is the studio navbar bar, there is no separate control in the preview header') : differs('Presentation loaded without the dimension control')))
       const frame = () => page.frames().find((f) => f.url().includes(':3334'))
       await run(1, async () => {
-        await page.locator('[data-testid=presentation-variants-button]').click()
+        await settle(page, 7000) // Presentation re-renders while the preview connects
+        await page.locator('[data-ui=ReleasesNav] button').last().click()
+        await page.getByRole('menuitem', {name: /View as|Add a dimension/}).first().click()
+        await settle(page, 800)
+        const dim = page.locator('[data-testid^=picker-dimension-]').first()
+        if (!(await page.locator('[data-testid^=picker-value-]').first().isVisible().catch(() => false)) && (await dim.isVisible().catch(() => false))) await dim.click()
         await page.locator('[data-testid^=picker-value-]', {hasText: 'Members'}).first().click()
         await settle(page, 6000)
         const badge = await frame()?.locator('[data-testid=preview-state]').innerText().catch(() => '')
         return /variant aud-members/.test(badge ?? '') ? ok(`the preview received the variant: ${badge}`) : differs(`preview badge: ${badge || 'no preview frame'}`)
       })
       await run(2, async () => {
-        await frame()?.getByText('The Lighthouse Keeper').first().click()
+        await frame()?.locator('h3', {hasText: 'The Lighthouse Keeper'}).first().click()
         await settle(page, 6000)
         const line = (await page.locator('[data-testid=presentation-context-line]').innerText().catch(() => '')).replace(/\s+/g, ' ')
         return line ? ok(`click-to-edit opened the document form; context line: ${line}`) : differs('clicking the title did not open a document form')

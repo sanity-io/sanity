@@ -61,18 +61,19 @@ const frame = (route: string, variant: string | undefined, viewport: Viewport, e
 
 const LIGHTHOUSE = 'book:book-lighthouse'
 const PRESETS: Record<string, () => FrameSpec[]> = {
-  // One route, three audiences.
-  Compare: () => [undefined, 'aud-members', 'aud-students'].map((v) => frame(LIGHTHOUSE, v, 'phone')),
-  // Five routes at phone width.
-  'Device wall': () => ['list', LIGHTHOUSE, 'book:book-glass', 'book:book-harvest', 'book:book-rail'].map((r) => frame(r, undefined, 'phone')),
-  // Three routes, one audience.
-  Sitemap: () => ['list', LIGHTHOUSE, 'book:book-glass'].map((r) => frame(r, 'aud-members', 'tablet')),
+  // One route (the home page), three audiences: headline, promo and campaign change per frame.
+  Compare: () => [undefined, 'aud-members', 'aud-students'].map((v) => frame('home', v, 'phone')),
+  // Every route of the site at phone width.
+  'Device wall': () => ['home', 'list', LIGHTHOUSE, 'campaign', 'about'].map((r) => frame(r, undefined, 'phone')),
+  // Four routes, one audience, at tablet width.
+  Sitemap: () => ['home', 'list', LIGHTHOUSE, 'campaign'].map((r) => frame(r, 'aud-members', 'tablet')),
   // Two routes by three audiences.
-  Matrix: () => ['list', LIGHTHOUSE].flatMap((r) => [undefined, 'aud-members', 'aud-students'].map((v) => frame(r, v, 'phone'))),
+  Matrix: () => ['home', LIGHTHOUSE].flatMap((r) => [undefined, 'aud-members', 'aud-students'].map((v) => frame(r, v, 'phone'))),
 }
 
-const QUERY_LIST = `*[_type == "book"] | order(title asc) {_id, _type, title, subtitle}`
-const QUERY_ONE = `*[_type == "book" && _id == $id][0] {_id, _type, title, subtitle, blurb}`
+// The same queries as the site's own (dev/preview-iframe/src/variants/main.tsx): both book types.
+const QUERY_LIST = `*[_type in ["book", "bookLive"]] | order(title asc) {_id, _type, title, subtitle, blurb}`
+const QUERY_ONE = `*[_type in ["book", "bookLive"] && _id == $id][0] {_id, _type, title, subtitle, blurb}`
 
 interface PageDoc {
   _id: string
@@ -167,6 +168,15 @@ function GridFrame(props: {
   const live = useRef({perspective: spec.perspective, variant: spec.variant})
   live.current = {perspective: spec.perspective, variant: spec.variant}
 
+  // A link inside the site asks this frame to change its route (the frame reloads on the new route).
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'grid-navigate' && event.data.frame === spec.id && typeof event.data.route === 'string') onChange({...spec, route: event.data.route})
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  })
+
   // The channel: one controller, one `presentation` channel per connected iframe.
   useEffect(() => {
     const target = iframe.current?.contentWindow
@@ -219,13 +229,16 @@ function GridFrame(props: {
     const client = studioClient.withConfig({apiVersion: 'X', perspective: spec.perspective, useCdn: false})
     const run = async () => {
       const isBook = spec.route.startsWith('book:')
-      const data = await client
-        .fetch(isBook ? QUERY_ONE : QUERY_LIST, isBook ? {id: spec.route.slice(5)} : {}, {perspective: spec.perspective, variant: spec.variant} as never)
-        .catch(() => null)
+      const options = {perspective: spec.perspective, variant: spec.variant} as never
+      // The site needs the whole list on every route (featured, related, campaign) and the one book on a book route.
+      const [list, book] = await Promise.all([
+        client.fetch(QUERY_LIST, {}, options).catch(() => null),
+        isBook ? client.fetch(QUERY_ONE, {id: spec.route.slice(5)}, options).catch(() => null) : Promise.resolve(null),
+      ])
       if (cancelled) return
-      iframe.current?.contentWindow?.postMessage({type: 'grid-data', frame: spec.id, data}, ORIGIN)
+      iframe.current?.contentWindow?.postMessage({type: 'grid-data', frame: spec.id, list, book}, ORIGIN)
       if (!spec.connected) {
-        const docs = (Array.isArray(data) ? data : data ? [data] : []) as PageDoc[]
+        const docs = (isBook ? (book ? [book] : []) : Array.isArray(list) ? list : []) as PageDoc[]
         onReport(spec.id, {docs})
       }
     }
@@ -316,7 +329,7 @@ function Grid() {
     setReports((prev) => ({...prev, [id]: Object.assign({status: 'loading', fetchPerspective: 0, docs: []} as Report, prev[id], patch)}))
   ;(window as unknown as {__grid?: unknown}).__grid = reports
 
-  const routes = useMemo(() => ['list', ...(corpus?.docs ?? []).map((d) => `book:${d.id}`)], [corpus])
+  const routes = useMemo(() => ['home', 'list', 'campaign', 'about', ...(corpus?.docs ?? []).map((d) => `book:${d.id}`)], [corpus])
   const audiences = useMemo(() => definitions.map((d) => ({id: d._id.replace(/^_\.variants\./, ''), title: d.metadata?.title ?? d._id})), [definitions])
   const editSpec = edit ? frames.find((f) => f.id === edit.frameId) : undefined
   const editVariantTitle = editSpec?.variant ? (audiences.find((a) => a.id === editSpec.variant)?.title ?? editSpec.variant) : 'Base'
