@@ -6,7 +6,7 @@ import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {RemoveIcon} from '@sanity/icons/Remove'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Card, Flex, Text} from '@sanity/ui'
 import {type ReactElement, useEffect, useState} from 'react'
 
@@ -19,7 +19,8 @@ import {usePerspectiveState} from './state'
 import {CHIP_SHAPE} from './Controls'
 import {DimensionButton, StateMenu, VersionGlyph} from './StateMenu'
 
-const CHIP_INNER = {height: 23, minHeight: 23} as const
+// Flush segments: the buttons inside the chip have no radius of their own; the chip's outer radius clips their hover fill.
+const CHIP_INNER = {borderRadius: 0, height: 23, minHeight: 23} as const
 
 /**
  * An address chip, built as the real `PerspectiveFilter` pill is: one `Card` (radius 2 = 3px, 1px
@@ -43,7 +44,7 @@ function AddressChip(props: {
 }) {
   return (
     // UI-CONSISTENCY section 2: 25px including the 1px border, so the buttons inside are 23px.
-    <Card border data-testid={props.testId} radius={CHIP_SHAPE === 'round' ? 'full' : 2} ref={props.setRef} style={{height: 25}}>
+    <Card border data-testid={props.testId} radius={CHIP_SHAPE === 'round' ? 'full' : 2} ref={props.setRef} style={{height: 25, overflow: 'hidden'}}>
       <Flex align="center">
         <Button
           aria-label={props.accessibleName}
@@ -51,7 +52,6 @@ function AddressChip(props: {
           iconRight={ChevronDownIcon}
           mode="bleed"
           onClick={props.onOpen}
-          radius={CHIP_SHAPE === 'round' ? 'full' : undefined}
           style={CHIP_INNER}
           text={props.text}
           tooltipProps={null}
@@ -60,10 +60,9 @@ function AddressChip(props: {
         <Button
           aria-label={props.removeLabel}
           data-testid={props.removeTestId}
-          icon={RemoveIcon}
+          icon={CloseIcon}
           mode="bleed"
           onClick={props.onRemove}
-          radius={CHIP_SHAPE === 'round' ? 'full' : undefined}
           style={CHIP_INNER}
           tooltipProps={null}
         />
