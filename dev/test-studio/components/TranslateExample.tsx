@@ -93,5 +93,5 @@ function Bold({children}: {children?: ReactNode}) {
   return <b>{children}</b>
 }
 function InfoFilledIconComponent() {
-  return <Icon size={1} icon={InfoFilledIcon} style={{margin: '-0.375rem'}} />
+  return <Icon muted icon={InfoFilledIcon} style={{margin: '-0.4375rem'}} />
 }

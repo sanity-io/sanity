@@ -1,18 +1,16 @@
 import {ConfettiIcon} from '@sanity/icons/Confetti'
 import {Card} from '@sanity/ui'
 import {defineField, defineType} from 'sanity'
-import {Flex, Icon, Text} from 'ui5'
+import {Icon, Text} from 'ui5'
 
 export function Decoration({title}: {title: string}) {
   return (
     <Card padding={2} paddingY={3} radius={2} border>
-      <Flex alignItems="center">
-        <Icon icon={ConfettiIcon} style={{margin: '-0.375rem'}} />
-        <Text trim={true}>
-          {'  '} {title} {'  '}
-        </Text>
-        <Icon icon={ConfettiIcon} style={{margin: '-0.375rem'}} />
-      </Flex>
+      <Text trim={true}>
+        <Icon icon={ConfettiIcon} style={{margin: '-0.4375rem'}} />
+        {'  '} {title} {'  '}
+        <Icon icon={ConfettiIcon} style={{margin: '-0.4375rem'}} />
+      </Text>
     </Card>
   )
 }

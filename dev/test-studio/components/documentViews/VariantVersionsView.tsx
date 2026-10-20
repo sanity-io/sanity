@@ -390,10 +390,10 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
                 </Text>
               </Inline>
               <Inline>
-                <Text size={1} weight="semibold" as="div" trim={true}>
-                  Last updated at:{' '}
-                </Text>
                 <Text size={1} as="div" trim={true}>
+                  <Text size={1} weight="semibold" as="span" trim={true}>
+                    Last updated at:{' '}
+                  </Text>
                   {formattedUpdatedAt ?? (
                     <Text muted as="div" trim={true}>
                       (unknown)
@@ -416,7 +416,12 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
               {queryUrl && documentId && (
                 <VStack gap={2}>
                   <Text size={1} as="div" trim={true}>
-                    <Link href={queryUrl} openInNewTab underlined={undefined}>
+                    <Link
+                      href={queryUrl}
+                      openInNewTab
+                      underlined={false}
+                      style={{color: 'var(--card-link-color)'}}
+                    >
                       See document <Icon size={1} icon={LaunchIcon} style={{margin: '-0.375rem'}} />
                     </Link>
                   </Text>

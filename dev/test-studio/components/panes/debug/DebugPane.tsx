@@ -58,17 +58,17 @@ export const DebugPane: UserComponent = function DebugPane(props) {
             selected={isActive && childItemId === 'test'}
           >
             <Flex>
-              <Box>
+              <Flex>
                 <Icon size={1} icon={LinkIcon} style={{margin: '-0.375rem'}} />
-              </Box>
+              </Flex>
               <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
                 <Text size={1} truncate={1} as="div" trim={true}>
                   ChildLink
                 </Text>
               </Box>
-              <Box>
+              <Flex>
                 <Icon size={1} icon={ChevronRightIcon} style={{margin: '-0.375rem'}} />
-              </Box>
+              </Flex>
             </Flex>
           </Card>
 
@@ -82,17 +82,17 @@ export const DebugPane: UserComponent = function DebugPane(props) {
             radius={2}
           >
             <Flex>
-              <Box>
+              <Flex>
                 <Icon size={1} icon={ControlsIcon} style={{margin: '-0.375rem'}} />
-              </Box>
+              </Flex>
               <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
                 <Text size={1} truncate={1} as="div" trim={true}>
                   ParameterizedLink
                 </Text>
               </Box>
-              <Box>
+              <Flex>
                 <Icon size={1} icon={ChevronDownIcon} style={{margin: '-0.375rem'}} />
-              </Box>
+              </Flex>
             </Flex>
           </Card>
         </VStack>
