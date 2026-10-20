@@ -12,6 +12,10 @@ export interface Book {
   title?: string
   subtitle?: string
   blurb?: string
+  highlights?: string[]
+  promo?: string
+  badge?: string
+  cta?: string
 }
 
 export interface Parsed {
@@ -84,6 +88,9 @@ const GERMAN = {
   hero: 'Bücher von den Fjorden und den Inseln',
   promo: 'Ein kleiner Laden für nordische Literatur, von Hand sortiert.',
   viewing: 'Ansicht',
+  viewingVersion: (label: string) => `Sie sehen die Version: ${label}`,
+  highlights: 'In dieser Ausgabe',
+  defaultCta: 'In den Warenkorb',
 }
 const ENGLISH: typeof GERMAN = {
   nav: {home: 'Home', list: 'Catalogue', campaign: 'Campaign', about: 'About'},
@@ -103,6 +110,9 @@ const ENGLISH: typeof GERMAN = {
   hero: '',
   promo: '',
   viewing: 'Viewing',
+  viewingVersion: (label: string) => `You are viewing the ${label} version`,
+  highlights: 'In this edition',
+  defaultCta: 'Add to cart',
 }
 export const strings = (lang: Lang) => (lang === 'de' ? GERMAN : ENGLISH)
 

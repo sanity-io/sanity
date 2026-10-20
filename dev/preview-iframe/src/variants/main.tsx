@@ -22,9 +22,9 @@ const lockedVariant = params.get('variant') ?? undefined
 const gridFrame = params.get('frame')
 
 // Every document of the shop: both book types (the dataset has `book` and the live-edit `bookLive`).
-const LIST = `*[_type in ["book", "bookLive"]] | order(title asc) {_id, _type, title, subtitle, blurb}`
+const LIST = `*[_type in ["book", "bookLive"]] | order(title asc) {_id, _type, title, subtitle, blurb, highlights, promo, badge, cta}`
 const FM = `*[_type == "fieldMarksTest" && _id == $id][0] {_id, _type, title, subtitle}`
-const ONE = `*[_type in ["book", "bookLive"] && _id == $id][0] {_id, _type, title, subtitle, blurb}`
+const ONE = `*[_type in ["book", "bookLive"] && _id == $id][0] {_id, _type, title, subtitle, blurb, highlights, promo, badge, cta}`
 
 /** Where a link goes. In Presentation the iframe reloads with a new `?route=`; the locked variant (if any) is kept. */
 const hrefFor = (to: string) => `?route=${encodeURIComponent(to)}${lockedVariant ? `&variant=${lockedVariant}` : ''}`

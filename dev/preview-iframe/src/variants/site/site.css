@@ -144,3 +144,12 @@ footer.foot .wrap { display: flex; justify-content: space-between; gap: 12px; fl
 }
 @media (max-width: 440px) { .brand { font-size: 19px; } .nav a { padding: 5px 8px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* fields from the content seed: promo strip, badge chip, highlights, button, viewing line */
+.promo { margin-top: 16px; padding: 10px 16px; border-radius: 99px; background: var(--tint); color: var(--spruce); font-size: 14px; font-weight: 550; text-align: center; border: 1px solid var(--line); }
+.badge { display: inline-block; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 650; color: var(--accent-ink); background: var(--accent); border-radius: 3px; padding: 2px 8px; margin-top: 2px; width: fit-content; }
+.badge.big { font-size: 12px; margin-bottom: 12px; }
+.highlights { margin-top: 22px; } .highlights .lab { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); display: block; margin-bottom: 6px; }
+.highlights ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+button.btn.buy { border: 0; cursor: pointer; font-family: var(--sans); margin-top: 24px; }
+.viewing-line { margin-top: 16px; font-size: 13px; color: var(--muted); padding-top: 12px; border-top: 1px dashed var(--line); max-width: 58ch; }

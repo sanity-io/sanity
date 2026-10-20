@@ -61,8 +61,8 @@ const frame = (route: string, variant: string | undefined, viewport: Viewport, e
 
 const LIGHTHOUSE = 'book:book-lighthouse'
 const PRESETS: Record<string, () => FrameSpec[]> = {
-  // One route (the home page), three audiences: headline, promo and campaign change per frame.
-  Compare: () => [undefined, 'aud-members', 'aud-students'].map((v) => frame('home', v, 'phone')),
+  // One book, four audiences (Base, Members, Students, German): title, subtitle, note, promo, badge, highlights and button change per frame.
+  Compare: () => [undefined, 'aud-members', 'aud-students', 'loc-de-de'].map((v) => frame(LIGHTHOUSE, v, 'phone')),
   // Every route of the site at phone width.
   'Device wall': () => ['home', 'list', LIGHTHOUSE, 'campaign', 'about'].map((r) => frame(r, undefined, 'phone')),
   // Four routes, one audience, at tablet width.
@@ -72,8 +72,8 @@ const PRESETS: Record<string, () => FrameSpec[]> = {
 }
 
 // The same queries as the site's own (dev/preview-iframe/src/variants/main.tsx): both book types.
-const QUERY_LIST = `*[_type in ["book", "bookLive"]] | order(title asc) {_id, _type, title, subtitle, blurb}`
-const QUERY_ONE = `*[_type in ["book", "bookLive"] && _id == $id][0] {_id, _type, title, subtitle, blurb}`
+const QUERY_LIST = `*[_type in ["book", "bookLive"]] | order(title asc) {_id, _type, title, subtitle, blurb, highlights, promo, badge, cta}`
+const QUERY_ONE = `*[_type in ["book", "bookLive"] && _id == $id][0] {_id, _type, title, subtitle, blurb, highlights, promo, badge, cta}`
 
 interface PageDoc {
   _id: string

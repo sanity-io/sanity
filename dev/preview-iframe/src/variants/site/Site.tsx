@@ -43,6 +43,7 @@ function BookCard({b, link}: {b: Book; link: (route: string) => ReactNode | stri
       <div>
         <h3 data-sanity={attr(b, 'title')}>{b.title}</h3>
         <div className="by" data-sanity={attr(b, 'subtitle')}>{b.subtitle ?? ' '}</div>
+        {b.badge ? <span className="badge" data-sanity={attr(b, 'badge')}>{b.badge}</span> : null}
       </div>
     </a>
   )
@@ -227,12 +228,22 @@ function BookPage(props: {A: AFn; book: Book | null; parsed: Parsed[]; t: Return
     .slice(0, 4)
   return (
     <main className="wrap">
+      {book.promo ? (
+        <div className="promo" data-sanity={attr(book, 'promo')} data-testid="book-promo">
+          {book.promo}
+        </div>
+      ) : null}
       <div className="crumbs">
         <A to="list">← {t.back}</A>
       </div>
       <article className="detail">
         <Cover big p={p} />
         <div>
+          {book.badge ? (
+            <span className="badge big" data-sanity={attr(book, 'badge')}>
+              {book.badge}
+            </span>
+          ) : null}
           <h1 data-sanity={attr(book, 'title')}>{book.title}</h1>
           <div className="byline" data-sanity={attr(book, 'subtitle')}>{book.subtitle}</div>
           {book.blurb ? (
@@ -241,7 +252,24 @@ function BookPage(props: {A: AFn; book: Book | null; parsed: Parsed[]; t: Return
               <p data-sanity={attr(book, 'blurb')}>{book.blurb}</p>
             </div>
           ) : null}
-          {variant ? <span className="edition">{t.editions}: {copyLabel}</span> : null}
+          {book.highlights?.length ? (
+            <div className="highlights">
+              <span className="lab">{t.highlights}</span>
+              <ul data-sanity={attr(book, 'highlights')}>
+                {book.highlights.map((h, i) => (
+                  <li key={i}>{h}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          <button className="btn buy" data-sanity={attr(book, 'cta')} type="button">
+            {book.cta ?? t.defaultCta}
+          </button>
+          {variant ? (
+            <p className="viewing-line" data-testid="viewing-version">
+              {t.viewingVersion(copyLabel)}
+            </p>
+          ) : null}
           <small className="visually-hidden" data-testid="served-text">{stegaClean(book.blurb ?? '')}</small>
         </div>
       </article>

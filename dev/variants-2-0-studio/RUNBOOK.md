@@ -47,6 +47,7 @@ After that every step on the demo path loads in under 5 seconds. Presentation ta
 
 - Reseed: `node seed/seed.mts` (Nordic Books, releases, definitions, variants). Safe to run again.
 - Field marks: `node seed/seed-field-marks.mts` (document `fm-1` with a Members variant).
+- Real content: `seed/variant-content.json` (source: `docs/initiatives/curation-perspective-selector/variant-content.json`). Every book has base copy plus, per variant, only the fields that differ (blurb, promo, badge, cta, highlights; a subtitle or German title where it fits), so field marks and the preview show real differences. The book schema has `highlights`, `promo`, `badge` and `cta` for this. Two versions inside already-scheduled releases and one in the undecided release keep their old marker text (a scheduled release cannot be edited).
 - Check: `node seed/verify.mts`.
 - Throwaway: the scripts create documents `book-c5-pw-*` and the definition `aud-pw-empty`, then delete them. Do not edit them.
 - Do not delete the seeded `book-*` documents. Reseed if something is lost.

@@ -11,8 +11,8 @@ const token = JSON.parse(readFileSync(join(homedir(), '.config', 'sanity', 'conf
 const w = console.warn
 console.warn = (...a: unknown[]) => { if (String(a[0]).includes('experimental')) return; w(...a) }
 const x = createClient({projectId: 'ppsg7ml5', dataset: 'variants-2-0', apiVersion: 'X', useCdn: false, token})
-const LIST = `*[_type in ["book", "bookLive"]] | order(title asc) {_id, _type, title, subtitle, blurb}`
-const ONE = `*[_type in ["book", "bookLive"] && _id == $id][0] {_id, _type, title, subtitle, blurb}`
+const LIST = `*[_type in ["book", "bookLive"]] | order(title asc) {_id, _type, title, subtitle, blurb, highlights, promo, badge, cta}`
+const ONE = `*[_type in ["book", "bookLive"] && _id == $id][0] {_id, _type, title, subtitle, blurb, highlights, promo, badge, cta}`
 mkdirSync('journeys-captures/site', {recursive: true})
 const AUDIENCES: [string, string | undefined][] = [['base', undefined], ['members', 'aud-members'], ['german', 'loc-de-de']]
 const ROUTES = ['home', 'list', 'book:book-lighthouse', 'campaign', 'about']
