@@ -37,6 +37,19 @@ describe('mergeReleaseMetadata', () => {
     })
   })
 
+  it('omits null and empty string instead of storing them', () => {
+    expect(
+      mergeReleaseMetadata(
+        {...metadata, legalReview: 'reviewed', reviewNote: 'Note'},
+        {
+          legalReview: null,
+          reviewNote: '',
+        },
+        ['legalReview', 'reviewNote'],
+      ),
+    ).toEqual(metadata)
+  })
+
   it('removes a configured field when the form value no longer has it', () => {
     expect(
       mergeReleaseMetadata({...metadata, legalReview: 'notReviewed'}, {_id: 'form'}, [

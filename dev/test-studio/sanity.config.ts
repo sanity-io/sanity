@@ -365,12 +365,6 @@ const defaultWorkspace = defineConfig({
           },
         }),
         defineField({
-          name: 'reviewNote',
-          title: 'Review note',
-          type: 'string',
-          validation: (rule) => rule.required().min(3),
-        }),
-        defineField({
           name: 'signOff',
           title: 'Sign-off',
           type: 'object',
@@ -434,7 +428,24 @@ export default defineConfig([
     basePath: '/default-hidden',
     hidden: true,
   },
-  defaultWorkspace,
+  {
+    ...defaultWorkspace,
+    releases: {
+      ...defaultWorkspace.releases,
+      metadata: {
+        ...defaultWorkspace.releases?.metadata,
+        fields: [
+          ...(defaultWorkspace.releases?.metadata?.fields ?? []),
+          defineField({
+            name: 'reviewNote',
+            title: 'Review note',
+            type: 'string',
+            validation: (rule) => rule.required().min(3),
+          }),
+        ],
+      },
+    },
+  },
   {
     ...defaultWorkspace,
     title: 'Test Studio (variants disabled)',

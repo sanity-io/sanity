@@ -3,7 +3,7 @@ import {defineField, type FieldDefinition} from '@sanity/types'
 import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactElement, useCallback, useState} from 'react'
-import {describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type InputProps} from '../../../../form/types/inputProps'
@@ -44,8 +44,9 @@ function ControlledMetadataForm(props: {
   initial: ReleaseMetadataRecord
   onChange: (metadata: ReleaseMetadataRecord) => void
   onValidityChange?: (valid: boolean) => void
+  commitInitialValues?: boolean
 }) {
-  const {initial, onChange, onValidityChange} = props
+  const {initial, onChange, onValidityChange, commitInitialValues} = props
   const [metadata, setMetadata] = useState(initial)
   const handleChange = useCallback(
     (next: EditableReleaseDocument['metadata']) => {
@@ -57,6 +58,7 @@ function ControlledMetadataForm(props: {
   )
   return (
     <ReleaseMetadataForm
+      commitInitialValues={commitInitialValues}
       metadata={metadata}
       onChange={handleChange}
       onValidityChange={onValidityChange}
@@ -67,8 +69,9 @@ function ControlledMetadataForm(props: {
 function ControlledReleaseForm(props: {
   initial: EditableReleaseDocument
   onChange: (value: EditableReleaseDocument) => void
+  onValidityChange?: (valid: boolean) => void
 }) {
-  const {initial, onChange} = props
+  const {initial, onChange, onValidityChange} = props
   const [value, setValue] = useState(initial)
   const handleChange = useCallback(
     (next: EditableReleaseDocument) => {
@@ -77,7 +80,7 @@ function ControlledReleaseForm(props: {
     },
     [onChange],
   )
-  return <ReleaseForm onChange={handleChange} value={value} />
+  return <ReleaseForm onChange={handleChange} onValidityChange={onValidityChange} value={value} />
 }
 
 async function renderWithFields(
@@ -138,6 +141,58 @@ describe('ReleaseMetadataForm', () => {
         }),
       )
     })
+  })
+
+  it('defaults a missing key once on create, then leaves a cleared value omitted', async () => {
+    const onChange = vi.fn()
+    await renderWithFields(
+      [legalReviewField],
+      <ControlledMetadataForm initial={{releaseType: 'asap'}} onChange={onChange} />,
+    )
+
+    const select = within(await screen.findByTestId('field-legalReview')).getByRole('combobox')
+    await waitFor(() => expect(select).toHaveValue('0'))
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(expect.objectContaining({legalReview: 'notReviewed'}))
+    })
+
+    await userEvent.selectOptions(select, '-1')
+    await waitFor(() => {
+      const last = onChange.mock.calls.at(-1)?.[0]
+      expect(last).not.toHaveProperty('legalReview')
+    })
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 30))
+    })
+    expect(onChange.mock.calls.at(-1)?.[0]).not.toHaveProperty('legalReview')
+    expect(select).toHaveValue('-1')
+  })
+
+  it('lets an edit clear a stored value without restoring initialValue', async () => {
+    const onChange = vi.fn()
+    await renderWithFields(
+      [legalReviewField],
+      <ControlledMetadataForm
+        commitInitialValues={false}
+        initial={{releaseType: 'asap', legalReview: 'reviewed'}}
+        onChange={onChange}
+      />,
+    )
+
+    const select = within(await screen.findByTestId('field-legalReview')).getByRole('combobox')
+    await waitFor(() => expect(select).toHaveValue('1'))
+    expect(onChange).not.toHaveBeenCalled()
+
+    await userEvent.selectOptions(select, '-1')
+    await waitFor(() => {
+      const last = onChange.mock.calls.at(-1)?.[0]
+      expect(last).not.toHaveProperty('legalReview')
+    })
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 30))
+    })
+    expect(onChange.mock.calls.at(-1)?.[0]).not.toHaveProperty('legalReview')
+    expect(select).toHaveValue('-1')
   })
 
   it('does not render a field that sets components.input', async () => {
@@ -246,6 +301,65 @@ describe('ReleaseMetadataForm', () => {
 })
 
 describe('ReleaseForm metadata fields', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('does not revalidate when the title changes, and blocks while the note is rechecked', async () => {
+    const gates: Array<(result: true | string) => void> = []
+    const onValidityChange = vi.fn()
+    const reviewNote = defineField({
+      name: 'reviewNote',
+      title: 'Review note',
+      type: 'string',
+      validation: (rule) =>
+        rule.custom(
+          () =>
+            new Promise((resolve) => {
+              gates.push(resolve)
+            }),
+        ),
+    })
+    const value: EditableReleaseDocument = {
+      _id: 'very-random',
+      metadata: asReleaseMetadata({
+        title: 'Spring',
+        description: '',
+        releaseType: 'asap',
+        reviewNote: 'ok',
+      }),
+    }
+
+    await renderWithFields(
+      [reviewNote],
+      <ControlledReleaseForm
+        initial={value}
+        onChange={vi.fn()}
+        onValidityChange={onValidityChange}
+      />,
+    )
+
+    await waitFor(() => expect(gates.length).toBeGreaterThan(0))
+    gates.at(-1)?.(true)
+    await waitFor(() => expect(onValidityChange).toHaveBeenCalledWith(true))
+
+    onValidityChange.mockClear()
+    const checksBeforeTitle = gates.length
+    const title = screen.getByTestId('release-form-title')
+    await userEvent.type(title, '!')
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 30))
+    })
+    expect(gates.length).toBe(checksBeforeTitle)
+    expect(onValidityChange).not.toHaveBeenCalledWith(false)
+
+    const note = within(screen.getByTestId('field-reviewNote')).getByRole('textbox')
+    await userEvent.type(note, 'x')
+    await waitFor(() => expect(gates.length).toBeGreaterThan(checksBeforeTitle))
+    expect(onValidityChange).toHaveBeenCalledWith(false)
+    expect(onValidityChange).not.toHaveBeenCalledWith(true)
+  })
+
   it('does not render configured fields when variants are off', async () => {
     const onChange = vi.fn()
     const value: EditableReleaseDocument = {

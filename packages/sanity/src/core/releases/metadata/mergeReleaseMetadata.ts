@@ -43,11 +43,18 @@ export function mergeReleaseMetadata(
 
   for (const name of fieldNames) {
     if (RESERVED_RELEASE_METADATA_NAMES.has(name)) continue
-    if (!Object.prototype.hasOwnProperty.call(formValue, name) || formValue[name] === undefined) {
+    const value = formValue[name]
+    // An empty string or null is a cleared field, not a stored value.
+    if (
+      !Object.prototype.hasOwnProperty.call(formValue, name) ||
+      value === undefined ||
+      value === null ||
+      value === ''
+    ) {
       delete next[name]
       continue
     }
-    next[name] = formValue[name]
+    next[name] = value
   }
 
   return next

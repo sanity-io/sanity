@@ -131,6 +131,7 @@ export function EditReleaseDialog({
           </VStack>
           {metadataFieldsEnabled ? (
             <ReleaseMetadataForm
+              commitInitialValues={false}
               metadata={asReleaseMetadata(metadata)}
               onChange={handleMetadataChange}
               onValidityChange={setMetadataValid}

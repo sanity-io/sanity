@@ -51,8 +51,8 @@ interface ReleaseMetadataFormProps {
   onValidityChange?: (valid: boolean) => void
   readOnly?: boolean
   /**
-   * When true, missing keys are written back as soon as `initialValue` resolves.
-   * Create and the edit dialog need that.
+   * When true, `initialValue` is written once for keys that are absent on mount.
+   * Create uses that. Edit leaves an absent key absent.
    */
   commitInitialValues?: boolean
 }
@@ -78,18 +78,23 @@ function formValueFromMetadata(
   }
 }
 
-function withInitialValues(
-  metadata: ReleaseMetadataRecord,
+function sameConfiguredFields(
+  current: FormDocumentValue,
+  next: FormDocumentValue,
   fieldNames: readonly string[],
-  initialValues: Record<string, unknown> | null,
-): ReleaseMetadataRecord {
-  const next: ReleaseMetadataRecord = {...metadata}
-  if (!initialValues) return next
+): boolean {
   for (const name of fieldNames) {
-    if (next[name] !== undefined || initialValues[name] === undefined) continue
-    next[name] = initialValues[name]
+    if (current[name] !== next[name]) return false
   }
-  return next
+  for (const key of Object.keys(current)) {
+    if (key === '_id' || key === '_type') continue
+    if (!fieldNames.includes(key)) return false
+  }
+  return true
+}
+
+function isSeedableInitialValue(value: unknown): boolean {
+  return value !== undefined && value !== null && value !== ''
 }
 
 function ReleaseMetadataFieldsForm(
@@ -116,15 +121,18 @@ function ReleaseMetadataFieldsForm(
     markers: ValidationMarker[]
   } | null>(null)
   const requestId = useRef(0)
-
-  const displayedMetadata = useMemo(
-    () => withInitialValues(metadata, fieldNames, initialValues),
-    [fieldNames, initialValues, metadata],
+  const didCommitInitialValues = useRef(false)
+  const [seedNames] = useState(
+    () =>
+      new Set(commitInitialValues ? fieldNames.filter((name) => metadata[name] === undefined) : []),
   )
-  const formValue = useMemo(
-    () => formValueFromMetadata(displayedMetadata, fieldNames),
-    [displayedMetadata, fieldNames],
-  )
+  // Title and description edits rebuild metadata without touching configured fields.
+  // Reusing the form value keeps validateItem from running and Create from disabling.
+  const nextFormValue = formValueFromMetadata(metadata, fieldNames)
+  const [formValue, setFormValue] = useState(nextFormValue)
+  if (!sameConfiguredFields(formValue, nextFormValue, fieldNames)) {
+    setFormValue(nextFormValue)
+  }
   // A new value is invalid until its own check settles. Old markers must not
   // keep create/save enabled while `validateItem` is still running.
   const markers = settled?.value === formValue ? settled.markers : NO_MARKERS
@@ -163,15 +171,21 @@ function ReleaseMetadataFieldsForm(
   }, [compiled.schemaType, context])
 
   useEffect(() => {
-    if (!commitInitialValues || !initialValues) return
-    const next = withInitialValues(metadata, fieldNames, initialValues)
-    const changed = fieldNames.some(
-      (name) => metadata[name] === undefined && next[name] !== undefined,
-    )
+    if (!commitInitialValues || !initialValues || didCommitInitialValues.current) return
+    didCommitInitialValues.current = true
+    if (seedNames.size === 0) return
+    const next: ReleaseMetadataRecord = {...metadata}
+    let changed = false
+    for (const name of seedNames) {
+      if (next[name] !== undefined) continue
+      const initial = initialValues[name]
+      if (!isSeedableInitialValue(initial)) continue
+      next[name] = initial
+      changed = true
+    }
     if (!changed) return
-    onValidityChange?.(false)
     onChange(asReleaseMetadata(next))
-  }, [commitInitialValues, fieldNames, initialValues, metadata, onChange, onValidityChange])
+  }, [commitInitialValues, initialValues, metadata, onChange, seedNames])
 
   useEffect(() => {
     const id = ++requestId.current
@@ -219,8 +233,12 @@ function ReleaseMetadataFieldsForm(
 
   const handleChange = useFormPatchHandler(formValue, (next) => {
     if (!isRecord(next)) return
+    const merged = mergeReleaseMetadata(metadata, next, fieldNames)
+    for (const name of fieldNames) {
+      if (metadata[name] !== merged[name]) seedNames.delete(name)
+    }
     onValidityChange?.(false)
-    onChange(asReleaseMetadata(mergeReleaseMetadata(displayedMetadata, next, fieldNames)))
+    onChange(asReleaseMetadata(merged))
   })
 
   const formState = useFormState({
