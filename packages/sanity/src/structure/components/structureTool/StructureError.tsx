@@ -2,7 +2,6 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {Card, Container, Heading, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 import {Box, Flex, VStack} from 'ui5'
@@ -35,9 +34,10 @@ function formatStack(stack: string) {
 
 interface StructureErrorProps {
   error: unknown
+  onReload: () => void
 }
 
-export function StructureError({error}: StructureErrorProps) {
+export function StructureError({error, onReload}: StructureErrorProps) {
   if (!(error instanceof PaneResolutionError)) {
     throw error
   }
@@ -53,10 +53,6 @@ export function StructureError({error}: StructureErrorProps) {
 
   const path = cause instanceof SerializeError ? cause.path : []
   const helpId = (cause instanceof SerializeError && cause.helpId) || error.helpId
-
-  const handleReload = useCallback(() => {
-    window.location.reload()
-  }, [])
 
   return (
     <Card height="fill" overflow="auto" padding={4} sizing="border" tone="critical">
@@ -101,7 +97,7 @@ export function StructureError({error}: StructureErrorProps) {
               text={t('structure-error.reload-button.text')}
               icon={SyncIcon}
               tone="primary"
-              onClick={handleReload}
+              onClick={onReload}
             />
           </Box>
         </Card>

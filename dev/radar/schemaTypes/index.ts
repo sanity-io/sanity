@@ -5,6 +5,7 @@ import {engineConfidenceRunTypes} from './engineConfidenceRun'
 import {gitCommit} from './gitCommit'
 import {gitTag} from './gitTag'
 import {releaseLine} from './releaseLine'
+import {sqrlScore} from './sqrlScore'
 
 export const schemaTypes = [
   ...benchRunTypes,
@@ -14,4 +15,5 @@ export const schemaTypes = [
   gitCommit,
   gitTag,
   releaseLine,
+  sqrlScore,
 ]

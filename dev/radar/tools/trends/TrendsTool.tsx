@@ -94,6 +94,7 @@ import {EngineConfidencePanel} from './EngineConfidencePanel'
 import {type LayerState, useLayerState} from './layers'
 import {sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
+import {SqrlBanner} from './SqrlBanner'
 import {seriesHasCalibration, TrendChart} from './TrendChart'
 import {type DriftState, useDriftState} from './useDriftState'
 import {useUrlState} from './useUrlState'
@@ -1622,6 +1623,8 @@ export function TrendsTool() {
               </Flex>
             </Flex>
 
+            <SqrlBanner source={source} rangeDays={rangeDays} tags={tags} />
+
             {/* How-to-read is opt-in — returning viewers don't need the wall
                 of text, first-timers are one click away */}
             {showHelp && (
@@ -1638,6 +1641,13 @@ export function TrendsTool() {
                     before trusting a spike, check the host calibration in the Calibration tab. If
                     it spikes on the same day, suspect the runner, not the studio. Flat lines are
                     the goal; the ⓘ on each chart explains what it measures.
+                  </Text>
+                  <Text size={1} muted>
+                    The SQRL banner at the top is one score across the metrics below, where higher
+                    is better and 100 is late June 2026. Each input counts as its late-June value
+                    divided by today's, so any metric getting faster or lighter raises it. A
+                    week-to-week move under about 7 points is noise. See{' '}
+                    <code>dev/radar/sqrl/README.md</code>.
                   </Text>
                 </VStack>
               </Card>

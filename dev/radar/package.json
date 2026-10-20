@@ -11,6 +11,7 @@
     "build": "sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 3399",
+    "sqrl": "node --conditions=monorepo --import tsx scripts/sqrl.ts",
     "start": "sanity preview --port 3399",
     "sync-git": "node --conditions=monorepo --import tsx scripts/syncGitHistory.ts"
   },

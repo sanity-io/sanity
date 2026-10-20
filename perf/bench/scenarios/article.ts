@@ -3,7 +3,7 @@ import {type BenchDocument} from '../mock-api/types'
 import articleDocument from './fixtures/articleDocument'
 import {imageAsset, imageRef} from './fixtures/assets'
 import {createFixtureRng, keyGenerator} from './fixtures/prng'
-import {defineScenario} from './types'
+import {defineScenario, type SoakExcursion, type StepSelector} from './types'
 
 const DOCUMENT_ID = 'bench-article'
 
@@ -95,6 +95,78 @@ function buildArticle(): BenchDocument[] {
   ]
 }
 
+const OPEN_MENU: StepSelector = {css: '[role="menu"]:visible'}
+const DOCUMENT_ACTIONS: StepSelector = {label: 'Open document actions'}
+
+const backToArticle = {
+  kind: 'visitDocument',
+  documentId: DOCUMENT_ID,
+  documentType: 'article',
+  awaitField: 'body',
+} as const
+
+const SOAK_EXCURSIONS: SoakExcursion[] = [
+  {
+    label: 'document actions menu',
+    steps: [
+      {kind: 'click', selector: DOCUMENT_ACTIONS},
+      {kind: 'awaitVisible', selector: OPEN_MENU},
+      {kind: 'press', key: 'Escape'},
+    ],
+  },
+  {
+    label: 'field actions menu',
+    steps: [
+      {kind: 'hover', selector: {testId: 'field-title'}},
+      {kind: 'click', selector: {testId: 'field-actions-trigger', within: 'field-title'}},
+      {kind: 'awaitVisible', selector: OPEN_MENU},
+      {kind: 'press', key: 'Escape'},
+    ],
+  },
+  {
+    label: 'reference array item menu',
+    steps: [
+      {
+        kind: 'click',
+        selector: {css: '[data-testid="field-categories"] button[id$="-menuButton"]'},
+      },
+      {kind: 'awaitVisible', selector: OPEN_MENU},
+      {kind: 'press', key: 'Escape'},
+    ],
+  },
+  {
+    label: 'document actions tooltip',
+    steps: [
+      {kind: 'hover', selector: DOCUMENT_ACTIONS},
+      {kind: 'awaitVisible', selector: {css: '[data-ui="Tooltip"]:visible'}},
+    ],
+  },
+  {
+    label: 'switch to the author and back',
+    steps: [
+      {
+        kind: 'visitDocument',
+        documentId: 'reference-author',
+        documentType: 'author',
+        awaitField: 'name',
+      },
+      backToArticle,
+    ],
+  },
+  {
+    label: 'switch to a category and back',
+    steps: [
+      {
+        kind: 'visitDocument',
+        documentId: 'category-0',
+        documentType: 'category',
+        awaitField: 'name',
+      },
+      backToArticle,
+    ],
+  },
+]
+
 // Ported from dev/efps/tests/article/article.ts
 export const article = defineScenario({
   name: 'article',
@@ -121,4 +193,17 @@ export const article = defineScenario({
       readbackText: (doc: BenchDocument) => ((doc.tags as string[] | undefined) ?? []).join(' '),
     },
   ],
+  soak: {
+    target: 'body',
+    excursions: SOAK_EXCURSIONS,
+    seed: 20261015,
+    presence: {
+      peer: {
+        userId: 'bench-peer',
+        displayName: 'Bench Peer',
+        documentId: `drafts.${DOCUMENT_ID}`,
+        paths: [['body'], ['title'], ['categories'], ['seo', 'metaTitle']],
+      },
+    },
+  },
 })

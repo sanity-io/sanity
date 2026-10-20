@@ -53,6 +53,7 @@ const RUN: BenchRunDocument = {
       },
       soak: {
         minutes: 2,
+        settleMinute: 1,
         samples: [
           {
             minute: 0,
@@ -138,6 +139,10 @@ describe('toStorableRun', () => {
       {_key: 'listen', endpointClass: 'listen', count: 3},
       {_key: 'actions', endpointClass: 'actions', count: 7},
     ])
+  })
+
+  it('stores the soak settle minute', () => {
+    expect(toStorableRun(RUN).scenarios[0].soak?.settleMinute).toBe(1)
   })
 
   it('leaves the input document untouched', () => {
