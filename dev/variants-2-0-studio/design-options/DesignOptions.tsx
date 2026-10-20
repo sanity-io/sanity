@@ -47,6 +47,8 @@ import {TAB_ID} from './tab'
 import {type ComponentDef, type OptionDef} from './types'
 
 const LETTERS = 'ABCDEFGH'
+/** Icons beside labels in the footer and card links are 18px (the library's size). */
+const ICON_18 = {fontSize: 18} as const
 const WINDOW_KEY = () => `${getConfig().storageKey}:window`
 const DEFAULT_SIZE = {w: 720, h: 560}
 const MIN_SIZE = {w: 560, h: 400}
@@ -124,32 +126,41 @@ function Segmented<T extends string | number | null>(props: {
   }
 
   return (
-    <Flex aria-label={ariaLabel} gap={1} onKeyDown={onKeyDown} role="radiogroup">
-      {options.map((option, index) => {
-        const selected = option.value === value
-        return (
-          <Box flex={fullWidth ? 1 : undefined} key={String(option.value)}>
-            <Button
-              aria-checked={selected}
-              disabled={disabled || option.disabled}
-              fontSize={1}
-              mode={selected ? 'default' : 'ghost'}
-              onClick={() => onChange(option.value)}
-              padding={2}
-              ref={(el: HTMLButtonElement | null) => {
-                refs.current[index] = el
-              }}
-              role="radio"
-              style={{height: 25, width: fullWidth ? '100%' : undefined}}
-              tabIndex={selected ? 0 : -1}
-              text={option.label}
-              title={option.title}
-              tone={selected ? 'primary' : 'default'}
-            />
-          </Box>
-        )
-      })}
-    </Flex>
+    <Card
+      border
+      data-segmented
+      padding={0}
+      radius={2}
+      style={{display: 'inline-flex', padding: 3}}
+      tone="transparent"
+    >
+      <Flex aria-label={ariaLabel} gap={1} onKeyDown={onKeyDown} role="radiogroup">
+        {options.map((option, index) => {
+          const selected = option.value === value
+          return (
+            <Box flex={fullWidth ? 1 : undefined} key={String(option.value)}>
+              <Button
+                aria-checked={selected}
+                disabled={disabled || option.disabled}
+                fontSize={1}
+                mode={selected ? 'default' : 'bleed'}
+                onClick={() => onChange(option.value)}
+                padding={2}
+                ref={(el: HTMLButtonElement | null) => {
+                  refs.current[index] = el
+                }}
+                role="radio"
+                style={{height: 25, width: fullWidth ? '100%' : undefined}}
+                tabIndex={selected ? 0 : -1}
+                text={option.label}
+                title={option.title}
+                tone={selected ? 'primary' : 'default'}
+              />
+            </Box>
+          )
+        })}
+      </Flex>
+    </Card>
   )
 }
 
@@ -258,14 +269,14 @@ function LinkButton(props: {
       as="a"
       data-moved={props.moved ? '' : undefined}
       data-testid={props.testId}
-      fontSize={0}
+      fontSize={1}
       href={props.href}
-      icon={LaunchIcon}
+      icon={<LaunchIcon style={ICON_18} />}
       mode="ghost"
       onClick={(e: {stopPropagation: () => void}) => e.stopPropagation()}
       padding={2}
       rel="noreferrer"
-      style={{height: 25}}
+      style={{height: 31}}
       target="_blank"
       text={props.label}
       title={props.title}
@@ -365,12 +376,13 @@ function OptionCard(props: {
               ? 'No design for this option yet.'
               : (option.oneLiner ?? oneLine(option.summary))}
           </Text>
-          <Flex align="center" gap={2} wrap="wrap">
+          <Flex align="center" gap={2}>
             <StatusDot color={status.dot} title={status.word} />
             <Text muted size={0}>
               {status.word}
             </Text>
-            <Box flex={1} />
+          </Flex>
+          <Flex gap={2}>
             {figma ? <LinkButton href={figma.href} label="Figma" testId="figma-link" /> : null}
             {option.story ? <StoryLink id={option.story} /> : null}
           </Flex>
@@ -439,12 +451,16 @@ function FramesGallery({component}: {component: ComponentDef}) {
   )
 }
 
-function Label({children}: {children: string}) {
+function Label({children, accent}: {children: string; accent?: boolean}) {
   return (
     <Text
-      muted
+      muted={!accent}
       size={0}
-      style={{letterSpacing: '0.04em', textTransform: 'uppercase'}}
+      style={{
+        letterSpacing: '0.04em',
+        textTransform: 'uppercase',
+        ...(accent ? {color: 'var(--card-link-fg-color)'} : {}),
+      }}
       weight="medium"
     >
       {children}
@@ -556,88 +572,102 @@ function SettingsGroups({
   state: State
   showOptions: SegmentOption<GlobalChoice>[]
 }) {
-  const group = (title: string, hint: string, children: ReactNode) => (
-    <Stack data-testid={`settings-${title.toLowerCase().replace(/\s+/g, '-')}`} gap={2} key={title}>
-      <Label>{title}</Label>
-      <Flex align="center" gap={3} title={hint} wrap="wrap">
+  const group = (title: string, children: ReactNode, first = false) => (
+    <Stack
+      data-testid={`settings-${title.toLowerCase().replace(/\s+/g, '-')}`}
+      gap={3}
+      key={title}
+      style={
+        first ? undefined : {borderLeft: '1px solid var(--card-border-color)', paddingLeft: 20}
+      }
+    >
+      <Label accent>{title}</Label>
+      <Flex align="flex-start" gap={4} wrap="wrap">
         {children}
       </Flex>
     </Stack>
   )
   const control = (label: string, node: ReactNode) => (
-    <Flex align="center" gap={2}>
+    <Stack gap={2}>
       <Text muted size={0}>
         {label}
       </Text>
       {node}
-    </Flex>
+    </Stack>
   )
   return (
-    <Flex gap={5} wrap="wrap">
-      {group(
-        'World',
-        'Changes the data and the scope',
-        <>
-          {control(
-            'Stage',
+    <Card border padding={3} radius={3} shadow={1}>
+      <Flex gap={4} wrap="wrap">
+        {group(
+          'World',
+          <>
+            {control(
+              'Stage',
+              <Segmented
+                ariaLabel="Stage"
+                onChange={(value) => setStage(value)}
+                options={getConfig().scenario.stages.map((stage) => ({
+                  value: stage.id,
+                  label: stage.label,
+                }))}
+                value={state.stage}
+              />,
+            )}
+            {getConfig().scenario.dimensions && state.stage === getConfig().scenario.dimensionsStage
+              ? control(
+                  'Dimensions',
+                  <Segmented
+                    ariaLabel="Dimensions"
+                    onChange={(value) => setDimensionLimit(value)}
+                    options={(getConfig().scenario.dimensions ?? []).map((d) => ({
+                      value: d.value,
+                      label: d.label,
+                      title: d.title,
+                    }))}
+                    value={state.dimensionLimit}
+                  />,
+                )
+              : null}
+          </>,
+          true,
+        )}
+        {getConfig().shape
+          ? group(
+              'Look',
+              <>
+                {control(
+                  'Shape',
+                  <Segmented
+                    ariaLabel="Shape"
+                    onChange={(value) => setShape(value)}
+                    options={[
+                      {
+                        value: 'round',
+                        label: 'Round',
+                        title: 'Shipped: full-radius pills and chips',
+                      },
+                      {value: 'box', label: 'Box', title: 'Proposal: 3px radius'},
+                    ]}
+                    value={state.shape}
+                  />,
+                )}
+              </>,
+            )
+          : null}
+        {group(
+          'Options for all',
+          control(
+            'Set every component to',
             <Segmented
-              ariaLabel="Stage"
-              onChange={(value) => setStage(value)}
-              options={getConfig().scenario.stages.map((stage) => ({
-                value: stage.id,
-                label: stage.label,
-              }))}
-              value={state.stage}
+              ariaLabel="Options for all"
+              onChange={(value) => setGlobalChoice(value)}
+              options={showOptions}
+              value={state.global}
             />,
-          )}
-          {getConfig().scenario.dimensions && state.stage === getConfig().scenario.dimensionsStage
-            ? control(
-                'Dimensions',
-                <Segmented
-                  ariaLabel="Dimensions"
-                  onChange={(value) => setDimensionLimit(value)}
-                  options={(getConfig().scenario.dimensions ?? []).map((d) => ({
-                    value: d.value,
-                    label: d.label,
-                    title: d.title,
-                  }))}
-                  value={state.dimensionLimit}
-                />,
-              )
-            : null}
-        </>,
-      )}
-      {getConfig().shape
-        ? group(
-            'Look',
-            'Changes how things are drawn',
-            <>
-              {control(
-                'Shape',
-                <Segmented
-                  ariaLabel="Shape"
-                  onChange={(value) => setShape(value)}
-                  options={[
-                    {value: 'round', label: 'Round', title: 'Shipped: full-radius pills and chips'},
-                    {value: 'box', label: 'Box', title: 'Proposal: 3px radius'},
-                  ]}
-                  value={state.shape}
-                />,
-              )}
-            </>,
-          )
-        : null}
-      {group(
-        'Options for all',
-        'One click sets every component',
-        <Segmented
-          ariaLabel="Options for all"
-          onChange={(value) => setGlobalChoice(value)}
-          options={showOptions}
-          value={state.global}
-        />,
-      )}
-    </Flex>
+          ),
+        )}
+      </Flex>
+    </Card>
   )
 }
 
@@ -803,12 +833,20 @@ function ConfigBody({
               mode="bleed"
               onClick={resetOverrides}
               padding={2}
+              style={{height: 33}}
               text="Reset all"
             />
             <Box flex={1} />
             <MenuButton
               button={
-                <Button fontSize={1} icon={ShareIcon} mode="bleed" padding={2} text="Share" />
+                <Button
+                  fontSize={1}
+                  icon={<ShareIcon style={ICON_18} />}
+                  mode="bleed"
+                  padding={2}
+                  style={{height: 33}}
+                  text="Share"
+                />
               }
               id="options-share-menu"
               menu={
@@ -847,9 +885,10 @@ function ConfigBody({
                 <Button
                   aria-label="More"
                   fontSize={1}
-                  icon={EllipsisHorizontalIcon}
+                  icon={<EllipsisHorizontalIcon style={ICON_18} />}
                   mode="bleed"
                   padding={2}
+                  style={{height: 33, width: 33}}
                 />
               }
               id="options-more-menu"
