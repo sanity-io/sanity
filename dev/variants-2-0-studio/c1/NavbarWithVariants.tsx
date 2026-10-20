@@ -8,7 +8,7 @@ import {VariantsControl} from './Controls'
 /**
  * Studio's navbar plus C1:
  * - Option B adds the "Variants" control to the top right through the navbar's `__internal_actions` slot;
- * - Options A and B show the composed-address row under the navbar, in the page flow (it pushes the Studio down).
+ * - Options A and B show the composed-address row under the navbar (option C keeps only the shipped bar), in the page flow (it pushes the Studio down).
  * Option A's pill is extended elsewhere, through the PROPOSED perspective menu extension.
  */
 export function NavbarWithVariants(props: NavbarProps) {
@@ -24,7 +24,8 @@ export function NavbarWithVariants(props: NavbarProps) {
   return (
     <>
       {props.renderDefault({...props, __internal_actions: actions})}
-      {option === STOCK_OPTION ? null : <AddressRow />}
+      {/* Option C is the shipped Perspective Filter bar only: no address row. */}
+      {option === STOCK_OPTION || option === 'c' ? null : <AddressRow />}
     </>
   )
 }
