@@ -1,5 +1,7 @@
 import {defineField, defineType} from 'sanity'
 
+import {referenceFields} from './people'
+
 // Nordic Books: the mock catalogue behind the Variants 2.0 fixtures (seed/nordic-books.json).
 export const bookFields = [
   defineField({name: 'title', type: 'string'}),
@@ -10,6 +12,8 @@ export const bookFields = [
   defineField({name: 'promo', type: 'string', description: 'The strip above the book'}),
   defineField({name: 'badge', type: 'string', description: 'A small chip'}),
   defineField({name: 'cta', type: 'string', title: 'Button label'}),
+  // E9: real references (schemas/people.ts)
+  ...referenceFields,
 ]
 
 export const book = defineType({

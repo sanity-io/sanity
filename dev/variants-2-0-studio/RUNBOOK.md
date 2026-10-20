@@ -205,3 +205,20 @@ Screenshots and `run.json` go to `journeys-captures/` (not committed). The scrip
 | Array items changed, removed, moved, added; portable text blocks changed; a change inside a collapsed fieldset and a nested object; an unknown path | `fieldMarksTest;fm-2`, variant `aud-returning-visitors` (the Field marks test `fm-1` keeps its Members variant) |
 
 The Field marks test type gained a collapsed fieldset, `Advanced` (`seoTitle`, `seoDescription`).
+
+## References fixtures (multi-pane scenarios)
+
+`node seed/seed-refs.mts` (idempotent, run after `seed-e9.mts`). New types: `author`, `publisher`, `series`, `place` (`schemas/people.ts`). Every book version (Book, E9 review set, E9 scenarios) gained real reference fields; the by-line strings stay (`subtitle` still reads "By Maren Halvorsen"), ids are unchanged.
+
+| Field                      | Kind                                                                                                                                          | Where                     |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `author`                   | hard reference to `author-<name>`; 25 authors, several books per author (incoming references)                                                 | every book                |
+| `publisher`                | WEAK reference; `book-lighthouse` points at `publisher-unpublished`, which exists only as a draft (a weak reference to something unpublished) | every book                |
+| `inSeries`                 | hard reference to a series                                                                                                                    | every book                |
+| `relatedBooks`             | array mixing hard (`related`) and weak (`relatedWeak`) references                                                                             | most books                |
+| `notes`                    | portable text with an inline `authorMention` reference                                                                                        | every book with an author |
+| `homeTown`, `headquarters` | weak and hard references to places                                                                                                            | authors, publishers       |
+
+Authors with variants: Maren Halvorsen (Members, published), Elif Demir (Returning visitors, published only), Ines Marques (Members, published and a newer draft); the others have none. Versions in a scheduled release cannot be mutated and keep no references (five documents).
+
+A reference opens in a new pane in stock Studio; the second pane can hold its own perspective, set by URL: `/structure/book;book-lighthouse;author-maren-halvorsen,type=author,localPerspective=published,localVariant=aud-members?design=show.a,stage.open-beta,paneAddress.c`. Incoming references are the stock delete dialog (the stock Studio has no references inspector); hard and weak references are the stock reference field and its "weak" badge. `node journeys/verify-refs.mts`.

@@ -37,7 +37,7 @@ const rect = async (sel: string) => p.locator(sel).first().evaluate((e) => { con
 
 const layouts = ['left', 'actionsRight', 'centered'] as const
 for (const layout of layouts) {
-  await open(`show.a,stage.ga,dim.4${layout === 'centered' ? '' : `,rowlayout.${layout}`}`)
+  await open(`show.a,stage.ga,dim.4,rowWidth.a${layout === 'centered' ? '' : `,rowlayout.${layout}`}`)
   await addChips(1)
   const row = await rect('[data-testid=address-row]')
   const group = await rect('[data-testid=address-row-group]')
@@ -56,7 +56,7 @@ for (const layout of layouts) {
 // Shots: rest, 1, 3, 4 chips in each layout.
 const shoot = async (layout: string, n: number) => p.screenshot({path: `journeys-captures/c1-layout/${layout}-${n}chips.png`, clip: {x: 0, y: 0, width: 1300, height: 190}})
 for (const layout of layouts) {
-  const url = `show.a,stage.ga,dim.4${layout === 'centered' ? '' : `,rowlayout.${layout}`}`
+  const url = `show.a,stage.ga,dim.4,rowWidth.a${layout === 'centered' ? '' : `,rowlayout.${layout}`}`
   await open(url)
   await p.locator('[data-ui=ReleasesNav] button').last().click()
   await p.getByRole('menuitem', {name: /Add a dimension|View as/}).first().click()
