@@ -1,9 +1,9 @@
-import {Skeleton} from '@sanity/ui'
 import {type ComponentType, Suspense} from 'react'
 
 import {useMiddlewareComponents} from '../../config/components/useMiddlewareComponents'
 import {defaultResolveInputComponent} from '../studio/inputResolver/inputResolver'
 import {type InputProps} from '../types/inputProps'
+import {CustomInputSuspenseFallback} from './CustomInputSuspenseFallback'
 import {pickInputComponent} from './picks'
 import {useResolveDefaultComponent} from './useResolveDefaultComponent'
 
@@ -25,7 +25,7 @@ function DefaultInput(props: Omit<InputProps, 'renderDefault'>): React.JSX.Eleme
   // suspend the whole form, leaving no field to edit that could create the document.
   return (
     <Suspense
-      fallback={<Skeleton data-testid="custom-input-fallback" padding={3} radius={1} animated />}
+      fallback={<CustomInputSuspenseFallback schemaType={props.schemaType} path={props.path} />}
     >
       {input}
     </Suspense>

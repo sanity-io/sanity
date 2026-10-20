@@ -396,6 +396,7 @@ describe('FormBuilder', () => {
 
   it("keeps the rest of the form editable while a schema type's custom input never settles", async () => {
     mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
     const pending = new Promise<never>(noop)
     function NeverSettlingInput(props: InputProps) {
       use(pending)
@@ -416,10 +417,53 @@ describe('FormBuilder', () => {
     ).toBeInTheDocument()
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+
+    const suspenseWarnings = warn.mock.calls.filter(([message]) =>
+      String(message).startsWith('The custom input <NeverSettlingInput> for the field "custom"'),
+    )
+    expect(suspenseWarnings).toHaveLength(1)
+    expect(suspenseWarnings[0][1]).toBe(NeverSettlingInput)
+    warn.mockRestore()
+  })
+
+  it('does not warn about a custom input that declares its own Suspense', async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const pending = new Promise<never>(noop)
+    function SuspendingPart(): null {
+      use(pending)
+      return null
+    }
+    function SelfContainedInput(props: InputProps) {
+      return (
+        <>
+          <Suspense fallback={<div data-testid="own-fallback" />}>
+            <SuspendingPart />
+          </Suspense>
+          {props.renderDefault(props)}
+        </>
+      )
+    }
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {schema: {types: [customInputTestType(SelfContainedInput)]}},
+      pane: true,
+    })
+
+    const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
+    expect(within(customField).getByTestId('own-fallback')).toBeInTheDocument()
+    expect(within(customField).getByTestId('string-input')).toBeInTheDocument()
+    expect(screen.queryByTestId('custom-input-fallback')).not.toBeInTheDocument()
+    expect(
+      warn.mock.calls.filter(([message]) => String(message).startsWith('The custom input')),
+    ).toHaveLength(0)
+    warn.mockRestore()
   })
 
   it("replaces a schema type's custom input fallback once the input loads", async () => {
     mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
     const input = deferredComponent<InputProps>()
 
     await renderFormBuilder({
@@ -439,6 +483,7 @@ describe('FormBuilder', () => {
       await within(customField).findByTestId('string-input', {}, {timeout: 10_000}),
     ).toBeInTheDocument()
     expect(within(customField).queryByTestId('custom-input-fallback')).not.toBeInTheDocument()
+    warn.mockRestore()
   })
 })
 
