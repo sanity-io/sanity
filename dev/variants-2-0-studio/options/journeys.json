@@ -28,7 +28,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "A dialog asks for the dimension and the definition title.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition",
+        "story": "explorations-variants-2-0-c6-shipped-flow--new-definition-dialog",
         "flowStep": 2
       },
       {
@@ -38,7 +38,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The same dialog takes one condition (for example locale = de-DE) and saves.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition",
+        "story": "explorations-variants-2-0-c6-shipped-flow--new-definition-dialog",
         "flowStep": 3
       },
       {
@@ -48,7 +48,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The detail page of the new definition shows 0 documents and a Create action.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition",
+        "story": "explorations-variants-2-0-c6-shipped-flow--created-definition",
         "flowStep": 4
       }
     ]
@@ -81,7 +81,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The Edit dialog opens with the conditions of the definition.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-names-the-consequence",
+        "story": "explorations-variants-2-0-c6-shipped-flow--edit-definition-dialog",
         "flowStep": 2
       },
       {
@@ -91,7 +91,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The dialog names how many documents the change affects before saving.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-names-the-consequence",
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-conditions-dialog",
         "flowStep": 2
       }
     ]
@@ -202,7 +202,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "One row per stored version, with address and state.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--by-publish-date",
         "flowStep": 2
       },
       {
@@ -212,7 +212,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The document shows that version.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--open-a-version",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--open-a-version",
         "flowStep": 2
       }
     ]
@@ -406,7 +406,7 @@
         "preset": "open-beta-a",
         "route": "/inventory",
         "expect": "A definition shows 0 of n documents.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--dimension-lens",
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--dimension-lens-empty-value",
         "flowStep": 1
       },
       {
@@ -494,7 +494,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The version rows are listed with states.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--by-publish-date",
         "flowStep": 1
       },
       {
@@ -591,7 +591,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The detail page shows 0 documents.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-from-the-detail",
+        "story": "explorations-variants-2-0-components-c6-variants-tool--definition-no-documents",
         "flowStep": 1
       },
       {
@@ -601,7 +601,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "A dialog confirms. No documents are affected.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-without-documents",
+        "story": "explorations-variants-2-0-c6-shipped-flow--delete-definition-dialog",
         "flowStep": 2
       },
       {
@@ -611,7 +611,7 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The definition is gone from the overview.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-without-documents",
+        "story": "explorations-variants-2-0-c6-shipped-flow--list-after-delete",
         "flowStep": 3
       }
     ]
@@ -645,7 +645,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The draft row is listed.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--by-publish-date",
         "flowStep": null
       },
       {
@@ -689,7 +689,7 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The document opens on the variant. The pane header names the variant and its state.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--open-a-version",
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a-side-panel--open-a-version",
         "flowStep": null
       },
       {

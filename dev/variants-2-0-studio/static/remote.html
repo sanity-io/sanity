@@ -107,7 +107,8 @@
 import {connect, statusLine} from '/static/remote-core.js'
 const CHECKS_KEY = 'variants-2-0-studio:journey-checks'
 const POS_KEY = 'variants-2-0-studio:remote-position'
-const STORYBOOK = 'https://sanity-studio-storybook-r4ildcrzv.sanity.dev'
+// The studio passes its Storybook base (SANITY_STUDIO_STORYBOOK_BASE or the branch alias) when it opens the remote.
+const STORYBOOK = new URLSearchParams(location.search).get('storybook') || 'https://sanity-studio-storybook-git-explorations-variants-2-0.sanity.dev'
 const FIGMA = 'https://www.figma.com/design/QCVhwHlQp0QfERBamuj2ey/Studio-Flows'
 const $ = (id) => document.getElementById(id)
 const load = (url) => fetch(url).then((r) => (r.ok ? r.json() : null)).catch(() => null)

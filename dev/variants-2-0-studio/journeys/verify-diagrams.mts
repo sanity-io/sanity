@@ -4,7 +4,7 @@ import {existsSync, readFileSync} from 'node:fs'
 
 const registry = readFileSync('options/registry.ts', 'utf8')
 const local = JSON.parse(readFileSync('options/diagrams.json', 'utf8')) as {diagrams: Record<string, unknown>}
-const docsPath = '../../../../docs/initiatives/curation-perspective-selector/diagrams.json'
+const docsPath = '../../../../../docs/initiatives/curation-perspective-selector/diagrams.json'
 const keys = new Set<string>()
 for (const line of registry.split('\n')) {
   if (!/diagramKey:|frames:/.test(line)) continue

@@ -181,6 +181,67 @@ function oneLine(text: string): string {
   return first.length > 110 ? `${first.slice(0, 107)}…` : first
 }
 
+// The Storybook index, fetched once per session (base + /index.json). Behind a sign-in it may not load; then links open as given.
+let storyIndex: Promise<string[] | null> | null = null
+function loadStoryIndex(): Promise<string[] | null> {
+  const base = getConfig().links?.storybookBase
+  if (!base) return Promise.resolve(null)
+  storyIndex ??= fetch(`${base}/index.json`)
+    .then((r) => (r.ok ? r.json() : null))
+    .then((json) => {
+      const body = json?.entries ?? json
+      return Array.isArray(body) ? body.map((e: {id: string}) => e.id) : body ? (Object.keys(body) as string[]) : null
+    })
+    .catch(() => null)
+  return storyIndex
+}
+
+/** The valid story closest to an id that is not in the index: the same component page, else the longest shared prefix. */
+export function nearestStory(id: string, ids: string[]): string | null {
+  const page = id.split('--')[0]
+  const same = ids.filter((x) => x.startsWith(`${page}--`))
+  if (same.length) return same.find((x) => x.endsWith('--docs')) ?? same[0]
+  let best: string | null = null
+  let bestLen = 0
+  for (const x of ids) {
+    let n = 0
+    while (n < x.length && n < id.length && x[n] === id[n]) n++
+    if (n > bestLen) {
+      bestLen = n
+      best = x
+    }
+  }
+  return bestLen > 20 ? best : null
+}
+
+/** A Storybook link that cannot end on Storybook's error page: a missing story opens the nearest valid one, with a note. */
+function StoryLink({id}: {id: string}) {
+  const [ids, setIds] = useState<string[] | null>(null)
+  useEffect(() => {
+    let alive = true
+    void loadStoryIndex().then((list) => alive && setIds(list))
+    return () => {
+      alive = false
+    }
+  }, [])
+  const missing = !!ids && !ids.includes(id)
+  const target = missing ? (nearestStory(id, ids) ?? id) : id
+  return (
+    <a
+      data-moved={missing ? '' : undefined}
+      data-testid="story-link"
+      href={`${getConfig().links?.storybookBase}/?path=/story/${target}`}
+      onClick={(e) => e.stopPropagation()}
+      rel="noreferrer"
+      style={{fontSize: 12}}
+      target="_blank"
+      title={missing ? 'Story moved: this opens the nearest story' : undefined}
+    >
+      Storybook{missing ? ' (moved)' : ''}
+    </a>
+  )
+}
+
 function OptionCard(props: {component: ComponentDef; option: OptionDef; letter: string; chosen: boolean; stock: boolean}) {
   const {component, option, letter, chosen, stock} = props
   const notDrawn = option.label === NOT_DRAWN
@@ -250,17 +311,7 @@ function OptionCard(props: {component: ComponentDef; option: OptionDef; letter: 
                 Figma
               </a>
             ) : null}
-            {option.story ? (
-              <a
-                href={`${getConfig().links?.storybookBase}/?path=/story/${option.story}`}
-                onClick={(e) => e.stopPropagation()}
-                rel="noreferrer"
-                style={{fontSize: 12}}
-                target="_blank"
-              >
-                Storybook
-              </a>
-            ) : null}
+            {option.story ? <StoryLink id={option.story} /> : null}
           </Flex>
         </Stack>
       </Stack>
@@ -503,11 +554,16 @@ function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
           <Flex align="center" gap={2}>
             <Button disabled={changedCount === 0} fontSize={1} mode="bleed" onClick={resetOverrides} padding={2} text="Reset all" />
             <Box flex={1} />
+            {getConfig().links?.storybookBase ? (
+              <Text data-testid="storybook-base" muted size={0} title="Set SANITY_STUDIO_STORYBOOK_BASE to point the links elsewhere">
+                Storybook: {getConfig().links?.storybookBase}
+              </Text>
+            ) : null}
             {getConfig().links?.remote ? (
               <Button fontSize={1} mode="bleed" onClick={() => window.open(`${getConfig().links!.remote}?tab=${TAB_ID}`, 'variants-2-0-options-remote', 'popup,width=520,height=820')} padding={2} text="Options remote" />
             ) : null}
             {getConfig().links?.remote ? (
-              <Button fontSize={1} mode="bleed" onClick={() => window.open(`${getConfig().links!.journeysRemote}?tab=${TAB_ID}`, 'variants-2-0-remote', 'popup,width=1280,height=860')} padding={2} text="Journeys remote" />
+              <Button fontSize={1} mode="bleed" onClick={() => window.open(`${getConfig().links!.journeysRemote}?tab=${TAB_ID}&storybook=${encodeURIComponent(getConfig().links?.storybookBase ?? '')}`, 'variants-2-0-remote', 'popup,width=1280,height=860')} padding={2} text="Journeys remote" />
             ) : null}
             <Button fontSize={1} mode="bleed" onClick={copy} padding={2} text={copied ? 'Copied' : 'Copy link'} />
             <Button fontSize={1} mode="bleed" onClick={onHide} padding={2} text="Hide until refresh" />

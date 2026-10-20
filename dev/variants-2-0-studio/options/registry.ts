@@ -366,7 +366,9 @@ defineDesignOptions({
     figmaFile: 'https://www.figma.com/design/C1T4EUScc9PMf5tqNo09Qs',
     remote: '/static/options-remote.html',
     journeysRemote: '/static/remote.html',
-    storybookBase: 'https://sanity-studio-storybook-r4ildcrzv.sanity.dev',
+    // The branch alias follows the newest deployment of explorations/variants-2-0. SANITY_STUDIO_STORYBOOK_BASE overrides it
+    // (for example http://localhost:6006). Both hosted URLs sit behind a sign-in.
+    storybookBase: process.env.SANITY_STUDIO_STORYBOOK_BASE ?? 'https://sanity-studio-storybook-git-explorations-variants-2-0.sanity.dev',
   },
 })
 
