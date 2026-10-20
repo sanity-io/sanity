@@ -3,7 +3,7 @@
 // entry to `options`. `final` marks the chosen option once the design is signed off.
 
 import {defineDesignOptions, getComponent} from '../design-options/config'
-import type {ComponentDef, DiagramFile, DiagramSpec, OptionStatus} from '../design-options/types'
+import  {type ComponentDef, type DiagramFile, type DiagramSpec, type OptionStatus} from '../design-options/types'
 
 import diagrams from './diagrams.json'
 import presets from './presets.json'
@@ -49,7 +49,7 @@ export const COMPONENTS: ComponentDef[] = [
     defaultOption: 'a',
     cover: "Draft and Published in the document header, plus a Versions button that opens the inventory pane. Releases move to their own dropdown.",
     scope: "Open beta",
-    pick: "Lean: Draft/Published plus Versions button; toggle still open. The Figma drafts of 19 Oct (A grouped dropdowns, B per-axis controls) refine this; the cover text is the older lean.",
+    pick: "Lean: Draft/Published plus Versions button; toggle still open. The Figma drafts of 19 Oct (A grouped dropdowns) refine this; option B is the 20 Oct redraw: a Published | Draft toggle and one Other versions button. The cover text is the older lean.",
     built: true,
     where: 'Open a document: a V1 row under the pane header.',
     options: [
@@ -62,10 +62,10 @@ export const COMPONENTS: ComponentDef[] = [
       },
       {
         id: 'b',
-        label: 'Per-axis controls',
-        summary: 'Exploration: one control per axis (state, audience, locale), each listing what this document has. Asks for more axes than the page builds.',
+        label: 'Published toggle',
+        summary: 'The header shows only a Published | Draft toggle (a raised thumb under the chosen side) and one "Other versions · N" button. The button opens a short popover: variants with what each has, releases with dates, and "Open the version inventory…". A variant that is the current view shows as a removable chip beside the toggle; the x returns to the base document.',
         status: 'candidate',
-        refs: 'Figma C2 227:1929',
+        refs: 'Figma C2 page, option B frames B1, B1b, B2, B3 (file C1T4EUScc9PMf5tqNo09Qs)',
       },
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -226,7 +226,7 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
   },
   c2: {
     a: 'Variants first, a divider, then Published, Draft and Releases (as in PR #39).',
-    b: 'Exploration: one control per axis (state, audience, locale).',
+    b: 'A Published | Draft toggle and one Other versions button; a variant in view is a chip.',
   },
   c3: {
     a: 'Icon on every row; hover opens a read-only popover; click opens document and inventory.',
@@ -262,7 +262,7 @@ const DIAGRAMS: Record<string, Record<string, DiagramSpec>> = {
   },
   c2: {
     a: {shapes: [60, 88, 116, 144].map((x) => ({kind: 'pill' as const, x, y: 14.5, w: 24, h: 7}))},
-    b: {shapes: [{kind: 'box', x: 60, y: 14.5, w: 40, h: 7}, {kind: 'box', x: 104, y: 14.5, w: 40, h: 7}]},
+    b: {shapes: [{kind: 'pill', x: 60, y: 14.5, w: 34, h: 7}, {kind: 'pill', x: 98, y: 14.5, w: 40, h: 7}]},
   },
   c3: {
     a: {shapes: [...rows.map((y) => ({kind: 'box' as const, x: 40, y: y + 0.5, w: 7, h: 7})), {kind: 'box', x: 30, y: 34, w: 42, h: 22}]},
