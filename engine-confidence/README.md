@@ -2,11 +2,9 @@
 
 Produces the weekly Engine Confidence Score for the document sync engine (`@sanity/mutator` and the document store and form patch code in `packages/sanity`). The result is one `engineConfidenceRun` document per ISO week, shown in the Radar "Engine confidence" tab.
 
-The headline is the geometric mean of the measures that ran:
+The score is Stryker's mutation score, stored as `score.ratio`: (killed + timeout) / (killed + timeout + survived + no coverage). Stryker mutates the tier 1 engine files (`tier1.json`) and runs the unit tests; the score is the share of planted bugs a test fails on. Reporting that reads the dataset directly (BigQuery, Omni) should read `score.ratio`: one field, no blending.
 
-- `generatedBugsCaught`: Stryker mutates the tier 1 engine files (`tier1.json`) and runs the unit tests. The ratio is Stryker's mutation score: (killed + timeout) / (killed + timeout + survived + no coverage).
-- `knownBugsCaught`: Each catalogue entry is a patch that reintroduces a past or plausible bug. The ratio is the entries at least one suite fails on, over the active entries.
-- `syncScenariosVerified`: not measured yet, it needs fuzzers that report scenario cells. The e2e suite is also recorded as `not-run` in every catalogue entry.
+The catalogue (`knownBugs`) is replayed alongside it and stored for its own sake: each entry is a patch that reintroduces a past or plausible bug, and Radar shows how many of the active entries at least one suite catches. It is supporting detail only and never feeds `score`. The e2e suite is recorded as `not-run` in every catalogue entry.
 
 Stryker ignores the message of `new SomeError(...)` / `SomeError(...)` calls and every `console.*(...)` and `debug(...)` call (`stryker/messageIgnorer.ts`), so message text and log lines do not count as generated bugs. Only the message is ignored: the `throw` statement, the condition and block around it and strings such as action names stay scored, because deleting a throw lets bad input through silently. Ignored mutants show up as `counts.ignored` and stay out of the ratio.
 
@@ -47,7 +45,7 @@ pnpm engine-confidence score
 pnpm engine-confidence store reports/engine-confidence-run.json --dry-run
 ```
 
-For a quicker pass, `catalogue --suites unit:mutator,unit:engine` skips the fuzz suite and records it as `not-run`. The known bugs ratio of such a run is not comparable with a full one.
+For a quicker pass, `catalogue --suites unit:mutator,unit:engine` skips the fuzz suite and records it as `not-run`. The known bugs count of such a run is not comparable with a full one.
 
 ## The exclusion register
 

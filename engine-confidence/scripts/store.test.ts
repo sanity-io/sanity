@@ -14,7 +14,8 @@ const validDocument = {
   schemaVersion: 1,
   isoWeek: '2026-W42',
   startedAt: '2026-10-15T03:00:00.000Z',
-  headline: {measuresUsed: []},
+  score: {status: 'not-measured', reason: 'No Stryker reports were found'},
+  knownBugs: {status: 'not-measured', reason: 'No catalogue results were found'},
 }
 
 describe('runDocumentProblems', () => {

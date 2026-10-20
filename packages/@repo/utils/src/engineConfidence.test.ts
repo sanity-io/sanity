@@ -1,16 +1,12 @@
 import {describe, expect, test} from 'vitest'
 
 import {
-  type CatalogueEntryResult,
   countMutantStatuses,
   coveredMutationScoreOf,
   emptyMutantCounts,
-  type EngineConfidenceMeasures,
-  geometricMeanOf,
-  headlineOf,
+  isEntryCaught,
   isoWeekOf,
   isoWeekStart,
-  knownBugsRatioOf,
   type MutantCounts,
   mutationScoreOf,
 } from './engineConfidence'
@@ -19,18 +15,6 @@ import {engineConfidenceRunId} from './radarIds'
 function counts(overrides: Partial<MutantCounts>): MutantCounts {
   return {...emptyMutantCounts(), ...overrides}
 }
-
-function entry(statuses: CatalogueEntryResult['results'][number]['status'][]) {
-  return {
-    results: statuses.map((status, index) => ({
-      _key: `suite-${index}`,
-      suite: 'unit:engine' as const,
-      status,
-    })),
-  }
-}
-
-const notMeasured = {status: 'not-measured', reason: 'no fuzzer reports scenario cells'} as const
 
 describe('mutation scores', () => {
   test('match Stryker: detected over detected, survived and uncovered; errors, ignored and excluded left out', () => {
@@ -63,60 +47,21 @@ describe('mutation scores', () => {
 })
 
 describe('known bugs', () => {
-  test('an entry counts once when any suite caught it; not-run and not-applicable never count', () => {
-    const entries = [
-      entry(['caught', 'caught']),
-      entry(['missed', 'caught']),
-      entry(['missed', 'not-applicable', 'not-run']),
-      entry(['caught']),
-      entry(['missed']),
-    ]
-    expect(knownBugsRatioOf(entries)).toBe(3 / 5)
-  })
+  function entry(statuses: ('caught' | 'missed' | 'not-applicable' | 'not-run')[]) {
+    return {
+      results: statuses.map((status, index) => ({
+        _key: `suite-${index}`,
+        suite: 'unit:engine' as const,
+        status,
+      })),
+    }
+  }
 
-  test('an empty catalogue is not a measurement', () => {
-    expect(knownBugsRatioOf([])).toBeUndefined()
-  })
-})
-
-describe('headline', () => {
-  test('is the geometric mean of the measured ratios and names them', () => {
-    const measures = {
-      generatedBugsCaught: {
-        status: 'measured',
-        ratio: 0.64,
-        counts: emptyMutantCounts(),
-        targets: [],
-        files: [],
-      },
-      knownBugsCaught: {
-        status: 'measured',
-        ratio: 1,
-        activeEntries: 5,
-        caughtEntries: 5,
-        entries: [],
-      },
-      syncScenariosVerified: notMeasured,
-    } satisfies EngineConfidenceMeasures
-    expect(headlineOf(measures)).toEqual({
-      ratio: 0.8,
-      measuresUsed: ['generatedBugsCaught', 'knownBugsCaught'],
-    })
-  })
-
-  test('has no ratio when nothing was measured', () => {
-    expect(
-      headlineOf({
-        generatedBugsCaught: notMeasured,
-        knownBugsCaught: notMeasured,
-        syncScenariosVerified: notMeasured,
-      }),
-    ).toEqual({measuresUsed: []})
-  })
-
-  test('a zero measure zeroes the headline and an out-of-range ratio throws', () => {
-    expect(geometricMeanOf([0.9, 0])).toBe(0)
-    expect(() => geometricMeanOf([0.5, 71.1])).toThrow(RangeError)
+  test('an entry is caught when any suite caught it; not-run and not-applicable never count as caught', () => {
+    expect(isEntryCaught(entry(['caught', 'caught']))).toBe(true)
+    expect(isEntryCaught(entry(['missed', 'caught']))).toBe(true)
+    expect(isEntryCaught(entry(['missed', 'not-applicable', 'not-run']))).toBe(false)
+    expect(isEntryCaught(entry(['missed']))).toBe(false)
   })
 })
 

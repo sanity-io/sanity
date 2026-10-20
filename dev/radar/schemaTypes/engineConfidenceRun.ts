@@ -6,7 +6,7 @@ import {
 import {BarChartIcon} from '@sanity/icons/BarChart'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
-/** Mirrors `EngineConfidenceRunDocument`. A measure that was not measured stores only `status` and `reason`, so every other measure field is optional. */
+/** Mirrors `EngineConfidenceRunDocument`. A score or summary that was not measured stores only `status` and `reason`, so every other field is optional. */
 
 const mutantCountsFields = [
   defineField({name: 'killed', type: 'number'}),
@@ -27,7 +27,7 @@ const mutantCountsFields = [
   }),
 ]
 
-const measureStatusFields = [
+const statusFields = [
   defineField({
     name: 'status',
     type: 'string',
@@ -35,18 +35,18 @@ const measureStatusFields = [
   }),
   defineField({
     name: 'reason',
-    description: 'Why the measure is not measured; absent when it is',
+    description: 'Why it is not measured; absent when it is',
     type: 'string',
   }),
 ]
 
-const generatedBugsCaught = defineField({
-  name: 'generatedBugsCaught',
+const score = defineField({
+  name: 'score',
   description:
-    'Mutation score of the engine files: the share of generated bugs (Stryker mutants) a test fails on',
+    'The engine confidence score: Stryker mutation score of the engine files, the share of generated bugs a test fails on. Reporting should read score.ratio.',
   type: 'object',
   fields: [
-    ...measureStatusFields,
+    ...statusFields,
     defineField({name: 'ratio', description: 'Fraction in [0, 1]', type: 'number'}),
     defineField({
       name: 'coveredRatio',
@@ -102,14 +102,13 @@ const generatedBugsCaught = defineField({
   ],
 })
 
-const knownBugsCaught = defineField({
-  name: 'knownBugsCaught',
+const knownBugs = defineField({
+  name: 'knownBugs',
   description:
-    'Share of the bug catalogue (real engine bugs replayed as patches) that at least one test suite catches',
+    'The known-bug catalogue (real engine bugs replayed as patches), kept as supporting detail only: it never feeds the score.',
   type: 'object',
   fields: [
-    ...measureStatusFields,
-    defineField({name: 'ratio', description: 'Fraction in [0, 1]', type: 'number'}),
+    ...statusFields,
     defineField({name: 'activeEntries', type: 'number'}),
     defineField({name: 'caughtEntries', type: 'number'}),
     defineField({
@@ -163,13 +162,6 @@ const knownBugsCaught = defineField({
       ],
     }),
   ],
-})
-
-const syncScenariosVerified = defineField({
-  name: 'syncScenariosVerified',
-  description: 'Not measured in v1: needs fuzzers that report scenario cells',
-  type: 'object',
-  fields: measureStatusFields,
 })
 
 const engineConfidenceRun = defineType({
@@ -247,27 +239,11 @@ const engineConfidenceRun = defineType({
         defineField({name: 'fuzzRuns', type: 'number'}),
       ],
     }),
-    defineField({
-      name: 'headline',
-      description: 'Geometric mean of the measured ratios',
-      type: 'object',
-      fields: [
-        defineField({name: 'ratio', description: 'Fraction in [0, 1]', type: 'number'}),
-        defineField({
-          name: 'measuresUsed',
-          type: 'array',
-          of: [defineArrayMember({type: 'string'})],
-        }),
-      ],
-    }),
-    defineField({
-      name: 'measures',
-      type: 'object',
-      fields: [generatedBugsCaught, knownBugsCaught, syncScenariosVerified],
-    }),
+    score,
+    knownBugs,
   ],
   preview: {
-    select: {isoWeek: 'isoWeek', ratio: 'headline.ratio', sha: 'git.sha'},
+    select: {isoWeek: 'isoWeek', ratio: 'score.ratio', sha: 'git.sha'},
     prepare: ({isoWeek, ratio, sha}) => ({
       title: isoWeek ?? 'Engine confidence run',
       subtitle: [

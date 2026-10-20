@@ -11,14 +11,11 @@ import {
   emptyMutantCounts,
   ENGINE_CONFIDENCE_RUN_TYPE,
   ENGINE_CONFIDENCE_SCHEMA_VERSION,
-  type EngineConfidenceMeasures,
   type EngineConfidenceRunDocument,
-  type GeneratedBugsMeasure,
-  headlineOf,
+  type EngineConfidenceScore,
   isEntryCaught,
   isoWeekOf,
-  type KnownBugsMeasure,
-  knownBugsRatioOf,
+  type KnownBugsSummary,
   missedMutants,
   mutationScoreOf,
   STRYKER_TARGET_IDS,
@@ -76,12 +73,11 @@ export interface ScoreInputs {
 
 const EXIT_HASH_MISMATCH = 6
 const EXIT_EXCLUSION_REGISTER = 8
-const NO_SCENARIOS_REASON = 'No fuzzer reports scenario cells yet'
 
-function generatedBugsMeasure(
+function strykerScore(
   strykerTargets: StrykerTargetInput[],
   exclusions: ExclusionEntry[],
-): GeneratedBugsMeasure {
+): EngineConfidenceScore {
   if (strykerTargets.length === 0) {
     return {status: 'not-measured', reason: 'No Stryker reports were found'}
   }
@@ -121,17 +117,15 @@ function generatedBugsMeasure(
   }
 }
 
-function knownBugsMeasure(catalogue: CatalogueResultsFile | undefined): KnownBugsMeasure {
+function knownBugsSummary(catalogue: CatalogueResultsFile | undefined): KnownBugsSummary {
   if (catalogue === undefined) {
     return {status: 'not-measured', reason: 'No catalogue results were found'}
   }
-  const ratio = knownBugsRatioOf(catalogue.entries)
-  if (ratio === undefined) {
+  if (catalogue.entries.length === 0) {
     return {status: 'not-measured', reason: 'The catalogue has no active entries'}
   }
   return {
     status: 'measured',
-    ratio,
     activeEntries: catalogue.entries.length,
     caughtEntries: catalogue.entries.filter(isEntryCaught).length,
     entries: catalogue.entries,
@@ -140,11 +134,8 @@ function knownBugsMeasure(catalogue: CatalogueResultsFile | undefined): KnownBug
 
 export function buildRunDocument(inputs: ScoreInputs): EngineConfidenceRunDocument {
   const {pinnedConfig, startedAt} = inputs
-  const measures: EngineConfidenceMeasures = {
-    generatedBugsCaught: generatedBugsMeasure(inputs.strykerTargets, inputs.exclusions),
-    knownBugsCaught: knownBugsMeasure(inputs.catalogue),
-    syncScenariosVerified: {status: 'not-measured', reason: NO_SCENARIOS_REASON},
-  }
+  const score = strykerScore(inputs.strykerTargets, inputs.exclusions)
+  const knownBugs = knownBugsSummary(inputs.catalogue)
   const isoWeek = isoWeekOf(startedAt)
   const fuzzSuite = pinnedConfig.catalogue.suites['fuzz:pt']
   return {
@@ -167,8 +158,8 @@ export function buildRunDocument(inputs: ScoreInputs): EngineConfidenceRunDocume
       fuzzSeeds: fuzzSuite.seeds,
       fuzzRuns: fuzzSuite.runs,
     },
-    headline: headlineOf(measures),
-    measures,
+    score,
+    knownBugs,
   }
 }
 
@@ -265,19 +256,16 @@ function percentOf(ratio: number | undefined): string {
 }
 
 export function renderSummary(document: EngineConfidenceRunDocument): string {
-  const {measures} = document
-  const generated = measures.generatedBugsCaught
-  const known = measures.knownBugsCaught
+  const {score, knownBugs} = document
   return [
     `### Engine confidence ${document.isoWeek}`,
     '',
-    `Headline: **${percentOf(document.headline.ratio)}** (config v${document.config.version}, measures: ${document.headline.measuresUsed.join(', ') || 'none'})`,
+    `Score: **${percentOf(score.status === 'measured' ? score.ratio : undefined)}** (config v${document.config.version})`,
     '',
     '| Measure | Result |',
     '| --- | --- |',
-    `| Generated bugs caught | ${generated.status === 'measured' ? `${percentOf(generated.ratio)} (${detectedMutants(generated.counts)} detected, ${missedMutants(generated.counts)} missed, ${generated.counts.ignored} ignored by rule, ${generated.counts.excluded} excluded after review)` : generated.reason} |`,
-    `| Known bugs caught | ${known.status === 'measured' ? `${known.caughtEntries}/${known.activeEntries}` : known.reason} |`,
-    `| Sync scenarios verified | ${measures.syncScenariosVerified.reason} |`,
+    `| Stryker mutation score | ${score.status === 'measured' ? `${percentOf(score.ratio)} (${detectedMutants(score.counts)} detected, ${missedMutants(score.counts)} missed, ${score.counts.ignored} ignored by rule, ${score.counts.excluded} excluded after review)` : score.reason} |`,
+    `| Known bugs caught (not part of the score) | ${knownBugs.status === 'measured' ? `${knownBugs.caughtEntries}/${knownBugs.activeEntries}` : knownBugs.reason} |`,
     '',
   ].join('\n')
 }

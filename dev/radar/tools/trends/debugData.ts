@@ -19,13 +19,12 @@ import {
   emptyMutantCounts,
   ENGINE_CONFIDENCE_RUN_TYPE,
   ENGINE_CONFIDENCE_SCHEMA_VERSION,
-  type EngineConfidenceMeasures,
   type EngineConfidenceRunDocument,
-  headlineOf,
+  type EngineConfidenceScore,
   isEntryCaught,
   isoWeekOf,
   isoWeekStart,
-  knownBugsRatioOf,
+  type KnownBugsSummary,
   type MutantCounts,
   type MutatedFileResult,
   mutationScoreOf,
@@ -744,44 +743,35 @@ function demoCatalogueEntries(week: number, addedOn: string): CatalogueEntryResu
   })
 }
 
-function demoEngineMeasures(
+function demoEngineScore(
   week: number,
   configVersion: number,
-  addedOn: string,
-): EngineConfidenceMeasures {
-  const files = demoMutatedFiles(engineScoreShift(week))
+  files: MutatedFileResult[],
+): EngineConfidenceScore {
   const counts = sumCounts(files)
-  const entries = demoCatalogueEntries(week, addedOn)
-  const generatedRatio = mutationScoreOf(counts)
+  const ratio = mutationScoreOf(counts)
   const coveredRatio = coveredMutationScoreOf(counts)
-  const knownRatio = knownBugsRatioOf(entries)
-  return {
-    generatedBugsCaught:
-      generatedRatio === undefined
-        ? {status: 'not-measured', reason: 'No mutants were scored'}
-        : {
-            status: 'measured',
-            ratio: generatedRatio,
-            ...(coveredRatio === undefined ? {} : {coveredRatio}),
-            counts,
-            targets: demoStrykerTargets({week, configVersion, files}),
-            files,
-          },
-    knownBugsCaught:
-      knownRatio === undefined
-        ? {status: 'not-measured', reason: 'The catalogue has no active entries'}
-        : {
-            status: 'measured',
-            ratio: knownRatio,
-            activeEntries: entries.length,
-            caughtEntries: entries.filter(isEntryCaught).length,
-            entries,
-          },
-    syncScenariosVerified: {
-      status: 'not-measured',
-      reason: 'No fuzzer reports scenario cells yet',
-    },
-  }
+  return ratio === undefined
+    ? {status: 'not-measured', reason: 'No mutants were scored'}
+    : {
+        status: 'measured',
+        ratio,
+        ...(coveredRatio === undefined ? {} : {coveredRatio}),
+        counts,
+        targets: demoStrykerTargets({week, configVersion, files}),
+        files,
+      }
+}
+
+function demoKnownBugs(entries: CatalogueEntryResult[]): KnownBugsSummary {
+  return entries.length === 0
+    ? {status: 'not-measured', reason: 'The catalogue has no active entries'}
+    : {
+        status: 'measured',
+        activeEntries: entries.length,
+        caughtEntries: entries.filter(isEntryCaught).length,
+        entries,
+      }
 }
 
 function demoEngineRun(week: number, weekStart: Date): EngineConfidenceRunDocument {
@@ -789,7 +779,9 @@ function demoEngineRun(week: number, weekStart: Date): EngineConfidenceRunDocume
   const configVersion = week >= ENGINE_CONFIG_BREAK_WEEK ? 2 : 1
   const startedAt = new Date(weekStart.getTime() + THURSDAY_RUN_OFFSET_MS)
   const isoWeek = isoWeekOf(startedAt)
-  const measures = demoEngineMeasures(week, configVersion, isoDate(startedAt))
+  const files = demoMutatedFiles(engineScoreShift(week))
+  const score = demoEngineScore(week, configVersion, files)
+  const knownBugs = demoKnownBugs(demoCatalogueEntries(week, isoDate(startedAt)))
   return {
     _id: engineConfidenceRunId(isoWeek),
     _type: ENGINE_CONFIDENCE_RUN_TYPE,
@@ -826,8 +818,8 @@ function demoEngineRun(week: number, weekStart: Date): EngineConfidenceRunDocume
       fuzzSeeds: [1, 2, 3],
       fuzzRuns: 150,
     },
-    headline: headlineOf(measures),
-    measures,
+    score,
+    knownBugs,
   }
 }
 
@@ -848,7 +840,7 @@ function isEngineConfidenceRun(value: unknown): value is EngineConfidenceRunDocu
   return (
     candidate._type === ENGINE_CONFIDENCE_RUN_TYPE &&
     candidate.schemaVersion === ENGINE_CONFIDENCE_SCHEMA_VERSION &&
-    typeof candidate.measures === 'object'
+    typeof candidate.score === 'object'
   )
 }
 

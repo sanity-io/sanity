@@ -1,6 +1,5 @@
 import {
   emptyMutantCounts,
-  headlineOf,
   isoWeekOf,
   isoWeekStart,
   mutationScoreOf,
@@ -14,11 +13,12 @@ import {
   configBreaks,
   deepLinkTargetLoaded,
   ENGINE_CONFIDENCE_EXPLAINER,
+  ENGINE_SCORE_KEY,
   engineConfidenceDetailOf,
   engineConfidenceSeries,
   type EngineConfidenceDetail,
   type EngineConfidenceRunSummary,
-  type EngineMeasureSummary,
+  type EngineScoreSummary,
   filterEngineRunsByRange,
   worstFiles,
 } from './engineConfidence'
@@ -27,18 +27,16 @@ import {weeklyBuckets} from './weekly'
 const FIRST_MONDAY = Date.UTC(2026, 0, 5)
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
-function measured(ratio: number): EngineMeasureSummary {
+function measured(ratio: number): EngineScoreSummary {
   return {status: 'measured', ratio}
 }
 
-const NOT_MEASURED: EngineMeasureSummary = {status: 'not-measured', reason: 'no fuzzer yet'}
+const NOT_MEASURED: EngineScoreSummary = {status: 'not-measured', reason: 'no stryker report yet'}
 
 function summaryRun(
   weekIndex: number,
   options: {
-    generated?: number
-    known?: number
-    headline?: number
+    score?: number
     configVersion?: number
   } = {},
 ): EngineConfidenceRunSummary {
@@ -52,16 +50,8 @@ function summaryRun(
     git: {sha: `sha${weekIndex}`, branch: 'main'},
     runner: {runId: `run${weekIndex}`, runAttempt: 1},
     config: {version: options.configVersion ?? 1},
-    headline: {
-      ...(options.headline === undefined ? {} : {ratio: options.headline}),
-      measuresUsed: [],
-    },
-    measures: {
-      generatedBugsCaught:
-        options.generated === undefined ? NOT_MEASURED : measured(options.generated),
-      knownBugsCaught: options.known === undefined ? NOT_MEASURED : measured(options.known),
-      syncScenariosVerified: NOT_MEASURED,
-    },
+    score: options.score === undefined ? NOT_MEASURED : measured(options.score),
+    knownBugs: {status: 'not-measured', reason: 'no catalogue results'},
   }
 }
 
@@ -72,19 +62,11 @@ function seriesByKey(series: ReturnType<typeof engineConfidenceSeries>, key: str
 }
 
 describe('engineConfidenceSeries', () => {
-  const runs = [
-    summaryRun(0, {generated: 0.7, known: 0.8, headline: 0.748}),
-    summaryRun(1, {generated: 0.72, known: 0.8, headline: 0.758}),
-  ]
+  const runs = [summaryRun(0, {score: 0.7}), summaryRun(1, {score: 0.72})]
 
-  test('builds the headline and one series per measure in the engine group', () => {
+  test('builds a single score series in the engine group', () => {
     const series = engineConfidenceSeries(runs)
-    expect(series.map((entry) => entry.key)).toEqual([
-      'engine:headline',
-      'engine:generatedBugsCaught',
-      'engine:knownBugsCaught',
-      'engine:syncScenariosVerified',
-    ])
+    expect(series.map((entry) => entry.key)).toEqual([ENGINE_SCORE_KEY])
     expect(series.every((entry) => entry.group === 'engine')).toBe(true)
     expect(series.every((entry) => entry.unit === 'percent' && entry.goal === 'higher')).toBe(true)
     expect(
@@ -93,8 +75,8 @@ describe('engineConfidenceSeries', () => {
   })
 
   test('converts ratios to percent and dates each point to its ISO week start', () => {
-    const generated = seriesByKey(engineConfidenceSeries(runs), 'engine:generatedBugsCaught')
-    const [first, second] = generated.lines[0].points
+    const score = seriesByKey(engineConfidenceSeries(runs), ENGINE_SCORE_KEY)
+    const [first, second] = score.lines[0].points
     expect(first.value).toBeCloseTo(70)
     expect(second.value).toBeCloseTo(72)
     expect(first.date).toEqual(isoWeekStart(runs[0].isoWeek))
@@ -104,48 +86,35 @@ describe('engineConfidenceSeries', () => {
   })
 
   test('puts each week in exactly one weekly bucket', () => {
-    const headline = seriesByKey(engineConfidenceSeries(runs), 'engine:headline')
-    const buckets = weeklyBuckets(headline.lines[0].points)
+    const score = seriesByKey(engineConfidenceSeries(runs), ENGINE_SCORE_KEY)
+    const buckets = weeklyBuckets(score.lines[0].points)
     expect(buckets.map((bucket) => bucket.runs)).toEqual([1, 1])
   })
 
-  test('leaves a gap for a week where a measure was not measured', () => {
-    const withGap = [
-      summaryRun(0, {generated: 0.7, known: 0.8, headline: 0.748}),
-      summaryRun(1, {generated: 0.71, headline: 0.71}),
-      summaryRun(2, {generated: 0.72, known: 0.8, headline: 0.758}),
-    ]
+  test('leaves a gap for a week where the score was not measured', () => {
+    const withGap = [summaryRun(0, {score: 0.7}), summaryRun(1), summaryRun(2, {score: 0.72})]
     const series = engineConfidenceSeries(withGap)
-    expect(seriesByKey(series, 'engine:knownBugsCaught').lines[0].points).toHaveLength(2)
-    expect(seriesByKey(series, 'engine:generatedBugsCaught').lines[0].points).toHaveLength(3)
-    expect(seriesByKey(series, 'engine:syncScenariosVerified').lines[0].points).toHaveLength(0)
+    expect(seriesByKey(series, ENGINE_SCORE_KEY).lines[0].points).toHaveLength(2)
   })
 
   test('orders points oldest first regardless of input order', () => {
-    const generated = seriesByKey(
-      engineConfidenceSeries([...runs].reverse()),
-      'engine:generatedBugsCaught',
-    )
-    expect(generated.lines[0].points.map((point) => point.runId)).toEqual(
-      runs.map((run) => run._id),
-    )
+    const score = seriesByKey(engineConfidenceSeries([...runs].reverse()), ENGINE_SCORE_KEY)
+    expect(score.lines[0].points.map((point) => point.runId)).toEqual(runs.map((run) => run._id))
   })
 
   test('uses weekly drift windows and carries the config breaks', () => {
     const series = engineConfidenceSeries([
-      summaryRun(0, {generated: 0.7, configVersion: 1}),
-      summaryRun(1, {generated: 0.7, configVersion: 2}),
+      summaryRun(0, {score: 0.7, configVersion: 1}),
+      summaryRun(1, {score: 0.7, configVersion: 2}),
     ])
-    const headline = seriesByKey(series, 'engine:headline')
-    expect(headline.drift).toEqual({recentRuns: 2, baselineRuns: 4, minimumRuns: 4})
-    expect(headline.breaks).toEqual([
-      {date: isoWeekStart(summaryRun(1).isoWeek), label: 'config v2'},
-    ])
+    const score = seriesByKey(series, ENGINE_SCORE_KEY)
+    expect(score.drift).toEqual({recentRuns: 2, baselineRuns: 4, minimumRuns: 4})
+    expect(score.breaks).toEqual([{date: isoWeekStart(summaryRun(1).isoWeek), label: 'config v2'}])
   })
 
-  test('the explainer names the headline formula and the series break', () => {
-    expect(ENGINE_CONFIDENCE_EXPLAINER).toContain('geometric mean')
+  test('the explainer names the series break and keeps known bugs out of the score', () => {
     expect(ENGINE_CONFIDENCE_EXPLAINER).toContain('breaks the series')
+    expect(ENGINE_CONFIDENCE_EXPLAINER).toContain('does not feed the score')
   })
 })
 
@@ -329,13 +298,12 @@ describe('generateDebugEngineConfidenceRuns', () => {
     expect(monday.at(-1)?.isoWeek).toBe('2026-W41')
   })
 
-  test('is valid stored documents: ids follow the week, headline follows the measures', () => {
+  test('is valid stored documents: ids follow the week', () => {
     for (const run of demo) {
       expect(run._type).toBe('engineConfidenceRun')
       expect(run.schemaVersion).toBe(1)
       expect(run._id).toBe(engineConfidenceRunId(run.isoWeek))
       expect(run.isoWeek).toBe(isoWeekOf(new Date(run.startedAt)))
-      expect(run.headline).toEqual(headlineOf(run.measures))
     }
   })
 
@@ -355,9 +323,9 @@ describe('generateDebugEngineConfidenceRuns', () => {
 
   test('climbs from about 69% to about 74% with a flat stretch', () => {
     const ratios = demo.map((run) => {
-      const measure = run.measures.generatedBugsCaught
-      if (measure.status !== 'measured') throw new Error('expected measured')
-      return measure.ratio
+      const {score} = run
+      if (score.status !== 'measured') throw new Error('expected measured')
+      return score.ratio
     })
     expect(ratios[0]).toBeGreaterThan(0.68)
     expect(ratios[0]).toBeLessThan(0.7)
@@ -369,39 +337,39 @@ describe('generateDebugEngineConfidenceRuns', () => {
   })
 
   test('keeps the ratio and the per-file counts consistent', () => {
-    const measure = demo.at(-1)!.measures.generatedBugsCaught
-    if (measure.status !== 'measured') throw new Error('expected measured')
-    const total = measure.files.reduce(
+    const {score} = demo.at(-1)!
+    if (score.status !== 'measured') throw new Error('expected measured')
+    const total = score.files.reduce(
       (sum, file) => sum + file.counts.killed + file.counts.survived + file.counts.noCoverage,
       0,
     )
-    expect(total).toBe(measure.counts.killed + measure.counts.survived + measure.counts.noCoverage)
-    expect(measure.ratio).toBe(mutationScoreOf(measure.counts))
-    expect(measure.files.every((file, index) => file._key === `file-${index}`)).toBe(true)
-    expect(measure.targets.map((target) => target._key)).toEqual(['target-0', 'target-1'])
+    expect(total).toBe(score.counts.killed + score.counts.survived + score.counts.noCoverage)
+    expect(score.ratio).toBe(mutationScoreOf(score.counts))
+    expect(score.files.every((file, index) => file._key === `file-${index}`)).toBe(true)
+    expect(score.targets.map((target) => target._key)).toEqual(['target-0', 'target-1'])
   })
 
   test('reports ignored and excluded mutants outside the ratio, summing to the totals', () => {
-    const measure = demo.at(-1)!.measures.generatedBugsCaught
-    if (measure.status !== 'measured') throw new Error('expected measured')
+    const {score} = demo.at(-1)!
+    if (score.status !== 'measured') throw new Error('expected measured')
     const sumOf = (field: 'ignored' | 'excluded') =>
-      measure.files.reduce((sum, file) => sum + file.counts[field], 0)
+      score.files.reduce((sum, file) => sum + file.counts[field], 0)
 
-    expect(measure.counts.excluded).toBeGreaterThan(0)
-    expect(measure.counts.ignored).toBeGreaterThan(0)
-    expect(sumOf('excluded')).toBe(measure.counts.excluded)
-    expect(sumOf('ignored')).toBe(measure.counts.ignored)
-    expect(mutationScoreOf({...measure.counts, excluded: 0, ignored: 0})).toBe(measure.ratio)
+    expect(score.counts.excluded).toBeGreaterThan(0)
+    expect(score.counts.ignored).toBeGreaterThan(0)
+    expect(sumOf('excluded')).toBe(score.counts.excluded)
+    expect(sumOf('ignored')).toBe(score.counts.ignored)
+    expect(mutationScoreOf({...score.counts, excluded: 0, ignored: 0})).toBe(score.ratio)
   })
 
-  test('grows the catalogue from 5 to 7 entries and starts catching one', () => {
+  test('grows the catalogue from 5 to 7 entries and starts catching one, without it feeding the score', () => {
     const entryCount = (run: (typeof demo)[number]) => {
-      const measure = run.measures.knownBugsCaught
-      if (measure.status !== 'measured') throw new Error('expected measured')
+      const {knownBugs} = run
+      if (knownBugs.status !== 'measured') throw new Error('expected measured')
       return {
-        active: measure.activeEntries,
-        caught: measure.caughtEntries,
-        entries: measure.entries,
+        active: knownBugs.activeEntries,
+        caught: knownBugs.caughtEntries,
+        entries: knownBugs.entries,
       }
     }
     expect(entryCount(demo[0]).active).toBe(5)
@@ -415,22 +383,14 @@ describe('generateDebugEngineConfidenceRuns', () => {
       'entry-3',
       'entry-4',
     ])
-  })
-
-  test('never measures sync scenarios', () => {
-    expect(demo.every((run) => run.measures.syncScenariosVerified.status === 'not-measured')).toBe(
-      true,
-    )
-    expect(demo.every((run) => !run.headline.measuresUsed.includes('syncScenariosVerified'))).toBe(
-      true,
-    )
+    expect(demo[0].knownBugs).not.toHaveProperty('ratio')
   })
 
   test('runs full every fourth week and incremental in between', () => {
     const modes = demo.map((run) => {
-      const measure = run.measures.generatedBugsCaught
-      if (measure.status !== 'measured') throw new Error('expected measured')
-      return measure.targets.map((target) => target.mode)
+      const {score} = run
+      if (score.status !== 'measured') throw new Error('expected measured')
+      return score.targets.map((target) => target.mode)
     })
     expect(modes[0]).toEqual(['full', 'full'])
     expect(modes[1]).toEqual(['incremental', 'incremental'])
@@ -454,8 +414,7 @@ describe('generateDebugEngineConfidenceRuns', () => {
 
   test('feeds the series mapper and the detail derivation', () => {
     const series = engineConfidenceSeries(demo)
-    expect(seriesByKey(series, 'engine:headline').lines[0].points).toHaveLength(20)
-    expect(seriesByKey(series, 'engine:syncScenariosVerified').lines[0].points).toHaveLength(0)
+    expect(seriesByKey(series, ENGINE_SCORE_KEY).lines[0].points).toHaveLength(20)
     const detail = engineConfidenceDetailOf(demo.at(-1)!)
     expect(detail.isoWeek).toBe(demo.at(-1)!.isoWeek)
     expect(worstFiles(detail)[0].path).toContain('@sanity/mutator/src/document/')
@@ -464,15 +423,12 @@ describe('generateDebugEngineConfidenceRuns', () => {
 })
 
 describe('engineConfidenceDetailOf', () => {
-  test('has no drill-down lists when the measures were not measured', () => {
+  test('has no drill-down lists when the score and known bugs were not measured', () => {
     const run = {
       isoWeek: '2026-W42',
       startedAt: '2026-10-15T03:00:00.000Z',
-      measures: {
-        generatedBugsCaught: {status: 'not-measured' as const, reason: 'no reports'},
-        knownBugsCaught: {status: 'not-measured' as const, reason: 'no results'},
-        syncScenariosVerified: {status: 'not-measured' as const, reason: 'v1'},
-      },
+      score: {status: 'not-measured' as const, reason: 'no reports'},
+      knownBugs: {status: 'not-measured' as const, reason: 'no results'},
     }
     expect(engineConfidenceDetailOf(run)).toEqual({
       isoWeek: '2026-W42',
@@ -486,9 +442,9 @@ describe('engineConfidenceDetailOf', () => {
 describe('deepLinkTargetLoaded', () => {
   test('waits for the engine query when the link names an engine card', () => {
     const benchOnly = {benchSeriesLoaded: true, engineRunsLoaded: false}
-    expect(deepLinkTargetLoaded({seriesKey: 'engine:headline', ...benchOnly})).toBe(false)
+    expect(deepLinkTargetLoaded({seriesKey: ENGINE_SCORE_KEY, ...benchOnly})).toBe(false)
     expect(
-      deepLinkTargetLoaded({seriesKey: 'engine:headline', ...benchOnly, engineRunsLoaded: true}),
+      deepLinkTargetLoaded({seriesKey: ENGINE_SCORE_KEY, ...benchOnly, engineRunsLoaded: true}),
     ).toBe(true)
   })
 

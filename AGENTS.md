@@ -267,7 +267,7 @@ Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL
 
 ### Engine confidence score (No Auth Required locally)
 
-The Engine confidence score measures how well the tests guard the document engine (`@sanity/mutator`, the document store, form patching, Portable Text sync). It combines two Stryker mutation runs with a catalogue of known-bug patches that the suites must still catch. The producer lives in `engine-confidence/` and `engine-confidence/README.md` carries the detail.
+The Engine confidence score measures how well the tests guard the document engine (`@sanity/mutator`, the document store, form patching, Portable Text sync). It is Stryker's mutation score across two mutation runs, stored as `score.ratio`. It is one field, so reporting that reads the dataset directly needs no understanding of how it is computed. A catalogue of known-bug patches is also replayed and stored as `knownBugs`, shown in Radar as supporting detail ("X of N known bugs caught"), but it never feeds the score. The producer lives in `engine-confidence/` and `engine-confidence/README.md` carries the detail.
 
 ```bash
 pnpm engine-confidence stryker --target mutator --full   # also: --target sanity; omit --full for an incremental run

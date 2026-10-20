@@ -1,8 +1,4 @@
-import {
-  CATALOGUE_SUITE_IDS,
-  type CatalogueSuiteStatus,
-  ENGINE_CONFIDENCE_MEASURE_IDS,
-} from '@repo/utils/engine-confidence'
+import {CATALOGUE_SUITE_IDS, type CatalogueSuiteStatus} from '@repo/utils/engine-confidence'
 import {Badge, Card, Spinner, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {Box, Flex, Grid, VStack} from 'ui5'
@@ -13,8 +9,7 @@ import {
   catalogueGrid,
   type EngineConfidenceDetail,
   type EngineConfidenceRunSummary,
-  type EngineMeasureSummary,
-  engineMeasureTitle,
+  ENGINE_SCORE_KEY,
   worstFiles,
 } from './engineConfidence'
 import {WeeklyCard, type WeeklyVariant} from './WeeklyBars'
@@ -64,49 +59,10 @@ function NotMeasuredCard(props: {title: string; reason: string}) {
   )
 }
 
-function MeasureCard(props: {
-  series: TrendSeries | undefined
-  title: string
-  latestMeasure: EngineMeasureSummary
-  tags: TrendTag[]
-  cardId: (seriesKey: string) => string
-  focusedKey: string | null
-}) {
-  const {series, title, latestMeasure, tags, cardId, focusedKey} = props
-  if (!hasPoints(series)) {
-    return (
-      <NotMeasuredCard
-        title={title}
-        reason={latestMeasure.reason ?? 'no run in this range measured it'}
-      />
-    )
-  }
-  return (
-    <VStack gap={2}>
-      <WeeklyCard
-        title={title}
-        description={series.description}
-        series={series}
-        variant={SHARE_VARIANT}
-        goal="higher"
-        tags={tags}
-        breaks={series.breaks}
-        domId={cardId(series.key)}
-        focused={focusedKey === series.key}
-      />
-      {latestMeasure.status === 'not-measured' && (
-        <Text size={1} muted>
-          Not measured in the latest week: {latestMeasure.reason ?? 'no reason recorded'}
-        </Text>
-      )}
-    </VStack>
-  )
-}
-
 function LatestWeekSummary(props: {run: EngineConfidenceRunSummary}) {
   const {run} = props
-  const {generatedBugsCaught} = run.measures
-  const targets = generatedBugsCaught.targets ?? []
+  const {score, knownBugs} = run
+  const targets = score.targets ?? []
   return (
     <Card border padding={3} radius={2} data-testid="engine-latest-week">
       <VStack gap={3}>
@@ -118,26 +74,24 @@ function LatestWeekSummary(props: {run: EngineConfidenceRunSummary}) {
             config v{run.config.version}
           </Badge>
         </Flex>
-        <VStack gap={2}>
-          <Text size={1}>Headline {percentLabel(run.headline.ratio)}</Text>
-          {ENGINE_CONFIDENCE_MEASURE_IDS.map((measureId) => (
-            <Text key={measureId} size={1} muted>
-              {engineMeasureTitle(measureId)} {percentLabel(run.measures[measureId].ratio)}
-            </Text>
-          ))}
-        </VStack>
-        {generatedBugsCaught.counts ? (
+        <Text size={1}>Score {percentLabel(score.ratio)}</Text>
+        {score.status === 'not-measured' && (
+          <Text size={1} muted>
+            Not measured: {score.reason ?? 'no reason recorded'}
+          </Text>
+        )}
+        {score.counts ? (
           <Text size={1} muted data-testid="engine-mutant-exclusions">
-            Mutants left out of the score:{' '}
-            {NUMBER_FORMAT.format(generatedBugsCaught.counts.ignored)} ignored by rule,{' '}
-            {NUMBER_FORMAT.format(generatedBugsCaught.counts.excluded)} excluded after review
+            Mutants left out of the score: {NUMBER_FORMAT.format(score.counts.ignored)} ignored by
+            rule, {NUMBER_FORMAT.format(score.counts.excluded)} excluded after review
           </Text>
         ) : null}
-        <Text size={1} muted data-testid="engine-measures-used">
-          Headline uses:{' '}
-          {run.headline.measuresUsed.length === 0
-            ? 'nothing measured'
-            : run.headline.measuresUsed.map(engineMeasureTitle).join(', ')}
+        <Text size={1} muted data-testid="engine-known-bugs">
+          Known bugs caught:{' '}
+          {knownBugs.status === 'measured'
+            ? `${knownBugs.caughtEntries} of ${knownBugs.activeEntries}`
+            : (knownBugs.reason ?? 'not measured')}{' '}
+          (not part of the score)
         </Text>
         {targets.length > 0 && (
           <VStack gap={2}>
@@ -360,7 +314,7 @@ export function EngineConfidencePanel(props: {
     )
   }
 
-  const headlineSeries = seriesFor(series, 'engine:headline')
+  const scoreSeries = seriesFor(series, ENGINE_SCORE_KEY)
   return (
     <Flex gap={6} paddingTop={3} flexDirection="column">
       <VStack gap={4}>
@@ -368,46 +322,25 @@ export function EngineConfidencePanel(props: {
           gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(2, minmax(0, 1fr))']}
           gap={3}
         >
-          {hasPoints(headlineSeries) ? (
+          {hasPoints(scoreSeries) ? (
             <WeeklyCard
               title="Engine confidence"
-              description={headlineSeries.description}
-              series={headlineSeries}
+              description={scoreSeries.description}
+              series={scoreSeries}
               variant={SHARE_VARIANT}
               goal="higher"
               tags={tags}
-              breaks={headlineSeries.breaks}
-              domId={cardId(headlineSeries.key)}
-              focused={focusedKey === headlineSeries.key}
+              breaks={scoreSeries.breaks}
+              domId={cardId(scoreSeries.key)}
+              focused={focusedKey === scoreSeries.key}
             />
           ) : (
             <NotMeasuredCard
               title="Engine confidence"
-              reason="no measure produced a score in this range"
+              reason={latest.score.reason ?? 'no run in this range measured it'}
             />
           )}
           <LatestWeekSummary run={latest} />
-        </Grid>
-        <Grid
-          gridTemplateColumns={[
-            'repeat(1, minmax(0, 1fr))',
-            'repeat(2, minmax(0, 1fr))',
-            'repeat(3, minmax(0, 1fr))',
-          ]}
-          gap={3}
-        >
-          {ENGINE_CONFIDENCE_MEASURE_IDS.map((measureId) => (
-            <Box key={measureId}>
-              <MeasureCard
-                series={seriesFor(series, `engine:${measureId}`)}
-                title={engineMeasureTitle(measureId)}
-                latestMeasure={latest.measures[measureId]}
-                tags={tags}
-                cardId={cardId}
-                focusedKey={focusedKey}
-              />
-            </Box>
-          ))}
         </Grid>
       </VStack>
       {detail && (
@@ -422,7 +355,7 @@ export function EngineConfidencePanel(props: {
           <VStack gap={3}>
             <SectionHeader
               title="Known bug catalogue"
-              note={`which suite catches each entry, week ${detail.isoWeek}`}
+              note={`which suite catches each entry, week ${detail.isoWeek} (not part of the score)`}
             />
             <CatalogueTable detail={detail} />
           </VStack>

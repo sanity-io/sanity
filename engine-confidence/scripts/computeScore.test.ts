@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs'
 import path from 'node:path'
 
-import {headlineOf, isoWeekOf} from '@repo/utils/engine-confidence'
+import {isoWeekOf} from '@repo/utils/engine-confidence'
 import {describe, expect, test} from 'vitest'
 
 import {type CatalogueResultsFile} from './catalogue/results'
@@ -158,26 +158,18 @@ describe('buildRunDocument', () => {
     expect(document.schemaVersion).toBe(1)
   })
 
-  test('scores generated bugs from the merged Stryker reports', () => {
-    const {generatedBugsCaught} = buildRunDocument(scoreInputs()).measures
+  test('scores the mutation score from the merged Stryker reports', () => {
+    const {score} = buildRunDocument(scoreInputs())
 
-    expect(generatedBugsCaught).toMatchObject({
+    expect(score).toMatchObject({
       status: 'measured',
       counts: {killed: 23, survived: 4, noCoverage: 17},
     })
-    if (generatedBugsCaught.status === 'measured') {
-      expect(generatedBugsCaught.ratio).toBeCloseTo(23 / 44)
-      expect(generatedBugsCaught.coveredRatio).toBeCloseTo(23 / 27)
-      expect(generatedBugsCaught.files.map((file) => file._key)).toEqual([
-        'file-0',
-        'file-1',
-        'file-2',
-        'file-3',
-      ])
-      expect(generatedBugsCaught.targets.map((target) => target._key)).toEqual([
-        'target-0',
-        'target-1',
-      ])
+    if (score.status === 'measured') {
+      expect(score.ratio).toBeCloseTo(23 / 44)
+      expect(score.coveredRatio).toBeCloseTo(23 / 27)
+      expect(score.files.map((file) => file._key)).toEqual(['file-0', 'file-1', 'file-2', 'file-3'])
+      expect(score.targets.map((target) => target._key)).toEqual(['target-0', 'target-1'])
     }
   })
 
@@ -188,10 +180,10 @@ describe('buildRunDocument', () => {
         strykerTargets: [sanityTarget, mutatorTargetWith('Survived')],
         exclusions: [{...emptyArrayExclusion, contextHash: undefined}],
       }),
-    ).measures.generatedBugsCaught
+    ).score
     const withoutRegister = buildRunDocument(
       scoreInputs({strykerTargets: [sanityTarget, mutatorTargetWith('Survived')]}),
-    ).measures.generatedBugsCaught
+    ).score
 
     expect(withRegister).toMatchObject({status: 'measured', counts: {excluded: 1, ignored: 0}})
     expect(withoutRegister).toMatchObject({status: 'measured', counts: {excluded: 0, survived: 3}})
@@ -219,54 +211,33 @@ describe('buildRunDocument', () => {
     ).toThrow(/a test detected/)
   })
 
-  test('scores known bugs as entries caught by at least one suite', () => {
-    const {knownBugsCaught} = buildRunDocument(scoreInputs()).measures
+  test('reports known bugs as caught by at least one suite, kept apart from the score', () => {
+    const {knownBugs} = buildRunDocument(scoreInputs())
 
-    expect(knownBugsCaught).toMatchObject({
+    expect(knownBugs).toMatchObject({
       status: 'measured',
-      ratio: 0.5,
       activeEntries: 2,
       caughtEntries: 1,
     })
-  })
-
-  test('takes the geometric mean of the measured measures as the headline', () => {
-    const document = buildRunDocument(scoreInputs())
-
-    expect(document.headline.measuresUsed).toEqual(['generatedBugsCaught', 'knownBugsCaught'])
-    expect(document.headline.ratio).toBeCloseTo(Math.sqrt((23 / 44) * 0.5))
-    expect(document.headline).toEqual(headlineOf(document.measures))
-  })
-
-  test('always reports sync scenarios as not measured', () => {
-    const document = buildRunDocument(scoreInputs())
-
-    expect(document.measures.syncScenariosVerified.status).toBe('not-measured')
+    expect(knownBugs).not.toHaveProperty('ratio')
   })
 
   test('reports known bugs as not measured when there are no catalogue results', () => {
     const document = buildRunDocument(scoreInputs({catalogue: undefined}))
 
-    expect(document.measures.knownBugsCaught).toEqual({
+    expect(document.knownBugs).toEqual({
       status: 'not-measured',
       reason: 'No catalogue results were found',
     })
-    expect(document.headline.measuresUsed).toEqual(['generatedBugsCaught'])
   })
 
-  test('reports generated bugs as not measured when a target has no report', () => {
+  test('reports the score as not measured when a target has no report', () => {
     const document = buildRunDocument(scoreInputs({strykerTargets: [strykerTargets[0]]}))
 
-    expect(document.measures.generatedBugsCaught).toEqual({
+    expect(document.score).toEqual({
       status: 'not-measured',
       reason: 'No Stryker report for target: mutator',
     })
-  })
-
-  test('leaves the headline ratio out when nothing was measured', () => {
-    const document = buildRunDocument(scoreInputs({strykerTargets: [], catalogue: undefined}))
-
-    expect(document.headline).toEqual({measuresUsed: []})
   })
 
   test('copies the pinned config into the document', () => {
@@ -284,12 +255,11 @@ describe('buildRunDocument', () => {
 })
 
 describe('renderSummary', () => {
-  test('puts the headline and each measure in a markdown table', () => {
+  test('puts the score and the known bugs count in a markdown table', () => {
     const summary = renderSummary(buildRunDocument(scoreInputs()))
 
     expect(summary).toContain('### Engine confidence 2026-W42')
     expect(summary).toContain('0 ignored by rule, 0 excluded after review')
-    expect(summary).toContain('| Known bugs caught | 1/2 |')
-    expect(summary).toContain('| Sync scenarios verified | No fuzzer reports scenario cells yet |')
+    expect(summary).toContain('| Known bugs caught (not part of the score) | 1/2 |')
   })
 })
