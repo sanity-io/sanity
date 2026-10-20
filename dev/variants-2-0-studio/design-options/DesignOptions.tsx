@@ -342,6 +342,12 @@ function StoryLink({id}: {id: string}) {
     listWhenPerspective,
     priorityView,
   } = useOptionState()
+  const optionState = useOptionState()
+  // The E9 switches carry the same names as Storybook globals (paneAddress, compare, reviewPanel, listMark, listFlyout, reviewPass, fieldMarks).
+  const e9Globals = getConfig()
+    .components.filter((component) => component.independent)
+    .map((component) => `;${component.id}:${resolveOption(component, optionState)}`)
+    .join('')
   const [ids, setIds] = useState<string[] | null>(null)
   useEffect(() => {
     let alive = true
@@ -354,7 +360,7 @@ function StoryLink({id}: {id: string}) {
   const target = missing ? (nearestStory(id, ids) ?? id) : id
   return (
     <LinkButton
-      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape};rowLayout:${rowLayout};pillWhenOpen:${pillWhenOpen};toastAction:${toastAction};toastStyle:${toastStyle};listWhenPerspective:${listWhenPerspective};priorityView:${priorityView}`}
+      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape};rowLayout:${rowLayout};pillWhenOpen:${pillWhenOpen};toastAction:${toastAction};toastStyle:${toastStyle};listWhenPerspective:${listWhenPerspective};priorityView:${priorityView}${e9Globals}`}
       label={missing ? 'Storybook (moved)' : 'Storybook'}
       moved={missing}
       testId="story-link"
@@ -535,7 +541,7 @@ function summary(state: State): string {
     lines.push(
       getConfig()
         .components.filter((c) => c.built)
-        .map((c) => `${c.id.toUpperCase()} ${resolveOption(c, state).toUpperCase()}`)
+        .map((c) => `${(c.tag ?? c.id).toUpperCase()} ${resolveOption(c, state).toUpperCase()}`)
         .join(' · '),
     )
   }
@@ -552,7 +558,10 @@ function RailRow(props: {
   const stock = state.global === 'stock'
   const active = resolveOption(component, state)
   const changed =
-    !stock && state.overrides[component.id] !== undefined && active !== showOption(component, state)
+    !stock &&
+    !component.independent &&
+    state.overrides[component.id] !== undefined &&
+    active !== showOption(component, state)
   const fallback = fellBack(component, state)
   const name = component.title.replace(new RegExp(`^${component.id.toUpperCase()}\\s*`), '')
   return (
@@ -568,7 +577,7 @@ function RailRow(props: {
     >
       <Flex align="center" gap={2}>
         <Text muted={!selected} size={0}>
-          {component.id.toUpperCase()}
+          {(component.tag ?? component.id).toUpperCase()}
         </Text>
         <Box flex={1}>
           <Text size={1}>{name}</Text>

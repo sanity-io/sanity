@@ -68,6 +68,13 @@ export interface ComponentDef {
   defaultOption: string
   /** The signed-off option, once there is one. */
   final?: string
+  /**
+   * True for a switch that "Show" does not move: it stays at its own option (the default, normally A) until it is set explicitly,
+   * so a preset such as "All B" keeps today's look for it. Used by the E9 switches.
+   */
+  independent?: boolean
+  /** A short label for the rail and the summary, when the id is not a `cN` code (default: the id). */
+  tag?: string
   /** True once the studio renders real UI for this component (not only a slot). */
   built?: boolean
   cover?: string
@@ -105,7 +112,12 @@ export interface DesignOptionsConfig {
   presets: PresetDef[]
   /** A global shape switch (pill radius): the CSS variable every bound piece reads, and its value in each mode. */
   shape?: {variable: string; round: string; box: string}
-  links?: {figmaFile?: string; storybookBase?: string; /** A page that drives this window from another window (a remote). */ remote?: string; /** The remote for the journeys, next to the options remote. */ journeysRemote?: string}
+  links?: {
+    figmaFile?: string
+    storybookBase?: string
+    /** A page that drives this window from another window (a remote). */ remote?: string
+    /** The remote for the journeys, next to the options remote. */ journeysRemote?: string
+  }
   /** The shared diagram spec (options/diagrams.json). Options with a `diagramKey` draw from it. */
   diagrams?: DiagramFile
 }

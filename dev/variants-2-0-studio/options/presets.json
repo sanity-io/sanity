@@ -28,5 +28,25 @@
     "id": "field-marks",
     "name": "Field marks (variant document)",
     "design": "show.a,stage.open-beta"
+  },
+  {
+    "id": "e9-a",
+    "name": "E9 · A today",
+    "design": "show.a,stage.open-beta"
+  },
+  {
+    "id": "e9-b",
+    "name": "E9 · B",
+    "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.b,compare.b,reviewPanel.b,listMark.b,listFlyout.b,reviewPass.b,fieldMarks.b"
+  },
+  {
+    "id": "e9-c",
+    "name": "E9 · C",
+    "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.c,compare.c,reviewPanel.c,listMark.c,listFlyout.c,reviewPass.c,fieldMarks.c"
+  },
+  {
+    "id": "e9-data",
+    "name": "E9 · Data's recommendation (not decided)",
+    "design": "show.a,stage.open-beta,c2.b,c3.d,compare.c,fieldMarks.b,listFlyout.b,listMark.b,paneAddress.c,reviewPanel.c,reviewPass.b"
   }
 ]

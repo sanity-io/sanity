@@ -116,7 +116,10 @@ export function parseDesign(value: string): State | null {
       if (val === 'summary') next.pillWhenOpen = 'summary'
     } else if (key === 'dim') {
       next.dimensionLimit = Number(val) || null
-    } else if (/^c\d+$/.test(key)) {
+    } else if (
+      /^c\d+$/.test(key) ||
+      getConfig().components.some((component) => component.id === key)
+    ) {
       next.overrides[key] = val
     }
   }
@@ -319,6 +322,13 @@ export function resetOptions() {
 }
 
 export function resolveOption(component: ComponentDef, now: State = current()): string {
+  if (component.independent) {
+    if (now.global === 'stock') return component.defaultOption
+    const own = now.overrides[component.id]
+    return own && component.options.some((option) => option.id === own)
+      ? own
+      : component.defaultOption
+  }
   if (now.global === 'stock') return STOCK_OPTION
   const override = now.overrides[component.id]
   if (override && component.options.some((option) => option.id === override)) return override
@@ -330,6 +340,7 @@ export function resolveOption(component: ComponentDef, now: State = current()): 
 
 /** True when "Show" asked for a letter this component cannot give (not drawn or missing), so it fell back. */
 export function fellBack(component: ComponentDef, now: State = current()): boolean {
+  if (component.independent) return false
   if (now.global === 'stock' || now.global === 'final') return false
   if (now.overrides[component.id]) return false
   const chosen = component.options[now.global]
