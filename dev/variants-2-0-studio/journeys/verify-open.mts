@@ -34,7 +34,7 @@ try {
   log(/book-lighthouse/.test(url()) && /variant=aud-members/.test(url()) && /perspective=published/.test(url()), 'visitor lens Open opens the served version', url())
   log(/Members/.test(await ctx()), 'context line shows the served version', await ctx())
   // 3. inventory row (inspector) keeps the inspector and shows the version
-  await p.goto('http://localhost:3350/structure/book;book-lighthouse%2Cinspect%3Dvariants-inventory?preset=open-beta-a&design=show.a,stage.open-beta,c4.a')
+  await p.goto('http://localhost:3350/structure/book;book-lighthouse%2Cinspect%3Dvariants-inventory?preset=open-beta-a&design=show.a,stage.open-beta,c4.c')
   await p.waitForTimeout(12000)
   await p.getByText('Returning visitors').last().click().catch(() => undefined)
   await p.waitForTimeout(4000)

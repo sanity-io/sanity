@@ -58,7 +58,7 @@ async function main() {
 
     await guarded('mixed selection', async () => {
       await tick(1).check(); await tick(3).check()
-      const en = {publish: await bar(/^Publish/).isEnabled(), unpublish: await bar(/^Unpublish/).isEnabled(), create: await bar(/Create/).isEnabled(), del: await bar(/^Delete/).isEnabled(), add: await bar(/Add to release/).isEnabled()}
+      const en = {publish: await bar(/^Publish/).isEnabled(), unpublish: await bar(/^Unpublish/).isEnabled(), create: await bar(/Create/).isEnabled(), del: await bar(/^Delete$/).isEnabled(), add: await bar(/Add to release/).isEnabled()}
       rec('mixed selection (1 published + 1 absent) enables only what applies', !en.publish && en.unpublish && en.create && en.del && en.add, JSON.stringify(en))
       await bar(/^Unpublish/).click()
       const text = (await dlg.innerText()).replace(/\s+/g, ' ')
@@ -86,14 +86,14 @@ async function main() {
 
     await guarded('Delete dialog fallback (published variant)', async () => {
       await tick(2).check()
-      await bar(/^Delete/).click()
+      await bar(/^Delete$/).click()
       const text = (await dlg.innerText()).replace(/\s+/g, ' ')
       rec('Delete dialog says what the audience falls back to', /Members fall back to/.test(text), text.slice(0, 220))
       await dlg.getByRole('button', {name: 'Cancel'}).click()
     }, page)
 
     // C4 option C: the lens in the inspector
-    await page.goto(`${base}/structure/book;book-c5-pw-2%2Cinspect%3Dvariants-inventory?design=show.a,stage.open-beta,c4.c`)
+    await page.goto(`${base}/structure/book;book-c5-pw-2%2Cinspect%3Dvariants-inventory?design=show.a,stage.open-beta,c4.a`)
     await sleep(page, 10000)
     await guarded('C4 lens row click keeps the inspector and shows the version', async () => {
       await page.locator('[data-testid=lens-doc-versions-mini]').waitFor({timeout: 20000})
