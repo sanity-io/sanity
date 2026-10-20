@@ -118,7 +118,12 @@ function FavoriteButton({
         placement: 'right',
       }}
     >
-      <Icon size={1} icon={isFavorited ? StarFilledIcon : StarIcon} style={{margin: '-0.375rem'}} />
+      <Icon
+        size={1}
+        muted
+        icon={isFavorited ? StarFilledIcon : StarIcon}
+        style={{margin: '-0.375rem', ...(disabled && {color: '(var(--inert-foreground))'})}}
+      />
     </Button>
   )
 }

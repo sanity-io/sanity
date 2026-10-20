@@ -1,6 +1,6 @@
 import {type ButtonMode, type ButtonTone, Card, type CardTone} from '@sanity/ui'
 import {type ComponentType, type ElementType, type ReactNode} from 'react'
-import {Text, Flex, Box, Icon} from 'ui5'
+import {Flex, Box, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 
@@ -33,6 +33,7 @@ export function Banner(props: BannerProps) {
         <Flex alignItems="center" gap={3} paddingX={2}>
           {BannerIcon && (
             <Icon
+              muted={!(tone === 'inherit' || tone === 'primary')}
               size={0}
               icon={BannerIcon}
               tone={iconTone}
