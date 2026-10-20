@@ -105,7 +105,7 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
             testId="pills-variants"
             text={`Variants · ${variants.length}`}
           />
-          <div aria-hidden data-testid="pills-divider" style={{alignSelf: 'stretch', width: 1, margin: '4px 2px', background: 'var(--card-border-color)'}} />
+          <div aria-hidden data-testid="pills-divider" style={{alignSelf: 'stretch', width: 1, margin: '4px', background: 'var(--card-border-color)'}} />
           {published && (
             <Chip icon={<ReleaseAvatarIcon release="published" />} mode="ghost" onClick={() => setPerspective('published')} selected={current === 'published'} text="Published" />
           )}

@@ -40,7 +40,7 @@ export const DimensionButton = forwardRef<HTMLButtonElement, DimensionButtonProp
         radius={shape === 'round' ? 'full' : undefined}
         ref={ref}
         selected={selected}
-        style={{...(shape === 'round' ? {maxWidth} : {maxWidth, borderRadius: 6}), ...(height ? {height} : {})}}
+        style={{...(shape === 'round' ? {maxWidth} : {maxWidth}), ...(height ? {height} : {})}}
         text={text}
         tooltipProps={null}
       />

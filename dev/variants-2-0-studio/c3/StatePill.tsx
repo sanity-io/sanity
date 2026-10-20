@@ -88,7 +88,7 @@ export function StatePill({
             background: 'transparent',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 8,
             height: 25,
             padding: '0 4px',
             whiteSpace: 'nowrap',
