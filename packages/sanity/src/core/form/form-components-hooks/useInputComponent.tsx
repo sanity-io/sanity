@@ -1,4 +1,5 @@
-import {type ComponentType} from 'react'
+import {Skeleton} from '@sanity/ui'
+import {type ComponentType, Suspense} from 'react'
 
 import {useMiddlewareComponents} from '../../config/components/useMiddlewareComponents'
 import {defaultResolveInputComponent} from '../studio/inputResolver/inputResolver'
@@ -10,10 +11,25 @@ import {useResolveDefaultComponent} from './useResolveDefaultComponent'
  * @internal
  */
 function DefaultInput(props: Omit<InputProps, 'renderDefault'>): React.JSX.Element {
-  return useResolveDefaultComponent<Omit<InputProps, 'renderDefault'>>({
+  const input = useResolveDefaultComponent<Omit<InputProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolveInputComponent,
   })
+
+  if (!props.schemaType.components?.input) {
+    return input
+  }
+
+  // A schema type's custom input can suspend on data that only settles once the document exists
+  // (an SDK projection of a new document never does). Without a boundary of its own it would
+  // suspend the whole form, leaving no field to edit that could create the document.
+  return (
+    <Suspense
+      fallback={<Skeleton data-testid="custom-input-fallback" padding={3} radius={1} animated />}
+    >
+      {input}
+    </Suspense>
+  )
 }
 
 /**
