@@ -14,6 +14,7 @@ import {
   typeBurst,
   waitUntilEditable,
 } from './interaction'
+import {DEFAULT_READY_SELECTOR} from './navigation'
 
 export interface StepResult {
   /** Interactions driven (clicks + key presses) — folded into INP's `driven` total. */
@@ -163,6 +164,36 @@ async function awaitEditable(context: StepContext, field: string): Promise<void>
     })
 }
 
+async function visitDocument(
+  context: StepContext,
+  step: Extract<ScenarioStep, {kind: 'visitDocument'}>,
+): Promise<void> {
+  const {page} = context
+  const [workspace] = new URL(page.url()).pathname.split('/').filter(Boolean)
+  const intentPath =
+    `/${workspace}/intent/edit/id=${encodeURIComponent(step.documentId)};` +
+    `type=${encodeURIComponent(step.documentType)}`
+  // Single-expression arrow: see the `__name` note in interaction.ts
+  await page.evaluate(
+    (path) => (
+      window.history.pushState(null, '', path),
+      window.dispatchEvent(new PopStateEvent('popstate', {state: null}))
+    ),
+    intentPath,
+  )
+  await page
+    .locator(`${DEFAULT_READY_SELECTOR} [data-testid="field-${step.awaitField}"]`)
+    .first()
+    .waitFor({state: 'visible', timeout: context.timeoutMs})
+    .catch(() => {
+      throw new SessionError(
+        'readiness-timeout',
+        `${step.documentType} ${step.documentId} never showed field "${step.awaitField}"${context.label ? ` (${context.label})` : ''}`,
+        context.diagnostics?.() ?? [],
+      )
+    })
+}
+
 export async function runStep(context: StepContext, step: ScenarioStep): Promise<StepResult> {
   const {page} = context
   const cadenceMs = DEFAULT_SESSION_CONFIG.isolatedCadenceMs
@@ -230,6 +261,9 @@ export async function runStep(context: StepContext, step: ScenarioStep): Promise
       }
       return {interactions: clicks + repeat}
     }
+    case 'visitDocument':
+      await visitDocument(context, step)
+      return {interactions: 0}
     case 'raw':
       return step.drive(context)
     default: {

@@ -121,6 +121,52 @@ export interface BenchScenario {
    * HEAD on both).
    */
   keystrokes?: {warmup?: number; measured?: number; burst?: number}
+  /**
+   * Soak-mode workload (runner/session/soak.ts). Absent ⇒ the original soak:
+   * type a burst into `interactions[0]`, select-all-delete, repeat, with the
+   * presence socket parked.
+   */
+  soak?: SoakPlan
+}
+
+/**
+ * A soak that exercises the studio between typing bursts. Every cycle runs
+ * the next excursion of a seeded schedule, then types a burst into `target`
+ * and erases it again, so the workload stays bounded and the same sequence
+ * replays on every run.
+ */
+export interface SoakPlan {
+  /** `fieldPath` of the interaction target to type into (default `interactions[0]`). */
+  target?: string
+  /**
+   * Interleaved between typing bursts, one per cycle, in seeded-shuffle order
+   * (every excursion runs once per round). Each must end back on the
+   * scenario document: samples are taken after the typing burst that follows.
+   */
+  excursions: SoakExcursion[]
+  /** Seed for the excursion order. */
+  seed: number
+  /** First minute of steady state, stored on the report (default `DEFAULT_SOAK_SETTLE_MINUTE`). */
+  settleMinute?: number
+  /**
+   * Serve the bifur presence socket instead of parking it, optionally with a
+   * mock peer present on the document. The peer moves to the next path in
+   * `paths` every cycle, so presence avatars mount and unmount across fields.
+   */
+  presence?: {peer?: SoakPresencePeer}
+}
+
+export interface SoakExcursion {
+  label: string
+  steps: ScenarioStep[]
+}
+
+export interface SoakPresencePeer {
+  userId: string
+  displayName: string
+  /** Document the peer reports itself on (draft or published id). */
+  documentId: string
+  paths: string[][]
 }
 
 /**
@@ -240,6 +286,19 @@ export type ScenarioStep =
       repeat?: number
       selector?: StepSelector
       readback?: StepReadback
+    }
+  | {
+      /**
+       * Open another document's edit intent through the studio router, the
+       * way an in-app link does (pushState + popstate on the current
+       * workspace). No page reload, so in-memory state survives the switch.
+       * Waits until `awaitField` is visible in an editable form, so it must
+       * be a field the previous document does not have.
+       */
+      kind: 'visitDocument'
+      documentId: string
+      documentType: string
+      awaitField: string
     }
   | {
       kind: 'raw'

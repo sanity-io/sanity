@@ -10,12 +10,12 @@ import {Subscription} from 'rxjs'
 import {handleAuth} from './auth'
 import {handleActions, handleDoc, handleDocRevision, handleMutate, handleQuery} from './data'
 import {RequestLedger} from './ledger'
+import {PresenceHub} from './presence'
 import {DATASET_ACL, DATASETS, projectData} from './project'
 import {corsHeaders, handlePreflight, json, readBody} from './respond'
 import {ListenHub} from './sse'
 import {DocumentStore} from './store'
 import {type BenchDocument} from './types'
-import {parkWebSocket} from './websocket'
 
 export interface MockApiConfig {
   port: number
@@ -39,6 +39,8 @@ export interface MockApiServer {
    * the page loads; `/_bench/reset` turns it off.
    */
   setRequireToken: (requireToken: boolean) => void
+  /** The bifur presence socket: parked unless a session switches it live (see presence.ts). */
+  presence: PresenceHub
 }
 
 /** Strip the `/vX.Y` API-version prefix @sanity/client puts on every path. */
@@ -60,6 +62,7 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
   const store = new DocumentStore()
   const hub = new ListenHub()
   const ledger = new RequestLedger()
+  const presence = new PresenceHub()
   let requireToken = false
   // See mock-api/auth.ts `hasSession`; reset with requireToken
   let hasSession = false
@@ -91,6 +94,7 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       hub.closeAll()
       store.reset()
       ledger.reset()
+      presence.reset()
       requireToken = false
       hasSession = false
       json(req, res, 200, {ok: true})
@@ -150,6 +154,18 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       }
       ledger.recordUnexpected(method, rawPath)
       record('auth', json(req, res, 404, {error: 'not implemented in bench mock'}))
+      return
+    }
+    // User profiles (userStore.ts batches ids into one path) — only the live
+    // presence peer is known; anything else stays an unexpected endpoint
+    const usersMatch = path.match(/^\/users\/([^/]+)$/)
+    const peerProfiles = usersMatch
+      ? decodeURIComponent(usersMatch[1])
+          .split(',')
+          .map((userId) => presence.userProfile(userId))
+      : []
+    if (peerProfiles.length > 0 && peerProfiles.every((profile) => profile !== null)) {
+      record('users', json(req, res, 200, peerProfiles))
       return
     }
 
@@ -299,8 +315,8 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     // protection is not needed here.
     http2Options: {streamResetBurst: 1_000_000, streamResetRate: 1_000_000},
     routes: [],
-    // bifur presence socket: accept-and-park (see websocket.ts)
-    upgradeHandler: parkWebSocket,
+    // bifur presence socket: parked unless a soak goes live (see presence.ts)
+    upgradeHandler: presence.handleUpgrade,
     defaultHandler: (req, res) => {
       handle(req, res).catch((error) => {
         console.error('[bench-mock] handler error:', error)
@@ -322,12 +338,14 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     },
     close: async () => {
       hub.closeAll()
+      presence.reset()
       await proxy.close()
     },
     url: `${protocol}://localhost:${config.port}`,
     store,
     hub,
     ledger,
+    presence,
     setRequireToken: (next) => {
       requireToken = next
       hasSession = false

@@ -1,5 +1,3 @@
-import process from 'node:process'
-
 import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser, type Locator, type Page} from 'playwright'
 
@@ -10,7 +8,6 @@ import {
   scenarioDocument,
   scenarioFixture,
 } from '../../scenarios/types'
-import {median} from '../../stats/quantiles'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
@@ -178,7 +175,7 @@ export function interactionMaxDurations(entries: BenchEntries): number[] {
  * duration per interaction, and account for unobservably fast keystrokes at
  * the floor (see OBSERVABILITY_FLOOR_MS).
  */
-function toLatencies(
+export function toLatencies(
   entries: BenchEntries,
   sentKeystrokes: number,
 ): {samples: number[]; belowFloorCount: number} {
@@ -680,150 +677,6 @@ export async function runInteractionSession(options: {
       memory,
       styles,
     }
-  } finally {
-    await context.close()
-  }
-}
-
-export interface SoakSample {
-  minute: number
-  heapMb: number
-  domNodes: number
-  listeners: number
-  /** Median keystroke latency over the past interval (null before typing). */
-  latencyP50Ms: number | null
-  /** Main-thread task time spent during the past interval (null at minute 0). */
-  cpuTaskMs: number | null
-  /** Open listener connections on the mock — socket leaks across reconnects. */
-  connections: number
-  /** Requests the mock served during the past interval (minute 0 = boot). */
-  requests: number
-}
-
-/**
- * Soak check: one long session typing continuously (bounded content —
- * each cycle types a burst then select-all-deletes), sampling every minute.
- * The workload is constant and self-erasing, so every series should be
- * flat: a rising heap/listener/DOM slope is a retention regression (a
- * leak), a rising latency/CPU slope is degradation under sustained use,
- * and a rising connection or request rate is a resubscribe loop. Runs in
- * the daily cron, not on PRs.
- */
-export async function runSoakSession(options: {
-  browser: Browser
-  running: RunningSide
-  scenario: BenchScenario
-  instrumentation: string
-  minutes: number
-  config?: Partial<SessionConfig>
-  log?: (message: string) => void
-}): Promise<{minutes: number; samples: SoakSample[]; interruptions: ReadOnlyInterruptions}> {
-  const {browser, running, scenario, instrumentation, minutes} = options
-  const config = {...DEFAULT_SESSION_CONFIG, ...options.config}
-  const log = options.log ?? (() => {})
-
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
-  running.mock.store.seed(scenarioFixture(scenario))
-
-  const session = await createSessionContext(browser, running.side, running.studioUrl, {
-    cpuThrottleRate: config.cpuThrottleRate,
-  })
-  const {context, page} = session
-
-  try {
-    await page.addInitScript(instrumentation)
-    await gotoScenario(page, running.studioUrl, scenario, config.readinessTimeoutMs)
-    await awaitReadiness(page, scenario, {
-      timeoutMs: config.readinessTimeoutMs,
-      diagnostics: () => [...session.consoleErrors, ...session.pageErrors],
-    })
-
-    const target = scenario.interactions[0]
-    await focusField(page, target, config.readinessTimeoutMs)
-    // Flush boot + focus-click interaction entries so the first interval's
-    // latency accounting starts clean
-    await drainEntries(page)
-
-    const samples: SoakSample[] = []
-    // Per-interval accumulators, reset at every sample
-    let intervalLatencies: number[] = []
-    let lastCpu = await readCpuMetrics(session.cdp)
-    let lastRequestCount = running.mock.ledger.snapshot().entries.length
-
-    const takeSample = async (minute: number) => {
-      const memory = await readMemorySnapshot(session.cdp)
-      if (!memory) return
-      const cpu = await readCpuMetrics(session.cdp)
-      const cpuTaskMs =
-        cpu && lastCpu ? Math.round((cpu.taskDuration - lastCpu.taskDuration) * 1000) : null
-      lastCpu = cpu
-      const requestCount = running.mock.ledger.snapshot().entries.length
-      const requests = requestCount - lastRequestCount
-      lastRequestCount = requestCount
-      const latencyP50Ms = intervalLatencies.length > 0 ? median(intervalLatencies) : null
-      intervalLatencies = []
-      const connections = running.mock.hub.connectionCount
-      samples.push({
-        minute,
-        ...memory,
-        latencyP50Ms,
-        cpuTaskMs,
-        connections,
-        requests,
-      })
-      log(
-        `  minute ${minute}: heap ${memory.heapMb.toFixed(1)} MB, ${memory.domNodes} nodes, ` +
-          `${memory.listeners} listeners, p50 ${latencyP50Ms === null ? '—' : `${latencyP50Ms.toFixed(0)}ms`}, ` +
-          `cpu ${cpuTaskMs === null ? '—' : `${cpuTaskMs}ms`}, ${connections} connection(s), ${requests} request(s)`,
-      )
-    }
-
-    await takeSample(0)
-    const deadline = Date.now() + minutes * 60_000
-    let nextSampleAt = Date.now() + 60_000
-    const interruptions: ReadOnlyInterruptions = {count: 0, totalMs: 0}
-    let offset = 0
-
-    while (Date.now() < deadline) {
-      // Bounded workload: type a burst, then clear it
-      await typeKeystrokes(page, 40, config.burstCadenceMs, offset, interruptions)
-      offset += 40
-      const entries = await drainEntries(page)
-      intervalLatencies.push(...toLatencies(entries, 40).samples)
-      await page.keyboard.press(process.platform === 'darwin' ? 'Meta+a' : 'Control+a')
-      await page.keyboard.press('Backspace')
-      // The clear is interaction traffic too — drain and discard so it never
-      // pollutes the next interval's latency accounting
-      await drainEntries(page)
-      await page.waitForTimeout(300)
-
-      if (Date.now() >= nextSampleAt) {
-        await takeSample(Math.round((Date.now() - (deadline - minutes * 60_000)) / 60_000))
-        nextSampleAt += 60_000
-      }
-    }
-    // Final sample, unless the loop's last iteration already took it
-    if (samples.at(-1)?.minute !== minutes) {
-      await takeSample(minutes)
-    }
-
-    if (session.violations.length > 0) {
-      throw new SessionError(
-        'hermeticity-violation',
-        session.violations.join(', '),
-        HERMETICITY_HINT,
-      )
-    }
-    if (session.pageErrors.length > 0) {
-      throw new SessionError('page-error', session.pageErrors.join('\n'))
-    }
-    if (session.consoleErrors.length > 0) {
-      throw new SessionError('console-error', session.consoleErrors.join('\n'), session.httpErrors)
-    }
-
-    return {minutes, samples, interruptions}
   } finally {
     await context.close()
   }

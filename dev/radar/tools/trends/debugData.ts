@@ -11,7 +11,7 @@
 import {type TrendRun, type TrendTag} from './data'
 
 /** mulberry32 — same tiny PRNG the bench fixtures use. */
-function mulberry32(seed: number): () => number {
+export function mulberry32(seed: number): () => number {
   let state = seed >>> 0
   return () => {
     state = (state + 0x6d2b79f5) | 0
@@ -21,7 +21,16 @@ function mulberry32(seed: number): () => number {
   }
 }
 
-export const DEBUG_SOURCES = ['demo', 'sparse', 'single-run', 'empty'] as const
+export const DEBUG_SOURCES = [
+  'demo',
+  'sparse',
+  'single-run',
+  'empty',
+  'sqrl',
+  'sqrl-climb',
+  'sqrl-regressed',
+  'sqrl-empty',
+] as const
 export type DebugSource = (typeof DEBUG_SOURCES)[number]
 
 const DAYS = 90
@@ -432,6 +441,10 @@ export function generateDebugRuns(source: DebugSource): TrendRun[] {
   const demo = [...generateDemo('main', 0), ...generateDemo('perf-bench', -4)]
   switch (source) {
     case 'demo':
+    case 'sqrl':
+    case 'sqrl-climb':
+    case 'sqrl-regressed':
+    case 'sqrl-empty':
       return demo
     case 'sparse':
       return demo.filter((_, index) => index % 7 === 0)

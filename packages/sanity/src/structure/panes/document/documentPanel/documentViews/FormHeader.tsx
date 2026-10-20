@@ -1,9 +1,10 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Inline, Text} from '@sanity/ui'
+import {type MouseEvent} from 'react'
 import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
-import {VStack} from 'ui5'
+import {Box, PressArea, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -12,7 +13,15 @@ interface DocumentHeaderProps {
   documentId: string
   schemaType: ObjectSchemaType
   title?: string
+  /**
+   * When given, the title is a button that calls this. Left out when no
+   * single field sets the title or the form is read-only.
+   */
+  onTitleClick?: () => void
 }
+
+// Leave focus where it is until the title field mounts and takes it.
+const preventDefault = (event: MouseEvent<HTMLButtonElement>) => event.preventDefault()
 
 /**
  * Use CSS container queries to conditionally render headings at different sizes.
@@ -62,7 +71,7 @@ const TitleContainer = styled(VStack)`
  * Document type is hidden if the document `_id` matches the current document `_type`.
  * The entire header is hidden if container queries are not supported.
  */
-export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps) => {
+export const FormHeader = ({documentId, schemaType, title, onTitleClick}: DocumentHeaderProps) => {
   const isSingleton = documentId === schemaType.name
   const description = schemaType.description
   const {t} = useTranslation(structureLocaleNamespace)
@@ -70,6 +79,9 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
   if (schemaType.__experimental_formPreviewTitle === false) {
     return null
   }
+
+  const titleText = title ?? t('document-view.form-view.form-title-fallback')
+
   return (
     <TitleContainer marginBottom={6} gap={4}>
       {!isSingleton && (
@@ -85,7 +97,23 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
         </Inline>
       )}
       <Heading as="h2" data-heading muted={!title} data-testid="document-panel-document-title">
-        {title ?? t('document-view.form-view.form-title-fallback')}
+        {onTitleClick ? (
+          // The heading wraps the button rather than sitting inside it: a button's children are
+          // presentational, so a heading inside one loses its role. The text keeps the heading's
+          // container-query sizes, which a v5 Text would override.
+          <Box as="span" width="fit-content">
+            <PressArea
+              data-testid="document-panel-document-title-field"
+              onClick={onTitleClick}
+              onMouseDown={preventDefault}
+              type="button"
+            >
+              {titleText}
+            </PressArea>
+          </Box>
+        ) : (
+          titleText
+        )}
       </Heading>
     </TitleContainer>
   )
