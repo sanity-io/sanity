@@ -1,12 +1,13 @@
 import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser} from 'playwright'
 
-import {type BenchScenario, scenarioFixture, type ScenarioStep} from '../../scenarios/types'
+import {type BenchScenario, type ScenarioStep} from '../../scenarios/types'
 import {type AttachedPage, attachPage, createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
-import {HERMETICITY_HINT, UNEXPECTED_ENDPOINT_HINT} from './interaction'
+import {HERMETICITY_HINT, unexpectedEndpointHint} from './interaction'
 import {awaitReadiness, scenarioUrl} from './navigation'
+import {resetMockForScenario} from './seed'
 import {milestoneMeasureName, runStep} from './steps'
 import {takePageStyleCensus} from './styles'
 
@@ -364,11 +365,8 @@ export async function runPageLoadSample(options: {
   const auth = scenario.load?.auth ?? 'authenticated'
   const conditions = scenario.load?.conditions ?? ['boot-cold', 'open-doc-warm']
 
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
+  resetMockForScenario(running, scenario)
   running.mock.setRequireToken(auth === 'logged-out')
-  running.mock.store.seed(scenarioFixture(scenario))
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,
@@ -415,7 +413,7 @@ export async function runPageLoadSample(options: {
       throw new SessionError(
         'unexpected-endpoint',
         unexpected.map((entry) => `${entry.method} ${entry.path}`).join(', '),
-        UNEXPECTED_ENDPOINT_HINT,
+        unexpectedEndpointHint(unexpected.map((entry) => entry.path)),
       )
     }
 

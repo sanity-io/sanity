@@ -4,17 +4,13 @@ import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser, type Locator, type Page} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
-import {
-  type BenchScenario,
-  type InteractionTarget,
-  scenarioDocument,
-  scenarioFixture,
-} from '../../scenarios/types'
+import {type BenchScenario, type InteractionTarget, scenarioDocument} from '../../scenarios/types'
 import {median} from '../../stats/quantiles'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
 import {awaitReadiness, gotoScenario} from './navigation'
+import {resetMockForScenario} from './seed'
 import {takePageStyleCensus} from './styles'
 
 /** Characters cycled through while typing (letters + digits only). */
@@ -129,6 +125,23 @@ export const UNEXPECTED_ENDPOINT_HINT = [
   'or, if the studio degrades gracefully when it 404s, allowlist it in UNIMPLEMENTED_BUT_GRACEFUL in perf/bench/mock-api/ledger.ts.',
   'Verify with: pnpm build:bench && pnpm bench:test -- --scenario singleString --sessions 2',
 ]
+
+const COMMENTS_API_HINT = [
+  'The studio served comments from the Comments API (/collaboration/comments), which the bench mock does not implement.',
+  'That is the comments-v2 transport, selected by `beta.comments.v2`; the commentsField scenario was built against the',
+  'addon-dataset one, where comments are ordinary documents in the dataset.',
+  'Do NOT take the allowlist branch above. Comments do degrade gracefully when the API 404s, so allowlisting turns the',
+  'shard green while leaving commentsField measuring a comments UI with no backend - a silent, permanent false reading.',
+  'Implement it instead: query and listen map onto the existing handleQuery and ListenHub, writes onto the DocumentStore.',
+  'Comments arrive as `_type: "sanity.comment"`, which the scenario readback already accepts alongside v1 `comment`.',
+  'Verify with: pnpm build:bench && pnpm bench:test -- --scenario commentsField --sessions 2',
+]
+
+/** Comments moving to its own API is a known, in-flight migration - name it instead of reporting generic drift. */
+export function unexpectedEndpointHint(paths: readonly string[]): string[] {
+  const isCommentsApi = paths.some((path) => path.includes('/collaboration/comments'))
+  return isCommentsApi ? COMMENTS_API_HINT : UNEXPECTED_ENDPOINT_HINT
+}
 
 export const HERMETICITY_HINT = [
   'The page contacted a non-local host the bench does not recognize.',
@@ -388,11 +401,7 @@ export async function runInteractionSession(options: {
   const {documentId, documentType} = scenarioDocument(scenario)
   const draftId = `drafts.${documentId}`
 
-  // Fresh state, in-process — no HTTP round-trips to our own mock
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
-  running.mock.store.seed(scenarioFixture(scenario))
+  resetMockForScenario(running, scenario)
 
   // Pre-typing field text, needed by the Portable Text readback (typed
   // characters are validated as a delta over the seeded content)
@@ -658,7 +667,7 @@ export async function runInteractionSession(options: {
       throw new SessionError(
         'unexpected-endpoint',
         ledgerSnapshot.unexpected.map((entry) => `${entry.method} ${entry.path}`).join(', '),
-        UNEXPECTED_ENDPOINT_HINT,
+        unexpectedEndpointHint(ledgerSnapshot.unexpected.map((entry) => entry.path)),
       )
     }
     const requests: SessionRequests = {byClass: {}, total: ledgerSnapshot.entries.length}
@@ -722,10 +731,7 @@ export async function runSoakSession(options: {
   const config = {...DEFAULT_SESSION_CONFIG, ...options.config}
   const log = options.log ?? (() => {})
 
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
-  running.mock.store.seed(scenarioFixture(scenario))
+  resetMockForScenario(running, scenario)
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,
