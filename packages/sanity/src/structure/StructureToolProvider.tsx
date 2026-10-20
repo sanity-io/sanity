@@ -20,6 +20,8 @@ import {
 export interface StructureToolProviderProps {
   structure?: StructureResolver
   defaultDocumentNode?: DefaultDocumentNodeResolver
+  /** Enables the `responsiveInspector` feature. Defaults to `false`. */
+  responsiveInspector?: boolean
   children: ReactNode
 }
 
@@ -27,6 +29,7 @@ export interface StructureToolProviderProps {
 export function StructureToolProvider({
   defaultDocumentNode,
   structure: resolveStructure,
+  responsiveInspector = false,
   children,
 }: StructureToolProviderProps): React.JSX.Element {
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
@@ -64,11 +67,12 @@ export function StructureToolProvider({
     () => ({
       backButton: layoutCollapsed,
       resizablePanes: !layoutCollapsed,
+      responsiveInspector,
       reviewChanges: !layoutCollapsed,
       splitPanes: !layoutCollapsed,
       splitViews: !layoutCollapsed,
     }),
-    [layoutCollapsed],
+    [layoutCollapsed, responsiveInspector],
   )
 
   const structureTool: StructureToolContextValue = useMemo(() => {

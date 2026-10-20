@@ -7,6 +7,10 @@ export const DOCUMENT_PANEL_INITIAL_MIN_WIDTH = 600
 export const DOCUMENT_INSPECTOR_MIN_WIDTH = 320
 export const DOCUMENT_INSPECTOR_MAX_WIDTH = 540
 
+/** The narrowest pane that fits the form and an inspector side by side */
+export const DOCUMENT_PANEL_WITH_INSPECTOR_MIN_WIDTH =
+  DOCUMENT_PANEL_MIN_WIDTH + DOCUMENT_INSPECTOR_MIN_WIDTH
+
 export const EMPTY_PARAMS: NonNullable<PaneRouterContextValue['params']> = {}
 
 export const INSPECT_ACTION_PREFIX = 'inspect:'
