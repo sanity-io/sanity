@@ -278,6 +278,28 @@ export const E9_COMPONENTS: ComponentDef[] = [
   },
 ]
 
+/**
+ * The address row's content width on wide screens. RECOMMENDATION (not decided): B, contained at 1200 px, because the row's content is a
+ * sentence (Showing, chips, actions) that stops being readable when it spans a 2560 px screen; the row's line still runs edge to edge.
+ */
+export const ROW_WIDTH: ComponentDef = {
+  id: 'rowWidth',
+  tag: 'RW',
+  title: 'Address row width',
+  defaultOption: 'b',
+  independent: true,
+  built: true,
+  scope: 'Open beta',
+  cover: 'How wide the content of the address row (the Showing row under the navbar) may grow. On a very wide screen it stretched to both corners.',
+  pick: 'Default B is a recommendation, not a decision.',
+  where: 'Any page with the Showing row open.',
+  options: [
+    {id: 'a', label: 'Full', summary: 'Edge to edge, as before.', oneLiner: 'Edge to edge.', status: 'final'},
+    {id: 'b', label: 'Contained · 1200', summary: 'Content up to 1200 px wide, centred; the row keeps its line edge to edge. Recommended.', oneLiner: 'Up to 1200 px, centred. Recommended.', status: 'candidate'},
+    {id: 'c', label: 'Compact · 880', summary: 'Content up to 880 px wide, centred.', oneLiner: 'Up to 880 px, centred.', status: 'candidate'},
+  ],
+}
+
 /** Hidden switch (not in the window): L5a keeps the local row with "matches global" when the global perspective catches up (b); L5b follows quietly (a, default). URL: localMatch.b */
 export const LOCAL_MATCH: ComponentDef = {
   id: 'localMatch',

@@ -81,7 +81,7 @@ Click `Design options` (bottom left). The window has four zones, top to bottom:
 
 A preset is a saved combination. Shared presets are in `options/presets.json`. Yours are kept in the browser. The Look group is global like the theme: a preset keeps it.
 `Copy link` puts the state in the URL (`?design=`, for example `show.a,stage.ga,shape.box,rowlayout.centered,pill.summary,toast.link`).
-Storybook links carry `globals=theme:…;shape:…;rowLayout:left|actionsRight|centered;pillWhenOpen:summary|versionCount;toastAction:button|link`.
+Storybook links carry (the E9 switches and rowWidth follow, one name each) `globals=theme:…;shape:…;rowLayout:left|actionsRight|centered;pillWhenOpen:summary|versionCount;toastAction:button|link`.
 Screenshots of the window: `node journeys/shoot-window.mts <tag>` (900 and 1400px, light and dark; 720px for the Settings popover).
 
 ## What will my visitors see?

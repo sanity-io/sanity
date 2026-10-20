@@ -10,7 +10,7 @@ import {SegmentDivider} from '../../../packages/sanity/src/core/variants/plugin/
 // Changes: imports point at this monorepo and ./model. LIVE: the Stage setting (open beta = one dimension, no
 // "Add dimension", no pending chip) and the removed fixture `world`; marked "LIVE:" below.
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
-import {useOptionState} from '../options/store'
+import {useOption, useOptionState} from '../options/store'
 import {CHIP_SHAPE} from './Controls'
 import {DimensionIcon} from './dimensionIcons'
 import {valueTitle} from './model'
@@ -104,6 +104,8 @@ export function AddressRow() {
   const allSet = dimensions.every((d) => chosen[d.name])
   // LIVE: open beta has exactly one dimension and no Add dimension button or pending chip.
   const {stage, rowLayout} = useOptionState()
+  const rowWidth = useOption('rowWidth')
+  const maxWidth = rowWidth === 'a' ? undefined : rowWidth === 'c' ? 880 : 1200
   const openBeta = stage === 'open-beta'
   const only = dimensions[0]
 
@@ -143,11 +145,11 @@ export function AddressRow() {
         data-layout={rowLayout}
         data-testid="address-row-layout"
         gap={2}
-        style={
-          rowLayout === 'centered'
-            ? {display: 'grid', gridTemplateColumns: '1fr auto 1fr'}
-            : undefined
-        }
+        style={{
+          ...(rowLayout === 'centered' ? {display: 'grid', gridTemplateColumns: '1fr auto 1fr'} : null),
+          marginInline: 'auto',
+          maxWidth,
+        }}
         wrap="wrap"
       >
         {rowLayout === 'centered' ? <div /> : null}

@@ -55,7 +55,8 @@ function defaults(): State {
     dimensionLimit: null,
     stage: getConfig().scenario.stages[0].id,
     shape: 'round',
-    rowLayout: 'actionsRight',
+    // Centred since 21 Oct (Faheem prefers it); Left and Actions right stay selectable.
+    rowLayout: 'centered',
     pillWhenOpen: 'versionCount',
     toastAction: 'button',
     toastStyle: 'stock',
@@ -77,7 +78,7 @@ export function serializeDesign(current: State): string {
   const parts = [`show.${show}`, `stage.${current.stage}`]
   if (current.dimensionLimit !== null) parts.push(`dim.${current.dimensionLimit}`)
   if (current.shape === 'box') parts.push('shape.box')
-  if (current.rowLayout !== 'actionsRight') parts.push(`rowlayout.${current.rowLayout}`)
+  if (current.rowLayout !== 'centered') parts.push(`rowlayout.${current.rowLayout}`)
   if (current.pillWhenOpen !== 'versionCount') parts.push('pill.summary')
   if (current.toastAction !== 'button') parts.push('toast.link')
   if (current.toastStyle !== 'stock') parts.push('toaststyle.proposed')
@@ -103,7 +104,7 @@ export function parseDesign(value: string): State | null {
     } else if (key === 'shape') {
       if (val === 'box') next.shape = 'box'
     } else if (key === 'rowlayout') {
-      if (val === 'left' || val === 'centered') next.rowLayout = val
+      if (val === 'left' || val === 'actionsRight' || val === 'centered') next.rowLayout = val
     } else if (key === 'list') {
       if (val === 'sorted') next.listWhenPerspective = 'sorted'
     } else if (key === 'priority') {
@@ -197,7 +198,7 @@ export function isModified(current: State = state ?? defaults()): boolean {
     serializeDesign({
       ...current,
       shape: 'round',
-      rowLayout: 'actionsRight',
+      rowLayout: 'centered',
       pillWhenOpen: 'versionCount',
       toastAction: 'button',
       toastStyle: 'stock',
