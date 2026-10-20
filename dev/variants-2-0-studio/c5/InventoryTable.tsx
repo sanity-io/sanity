@@ -3,8 +3,10 @@ import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {type ReactNode, useState} from 'react'
 
 import {useDimensions, useVariantDefinitions} from '../c1/world'
+import {useOptionState} from '../options/store'
 import {DefinitionDocumentsLens, DocumentVersionsLens} from './ActionableLenses'
-import {DimensionLens, ReleaseLens, VisitorLens} from './Lenses'
+import {DimensionMatrix, VisitorResolution} from './GaLenses'
+import {ReleaseLens} from './Lenses'
 import {useCorpus} from './useCorpus'
 
 type Lens = 'document' | 'definition' | 'dimension' | 'visitor'
@@ -12,9 +14,12 @@ type Lens = 'document' | 'definition' | 'dimension' | 'visitor'
 const LENSES: {id: Lens; label: string; hint: string}[] = [
   {id: 'document', label: 'Document', hint: 'Pinned to one document: its stored versions, one per row.'},
   {id: 'definition', label: 'Definition', hint: 'Pinned to one variant definition: every document, with the grey rows that do not have it yet.'},
-  {id: 'dimension', label: 'Dimension', hint: 'Each dimension value, with the definitions and documents that use it. Read only.'},
-  {id: 'visitor', label: 'Visitor', hint: 'Computed: pick a visitor; for every document, which version they are served and why. Read only.'},
+  {id: 'dimension', label: 'Dimension', hint: 'GA. One row per document, one column per definition of a dimension: where each is published, in draft or in a release. Read only.'},
+  {id: 'visitor', label: 'Visitor', hint: 'GA. Computed in this browser for the visitor chosen in the perspective bar: what each document serves, why, and what else exists. Read only.'},
 ]
+
+/** The lens switch follows the stage control of the Design options window: Open beta keeps Document and Definition, GA shows all four. */
+const GA_ONLY: Lens[] = ['dimension', 'visitor']
 
 const LOADING = (
   <Text muted size={1}>
@@ -41,7 +46,7 @@ function Segment<T extends string>(props: {value: T; options: {id: T; label: str
 }
 
 /**
- * C5, the inventory table, on real data (Figma E5 3:5679): one table, four lenses. The Document and Definition lenses
+ * C5, the inventory table, on real data (Figma E5 3:5679): one table, four lenses (Dimension and Visitor at the GA stage only). The Document and Definition lenses
  * write to the dataset (select rows, bulk bar, confirm dialog); Dimension and Visitor are read only for now.
  *  - Option A (I1): one surface with a "View by" switch; each lens has its pin picker.
  *  - Option B (I2): the lenses live at their pins, each in its own place, on the same table.
@@ -50,6 +55,7 @@ export function InventoryTable({option}: {option: 'a' | 'b'}) {
   const corpus = useCorpus()
   const definitions = useVariantDefinitions()
   const dimensions = useDimensions()
+  const {stage} = useOptionState()
   const [lens, setLens] = useState<Lens>('definition')
   const [mini, setMini] = useState(false)
   const [docPin, setDocPin] = useState<string | null>(null)
@@ -61,8 +67,14 @@ export function InventoryTable({option}: {option: 'a' | 'b'}) {
     <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={docPin ?? corpus.docs[0]?.id ?? ''} mini={mini} onPin={setDocPin} />
   )
   const definitionLens = <DefinitionDocumentsLens corpus={corpus} definitions={definitions} onPin={setVariantPin} variantId={variantPin} />
-  const dimensionLens = <DimensionLens corpus={corpus} definitions={definitions} dimensions={dimensions} />
-  const visitorLens = <VisitorLens corpus={corpus} definitions={definitions} dimensions={dimensions} />
+  const openDefinition = (variantId: string) => {
+    setVariantPin(variantId)
+    setLens('definition')
+  }
+  const dimensionLens = <DimensionMatrix corpus={corpus} definitions={definitions} dimensions={dimensions} onOpenDefinition={openDefinition} />
+  const visitorLens = <VisitorResolution corpus={corpus} definitions={definitions} dimensions={dimensions} />
+  const ga = stage === 'ga'
+  const lenses = LENSES.filter((l) => ga || !GA_ONLY.includes(l.id))
 
   if (option === 'b') {
     const section = (title: string, hint: string, body: ReactNode) => (
@@ -85,29 +97,31 @@ export function InventoryTable({option}: {option: 'a' | 'b'}) {
           </Stack>
         ))}
         {section('In the Variants tool: the Definition lens', 'Pinned to a definition.', definitionLens)}
-        {section('In the Variants tool: the Dimension lens', LENSES[2].hint, dimensionLens)}
-        {section('In the preview: the Visitor lens', LENSES[3].hint, visitorLens)}
+        {ga ? section('In the Variants tool: the Dimension lens', LENSES[2].hint, dimensionLens) : null}
+        {ga ? section('In the preview: the Visitor lens', LENSES[3].hint, visitorLens) : null}
       </Stack>
     )
   }
 
-  const active = LENSES.find((l) => l.id === lens)
+  // A lens that the stage does not offer falls back to Definition (the switch was on Dimension, then the stage went to Open beta).
+  const shown: Lens = lenses.some((l) => l.id === lens) ? lens : 'definition'
+  const active = lenses.find((l) => l.id === shown)
   return (
     <Stack data-testid="c5-a" gap={3}>
       <Flex align="center" gap={3} wrap="wrap">
         <Text muted size={1}>
           View by
         </Text>
-        <Segment label="View by" onChange={setLens} options={LENSES} value={lens} />
-        {lens === 'document' ? (
+        <Segment label="View by" onChange={setLens} options={lenses} value={shown} />
+        {shown === 'document' ? (
           <Segment label="Width" onChange={(id) => setMini(id === 'mini')} options={[{id: 'full', label: 'Full'}, {id: 'mini', label: 'Mini · 320'}]} value={mini ? 'mini' : 'full'} />
         ) : null}
       </Flex>
       <Text muted size={0}>
         {active?.hint}
       </Text>
-      <Box style={{maxWidth: lens === 'document' && mini ? 340 : undefined}}>
-        {lens === 'document' ? docLens : lens === 'definition' ? definitionLens : lens === 'dimension' ? dimensionLens : visitorLens}
+      <Box style={{maxWidth: shown === 'document' && mini ? 340 : undefined}}>
+        {shown === 'document' ? docLens : shown === 'definition' ? definitionLens : shown === 'dimension' ? dimensionLens : visitorLens}
       </Box>
     </Stack>
   )
