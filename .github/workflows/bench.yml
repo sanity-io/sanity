@@ -870,8 +870,14 @@ jobs:
        (github.event_name == 'workflow_dispatch' && inputs.run_suite && inputs.ab_to == ''))
     needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
-    # Soak (~10m) + INP (~10m) + settle (9 scenarios × 4 sessions, the two
-    # red-by-design ones costing the 30s cap per session — ~20m)
+    outputs:
+      # Read by alert-scheduled-failure: the article soak step never fails the job
+      article_soak_outcome: ${{ steps.article_soak.outcome }}
+      # Read by sqrl-score: a settle mismatch fails the job after the run is stored
+      benchrun_store_outcome: ${{ steps.store.outcome }}
+    # Soak (~10m) + article soak (~11m) + INP (~10m) + settle (9 scenarios ×
+    # 4 sessions, the two red-by-design ones costing the 30s cap per session —
+    # ~20m)
     timeout-minutes: 60
     permissions:
       contents: read
@@ -948,6 +954,32 @@ jobs:
           pnpm bench run --mode soak --scenario singleString --minutes 10 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__soak.json"
 
+      # Long-session soak on the article scenario's soak plan (about 11 runner
+      # minutes). Own step and results file, and allowed to fail, so a broken
+      # run costs neither the singleString soak nor the stored run. The failure
+      # is still reported: annotation and summary line below, Slack alert via
+      # the job output.
+      - name: Run article soak check
+        id: article_soak
+        continue-on-error: true
+        timeout-minutes: 15
+        run: |
+          set -o pipefail
+          pnpm bench run --mode soak --scenario article --minutes 10 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__soak-article.json" \
+            2>&1 | tee "$RUNNER_TEMP/article-soak.log"
+
+      - name: Report article soak failure
+        if: steps.article_soak.outcome == 'failure'
+        run: |
+          log="$RUNNER_TEMP/article-soak.log"
+          reason=$(grep -m 1 -oE '\[soak-excursion\] .*' "$log" \
+            || grep -m 1 -oE 'SessionError: .*' "$log" \
+            || grep -m 1 -oE 'Error: .*' "$log" \
+            || echo "no error line in the log (step timeout?)")
+          echo "::warning title=Article soak failed::${reason}"
+          echo "- :warning: Article soak failed; the run was stored without it: \`${reason}\`" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Run INP benchmarks
         run: |
           pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
@@ -995,6 +1027,7 @@ jobs:
         run: pnpm bench report
 
       - name: Store benchRun document
+        id: store
         env:
           RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm bench store
@@ -1013,20 +1046,55 @@ jobs:
           overwrite: true
           retention-days: 30
 
+  # SQRL score (dev/radar/sqrl, SPEC.md "SQRL score") recomputed from the
+  # stored history once track-main has stored its benchRun, rewriting every
+  # commit's sqrlScore so backfills and late npm deprecations reach the whole
+  # history. A dispatch from any other
+  # branch prints the score and writes nothing, so unmerged engine code never
+  # lands in the dataset. Its own job so a scoring failure can never cost the
+  # day its stored run.
+  sqrl-score:
+    needs: [track-main]
+    if: >-
+      !cancelled() && needs.track-main.outputs.benchrun_store_outcome == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Compute and store the SQRL score
+        env:
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          if [ "$REF_NAME" = "main" ] || [ "$REF_TYPE" = "tag" ]; then
+            pnpm --filter radar sqrl
+          else
+            pnpm --filter radar sqrl -- --dry-run
+          fi
+
   # A failed scheduled run has no PR check to go red on and no human watching —
   # a silent failure leaves a hole in the main-branch time series. Alert the
   # CI channel instead of relying on someone opening the Actions tab.
   # `cancelled` is included because job timeouts conclude as cancelled, not
   # failure (see the report job's note).
   alert-scheduled-failure:
-    needs: [build, bench-interaction, bench-pageload, self-test, track-main]
+    needs: [build, bench-interaction, bench-pageload, self-test, track-main, sqrl-score]
     if: >-
       always() && github.event_name == 'schedule' &&
-      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') ||
+       needs.track-main.outputs.article_soak_outcome == 'failure')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Send Slack notification
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
@@ -1034,4 +1102,15 @@ jobs:
           payload: |
             {
               "text": ":alert-dot: Scheduled \"${{ github.workflow }}\" run failed — daily tracking or the weekly self-test is broken (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
+            }
+
+      - name: Send article soak Slack notification
+        if: needs.track-main.outputs.article_soak_outcome == 'failure'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":warning: Scheduled \"${{ github.workflow }}\" run stored without the article soak — the soak failed, see the run's annotations (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
             }

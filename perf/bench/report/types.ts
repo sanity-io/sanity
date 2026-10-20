@@ -170,6 +170,13 @@ export interface ScenarioReport {
   /** Soak series (soak mode only) — every value should stay flat over time. */
   soak?: {
     minutes: number
+    /**
+     * First steady-state minute (default 2, see `@repo/utils/soak-settle`):
+     * the minutes before it race the studio's lazy mount, so growth is read
+     * from this sample on. Absent on reports written before the field existed;
+     * consumers fall back to `soakSettleMinute(minutes)`.
+     */
+    settleMinute?: number
     samples: {
       minute: number
       heapMb: number

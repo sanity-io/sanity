@@ -2,6 +2,7 @@
  * Data layer for the Trends tool: one tightly-projected GROQ query (never
  * fetch `sessions` — see SPEC.md) and pure series derivation.
  */
+import {soakSettleMinute, steadySoakSamples} from '@repo/utils/soak-settle'
 import {STYLE_METRICS, STYLE_SYSTEMS, styleMetricFor} from '@repo/utils/style-systems'
 
 import {ENGINE_CONFIDENCE_EXPLAINER} from './engineConfidence'
@@ -76,6 +77,8 @@ export interface TrendRun {
         } | null
         soak?: {
           minutes: number
+          /** First steady-state minute; absent on runs stored before perf/bench recorded it. */
+          settleMinute?: number | null
           samples:
             | {
                 minute: number
@@ -114,7 +117,7 @@ export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order
     settleExpectation{expectedToSettle},
     metrics[]{label, unit, experiment{summary{median, p75, p90}}},
     styles{experiment{ui5Available, styledComponentsVersion, readableCssRules}},
-    soak{minutes, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
+    soak{minutes, settleMinute, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
   }
 }`
 
@@ -1992,7 +1995,15 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
 type SoakScenario = NonNullable<NonNullable<TrendRun['scenarios']>[number]['soak']>
 type SoakSample = NonNullable<SoakScenario['samples']>[number]
 
-/** Find each run's soak scenario (there's at most one), newest run first. */
+/**
+ * The soak scenario the soak series follow. A run can carry several soak
+ * reports (the daily run adds an `article` soak), and the stored order of
+ * scenarios is not stable, so the series name theirs rather than taking the
+ * first soak they find.
+ */
+const SOAK_SERIES_SCENARIO = 'singleString'
+
+/** Each run's `SOAK_SERIES_SCENARIO` soak report, in run order. */
 function runsWithSoak(runs: TrendRun[]): {
   run: TrendRun
   soak: SoakScenario
@@ -2002,7 +2013,10 @@ function runsWithSoak(runs: TrendRun[]): {
 }[] {
   return runs
     .map((run) => {
-      const scenario = run.scenarios?.find((s) => s.soak?.samples?.length)
+      const scenario = run.scenarios?.find(
+        (candidate) =>
+          candidate.scenario === SOAK_SERIES_SCENARIO && candidate.soak?.samples?.length,
+      )
       return scenario?.soak
         ? {run, soak: scenario.soak, sourceFile: scenario.sourceFile, runner: scenario.runner}
         : null
@@ -2070,6 +2084,16 @@ function slopePerMinute(samples: SoakSample[], key: keyof SoakSample): number {
   return (n * sumXY - sumX * sumY) / denominator
 }
 
+/**
+ * The samples from the run's settle minute on. The minutes before it race the
+ * studio's lazy mount, so a slope over them measures mount time rather than
+ * growth. Runs stored before the settle minute existed get the bench default.
+ */
+function steadyStateSoakSamples(soak: SoakScenario): SoakSample[] {
+  const settleMinute = soak.settleMinute ?? soakSettleMinute(soak.minutes)
+  return steadySoakSamples(soak.samples ?? [], settleMinute)
+}
+
 /** The end-of-run (last-minute) value of a soak metric, or null if absent. */
 function lastSoakValue(samples: SoakSample[], key: keyof SoakSample): number | null {
   for (let i = samples.length - 1; i >= 0; i--) {
@@ -2088,7 +2112,7 @@ function lastSoakValue(samples: SoakSample[], key: keyof SoakSample): number | n
 function soakHistory(
   runs: TrendRun[],
   variant: 'slope' | 'latest',
-  reduce: (samples: SoakSample[], key: keyof SoakSample) => number | null,
+  reduce: (soak: SoakScenario, key: keyof SoakSample) => number | null,
   meta: (
     metric: (typeof SOAK_METRICS)[number],
   ) => Pick<TrendSeries, 'title' | 'unit' | 'description' | 'lineLabel'>,
@@ -2098,7 +2122,7 @@ function soakHistory(
     const lineByBranch = new Map<string, TrendLine>()
     let sourceFile: string | undefined
     for (const {run, soak, sourceFile: file, runner} of withSoak) {
-      const value = reduce(soak.samples ?? [], metric.key)
+      const value = reduce(soak, metric.key)
       if (value === null) continue
       sourceFile ??= file
       const branch = run.git?.branch ?? 'unknown'
@@ -2128,11 +2152,11 @@ export function soakSlopeSeries(runs: TrendRun[]): TrendSeries[] {
   return soakHistory(
     runs,
     'slope',
-    (samples, key) => slopePerMinute(samples, key),
+    (soak, key) => slopePerMinute(steadyStateSoakSamples(soak), key),
     (metric) => ({
       title: `soak · ${metric.title} per minute`,
       unit: slopeUnitFor(metric.unit),
-      description: `${metric.title} change per soak minute (linear fit), per run. Flat (~0) is healthy; a rising slope across runs is a worsening leak or degradation.`,
+      description: `${metric.title} change per soak minute (linear fit from the run's settle minute, minute 2 by default), per run. Flat (~0) is healthy; a rising slope across runs is a worsening leak or degradation.`,
       lineLabel: 'slope per run',
     }),
   )
@@ -2148,7 +2172,7 @@ export function soakLatestValueSeries(runs: TrendRun[]): TrendSeries[] {
   return soakHistory(
     runs,
     'latest',
-    (samples, key) => lastSoakValue(samples, key),
+    (soak, key) => lastSoakValue(soak.samples ?? [], key),
     (metric) => ({
       title: `soak · ${metric.title} at end`,
       unit: metric.unit,

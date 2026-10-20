@@ -22,6 +22,7 @@ pnpm bench run --scenario singleString --sessions 4           # absolute interac
 pnpm bench run --mode pageload --scenario singleString        # load vitals + bundle size
 pnpm bench run --mode inp --scenario singleString --sessions 3
 pnpm bench run --mode soak --scenario singleString --minutes 5
+pnpm bench run --mode soak --scenario article --minutes 2       # long-session soak smoke (PTE body, menus, doc switches, live presence)
 pnpm --filter bench build:reference-config \
   && pnpm bench run --scenario singleString --reference-dist perf/bench/.reference/dist   # self-test: must be all-neutral
 pnpm bench prepare-backfill --sha <sha>                       # build a historical commit into perf/bench/dist (tarball recipe)
@@ -39,7 +40,7 @@ CLI cannot open its IPC pipe (`listen EPERM … tsx-*/…pipe`), run the CLI dir
 | Trigger                                                | What runs                                                                                                                             | Result lands in                                                                                              |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Label a PR `trigger:perf-bench` (maintainers)          | PR head vs merge-base A/B, one shard per scenario. The label persists: every later push re-runs the suite until the label is removed. | Sticky PR comment `bench-report`; absolute side stored under the branch (`?branches=main,<branch>` in Radar) |
-| Cron 05:00 UTC daily                                   | Absolute suite on main + soak + INP                                                                                                   | `benchRun` `mode: "absolute"` in Radar (Trends)                                                              |
+| Cron 05:00 UTC daily                                   | Absolute suite on main + soaks (`singleString`, `article`) + INP + settle                                                             | `benchRun` `mode: "absolute"` in Radar (Trends)                                                              |
 | Cron Monday 06:00 UTC                                  | Self-test (build vs itself, `--fail-on-verdict`)                                                                                      | Red job = harness drift                                                                                      |
 | `-f run_suite=true`                                    | Same as the daily cron, on demand                                                                                                     | Radar                                                                                                        |
 | `-f run_suite=true -f backfill_sha=<40-char sha>`      | Replay a historical main commit, store under that sha and its commit date                                                             | Radar (fills a hole in the series)                                                                           |
@@ -71,6 +72,13 @@ previous run**) so the shas never need typing.
 - Gates: interaction median with `absMs` 16ms floor (two Event Timing quantisation steps), pageload time-to-editable; INP, vitals, resources, bundle are report-only. Thresholds live in `perf/bench/stats/gate.ts` and are shared with Radar's drift feed.
 - ⚪ on a heavy scenario usually means the budget ran out; re-dispatch or look at `stoppedBy` and `failures` in the stored run.
 - A `hermeticity violation` or `unexpected endpoint` session failure means the studio made a request the mock does not know: extend `perf/bench/mock-api` in the same PR as the studio change.
+
+## Soak
+
+- Two soaks run daily: `singleString` (typing only, presence parked) and `article`, the long-session soak from the scenario's `soak` plan: excursions (document actions menu, field actions menu, reference array item menu, tooltip, switch to the author or a category and back) interleaved with 40-keystroke Portable Text bursts on a seeded schedule, presence live with a mock peer. The article step is `continue-on-error` and writes `bench-results__soak-article.json`. A failure names the excursion and step (`[soak-excursion] …`) in a `::warning::` annotation and the job summary, and a cron run posts it to the CI alerts Slack channel through the `article_soak_outcome` job output.
+- Every soak report stores `soak.settleMinute` (default 2, `@repo/utils/soak-settle`). Compute growth from that sample on, as Radar's soak slopes do; the first minutes race the lazy mount.
+- A run can hold several soak reports, in no stable order. Select a soak by `scenario`, never by taking the first report with `soak` (Radar uses `SOAK_SERIES_SCENARIO = 'singleString'`).
+- Live presence is per session (`running.mock.presence.setLive`) and reset afterwards; every other mode keeps the parked socket, so a plan without `presence` cannot change other scenarios' numbers.
 
 ## Changing the suite
 
