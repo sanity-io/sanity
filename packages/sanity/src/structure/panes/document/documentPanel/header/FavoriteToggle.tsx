@@ -118,7 +118,7 @@ function FavoriteButton({
         placement: 'right',
       }}
     >
-      <Icon size={1} icon={isFavorited ? StarFilledIcon : StarIcon} />
+      <Icon size={1} icon={isFavorited ? StarFilledIcon : StarIcon} style={{margin: '-0.375rem'}} />
     </Button>
   )
 }
