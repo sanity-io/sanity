@@ -1,10 +1,10 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {useSetVariant} from 'sanity'
 
 import {usePerspectiveState} from '../../c1/state'
 import {useVariantDefinitions} from '../../c1/world'
-import {HidePriorityView, VisitorLensLine} from '../VisitorLens'
+import {HidePriorityView, VisitorLensLine, VisitorLensPanel} from '../VisitorLens'
 import {type InventoryEntry} from './fixtures'
 import {InventoryConceptsProvider} from './model'
 import {useLiveWorld} from './useLiveWorld'
@@ -23,6 +23,7 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const s = usePerspectiveState()
   const setVariant = useSetVariant()
   const variants = useVariantDefinitions()
+  const [lensOpen, setLensOpen] = useState(false)
 
   const variantFor = useCallback(
     (variantId: string | undefined) => variants.find((v) => shortId(v._id) === variantId),
@@ -63,9 +64,18 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   }
   return (
     <Flex direction="column" height="fill">
-      <VisitorLensLine documentId={documentId} title={title} />
+      {lensOpen ? null : <VisitorLensLine onOpen={() => setLensOpen(true)} />}
       <HidePriorityView />
-      <Box flex={1} style={{minHeight: 0}}>
+      {lensOpen ? (
+        <Box flex={1} overflow="auto">
+          <VisitorLensPanel
+            documentId={documentId}
+            onClose={() => setLensOpen(false)}
+            title={title}
+          />
+        </Box>
+      ) : null}
+      <Box flex={1} style={{display: lensOpen ? 'none' : undefined, minHeight: 0}}>
         <InventoryConceptsProvider selection={{currentEntryKey, onSelect}} world={world}>
           <VersionInventoryPanel />
         </InventoryConceptsProvider>

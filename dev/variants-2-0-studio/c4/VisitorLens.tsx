@@ -1,11 +1,12 @@
-import {AddIcon} from '@sanity/icons/Add'
-import {Box, Button, Card, Dialog, Flex, Stack, Text} from '@sanity/ui'
-import {useEffect, useMemo, useState} from 'react'
+import {CloseIcon} from '@sanity/icons/Close'
+import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {type SystemVariant} from '../c1/model'
+import {type SystemVariant, valueTitle} from '../c1/model'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
+import {StateDot} from '../c3/StateGlyph'
 import {ConfirmDialog, useBulk} from '../c5/Actionable'
 import {useCorpus} from '../c5/useCorpus'
 import {usePerspectiveMatch} from '../data/match'
@@ -26,6 +27,46 @@ import {useOptionState} from '../options/store'
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 const titleOf = (d: SystemVariant | undefined, id: string) => d?.metadata?.title ?? id
 
+function Label({children}: {children: string}) {
+  return (
+    <Text
+      muted
+      size={0}
+      style={{letterSpacing: '0.5px', textTransform: 'uppercase'}}
+      weight="semibold"
+    >
+      {children}
+    </Text>
+  )
+}
+
+/** A served-version row: the state dot, the variant's name, and what it is. */
+function VersionRow(props: {
+  state: 'published' | 'draft'
+  name: string
+  detail: string
+  testId: string
+  muted?: boolean
+}) {
+  return (
+    <Card border data-testid={props.testId} padding={3} radius={2} tone="default">
+      <Flex align="flex-start" gap={3}>
+        <Box paddingTop={1}>
+          <StateDot kind={props.state} />
+        </Box>
+        <Stack gap={2}>
+          <Text muted={props.muted} size={1} weight="medium">
+            {props.name}
+          </Text>
+          <Text muted size={1}>
+            {props.detail}
+          </Text>
+        </Stack>
+      </Flex>
+    </Card>
+  )
+}
+
 function LensBody(props: {documentId: string; title: string; onClose: () => void}) {
   const {documentId, title, onClose} = props
   const versions = useVersionList(documentId)
@@ -42,7 +83,7 @@ function LensBody(props: {documentId: string; title: string; onClose: () => void
   )
   const matching = perspective.matching(variantIds)
   const best = matching.find((m) => m.kind === 'full') ?? matching[0]
-  const label = address.valueTitles.join(', ')
+  const label = address.valueTitles.join(' · ')
 
   if (!versions)
     return (
@@ -79,10 +120,6 @@ function LensBody(props: {documentId: string; title: string; onClose: () => void
     }
     bulk.open('create', [{docId: documentId, title, variantId: exactId, rows: []}])
   }
-  const ctaText = exact
-    ? 'Create a variant for this perspective'
-    : 'Define a variant for this perspective'
-
   const dialog =
     corpus && exact ? (
       <ConfirmDialog
@@ -94,26 +131,43 @@ function LensBody(props: {documentId: string; title: string; onClose: () => void
       />
     ) : null
 
+  const subtitle = (
+    <Text data-testid="lens-for" size={1} style={{color: 'var(--card-badge-suggest-fg-color)'}}>
+      For {label}
+    </Text>
+  )
+
   if (!best) {
     return (
       <Stack data-testid="lens-none" gap={4}>
-        <Text size={1}>
-          No variant of this document matches <b>{label}</b>.
-        </Text>
-        <Text muted size={1}>
-          Visitors with these values are served{' '}
-          {baseDoc
-            ? 'the published base document'
-            : 'nothing yet: the base document is not published'}
-          .
-        </Text>
+        {subtitle}
+        <Card
+          padding={3}
+          radius={3}
+          tone="primary"
+          style={{background: 'var(--card-badge-suggest-bg-color)'}}
+        >
+          <Stack gap={2}>
+            <Text size={1} weight="semibold">
+              Nothing is set for this perspective
+            </Text>
+            <Text size={1}>
+              Visitors in {label} see{' '}
+              {baseDoc ? 'the base document' : 'nothing yet: the base document is not published'}.
+            </Text>
+          </Stack>
+        </Card>
         <Flex>
           <Button
             data-testid="lens-cta"
-            icon={AddIcon}
-            mode="ghost"
+            fontSize={1}
             onClick={create}
-            text={ctaText}
+            padding={2}
+            text={
+              exact
+                ? 'Create a variant for this perspective'
+                : 'Define a variant for this perspective'
+            }
           />
         </Flex>
         {dialog}
@@ -127,88 +181,118 @@ function LensBody(props: {documentId: string; title: string; onClose: () => void
     (v) => v.variantId === best.variantId && v.state === 'published' && !v.release,
   )
   const draft = versions.find((v) => v.variantId === best.variantId && v.state === 'draft')
-  const covers = Object.keys(definition?.conditions ?? {}).length
-  const total = Object.keys(perspective.chosen).length
+  const covered = Object.keys(definition?.conditions ?? {})
+  // The values of the perspective this variant does not cover, by name ("Returning visitors"), as the Figma frame says it.
+  const missing = address.dimensions
+    .filter((d) => perspective.chosen[d.name] && !covered.includes(d.name))
+    .map((d) => valueTitle(d, perspective.chosen[d.name]))
 
   return (
     <Stack data-testid={best.kind === 'full' ? 'lens-full' : 'lens-partial'} gap={4}>
-      <Stack gap={2}>
-        <Text muted size={1}>
-          Visitors who are <b>{label}</b> are served
-        </Text>
-        <Card border padding={3} radius={3} tone={published ? 'positive' : 'caution'}>
-          <Stack gap={2}>
-            <Text data-testid="lens-served" size={2} weight="medium">
-              {name}
-            </Text>
-            <Text muted size={1}>
-              {published
-                ? 'Published version'
-                : 'Not published yet: until it is, visitors see the base document'}
-            </Text>
-          </Stack>
-        </Card>
-      </Stack>
-      {draft ? (
-        <Text data-testid="lens-draft" muted size={1}>
-          Draft beneath: {name} has changes that are not published, so visitors do not see them.
-        </Text>
-      ) : null}
+      {subtitle}
       {best.kind === 'partial' ? (
         <Card data-testid="lens-partial-prompt" padding={3} radius={3} tone="caution">
-          <Stack gap={3}>
-            <Text size={1}>
-              This variant covers {covers} of the {total} values in the perspective. Create a
-              variant that covers all of them.
+          <Stack gap={2}>
+            <Text size={1} weight="semibold">
+              Partly matched
             </Text>
-            <Flex>
-              {!hasExactVersion ? (
-                <Button
-                  data-testid="lens-cta"
-                  icon={AddIcon}
-                  mode="ghost"
-                  onClick={create}
-                  text="Create a full variant"
-                />
-              ) : null}
-            </Flex>
+            <Text size={1}>
+              Visitors in {label} get the {name} version. It does not cover{' '}
+              {missing.join(' and ') || 'every value'}.
+            </Text>
           </Stack>
         </Card>
+      ) : null}
+      <Stack gap={2}>
+        <Label>Served now</Label>
+        <div data-testid="lens-served">
+          {published ? (
+            <VersionRow detail="Published" name={name} state="published" testId="lens-served-row" />
+          ) : (
+            <Card border padding={3} radius={2} tone="caution">
+              <Text size={1}>
+                {name} is not published yet. Until it is, visitors see the base document.
+              </Text>
+            </Card>
+          )}
+        </div>
+      </Stack>
+      {draft ? (
+        <Stack gap={2}>
+          <Label>Draft, not served</Label>
+          <div data-testid="lens-draft">
+            <VersionRow
+              detail="Has changes that are not published, so visitors do not see them"
+              muted
+              name={name}
+              state="draft"
+              testId="lens-draft-row"
+            />
+          </div>
+        </Stack>
+      ) : null}
+      {best.kind === 'partial' && !hasExactVersion ? (
+        <Flex>
+          <Button
+            data-testid="lens-cta"
+            fontSize={1}
+            onClick={create}
+            padding={2}
+            text="Create a full variant"
+          />
+        </Flex>
       ) : null}
       {dialog}
     </Stack>
   )
 }
 
-/** The line above the inventory list, and the lens it opens. */
-export function VisitorLensLine({documentId, title}: {documentId: string; title: string}) {
-  const [open, setOpen] = useState(false)
+/** The line above the inventory list: it opens the lens in the panel's place. */
+export function VisitorLensLine({onOpen}: {onOpen: () => void}) {
   return (
-    <>
-      <Box padding={1}>
+    <Box padding={1}>
+      <Button
+        data-testid="visitor-lens-open"
+        fontSize={1}
+        mode="bleed"
+        onClick={onOpen}
+        padding={2}
+        style={{height: 31, width: '100%', justifyContent: 'flex-start'}}
+        text="What will my visitors see?"
+      />
+    </Box>
+  )
+}
+
+/** The lens, as the Figma E1 to E3 frames draw it: a header with a close, the perspective it is for, then the answer. */
+export function VisitorLensPanel({
+  documentId,
+  title,
+  onClose,
+}: {
+  documentId: string
+  title: string
+  onClose: () => void
+}) {
+  return (
+    <Stack data-testid="visitor-lens" gap={4} padding={3}>
+      <Flex align="center" gap={2}>
+        <Box flex={1}>
+          <Text size={1} weight="medium">
+            What will my visitors see?
+          </Text>
+        </Box>
         <Button
-          data-testid="visitor-lens-open"
-          fontSize={1}
+          aria-label="Close"
+          data-testid="visitor-lens-close"
+          icon={CloseIcon}
           mode="bleed"
-          onClick={() => setOpen(true)}
+          onClick={onClose}
           padding={2}
-          style={{height: 31, width: '100%', justifyContent: 'flex-start'}}
-          text="What will my visitors see?"
         />
-      </Box>
-      {open ? (
-        <Dialog
-          header="What will my visitors see?"
-          id="visitor-lens"
-          onClose={() => setOpen(false)}
-          width={1}
-        >
-          <Box data-testid="visitor-lens" padding={4}>
-            <LensBody documentId={documentId} onClose={() => setOpen(false)} title={title} />
-          </Box>
-        </Dialog>
-      ) : null}
-    </>
+      </Flex>
+      <LensBody documentId={documentId} onClose={onClose} title={title} />
+    </Stack>
   )
 }
 

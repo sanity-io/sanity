@@ -45,40 +45,40 @@ try {
   // Idle: no perspective.
   await open('show.a,stage.ga,c4.a')
   log((await lens('idle')).includes('Choose who to look at'), 'no perspective: the lens asks for one')
-  await p.keyboard.press('Escape')
+  await p.getByTestId('visitor-lens-close').click()
 
   // Full match: Members (audience = members). The Lighthouse Keeper's Almanac has a published Members version.
   await open('show.a,stage.ga,c4.a')
   await pick([{dim: 'audience', value: 'members'}])
   let text = await lens('full-match')
-  log((await p.getByTestId('lens-full').count()) === 1 && /Members/.test(text) && /Published version/.test(text), 'full match: only the variant that fits, as a published version', text)
+  log((await p.getByTestId('lens-full').count()) === 1 && /Members/.test(text) && /Served now/i.test(text) && /Published/.test(text), 'full match: only the variant that fits, as a published version', text)
   log((await p.getByTestId('lens-cta').count()) === 0 && (await p.getByTestId('lens-partial-prompt').count()) === 0, 'full match: no prompt to create anything')
-  await p.keyboard.press('Escape')
+  await p.getByTestId('visitor-lens-close').click()
 
   // Full match with a draft beneath: Students has a published version and a draft.
   await open('show.a,stage.ga,c4.a')
   await pick([{dim: 'audience', value: 'students'}])
   text = await lens('full-match-draft-beneath')
-  log((await p.getByTestId('lens-draft').count()) === 1 && /Draft beneath/.test(text), 'full match: the draft sits beneath the published version, as secondary', text)
+  log((await p.getByTestId('lens-draft').count()) === 1 && /Draft, not served/i.test(text), 'full match: the draft sits beneath the published version, as secondary', text)
   const order = await p.evaluate(() => { const a = document.querySelector('[data-testid=lens-served]')!.getBoundingClientRect().top; const d = document.querySelector('[data-testid=lens-draft]')!.getBoundingClientRect().top; return a < d })
   log(order, 'full match: the served version comes first')
-  await p.keyboard.press('Escape')
+  await p.getByTestId('visitor-lens-close').click()
 
   // Partial match: audience + locale; the Members variant covers one of the two values.
   await open('show.a,stage.ga,dim.4,c4.a')
   await pick([{dim: 'audience', value: 'members'}, {dim: 'locale', value: 'de-DE'}])
   text = await lens('partial-match')
   const partial = (await p.getByTestId('lens-partial').count()) === 1
-  log(partial && (await p.getByTestId('lens-partial-prompt').count()) === 1, 'partial match: the match plus a prompt to create a full variant', text)
-  await p.keyboard.press('Escape')
+  log(partial && (await p.getByTestId('lens-partial-prompt').count()) === 1 && /Partly matched/.test(text) && /Create a full variant/.test(text), 'partial match: the match plus a prompt to create a full variant', text)
+  await p.getByTestId('visitor-lens-close').click()
 
   // No match: a perspective no definition names (market France + channel app, if present).
   await open('show.a,stage.ga,dim.4,c4.a')
   await pick([{dim: 'market', value: 'france'}, {dim: 'channel', value: 'app'}])
   text = await lens('no-match')
-  log((await p.getByTestId('lens-none').count()) === 1 && /No variant of this document matches/.test(text), 'no match: says so plainly', text)
+  log((await p.getByTestId('lens-none').count()) === 1 && /Nothing is set for this perspective/.test(text) && /see the base document/.test(text), 'no match: says so plainly', text)
   log((await p.getByTestId('lens-cta').count()) === 1, 'no match: offers the CTA', await p.getByTestId('lens-cta').innerText().catch(() => ''))
-  await p.keyboard.press('Escape')
+  await p.getByTestId('visitor-lens-close').click()
 } catch (e) {
   log(false, 'script error', String(e).split('\n')[0])
 }
@@ -96,6 +96,7 @@ try {
     const dtext = (await dialog.innerText()).replace(/\n/g, ' | ')
     log(/Create/.test(dtext) && /Address/.test(dtext), 'the CTA opens the Create dialog with the definition preselected', dtext)
     await dialog.getByRole('button', {name: /Cancel/}).first().click().catch(() => undefined)
+    await p.screenshot({path: 'journeys-captures/c4-lens/create-dialog.png'})
   } else {
     log(true, 'the CTA is absent for this document (it already has the version)', text)
   }
