@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useEffect, useMemo} from 'react'
+import {Box, Button, Card, Dialog, Flex, Select, Stack, Text} from '@sanity/ui'
+import {useEffect, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {type SystemVariant, valueTitle} from '../c1/model'
@@ -10,6 +10,7 @@ import {StateDot} from '../c3/StateGlyph'
 import {ConfirmDialog, useBulk} from '../c5/Actionable'
 import {useCorpus} from '../c5/useCorpus'
 import {usePerspectiveMatch} from '../data/match'
+import {matchOf} from '../data/matchCore'
 import {useVersionList} from '../data/useVersionList'
 import {useOptionState} from '../options/store'
 
@@ -76,6 +77,9 @@ function LensBody(props: {documentId: string; title: string; onClose: () => void
   const corpus = useCorpus()
   const bulk = useBulk()
   const router = useRouter()
+  const [choosing, setChoosing] = useState(false)
+  const [chosenId, setChosenId] = useState('')
+  const [target, setTarget] = useState<string | undefined>()
 
   const variantIds = useMemo(
     () => (versions ?? []).flatMap((v) => (v.variantId ? [v.variantId] : [])),
@@ -101,35 +105,90 @@ function LensBody(props: {documentId: string; title: string; onClose: () => void
   }
 
   const baseDoc = versions.find((v) => v.audience === null && v.state === 'published')
-  // The definition whose conditions are exactly the perspective: what a "full" variant would be.
-  const exact = definitions.find((d) => {
-    const own = Object.entries(d.conditions)
-    return (
-      own.length === Object.keys(perspective.chosen).length &&
-      own.every(([k, v]) => perspective.chosen[k] === v)
-    )
-  })
-  const exactId = exact ? shortId(exact._id) : undefined
-  const hasExactVersion = !!exactId && variantIds.includes(exactId)
-
+  // What the Create dialog can offer: the definitions this document has no version of yet. Of those, the ones that FIT the perspective (every
+  // condition holds in it). Exactly one fits: the dialog preselects it. None or several: nothing is preselected and the editor picks.
+  const lacking = definitions.filter((d) => !variantIds.includes(shortId(d._id)))
+  const fitting = lacking.filter((d) => matchOf(d.conditions, perspective.chosen) !== null)
+  const offered = fitting.length ? fitting : lacking
+  const start = (id: string) => {
+    setTarget(id)
+    bulk.open('create', [{docId: documentId, title, variantId: id, rows: []}])
+  }
   const create = () => {
-    if (!exact || !exactId) {
+    if (!lacking.length) {
       onClose()
       router.navigateUrl({path: '/variants'})
       return
     }
-    bulk.open('create', [{docId: documentId, title, variantId: exactId, rows: []}])
+    if (fitting.length === 1) {
+      start(shortId(fitting[0]._id))
+      return
+    }
+    setChosenId('')
+    setChoosing(true)
   }
-  const dialog =
-    corpus && exact ? (
-      <ConfirmDialog
-        address={titleOf(exact, exactId ?? '')}
-        bulk={bulk}
-        corpus={corpus}
-        definitions={definitions}
-        onDone={() => undefined}
-      />
-    ) : null
+  const ctaText = lacking.length
+    ? 'Create a variant for this perspective'
+    : 'Define a variant for this perspective'
+  const targetDefinition = definitions.find((d) => shortId(d._id) === target)
+  const dialog = (
+    <>
+      {corpus && target ? (
+        <ConfirmDialog
+          address={titleOf(targetDefinition, target)}
+          bulk={bulk}
+          corpus={corpus}
+          definitions={definitions}
+          onDone={() => undefined}
+        />
+      ) : null}
+      {choosing ? (
+        <Dialog
+          header="Create a variant for this perspective"
+          id="lens-pick-definition"
+          onClose={() => setChoosing(false)}
+          width={0}
+        >
+          <Stack data-testid="lens-pick" gap={4} padding={4}>
+            <Text muted size={1}>
+              {fitting.length > 1
+                ? `${fitting.length} definitions fit ${label}.`
+                : `No definition fits ${label} exactly.`}{' '}
+              Pick the one to create.
+            </Text>
+            <Select
+              data-testid="lens-pick-select"
+              fontSize={1}
+              onChange={(e) => setChosenId(e.currentTarget.value)}
+              value={chosenId}
+            >
+              <option disabled value="">
+                Choose a definition
+              </option>
+              {offered.map((d) => (
+                <option key={d._id} value={shortId(d._id)}>
+                  {titleOf(d, shortId(d._id))}
+                </option>
+              ))}
+            </Select>
+            <Flex gap={2} justify="flex-end">
+              <Button fontSize={1} mode="bleed" onClick={() => setChoosing(false)} text="Cancel" />
+              <Button
+                data-testid="lens-pick-continue"
+                disabled={!chosenId}
+                fontSize={1}
+                onClick={() => {
+                  setChoosing(false)
+                  start(chosenId)
+                }}
+                text="Continue"
+              />
+            </Flex>
+          </Stack>
+        </Dialog>
+      ) : null}
+    </>
+  )
 
   const subtitle = (
     <Text data-testid="lens-for" size={1} style={{color: 'var(--card-badge-suggest-fg-color)'}}>
@@ -158,17 +217,7 @@ function LensBody(props: {documentId: string; title: string; onClose: () => void
           </Stack>
         </Card>
         <Flex>
-          <Button
-            data-testid="lens-cta"
-            fontSize={1}
-            onClick={create}
-            padding={2}
-            text={
-              exact
-                ? 'Create a variant for this perspective'
-                : 'Define a variant for this perspective'
-            }
-          />
+          <Button data-testid="lens-cta" fontSize={1} onClick={create} padding={2} text={ctaText} />
         </Flex>
         {dialog}
       </Stack>
@@ -231,19 +280,9 @@ function LensBody(props: {documentId: string; title: string; onClose: () => void
           </div>
         </Stack>
       ) : null}
-      {best.kind === 'partial' && !hasExactVersion ? (
+      {best.kind === 'partial' && lacking.length > 0 ? (
         <Flex>
-          <Button
-            data-testid="lens-cta"
-            fontSize={1}
-            onClick={create}
-            padding={2}
-            text={
-              exact
-                ? 'Create a variant for this perspective'
-                : 'Define a variant for this perspective'
-            }
-          />
+          <Button data-testid="lens-cta" fontSize={1} onClick={create} padding={2} text={ctaText} />
         </Flex>
       ) : null}
       {dialog}
