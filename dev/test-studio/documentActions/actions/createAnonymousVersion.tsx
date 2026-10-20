@@ -1,5 +1,5 @@
 import {AsteriskIcon} from '@sanity/icons/Asterisk'
-import {Button, Card, Dialog, TextInput, Text} from '@sanity/ui'
+import {Button, Card, Dialog, TextInput} from '@sanity/ui'
 import {useState} from 'react'
 import {
   useClient,
@@ -10,7 +10,7 @@ import {
   useSetPerspective,
 } from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
   const [open, setOpen] = useState<boolean>(false)
@@ -73,7 +73,7 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
             <form onSubmit={handleSubmit}>
               <VStack gap={3}>
                 <VStack gap={4}>
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true}>
                     Create an anonymous version of the document. This will create a new document
                     with the same content as the original document, but with a new ID.
                   </Text>
@@ -86,7 +86,9 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
                 </VStack>
                 {status === 'error' && error && (
                   <Card tone="critical" padding={3}>
-                    <Text size={0}>{error.message}</Text>
+                    <Text size={0} as="div" trim={true}>
+                      {error.message}
+                    </Text>
                   </Card>
                 )}
                 <Flex justifyContent="flex-end" gap={2}>

@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ItemProps, ObjectInputMembers, type ObjectInputProps} from 'sanity'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 /**
  * Simple custom item component for array of objects
@@ -23,16 +23,20 @@ export function SideBySideObjectItem(props: ItemProps) {
         {/* Preview of the item */}
         <Flex gap={3}>
           <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
-            <Text size={0} weight="semibold">
+            <Text size={0} weight="semibold" as="div" trim={true}>
               Name
             </Text>
-            <Text size={1}>{nameChild || 'No name'}</Text>
+            <Text size={1} as="div" trim={true}>
+              {nameChild || 'No name'}
+            </Text>
           </Flex>
           <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
-            <Text size={0} weight="semibold">
+            <Text size={0} weight="semibold" as="div" trim={true}>
               Internationalized
             </Text>
-            <Text size={1}>{internationalizedArrayStringChild?.[0]?.value || 'No value'}</Text>
+            <Text size={1} as="div" trim={true}>
+              {internationalizedArrayStringChild?.[0]?.value || 'No value'}
+            </Text>
           </Flex>
         </Flex>
 

@@ -2,11 +2,11 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {LinkIcon} from '@sanity/icons/Link'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useState} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 const CHILD_LINK_PARAMETERS: Record<string, string> = {}
 const PARAMETERIZED_LINK_PARAMS: Record<string, string> = {param1: 'test'}
@@ -36,10 +36,10 @@ export const DebugPane: UserComponent = function DebugPane(props) {
     <Box height="100%">
       <Box padding={4} paddingTop={0}>
         <VStack gap={3}>
-          <Text muted size={1} textOverflow="ellipsis">
+          <Text muted size={1} truncate={1} as="div" trim={true}>
             Random ID: <code>{randomId}</code>
           </Text>
-          <Text textOverflow="ellipsis" size={1} muted>
+          <Text truncate={1} size={1} muted as="div" trim={true}>
             Assigned on pane component mount
           </Text>
         </VStack>
@@ -59,17 +59,17 @@ export const DebugPane: UserComponent = function DebugPane(props) {
           >
             <Flex>
               <Box>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <LinkIcon />
                 </Text>
               </Box>
               <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-                <Text size={1} textOverflow="ellipsis">
+                <Text size={1} truncate={1} as="div" trim={true}>
                   ChildLink
                 </Text>
               </Box>
               <Box>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <ChevronRightIcon />
                 </Text>
               </Box>
@@ -87,17 +87,17 @@ export const DebugPane: UserComponent = function DebugPane(props) {
           >
             <Flex>
               <Box>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <ControlsIcon />
                 </Text>
               </Box>
               <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-                <Text size={1} textOverflow="ellipsis">
+                <Text size={1} truncate={1} as="div" trim={true}>
                   ParameterizedLink
                 </Text>
               </Box>
               <Box>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <ChevronDownIcon />
                 </Text>
               </Box>

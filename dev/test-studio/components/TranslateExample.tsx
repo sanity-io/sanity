@@ -1,30 +1,32 @@
 import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {Translate, useTranslation} from 'sanity'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 export function TranslateExample() {
   const {t} = useTranslation('testStudio')
   return (
     <Card padding={4}>
       <VStack gap={4}>
-        <Text>{t('use-translation.with-html')}</Text>
-        <Text>
+        <Text as="div" trim={true}>
+          {t('use-translation.with-html')}
+        </Text>
+        <Text as="div" trim={true}>
           {t('use-translation.interpolation-example', {
             spaces: 'spaces',
             doesNot: 'does not have spaces',
           })}
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           {t('translate.with-formatter', {
             countries: ['Norway', 'Denmark', 'Sweden'],
           })}
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           <Translate t={t} i18nKey="use-translation.with-html" />
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           <Translate
             t={t}
             i18nKey="translate.example"
@@ -35,7 +37,7 @@ export function TranslateExample() {
             }}
           />
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           <Translate
             t={t}
             i18nKey="translate.with-xml-in-value"
@@ -45,7 +47,7 @@ export function TranslateExample() {
           />
         </Text>
 
-        <Text>
+        <Text as="div" trim={true}>
           <Translate
             t={t}
             i18nKey="use-translation.interpolation-example"
@@ -56,16 +58,18 @@ export function TranslateExample() {
           />
         </Text>
 
-        <Text weight="bold">Broken translations (should fall back gracefully, not crash):</Text>
+        <Text weight="bold" as="div" trim={true}>
+          Broken translations (should fall back gracefully, not crash):
+        </Text>
 
-        <Text>
+        <Text as="div" trim={true}>
           Missing self-closing:{' '}
           <Translate t={t} i18nKey="translate.missing-self-closing" components={{}} />
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           Missing wrapping: <Translate t={t} i18nKey="translate.missing-wrapping" components={{}} />
         </Text>
-        <Text>
+        <Text as="div" trim={true}>
           Mismatched component (issue #12617):{' '}
           <Translate
             t={t}

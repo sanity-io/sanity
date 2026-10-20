@@ -1,4 +1,4 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {createContext, useContext} from 'react'
 import {
   definePlugin,
@@ -7,7 +7,7 @@ import {
   type NavbarProps,
   type ToolMenuProps,
 } from 'sanity'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 export const studioComponentsPlugin = definePlugin({
   name: 'studio-components-plugin',
@@ -57,7 +57,7 @@ export function CustomNavbar(props: NavbarProps) {
     <VStack data-testid="test-navbar-config">
       <Card padding={4} tone="primary" data-testid="test-navbar-banner-config">
         <Flex alignItems="center" gap={4}>
-          <Text weight="semibold" size={1}>
+          <Text weight="semibold" size={1} as="div" trim={true}>
             This banner is rendered with <code>{`components.navbar`}</code> in{' '}
             <code>{`defineConfig`}</code>
           </Text>

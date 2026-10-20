@@ -1,9 +1,9 @@
 import {TranslateIcon} from '@sanity/icons/Translate'
-import {Button, Card, Checkbox, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Button, Card, Checkbox, useClickOutsideEvent} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {type FormEvent, useCallback, useRef, useState} from 'react'
 import {type ObjectSchemaType} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {type LanguageFilterPluginOptions} from './types'
 import {usePaneLanguages} from './usePaneLanguages'
@@ -56,12 +56,14 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
       {defaultLanguages.length > 0 && (
         <Card radius={2} tone="primary">
           <Flex padding={2} gap={3} flexDirection="column">
-            <Text size={1} weight="semibold">
+            <Text size={1} weight="semibold" as="div" trim={true}>
               Default language{defaultLanguages.length > 1 && <>s</>}
             </Text>
 
             {defaultLanguages.map((l) => (
-              <Text key={l.id}>{l.title}</Text>
+              <Text key={l.id} as="div" trim={true}>
+                {l.title}
+              </Text>
             ))}
           </Flex>
         </Card>
@@ -69,7 +71,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
 
       <Flex marginTop={3} padding={2} gap={2} flexDirection="column">
         <Box paddingBottom={1}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="semibold" as="div" trim={true}>
             Show translations
           </Text>
         </Box>
@@ -78,7 +80,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
           <Flex alignItems="center" gap={2}>
             <Checkbox checked={allSelected} name="_allSelected" onChange={handleToggleAll} />
             <Box flexBasis="0%" flexGrow={1}>
-              <Text muted={!allSelected} weight="semibold">
+              <Text muted={!allSelected} weight="semibold" as="div" trim={true}>
                 All translations
               </Text>
             </Box>
@@ -128,7 +130,9 @@ function LanguageFilterOption(props: {
       <Flex alignItems="center" gap={2}>
         <Checkbox checked={selected} name={`language-${id}`} onChange={handleChange} />
         <Box flexBasis="0%" flexGrow={1}>
-          <Text muted={!selected}>{title}</Text>
+          <Text muted={!selected} as="div" trim={true}>
+            {title}
+          </Text>
         </Box>
       </Flex>
     </Card>

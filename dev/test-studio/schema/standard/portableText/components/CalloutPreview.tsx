@@ -1,7 +1,7 @@
-import {Card, type CardTone, Text} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {type PreviewProps} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 type CalloutPreviewProps = PreviewProps & {
   tone?: CardTone | string
@@ -14,11 +14,11 @@ export function CalloutPreview(props: CalloutPreviewProps) {
     <Card tone={tone}>
       <Flex alignItems="flex-start">
         <Box flexBasis="0%" flexGrow={1} padding={3}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="semibold" as="div" trim={true}>
             {(props.title as ReactNode) || <>Untitled</>} ({tone})
           </Text>
           {props.subtitle ? (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {props.subtitle as ReactNode}
             </Text>
           ) : null}

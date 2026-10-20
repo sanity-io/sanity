@@ -1,5 +1,5 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Button, Card, Dialog, Inline, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Inline} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -18,7 +18,7 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
-import {Box, Grid, VStack} from 'ui5'
+import {Text, Box, Grid, VStack} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'
 const RAW_PERSPECTIVE_CLIENT_OPTIONS = {apiVersion: 'X' as const}
@@ -288,12 +288,12 @@ function DocumentJsonDialog(props: {documentId: string; label: string; onClose: 
     >
       <Box overflow="auto" padding={4} style={{maxHeight: '70vh'}}>
         {loading && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             Loading document…
           </Text>
         )}
         {!loading && error && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {error}
           </Text>
         )}
@@ -346,58 +346,76 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
       <Card padding={4} radius={2} shadow={2} tone="default">
         <VStack gap={3}>
           <VStack gap={1}>
-            <Text size={2} weight="semibold">
+            <Text size={2} weight="semibold" as="div" trim={true}>
               {label}
             </Text>
             {contextTitle && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {contextTitle}
               </Text>
             )}
           </VStack>
           {status === 'loading' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Loading…
             </Text>
           )}
           {status === 'no-variant' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Select a variant in the perspective bar
             </Text>
           )}
           {status === 'no-release' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Select a release in the perspective bar
             </Text>
           )}
           {status === 'not-found' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Not found
             </Text>
           )}
           {status === 'ready' && (
             <VStack gap={2}>
               <Inline>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   Title:{' '}
                 </Text>
-                <Text size={1}>{snapshot?.title ?? <Text muted>(empty)</Text>}</Text>
+                <Text size={1} as="div" trim={true}>
+                  {snapshot?.title ?? (
+                    <Text muted as="div" trim={true}>
+                      (empty)
+                    </Text>
+                  )}
+                </Text>
               </Inline>
               <Inline>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   Last updated at:{' '}
                 </Text>
-                <Text size={1}>{formattedUpdatedAt ?? <Text muted>(unknown)</Text>}</Text>
+                <Text size={1} as="div" trim={true}>
+                  {formattedUpdatedAt ?? (
+                    <Text muted as="div" trim={true}>
+                      (unknown)
+                    </Text>
+                  )}
+                </Text>
               </Inline>
               <Inline>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" as="div" trim={true}>
                   ID:{' '}
                 </Text>
-                <Text size={1}>{snapshot?._id ?? <Text muted>(unknown)</Text>}</Text>
+                <Text size={1} as="div" trim={true}>
+                  {snapshot?._id ?? (
+                    <Text muted as="div" trim={true}>
+                      (unknown)
+                    </Text>
+                  )}
+                </Text>
               </Inline>
               {queryUrl && documentId && (
                 <VStack gap={2}>
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true}>
                     <a href={queryUrl} rel="noopener noreferrer" target="_blank">
                       See document <LaunchIcon />
                     </a>
@@ -411,7 +429,7 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
                     tone="critical"
                   />
                   {deleteError && (
-                    <Text muted size={1}>
+                    <Text muted size={1} as="div" trim={true}>
                       {deleteError}
                     </Text>
                   )}
@@ -438,28 +456,28 @@ export function VariantVersionsView(props: {documentId: string}) {
       <Box padding={4}>
         <VStack gap={4}>
           <VStack gap={2}>
-            <Text size={3} weight="bold">
+            <Text size={3} weight="bold" as="div" trim={true}>
               Variant versions
             </Text>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               Document group: {getPublishedId(documentId)}
             </Text>
             {selectedReleaseId && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 Selected release: {releaseTitle ?? selectedReleaseId}
               </Text>
             )}
             {selectedVariant ? (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 Selected variant: {variantTitle ?? selectedVariant._id}
               </Text>
             ) : (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 No variant selected — variant slots require a variant in the perspective bar.
               </Text>
             )}
             {versionsLoading && (
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 Resolving document versions…
               </Text>
             )}
