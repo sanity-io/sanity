@@ -104,10 +104,21 @@ import reservedFieldNames from './debug/reservedFieldNames'
 import restrictedVersionActions from './debug/restrictedVersionActions'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
+import {
+  sdkProjectionGuardOnly,
+  sdkProjectionUnwrapped,
+  sdkProjectionWrapped,
+} from './debug/sdkProjectionInput'
 import select from './debug/select'
 import {navbarSettingsDialogRepro} from './debug/settingsV2DialogRepro'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
 import {simpleReferences} from './debug/simpleReferences'
+import {
+  suspendingInputCached,
+  suspendingInputLazy,
+  suspendingInputPerInstance,
+  suspendingInputPerInstanceWrapped,
+} from './debug/suspendingInputs'
 import {twoArgValidationRepro} from './debug/twoArgValidationRepro'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
@@ -285,6 +296,13 @@ export function createSchemaTypes(projectId: string) {
     languageFilterDebugType,
     localeBlockContentType,
     lazyComponents,
+    suspendingInputCached,
+    suspendingInputLazy,
+    suspendingInputPerInstance,
+    suspendingInputPerInstanceWrapped,
+    sdkProjectionGuardOnly,
+    sdkProjectionUnwrapped,
+    sdkProjectionWrapped,
     locationResolverTest,
     liveEdit,
     localeString,
