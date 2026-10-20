@@ -97,7 +97,8 @@ function JourneyRow({journey, open, onToggle}: {journey: Journey; open: boolean;
           </Text>
           <Flex gap={2}>
             <Button fontSize={1} onClick={() => go(journey.steps[0])} padding={2} style={{height: 25}} text="Start journey" tone="primary" />
-            <Button fontSize={1} mode="ghost" onClick={() => window.open('/static/remote.html', 'variants-2-0-remote', 'popup,width=520,height=820')} padding={2} style={{height: 25}} text="Open remote" />
+            <Button fontSize={1} mode="ghost" onClick={() => window.open('/static/remote.html', 'variants-2-0-remote', 'popup,width=1200,height=800')} padding={2} style={{height: 25}} text="Journeys remote" />
+            <Button fontSize={1} mode="ghost" onClick={() => window.open('/static/options-remote.html', 'variants-2-0-options-remote', 'popup,width=520,height=820')} padding={2} style={{height: 25}} text="Options remote" />
           </Flex>
           {journey.steps.length === 0 ? (
             <Text muted size={0}>

@@ -5,6 +5,7 @@
     "title": "An editor creates a first variant definition by hand",
     "stage": "Open beta",
     "persona": "editor",
+    "flow": "T2.1",
     "components": [
       "C2",
       "C6"
@@ -17,7 +18,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The shipped overview lists definitions with document counts. An empty state offers to create the first one.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--no-definitions"
+        "story": "explorations-variants-2-0-components-c6-variants-tool--no-definitions",
+        "flowStep": 1
       },
       {
         "title": "Start a new definition",
@@ -26,7 +28,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "A dialog asks for the dimension and the definition title.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition",
+        "flowStep": 2
       },
       {
         "title": "Add the first condition",
@@ -35,7 +38,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The same dialog takes one condition (for example locale = de-DE) and saves.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition",
+        "flowStep": 3
       },
       {
         "title": "See the definition in the list",
@@ -44,7 +48,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The detail page of the new definition shows 0 documents and a Create action.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--create-definition",
+        "flowStep": 4
       }
     ]
   },
@@ -54,6 +59,7 @@
     "title": "An editor changes a variant definition",
     "stage": "Open beta",
     "persona": "editor",
+    "flow": "T2.1",
     "components": [
       "C6"
     ],
@@ -65,7 +71,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The detail page shows the definition, its conditions and its documents.",
-        "story": "explorations-variants-2-0-components-c6-variants-tool--definition-with-documents"
+        "story": "explorations-variants-2-0-components-c6-variants-tool--definition-with-documents",
+        "flowStep": null
       },
       {
         "title": "Change a condition",
@@ -74,7 +81,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The Edit dialog opens with the conditions of the definition.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-names-the-consequence"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-names-the-consequence",
+        "flowStep": null
       },
       {
         "title": "Read the consequence",
@@ -83,7 +91,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The dialog names how many documents the change affects before saving.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-names-the-consequence"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--edit-names-the-consequence",
+        "flowStep": null
       }
     ]
   },
@@ -93,6 +102,7 @@
     "title": "From the base document",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": "T3.1",
     "components": [
       "C1",
       "C3",
@@ -107,7 +117,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The document list shows the base document with its version mark.",
-        "story": "explorations-variants-2-0-components-c3-version-mark--default"
+        "story": "explorations-variants-2-0-components-c3-version-mark--default",
+        "flowStep": null
       },
       {
         "title": "Open the perspective control",
@@ -116,7 +127,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The version pill opens its menu. An extra row adds a dimension.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta",
+        "flowStep": null
       },
       {
         "title": "Pick a dimension and a definition",
@@ -125,7 +137,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The perspective row appears. The studio shows the chosen variant, or the base if none exists.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta",
+        "flowStep": null
       },
       {
         "title": "See the missing-variant banner",
@@ -134,7 +147,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "A banner says this document has no version for the shown variant and offers Create.",
-        "story": "explorations-variants-2-0-c7-banners-option-a--drafts-no-variant"
+        "story": "explorations-variants-2-0-c7-banners-option-a--drafts-no-variant",
+        "flowStep": null
       },
       {
         "title": "Create the variant document",
@@ -143,7 +157,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The variant is created from the base as a draft. The banner disappears.",
-        "story": "explorations-variants-2-0-c7-banners-option-a--created"
+        "story": "explorations-variants-2-0-c7-banners-option-a--created",
+        "flowStep": null
       }
     ]
   },
@@ -153,6 +168,7 @@
     "title": "From the document",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": "T4.1",
     "components": [
       "C3",
       "C4",
@@ -166,7 +182,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "Rows carry a version mark for documents that have versions.",
-        "story": "explorations-variants-2-0-components-c3-version-mark--default"
+        "story": "explorations-variants-2-0-components-c3-version-mark--default",
+        "flowStep": null
       },
       {
         "title": "Click the mark",
@@ -175,7 +192,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The base document opens with the version inventory beside it.",
-        "story": "explorations-variants-2-0-components-c3-version-mark--click-opens-document-and-inspector"
+        "story": "explorations-variants-2-0-components-c3-version-mark--click-opens-document-and-inspector",
+        "flowStep": null
       },
       {
         "title": "Read the inventory",
@@ -184,7 +202,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "One row per stored version, with address and state.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory",
+        "flowStep": null
       },
       {
         "title": "Open a version from the inventory",
@@ -193,7 +212,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The document shows that version.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--open-a-version"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--open-a-version",
+        "flowStep": null
       }
     ]
   },
@@ -203,6 +223,7 @@
     "title": "From a variant definition",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": "T3.2",
     "components": [
       "C6",
       "C5"
@@ -215,7 +236,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The detail table lists documents that have the version. Grey rows list documents that do not.",
-        "story": "explorations-variants-2-0-c6-variants-tool-option-a--definition-detail"
+        "story": "explorations-variants-2-0-c6-variants-tool-option-a--definition-detail",
+        "flowStep": null
       },
       {
         "title": "Select the grey rows",
@@ -224,7 +246,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The bulk bar offers Create and Add to release.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--create-german-versions"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--create-german-versions",
+        "flowStep": null
       },
       {
         "title": "Confirm the creation",
@@ -233,7 +256,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The dialog names the address, the release and who is affected.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--create-german-versions"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--create-german-versions",
+        "flowStep": null
       },
       {
         "title": "Verify",
@@ -242,7 +266,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "Per-row results show. The grey rows are now drafts, counted as pending.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--create-german-versions"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--create-german-versions",
+        "flowStep": null
       }
     ]
   },
@@ -252,6 +277,7 @@
     "title": "Composing a perspective",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": "T4.2",
     "components": [
       "C1",
       "C2"
@@ -264,7 +290,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "Published and Drafts show. Release sections show only if releases are on.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--menu-open"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--menu-open",
+        "flowStep": null
       },
       {
         "title": "Add a dimension",
@@ -273,7 +300,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The panel opens; one dimension in open beta.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta",
+        "flowStep": null
       },
       {
         "title": "Choose a value",
@@ -282,7 +310,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The row shows one chip. The studio shows that perspective.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--open-beta",
+        "flowStep": null
       },
       {
         "title": "Hide and show the row",
@@ -291,7 +320,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The version label toggles the row. The chip stays set.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--label-toggles-row"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--label-toggles-row",
+        "flowStep": null
       },
       {
         "title": "Clear",
@@ -300,7 +330,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The chip is removed and the studio returns to the base.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--clear-and-remove"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--clear-and-remove",
+        "flowStep": null
       }
     ]
   },
@@ -310,6 +341,7 @@
     "title": "Via the presentation tool",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": "T4.4",
     "components": [
       "C1"
     ],
@@ -321,7 +353,8 @@
         "preset": "open-beta-a",
         "route": "/presentation",
         "expect": "The preview loads with the same perspective control as the studio.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation-documents-on-this-page"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation-documents-on-this-page",
+        "flowStep": null
       },
       {
         "title": "Choose a dimension value",
@@ -330,7 +363,8 @@
         "preset": "open-beta-a",
         "route": "/presentation",
         "expect": "Choosing a value in the preview toolbar re-renders the preview for that audience. (Open question: the Presentation tool has only the navbar pill today.)",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation",
+        "flowStep": null
       },
       {
         "title": "Click to edit",
@@ -339,7 +373,8 @@
         "preset": "open-beta-a",
         "route": "/presentation",
         "expect": "The document opens in the version the preview shows.",
-        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation-open-document"
+        "story": "explorations-variants-2-0-c1-perspective-selector-option-a--presentation-open-document",
+        "flowStep": null
       }
     ]
   },
@@ -349,6 +384,7 @@
     "title": "An editor reads the dimension map and proposes a change",
     "stage": "Open beta",
     "persona": "editor",
+    "flow": "T2.3",
     "components": [
       "C5"
     ],
@@ -360,7 +396,8 @@
         "preset": "open-beta-a",
         "route": "/inventory",
         "expect": "One row per value with counts per lifecycle state.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--dimension-lens"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--dimension-lens",
+        "flowStep": null
       },
       {
         "title": "Find a definition with no documents",
@@ -369,7 +406,8 @@
         "preset": "open-beta-a",
         "route": "/inventory",
         "expect": "A definition shows 0 of n documents.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--dimension-lens"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--dimension-lens",
+        "flowStep": null
       },
       {
         "title": "Open its definition",
@@ -378,7 +416,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The definition lens lists the documents with a Create action.",
-        "story": "explorations-variants-2-0-c6-variants-tool-option-a--definition-detail"
+        "story": "explorations-variants-2-0-c6-variants-tool-option-a--definition-detail",
+        "flowStep": null
       }
     ]
   },
@@ -388,6 +427,7 @@
     "title": "Preview as an audience",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": "T5.2",
     "components": [
       "C1",
       "C7"
@@ -400,7 +440,8 @@
         "preset": "open-beta-a",
         "route": "/inventory",
         "expect": "The visitor picker shows one value per dimension, default Anyone.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--visitor-lens"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--visitor-lens",
+        "flowStep": null
       },
       {
         "title": "Pick a visitor",
@@ -409,7 +450,8 @@
         "preset": "open-beta-a",
         "route": "/inventory",
         "expect": "Each document shows the version served and the grounds.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--visitor-lens"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--visitor-lens",
+        "flowStep": null
       },
       {
         "title": "Open a served document",
@@ -418,7 +460,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The studio shows the served version. The banner appears only if the version is missing.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--served-document"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--served-document",
+        "flowStep": null
       }
     ]
   },
@@ -428,6 +471,7 @@
     "title": "Delete a variant document from the document editor",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": "T6.1",
     "components": [
       "C3",
       "C4"
@@ -440,7 +484,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The document opens on that version. The pane header names the variant and its state.",
-        "story": "explorations-variants-2-0-c3-version-mark-popover-as-list--row-click-opens-document-and-inspector"
+        "story": "explorations-variants-2-0-c3-version-mark-popover-as-list--row-click-opens-document-and-inspector",
+        "flowStep": null
       },
       {
         "title": "Open the version inventory",
@@ -449,7 +494,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The version rows are listed with states.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory",
+        "flowStep": null
       },
       {
         "title": "Delete the variant version",
@@ -458,7 +504,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "A dialog names the version and which audience falls back to what.",
-        "story": "explorations-variants-2-0-components-c4-version-inventory-pane--delete-asks-first"
+        "story": "explorations-variants-2-0-components-c4-version-inventory-pane--delete-asks-first",
+        "flowStep": null
       },
       {
         "title": "Verify",
@@ -467,7 +514,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The row is gone. The base document is unchanged.",
-        "story": "explorations-variants-2-0-components-c4-version-inventory-pane--delete-asks-first"
+        "story": "explorations-variants-2-0-components-c4-version-inventory-pane--delete-asks-first",
+        "flowStep": null
       }
     ]
   },
@@ -477,6 +525,7 @@
     "title": "Delete a variant document from the Variants tool",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": "T6.3",
     "components": [
       "C6",
       "C5"
@@ -489,7 +538,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The detail table lists its documents.",
-        "story": "explorations-variants-2-0-c6-variants-tool-option-a--definition-detail"
+        "story": "explorations-variants-2-0-c6-variants-tool-option-a--definition-detail",
+        "flowStep": null
       },
       {
         "title": "Select documents",
@@ -498,7 +548,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The bulk bar shows Delete.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-results"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-results",
+        "flowStep": null
       },
       {
         "title": "Confirm the delete",
@@ -507,7 +558,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The dialog lists each document and the fallback per audience.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-consequence"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-consequence",
+        "flowStep": null
       },
       {
         "title": "Read per-row results",
@@ -516,7 +568,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "Each row reports success or failure on its own.",
-        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-results"
+        "story": "explorations-variants-2-0-c5-inventory-table-option-a--delete-results",
+        "flowStep": null
       }
     ]
   },
@@ -526,6 +579,7 @@
     "title": "Delete a variant definition that has no documents",
     "stage": "Open beta",
     "persona": "editor",
+    "flow": "T7.1",
     "components": [
       "C6"
     ],
@@ -537,7 +591,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The detail page shows 0 documents.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-from-the-detail"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-from-the-detail",
+        "flowStep": null
       },
       {
         "title": "Delete the definition",
@@ -546,7 +601,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "A dialog confirms. No documents are affected.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-without-documents"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-without-documents",
+        "flowStep": null
       },
       {
         "title": "Verify",
@@ -555,7 +611,8 @@
         "preset": "open-beta-a",
         "route": "/variants",
         "expect": "The definition is gone from the overview.",
-        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-without-documents"
+        "story": "explorations-variants-2-0-c6-variants-tool-lifecycle--delete-without-documents",
+        "flowStep": null
       }
     ]
   },
@@ -565,6 +622,7 @@
     "title": "Publish one variant document",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": "T8.2",
     "components": [
       "C3",
       "C4"
@@ -577,7 +635,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The document opens on the draft version. The pane header names the variant and its state.",
-        "story": "explorations-variants-2-0-c3-version-mark-popover-as-list--row-click-opens-document-and-inspector"
+        "story": "explorations-variants-2-0-c3-version-mark-popover-as-list--row-click-opens-document-and-inspector",
+        "flowStep": null
       },
       {
         "title": "Open the version inventory",
@@ -586,7 +645,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The draft row is listed.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--inventory",
+        "flowStep": null
       },
       {
         "title": "Publish the variant version",
@@ -595,7 +655,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The row turns Published. The base is unchanged.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--publish-from-the-inventory"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--publish-from-the-inventory",
+        "flowStep": null
       },
       {
         "title": "Check the Releases tool",
@@ -604,7 +665,8 @@
         "preset": "open-beta-a",
         "route": "/releases",
         "expect": "The Releases tool lists releases. A variant published on its own is not part of one.",
-        "story": "explorations-variants-2-0-c8-releases-view-option-a--autumn"
+        "story": "explorations-variants-2-0-c8-releases-view-option-a--autumn",
+        "flowStep": null
       }
     ]
   },
@@ -614,6 +676,7 @@
     "title": "An editor sees which fields differ from the base",
     "stage": "Open beta",
     "persona": "content editor",
+    "flow": null,
     "components": [
       "C3",
       "C7"
@@ -626,7 +689,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The document opens on the variant. The pane header names the variant and its state.",
-        "story": "explorations-variants-2-0-c4-version-inventory-option-a--open-a-version"
+        "story": "explorations-variants-2-0-c4-version-inventory-option-a--open-a-version",
+        "flowStep": null
       },
       {
         "title": "Read the marks in the form gutter",
@@ -635,7 +699,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "A purple mark sits beside every field whose value differs from the base. Identical fields have none. The tooltip says Changed from base variant.",
-        "story": "explorations-variants-2-0-field-marks-by-kind--marks-by-field-kind"
+        "story": "explorations-variants-2-0-field-marks-by-kind--marks-by-field-kind",
+        "flowStep": null
       },
       {
         "title": "Read a nested object and an array",
@@ -644,7 +709,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The changed leaf and its parent object are marked. An array shows one mark on the field, not on each item.",
-        "story": "explorations-variants-2-0-field-marks-by-kind--marks-by-field-kind"
+        "story": "explorations-variants-2-0-field-marks-by-kind--marks-by-field-kind",
+        "flowStep": null
       },
       {
         "title": "Read a portable text field",
@@ -653,7 +719,8 @@
         "preset": "open-beta-a",
         "route": "/structure",
         "expect": "The field carries one mark. Which paragraph changed is not marked in open beta.",
-        "story": "explorations-variants-2-0-field-marks-portable-text--portable-text-treatments"
+        "story": "explorations-variants-2-0-field-marks-portable-text--portable-text-treatments",
+        "flowStep": null
       },
       {
         "title": "Open the same document in Presentation",
@@ -662,7 +729,8 @@
         "preset": "open-beta-a",
         "route": "/presentation",
         "expect": "The marks show in the narrow document pane without clipping.",
-        "story": "explorations-variants-2-0-field-marks-narrow-pane--narrow-pane"
+        "story": "explorations-variants-2-0-field-marks-narrow-pane--narrow-pane",
+        "flowStep": null
       }
     ]
   }

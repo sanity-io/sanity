@@ -5,189 +5,297 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Journeys remote</title>
 <style>
-  :root { --bg:#f6f7f9; --card:#fff; --fg:#14181f; --muted:#5d6675; --line:#dde1e8; --accent:#4a54e8; --accent-bg:#e9eafd; --ok:#1a8f5b; --warn:#b36b00; --focus:#4a54e8; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#101319; --card:#181c24; --fg:#e8ebf1; --muted:#98a1b2; --line:#2a303c; --accent:#8d95ff; --accent-bg:#232748; --ok:#4fd29a; --warn:#e5a54b; --focus:#8d95ff; } }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; }
-  header { position:sticky; top:0; z-index:2; background:var(--bg); border-bottom:1px solid var(--line); padding:12px 16px; }
-  h1 { font-size:14px; margin:0 0 6px; font-weight:650; display:flex; align-items:center; gap:8px; }
+  :root {
+    --bg:#f3f4f7; --panel:#fff; --fg:#161a22; --muted:#5b6474; --line:#d9dde5; --accent:#4a54e8; --accent-bg:#e8e9fd;
+    --ok:#17825a; --warn:#a96300; --bad:#c43b3b; --focus:#4a54e8; --blue:#2f5fd0;
+    --card-trigger:#e6e8ee; --card-step:#fff; --card-success:#dff3e8; --card-failure:#fbf0c9; --card-pain:#fff7ea;
+    --chip:#eceef4; --scope-beta:#1f8a5b; --scope-ga:#2f6fe0;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#0f1218; --panel:#161a22; --fg:#e9ecf2; --muted:#97a0b0; --line:#2a303c; --accent:#8d95ff; --accent-bg:#23274a;
+    --ok:#4fd29a; --warn:#e5a54b; --bad:#ef7b7b; --focus:#8d95ff; --blue:#7fa6ff;
+    --card-trigger:#262b36; --card-step:#1c212b; --card-success:#163a2b; --card-failure:#403615; --card-pain:#33291a;
+    --chip:#262b36; --scope-beta:#3cc489; --scope-ga:#6aa1ff;
+  } }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; display:grid; grid-template-columns:230px 1fr; grid-template-rows:auto 1fr auto; grid-template-areas:"top top" "list main" "list dock"; }
+  header { grid-area:top; display:flex; gap:12px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--line); background:var(--panel); flex-wrap:wrap; }
+  h1 { font-size:14px; margin:0; font-weight:650; }
   .pill { font-size:11px; padding:1px 8px; border-radius:99px; border:1px solid var(--line); color:var(--muted); }
-  .pill.on { color:var(--ok); border-color:var(--ok); }
-  .pill.off { color:var(--warn); border-color:var(--warn); }
-  #state { color:var(--muted); font-size:12px; word-break:break-all; }
-  main { padding:12px 16px 80px; display:grid; gap:12px; }
+  .pill.on { color:var(--ok); border-color:var(--ok); } .pill.off { color:var(--warn); border-color:var(--warn); }
+  #state { color:var(--muted); font-size:12px; word-break:break-all; flex:1; min-width:200px; }
+  aside { grid-area:list; border-right:1px solid var(--line); overflow:auto; background:var(--panel); padding:8px; }
+  aside h2 { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:10px 6px 4px; }
+  .jr { display:flex; gap:8px; align-items:center; width:100%; text-align:left; border:0; background:none; padding:6px; border-radius:6px; cursor:pointer; color:var(--fg); font:inherit; }
+  .jr:hover { background:var(--chip); } .jr.cur { background:var(--accent-bg); }
+  .jr .id { font-size:11px; color:var(--muted); width:28px; flex:none; } .jr .tt { flex:1; } .jr .ct { font-size:11px; color:var(--muted); }
+  .dot { width:9px; height:9px; border-radius:50%; flex:none; background:var(--muted); }
+  .dot.shipped { background:var(--ok); } .dot.partly { background:var(--warn); } .dot.notBuilt { background:var(--bad); } .dot.none { background:transparent; border:1px dashed var(--muted); }
+  main { grid-area:main; overflow:auto; padding:16px 18px; min-height:0; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  .chip { font-size:11px; padding:1px 8px; border-radius:99px; background:var(--chip); color:var(--fg); white-space:nowrap; }
+  .cap { font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:650; }
+  .ttl { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:10px 0 2px; }
+  .de { border:1px solid var(--line); border-radius:8px; padding:10px 12px; background:var(--panel); margin:8px 0 12px; max-width:880px; }
+  .headline { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:6px 0 2px; }
+  .headline h2 { font:650 20px/1.2 ui-serif,Georgia,serif; margin:0; }
+  .scope { font-size:11px; border-radius:99px; padding:1px 9px; border:1px solid currentColor; }
+  .note { color:var(--muted); font-size:11px; margin:2px 0 10px; } .note a { color:var(--accent); }
+  .track { display:flex; gap:0; overflow-x:auto; padding:6px 0 14px; align-items:flex-start; }
+  .col { display:flex; flex-direction:column; flex:none; padding-right:14px; }
+  .phase { border-top:2px solid var(--line); padding-top:6px; margin-bottom:8px; }
+  .phase b { display:block; font-size:12px; } .phase span { color:var(--muted); font-size:11px; display:block; max-width:420px; }
+  .cards { display:flex; gap:12px; align-items:flex-start; }
+  .unit { width:210px; flex:none; display:flex; flex-direction:column; gap:8px; position:relative; }
+  .unit:not(:last-child)::after { content:"→"; position:absolute; right:-14px; top:34px; color:var(--muted); font-size:12px; }
+  .card { border:1px solid var(--line); border-radius:8px; padding:9px 10px; background:var(--card-step); min-height:92px; position:relative; scroll-margin:24px; transition:opacity .15s, box-shadow .15s; }
+  .card.trigger { background:var(--card-trigger); } .card.success { background:var(--card-success); } .card.failure { background:var(--card-failure); }
+  .card .h { display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:4px; }
+  .card .x { font-size:12px; } .card .s { font-style:italic; color:var(--muted); font-size:11px; margin-top:6px; }
+  .tag { font-size:10px; border:1px solid var(--line); border-radius:4px; padding:0 4px; color:var(--muted); margin-left:6px; }
+  .card.past::before { content:"✓"; position:absolute; right:8px; bottom:6px; color:var(--ok); font-weight:700; }
+  .card.future { opacity:.5; }
+  .card.cur { outline:3px solid var(--accent); outline-offset:1px; box-shadow:0 6px 18px rgba(0,0,0,.18); }
+  .pain { border:1px solid var(--warn); background:var(--card-pain); border-radius:8px; padding:8px 10px; font-size:12px; }
+  .pain .q { color:var(--blue); font-style:italic; margin-top:4px; }
+  .slash { align-self:center; color:var(--muted); padding:0 4px; font-size:18px; }
+  .noflow { color:var(--muted); border:1px dashed var(--line); border-radius:8px; padding:14px; max-width:620px; }
+  .quiet { color:var(--muted); font-size:12px; }
+  footer { grid-area:dock; border-top:1px solid var(--line); background:var(--panel); padding:10px 14px; display:grid; gap:8px; }
   .row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
-  button, select { font:inherit; color:var(--fg); background:var(--card); border:1px solid var(--line); border-radius:6px; padding:4px 10px; cursor:pointer; }
-  button:hover { border-color:var(--accent); }
-  button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
-  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
-  button.on { background:var(--accent-bg); border-color:var(--accent); }
-  label.cap { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; display:block; margin-bottom:4px; }
-  select { max-width:100%; }
-  ol { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
-  li { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px; display:grid; grid-template-columns:auto 1fr; gap:4px 10px; }
-  li.current { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-bg); }
-  li .t { font-weight:600; cursor:pointer; }
-  li .meta { color:var(--muted); font-size:12px; }
-  li .expect { color:var(--muted); font-size:12px; grid-column:2; }
-  li .acts { grid-column:2; display:flex; gap:10px; align-items:center; font-size:12px; }
+  button, select { font:inherit; color:var(--fg); background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:4px 10px; cursor:pointer; }
+  button:hover { border-color:var(--accent); } button.primary { background:var(--accent); border-color:var(--accent); color:#fff; } button.on { background:var(--accent-bg); border-color:var(--accent); }
+  button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible, .jr:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
   a { color:var(--accent); }
-  code { font:11px ui-monospace,SFMono-Regular,Menlo,monospace; background:var(--accent-bg); padding:0 4px; border-radius:4px; }
-  .hint { color:var(--muted); font-size:12px; }
+  .steps { display:flex; gap:4px; flex-wrap:wrap; } .steps button { padding:2px 8px; min-width:28px; } .steps button.cur { background:var(--accent); color:#fff; border-color:var(--accent); } .steps button.done { border-color:var(--ok); }
+  @media (max-width:700px) {
+    body { display:block; height:auto; } aside { border-right:0; border-bottom:1px solid var(--line); max-height:200px; } main { overflow:visible; }
+    footer { position:sticky; bottom:0; } .track { flex-direction:column; overflow:visible; } .col { padding-right:0; } .cards { flex-direction:column; } .unit { width:100%; } .unit::after { display:none; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>Journeys remote <span class="pill off" id="conn">Not connected</span></h1>
+  <h1>Journeys remote</h1><span class="pill off" id="conn">Not connected</span>
   <div id="state">No studio window found. Open the studio in another window of this browser.</div>
+  <button id="openOptions" title="Open the Design options remote in its own window">Design options remote ↗</button>
 </header>
-<main>
-  <div>
-    <label class="cap" for="journey">Journey</label>
-    <div class="row"><select id="journey" aria-label="Journey"></select>
-    <button id="pj" title="Previous journey">◀ Journey</button><button id="nj" title="Next journey">Journey ▶</button></div>
-  </div>
+<aside id="list" aria-label="Journeys"></aside>
+<main id="main"></main>
+<footer>
+  <div class="row"><strong id="stepTitle"></strong><span class="quiet" id="stepMeta"></span></div>
+  <div class="quiet" id="expect"></div>
   <div class="row">
-    <button id="ps" title="Previous step (← or k)">← Step</button>
-    <button id="ns" class="primary" title="Next step (→ or j)">Step →</button>
-    <span class="hint" id="pos"></span>
-    <button id="reset" title="Clear the done marks of this journey">Reset checks</button>
+    <button id="ps" title="Previous step (← or k)">← Previous</button>
+    <button id="go" class="primary" title="Go to this step again">Go to step</button>
+    <button id="ns" title="Next step (→ or j)">Next →</button>
+    <label><input type="checkbox" id="done"> Done</label>
+    <a id="story" target="_blank" rel="noreferrer" hidden>Storybook</a>
+    <span class="steps" id="steps"></span>
+    <button id="pj">◀ Journey</button><button id="nj">Journey ▶</button><button id="reset" title="Clear the done marks of this journey">Reset checks</button>
   </div>
-  <div>
-    <label class="cap">Stage</label>
-    <div class="row" id="stages"></div>
-  </div>
-  <div>
-    <label class="cap">Preset</label>
-    <div class="row" id="presets"></div>
-  </div>
-  <div id="detail" class="hint"></div>
-  <ol id="steps"></ol>
-  <p class="hint">Keys: ← / k previous step, → / j next step. Going to a step makes the studio window apply the step's preset and open its route.</p>
-</main>
+</footer>
 <script type="module">
 const CHANNEL = 'variants-2-0-remote'
 const CHECKS_KEY = 'variants-2-0-studio:journey-checks'
 const POS_KEY = 'variants-2-0-studio:remote-position'
 const STORYBOOK = 'https://sanity-studio-storybook-r4ildcrzv.sanity.dev'
-const STAGES = [['open-beta', 'Open beta'], ['ga', 'GA']]
+const FIGMA = 'https://www.figma.com/design/QCVhwHlQp0QfERBamuj2ey/Studio-Flows'
 const $ = (id) => document.getElementById(id)
 const newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
-const [journeys, presets] = await Promise.all([fetch('/static/journeys.json').then((r) => r.json()), fetch('/static/presets.json').then((r) => r.json())])
+const load = (url) => fetch(url).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+const [journeys, flowData] = await Promise.all([load('/static/journeys.json'), load('/static/studio-flows.json')])
+const flowById = new Map()
+for (const t of flowData?.tasks ?? []) for (const f of t.flows ?? []) flowById.set(f.id, {flow: f, task: t})
 const bc = new BroadcastChannel(CHANNEL)
 const seen = new Set()
-let status = null, lastSeen = 0
+let status = null, lastSeen = 0, lastKey = ''
 let pos = {journey: journeys[0].id, step: 0}
 try { pos = {...pos, ...JSON.parse(localStorage.getItem(POS_KEY) || '{}')} } catch {}
 const checks = () => { try { return JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}') } catch { return {} } }
 const send = (message) => bc.postMessage({id: newId(), from: 'remote', origin: location.origin, ...message})
 const journey = () => journeys.find((j) => j.id === pos.journey) ?? journeys[0]
+const flowOf = (j) => (j.flow ? flowById.get(j.flow) : undefined)
+const stepPreset = (j, s) => s.preset ?? j.id
+const pathOf = (s) => (s || '').split('?')[0]
 
+// ---- rich text: **bold** and *italic*
+function rich(text, into) {
+  for (const part of String(text ?? '').split(/(\*\*[^*]+\*\*|\*[^*]+\*)/)) {
+    if (!part) continue
+    if (part.startsWith('**')) { const b = document.createElement('b'); b.textContent = part.slice(2, -2); into.append(b) }
+    else if (part.startsWith('*')) { const i = document.createElement('i'); i.textContent = part.slice(1, -1); into.append(i) }
+    else into.append(part)
+  }
+  return into
+}
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e }
+
+// ---- studio status
 bc.onmessage = (event) => {
   const m = event.data
-  // Ignore anything that is not a studio status from this origin, and anything already handled (no feedback loop).
   if (!m || m.from !== 'studio' || m.origin !== location.origin || m.type !== 'status' || seen.has(m.id)) return
   seen.add(m.id)
   status = m
   lastSeen = Date.now()
   renderStatus()
+  followStudio()
 }
 function renderStatus() {
   const on = status && Date.now() - lastSeen < 7000
   $('conn').textContent = on ? 'Connected' : 'Not connected'
   $('conn').className = 'pill ' + (on ? 'on' : 'off')
   $('state').textContent = status ? `preset ${status.preset ?? '(custom)'} · stage ${status.stage} · ${status.path}` : 'No studio window found. Open the studio in another window of this browser.'
-  $('state').dataset.preset = status?.preset ?? ''
-  $('state').dataset.stage = status?.stage ?? ''
-  $('state').dataset.path = status?.path ?? ''
-  document.querySelectorAll('#stages button').forEach((b) => b.classList.toggle('on', !!status && status.stage === b.dataset.stage))
-  document.querySelectorAll('#presets button').forEach((b) => b.classList.toggle('on', !!status && status.preset === b.dataset.id))
+  Object.assign($('state').dataset, {preset: status?.preset ?? '', stage: status?.stage ?? '', path: status?.path ?? ''})
+}
+// When the studio moves on its own (a route or preset change that matches a walk step of this journey), follow it.
+function followStudio() {
+  if (!status) return
+  const key = `${status.preset}|${pathOf(status.path)}`
+  if (key === lastKey) return
+  lastKey = key
+  const j = journey()
+  const matches = j.steps.map((s, i) => [s, i]).filter(([s]) => pathOf(s.route) === pathOf(status.path) && stepPreset(j, s) === status.preset).map(([, i]) => i)
+  if (matches.length && !matches.includes(pos.step)) { pos.step = matches.find((i) => i > pos.step) ?? matches[0]; renderAll(false) }
 }
 setInterval(() => { send({type: 'hello'}); renderStatus() }, 2000)
 send({type: 'hello'})
 
-function go(index) {
+// ---- navigation
+function go(index, silent) {
   const j = journey()
   if (!j.steps.length) return
   pos.step = Math.max(0, Math.min(j.steps.length - 1, index))
   const step = j.steps[pos.step]
-  try { localStorage.setItem(POS_KEY, JSON.stringify(pos)) } catch {}
-  // The same as the panel's go(): the step's preset (or the journey's id), then its route.
-  send({type: 'go', preset: step.preset ?? j.id, route: step.route})
-  renderSteps()
+  lastKey = `${stepPreset(j, step)}|${pathOf(step.route)}`
+  if (!silent) send({type: 'go', preset: stepPreset(j, step), route: step.route})
+  renderAll(true)
 }
+function pickJourney(id) { pos = {journey: id, step: 0}; renderAll(true) }
 function changeJourney(delta) {
   const i = Math.max(0, Math.min(journeys.length - 1, journeys.findIndex((j) => j.id === pos.journey) + delta))
-  pos = {journey: journeys[i].id, step: 0}
-  $('journey').value = pos.journey
-  renderSteps()
+  pickJourney(journeys[i].id)
 }
-function toggle(index) {
+function setDone(index, on) {
   const c = checks(), key = `${pos.journey}:${index}`
-  c[key] = !c[key]
+  if (on) c[key] = true; else delete c[key]
   try { localStorage.setItem(CHECKS_KEY, JSON.stringify(c)) } catch {}
-  renderSteps()
-}
-function renderSteps() {
-  const j = journey(), c = checks()
-  const done = j.steps.filter((_, i) => c[`${j.id}:${i}`]).length
-  $('pos').textContent = j.steps.length ? `step ${pos.step + 1} of ${j.steps.length} · ${done} done` : 'no steps'
-  $('detail').textContent = `${j.title} · ${j.task} · ${j.persona} · ${j.stage}` + (j.components.length ? ` · ${j.components.join(', ')}` : '')
-  const list = $('steps')
-  list.replaceChildren()
-  j.steps.forEach((step, i) => {
-    const li = document.createElement('li')
-    if (i === pos.step) li.className = 'current'
-    li.dataset.step = String(i)
-    const box = document.createElement('input')
-    box.type = 'checkbox'; box.checked = !!c[`${j.id}:${i}`]; box.setAttribute('aria-label', `Step ${i + 1} done`)
-    box.addEventListener('change', () => toggle(i))
-    const body = document.createElement('div')
-    const t = document.createElement('div'); t.className = 't'; t.textContent = `${i + 1}. ${step.title}`; t.addEventListener('click', () => go(i))
-    const meta = document.createElement('div'); meta.className = 'meta'
-    meta.textContent = [step.component && `${step.component}${step.option ? ' ' + step.option : ''}`, step.preset && `preset ${step.preset}`, step.route].filter(Boolean).join(' · ')
-    body.append(t, meta)
-    li.append(box, body)
-    if (step.expect) { const e = document.createElement('div'); e.className = 'expect'; e.textContent = `Expect: ${step.expect}`; li.append(e) }
-    const acts = document.createElement('div'); acts.className = 'acts'
-    const g = document.createElement('button'); g.textContent = 'Go to step'; g.addEventListener('click', () => go(i)); acts.append(g)
-    if (step.story) { const a = document.createElement('a'); a.href = `${STORYBOOK}/?path=/story/${step.story}`; a.target = '_blank'; a.rel = 'noreferrer'; a.textContent = 'Storybook'; acts.append(a) }
-    li.append(acts)
-    list.append(li)
-  })
-  try { localStorage.setItem(POS_KEY, JSON.stringify(pos)) } catch {}
+  renderAll(false)
 }
 
-for (const j of journeys) { const o = document.createElement('option'); o.value = j.id; o.textContent = `${j.id.toUpperCase()} · ${j.title}`; $('journey').append(o) }
-$('journey').value = pos.journey
-$('journey').addEventListener('change', (e) => { pos = {journey: e.target.value, step: 0}; renderSteps() })
-$('pj').addEventListener('click', () => changeJourney(-1))
-$('nj').addEventListener('click', () => changeJourney(1))
+// ---- views
+function renderList() {
+  const list = $('list'), c = checks()
+  list.replaceChildren()
+  for (const task of [...new Set(journeys.map((j) => j.task))].sort()) {
+    list.append(el('h2', null, task))
+    for (const j of journeys.filter((x) => x.task === task)) {
+      const f = flowOf(j)
+      const b = el('button', 'jr' + (j.id === pos.journey ? ' cur' : ''))
+      b.dataset.journey = j.id
+      b.append(el('span', 'dot ' + (f?.flow.status ?? 'none')), el('span', 'id', j.id.toUpperCase()), el('span', 'tt', j.title), el('span', 'ct', `${j.steps.filter((_, i) => c[`${j.id}:${i}`]).length}/${j.steps.length}`))
+      b.addEventListener('click', () => pickJourney(j.id))
+      list.append(b)
+    }
+  }
+}
+function renderFlow(highlight) {
+  const main = $('main'), j = journey(), found = flowOf(j)
+  main.replaceChildren()
+  if (!found) {
+    main.append(el('div', 'noflow', j.flow ? `Flow ${j.flow} is not in studio-flows.json yet.` : 'No designer flow matches this journey.'))
+    return
+  }
+  const {flow, task} = found
+  const step = j.steps[pos.step]
+  const fs = step?.flowStep ?? null
+  // header
+  const chips = el('div', 'chips'); chips.append(el('span', 'cap', 'Actors'))
+  for (const a of flow.actors ?? []) chips.append(el('span', 'chip', (flowData.actors ?? []).find((x) => x.id === a)?.label ?? a))
+  main.append(chips, el('div', 'ttl', task.title))
+  const de = el('div', 'de'); de.append(el('div', 'cap', 'Desired experience'), rich(flow.desiredExperience, el('div'))); main.append(de)
+  const head = el('div', 'headline')
+  const dotColor = flow.statusColor
+  const dot = el('span', 'dot ' + (flow.status ?? 'none')); if (dotColor) dot.style.background = dotColor
+  const sc = el('span', 'scope', flow.scopeText ?? flow.scope ?? ''); sc.style.color = flow.scopeColor ?? (/GA|Generally/.test(flow.scope ?? '') ? 'var(--scope-ga)' : 'var(--scope-beta)')
+  if (!flow.scope && !flow.scopeText) sc.hidden = true
+  head.append(dot, el('h2', null, `${flow.id} · ${flow.title}`), sc); main.append(head)
+  const note = el('div', 'note'); note.append(`from Studio Flows, extracted ${flowData.extracted ?? '2026-10-20'} · `)
+  const a = el('a', null, `Figma ${flow.node}`); a.href = `${FIGMA}?node-id=${String(flow.node).replace(':', '-')}`; a.target = '_blank'; a.rel = 'noreferrer'; note.append(a)
+  if (task.review?.date) note.append(` · review ${task.review.date}${task.review.by ? ' by ' + task.review.by : ''}`)
+  main.append(note)
+  // track
+  const track = el('div', 'track'); track.dataset.testid = 'flow-track'
+  const mark = (card, kind, n) => {
+    card.dataset.kind = kind; if (n != null) card.dataset.n = String(n)
+    const isCur = fs != null && (kind === 'step' ? fs === n : fs === kind)
+    if (isCur) card.classList.add('cur')
+    else if (fs != null) {
+      const stepN = typeof fs === 'number' ? fs : null
+      if (kind === 'step') { if (stepN != null ? n < stepN : fs === 'success' || fs === 'failure') card.classList.add('past'); else card.classList.add('future') }
+      else if (kind === 'trigger') { if (fs !== 'trigger') card.classList.add('past') }
+    }
+  }
+  const pains = (at) => (flow.painPoints ?? []).filter((p) => String(p.at) === String(at)).map((p) => { const d = el('div', 'pain'); d.append('⚠ ', rich(p.text, el('span'))); if (p.quote) d.append(rich(p.quote, el('div', 'q'))); return d })
+  const unit = (card, at) => { const u = el('div', 'unit'); u.append(card, ...pains(at)); return u }
+  const trig = el('div', 'card trigger'); trig.append(el('div', 'h', 'TRIGGER')); trig.append(rich(flow.trigger, el('div', 'x'))); mark(trig, 'trigger')
+  const first = el('div', 'col'); const fc = el('div', 'cards'); fc.append(unit(trig, 'trigger')); first.append(el('div', 'phase'), fc); track.append(first)
+  const stepOf = new Map((flow.steps ?? []).map((s) => [s.n, s]))
+  const phases = flow.phases?.length ? flow.phases : [{title: '', description: '', stepNumbers: (flow.steps ?? []).map((s) => s.n)}]
+  for (const ph of phases) {
+    const col = el('div', 'col'), phase = el('div', 'phase'); phase.append(el('b', null, ph.title), el('span', null, ph.description ?? '')); col.append(phase)
+    const cards = el('div', 'cards')
+    for (const n of ph.stepNumbers ?? []) {
+      const s = stepOf.get(n); if (!s) continue
+      const c = el('div', 'card'); const h = el('div', 'h'); const l = el('span', 'cap', `STEP ${s.n}`); if (s.idea) l.append(el('span', 'tag', String(s.idea).replace(/^IDEA:?\s*/i, 'IDEA ')))
+      h.append(l); if (s.actor) h.append(el('span', 'chip', (flowData.actors ?? []).find((x) => x.id === s.actor)?.label ?? s.actor))
+      c.append(h, rich(s.text, el('div', 'x'))); if (s.surface) c.append(el('div', 's', s.surface))
+      mark(c, 'step', s.n); cards.append(unit(c, s.n))
+    }
+    col.append(cards); track.append(col)
+  }
+  const end = el('div', 'col'); end.append(el('div', 'phase')); const ec = el('div', 'cards')
+  const ok = el('div', 'card success'); ok.append(el('div', 'h', 'SUCCESS'), rich(flow.success, el('div', 'x'))); mark(ok, 'success')
+  const bad = el('div', 'card failure'); bad.append(el('div', 'h', 'FAILURE'), rich(flow.failure, el('div', 'x'))); mark(bad, 'failure')
+  const u1 = el('div', 'unit'); u1.append(ok); const u2 = el('div', 'unit'); u2.append(bad)
+  ec.append(u1, el('span', 'slash', '/'), u2); end.append(ec); track.append(end)
+  main.append(track)
+  if (fs == null) main.append(el('div', 'quiet', step ? 'This walk step does not play a designer step.' : ''))
+  if (highlight) requestAnimationFrame(() => track.querySelector('.card.cur')?.scrollIntoView({inline: 'center', block: 'nearest', behavior: 'smooth'}))
+}
+function renderDock() {
+  const j = journey(), c = checks(), step = j.steps[pos.step]
+  $('stepTitle').textContent = step ? `${pos.step + 1}/${j.steps.length}  ${step.title}` : 'This journey has no steps yet'
+  $('stepMeta').textContent = step ? [step.component && `${step.component}${step.option ? ' ' + step.option : ''}`, `preset ${stepPreset(j, step)}`, step.route].filter(Boolean).join(' · ') : ''
+  $('expect').textContent = step?.expect ? `Expect: ${step.expect}` : ''
+  $('done').checked = !!c[`${j.id}:${pos.step}`]; $('done').disabled = !step
+  const a = $('story'); a.hidden = !step?.story; if (step?.story) a.href = `${STORYBOOK}/?path=/story/${step.story}`
+  const steps = $('steps'); steps.replaceChildren()
+  j.steps.forEach((_, i) => { const b = el('button', (i === pos.step ? 'cur ' : '') + (c[`${j.id}:${i}`] ? 'done' : ''), String(i + 1)); b.dataset.step = String(i); b.addEventListener('click', () => go(i)); steps.append(b) })
+}
+function renderAll(highlight) {
+  try { localStorage.setItem(POS_KEY, JSON.stringify(pos)) } catch {}
+  renderList(); renderFlow(highlight); renderDock()
+  document.body.dataset.journey = pos.journey; document.body.dataset.step = String(pos.step)
+  document.body.dataset.flowStep = String(journey().steps[pos.step]?.flowStep ?? '')
+}
+
 $('ps').addEventListener('click', () => go(pos.step - 1))
 $('ns').addEventListener('click', () => go(pos.step + 1))
-$('reset').addEventListener('click', () => {
-  const c = checks(), j = journey()
-  j.steps.forEach((_, i) => delete c[`${j.id}:${i}`])
-  try { localStorage.setItem(CHECKS_KEY, JSON.stringify(c)) } catch {}
-  renderSteps()
-})
-for (const [id, label] of STAGES) {
-  const b = document.createElement('button'); b.textContent = label; b.dataset.stage = id
-  b.addEventListener('click', () => send({type: 'stage', stage: id}))
-  $('stages').append(b)
-}
-for (const p of presets) {
-  const b = document.createElement('button'); b.textContent = p.name; b.dataset.id = p.id; b.title = p.design
-  b.addEventListener('click', () => send({type: 'preset', preset: p.id}))
-  $('presets').append(b)
-}
+$('go').addEventListener('click', () => go(pos.step))
+$('pj').addEventListener('click', () => changeJourney(-1))
+$('nj').addEventListener('click', () => changeJourney(1))
+$('done').addEventListener('change', (e) => setDone(pos.step, e.target.checked))
+$('reset').addEventListener('click', () => { const c = checks(), j = journey(); j.steps.forEach((_, i) => delete c[`${j.id}:${i}`]); try { localStorage.setItem(CHECKS_KEY, JSON.stringify(c)) } catch {}; renderAll(false) })
+$('openOptions').addEventListener('click', () => window.open('/static/options-remote.html', 'variants-2-0-options-remote', 'popup,width=520,height=820'))
 window.addEventListener('keydown', (e) => {
   if (e.target instanceof HTMLElement && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return
   if (e.key === 'ArrowRight' || e.key === 'j') { e.preventDefault(); go(pos.step + 1) }
   else if (e.key === 'ArrowLeft' || e.key === 'k') { e.preventDefault(); go(pos.step - 1) }
 })
-window.addEventListener('storage', (e) => { if (e.key === CHECKS_KEY) renderSteps() })
-renderSteps()
+window.addEventListener('storage', (e) => { if (e.key === CHECKS_KEY) renderAll(false) })
+renderAll(true)
 renderStatus()
 </script>
 </body>

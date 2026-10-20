@@ -1,0 +1,113 @@
+{
+  "source": "SAMPLE (hand-made, same shape as studio-flows.json; replaced by the extraction)",
+  "extracted": "2026-10-20",
+  "legend": {
+    "shipped": "Shipped",
+    "partly": "Partly built",
+    "notBuilt": "Not built"
+  },
+  "actors": [
+    {
+      "id": "editor",
+      "label": "Content editor"
+    },
+    {
+      "id": "developer",
+      "label": "Developer"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T2",
+      "node": "419:2",
+      "title": "TASK 2 · CONFIGURE VARIANT DEFINITIONS",
+      "intro": "Sample.",
+      "review": {
+        "date": "",
+        "by": "",
+        "raw": ""
+      },
+      "flows": [
+        {
+          "id": "T2.1",
+          "node": "664:209",
+          "title": "An editor creates a variant definition by hand",
+          "scope": "Open beta",
+          "status": "partly",
+          "actors": [
+            "editor"
+          ],
+          "desiredExperience": "Creating a definition feels like filling in a **short form**. The editor never has to know where the data is stored.",
+          "phases": [
+            {
+              "title": "Find the tool",
+              "description": "Reach the Variants tool and see what exists.",
+              "stepNumbers": [
+                1
+              ]
+            },
+            {
+              "title": "Define",
+              "description": "Describe who the definition is for.",
+              "stepNumbers": [
+                2,
+                3
+              ]
+            },
+            {
+              "title": "Check",
+              "description": "See it in the list.",
+              "stepNumbers": [
+                4
+              ]
+            }
+          ],
+          "trigger": "A campaign needs a **new audience** that no definition covers yet.",
+          "steps": [
+            {
+              "n": 1,
+              "text": "The editor opens the **Variants** tool and reads the list of definitions.",
+              "surface": "Variants tool, overview",
+              "idea": "",
+              "phase": 1,
+              "actor": "editor"
+            },
+            {
+              "n": 2,
+              "text": "The editor chooses **New variant definition** and gives it a *title*.",
+              "surface": "Create dialog",
+              "idea": "IDEA: type owns keys",
+              "phase": 2,
+              "actor": "editor"
+            },
+            {
+              "n": 3,
+              "text": "The editor adds the **first condition**: a key and a value.",
+              "surface": "Create dialog, conditions",
+              "idea": "",
+              "phase": 2,
+              "actor": "editor"
+            },
+            {
+              "n": 4,
+              "text": "The new definition appears in the list with **0 documents**.",
+              "surface": "Variants tool, overview",
+              "idea": "",
+              "phase": 3,
+              "actor": "editor"
+            }
+          ],
+          "success": "The definition exists and can be used for variant documents.",
+          "failure": "The editor cannot tell which **keys** are allowed.",
+          "painPoints": [
+            {
+              "at": 3,
+              "text": "Free-text keys let a typo create a **new dimension**.",
+              "quote": "“I typed audiance and nothing told me.” (editor, workshop)"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

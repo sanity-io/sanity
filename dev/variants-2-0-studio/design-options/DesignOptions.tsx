@@ -503,7 +503,10 @@ function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
             <Button disabled={changedCount === 0} fontSize={1} mode="bleed" onClick={resetOverrides} padding={2} text="Reset all" />
             <Box flex={1} />
             {getConfig().links?.remote ? (
-              <Button fontSize={1} mode="bleed" onClick={() => window.open(getConfig().links!.remote, 'variants-2-0-remote', 'popup,width=520,height=820')} padding={2} text="Open remote" />
+              <Button fontSize={1} mode="bleed" onClick={() => window.open(getConfig().links!.remote, 'variants-2-0-options-remote', 'popup,width=520,height=820')} padding={2} text="Options remote" />
+            ) : null}
+            {getConfig().links?.remote ? (
+              <Button fontSize={1} mode="bleed" onClick={() => window.open(getConfig().links!.journeysRemote, 'variants-2-0-remote', 'popup,width=1200,height=800')} padding={2} text="Journeys remote" />
             ) : null}
             <Button fontSize={1} mode="bleed" onClick={copy} padding={2} text={copied ? 'Copied' : 'Copy link'} />
             <Button fontSize={1} mode="bleed" onClick={onHide} padding={2} text="Hide until refresh" />
