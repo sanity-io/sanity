@@ -465,7 +465,6 @@ import type {
   DocumentFormNode,
   DocumentGroupEvent,
   DocumentGroupInventory,
-  DocumentGroupInventoryAction,
   DocumentGroupInventoryComponents,
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
@@ -3268,9 +3267,6 @@ describe('sanity', () => {
   })
   test('DocumentGroupInventory', () => {
     expectTypeOf<typeof DocumentGroupInventory>().not.toBeNever()
-  })
-  test('DocumentGroupInventoryAction', () => {
-    expectTypeOf<typeof DocumentGroupInventoryAction>().not.toBeNever()
   })
   test('DocumentGroupInventoryComponents', () => {
     expectTypeOf<DocumentGroupInventoryComponents>().toBeObject()

@@ -8,13 +8,14 @@ import {styled, css} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../../i18n'
+import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../constants'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DocumentGroupInventoryHintPressed} from '../__telemetry__/documentGroupInventoryHint.telemetry'
 import {browserStorageAdapter, hintStatus, suppressHint} from './hintStatus'
 
 export const DocumentGroupInventoryHint: ComponentType = () => {
   const {t} = useTranslation(structureLocaleNamespace)
-  const {setIsDocumentGroupInventoryActive} = useDocumentPane()
+  const {openInspector} = useDocumentPane()
   const telemetry = useTelemetry()
   const status = useObservable(
     useMemo(() => hintStatus(browserStorageAdapter), []),
@@ -31,7 +32,7 @@ export const DocumentGroupInventoryHint: ComponentType = () => {
     <TextButton
       onClick={async () => {
         telemetry.log(DocumentGroupInventoryHintPressed)
-        setIsDocumentGroupInventoryActive(true)
+        openInspector(DOCUMENT_GROUP_INSPECTOR_NAME)
         await suppressHint(browserStorageAdapter)
       }}
     >
