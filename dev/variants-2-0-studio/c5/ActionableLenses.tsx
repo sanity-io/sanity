@@ -1,5 +1,6 @@
-import {Badge, Box, Button as SortHeaderButton, Card, Flex, Layer, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Badge, Box, Button as SortHeaderButton, Card, Flex, Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
+import {Dialog} from '../../../packages/sanity/src/ui-components/dialog/Dialog'
 import {CONTROL_HEIGHT} from '../shared/sizes'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type ReactNode, useMemo, useState} from 'react'
@@ -501,43 +502,17 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
 }
 
 /**
- * The expanded view: the same document lens at full width (about 1,112px, the spec's full surface) in an overlay above
- * the Studio. A Layer, so the confirm dialog of a bulk action opens above it. Esc or the close button returns.
+ * The expanded view: the same document lens at full width in the Studio Dialog (width 3, the 1,280px theme size; on a
+ * narrow screen the Dialog shrinks to the viewport). The Dialog brings the theme scrim, Esc and click-outside close,
+ * and its own layer, so the confirm dialog of a bulk action opens above it.
  */
 export function WideOverlay(props: {title: string; onClose: () => void; children: ReactNode}) {
   return (
-    <Layer zOffset={100}>
-      <div
-        onClick={props.onClose}
-        onKeyDown={(event) => {
-          if (event.key === 'Escape') props.onClose()
-        }}
-        role="presentation"
-        style={{alignItems: 'center', background: 'rgba(0,0,0,0.45)', display: 'flex', inset: 0, justifyContent: 'center', position: 'fixed'}}
-      >
-        <Card
-          aria-label={props.title}
-          data-testid="wide-overlay"
-          onClick={(event) => event.stopPropagation()}
-          radius={3}
-          role="dialog"
-          shadow={4}
-          style={{display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 64px)', width: 'min(1112px, calc(100vw - 48px))'}}
-        >
-          <Flex align="center" gap={2} padding={3}>
-            <Box flex={1}>
-              <Text size={1} weight="medium">
-                {props.title}
-              </Text>
-            </Box>
-            <Button mode="bleed" onClick={props.onClose} text="Close" />
-          </Flex>
-          <Box padding={4} style={{borderTop: '1px solid var(--card-border-color)', overflow: 'auto'}}>
-            {props.children}
-          </Box>
-        </Card>
-      </div>
-    </Layer>
+    <Dialog header={props.title} id="c5-wide-overlay" onClose={props.onClose} width={3}>
+      <Box data-testid="wide-overlay" padding={4}>
+        {props.children}
+      </Box>
+    </Dialog>
   )
 }
 
