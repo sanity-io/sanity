@@ -1,5 +1,5 @@
 // Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/inventory-sidepanel (PR #47), commit 310271b6e2, previously db53306896, lib/explorations/variants/inventory-concepts/VersionInventoryPanel.tsx).
+// explorations/inventory-sidepanel (PR #47), commit 40041dec04, previously 310271b6e2 and db53306896, lib/explorations/variants/inventory-concepts/VersionInventoryPanel.tsx).
 // Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
 import {DocumentVersionsStatusIndicator} from '../../../../packages/sanity/src/core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {VariantCheckbox} from '../../../../packages/sanity/src/core/documentGroupInventory/components/VariantSet/VariantCheckbox'
@@ -268,6 +268,8 @@ function FilterToggle() {
 function FilterBar({narrow}: {narrow: boolean}) {
   const {filters, removeFilter, resetFilters, world} = useInventoryConcepts()
   const clear = <Button mode="bleed" onClick={resetFilters} text="Clear filters" />
+  // Clear filters shows only while there is a filter to clear; Add filter always shows.
+  const hasFilters = filters.length > 0
   return (
     <ModeBar borderBottom testId="inventory-filter-bar">
       {/* The filters and Add filter wrap on the left; Clear filters stays on the first line, right
@@ -285,13 +287,13 @@ function FilterBar({narrow}: {narrow: boolean}) {
             />
           ))}
           <AddFilterMenu />
-          {narrow && (
+          {narrow && hasFilters && (
             <Box data-testid="inventory-filter-actions" style={{flexBasis: '100%'}}>
               {clear}
             </Box>
           )}
         </Flex>
-        {!narrow && (
+        {!narrow && hasFilters && (
           <Flex data-testid="inventory-filter-actions" gap={1} style={{flex: 'none'}}>
             {clear}
           </Flex>

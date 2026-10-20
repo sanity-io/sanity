@@ -1,5 +1,5 @@
 // Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/inventory-sidepanel (PR #47), commit 310271b6e2, previously db53306896, lib/explorations/variants/inventory-concepts/InventoryMenus.tsx).
+// explorations/inventory-sidepanel (PR #47), commit 40041dec04, previously 310271b6e2 and db53306896, lib/explorations/variants/inventory-concepts/InventoryMenus.tsx).
 // Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
 import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
 import {Dialog} from '../../../../packages/sanity/src/ui-components/dialog/Dialog'
@@ -15,6 +15,7 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {SortIcon} from '@sanity/icons/Sort'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {UserIcon} from '@sanity/icons/User'
 import {Box, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
@@ -135,26 +136,56 @@ const VIEW_MENU_LABELS: Record<InventoryView, string> = {
   priority: 'By priority for this perspective',
 }
 
-/** A saved view's ⋯ shows on hover and focus, and while its menu is open. */
+/** A saved view's trash button shows on hover and focus. */
 const SavedViewRow = styled(Flex)`
   .saved-view-actions {
     opacity: 0;
   }
   &:hover .saved-view-actions,
-  &:focus-within .saved-view-actions,
-  .saved-view-actions:has([aria-expanded='true']) {
+  &:focus-within .saved-view-actions {
     opacity: 1;
   }
 `
 
 /**
- * A saved view in the views menu, with a ⋯ that deletes it. Delete takes effect at once and offers
- * Undo in a toast, which puts the view back where it was.
+ * A saved view in the views menu, with a trash button that asks before it deletes the view
+ * (Andrej, 2026-10-20: "replace the three dot menu with a trashcan icon … There should be a
+ * confirmation dialog for this").
  */
-function SavedViewItem({saved}: {saved: SavedView}) {
-  const {savedViewId, selectSavedView, deleteSavedView} = useInventoryConcepts()
+function SavedViewItem({saved, onDelete}: {saved: SavedView; onDelete: () => void}) {
+  const {savedViewId, selectSavedView} = useInventoryConcepts()
+  return (
+    <SavedViewRow align="center" data-testid={`inventory-saved-view-${saved.id}`}>
+      <Box flex={1} style={{minWidth: 0}}>
+        <Check
+          checked={saved.id === savedViewId}
+          onClick={() => selectSavedView(saved.id)}
+          text={saved.name}
+        />
+      </Box>
+      <Box className="saved-view-actions" paddingRight={1}>
+        <Button
+          aria-label="Delete view"
+          data-testid={`inventory-saved-view-delete-${saved.id}`}
+          icon={TrashIcon}
+          mode="bleed"
+          onClick={onDelete}
+          tone="critical"
+          tooltipProps={null}
+        />
+      </Box>
+    </SavedViewRow>
+  )
+}
+
+/**
+ * Asks before a saved view goes, in Studio's small dialog. Delete takes effect at once and offers
+ * Undo in a toast, which puts the view back where it was; Cancel changes nothing.
+ */
+function DeleteViewDialog({saved, onClose}: {saved: SavedView; onClose: () => void}) {
+  const {deleteSavedView} = useInventoryConcepts()
   const toast = useToast()
-  const onDelete = () => {
+  const confirm = () => {
     const undo = deleteSavedView(saved.id)
     const toastId = `saved-view-deleted-${saved.id}`
     toast.push({
@@ -173,36 +204,18 @@ function SavedViewItem({saved}: {saved: SavedView}) {
         />
       ),
     })
+    onClose()
   }
   return (
-    <SavedViewRow align="center" data-testid={`inventory-saved-view-${saved.id}`}>
-      <Box flex={1} style={{minWidth: 0}}>
-        <Check
-          checked={saved.id === savedViewId}
-          onClick={() => selectSavedView(saved.id)}
-          text={saved.name}
-        />
-      </Box>
-      <Box className="saved-view-actions" paddingRight={1}>
-        <MenuButton
-          button={
-            <Button
-              aria-label={`Actions for ${saved.name}`}
-              icon={EllipsisHorizontalIcon}
-              mode="bleed"
-              tooltipProps={null}
-            />
-          }
-          id={`inventory-saved-view-actions-${saved.id}`}
-          menu={
-            <Menu>
-              <MenuItem onClick={onDelete} text="Delete view" tone="critical" />
-            </Menu>
-          }
-          popover={{placement: 'right-start', portal: true}}
-        />
-      </Box>
-    </SavedViewRow>
+    <Dialog
+      footer={{confirmButton: {onClick: confirm, text: 'Delete', tone: 'critical'}}}
+      header="Delete view?"
+      id="inventory-delete-view-dialog"
+      onClose={onClose}
+      width={0}
+    >
+      <Text size={1}>Delete the saved view &ldquo;{saved.name}&rdquo;?</Text>
+    </Dialog>
   )
 }
 
@@ -211,6 +224,13 @@ function SaveViewDialog({onClose}: {onClose: () => void}) {
   const {saveView} = useInventoryConcepts()
   const [name, setName] = useState('')
   const inputId = useId()
+  // The views menu hands focus back to its button as it closes, after the dialog has taken it; the
+  // Name field takes it on the next frame, so typing goes straight into it.
+  const inputRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => inputRef.current?.focus())
+    return () => cancelAnimationFrame(frame)
+  }, [])
   const trimmed = name.trim()
   const save = (event?: FormEvent) => {
     event?.preventDefault()
@@ -234,9 +254,9 @@ function SaveViewDialog({onClose}: {onClose: () => void}) {
             Name
           </Text>
           <TextInput
-            autoFocus
             id={inputId}
             onChange={(e) => setName(e.currentTarget.value)}
+            ref={inputRef}
             value={name}
           />
         </Stack>
@@ -248,6 +268,7 @@ function SaveViewDialog({onClose}: {onClose: () => void}) {
 export function ViewsMenu() {
   const {view, setView, savedViews, savedViewId, viewLabel} = useInventoryConcepts()
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState<SavedView | undefined>()
   return (
     <>
       <MenuButton
@@ -274,7 +295,7 @@ export function ViewsMenu() {
             <MenuDivider />
             <Section>Saved views</Section>
             {savedViews.map((saved) => (
-              <SavedViewItem key={saved.id} saved={saved} />
+              <SavedViewItem key={saved.id} onDelete={() => setDeleting(saved)} saved={saved} />
             ))}
             <MenuDivider />
             <Check onClick={() => setSaving(true)} text="Save current view…" />
@@ -283,6 +304,7 @@ export function ViewsMenu() {
         popover={{placement: 'bottom-start', portal: true}}
       />
       {saving && <SaveViewDialog onClose={() => setSaving(false)} />}
+      {deleting && <DeleteViewDialog onClose={() => setDeleting(undefined)} saved={deleting} />}
     </>
   )
 }

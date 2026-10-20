@@ -1,5 +1,5 @@
 // Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/inventory-sidepanel (PR #47), commit 310271b6e2, previously db53306896, lib/explorations/variants/inventory-concepts/model.tsx).
+// explorations/inventory-sidepanel (PR #47), commit 40041dec04, previously 310271b6e2 and db53306896, lib/explorations/variants/inventory-concepts/model.tsx).
 // Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
 import {PerspectiveProvider} from '../../../../packages/sanity/src/core/perspective/PerspectiveProvider'
 import {type ReleaseId} from '../../../../packages/sanity/src/core/perspective/types'
