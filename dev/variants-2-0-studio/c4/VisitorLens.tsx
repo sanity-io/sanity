@@ -238,7 +238,11 @@ function LensBody(props: {documentId: string; title: string; onClose: () => void
             fontSize={1}
             onClick={create}
             padding={2}
-            text="Create a full variant"
+            text={
+              exact
+                ? 'Create a variant for this perspective'
+                : 'Define a variant for this perspective'
+            }
           />
         </Flex>
       ) : null}

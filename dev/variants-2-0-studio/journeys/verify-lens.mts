@@ -69,7 +69,7 @@ try {
   await pick([{dim: 'audience', value: 'members'}, {dim: 'locale', value: 'de-DE'}])
   text = await lens('partial-match')
   const partial = (await p.getByTestId('lens-partial').count()) === 1
-  log(partial && (await p.getByTestId('lens-partial-prompt').count()) === 1 && /Partly matched/.test(text) && /Create a full variant/.test(text), 'partial match: the match plus a prompt to create a full variant', text)
+  log(partial && (await p.getByTestId('lens-partial-prompt').count()) === 1 && /Partly matched/.test(text) && /(Create|Define) a variant for this perspective/.test(text), 'partial match: the match plus a prompt to create a full variant', text)
   await p.getByTestId('visitor-lens-close').click()
 
   // No match: a perspective no definition names (market France + channel app, if present).
