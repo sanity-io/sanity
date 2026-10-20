@@ -28,6 +28,11 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     | ReleaseId
     | undefined
 
+  // PROPOSED (Variants 2.0 test studio): `?perspective=drafts` is how a link names the default perspective. Drafts is the absence of the param,
+  // and every consumer (`getVersionId`, the events store) throws on the string "drafts", so it is read as the default here.
+  if ((selectedPerspectiveName as string | undefined) === 'drafts')
+    selectedPerspectiveName = undefined
+
   if (!isDraftModelEnabled && typeof selectedPerspectiveName === 'undefined') {
     selectedPerspectiveName = PUBLISHED
   }
