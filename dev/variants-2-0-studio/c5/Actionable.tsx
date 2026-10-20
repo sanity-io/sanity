@@ -1,4 +1,4 @@
-import {Box, Card, Dialog, Flex, Select, Stack, Text} from '@sanity/ui'
+import {Box, Card, Checkbox, Dialog, Flex, Select, Stack, Text} from '@sanity/ui'
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useClient} from 'sanity'
@@ -75,16 +75,12 @@ export function useBulk(): BulkState {
 /** The checkbox of a row or of the header. */
 export function Check(props: {checked: boolean; onChange: () => void; label: string; indeterminate?: boolean}) {
   return (
-    <input
+    <Checkbox
       aria-label={props.label}
       checked={props.checked}
+      indeterminate={props.indeterminate}
       onChange={props.onChange}
       onClick={(e) => e.stopPropagation()}
-      ref={(el) => {
-        if (el) el.indeterminate = !!props.indeterminate
-      }}
-      style={{cursor: 'pointer', height: 16, width: 16}}
-      type="checkbox"
     />
   )
 }
