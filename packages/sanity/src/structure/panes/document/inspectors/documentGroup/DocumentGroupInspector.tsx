@@ -26,6 +26,7 @@ import {useDocumentPerspectiveList} from '../../../../hooks/useDocumentPerspecti
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
+import {documentGroupInventoryContainer} from './DocumentGroupInspector.css'
 
 const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   DocTitle,
@@ -89,7 +90,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
         onClose={onClose}
         title={t('document-group-inventory.action.manage-versions')}
       />
-      <Card flex={1} overflow="auto">
+      <Card className={documentGroupInventoryContainer} flex={1}>
         {typeof targetDocumentId !== 'undefined' && (
           <DocumentGroupInventory
             // The inventory's machines read their input once, so they must be recreated when the

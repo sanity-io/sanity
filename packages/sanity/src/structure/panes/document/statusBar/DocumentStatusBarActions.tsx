@@ -108,7 +108,6 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       <Suspense>
         <MaybeTasksFooter />
       </Suspense>
-
       {showFirstActionButton && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
