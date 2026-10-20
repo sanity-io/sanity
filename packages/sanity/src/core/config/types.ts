@@ -913,6 +913,13 @@ export interface DocumentInspectorContext extends ConfigContext {
    * The singleton definition id, if the document is configured as a singleton.
    */
   singleton?: string
+
+  /**
+   * The source's resolved beta feature configuration.
+   *
+   * @internal
+   */
+  beta?: BetaFeatures
 }
 
 /** @hidden @beta */
