@@ -27,4 +27,8 @@ ok('no published counterpart: differs from base is the top claim', claimsOf(unde
 ok('same as both: no claim', claimsOf('A', 'A', 'A', true, true).top === null)
 ok('unknown keys are the ones the schema does not know', unknownKeys({_id: 'x', title: 't', legacyNote: 'n'}, ['title']).join() === 'legacyNote')
 ok('describe reads a portable text block', describe({_type: 'block', children: [{text: 'Hello '}, {text: 'world'}]}) === 'Hello world')
+import {flatten} from '../fieldmarks/markModel.ts'
+const changes = flatten(base, cur)
+ok('flatten lists every leaf change with a way to revert it', changes.length >= 6 && changes.every((c) => c.revert), changes.map((c) => `${c.kind}:${c.label}`).join(' | '))
+ok('flatten: an added section, a removed section, a moved section, a changed field', ['added', 'removed', 'moved', 'changed'].every((k) => changes.some((c) => c.kind === k && c.label.startsWith(k === 'changed' ? 'Settings' : 'Sections') || c.kind === k)))
 process.exit(failed ? 1 : 0)

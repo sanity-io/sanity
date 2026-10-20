@@ -6,6 +6,7 @@ import {NavbarWithVariants} from './c1/NavbarWithVariants'
 import {inventoryInspector} from './c4/InventoryInspector'
 import {E9Block, E9Field, E9Input, E9Item} from './fieldmarks/E9Marks'
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
+import {ReviewSwitch, rememberStock} from './review/E9Review'
 import {schemaTypesFor} from './schemas'
 import {designSlotsTool, inventoryTool, ToolMenuWithSlots} from './slots/DesignSlotsTool'
 import {presentationGridTool} from './spike/PresentationGrid'
@@ -26,7 +27,17 @@ const variants2Options = definePlugin({
     designSlotsTool,
     ...(process.env.SANITY_STUDIO_GRID ? [presentationGridTool] : []),
   ],
-  document: {inspectors: (prev) => [...prev, inventoryInspector]},
+  // The stock Review changes inspector keeps its place; its body is the E9 panel while `reviewPanel` is B or C (A renders the stock one).
+  document: {
+    inspectors: (prev) => [
+      ...prev.map((inspector) => {
+        if (inspector.name !== 'sanity/structure/history') return inspector
+        rememberStock(inspector.component)
+        return {...inspector, component: ReviewSwitch}
+      }),
+      inventoryInspector,
+    ],
+  },
   // Field marks through the public form.components overrides: the C9 candidates (switch c9) and the E9 marks (switch fieldMarks).
   // Each wrapper renders the shipped form unchanged while its switch is A.
   form: {components: {block: E9Block, field: E9Field, input: E9Input, item: E9Item}},

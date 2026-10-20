@@ -32,6 +32,7 @@ import {
   type Seg,
   unknownKeys,
 } from './markModel'
+import {useIsSelected} from './selection'
 import {type MarkData, useMarkData} from './useMarkData'
 
 // E9 field marks (switch `fieldMarks`): A = the shipped marks (untouched), B = complete marks, C = B plus a peek.
@@ -140,8 +141,9 @@ interface MarkSpec {
 
 const BAR_CSS = `
 [data-e9-mark] { background: none; border: 0; cursor: pointer; display: flex; font: inherit; gap: 6px; padding: 0; text-align: left; }
+[data-e9-mark][data-selected] [data-e9-bar] { width: 7px; }
 [data-e9-mark]:focus-visible { outline: 2px solid var(--card-focus-ring-color); outline-offset: 1px; border-radius: 3px; }
-[data-e9-mark] [data-e9-bar] { flex: none; width: 3px; border-radius: 2px; align-self: stretch; }
+[data-e9-mark] [data-e9-bar] { flex: none; width: 3px; transition: width 120ms; border-radius: 2px; align-self: stretch; }
 [data-e9-mark] [data-e9-word] { font-size: 11px; line-height: 14px; font-weight: 600; width: ${GUTTER_WIDTH - 10}px; white-space: normal; overflow-wrap: normal; padding-top: 1px; }
 [data-testid="change-bar__marker"], [data-testid="change-bar__button"] { opacity: 0 !important; pointer-events: none !important; }
 `
@@ -257,6 +259,7 @@ function GutterMark(props: {
 }) {
   const {spec, wrapper, peek} = props
   const room = useRoom(wrapper)
+  const selected = useIsSelected(spec.path)
   const roomy = room >= MIN_WORD
   const wordWidth = Math.min(GUTTER_WIDTH - 10, room - 12)
   const [open, setOpen] = useState(false)
@@ -283,6 +286,7 @@ function GutterMark(props: {
       aria-label={spec.title}
       data-e9-mark=""
       data-kind={spec.tone}
+      data-selected={selected ? '' : undefined}
       data-testid="e9-mark"
       onClick={press}
       onFocus={focus}

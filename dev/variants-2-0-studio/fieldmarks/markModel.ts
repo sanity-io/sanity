@@ -225,3 +225,124 @@ export function unknownKeys(doc: Json, known: readonly string[]): string[] {
   if (!isObj(doc)) return []
   return Object.keys(doc).filter((k) => !k.startsWith('_') && !known.includes(k))
 }
+
+// ---- The change list (Review changes panel) --------------------------------------------------------------------------
+
+export type ChangeKind = 'changed' | 'added' | 'removed' | 'moved'
+
+/** How to undo one change: set a value at a path, unset a path, or put a removed array item back. */
+export type RevertOp =
+  | {op: 'set'; path: Seg[]; value: Json}
+  | {op: 'unset'; path: Seg[]}
+  | {op: 'insert'; path: Seg[]; item: Json; at: number}
+
+export interface Change {
+  key: string
+  path: Seg[]
+  kind: ChangeKind
+  label: string
+  before: Json
+  after: Json
+  revert: RevertOp
+}
+
+const words = (name: string) =>
+  name.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, (c) => c.toUpperCase())
+const segKey = (seg: Seg) => (typeof seg === 'object' ? `{${seg._key}}` : String(seg))
+const isKeyed = (v: Json) =>
+  Array.isArray(v) && v.some((i) => isObj(i) && typeof i._key === 'string')
+
+/** Every leaf change between `compare` and `current`, in document order, with how to revert each. Keyed array items are changes of their own. */
+export function flatten(
+  compare: Json,
+  current: Json,
+  path: Seg[] = [],
+  label: string[] = [],
+): Change[] {
+  if (deepEqual(compare, current)) return []
+  const here = (kind: ChangeKind, before: Json, after: Json, revert: RevertOp): Change => ({
+    key: path.map(segKey).join('/') || 'document',
+    path,
+    kind,
+    label: label.join(' › ') || 'Document',
+    before,
+    after,
+    revert,
+  })
+  if (compare === undefined || compare === null)
+    return [here('added', undefined, current, {op: 'unset', path})]
+  if (current === undefined || current === null)
+    return [here('removed', compare, undefined, {op: 'set', path, value: compare})]
+  if (Array.isArray(compare) && Array.isArray(current)) {
+    if (!isKeyed(compare) && !isKeyed(current)) {
+      // An array of values: one change for the whole list, reverted as a whole.
+      const t = tally(compare, current)
+      const kind: ChangeKind =
+        t.removed && !t.added
+          ? 'removed'
+          : t.added && !t.removed
+            ? 'added'
+            : t.moved && !t.added && !t.removed
+              ? 'moved'
+              : 'changed'
+      return [here(kind, compare, current, {op: 'set', path, value: compare})]
+    }
+    const m = match(compare, current)
+    const moved = movedSet(m)
+    const out: Change[] = []
+    current.forEach((item, i) => {
+      const from = m.fromCurrent[i]
+      const seg: Seg = isObj(item) && typeof item._key === 'string' ? {_key: item._key} : i
+      const itemLabel = [...label, `${describe(item)}`]
+      if (from < 0)
+        out.push({
+          key: [...path, seg].map(segKey).join('/'),
+          path: [...path, seg],
+          kind: 'added',
+          label: itemLabel.join(' › '),
+          before: undefined,
+          after: item,
+          revert: {op: 'unset', path: [...path, seg]},
+        })
+      else if (moved.has(i) && deepEqual(compare[from], item)) {
+        const ordered = [...current].sort((a, b) => {
+          const ia = m.fromCurrent[current.indexOf(a)]
+          const ib = m.fromCurrent[current.indexOf(b)]
+          return (ia < 0 ? 1e9 : ia) - (ib < 0 ? 1e9 : ib)
+        })
+        out.push({
+          key: `${[...path, seg].map(segKey).join('/')}~moved`,
+          path: [...path, seg],
+          kind: 'moved',
+          label: itemLabel.join(' › '),
+          before: from,
+          after: i,
+          revert: {op: 'set', path, value: ordered},
+        })
+      } else out.push(...flatten(compare[from], item, [...path, seg], itemLabel))
+    })
+    m.removed.forEach((index) => {
+      const item = compare[index]
+      const seg: Seg = isObj(item) && typeof item._key === 'string' ? {_key: item._key} : index
+      out.push({
+        key: `${[...path, seg].map(segKey).join('/')}~removed`,
+        path: [...path, seg],
+        kind: 'removed',
+        label: [...label, describe(item)].join(' › '),
+        before: item,
+        after: undefined,
+        revert: {op: 'insert', path, item, at: index},
+      })
+    })
+    return out
+  }
+  if (isObj(compare) && isObj(current)) {
+    const out: Change[] = []
+    for (const k of new Set([...Object.keys(compare), ...Object.keys(current)])) {
+      if (META.has(k)) continue
+      out.push(...flatten(compare[k], current[k], [...path, k], [...label, words(k)]))
+    }
+    return out
+  }
+  return [here('changed', compare, current, {op: 'set', path, value: compare})]
+}
