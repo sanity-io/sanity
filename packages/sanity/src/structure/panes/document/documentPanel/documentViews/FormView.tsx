@@ -26,6 +26,7 @@ import {useEffectEvent} from 'use-effect-event'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
+import {useDocumentTitleField} from '../useDocumentTitleField'
 import {FormHeader} from './FormHeader'
 
 interface FormViewProps {
@@ -73,6 +74,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
   const scopeId = getTargetScopeId(targetDocumentState)
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
+  const titleField = useDocumentTitleField()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.
@@ -274,6 +276,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
                   documentId={documentId}
                   schemaType={formState.schemaType}
                   title={title}
+                  onTitleClick={titleField.editable && !isReadOnly ? titleField.focus : undefined}
                 />
               </FormRow>
               <FormBuilder

@@ -74,6 +74,31 @@ test('fromString: handles deep key segments', () => {
   ])
 })
 
+test('fromString: handles key segments containing path delimiters', () => {
+  expect(fromString('body[_key=="a.b"].children')).toEqual(['body', {_key: 'a.b'}, 'children'])
+  expect(fromString('body[_key=="a]b"].children')).toEqual(['body', {_key: 'a]b'}, 'children'])
+  expect(fromString('body[_key=="a[b"][0]')).toEqual(['body', {_key: 'a[b'}, 0])
+  expect(fromString("body[_key=='v1.0.0']")).toEqual(['body', {_key: 'v1.0.0'}])
+})
+
+test('fromString: ends a key segment at the first closing quote and bracket', () => {
+  expect(fromString('foo[_key=="a"]bar[_key=="b"]')).toEqual([
+    'foo',
+    {_key: 'a'},
+    'bar',
+    {_key: 'b'},
+  ])
+  expect(fromString('refs[_key=="r"]->title')).toEqual(['refs', {_key: 'r'}, '->title'])
+})
+
+test('fromString: round-trips keys written by toString', () => {
+  const keys = ['abc', 'a.b', 'a,b', 'a;b', 'a]b', 'a[b', 'a"b', "a'b", 'a|b', 'a b', '.']
+  for (const key of keys) {
+    const path = ['body', {_key: key}, 'children', {_key: key}, 'text']
+    expect(fromString(toString(path))).toEqual(path)
+  }
+})
+
 test('toString: throws if not an array', () => {
   // @ts-expect-error
   expect(() => toString()).toThrow('Path is not an array')
