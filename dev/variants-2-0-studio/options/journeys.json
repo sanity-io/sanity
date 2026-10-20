@@ -6,10 +6,7 @@
     "stage": "Open beta",
     "persona": "editor",
     "flow": "T2.1",
-    "components": [
-      "C2",
-      "C6"
-    ],
+    "components": ["C2", "C6"],
     "steps": [
       {
         "title": "Open the Variants tool",
@@ -60,9 +57,7 @@
     "stage": "Open beta",
     "persona": "editor",
     "flow": "T2.5",
-    "components": [
-      "C6"
-    ],
+    "components": ["C6"],
     "steps": [
       {
         "title": "Open a definition",
@@ -103,12 +98,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": "T3.1",
-    "components": [
-      "C1",
-      "C3",
-      "C4",
-      "C7"
-    ],
+    "components": ["C1", "C3", "C4", "C7"],
     "steps": [
       {
         "title": "Open a base document",
@@ -169,11 +159,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": "T4.1",
-    "components": [
-      "C3",
-      "C4",
-      "C7"
-    ],
+    "components": ["C3", "C4", "C7"],
     "steps": [
       {
         "title": "Open a document list",
@@ -224,10 +210,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": "T3.2",
-    "components": [
-      "C6",
-      "C5"
-    ],
+    "components": ["C6", "C5"],
     "steps": [
       {
         "title": "Open a definition in the Variants tool",
@@ -278,10 +261,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": "T4.2",
-    "components": [
-      "C1",
-      "C2"
-    ],
+    "components": ["C1", "C2"],
     "steps": [
       {
         "title": "Open the version menu",
@@ -342,9 +322,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": "T4.4",
-    "components": [
-      "C1"
-    ],
+    "components": ["C1"],
     "steps": [
       {
         "title": "Open Presentation",
@@ -385,9 +363,7 @@
     "stage": "Open beta",
     "persona": "editor",
     "flow": "T2.6",
-    "components": [
-      "C5"
-    ],
+    "components": ["C5"],
     "steps": [
       {
         "title": "Open Inventory, View by Dimension",
@@ -428,10 +404,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": "T5.2",
-    "components": [
-      "C1",
-      "C7"
-    ],
+    "components": ["C1", "C7"],
     "steps": [
       {
         "title": "Open View by Visitor",
@@ -472,10 +445,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": "T6.1",
-    "components": [
-      "C3",
-      "C4"
-    ],
+    "components": ["C3", "C4"],
     "steps": [
       {
         "title": "Open the variant version as its own document",
@@ -526,10 +496,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": "T6.3",
-    "components": [
-      "C6",
-      "C5"
-    ],
+    "components": ["C6", "C5"],
     "steps": [
       {
         "title": "Open a definition",
@@ -580,9 +547,7 @@
     "stage": "Open beta",
     "persona": "editor",
     "flow": "T7.1",
-    "components": [
-      "C6"
-    ],
+    "components": ["C6"],
     "steps": [
       {
         "title": "Open a definition with no documents",
@@ -623,10 +588,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": "T8.2",
-    "components": [
-      "C3",
-      "C4"
-    ],
+    "components": ["C3", "C4"],
     "steps": [
       {
         "title": "Open the draft variant version as its own document",
@@ -677,10 +639,7 @@
     "stage": "Open beta",
     "persona": "content editor",
     "flow": null,
-    "components": [
-      "C3",
-      "C7"
-    ],
+    "components": ["C3", "C7"],
     "steps": [
       {
         "title": "Open a variant version as its own document",
@@ -731,6 +690,154 @@
         "expect": "The marks show in the narrow document pane without clipping.",
         "story": "explorations-variants-2-0-field-marks-narrow-pane--narrow-pane",
         "flowStep": null
+      }
+    ]
+  },
+  {
+    "id": "e9-1",
+    "task": "E9",
+    "title": "Keep one document at another version while the studio moves on (local perspective)",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": null,
+    "components": ["E9"],
+    "steps": [
+      {
+        "title": "A reference opens beside the book, on its own perspective",
+        "component": "Pane address",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/book;book-lighthouse;author-maren-halvorsen,type=author,localPerspective=published,localVariant=aud-members?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The author pane names its address ('differs') and offers Follow global perspective; the book pane names nothing."
+      },
+      {
+        "title": "The global perspective changes; the local one is held",
+        "component": "Pane address",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=published,localVariant=aud-members?perspective=drafts&variant=aud-students",
+        "expect": "The second pane still shows Members; the row still says differs."
+      },
+      {
+        "title": "One action returns the pane to the global perspective",
+        "component": "Pane address",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=published,localVariant=aud-members?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Follow global perspective removes the row and the pane follows the Showing row again."
+      }
+    ]
+  },
+  {
+    "id": "e9-2",
+    "task": "E9",
+    "title": "Compare a variant with another address (one dimension)",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": null,
+    "components": ["E9"],
+    "steps": [
+      {
+        "title": "Open beside, Returning visitors against Members",
+        "component": "Compare",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=drafts,localVariant=aud-members?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "One header: Comparing variants, Showing and Against, N changes in M fields, Copy link, Close comparison."
+      },
+      {
+        "title": "Same variant, Published against Drafts",
+        "component": "Compare",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=published,localVariant=aud-returning-visitors?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The title reads: Seeing what changed since Published."
+      },
+      {
+        "title": "Two dimensions differ: refused, with the way back",
+        "component": "Compare",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-visitors;e9-visitors,localPerspective=published,localVariant=aud-members?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The header says Open beta compares one dimension at a time and offers one click back."
+      },
+      {
+        "title": "No version at the Against address",
+        "component": "Compare",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Case;e9-danish;e9-danish,localPerspective=drafts,localVariant=loc-da-dk?perspective=drafts",
+        "expect": "The header says no version here and offers Create Danish; nothing is written until then."
+      }
+    ]
+  },
+  {
+    "id": "e9-3",
+    "task": "E9",
+    "title": "Review what changed before publishing (Review changes panel and field marks)",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": null,
+    "components": ["E9"],
+    "steps": [
+      {
+        "title": "A draft of a variant: one mark per field, roll-up counts",
+        "component": "Field marks",
+        "option": "B",
+        "preset": "e9-c",
+        "route": "/structure/fieldMarksTest;fm-2?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Purple Changed bars, N changed inside on containers, Added, Moved and Removed on items, an unknown-field note, a roll-up on the collapsed Advanced field set."
+      },
+      {
+        "title": "Press a mark: before and after",
+        "component": "Field marks",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/fieldMarksTest;fm-2?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The peek shows before, after, the author and Open comparison."
+      },
+      {
+        "title": "The panel: Showing, Against, Revert with Undo",
+        "component": "Review panel",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/fieldMarksTest;fm-2?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Open History from the pane menu: Showing and Against rows, counterparts limited to one move, Revert per change with Undo, Open full view."
+      }
+    ]
+  },
+  {
+    "id": "e9-4",
+    "task": "E9",
+    "title": "Review many documents for one variant (list)",
+    "stage": "Open beta",
+    "persona": "editor",
+    "flow": null,
+    "components": ["E9"],
+    "steps": [
+      {
+        "title": "The grouped list says which documents have the variant, and which differ",
+        "component": "List",
+        "option": "B",
+        "preset": "e9-b",
+        "route": "/structure/e9Set?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Has variant (10) and No variant (3); Returning visitors against Base: 7 of 10 differ; a Differs word on seven rows."
+      },
+      {
+        "title": "Walk the pass held in the list",
+        "component": "Review pass",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Set?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "Review Returning visitors opens the first differing document as a comparison: Document 1 of 7 that differ, Next changed document, End review, Esc."
+      },
+      {
+        "title": "Open a version beside from the list",
+        "component": "List flyout",
+        "option": "C",
+        "preset": "e9-c",
+        "route": "/structure/e9Set?perspective=drafts&variant=aud-returning-visitors",
+        "expect": "The chevron lists the versions with Open beside; Cmd-click a row opens it beside."
       }
     ]
   }
