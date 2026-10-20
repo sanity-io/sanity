@@ -2355,6 +2355,61 @@
         "class": "even"
       },
       "caption": "No banner in Drafts; a hint in the pane header. Banner only in Published and releases."
+    },
+    "c3.d": {
+      "size": [200, 100],
+      "generic": {
+        "shapes": [
+          {
+            "kind": "box",
+            "x": 30,
+            "y": 14,
+            "w": 60,
+            "h": 6
+          },
+          {
+            "kind": "box",
+            "x": 36,
+            "y": 24,
+            "w": 54,
+            "h": 8
+          },
+          {
+            "kind": "box",
+            "x": 36,
+            "y": 36,
+            "w": 54,
+            "h": 8
+          },
+          {
+            "kind": "box",
+            "x": 30,
+            "y": 52,
+            "w": 60,
+            "h": 6
+          },
+          {
+            "kind": "box",
+            "x": 36,
+            "y": 62,
+            "w": 54,
+            "h": 8
+          },
+          {
+            "kind": "box",
+            "x": 36,
+            "y": 74,
+            "w": 54,
+            "h": 8
+          }
+        ]
+      },
+      "name": "D · Grouped list",
+      "status": {
+        "text": "candidate",
+        "class": "even"
+      },
+      "caption": "The list in two sections when a perspective is active: Has variant, No variant."
     }
   }
 }

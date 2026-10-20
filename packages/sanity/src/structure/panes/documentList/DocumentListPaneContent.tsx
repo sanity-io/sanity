@@ -21,6 +21,10 @@ import {Flex, Box} from 'ui5'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
+import {
+  DOCUMENT_LIST_SECTION_TYPE,
+  useDocumentListArrange,
+} from '../../components/paneItem/DocumentListArrange'
 import {PaneItem} from '../../components/paneItem/PaneItem'
 import {structureLocaleNamespace} from '../../i18n'
 import {FULL_LIST_LIMIT} from './constants'
@@ -108,6 +112,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   } = props
 
   const schema = useSchema()
+  // PROPOSED: the host may reorder the rows and add section rows (C3 option D, see DocumentListArrange).
+  const arranged = useDocumentListArrange(items)
+  const listItems = arranged?.items ?? items
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
@@ -135,11 +142,14 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
   const renderItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
     (item, {activeIndex}) => {
+      if (arranged && item._type === DOCUMENT_LIST_SECTION_TYPE) {
+        return arranged.renderSection(item as DocumentListPaneItem)
+      }
       const publishedId = getPublishedId(item._id)
       const isSelected = childItemId === publishedId
       const pressed = !isActive && isSelected
       const selected = isActive && isSelected
-      const isLastItem = activeIndex === items.length - 1
+      const isLastItem = activeIndex === listItems.length - 1
       const showSpinner = isLastItem && isLazyLoading
       const showMaxItemsMessage = isLastItem && hasMaxItems
 
@@ -170,9 +180,10 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       )
     },
     [
+      arranged,
       childItemId,
       isActive,
-      items.length,
+      listItems.length,
       layout,
       schema,
       showIcons,
@@ -293,7 +304,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             canReceiveFocus
             inputElement={searchInputElement}
             itemHeight={51}
-            items={items}
+            items={listItems}
             onEndReached={handleEndReached}
             onlyShowSelectionWhenActive
             overscan={10}
@@ -316,6 +327,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     isLoading,
     isRetrying,
     items,
+    listItems,
     layout,
     loadingVariant,
     muted,

@@ -4,11 +4,11 @@ import {structureTool} from 'sanity/structure'
 
 import {NavbarWithVariants} from './c1/NavbarWithVariants'
 import {inventoryInspector} from './c4/InventoryInspector'
+import {BlockWithMark, FieldWithRemovedNote} from './fieldmarks/FieldMarkCandidates'
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
 import {schemaTypesFor} from './schemas'
-import {BlockWithMark, FieldWithRemovedNote} from './fieldmarks/FieldMarkCandidates'
-import {presentationGridTool} from './spike/PresentationGrid'
 import {designSlotsTool, inventoryTool, ToolMenuWithSlots} from './slots/DesignSlotsTool'
+import {presentationGridTool} from './spike/PresentationGrid'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'ppsg7ml5'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
@@ -21,11 +21,21 @@ const previewPath = previewOrigin.endsWith(':3334') ? '/variants-preview.html?ro
 const variants2Options = definePlugin({
   name: 'variants-2-0-options',
   // SPIKE: SANITY_STUDIO_GRID=1 adds the separate "Presentation grid" tool (not part of the designs).
-  tools: [inventoryTool, designSlotsTool, ...(process.env.SANITY_STUDIO_GRID ? [presentationGridTool] : [])],
+  tools: [
+    inventoryTool,
+    designSlotsTool,
+    ...(process.env.SANITY_STUDIO_GRID ? [presentationGridTool] : []),
+  ],
   document: {inspectors: (prev) => [...prev, inventoryInspector]},
   // CANDIDATE field marks (C9), through the public form.components overrides.
   form: {components: {block: BlockWithMark, field: FieldWithRemovedNote}},
-  studio: {components: {layout: LayoutWithFloatingOptions, navbar: NavbarWithVariants, toolMenu: ToolMenuWithSlots}},
+  studio: {
+    components: {
+      layout: LayoutWithFloatingOptions,
+      navbar: NavbarWithVariants,
+      toolMenu: ToolMenuWithSlots,
+    },
+  },
 })
 
 export default defineConfig({

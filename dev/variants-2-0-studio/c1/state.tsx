@@ -1,7 +1,17 @@
-import {createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {useActiveReleases, usePerspective, useSetPerspective, useSetVariant} from 'sanity'
 import {useRouterState} from 'sanity/router'
 
+import {ListArrangeProvider} from '../c3/groupedList'
+import {useStableEvent} from '../shared/useStableEvent'
 import {type Chosen, type DimensionSpec, valueTitle} from './model'
 import {useDimensions, useVariantDefinitions} from './world'
 
@@ -58,36 +68,47 @@ export function PerspectiveProvider({children}: {children: ReactNode}) {
   // The router's sticky `variant` param is the context that travels between tools (and survives a reload or a new tab).
   // When it names a definition the bar does not show yet, the bar takes that definition's values and opens its row, so
   // Presentation, Structure and the rest all show the same bar for the same context.
-  useEffect(() => {
-    if (!selectedVariantName) return
-    const id = selectedVariantName.replace(/^_\.variants\./, '')
-    const definition = definitions.find((v) => v._id.replace(/^_\.variants\./, '') === id)
+  const readParam = useStableEvent((name: string | undefined, defs: typeof definitions) => {
+    if (!name) return
+    const id = name.replace(/^_\.variants\./, '')
+    const definition = defs.find((v) => v._id.replace(/^_\.variants\./, '') === id)
     if (!definition) return
-    const same = Object.keys(definition.conditions).length === Object.keys(chosen).length && Object.entries(definition.conditions).every(([k, v]) => chosen[k] === v)
+    const same =
+      Object.keys(definition.conditions).length === Object.keys(chosen).length &&
+      Object.entries(definition.conditions).every(([k, v]) => chosen[k] === v)
     if (same) return
     setChosen({...definition.conditions})
     setRowShown(true)
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- only a change of the param or the definitions re-reads it
-  }, [selectedVariantName, definitions])
+  })
+  useEffect(() => {
+    readParam(selectedVariantName, definitions)
+  }, [selectedVariantName, definitions, readParam])
 
   // The other way: in Presentation the preview reads the router's variant param, so the bar's choice is written to it.
   // (Structure keeps reading the bar's own state; the param is the same context, shared by every tool.)
+  const writeParam = useStableEvent(
+    (own: Chosen, inTool: string | undefined, defs: typeof definitions) => {
+      if (inTool !== 'presentation') return
+      const entries = Object.entries(own)
+      const exact = entries.length
+        ? defs.find((v) => {
+            const conditions = Object.entries(v.conditions)
+            return (
+              conditions.length === entries.length &&
+              conditions.every(([name, key]) => own[name] === key)
+            )
+          })
+        : undefined
+      const wanted = exact?._id.replace(/^_\.variants\./, '')
+      const current = selectedVariantName?.replace(/^_\.variants\./, '')
+      if (entries.length && !exact) return
+      if (wanted === current) return
+      setVariantParam({variantId: exact?._id as never})
+    },
+  )
   useEffect(() => {
-    if (tool !== 'presentation') return
-    const entries = Object.entries(chosen)
-    const exact = entries.length
-      ? definitions.find((v) => {
-          const own = Object.entries(v.conditions)
-          return own.length === entries.length && own.every(([name, key]) => chosen[name] === key)
-        })
-      : undefined
-    const wanted = exact?._id.replace(/^_\.variants\./, '')
-    const current = selectedVariantName?.replace(/^_\.variants\./, '')
-    if (entries.length && !exact) return
-    if (wanted === current) return
-    setVariantParam({variantId: exact?._id as never})
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- a change of the choice, the tool or the definitions
-  }, [chosen, tool, definitions])
+    writeParam(chosen, tool, definitions)
+  }, [chosen, tool, definitions, writeParam])
 
   const version: VersionId = selectedPerspectiveName ?? 'drafts'
   const setVersion = useCallback((next: VersionId) => setPerspective(next), [setPerspective])
@@ -110,9 +131,17 @@ export function PerspectiveProvider({children}: {children: ReactNode}) {
       setPending,
       dimensions,
       versionLabel,
-      valueTitles: dimensions.filter((d) => chosen[d.name]).map((d) => valueTitle(d, chosen[d.name])),
+      valueTitles: dimensions
+        .filter((d) => chosen[d.name])
+        .map((d) => valueTitle(d, chosen[d.name])),
     }),
     [version, setVersion, chosen, rowShown, pending, dimensions, versionLabel],
   )
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>
+  return (
+    <Ctx.Provider value={value}>
+      <ListArrangeProvider chosen={chosen} definitions={definitions}>
+        {children}
+      </ListArrangeProvider>
+    </Ctx.Provider>
+  )
 }

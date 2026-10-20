@@ -16,6 +16,8 @@ export type Stage = string
 export type RowLayout = 'left' | 'actionsRight' | 'centered'
 export type PillWhenOpen = 'summary' | 'versionCount'
 export type ToastAction = 'button' | 'link'
+export type ListWhenPerspective = 'grouped' | 'sorted'
+export type PriorityView = 'hide' | 'show'
 
 export interface State {
   global: GlobalChoice
@@ -31,6 +33,10 @@ export interface State {
   pillWhenOpen: PillWhenOpen
   /** How a result toast shows its action: a filled `button` at the bottom right (default) or a `link` under the message. Global like the shape. */
   toastAction: ToastAction
+  /** C3 option D, with a perspective active: the list in two sections (`grouped`, the default) or with the matching documents first (`sorted`). */
+  listWhenPerspective: ListWhenPerspective
+  /** Open beta scope: the inventory panel's Priority view is `hide`n (the default) or `show`n. */
+  priorityView: PriorityView
   /** The preset this config started from (null = none). The config is "modified" when it no longer equals it. */
   preset: string | null
 }
@@ -49,6 +55,8 @@ function defaults(): State {
     rowLayout: 'actionsRight',
     pillWhenOpen: 'versionCount',
     toastAction: 'button',
+    listWhenPerspective: 'grouped',
+    priorityView: 'hide',
     preset: null,
   }
 }
@@ -68,6 +76,8 @@ export function serializeDesign(current: State): string {
   if (current.rowLayout !== 'actionsRight') parts.push(`rowlayout.${current.rowLayout}`)
   if (current.pillWhenOpen !== 'versionCount') parts.push('pill.summary')
   if (current.toastAction !== 'button') parts.push('toast.link')
+  if (current.listWhenPerspective !== 'grouped') parts.push('list.sorted')
+  if (current.priorityView !== 'hide') parts.push('priority.show')
   for (const [component, option] of Object.entries(current.overrides).sort(([a], [b]) =>
     a.localeCompare(b),
   ))
@@ -89,6 +99,10 @@ export function parseDesign(value: string): State | null {
       if (val === 'box') next.shape = 'box'
     } else if (key === 'rowlayout') {
       if (val === 'left' || val === 'centered') next.rowLayout = val
+    } else if (key === 'list') {
+      if (val === 'sorted') next.listWhenPerspective = 'sorted'
+    } else if (key === 'priority') {
+      if (val === 'show') next.priorityView = 'show'
     } else if (key === 'toast') {
       if (val === 'link') next.toastAction = 'link'
     } else if (key === 'pill') {
@@ -176,6 +190,8 @@ export function isModified(current: State = state ?? defaults()): boolean {
       rowLayout: 'actionsRight',
       pillWhenOpen: 'versionCount',
       toastAction: 'button',
+      listWhenPerspective: 'grouped',
+      priorityView: 'hide',
     }) !== normalise(preset.design)
   )
 }
@@ -257,6 +273,14 @@ export function setRowLayout(rowLayout: RowLayout) {
   commit({...current(), rowLayout})
 }
 
+export function setListWhenPerspective(listWhenPerspective: ListWhenPerspective) {
+  commit({...current(), listWhenPerspective})
+}
+
+export function setPriorityView(priorityView: PriorityView) {
+  commit({...current(), priorityView})
+}
+
 export function setToastAction(toastAction: ToastAction) {
   commit({...current(), toastAction})
 }
@@ -332,6 +356,8 @@ export function applyPreset(id: string) {
       rowLayout: current().rowLayout,
       pillWhenOpen: current().pillWhenOpen,
       toastAction: current().toastAction,
+      listWhenPerspective: current().listWhenPerspective,
+      priorityView: current().priorityView,
       preset: preset.id,
     })
 }

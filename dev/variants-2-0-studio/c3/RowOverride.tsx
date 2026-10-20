@@ -2,9 +2,10 @@ import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 import {type UseDocumentListItemOverride} from 'sanity/structure'
 
+import {usePerspectiveMatch} from '../data/match'
 import {useVersionList} from '../data/useVersionList'
-import {PageVersionLabel, pageVersion, usePresentationAudience} from '../presentation/pageVersion'
 import {STOCK_OPTION, useOption} from '../options/store'
+import {PageVersionLabel, pageVersion, usePresentationAudience} from '../presentation/pageVersion'
 import {baseDot, hasMoreThanBase} from './types'
 import {VersionMark, type VersionPick} from './VersionMark'
 
@@ -33,6 +34,7 @@ export const useRowOverride: UseDocumentListItemOverride = ({
   const versions = useVersionList(documentId, !stock)
   const router = useRouter()
   const audience = usePresentationAudience('presentation')
+  const perspective = usePerspectiveMatch()
 
   // v2/C rows: a click on a picked version opens that document.
   const openDocument = useCallback(
@@ -52,13 +54,28 @@ export const useRowOverride: UseDocumentListItemOverride = ({
   if (versions === null) return {status: SLOT, tooltip: null}
   // In Presentation with an audience chosen, the row says which version that audience gets (P2).
   if (audience) {
-    return {status: <PageVersionLabel version={pageVersion(versions, audience.variantId, audience.title, audience.perspective)} />, tooltip: null}
+    return {
+      status: (
+        <PageVersionLabel
+          version={pageVersion(versions, audience.variantId, audience.title, audience.perspective)}
+        />
+      ),
+      tooltip: null,
+    }
   }
   if (versions.length === 0 || (!SHOW_ON_EVERY_ROW && !hasMoreThanBase(versions))) {
     return {status: defaultStatus, tooltip: null}
   }
 
-  const dot = baseDot(versions)
+  // One indicator, reactive to the perspective (call of 20 Oct). With no perspective it is the base document's state: one icon, the draft over the
+  // published one, and none when the document exists only in a release. With a perspective the state dot goes and a diamond marks only the
+  // documents that have a variant matching it. Option D says it with sections instead, so its rows carry no diamond.
+  const dot: 'published' | 'draft' | 'variant' | null = !perspective.active
+    ? baseDot(versions)
+    : option !== 'd' &&
+        perspective.best(versions.flatMap((v) => (v.variantId ? [v.variantId] : [])))
+      ? 'variant'
+      : null
 
   if (option === 'b') {
     // v2: the flyout. Clickable rows, and the popover stays open while the pointer travels to it.

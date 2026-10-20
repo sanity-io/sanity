@@ -31,9 +31,9 @@ import {createPortal} from 'react-dom'
 
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {ToastPreviews} from '../toasts/ToastPreviews'
 import {getConfig, NOT_DRAWN_LABEL} from './config'
 import {OptionDiagram, SpecDiagram} from './diagram'
-import {ToastPreviews} from '../toasts/ToastPreviews'
 import {PresetBar} from './PresetBar'
 import {
   designLink,
@@ -48,6 +48,8 @@ import {
   setOverride,
   setPillWhenOpen,
   setRowLayout,
+  setListWhenPerspective,
+  setPriorityView,
   setToastAction,
   setShape,
   setStage,
@@ -330,7 +332,8 @@ function LinkButton(props: {
 
 /** A Storybook link that cannot end on Storybook's error page: a missing story opens the nearest valid one, with a note. */
 function StoryLink({id}: {id: string}) {
-  const {shape, rowLayout, pillWhenOpen, toastAction} = useOptionState()
+  const {shape, rowLayout, pillWhenOpen, toastAction, listWhenPerspective, priorityView} =
+    useOptionState()
   const [ids, setIds] = useState<string[] | null>(null)
   useEffect(() => {
     let alive = true
@@ -343,7 +346,7 @@ function StoryLink({id}: {id: string}) {
   const target = missing ? (nearestStory(id, ids) ?? id) : id
   return (
     <LinkButton
-      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape};rowLayout:${rowLayout};pillWhenOpen:${pillWhenOpen};toastAction:${toastAction}`}
+      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape};rowLayout:${rowLayout};pillWhenOpen:${pillWhenOpen};toastAction:${toastAction};listWhenPerspective:${listWhenPerspective};priorityView:${priorityView}`}
       label={missing ? 'Storybook (moved)' : 'Storybook'}
       moved={missing}
       testId="story-link"
@@ -725,6 +728,26 @@ function SettingsGroups({
           'World',
           <>
             {control(
+              'Priority view (open beta scope)',
+              <Segmented
+                ariaLabel="Priority view"
+                onChange={(value) => setPriorityView(value)}
+                options={[
+                  {
+                    value: 'hide',
+                    label: 'Hide',
+                    title: 'Open beta scope: the inventory panel has no Priority view',
+                  },
+                  {
+                    value: 'show',
+                    label: 'Show',
+                    title: "Andrej's Priority view stays in the views list",
+                  },
+                ]}
+                value={state.priorityView}
+              />,
+            )}
+            {control(
               'Stage',
               <Segmented
                 ariaLabel="Stage"
@@ -817,10 +840,39 @@ function SettingsGroups({
                     ariaLabel="Toast action"
                     onChange={(value) => setToastAction(value)}
                     options={[
-                      {value: 'button', label: 'Button', title: 'A filled button at the bottom right of the toast'},
-                      {value: 'link', label: 'Link', title: 'An underlined text link under the message'},
+                      {
+                        value: 'button',
+                        label: 'Button',
+                        title: 'A filled button at the bottom right of the toast',
+                      },
+                      {
+                        value: 'link',
+                        label: 'Link',
+                        title: 'An underlined text link under the message',
+                      },
                     ]}
                     value={state.toastAction}
+                  />,
+                )}
+                {control(
+                  'List when a perspective is active',
+                  <Segmented
+                    ariaLabel="List when a perspective is active"
+                    onChange={(value) => setListWhenPerspective(value)}
+                    options={[
+                      {
+                        value: 'grouped',
+                        label: 'Grouped',
+                        title:
+                          'C3 option D: two sections, Has variant and No variant for this perspective',
+                      },
+                      {
+                        value: 'sorted',
+                        label: 'Sorted',
+                        title: 'C3 option D: the documents that match come first, no sections',
+                      },
+                    ]}
+                    value={state.listWhenPerspective}
                   />,
                 )}
               </>,
@@ -990,70 +1042,70 @@ function ConfigBody({
             <ToastPreviews />
           </Box>
         ) : (
-        <Box flex={1} padding={3} style={{overflow: 'auto'}}>
-          <Stack gap={3}>
-            <Stack gap={1}>
-              <Flex align="baseline" gap={3}>
-                <Box flex={1}>
-                  <Text size={2} weight="medium">
-                    {selected.title}
-                  </Text>
-                </Box>
-                {getConfig().links?.storybookBase ? (
-                  <Text
-                    data-testid="storybook-base"
-                    muted
-                    size={0}
-                    title={getConfig().links?.storybookBase}
-                  >
-                    Storybook base: {storybookBaseLabel(getConfig().links?.storybookBase)}
-                  </Text>
-                ) : null}
-              </Flex>
-              <Text muted size={0}>
-                {stock
-                  ? 'Stock Studio is showing; pick A, B, C in Options for all to compare.'
-                  : fellBack(selected, state)
-                    ? `Showing ${active.toUpperCase()}, fallback: Options for all asks for a letter this component does not have.`
-                    : `Showing option ${active.toUpperCase()}. Click a card to apply it.`}
-              </Text>
+          <Box flex={1} padding={3} style={{overflow: 'auto'}}>
+            <Stack gap={3}>
+              <Stack gap={1}>
+                <Flex align="baseline" gap={3}>
+                  <Box flex={1}>
+                    <Text size={2} weight="medium">
+                      {selected.title}
+                    </Text>
+                  </Box>
+                  {getConfig().links?.storybookBase ? (
+                    <Text
+                      data-testid="storybook-base"
+                      muted
+                      size={0}
+                      title={getConfig().links?.storybookBase}
+                    >
+                      Storybook base: {storybookBaseLabel(getConfig().links?.storybookBase)}
+                    </Text>
+                  ) : null}
+                </Flex>
+                <Text muted size={0}>
+                  {stock
+                    ? 'Stock Studio is showing; pick A, B, C in Options for all to compare.'
+                    : fellBack(selected, state)
+                      ? `Showing ${active.toUpperCase()}, fallback: Options for all asks for a letter this component does not have.`
+                      : `Showing option ${active.toUpperCase()}. Click a card to apply it.`}
+                </Text>
+              </Stack>
+              <div
+                role="radiogroup"
+                style={{
+                  display: 'grid',
+                  gap: 12,
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 350px))',
+                }}
+              >
+                {selected.options.map((option, index) => (
+                  <OptionCard
+                    chosen={!stock && option.id === active}
+                    component={selected}
+                    key={option.id}
+                    letter={LETTERS[index]}
+                    option={option}
+                    stock={stock}
+                  />
+                ))}
+              </div>
+              {frameKeys(selected).length ? (
+                <Flex>
+                  <Button
+                    aria-pressed={framesOn}
+                    data-testid="frames-toggle"
+                    fontSize={1}
+                    mode="bleed"
+                    onClick={() => setFramesOn((v) => !v)}
+                    padding={2}
+                    style={{height: 31}}
+                    text={framesOn ? 'Hide frame previews' : 'Show frame previews'}
+                  />
+                </Flex>
+              ) : null}
+              {framesOn ? <FramesGallery component={selected} /> : null}
             </Stack>
-            <div
-              role="radiogroup"
-              style={{
-                display: 'grid',
-                gap: 12,
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 350px))',
-              }}
-            >
-              {selected.options.map((option, index) => (
-                <OptionCard
-                  chosen={!stock && option.id === active}
-                  component={selected}
-                  key={option.id}
-                  letter={LETTERS[index]}
-                  option={option}
-                  stock={stock}
-                />
-              ))}
-            </div>
-            {frameKeys(selected).length ? (
-              <Flex>
-                <Button
-                  aria-pressed={framesOn}
-                  data-testid="frames-toggle"
-                  fontSize={1}
-                  mode="bleed"
-                  onClick={() => setFramesOn((v) => !v)}
-                  padding={2}
-                  style={{height: 31}}
-                  text={framesOn ? 'Hide frame previews' : 'Show frame previews'}
-                />
-              </Flex>
-            ) : null}
-            {framesOn ? <FramesGallery component={selected} /> : null}
-          </Stack>
-        </Box>
+          </Box>
         )}
       </Flex>
 

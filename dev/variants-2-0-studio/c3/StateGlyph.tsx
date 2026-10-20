@@ -1,10 +1,11 @@
+import {type CSSProperties} from 'react'
+
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit 9748ea43e0, lib/explorations/variants-2-0/mark/StateGlyph.tsx).
 // Only the imports differ from the original (they point at this monorepo and ./types).
 import {CircleSmallIcon} from '../../../packages/sanity/src/core/components/temporary-icons/CircleSmall'
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {RingIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Ring'
-
-import {type CSSProperties} from 'react'
 
 /**
  * The glyph of the state dot on its own: the green disc (published) or the amber ring (draft), the
@@ -12,13 +13,15 @@ import {type CSSProperties} from 'react'
  * icon, so it takes its size from the `Text` or `Button` that holds it.
  */
 /** The states a dot can show. `release` is the suggest-tone disc; `absent` is a muted ring (no version here). */
-export type StateKind = 'published' | 'draft' | 'release' | 'absent'
+export type StateKind = 'published' | 'draft' | 'release' | 'absent' | 'variant'
 
 const COLOR: Record<StateKind, string> = {
   published: 'var(--card-badge-positive-dot-color)',
   draft: 'var(--card-badge-caution-dot-color)',
   release: 'var(--card-badge-suggest-dot-color)',
   absent: 'var(--card-muted-fg-color)',
+  // The diamond: the same mark as the field marks, the inventory and the C1 row. In the list it says "this document has a variant for the chosen perspective".
+  variant: 'var(--card-badge-suggest-dot-color)',
 }
 
 export function StateGlyph({
@@ -39,7 +42,12 @@ export function StateGlyph({
     'marginRight': gap,
     ...(size ? {width: size, height: size, flex: 'none', margin: 0} : {}),
   } as CSSProperties
-  return state === 'published' || state === 'release' ? <CircleSmallIcon style={style} /> : <RingIcon style={style} />
+  if (state === 'variant') return <RhombusIcon style={style} />
+  return state === 'published' || state === 'release' ? (
+    <CircleSmallIcon style={style} />
+  ) : (
+    <RingIcon style={style} />
+  )
 }
 
 /** The disc fills about a quarter of the icon box, so a 32px box draws the 8px dot of the old hand-drawn one, centred in a 12px slot. */
@@ -49,7 +57,17 @@ const DOT_SLOT = 12
 /** The dot of a row label: the real glyph at the 8px size of the old hand-drawn dot, centred in a fixed slot. */
 export function StateDot({kind}: {kind: StateKind | 'none'}) {
   return (
-    <span aria-hidden style={{alignItems: 'center', display: 'flex', flex: 'none', height: DOT_SLOT, justifyContent: 'center', width: DOT_SLOT}}>
+    <span
+      aria-hidden
+      style={{
+        alignItems: 'center',
+        display: 'flex',
+        flex: 'none',
+        height: DOT_SLOT,
+        justifyContent: 'center',
+        width: DOT_SLOT,
+      }}
+    >
       <StateGlyph size={DOT_BOX} state={kind === 'none' ? 'absent' : kind} />
     </span>
   )

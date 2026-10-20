@@ -26,7 +26,7 @@ import {
  */
 /** The icon box for an 8px disc: the disc is 7 of 25 units, so 25 * 8 / 7 px. */
 const DOT_BOX = (25 * 8) / 7
-const StateDotIcon = (dot: 'published' | 'draft' | null) =>
+const stateDotIcon = (dot: 'published' | 'draft' | 'variant' | null) =>
   function DotIcon() {
     return (
       <span style={{position: 'relative', display: 'block', width: 17, height: 17, flex: 'none'}}>
@@ -112,7 +112,7 @@ export function VersionMark(props: {
   /** What the popover body shows (default: today's pills). */
   content?: PopoverContent
   /** The base document's state, shown inside the `pill` and `badge` triggers. */
-  dot?: 'published' | 'draft' | null
+  dot?: 'published' | 'draft' | 'variant' | null
   /** `a` (default): flat labels in the popover. `b`: clickable chips. */
   option?: 'a' | 'b'
   /** Option B: a pill was clicked. Without it a pill click opens the inventory unscoped. */
@@ -135,7 +135,13 @@ export function VersionMark(props: {
   // Set when focus returns to the control from the popover, so the focus does not reopen it.
   const skipOpen = useRef(false)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  // Where the pointer last was over the control: the apex of the safe triangle.
+  const lastPoint = useRef<Point | null>(null)
+  const stopTracking = useRef<(() => void) | null>(null)
   const cancelClose = useCallback(() => clearTimeout(timer.current), [])
+  const closeAfter = useCallback((ms: number) => {
+    timer.current = setTimeout(() => setOpen(false), ms)
+  }, [])
   const show = useCallback(() => {
     cancelClose()
     stopTracking.current?.()
@@ -150,15 +156,12 @@ export function VersionMark(props: {
   }, [])
   const pattern = props.pattern ?? 'pp2'
   const intent = props.hoverIntent ?? (pattern === 'pl1' ? 'triangle' : 'timer')
-  // Where the pointer last was over the control: the apex of the safe triangle.
-  const lastPoint = useRef<Point | null>(null)
-  const stopTracking = useRef<(() => void) | null>(null)
   const hideSoon = useCallback(() => {
     cancelClose()
     stopTracking.current?.()
     stopTracking.current = null
     if (intent === 'timer') {
-      timer.current = setTimeout(() => setOpen(false), CLOSE_DELAY)
+      closeAfter(CLOSE_DELAY)
       return
     }
     // Hover intent: keep the popover open while the pointer travels toward it. The triangle runs from
@@ -170,7 +173,7 @@ export function VersionMark(props: {
     const from =
       lastPoint.current ?? (box && {x: box.left + box.width / 2, y: box.top + box.height / 2})
     if (!popover || !from) {
-      timer.current = setTimeout(() => setOpen(false), CLOSE_DELAY)
+      closeAfter(CLOSE_DELAY)
       return
     }
     const near = popover.left >= from.x ? popover.left : popover.right
@@ -205,7 +208,7 @@ export function VersionMark(props: {
     document.addEventListener('pointermove', move)
     stopTracking.current = () => document.removeEventListener('pointermove', move)
     stall()
-  }, [cancelClose, intent])
+  }, [cancelClose, closeAfter, intent])
   useEffect(
     () => () => {
       cancelClose()
@@ -292,7 +295,11 @@ export function VersionMark(props: {
           // One accessible name for the one control, with the base document's state in it.
           const name =
             `${versions.length} ${versions.length === 1 ? 'version' : 'versions'}` +
-            (trigger !== 'icon' && dot ? `. The base document is ${dot}` : '') +
+            (trigger !== 'icon' && dot
+              ? dot === 'variant'
+                ? '. A variant matches the chosen perspective'
+                : `. The base document is ${dot}`
+              : '') +
             '. Open the document and its version inventory'
           // LIVE: in the real list the control sits inside the row's link. Stop the click here so the
           // row's own navigation does not run after ours and drop the inspector.
@@ -311,7 +318,7 @@ export function VersionMark(props: {
                 aria-label={name}
                 data-testid={`version-mark-${docId}`}
                 disabled={!live}
-                icon={StateDotIcon(dot)}
+                icon={stateDotIcon(dot)}
                 style={{width: 25, height: 25, padding: 0}}
                 mode="bleed"
                 onClick={onClick}

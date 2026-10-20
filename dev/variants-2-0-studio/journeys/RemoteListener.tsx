@@ -12,6 +12,8 @@ import {
   setGlobalChoice,
   setOverride,
   setPillWhenOpen,
+  setListWhenPerspective,
+  setPriorityView,
   setToastAction,
   setRowLayout,
   setShape,
@@ -57,7 +59,27 @@ export type RemoteMessage =
       type: 'pillWhenOpen'
       pillWhenOpen: 'summary' | 'versionCount'
     }
-  | {id: string; from: 'remote'; origin: string; type: 'toastAction'; toastAction: 'button' | 'link'}
+  | {
+      id: string
+      from: 'remote'
+      origin: string
+      type: 'toastAction'
+      toastAction: 'button' | 'link'
+    }
+  | {
+      id: string
+      from: 'remote'
+      origin: string
+      type: 'listWhenPerspective'
+      listWhenPerspective: 'grouped' | 'sorted'
+    }
+  | {
+      id: string
+      from: 'remote'
+      origin: string
+      type: 'priorityView'
+      priorityView: 'hide' | 'show'
+    }
   | {id: string; from: 'remote'; origin: string; type: 'reset'; all?: boolean}
   | {id: string; from: 'remote'; origin: string; type: 'identify'}
 
@@ -85,6 +107,8 @@ export interface StudioStatus {
     rowLayout: 'left' | 'actionsRight' | 'centered'
     pillWhenOpen: 'summary' | 'versionCount'
     toastAction: 'button' | 'link'
+    listWhenPerspective: 'grouped' | 'sorted'
+    priorityView: 'hide' | 'show'
     dimensionLimit: number | null
     stages: {id: string; label: string}[]
     dimensions: {value: number | null; label: string}[]
@@ -149,6 +173,8 @@ export function RemoteListener() {
         rowLayout: now.rowLayout,
         pillWhenOpen: now.pillWhenOpen,
         toastAction: now.toastAction,
+        listWhenPerspective: now.listWhenPerspective,
+        priorityView: now.priorityView,
         dimensionLimit: now.dimensionLimit,
         stages: getConfig().scenario.stages,
         dimensions: (getConfig().scenario.dimensions ?? []).map((d) => ({
@@ -205,6 +231,8 @@ export function RemoteListener() {
       else if (m.type === 'rowLayout') setRowLayout(m.rowLayout)
       else if (m.type === 'pillWhenOpen') setPillWhenOpen(m.pillWhenOpen)
       else if (m.type === 'toastAction') setToastAction(m.toastAction)
+      else if (m.type === 'listWhenPerspective') setListWhenPerspective(m.listWhenPerspective)
+      else if (m.type === 'priorityView') setPriorityView(m.priorityView)
       else if (m.type === 'option') setOverride(m.component, m.option)
       else if (m.type === 'dimensions') setDimensionLimit(m.limit)
       else if (m.type === 'reset') (m.all ? resetOptions : resetOverrides)()

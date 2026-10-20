@@ -15,6 +15,12 @@ export {
 } from '../structure/panes/document/documentPanel/DocumentPaneExtension'
 // PROPOSED: extension point for document list rows (Variants 2.0 test studio).
 export {
+  DOCUMENT_LIST_SECTION_TYPE,
+  type DocumentListArrange,
+  DocumentListArrangeProvider,
+  type DocumentListArrangement,
+} from '../structure/components/paneItem/DocumentListArrange'
+export {
   type DocumentListItemOverride,
   type DocumentListItemOverrideArgs,
   DocumentListItemOverrideProvider,
