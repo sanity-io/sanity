@@ -21,6 +21,27 @@ export interface DiagramSpec {
   shapes?: DiagramShape[]
 }
 
+/** One drawing primitive of a spec diagram (see options/diagrams.json for the vocabulary). */
+export interface DiagramPrim {
+  p: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any
+}
+
+/** An entry of the shared diagram spec: either a list of primitives or the generic 200 x 100 frame form. */
+export interface DiagramEntry {
+  name: string
+  status: {text: string; class: 'win' | 'even' | 'open'}
+  caption: string
+  size: [number, number]
+  prims?: DiagramPrim[]
+  generic?: DiagramSpec
+}
+
+export interface DiagramFile {
+  diagrams: Record<string, DiagramEntry>
+}
+
 export interface OptionDef {
   id: string
   label: string
@@ -33,6 +54,10 @@ export interface OptionDef {
   /** Storybook story id (opens at the Storybook base URL). */
   story?: string
   diagram?: DiagramSpec
+  /** Key of the option's card diagram in the shared diagram spec. */
+  diagramKey?: string
+  /** More keys of the spec that belong to this option, shown as frames under the cards. */
+  frames?: string[]
 }
 
 export interface ComponentDef {
@@ -49,6 +74,8 @@ export interface ComponentDef {
   scope?: string
   pick?: string
   where?: string
+  /** Spec keys that belong to the component as a whole (flows). */
+  frames?: string[]
 }
 
 export interface ScenarioConfig {
@@ -77,4 +104,6 @@ export interface DesignOptionsConfig {
   /** Shared presets (the ones that ship in the repo). Mine live in localStorage. */
   presets: PresetDef[]
   links?: {figmaFile?: string; storybookBase?: string}
+  /** The shared diagram spec (options/diagrams.json). Options with a `diagramKey` draw from it. */
+  diagrams?: DiagramFile
 }

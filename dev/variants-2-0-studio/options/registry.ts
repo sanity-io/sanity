@@ -3,8 +3,9 @@
 // entry to `options`. `final` marks the chosen option once the design is signed off.
 
 import {defineDesignOptions, getComponent} from '../design-options/config'
-import type {ComponentDef, DiagramSpec, OptionStatus} from '../design-options/types'
+import type {ComponentDef, DiagramFile, DiagramSpec, OptionStatus} from '../design-options/types'
 
+import diagrams from './diagrams.json'
 import presets from './presets.json'
 
 export type {ComponentDef, OptionStatus}
@@ -134,9 +135,10 @@ export const COMPONENTS: ComponentDef[] = [
     scope: "Document lens: open beta. Others: parked",
     pick: "Concept; the spec frame is on this page",
     where: 'Design slots tool.',
+    frames: ['c5.flow'],
     options: [
-      {id: 'a', label: 'One surface, a View by switch', summary: 'One table with a View by switch (Document, Definition, Dimension, Visitor) and a pin picker.', status: 'candidate', refs: 'Spec frame in Figma E5'},
-      {id: 'b', label: 'Lenses at their pins', summary: 'Each lens lives at its pin: Document in the document, Definition and Dimension in the Variants tool, Visitor in the preview.', status: 'candidate'},
+      {id: 'a', label: 'One surface, a View by switch', summary: 'One table with a View by switch (Document, Definition, Dimension, Visitor) and a pin picker. The Definition lens lists grey rows for documents that miss the version; selected rows get a bulk bar (Create versions, Add to release); Delete opens a dialog that names the version, the documents and who is affected.', status: 'candidate', refs: 'Spec frame in Figma E5', diagramKey: 'c5.a.document', frames: ['c5.a.definition', 'c5.a.selection', 'c5.a.delete']},
+      {id: 'b', label: 'Lenses at their pins', summary: 'The same table at the place each lens lives: Definition in the variant detail (with the absent block), Document as a mini lens in the document inspector, Dimension as the overview. Visitor is not drawn in this option.', status: 'candidate', diagramKey: 'c5.b.homes'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
   },
@@ -148,8 +150,9 @@ export const COMPONENTS: ComponentDef[] = [
     scope: "Open beta (as shipped)",
     pick: "No change; table stakes",
     where: 'Design slots tool.',
+    frames: ['c6.flow'],
     options: [
-      {id: 'a', label: 'As today', summary: 'The shipped Variants tool with the spec additions: grey rows for documents that miss the variant, Create, Add to release.', status: 'candidate', refs: 'Figma E6'},
+      {id: 'a', label: 'As today', summary: 'The shipped Variants tool (overview with document counts, search and filters; detail with conditions, details and the documents table) plus a proposed block of pages without the version, with Create versions and Add to release.', status: 'candidate', refs: 'Figma E6', diagramKey: 'c6.overview', frames: ['c6.detail']},
       {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -189,8 +192,9 @@ export const COMPONENTS: ComponentDef[] = [
     scope: "Fast follow",
     pick: "Polish only",
     where: 'Design slots tool.',
+    frames: ['c8.flow'],
     options: [
-      {id: 'a', label: 'Table, polished', summary: 'The shipped Releases tool, unchanged for now.', status: 'candidate', refs: 'Figma E8'},
+      {id: 'a', label: 'Table, polished', summary: 'The Releases tool with version columns: the overview adds a Variants count next to documents; the release detail shows the version each document carries and an On publish column (Publishes German, Publishes base).', status: 'candidate', refs: 'Figma E8', diagramKey: 'c8.overview', frames: ['c8.detail']},
       {id: 'b', label: 'Not drawn', summary: 'A second option, if one is drawn.', status: 'exploration'},
       {id: 'c', label: 'Not drawn', summary: 'A third option, if one is drawn.', status: 'exploration'},
     ],
@@ -232,13 +236,13 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
     b: 'The same document lens, as a popover from Manage versions.',
     c: "Andrej's original panel in the inspector, for comparison.",
   },
-  c5: {a: 'One surface with a View by switch and a pin picker.', b: 'The lenses live at their pins, on one shared table.'},
-  c6: {a: 'The shipped Variants tool, plus grey rows for missing documents, Create and Add to release.'},
+  c5: {a: 'One surface with a View by switch, a pin picker, a bulk bar and a delete dialog.', b: 'The same table at its homes: variant detail, document inspector, overview.'},
+  c6: {a: 'The shipped Variants tool, plus a block of pages without the version, Create and Add to release.'},
   c7: {
     a: 'A banner on a missing variant, with Create variant, in every version.',
     b: 'No banner in Drafts; a hint in the pane header. Banner only in Published and releases.',
   },
-  c8: {a: 'The shipped Releases tool, as it is.'},
+  c8: {a: 'The Releases tool with a Variants count, a version column and an On publish column.'},
   c9: {
     a: 'One mark on the field, for every kind; nothing on array items or removed items.',
     b: 'A mark at the left edge of each changed portable text block.',
@@ -321,6 +325,9 @@ const STORIES: Record<string, Record<string, string>> = {
 
 for (const component of COMPONENTS) {
   for (const option of component.options) {
+    // C1 to C4 and C7 are drawn in the generic frame form of the shared spec (options/diagrams.json).
+    const generic = `${component.id}.${option.id}`
+    if (!option.diagramKey && (diagrams as unknown as DiagramFile).diagrams[generic]) option.diagramKey = generic
     const story = STORIES[component.id]?.[option.id]
     if (story) option.story = story
     const oneLiner = ONE_LINERS[component.id]?.[option.id]
@@ -354,6 +361,7 @@ defineDesignOptions({
     ],
   },
   presets,
+  diagrams: diagrams as unknown as DiagramFile,
   links: {
     figmaFile: 'https://www.figma.com/design/C1T4EUScc9PMf5tqNo09Qs',
     storybookBase: 'https://sanity-studio-storybook-r4ildcrzv.sanity.dev',

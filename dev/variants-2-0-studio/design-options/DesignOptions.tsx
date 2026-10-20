@@ -7,7 +7,7 @@ import {createPortal} from 'react-dom'
 import {type KeyboardEvent, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState} from 'react'
 
 import {getConfig, NOT_DRAWN_LABEL} from './config'
-import {OptionDiagram} from './diagram'
+import {OptionDiagram, SpecDiagram} from './diagram'
 import {PresetBar} from './PresetBar'
 import {
   designLink,
@@ -185,6 +185,7 @@ function OptionCard(props: {component: ComponentDef; option: OptionDef; letter: 
   const notDrawn = option.label === NOT_DRAWN
   const status = notDrawn ? {word: 'not drawn', dot: 'default' as Dot} : STATUS_WORD[option.status]
   const figma = figmaLinks(option.refs)[0]
+  const entry = option.diagramKey ? getConfig().diagrams?.diagrams[option.diagramKey] : undefined
   const dashed = notDrawn || option.status === 'not-drawn'
   const border = chosen ? '2px solid var(--card-badge-suggest-dot-color)' : `1px ${dashed ? 'dashed' : 'solid'} var(--card-border-color)`
   const pick = () => {
@@ -218,7 +219,17 @@ function OptionCard(props: {component: ComponentDef; option: OptionDef; letter: 
     >
       <Stack gap={3}>
         <Box style={{display: 'flex', justifyContent: 'center'}}>
-          <OptionDiagram spec={notDrawn ? undefined : option.diagram} />
+          {notDrawn ? (
+            <OptionDiagram />
+          ) : entry ? (
+            <div style={{width: '100%'}}>
+              <SpecDiagram entry={entry} />
+            </div>
+          ) : (
+            <div style={{width: '100%'}}>
+              <OptionDiagram spec={option.diagram} />
+            </div>
+          )}
         </Box>
         <Stack gap={2}>
           <Text size={1} weight="medium">
@@ -258,6 +269,43 @@ function OptionCard(props: {component: ComponentDef; option: OptionDef; letter: 
         </span>
       ) : null}
     </div>
+  )
+}
+
+const PILL: Record<string, string> = {
+  win: 'var(--card-badge-positive-dot-color)',
+  even: 'var(--card-badge-suggest-dot-color)',
+  open: 'var(--card-muted-fg-color)',
+}
+
+/** The spec keys that belong to a component: its own, then each option's card diagram and extra frames. */
+function frameKeys(component: ComponentDef): string[] {
+  const keys = component.options.flatMap((o) => (o.diagramKey ? [o.diagramKey, ...(o.frames ?? [])] : []))
+  return [...new Set([...keys, ...(component.frames ?? [])])]
+}
+
+/** Every drawn frame of the component, with its status and caption (the same spec the tracker reads). */
+function FramesGallery({component}: {component: ComponentDef}) {
+  const file = getConfig().diagrams
+  const entries = frameKeys(component).flatMap((key) => (file?.diagrams[key] ? [{key, entry: file.diagrams[key]}] : []))
+  if (!entries.length) return null
+  return (
+    <Stack data-testid="frames-gallery" gap={2}>
+      <Label>Frames</Label>
+      <div style={{display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))'}}>
+        {entries.map(({key, entry}) => (
+          <figure key={key} style={{margin: 0}}>
+            <SpecDiagram entry={entry} />
+            <figcaption style={{fontSize: 12, marginTop: 6}}>
+              <b>{entry.name}</b>{' '}
+              <span style={{color: PILL[entry.status.class]}}>● {entry.status.text}</span>
+              <br />
+              <span style={{color: 'var(--card-muted-fg-color)'}}>{entry.caption}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </Stack>
   )
 }
 
@@ -432,7 +480,7 @@ function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
               </Stack>
               <div
                 role="radiogroup"
-                style={{display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))'}}
+                style={{display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))'}}
               >
                 {selected.options.map((option, index) => (
                   <OptionCard
@@ -445,6 +493,7 @@ function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
                   />
                 ))}
               </div>
+              <FramesGallery component={selected} />
             </Stack>
           </Box>
         </Flex>

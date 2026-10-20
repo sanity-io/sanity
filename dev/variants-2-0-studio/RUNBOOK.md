@@ -77,6 +77,7 @@ A preset is a saved combination. Shared presets are in `options/presets.json`. Y
 Click `Journeys`. Choose a journey, then `Start journey`: it applies the preset and opens the first route.
 Tick each step as you go. `options/journeys.json` is a copy of `docs/initiatives/curation-perspective-selector/journeys.json`.
 Copy the file again when it changes.
+`options/diagrams.json` is the same kind of copy of `docs/initiatives/curation-perspective-selector/diagrams.json`: the diagrams in the window (and the frames under the cards) draw from it.
 
 ## Run the walk (Playwright)
 
@@ -88,6 +89,8 @@ node journeys/verify.mts             # bulk actions, C4 lens, visitor lens
 node journeys/verify-d1.mts          # delete one version, delete all versions
 node journeys/verify-open.mts        # open a version as a document
 node journeys/verify-crud.mts       # create and delete, by clicks: a variant definition and a variant document (throwaway data)
+node journeys/verify-diagrams.mts    # every diagram key in the registry exists in diagrams.json; the studio copy equals the docs file
+node journeys/shoot-diagrams.mts     # window screenshots for C5, C6, C8, light and dark (journeys-captures/diagrams-*.png)
 node journeys/verify-pills.mts       # C2 A pill order (Variants, divider, Published, Draft, Releases)
 node journeys/dryrun.mts             # the demo path above, timed, with console errors and a contrast check in light and dark
 ```
