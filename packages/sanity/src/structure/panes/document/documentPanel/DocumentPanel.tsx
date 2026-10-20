@@ -269,7 +269,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     if (documentInScheduledRelease) {
-      return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
+      return (
+        <ScheduledReleaseBanner
+          currentRelease={selectedPerspective as ReleaseDocument}
+          documentId={documentId}
+          documentType={schemaType.name}
+        />
+      )
     }
 
     const allFilteredReleases = [

@@ -1,11 +1,15 @@
 import {LockIcon} from '@sanity/icons/Lock'
 import {Text} from '@sanity/ui'
 import {
+  getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
+  InsufficientPermissionsMessage,
   isCardinalityOneRelease,
   LATEST,
   type ReleaseDocument,
   Translate,
+  useCurrentUser,
+  useDocumentPairPermissions,
   useFormatRelativeLocalePublishDate,
   usePauseToEditScheduledDraft,
   useTranslation,
@@ -16,8 +20,12 @@ import {Banner} from './Banner'
 
 export function ScheduledReleaseBanner({
   currentRelease,
+  documentId,
+  documentType,
 }: {
   currentRelease: ReleaseDocument
+  documentId: string
+  documentType: string
 }): React.JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
 
@@ -29,6 +37,17 @@ export function ScheduledReleaseBanner({
     release: isCardinalityOne ? currentRelease : undefined,
     documentTitle: title,
   })
+
+  const currentUser = useCurrentUser()
+  const [publishPermission, isPublishPermissionLoading] = useDocumentPairPermissions({
+    id: documentId,
+    // '*' denies without a document lookup.
+    type: isCardinalityOne ? documentType : '*',
+    version: getReleaseIdFromReleaseDocumentId(currentRelease._id),
+    permission: 'publish',
+  })
+  const isPublishGranted = Boolean(publishPermission?.granted)
+  const isPublishDenied = !isPublishPermissionLoading && !isPublishGranted
 
   return (
     <Banner
@@ -51,7 +70,17 @@ export function ScheduledReleaseBanner({
           ? {
               text: tCore('release.action.pause-to-edit'),
               onClick: pauseToEdit,
-              disabled: isPausing,
+              disabled: isPausing || isPublishPermissionLoading || !isPublishGranted,
+              tooltipProps: isPublishDenied
+                ? {
+                    content: (
+                      <InsufficientPermissionsMessage
+                        context="edit-schedules"
+                        currentUser={currentUser}
+                      />
+                    ),
+                  }
+                : null,
               mode: 'default',
               tone: tone,
             }

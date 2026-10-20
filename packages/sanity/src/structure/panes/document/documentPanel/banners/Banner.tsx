@@ -3,6 +3,7 @@ import {type ComponentType, type ElementType, type ReactNode} from 'react'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
+import {type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
 
 interface BannerProps {
   action?: {
@@ -13,6 +14,7 @@ interface BannerProps {
     tone?: ButtonTone
     disabled?: boolean
     mode?: ButtonMode
+    tooltipProps?: TooltipProps | null
   }
   content: ReactNode
   icon?: ComponentType
