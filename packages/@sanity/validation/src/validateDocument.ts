@@ -20,12 +20,11 @@ import {
   defer,
   from,
   lastValueFrom,
-  merge,
   type Observable,
   of,
   throwError,
 } from 'rxjs'
-import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
+import {catchError, map, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
 import {ClientUnavailableError} from './clientUnavailable'
@@ -747,14 +746,13 @@ function validateItemObservable({
   // run validation for nested values (conditionally)
   let nestedChecks: Array<Observable<ValidationMarker[]>> = []
 
-  const selfIsRequired = rules.some((rule) => rule.isRequired())
   const shouldRunNestedObjectValidation =
     // run nested validation for objects
     type?.jsonType === 'object' &&
     // if the value is truthy
     (!!value || // or
       // (the value is null or undefined) and the top-level value is required
-      ((value === null || value === undefined) && selfIsRequired))
+      ((value === null || value === undefined) && rules.some((rule) => rule.isRequired())))
 
   if (shouldRunNestedObjectValidation) {
     const fieldTypes = type.fields.reduce<Record<string, SchemaType>>((acc, field) => {
@@ -847,8 +845,7 @@ function validateItemObservable({
     )
   }
 
-  // A single leaf rule already emits one marker array. Keep the run's pacing,
-  // but avoid constructing the merge/collection pipeline for this common case.
+  // A single leaf rule already emits the complete marker array.
   if (
     selfChecks.length === 1 &&
     nestedChecks.length === 0 &&
@@ -858,9 +855,8 @@ function validateItemObservable({
   }
 
   // Every check waits for its turn as the run's pacer sees fit (see `ValidationScheduling`).
-  return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
+  return from([...selfChecks, ...nestedChecks]).pipe(
     mergeMap((validateNode) => concat(pace(), validateNode), 40),
-    mergeAll(),
     toArray(),
     map(flatten),
     map((results) => {
