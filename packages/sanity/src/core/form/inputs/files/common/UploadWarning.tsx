@@ -20,6 +20,7 @@ export function UploadWarning({onClearStale}: Props) {
         <Box>
           <Icon
             size={1}
+            muted
             icon={WarningOutlineIcon}
             tone="caution"
             style={{

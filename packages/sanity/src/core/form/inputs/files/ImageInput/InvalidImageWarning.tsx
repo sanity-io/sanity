@@ -18,6 +18,7 @@ export function InvalidImageWarning({onClearValue}: Props) {
         <Box>
           <Icon
             size={1}
+            muted
             icon={WarningOutlineIcon}
             tone="caution"
             style={{

@@ -70,7 +70,7 @@ export function IncompatibleItemType(props: Props) {
             </Text>
             <Box>
               <Text size={1} as="div" trim={true}>
-                <Icon size={1} icon={BulbOutlineIcon} style={{margin: '-0.375rem'}} />{' '}
+                <Icon size={1} muted icon={BulbOutlineIcon} style={{margin: '-0.375rem'}} />{' '}
                 {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>

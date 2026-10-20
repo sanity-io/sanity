@@ -185,7 +185,7 @@ function DropMessage(props: DropMessageProps) {
       {acceptedFiles.length > 0 ? (
         <>
           <Inline gap={2}>
-            <Icon icon={UploadIcon} />
+            <Icon icon={UploadIcon} style={{margin: '-0.4375rem'}} />
             {multiple
               ? t('inputs.files.common.drop-message.drop-to-upload-multi', {
                   count: acceptedFiles.length,
@@ -196,7 +196,7 @@ function DropMessage(props: DropMessageProps) {
           {rejectedFilesCount > 0 && (
             <Box marginTop={4}>
               <Inline gap={2}>
-                <Icon muted size={1} icon={AccessDeniedIcon} />
+                <Icon muted size={1} icon={AccessDeniedIcon} style={{margin: '-0.375rem'}} />
                 <Text muted size={1} as="div" trim={true}>
                   {t('inputs.files.common.drop-message.drop-to-upload.rejected-file-message', {
                     count: rejectedFilesCount,
@@ -208,7 +208,7 @@ function DropMessage(props: DropMessageProps) {
         </>
       ) : (
         <Inline gap={2}>
-          <Icon icon={AccessDeniedIcon} />
+          <Icon icon={AccessDeniedIcon} style={{margin: '-0.4375rem'}} />
           <Text as="div" trim={true}>
             {t('inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message', {
               count: hoveringFiles.length,

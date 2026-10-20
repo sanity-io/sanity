@@ -49,7 +49,7 @@ export function FileActionsMenu(props: Props) {
         <Flex flexWrap="nowrap" alignItems="center">
           <Card padding={3} tone="transparent" shadow={1} radius={1}>
             <Icon
-              muted={muted}
+              muted
               icon={BinaryDocumentIcon}
               style={{margin: '-0.4375rem', display: 'block'}}
             />

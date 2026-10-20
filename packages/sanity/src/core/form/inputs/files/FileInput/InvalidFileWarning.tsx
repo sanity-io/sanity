@@ -17,6 +17,7 @@ export function InvalidFileWarning({onClearValue}: Props) {
       <Flex gap={4} marginBottom={4}>
         <Box>
           <Icon
+            muted
             size={1}
             icon={WarningOutlineIcon}
             tone="caution"
