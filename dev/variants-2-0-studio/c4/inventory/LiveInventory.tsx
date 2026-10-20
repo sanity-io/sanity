@@ -4,11 +4,22 @@ import {useSetVariant} from 'sanity'
 
 import {usePerspectiveState} from '../../c1/state'
 import {useVariantDefinitions} from '../../c1/world'
+import {useCompareActions} from '../../compare/useCompare'
+import {useOption} from '../../design-options/store'
 import {HidePriorityView, VisitorLensLine, VisitorLensPanel} from '../VisitorLens'
 import {type InventoryEntry} from './fixtures'
 import {InventoryConceptsProvider} from './model'
 import {useLiveWorld} from './useLiveWorld'
 import {VersionInventoryPanel} from './VersionInventoryPanel'
+
+// Cmd or Ctrl held while a version is chosen: with Compare on, the version opens BESIDE the current document (E9 compare B).
+let openBesideHeld = false
+if (typeof window !== 'undefined')
+  window.addEventListener(
+    'pointerdown',
+    (event) => void (openBesideHeld = event.metaKey || event.ctrlKey),
+    true,
+  )
 
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 
@@ -24,6 +35,8 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const setVariant = useSetVariant()
   const variants = useVariantDefinitions()
   const [lensOpen, setLensOpen] = useState(false)
+  const compare = useOption('compare')
+  const compareActions = useCompareActions()
 
   const variantFor = useCallback(
     (variantId: string | undefined) => variants.find((v) => shortId(v._id) === variantId),
@@ -45,12 +58,19 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const onSelect = useCallback(
     (entry: InventoryEntry) => {
       const variant = variantFor(entry.variantId)
+      if (compare !== 'a' && openBesideHeld) {
+        compareActions.openBeside(documentId, {
+          perspective: entry.group as string,
+          variant: variant ? shortId(variant._id) : 'none',
+        })
+        return
+      }
       // One navigation sets the version and the variant, so the document pane shows that version (inspector stays open).
       setVariant({variantId: variant?._id as never, perspective: entry.group as never})
       s.setChosen(variant ? variant.conditions : {})
       if (variant) s.setRowShown(true)
     },
-    [setVariant, variantFor, s],
+    [setVariant, variantFor, s, compare, compareActions, documentId],
   )
 
   if (!world) {
@@ -66,6 +86,13 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
     <Flex direction="column" height="fill">
       {lensOpen ? null : <VisitorLensLine onOpen={() => setLensOpen(true)} />}
       <HidePriorityView />
+      {compare !== 'a' ? (
+        <Box data-testid="open-beside-hint" paddingX={3} paddingY={2}>
+          <Text muted size={0}>
+            Cmd-click a version to open it beside this document.
+          </Text>
+        </Box>
+      ) : null}
       {lensOpen ? (
         <Box flex={1} overflow="auto">
           <VisitorLensPanel

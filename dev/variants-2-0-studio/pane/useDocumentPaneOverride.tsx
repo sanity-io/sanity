@@ -3,6 +3,7 @@ import {type UseDocumentPaneExtension} from 'sanity/structure'
 import {DocumentPillsV1} from '../c2/DocumentPills'
 import {ManageVersions} from '../c4/ManageVersions'
 import {DocumentBannerV1} from '../c7/Banners'
+import {useComparison} from '../compare/useCompare'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PresentationContextLine} from '../presentation/PresentationContextLine'
 import {DocumentsCount, LocalRow} from './PaneAddress'
@@ -14,6 +15,7 @@ export const useDocumentPaneOverride: UseDocumentPaneExtension = ({documentId, d
   const c4 = useOption('c4')
   const paneAddress = useOption('paneAddress')
   const compare = useOption('compare')
+  const comparison = useComparison()
   const manageIcon = c4 === 'b' ? <ManageVersions documentId={documentId} form="icon" /> : undefined
   // E9 paneAddress B and C replace the chips with a Documents count; C (and a compare) adds the local row under the header.
   const pills =

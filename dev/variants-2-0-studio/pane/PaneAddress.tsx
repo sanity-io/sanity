@@ -60,10 +60,17 @@ export function usePaneAddress() {
   return {held, local, global, differs, set}
 }
 
-function Pick(props: {
+export function Pick(props: {
   text: string
   testId: string
-  items: {key: string; text: string; icon?: ReactElement; selected: boolean; onClick: () => void}[]
+  items: {
+    key: string
+    text: string
+    icon?: ReactElement
+    selected: boolean
+    onClick: () => void
+    disabled?: boolean
+  }[]
   icon?: ReactElement
 }) {
   return (
@@ -96,7 +103,7 @@ function Pick(props: {
   )
 }
 
-const layerLabel = (perspective: string) =>
+export const layerLabel = (perspective: string) =>
   perspective === 'published' ? 'Published' : perspective === 'drafts' ? 'Drafts' : perspective
 
 /** B and C: the Documents button with a count. It replaces the pane header's version chips and opens the inventory. */
