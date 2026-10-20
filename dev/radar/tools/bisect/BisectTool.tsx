@@ -1,12 +1,12 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {EnterRightIcon} from '@sanity/icons/EnterRight'
-import {Badge, Box, Button, Card, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type SVGProps, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
-import {Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack} from 'ui5'
 
 import {compareTagsSemverDesc, regressionsByTag, withoutEolLines} from '../releases/releaseInfo'
 import {RELEASE_LINES_QUERY, type ReleaseLineSlice} from '../releases/releaseLines'
@@ -250,10 +250,10 @@ export function BisectTool() {
           <Flex alignItems="center" gap={3}>
             <Box flex={1}>
               <VStack gap={3}>
-                <Text size={3} weight="semibold">
+                <Text size={3} weight="semibold" as="div" trim={true}>
                   Bisect
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   Hunt down the commit that broke something: pick a known-good and a known-bad
                   commit, then test the preview build the tool proposes at each step. Every run is
                   stored as a session, so a bisect can be shared or picked up later.
@@ -271,17 +271,19 @@ export function BisectTool() {
 
           {error && (
             <Card padding={4} radius={3} tone="critical">
-              <Text size={1}>Failed to load: {error}</Text>
+              <Text size={1} as="div" trim={true}>
+                Failed to load: {error}
+              </Text>
             </Card>
           )}
           {!error && sessions === null && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               Loading…
             </Text>
           )}
           {sessions?.length === 0 && (
             <Card padding={4} radius={3} tone="transparent" border>
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 No bisect sessions yet.
               </Text>
             </Card>
@@ -364,7 +366,7 @@ function SessionTree(props: {
               // heading, says "narrows down the one above" without words
               <Flex key={child._id} alignItems="flex-start" gap={1}>
                 <Box paddingTop={3} style={{flexShrink: 0}}>
-                  <Text size={1} muted>
+                  <Text size={1} muted as="div" trim={true}>
                     <EnterRightIcon />
                   </Text>
                 </Box>
@@ -452,7 +454,7 @@ function SessionRow(props: {
             {/* The heading (see above), then the verdict note: what and why */}
             <Flex alignItems="center" gap={2}>
               <Box flex={1} style={{minWidth: 0}}>
-                <Text size={1} weight="medium" textOverflow="ellipsis">
+                <Text size={1} weight="medium" truncate={1} as="div" trim={true}>
                   <a
                     href={`?session=${encodeURIComponent(session._id)}`}
                     onClick={(event) => {
@@ -468,7 +470,7 @@ function SessionRow(props: {
               </Box>
             </Flex>
             {description && note && (
-              <Text size={1} muted textOverflow="ellipsis">
+              <Text size={1} muted truncate={1} as="div" trim={true}>
                 {note}
               </Text>
             )}
@@ -478,7 +480,7 @@ function SessionRow(props: {
               <Flex alignItems="center" gap={2} flexWrap="wrap">
                 {activeRange && (
                   <>
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       Affected
                     </Text>
                     <Badge tone="primary" fontSize={0}>
@@ -486,7 +488,7 @@ function SessionRow(props: {
                     </Badge>
                     {activeRange.to !== activeRange.from && (
                       <>
-                        <Text size={1} muted>
+                        <Text size={1} muted as="div" trim={true}>
                           –
                         </Text>
                         <Badge tone="primary" fontSize={0}>
@@ -514,11 +516,11 @@ function SessionRow(props: {
             )}
             <Flex alignItems="center" gap={2} flexWrap="wrap">
               {session.createdAt && <RelativeDate dateTime={session.createdAt} size={0} muted />}
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 · {session.createdBy}
               </Text>
               {refinementCount > 0 && (
-                <Text size={0} muted>
+                <Text size={0} muted as="div" trim={true}>
                   · narrowed down by the {pluralize(refinementCount, 'session')} below — counted as
                   one regression
                 </Text>
@@ -532,15 +534,15 @@ function SessionRow(props: {
           // CommitCard shows, folded onto one line
           <Box style={{maxWidth: '50%', minWidth: 0}}>
             <VStack gap={2}>
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 Identified
               </Text>
               <Card padding={2} radius={2} border tone="transparent">
                 <Flex alignItems="center" gap={2}>
-                  <Text size={1} muted>
+                  <Text size={1} muted as="div" trim={true}>
                     <GitMergeIcon />
                   </Text>
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true}>
                     <a
                       href={commitUrl(firstBadSha)}
                       target="_blank"
@@ -553,7 +555,7 @@ function SessionRow(props: {
                   </Text>
                   {subject && (
                     <Box flex={1} style={{minWidth: 0}}>
-                      <Text size={1} textOverflow="ellipsis">
+                      <Text size={1} truncate={1} as="div" trim={true}>
                         <a
                           href={commitUrl(firstBadSha)}
                           target="_blank"
@@ -567,7 +569,7 @@ function SessionRow(props: {
                     </Box>
                   )}
                   {prNumber !== undefined && (
-                    <Text size={1}>
+                    <Text size={1} as="div" trim={true}>
                       <a
                         href={prUrl(prNumber)}
                         target="_blank"

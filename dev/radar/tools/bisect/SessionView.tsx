@@ -1,12 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Badge, Box, Button, Card, Dialog, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Dialog} from '@sanity/ui'
 import {type ToastContextValue, useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
-import {Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {
@@ -268,23 +268,23 @@ export function SessionView(props: {
             <Button mode="bleed" icon={ArrowLeftIcon} text="Sessions" onClick={onBack} />
             <Box flex={1} style={{minWidth: 0}}>
               <VStack gap={2}>
-                <Text size={2} weight="semibold">
+                <Text size={2} weight="semibold" as="div" trim={true}>
                   {session?.description || session?.title || 'Bisect session'}
                 </Text>
                 {session?.description && (
-                  <Text size={1} muted>
+                  <Text size={1} muted as="div" trim={true}>
                     {session.title ?? sessionId}
                   </Text>
                 )}
                 {reproPath && (
-                  <Text size={0} muted textOverflow="ellipsis">
+                  <Text size={0} muted truncate={1} as="div" trim={true}>
                     Preview builds open at <code>{reproPath}</code>
                   </Text>
                 )}
                 {/* A refinement and its parent are one regression; say so
                     both ways so neither reads as a duplicate */}
                 {session?.refines && (
-                  <Text size={0} muted>
+                  <Text size={0} muted as="div" trim={true}>
                     Narrows down{' '}
                     <a
                       href={`?session=${encodeURIComponent(session.refines._id)}`}
@@ -299,7 +299,7 @@ export function SessionView(props: {
                   </Text>
                 )}
                 {session && session.refinedBy.length > 0 && (
-                  <Text size={0} muted>
+                  <Text size={0} muted as="div" trim={true}>
                     Narrowed down by{' '}
                     {session.refinedBy.map((child, index) => (
                       <span key={child._id}>
@@ -333,38 +333,44 @@ export function SessionView(props: {
 
           {dataError && (
             <Card padding={4} radius={3} tone="critical">
-              <Text size={1}>Failed to load: {dataError}</Text>
+              <Text size={1} as="div" trim={true}>
+                Failed to load: {dataError}
+              </Text>
             </Card>
           )}
           {live.error && (
             <Card padding={4} radius={3} tone="critical">
-              <Text size={1}>Failed to load session: {live.error}</Text>
+              <Text size={1} as="div" trim={true}>
+                Failed to load session: {live.error}
+              </Text>
             </Card>
           )}
           {!live.error && session === undefined && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               Loading…
             </Text>
           )}
           {session === null && (
             <Card padding={4} radius={3} tone="caution">
-              <Text size={1}>This session no longer exists.</Text>
+              <Text size={1} as="div" trim={true}>
+                This session no longer exists.
+              </Text>
             </Card>
           )}
           {session && !dataError && !chainResult && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               Loading commit history…
             </Text>
           )}
           {session && !dataError && chainResult?.ok && !bisectOptions && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               Loading release tags…
             </Text>
           )}
 
           {session && chainResult && !chainResult.ok && (
             <Card padding={4} radius={3} tone="caution">
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 {chainErrorCopy(
                   chainResult.reason,
                   session.good?.label ?? session.good?.sha?.slice(0, 7) ?? 'unknown',
@@ -383,7 +389,7 @@ export function SessionView(props: {
                   until the conflicting one is gone. */}
               <Flex alignItems="center" gap={3}>
                 <Box flex={1}>
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true}>
                     Conflicting marks: <code>{state.goodMarkSha.slice(0, 10)}</code> is marked good
                     but is newer than bad-marked <code>{state.badMarkSha.slice(0, 10)}</code>. Undo
                     a mark to resolve.
@@ -440,7 +446,7 @@ export function SessionView(props: {
         >
           <Box padding={4}>
             <VStack gap={4}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 Delete “{session?.title ?? sessionId}”? The session, its marks log, and any verdict
                 (including a regression pinned on a release) are permanently removed.
               </Text>
@@ -470,7 +476,7 @@ function RangeStatus(props: {
   return (
     <VStack gap={3}>
       <Flex alignItems="center" gap={2} flexWrap="wrap">
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           The bad commit is between
         </Text>
         <Badge tone="positive" fontSize={0}>
@@ -478,7 +484,7 @@ function RangeStatus(props: {
             good {state.goodBound.sha.slice(0, 7)}
           </a>
         </Badge>
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           and
         </Text>
         <Badge tone="critical" fontSize={0}>
@@ -486,7 +492,7 @@ function RangeStatus(props: {
             bad {state.badBound.sha.slice(0, 7)}
           </a>
         </Badge>
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           —{' '}
           <a
             href={compareUrl(state.goodBound.sha, state.badBound.sha)}
@@ -499,13 +505,13 @@ function RangeStatus(props: {
         </Text>
       </Flex>
       {releasesOnly ? (
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           Bisecting released versions only — {pluralize(state.testableCount, 'release')} left to
           test in the range; the commits between releases are reported as suspects at the end.
         </Text>
       ) : (
         state.unknownCount > state.testableCount && (
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {state.unknownCount - state.testableCount} of these have no preview build (or were
             skipped) and can't be tested directly — if the range narrows down to them, they're
             reported as suspects.

@@ -1,5 +1,5 @@
-import {Text} from '@sanity/ui'
 import {type CSSProperties, useState} from 'react'
+import {Text} from 'ui5'
 
 import {releaseUrl} from '../trends/links'
 import {type TagSlice} from './data'
@@ -26,7 +26,7 @@ export function IncludedIn(props: {releases: TagSlice[]}) {
   const visible = expanded ? releases : releases.slice(0, limit)
   const hiddenCount = releases.length - visible.length
   return (
-    <Text size={1} muted>
+    <Text size={1} muted as="div" trim={true}>
       {releases.length === 0 ? (
         'Not included in any release yet.'
       ) : (

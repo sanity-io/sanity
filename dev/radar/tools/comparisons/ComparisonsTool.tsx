@@ -1,12 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, type BadgeTone, Button, Card, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Button, Card} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Container, Flex, Box, VStack} from 'ui5'
+import {Text, Container, Flex, Box, VStack} from 'ui5'
 
 import {formatValue} from '../trends/data'
 import {ciRunUrl, commitUrl, dispatchRunsUrl} from '../trends/links'
@@ -74,16 +74,16 @@ export function ComparisonsTool() {
       <Container size={2}>
         <VStack gap={4}>
           <VStack gap={3}>
-            <Text size={3} weight="semibold">
+            <Text size={3} weight="semibold" as="div" trim={true}>
               A/B comparisons
             </Text>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               Each entry is one dispatched comparison of two commits (reference → experiment),
               stored when its run completes. Dispatch one from a trend point&apos;s &quot;Copy A/B
               vs previous run&quot; button, or directly:
             </Text>
             <Card padding={3} radius={2} tone="transparent" border>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <code>
                   gh workflow run bench.yml -R sanity-io/sanity -f ab_from=&lt;sha&gt; -f
                   ab_to=&lt;sha&gt;
@@ -109,17 +109,19 @@ export function ComparisonsTool() {
 
           {live.error && (
             <Card padding={4} radius={3} tone="critical">
-              <Text size={1}>Failed to load comparisons: {live.error}</Text>
+              <Text size={1} as="div" trim={true}>
+                Failed to load comparisons: {live.error}
+              </Text>
             </Card>
           )}
           {!live.error && live.runs === null && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               Loading…
             </Text>
           )}
           {live.runs?.length === 0 && (
             <Card padding={4} radius={3} tone="transparent" border>
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 No comparisons stored yet.
               </Text>
             </Card>
@@ -161,7 +163,7 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
           <Box flexBasis="0%" flexGrow={1}>
             <Flex alignItems="center" gap={2} flexWrap="wrap">
               <ShaLink sha={fromSha} />
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 →
               </Text>
               <ShaLink sha={toSha} />
@@ -172,7 +174,7 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
               {VERDICT_MARK[verdict]} {counts[verdict]} {verdict}
             </Badge>
           ))}
-          <Text size={0} muted>
+          <Text size={0} muted as="div" trim={true}>
             {run.startedAt.slice(0, 10)}
           </Text>
           {run.runner?.runId && (
@@ -193,7 +195,7 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
         {expanded &&
           (run.scenarios ?? []).map((scenario) => (
             <VStack key={`${scenario.mode ?? scenario.kind}-${scenario.scenario}`} gap={3}>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {scenario.scenario} · {scenario.mode ?? scenario.kind}
               </Text>
               <VStack gap={2}>
@@ -212,13 +214,13 @@ function ShaLink(props: {sha: string | undefined}) {
   const {sha} = props
   if (!sha) {
     return (
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         unknown
       </Text>
     )
   }
   return (
-    <Text size={1}>
+    <Text size={1} as="div" trim={true}>
       <a href={commitUrl(sha)} target="_blank" rel="noreferrer">
         <code>{sha.slice(0, 10)}</code>
       </a>
@@ -237,24 +239,24 @@ function MetricRow(props: {metric: ComparisonMetric}) {
   return (
     <Flex alignItems="center" gap={3} flexWrap="wrap">
       <Box style={{width: 220}}>
-        <Text size={1} textOverflow="ellipsis">
+        <Text size={1} truncate={1} as="div" trim={true}>
           {metric.label}
         </Text>
       </Box>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         {reference === undefined || reference === null ? '—' : formatValue(reference, metric.unit)}
       </Text>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         →
       </Text>
-      <Text size={1}>
+      <Text size={1} as="div" trim={true}>
         {experiment === undefined || experiment === null
           ? '—'
           : formatValue(experiment, metric.unit)}
       </Text>
       {comparison && (
         <>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             Δ {sign(comparison.diff)} [{sign(comparison.lo)}, {sign(comparison.hi)}]
           </Text>
           <Badge tone={VERDICT_TONE[comparison.verdict]} fontSize={0}>

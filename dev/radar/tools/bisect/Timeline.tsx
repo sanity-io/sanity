@@ -5,9 +5,9 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {PlayIcon} from '@sanity/icons/Play'
 import {UndoIcon} from '@sanity/icons/Undo'
-import {Badge, type BadgeTone, Box, Button, Card, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Box, Button, Card} from '@sanity/ui'
 import {type ReactNode, useMemo, useState} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
@@ -123,7 +123,7 @@ export function Timeline(props: {
 
   return (
     <VStack gap={2}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="semibold" as="div" trim={true}>
         Bisect timeline
       </Text>
       <VStack gap={1}>
@@ -225,7 +225,7 @@ function GapGroup(props: {
             onClick={onToggle}
           />
           <Box flex={1} />
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             <a href={compareUrl(entry.baseSha, entry.newestSha)} target="_blank" rel="noreferrer">
               Compare on GitHub
             </a>
@@ -272,7 +272,7 @@ function TestCard(props: {
       tone="primary"
       heading={
         <Flex alignItems="center" gap={2}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="semibold" as="div" trim={true}>
             {headingText}
           </Text>
           <Box flex={1} />
@@ -294,7 +294,7 @@ function TestCard(props: {
     >
       <IncludedIn releases={releases} />
       {!commit.testStudioUrl && (
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           No preview build for this commit — test it from a checkout instead.
         </Text>
       )}
@@ -315,7 +315,7 @@ function TestCard(props: {
         {version && <InstallChip version={version} />}
         <Box flex={1} />
         <Flex alignItems="center" gap={2}>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             Mark as
           </Text>
           <Button
@@ -362,13 +362,13 @@ function CommitRow(props: {commit: BisectCommit; badge: RowBadge; onPick?: () =>
           login={commit.authorLogin}
           avatarUrl={commit.authorAvatarUrl}
         />
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
             <code>{commit.sha.slice(0, 7)}</code>
           </a>
         </Text>
         <Box flex={1} style={{minWidth: 0}}>
-          <Text size={1} muted textOverflow="ellipsis">
+          <Text size={1} muted truncate={1} as="div" trim={true}>
             <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
               {commit.subject}
             </a>
