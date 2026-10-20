@@ -117,6 +117,7 @@ function TitleFieldButton(props: {focus: () => void; children: ReactNode}) {
     // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- a CSS length, not copy
     <Box as="span" maxWidth="100%" width="fit-content">
       <PressArea
+        data-document-pane-title-button=""
         data-testid="document-pane-title-field"
         onClick={handleClick}
         onMouseDown={handleMouseDown}
