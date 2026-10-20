@@ -209,13 +209,14 @@ export function claimsOf(
   hasBase: boolean,
 ): Claims {
   const all: Claim[] = []
+  // One count everywhere (marks, compare header, Review changes panel): the number of entries `flatten` lists.
   if (hasPublished) {
     const t = tally(published, current)
-    if (sum(t) > 0) all.push({kind: 'changed', count: sum(t), tally: t})
+    if (sum(t) > 0) all.push({kind: 'changed', count: countChanges(published, current), tally: t})
   }
   if (hasBase) {
     const t = tally(base, current)
-    if (sum(t) > 0) all.push({kind: 'differs', count: sum(t), tally: t})
+    if (sum(t) > 0) all.push({kind: 'differs', count: countChanges(base, current), tally: t})
   }
   return {top: all[0] ?? null, all}
 }
@@ -345,4 +346,23 @@ export function flatten(
     return out
   }
   return [here('changed', compare, current, {op: 'set', path, value: compare})]
+}
+
+/** The one definition of "how many changes": what the Review changes panel lists. The marks and the compare header use it too. */
+export const countChanges = (compare: Json, current: Json): number =>
+  flatten(compare, current).length
+
+/** A path as a JSON path string for a patch: `settings.meta.region`, `sections[_key=="s1"].text`, `tags[2]`. */
+export function pathToString(path: readonly Seg[]): string {
+  return path
+    .map((seg, i) =>
+      typeof seg === 'object'
+        ? `[_key=="${seg._key}"]`
+        : typeof seg === 'number'
+          ? `[${seg}]`
+          : i === 0
+            ? seg
+            : `.${seg}`,
+    )
+    .join('')
 }

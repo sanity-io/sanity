@@ -244,7 +244,15 @@ function E9Review(props: DocumentInspectorProps & {full: boolean}) {
               disabled={compare === 'a'}
               fontSize={1}
               mode="ghost"
-              onClick={() => actions.openBeside(docId, against)}
+              onClick={() => {
+                // Below about 1700 px the rack cannot hold a panel and two panes: the panel hands over to the lane compare (its change list does the same job).
+                // The panel closes first, then the second pane opens, so the two navigations do not overwrite each other.
+                if (window.innerWidth < 1700) onClose()
+                window.setTimeout(
+                  () => actions.openBeside(docId, against),
+                  window.innerWidth < 1700 ? 400 : 0,
+                )
+              }}
               padding={2}
               text="Open full view"
               title={compare === 'a' ? 'Turn Compare on to open the full view' : undefined}

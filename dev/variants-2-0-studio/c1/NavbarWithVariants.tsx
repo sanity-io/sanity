@@ -42,7 +42,12 @@ export function NavbarWithVariants(props: NavbarProps) {
       {/* Option C is the shipped Perspective Filter bar only: no address row. */}
       {option === STOCK_OPTION || option === 'c' || navLayout === 'c' ? null : <AddressRow />}
       {/* E9 compare C: one header across both panes. */}
-      {compare === 'c' && comparison ? <CompareHeader comparison={comparison} /> : null}
+      {compare !== 'a' && compare !== 'b' && comparison ? (
+        <CompareHeader
+          comparison={comparison}
+          composed={compare === 'c' ? undefined : (compare as 'd' | 'e' | 'f')}
+        />
+      ) : null}
     </>
   )
 }

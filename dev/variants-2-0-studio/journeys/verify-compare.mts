@@ -22,6 +22,7 @@ async function open(path: string, width = 1440, theme: 'light' | 'dark' = 'light
 const G = '&perspective=drafts&variant=aud-returning-visitors'
 const pane = (v: string, l = 'drafts') => `/structure/e9Case;e9-visitors;e9-visitors,localPerspective=${l},localVariant=${v}`
 const D = (c: string) => `?design=show.a,stage.open-beta,compare.${c}${G}`
+const count2 = (p: Page, id: string) => p.getByTestId(id).count()
 const text = (p: Page, id: string) => p.getByTestId(id).first().textContent().catch(() => null)
 
 {
@@ -86,6 +87,19 @@ for (const theme of ['light', 'dark'] as const) {
   console.log('URL', decodeURIComponent(p.url()))
   log('C6: one click returns to a comparison the open beta can show', (await p.getByTestId('compare-refused').count()) === 0 && (await text(p, 'compare-title')) === 'Comparing variants', String(await text(p, 'compare-title')))
   await context.close()
+}
+for (const look of ['d', 'e', 'f'] as const) {
+  for (const theme of ['light', 'dark'] as const) {
+    for (const width of [1440, 2200] as const) {
+      const {p, context} = await open(pane('aud-members') + D(look), width, theme)
+      if (theme === 'light' && width === 1440) {
+        log(`${look.toUpperCase()}: the ported composed bar is the compare header (title kept)`, (await text(p, 'compare-title')) === 'Comparing variants' && (await p.locator('[data-testid^="composed-"], [data-testid*="compare-' + look + '"]').count()) > 0, String(await text(p, 'compare-title')))
+        if (look === 'e') log('E: a pane bar above each pane', (await count2(p, 'pane-bar')) === 2, String(await count2(p, 'pane-bar')))
+      }
+      await p.screenshot({path: `journeys-captures/e9-compare/${look.toUpperCase()}-${width}-${theme}.png`, clip: {x: 0, y: 0, width, height: 360}})
+      await context.close()
+    }
+  }
 }
 await b.close()
 process.exit(failed ? 1 : 0)

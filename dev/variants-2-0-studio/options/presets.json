@@ -58,5 +58,20 @@
     "id": "e9-nav-c",
     "name": "E9 · Nav C (vision)",
     "design": "show.a,stage.open-beta,navLayout.c,compare.c,paneAddress.c,reviewPanel.c,fieldMarks.b"
+  },
+  {
+    "id": "e9-compare-d",
+    "name": "E9 · Compare D",
+    "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.c,reviewPanel.c,fieldMarks.b,compare.d"
+  },
+  {
+    "id": "e9-compare-e",
+    "name": "E9 · Compare E",
+    "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.c,reviewPanel.c,fieldMarks.b,compare.e"
+  },
+  {
+    "id": "e9-compare-f",
+    "name": "E9 · Compare F (lane row two)",
+    "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.c,reviewPanel.c,fieldMarks.b,compare.f"
   }
 ]

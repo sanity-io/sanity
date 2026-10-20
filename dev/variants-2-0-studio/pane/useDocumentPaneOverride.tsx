@@ -3,6 +3,7 @@ import {type UseDocumentPaneExtension} from 'sanity/structure'
 import {DocumentPillsV1} from '../c2/DocumentPills'
 import {ManageVersions} from '../c4/ManageVersions'
 import {DocumentBannerV1} from '../c7/Banners'
+import {PaneBar} from '../compare/PaneBar'
 import {useComparison} from '../compare/useCompare'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PresentationContextLine} from '../presentation/PresentationContextLine'
@@ -36,8 +37,11 @@ export const useDocumentPaneOverride: UseDocumentPaneExtension = ({documentId, d
   // Presentation (P2): the version's context line and a way back to "On this page".
   const context = <PresentationContextLine documentId={documentId} />
   const manage = c4 === 'b' && !pills ? <ManageVersions documentId={documentId} /> : undefined
+  // Compare E: a pane-scope bar above each pane of a comparison.
+  const paneBar = compare === 'e' && comparison ? <PaneBar documentId={documentId} /> : undefined
   const banners = (
     <>
+      {paneBar}
       {localRow}
       {context}
       {manage}

@@ -70,6 +70,12 @@ export function useAddressDoc(docId: string, address: Address): {doc: Json | nul
   )
   const key = `${docId}|${address.perspective}|${address.variant}`
   const [state, setState] = useState<{key: string; doc: Json | null}>({key: '', doc: null})
+  // Re-read every few seconds: an edit, a revert or an Undo in either pane moves the counts in the header.
+  const [tick, setTick] = useState(0)
+  useEffect(() => {
+    const id = window.setInterval(() => setTick((n) => n + 1), 2500)
+    return () => window.clearInterval(id)
+  }, [])
   useEffect(() => {
     let cancelled = false
     const variant = address.variant === NONE ? null : address.variant
@@ -95,6 +101,7 @@ export function useAddressDoc(docId: string, address: Address): {doc: Json | nul
     return () => {
       cancelled = true
     }
-  }, [client, key, docId, address.perspective, address.variant])
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- `tick` is the re-read trigger
+  }, [client, key, docId, address.perspective, address.variant, tick])
   return {doc: state.key === key ? state.doc : null, ready: state.key === key}
 }

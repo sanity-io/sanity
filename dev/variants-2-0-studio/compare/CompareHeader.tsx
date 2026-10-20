@@ -1,12 +1,14 @@
 import {Box, Button, Card, Flex, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
-import {ReleaseAvatarIcon, useClient} from 'sanity'
+import {ReleaseAvatarIcon, useClient, useSetVariant} from 'sanity'
 
+import {buildConditionFacets} from '../../../packages/sanity/src/core/variants/tool/util'
 import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
 import {useVariantDefinitions} from '../c1/world'
 import {createVariantVersion} from '../c7/Banners'
 import {useVersionList} from '../data/useVersionList'
-import {sum, tally} from '../fieldmarks/markModel'
+import {type Change, flatten, type Json, pathToString} from '../fieldmarks/markModel'
 import {PassControls} from '../list/ListParts'
 import {layerLabel, Pick} from '../pane/PaneAddress'
 import {useResultToast} from '../toasts/ResultToast'
@@ -19,6 +21,8 @@ import {
   sameAddress,
   setAgainstPath,
 } from './address'
+import {ComposedCompareBar} from './composed/ComposedCompareBar'
+import {addressOfSide, sideOfAddress, type BundleOption} from './composed/composedModel'
 import {useAddressDoc, useCompareActions} from './useCompare'
 
 // Compare C: ONE header across both panes (it sits under the navbar, in the page flow like the Showing row), as drawn on E9 413:6.
@@ -32,16 +36,26 @@ export const isOneMove = (showing: Address, candidate: Address) =>
 
 const META = new Set(['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system'])
 
+/** The changed top-level fields with how many changes each holds: the Review changes panel's entries, grouped by field (one count everywhere). */
 export function changedFields(against: unknown, showing: unknown): {name: string; count: number}[] {
-  const a = (against ?? {}) as Record<string, unknown>
-  const s = (showing ?? {}) as Record<string, unknown>
-  return [...new Set([...Object.keys(a), ...Object.keys(s)])]
-    .filter((k) => !META.has(k))
-    .map((name) => ({name, count: sum(tally(a[name], s[name]))}))
-    .filter((f) => f.count > 0)
+  const counts = new Map<string, number>()
+  for (const change of flatten(against, showing)) {
+    const name = typeof change.path[0] === 'string' ? change.path[0] : 'document'
+    counts.set(name, (counts.get(name) ?? 0) + 1)
+  }
+  return [...counts].map(([name, count]) => ({name, count}))
 }
 
-export function CompareHeader({comparison}: {comparison: Comparison}) {
+/** The bar's rung (how far the chips have collapsed) is shared by every bar on the page (compare E), so dimensions line up across panes. */
+export type ComposedLook = 'd' | 'e' | 'f'
+
+export function CompareHeader({
+  comparison,
+  composed,
+}: {
+  comparison: Comparison
+  composed?: ComposedLook
+}) {
   const {docId, showing, against} = comparison
   const actions = useCompareActions()
   const definitions = useVariantDefinitions()
@@ -54,6 +68,8 @@ export function CompareHeader({comparison}: {comparison: Comparison}) {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null)
   const [copied, setCopied] = useState(false)
   const [creating, setCreating] = useState(false)
+  const [refusal, setRefusal] = useState<string | null>(null)
+  const setVariant = useSetVariant()
 
   const defOf = (id: string) => definitions.find((d) => d._id.replace(/^_\.variants\./, '') === id)
   const titleOf = (id: string) => (id === NONE ? 'Base' : (defOf(id)?.metadata?.title ?? id))
@@ -63,6 +79,8 @@ export function CompareHeader({comparison}: {comparison: Comparison}) {
   const text = (a: Address) => `${layerLabel(a.perspective)} · ${titleOf(a.variant)}`
 
   const fields = changedFields(againstDoc.doc, showingDoc.doc)
+  const changes = flatten(againstDoc.doc, showingDoc.doc)
+  const toast = useToast()
   const total = fields.reduce((n, f) => n + f.count, 0)
   const missing = againstDoc.ready && !againstDoc.doc
   const variantIds = [
@@ -100,6 +118,55 @@ export function CompareHeader({comparison}: {comparison: Comparison}) {
       window.setTimeout(() => setCopied(false), 1800)
     })
   }
+  // Revert one change on the Showing side (the editable draft), straight on the document: the header sits outside the pane's form. The pane, the marks and
+  // the counts follow when the document changes; Undo puts the top-level field back as it was.
+  const revert = async (change: Change) => {
+    const doc = showingDoc.doc as {_id?: string} & Record<string, Json>
+    if (!doc?._id) return
+    const top = typeof change.path[0] === 'string' ? change.path[0] : undefined
+    const was = top ? (doc as Record<string, Json>)[top] : undefined
+    const target = client
+      .withConfig({apiVersion: 'X', perspective: 'raw', useCdn: false})
+      .patch(doc._id)
+    const at = pathToString(change.path)
+    const op = change.revert
+    if (op.op === 'set') {
+      if (op.value === undefined) target.unset([pathToString(op.path)])
+      else target.set({[pathToString(op.path)]: op.value as never})
+    } else if (op.op === 'unset') target.unset([at])
+    else {
+      const arr = pathToString(op.path)
+      target.insert(
+        op.at > 0 ? 'after' : 'before',
+        op.at > 0 ? `${arr}[${op.at - 1}]` : `${arr}[0]`,
+        [op.item as never],
+      )
+    }
+    await target.commit()
+    window.dispatchEvent(new Event('focus'))
+    toast.push({
+      id: 'e9-revert',
+      status: 'success',
+      title: `Reverted ${change.label}`,
+      description: (
+        <Button
+          data-testid="undo-revert"
+          fontSize={1}
+          mode="ghost"
+          onClick={() => {
+            if (!top) return
+            const back = client
+              .withConfig({apiVersion: 'X', perspective: 'raw', useCdn: false})
+              .patch(doc._id as string)
+            void (was === undefined ? back.unset([top]) : back.set({[top]: was as never})).commit()
+          }}
+          padding={2}
+          text="Undo"
+        />
+      ),
+      duration: 8000,
+    })
+  }
   const scrollTo = (name: string) => {
     setListOpen(false)
     document
@@ -120,38 +187,56 @@ export function CompareHeader({comparison}: {comparison: Comparison}) {
         <Text data-testid="compare-title" size={1} weight="semibold">
           {title}
         </Text>
-        <Flex align="center" gap={2}>
-          <Text muted size={1}>
-            Showing
-          </Text>
-          <span data-testid="compare-showing" style={chipStyle}>
-            <ReleaseAvatarIcon
-              release={showing.perspective === 'published' ? 'published' : 'drafts'}
-            />{' '}
-            {text(showing)}
-          </span>
-          <Text muted size={1}>
-            Against
-          </Text>
-          <Pick
-            items={options.map(({key, address}) => {
-              const allowed = isOneMove(showing, address)
-              return {
-                key,
-                text: allowed
-                  ? text(address)
-                  : `${text(address)} · Open beta compares one dimension at a time`,
-                selected: sameAddress(address, against),
-                disabled: !allowed,
-                onClick: () => actions.go(setAgainstPath(comparison, address)),
-              }
-            })}
-            testId="compare-against"
-            text={text(against)}
+        {composed ? (
+          <ComposedBar
+            comparison={comparison}
+            definitions={definitions}
+            look={composed}
+            onRefuse={setRefusal}
+            releases={(versions ?? [])
+              .filter((v) => v.release && v.bundleId && !v.variantId)
+              .map((v) => ({id: v.bundleId as string, label: v.release as string}))}
+            setVariant={setVariant}
           />
-        </Flex>
+        ) : (
+          <Flex align="center" gap={2}>
+            <Text muted size={1}>
+              Showing
+            </Text>
+            <span data-testid="compare-showing" style={chipStyle}>
+              <ReleaseAvatarIcon
+                release={showing.perspective === 'published' ? 'published' : 'drafts'}
+              />{' '}
+              {text(showing)}
+            </span>
+            <Text muted size={1}>
+              Against
+            </Text>
+            <Pick
+              items={options.map(({key, address}) => {
+                const allowed = isOneMove(showing, address)
+                return {
+                  key,
+                  text: allowed
+                    ? text(address)
+                    : `${text(address)} · Open beta compares one dimension at a time`,
+                  selected: sameAddress(address, against),
+                  disabled: !allowed,
+                  onClick: () => actions.go(setAgainstPath(comparison, address)),
+                }
+              })}
+              testId="compare-against"
+              text={text(against)}
+            />
+          </Flex>
+        )}
         <Box flex={1} />
         {/* A review pass held in the list shows here too, because the list pane folds away when two panes are open. */}
+        {refusal ? (
+          <Text data-testid="compare-refusal" size={1}>
+            {refusal}
+          </Text>
+        ) : null}
         <PassControls />
         {kind === 'refused' ? (
           <Flex align="center" gap={2} data-testid="compare-refused">
@@ -218,17 +303,36 @@ export function CompareHeader({comparison}: {comparison: Comparison}) {
       </Flex>
       <Popover
         content={
-          <Card data-testid="compare-list" padding={2} style={{minWidth: 260}}>
-            {fields.map((f) => (
-              <Button
-                key={f.name}
-                data-testid={`compare-field-${f.name}`}
-                mode="bleed"
-                onClick={() => scrollTo(f.name)}
-                padding={2}
-                style={{width: '100%', justifyContent: 'space-between'}}
-                text={`${f.name} · ${f.count}`}
-              />
+          <Card data-testid="compare-list" padding={2} style={{minWidth: 340}}>
+            {changes.map((change) => (
+              <Flex align="center" gap={2} key={change.key} paddingY={1}>
+                <Box flex={1}>
+                  <Button
+                    data-testid={`compare-field-${typeof change.path[0] === 'string' ? change.path[0] : 'document'}`}
+                    mode="bleed"
+                    onClick={() =>
+                      scrollTo(typeof change.path[0] === 'string' ? change.path[0] : '')
+                    }
+                    padding={2}
+                    style={{width: '100%', justifyContent: 'flex-start'}}
+                    text={`${change.label} · ${change.kind}`}
+                  />
+                </Box>
+                <Button
+                  data-testid="compare-revert"
+                  disabled={showing.perspective === 'published'}
+                  fontSize={1}
+                  mode="ghost"
+                  onClick={() => void revert(change)}
+                  padding={2}
+                  text="Revert"
+                  title={
+                    showing.perspective === 'published'
+                      ? 'Open the Draft to revert: this version is read-only'
+                      : undefined
+                  }
+                />
+              </Flex>
             ))}
           </Card>
         }
@@ -251,3 +355,64 @@ const chipStyle = {
   gap: 4,
   padding: '3px 10px',
 } as const
+
+/** Compare D, E and F: the Storybook ComposedAddressBar (compare/composed) in the header. The anchor is the global perspective, the counterpart is the Against pane. */
+function ComposedBar(props: {
+  comparison: Comparison
+  definitions: ReturnType<typeof useVariantDefinitions>
+  look: ComposedLook
+  releases: BundleOption[]
+  onRefuse: (reason: string | null) => void
+  setVariant: ReturnType<typeof useSetVariant>
+}) {
+  const {comparison, definitions, look, releases, onRefuse, setVariant} = props
+  const actions = useCompareActions()
+  const bundles: BundleOption[] = [
+    {id: 'drafts', label: 'Draft'},
+    {id: 'published', label: 'Published'},
+    ...releases,
+  ]
+  const facets = buildConditionFacets(definitions as never)
+  const anchor = sideOfAddress(
+    {
+      perspective: comparison.showing.perspective,
+      variant: comparison.showing.variant === NONE ? 'none' : comparison.showing.variant,
+    },
+    definitions,
+  )
+  const counterpart = sideOfAddress(comparison.against, definitions)
+  return (
+    <ComposedCompareBar
+      anchor={anchor}
+      bundles={bundles}
+      clearable={false}
+      comparable
+      counterpart={counterpart}
+      facets={facets}
+      instanceId={`compare-${look}`}
+      layout={look === 'f' ? 'inline' : 'tiers'}
+      maxCompared={1}
+      onAnchorChange={(side) => {
+        // Showing is the global perspective: moving it moves the whole studio (the Against pane keeps its own address).
+        const next = addressOfSide(side, definitions)
+        const definition = definitions.find(
+          (d) => d._id.replace(/^_\.variants\./, '') === next.variant,
+        )
+        setVariant({variantId: definition?._id as never, perspective: next.perspective as never})
+        onRefuse(null)
+      }}
+      onCounterpartChange={(side) => {
+        if (!side) return actions.close()
+        const next = addressOfSide(side, definitions)
+        if (next.variant === null) return onRefuse('No single variant matches these values.')
+        onRefuse(null)
+        actions.go(
+          setAgainstPath(comparison, {perspective: next.perspective, variant: next.variant}),
+        )
+      }}
+      onRefuse={onRefuse}
+      reserveSecondRow={look === 'd'}
+      variants={definitions}
+    />
+  )
+}

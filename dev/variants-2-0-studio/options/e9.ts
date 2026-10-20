@@ -84,6 +84,33 @@ export const E9_COMPONENTS: ComponentDef[] = [
         status: 'candidate',
         refs: `${FIGMA}; compare 413:6: C1 417:9525, C2 418:22855, C3 418:24112, C4 418:88753, C5 418:89904, C6 418:25272`,
       },
+      {
+        id: 'd',
+        label: 'Composed bar header',
+        summary:
+          'The Storybook ComposedAddressBar (ported to compare/composed) as the compare header: two tiers, the full address and what differs (anchor against counterpart), second row kept. The anchor is the global perspective, the counterpart the Against pane. Titles, counts and the change list as in C. One compared dimension (the bar refuses a second).',
+        oneLiner: 'The ported composed bar as the header, two tiers.',
+        status: 'candidate',
+        refs: `${FIGMA}; 3b L1 434:2112`,
+      },
+      {
+        id: 'e',
+        label: 'Pane bars, shared rung',
+        summary:
+          'D, plus a pane-scope bar above each pane (no row label, not clearable, not comparable) whose collapse rung is shared, so the dimensions line up across panes.',
+        oneLiner: 'D plus a bar above each pane.',
+        status: 'candidate',
+        refs: `${FIGMA}; 3b L4 434:2999`,
+      },
+      {
+        id: 'f',
+        label: 'Lane row two',
+        summary:
+          'The recommended lane row (not decided): the bar is one row, and the Against side appears as row two only while comparing. Approximation: the same ported bar in its inline layout, in the header band; alignment to the compared chip of the global row is not exact.',
+        oneLiner: 'One row, Against appears only when comparing. Recommended, approximate.',
+        status: 'candidate',
+        refs: `${FIGMA}; 3b L3 433:12409, L2 433:13274, L3b 435:1595`,
+      },
     ],
   },
   {
