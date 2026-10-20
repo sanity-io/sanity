@@ -16,6 +16,12 @@ const RULES = `
 [data-testid="row-choose"],
 [data-testid="variants-button"],
 [data-testid^="doc-pills-"] button { border-radius: ${R} !important; }
+
+/* A rounded clip cuts the icon at the left edge, so the icon gets its own safe padding (12px, 8px less on the 3px Box). */
+[data-testid^="chip-"]:not([data-testid$="-remove"]) > div > button:first-child,
+[data-testid="row-version"],
+[data-testid="row-choose"],
+[data-testid="variants-button"] { padding-left: var(--v2-pill-icon-pad, 12px) !important; }
 `
 
 export function ShapeStyles() {

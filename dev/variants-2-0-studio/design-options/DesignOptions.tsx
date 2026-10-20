@@ -1,14 +1,31 @@
+import {ArrowDownIcon} from '@sanity/icons/ArrowDown'
+import {ArrowTopRightIcon} from '@sanity/icons/ArrowTopRight'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
+import {CogIcon} from '@sanity/icons/Cog'
 import {DragHandleIcon} from '@sanity/icons/DragHandle'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {RemoveIcon} from '@sanity/icons/Remove'
-import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {ShareIcon} from '@sanity/icons/Share'
+import {Box, Button, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {
+  type KeyboardEvent,
+  type ReactNode,
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import {createPortal} from 'react-dom'
-import {type KeyboardEvent, type ReactNode, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState} from 'react'
 
+import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {getConfig, NOT_DRAWN_LABEL} from './config'
 import {OptionDiagram, SpecDiagram} from './diagram'
-import {TAB_ID} from './tab'
 import {PresetBar} from './PresetBar'
 import {
   designLink,
@@ -26,13 +43,13 @@ import {
   type State,
   useOptionState,
 } from './store'
-import type {ComponentDef, OptionDef} from './types'
+import {TAB_ID} from './tab'
+import {type ComponentDef, type OptionDef} from './types'
 
 const LETTERS = 'ABCDEFGH'
 const WINDOW_KEY = () => `${getConfig().storageKey}:window`
 const DEFAULT_SIZE = {w: 720, h: 560}
 const MIN_SIZE = {w: 560, h: 400}
-
 
 const NOT_DRAWN = NOT_DRAWN_LABEL
 
@@ -44,13 +61,22 @@ function statusOf(component: ComponentDef): Dot {
   return component.options.some((option) => option.label !== NOT_DRAWN) ? 'suggest' : 'default'
 }
 
-function StatusDot({color, title}: {color: 'positive' | 'suggest' | 'caution' | 'default'; title: string}) {
+function StatusDot({
+  color,
+  title,
+}: {
+  color: 'positive' | 'suggest' | 'caution' | 'default'
+  title: string
+}) {
   return (
     <span
       aria-label={title}
       role="img"
       style={{
-        background: color === 'default' ? 'var(--card-muted-fg-color)' : `var(--card-badge-${color}-dot-color)`,
+        background:
+          color === 'default'
+            ? 'var(--card-muted-fg-color)'
+            : `var(--card-badge-${color}-dot-color)`,
         borderRadius: '50%',
         display: 'block',
         flex: 'none',
@@ -127,7 +153,6 @@ function Segmented<T extends string | number | null>(props: {
   )
 }
 
-
 type Rect = {x: number; y: number; w: number; h: number}
 
 function clampRect(r: Rect): Rect {
@@ -170,11 +195,11 @@ function showOption(component: ComponentDef, state: State): string {
 }
 
 const STATUS_WORD: Record<string, {word: string; dot: Dot}> = {
-  final: {word: 'decided', dot: 'positive'},
-  candidate: {word: 'candidate', dot: 'suggest'},
-  exploration: {word: 'exploration', dot: 'default'},
+  'final': {word: 'decided', dot: 'positive'},
+  'candidate': {word: 'candidate', dot: 'suggest'},
+  'exploration': {word: 'exploration', dot: 'default'},
   'not-drawn': {word: 'not drawn', dot: 'default'},
-  archived: {word: 'archived (kept so old links resolve)', dot: 'default'},
+  'archived': {word: 'archived (kept so old links resolve)', dot: 'default'},
 }
 
 /** First sentence of a summary: one line for a card. */
@@ -192,7 +217,11 @@ function loadStoryIndex(): Promise<string[] | null> {
     .then((r) => (r.ok ? r.json() : null))
     .then((json) => {
       const body = json?.entries ?? json
-      return Array.isArray(body) ? body.map((e: {id: string}) => e.id) : body ? (Object.keys(body) as string[]) : null
+      return Array.isArray(body)
+        ? body.map((e: {id: string}) => e.id)
+        : body
+          ? (Object.keys(body) as string[])
+          : null
     })
     .catch(() => null)
   return storyIndex
@@ -216,6 +245,34 @@ export function nearestStory(id: string, ids: string[]): string | null {
   return bestLen > 20 ? best : null
 }
 
+/** A link as a secondary button with the external-link icon (not a bare underlined link). */
+function LinkButton(props: {
+  href: string
+  label: string
+  testId: string
+  moved?: boolean
+  title?: string
+}) {
+  return (
+    <Button
+      as="a"
+      data-moved={props.moved ? '' : undefined}
+      data-testid={props.testId}
+      fontSize={0}
+      href={props.href}
+      icon={LaunchIcon}
+      mode="ghost"
+      onClick={(e: {stopPropagation: () => void}) => e.stopPropagation()}
+      padding={2}
+      rel="noreferrer"
+      style={{height: 25}}
+      target="_blank"
+      text={props.label}
+      title={props.title}
+    />
+  )
+}
+
 /** A Storybook link that cannot end on Storybook's error page: a missing story opens the nearest valid one, with a note. */
 function StoryLink({id}: {id: string}) {
   const {shape} = useOptionState()
@@ -230,29 +287,32 @@ function StoryLink({id}: {id: string}) {
   const missing = !!ids && !ids.includes(id)
   const target = missing ? (nearestStory(id, ids) ?? id) : id
   return (
-    <a
-      data-moved={missing ? '' : undefined}
-      data-testid="story-link"
+    <LinkButton
       href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape}`}
-      onClick={(e) => e.stopPropagation()}
-      rel="noreferrer"
-      style={{fontSize: 12}}
-      target="_blank"
+      label={missing ? 'Storybook (moved)' : 'Storybook'}
+      moved={missing}
+      testId="story-link"
       title={missing ? 'Story moved: this opens the nearest story' : undefined}
-    >
-      Storybook{missing ? ' (moved)' : ''}
-    </a>
+    />
   )
 }
 
-function OptionCard(props: {component: ComponentDef; option: OptionDef; letter: string; chosen: boolean; stock: boolean}) {
+function OptionCard(props: {
+  component: ComponentDef
+  option: OptionDef
+  letter: string
+  chosen: boolean
+  stock: boolean
+}) {
   const {component, option, letter, chosen, stock} = props
   const notDrawn = option.label === NOT_DRAWN
   const status = notDrawn ? {word: 'not drawn', dot: 'default' as Dot} : STATUS_WORD[option.status]
   const figma = figmaLinks(option.refs)[0]
   const entry = option.diagramKey ? getConfig().diagrams?.diagrams[option.diagramKey] : undefined
   const dashed = notDrawn || option.status === 'not-drawn'
-  const border = chosen ? '2px solid var(--card-badge-suggest-dot-color)' : `1px ${dashed ? 'dashed' : 'solid'} var(--card-border-color)`
+  const border = chosen
+    ? '2px solid var(--card-badge-suggest-dot-color)'
+    : `1px ${dashed ? 'dashed' : 'solid'} var(--card-border-color)`
   const pick = () => {
     if (notDrawn || stock) return
     const base = showOption(component, getOptionState())
@@ -301,7 +361,9 @@ function OptionCard(props: {component: ComponentDef; option: OptionDef; letter: 
             {letter} · {notDrawn ? NOT_DRAWN : option.label}
           </Text>
           <Text muted size={0} style={{minHeight: 32}}>
-            {notDrawn ? 'No design for this option yet.' : (option.oneLiner ?? oneLine(option.summary))}
+            {notDrawn
+              ? 'No design for this option yet.'
+              : (option.oneLiner ?? oneLine(option.summary))}
           </Text>
           <Flex align="center" gap={2} wrap="wrap">
             <StatusDot color={status.dot} title={status.word} />
@@ -309,17 +371,20 @@ function OptionCard(props: {component: ComponentDef; option: OptionDef; letter: 
               {status.word}
             </Text>
             <Box flex={1} />
-            {figma ? (
-              <a href={figma.href} onClick={(e) => e.stopPropagation()} rel="noreferrer" style={{fontSize: 12}} target="_blank">
-                Figma
-              </a>
-            ) : null}
+            {figma ? <LinkButton href={figma.href} label="Figma" testId="figma-link" /> : null}
             {option.story ? <StoryLink id={option.story} /> : null}
           </Flex>
         </Stack>
       </Stack>
       {chosen ? (
-        <span style={{color: 'var(--card-badge-suggest-dot-color)', position: 'absolute', right: 6, top: 4}}>
+        <span
+          style={{
+            color: 'var(--card-badge-suggest-dot-color)',
+            position: 'absolute',
+            right: 6,
+            top: 4,
+          }}
+        >
           <CheckmarkIcon style={{fontSize: 20}} />
         </span>
       ) : null}
@@ -335,19 +400,29 @@ const PILL: Record<string, string> = {
 
 /** The spec keys that belong to a component: its own, then each option's card diagram and extra frames. */
 function frameKeys(component: ComponentDef): string[] {
-  const keys = component.options.flatMap((o) => (o.diagramKey ? [o.diagramKey, ...(o.frames ?? [])] : []))
+  const keys = component.options.flatMap((o) =>
+    o.diagramKey ? [o.diagramKey, ...(o.frames ?? [])] : [],
+  )
   return [...new Set([...keys, ...(component.frames ?? [])])]
 }
 
 /** Every drawn frame of the component, with its status and caption (the same spec the tracker reads). */
 function FramesGallery({component}: {component: ComponentDef}) {
   const file = getConfig().diagrams
-  const entries = frameKeys(component).flatMap((key) => (file?.diagrams[key] ? [{key, entry: file.diagrams[key]}] : []))
+  const entries = frameKeys(component).flatMap((key) =>
+    file?.diagrams[key] ? [{key, entry: file.diagrams[key]}] : [],
+  )
   if (!entries.length) return null
   return (
     <Stack data-testid="frames-gallery" gap={2}>
       <Label>Frames</Label>
-      <div style={{display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))'}}>
+      <div
+        style={{
+          display: 'grid',
+          gap: 12,
+          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        }}
+      >
         {entries.map(({key, entry}) => (
           <figure key={key} style={{margin: 0}}>
             <SpecDiagram entry={entry} />
@@ -366,18 +441,28 @@ function FramesGallery({component}: {component: ComponentDef}) {
 
 function Label({children}: {children: string}) {
   return (
-    <Text muted size={0} style={{letterSpacing: '0.04em', textTransform: 'uppercase'}} weight="medium">
+    <Text
+      muted
+      size={0}
+      style={{letterSpacing: '0.04em', textTransform: 'uppercase'}}
+      weight="medium"
+    >
       {children}
     </Text>
   )
 }
 
 function summary(state: State): string {
-  const show = state.global === 'stock' ? 'Stock' : state.global === 'final' ? 'Final' : LETTERS[state.global]
-  const lines = [`Show: ${show}`, `Stage: ${getConfig().scenario.stages.find((x) => x.id === state.stage)?.label ?? state.stage}`]
+  const show =
+    state.global === 'stock' ? 'Stock' : state.global === 'final' ? 'Final' : LETTERS[state.global]
+  const lines = [
+    `Show: ${show}`,
+    `Stage: ${getConfig().scenario.stages.find((x) => x.id === state.stage)?.label ?? state.stage}`,
+  ]
   if (state.global !== 'stock') {
     lines.push(
-      getConfig().components.filter((c) => c.built)
+      getConfig()
+        .components.filter((c) => c.built)
         .map((c) => `${c.id.toUpperCase()} ${resolveOption(c, state).toUpperCase()}`)
         .join(' · '),
     )
@@ -385,11 +470,17 @@ function summary(state: State): string {
   return lines.join('\n')
 }
 
-function RailRow(props: {component: ComponentDef; state: State; selected: boolean; onSelect: () => void}) {
+function RailRow(props: {
+  component: ComponentDef
+  state: State
+  selected: boolean
+  onSelect: () => void
+}) {
   const {component, state, selected, onSelect} = props
   const stock = state.global === 'stock'
   const active = resolveOption(component, state)
-  const changed = !stock && state.overrides[component.id] !== undefined && active !== showOption(component, state)
+  const changed =
+    !stock && state.overrides[component.id] !== undefined && active !== showOption(component, state)
   const fallback = fellBack(component, state)
   const name = component.title.replace(new RegExp(`^${component.id.toUpperCase()}\\s*`), '')
   return (
@@ -408,9 +499,7 @@ function RailRow(props: {component: ComponentDef; state: State; selected: boolea
           {component.id.toUpperCase()}
         </Text>
         <Box flex={1}>
-          <Text size={1} textOverflow="ellipsis">
-            {name}
-          </Text>
+          <Text size={1}>{name}</Text>
         </Box>
         {changed ? <StatusDot color="caution" title="Differs from Show" /> : null}
         <span
@@ -425,7 +514,11 @@ function RailRow(props: {component: ComponentDef; state: State; selected: boolea
             minWidth: fallback ? 24 : 18,
             padding: fallback ? '0 4px' : 0,
           }}
-          title={fallback ? `Show asks for a letter this component does not have: A, fallback` : `Option ${active.toUpperCase()}`}
+          title={
+            fallback
+              ? `Show asks for a letter this component does not have: A, fallback`
+              : `Option ${active.toUpperCase()}`
+          }
         >
           {stock ? '–' : active.toUpperCase()}
           {fallback ? '*' : ''}
@@ -435,24 +528,150 @@ function RailRow(props: {component: ComponentDef; state: State; selected: boolea
   )
 }
 
+/** The one-line summary of the settings, for the collapsed strip: "Open beta · All · Round · Options A". */
+function settingsSummary(state: State): string {
+  const stage = getConfig().scenario.stages.find((x) => x.id === state.stage)?.label ?? state.stage
+  const dims =
+    getConfig().scenario.dimensions && state.stage === getConfig().scenario.dimensionsStage
+      ? ((getConfig().scenario.dimensions ?? []).find((d) => d.value === state.dimensionLimit)
+          ?.label ?? 'All')
+      : null
+  const all =
+    state.global === 'stock' ? 'Stock' : state.global === 'final' ? 'Final' : LETTERS[state.global]
+  return [
+    stage,
+    dims && `${dims} dimensions`,
+    getConfig().shape ? (state.shape === 'box' ? 'Box' : 'Round') : null,
+    `All: ${all}`,
+  ]
+    .filter(Boolean)
+    .join(' · ')
+}
+
+/** The settings, in three groups named by what they change: World (data and scope), Look (how things are drawn), Options for all. */
+function SettingsGroups({
+  state,
+  showOptions,
+}: {
+  state: State
+  showOptions: SegmentOption<GlobalChoice>[]
+}) {
+  const group = (title: string, hint: string, children: ReactNode) => (
+    <Stack data-testid={`settings-${title.toLowerCase().replace(/\s+/g, '-')}`} gap={2} key={title}>
+      <Label>{title}</Label>
+      <Flex align="center" gap={3} title={hint} wrap="wrap">
+        {children}
+      </Flex>
+    </Stack>
+  )
+  const control = (label: string, node: ReactNode) => (
+    <Flex align="center" gap={2}>
+      <Text muted size={0}>
+        {label}
+      </Text>
+      {node}
+    </Flex>
+  )
+  return (
+    <Flex gap={5} wrap="wrap">
+      {group(
+        'World',
+        'Changes the data and the scope',
+        <>
+          {control(
+            'Stage',
+            <Segmented
+              ariaLabel="Stage"
+              onChange={(value) => setStage(value)}
+              options={getConfig().scenario.stages.map((stage) => ({
+                value: stage.id,
+                label: stage.label,
+              }))}
+              value={state.stage}
+            />,
+          )}
+          {getConfig().scenario.dimensions && state.stage === getConfig().scenario.dimensionsStage
+            ? control(
+                'Dimensions',
+                <Segmented
+                  ariaLabel="Dimensions"
+                  onChange={(value) => setDimensionLimit(value)}
+                  options={(getConfig().scenario.dimensions ?? []).map((d) => ({
+                    value: d.value,
+                    label: d.label,
+                    title: d.title,
+                  }))}
+                  value={state.dimensionLimit}
+                />,
+              )
+            : null}
+        </>,
+      )}
+      {getConfig().shape
+        ? group(
+            'Look',
+            'Changes how things are drawn',
+            <>
+              {control(
+                'Shape',
+                <Segmented
+                  ariaLabel="Shape"
+                  onChange={(value) => setShape(value)}
+                  options={[
+                    {value: 'round', label: 'Round', title: 'Shipped: full-radius pills and chips'},
+                    {value: 'box', label: 'Box', title: 'Proposal: 3px radius'},
+                  ]}
+                  value={state.shape}
+                />,
+              )}
+            </>,
+          )
+        : null}
+      {group(
+        'Options for all',
+        'One click sets every component',
+        <Segmented
+          ariaLabel="Options for all"
+          onChange={(value) => setGlobalChoice(value)}
+          options={showOptions}
+          value={state.global}
+        />,
+      )}
+    </Flex>
+  )
+}
+
 /** Everything under the title bar: presets, Show and scenario, the rail, the option cards, the footer. */
-function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
+function ConfigBody({
+  state,
+  onHide,
+  compact,
+}: {
+  state: State
+  onHide?: () => void
+  compact?: boolean
+}) {
   const [selectedId, setSelectedId] = useState('c1')
   const [copied, setCopied] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const stock = state.global === 'stock'
-  const selected = getConfig().components.find((c) => c.id === selectedId) ?? getConfig().components[0]
+  const selected =
+    getConfig().components.find((c) => c.id === selectedId) ?? getConfig().components[0]
   const active = resolveOption(selected, state)
   const changedCount = getConfig().components.filter(
     (c) => state.overrides[c.id] !== undefined && resolveOption(c, state) !== showOption(c, state),
   ).length
   const maxChoices = maxOptionCount()
   const showOptions: SegmentOption<GlobalChoice>[] = [
-    {value: 'stock', label: 'Stock', title: 'Stock Studio: every design slot renders what Studio does today'},
-    ...Array.from({length: 5}, (_, index) => ({
+    {
+      value: 'stock',
+      label: 'Stock',
+      title: 'Stock Studio: every design slot renders what Studio does today',
+    },
+    // Only the letters some component has (D and E are not offered unless used).
+    ...Array.from({length: Math.min(Math.max(maxChoices, 1), 5)}, (_, index) => ({
       value: index as GlobalChoice,
       label: LETTERS[index],
-      disabled: index >= maxChoices,
-      title: index >= maxChoices ? 'No component has this option' : undefined,
     })),
     {value: 'final', label: 'Final', title: "Each component's signed-off option"},
   ]
@@ -469,124 +688,191 @@ function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
 
   return (
     <>
-        <Card borderBottom borderTop padding={3}>
-          <Stack gap={3}>
+      <Card borderBottom borderTop padding={3}>
+        <Stack gap={3}>
           <PresetBar state={state} />
-          <Flex align="center" gap={4} wrap="wrap">
-            <Flex align="center" gap={2}>
-              <Label>Show</Label>
-              <Segmented ariaLabel="Show" onChange={(value) => setGlobalChoice(value)} options={showOptions} value={state.global} />
-            </Flex>
-            <Flex align="center" gap={2}>
-              <Label>Stage</Label>
-              <Segmented
-                ariaLabel="Stage"
-                onChange={(value) => setStage(value)}
-                options={getConfig().scenario.stages.map((stage) => ({value: stage.id, label: stage.label}))}
-                value={state.stage}
-              />
-            </Flex>
-            {getConfig().shape ? (
-              <Flex align="center" gap={2}>
-                <Label>Shape</Label>
-                <Segmented
-                  ariaLabel="Shape"
-                  onChange={(value) => setShape(value)}
-                  options={[{value: 'round', label: 'Round', title: 'Shipped: full-radius pills and chips'}, {value: 'box', label: 'Box', title: 'Proposal: 3px radius'}]}
-                  value={state.shape}
+          {compact ? (
+            <div style={{position: 'relative'}}>
+              <Flex align="center" gap={3}>
+                <Text data-testid="settings-summary" muted size={1} style={{flex: 1}}>
+                  {settingsSummary(state)}
+                </Text>
+                <Button
+                  aria-expanded={settingsOpen}
+                  fontSize={1}
+                  icon={CogIcon}
+                  mode="ghost"
+                  onClick={() => setSettingsOpen((v) => !v)}
+                  padding={2}
+                  selected={settingsOpen}
+                  style={{height: 25}}
+                  text="Settings"
                 />
               </Flex>
-            ) : null}
-            {getConfig().scenario.dimensions && state.stage === getConfig().scenario.dimensionsStage ? (
-              <Flex align="center" gap={2}>
-                <Label>Dimensions</Label>
-                <Segmented
-                  ariaLabel="Dimensions"
-                  onChange={(value) => setDimensionLimit(value)}
-                  options={(getConfig().scenario.dimensions ?? []).map((d) => ({value: d.value, label: d.label, title: d.title}))}
-                  value={state.dimensionLimit}
-                />
-              </Flex>
-            ) : null}
-          </Flex>
-          </Stack>
-        </Card>
+              {settingsOpen ? (
+                <Card
+                  border
+                  data-testid="settings-popover"
+                  padding={3}
+                  radius={3}
+                  shadow={3}
+                  style={{left: 0, position: 'absolute', right: 0, top: 33, zIndex: 5}}
+                >
+                  <SettingsGroups showOptions={showOptions} state={state} />
+                </Card>
+              ) : null}
+            </div>
+          ) : (
+            <SettingsGroups showOptions={showOptions} state={state} />
+          )}
+        </Stack>
+      </Card>
 
-        <Flex style={{flex: 1, minHeight: 0}}>
-          <Box padding={2} style={{borderRight: '1px solid var(--card-border-color)', overflow: 'auto', width: 200}}>
-            <Stack gap={3}>
-              {getConfig().groups.map((group) => (
-                <Stack gap={1} key={group.label}>
-                  <Box paddingX={2}>
-                    <Label>{group.label}</Label>
-                  </Box>
-                  {group.ids.map((id) => {
-                    const component = getConfig().components.find((c) => c.id === id)
-                    return component ? (
-                      <RailRow component={component} key={id} onSelect={() => setSelectedId(id)} selected={id === selectedId} state={state} />
-                    ) : null
-                  })}
-                </Stack>
-              ))}
-            </Stack>
-          </Box>
-          <Box flex={1} padding={3} style={{overflow: 'auto'}}>
-            <Stack gap={3}>
-              <Stack gap={1}>
-                <Text size={1} weight="medium">
-                  {selected.title}
-                </Text>
-                <Text muted size={0}>
-                  {stock
-                    ? 'Stock Studio is showing; pick A, B, C in Show to compare.'
-                    : fellBack(selected, state)
-                      ? `Showing ${active.toUpperCase()}, fallback: Show asks for a letter this component does not have.`
-                      : `Showing option ${active.toUpperCase()}. Click a card to apply it.`}
-                </Text>
+      <Flex style={{flex: 1, minHeight: 0}}>
+        <Box
+          padding={2}
+          style={{borderRight: '1px solid var(--card-border-color)', overflow: 'auto', width: 240}}
+        >
+          <Stack gap={3}>
+            {getConfig().groups.map((group) => (
+              <Stack gap={1} key={group.label}>
+                <Box paddingX={2}>
+                  <Label>{group.label}</Label>
+                </Box>
+                {group.ids.map((id) => {
+                  const component = getConfig().components.find((c) => c.id === id)
+                  return component ? (
+                    <RailRow
+                      component={component}
+                      key={id}
+                      onSelect={() => setSelectedId(id)}
+                      selected={id === selectedId}
+                      state={state}
+                    />
+                  ) : null
+                })}
               </Stack>
-              <div
-                role="radiogroup"
-                style={{display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))'}}
-              >
-                {selected.options.map((option, index) => (
-                  <OptionCard
-                    chosen={!stock && option.id === active}
-                    component={selected}
-                    key={option.id}
-                    letter={LETTERS[index]}
-                    option={option}
-                    stock={stock}
-                  />
-                ))}
-              </div>
-              <FramesGallery component={selected} />
+            ))}
+          </Stack>
+        </Box>
+        <Box flex={1} padding={3} style={{overflow: 'auto'}}>
+          <Stack gap={3}>
+            <Stack gap={1}>
+              <Text size={1} weight="medium">
+                {selected.title}
+              </Text>
+              <Text muted size={0}>
+                {stock
+                  ? 'Stock Studio is showing; pick A, B, C in Show to compare.'
+                  : fellBack(selected, state)
+                    ? `Showing ${active.toUpperCase()}, fallback: Show asks for a letter this component does not have.`
+                    : `Showing option ${active.toUpperCase()}. Click a card to apply it.`}
+              </Text>
             </Stack>
-          </Box>
-        </Flex>
+            <div
+              role="radiogroup"
+              style={{
+                display: 'grid',
+                gap: 12,
+                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+              }}
+            >
+              {selected.options.map((option, index) => (
+                <OptionCard
+                  chosen={!stock && option.id === active}
+                  component={selected}
+                  key={option.id}
+                  letter={LETTERS[index]}
+                  option={option}
+                  stock={stock}
+                />
+              ))}
+            </div>
+            <FramesGallery component={selected} />
+          </Stack>
+        </Box>
+      </Flex>
 
+      {/* The window floats at z-index 1000000; its menus open above it. */}
+      <LayerProvider zOffset={1000001}>
         <Card borderTop padding={2}>
           <Flex align="center" gap={2}>
-            <Button disabled={changedCount === 0} fontSize={1} mode="bleed" onClick={resetOverrides} padding={2} text="Reset all" />
+            <Button
+              disabled={changedCount === 0}
+              fontSize={1}
+              mode="bleed"
+              onClick={resetOverrides}
+              padding={2}
+              text="Reset all"
+            />
             <Box flex={1} />
-            {getConfig().links?.storybookBase ? (
-              <Text data-testid="storybook-base" muted size={0} title="Set SANITY_STUDIO_STORYBOOK_BASE to point the links elsewhere">
-                Storybook: {getConfig().links?.storybookBase}
-              </Text>
-            ) : null}
-            {getConfig().links?.remote ? (
-              <Button fontSize={1} mode="bleed" onClick={() => window.open(`${getConfig().links!.remote}?tab=${TAB_ID}`, 'variants-2-0-options-remote', 'popup,width=520,height=820')} padding={2} text="Options remote" />
-            ) : null}
-            {getConfig().links?.remote ? (
-              <Button fontSize={1} mode="bleed" onClick={() => window.open(`${getConfig().links!.journeysRemote}?tab=${TAB_ID}&storybook=${encodeURIComponent(getConfig().links?.storybookBase ?? '')}`, 'variants-2-0-remote', 'popup,width=1280,height=860')} padding={2} text="Journeys remote" />
-            ) : null}
-            <Button fontSize={1} mode="bleed" onClick={copy} padding={2} text={copied ? 'Copied' : 'Copy link'} />
-            <Button fontSize={1} mode="bleed" onClick={onHide} padding={2} text="Hide until refresh" />
+            <MenuButton
+              button={
+                <Button fontSize={1} icon={ShareIcon} mode="bleed" padding={2} text="Share" />
+              }
+              id="options-share-menu"
+              menu={
+                <Menu padding={1}>
+                  {getConfig().links?.remote ? (
+                    <MenuItem
+                      onClick={() =>
+                        window.open(
+                          `${getConfig().links!.remote}?tab=${TAB_ID}`,
+                          'variants-2-0-options-remote',
+                          'popup,width=520,height=820',
+                        )
+                      }
+                      text="Options remote"
+                    />
+                  ) : null}
+                  {getConfig().links?.remote ? (
+                    <MenuItem
+                      onClick={() =>
+                        window.open(
+                          `${getConfig().links!.journeysRemote}?tab=${TAB_ID}&storybook=${encodeURIComponent(getConfig().links?.storybookBase ?? '')}`,
+                          'variants-2-0-remote',
+                          'popup,width=1280,height=860',
+                        )
+                      }
+                      text="Journeys remote"
+                    />
+                  ) : null}
+                  <MenuItem onClick={copy} text={copied ? 'Copied' : 'Copy link'} />
+                </Menu>
+              }
+              popover={{placement: 'top-end', portal: true}}
+            />
+            <MenuButton
+              button={
+                <Button
+                  aria-label="More"
+                  fontSize={1}
+                  icon={EllipsisHorizontalIcon}
+                  mode="bleed"
+                  padding={2}
+                />
+              }
+              id="options-more-menu"
+              menu={
+                <Menu padding={1}>
+                  {getConfig().links?.storybookBase ? (
+                    <MenuItem
+                      data-testid="storybook-base"
+                      disabled
+                      text={`Storybook: ${getConfig().links?.storybookBase}`}
+                    />
+                  ) : null}
+                  <MenuItem onClick={onHide} text="Hide until refresh" />
+                </Menu>
+              }
+              popover={{placement: 'top-end', portal: true}}
+            />
           </Flex>
         </Card>
+      </LayerProvider>
     </>
   )
 }
-
 
 /** The text of a sheet's rules, or null when it cannot be read (cross-origin). */
 function sheetText(sheet: CSSStyleSheet): string | null {
@@ -613,7 +899,10 @@ function startStyleSync(target: Document): () => void {
         target.documentElement.setAttribute(attr.name, attr.value)
       }
     }
-    const sheets = [...Array.from(document.styleSheets), ...Array.from(document.adoptedStyleSheets ?? [])]
+    const sheets = [
+      ...Array.from(document.styleSheets),
+      ...Array.from(document.adoptedStyleSheets ?? []),
+    ]
     for (const sheet of sheets) {
       const existing = copies.get(sheet)
       if (sheet.href) {
@@ -683,7 +972,12 @@ async function openExternalWindow(size: {w: number; h: number}): Promise<Window 
 }
 
 /** The panel rendered into another window. Closing that window brings the panel back into the page. */
-function ExternalWindow(props: {win: Window; state: State; onHide: () => void; onBack: () => void}) {
+function ExternalWindow(props: {
+  win: Window
+  state: State
+  onHide: () => void
+  onBack: () => void
+}) {
   const {win, state, onHide, onBack} = props
   useEffect(() => {
     const stopSync = startStyleSync(win.document)
@@ -701,7 +995,17 @@ function ExternalWindow(props: {win: Window; state: State; onHide: () => void; o
             {getConfig().title ?? 'Design options'}
           </Text>
         </Box>
-        <Button fontSize={0} mode="bleed" onClick={() => { win.close(); onBack() }} padding={2} text="Bring back" title="Return the panel to the page" />
+        <Button
+          fontSize={0}
+          mode="bleed"
+          onClick={() => {
+            win.close()
+            onBack()
+          }}
+          padding={2}
+          text="Bring back"
+          title="Return the panel to the page"
+        />
       </Flex>
       <ConfigBody onHide={onHide} state={state} />
     </Card>,
@@ -711,22 +1015,29 @@ function ExternalWindow(props: {win: Window; state: State; onHide: () => void; o
 
 // A floating window instead of a docked panel: dragged by its title bar, resized from the corner, position and
 // size remembered. No scrim, so the studio under it stays interactive. Esc minimises it.
-function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => void; onPopOut: (size: {w: number; h: number}) => void}) {
+function ConfigWindow(props: {
+  state: State
+  onClose: () => void
+  onHide: () => void
+  onPopOut: (size: {w: number; h: number}) => void
+}) {
   const {state, onClose, onHide, onPopOut} = props
   const [rect, setRect] = useState<Rect>(loadRect)
   const rectRef = useRef(rect)
-  rectRef.current = rect
+  useLayoutEffect(() => {
+    rectRef.current = rect
+  })
   const frame = useRef<HTMLDivElement | null>(null)
   const drag = useRef<{dx: number; dy: number} | null>(null)
 
-  const save = (next: Rect) => {
+  const save = useCallback((next: Rect) => {
     setRect(next)
     try {
       window.localStorage.setItem(WINDOW_KEY(), JSON.stringify(next))
     } catch {
       // Not remembered this time.
     }
-  }
+  }, [])
 
   // Keep it inside the viewport when the browser window changes size.
   useEffect(() => {
@@ -742,11 +1053,12 @@ function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => v
     const observer = new ResizeObserver(() => {
       const w = Math.round(el.offsetWidth)
       const h = Math.round(el.offsetHeight)
-      if (w !== rectRef.current.w || h !== rectRef.current.h) save(clampRect({...rectRef.current, w, h}))
+      if (w !== rectRef.current.w || h !== rectRef.current.h)
+        save(clampRect({...rectRef.current, w, h}))
     })
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [save])
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if ((event.target as HTMLElement).closest('button')) return
@@ -755,7 +1067,13 @@ function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => v
   }
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!drag.current) return
-    setRect(clampRect({...rectRef.current, x: event.clientX - drag.current.dx, y: event.clientY - drag.current.dy}))
+    setRect(
+      clampRect({
+        ...rectRef.current,
+        x: event.clientX - drag.current.dx,
+        y: event.clientY - drag.current.dy,
+      }),
+    )
   }
   const onPointerUp = () => {
     if (!drag.current) return
@@ -777,6 +1095,7 @@ function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => v
   }
 
   return (
+    // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Escape closes the dialog from anywhere inside it
     <div
       aria-label="Design options"
       onKeyDown={(event) => {
@@ -802,7 +1121,12 @@ function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => v
         zIndex: 1000000,
       }}
     >
-      <Card border radius={3} shadow={3} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+      <Card
+        border
+        radius={3}
+        shadow={3}
+        style={{display: 'flex', flexDirection: 'column', height: '100%'}}
+      >
         <Flex
           align="center"
           gap={2}
@@ -822,13 +1146,44 @@ function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => v
               Design options
             </Text>
           </Box>
-          <Button fontSize={0} mode="bleed" onClick={() => onPopOut({w: rect.w, h: rect.h})} padding={2} text="Pop out" title="Open in its own window: move it to another screen" />
-          <Button fontSize={0} mode="bleed" onClick={() => save(dockedRect())} padding={2} text="Dock" title="Back to the bottom left" />
-          <Button aria-label="Minimise" icon={RemoveIcon} mode="bleed" onClick={onClose} padding={2} style={{height: 25, width: 25}} title="Minimise (Esc)" />
-          <Button aria-label="Close" icon={CloseIcon} mode="bleed" onClick={onClose} padding={2} style={{height: 25, width: 25}} />
+          <Button
+            aria-label="Pop out"
+            icon={ArrowTopRightIcon}
+            mode="bleed"
+            onClick={() => onPopOut({w: rect.w, h: rect.h})}
+            padding={2}
+            style={{height: 25, width: 25}}
+            title="Pop out: open in its own window, to move it to another screen"
+          />
+          <Button
+            aria-label="Dock"
+            icon={ArrowDownIcon}
+            mode="bleed"
+            onClick={() => save(dockedRect())}
+            padding={2}
+            style={{height: 25, width: 25}}
+            title="Dock: back to the bottom left"
+          />
+          <Button
+            aria-label="Minimise"
+            icon={RemoveIcon}
+            mode="bleed"
+            onClick={onClose}
+            padding={2}
+            style={{height: 25, width: 25}}
+            title="Minimise (Esc)"
+          />
+          <Button
+            aria-label="Close"
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={onClose}
+            padding={2}
+            style={{height: 25, width: 25}}
+          />
         </Flex>
 
-        <ConfigBody onHide={onHide} state={state} />
+        <ConfigBody compact={rect.w < 900} onHide={onHide} state={state} />
       </Card>
     </div>
   )
@@ -871,10 +1226,18 @@ function Launcher({children}: {children: ReactNode}) {
     <div
       data-testid="options-launcher"
       ref={box}
-      style={{alignItems: 'center', display: 'flex', gap: 2, position: 'fixed', zIndex: 1000000, ...(pos ? {left: pos.x, top: pos.y} : {bottom: 16, left: 16})}}
+      style={{
+        alignItems: 'center',
+        display: 'flex',
+        gap: 2,
+        position: 'fixed',
+        zIndex: 1000000,
+        ...(pos ? {left: pos.x, top: pos.y} : {bottom: 16, left: 16}),
+      }}
     >
       <div
-        aria-label="Drag handle" data-testid="options-grip"
+        aria-label="Drag handle"
+        data-testid="options-grip"
         onDoubleClick={() => save(null)}
         onPointerDown={(event) => {
           const rect = box.current!.getBoundingClientRect()
@@ -882,7 +1245,8 @@ function Launcher({children}: {children: ReactNode}) {
           ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
         }}
         onPointerMove={(event) => {
-          if (drag.current) setPos(clamp(event.clientX - drag.current.dx, event.clientY - drag.current.dy))
+          if (drag.current)
+            setPos(clamp(event.clientX - drag.current.dx, event.clientY - drag.current.dy))
         }}
         onPointerUp={(event) => {
           if (!drag.current) return
@@ -891,11 +1255,30 @@ function Launcher({children}: {children: ReactNode}) {
           save(next)
         }}
         role="button"
-        style={{background: 'var(--card-bg-color)', border: '1px solid var(--card-border-color)', borderRadius: 4, cursor: 'grab', height: 33, touchAction: 'none', width: 14}}
+        style={{
+          background: 'var(--card-bg-color)',
+          border: '1px solid var(--card-border-color)',
+          borderRadius: 4,
+          cursor: 'grab',
+          height: 33,
+          touchAction: 'none',
+          width: 14,
+        }}
         tabIndex={-1}
         title="Drag to move; double-click to reset"
       >
-        <span aria-hidden style={{color: 'var(--card-muted-fg-color)', display: 'block', fontSize: 10, lineHeight: '31px', textAlign: 'center'}}>⋮</span>
+        <span
+          aria-hidden
+          style={{
+            color: 'var(--card-muted-fg-color)',
+            display: 'block',
+            fontSize: 10,
+            lineHeight: '31px',
+            textAlign: 'center',
+          }}
+        >
+          ⋮
+        </span>
       </div>
       {children}
     </div>
@@ -909,7 +1292,16 @@ export function DesignOptions() {
   // The global shape: one CSS variable that every Variants 2.0 pill and chip reads.
   useEffect(() => {
     const shape = getConfig().shape
-    if (shape) document.documentElement.style.setProperty(shape.variable, state.shape === 'box' ? shape.box : shape.round)
+    if (shape)
+      document.documentElement.style.setProperty(
+        shape.variable,
+        state.shape === 'box' ? shape.box : shape.round,
+      )
+    if (shape)
+      document.documentElement.style.setProperty(
+        '--v2-pill-icon-pad',
+        state.shape === 'box' ? '6px' : '12px',
+      )
   }, [state.shape])
   const [external, setExternal] = useState<Window | null>(null)
   const controlRef = useRef<HTMLButtonElement | null>(null)
@@ -930,15 +1322,31 @@ export function DesignOptions() {
   const changedCount = stock
     ? 0
     : getConfig().components.filter(
-        (c) => state.overrides[c.id] !== undefined && resolveOption(c, state) !== showOption(c, state),
+        (c) =>
+          state.overrides[c.id] !== undefined && resolveOption(c, state) !== showOption(c, state),
       ).length
-  const label = stock ? 'Stock' : changedCount > 0 ? `Design options · ${changedCount} changed` : 'Design options'
+  const label = stock
+    ? 'Stock'
+    : changedCount > 0
+      ? `Design options · ${changedCount} changed`
+      : 'Design options'
 
   if (hidden) return null
 
   return (
     <>
-      {external ? <ExternalWindow onBack={bringBack} onHide={() => { external.close(); setExternal(null); setHidden(true) }} state={state} win={external} /> : null}
+      {external ? (
+        <ExternalWindow
+          onBack={bringBack}
+          onHide={() => {
+            external.close()
+            setExternal(null)
+            setHidden(true)
+          }}
+          state={state}
+          win={external}
+        />
+      ) : null}
       {open && !external ? (
         <ConfigWindow
           onPopOut={(size) => void popOut(size)}
@@ -960,7 +1368,13 @@ export function DesignOptions() {
               <span style={{alignItems: 'center', display: 'flex', height: 17}}>
                 <StatusDot
                   color={stock ? 'default' : changedCount > 0 ? 'caution' : 'positive'}
-                  title={stock ? 'Stock Studio' : changedCount > 0 ? 'Some components differ from Show' : 'Following Show'}
+                  title={
+                    stock
+                      ? 'Stock Studio'
+                      : changedCount > 0
+                        ? 'Some components differ from Show'
+                        : 'Following Show'
+                  }
                 />
               </span>
             }
@@ -976,4 +1390,3 @@ export function DesignOptions() {
     </>
   )
 }
-

@@ -66,6 +66,7 @@ try {
   // 5. Stage back to Open beta while on a GA lens: the switch drops to two lenses and the lens falls back to Definition.
   await radios().filter({hasText: 'Dimension'}).click()
   await p.getByRole('button', {name: 'Design options'}).click()
+  const settings = p.getByRole('dialog', {name: 'Design options'}).getByRole('button', {name: 'Settings'}); if (await settings.isVisible().catch(() => false) && (await settings.getAttribute('aria-expanded')) !== 'true') await settings.click(); 
   await p.getByRole('dialog', {name: 'Design options'}).getByRole('radio', {name: 'Open beta', exact: true}).click()
   await p.waitForTimeout(1200)
   const after = await radios().allInnerTexts()

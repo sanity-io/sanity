@@ -21,5 +21,6 @@ for (let n = 1; n <= 9; n++) {
   console.log(`C${n}:`, links.join(' | '))
   await dialog.screenshot({path: `journeys-captures/story-links/c${n}.png`})
 }
-console.log(await dialog.locator('[data-testid=storybook-base]').innerText())
+await dialog.getByRole('button', {name: 'More'}).click()
+console.log(await p.locator('[data-testid=storybook-base]').innerText())
 await b.close()

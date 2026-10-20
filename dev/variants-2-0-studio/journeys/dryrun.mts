@@ -157,15 +157,17 @@ for (const theme of ['light', 'dark'] as const) {
     await page.getByRole('button', {name: 'Design options'}).waitFor({timeout: 30000})
     await page.getByRole('button', {name: 'Design options'}).click()
     await page.getByRole('dialog', {name: 'Design options'}).waitFor({timeout: 8000})
+    const settings = page.getByRole('dialog').first().getByRole('button', {name: 'Settings'}); if (await settings.isVisible().catch(() => false) && (await settings.getAttribute('aria-expanded')) !== 'true') await settings.click(); 
     await page.getByRole('dialog').getByRole('radio', {name: 'B', exact: true}).first().click()
     await page.waitForTimeout(800)
     await page.getByRole('dialog').getByRole('radio', {name: 'A', exact: true}).first().click()
-    return 'opened, Show B then A'
+    return 'opened, Options for all B then A'
   })
   await step('5b Journeys remote opens from the Design options window', async () => {
     const dialog = page.getByRole('dialog', {name: 'Design options'})
     if (!(await dialog.isVisible().catch(() => false))) await page.getByRole('button', {name: 'Design options'}).click()
-    const [popup] = await Promise.all([context.waitForEvent('page', {timeout: 8000}), dialog.getByRole('button', {name: 'Journeys remote'}).click()])
+    await dialog.getByRole('button', {name: 'Share'}).click()
+    const [popup] = await Promise.all([context.waitForEvent('page', {timeout: 8000}), page.getByRole('menuitem', {name: 'Journeys remote'}).click()])
     await popup.waitForSelector('#conn', {timeout: 8000})
     const text = await popup.locator('#conn').innerText()
     await popup.close()

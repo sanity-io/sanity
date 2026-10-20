@@ -28,6 +28,7 @@ try {
   log(parseFloat(round.pill) >= 100 && parseFloat(round.chip) >= 100, 'Round (default): pill and chip are full radius', JSON.stringify(round))
   await p.getByRole('button', {name: 'Design options'}).click()
   const dialog = p.getByRole('dialog', {name: 'Design options'})
+  const settings = dialog.getByRole('button', {name: 'Settings'}); if (await settings.isVisible().catch(() => false) && (await settings.getAttribute('aria-expanded')) !== 'true') await settings.click(); 
   await dialog.getByRole('radio', {name: 'Box', exact: true}).click()
   await p.waitForTimeout(500)
   await p.keyboard.press('Escape')
