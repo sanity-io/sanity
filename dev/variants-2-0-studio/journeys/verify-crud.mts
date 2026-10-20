@@ -50,10 +50,13 @@ try {
   // 3. Delete the variant document through the version list.
   await p.goto(`${base}/structure/book;${DOC}%2Cinspect%3Dvariants-inventory?perspective=drafts&variant=${variantId}&preset=open-beta-a`)
   await p.waitForTimeout(12000)
+  // The panel has no row actions; its expand control opens the full lens, which has them.
+  await p.locator('[data-testid=inventory-expand]').click()
+  await p.waitForTimeout(2500)
   await p.getByRole('button', {name: /Actions for PW crud/}).first().click()
   await p.getByRole('menuitem', {name: 'Delete this version'}).click()
   await shot('5-delete-variant-dialog')
-  await p.getByRole('dialog').getByRole('button', {name: /^Delete 1/}).click()
+  await p.getByRole('dialog').last().getByRole('button', {name: /^Delete 1/}).click()
   await p.waitForTimeout(5000)
   const left = await variantDocs()
   log(left.length === 0 && (await x.fetch('count(*[_id == $id])', {id: DOC})) === 1, 'DELETE variant document (version list)', `variant versions left ${left.length}`)
