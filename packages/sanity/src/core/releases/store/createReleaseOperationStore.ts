@@ -9,7 +9,13 @@ import {
   type SingleActionResult,
 } from '@sanity/client'
 
-import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../../util/draftUtils'
+import {
+  getDraftId,
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+  isPublishedId,
+} from '../../util/draftUtils'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -190,8 +196,16 @@ export function createReleaseOperationsStore(options: {
     documentId: string,
     opts?: BaseActionOptions,
   ) => {
-    // fetch original document to get the revision id
-    const document = await client.getDocument(documentId)
+    // Copy version is sometimes given the published id of a document that only
+    // exists as a draft. The versions list and the published chip both address
+    // that id, so read the draft and use it as the base.
+    let baseId = documentId
+    let document = await client.getDocument(baseId)
+
+    if (!document && isPublishedId(documentId)) {
+      baseId = getDraftId(documentId)
+      document = await client.getDocument(baseId)
+    }
 
     if (!document) {
       throw new Error(`Document with id ${documentId} not found`)
@@ -199,8 +213,8 @@ export function createReleaseOperationsStore(options: {
 
     return client.createVersion(
       {
-        baseId: documentId,
-        ifBaseRevisionId: document?._rev,
+        baseId,
+        ifBaseRevisionId: document._rev,
         publishedId: getPublishedId(documentId),
         releaseId,
       },
