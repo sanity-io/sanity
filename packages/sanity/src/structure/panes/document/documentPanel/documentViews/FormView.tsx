@@ -179,6 +179,10 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
   }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLFormElement>(null)
+  // FormHeader chrome (schema description, title button) sits above FormBuilder and is already
+  // mounted when this effect runs. Autofocus must target the fields region so those controls
+  // do not steal focus (and open tooltips) ahead of the first input.
+  const [formFieldsRef, setFormFieldsRef] = useState<null | HTMLDivElement>(null)
   const [hasFocusedAnyPath, setHasFocusedAnyPath] = useState(false)
 
   useEffect(() => {
@@ -188,34 +192,37 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     // auto-focusing the first descendant after blurring a path that was focused
     // for any reason (e.g. by this auto-focus mechanism itself, or by
     // navigating to a deep-link).
-    if (hasFocusedAnyPath || !ready || formState?.focusPath.length || !formRef) {
+    // Prefer the fields region when present; fall back to the form for states that
+    // render without FormBuilder (e.g. the form-hidden placeholder).
+    const focusRoot = formFieldsRef ?? formRef
+    if (hasFocusedAnyPath || !ready || formState?.focusPath.length || !focusRoot) {
       return undefined
     }
-    if (focusFirstDescendant(formRef)) {
+    if (focusFirstDescendant(focusRoot)) {
       return undefined
     }
     // Nothing focusable yet: the inputs are behind FormBuilder's Suspense boundary while a lazy
     // form component loads. Retry when they land, unless focus has moved anywhere since the form
     // committed: whatever held focus before that (the list item that opened the document) is not
     // a choice the user made while waiting, but any focus after it is.
-    const {ownerDocument} = formRef
+    const {ownerDocument} = focusRoot
     let focusMoved = false
     const handleFocusIn = () => {
       focusMoved = true
     }
     ownerDocument.addEventListener('focusin', handleFocusIn, true)
     const observer = new MutationObserver(() => {
-      if (focusMoved || focusFirstDescendant(formRef)) {
+      if (focusMoved || focusFirstDescendant(focusRoot)) {
         observer.disconnect()
         ownerDocument.removeEventListener('focusin', handleFocusIn, true)
       }
     })
-    observer.observe(formRef, {childList: true, subtree: true})
+    observer.observe(focusRoot, {childList: true, subtree: true})
     return () => {
       observer.disconnect()
       ownerDocument.removeEventListener('focusin', handleFocusIn, true)
     }
-  }, [hasFocusedAnyPath, formRef, formState?.focusPath.length, ready])
+  }, [hasFocusedAnyPath, formRef, formFieldsRef, formState?.focusPath.length, ready])
 
   useEffect(() => {
     if (focusPath.length !== 0) {
@@ -279,42 +286,44 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
                   onTitleClick={titleField.editable && !isReadOnly ? titleField.focus : undefined}
                 />
               </FormRow>
-              <FormBuilder
-                __internal_fieldActions={fieldActions}
-                __internal_inspectOpen={inspectOpen}
-                __internal_patchChannel={patchChannel}
-                changed={formState.changed}
-                collapsedFieldSets={collapsedFieldSets}
-                collapsedPaths={collapsedPaths}
-                compareValue={compareValue ?? undefined}
-                focused={formState.focused}
-                focusPath={formState.focusPath}
-                groups={formState.groups}
-                id="root"
-                members={formState.members}
-                onChange={onChange}
-                onFieldGroupSelect={onSetActiveFieldGroup}
-                onPathBlur={onBlur}
-                onPathFocus={onFocus}
-                onPathOpen={onPathOpen}
-                onSetFieldSetCollapsed={onSetCollapsedFieldSet}
-                onSetPathCollapsed={onSetCollapsedPath}
-                openPath={openPath}
-                perspective={selectedPerspective}
-                hasUpstreamVersion={hasUpstreamVersion}
-                changedFromBaseVariant={formState.changedFromBaseVariant}
-                baseVariantValue={formState.baseVariantValue}
-                hasBaseVariant={formState.hasBaseVariant}
-                presence={presence}
-                readOnly={isReadOnly}
-                schemaType={formState.schemaType}
-                validation={validation}
-                value={
-                  // note: the form state doesn't have a typed concept of a "document" value
-                  // but these should be compatible
-                  formState.value as FormDocumentValue
-                }
-              />
+              <div ref={setFormFieldsRef}>
+                <FormBuilder
+                  __internal_fieldActions={fieldActions}
+                  __internal_inspectOpen={inspectOpen}
+                  __internal_patchChannel={patchChannel}
+                  changed={formState.changed}
+                  collapsedFieldSets={collapsedFieldSets}
+                  collapsedPaths={collapsedPaths}
+                  compareValue={compareValue ?? undefined}
+                  focused={formState.focused}
+                  focusPath={formState.focusPath}
+                  groups={formState.groups}
+                  id="root"
+                  members={formState.members}
+                  onChange={onChange}
+                  onFieldGroupSelect={onSetActiveFieldGroup}
+                  onPathBlur={onBlur}
+                  onPathFocus={onFocus}
+                  onPathOpen={onPathOpen}
+                  onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+                  onSetPathCollapsed={onSetCollapsedPath}
+                  openPath={openPath}
+                  perspective={selectedPerspective}
+                  hasUpstreamVersion={hasUpstreamVersion}
+                  changedFromBaseVariant={formState.changedFromBaseVariant}
+                  baseVariantValue={formState.baseVariantValue}
+                  hasBaseVariant={formState.hasBaseVariant}
+                  presence={presence}
+                  readOnly={isReadOnly}
+                  schemaType={formState.schemaType}
+                  validation={validation}
+                  value={
+                    // note: the form state doesn't have a typed concept of a "document" value
+                    // but these should be compatible
+                    formState.value as FormDocumentValue
+                  }
+                />
+              </div>
             </>
           )}
         </Box>
