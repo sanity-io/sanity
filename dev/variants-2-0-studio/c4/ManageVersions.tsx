@@ -7,19 +7,22 @@ import {BadgeButton, BadgedControl} from '../c3/StateBadge'
 import {baseDot} from '../c3/types'
 import {VersionsIcon} from '../c3/VersionsIcon'
 import {useVersionList} from '../data/useVersionList'
-import {useVariantDefinitions} from '../c1/world'
-import {SharedInventory} from '../c5/ActionableLenses'
+import {DocumentVersionsLens, WideOverlay} from '../c5/ActionableLenses'
 import {useCorpus} from '../c5/useCorpus'
+import {useVariantDefinitions} from '../c1/world'
+import {InventoryExpandContext} from './inventory/expandContext'
+import {LiveInventory} from './inventory/LiveInventory'
 
 /**
- * C4 option B: the same inventory panel (Andrej's), opened as a popover from a "Manage versions" button. It sits in
+ * C4 option B: the same inventory panel (Andrej's, as in option A), opened as a popover from a "Manage versions" button. It sits in
  * a thin row under the pane header (the PROPOSED banner slot), right aligned.
  */
 export function ManageVersions({documentId, form = 'lane'}: {documentId: string; form?: 'lane' | 'icon'}) {
   const [open, setOpen] = useState(false)
-  const versions = useVersionList(documentId, form === 'icon')
+  const [expanded, setExpanded] = useState(false)
   const corpus = useCorpus()
   const definitions = useVariantDefinitions()
+  const versions = useVersionList(documentId, form === 'icon')
   const [button, setButton] = useState<HTMLElement | null>(null)
   const panel = useRef<HTMLDivElement | null>(null)
 
@@ -47,8 +50,10 @@ export function ManageVersions({documentId, form = 'lane'}: {documentId: string;
   const popover = (
       <Popover
         content={
-          <Box padding={3} ref={panel} style={{maxHeight: 520, overflow: 'auto', width: 360}}>
-            {corpus ? <SharedInventory bare corpus={corpus} definitions={definitions} docId={documentId} /> : <Text muted size={1}>Loading versions…</Text>}
+          <Box ref={panel} style={{height: 520, overflow: 'hidden', width: 360}}>
+            <InventoryExpandContext.Provider value={corpus ? () => { setOpen(false); setExpanded(true) } : null}>
+              <LiveInventory documentId={documentId} title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId} />
+            </InventoryExpandContext.Provider>
           </Box>
         }
         floatingBoundary={document.body}
@@ -62,6 +67,13 @@ export function ManageVersions({documentId, form = 'lane'}: {documentId: string;
         shadow={3}
       />
   )
+
+  const dialog =
+    expanded && corpus ? (
+      <WideOverlay onClose={() => setExpanded(false)} title="Version inventory">
+        <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={documentId} onPin={() => undefined} />
+      </WideOverlay>
+    ) : null
 
   // In the pills row: the same icon and state badge as the list row's versions control.
   if (form === 'icon') {
@@ -78,6 +90,7 @@ export function ManageVersions({documentId, form = 'lane'}: {documentId: string;
           />
         </BadgedControl>
         {popover}
+        {dialog}
       </span>
     )
   }
@@ -97,6 +110,7 @@ export function ManageVersions({documentId, form = 'lane'}: {documentId: string;
         text="Manage versions"
       />
       {popover}
+      {dialog}
     </Flex>
   )
 }

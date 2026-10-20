@@ -93,7 +93,7 @@ async function main() {
     }, page)
 
     // C4 option C: the lens in the inspector
-    await page.goto(`${base}/structure/book;book-c5-pw-2%2Cinspect%3Dvariants-inventory?design=show.a,stage.open-beta,c4.a`)
+    await page.goto(`${base}/structure/book;book-c5-pw-2%2Cinspect%3Dvariants-inventory?design=show.a,stage.open-beta,c4.c`)  // C is the archived shared lens (the previous A): these checks cover its row menu
     await sleep(page, 10000)
     await guarded('C4 lens row click keeps the inspector and shows the version', async () => {
       await page.locator('[data-testid=lens-doc-versions-mini]').waitFor({timeout: 20000})

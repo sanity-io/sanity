@@ -1,5 +1,5 @@
 // Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/variants-2-0, commit db53306896, lib/explorations/variants/inventory-concepts/VersionInventoryPanel.tsx).
+// explorations/inventory-sidepanel (PR #47), commit 310271b6e2, previously db53306896, lib/explorations/variants/inventory-concepts/VersionInventoryPanel.tsx).
 // Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
 import {DocumentVersionsStatusIndicator} from '../../../../packages/sanity/src/core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {VariantCheckbox} from '../../../../packages/sanity/src/core/documentGroupInventory/components/VariantSet/VariantCheckbox'
@@ -19,6 +19,8 @@ import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {CloseIcon} from '@sanity/icons/Close'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {ExpandIcon} from '@sanity/icons/Expand'
+import {useInventoryExpand} from './expandContext'
+import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
@@ -35,7 +37,7 @@ import {styled} from 'styled-components'
 
 import {DateSpanPicker} from './DateSpanPicker'
 import {documentsFor, variantsOn, worldDocument, worldVariants} from './fixtures'
-import {FilterMenu, NOT_DESIGNED, SortMenu, ViewSettingsMenu, ViewsMenu} from './InventoryMenus'
+import {AddFilterMenu, NOT_DESIGNED, SortMenu, ViewSettingsMenu, ViewsMenu} from './InventoryMenus'
 import {
   filterKey,
   filterLabel,
@@ -135,9 +137,17 @@ function PlaceholderIconButton({icon, label}: {icon: ComponentType; label: strin
  * own scheme in a neutral tone, so it reads as a bar in light and dark alike (Andrej, 2026-10-15: "Both
  * modes need to work"); it used to invert the scheme and turned white in dark mode.
  */
-function ModeBar({children, testId}: {children: ReactNode; testId: string}) {
+function ModeBar({
+  children,
+  testId,
+  borderBottom,
+}: {
+  children: ReactNode
+  testId: string
+  borderBottom?: boolean
+}) {
   return (
-    <Card data-testid={testId} paddingX={3} paddingY={2} tone="neutral">
+    <Card borderBottom={borderBottom} data-testid={testId} paddingX={3} paddingY={2} tone="neutral">
       <Flex align="center" gap={2} wrap="wrap">
         {children}
       </Flex>
@@ -147,6 +157,7 @@ function ModeBar({children, testId}: {children: ReactNode; testId: string}) {
 
 function PanelHeader() {
   const {world} = useInventoryConcepts()
+  const expand = useInventoryExpand()
   return (
     <Flex
       align="center"
@@ -161,13 +172,14 @@ function PanelHeader() {
           Versions of {worldDocument(world).title}
         </Text>
       </Box>
-      {/* Leads to the Variants tool (Andrej, 2026-10-14); the prototype names it, the click is not wired. */}
+      {/* LIVE: his "Open in Variants tool" (not wired in the prototype) is the one expand of the inventory: it opens the full lens. */}
       <Button
-        aria-label="Open in Variants tool"
+        aria-label="Expand the version inventory"
+        data-testid="inventory-expand"
         icon={ExpandIcon}
         mode="bleed"
-        onClick={noop}
-        tooltipProps={{content: 'Open in Variants tool'}}
+        onClick={expand ?? noop}
+        tooltipProps={{content: 'Expand the version inventory'}}
       />
       <PlaceholderIconButton icon={CloseIcon} label="Close" />
     </Flex>
@@ -213,7 +225,7 @@ function Toolbar({narrow}: {narrow: boolean}) {
       <ViewsMenu />
       <Box flex={1} />
       <PlaceholderIconButton icon={SearchIcon} label="Search" />
-      <FilterMenu />
+      <FilterToggle />
       {!narrow && <SortMenu />}
       {!narrow && <ViewSettingsMenu />}
     </Flex>
@@ -221,18 +233,43 @@ function Toolbar({narrow}: {narrow: boolean}) {
 }
 
 /**
- * The filter bar sits under the toolbar while any filter is set, and goes when the last one is
- * removed; the toolbar never gives way to it (Andrej, 2026-10-19: "we never kind of like remove the
+ * The toolbar's filter button turns the filter bar on and off and opens no menu (Andrej, 2026-10-20:
+ * "The filter button should just turn on and off … the filter bar … we don't want that menu"). It
+ * reads selected while the bar shows or a filter is set, so hidden filters stay visible as a state
+ * ("Hiding keeps the filters, but the button should be visibly in active state").
+ */
+function FilterToggle() {
+  const {filters, filterBarOpen, toggleFilterBar} = useInventoryConcepts()
+  return (
+    <Button
+      aria-label="Filter"
+      aria-pressed={filterBarOpen}
+      data-testid="inventory-filter-toggle"
+      icon={FilterIcon}
+      mode="bleed"
+      onClick={toggleFilterBar}
+      selected={filterBarOpen || filters.length > 0}
+      tooltipProps={{content: 'Filter'}}
+    />
+  )
+}
+
+/**
+ * The filter bar sits under the toolbar while the filter button has it on; the toolbar never gives
+ * way to it (Andrej, 2026-10-19: "we never kind of like remove the
  * view selector and override it, we just show the filter bar under it … people would be choosing
  * the save view from the view selector menu"). Save view lives in the views menu, so the bar holds
- * the filters, Add filter and Clear filters, and needs no Done. In the 240 px pane Clear filters takes
- * its own line after Add filter, so a chip keeps the width its ✕ needs.
+ * the filters, Add filter and Clear filters, and needs no Done. Clear filters removes the filters and
+ * leaves the bar open. A theme border divides the bar from the list, as under a pane toolbar
+ * (Andrej, 2026-10-20: "there needs to be a divider towards the list of the versions below"). In the
+ * 240 px pane Clear filters takes its own line after Add filter, so a chip keeps the width its ✕
+ * needs.
  */
 function FilterBar({narrow}: {narrow: boolean}) {
   const {filters, removeFilter, resetFilters, world} = useInventoryConcepts()
   const clear = <Button mode="bleed" onClick={resetFilters} text="Clear filters" />
   return (
-    <ModeBar testId="inventory-filter-bar">
+    <ModeBar borderBottom testId="inventory-filter-bar">
       {/* The filters and Add filter wrap on the left; Clear filters stays on the first line, right
           (Andrej, 2026-10-15: "Make the add filter button a secondary button that bleeds into the
           background"). */}
@@ -247,7 +284,7 @@ function FilterBar({narrow}: {narrow: boolean}) {
               text={filterLabel(filter, world)}
             />
           ))}
-          <FilterMenu button={<Button icon={AddIcon} mode="bleed" text="Add filter" />} />
+          <AddFilterMenu />
           {narrow && (
             <Box data-testid="inventory-filter-actions" style={{flexBasis: '100%'}}>
               {clear}
@@ -503,18 +540,10 @@ function Row({row}: {row: InventoryRow}) {
   )
   return (
     <>
-      {/* The version the form edits, or a selected one, in the primary tone; By priority's winner,
-          the version this visitor is shown, in the positive tone (Andrej, 2026-10-15: "a flat list
-          with a winning variant being highlighted"). */}
-      {highlighted ? (
-        <Card tone="primary">{entry}</Card>
-      ) : row.isShown ? (
-        <Card data-testid="inventory-winner" tone="positive">
-          {entry}
-        </Card>
-      ) : (
-        entry
-      )}
+      {/* One highlight only, the primary tone, on the version the form edits or a selected one
+          (Andrej, 2026-10-20: "It should always be only one standard highlight"). By priority's
+          winner keeps its match label and `data-shown`. */}
+      {highlighted ? <Card tone="primary">{entry}</Card> : entry}
       {row.fallback && (
         <Box data-testid="inventory-fallback" paddingX={3} paddingY={3}>
           <Text muted size={1}>
@@ -551,30 +580,18 @@ function PublishDatePicker({anchor}: {anchor: HTMLElement | null}) {
 }
 
 /**
- * When the filters leave no row: Studio's search no-results layout (`NoResults`), muted and centred,
- * with a way back (Andrej, 2026-10-15: "We need an empty state where the filter yields no result
- * with the option to reset filters"). Reset removes every filter, and the filter bar goes with them.
+ * When the filters leave no row, in every view: one muted line in place of the groups, as Studio's
+ * other empty lists have (Andrej, 2026-10-20: "when there is no matching, we just show them an empty
+ * state in the list"). The filter bar above keeps the chips, Add filter and Clear filters, the one
+ * action that clears them ("Only the clear filter action clears them").
  */
 function NoMatches() {
-  const {resetFilters} = useInventoryConcepts()
   return (
-    <Stack
-      aria-live="assertive"
-      data-testid="inventory-no-matches"
-      gap={4}
-      paddingX={4}
-      paddingY={5}
-    >
-      <Text align="center" muted size={1} weight="medium">
-        No matching versions
-      </Text>
+    <Box aria-live="polite" data-testid="inventory-no-matches" paddingX={4} paddingY={5}>
       <Text align="center" muted size={1}>
-        Change or reset the filters to see more versions.
+        No versions match these filters.
       </Text>
-      <Flex justify="center">
-        <Button mode="ghost" onClick={resetFilters} text="Reset filters" />
-      </Flex>
-    </Stack>
+    </Box>
   )
 }
 
@@ -583,14 +600,13 @@ function NoMatches() {
  * 240 px pane, whose title, ＋ and ⋯ live in Studio's pane header instead.
  */
 export function VersionInventoryPanel({layout = 'wide'}: {layout?: 'wide' | 'narrow'}) {
-  const {groups, filters, selectedKeys} = useInventoryConcepts()
+  const {groups, filters, filterBarOpen, selectedKeys} = useInventoryConcepts()
   const narrow = layout === 'narrow'
   const [filterSlot, setFilterSlot] = useState<HTMLElement | null>(null)
-  // Groups whose header was clicked, by id: each turns from its starting state, open unless it
-  // starts collapsed. A view's groups keep their state when the editor comes back to it.
+  // Groups whose header was clicked, by id: every group starts open, and a click collapses it. A
+  // view's groups keep their state when the editor comes back to it.
   const [toggled, setToggled] = useState<ReadonlySet<string>>(new Set())
-  const isCollapsed = (group: InventoryGroup) =>
-    (group.defaultCollapsed ?? false) !== toggled.has(group.id)
+  const isCollapsed = (group: InventoryGroup) => toggled.has(group.id)
   const toggleCollapsed = useCallback((id: string) => {
     setToggled((current) => {
       const next = new Set(current)
@@ -612,7 +628,7 @@ export function VersionInventoryPanel({layout = 'wide'}: {layout?: 'wide' | 'nar
         {/* LIVE: the C4 cover says selecting a row must not swap the toolbar, so the bulk bar is not shown. */}
         <Toolbar narrow={narrow} />
       </Box>
-      {filters.length > 0 && <FilterBar narrow={narrow} />}
+      {filterBarOpen && <FilterBar narrow={narrow} />}
       <PublishDatePicker anchor={filterSlot} />
       <Box flex={1} overflow="auto">
         <RowShell

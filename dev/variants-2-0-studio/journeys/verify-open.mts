@@ -40,11 +40,11 @@ try {
   log(/book-lighthouse/.test(url()) && /variant=aud-members/.test(url()) && /perspective=published/.test(url()), 'visitor lens Open opens the served version', url())
   log(/Members/.test(await ctx()), 'context line shows the served version', await ctx())
   // 3. inventory row (inspector) keeps the inspector and shows the version
-  await p.goto('http://localhost:3350/structure/book;book-lighthouse%2Cinspect%3Dvariants-inventory?preset=open-beta-a&design=show.a,stage.open-beta,c4.c')
+  await p.goto('http://localhost:3350/structure/book;book-lighthouse%2Cinspect%3Dvariants-inventory?preset=open-beta-a&design=show.a,stage.open-beta,c4.a')
   await p.waitForTimeout(12000)
-  await p.getByText('Returning visitors').last().click().catch(() => undefined)
+  await p.locator('[data-testid^=inventory-row-]').filter({hasText: 'Returning visitors'}).first().click().catch(() => undefined)
   await p.waitForTimeout(4000)
-  log(/inspect=variants-inventory/.test(url()) && /variant=/.test(url()), "Andrej's inventory row keeps the inspector and sets the version", url())
+  log(/inspect=variants-inventory/.test(url()) && /variant=/.test(url()), "Andrej's inventory row (C4 A) keeps the inspector and sets the version", url())
   // 4. shipped Variants tool row link
   await p.goto('http://localhost:3350/variants/aud-members?preset=open-beta-a')
   await p.waitForTimeout(11000)

@@ -169,8 +169,8 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
         return /inspect/.test(decodeURIComponent(page.url())) ? ok(`URL: ${decodeURIComponent(page.url()).split('/structure')[1]}`) : differs('document opened without the inventory: ' + page.url())
       })
       await run(2, async () => {
-        await visible(page, '[data-testid^=lens-doc-versions-mini-row-]', 20000)
-        const n = await page.locator('[data-testid^=lens-doc-versions-mini-row-]').count()
+        await visible(page, '[data-testid^=inventory-row-]', 20000)
+        const n = await page.locator('[data-testid^=inventory-row-]').count()
         return n > 0 ? ok(`the version list shows ${n} rows with address and state`) : differs('version list not readable')
       })
       await run(3, async () => {
@@ -332,20 +332,23 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
         return /Members/.test(line) ? ok(`the document opens on the variant (link with perspective and variant); pane header: ${line}`) : differs('no context line naming the variant')
       })
       await run(1, async () => {
-        await visible(page, '[data-testid^=lens-doc-versions-mini-row-]', 20000)
-        return (await page.locator('[data-testid^=lens-doc-versions-mini-row-]').count()) > 0 ? ok('the version list shows the version rows with states') : differs('version list not shown')
+        await visible(page, '[data-testid^=inventory-row-]', 20000)
+        return (await page.locator('[data-testid^=inventory-row-]').count()) > 0 ? ok('the version list shows the version rows with states') : differs('version list not shown')
       })
       await run(2, async () => {
+        // The panel has no row actions of its own; its one expand control opens the full lens, which does.
+        await page.locator('[data-testid=inventory-expand]').click()
+        await settle(page, 2500)
         await page.getByRole('button', {name: /Actions for Members/}).first().click()
         await page.getByRole('menuitem', {name: 'Delete this version'}).click()
-        const text = (await page.getByRole('dialog').innerText()).replace(/\s+/g, ' ')
+        const text = (await page.getByRole('dialog').last().innerText()).replace(/\s+/g, ' ')
         return /Members/.test(text) && /not served yet|fall back/.test(text) ? ok(text.slice(0, 180)) : differs(text.slice(0, 180))
       })
       await run(3, async () => {
-        await page.getByRole('dialog').getByRole('button', {name: /^Delete 1/}).click()
+        await page.getByRole('dialog').last().getByRole('button', {name: /^Delete 1/}).click()
         // The row that held the dialog is deleted, so the results list may already be gone: do not wait for it.
         await settle(page, 5000)
-        await page.getByRole('dialog').getByRole('button', {name: 'Close'}).last().click({timeout: 2000}).catch(() => undefined)
+        await page.getByRole('dialog').last().getByRole('button', {name: 'Close'}).last().click({timeout: 2000}).catch(() => undefined)
         const left = (await x.fetch('*[_id match "*" + $id && defined(_system.variant)]._id', {id: DOCS[0]})) as string[]
         const base = (await x.fetch('count(*[_id == $id])', {id: DOCS[0]})) as number
         return left.length === 0 && base === 1 ? ok('the Members version is gone; the base document is unchanged') : differs(`variant versions left: ${left.length}, base documents: ${base}`)
@@ -475,10 +478,13 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
         return /Members · draft/.test(line) ? ok(`the draft variant opens as its own document; pane header: ${line}`) : differs(`pane header: ${line || 'none'}`)
       })
       await run(1, async () => {
-        await visible(page, '[data-testid^=lens-doc-versions-mini-row-]', 20000)
-        return /Draft/.test(await page.locator('[data-testid=lens-doc-versions-mini]').innerText()) ? ok('the draft row is listed in the version list') : differs('no draft row')
+        await visible(page, '[data-testid^=inventory-row-]', 20000)
+        await settle(page, 2500)
+        return /Draft/.test(await page.locator('[data-testid=version-inventory-panel]').innerText()) ? ok('the draft row is listed in the version list') : differs('no draft row')
       })
       await run(2, async () => {
+        await page.locator('[data-testid=inventory-expand]').click()
+        await settle(page, 2500)
         await page.getByRole('button', {name: /Actions for Members/}).first().click()
         await page.getByRole('menuitem', {name: 'Publish'}).click()
         await page.getByRole('dialog').getByRole('button', {name: /^Publish 1/}).click()
@@ -566,8 +572,8 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
       await run(1, async () => {
         await page.locator('[data-testid^=version-mark-]').nth(5).click()
         await settle(page, 4000)
-        await visible(page, '[data-testid^=lens-doc-versions-mini-row-]', 20000)
-        return /Draft/.test(await page.locator('[data-testid=lens-doc-versions-mini]').innerText()) ? ok('draft rows listed in the version list') : differs('no draft row')
+        await visible(page, '[data-testid^=inventory-row-]', 20000)
+        return /Draft/.test(await page.locator('[data-testid=version-inventory-panel]').innerText()) ? ok('draft rows listed in the version list') : differs('no draft row')
       })
       await run(2, async () => missing('the inventory panel has no Publish action (bulk bar removed in the port); publishing a variant version is possible from the Variants tool bulk bar'))
       await goto(page, '/releases', 'open-beta-a')

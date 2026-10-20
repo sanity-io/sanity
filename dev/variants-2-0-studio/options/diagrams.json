@@ -2745,12 +2745,12 @@
      }
     ]
    },
-   "name": "A · Document lens, side panel",
+   "name": "A · Andrej's side panel",
    "status": {
     "text": "candidate",
     "class": "even"
    },
-   "caption": "The document lens in the inspector: grouped by publish date, sort, filter, Expand."
+   "caption": "Andrej's inventory panel in the document inspector: views by publish date, stage and priority; sort, filters, saved views; Expand opens the C5 lens."
   },
   "c4.b": {
    "size": [
@@ -2768,12 +2768,12 @@
      }
     ]
    },
-   "name": "B · Popover from Manage versions",
+   "name": "B · The same panel as a popover",
    "status": {
     "text": "candidate",
     "class": "even"
    },
-   "caption": "The same document lens, as a popover from Manage versions."
+   "caption": "The same panel, opened as a popover from Manage versions."
   },
   "c4.c": {
    "size": [
@@ -2806,12 +2806,12 @@
      }
     ]
    },
-   "name": "C · Andrej's panel (original)",
+   "name": "C · Shared C5 lens at mini width (previous A)",
    "status": {
-    "text": "exploration",
+    "text": "archived",
     "class": "open"
    },
-   "caption": "Andrej's original panel in the inspector, for comparison."
+   "caption": "Archived. The C5 document lens at mini width in the inspector; kept so old presets and links resolve."
   },
   "c7.a": {
    "size": [

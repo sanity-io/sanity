@@ -173,6 +173,7 @@ const STATUS_WORD: Record<string, {word: string; dot: Dot}> = {
   candidate: {word: 'candidate', dot: 'suggest'},
   exploration: {word: 'exploration', dot: 'default'},
   'not-drawn': {word: 'not drawn', dot: 'default'},
+  archived: {word: 'archived (kept so old links resolve)', dot: 'default'},
 }
 
 /** First sentence of a summary: one line for a card. */
@@ -273,7 +274,7 @@ function OptionCard(props: {component: ComponentDef; option: OptionDef; letter: 
         border,
         borderRadius: 6,
         cursor: notDrawn || stock ? 'default' : 'pointer',
-        opacity: notDrawn || stock ? 0.6 : 1,
+        opacity: notDrawn || stock ? 0.6 : option.status === 'archived' ? 0.7 : 1,
         padding: chosen ? 11 : 12,
         position: 'relative',
       }}

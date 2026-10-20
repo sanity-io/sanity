@@ -1,5 +1,5 @@
 // Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/variants-2-0, commit db53306896, lib/explorations/variants/inventory-concepts/InventoryMenus.tsx).
+// explorations/inventory-sidepanel (PR #47), commit 310271b6e2, previously db53306896, lib/explorations/variants/inventory-concepts/InventoryMenus.tsx).
 // Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
 import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
 import {Dialog} from '../../../../packages/sanity/src/ui-components/dialog/Dialog'
@@ -10,10 +10,10 @@ import {
 } from '../../../../packages/sanity/src/ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 
+import {AddIcon} from '@sanity/icons/Add'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
-import {FilterIcon} from '@sanity/icons/Filter'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
 import {Box, Flex, Stack, Text, TextInput} from '@sanity/ui'
@@ -70,12 +70,12 @@ function Section({children}: {children: ReactNode}) {
  * (Andrej, 2026-10-15: "make the bracketed numbers in grey tone"). Studio's `MenuItem` takes text as
  * a string, so the label is drawn through its `renderMenuItem` hook, in the same size and weight.
  */
-function CountedLabel(props: {text: string; count: number; checked?: boolean; muted?: boolean}) {
-  const {text, count, checked, muted} = props
+function CountedLabel(props: {text: string; count: number; checked?: boolean}) {
+  const {text, count, checked} = props
   return (
     <Flex align="center" gap={2}>
       <Box flex={1}>
-        <Text muted={muted} size={1} textOverflow="ellipsis" weight="medium">
+        <Text size={1} textOverflow="ellipsis" weight="medium">
           {text}{' '}
           <span style={{color: 'var(--card-muted-fg-color)', fontWeight: 400}}>({count})</span>
         </Text>
@@ -105,14 +105,14 @@ function Check({
   count?: number
   disabled?: boolean
 }) {
-  // An option that would list nothing is greyed out and cannot be picked (Andrej, 2026-10-15: "You
-  // can grey them out"); one already chosen stays live.
-  const empty = count === 0 && !checked
+  // Every option can be picked, one that lists nothing too, so a view can be set up and saved
+  // before any version fits it (Andrej, 2026-10-20: "we need to enable the users to set any
+  // filters, and when there is no matching, we just show them an empty state in the list").
   return (
     // The checkmark marks every chosen item, as Studio's pane menus do: the highlight alone shows only
     // one per menu, so Publish date and Ascending could not both read as chosen.
     <MenuItem
-      disabled={disabled || empty}
+      disabled={disabled}
       iconRight={checked ? CheckmarkIcon : undefined}
       onClick={onClick ?? noop}
       pressed={checked}
@@ -120,7 +120,7 @@ function Check({
       renderMenuItem={
         count === undefined
           ? undefined
-          : () => <CountedLabel checked={checked} count={count} muted={empty} text={text} />
+          : () => <CountedLabel checked={checked} count={count} text={text} />
       }
       text={text}
       tooltipProps={onClick ? undefined : NOT_DESIGNED}
@@ -226,7 +226,7 @@ function SaveViewDialog({onClose}: {onClose: () => void}) {
       header="Save view"
       id="inventory-save-view-dialog"
       onClose={onClose}
-      width={1}
+      width={0}
     >
       <form onSubmit={save}>
         <Stack gap={3}>
@@ -620,27 +620,18 @@ function ViewFilterGroups() {
 }
 
 /**
- * The toolbar's filter icon, selected while filters are set, and "+ Add filter" in the filter bar:
- * one short list of filter kinds, each a submenu. The view's own kinds come first (Publish date; Stage, Assignee, Edited by, Last edited;
+ * "+ Add filter" in the filter bar, the one place to add a filter (Andrej, 2026-10-20: "people should
+ * be able to add filters only from that one place"): one short list of filter kinds, each a submenu. The view's own kinds come first (Publish date; Stage, Assignee, Edited by, Last edited;
  * Match for this visitor, Release), then Language, Audience and Experiment in every view.
  */
-export function FilterMenu({button}: {button?: ReactNode}) {
-  const {filters, world} = useInventoryConcepts()
+export function AddFilterMenu() {
+  const {world} = useInventoryConcepts()
   return (
     <MenuButton
       button={
-        (button as React.JSX.Element) ?? (
-          <Button
-            aria-label="Filter"
-            tooltipProps={{content: 'Filter'}}
-            data-testid="inventory-filter-menu"
-            icon={FilterIcon}
-            mode="bleed"
-            selected={filters.length > 0}
-          />
-        )
+        <Button data-testid="inventory-add-filter" icon={AddIcon} mode="bleed" text="Add filter" />
       }
-      id="inventory-filter-menu"
+      id="inventory-add-filter"
       menu={
         <Menu>
           <ViewFilterGroups />

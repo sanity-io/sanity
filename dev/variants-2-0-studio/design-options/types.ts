@@ -1,7 +1,7 @@
 // The schema of a design-options registry. A project writes one registry (components with options, groups,
 // scenario switches) and a presets list; the window, picker, store and diagram renderer are generic.
 
-export type OptionStatus = 'candidate' | 'final' | 'exploration' | 'not-drawn'
+export type OptionStatus = 'candidate' | 'final' | 'exploration' | 'not-drawn' | 'archived'
 
 /** A shape on the 200 x 100 diagram grid. `box` is a rounded rectangle, `pill` a fully rounded one, `dot` a circle. */
 export interface DiagramShape {

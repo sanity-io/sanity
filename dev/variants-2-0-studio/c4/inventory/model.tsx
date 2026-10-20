@@ -1,5 +1,5 @@
 // Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/variants-2-0, commit db53306896, lib/explorations/variants/inventory-concepts/model.tsx).
+// explorations/inventory-sidepanel (PR #47), commit 310271b6e2, previously db53306896, lib/explorations/variants/inventory-concepts/model.tsx).
 // Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
 import {PerspectiveProvider} from '../../../../packages/sanity/src/core/perspective/PerspectiveProvider'
 import {type ReleaseId} from '../../../../packages/sanity/src/core/perspective/types'
@@ -414,8 +414,6 @@ export interface InventoryGroup {
   rows: InventoryRow[]
   /** The line under the header while the group has no rows; without it an empty group is left out. */
   emptyText?: string
-  /** Starts collapsed, until its header is clicked. */
-  defaultCollapsed?: boolean
 }
 
 /** A world's variants by short id, built once per variants list. */
@@ -682,11 +680,14 @@ function filterMatches(
  * the priority look like?"; Andrej, 2026-10-15: "show which is the winning variant for a particular
  * perspective and show the fallback variants in order of priority under each other").
  *
- * The rule is an assumption until Pedro or Jordan say how the query resolves: first the matching
- * versions in the bundle the bar previews (a release, a scheduled draft, or the drafts), more
- * conditions winning and ties broken on priority; then the matching published versions. Drafts and
- * scheduled drafts are served only when the bar previews them. Everything else is not served.
- * Rows in `exclude` are skipped, which is how the fallback after a delete is found.
+ * The rule is an assumption until Pedro or Jordan say how the query resolves. The best-matching
+ * variant wins: more conditions first, ties broken on priority, the base last. Each variant serves
+ * its version in the bundle the bar previews (a release, a scheduled draft, or the drafts), else
+ * its published version; with Published previewed, only published versions count (Andrej,
+ * 2026-10-20: "It should be published.norwegian actually because the norwegian perspective is
+ * selected"). Drafts and scheduled drafts are served only when the bar previews them. Everything
+ * else is not served. Rows in `exclude` are skipped, which is how the fallback after a delete is
+ * found.
  */
 function priorityRanking(
   world: InventoryWorld,
@@ -702,12 +703,23 @@ function priorityRanking(
         (a, b) =>
           tier(b.match) - tier(a.match) || priorityOf(world, b.entry) - priorityOf(world, a.entry),
       )
-  const bundles = release === 'published' ? ['published'] : [release, 'published']
-  const served = bundles.flatMap((bundle) =>
-    ranked(world.entries.filter((entry) => entry.group === bundle))
-      .filter(({match}) => match.kind !== 'none')
-      .map(({entry}) => entry),
-  )
+  const bundles: string[] = release === 'published' ? ['published'] : [release, 'published']
+  // Variants that tie on match and priority keep the fixture's order, and each keeps its versions
+  // together.
+  const variantOrder = [...new Set(world.entries.map((entry) => entry.variantId ?? ''))]
+  const served = world.entries
+    .filter((entry) => !exclude.has(entry.key) && bundles.includes(entry.group))
+    .map((entry) => ({entry, match: matchVariant(variantFor(world, entry), visitor)}))
+    .filter(({match}) => match.kind !== 'none')
+    .sort(
+      (a, b) =>
+        tier(b.match) - tier(a.match) ||
+        priorityOf(world, b.entry) - priorityOf(world, a.entry) ||
+        variantOrder.indexOf(a.entry.variantId ?? '') -
+          variantOrder.indexOf(b.entry.variantId ?? '') ||
+        bundles.indexOf(a.entry.group) - bundles.indexOf(b.entry.group),
+    )
+    .map(({entry}) => entry)
   const servedKeys = new Set(served.map((entry) => entry.key))
   const rest = ranked(world.entries.filter((entry) => !servedKeys.has(entry.key))).map(
     ({entry}) => entry,
@@ -845,37 +857,54 @@ export function buildGroups(options: {
 
   let groups: InventoryGroup[]
   if (ranking) {
-    // By priority lists what is served in serving order, in two sections, then what never is
-    // (Andrej, 2026-10-19: "so it's like matching this visitor, fallback, never served, and the
-    // never served can be even collapsed as a group"). Matching this visitor holds the exact
-    // matches, the first of them the one shown; Fallback what is served without one, partial
-    // matches and the base. Ascending turns each section round, lowest priority first; the sections
-    // stay apart (Andrej, 2026-10-19: "In the priority view we may want to sort by priority
-    // ascending or descending").
+    // By priority sorts the versions by how they match the visitor, in serving order inside each
+    // section (Andrej, 2026-10-20: "matching and then served to this visitor"; "Partially matching"
+    // and "not matching"; Base in its own section, "Fallback"). The first section holds the served
+    // version when it matches fully, and its name is the only mark on it (Andrej, 2026-10-20: "The
+    // section headers allow us to designate that"). The served list comes first, then the rest, so
+    // a served row leads its section. Every section starts open. Ascending turns each section
+    // round, lowest priority first; the sections stay apart (Andrej, 2026-10-19: "In the priority
+    // view we may want to sort by priority ascending or descending").
     const visibleKeys = new Set(visible.map((entry) => entry.key))
     const rowsFor = (entries: InventoryEntry[]) => {
       const rows = entries.filter((entry) => visibleKeys.has(entry.key)).map(toRow)
       return priorityOrder === 'asc' ? rows.reverse() : rows
     }
-    const exact = (entry: InventoryEntry) => matchFilterOf(world, visitor, entry) === 'exact'
+    const ordered = [...ranking.served, ...ranking.rest]
+    const kindOf = (entry: InventoryEntry) => matchFilterOf(world, visitor, entry)
+    const served = ranking.served[0]
+    const servedMatches = served && kindOf(served) === 'exact' ? served : undefined
+    const inRelease =
+      release === 'drafts' || release === 'published'
+        ? ''
+        : ` in ${releaseTitle(world, release as InventoryGroupId)}`
     groups = [
       {
+        id: 'priority-served',
+        title: `Matching and served to this visitor${inRelease}`,
+        rows: rowsFor(servedMatches ? [servedMatches] : []),
+        emptyText: 'No version matches this visitor.',
+      },
+      {
         id: 'priority-matching',
-        title: 'Matching this visitor',
-        rows: rowsFor(ranking.served.filter(exact)),
-        emptyText: 'No version matches this visitor exactly.',
+        title: 'Matching, not served',
+        rows: rowsFor(ordered.filter((e) => e !== servedMatches && kindOf(e) === 'exact')),
+      },
+      {
+        id: 'priority-partial',
+        title: 'Partially matching',
+        rows: rowsFor(ordered.filter((e) => kindOf(e) === 'partial')),
       },
       {
         id: 'priority-fallback',
         title: 'Fallback',
-        rows: rowsFor(ranking.served.filter((entry) => !exact(entry))),
+        rows: rowsFor(ordered.filter((e) => kindOf(e) === 'default')),
         emptyText: 'No fallback for this visitor.',
       },
       {
-        id: 'priority-never',
-        title: 'Never served to this visitor',
-        rows: rowsFor(ranking.rest),
-        defaultCollapsed: true,
+        id: 'priority-not-matching',
+        title: 'Not matching',
+        rows: rowsFor(ordered.filter((e) => kindOf(e) === 'none')),
       },
     ]
   } else if (view === 'stage') {
@@ -973,6 +1002,13 @@ interface InventoryConceptsValue {
   addFilter: (filter: Filter) => void
   removeFilter: (index: number) => void
   /**
+   * The filter bar shows: the toolbar's filter button turns it on and off, and hiding it keeps the
+   * filters (Andrej, 2026-10-20: "The filter button should just turn on and off … the filter bar";
+   * "Hiding keeps the filters"). A saved view with filters opens it.
+   */
+  filterBarOpen: boolean
+  toggleFilterBar: () => void
+  /**
    * The Specific date calendar is open, and whether its next day click extends the span. Held here,
    * not in the menu: the first pick closes the menu and brings the filter bar in, and the calendar
    * has to stay open through both.
@@ -987,7 +1023,7 @@ interface InventoryConceptsValue {
    * filter in (brackets). Apply this as a pattern to all filters across all views").
    */
   countWith: (filter: Filter) => number
-  /** Removes every filter; the filter bar goes with them. */
+  /** Removes every filter; the filter bar stays open. */
   resetFilters: () => void
   selectedKeys: ReadonlySet<string>
   toggleSelected: (keys: string[]) => void
@@ -1074,6 +1110,8 @@ export function InventoryConceptsProvider(props: {
   const [sort, setSort] = useState<Sort>(DEFAULT_SORT)
   const [priorityOrder, setPriorityOrder] = useState<SortOrder>('desc')
   const [filters, setFilters] = useState<Filter[]>([])
+  const [filterBarOpen, setFilterBarOpen] = useState(false)
+  const toggleFilterBar = useCallback(() => setFilterBarOpen((open) => !open), [])
   const [selectedKeys, setSelectedKeys] = useState<ReadonlySet<string>>(new Set())
 
   const setView = useCallback((next: InventoryView) => {
@@ -1088,6 +1126,7 @@ export function InventoryConceptsProvider(props: {
       if (!saved) return
       setViewState(saved.view)
       setFilters(saved.filters)
+      if (saved.filters.length > 0) setFilterBarOpen(true)
       // By priority keeps its order apart from the other views' sort.
       if (saved.view === 'priority') setPriorityOrder(saved.sort?.order ?? 'desc')
       else setSort(saved.sort)
@@ -1265,6 +1304,8 @@ export function InventoryConceptsProvider(props: {
       filters,
       addFilter,
       removeFilter,
+      filterBarOpen,
+      toggleFilterBar,
       resetFilters,
       countWith,
       datePicker,
@@ -1305,6 +1346,8 @@ export function InventoryConceptsProvider(props: {
       filters,
       addFilter,
       removeFilter,
+      filterBarOpen,
+      toggleFilterBar,
       resetFilters,
       countWith,
       datePicker,

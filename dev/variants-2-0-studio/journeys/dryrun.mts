@@ -100,8 +100,8 @@ for (const theme of ['light', 'dark'] as const) {
   })
   await step('1c click: document + list', async () => {
     await page.locator('[data-testid^=version-mark-]').nth(5).click()
-    await page.locator('[data-testid^=lens-doc-versions-mini-row-]').first().waitFor({timeout: 20000})
-    return `${await page.locator('[data-testid^=lens-doc-versions-mini-row-]').count()} version rows; filter bar ${await page.getByTestId('filter-button').count() ? 'shown' : 'missing'}`
+    await page.locator('[data-testid^=inventory-row-]').first().waitFor({timeout: 20000})
+    return `${await page.locator('[data-testid^=inventory-row-]').count()} version rows; toolbar ${await page.getByTestId('inventory-toolbar').count() ? 'shown' : 'missing'}`
   })
   await step('2a version menu: View as…', async () => {
     await page.goto(`${base}/structure/book`)
