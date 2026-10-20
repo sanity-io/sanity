@@ -33,7 +33,7 @@ export interface DialogStackContextValue {
      */
     toParent?: boolean
   }) => void
-  /** Navigate to a specific path, updating the form path and cleaning up stack entries that are at or deeper than the target. */
+  /** Navigate to a specific path, updating the form path and cleaning up stack entries that are deeper than the target. */
   navigateTo: (path: Path) => void
 }
 

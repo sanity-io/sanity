@@ -64,6 +64,10 @@ export {DocumentTableSelectionContext} from '../_singletons/context/DocumentTabl
 export {EditDialogOuterBoundaryContext} from '../_singletons/context/EditDialogOuterBoundaryContext'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {EnhancedObjectDialogContext} from '../_singletons/context/EnhancedObjectDialogContext'
+export {
+  EnhancedObjectDialogScrollContext,
+  type EnhancedObjectDialogScrollToTop,
+} from '../_singletons/context/EnhancedObjectDialogScrollContext'
 export {EventsContext} from '../_singletons/context/EventsContext'
 export {FeedbackContext, type FeedbackContextValue} from '../_singletons/context/FeedbackContext'
 export {
