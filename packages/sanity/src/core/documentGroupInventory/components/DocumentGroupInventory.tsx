@@ -1,15 +1,7 @@
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useActorRef, useSelector} from '@xstate/react'
-import {
-  type ChangeEvent,
-  type ComponentType,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type ChangeEvent, type ComponentType, useMemo} from 'react'
 import {
   combineLatest,
   debounceTime,
@@ -157,7 +149,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const {state$: releases} = useReleasesStore()
   const {state$: agentBundles} = useAgentBundlesStore()
   const {state$: variants} = useVariantsStore()
-  const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
+
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
   const {feedbackDialogOpened} = useFeedbackTelemetry()
   const setVariant = useSetVariant()
@@ -348,7 +340,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const selectionRef = useSelector(inventoryRef, ({context}) => context.selectionRef)
   const deletionRef = useSelector(inventoryRef, ({context}) => context.deletionRef)
   const variantCreationRef = useSelector(inventoryRef, ({context}) => context.variantCreationRef)
-  const metaState = useSelector(inventoryRef, ({context}) => context.metaState)
 
   const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
   const isLocked = useSelector(selectionRef, (snapshot) => snapshot.matches('locked'))
@@ -371,24 +362,9 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
     machine.can({type: 'createVariant.request'}),
   )
 
-  const [isActive, setIsActive] = useState<boolean>(false)
-
-  useLayoutEffect(() => {
-    const frame = requestAnimationFrame(() => setIsActive(metaState === 'ready'))
-    return () => cancelAnimationFrame(frame)
-  }, [metaState])
-
-  usePreserveIntrinsicBlockSize({
-    element: containerElement,
-    isActive,
-  })
-
   return (
     <>
-      <Container
-        ref={setContainerElement}
-        data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}
-      >
+      <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
         {(isVariantCreationActive || isVariantCreationPending) && (
           <CreateVariant variantCreationRef={variantCreationRef} selectionRef={selectionRef} />
         )}
@@ -432,7 +408,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                   <Button
                     text={t('document-group.create-variant')}
                     tone="suggest"
-                    size="large"
                     icon={CreateVariantIcon}
                     onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
                   />
@@ -442,7 +417,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                     text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
                     onClick={() => deletionRef.send({type: 'delete.request'})}
                     tone="critical"
-                    size="large"
                     icon={TrashIcon}
                   />
                 )}
@@ -699,45 +673,4 @@ const ManagedVariantRow: ComponentType<{
       />
     </>
   )
-}
-
-const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
-
-/**
- * Preserve the intrinsic block size of an element by maintaining an `--intrinsic-block-size`
- * custom property. This custom property must be used by styles to control the element's size.
- */
-function usePreserveIntrinsicBlockSize({
-  isActive,
-  element,
-}: {
-  isActive: boolean
-  element: HTMLElement | null
-}): void {
-  const heightRef = useRef(0)
-
-  useEffect(() => {
-    if (!isActive || !element) {
-      return undefined
-    }
-
-    const setHeight = (height: number) => {
-      heightRef.current = height
-      element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${height}px`)
-    }
-
-    const resizeObserver = new ResizeObserver(([entry]) => {
-      setHeight(entry.contentRect.height)
-    })
-
-    if (heightRef.current) {
-      setHeight(heightRef.current)
-    }
-    resizeObserver.observe(element)
-
-    return () => {
-      element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
-      resizeObserver.disconnect()
-    }
-  }, [isActive, element])
 }
