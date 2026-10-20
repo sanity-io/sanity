@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {defineType, type ObjectSchemaType} from '@sanity/types'
 import {act, render, type RenderResult, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type ComponentType, lazy, type ReactNode, Suspense, useMemo, useState} from 'react'
+import {type ComponentType, lazy, type ReactNode, Suspense, use, useMemo, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
@@ -393,7 +393,66 @@ describe('FormBuilder', () => {
     )
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
   })
+
+  it("keeps the rest of the form editable while a schema type's custom input never settles", async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const pending = new Promise<never>(noop)
+    function NeverSettlingInput(props: InputProps) {
+      use(pending)
+      return props.renderDefault(props)
+    }
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {schema: {types: [customInputTestType(NeverSettlingInput)]}},
+      pane: true,
+    })
+
+    const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
+    expect(within(customField).getByTestId('custom-input-fallback')).toBeInTheDocument()
+    expect(within(customField).queryByTestId('string-input')).not.toBeInTheDocument()
+    expect(
+      within(screen.getByTestId('field-title')).getByTestId('string-input'),
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+  })
+
+  it("replaces a schema type's custom input fallback once the input loads", async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const input = deferredComponent<InputProps>()
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {schema: {types: [customInputTestType(input.Lazy)]}},
+      pane: true,
+    })
+
+    const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
+    expect(within(customField).getByTestId('custom-input-fallback')).toBeInTheDocument()
+
+    await act(async () => {
+      input.resolve(PassThroughInput)
+    })
+
+    expect(
+      await within(customField).findByTestId('string-input', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
+    expect(within(customField).queryByTestId('custom-input-fallback')).not.toBeInTheDocument()
+  })
 })
+
+function customInputTestType(input: ComponentType<InputProps>) {
+  return defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      {type: 'string', name: 'title', title: 'Title'},
+      {type: 'string', name: 'custom', title: 'Custom', components: {input}},
+    ],
+  })
+}
 
 function removeClasses(html: string) {
   return html.replace(/\s+class=".*?"|\s+data-testid="string-input"/g, '')
