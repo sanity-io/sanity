@@ -289,7 +289,7 @@ function renderFlow(highlight) {
 function setStoryHref() {
   const j = journey(), step = j.steps[pos.step], a = $('story')
   a.hidden = !step?.story
-  if (step?.story) a.href = `${STORYBOOK}/?path=/story/${step.story}&globals=theme:${matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${core.target()?.options?.shape ?? 'round'};rowLayout:${core.target()?.options?.rowLayout ?? 'actionsRight'};pillWhenOpen:${core.target()?.options?.pillWhenOpen ?? 'versionCount'};toastAction:${core.target()?.options?.toastAction ?? 'button'};listWhenPerspective:${core.target()?.options?.listWhenPerspective ?? 'grouped'};priorityView:${core.target()?.options?.priorityView ?? 'hide'}`
+  if (step?.story) a.href = `${STORYBOOK}/?path=/story/${step.story}&globals=theme:${matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${core.target()?.options?.shape ?? 'round'};rowLayout:${core.target()?.options?.rowLayout ?? 'actionsRight'};pillWhenOpen:${core.target()?.options?.pillWhenOpen ?? 'versionCount'};toastAction:${core.target()?.options?.toastAction ?? 'button'};toastStyle:${core.target()?.options?.toastStyle ?? 'stock'};listWhenPerspective:${core.target()?.options?.listWhenPerspective ?? 'grouped'};priorityView:${core.target()?.options?.priorityView ?? 'hide'}`
 }
 function renderDock() {
   const j = journey(), c = checks(), step = j.steps[pos.step]

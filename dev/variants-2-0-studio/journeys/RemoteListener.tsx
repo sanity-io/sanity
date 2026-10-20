@@ -15,6 +15,7 @@ import {
   setListWhenPerspective,
   setPriorityView,
   setToastAction,
+  setToastStyle,
   setRowLayout,
   setShape,
   setStage,
@@ -70,6 +71,13 @@ export type RemoteMessage =
       id: string
       from: 'remote'
       origin: string
+      type: 'toastStyle'
+      toastStyle: 'stock' | 'proposed'
+    }
+  | {
+      id: string
+      from: 'remote'
+      origin: string
       type: 'listWhenPerspective'
       listWhenPerspective: 'grouped' | 'sorted'
     }
@@ -107,6 +115,7 @@ export interface StudioStatus {
     rowLayout: 'left' | 'actionsRight' | 'centered'
     pillWhenOpen: 'summary' | 'versionCount'
     toastAction: 'button' | 'link'
+    toastStyle: 'stock' | 'proposed'
     listWhenPerspective: 'grouped' | 'sorted'
     priorityView: 'hide' | 'show'
     dimensionLimit: number | null
@@ -173,6 +182,7 @@ export function RemoteListener() {
         rowLayout: now.rowLayout,
         pillWhenOpen: now.pillWhenOpen,
         toastAction: now.toastAction,
+        toastStyle: now.toastStyle,
         listWhenPerspective: now.listWhenPerspective,
         priorityView: now.priorityView,
         dimensionLimit: now.dimensionLimit,
@@ -231,6 +241,7 @@ export function RemoteListener() {
       else if (m.type === 'rowLayout') setRowLayout(m.rowLayout)
       else if (m.type === 'pillWhenOpen') setPillWhenOpen(m.pillWhenOpen)
       else if (m.type === 'toastAction') setToastAction(m.toastAction)
+      else if (m.type === 'toastStyle') setToastStyle(m.toastStyle)
       else if (m.type === 'listWhenPerspective') setListWhenPerspective(m.listWhenPerspective)
       else if (m.type === 'priorityView') setPriorityView(m.priorityView)
       else if (m.type === 'option') setOverride(m.component, m.option)

@@ -205,4 +205,33 @@ for (const theme of ['light', 'dark'] as const) {
     await context.close()
   }
 }
+
+// Toast style: Proposed (a status icon, 400px, an action slot at the end), against Stock (380px, no icon). Default is Stock.
+{
+  const {context, p} = await boot('light', 'show.a,stage.ga,toaststyle.proposed')
+  let ok = 0
+  const misses: string[] = []
+  for (const ev of EVENTS) {
+    await p.getByTestId(`toast-preview-${ev.id}`).click()
+    await toastOf(p).first().waitFor({timeout: 6000})
+    await p.waitForFunction(([re]) => new RegExp(re as string).test(document.querySelector('[data-ui=Toast]')?.textContent ?? ''), [ev.title.source], {timeout: 4000}).catch(() => undefined)
+    await p.waitForTimeout(300)
+    const info = await p.evaluate(() => {
+      const t = document.querySelector('[data-ui=Toast]')!
+      const icon = t.querySelector('[data-testid=toast-icon] svg')?.getBoundingClientRect()
+      const action = t.querySelector('[data-testid=toast-action]')?.getBoundingClientRect()
+      const box = t.getBoundingClientRect()
+      return {count: document.querySelectorAll('[data-ui=Toast]').length, w: Math.round(box.width), icon: icon ? Math.round(icon.width) : 0, inside: action ? action.bottom <= box.bottom + 1 && action.right <= box.right : true}
+    })
+    if (info.count === 1 && Math.abs(info.w - 400) <= 2 && info.icon === 18 && info.inside) ok++
+    else misses.push(`${ev.id}: ${JSON.stringify(info)}`)
+    if (ev.id === 'failed' || ev.id === 'version-created') await p.screenshot({path: `journeys-captures/toasts/${ev.id}-proposed-light.png`, clip: {x: 900, y: 600, width: 600, height: 300}})
+  }
+  log(ok === EVENTS.length, 'Proposed: every event is 400px wide with an 18px status icon and its action inside the toast', misses.join(' | '))
+  await p.getByTestId('toast-preview-failed').click()
+  await p.waitForTimeout(400)
+  const slot = await p.locator('[data-testid=toast-action]').first().getAttribute('data-slot')
+  log(slot !== null, 'Proposed: the action button sits in the toast\'s own slot at the end (not on the close icon edge)')
+  await context.close()
+}
 await b.close()

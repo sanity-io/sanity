@@ -51,6 +51,7 @@ import {
   setListWhenPerspective,
   setPriorityView,
   setToastAction,
+  setToastStyle,
   setShape,
   setStage,
   type State,
@@ -332,8 +333,15 @@ function LinkButton(props: {
 
 /** A Storybook link that cannot end on Storybook's error page: a missing story opens the nearest valid one, with a note. */
 function StoryLink({id}: {id: string}) {
-  const {shape, rowLayout, pillWhenOpen, toastAction, listWhenPerspective, priorityView} =
-    useOptionState()
+  const {
+    shape,
+    rowLayout,
+    pillWhenOpen,
+    toastAction,
+    toastStyle,
+    listWhenPerspective,
+    priorityView,
+  } = useOptionState()
   const [ids, setIds] = useState<string[] | null>(null)
   useEffect(() => {
     let alive = true
@@ -346,7 +354,7 @@ function StoryLink({id}: {id: string}) {
   const target = missing ? (nearestStory(id, ids) ?? id) : id
   return (
     <LinkButton
-      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape};rowLayout:${rowLayout};pillWhenOpen:${pillWhenOpen};toastAction:${toastAction};listWhenPerspective:${listWhenPerspective};priorityView:${priorityView}`}
+      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape};rowLayout:${rowLayout};pillWhenOpen:${pillWhenOpen};toastAction:${toastAction};toastStyle:${toastStyle};listWhenPerspective:${listWhenPerspective};priorityView:${priorityView}`}
       label={missing ? 'Storybook (moved)' : 'Storybook'}
       moved={missing}
       testId="story-link"
@@ -852,6 +860,27 @@ function SettingsGroups({
                       },
                     ]}
                     value={state.toastAction}
+                  />,
+                )}
+                {control(
+                  'Toast style',
+                  <Segmented
+                    ariaLabel="Toast style"
+                    onChange={(value) => setToastStyle(value)}
+                    options={[
+                      {
+                        value: 'stock',
+                        label: 'Stock',
+                        title: 'The toast as Studio draws it today: 380px, no status icon',
+                      },
+                      {
+                        value: 'proposed',
+                        label: 'Proposed',
+                        title:
+                          'A status icon, 400px wide and an action slot at the end (a Studio change, not approved)',
+                      },
+                    ]}
+                    value={state.toastStyle}
                   />,
                 )}
                 {control(
