@@ -130,6 +130,25 @@ async function attempt(label: string, fn: () => Promise<string | void>) {
   }
 }
 
+// Real content (seed/variant-content.json, written from docs/initiatives/curation-perspective-selector/variant-content.json):
+// base fields per book plus, per variant, only the fields that differ. A version is the base merged with its overrides.
+type Fields = {title?: string; subtitle?: string | null; blurb?: string; highlights?: string[]; promo?: string; badge?: string; cta?: string}
+type VariantContent = {
+  audiences: Record<string, Fields & {label?: string}>
+  books: Array<{id: string; base: Fields; variants: Record<string, Fields>}>
+  extras: Array<{id: string; base: Fields}>
+}
+const vc: VariantContent = JSON.parse(readFileSync(new URL('./variant-content.json', import.meta.url), 'utf8'))
+const baseOf = (id: string): Fields => vc.books.find((b) => b.id === id)?.base ?? vc.extras.find((e) => e.id === id)?.base ?? {}
+/** The document body for a book (and an optional variant): base, then the variant's own overrides, else the audience copy. */
+const contentFor = (id: string, variantId?: string, suffix = '') => {
+  const override: Fields & {label?: string} = variantId ? (vc.books.find((b) => b.id === id)?.variants[variantId] ?? vc.audiences[variantId] ?? {}) : {}
+  const merged: Record<string, unknown> = {...baseOf(id), ...override}
+  delete merged.label
+  if (suffix && typeof merged.blurb === 'string') merged.blurb = `${merged.blurb} ${suffix}`
+  return {_type: 'book', ...Object.fromEntries(Object.entries(merged).filter(([, v]) => v !== undefined && v !== null))}
+}
+
 const content = (title: string, subtitle: string | null, blurb: string) => ({
   _type: 'book',
   title,
@@ -181,21 +200,21 @@ async function seedBase() {
     const hasPublished = base.some((v) => v.state === 'published')
     const hasDraft = base.some((v) => v.state === 'draft')
     if (hasPublished) {
-      tx.createOrReplace({_id: d.id, ...content(d.title, d.subtitle, 'Base · published')})
+      tx.createOrReplace({_id: d.id, ...contentFor(d.id)})
       published++
     }
     if (hasDraft) {
-      tx.createOrReplace({_id: `drafts.${d.id}`, ...content(d.title, d.subtitle, hasPublished ? 'Base · draft edit' : 'Base · draft only')})
+      tx.createOrReplace({_id: `drafts.${d.id}`, ...contentFor(d.id, undefined, hasPublished ? '(draft edit)' : '')})
       drafts++
     }
   }
   // Documents for the extra permutations (see seedExtras).
-  tx.createOrReplace({_id: 'book-scheduled-draft', ...content('The Ferry Timetable', 'By Linnea Strand · 2025', 'Base · published')})
-  tx.createOrReplace({_id: 'drafts.book-scheduled-draft', ...content('The Ferry Timetable (revised)', 'By Linnea Strand · 2025', 'Draft that is scheduled to publish')})
+  tx.createOrReplace({_id: 'book-scheduled-draft', ...contentFor('book-scheduled-draft')})
+  tx.createOrReplace({_id: 'drafts.book-scheduled-draft', ...contentFor('book-scheduled-draft', undefined, '(revised timetable)'), title: 'The Ferry Timetable (revised)'})
   // Once the "published" release has run, its content is the published document: do not reset it.
   const released = await releaseExists('rPublished')
-  tx.createOrReplace({_id: 'book-released', ...(released ? content('Harbour Lights (2nd edition)', 'By Kari Moe · 2022', 'After the release') : content('Harbour Lights', 'By Kari Moe · 2022', 'Before the release'))})
-  tx.createOrReplace({_id: 'book-translations', ...content('Midsummer', 'By Astrid Lund · 2023', 'Base · published (en-US)')})
+  tx.createOrReplace({_id: 'book-released', ...(released ? contentFor('book-released') : {...contentFor('book-released'), title: 'Harbour Lights', blurb: 'The harbour as it was before the reopening.'})})
+  tx.createOrReplace({_id: 'book-translations', ...contentFor('book-translations')})
   tx.createOrReplace({_id: 'live-atlas', _type: 'bookLive', title: 'Atlas of Small Islands', subtitle: 'Live edit: no drafts', blurb: 'Published only'})
   tx.createOrReplace({_id: 'live-almanac', _type: 'bookLive', title: 'Tide Almanac', subtitle: 'Live edit: no drafts', blurb: 'Published only'})
   await tx.commit({visibility: 'sync'})
@@ -225,8 +244,9 @@ async function seedFixtureVariants() {
     for (const v of d.versions) {
       if (v.audience === null) continue
       const variantId = audienceVariantId(v.audience)
-      const blurb = `${v.audience} · ${v.state}${v.release ? ` in ${v.release}` : ''}`
-      const doc = content(d.title, d.subtitle, blurb)
+      // A draft next to a published version of the same variant reads as an edit of it.
+      const editOfPublished = v.state === 'draft' && d.versions.some((o) => o.audience === v.audience && o.state === 'published')
+      const doc = contentFor(d.id, variantId, editOfPublished ? '(draft edit)' : '')
       await attempt(`${d.id} / ${v.audience} / ${v.state}`, async () => {
         if (v.state === 'published') return variantVersion(d.id, variantId, 'drafts', doc, true)
         if (v.state === 'draft') return variantVersion(d.id, variantId, 'drafts', doc)
@@ -249,28 +269,28 @@ async function seedExtras() {
     if (await releaseExists(id)) return 'exists'
     const at = berlin('2026-11-03T09:00:00')
     await ensureRelease(id, {title: 'Scheduled draft', description: '', releaseType: 'scheduled', cardinality: 'one', intendedPublishAt: new Date(at).toISOString()})
-    await releaseVersion(id, 'book-scheduled-draft', content('The Ferry Timetable (revised)', 'By Linnea Strand · 2025', 'Draft that is scheduled to publish'))
+    await releaseVersion(id, 'book-scheduled-draft', {...contentFor('book-scheduled-draft', undefined, '(revised timetable)'), title: 'The Ferry Timetable (revised)'})
     await schedule(id, at)
   })
   // 2. Undecided release, holding a base version and a variant version.
   await attempt('undecided release', async () => {
     if (await releaseExists('rUndecided')) return 'exists'
     await ensureRelease('rUndecided', {title: 'Autumn catalogue (undecided)', releaseType: 'undecided'})
-    await releaseVersion('rUndecided', 'book-field-guide', content('A Field Guide to Small Hours', 'By Elif Demir · 2023', 'Base · in an undecided release'))
-    await variantVersion('book-salt', audienceVariantId('Students'), 'rUndecided', content('Salt & Ember', 'By Tove Nilsen · 2019', 'Students · in an undecided release'))
+    await releaseVersion('rUndecided', 'book-field-guide', contentFor('book-field-guide', undefined, '(autumn catalogue edition)'))
+    await variantVersion('book-salt', audienceVariantId('Students'), 'rUndecided', contentFor('book-salt', audienceVariantId('Students'), '(autumn catalogue edition)'))
   })
   // 3. Published release (moves the published document).
   await attempt('published release', async () => {
     if (await releaseExists('rPublished')) return 'exists'
     await ensureRelease('rPublished', {title: 'Harbour relaunch (published)', releaseType: 'asap'})
-    await releaseVersion('rPublished', 'book-released', content('Harbour Lights (2nd edition)', 'By Kari Moe · 2022', 'After the release'))
+    await releaseVersion('rPublished', 'book-released', contentFor('book-released'))
     await x.action({actionType: 'sanity.action.release.publish', releaseId: 'rPublished'} as any)
   })
   // 4. Archived release.
   await attempt('archived release', async () => {
     if (await releaseExists('rArchived')) return 'exists'
     await ensureRelease('rArchived', {title: 'Spring list (archived)', releaseType: 'undecided'})
-    await releaseVersion('rArchived', 'book-tidewater', content('Tidewater', null, 'Base · in an archived release'))
+    await releaseVersion('rArchived', 'book-tidewater', contentFor('book-tidewater', undefined, '(spring list)'))
     await x.action({actionType: 'sanity.action.release.archive', releaseId: 'rArchived'} as any)
   })
   // 4b. A document that exists only inside a release (no published base, no draft).
@@ -281,18 +301,48 @@ async function seedExtras() {
   })
   // 5. A variant whose base was never published (book-rail has only a draft).
   await attempt('variant with no published base', () =>
-    variantVersion('book-rail', audienceVariantId('Returning visitors'), 'drafts', content('Notes from the Northern Rail', 'By Jonas Aalto · 2018', 'Returning visitors · base never published')),
+    variantVersion('book-rail', audienceVariantId('Returning visitors'), 'drafts', contentFor('book-rail', audienceVariantId('Returning visitors'))),
   )
   // 6. Locale dimension, alone and combined with audience.
-  const t = content('Midsummer', 'By Astrid Lund · 2023', '')
+  const t = contentFor('book-translations')
+  const de = 'Der längste Tag des Jahres in einem Haus, das nie ganz dunkel wird, über drei Generationen.'
+  const fr = "Le jour le plus long de l'année dans une maison qui ne s'assombrit jamais tout à fait, sur trois générations."
   await attempt('locale variants', async () => {
-    await variantVersion('book-translations', 'loc-en-gb', 'drafts', {...t, blurb: 'en-GB · published'}, true)
-    await variantVersion('book-translations', 'loc-de-de', 'drafts', {...t, title: 'Mittsommer', blurb: 'de-DE · published'}, true)
-    await variantVersion('book-translations', 'loc-de-de', 'drafts', {...t, title: 'Mittsommer (neu)', blurb: 'de-DE · draft edit'})
-    await variantVersion('book-translations', 'loc-fr-fr', 'drafts', {...t, title: "La Saint-Jean", blurb: 'fr-FR · draft only'})
-    await variantVersion('book-translations', 'aud-loyal-customers__loc-de-de', 'drafts', {...t, title: 'Mittsommer für Stammkunden', blurb: 'Loyal customers · de-DE · published'}, true)
-    await variantVersion('book-translations', 'aud-students__loc-fr-fr', 'rAsapCopy', {...t, title: 'La Saint-Jean, édition étudiante', blurb: 'Students · fr-FR · in ASAP (Copy)'})
+    await variantVersion('book-translations', 'loc-en-gb', 'drafts', {...t, subtitle: 'By Astrid Lund · 2023 · UK edition'}, true)
+    await variantVersion('book-translations', 'loc-de-de', 'drafts', {...t, title: 'Mittsommer', subtitle: 'Von Astrid Lund · 2023', blurb: de, promo: 'Kostenloser Versand ab 40 Euro.', cta: 'In den Warenkorb'}, true)
+    await variantVersion('book-translations', 'loc-de-de', 'drafts', {...t, title: 'Mittsommer (neu)', subtitle: 'Von Astrid Lund · 2023', blurb: `${de} (Entwurf)`, promo: 'Kostenloser Versand ab 40 Euro.', cta: 'In den Warenkorb'})
+    await variantVersion('book-translations', 'loc-fr-fr', 'drafts', {...t, title: 'La Saint-Jean', subtitle: 'Par Astrid Lund · 2023', blurb: fr, cta: 'Ajouter au panier'})
+    await variantVersion('book-translations', 'aud-loyal-customers__loc-de-de', 'drafts', {...t, title: 'Mittsommer für Stammkunden', subtitle: 'Von Astrid Lund · 2023', blurb: de, badge: 'Für Stammkunden', cta: 'Signiertes Exemplar reservieren'}, true)
+    await variantVersion('book-translations', 'aud-students__loc-fr-fr', 'rAsapCopy', {...t, title: 'La Saint-Jean, édition étudiante', subtitle: 'Par Astrid Lund · 2023', blurb: fr, badge: 'Prix étudiant', cta: 'Ajouter au prix étudiant'})
   })
+}
+
+/**
+ * One published personalised version for every variant that variant-content.json lists for a book and the fixture does not
+ * already create, so each book has several visible versions. A book whose base was never published (book-rail) gets a draft.
+ */
+async function seedPersonalised() {
+  const have = new Set<string>()
+  for (const d of fixture.documents) for (const v of d.versions) if (v.audience) have.add(`${d.id}|${audienceVariantId(v.audience)}`)
+  have.add('book-salt|aud-students')
+  have.add('book-rail|aud-returning-visitors')
+  let created = 0
+  for (const book of vc.books) {
+    for (const variantId of Object.keys(book.variants)) {
+      if (have.has(`${book.id}|${variantId}`)) continue
+      await attempt(`${book.id} / ${variantId} / published`, async () => {
+        const doc = contentFor(book.id, variantId)
+        try {
+          await variantVersion(book.id, variantId, 'drafts', doc, true)
+        } catch {
+          await variantVersion(book.id, variantId, 'drafts', doc)
+          return 'draft only (the base is not published)'
+        }
+        created++
+      })
+    }
+  }
+  log(`personalised versions added by variant-content.json: ${created}`)
 }
 
 async function report() {
@@ -315,5 +365,6 @@ await seedBase()
 await seedDefinitions()
 await seedFixtureVariants()
 await seedExtras()
+await seedPersonalised()
 await report()
 log(`done in ${((Date.now() - t0) / 1000).toFixed(1)} s`)

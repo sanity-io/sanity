@@ -5,6 +5,11 @@ const fields = [
   defineField({name: 'title', type: 'string'}),
   defineField({name: 'subtitle', type: 'string'}),
   defineField({name: 'blurb', type: 'text', rows: 3}),
+  // Added with the real seed content (seed/variant-content.json): what a personalised version changes.
+  defineField({name: 'highlights', type: 'array', of: [{type: 'string'}]}),
+  defineField({name: 'promo', type: 'string', description: 'The strip above the book'}),
+  defineField({name: 'badge', type: 'string', description: 'A small chip'}),
+  defineField({name: 'cta', type: 'string', title: 'Button label'}),
 ]
 
 export const book = defineType({
