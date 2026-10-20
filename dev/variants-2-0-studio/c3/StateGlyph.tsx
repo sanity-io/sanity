@@ -11,20 +11,27 @@ import {type CSSProperties} from 'react'
  * Studio icons with the badge dot colours, the way `ReleaseAvatarIcon` colours its icons. It is an
  * icon, so it takes its size from the `Text` or `Button` that holds it.
  */
+/** The states a dot can show. `release` is the suggest-tone disc; `absent` is a muted ring (no version here). */
+export type StateKind = 'published' | 'draft' | 'release' | 'absent'
+
+const COLOR: Record<StateKind, string> = {
+  published: 'var(--card-badge-positive-dot-color)',
+  draft: 'var(--card-badge-caution-dot-color)',
+  release: 'var(--card-badge-suggest-dot-color)',
+  absent: 'var(--card-muted-fg-color)',
+}
+
 export function StateGlyph({
   state,
   gap = 0,
   size,
 }: {
-  state: 'published' | 'draft'
+  state: StateKind
   gap?: number
   /** A pixel size for the icon box, when it is not inside a `Text` or `Button`. */
   size?: number
 }) {
-  const color =
-    state === 'published'
-      ? 'var(--card-badge-positive-dot-color)'
-      : 'var(--card-badge-caution-dot-color)'
+  const color = COLOR[state]
   // `color` as well, for a glyph that sits outside a Text or Button (a badge).
   const style = {
     '--card-icon-color': color,
@@ -32,5 +39,18 @@ export function StateGlyph({
     'marginRight': gap,
     ...(size ? {width: size, height: size, flex: 'none', margin: 0} : {}),
   } as CSSProperties
-  return state === 'published' ? <CircleSmallIcon style={style} /> : <RingIcon style={style} />
+  return state === 'published' || state === 'release' ? <CircleSmallIcon style={style} /> : <RingIcon style={style} />
+}
+
+/** The disc fills about a quarter of the icon box, so a 32px box draws the 8px dot of the old hand-drawn one, centred in a 12px slot. */
+const DOT_BOX = 32
+const DOT_SLOT = 12
+
+/** The dot of a row label: the real glyph at the 8px size of the old hand-drawn dot, centred in a fixed slot. */
+export function StateDot({kind}: {kind: StateKind | 'none'}) {
+  return (
+    <span aria-hidden style={{alignItems: 'center', display: 'flex', flex: 'none', height: DOT_SLOT, justifyContent: 'center', width: DOT_SLOT}}>
+      <StateGlyph size={DOT_BOX} state={kind === 'none' ? 'absent' : kind} />
+    </span>
+  )
 }

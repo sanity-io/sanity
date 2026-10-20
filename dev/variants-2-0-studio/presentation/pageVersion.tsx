@@ -4,6 +4,7 @@ import {usePerspective} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
+import {StateDot} from '../c3/StateGlyph'
 import {useVariantDefinitions} from '../c1/world'
 import {type AudienceVersion} from '../data/versions'
 import {useOption} from '../options/store'
@@ -49,28 +50,11 @@ export function usePresentationAudience(only?: 'presentation'): {variantId: stri
   return {variantId, title: def?.metadata?.title ?? variantId, perspective: selectedPerspectiveName ?? 'drafts', presentation: inPresentation}
 }
 
-const DOT: Record<PageVersion['kind'], string> = {
-  published: 'var(--card-badge-positive-dot-color)',
-  draft: 'var(--card-badge-caution-dot-color)',
-  release: 'var(--card-badge-suggest-dot-color)',
-  none: 'var(--card-muted-fg-color)',
-}
-
 /** The state label of a row in "Documents on this page". */
 export function PageVersionLabel({version}: {version: PageVersion}) {
   return (
     <Flex align="center" data-testid="page-version" gap={2}>
-      <span
-        style={{
-          background: version.kind === 'draft' || version.kind === 'none' ? 'none' : DOT[version.kind],
-          border: version.kind === 'draft' ? `2px solid ${DOT.draft}` : version.kind === 'none' ? `1px dashed ${DOT.none}` : 'none',
-          borderRadius: '50%',
-          display: 'block',
-          flex: 'none',
-          height: 8,
-          width: 8,
-        }}
-      />
+      <StateDot kind={version.kind} />
       <Text muted={version.kind === 'none'} size={0} style={{whiteSpace: 'nowrap'}}>
         {version.label}
       </Text>

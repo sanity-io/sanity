@@ -8,6 +8,7 @@ import {useSetVariant} from 'sanity'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 
+import {StateDot, type StateKind} from '../c3/StateGlyph'
 import {type SystemVariant} from '../c1/model'
 import {applies, BulkBar, Check, ConfirmDialog, useBulk} from './Actionable'
 import {useOpenVersion} from './openVersion'
@@ -33,27 +34,10 @@ const ago = (iso: string) => {
   return `${Math.floor(days / 30)}mo ago`
 }
 
-const DOT = {
-  published: 'var(--card-badge-positive-dot-color)',
-  draft: 'var(--card-badge-caution-dot-color)',
-  release: 'var(--card-badge-suggest-dot-color)',
-  absent: 'var(--card-muted-fg-color)',
-}
-
-function State({kind, children, faint}: {kind: keyof typeof DOT; children: ReactNode; faint?: boolean}) {
+function State({kind, children, faint}: {kind: StateKind; children: ReactNode; faint?: boolean}) {
   return (
     <Flex align="center" gap={2}>
-      <span
-        style={{
-          background: kind === 'draft' || kind === 'absent' ? 'none' : DOT[kind],
-          border: kind === 'draft' ? `2px solid ${DOT.draft}` : kind === 'absent' ? `1px dashed ${DOT.absent}` : 'none',
-          borderRadius: '50%',
-          display: 'block',
-          flex: 'none',
-          height: 8,
-          width: 8,
-        }}
-      />
+      <StateDot kind={kind} />
       <Text muted={faint} size={1}>
         {children}
       </Text>
