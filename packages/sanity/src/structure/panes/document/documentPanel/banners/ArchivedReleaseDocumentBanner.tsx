@@ -72,7 +72,7 @@ export function ArchivedReleaseDocumentBanner({
     <Banner
       tone="caution"
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone="caution">
           <ReleaseTitle
             title={release?.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}

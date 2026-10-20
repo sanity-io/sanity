@@ -4,7 +4,7 @@ import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useTranslation} from 'sanity'
 import {styled, css} from 'styled-components'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
@@ -43,7 +43,8 @@ export const DocumentGroupInventoryHint: ComponentType = () => {
           flexShrink={0}
           justifyContent="flex-end"
         >
-          <InfoOutlineIcon /> {t('document-group-inventory.onboarding-hint')}
+          <Icon size={1} icon={InfoOutlineIcon} style={{margin: '-0.375rem'}} />{' '}
+          {t('document-group-inventory.onboarding-hint')}
         </Flex>
       </Text>
     </TextButton>

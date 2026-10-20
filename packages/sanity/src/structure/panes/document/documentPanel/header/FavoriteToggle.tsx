@@ -9,7 +9,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {Text} from 'ui5'
+import {Icon, Text} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -118,9 +118,7 @@ function FavoriteButton({
         placement: 'right',
       }}
     >
-      <Text size={1} as="div" trim={true}>
-        {isFavorited ? <StarFilledIcon /> : <StarIcon />}
-      </Text>
+      <Icon size={1} icon={isFavorited ? StarFilledIcon : StarIcon} />
     </Button>
   )
 }

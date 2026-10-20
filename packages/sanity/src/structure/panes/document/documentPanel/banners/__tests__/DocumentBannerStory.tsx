@@ -1,7 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type CardTone, Card} from '@sanity/ui'
-import {Text, VStack} from 'ui5'
+import {Text, type TextProps, VStack} from 'ui5'
 
 import {Banner} from '../Banner'
 
@@ -24,7 +24,17 @@ export function DocumentBannerStory() {
             <Banner
               action={{text: 'Review'}}
               content={
-                <Text size={1} as="div" trim={true}>
+                <Text
+                  size={1}
+                  as="div"
+                  trim={true}
+                  tone={
+                    tone === 'primary' || tone === 'transparent'
+                      ? undefined
+                      : (tone as TextProps['tone'])
+                  }
+                  style={tone === 'primary' ? {color: 'var(--card-fg-color)'} : undefined}
+                >
                   Document has unpublished changes
                 </Text>
               }

@@ -51,7 +51,7 @@ export function UnpublishedDocumentBanner() {
         tone="critical"
         content={
           <VStack gap={2}>
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} tone="critical">
               <Translate
                 t={t}
                 i18nKey="banners.unpublished-release-banner.text"
@@ -65,7 +65,7 @@ export function UnpublishedDocumentBanner() {
                 }}
               />
             </Text>
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} tone="critical">
               <Translate t={t} i18nKey="banners.unpublished-release-banner.text-with-published" />
             </Text>
           </VStack>

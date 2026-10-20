@@ -44,7 +44,7 @@ export function SeeDraftBanner() {
       tone="suggest"
       data-testid="see-draft-banner"
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone="suggest">
           {t('banners.published.see-draft.text')}
         </Text>
       }

@@ -9,7 +9,7 @@ import {
   usePauseToEditScheduledDraft,
   useTranslation,
 } from 'sanity'
-import {Text} from 'ui5'
+import {Text, type TextProps} from 'ui5'
 
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {Banner} from './Banner'
@@ -36,7 +36,7 @@ export function ScheduledReleaseBanner({
       icon={LockIcon}
       data-testid="scheduled-release-banner"
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>
           <Translate
             t={tCore}
             i18nKey="release.banner.scheduled-for-publishing-on"

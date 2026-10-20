@@ -71,7 +71,7 @@ const ArchivedReleaseBanner = ({release}: {release: ReleaseDocument}) => {
     <Banner
       tone="caution"
       content={
-        <Text size={1} weight="medium" as="div" trim={true}>
+        <Text size={1} weight="medium" as="div" trim={true} tone="caution">
           <Translate
             t={t}
             i18nKey="banners.archived-release-banner.text"

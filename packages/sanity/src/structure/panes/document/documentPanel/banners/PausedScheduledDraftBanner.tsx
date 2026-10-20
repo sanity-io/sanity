@@ -13,7 +13,7 @@ export function PausedScheduledDraftBanner(): React.JSX.Element {
       tone="caution"
       icon={PauseIcon}
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone="caution">
           <Translate t={t} i18nKey="banners.paused-scheduled-draft.text" />
         </Text>
       }

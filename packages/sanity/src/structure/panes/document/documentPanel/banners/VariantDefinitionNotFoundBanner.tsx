@@ -22,7 +22,7 @@ export function VariantDefinitionNotFoundBanner({
       tone="caution"
       icon={WarningOutlineIcon}
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone="caution">
           <Translate
             i18nKey="banners.variant.definition-not-found"
             t={t}

@@ -179,7 +179,7 @@ const ReferenceChangedBannerComponent: ComponentType = () => {
       }
       data-testid="reference-changed-banner"
       content={
-        <Text size={1} weight="medium" as="div" trim={true}>
+        <Text size={1} weight="medium" as="div" trim={true} tone="caution">
           {parentReferenceInfo.result?.refValue
             ? t('banners.reference-changed-banner.reason-changed.text')
             : t('banners.reference-changed-banner.reason-removed.text')}

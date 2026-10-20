@@ -18,7 +18,7 @@ export function RevisionNotFoundBanner() {
       data-test-id="revision-not-found-banner"
       icon={WarningOutlineIcon}
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone="caution">
           {t('banners.revision-not-found.description')}
         </Text>
       }

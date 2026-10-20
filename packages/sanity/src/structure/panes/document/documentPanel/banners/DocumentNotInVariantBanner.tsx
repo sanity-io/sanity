@@ -137,7 +137,7 @@ export function DocumentNotInVariantBanner() {
     <Banner
       tone="suggest"
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone="suggest">
           <Translate
             i18nKey="banners.variant.not-in-variant"
             t={t}

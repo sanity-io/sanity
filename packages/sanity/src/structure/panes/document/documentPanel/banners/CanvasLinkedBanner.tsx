@@ -10,7 +10,7 @@ import {
   useNavigateToCanvasDoc,
   useTranslation,
 } from 'sanity'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
@@ -52,9 +52,7 @@ const CanvasPopoverContent = ({
             <Text size={1} weight="semibold" as="div" trim={true}>
               {CANVAS_APP_NAME}
             </Text>
-            <Text size={1} muted as="div" trim={true}>
-              <ComposeSparklesIcon />
-            </Text>
+            <Icon size={1} muted icon={ComposeSparklesIcon} style={{margin: '-0.375rem'}} />
           </Flex>
           <Box paddingTop={3}>
             <Heading size={1}>{popoverHeading}</Heading>
