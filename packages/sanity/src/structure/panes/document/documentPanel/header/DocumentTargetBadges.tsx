@@ -140,7 +140,7 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
   return (
     <BadgeContainer padding={2}>
       <Flex alignItems="center" gap={2}>
-        <Icon size={0} icon={RhombusIcon} tone="suggest" style={{margin: '-0.3125rem'}} />
+        <Icon muted size={0} icon={RhombusIcon} tone="suggest" style={{margin: '-0.3125rem'}} />
         <Text size={1} weight="medium" as="div" trim={true} tone="suggest">
           {getVariantTitle(variant)}
         </Text>
