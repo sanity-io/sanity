@@ -1,5 +1,5 @@
 // Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/inventory-sidepanel (PR #47), commit 40041dec04, previously 310271b6e2 and db53306896, lib/explorations/variants/inventory-concepts/model.tsx).
+// explorations/inventory-sidepanel (PR #47), commit 9f990e031b, previously 40041dec04, 310271b6e2 and db53306896, lib/explorations/variants/inventory-concepts/model.tsx).
 // Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
 import {PerspectiveProvider} from '../../../../packages/sanity/src/core/perspective/PerspectiveProvider'
 import {type ReleaseId} from '../../../../packages/sanity/src/core/perspective/types'
@@ -615,7 +615,9 @@ function startOfDay(date: Date): number {
 
 /**
  * How a version matches the visitor, as the Match filter names it: exact when its conditions are
- * every dimension the visitor has, partial when they are some of them.
+ * every dimension the visitor has, partial when they are some of them. The base has no conditions,
+ * so it matches exactly a visitor with no value in any dimension, and is the default otherwise
+ * (Andrej, 2026-10-20: "in this state I would expect that the base is in the category Matching").
  */
 function matchFilterOf(
   world: InventoryWorld,
@@ -623,8 +625,9 @@ function matchFilterOf(
   entry: InventoryEntry,
 ): MatchFilter {
   const match = matchVariant(variantFor(world, entry), visitor)
-  if (match.kind !== 'conditions') return match.kind
   const chosen = Object.values(visitor).filter((value) => value !== undefined).length
+  if (match.kind === 'default') return chosen === 0 ? 'exact' : 'default'
+  if (match.kind !== 'conditions') return match.kind
   return match.count === chosen ? 'exact' : 'partial'
 }
 
@@ -681,12 +684,13 @@ function filterMatches(
  * perspective and show the fallback variants in order of priority under each other").
  *
  * The rule is an assumption until Pedro or Jordan say how the query resolves. The best-matching
- * variant wins: more conditions first, ties broken on priority, the base last. Each variant serves
- * its version in the bundle the bar previews (a release, a scheduled draft, or the drafts), else
- * its published version; with Published previewed, only published versions count (Andrej,
- * 2026-10-20: "It should be published.norwegian actually because the norwegian perspective is
- * selected"). Drafts and scheduled drafts are served only when the bar previews them. Everything
- * else is not served. Rows in `exclude` are skipped, which is how the fallback after a delete is
+ * variant wins: more conditions first, ties broken on priority, the base last. Only a version a
+ * visitor can get is served: a published version, or one in the release or scheduled draft the bar
+ * previews, which goes out when it publishes. Each variant serves its version in that release, else
+ * its published version. A draft is never served (Andrej, 2026-10-20: "drafts are never served.
+ * They need to be published to be served"), so with Drafts previewed the ranking is Published's
+ * (Andrej, 2026-10-20: "It should be published.norwegian actually because the norwegian perspective
+ * is selected"). Everything else is not served. Rows in `exclude` are skipped, which is how the fallback after a delete is
  * found.
  */
 function priorityRanking(
@@ -703,7 +707,8 @@ function priorityRanking(
         (a, b) =>
           tier(b.match) - tier(a.match) || priorityOf(world, b.entry) - priorityOf(world, a.entry),
       )
-  const bundles: string[] = release === 'published' ? ['published'] : [release, 'published']
+  const bundles: string[] =
+    release === 'published' || release === 'drafts' ? ['published'] : [release, 'published']
   // Variants that tie on match and priority keep the fixture's order, and each keeps its versions
   // together.
   const variantOrder = [...new Set(world.entries.map((entry) => entry.variantId ?? ''))]
@@ -798,14 +803,19 @@ export function buildGroups(options: {
 
   /**
    * By priority's right-hand label: a served row says how it matches, a row that is not served why
-   * (Captain's brief, 2026-10-15): "No match" when its conditions disagree, "Not in this
-   * perspective" when it matches but sits in a bundle the bar does not preview. The section names
+   * (Captain's brief, 2026-10-15): "No match" when its conditions disagree, "Not published" for a
+   * draft that matches, and "Not in this perspective" when it matches but sits in a release the bar
+   * does not preview. The section names
    * the shown version, so its row does not (Andrej, 2026-10-19: "we don't need redundancy then in
-   * the actual row item").
+   * the actual row item"). A base that matches exactly gets a full match's label, not "Default".
    */
   const priorityMeta = (entry: InventoryEntry, match: Match) => {
-    if (servedKeys.has(entry.key)) return matchLabel(match)
-    return match.kind === 'none' ? 'No match' : 'Not in this perspective'
+    if (servedKeys.has(entry.key))
+      return match.kind === 'default' && matchFilterOf(world, visitor, entry) === 'exact'
+        ? matchLabel({kind: 'conditions', count: 0})
+        : matchLabel(match)
+    if (match.kind === 'none') return 'No match'
+    return entry.group === 'drafts' ? 'Not published' : 'Not in this perspective'
   }
 
   const toRow = (entry: InventoryEntry): InventoryRow => {
@@ -859,7 +869,9 @@ export function buildGroups(options: {
   if (ranking) {
     // By priority sorts the versions by how they match the visitor, in serving order inside each
     // section (Andrej, 2026-10-20: "matching and then served to this visitor"; "Partially matching"
-    // and "not matching"; Base in its own section, "Fallback"). The first section holds the served
+    // and "not matching"; Base in its own section, "Fallback"). With no value in any dimension the
+    // base matches fully and takes the match sections instead (Andrej, 2026-10-20: "in this state I
+    // would expect that the base is in the category Matching"). The first section holds the served
     // version when it matches fully, and its name is the only mark on it (Andrej, 2026-10-20: "The
     // section headers allow us to designate that"). The served list comes first, then the rest, so
     // a served row leads its section. Every section starts open. Ascending turns each section
