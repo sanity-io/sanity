@@ -139,7 +139,10 @@ export function AddressRow() {
               icon={<DimensionIcon name={d.name} />}
               key={d.name}
               onOpen={() => {
-                setAnchor(document.querySelector(`[data-testid="chip-${d.name}"]`))
+                const el = document.querySelector<HTMLElement>(`[data-testid="chip-${d.name}"]`)
+                // A second click on the chip that opened the picker closes it, like the Drafts pill.
+                if (open && anchor === el) return close()
+                setAnchor(el)
                 setStart(d.name)
                 setOpen(true)
               }}
@@ -161,6 +164,7 @@ export function AddressRow() {
                 iconRight={ChevronDownIcon}
                 mode="ghost"
                 onClick={() => {
+                  if (open && anchor === addEl) return close()
                   setAnchor(addEl)
                   setStart(undefined)
                   setOpen(true)
@@ -174,6 +178,7 @@ export function AddressRow() {
           <AddressChip
             accessibleName="Pick a dimension"
             onOpen={() => {
+              if (open && anchor === pendingEl) return close()
               setAnchor(pendingEl)
               setStart(undefined)
               setOpen(true)
@@ -196,7 +201,11 @@ export function AddressRow() {
               icon={AddIcon}
               mode="bleed"
               onClick={() => {
-                s.setPending(true)
+                // Add dimension raises the pending chip and its picker; a second click takes both away again.
+                if (s.pending) {
+                  s.setPending(false)
+                  close()
+                } else s.setPending(true)
               }}
               text="Add dimension"
               tooltipProps={null}
