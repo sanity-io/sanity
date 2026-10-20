@@ -12,6 +12,7 @@ import {generateDebugEngineConfidenceRuns} from './debugData'
 import {
   catalogueGrid,
   configBreaks,
+  deepLinkTargetLoaded,
   ENGINE_CONFIDENCE_EXPLAINER,
   engineConfidenceDetailOf,
   engineConfidenceSeries,
@@ -479,5 +480,23 @@ describe('engineConfidenceDetailOf', () => {
       files: null,
       entries: null,
     })
+  })
+})
+
+describe('deepLinkTargetLoaded', () => {
+  test('waits for the engine query when the link names an engine card', () => {
+    const benchOnly = {benchSeriesLoaded: true, engineRunsLoaded: false}
+    expect(deepLinkTargetLoaded({seriesKey: 'engine:headline', ...benchOnly})).toBe(false)
+    expect(
+      deepLinkTargetLoaded({seriesKey: 'engine:headline', ...benchOnly, engineRunsLoaded: true}),
+    ).toBe(true)
+  })
+
+  test('waits for the bench series when the link names a bench chart', () => {
+    const engineOnly = {benchSeriesLoaded: false, engineRunsLoaded: true}
+    expect(deepLinkTargetLoaded({seriesKey: 'bundle:initialJs', ...engineOnly})).toBe(false)
+    expect(
+      deepLinkTargetLoaded({seriesKey: 'bundle:initialJs', ...engineOnly, benchSeriesLoaded: true}),
+    ).toBe(true)
   })
 })

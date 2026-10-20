@@ -83,6 +83,7 @@ import {
   ENGINE_CONFIDENCE_DETAIL_TAG,
   ENGINE_CONFIDENCE_QUERY,
   ENGINE_CONFIDENCE_TAG,
+  deepLinkTargetLoaded,
   type EngineConfidenceDetail,
   engineConfidenceDetailOf,
   type EngineConfidenceRunSummary,
@@ -1453,11 +1454,21 @@ export function TrendsTool() {
   // charts don't exist yet (listenQuery hasn't emitted), so an immediate
   // scroll would silently no-op and the ring would expire unseen.
   const pendingDeepLink = useRef(chartParam)
+  const engineRunsLoaded = engineRuns !== null
   useEffect(() => {
-    if (!pendingDeepLink.current || series.length === 0) return
-    setFocusedKey(pendingDeepLink.current)
-    pendingDeepLink.current = ''
-  }, [series])
+    const seriesKey = pendingDeepLink.current
+    const targetLoaded =
+      seriesKey.length > 0 &&
+      deepLinkTargetLoaded({
+        seriesKey,
+        benchSeriesLoaded: series.length > 0,
+        engineRunsLoaded,
+      })
+    if (targetLoaded) {
+      setFocusedKey(seriesKey)
+      pendingDeepLink.current = ''
+    }
+  }, [series, engineRunsLoaded])
   const focusMetric = (seriesKey: string) => {
     // One history entry per jump: push the chart param, then clear any
     // explicit tab on that same entry (replace) — the active tab derives from

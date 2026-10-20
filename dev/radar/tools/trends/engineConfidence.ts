@@ -118,6 +118,17 @@ export const ENGINE_DRIFT_WINDOWS: DriftWindows = {
 
 export const ENGINE_HEADLINE_KEY = 'engine:headline'
 
+/** Engine cards mount from their own query, so a deep link to one waits for that query. */
+export function deepLinkTargetLoaded(options: {
+  seriesKey: string
+  benchSeriesLoaded: boolean
+  engineRunsLoaded: boolean
+}): boolean {
+  return options.seriesKey.startsWith('engine:')
+    ? options.engineRunsLoaded
+    : options.benchSeriesLoaded
+}
+
 const ENGINE_MEASURE_SERIES: {
   key: string
   measure: EngineConfidenceMeasureId | 'headline'
