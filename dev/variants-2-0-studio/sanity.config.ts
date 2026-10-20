@@ -4,7 +4,7 @@ import {structureTool} from 'sanity/structure'
 
 import {NavbarWithVariants} from './c1/NavbarWithVariants'
 import {inventoryInspector} from './c4/InventoryInspector'
-import {BlockWithMark, FieldWithRemovedNote} from './fieldmarks/FieldMarkCandidates'
+import {E9Block, E9Field, E9Input, E9Item} from './fieldmarks/E9Marks'
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
 import {schemaTypesFor} from './schemas'
 import {designSlotsTool, inventoryTool, ToolMenuWithSlots} from './slots/DesignSlotsTool'
@@ -27,8 +27,9 @@ const variants2Options = definePlugin({
     ...(process.env.SANITY_STUDIO_GRID ? [presentationGridTool] : []),
   ],
   document: {inspectors: (prev) => [...prev, inventoryInspector]},
-  // CANDIDATE field marks (C9), through the public form.components overrides.
-  form: {components: {block: BlockWithMark, field: FieldWithRemovedNote}},
+  // Field marks through the public form.components overrides: the C9 candidates (switch c9) and the E9 marks (switch fieldMarks).
+  // Each wrapper renders the shipped form unchanged while its switch is A.
+  form: {components: {block: E9Block, field: E9Field, input: E9Input, item: E9Item}},
   studio: {
     components: {
       layout: LayoutWithFloatingOptions,
