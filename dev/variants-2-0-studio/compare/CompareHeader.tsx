@@ -7,6 +7,7 @@ import {useVariantDefinitions} from '../c1/world'
 import {createVariantVersion} from '../c7/Banners'
 import {useVersionList} from '../data/useVersionList'
 import {sum, tally} from '../fieldmarks/markModel'
+import {PassControls} from '../list/ListParts'
 import {layerLabel, Pick} from '../pane/PaneAddress'
 import {useResultToast} from '../toasts/ResultToast'
 import {
@@ -150,6 +151,8 @@ export function CompareHeader({comparison}: {comparison: Comparison}) {
           />
         </Flex>
         <Box flex={1} />
+        {/* A review pass held in the list shows here too, because the list pane folds away when two panes are open. */}
+        <PassControls />
         {kind === 'refused' ? (
           <Flex align="center" gap={2} data-testid="compare-refused">
             <Text size={1}>Open beta compares one dimension at a time.</Text>

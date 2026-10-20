@@ -9,9 +9,12 @@ import {
   DocumentListArrangeProvider,
 } from 'sanity/structure'
 
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {type SystemVariant} from '../c1/model'
 import {useCorpus} from '../c5/useCorpus'
 import {createPerspectiveMatch} from '../data/matchCore'
+import {CmdClickOpensBeside, ListMarkStyles, ReviewHeader} from '../list/ListParts'
+import {exactVariantId} from '../list/listStore'
 import {useOptionState, useOption} from '../options/store'
 
 /**
@@ -22,19 +25,31 @@ import {useOptionState, useOption} from '../options/store'
 
 const HAS = '__section-has-variant'
 const NONE = '__section-no-variant'
+const HEADER = '__section-review-header'
 
 function SectionRow(props: {
   title: string
+  /** listMark B: one purple variant diamond on the stack. */
+  diamond?: boolean
   count: number
   collapsed?: boolean
   onToggle?: () => void
   testId: string
 }) {
-  const {title, count, collapsed, onToggle, testId} = props
+  const {title, count, collapsed, onToggle, testId, diamond} = props
   const inner: ReactNode = (
     <Flex align="center" gap={2}>
       {onToggle ? (
         <Text size={1}>{collapsed ? <ChevronRightIcon /> : <ChevronDownIcon />}</Text>
+      ) : null}
+      {diamond ? (
+        <Text
+          data-testid="list-diamond"
+          size={1}
+          style={{color: 'var(--card-badge-suggest-dot-color)'}}
+        >
+          <RhombusIcon />
+        </Text>
       ) : null}
       <Text muted size={1} weight="medium">
         {title}
@@ -85,6 +100,8 @@ export function ListArrangeProvider(props: {
 }) {
   const option = useOption('c3')
   const {listWhenPerspective} = useOptionState()
+  const listMark = useOption('listMark')
+  const reviewPass = useOption('reviewPass')
   const {chosen, definitions} = props
   const perspective = useMemo(
     () => createPerspectiveMatch(chosen, definitions),
@@ -95,7 +112,7 @@ export function ListArrangeProvider(props: {
   const toggle = useCallback(() => setNoneCollapsed((v) => !v), [])
 
   const arrange = useMemo<DocumentListArrange | null>(() => {
-    if (option !== 'd' || !perspective.active || !corpus) return null
+    if ((option !== 'd' && reviewPass === 'a') || !perspective.active || !corpus) return null
     const variantsOf = new Map(corpus.docs.map((d) => [d.id, d.variantIds]))
     return (items) => {
       const has = items.filter(
@@ -111,14 +128,39 @@ export function ListArrangeProvider(props: {
         hasPublished: false,
         hasDraft: false,
       })
+      const variantId = exactVariantId(chosen, definitions)
+      const variantTitle =
+        definitions.find((d) => variantId && d._id === `_.variants.${variantId}`)?.metadata
+          ?.title ??
+        variantId ??
+        ''
+      const type = items.find((item) => item._type !== DOCUMENT_LIST_SECTION_TYPE)?._type ?? ''
+      const withHeader = reviewPass !== 'a' && variantId
+      const header = withHeader ? [section(HEADER)] : []
       const sorted = listWhenPerspective === 'sorted'
+      const grouped =
+        option !== 'd'
+          ? items
+          : sorted
+            ? [...has, ...none]
+            : [section(HAS), ...has, section(NONE), ...(noneCollapsed ? [] : none)]
       return {
-        items: sorted
-          ? [...has, ...none]
-          : [section(HAS), ...has, section(NONE), ...(noneCollapsed ? [] : none)],
+        items: [...header, ...grouped],
         renderSection: (item) =>
-          item._id === HAS ? (
-            <SectionRow count={has.length} testId="list-section-has" title="Has variant" />
+          item._id === HEADER ? (
+            <ReviewHeader
+              orderedIds={has.map((h) => getPublishedId(h._id))}
+              title={variantTitle}
+              type={type}
+              variantId={variantId ?? ''}
+            />
+          ) : item._id === HAS ? (
+            <SectionRow
+              count={has.length}
+              diamond={listMark === 'b'}
+              testId="list-section-has"
+              title="Has variant"
+            />
           ) : (
             <SectionRow
               collapsed={noneCollapsed}
@@ -130,7 +172,24 @@ export function ListArrangeProvider(props: {
           ),
       }
     }
-  }, [option, perspective, corpus, listWhenPerspective, noneCollapsed, toggle])
+  }, [
+    option,
+    perspective,
+    corpus,
+    listWhenPerspective,
+    noneCollapsed,
+    toggle,
+    reviewPass,
+    listMark,
+    chosen,
+    definitions,
+  ])
 
-  return <DocumentListArrangeProvider value={arrange}>{props.children}</DocumentListArrangeProvider>
+  return (
+    <DocumentListArrangeProvider value={arrange}>
+      <ListMarkStyles />
+      <CmdClickOpensBeside />
+      {props.children}
+    </DocumentListArrangeProvider>
+  )
 }

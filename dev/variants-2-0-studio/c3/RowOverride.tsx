@@ -2,8 +2,12 @@ import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 import {type UseDocumentListItemOverride} from 'sanity/structure'
 
+import {usePerspectiveState} from '../c1/state'
+import {useVariantDefinitions} from '../c1/world'
 import {usePerspectiveMatch} from '../data/match'
 import {useVersionList} from '../data/useVersionList'
+import {RowExtras} from '../list/ListParts'
+import {exactVariantId} from '../list/listStore'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PageVersionLabel, pageVersion, usePresentationAudience} from '../presentation/pageVersion'
 import {baseDot, hasMoreThanBase} from './types'
@@ -24,7 +28,7 @@ const INVENTORY_INSPECTOR = 'variants-inventory'
 /** Keeps the 25px slot while the versions load, so rows do not jump. */
 const SLOT = <span style={{display: 'block', width: 25, height: 25}} />
 
-export const useRowOverride: UseDocumentListItemOverride = ({
+const useBaseRowOverride: UseDocumentListItemOverride = ({
   documentId,
   documentType,
   defaultStatus,
@@ -127,5 +131,39 @@ export const useRowOverride: UseDocumentListItemOverride = ({
       />
     ),
     tooltip: null,
+  }
+}
+
+/**
+ * The shipped row override, plus the E9 list parts: a hidden marker on the rows that have a matching variant (listMark C styles them), the
+ * Differs word and Looked at tag (reviewPass) and the chevron flyout (listFlyout). The marker and the extras are added around whatever
+ * status the C3 option draws.
+ */
+export const useRowOverride: UseDocumentListItemOverride = (args) => {
+  const base = useBaseRowOverride(args)
+  const versions = useVersionList(args.documentId, true)
+  const perspective = usePerspectiveMatch()
+  const {chosen} = usePerspectiveState()
+  const definitions = useVariantDefinitions()
+  if (!base) return base
+  const variantId = exactVariantId(chosen, definitions)
+  const has =
+    perspective.active &&
+    !!versions &&
+    perspective.best(versions.flatMap((v) => (v.variantId ? [v.variantId] : []))) !== null
+  return {
+    ...base,
+    status: (
+      <>
+        {has ? <span data-e9-has="" style={{display: 'none'}} /> : null}
+        <RowExtras
+          documentId={args.documentId}
+          documentType={args.documentType}
+          variantId={variantId}
+          versions={versions ?? []}
+        />
+        {base.status}
+      </>
+    ),
   }
 }
