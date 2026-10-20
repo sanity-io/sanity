@@ -298,6 +298,12 @@ const benchScenario = defineType({
       fields: [
         defineField({name: 'minutes', type: 'number'}),
         defineField({
+          name: 'settleMinute',
+          description:
+            'First steady-state minute: growth is read from this sample on (absent on older runs, which default to minute 2)',
+          type: 'number',
+        }),
+        defineField({
           name: 'samples',
           type: 'array',
           of: [
