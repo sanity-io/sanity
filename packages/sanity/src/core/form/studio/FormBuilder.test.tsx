@@ -419,7 +419,9 @@ describe('FormBuilder', () => {
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
 
     const suspenseWarnings = warn.mock.calls.filter(([message]) =>
-      String(message).startsWith('The custom input <NeverSettlingInput> for the field "custom"'),
+      String(message).startsWith(
+        'The custom input <NeverSettlingInput> for the field "custom" of a "test" document',
+      ),
     )
     expect(suspenseWarnings).toHaveLength(1)
     expect(suspenseWarnings[0][1]).toBe(NeverSettlingInput)

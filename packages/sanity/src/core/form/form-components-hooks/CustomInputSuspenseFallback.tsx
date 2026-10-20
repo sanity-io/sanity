@@ -1,8 +1,9 @@
 import {type Path, type SchemaType} from '@sanity/types'
 import {Skeleton} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
-import {type ComponentType, useEffect} from 'react'
+import {type ComponentType, useContext, useEffect} from 'react'
 import {isLazy} from 'react-is'
+import {FormValueContext} from 'sanity/_singletons'
 
 const warned = new WeakSet<object>()
 
@@ -15,29 +16,38 @@ const warned = new WeakSet<object>()
  */
 export function CustomInputSuspenseFallback(props: {schemaType: SchemaType; path: Path}) {
   const {schemaType, path} = props
+  // Read without `useFormValue`, which throws outside a provider: a fallback must not crash
+  const documentType = useContext(FormValueContext)?.value?._type
 
   // An effect, not render: only a fallback React actually commits means the input suspended.
   useEffect(() => {
-    warnCustomInputSuspended(schemaType, path)
-  }, [schemaType, path])
+    warnCustomInputSuspended({schemaType, path, documentType})
+  }, [schemaType, path, documentType])
 
   return <Skeleton data-testid="custom-input-fallback" padding={3} radius={1} animated />
 }
 
 /**
  * Warns once per custom input component, in every environment. The component is passed along so
- * browser devtools render it as a reference that opens its source.
+ * browser devtools render it as a reference that opens its source. Production builds minify the
+ * component's name, so the field path and document type are what locate it there.
  *
  * @internal
  */
-export function warnCustomInputSuspended(schemaType: SchemaType, path: Path): void {
+export function warnCustomInputSuspended(options: {
+  schemaType: SchemaType
+  path: Path
+  documentType?: string
+}): void {
+  const {schemaType, path, documentType} = options
   const component = schemaType.components?.input
   if (!component || warned.has(component)) return
   warned.add(component)
 
   const field = path.length > 0 ? `the field "${pathToString(path)}"` : 'the document root'
+  const document = documentType ? ` of a "${documentType}" document` : ''
   console.warn(
-    `The custom input ${describeComponent(component)} for ${field} (schema type "${schemaType.name}") ` +
+    `The custom input ${describeComponent(component)} for ${field}${document} (schema type "${schemaType.name}") ` +
       'suspended without a <Suspense> boundary of its own, so Studio shows a generic skeleton in ' +
       'its place. Wrap the part of the input that suspends in <Suspense> with a fallback that ' +
       'reserves the space the loaded input needs, so the form does not shift when it loads. ' +

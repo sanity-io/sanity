@@ -34,12 +34,16 @@ describe('warnCustomInputSuspended', () => {
       return props.renderDefault(props)
     }
 
-    warnCustomInputSuspended(fieldType(CheckModelHasSize), ['models'])
+    warnCustomInputSuspended({
+      schemaType: fieldType(CheckModelHasSize),
+      path: ['models'],
+      documentType: 'product',
+    })
 
     expect(warn).toHaveBeenCalledTimes(1)
     const [message, component] = warn.mock.calls[0]
     expect(message).toMatch(
-      /^The custom input <CheckModelHasSize> for the field "models" \(schema type "string"\) suspended without a <Suspense> boundary of its own/,
+      /^The custom input <CheckModelHasSize> for the field "models" of a "product" document \(schema type "string"\) suspended without a <Suspense> boundary of its own/,
     )
     expect(message).toMatch(/fallback that reserves the space the loaded input needs/)
     expect(message).toMatch(/skip that part until the document exists/)
@@ -53,8 +57,8 @@ describe('warnCustomInputSuspended', () => {
     }
     const schemaType = fieldType(SharedInput)
 
-    warnCustomInputSuspended(schemaType, ['models'])
-    warnCustomInputSuspended(schemaType, ['other', 'models'])
+    warnCustomInputSuspended({schemaType, path: ['models']})
+    warnCustomInputSuspended({schemaType, path: ['other', 'models']})
 
     expect(warn).toHaveBeenCalledTimes(1)
   })
@@ -64,15 +68,16 @@ describe('warnCustomInputSuspended', () => {
       Promise.resolve({default: (props: StringInputProps) => props.renderDefault(props)}),
     )
 
-    warnCustomInputSuspended(fieldType(LazyInput), [])
+    warnCustomInputSuspended({schemaType: fieldType(LazyInput), path: []})
 
+    // Without a form value there is no document type to name
     expect(warn.mock.calls[0][0]).toMatch(
-      /^The custom input \(a React\.lazy component\) for the document root /,
+      /^The custom input \(a React\.lazy component\) for the document root \(schema type /,
     )
   })
 
   it('stays quiet for a schema type without a custom input', () => {
-    warnCustomInputSuspended(fieldType(undefined), ['models'])
+    warnCustomInputSuspended({schemaType: fieldType(undefined), path: ['models']})
 
     expect(warn).not.toHaveBeenCalled()
   })
