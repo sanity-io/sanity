@@ -1,9 +1,10 @@
-import {Card, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useSetVariant} from 'sanity'
 
 import {usePerspectiveState} from '../../c1/state'
 import {useVariantDefinitions} from '../../c1/world'
+import {HidePriorityView, VisitorLensLine} from '../VisitorLens'
 import {type InventoryEntry} from './fixtures'
 import {InventoryConceptsProvider} from './model'
 import {useLiveWorld} from './useLiveWorld'
@@ -23,7 +24,10 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const setVariant = useSetVariant()
   const variants = useVariantDefinitions()
 
-  const variantFor = useCallback((variantId: string | undefined) => variants.find((v) => shortId(v._id) === variantId), [variants])
+  const variantFor = useCallback(
+    (variantId: string | undefined) => variants.find((v) => shortId(v._id) === variantId),
+    [variants],
+  )
 
   // The row the address already shows: the version and the variant the C1 row names.
   const currentEntryKey = useMemo(() => {
@@ -51,13 +55,21 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   if (!world) {
     return (
       <Card padding={3}>
-        <Text muted size={1}>Loading versions…</Text>
+        <Text muted size={1}>
+          Loading versions…
+        </Text>
       </Card>
     )
   }
   return (
-    <InventoryConceptsProvider selection={{currentEntryKey, onSelect}} world={world}>
-      <VersionInventoryPanel />
-    </InventoryConceptsProvider>
+    <Flex direction="column" height="fill">
+      <VisitorLensLine documentId={documentId} title={title} />
+      <HidePriorityView />
+      <Box flex={1} style={{minHeight: 0}}>
+        <InventoryConceptsProvider selection={{currentEntryKey, onSelect}} world={world}>
+          <VersionInventoryPanel />
+        </InventoryConceptsProvider>
+      </Box>
+    </Flex>
   )
 }

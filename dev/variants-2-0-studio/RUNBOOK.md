@@ -84,6 +84,20 @@ A preset is a saved combination. Shared presets are in `options/presets.json`. Y
 Storybook links carry `globals=theme:…;shape:…;rowLayout:left|actionsRight|centered;pillWhenOpen:summary|versionCount;toastAction:button|link`.
 Screenshots of the window: `node journeys/shoot-window.mts <tag>` (900 and 1400px, light and dark; 720px for the Settings popover).
 
+## What will my visitors see?
+
+The editor lens (`c4/VisitorLens.tsx`): the line above the inventory list opens a dialog that answers one question for the perspective in the bar:
+full match (only the variant that fits, the published version first, the draft beneath), partial match (the same plus a prompt to create a full variant), no match
+(says so; the CTA opens the Create dialog with the definition preselected, or the Variants tool when no definition exists yet). The panel's Priority view is hidden
+from the views menu by default (World > Priority view; the panel has no prop for its views, so it is hidden from the outside until the handoff). The delete dialog says
+"If you delete this, X will be served instead". Not built: the by-stage release tag ("Draft, part of Halloween") needs the panel's own model. Check: `node journeys/verify-lens.mts`.
+
+## Document list indicator (C3)
+
+One indicator, reactive to the perspective, for every option: no perspective shows the base document's state (one published or draft icon, the draft over the published one);
+a perspective removes the dots and puts a diamond on the documents that have a matching variant. Option D groups the list instead (Has variant, No variant for this perspective;
+Look > List when a perspective is active: Grouped | Sorted) through the PROPOSED `DocumentListArrange` seam. Check: `node journeys/verify-c3.mts`.
+
 ## Result toasts
 
 The stock Studio toast (`useToast().push`, 380px, `TOAST_WIDTH` in `toasts/ResultToast.tsx`), one at a time (one id, so a result replaces the one on screen).

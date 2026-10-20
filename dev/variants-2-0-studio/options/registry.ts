@@ -135,7 +135,7 @@ export const COMPONENTS: ComponentDef[] = [
     cover:
       "Andrej's version inventory panel in the document inspector: views by publish date, stage and priority, sort, filters, saved views. Selecting a row must not swap or shift the toolbar. Expand opens the C5 document lens.",
     scope: 'Open beta',
-    pick: "Andrej's panel is A; B is the same panel as a popover; the shared C5 lens at mini width (previous A) is archived",
+    pick: "Andrej's panel is A; B is the same panel as a popover; the shared C5 lens at mini width (previous A) is archived. 20 Oct call: the Priority view is out of open beta (World > Priority view, default Hide), replaced by one action, 'What will my visitors see?' (our own component beside the panel: full match, partial match with a prompt, no match with a Create CTA, the draft beneath the published version); the delete dialog says 'If you delete this, X will be served instead'. Figma C4 page, section Editor lens: E1 full match with the draft beneath 345:313, E2 partial match 345:733, E3 no match 345:1040, E4 by stage with release tags 345:1309 (not built: needs the panel's own model), E5 delete dialog 345:1717",
     built: true,
     where:
       'Open a document, then the inspector "Versions" (Option A) or "Manage versions" (Option B).',

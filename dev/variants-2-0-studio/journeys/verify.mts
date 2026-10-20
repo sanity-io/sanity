@@ -89,6 +89,7 @@ async function main() {
       await bar(/^Delete$/).click()
       const text = (await dlg.innerText()).replace(/\s+/g, ' ')
       rec('Delete dialog says what the audience falls back to', /Members fall back to/.test(text), text.slice(0, 220))
+      rec('Delete dialog says what is served instead', /If you delete this, .+ will be served instead\./.test(text), text.slice(0, 260))
       await dlg.getByRole('button', {name: 'Cancel'}).click()
     }, page)
 
