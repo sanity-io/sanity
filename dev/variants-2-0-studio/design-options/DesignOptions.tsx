@@ -803,7 +803,9 @@ function SettingsGroups({
                   />,
                 )}
                 {control(
-                  'Row layout',
+                  state.overrides.navLayout === 'c'
+                    ? 'Row layout (not used with Nav C: no row)'
+                    : 'Row layout',
                   <Segmented
                     ariaLabel="Row layout"
                     onChange={(value) => setRowLayout(value)}

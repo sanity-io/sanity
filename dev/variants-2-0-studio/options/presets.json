@@ -48,5 +48,15 @@
     "id": "e9-data",
     "name": "E9 · Data's recommendation (not decided)",
     "design": "show.a,stage.open-beta,c2.b,c3.d,compare.c,fieldMarks.b,listFlyout.b,listMark.b,paneAddress.c,reviewPanel.c,reviewPass.b"
+  },
+  {
+    "id": "e9-nav-b",
+    "name": "E9 · Nav B",
+    "design": "show.a,stage.open-beta,navLayout.b"
+  },
+  {
+    "id": "e9-nav-c",
+    "name": "E9 · Nav C (vision)",
+    "design": "show.a,stage.open-beta,navLayout.c,compare.c,paneAddress.c,reviewPanel.c,fieldMarks.b"
   }
 ]

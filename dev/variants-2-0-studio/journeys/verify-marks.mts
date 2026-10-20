@@ -40,6 +40,13 @@ const marks = (p: Page) => p.evaluate(() => [...document.querySelectorAll('[data
   await context.close()
 }
 {
+  // A collapsed field set (Advanced) carries a roll-up of the changes inside it (a small core seam, FieldSetRollupProvider).
+  const {p, context} = await open('b')
+  const roll = (await p.getByTestId('e9-fieldset-rollup').textContent().catch(() => null)) ?? ''
+  log('B: the collapsed Advanced field set says how many fields inside changed', /1 (changed|differ from base) inside|differ from base inside/.test(roll), roll)
+  await context.close()
+}
+{
   const {p, context} = await open('c')
   const first = p.getByTestId('e9-mark').first()
   await first.focus()

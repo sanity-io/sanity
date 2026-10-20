@@ -11,6 +11,7 @@ import {
 import {
   type BlockProps,
   type FieldProps,
+  type FieldSetRollupArgs,
   type InputProps,
   type ItemProps,
   useClient,
@@ -592,3 +593,61 @@ export function E9Input(props: InputProps) {
   if (option === 'a' || props.path.length > 0) return props.renderDefault(props)
   return <RootMarks {...props} />
 }
+
+// ---- Field sets (a small core seam: FieldSetRollupProvider) -----------------------------------------------------------
+
+/** The roll-up of a COLLAPSED field set: its fields are not rendered, so no field mark can speak for them (F2-AC1). */
+function FieldSetRollup(props: FieldSetRollupArgs) {
+  const option = useOption('fieldMarks')
+  const data = useMarkData()
+  if (option === 'a' || !props.collapsed) return null
+  let changed = 0
+  let differs = 0
+  for (const raw of props.fieldPaths) {
+    const path = asPath(raw)
+    const claims = claimsOf(
+      get(data.published, path),
+      get(data.base, path),
+      get(data.current, path),
+      data.published !== null,
+      data.base !== null,
+    )
+    changed += claims.all.find((c) => c.kind === 'changed')?.count ?? 0
+    differs += claims.all.find((c) => c.kind === 'differs')?.count ?? 0
+  }
+  const kind: Tone = changed > 0 ? 'changed' : 'differs'
+  const count = changed > 0 ? changed : differs
+  if (count === 0) return null
+  const label = kind === 'changed' ? `${count} changed inside` : `${count} differ from base inside`
+  return (
+    <span
+      data-kind={kind}
+      data-testid="e9-fieldset-rollup"
+      style={{
+        alignItems: 'center',
+        color: TONE[kind].fg,
+        display: 'inline-flex',
+        fontSize: 11,
+        fontWeight: 600,
+        gap: 6,
+        whiteSpace: 'nowrap',
+      }}
+      title={label}
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          alignSelf: 'stretch',
+          background: TONE[kind].bar,
+          borderRadius: 2,
+          minHeight: 14,
+          width: 3,
+        }}
+      />
+      {label}
+    </span>
+  )
+}
+
+/** The function the form calls to draw a field set's roll-up. */
+export const renderFieldSetRollup = (args: FieldSetRollupArgs) => <FieldSetRollup {...args} />

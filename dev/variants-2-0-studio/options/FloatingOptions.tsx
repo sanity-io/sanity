@@ -1,9 +1,11 @@
 import {
   type LayoutProps,
+  FieldSetRollupProvider,
   PerspectiveMenuExtensionProvider,
   ShippedPerspectiveBarProvider,
   VariantDetailExtensionProvider,
   VariantEditNoticeProvider,
+  VariantBannerReplacedProvider,
   VariantFilterAddControlProvider,
 } from 'sanity'
 import {DocumentListItemOverrideProvider, DocumentPaneExtensionProvider} from 'sanity/structure'
@@ -15,6 +17,7 @@ import {useRowOverride} from '../c3/RowOverride'
 import {EditNotice} from '../c6/EditNotice'
 import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
 import {DesignOptions} from '../design-options/DesignOptions'
+import {renderFieldSetRollup} from '../fieldmarks/E9Marks'
 import {RemoteListener} from '../journeys/RemoteListener'
 import {useDocumentPaneOverride} from '../pane/useDocumentPaneOverride'
 import {ResultToastStyles} from '../toasts/ResultToast'
@@ -43,7 +46,10 @@ const EXTENSIONS = {
 export function LayoutWithFloatingOptions(props: LayoutProps) {
   // The Variants tool's Add filter uses the perspective bar's picker; Stock keeps the shipped menu.
   const stock = useOption('c1') === STOCK_OPTION
+  // Our missing-variant banner (C7 A or B) replaces the stock one: one banner, not two.
+  const c7 = useOption('c7')
   return (
+    <VariantBannerReplacedProvider value={c7 === 'a' || c7 === 'b'}>
     <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
       <PerspectiveProvider>
         <PerspectiveMenuExtensionProvider value={EXTENSIONS.perspectiveMenu}>
@@ -52,7 +58,9 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
               <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
                 <DocumentPaneExtensionProvider value={EXTENSIONS.documentPane}>
                   <VariantFilterAddControlProvider value={stock ? null : renderPickerAddFilter}>
-                    {props.renderDefault(props)}
+                    <FieldSetRollupProvider value={renderFieldSetRollup}>
+                      {props.renderDefault(props)}
+                    </FieldSetRollupProvider>
                   </VariantFilterAddControlProvider>
                   <DesignOptions />
                   <RemoteListener />
@@ -65,5 +73,6 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
         </PerspectiveMenuExtensionProvider>
       </PerspectiveProvider>
     </DocumentListItemOverrideProvider>
+    </VariantBannerReplacedProvider>
   )
 }
