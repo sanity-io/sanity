@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journeys remote</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --fg:#14181f; --muted:#5d6675; --line:#dde1e8; --accent:#4a54e8; --accent-bg:#e9eafd; --ok:#1a8f5b; --warn:#b36b00; --focus:#4a54e8; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#101319; --card:#181c24; --fg:#e8ebf1; --muted:#98a1b2; --line:#2a303c; --accent:#8d95ff; --accent-bg:#232748; --ok:#4fd29a; --warn:#e5a54b; --focus:#8d95ff; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  header { position:sticky; top:0; z-index:2; background:var(--bg); border-bottom:1px solid var(--line); padding:12px 16px; }
+  h1 { font-size:14px; margin:0 0 6px; font-weight:650; display:flex; align-items:center; gap:8px; }
+  .pill { font-size:11px; padding:1px 8px; border-radius:99px; border:1px solid var(--line); color:var(--muted); }
+  .pill.on { color:var(--ok); border-color:var(--ok); }
+  .pill.off { color:var(--warn); border-color:var(--warn); }
+  #state { color:var(--muted); font-size:12px; word-break:break-all; }
+  main { padding:12px 16px 80px; display:grid; gap:12px; }
+  .row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  button, select { font:inherit; color:var(--fg); background:var(--card); border:1px solid var(--line); border-radius:6px; padding:4px 10px; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.on { background:var(--accent-bg); border-color:var(--accent); }
+  label.cap { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; display:block; margin-bottom:4px; }
+  select { max-width:100%; }
+  ol { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
+  li { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px; display:grid; grid-template-columns:auto 1fr; gap:4px 10px; }
+  li.current { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-bg); }
+  li .t { font-weight:600; cursor:pointer; }
+  li .meta { color:var(--muted); font-size:12px; }
+  li .expect { color:var(--muted); font-size:12px; grid-column:2; }
+  li .acts { grid-column:2; display:flex; gap:10px; align-items:center; font-size:12px; }
+  a { color:var(--accent); }
+  code { font:11px ui-monospace,SFMono-Regular,Menlo,monospace; background:var(--accent-bg); padding:0 4px; border-radius:4px; }
+  .hint { color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Journeys remote <span class="pill off" id="conn">Not connected</span></h1>
+  <div id="state">No studio window found. Open the studio in another window of this browser.</div>
+</header>
+<main>
+  <div>
+    <label class="cap" for="journey">Journey</label>
+    <div class="row"><select id="journey" aria-label="Journey"></select>
+    <button id="pj" title="Previous journey">◀ Journey</button><button id="nj" title="Next journey">Journey ▶</button></div>
+  </div>
+  <div class="row">
+    <button id="ps" title="Previous step (← or k)">← Step</button>
+    <button id="ns" class="primary" title="Next step (→ or j)">Step →</button>
+    <span class="hint" id="pos"></span>
+    <button id="reset" title="Clear the done marks of this journey">Reset checks</button>
+  </div>
+  <div>
+    <label class="cap">Stage</label>
+    <div class="row" id="stages"></div>
+  </div>
+  <div>
+    <label class="cap">Preset</label>
+    <div class="row" id="presets"></div>
+  </div>
+  <div id="detail" class="hint"></div>
+  <ol id="steps"></ol>
+  <p class="hint">Keys: ← / k previous step, → / j next step. Going to a step makes the studio window apply the step's preset and open its route.</p>
+</main>
+<script type="module">
+const CHANNEL = 'variants-2-0-remote'
+const CHECKS_KEY = 'variants-2-0-studio:journey-checks'
+const POS_KEY = 'variants-2-0-studio:remote-position'
+const STORYBOOK = 'https://sanity-studio-storybook-r4ildcrzv.sanity.dev'
+const STAGES = [['open-beta', 'Open beta'], ['ga', 'GA']]
+const $ = (id) => document.getElementById(id)
+const newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+const [journeys, presets] = await Promise.all([fetch('/static/journeys.json').then((r) => r.json()), fetch('/static/presets.json').then((r) => r.json())])
+const bc = new BroadcastChannel(CHANNEL)
+const seen = new Set()
+let status = null, lastSeen = 0
+let pos = {journey: journeys[0].id, step: 0}
+try { pos = {...pos, ...JSON.parse(localStorage.getItem(POS_KEY) || '{}')} } catch {}
+const checks = () => { try { return JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}') } catch { return {} } }
+const send = (message) => bc.postMessage({id: newId(), from: 'remote', origin: location.origin, ...message})
+const journey = () => journeys.find((j) => j.id === pos.journey) ?? journeys[0]
+
+bc.onmessage = (event) => {
+  const m = event.data
+  // Ignore anything that is not a studio status from this origin, and anything already handled (no feedback loop).
+  if (!m || m.from !== 'studio' || m.origin !== location.origin || m.type !== 'status' || seen.has(m.id)) return
+  seen.add(m.id)
+  status = m
+  lastSeen = Date.now()
+  renderStatus()
+}
+function renderStatus() {
+  const on = status && Date.now() - lastSeen < 7000
+  $('conn').textContent = on ? 'Connected' : 'Not connected'
+  $('conn').className = 'pill ' + (on ? 'on' : 'off')
+  $('state').textContent = status ? `preset ${status.preset ?? '(custom)'} · stage ${status.stage} · ${status.path}` : 'No studio window found. Open the studio in another window of this browser.'
+  $('state').dataset.preset = status?.preset ?? ''
+  $('state').dataset.stage = status?.stage ?? ''
+  $('state').dataset.path = status?.path ?? ''
+  document.querySelectorAll('#stages button').forEach((b) => b.classList.toggle('on', !!status && status.stage === b.dataset.stage))
+  document.querySelectorAll('#presets button').forEach((b) => b.classList.toggle('on', !!status && status.preset === b.dataset.id))
+}
+setInterval(() => { send({type: 'hello'}); renderStatus() }, 2000)
+send({type: 'hello'})
+
+function go(index) {
+  const j = journey()
+  if (!j.steps.length) return
+  pos.step = Math.max(0, Math.min(j.steps.length - 1, index))
+  const step = j.steps[pos.step]
+  try { localStorage.setItem(POS_KEY, JSON.stringify(pos)) } catch {}
+  // The same as the panel's go(): the step's preset (or the journey's id), then its route.
+  send({type: 'go', preset: step.preset ?? j.id, route: step.route})
+  renderSteps()
+}
+function changeJourney(delta) {
+  const i = Math.max(0, Math.min(journeys.length - 1, journeys.findIndex((j) => j.id === pos.journey) + delta))
+  pos = {journey: journeys[i].id, step: 0}
+  $('journey').value = pos.journey
+  renderSteps()
+}
+function toggle(index) {
+  const c = checks(), key = `${pos.journey}:${index}`
+  c[key] = !c[key]
+  try { localStorage.setItem(CHECKS_KEY, JSON.stringify(c)) } catch {}
+  renderSteps()
+}
+function renderSteps() {
+  const j = journey(), c = checks()
+  const done = j.steps.filter((_, i) => c[`${j.id}:${i}`]).length
+  $('pos').textContent = j.steps.length ? `step ${pos.step + 1} of ${j.steps.length} · ${done} done` : 'no steps'
+  $('detail').textContent = `${j.title} · ${j.task} · ${j.persona} · ${j.stage}` + (j.components.length ? ` · ${j.components.join(', ')}` : '')
+  const list = $('steps')
+  list.replaceChildren()
+  j.steps.forEach((step, i) => {
+    const li = document.createElement('li')
+    if (i === pos.step) li.className = 'current'
+    li.dataset.step = String(i)
+    const box = document.createElement('input')
+    box.type = 'checkbox'; box.checked = !!c[`${j.id}:${i}`]; box.setAttribute('aria-label', `Step ${i + 1} done`)
+    box.addEventListener('change', () => toggle(i))
+    const body = document.createElement('div')
+    const t = document.createElement('div'); t.className = 't'; t.textContent = `${i + 1}. ${step.title}`; t.addEventListener('click', () => go(i))
+    const meta = document.createElement('div'); meta.className = 'meta'
+    meta.textContent = [step.component && `${step.component}${step.option ? ' ' + step.option : ''}`, step.preset && `preset ${step.preset}`, step.route].filter(Boolean).join(' · ')
+    body.append(t, meta)
+    li.append(box, body)
+    if (step.expect) { const e = document.createElement('div'); e.className = 'expect'; e.textContent = `Expect: ${step.expect}`; li.append(e) }
+    const acts = document.createElement('div'); acts.className = 'acts'
+    const g = document.createElement('button'); g.textContent = 'Go to step'; g.addEventListener('click', () => go(i)); acts.append(g)
+    if (step.story) { const a = document.createElement('a'); a.href = `${STORYBOOK}/?path=/story/${step.story}`; a.target = '_blank'; a.rel = 'noreferrer'; a.textContent = 'Storybook'; acts.append(a) }
+    li.append(acts)
+    list.append(li)
+  })
+  try { localStorage.setItem(POS_KEY, JSON.stringify(pos)) } catch {}
+}
+
+for (const j of journeys) { const o = document.createElement('option'); o.value = j.id; o.textContent = `${j.id.toUpperCase()} · ${j.title}`; $('journey').append(o) }
+$('journey').value = pos.journey
+$('journey').addEventListener('change', (e) => { pos = {journey: e.target.value, step: 0}; renderSteps() })
+$('pj').addEventListener('click', () => changeJourney(-1))
+$('nj').addEventListener('click', () => changeJourney(1))
+$('ps').addEventListener('click', () => go(pos.step - 1))
+$('ns').addEventListener('click', () => go(pos.step + 1))
+$('reset').addEventListener('click', () => {
+  const c = checks(), j = journey()
+  j.steps.forEach((_, i) => delete c[`${j.id}:${i}`])
+  try { localStorage.setItem(CHECKS_KEY, JSON.stringify(c)) } catch {}
+  renderSteps()
+})
+for (const [id, label] of STAGES) {
+  const b = document.createElement('button'); b.textContent = label; b.dataset.stage = id
+  b.addEventListener('click', () => send({type: 'stage', stage: id}))
+  $('stages').append(b)
+}
+for (const p of presets) {
+  const b = document.createElement('button'); b.textContent = p.name; b.dataset.id = p.id; b.title = p.design
+  b.addEventListener('click', () => send({type: 'preset', preset: p.id}))
+  $('presets').append(b)
+}
+window.addEventListener('keydown', (e) => {
+  if (e.target instanceof HTMLElement && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return
+  if (e.key === 'ArrowRight' || e.key === 'j') { e.preventDefault(); go(pos.step + 1) }
+  else if (e.key === 'ArrowLeft' || e.key === 'k') { e.preventDefault(); go(pos.step - 1) }
+})
+window.addEventListener('storage', (e) => { if (e.key === CHECKS_KEY) renderSteps() })
+renderSteps()
+renderStatus()
+</script>
+</body>
+</html>

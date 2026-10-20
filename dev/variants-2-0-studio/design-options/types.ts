@@ -103,7 +103,7 @@ export interface DesignOptionsConfig {
   scenario: ScenarioConfig
   /** Shared presets (the ones that ship in the repo). Mine live in localStorage. */
   presets: PresetDef[]
-  links?: {figmaFile?: string; storybookBase?: string}
+  links?: {figmaFile?: string; storybookBase?: string; /** A page that drives this window from another window (a remote). */ remote?: string}
   /** The shared diagram spec (options/diagrams.json). Options with a `diagramKey` draw from it. */
   diagrams?: DiagramFile
 }

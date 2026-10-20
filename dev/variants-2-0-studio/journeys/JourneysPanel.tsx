@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {applyPreset} from '../design-options/store'
@@ -45,6 +45,14 @@ function loadChecks(): Record<string, boolean> {
 function JourneyRow({journey, open, onToggle}: {journey: Journey; open: boolean; onToggle: () => void}) {
   const router = useRouter()
   const [checks, setChecks] = useState<Record<string, boolean>>(loadChecks)
+  // The remote (another window) writes the same key: follow it.
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === CHECKS_KEY) setChecks(loadChecks())
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
   const key = (index: number) => `${journey.id}:${index}`
   const done = journey.steps.filter((_, i) => checks[key(i)]).length
 
@@ -89,6 +97,7 @@ function JourneyRow({journey, open, onToggle}: {journey: Journey; open: boolean;
           </Text>
           <Flex gap={2}>
             <Button fontSize={1} onClick={() => go(journey.steps[0])} padding={2} style={{height: 25}} text="Start journey" tone="primary" />
+            <Button fontSize={1} mode="ghost" onClick={() => window.open('/static/remote.html', 'variants-2-0-remote', 'popup,width=520,height=820')} padding={2} style={{height: 25}} text="Open remote" />
           </Flex>
           {journey.steps.length === 0 ? (
             <Text muted size={0}>

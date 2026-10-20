@@ -364,6 +364,7 @@ defineDesignOptions({
   diagrams: diagrams as unknown as DiagramFile,
   links: {
     figmaFile: 'https://www.figma.com/design/C1T4EUScc9PMf5tqNo09Qs',
+    remote: '/static/remote.html',
     storybookBase: 'https://sanity-studio-storybook-r4ildcrzv.sanity.dev',
   },
 })

@@ -79,6 +79,19 @@ Tick each step as you go. `options/journeys.json` is a copy of `docs/initiatives
 Copy the file again when it changes.
 `options/diagrams.json` is the same kind of copy of `docs/initiatives/curation-perspective-selector/diagrams.json`: the diagrams in the window (and the frames under the cards) draw from it.
 
+## Journeys remote
+
+A controller for the Journeys, in its own window, that moves the studio window. Open it with `Open remote` in the Journeys panel or at
+the bottom of the Design options window (or go to http://localhost:3350/static/remote.html in another window of the same browser).
+It is a light static page (no studio load); it talks to the studio over a BroadcastChannel (same origin only).
+
+- Pick a journey, then click a step or use the keys: `→` or `j` next step, `←` or `k` previous step. A step makes the studio apply the step's
+  preset and open its route, as `Go` in the panel does.
+- Buttons: previous and next journey, `Reset checks`, the Stage switch (Open beta, GA) and one button per preset. The done checkboxes share
+  the panel's browser storage, so both stay in sync.
+- The top line shows `Connected` and what the studio reports: its preset, stage and path. `Not connected` means no studio window is open.
+- Check: `node journeys/verify-remote.mts` drives all 54 steps from the controller and compares the reported route and preset.
+
 ## Run the walk (Playwright)
 
 Both servers must run. Run from `dev/variants-2-0-studio`.
@@ -91,6 +104,7 @@ node journeys/verify-open.mts        # open a version as a document
 node journeys/verify-crud.mts       # create and delete, by clicks: a variant definition and a variant document (throwaway data)
 node journeys/verify-diagrams.mts    # every diagram key in the registry exists in diagrams.json; the studio copy equals the docs file
 node journeys/shoot-diagrams.mts     # window screenshots for C5, C6, C8, light and dark (journeys-captures/diagrams-*.png)
+node journeys/verify-remote.mts      # the Journeys remote drives all 54 steps; route and preset reported back match
 node journeys/verify-pills.mts       # C2 A pill order (Variants, divider, Published, Draft, Releases)
 node journeys/dryrun.mts             # the demo path above, timed, with console errors and a contrast check in light and dark
 ```
