@@ -273,9 +273,14 @@ describe('createReleaseOperationsStore', () => {
 
   it('should create a version of a document', async () => {
     const store = createStore()
-    mockClient.getDocument.mockResolvedValue({_id: 'doc-id', _rev: 'doc-rev-id', data: 'example'})
+    mockClient.fetch.mockResolvedValue([{_id: 'doc-id', _rev: 'doc-rev-id'}])
     await store.createVersion('release-id', 'doc-id')
-    expect(mockClient.getDocument).toHaveBeenCalledTimes(1)
+    expect(mockClient.fetch).toHaveBeenCalledTimes(1)
+    expect(mockClient.fetch).toHaveBeenCalledWith(
+      '*[_id in $ids]{_id, _rev}',
+      {ids: ['doc-id', 'drafts.doc-id']},
+      {perspective: 'raw', tag: 'release.create-version'},
+    )
     expect(mockClient.createVersion).toHaveBeenCalledWith(
       {
         baseId: 'doc-id',
@@ -287,19 +292,63 @@ describe('createReleaseOperationsStore', () => {
     )
   })
 
+  it('copies the published document when both the published id and the draft exist', async () => {
+    const store = createStore()
+    const publishedId = 'doc-id'
+    const draftId = 'drafts.doc-id'
+    mockClient.fetch.mockResolvedValue([
+      {_id: draftId, _rev: 'draft-rev'},
+      {_id: publishedId, _rev: 'published-rev'},
+    ])
+
+    await store.createVersion('release-id', publishedId)
+
+    expect(mockClient.fetch).toHaveBeenCalledTimes(1)
+    expect(mockClient.createVersion).toHaveBeenCalledWith(
+      {
+        baseId: publishedId,
+        ifBaseRevisionId: 'published-rev',
+        publishedId,
+        releaseId: 'release-id',
+      },
+      undefined,
+    )
+  })
+
+  it('copies the draft when the draft id is requested and the published document also exists', async () => {
+    const store = createStore()
+    mockClient.fetch.mockResolvedValue([
+      {_id: 'doc-id', _rev: 'published-rev'},
+      {_id: 'drafts.doc-id', _rev: 'draft-rev'},
+    ])
+
+    await store.createVersion('release-id', 'drafts.doc-id')
+
+    expect(mockClient.createVersion).toHaveBeenCalledWith(
+      {
+        baseId: 'drafts.doc-id',
+        ifBaseRevisionId: 'draft-rev',
+        publishedId: 'doc-id',
+        releaseId: 'release-id',
+      },
+      undefined,
+    )
+  })
+
   it('copies from the draft when the published id has no published document', async () => {
     const store = createStore()
     const publishedId = 'e39aab4b-2da4-4e07-bb1d-d5e8ef9e6008'
     const draftId = `drafts.${publishedId}`
-    mockClient.getDocument.mockImplementation(async (id: string) => {
-      if (id === draftId) return {_id: draftId, _rev: 'draft-rev'}
-      return null
-    })
+    mockClient.fetch.mockResolvedValue([{_id: draftId, _rev: 'draft-rev'}])
 
     await store.createVersion('release-id', publishedId)
 
-    expect(mockClient.getDocument).toHaveBeenNthCalledWith(1, publishedId)
-    expect(mockClient.getDocument).toHaveBeenNthCalledWith(2, draftId)
+    expect(mockClient.fetch).toHaveBeenCalledTimes(1)
+    expect(mockClient.fetch).toHaveBeenCalledWith(
+      '*[_id in $ids]{_id, _rev}',
+      {ids: [publishedId, draftId]},
+      {perspective: 'raw', tag: 'release.create-version'},
+    )
     expect(mockClient.createVersion).toHaveBeenCalledWith(
       {
         baseId: draftId,
@@ -314,31 +363,40 @@ describe('createReleaseOperationsStore', () => {
   it('throws when neither the published document nor a draft exists', async () => {
     const store = createStore()
     const publishedId = 'e39aab4b-2da4-4e07-bb1d-d5e8ef9e6008'
-    mockClient.getDocument.mockResolvedValue(null)
+    mockClient.fetch.mockResolvedValue([])
 
     await expect(store.createVersion('release-id', publishedId)).rejects.toThrow(
       `Document with id ${publishedId} not found`,
     )
-    expect(mockClient.getDocument).toHaveBeenNthCalledWith(1, publishedId)
-    expect(mockClient.getDocument).toHaveBeenNthCalledWith(2, `drafts.${publishedId}`)
+    expect(mockClient.fetch).toHaveBeenCalledTimes(1)
+    expect(mockClient.fetch).toHaveBeenCalledWith(
+      '*[_id in $ids]{_id, _rev}',
+      {ids: [publishedId, `drafts.${publishedId}`]},
+      {perspective: 'raw', tag: 'release.create-version'},
+    )
     expect(mockClient.createVersion).not.toHaveBeenCalled()
   })
 
   it('does not substitute a draft when a version id is missing', async () => {
     const store = createStore()
-    mockClient.getDocument.mockResolvedValue(null)
+    mockClient.fetch.mockResolvedValue([])
 
     await expect(store.createVersion('release-id', 'versions.r1.doc-id')).rejects.toThrow(
       'Document with id versions.r1.doc-id not found',
     )
-    expect(mockClient.getDocument).toHaveBeenCalledTimes(1)
-    expect(mockClient.getDocument).toHaveBeenCalledWith('versions.r1.doc-id')
+    expect(mockClient.fetch).toHaveBeenCalledTimes(1)
+    expect(mockClient.fetch).toHaveBeenCalledWith(
+      '*[_id in $ids]{_id, _rev}',
+      {ids: ['versions.r1.doc-id']},
+      {perspective: 'raw', tag: 'release.create-version'},
+    )
     expect(mockClient.createVersion).not.toHaveBeenCalled()
   })
 
   it('should omit _weak from reference fields if _strengthenOnPublish is present when it creates a version of a document', async () => {
     const store = createStore()
 
+    mockClient.fetch.mockResolvedValue([{_id: 'doc-id', _rev: 'doc-rev-id'}])
     mockClient.getDocument.mockResolvedValue({
       _id: 'doc-id',
       _rev: 'doc-rev-id',

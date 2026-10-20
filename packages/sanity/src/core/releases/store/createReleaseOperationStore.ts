@@ -9,13 +9,7 @@ import {
   type SingleActionResult,
 } from '@sanity/client'
 
-import {
-  getDraftId,
-  getPublishedId,
-  getVersionFromId,
-  getVersionId,
-  isPublishedId,
-} from '../../util/draftUtils'
+import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../../util/draftUtils'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -196,26 +190,33 @@ export function createReleaseOperationsStore(options: {
     documentId: string,
     opts?: BaseActionOptions,
   ) => {
-    // Copy version is sometimes given the published id of a document that only
-    // exists as a draft. The versions list and the published chip both address
-    // that id, so read the draft and use it as the base.
-    let baseId = documentId
-    let document = await client.getDocument(baseId)
+    const publishedId = getPublishedId(documentId)
+    const draftId = getDraftId(documentId)
+    // A published id and its draft are the same document group. Read both in one
+    // query (`perspective: 'raw'` so the draft is visible), then copy the id that
+    // was requested. A published id with no published document copies the draft.
+    const ids =
+      documentId === publishedId || documentId === draftId ? [publishedId, draftId] : [documentId]
 
-    if (!document && isPublishedId(documentId)) {
-      baseId = getDraftId(documentId)
-      document = await client.getDocument(baseId)
-    }
+    const documents = await client.fetch<{_id: string; _rev: string}[]>(
+      '*[_id in $ids]{_id, _rev}',
+      {ids},
+      {perspective: 'raw', tag: 'release.create-version'},
+    )
 
-    if (!document) {
+    const requested = documents.find((document) => document._id === documentId)
+    const draft = documents.find((document) => document._id === draftId)
+    const source = requested ?? (documentId === publishedId ? draft : undefined)
+
+    if (!source) {
       throw new Error(`Document with id ${documentId} not found`)
     }
 
     return client.createVersion(
       {
-        baseId,
-        ifBaseRevisionId: document._rev,
-        publishedId: getPublishedId(documentId),
+        baseId: source._id,
+        ifBaseRevisionId: source._rev,
+        publishedId,
         releaseId,
       },
       opts,
