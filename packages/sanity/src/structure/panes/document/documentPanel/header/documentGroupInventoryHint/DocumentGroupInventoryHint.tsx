@@ -1,11 +1,10 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Text} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useTranslation} from 'sanity'
 import {styled, css} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
@@ -35,7 +34,7 @@ export const DocumentGroupInventoryHint: ComponentType = () => {
         await suppressHint(browserStorageAdapter)
       }}
     >
-      <Text size={1} weight="medium">
+      <Text size={1} weight="medium" as="div" trim={true}>
         <Flex
           gap={2}
           alignItems="center"

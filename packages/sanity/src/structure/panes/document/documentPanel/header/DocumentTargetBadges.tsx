@@ -1,4 +1,4 @@
-import {Card, Text, type BadgeTone} from '@sanity/ui'
+import {Card, type BadgeTone} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {memo, type RefAttributes, type SVGProps} from 'react'
 import {
@@ -17,7 +17,7 @@ import {
   type TargetPerspective,
 } from 'sanity'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {isLiveEditEnabled} from '../../../../components/paneItem/helpers'
@@ -101,7 +101,7 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
   if (isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective)) {
     return (
       <BadgeContainer padding={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {isPublishedPerspective(selectedPerspective)
             ? t('release.chip.published')
             : t('release.chip.global.drafts')}
@@ -127,7 +127,7 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
 
   return (
     <BadgeContainer padding={2}>
-      <Text size={1} textOverflow="ellipsis" weight="medium">
+      <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
         {t('version.agent-bundle.proposed-changes')}
       </Text>
     </BadgeContainer>
@@ -138,10 +138,10 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
   return (
     <BadgeContainer padding={2}>
       <Flex alignItems="center" gap={2}>
-        <Text size={0}>
+        <Text size={0} as="div" trim={true}>
           <RhombusIcon />
         </Text>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {getVariantTitle(variant)}
         </Text>
       </Flex>

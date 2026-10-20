@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   getTargetSiblings,
@@ -7,6 +6,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
+import {Text} from 'ui5'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -43,7 +43,11 @@ export function SeeDraftBanner() {
     <Banner
       tone="suggest"
       data-testid="see-draft-banner"
-      content={<Text size={1}>{t('banners.published.see-draft.text')}</Text>}
+      content={
+        <Text size={1} as="div" trim={true}>
+          {t('banners.published.see-draft.text')}
+        </Text>
+      }
       action={{
         text: t('banners.published.see-draft.action'),
         tone: 'suggest',

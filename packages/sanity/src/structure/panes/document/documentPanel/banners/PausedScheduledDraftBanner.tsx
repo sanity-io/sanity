@@ -1,6 +1,6 @@
 import {PauseIcon} from '@sanity/icons/Pause'
-import {Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'
+import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -13,7 +13,7 @@ export function PausedScheduledDraftBanner(): React.JSX.Element {
       tone="caution"
       icon={PauseIcon}
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <Translate t={t} i18nKey="banners.paused-scheduled-draft.text" />
         </Text>
       }

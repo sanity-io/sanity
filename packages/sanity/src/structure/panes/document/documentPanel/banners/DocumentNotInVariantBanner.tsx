@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -15,6 +14,7 @@ import {
   useTranslation,
   useVariantDocumentOperations,
 } from 'sanity'
+import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -137,7 +137,7 @@ export function DocumentNotInVariantBanner() {
     <Banner
       tone="suggest"
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <Translate
             i18nKey="banners.variant.not-in-variant"
             t={t}

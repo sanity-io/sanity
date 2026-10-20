@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -12,6 +11,7 @@ import {
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
+import {Text} from 'ui5'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -72,7 +72,7 @@ export function ArchivedReleaseDocumentBanner({
     <Banner
       tone="caution"
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <ReleaseTitle
             title={release?.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}

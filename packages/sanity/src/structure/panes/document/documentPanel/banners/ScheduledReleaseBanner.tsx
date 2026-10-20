@@ -1,5 +1,4 @@
 import {LockIcon} from '@sanity/icons/Lock'
-import {Text} from '@sanity/ui'
 import {
   getReleaseTone,
   isCardinalityOneRelease,
@@ -10,6 +9,7 @@ import {
   usePauseToEditScheduledDraft,
   useTranslation,
 } from 'sanity'
+import {Text} from 'ui5'
 
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {Banner} from './Banner'
@@ -36,7 +36,7 @@ export function ScheduledReleaseBanner({
       icon={LockIcon}
       data-testid="scheduled-release-banner"
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           <Translate
             t={tCore}
             i18nKey="release.banner.scheduled-for-publishing-on"
