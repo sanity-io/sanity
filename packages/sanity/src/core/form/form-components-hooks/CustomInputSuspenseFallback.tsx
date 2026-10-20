@@ -4,14 +4,12 @@ import {toString as pathToString} from '@sanity/util/paths'
 import {type ComponentType, useEffect} from 'react'
 import {isLazy} from 'react-is'
 
-import {isDev} from '../../environment'
-
 const warned = new WeakSet<object>()
 
 /**
  * Stands in for a schema type's custom input while it suspends without a boundary of its own.
- * The skeleton cannot know the size of the input it replaces, so in development it also tells
- * the input's author to declare a `Suspense` that does.
+ * The skeleton cannot know the size of the input it replaces, so it also tells the input's author
+ * to declare a `Suspense` that does.
  *
  * @internal
  */
@@ -27,14 +25,14 @@ export function CustomInputSuspenseFallback(props: {schemaType: SchemaType; path
 }
 
 /**
- * Warns once per custom input component, in development only. The component is passed along so
+ * Warns once per custom input component, in every environment. The component is passed along so
  * browser devtools render it as a reference that opens its source.
  *
  * @internal
  */
 export function warnCustomInputSuspended(schemaType: SchemaType, path: Path): void {
   const component = schemaType.components?.input
-  if (!isDev || !component || warned.has(component)) return
+  if (!component || warned.has(component)) return
   warned.add(component)
 
   const field = path.length > 0 ? `the field "${pathToString(path)}"` : 'the document root'

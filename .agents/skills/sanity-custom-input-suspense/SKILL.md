@@ -7,7 +7,7 @@ description: Fix a Sanity Studio custom input that suspends without its own Susp
 
 Studio wraps every schema type's `components.input` in a fallback boundary so one suspending
 input cannot blank the form. That fallback is a generic skeleton: it does not know the input's
-size, so the form shifts when the input loads, and in development Studio warns about it. The fix
+size, so the form shifts when the input loads, and Studio warns about it in the console. The fix
 always lives in the input: declare a `Suspense` around the part that suspends, with a fallback
 that takes the same space as what it stands in for.
 
