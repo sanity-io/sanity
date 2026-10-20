@@ -1,7 +1,7 @@
 // The E9 switches (local perspective, compare, review, list, field marks). Brief: docs/initiatives/curation-perspective-selector/DESIGN-STUDIO-BRIEF-E9.md.
 // Each one is `independent`: "Show" (All A, All B) does not move it, so every existing preset keeps today's look. A = today (shipped),
 // B = the smaller step, C = the fuller step. The names are fixed so Storybook can carry the same globals.
-import  {type ComponentDef} from '../design-options/types'
+import {type ComponentDef} from '../design-options/types'
 
 const FIGMA = 'Figma file C1T4EUScc9PMf5tqNo09Qs, page E9 413:2'
 
@@ -277,5 +277,29 @@ export const E9_COMPONENTS: ComponentDef[] = [
     ],
   },
 ]
+
+/** Hidden switch (not in the window): L5a keeps the local row with "matches global" when the global perspective catches up (b); L5b follows quietly (a, default). URL: localMatch.b */
+export const LOCAL_MATCH: ComponentDef = {
+  id: 'localMatch',
+  tag: 'LM2',
+  title: 'Local matches global (L5a / L5b)',
+  defaultOption: 'a',
+  independent: true,
+  built: true,
+  options: [
+    {
+      id: 'a',
+      label: 'L5b: follow quietly',
+      summary: 'The row goes away when the global perspective matches the pane.',
+      status: 'candidate',
+    },
+    {
+      id: 'b',
+      label: 'L5a: keep the row',
+      summary: 'The row stays and says "matches global".',
+      status: 'candidate',
+    },
+  ],
+}
 
 export const E9_GROUP = {label: 'Compare and review (E9)', ids: E9_COMPONENTS.map((c) => c.id)}

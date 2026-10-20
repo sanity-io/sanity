@@ -10,7 +10,7 @@ import {
   type OptionStatus,
 } from '../design-options/types'
 import diagrams from './diagrams.json'
-import {E9_COMPONENTS, E9_GROUP} from './e9'
+import {E9_COMPONENTS, E9_GROUP, LOCAL_MATCH} from './e9'
 import presets from './presets.json'
 
 export type {ComponentDef, OptionStatus}
@@ -387,7 +387,7 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
 }
 
 // The E9 switches (options/e9.ts) come after C1 to C9.
-COMPONENTS.push(...E9_COMPONENTS)
+COMPONENTS.push(...E9_COMPONENTS, LOCAL_MATCH)
 
 // Diagram data on the 200 x 100 grid: the part that changes.
 const rows = [24, 38, 52, 66, 80]

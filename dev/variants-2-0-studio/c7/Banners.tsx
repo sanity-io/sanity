@@ -45,7 +45,7 @@ function hasVariantHere(versions: readonly AudienceVersion[], title: string, ver
 }
 
 /** Creates the variant version from the document's base; returns the failure message, or `null` when it worked. (Module scope, so the try/catch stays plain.) */
-async function createVariantVersion(
+export async function createVariantVersion(
   client: SanityClient,
   target: {documentId: string; variantId: string; bundleId: string},
 ): Promise<string | null> {
