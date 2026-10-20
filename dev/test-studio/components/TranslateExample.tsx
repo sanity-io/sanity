@@ -24,7 +24,11 @@ export function TranslateExample() {
           })}
         </Text>
         <Text as="div" trim={true}>
-          <Translate t={t} i18nKey="use-translation.with-html" />
+          <Translate
+            t={t}
+            i18nKey="use-translation.with-styled-html"
+            components={{Code: StyledCode}}
+          />
         </Text>
         <Text as="div" trim={true}>
           <Translate
@@ -94,4 +98,11 @@ function Bold({children}: {children?: ReactNode}) {
 }
 function InfoFilledIconComponent() {
   return <Icon muted icon={InfoFilledIcon} style={{margin: '-0.4375rem'}} />
+}
+function StyledCode({children}: {children?: ReactNode}) {
+  return (
+    <code style={{color: 'var(--foreground-low)', background: 'var(--background-low)'}}>
+      {children}
+    </code>
+  )
 }
