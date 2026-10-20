@@ -219,3 +219,5 @@ export {
   type UnresolvedPaneNode,
 } from '../structure/types'
 export {useStructureTool} from '../structure/useStructureTool'
+// PROPOSED: the host draws the missing-variant banner itself (Variants 2.0 test studio).
+export {VariantBannerReplacedProvider} from '../structure/panes/document/documentPanel/VariantBannerReplaced'

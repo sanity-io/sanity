@@ -5,10 +5,13 @@ import {
   ShippedPerspectiveBarProvider,
   VariantDetailExtensionProvider,
   VariantEditNoticeProvider,
-  VariantBannerReplacedProvider,
   VariantFilterAddControlProvider,
 } from 'sanity'
-import {DocumentListItemOverrideProvider, DocumentPaneExtensionProvider} from 'sanity/structure'
+import {
+  DocumentListItemOverrideProvider,
+  DocumentPaneExtensionProvider,
+  VariantBannerReplacedProvider,
+} from 'sanity/structure'
 
 import {useOptionAExtension} from '../c1/Controls'
 import {renderPickerAddFilter} from '../c1/PickerAddFilter'
@@ -50,29 +53,29 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
   const c7 = useOption('c7')
   return (
     <VariantBannerReplacedProvider value={c7 === 'a' || c7 === 'b'}>
-    <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
-      <PerspectiveProvider>
-        <PerspectiveMenuExtensionProvider value={EXTENSIONS.perspectiveMenu}>
-          <ShippedPerspectiveBarProvider value={EXTENSIONS.showShippedBar}>
-            <VariantEditNoticeProvider value={EditNotice}>
-              <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
-                <DocumentPaneExtensionProvider value={EXTENSIONS.documentPane}>
-                  <VariantFilterAddControlProvider value={stock ? null : renderPickerAddFilter}>
-                    <FieldSetRollupProvider value={renderFieldSetRollup}>
-                      {props.renderDefault(props)}
-                    </FieldSetRollupProvider>
-                  </VariantFilterAddControlProvider>
-                  <DesignOptions />
-                  <RemoteListener />
-                  <ShapeStyles />
-                  <ResultToastStyles />
-                </DocumentPaneExtensionProvider>
-              </VariantDetailExtensionProvider>
-            </VariantEditNoticeProvider>
-          </ShippedPerspectiveBarProvider>
-        </PerspectiveMenuExtensionProvider>
-      </PerspectiveProvider>
-    </DocumentListItemOverrideProvider>
+      <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
+        <PerspectiveProvider>
+          <PerspectiveMenuExtensionProvider value={EXTENSIONS.perspectiveMenu}>
+            <ShippedPerspectiveBarProvider value={EXTENSIONS.showShippedBar}>
+              <VariantEditNoticeProvider value={EditNotice}>
+                <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
+                  <DocumentPaneExtensionProvider value={EXTENSIONS.documentPane}>
+                    <VariantFilterAddControlProvider value={stock ? null : renderPickerAddFilter}>
+                      <FieldSetRollupProvider value={renderFieldSetRollup}>
+                        {props.renderDefault(props)}
+                      </FieldSetRollupProvider>
+                    </VariantFilterAddControlProvider>
+                    <DesignOptions />
+                    <RemoteListener />
+                    <ShapeStyles />
+                    <ResultToastStyles />
+                  </DocumentPaneExtensionProvider>
+                </VariantDetailExtensionProvider>
+              </VariantEditNoticeProvider>
+            </ShippedPerspectiveBarProvider>
+          </PerspectiveMenuExtensionProvider>
+        </PerspectiveProvider>
+      </DocumentListItemOverrideProvider>
     </VariantBannerReplacedProvider>
   )
 }

@@ -1015,6 +1015,12 @@ export {
   type UsePerspectiveMenuExtension,
 } from '../core/perspective/navbar/PerspectiveMenuExtension'
 export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
+// PROPOSED: a roll-up mark in a field set's header (Variants 2.0 test studio).
+export {
+  type FieldSetRollupArgs,
+  FieldSetRollupProvider,
+  type RenderFieldSetRollup,
+} from '../core/form/members/object/fieldSetRollup'
 // PROPOSED: replaces the Variants tool's "Add filter" control (Variants 2.0 test studio).
 export {
   VariantFilterAddControlProvider,

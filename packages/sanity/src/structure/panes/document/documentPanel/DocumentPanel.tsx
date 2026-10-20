@@ -1,5 +1,5 @@
 import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
@@ -23,6 +23,7 @@ import {
   useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
+import {VariantBannerReplacedContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
@@ -53,8 +54,8 @@ import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBann
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
-import {FormView} from './documentViews/FormView'
 import {useDocumentPaneExtension} from './DocumentPaneExtension'
+import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
@@ -111,6 +112,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {params} = usePaneRouter()
   // PROPOSED: a host may add banners and a row of version pills to the pane.
   const paneExtension = useDocumentPaneExtension({documentId, documentType: schemaType.name})
+  // PROPOSED: the host draws its own missing-variant banner, so the stock one is not drawn (one banner, not two).
+  const replacesVariantBanner = useContext(VariantBannerReplacedContext)
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
@@ -310,7 +313,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     // creates the document at the server-advertised id — matching the base draft/published
     // experience where editing the published fallback creates the draft.
     if (targetDocumentState.status === 'variant-missing' && !targetDocumentState.creatableTarget) {
-      return <DocumentNotInVariantBanner />
+      return replacesVariantBanner ? null : <DocumentNotInVariantBanner />
     }
 
     if (targetDocumentState.status === 'variant-definition-document-not-found') {
@@ -397,6 +400,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       </>
     )
   }, [
+    replacesVariantBanner,
     params?.historyVersion,
     archivedScheduledDraftRelease,
     selectedPerspective,

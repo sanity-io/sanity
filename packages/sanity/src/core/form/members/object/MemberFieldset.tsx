@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import capitalize from 'lodash-es/capitalize.js'
-import {memo, useCallback, useMemo} from 'react'
+import {memo, useCallback, useContext, useMemo} from 'react'
+import {FieldSetRollupContext} from 'sanity/_singletons'
 
 import {FormFieldSet} from '../../components/formField/FormFieldSet'
 import {type FieldSetMember} from '../../store/types/members'
@@ -42,6 +43,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
   } = props
 
   const {onSetFieldSetCollapsed} = useFormCallbacks()
+  const renderRollup = useContext(FieldSetRollupContext)
 
   const handleCollapse = useCallback(() => {
     onSetFieldSetCollapsed(member.fieldSet.path, true)
@@ -58,8 +60,22 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
     return member.fieldSet.members
   }, [member])
 
+  // PROPOSED: a roll-up mark for the fields in this field set, drawn in its header (nothing without a provider).
+  const rollup = renderRollup
+    ? renderRollup({
+        name: member.fieldSet.name,
+        path: member.path,
+        fieldPaths: member.fieldSet.members.flatMap((m) =>
+          m.kind === 'field' ? [m.field.path] : [],
+        ),
+        collapsed: Boolean(member.fieldSet.collapsed),
+      })
+    : null
+
   return (
     <FormFieldSet
+      // oxlint-disable-next-line no-deprecated -- the header slot is the only place a field set can carry a mark
+      __internal_slot={rollup}
       title={member.fieldSet.title || capitalize(member.fieldSet.name)}
       description={member.fieldSet.description}
       level={member.fieldSet.level}
