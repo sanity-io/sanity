@@ -1,7 +1,7 @@
 #!/bin/sh
 # Every check, one summary line each. Both servers must run. sh journeys/check-all.sh
 cd "$(dirname "$0")/.."
-for s in verify verify-d1 verify-crud verify-open verify-pills verify-shape verify-story-links verify-ga-lenses verify-launcher verify-toggle verify-picker-forms verify-context verify-site-nav verify-remote; do
+for s in verify verify-d1 verify-crud verify-open verify-pills verify-shape verify-layout verify-story-links verify-ga-lenses verify-launcher verify-toggle verify-picker-forms verify-context verify-site-nav verify-remote; do
   out=$(node journeys/$s.mts 2>&1)
   echo "$s: $(echo "$out" | grep -c '^PASS') pass, $(echo "$out" | grep -c '^FAIL') fail"
   echo "$out" | grep '^FAIL' | head -5

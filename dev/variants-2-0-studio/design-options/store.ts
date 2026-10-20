@@ -13,8 +13,8 @@ export const STOCK_OPTION = '__stock'
 /** The scenario's first switch; ids come from the registry (e.g. 'open-beta' | 'ga'). */
 export type Stage = string
 
-export type RowLayout = 'left' | 'right' | 'center'
-export type PillLabel = 'summary' | 'count'
+export type RowLayout = 'left' | 'actionsRight' | 'centered'
+export type PillWhenOpen = 'summary' | 'versionCount'
 
 export interface State {
   global: GlobalChoice
@@ -27,7 +27,7 @@ export interface State {
   /** Row layout of C1's address row (options A and B): `left`, `right` (actions pinned right, the default) or `center`. Global like the shape. */
   rowLayout: RowLayout
   /** What the top-right pill shows while the address row is open: the full `summary` or the `count` (version and a count badge, the default). Global like the shape. */
-  pillLabel: PillLabel
+  pillWhenOpen: PillWhenOpen
   /** The preset this config started from (null = none). The config is "modified" when it no longer equals it. */
   preset: string | null
 }
@@ -43,8 +43,8 @@ function defaults(): State {
     dimensionLimit: null,
     stage: getConfig().scenario.stages[0].id,
     shape: 'round',
-    rowLayout: 'right',
-    pillLabel: 'count',
+    rowLayout: 'actionsRight',
+    pillWhenOpen: 'versionCount',
     preset: null,
   }
 }
@@ -61,8 +61,8 @@ export function serializeDesign(current: State): string {
   const parts = [`show.${show}`, `stage.${current.stage}`]
   if (current.dimensionLimit !== null) parts.push(`dim.${current.dimensionLimit}`)
   if (current.shape === 'box') parts.push('shape.box')
-  if (current.rowLayout !== 'right') parts.push(`rowlayout.${current.rowLayout}`)
-  if (current.pillLabel !== 'count') parts.push('pill.summary')
+  if (current.rowLayout !== 'actionsRight') parts.push(`rowlayout.${current.rowLayout}`)
+  if (current.pillWhenOpen !== 'versionCount') parts.push('pill.summary')
   for (const [component, option] of Object.entries(current.overrides).sort(([a], [b]) =>
     a.localeCompare(b),
   ))
@@ -83,9 +83,9 @@ export function parseDesign(value: string): State | null {
     } else if (key === 'shape') {
       if (val === 'box') next.shape = 'box'
     } else if (key === 'rowlayout') {
-      if (val === 'left' || val === 'center') next.rowLayout = val
+      if (val === 'left' || val === 'centered') next.rowLayout = val
     } else if (key === 'pill') {
-      if (val === 'summary') next.pillLabel = 'summary'
+      if (val === 'summary') next.pillWhenOpen = 'summary'
     } else if (key === 'dim') {
       next.dimensionLimit = Number(val) || null
     } else if (/^c\d+$/.test(key)) {
@@ -163,8 +163,12 @@ export function isModified(current: State = state ?? defaults()): boolean {
   const preset = findPreset(current.preset)
   return (
     !!preset &&
-    serializeDesign({...current, shape: 'round', rowLayout: 'right', pillLabel: 'count'}) !==
-      normalise(preset.design)
+    serializeDesign({
+      ...current,
+      shape: 'round',
+      rowLayout: 'actionsRight',
+      pillWhenOpen: 'versionCount',
+    }) !== normalise(preset.design)
   )
 }
 
@@ -245,8 +249,8 @@ export function setRowLayout(rowLayout: RowLayout) {
   commit({...current(), rowLayout})
 }
 
-export function setPillLabel(pillLabel: PillLabel) {
-  commit({...current(), pillLabel})
+export function setPillWhenOpen(pillWhenOpen: PillWhenOpen) {
+  commit({...current(), pillWhenOpen})
 }
 
 export function setStage(stage: Stage) {
@@ -314,7 +318,7 @@ export function applyPreset(id: string) {
       ...parsed,
       shape: current().shape,
       rowLayout: current().rowLayout,
-      pillLabel: current().pillLabel,
+      pillWhenOpen: current().pillWhenOpen,
       preset: preset.id,
     })
 }

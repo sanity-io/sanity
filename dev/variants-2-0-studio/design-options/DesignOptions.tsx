@@ -45,6 +45,8 @@ import {
   setDimensionLimit,
   setGlobalChoice,
   setOverride,
+  setPillWhenOpen,
+  setRowLayout,
   setShape,
   setStage,
   type State,
@@ -325,7 +327,7 @@ function LinkButton(props: {
 
 /** A Storybook link that cannot end on Storybook's error page: a missing story opens the nearest valid one, with a note. */
 function StoryLink({id}: {id: string}) {
-  const {shape} = useOptionState()
+  const {shape, rowLayout, pillWhenOpen} = useOptionState()
   const [ids, setIds] = useState<string[] | null>(null)
   useEffect(() => {
     let alive = true
@@ -338,7 +340,7 @@ function StoryLink({id}: {id: string}) {
   const target = missing ? (nearestStory(id, ids) ?? id) : id
   return (
     <LinkButton
-      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape}`}
+      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape};rowLayout:${rowLayout};pillWhenOpen:${pillWhenOpen}`}
       label={missing ? 'Storybook (moved)' : 'Storybook'}
       moved={missing}
       testId="story-link"
@@ -755,6 +757,55 @@ function SettingsGroups({
                       {value: 'box', label: 'Box', title: 'Proposal: 3px radius'},
                     ]}
                     value={state.shape}
+                  />,
+                )}
+                {control(
+                  'Row layout',
+                  <Segmented
+                    ariaLabel="Row layout"
+                    onChange={(value) => setRowLayout(value)}
+                    options={[
+                      {
+                        value: 'left',
+                        label: 'Left',
+                        title:
+                          'Showing and the chips on the left, Add dimension and Clear follow them',
+                      },
+                      {
+                        value: 'actionsRight',
+                        label: 'Actions right',
+                        title:
+                          'Showing and the chips on the left, Add dimension and Clear pinned to the right edge',
+                      },
+                      {
+                        value: 'centered',
+                        label: 'Centred',
+                        title:
+                          'Showing and the chips centred, Add dimension and Clear pinned right',
+                      },
+                    ]}
+                    value={state.rowLayout}
+                  />,
+                )}
+                {control(
+                  'Pill when the row is open',
+                  <Segmented
+                    ariaLabel="Pill when the row is open"
+                    onChange={(value) => setPillWhenOpen(value)}
+                    options={[
+                      {
+                        value: 'summary',
+                        label: 'Summary',
+                        title: 'The pill keeps the full summary',
+                      },
+                      {
+                        value: 'versionCount',
+                        label: 'Version and count',
+                        title:
+                          'The pill shows the version and a count badge; the row shows the values',
+                      },
+                    ]}
+                    value={state.pillWhenOpen}
                   />,
                 )}
               </>,

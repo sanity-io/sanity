@@ -1,10 +1,9 @@
-import {type PerspectiveMenuExtension} from 'sanity'
+import {Flex, Text} from '@sanity/ui'
 import {useState} from 'react'
+import {type PerspectiveMenuExtension} from 'sanity'
 
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
-import {Flex, Text} from '@sanity/ui'
-
 import {STOCK_OPTION, useOption, useOptionState} from '../options/store'
 import {Picker} from './Picker'
 import {usePerspectiveState} from './state'
@@ -19,6 +18,14 @@ export function variantsLabel(titles: string[]): string {
   if (!titles.length) return 'Variants'
   const names = titles.join(', ')
   return names.length <= FIT_CHARS ? names : `${titles.length} variants`
+}
+
+/** The pill (option A) or the Variants button (option B) shows only the count while the address row is visible and the setting asks for it. */
+export function showsCountOnly(
+  pillWhenOpen: 'summary' | 'versionCount',
+  rowShown: boolean,
+): boolean {
+  return pillWhenOpen === 'versionCount' && rowShown
 }
 
 /**
@@ -67,7 +74,8 @@ export const PILL_ALWAYS_OPENS_MENU = true
 export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
   const option = useOption('c1')
   const s = usePerspectiveState()
-  const openBeta = useOptionState().stage === 'open-beta'
+  const {stage, pillWhenOpen} = useOptionState()
+  const openBeta = stage === 'open-beta'
   if (option !== 'a') return undefined
 
   const narrowed = Object.keys(s.chosen).length > 0
@@ -92,20 +100,48 @@ export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
     <MenuItem
       data-testid="narrow-by-dimension"
       icon={RhombusIcon}
-      onClick={() => (s.rowShown ? s.setRowShown(false) : narrowed ? s.setRowShown(true) : addDimension())}
-      text={s.rowShown ? 'Hide the variants row' : narrowed ? 'Show the variants row' : ADD_DIMENSION_COPY}
+      onClick={() =>
+        s.rowShown ? s.setRowShown(false) : narrowed ? s.setRowShown(true) : addDimension()
+      }
+      text={
+        s.rowShown
+          ? 'Hide the variants row'
+          : narrowed
+            ? 'Show the variants row'
+            : ADD_DIMENSION_COPY
+      }
     />
   )
 
   return {
     extraRows: rows,
-    labelSuffix: s.valueTitles.length ? (
-      // One string in one style: "Drafts, Loyal customers" (the comma follows the word), or "Drafts, 4 variants" when it would be too wide.
-      // The stock label sits in a box with 8px of padding on each side; the negative margin closes the gap before the comma.
-      <Text data-testid="pill-values" size={1} style={{marginLeft: -8, paddingRight: 8, whiteSpace: 'nowrap'}} weight="medium">
-        , {s.valueTitles.join(', ').length <= FIT_CHARS ? s.valueTitles.join(', ') : `${s.valueTitles.length} variants`}
-      </Text>
-    ) : null,
+    // "Pill when the row is open" = count: while the address row shows the values, the pill keeps only the version and a count ("Drafts · 2").
+    labelSuffix:
+      s.valueTitles.length && showsCountOnly(pillWhenOpen, s.rowShown) ? (
+        <Text
+          data-testid="pill-count"
+          size={1}
+          style={{marginLeft: -4, paddingRight: 8, whiteSpace: 'nowrap'}}
+          weight="medium"
+        >
+          {' · '}
+          {s.valueTitles.length}
+        </Text>
+      ) : s.valueTitles.length ? (
+        // One string in one style: "Drafts, Loyal customers" (the comma follows the word), or "Drafts, 4 variants" when it would be too wide.
+        // The stock label sits in a box with 8px of padding on each side; the negative margin closes the gap before the comma.
+        <Text
+          data-testid="pill-values"
+          size={1}
+          style={{marginLeft: -8, paddingRight: 8, whiteSpace: 'nowrap'}}
+          weight="medium"
+        >
+          ,{' '}
+          {s.valueTitles.join(', ').length <= FIT_CHARS
+            ? s.valueTitles.join(', ')
+            : `${s.valueTitles.length} variants`}
+        </Text>
+      ) : null,
     // Only once something is set does the label do anything.
     ...(PILL_LABEL_TOGGLES_ROW && narrowed
       ? {
@@ -125,6 +161,7 @@ export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
 export function VariantsControl() {
   const option = useOption('c1')
   const s = usePerspectiveState()
+  const {pillWhenOpen} = useOptionState()
   const [panelEl, setPanelEl] = useState<HTMLElement | null>(null)
   const [panel, setPanel] = useState(false)
   if (option !== 'b') return null
@@ -141,7 +178,11 @@ export function VariantsControl() {
           height={CONTROL_SHAPE === 'round' ? 33 : undefined}
           shape={CONTROL_SHAPE}
           testId="variants-button"
-          text={variantsLabel(s.valueTitles)}
+          text={
+            s.valueTitles.length && showsCountOnly(pillWhenOpen, s.rowShown)
+              ? String(s.valueTitles.length)
+              : variantsLabel(s.valueTitles)
+          }
         />
       </div>
       <Picker

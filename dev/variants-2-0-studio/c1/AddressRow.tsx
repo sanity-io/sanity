@@ -1,9 +1,3 @@
-// Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit c9557870aa, lib/explorations/variants-2-0/perspective/AddressRow.tsx).
-// Changes: imports point at this monorepo and ./model. LIVE: the Stage setting (open beta = one dimension, no
-// "Add dimension", no pending chip) and the removed fixture `world`; marked "LIVE:" below.
-import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
-
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
@@ -11,12 +5,17 @@ import {Card, Flex, Text} from '@sanity/ui'
 import {type ReactElement, useEffect, useState} from 'react'
 
 import {SegmentDivider} from '../../../packages/sanity/src/core/variants/plugin/components/PerspectiveFilter.css'
-import {valueTitle} from './model'
-import {DimensionIcon} from './dimensionIcons'
-import {Picker} from './Picker'
+// Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
+// explorations/variants-2-0, commit c9557870aa, lib/explorations/variants-2-0/perspective/AddressRow.tsx).
+// Changes: imports point at this monorepo and ./model. LIVE: the Stage setting (open beta = one dimension, no
+// "Add dimension", no pending chip) and the removed fixture `world`; marked "LIVE:" below.
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {useOptionState} from '../options/store'
-import {usePerspectiveState} from './state'
 import {CHIP_SHAPE} from './Controls'
+import {DimensionIcon} from './dimensionIcons'
+import {valueTitle} from './model'
+import {Picker} from './Picker'
+import {usePerspectiveState} from './state'
 import {DimensionButton, StateMenu, VersionGlyph} from './StateMenu'
 
 // Flush segments: the buttons inside the chip have no radius of their own; the chip's outer radius clips their hover fill.
@@ -40,29 +39,46 @@ function AddressChip(props: {
   onRemove: () => void
   removeLabel: string
   removeTestId: string
-  setRef?: (el: HTMLElement | null) => void
+  captureEl?: (el: HTMLElement | null) => void
 }) {
+  const {
+    text,
+    accessibleName,
+    icon,
+    testId,
+    onOpen,
+    onRemove,
+    removeLabel,
+    removeTestId,
+    captureEl,
+  } = props
   return (
     // UI-CONSISTENCY section 2: 25px including the 1px border, so the buttons inside are 23px.
-    <Card border data-testid={props.testId} radius={CHIP_SHAPE === 'round' ? 'full' : 2} ref={props.setRef} style={{height: 25, overflow: 'hidden'}}>
+    <Card
+      border
+      data-testid={testId}
+      radius={CHIP_SHAPE === 'round' ? 'full' : 2}
+      ref={captureEl}
+      style={{height: 25, overflow: 'hidden'}}
+    >
       <Flex align="center">
         <Button
-          aria-label={props.accessibleName}
-          icon={props.icon}
+          aria-label={accessibleName}
+          icon={icon}
           iconRight={ChevronDownIcon}
           mode="bleed"
-          onClick={props.onOpen}
+          onClick={onOpen}
           style={CHIP_INNER}
-          text={props.text}
+          text={text}
           tooltipProps={null}
         />
         <div className={SegmentDivider} />
         <Button
-          aria-label={props.removeLabel}
-          data-testid={props.removeTestId}
+          aria-label={removeLabel}
+          data-testid={removeTestId}
           icon={CloseIcon}
           mode="bleed"
-          onClick={props.onRemove}
+          onClick={onRemove}
           style={CHIP_INNER}
           tooltipProps={null}
         />
@@ -87,24 +103,29 @@ export function AddressRow() {
   const narrowed = Object.keys(chosen).length > 0
   const allSet = dimensions.every((d) => chosen[d.name])
   // LIVE: open beta has exactly one dimension and no Add dimension button or pending chip.
-  const openBeta = useOptionState().stage === 'open-beta'
+  const {stage, rowLayout} = useOptionState()
+  const openBeta = stage === 'open-beta'
   const only = dimensions[0]
 
   // The extra menu row ("Add a dimension…" or "View as…") raises the pending chip; its picker opens on it.
   useEffect(() => {
-    if (s.pending && pendingEl && !openBeta) {
-      setAnchor(pendingEl)
-      setStart(undefined)
-      setOpen(true)
-    }
-    // LIVE: in open beta the menu's extra row asks for the one list; it opens on the dimension button, no chip.
-    if (s.pending && openBeta && addEl) {
-      setAnchor(addEl)
-      setStart(undefined)
-      setOpen(true)
-      s.setPending(false)
-    }
-  }, [s.pending, pendingEl, addEl, openBeta, s])
+    // Deferred one tick: the menu row sets `pending` in the shared state, and this row follows it with its own picker state.
+    const id = window.setTimeout(() => {
+      if (s.pending && pendingEl && !openBeta) {
+        setAnchor(pendingEl)
+        setStart(undefined)
+        setOpen(true)
+      }
+      // LIVE: in open beta the menu's extra row asks for the one list; it opens on the dimension button, no chip.
+      if (s.pending && openBeta && addEl) {
+        setAnchor(addEl)
+        setStart(undefined)
+        setOpen(true)
+        s.setPending(false)
+      }
+    }, 0)
+    return () => window.clearTimeout(id)
+  }, [pendingEl, addEl, openBeta, s])
 
   // LIVE: the fixture's `world.variantsEnabled` is gone; the host only mounts this row when the design is on.
   if (!s.rowShown) return null
@@ -117,113 +138,142 @@ export function AddressRow() {
   }
   return (
     <Card borderBottom data-testid="address-row" paddingX={3} paddingY={2}>
-      <Flex align="center" gap={2} wrap="wrap">
-        <Text muted size={1}>
-          Showing
-        </Text>
-        <StateMenu
-          trigger={
-            <DimensionButton
-              icon={<VersionGlyph version={s.version} />}
-              shape={CHIP_SHAPE}
-              testId="row-version"
-              text={s.versionLabel}
-            />
-          }
-        />
-        {dimensions
-          .filter((d) => chosen[d.name])
-          .map((d) => (
-            <AddressChip
-              accessibleName={`${d.title}: ${valueTitle(d, chosen[d.name])}`}
-              icon={<DimensionIcon name={d.name} />}
-              key={d.name}
-              onOpen={() => {
-                const el = document.querySelector<HTMLElement>(`[data-testid="chip-${d.name}"]`)
-                // A second click on the chip that opened the picker closes it, like the Drafts pill.
-                if (open && anchor === el) return close()
-                setAnchor(el)
-                setStart(d.name)
-                setOpen(true)
-              }}
-              onRemove={() => remove(d.name)}
-              removeLabel={`Remove ${d.title}`}
-              removeTestId={`chip-${d.name}-remove`}
-              testId={`chip-${d.name}`}
-              text={valueTitle(d, chosen[d.name])}
-            />
-          ))}
-        {openBeta ? (
-          // LIVE: open beta. With nothing chosen the one dimension is a button that opens its flat list; once a
-          // value is chosen the chip above is the control. No "Add dimension", no pending chip.
-          !narrowed && only ? (
-            <div ref={setAddEl}>
-              <Button
-                data-testid="row-choose"
-                icon={<DimensionIcon name={only.name} />}
-                iconRight={ChevronDownIcon}
-                mode="ghost"
-                onClick={() => {
-                  if (open && anchor === addEl) return close()
-                  setAnchor(addEl)
-                  setStart(undefined)
+      <Flex
+        align="center"
+        data-layout={rowLayout}
+        data-testid="address-row-layout"
+        gap={2}
+        style={
+          rowLayout === 'centered'
+            ? {display: 'grid', gridTemplateColumns: '1fr auto 1fr'}
+            : undefined
+        }
+        wrap="wrap"
+      >
+        {rowLayout === 'centered' ? <div /> : null}
+        <Flex
+          align="center"
+          data-testid="address-row-group"
+          gap={2}
+          style={{flex: rowLayout === 'actionsRight' ? 1 : undefined}}
+          wrap="wrap"
+        >
+          <Text muted size={1}>
+            Showing
+          </Text>
+          <StateMenu
+            trigger={
+              <DimensionButton
+                icon={<VersionGlyph version={s.version} />}
+                shape={CHIP_SHAPE}
+                testId="row-version"
+                text={s.versionLabel}
+              />
+            }
+          />
+          {dimensions
+            .filter((d) => chosen[d.name])
+            .map((d) => (
+              <AddressChip
+                accessibleName={`${d.title}: ${valueTitle(d, chosen[d.name])}`}
+                icon={<DimensionIcon name={d.name} />}
+                key={d.name}
+                onOpen={() => {
+                  const el = document.querySelector<HTMLElement>(`[data-testid="chip-${d.name}"]`)
+                  // A second click on the chip that opened the picker closes it, like the Drafts pill.
+                  if (open && anchor === el) return close()
+                  setAnchor(el)
+                  setStart(d.name)
                   setOpen(true)
                 }}
-                text={only.title}
+                onRemove={() => remove(d.name)}
+                removeLabel={`Remove ${d.title}`}
+                removeTestId={`chip-${d.name}-remove`}
+                testId={`chip-${d.name}`}
+                text={valueTitle(d, chosen[d.name])}
+              />
+            ))}
+          {openBeta ? (
+            // LIVE: open beta. With nothing chosen the one dimension is a button that opens its flat list; once a
+            // value is chosen the chip above is the control. No "Add dimension", no pending chip.
+            !narrowed && only ? (
+              <div ref={setAddEl}>
+                <Button
+                  data-testid="row-choose"
+                  icon={<DimensionIcon name={only.name} />}
+                  iconRight={ChevronDownIcon}
+                  mode="ghost"
+                  onClick={() => {
+                    if (open && anchor === addEl) return close()
+                    setAnchor(addEl)
+                    setStart(undefined)
+                    setOpen(true)
+                  }}
+                  text={only.title}
+                  tooltipProps={null}
+                />
+              </div>
+            ) : null
+          ) : s.pending ? (
+            <AddressChip
+              accessibleName="Pick a dimension"
+              onOpen={() => {
+                if (open && anchor === pendingEl) return close()
+                setAnchor(pendingEl)
+                setStart(undefined)
+                setOpen(true)
+              }}
+              onRemove={() => {
+                s.setPending(false)
+                close()
+              }}
+              removeLabel="Cancel"
+              removeTestId="pending-cancel"
+              captureEl={setPendingEl}
+              testId="chip-pending"
+              text="Pick a dimension"
+            />
+          ) : null}
+        </Flex>
+        <Flex
+          align="center"
+          data-testid="address-row-actions"
+          gap={2}
+          justify="flex-end"
+          style={{marginLeft: rowLayout === 'actionsRight' ? 'auto' : undefined}}
+        >
+          {!openBeta && !s.pending ? (
+            <div ref={setAddEl}>
+              <Button
+                data-testid="row-add"
+                disabled={allSet}
+                icon={AddIcon}
+                mode="bleed"
+                onClick={() => {
+                  // Add dimension raises the pending chip and its picker; a second click takes both away again.
+                  if (s.pending) {
+                    s.setPending(false)
+                    close()
+                  } else s.setPending(true)
+                }}
+                text="Add dimension"
                 tooltipProps={null}
               />
             </div>
-          ) : null
-        ) : s.pending ? (
-          <AddressChip
-            accessibleName="Pick a dimension"
-            onOpen={() => {
-              if (open && anchor === pendingEl) return close()
-              setAnchor(pendingEl)
-              setStart(undefined)
-              setOpen(true)
-            }}
-            onRemove={() => {
-              s.setPending(false)
-              close()
-            }}
-            removeLabel="Cancel"
-            removeTestId="pending-cancel"
-            setRef={setPendingEl}
-            testId="chip-pending"
-            text="Pick a dimension"
-          />
-        ) : (
-          <div ref={setAddEl}>
+          ) : null}
+          {narrowed ? (
             <Button
-              data-testid="row-add"
-              disabled={allSet}
-              icon={AddIcon}
+              data-testid="row-clear"
               mode="bleed"
               onClick={() => {
-                // Add dimension raises the pending chip and its picker; a second click takes both away again.
-                if (s.pending) {
-                  s.setPending(false)
-                  close()
-                } else s.setPending(true)
+                s.setChosen({})
+                s.setPending(false)
               }}
-              text="Add dimension"
+              text="Clear"
               tooltipProps={null}
             />
-          </div>
-        )}
-        {narrowed ? (
-          <Button
-            data-testid="row-clear"
-            mode="bleed"
-            onClick={() => {
-              s.setChosen({})
-              s.setPending(false)
-            }}
-            text="Clear"
-            tooltipProps={null}
-          />
-        ) : null}
+          ) : null}
+        </Flex>
       </Flex>
       <Picker
         anchor={anchor ?? addEl}

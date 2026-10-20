@@ -1,9 +1,23 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useLayoutEffect, useRef} from 'react'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {getConfig} from '../design-options/config'
+import {
+  applyPreset,
+  getOptionState,
+  resetOptions,
+  resetOverrides,
+  resolveOption,
+  setDimensionLimit,
+  setGlobalChoice,
+  setOverride,
+  setPillWhenOpen,
+  setRowLayout,
+  setShape,
+  setStage,
+  useOptionState,
+} from '../design-options/store'
 import {TAB_ID} from '../design-options/tab'
-import {applyPreset, getOptionState, resetOptions, resetOverrides, resolveOption, setDimensionLimit, setGlobalChoice, setOverride, setShape, setStage, useOptionState} from '../design-options/store'
 
 // The studio end of the Journeys remote (static/remote.html, opened in another window of the same origin). Mounted once
 // with the Design options window, whether or not the Journeys panel is open. Commands arrive on a BroadcastChannel
@@ -18,9 +32,30 @@ export type RemoteMessage =
   | {id: string; from: 'remote'; origin: string; type: 'preset'; preset: string}
   | {id: string; from: 'remote'; origin: string; type: 'stage'; stage: string}
   | {id: string; from: 'remote'; origin: string; type: 'global'; choice: 'final' | 'stock' | number}
-  | {id: string; from: 'remote'; origin: string; type: 'option'; component: string; option: string | null}
+  | {
+      id: string
+      from: 'remote'
+      origin: string
+      type: 'option'
+      component: string
+      option: string | null
+    }
   | {id: string; from: 'remote'; origin: string; type: 'dimensions'; limit: number | null}
   | {id: string; from: 'remote'; origin: string; type: 'shape'; shape: 'round' | 'box'}
+  | {
+      id: string
+      from: 'remote'
+      origin: string
+      type: 'rowLayout'
+      rowLayout: 'left' | 'actionsRight' | 'centered'
+    }
+  | {
+      id: string
+      from: 'remote'
+      origin: string
+      type: 'pillWhenOpen'
+      pillWhenOpen: 'summary' | 'versionCount'
+    }
   | {id: string; from: 'remote'; origin: string; type: 'reset'; all?: boolean}
   | {id: string; from: 'remote'; origin: string; type: 'identify'}
 
@@ -45,11 +80,18 @@ export interface StudioStatus {
   options: {
     global: 'final' | 'stock' | number
     shape: 'round' | 'box'
+    rowLayout: 'left' | 'actionsRight' | 'centered'
+    pillWhenOpen: 'summary' | 'versionCount'
     dimensionLimit: number | null
     stages: {id: string; label: string}[]
     dimensions: {value: number | null; label: string}[]
     presets: {id: string; name: string}[]
-    components: {id: string; title: string; chosen: string; options: {id: string; label: string}[]}[]
+    components: {
+      id: string
+      title: string
+      chosen: string
+      options: {id: string; label: string}[]
+    }[]
   }
 }
 
@@ -76,38 +118,77 @@ export function RemoteListener() {
   const channel = useRef<BroadcastChannel | null>(null)
   const seen = useRef(new Set<string>())
   const routerRef = useRef(router)
-  routerRef.current = router
+  useLayoutEffect(() => {
+    routerRef.current = router
+  })
 
   const status = (reply?: string, wanted?: string): StudioStatus => {
     const now = getOptionState()
     const path = window.location.pathname + window.location.search
-    return {id: newId(), from: 'studio', origin: window.location.origin, type: 'status', reply, tab: TAB_ID, activeAt, visible: document.visibilityState === 'visible', wanted, reached: wanted === undefined ? undefined : path.split('?')[0].startsWith(wanted.split('?')[0]), preset: now.preset ?? undefined, stage: now.stage, path: window.location.pathname + window.location.search,
+    return {
+      id: newId(),
+      from: 'studio',
+      origin: window.location.origin,
+      type: 'status',
+      reply,
+      tab: TAB_ID,
+      activeAt,
+      visible: document.visibilityState === 'visible',
+      wanted,
+      reached:
+        wanted === undefined ? undefined : path.split('?')[0].startsWith(wanted.split('?')[0]),
+      preset: now.preset ?? undefined,
+      stage: now.stage,
+      path: window.location.pathname + window.location.search,
       options: {
         global: now.global,
         shape: now.shape,
+        rowLayout: now.rowLayout,
+        pillWhenOpen: now.pillWhenOpen,
         dimensionLimit: now.dimensionLimit,
         stages: getConfig().scenario.stages,
-        dimensions: (getConfig().scenario.dimensions ?? []).map((d) => ({value: d.value, label: d.label})),
+        dimensions: (getConfig().scenario.dimensions ?? []).map((d) => ({
+          value: d.value,
+          label: d.label,
+        })),
         presets: getConfig().presets.map((p) => ({id: p.id, name: p.name})),
-        components: getConfig().components.map((c) => ({id: c.id, title: c.title, chosen: resolveOption(c, now), options: c.options.map((o) => ({id: o.id, label: o.label}))})),
+        components: getConfig().components.map((c) => ({
+          id: c.id,
+          title: c.title,
+          chosen: resolveOption(c, now),
+          options: c.options.map((o) => ({id: o.id, label: o.label})),
+        })),
       },
     }
   }
-  const post = (reply?: string, wanted?: string) => channel.current?.postMessage(status(reply, wanted))
+  const postRef = useRef<(reply?: string, wanted?: string) => void>(() => undefined)
+  const post = (reply?: string, wanted?: string) =>
+    channel.current?.postMessage(status(reply, wanted))
+
+  useLayoutEffect(() => {
+    postRef.current = post
+  })
 
   useEffect(() => {
     const bc = new BroadcastChannel(REMOTE_CHANNEL)
     channel.current = bc
     bc.onmessage = (event: MessageEvent<RemoteMessage>) => {
       const m = event.data
-      if (!m || m.from !== 'remote' || m.origin !== window.location.origin || seen.current.has(m.id)) return
+      if (
+        !m ||
+        m.from !== 'remote' ||
+        m.origin !== window.location.origin ||
+        seen.current.has(m.id)
+      )
+        return
       seen.current.add(m.id)
       if ((m as {target?: string}).target && (m as {target?: string}).target !== TAB_ID) return
       if (m.type === 'identify') {
         // Shows which studio tab the remote is driving: a banner for a few seconds.
         const banner = document.createElement('div')
         banner.textContent = 'The Journeys remote is controlling this tab'
-        banner.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:2147483647;background:#4a54e8;color:#fff;padding:8px 14px;border-radius:6px;font:13px system-ui;box-shadow:0 4px 16px rgba(0,0,0,.3)'
+        banner.style.cssText =
+          'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:2147483647;background:#4a54e8;color:#fff;padding:8px 14px;border-radius:6px;font:13px system-ui;box-shadow:0 4px 16px rgba(0,0,0,.3)'
         document.body.append(banner)
         window.setTimeout(() => banner.remove(), 3000)
       } else if (m.type === 'go') {
@@ -117,29 +198,29 @@ export function RemoteListener() {
       else if (m.type === 'stage') setStage(m.stage)
       else if (m.type === 'global') setGlobalChoice(m.choice)
       else if (m.type === 'shape') setShape(m.shape)
+      else if (m.type === 'rowLayout') setRowLayout(m.rowLayout)
+      else if (m.type === 'pillWhenOpen') setPillWhenOpen(m.pillWhenOpen)
       else if (m.type === 'option') setOverride(m.component, m.option)
       else if (m.type === 'dimensions') setDimensionLimit(m.limit)
       else if (m.type === 'reset') (m.all ? resetOptions : resetOverrides)()
       // The route changes on the next tick; answer after it, and again from the effect below when the path moves.
-      window.setTimeout(() => post(m.id, m.type === 'go' ? m.route : undefined), 500)
+      window.setTimeout(() => postRef.current(m.id, m.type === 'go' ? m.route : undefined), 500)
     }
-    post()
+    postRef.current()
     return () => {
       bc.close()
       channel.current = null
     }
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- the channel lives as long as the studio
   }, [])
 
   // Report whenever the route or the option state changes.
+  // Report on every render: the component renders when the route or the option state changes.
   useEffect(() => {
-    post()
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- `post` only reads refs and the store
-  }, [routerState, optionState])
+    postRef.current()
+  })
   useEffect(() => {
-    const id = window.setInterval(() => post(), 1000)
+    const id = window.setInterval(() => postRef.current(), 1000)
     return () => window.clearInterval(id)
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- `post` only reads refs and the store
   }, [])
   return null
 }
