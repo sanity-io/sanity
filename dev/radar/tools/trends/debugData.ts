@@ -906,6 +906,11 @@ export function generateDebugEngineConfidenceRuns(
   switch (source) {
     case 'demo':
       return withLocalRun(weeks, localEngineRun())
+    case 'sqrl':
+    case 'sqrl-climb':
+    case 'sqrl-regressed':
+    case 'sqrl-empty':
+      return weeks
     case 'sparse':
       return SPARSE_ENGINE_WEEKS.map((week) => weeks[week])
     case 'single-run':
