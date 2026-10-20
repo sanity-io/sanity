@@ -1,7 +1,7 @@
 import {defineField, defineType} from 'sanity'
 
 // Nordic Books: the mock catalogue behind the Variants 2.0 fixtures (seed/nordic-books.json).
-const fields = [
+export const bookFields = [
   defineField({name: 'title', type: 'string'}),
   defineField({name: 'subtitle', type: 'string'}),
   defineField({name: 'blurb', type: 'text', rows: 3}),
@@ -16,7 +16,7 @@ export const book = defineType({
   name: 'book',
   title: 'Book',
   type: 'document',
-  fields,
+  fields: bookFields,
   preview: {select: {title: 'title', subtitle: 'subtitle'}},
 })
 
@@ -26,7 +26,7 @@ export const bookLive = defineType({
   title: 'Book (live edit)',
   type: 'document',
   liveEdit: true,
-  fields,
+  fields: bookFields,
   preview: {select: {title: 'title', subtitle: 'subtitle'}},
 })
 

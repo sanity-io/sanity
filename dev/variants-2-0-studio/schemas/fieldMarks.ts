@@ -7,6 +7,8 @@ export const fieldMarksTest = defineType({
   name: 'fieldMarksTest',
   title: 'Field marks test',
   type: 'document',
+  // A collapsed fieldset, so a change inside it has to be signalled by the fieldset itself (F2-AC1).
+  fieldsets: [{name: 'advanced', title: 'Advanced', options: {collapsible: true, collapsed: true}}],
   fields: [
     defineField({name: 'title', type: 'string'}),
     defineField({name: 'subtitle', type: 'string'}),
@@ -18,7 +20,10 @@ export const fieldMarksTest = defineType({
         defineField({
           name: 'meta',
           type: 'object',
-          fields: [defineField({name: 'owner', type: 'string'}), defineField({name: 'region', type: 'string'})],
+          fields: [
+            defineField({name: 'owner', type: 'string'}),
+            defineField({name: 'region', type: 'string'}),
+          ],
         }),
       ],
     }),
@@ -30,7 +35,10 @@ export const fieldMarksTest = defineType({
         defineArrayMember({
           type: 'object',
           name: 'section',
-          fields: [defineField({name: 'heading', type: 'string'}), defineField({name: 'text', type: 'text', rows: 2})],
+          fields: [
+            defineField({name: 'heading', type: 'string'}),
+            defineField({name: 'text', type: 'text', rows: 2}),
+          ],
           preview: {select: {title: 'heading', subtitle: 'text'}},
         }),
       ],
@@ -38,6 +46,8 @@ export const fieldMarksTest = defineType({
     defineField({name: 'featured', type: 'reference', to: [{type: 'book'}]}),
     defineField({name: 'cover', type: 'image', options: {hotspot: true}}),
     defineField({name: 'body', type: 'array', of: [defineArrayMember({type: 'block'})]}),
+    defineField({name: 'seoTitle', type: 'string', fieldset: 'advanced'}),
+    defineField({name: 'seoDescription', type: 'string', fieldset: 'advanced'}),
   ],
   preview: {select: {title: 'title', subtitle: 'subtitle'}},
 })

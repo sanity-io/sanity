@@ -190,3 +190,18 @@ Screenshots and `run.json` go to `journeys-captures/` (not committed). The scrip
 - Saved views in the version list are a candidate (`Save current view` is disabled).
 - Lint hook: two commits (`a28baf1b0f`, `9a51630470`) were made with `--no-verify` because the hook now flags code that was already there: `options/FloatingOptions.tsx` (react/hooks, hooks passed as provider values), `c7/Banners.tsx` (react/todo, try/finally) and the ported `c4/inventory/model.tsx` (set-state-in-effect). Everything else goes through the hook.
 - Not run on a phone, in light theme, or on the deployed preview.
+
+## E9 fixtures (local perspective, compare, review, list, field marks)
+
+`node seed/seed-e9.mts` (idempotent; needs `sanity login`). Documents are reachable by URL, for example `/structure/e9Case;e9-visitors?perspective=published&variant=aud-members`.
+
+| Scenario                                                                                                                                            | Where                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Same variant, draft AND published (Returning visitors, Members)                                                                                     | `e9Case;e9-visitors`, variant `aud-returning-visitors` or `aud-members`                                         |
+| A variant that is only published, no draft ("Danish")                                                                                               | `e9Case;e9-danish`, variant `loc-da-dk`                                                                         |
+| No de-DE version (fallback to the base)                                                                                                             | `e9Case;e9-no-de`, with `loc-en-gb` and `loc-fr-fr` present                                                     |
+| Ten documents with a Returning visitors variant, 7 differ from the base and 3 are the same, plus 3 without one                                      | the list `E9 review set` (13 documents, `e9-set-01` to `e9-set-13`)                                             |
+| A release with variant documents                                                                                                                    | release `E9 review release` (`rE9`): variant versions of `e9-set-01` to `e9-set-03`                             |
+| Array items changed, removed, moved, added; portable text blocks changed; a change inside a collapsed fieldset and a nested object; an unknown path | `fieldMarksTest;fm-2`, variant `aud-returning-visitors` (the Field marks test `fm-1` keeps its Members variant) |
+
+The Field marks test type gained a collapsed fieldset, `Advanced` (`seoTitle`, `seoDescription`).
