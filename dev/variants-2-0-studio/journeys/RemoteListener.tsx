@@ -2,6 +2,7 @@ import {useEffect, useRef} from 'react'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {getConfig} from '../design-options/config'
+import {TAB_ID} from '../design-options/tab'
 import {applyPreset, getOptionState, resetOptions, resetOverrides, resolveOption, setDimensionLimit, setGlobalChoice, setOverride, setStage, useOptionState} from '../design-options/store'
 
 // The studio end of the Journeys remote (static/remote.html, opened in another window of the same origin). Mounted once
@@ -52,7 +53,6 @@ export interface StudioStatus {
 
 // Several studio tabs can listen at once. Rule: a command carries the tab it is for (the remote picks the tab that was
 // active most recently: clicked or typed in, or the one that opened the remote); the other tabs ignore it. A command without a target is for every tab.
-export const TAB_ID = `tab-${Math.random().toString(36).slice(2, 8)}`
 let activeAt = Date.now()
 const markActive = () => {
   activeAt = Date.now()

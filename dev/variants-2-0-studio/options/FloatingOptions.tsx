@@ -9,7 +9,6 @@ import {useRowOverride} from '../c3/RowOverride'
 import {EditNotice} from '../c6/EditNotice'
 import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
 import {DesignOptions} from '../design-options/DesignOptions'
-import {JourneysLauncher} from '../journeys/JourneysLauncher'
 import {RemoteListener} from '../journeys/RemoteListener'
 import {useDocumentPaneOverride} from '../pane/useDocumentPaneOverride'
 import {STOCK_OPTION, useOption} from './store'
@@ -32,7 +31,6 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
           <DocumentPaneExtensionProvider value={useDocumentPaneOverride}>
             {props.renderDefault(props)}
             <DesignOptions />
-            <JourneysLauncher />
             <RemoteListener />
           </DocumentPaneExtensionProvider>
           </VariantDetailExtensionProvider>

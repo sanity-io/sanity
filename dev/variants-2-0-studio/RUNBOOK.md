@@ -84,11 +84,12 @@ Copy the file again when it changes.
 Two controllers, each in a window of its own, that move the studio window. They are static pages (no studio load) and talk to the studio over a
 BroadcastChannel (same origin only). Both can be open at the same time.
 
-- **Journeys remote** (`/static/remote.html`): the `Journeys` button at the bottom left of the studio opens it (1280 x 860). It shows the journeys
+- **Journeys remote** (`/static/remote.html`): `Journeys remote` in the Design options window opens it (1280 x 860). It shows the journeys
   on the left (flow status, actors, scope, steps and done counts), the designer's Studio Flows flow in the middle (phases, step cards, pain points,
   success and failure; the card the current walk step plays is outlined, earlier cards carry a check) and the walk step at the bottom.
   Keys: `→` or `j` next step, `←` or `k` previous step. `Go to step` makes the studio apply the step's preset and open its route.
-  The in-studio Journeys panel is gone; the done marks keep their storage key (`variants-2-0-studio:journey-checks`).
+  There is no separate Journeys button any more; the done marks keep their storage key (`variants-2-0-studio:journey-checks`).
+- **Moving the Design options button.** Drag the grip (⋮) on its left to put it anywhere; the place is remembered, and a double-click on the grip sends it back to the bottom left.
 - **Design options remote** (`/static/options-remote.html`): `Options remote` at the bottom of the Design options window, or the button in the Journeys remote.
   Show (Stock, A, B, C, Final), Stage, Dimensions (GA), presets and one button per option slot of every component.
 - **Which studio tab it moves.** A remote opened from the studio's own button is bound to the tab you clicked in (`?tab=`). Without that, it uses the

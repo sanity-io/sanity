@@ -4,10 +4,11 @@ import {DragHandleIcon} from '@sanity/icons/DragHandle'
 import {RemoveIcon} from '@sanity/icons/Remove'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {createPortal} from 'react-dom'
-import {type KeyboardEvent, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState} from 'react'
+import {type KeyboardEvent, type ReactNode, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState} from 'react'
 
 import {getConfig, NOT_DRAWN_LABEL} from './config'
 import {OptionDiagram, SpecDiagram} from './diagram'
+import {TAB_ID} from './tab'
 import {PresetBar} from './PresetBar'
 import {
   designLink,
@@ -503,10 +504,10 @@ function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
             <Button disabled={changedCount === 0} fontSize={1} mode="bleed" onClick={resetOverrides} padding={2} text="Reset all" />
             <Box flex={1} />
             {getConfig().links?.remote ? (
-              <Button fontSize={1} mode="bleed" onClick={() => window.open(getConfig().links!.remote, 'variants-2-0-options-remote', 'popup,width=520,height=820')} padding={2} text="Options remote" />
+              <Button fontSize={1} mode="bleed" onClick={() => window.open(`${getConfig().links!.remote}?tab=${TAB_ID}`, 'variants-2-0-options-remote', 'popup,width=520,height=820')} padding={2} text="Options remote" />
             ) : null}
             {getConfig().links?.remote ? (
-              <Button fontSize={1} mode="bleed" onClick={() => window.open(getConfig().links!.journeysRemote, 'variants-2-0-remote', 'popup,width=1200,height=800')} padding={2} text="Journeys remote" />
+              <Button fontSize={1} mode="bleed" onClick={() => window.open(`${getConfig().links!.journeysRemote}?tab=${TAB_ID}`, 'variants-2-0-remote', 'popup,width=1280,height=860')} padding={2} text="Journeys remote" />
             ) : null}
             <Button fontSize={1} mode="bleed" onClick={copy} padding={2} text={copied ? 'Copied' : 'Copy link'} />
             <Button fontSize={1} mode="bleed" onClick={onHide} padding={2} text="Hide until refresh" />
@@ -766,6 +767,71 @@ function ConfigWindow(props: {state: State; onClose: () => void; onHide: () => v
 // Floats over the Studio instead of taking layout space, so document heights stay real. Open or
 // closed is per page load, and "hide" is deliberately not remembered: a refresh brings it back.
 /** The collapsed control and the floating window. Mount once, anywhere in the app. */
+const LAUNCHER_KEY = () => `${getConfig().storageKey}:launcher`
+
+/**
+ * The collapsed control. Drag the grip to move it anywhere in the window (the place is remembered); double-click the grip
+ * to send it back to the bottom left. It sits above everything, so move it out of the way of the page you are reviewing.
+ */
+function Launcher({children}: {children: ReactNode}) {
+  const [pos, setPos] = useState<{x: number; y: number} | null>(() => {
+    try {
+      const raw = window.localStorage.getItem(LAUNCHER_KEY())
+      return raw ? JSON.parse(raw) : null
+    } catch {
+      return null
+    }
+  })
+  const drag = useRef<{dx: number; dy: number} | null>(null)
+  const box = useRef<HTMLDivElement | null>(null)
+  const clamp = (x: number, y: number) => ({
+    x: Math.min(Math.max(x, 0), window.innerWidth - (box.current?.offsetWidth ?? 120)),
+    y: Math.min(Math.max(y, 0), window.innerHeight - (box.current?.offsetHeight ?? 33)),
+  })
+  const save = (next: {x: number; y: number} | null) => {
+    setPos(next)
+    try {
+      if (next) window.localStorage.setItem(LAUNCHER_KEY(), JSON.stringify(next))
+      else window.localStorage.removeItem(LAUNCHER_KEY())
+    } catch {
+      // The place is not remembered this time.
+    }
+  }
+  return (
+    <div
+      data-testid="options-launcher"
+      ref={box}
+      style={{alignItems: 'center', display: 'flex', gap: 2, position: 'fixed', zIndex: 1000000, ...(pos ? {left: pos.x, top: pos.y} : {bottom: 16, left: 16})}}
+    >
+      <div
+        aria-label="Drag handle" data-testid="options-grip"
+        onDoubleClick={() => save(null)}
+        onPointerDown={(event) => {
+          const rect = box.current!.getBoundingClientRect()
+          drag.current = {dx: event.clientX - rect.left, dy: event.clientY - rect.top}
+          ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
+        }}
+        onPointerMove={(event) => {
+          if (drag.current) setPos(clamp(event.clientX - drag.current.dx, event.clientY - drag.current.dy))
+        }}
+        onPointerUp={(event) => {
+          if (!drag.current) return
+          const next = clamp(event.clientX - drag.current.dx, event.clientY - drag.current.dy)
+          drag.current = null
+          save(next)
+        }}
+        role="button"
+        style={{background: 'var(--card-bg-color)', border: '1px solid var(--card-border-color)', borderRadius: 4, cursor: 'grab', height: 33, touchAction: 'none', width: 14}}
+        tabIndex={-1}
+        title="Drag to move; double-click to reset"
+      >
+        <span aria-hidden style={{color: 'var(--card-muted-fg-color)', display: 'block', fontSize: 10, lineHeight: '31px', textAlign: 'center'}}>⋮</span>
+      </div>
+      {children}
+    </div>
+  )
+}
+
 export function DesignOptions() {
   const state = useOptionState()
   const [open, setOpen] = useState(false)
@@ -809,7 +875,7 @@ export function DesignOptions() {
           state={state}
         />
       ) : null}
-      <div style={{bottom: 16, left: 16, position: 'fixed', zIndex: 1000000}}>
+      <Launcher>
         <Card radius={2} shadow={2}>
           <Button
             aria-expanded={open}
@@ -831,7 +897,7 @@ export function DesignOptions() {
             title={summary(state)}
           />
         </Card>
-      </div>
+      </Launcher>
     </>
   )
 }
