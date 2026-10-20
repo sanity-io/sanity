@@ -1,7 +1,7 @@
 import {useSyncExternalStore} from 'react'
 
 import {getComponent, getConfig, NOT_DRAWN_LABEL} from './config'
-import type {ComponentDef, PresetDef} from './types'
+import {type ComponentDef, type PresetDef} from './types'
 
 // Global choice is a position in each component's option list ("first", "second", ...), or
 // 'final' to follow each component's signed-off option. A per-component override beats both.
@@ -13,6 +13,9 @@ export const STOCK_OPTION = '__stock'
 /** The scenario's first switch; ids come from the registry (e.g. 'open-beta' | 'ga'). */
 export type Stage = string
 
+export type RowLayout = 'left' | 'right' | 'center'
+export type PillLabel = 'summary' | 'count'
+
 export interface State {
   global: GlobalChoice
   overrides: Record<string, string>
@@ -21,6 +24,10 @@ export interface State {
   stage: Stage
   /** The global pill shape: round (shipped) or box (3px). Like the theme, a preset does not change it. */
   shape: 'round' | 'box'
+  /** Row layout of C1's address row (options A and B): `left`, `right` (actions pinned right, the default) or `center`. Global like the shape. */
+  rowLayout: RowLayout
+  /** What the top-right pill shows while the address row is open: the full `summary` or the `count` (version and a count badge, the default). Global like the shape. */
+  pillLabel: PillLabel
   /** The preset this config started from (null = none). The config is "modified" when it no longer equals it. */
   preset: string | null
 }
@@ -30,7 +37,16 @@ const PRESET_PARAM = 'preset'
 const LETTERS = 'abcdefgh'
 
 function defaults(): State {
-  return {global: 0, overrides: {}, dimensionLimit: null, stage: getConfig().scenario.stages[0].id, shape: 'round', preset: null}
+  return {
+    global: 0,
+    overrides: {},
+    dimensionLimit: null,
+    stage: getConfig().scenario.stages[0].id,
+    shape: 'round',
+    rowLayout: 'right',
+    pillLabel: 'count',
+    preset: null,
+  }
 }
 
 /**
@@ -39,11 +55,18 @@ function defaults(): State {
  */
 export function serializeDesign(current: State): string {
   const show =
-    current.global === 'stock' || current.global === 'final' ? current.global : LETTERS[current.global]
+    current.global === 'stock' || current.global === 'final'
+      ? current.global
+      : LETTERS[current.global]
   const parts = [`show.${show}`, `stage.${current.stage}`]
   if (current.dimensionLimit !== null) parts.push(`dim.${current.dimensionLimit}`)
   if (current.shape === 'box') parts.push('shape.box')
-  for (const [component, option] of Object.entries(current.overrides).sort()) parts.push(`${component}.${option}`)
+  if (current.rowLayout !== 'right') parts.push(`rowlayout.${current.rowLayout}`)
+  if (current.pillLabel !== 'count') parts.push('pill.summary')
+  for (const [component, option] of Object.entries(current.overrides).sort(([a], [b]) =>
+    a.localeCompare(b),
+  ))
+    parts.push(`${component}.${option}`)
   return parts.join(',')
 }
 
@@ -59,6 +82,10 @@ export function parseDesign(value: string): State | null {
       if (getConfig().scenario.stages.some((stage) => stage.id === val)) next.stage = val
     } else if (key === 'shape') {
       if (val === 'box') next.shape = 'box'
+    } else if (key === 'rowlayout') {
+      if (val === 'left' || val === 'center') next.rowLayout = val
+    } else if (key === 'pill') {
+      if (val === 'summary') next.pillLabel = 'summary'
     } else if (key === 'dim') {
       next.dimensionLimit = Number(val) || null
     } else if (/^c\d+$/.test(key)) {
@@ -134,7 +161,11 @@ export function isMinePreset(id: string): boolean {
 /** True when the current config differs from the active preset. */
 export function isModified(current: State = state ?? defaults()): boolean {
   const preset = findPreset(current.preset)
-  return !!preset && serializeDesign({...current, shape: 'round'}) !== normalise(preset.design)
+  return (
+    !!preset &&
+    serializeDesign({...current, shape: 'round', rowLayout: 'right', pillLabel: 'count'}) !==
+      normalise(preset.design)
+  )
 }
 
 // ---- State ------------------------------------------------------------------------------------------------------
@@ -210,6 +241,14 @@ export function setShape(shape: 'round' | 'box') {
   commit({...current(), shape})
 }
 
+export function setRowLayout(rowLayout: RowLayout) {
+  commit({...current(), rowLayout})
+}
+
+export function setPillLabel(pillLabel: PillLabel) {
+  commit({...current(), pillLabel})
+}
+
 export function setStage(stage: Stage) {
   commit({...current(), stage})
 }
@@ -270,7 +309,14 @@ export function applyPreset(id: string) {
   const preset = findPreset(id)
   const parsed = preset ? parseDesign(preset.design) : null
   // The shape is global, like the theme: a preset keeps the one that is set.
-  if (preset && parsed) commit({...parsed, shape: current().shape, preset: preset.id})
+  if (preset && parsed)
+    commit({
+      ...parsed,
+      shape: current().shape,
+      rowLayout: current().rowLayout,
+      pillLabel: current().pillLabel,
+      preset: preset.id,
+    })
 }
 
 /** Step to the previous (-1) or next (+1) preset, shared first then mine; wraps around. */
@@ -279,7 +325,8 @@ export function stepPreset(delta: 1 | -1) {
   const all = [...shared, ...own]
   if (!all.length) return
   const at = all.findIndex((preset) => preset.id === current().preset)
-  const next = at === -1 ? (delta === 1 ? 0 : all.length - 1) : (at + delta + all.length) % all.length
+  const next =
+    at === -1 ? (delta === 1 ? 0 : all.length - 1) : (at + delta + all.length) % all.length
   applyPreset(all[next].id)
 }
 
@@ -299,7 +346,11 @@ export function savePresetAs(name: string): string | null {
 /** Overwrite one of Mine with the current config. Shared presets live in the repo and cannot be updated here. */
 export function updatePreset(id: string) {
   if (!isMinePreset(id)) return
-  commitMine(getMine().map((preset) => (preset.id === id ? {...preset, design: serializeDesign(current())} : preset)))
+  commitMine(
+    getMine().map((preset) =>
+      preset.id === id ? {...preset, design: serializeDesign(current())} : preset,
+    ),
+  )
   commit({...current(), preset: id})
 }
 
@@ -325,7 +376,13 @@ export function importPresets(json: string): number {
   }
   const known = new Set(getMine().map((preset) => preset.name.toLowerCase()))
   const added = (list ?? [])
-    .filter((p) => p && typeof p.name === 'string' && typeof p.design === 'string' && !known.has(p.name.toLowerCase()))
+    .filter(
+      (p) =>
+        p &&
+        typeof p.name === 'string' &&
+        typeof p.design === 'string' &&
+        !known.has(p.name.toLowerCase()),
+    )
     .map((p, i) => ({id: `mine-${Date.now().toString(36)}-${i}`, name: p.name, design: p.design}))
   if (added.length) commitMine([...getMine(), ...added])
   return added.length
@@ -339,6 +396,8 @@ export function presetSummary(preset: PresetDef): string {
   if (parsed.global === 'stock') return 'Stock'
   const stage = stages.find((s) => s.id === parsed.stage)?.label ?? parsed.stage
   const show = parsed.global === 'final' ? 'Final' : `All ${LETTERS[parsed.global].toUpperCase()}`
-  const overrides = Object.entries(parsed.overrides).map(([id, option]) => `${id.toUpperCase()} ${option.toUpperCase()}`)
+  const overrides = Object.entries(parsed.overrides).map(
+    ([id, option]) => `${id.toUpperCase()} ${option.toUpperCase()}`,
+  )
   return [stage, show, ...overrides].join(' · ')
 }

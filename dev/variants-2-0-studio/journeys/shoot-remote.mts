@@ -24,8 +24,7 @@ for (const theme of ['light', 'dark'] as const) {
   await main.getByRole('button', {name: 'Design options'}).waitFor({timeout: 40000})
   await main.mouse.click(400, 400)
   await main.getByRole('button', {name: 'Design options'}).click()
-  await main.getByRole('dialog', {name: 'Design options'}).getByRole('button', {name: 'Share'}).click()
-const [remote] = await Promise.all([context.waitForEvent('page'), main.getByRole('menuitem', {name: 'Journeys remote'}).click()])
+  const [remote] = await Promise.all([context.waitForEvent('page'), main.getByRole('dialog', {name: 'Design options'}).getByRole('button', {name: 'Journeys remote'}).click()])
   await main.keyboard.press('Escape')
   await remote.waitForFunction(() => document.getElementById('conn')?.textContent === 'Connected', null, {timeout: 20000})
   for (const [id, steps] of [['j01', [0, 1, 2]], ['j03', [0, 2, 4]]] as const) {

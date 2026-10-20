@@ -31,8 +31,7 @@ await main.bringToFront()
 await main.mouse.click(600, 400)
 // Open the remote the way a user does: the Journeys remote button of the Design options window. The remote starts bound to that tab.
 await main.getByRole('button', {name: 'Design options'}).click()
-await main.getByRole('dialog', {name: 'Design options'}).getByRole('button', {name: 'Share'}).click()
-const [remote] = await Promise.all([context.waitForEvent('page'), main.getByRole('menuitem', {name: 'Journeys remote'}).click()])
+const [remote] = await Promise.all([context.waitForEvent('page'), main.getByRole('dialog', {name: 'Design options'}).getByRole('button', {name: 'Journeys remote'}).click()])
 let steps = 0
 let matched = 0
 const misses: string[] = []

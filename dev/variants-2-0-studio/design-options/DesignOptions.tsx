@@ -1,16 +1,23 @@
 import {ArrowDownIcon} from '@sanity/icons/ArrowDown'
 import {ArrowTopRightIcon} from '@sanity/icons/ArrowTopRight'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 import {CogIcon} from '@sanity/icons/Cog'
+import {ControlsIcon} from '@sanity/icons/Controls'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {DragHandleIcon} from '@sanity/icons/DragHandle'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
+import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 import {LaunchIcon} from '@sanity/icons/Launch'
+import {LinkIcon} from '@sanity/icons/Link'
+import {PlayIcon} from '@sanity/icons/Play'
 import {RemoveIcon} from '@sanity/icons/Remove'
-import {ShareIcon} from '@sanity/icons/Share'
 import {Box, Button, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {
+  type ComponentType,
+  type CSSProperties,
   type KeyboardEvent,
   type ReactNode,
   type PointerEvent as ReactPointerEvent,
@@ -49,6 +56,38 @@ import {type ComponentDef, type OptionDef} from './types'
 const LETTERS = 'ABCDEFGH'
 /** Icons beside labels in the footer and card links are 18px (the library's size). */
 const ICON_18 = {fontSize: 18} as const
+
+/**
+ * The window's surface layers (Figma 305:480): a soft vertical gradient behind everything, a lifted title band, raised cards,
+ * a translucent list panel and footer. The colours mix the Studio tokens, so light and dark follow the theme.
+ */
+const MIX = (pct: number) =>
+  `color-mix(in srgb, var(--card-bg-color) ${pct}%, var(--card-link-fg-color))`
+const SURFACE = {
+  window: `linear-gradient(180deg, ${MIX(95)} 0%, ${MIX(88)} 100%)`,
+  band: {
+    background: 'var(--card-bg-color)',
+    boxShadow: '0 1px 0 var(--card-border-color), 0 2px 8px rgba(0, 0, 0, 0.05)',
+    position: 'relative',
+    zIndex: 1,
+  } as const,
+  raised: {
+    background: 'var(--card-bg-color)',
+    borderRadius: 10,
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.05)',
+  } as const,
+  panel: {
+    background: 'color-mix(in srgb, var(--card-bg-color) 62%, transparent)',
+    border: '1px solid var(--card-border-color)',
+    borderRadius: 10,
+  } as const,
+  footer: {
+    background: 'color-mix(in srgb, var(--card-bg-color) 70%, transparent)',
+    borderTop: '1px solid var(--card-border-color)',
+  } as const,
+  selected:
+    'linear-gradient(180deg, color-mix(in srgb, var(--card-badge-suggest-dot-color) 9%, var(--card-bg-color)) 0%, var(--card-bg-color) 70%)',
+}
 const WINDOW_KEY = () => `${getConfig().storageKey}:window`
 const DEFAULT_SIZE = {w: 720, h: 560}
 const MIN_SIZE = {w: 560, h: 400}
@@ -343,9 +382,10 @@ function OptionCard(props: {
       }}
       role="radio"
       style={{
-        background: 'var(--card-bg-color)',
+        background: chosen ? SURFACE.selected : 'var(--card-bg-color)',
         border,
-        borderRadius: 6,
+        borderRadius: 10,
+        boxShadow: chosen ? '0 2px 10px rgba(110, 70, 220, 0.18)' : SURFACE.raised.boxShadow,
         cursor: notDrawn || stock ? 'default' : 'pointer',
         opacity: notDrawn || stock ? 0.6 : option.status === 'archived' ? 0.7 : 1,
         padding: chosen ? 11 : 12,
@@ -544,6 +584,84 @@ function RailRow(props: {
   )
 }
 
+/** Dimensions: a dropdown (All, 1 to 5). Open beta has one dimension, so it only applies at the GA stage. */
+function DimensionsMenu({state}: {state: State}) {
+  const options = getConfig().scenario.dimensions ?? []
+  const enabled = state.stage === getConfig().scenario.dimensionsStage
+  const current = options.find((d) => d.value === state.dimensionLimit) ?? options[0]
+  return (
+    <MenuButton
+      button={
+        <Button
+          data-testid="dimensions-menu"
+          disabled={!enabled}
+          fontSize={1}
+          iconRight={ChevronDownIcon}
+          mode="ghost"
+          padding={2}
+          style={{height: 33, minWidth: 96}}
+          text={current?.label ?? 'All'}
+          title={
+            enabled
+              ? 'How many dimensions the design shows'
+              : 'Open beta has one dimension; pick GA to change this'
+          }
+        />
+      }
+      id="options-dimensions-menu"
+      menu={
+        <Menu padding={1}>
+          {options.map((d) => (
+            <MenuItem
+              key={String(d.value)}
+              onClick={() => setDimensionLimit(d.value)}
+              pressed={d.value === state.dimensionLimit}
+              text={d.label}
+              tooltipProps={d.title ? {content: d.title} : undefined}
+            />
+          ))}
+        </Menu>
+      }
+      popover={{placement: 'bottom-start', portal: true}}
+    />
+  )
+}
+
+/** The Storybook base without the host noise: "git-explorations-variants-2-0". */
+function storybookBaseLabel(base: string | undefined): string {
+  if (!base) return ''
+  try {
+    return new URL(base).hostname
+      .replace(/^sanity-studio-storybook-/, '')
+      .replace(/\.sanity\.dev$/, '')
+  } catch {
+    return base
+  }
+}
+
+/** A footer action: an 18px icon and a 13px label; icon-only (with a tooltip and an accessible name) when the window is narrow. */
+function FooterAction(props: {
+  icon: ComponentType<{style?: CSSProperties}>
+  label: string
+  iconOnly?: boolean
+  onClick?: () => void
+}) {
+  const Icon = props.icon
+  return (
+    <Button
+      aria-label={props.label}
+      fontSize={1}
+      icon={<Icon style={ICON_18} />}
+      mode="bleed"
+      onClick={props.onClick}
+      padding={2}
+      style={{height: 33, ...(props.iconOnly ? {width: 33} : {})}}
+      text={props.iconOnly ? undefined : props.label}
+      title={props.label}
+    />
+  )
+}
+
 /** The one-line summary of the settings, for the collapsed strip: "Open beta · All · Round · Options A". */
 function settingsSummary(state: State): string {
   const stage = getConfig().scenario.stages.find((x) => x.id === state.stage)?.label ?? state.stage
@@ -596,7 +714,7 @@ function SettingsGroups({
     </Stack>
   )
   return (
-    <Card border padding={3} radius={3} shadow={1}>
+    <Card border padding={3} style={SURFACE.raised}>
       <Flex gap={4} wrap="wrap">
         {group(
           'World',
@@ -613,20 +731,8 @@ function SettingsGroups({
                 value={state.stage}
               />,
             )}
-            {getConfig().scenario.dimensions && state.stage === getConfig().scenario.dimensionsStage
-              ? control(
-                  'Dimensions',
-                  <Segmented
-                    ariaLabel="Dimensions"
-                    onChange={(value) => setDimensionLimit(value)}
-                    options={(getConfig().scenario.dimensions ?? []).map((d) => ({
-                      value: d.value,
-                      label: d.label,
-                      title: d.title,
-                    }))}
-                    value={state.dimensionLimit}
-                  />,
-                )
+            {getConfig().scenario.dimensions
+              ? control('Dimensions', <DimensionsMenu state={state} />)
               : null}
           </>,
           true,
@@ -676,14 +782,17 @@ function ConfigBody({
   state,
   onHide,
   compact,
+  iconOnly,
 }: {
   state: State
   onHide?: () => void
   compact?: boolean
+  iconOnly?: boolean
 }) {
   const [selectedId, setSelectedId] = useState('c1')
   const [copied, setCopied] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [framesOn, setFramesOn] = useState(false)
   const stock = state.global === 'stock'
   const selected =
     getConfig().components.find((c) => c.id === selectedId) ?? getConfig().components[0]
@@ -718,7 +827,7 @@ function ConfigBody({
 
   return (
     <>
-      <Card borderBottom borderTop padding={3}>
+      <Box padding={3}>
         <Stack gap={3}>
           <PresetBar state={state} />
           {compact ? (
@@ -756,12 +865,18 @@ function ConfigBody({
             <SettingsGroups showOptions={showOptions} state={state} />
           )}
         </Stack>
-      </Card>
+      </Box>
 
       <Flex style={{flex: 1, minHeight: 0}}>
         <Box
           padding={2}
-          style={{borderRight: '1px solid var(--card-border-color)', overflow: 'auto', width: 240}}
+          style={{
+            ...SURFACE.panel,
+            flexShrink: 0,
+            margin: '0 0 12px 12px',
+            overflow: 'auto',
+            width: 240,
+          }}
         >
           <Stack gap={3}>
             {getConfig().groups.map((group) => (
@@ -788,14 +903,28 @@ function ConfigBody({
         <Box flex={1} padding={3} style={{overflow: 'auto'}}>
           <Stack gap={3}>
             <Stack gap={1}>
-              <Text size={1} weight="medium">
-                {selected.title}
-              </Text>
+              <Flex align="baseline" gap={3}>
+                <Box flex={1}>
+                  <Text size={2} weight="medium">
+                    {selected.title}
+                  </Text>
+                </Box>
+                {getConfig().links?.storybookBase ? (
+                  <Text
+                    data-testid="storybook-base"
+                    muted
+                    size={0}
+                    title={getConfig().links?.storybookBase}
+                  >
+                    Storybook base: {storybookBaseLabel(getConfig().links?.storybookBase)}
+                  </Text>
+                ) : null}
+              </Flex>
               <Text muted size={0}>
                 {stock
-                  ? 'Stock Studio is showing; pick A, B, C in Show to compare.'
+                  ? 'Stock Studio is showing; pick A, B, C in Options for all to compare.'
                   : fellBack(selected, state)
-                    ? `Showing ${active.toUpperCase()}, fallback: Show asks for a letter this component does not have.`
+                    ? `Showing ${active.toUpperCase()}, fallback: Options for all asks for a letter this component does not have.`
                     : `Showing option ${active.toUpperCase()}. Click a card to apply it.`}
               </Text>
             </Stack>
@@ -804,7 +933,7 @@ function ConfigBody({
               style={{
                 display: 'grid',
                 gap: 12,
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 350px))',
               }}
             >
               {selected.options.map((option, index) => (
@@ -818,97 +947,79 @@ function ConfigBody({
                 />
               ))}
             </div>
-            <FramesGallery component={selected} />
+            {frameKeys(selected).length ? (
+              <Flex>
+                <Button
+                  aria-pressed={framesOn}
+                  data-testid="frames-toggle"
+                  fontSize={1}
+                  mode="bleed"
+                  onClick={() => setFramesOn((v) => !v)}
+                  padding={2}
+                  style={{height: 31}}
+                  text={framesOn ? 'Hide frame previews' : 'Show frame previews'}
+                />
+              </Flex>
+            ) : null}
+            {framesOn ? <FramesGallery component={selected} /> : null}
           </Stack>
         </Box>
       </Flex>
 
-      {/* The window floats at z-index 1000000; its menus open above it. */}
-      <LayerProvider zOffset={1000001}>
-        <Card borderTop padding={2}>
-          <Flex align="center" gap={2}>
-            <Button
-              disabled={changedCount === 0}
-              fontSize={1}
-              mode="bleed"
-              onClick={resetOverrides}
-              padding={2}
-              style={{height: 33}}
-              text="Reset all"
+      <Box padding={2} style={SURFACE.footer}>
+        <Flex align="center" gap={1}>
+          <Button
+            disabled={changedCount === 0}
+            fontSize={1}
+            mode="bleed"
+            onClick={resetOverrides}
+            padding={2}
+            style={{height: 33}}
+            text="Reset all"
+          />
+          <Box flex={1} />
+          {getConfig().links?.remote ? (
+            <FooterAction
+              icon={ControlsIcon}
+              iconOnly={iconOnly}
+              label="Options remote"
+              onClick={() =>
+                window.open(
+                  `${getConfig().links!.remote}?tab=${TAB_ID}`,
+                  'variants-2-0-options-remote',
+                  'popup,width=520,height=820',
+                )
+              }
             />
-            <Box flex={1} />
-            <MenuButton
-              button={
-                <Button
-                  fontSize={1}
-                  icon={<ShareIcon style={ICON_18} />}
-                  mode="bleed"
-                  padding={2}
-                  style={{height: 33}}
-                  text="Share"
-                />
+          ) : null}
+          {getConfig().links?.journeysRemote ? (
+            <FooterAction
+              icon={PlayIcon}
+              iconOnly={iconOnly}
+              label="Journeys remote"
+              onClick={() =>
+                window.open(
+                  `${getConfig().links!.journeysRemote}?tab=${TAB_ID}&storybook=${encodeURIComponent(getConfig().links?.storybookBase ?? '')}`,
+                  'variants-2-0-remote',
+                  'popup,width=1280,height=860',
+                )
               }
-              id="options-share-menu"
-              menu={
-                <Menu padding={1}>
-                  {getConfig().links?.remote ? (
-                    <MenuItem
-                      onClick={() =>
-                        window.open(
-                          `${getConfig().links!.remote}?tab=${TAB_ID}`,
-                          'variants-2-0-options-remote',
-                          'popup,width=520,height=820',
-                        )
-                      }
-                      text="Options remote"
-                    />
-                  ) : null}
-                  {getConfig().links?.remote ? (
-                    <MenuItem
-                      onClick={() =>
-                        window.open(
-                          `${getConfig().links!.journeysRemote}?tab=${TAB_ID}&storybook=${encodeURIComponent(getConfig().links?.storybookBase ?? '')}`,
-                          'variants-2-0-remote',
-                          'popup,width=1280,height=860',
-                        )
-                      }
-                      text="Journeys remote"
-                    />
-                  ) : null}
-                  <MenuItem onClick={copy} text={copied ? 'Copied' : 'Copy link'} />
-                </Menu>
-              }
-              popover={{placement: 'top-end', portal: true}}
             />
-            <MenuButton
-              button={
-                <Button
-                  aria-label="More"
-                  fontSize={1}
-                  icon={<EllipsisHorizontalIcon style={ICON_18} />}
-                  mode="bleed"
-                  padding={2}
-                  style={{height: 33, width: 33}}
-                />
-              }
-              id="options-more-menu"
-              menu={
-                <Menu padding={1}>
-                  {getConfig().links?.storybookBase ? (
-                    <MenuItem
-                      data-testid="storybook-base"
-                      disabled
-                      text={`Storybook: ${getConfig().links?.storybookBase}`}
-                    />
-                  ) : null}
-                  <MenuItem onClick={onHide} text="Hide until refresh" />
-                </Menu>
-              }
-              popover={{placement: 'top-end', portal: true}}
-            />
-          </Flex>
-        </Card>
-      </LayerProvider>
+          ) : null}
+          <FooterAction
+            icon={copied ? CopyIcon : LinkIcon}
+            iconOnly={iconOnly}
+            label={copied ? 'Copied' : 'Copy link'}
+            onClick={copy}
+          />
+          <FooterAction
+            icon={EyeClosedIcon}
+            iconOnly={iconOnly}
+            label="Hide until refresh"
+            onClick={onHide}
+          />
+        </Flex>
+      </Box>
     </>
   )
 }
@@ -1164,7 +1275,12 @@ function ConfigWindow(props: {
         border
         radius={3}
         shadow={3}
-        style={{display: 'flex', flexDirection: 'column', height: '100%'}}
+        style={{
+          background: SURFACE.window,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+        }}
       >
         <Flex
           align="center"
@@ -1174,7 +1290,7 @@ function ConfigWindow(props: {
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           padding={2}
-          style={{cursor: 'grab', touchAction: 'none', userSelect: 'none'}}
+          style={{...SURFACE.band, cursor: 'grab', touchAction: 'none', userSelect: 'none'}}
           tabIndex={0}
         >
           <Text muted size={1}>
@@ -1222,7 +1338,15 @@ function ConfigWindow(props: {
           />
         </Flex>
 
-        <ConfigBody compact={rect.w < 900} onHide={onHide} state={state} />
+        {/* The window floats at z-index 1000000; its menus open above it. */}
+        <LayerProvider zOffset={1000001}>
+          <ConfigBody
+            compact={rect.w < 900}
+            iconOnly={rect.w < 1100}
+            onHide={onHide}
+            state={state}
+          />
+        </LayerProvider>
       </Card>
     </div>
   )

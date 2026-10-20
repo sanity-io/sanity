@@ -17,7 +17,7 @@ import {
   updatePreset,
   usePresets,
 } from './store'
-import type {PresetDef} from './types'
+import {type PresetDef} from './types'
 
 const PURPLE = 'var(--card-badge-suggest-dot-color)'
 
@@ -25,7 +25,13 @@ const PURPLE = 'var(--card-badge-suggest-dot-color)'
 function Diamond() {
   return (
     <svg aria-hidden="true" height={12} viewBox="0 0 12 12" width={12}>
-      <path d="M6 1 11 6 6 11 1 6Z" fill={PURPLE} fillOpacity={0.35} stroke={PURPLE} strokeWidth={1} />
+      <path
+        d="M6 1 11 6 6 11 1 6Z"
+        fill={PURPLE}
+        fillOpacity={0.35}
+        stroke={PURPLE}
+        strokeWidth={1}
+      />
     </svg>
   )
 }
@@ -38,7 +44,14 @@ function isTyping(target: EventTarget | null): boolean {
 function PresetRow(props: {preset: PresetDef; active: boolean; onPick: () => void}) {
   const {preset, active, onPick} = props
   return (
-    <Card as="button" onClick={onPick} padding={2} radius={2} selected={active} style={{cursor: 'pointer', textAlign: 'left', width: '100%'}}>
+    <Card
+      as="button"
+      onClick={onPick}
+      padding={2}
+      radius={2}
+      selected={active}
+      style={{cursor: 'pointer', textAlign: 'left', width: '100%'}}
+    >
       <Flex align="center" gap={2} style={{minHeight: 24}}>
         <Box flex={1}>
           <Text size={1} textOverflow="ellipsis">
@@ -107,7 +120,8 @@ export function PresetBar({state}: {state: State}) {
     if (problem) setError(problem)
     else setSaving(false)
   }
-  const matches = (preset: PresetDef) => preset.name.toLowerCase().includes(query.trim().toLowerCase())
+  const matches = (preset: PresetDef) =>
+    preset.name.toLowerCase().includes(query.trim().toLowerCase())
   const sharedShown = shared.filter(matches)
   const mineShown = mine.filter(matches)
 
@@ -126,7 +140,12 @@ export function PresetBar({state}: {state: State}) {
 
   return (
     <Flex align="center" gap={2} ref={root} style={{position: 'relative'}}>
-      <Text muted size={0} style={{letterSpacing: '0.04em', textTransform: 'uppercase'}} weight="medium">
+      <Text
+        muted
+        size={0}
+        style={{letterSpacing: '0.04em', textTransform: 'uppercase'}}
+        weight="medium"
+      >
         Preset
       </Text>
 
@@ -151,8 +170,21 @@ export function PresetBar({state}: {state: State}) {
             style={{width: 240}}
             value={name}
           />
-          <Button fontSize={1} mode="default" onClick={doSave} padding={3} text="Save" tone="primary" />
-          <Button fontSize={1} mode="bleed" onClick={() => setSaving(false)} padding={3} text="Cancel" />
+          <Button
+            fontSize={1}
+            mode="default"
+            onClick={doSave}
+            padding={3}
+            text="Save"
+            tone="primary"
+          />
+          <Button
+            fontSize={1}
+            mode="bleed"
+            onClick={() => setSaving(false)}
+            padding={3}
+            text="Cancel"
+          />
           {error ? (
             <Text size={0} style={{color: 'var(--card-badge-critical-dot-color)'}}>
               {error}
@@ -161,7 +193,16 @@ export function PresetBar({state}: {state: State}) {
         </Flex>
       ) : (
         <>
-          <Button aria-label="Previous preset" fontSize={1} mode="bleed" onClick={() => stepPreset(-1)} padding={2} style={{height: 25, width: 25}} text="‹" title="Previous preset ([)" />
+          <Button
+            aria-label="Previous preset"
+            fontSize={1}
+            mode="bleed"
+            onClick={() => stepPreset(-1)}
+            padding={2}
+            style={{height: 25, width: 25}}
+            text="‹"
+            title="Previous preset ([)"
+          />
           <Button
             aria-expanded={open}
             fontSize={1}
@@ -177,27 +218,49 @@ export function PresetBar({state}: {state: State}) {
                 <span>{active ? active.name : 'No preset'}</span>
                 {modified ? (
                   <span style={{alignItems: 'center', display: 'inline-flex', gap: 4}}>
-                    <span style={{background: 'var(--card-badge-caution-dot-color)', borderRadius: '50%', height: 6, width: 6}} />
+                    <span
+                      style={{
+                        background: 'var(--card-badge-caution-dot-color)',
+                        borderRadius: '50%',
+                        height: 6,
+                        width: 6,
+                      }}
+                    />
                     <span style={{opacity: 0.7}}>modified</span>
                   </span>
                 ) : null}
               </Flex>
             }
           />
-          <Button aria-label="Next preset" fontSize={1} mode="bleed" onClick={() => stepPreset(1)} padding={2} style={{height: 25, width: 25}} text="›" title="Next preset (])" />
+          <Button
+            aria-label="Next preset"
+            fontSize={1}
+            mode="bleed"
+            onClick={() => stepPreset(1)}
+            padding={2}
+            style={{height: 25, width: 25}}
+            text="›"
+            title="Next preset (])"
+          />
           <Box flex={1} />
           <Button fontSize={1} mode="bleed" onClick={startSave} padding={2} text="Save as…" />
-          {modified ? (
-            <Button
-              disabled={!activeIsMine}
-              fontSize={1}
-              mode="bleed"
-              onClick={() => active && updatePreset(active.id)}
-              padding={2}
-              text="Update"
-              title={activeIsMine ? `Overwrite “${active?.name}” with this config` : 'Shared presets live in presets.json; use Save as…'}
-            />
-          ) : null}
+          <Button
+            disabled={!modified || !activeIsMine}
+            fontSize={1}
+            mode="bleed"
+            onClick={() => active && updatePreset(active.id)}
+            padding={2}
+            text="Update"
+            title={
+              !active
+                ? 'Pick a preset to update'
+                : !activeIsMine
+                  ? 'Shared presets live in presets.json; use Save as…'
+                  : modified
+                    ? `Overwrite “${active.name}” with this config`
+                    : 'Nothing to update: the config matches the preset'
+            }
+          />
         </>
       )}
 
@@ -212,31 +275,72 @@ export function PresetBar({state}: {state: State}) {
           }}
           radius={3}
           shadow={3}
-          style={{left: 56, maxHeight: 340, overflow: 'auto', position: 'absolute', top: 32, width: 340, zIndex: 2}}
+          style={{
+            left: 56,
+            maxHeight: 340,
+            overflow: 'auto',
+            position: 'absolute',
+            top: 32,
+            width: 340,
+            zIndex: 2,
+          }}
         >
           <Stack gap={2} padding={2}>
-            <TextInput autoFocus fontSize={1} onChange={(event) => setQuery(event.currentTarget.value)} padding={2} placeholder="Find a preset" value={query} />
+            <TextInput
+              autoFocus
+              fontSize={1}
+              onChange={(event) => setQuery(event.currentTarget.value)}
+              padding={2}
+              placeholder="Find a preset"
+              value={query}
+            />
             {sharedShown.length ? (
               <Stack gap={1}>
                 <Box paddingX={2}>
-                  <Text muted size={0} style={{letterSpacing: '0.04em', textTransform: 'uppercase'}} weight="medium">
+                  <Text
+                    muted
+                    size={0}
+                    style={{letterSpacing: '0.04em', textTransform: 'uppercase'}}
+                    weight="medium"
+                  >
                     Shared
                   </Text>
                 </Box>
                 {sharedShown.map((preset) => (
-                  <PresetRow active={preset.id === state.preset} key={preset.id} onPick={() => { applyPreset(preset.id); close() }} preset={preset} />
+                  <PresetRow
+                    active={preset.id === state.preset}
+                    key={preset.id}
+                    onPick={() => {
+                      applyPreset(preset.id)
+                      close()
+                    }}
+                    preset={preset}
+                  />
                 ))}
               </Stack>
             ) : null}
             {mineShown.length ? (
               <Stack gap={1}>
                 <Box paddingX={2}>
-                  <Text muted size={0} style={{letterSpacing: '0.04em', textTransform: 'uppercase'}} weight="medium">
+                  <Text
+                    muted
+                    size={0}
+                    style={{letterSpacing: '0.04em', textTransform: 'uppercase'}}
+                    weight="medium"
+                  >
                     Mine
                   </Text>
                 </Box>
                 {mineShown.map((preset) => (
-                  <PresetRow active={preset.id === state.preset} key={preset.id} onPick={() => { applyPreset(preset.id); close() }} preset={preset} />
+                  <PresetRow
+                    active={preset.id === state.preset}
+                    key={preset.id}
+                    onPick={() => {
+                      applyPreset(preset.id)
+                      close()
+                    }}
+                    preset={preset}
+                  />
                 ))}
               </Stack>
             ) : null}
@@ -250,27 +354,99 @@ export function PresetBar({state}: {state: State}) {
           </Stack>
           <Card borderTop padding={2}>
             <Stack gap={1}>
-              <Button fontSize={1} justify="flex-start" mode="bleed" onClick={startSave} padding={2} text="Save current as new preset…" />
+              <Button
+                fontSize={1}
+                justify="flex-start"
+                mode="bleed"
+                onClick={startSave}
+                padding={2}
+                text="Save current as new preset…"
+              />
               {active ? (
                 <>
-                  <Button disabled={!modified || !activeIsMine} fontSize={1} justify="flex-start" mode="bleed" onClick={() => { updatePreset(active.id); close() }} padding={2} text={`Update ${active.name}`} />
-                  <Button disabled={!modified} fontSize={1} justify="flex-start" mode="bleed" onClick={() => { applyPreset(active.id); close() }} padding={2} text={`Reset to ${active.name}`} />
+                  <Button
+                    disabled={!modified || !activeIsMine}
+                    fontSize={1}
+                    justify="flex-start"
+                    mode="bleed"
+                    onClick={() => {
+                      updatePreset(active.id)
+                      close()
+                    }}
+                    padding={2}
+                    text={`Update ${active.name}`}
+                  />
+                  <Button
+                    disabled={!modified}
+                    fontSize={1}
+                    justify="flex-start"
+                    mode="bleed"
+                    onClick={() => {
+                      applyPreset(active.id)
+                      close()
+                    }}
+                    padding={2}
+                    text={`Reset to ${active.name}`}
+                  />
                   {activeIsMine ? (
-                    <Button fontSize={1} justify="flex-start" mode="bleed" onClick={() => { deletePreset(active.id); close() }} padding={2} text="Delete" tone="critical" />
+                    <Button
+                      fontSize={1}
+                      justify="flex-start"
+                      mode="bleed"
+                      onClick={() => {
+                        deletePreset(active.id)
+                        close()
+                      }}
+                      padding={2}
+                      text="Delete"
+                      tone="critical"
+                    />
                   ) : null}
                 </>
               ) : (
-                <Button fontSize={1} justify="flex-start" mode="bleed" onClick={() => { resetOptions(); close() }} padding={2} text="Reset to defaults" />
+                <Button
+                  fontSize={1}
+                  justify="flex-start"
+                  mode="bleed"
+                  onClick={() => {
+                    resetOptions()
+                    close()
+                  }}
+                  padding={2}
+                  text="Reset to defaults"
+                />
               )}
               <Flex gap={1}>
-                <Button disabled={!mine.length} fontSize={0} mode="bleed" onClick={download} padding={2} text="Export mine…" />
-                <Button fontSize={0} mode="bleed" onClick={() => fileInput.current?.click()} padding={2} text="Import…" />
+                <Button
+                  disabled={!mine.length}
+                  fontSize={0}
+                  mode="bleed"
+                  onClick={download}
+                  padding={2}
+                  text="Export mine…"
+                />
+                <Button
+                  fontSize={0}
+                  mode="bleed"
+                  onClick={() => fileInput.current?.click()}
+                  padding={2}
+                  text="Import…"
+                />
               </Flex>
             </Stack>
           </Card>
         </Card>
       ) : null}
-      <input accept="application/json" hidden onChange={(event) => { void upload(event.target.files?.[0]); event.target.value = '' }} ref={fileInput} type="file" />
+      <input
+        accept="application/json"
+        hidden
+        onChange={(event) => {
+          void upload(event.target.files?.[0])
+          event.target.value = ''
+        }}
+        ref={fileInput}
+        type="file"
+      />
     </Flex>
   )
 }
