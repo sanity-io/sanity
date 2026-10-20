@@ -18,7 +18,7 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
-import {Text, Box, Grid, VStack} from 'ui5'
+import {Text, Box, Grid, VStack, Icon, Link} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'
 const RAW_PERSPECTIVE_CLIENT_OPTIONS = {apiVersion: 'X' as const}
@@ -416,9 +416,9 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
               {queryUrl && documentId && (
                 <VStack gap={2}>
                   <Text size={1} as="div" trim={true}>
-                    <a href={queryUrl} rel="noopener noreferrer" target="_blank">
-                      See document <LaunchIcon />
-                    </a>
+                    <Link href={queryUrl} openInNewTab underlined={undefined}>
+                      See document <Icon size={1} icon={LaunchIcon} style={{margin: '-0.375rem'}} />
+                    </Link>
                   </Text>
                   <Button mode="ghost" onClick={handleOpenDialog} text="View document JSON" />
                   <Button

@@ -6,7 +6,7 @@ import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useState} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
-import {Text, Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 const CHILD_LINK_PARAMETERS: Record<string, string> = {}
 const PARAMETERIZED_LINK_PARAMS: Record<string, string> = {param1: 'test'}
@@ -59,9 +59,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
           >
             <Flex>
               <Box>
-                <Text size={1} as="div" trim={true}>
-                  <LinkIcon />
-                </Text>
+                <Icon size={1} icon={LinkIcon} style={{margin: '-0.375rem'}} />
               </Box>
               <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
                 <Text size={1} truncate={1} as="div" trim={true}>
@@ -69,9 +67,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
                 </Text>
               </Box>
               <Box>
-                <Text size={1} as="div" trim={true}>
-                  <ChevronRightIcon />
-                </Text>
+                <Icon size={1} icon={ChevronRightIcon} style={{margin: '-0.375rem'}} />
               </Box>
             </Flex>
           </Card>
@@ -87,9 +83,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
           >
             <Flex>
               <Box>
-                <Text size={1} as="div" trim={true}>
-                  <ControlsIcon />
-                </Text>
+                <Icon size={1} icon={ControlsIcon} style={{margin: '-0.375rem'}} />
               </Box>
               <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
                 <Text size={1} truncate={1} as="div" trim={true}>
@@ -97,9 +91,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
                 </Text>
               </Box>
               <Box>
-                <Text size={1} as="div" trim={true}>
-                  <ChevronDownIcon />
-                </Text>
+                <Icon size={1} icon={ChevronDownIcon} style={{margin: '-0.375rem'}} />
               </Box>
             </Flex>
           </Card>

@@ -57,7 +57,13 @@ export function CustomNavbar(props: NavbarProps) {
     <VStack data-testid="test-navbar-config">
       <Card padding={4} tone="primary" data-testid="test-navbar-banner-config">
         <Flex alignItems="center" gap={4}>
-          <Text weight="semibold" size={1} as="div" trim={true}>
+          <Text
+            weight="semibold"
+            size={1}
+            as="div"
+            trim={true}
+            style={{color: 'var(--card-fg-color)'}}
+          >
             This banner is rendered with <code>{`components.navbar`}</code> in{' '}
             <code>{`defineConfig`}</code>
           </Text>

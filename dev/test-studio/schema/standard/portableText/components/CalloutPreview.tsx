@@ -14,11 +14,17 @@ export function CalloutPreview(props: CalloutPreviewProps) {
     <Card tone={tone}>
       <Flex alignItems="flex-start">
         <Box flexBasis="0%" flexGrow={1} padding={3}>
-          <Text size={1} weight="semibold" as="div" trim={true}>
+          <Text
+            size={1}
+            weight="semibold"
+            as="div"
+            trim={true}
+            style={{color: 'var(--card-fg-color)'}}
+          >
             {(props.title as ReactNode) || <>Untitled</>} ({tone})
           </Text>
           {props.subtitle ? (
-            <Text muted size={1} as="div" trim={true}>
+            <Text muted size={1} as="div" trim={true} style={{color: 'var(--card-muted-fg-color)'}}>
               {props.subtitle as ReactNode}
             </Text>
           ) : null}

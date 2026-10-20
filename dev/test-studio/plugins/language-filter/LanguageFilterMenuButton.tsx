@@ -56,12 +56,18 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
       {defaultLanguages.length > 0 && (
         <Card radius={2} tone="primary">
           <Flex padding={2} gap={3} flexDirection="column">
-            <Text size={1} weight="semibold" as="div" trim={true}>
+            <Text
+              size={1}
+              weight="semibold"
+              as="div"
+              trim={true}
+              style={{color: 'var(--card-fg-color)'}}
+            >
               Default language{defaultLanguages.length > 1 && <>s</>}
             </Text>
 
             {defaultLanguages.map((l) => (
-              <Text key={l.id} as="div" trim={true}>
+              <Text key={l.id} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
                 {l.title}
               </Text>
             ))}

@@ -86,7 +86,7 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
                 </VStack>
                 {status === 'error' && error && (
                   <Card tone="critical" padding={3}>
-                    <Text size={0} as="div" trim={true}>
+                    <Text size={0} as="div" trim={true} tone="critical">
                       {error.message}
                     </Text>
                   </Card>

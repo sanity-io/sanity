@@ -23,18 +23,30 @@ export function SideBySideObjectItem(props: ItemProps) {
         {/* Preview of the item */}
         <Flex gap={3}>
           <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
-            <Text size={0} weight="semibold" as="div" trim={true}>
+            <Text
+              size={0}
+              weight="semibold"
+              as="div"
+              trim={true}
+              style={{color: 'var(--card-fg-color)'}}
+            >
               Name
             </Text>
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
               {nameChild || 'No name'}
             </Text>
           </Flex>
           <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
-            <Text size={0} weight="semibold" as="div" trim={true}>
+            <Text
+              size={0}
+              weight="semibold"
+              as="div"
+              trim={true}
+              style={{color: 'var(--card-fg-color)'}}
+            >
               Internationalized
             </Text>
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
               {internationalizedArrayStringChild?.[0]?.value || 'No value'}
             </Text>
           </Flex>

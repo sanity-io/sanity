@@ -120,7 +120,13 @@ function DocumentOpenSimulation() {
   }, [])
   return (
     <Card border padding={3} radius={2} tone={mountedAfterMs === null ? 'critical' : 'positive'}>
-      <Text size={1} weight="medium" as="div" trim={true}>
+      <Text
+        size={1}
+        weight="medium"
+        as="div"
+        trim={true}
+        tone={mountedAfterMs === null ? 'critical' : 'positive'}
+      >
         {mountedAfterMs === null
           ? 'Document open simulation: mounting… (stalled by the loop)'
           : `Document open simulation: mounted after ${(mountedAfterMs / 1000).toFixed(1)}s`}
@@ -142,10 +148,10 @@ export function RenderLoopRepro() {
       <VStack gap={4}>
         <Card padding={3} radius={2} tone="caution">
           <VStack gap={3}>
-            <Text size={1} weight="medium" as="div" trim={true}>
+            <Text size={1} weight="medium" as="div" trim={true} tone="caution">
               useDocumentValues render loop → stalled document open
             </Text>
-            <Text size={1} muted as="div" trim={true}>
+            <Text size={1} muted as="div" trim={true} tone="caution">
               The preview rows pass an inline paths array to useDocumentValues. On studio versions
               where the hook memoizes on the array reference, the rows re-render in a tight loop and
               the simulated document open below stays stuck at "mounting…" until the rows remove

@@ -2,7 +2,7 @@ import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
 import {Card} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {Translate, useTranslation} from 'sanity'
-import {Text, VStack} from 'ui5'
+import {Icon, Text, VStack} from 'ui5'
 
 export function TranslateExample() {
   const {t} = useTranslation('testStudio')
@@ -30,7 +30,7 @@ export function TranslateExample() {
           <Translate
             t={t}
             i18nKey="translate.example"
-            components={{Icon: InfoFilledIcon, Red, Bold}}
+            components={{Icon: InfoFilledIconComponent, Red, Bold}}
             values={{
               keyword: 'something',
               duration: '30',
@@ -91,4 +91,7 @@ function Red({children}: {children?: ReactNode}) {
 }
 function Bold({children}: {children?: ReactNode}) {
   return <b>{children}</b>
+}
+function InfoFilledIconComponent() {
+  return <Icon size={1} icon={InfoFilledIcon} style={{margin: '-0.375rem'}} />
 }
