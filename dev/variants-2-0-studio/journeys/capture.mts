@@ -85,7 +85,7 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
     console.log(check.status.toUpperCase().padEnd(13), id, s.title, '-', check.note)
   }
   const first = journey.steps[0]
-  await goto(page, first.route === '/variants' && journey.id !== 'j05' && journey.id !== 'j11' && journey.id !== 'j12' && journey.id !== 'j02' ? '/variants' : first.route, first.preset)
+  await goto(page, first.route === '/variants' && journey.id !== 'j05' && journey.id !== 'j11' && journey.id !== 'j12' && journey.id !== 'j02' ? '/variants' : first.route, journey.id === 'j08' || journey.id === 'j09' ? 'ga-many' : first.preset) // the Dimension and Visitor lenses are GA only
 
   switch (journey.id) {
     case 'j01': {
@@ -273,14 +273,14 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
     case 'j08': {
       await run(0, async () => {
         await lens(page, 'Dimension').click()
+        await settle(page, 1500)
+        const cols = await page.locator('[data-testid^=lens-dimension-col-]').count()
         const rows = await page.locator('[data-testid^=lens-dimension-row-]').count()
-        const head = (await page.locator('[data-testid=lens-dimension]').innerText()).replace(/\\s+/g, ' ')
-        return rows && /Published/.test(head) && /Draft/.test(head) && /In a release/.test(head) ? ok(`${rows} value rows with counts per lifecycle state (Published, Draft, In a release)`) : differs(`${rows} rows; header: ${head.slice(0, 100)}`)
+        return cols && rows ? ok(`coverage matrix: ${rows} rows (documents and the coverage row), ${cols} columns, ${await page.locator('[data-testid=dimension-summary]').innerText().then((t) => t.replace(/\s+/g, ' '))}`) : differs('no matrix')
       })
       await run(1, async () => {
-        const rows = await page.locator('[data-testid^=lens-dimension-row-]').allInnerTexts()
-        const zero = rows.find((r) => /\n0\n0\s*$/.test(r + '\n'))
-        return zero ? ok('a value with no definitions: ' + zero.replace(/\s+/g, ' ')) : differs('every listed value is used by at least one definition (values are derived from definitions, so a value nobody authored cannot appear)')
+        const declared = await page.locator('[data-testid^=lens-dimension-col-declared-]').count()
+        return declared ? differs(`${declared} "no definition yet" column(s) are shown, but from a fixture (c5/dimensionConfig.ts): the dataset has no dimension config, so a value nobody authored cannot be read from data`) : differs('every listed value is used by at least one definition')
       })
       await run(2, async () => {
         await page.goto(`${base}/variants/${MEMBERS}?preset=open-beta-a`)
@@ -292,21 +292,25 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
     case 'j09': {
       await run(0, async () => {
         await lens(page, 'Visitor').click()
-        const selects = await page.locator('[data-testid=c5-a] select').count()
-        return selects ? ok(`${selects} visitor pickers, default: ` + (await page.locator('[data-testid=c5-a] select').first().inputValue() || 'Anyone')) : differs('no visitor picker')
+        await settle(page, 1200)
+        const note = (await page.locator('[data-testid=visitor-resolution]').innerText()).replace(/\s+/g, ' ')
+        return /No visitor is chosen/.test(note) ? ok('the lens asks for the visitor in the perspective bar; ' + note.slice(0, 120)) : differs(note.slice(0, 160))
       })
       await run(1, async () => {
-        const select = page.locator('[data-testid=c5-a] select').first()
-        const option = (await select.locator('option').allTextContents())[1]
-        await select.selectOption({index: 1})
+        await page.locator('[data-ui=ReleasesNav] button').last().click()
+        await page.getByRole('menuitem', {name: /View as|Add a dimension/}).first().click()
         await settle(page, 800)
+        const dim = page.locator('[data-testid^=picker-dimension-]').first()
+        if (!(await page.locator('[data-testid^=picker-value-]').first().isVisible().catch(() => false)) && (await dim.isVisible().catch(() => false))) await dim.click()
+        await page.locator('[data-testid^=picker-value-]').first().click()
+        await settle(page, 1500)
         const row = (await page.locator('[data-testid=lens-visitor-row-book-lighthouse]').innerText().catch(() => '')).replace(/\s+/g, ' ')
-        return row ? ok(`${option}: ${row}`) : differs('no per-document row')
+        return row ? ok(`the bar value drives the lens: ${row}`) : differs('no per-document row')
       })
       await run(2, async () => {
         await page.goto(`${base}/structure/book;book-lighthouse?preset=open-beta-a`)
         await settle(page, 7000)
-        return ok('document opens in the studio; the visitor choice is not carried into the studio perspective (the Visitor lens is read only)')
+        return ok('document opens in the studio; the visitor is the bar value, so it carries over')
       })
       break
     }

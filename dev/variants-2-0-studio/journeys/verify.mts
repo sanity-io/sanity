@@ -109,22 +109,14 @@ async function main() {
       await page.keyboard.press('Escape')
     }, page)
 
-    // Dimension and visitor lenses
-    await page.goto(`${base}/inventory?preset=open-beta-a`)
+    // Dimension lens (GA only; the Visitor lens and the stage gate are checked by verify-ga-lenses.mts)
+    await page.goto(`${base}/inventory?preset=ga-many`)
     await sleep(page, 9000)
-    await guarded('Dimension lens lifecycle counts', async () => {
+    await guarded('Dimension lens coverage matrix', async () => {
       await page.locator('[data-testid=c5-a] button[role=radio]', {hasText: 'Dimension'}).click()
-      const head = (await page.locator('[data-testid=lens-dimension]').innerText()).replace(/\s+/g, ' ')
-      rec('Dimension lens shows counts per lifecycle state', /Published/.test(head) && /Draft/.test(head) && /In a release/.test(head), head.slice(0, 160))
-    }, page)
-    await guarded('Visitor open in studio', async () => {
-      await page.locator('[data-testid=c5-a] button[role=radio]', {hasText: 'Visitor'}).click()
-      const select = page.locator('[data-testid=c5-a] select').first()
-      await select.selectOption({index: 1})
-      await page.getByRole('button', {name: /Open in the studio as this visitor/}).click()
-      await sleep(page, 4000)
-      const url = decodeURIComponent(page.url())
-      rec('Open in the studio as this visitor applies the perspective', /\/structure/.test(url) && /variant=/.test(url), url.split('3350')[1])
+      await sleep(page, 1500)
+      const cols = await page.locator('[data-testid^=lens-dimension-col-]').count()
+      rec('Dimension lens shows a coverage matrix', cols > 0 && (await page.locator('[data-testid=dimension-summary]').isVisible()), `${cols} columns`)
     }, page)
 
     // Flaky steps by hand-equivalent clicks
