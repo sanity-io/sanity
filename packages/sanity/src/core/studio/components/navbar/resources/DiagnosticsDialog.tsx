@@ -128,6 +128,22 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
   }, [startDiagnostics])
   const isCopied = Boolean(output && copiedText === output)
 
+  const handleOpenSchemaWarning = useCallback(() => setSchemaWarningOpen(true), [])
+  const handleCloseSchemaWarning = useCallback(() => setSchemaWarningOpen(false), [])
+
+  const handleDownloadSchema = useCallback(() => {
+    try {
+      downloadSchema(workspace)
+    } catch (cause) {
+      toast.push({
+        description: formatError(cause),
+        status: 'error',
+        title: 'Could not download schema',
+      })
+    }
+    setSchemaWarningOpen(false)
+  }, [toast, workspace])
+
   return (
     <Dialog
       bodyHeight="70vh"
@@ -178,7 +194,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
           <Card flex={1} overflow="auto" padding={3} radius={2} tone="transparent">
             <DiagnosticsReport
               diagnostics={diagnostics}
-              onDownloadSchema={() => setSchemaWarningOpen(true)}
+              onDownloadSchema={handleOpenSchemaWarning}
               onRunAgain={handleRunAgain}
             />
           </Card>
@@ -190,18 +206,15 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
           footer={{
             confirmButton: {
               icon: DownloadIcon,
-              onClick: () => {
-                downloadSchema(workspace)
-                setSchemaWarningOpen(false)
-              },
+              onClick: handleDownloadSchema,
               text: 'Download',
               tone: 'caution',
             },
           }}
           header="Download schema"
           id={`${dialogId}-schema`}
-          onClickOutside={() => setSchemaWarningOpen(false)}
-          onClose={() => setSchemaWarningOpen(false)}
+          onClickOutside={handleCloseSchemaWarning}
+          onClose={handleCloseSchemaWarning}
           width={1}
         >
           <Card padding={3} radius={2} tone="caution">

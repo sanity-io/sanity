@@ -10,9 +10,10 @@ import {DiagnosticsDialog} from './DiagnosticsDialog'
 const mocks = vi.hoisted(() => ({
   downloadSchema: vi.fn(),
   gatherStudioDiagnostics: vi.fn(),
+  pushToast: vi.fn(),
 }))
 
-vi.mock('@sanity/ui/toast', () => ({useToast: () => ({push: vi.fn()})}))
+vi.mock('@sanity/ui/toast', () => ({useToast: () => ({push: mocks.pushToast})}))
 vi.mock('../../../../../ui-components/dialog/Dialog', () => ({
   Dialog: ({
     children,
@@ -103,6 +104,30 @@ describe('DiagnosticsDialog', () => {
     expect(mocks.downloadSchema).toHaveBeenCalledWith(
       expect.objectContaining({dataset: 'production', projectId: 'project-id'}),
     )
+    expect(screen.queryByText(/Only share it with Sanity support/)).not.toBeInTheDocument()
+  })
+
+  it('reports a failed schema download', async () => {
+    mocks.gatherStudioDiagnostics.mockResolvedValue({})
+    mocks.downloadSchema.mockImplementationOnce(() => {
+      throw new Error('Unsupported type')
+    })
+    const userInteraction = userEvent.setup()
+
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsDialog onClose={vi.fn()} />
+      </ThemeProvider>,
+    )
+
+    await userInteraction.click(await screen.findByRole('button', {name: 'Download schema'}))
+    await userInteraction.click(screen.getByRole('button', {name: 'Download'}))
+
+    expect(mocks.pushToast).toHaveBeenCalledWith({
+      description: 'Unsupported type',
+      status: 'error',
+      title: 'Could not download schema',
+    })
     expect(screen.queryByText(/Only share it with Sanity support/)).not.toBeInTheDocument()
   })
 
