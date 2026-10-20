@@ -79,6 +79,18 @@ Tick each step as you go. `options/journeys.json` is a copy of `docs/initiatives
 Copy the file again when it changes.
 `options/diagrams.json` is the same kind of copy of `docs/initiatives/curation-perspective-selector/diagrams.json`: the diagrams in the window (and the frames under the cards) draw from it.
 
+## The preview site (Nordic Books)
+
+The Presentation preview is a small designed bookshop on `http://localhost:3334/variants-preview.html` (`dev/preview-iframe`, started with the second command
+under Start). Routes: `?route=home`, `list` (the catalogue, the default Presentation preview), `book:<document id>`, `campaign`, `about`
+(and `fm:<id>` for the field-marks document). Links inside the site change the route without reloading, so Presentation stays connected and its
+address bar follows. The audience changes the headline, promo line, campaign and (de-DE) the interface language; the books come from the variant's own
+documents. Covers are generated placeholders and the site copy is a fixture: see `docs/initiatives/curation-perspective-selector/SITE-NOTES.md`.
+Code: `dev/preview-iframe/src/variants/` (`main.tsx`, `site/Site.tsx`, `site/model.ts`, `site/site.css`).
+The Presentation grid presets use these routes (Compare = home by three audiences, Device wall = every route, Sitemap = four routes, Matrix = two routes by three audiences).
+Presentation uses the same perspective bar as the other tools (no extra control in the preview header); the bar keeps its context when you move between tools.
+Screenshots: `node journeys/shoot-site.mts` (the site alone), `node journeys/shoot-presentation.mts` (Presentation and the grid presets).
+
 ## Journeys remote and Design options remote
 
 Two controllers, each in a window of its own, that move the studio window. They are static pages (no studio load) and talk to the studio over a
