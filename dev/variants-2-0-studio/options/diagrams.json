@@ -1,0 +1,2863 @@
+{
+ "about": "One diagram spec, drawn in the Design options window (dev/variants-2-0-studio/design-options/diagram.tsx) and in the design tracker artifact. Edit here; the studio copy is options/diagrams.json (recopy).",
+ "space": "New diagrams are drawn on a 320 x 170 grid (flows 320 x 64, the lens-homes figure 320 x 152). Entries with `generic` keep the older 200 x 100 app frame plus highlighted shapes (kind box|pill|dot, optional frame: inspector, dashed).",
+ "primitives": {
+  "nav": "{active=3} top bar: logo, five tool tabs (tab `active` highlighted), two round buttons.",
+  "lens": "{active, picker=true} View-by switch: label, four segments, optional pin picker at the right.",
+  "card": "{x,y,w,h} outlined panel.",
+  "title": "{y, w=70} heading bar with a subtitle bar.",
+  "tabs": "{y, n=3, search=true, btn} filter tabs (first active), search field, then either a primary button (btn 'b') or two round icons.",
+  "head": "{y, cols:[[x,w]], x0=14} table header band with column labels.",
+  "row": "{y, cells:[[x,w,kind]], grey, checked, h=14} table row: checkbox, doc icon, title and subline, then cells. kind: n neutral chip, v violet chip, r blue chip, g grey chip, t text bar, dot violet dot + text. grey = the document has no version (muted); checked = selected (blue box, violet wash).",
+  "selectionBar": "{} the bulk bar under the title: count, hints, primary action.",
+  "dialog": "{} scrim plus a confirm dialog: title, four key/value lines, Cancel and a red confirm.",
+  "pane": "{x,y,w,h,stroke,rx,dash} outline only.",
+  "box": "{x,y,w,h,fill,op,stroke,rx,dash} filled rectangle. fill: bar, violet, blue, red, brand, faint, none, bg, black, check, border.",
+  "bar": "{x,y,w,h=3,op} a line of text, drawn as a bar.",
+  "chip": "{x,y,w,kind} 5 high chip: n, v, r, g.",
+  "label": "{x,y,text} real text, 7 high.",
+  "flowBox": "{label, kind} one step in a flow strip; boxes share the width evenly, joined by arrows. kind: n, v, r."
+ },
+ "statusClasses": "status.class: win (built or shipped), even (candidate, alternative, partly proposed), open (exploration or not drawn).",
+ "diagrams": {
+  "c5.a.document": {
+   "size": [
+    320,
+    170
+   ],
+   "prims": [
+    {
+     "p": "nav"
+    },
+    {
+     "p": "lens",
+     "active": 0
+    },
+    {
+     "p": "card",
+     "x": 8,
+     "y": 34,
+     "w": 304,
+     "h": 130
+    },
+    {
+     "p": "title",
+     "y": 40
+    },
+    {
+     "p": "tabs",
+     "y": 58
+    },
+    {
+     "p": "head",
+     "y": 77,
+     "cols": [
+      [
+       14,
+       6
+      ],
+      [
+       36,
+       22
+      ],
+      [
+       112,
+       24
+      ],
+      [
+       176,
+       24
+      ],
+      [
+       238,
+       26
+      ],
+      [
+       272,
+       26
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 85,
+     "cells": [
+      [
+       112,
+       48,
+       "n"
+      ],
+      [
+       176,
+       40,
+       "v"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ],
+      [
+       272,
+       28,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 101,
+     "cells": [
+      [
+       112,
+       48,
+       "n"
+      ],
+      [
+       176,
+       40,
+       "n"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ],
+      [
+       272,
+       28,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 117,
+     "cells": [
+      [
+       112,
+       48,
+       "n"
+      ],
+      [
+       176,
+       40,
+       "v"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ],
+      [
+       272,
+       28,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 133,
+     "cells": [
+      [
+       112,
+       48,
+       "n"
+      ],
+      [
+       176,
+       40,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ],
+      [
+       272,
+       28,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 149,
+     "cells": [
+      [
+       112,
+       48,
+       "n"
+      ],
+      [
+       176,
+       40,
+       "v"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ],
+      [
+       272,
+       28,
+       "t"
+      ]
+     ]
+    }
+   ],
+   "name": "A1 · Document lens",
+   "status": {
+    "text": "drawn, built",
+    "class": "win"
+   },
+   "caption": "View by Document. One document's stored versions: version, address, lifecycle, last edited, edited by. Tabs All, Published, Drafts."
+  },
+  "c5.a.definition": {
+   "size": [
+    320,
+    170
+   ],
+   "prims": [
+    {
+     "p": "nav"
+    },
+    {
+     "p": "lens",
+     "active": 1
+    },
+    {
+     "p": "card",
+     "x": 8,
+     "y": 34,
+     "w": 304,
+     "h": 130
+    },
+    {
+     "p": "title",
+     "y": 40,
+     "w": 58
+    },
+    {
+     "p": "tabs",
+     "y": 58
+    },
+    {
+     "p": "head",
+     "y": 77,
+     "cols": [
+      [
+       14,
+       6
+      ],
+      [
+       36,
+       22
+      ],
+      [
+       112,
+       30
+      ],
+      [
+       176,
+       22
+      ],
+      [
+       238,
+       26
+      ],
+      [
+       272,
+       26
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 85,
+     "cells": [
+      [
+       112,
+       34,
+       "n"
+      ],
+      [
+       176,
+       50,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ],
+      [
+       272,
+       28,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 101,
+     "cells": [
+      [
+       112,
+       50,
+       "n"
+      ],
+      [
+       176,
+       50,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ],
+      [
+       272,
+       28,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 117,
+     "cells": [
+      [
+       112,
+       50,
+       "g"
+      ]
+     ],
+     "grey": true
+    },
+    {
+     "p": "row",
+     "y": 133,
+     "cells": [
+      [
+       112,
+       50,
+       "g"
+      ]
+     ],
+     "grey": true
+    }
+   ],
+   "name": "A2 · Definition lens",
+   "status": {
+    "text": "drawn, built",
+    "class": "win"
+   },
+   "caption": "View by Definition (German). Documents that have the version, then grey rows for documents that do not; tabs All, Has it, Missing."
+  },
+  "c5.a.selection": {
+   "size": [
+    320,
+    170
+   ],
+   "prims": [
+    {
+     "p": "nav"
+    },
+    {
+     "p": "lens",
+     "active": 1
+    },
+    {
+     "p": "card",
+     "x": 8,
+     "y": 34,
+     "w": 304,
+     "h": 130
+    },
+    {
+     "p": "title",
+     "y": 40,
+     "w": 58
+    },
+    {
+     "p": "selectionBar"
+    },
+    {
+     "p": "head",
+     "y": 77,
+     "cols": [
+      [
+       14,
+       6
+      ],
+      [
+       36,
+       22
+      ],
+      [
+       112,
+       30
+      ],
+      [
+       176,
+       22
+      ],
+      [
+       238,
+       26
+      ],
+      [
+       272,
+       26
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 85,
+     "cells": [
+      [
+       112,
+       34,
+       "n"
+      ],
+      [
+       176,
+       50,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 101,
+     "cells": [
+      [
+       112,
+       50,
+       "n"
+      ],
+      [
+       176,
+       50,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 117,
+     "cells": [
+      [
+       112,
+       50,
+       "g"
+      ]
+     ],
+     "grey": true,
+     "checked": true
+    },
+    {
+     "p": "row",
+     "y": 133,
+     "cells": [
+      [
+       112,
+       50,
+       "g"
+      ]
+     ],
+     "grey": true,
+     "checked": true
+    }
+   ],
+   "name": "A3 · Selection",
+   "status": {
+    "text": "drawn, built",
+    "class": "win"
+   },
+   "caption": "Select the grey rows: the bulk bar offers Create German versions and Add to release."
+  },
+  "c5.a.delete": {
+   "size": [
+    320,
+    170
+   ],
+   "prims": [
+    {
+     "p": "nav"
+    },
+    {
+     "p": "lens",
+     "active": 1
+    },
+    {
+     "p": "card",
+     "x": 8,
+     "y": 34,
+     "w": 304,
+     "h": 130
+    },
+    {
+     "p": "title",
+     "y": 40,
+     "w": 58
+    },
+    {
+     "p": "head",
+     "y": 77,
+     "cols": [
+      [
+       14,
+       6
+      ],
+      [
+       36,
+       22
+      ],
+      [
+       112,
+       30
+      ],
+      [
+       176,
+       22
+      ],
+      [
+       238,
+       26
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 85,
+     "cells": [
+      [
+       112,
+       34,
+       "n"
+      ],
+      [
+       176,
+       50,
+       "r"
+      ]
+     ],
+     "checked": true
+    },
+    {
+     "p": "row",
+     "y": 101,
+     "cells": [
+      [
+       112,
+       50,
+       "n"
+      ],
+      [
+       176,
+       50,
+       "r"
+      ]
+     ],
+     "checked": true
+    },
+    {
+     "p": "row",
+     "y": 117,
+     "cells": [
+      [
+       112,
+       50,
+       "g"
+      ]
+     ],
+     "grey": true
+    },
+    {
+     "p": "row",
+     "y": 133,
+     "cells": [
+      [
+       112,
+       50,
+       "g"
+      ]
+     ],
+     "grey": true
+    },
+    {
+     "p": "dialog"
+    }
+   ],
+   "name": "A4, A8, A9 · Delete",
+   "status": {
+    "text": "drawn, built",
+    "class": "win"
+   },
+   "caption": "The dialog names the version, the documents and who is affected. One version is the rule; all versions is a special case."
+  },
+  "c5.b.homes": {
+   "size": [
+    320,
+    152
+   ],
+   "prims": [
+    {
+     "p": "pane",
+     "x": 4,
+     "y": 4,
+     "w": 108,
+     "h": 132,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 12,
+     "y": 10,
+     "w": 50,
+     "h": 4,
+     "op": 0.9
+    },
+    {
+     "p": "pane",
+     "x": 12,
+     "y": 20,
+     "w": 92,
+     "h": 48,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 16,
+     "y": 24,
+     "w": 32,
+     "op": 0.8
+    },
+    {
+     "p": "box",
+     "x": 14,
+     "y": 32,
+     "w": 88,
+     "h": 6,
+     "fill": "bar",
+     "rx": 0,
+     "op": 0.55
+    },
+    {
+     "p": "pane",
+     "x": 16,
+     "y": 42,
+     "w": 6,
+     "h": 6,
+     "stroke": "faint",
+     "rx": 1
+    },
+    {
+     "p": "bar",
+     "x": 26,
+     "y": 43,
+     "w": 30,
+     "h": 2.6,
+     "op": 0.8
+    },
+    {
+     "p": "chip",
+     "x": 62,
+     "y": 43,
+     "w": 34,
+     "kind": "r"
+    },
+    {
+     "p": "pane",
+     "x": 16,
+     "y": 53,
+     "w": 6,
+     "h": 6,
+     "stroke": "faint",
+     "rx": 1
+    },
+    {
+     "p": "bar",
+     "x": 26,
+     "y": 54,
+     "w": 30,
+     "h": 2.6,
+     "op": 0.8
+    },
+    {
+     "p": "chip",
+     "x": 62,
+     "y": 54,
+     "w": 34,
+     "kind": "r"
+    },
+    {
+     "p": "pane",
+     "x": 12,
+     "y": 74,
+     "w": 92,
+     "h": 56,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 16,
+     "y": 78,
+     "w": 40,
+     "op": 0.8
+    },
+    {
+     "p": "box",
+     "x": 66,
+     "y": 77,
+     "w": 34,
+     "h": 6,
+     "fill": "blue",
+     "op": 0.8
+    },
+    {
+     "p": "pane",
+     "x": 16,
+     "y": 90,
+     "w": 6,
+     "h": 6,
+     "stroke": "faint",
+     "rx": 1
+    },
+    {
+     "p": "bar",
+     "x": 26,
+     "y": 91,
+     "w": 30,
+     "h": 2.6,
+     "op": 0.35
+    },
+    {
+     "p": "chip",
+     "x": 62,
+     "y": 91,
+     "w": 34,
+     "kind": "g"
+    },
+    {
+     "p": "pane",
+     "x": 16,
+     "y": 104,
+     "w": 6,
+     "h": 6,
+     "stroke": "faint",
+     "rx": 1
+    },
+    {
+     "p": "bar",
+     "x": 26,
+     "y": 105,
+     "w": 30,
+     "h": 2.6,
+     "op": 0.35
+    },
+    {
+     "p": "chip",
+     "x": 62,
+     "y": 105,
+     "w": 34,
+     "kind": "g"
+    },
+    {
+     "p": "pane",
+     "x": 110,
+     "y": 4,
+     "w": 110,
+     "h": 132,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "box",
+     "x": 112,
+     "y": 10,
+     "w": 50,
+     "h": 3,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "bar",
+     "x": 116,
+     "y": 18,
+     "w": 44,
+     "op": 0.4
+    },
+    {
+     "p": "pane",
+     "x": 116,
+     "y": 23,
+     "w": 60,
+     "h": 5,
+     "stroke": "border"
+    },
+    {
+     "p": "bar",
+     "x": 116,
+     "y": 30,
+     "w": 44,
+     "op": 0.4
+    },
+    {
+     "p": "pane",
+     "x": 116,
+     "y": 35,
+     "w": 60,
+     "h": 5,
+     "stroke": "border"
+    },
+    {
+     "p": "bar",
+     "x": 116,
+     "y": 42,
+     "w": 44,
+     "op": 0.4
+    },
+    {
+     "p": "pane",
+     "x": 116,
+     "y": 47,
+     "w": 60,
+     "h": 5,
+     "stroke": "border"
+    },
+    {
+     "p": "bar",
+     "x": 116,
+     "y": 54,
+     "w": 44,
+     "op": 0.4
+    },
+    {
+     "p": "pane",
+     "x": 116,
+     "y": 59,
+     "w": 60,
+     "h": 5,
+     "stroke": "border"
+    },
+    {
+     "p": "bar",
+     "x": 116,
+     "y": 66,
+     "w": 44,
+     "op": 0.4
+    },
+    {
+     "p": "pane",
+     "x": 116,
+     "y": 71,
+     "w": 60,
+     "h": 5,
+     "stroke": "border"
+    },
+    {
+     "p": "box",
+     "x": 178,
+     "y": 8,
+     "w": 40,
+     "h": 124,
+     "fill": "violet",
+     "rx": 2,
+     "op": 0.1
+    },
+    {
+     "p": "bar",
+     "x": 182,
+     "y": 12,
+     "w": 26,
+     "op": 0.9
+    },
+    {
+     "p": "pane",
+     "x": 182,
+     "y": 22,
+     "w": 32,
+     "h": 12,
+     "stroke": "border"
+    },
+    {
+     "p": "bar",
+     "x": 185,
+     "y": 25,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.8
+    },
+    {
+     "p": "chip",
+     "x": 185,
+     "y": 29.5,
+     "w": 22,
+     "kind": "n"
+    },
+    {
+     "p": "pane",
+     "x": 182,
+     "y": 38,
+     "w": 32,
+     "h": 12,
+     "stroke": "border"
+    },
+    {
+     "p": "bar",
+     "x": 185,
+     "y": 41,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.8
+    },
+    {
+     "p": "chip",
+     "x": 185,
+     "y": 45.5,
+     "w": 22,
+     "kind": "v"
+    },
+    {
+     "p": "pane",
+     "x": 182,
+     "y": 54,
+     "w": 32,
+     "h": 12,
+     "stroke": "border"
+    },
+    {
+     "p": "bar",
+     "x": 185,
+     "y": 57,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.8
+    },
+    {
+     "p": "chip",
+     "x": 185,
+     "y": 61.5,
+     "w": 22,
+     "kind": "v"
+    },
+    {
+     "p": "pane",
+     "x": 182,
+     "y": 70,
+     "w": 32,
+     "h": 12,
+     "stroke": "border"
+    },
+    {
+     "p": "bar",
+     "x": 185,
+     "y": 73,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.8
+    },
+    {
+     "p": "chip",
+     "x": 185,
+     "y": 77.5,
+     "w": 22,
+     "kind": "r"
+    },
+    {
+     "p": "pane",
+     "x": 222,
+     "y": 4,
+     "w": 94,
+     "h": 132,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 230,
+     "y": 10,
+     "w": 46,
+     "h": 4,
+     "op": 0.9
+    },
+    {
+     "p": "box",
+     "x": 284,
+     "y": 9,
+     "w": 26,
+     "h": 6,
+     "fill": "blue",
+     "rx": 2,
+     "op": 0.8
+    },
+    {
+     "p": "pane",
+     "x": 230,
+     "y": 22,
+     "w": 80,
+     "h": 18,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 26,
+     "w": 38,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 32,
+     "w": 24,
+     "h": 2.3,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 282,
+     "y": 28,
+     "w": 22,
+     "kind": "v"
+    },
+    {
+     "p": "pane",
+     "x": 230,
+     "y": 44,
+     "w": 80,
+     "h": 18,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 48,
+     "w": 38,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 54,
+     "w": 24,
+     "h": 2.3,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 282,
+     "y": 50,
+     "w": 22,
+     "kind": "n"
+    },
+    {
+     "p": "pane",
+     "x": 230,
+     "y": 66,
+     "w": 80,
+     "h": 18,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 70,
+     "w": 38,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 76,
+     "w": 24,
+     "h": 2.3,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 282,
+     "y": 72,
+     "w": 22,
+     "kind": "v"
+    },
+    {
+     "p": "pane",
+     "x": 230,
+     "y": 88,
+     "w": 80,
+     "h": 18,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 92,
+     "w": 38,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 98,
+     "w": 24,
+     "h": 2.3,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 282,
+     "y": 94,
+     "w": 22,
+     "kind": "n"
+    },
+    {
+     "p": "pane",
+     "x": 230,
+     "y": 110,
+     "w": 80,
+     "h": 18,
+     "stroke": "border",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 114,
+     "w": 38,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 235,
+     "y": 120,
+     "w": 24,
+     "h": 2.3,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 282,
+     "y": 116,
+     "w": 22,
+     "kind": "v"
+    },
+    {
+     "p": "label",
+     "x": 8,
+     "y": 145,
+     "text": "Variant detail"
+    },
+    {
+     "p": "label",
+     "x": 114,
+     "y": 145,
+     "text": "Document inspector"
+    },
+    {
+     "p": "label",
+     "x": 226,
+     "y": 145,
+     "text": "Overview as a lens"
+    }
+   ],
+   "name": "B1 to B3 · Lenses at their homes",
+   "status": {
+    "text": "alternative, drawn",
+    "class": "even"
+   },
+   "caption": "The same table placed where each lens lives: variant detail with the absent block, a mini lens in the document inspector, the overview as a dimension lens."
+  },
+  "c6.overview": {
+   "size": [
+    320,
+    170
+   ],
+   "prims": [
+    {
+     "p": "nav"
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 22,
+     "w": 50,
+     "h": 5,
+     "op": 0.95
+    },
+    {
+     "p": "box",
+     "x": 246,
+     "y": 19,
+     "w": 62,
+     "h": 9,
+     "fill": "blue",
+     "rx": 2,
+     "op": 0.85
+    },
+    {
+     "p": "bar",
+     "x": 252,
+     "y": 22.5,
+     "w": 50,
+     "h": 2.2,
+     "op": 0.9
+    },
+    {
+     "p": "card",
+     "x": 8,
+     "y": 34,
+     "w": 304,
+     "h": 128
+    },
+    {
+     "p": "tabs",
+     "y": 40,
+     "n": 0
+    },
+    {
+     "p": "head",
+     "y": 58,
+     "cols": [
+      [
+       14,
+       28
+      ],
+      [
+       112,
+       34
+      ],
+      [
+       214,
+       26
+      ]
+     ]
+    },
+    {
+     "p": "box",
+     "x": 8,
+     "y": 80,
+     "w": 304,
+     "h": 0.4,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 69.5,
+     "w": 60,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 74.5,
+     "w": 36,
+     "h": 2.2,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 112,
+     "y": 70.5,
+     "w": 50,
+     "kind": "v"
+    },
+    {
+     "p": "bar",
+     "x": 214,
+     "y": 71,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.7
+    },
+    {
+     "p": "box",
+     "x": 292,
+     "y": 72,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 296,
+     "y": 72,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 300,
+     "y": 72,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 8,
+     "y": 95,
+     "w": 304,
+     "h": 0.4,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 84.5,
+     "w": 60,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 89.5,
+     "w": 36,
+     "h": 2.2,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 112,
+     "y": 85.5,
+     "w": 50,
+     "kind": "v"
+    },
+    {
+     "p": "bar",
+     "x": 214,
+     "y": 86,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.7
+    },
+    {
+     "p": "box",
+     "x": 292,
+     "y": 87,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 296,
+     "y": 87,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 300,
+     "y": 87,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 8,
+     "y": 110,
+     "w": 304,
+     "h": 0.4,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 99.5,
+     "w": 60,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 104.5,
+     "w": 36,
+     "h": 2.2,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 112,
+     "y": 100.5,
+     "w": 50,
+     "kind": "v"
+    },
+    {
+     "p": "bar",
+     "x": 214,
+     "y": 101,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.7
+    },
+    {
+     "p": "box",
+     "x": 292,
+     "y": 102,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 296,
+     "y": 102,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 300,
+     "y": 102,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 8,
+     "y": 125,
+     "w": 304,
+     "h": 0.4,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 114.5,
+     "w": 60,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 119.5,
+     "w": 36,
+     "h": 2.2,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 112,
+     "y": 115.5,
+     "w": 50,
+     "kind": "v"
+    },
+    {
+     "p": "bar",
+     "x": 214,
+     "y": 116,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.7
+    },
+    {
+     "p": "box",
+     "x": 292,
+     "y": 117,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 296,
+     "y": 117,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 300,
+     "y": 117,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 8,
+     "y": 140,
+     "w": 304,
+     "h": 0.4,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 129.5,
+     "w": 60,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 134.5,
+     "w": 36,
+     "h": 2.2,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 112,
+     "y": 130.5,
+     "w": 50,
+     "kind": "v"
+    },
+    {
+     "p": "bar",
+     "x": 214,
+     "y": 131,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.7
+    },
+    {
+     "p": "box",
+     "x": 292,
+     "y": 132,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 296,
+     "y": 132,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 300,
+     "y": 132,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 8,
+     "y": 155,
+     "w": 304,
+     "h": 0.4,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 144.5,
+     "w": 60,
+     "op": 0.9
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 149.5,
+     "w": 36,
+     "h": 2.2,
+     "op": 0.4
+    },
+    {
+     "p": "chip",
+     "x": 112,
+     "y": 145.5,
+     "w": 50,
+     "kind": "v"
+    },
+    {
+     "p": "bar",
+     "x": 214,
+     "y": 146,
+     "w": 16,
+     "h": 2.6,
+     "op": 0.7
+    },
+    {
+     "p": "box",
+     "x": 292,
+     "y": 147,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 296,
+     "y": 147,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    },
+    {
+     "p": "box",
+     "x": 300,
+     "y": 147,
+     "w": 2,
+     "h": 2,
+     "fill": "bar",
+     "rx": 1
+    }
+   ],
+   "name": "Overview",
+   "status": {
+    "text": "shipped",
+    "class": "win"
+   },
+   "caption": "Definitions with document counts, search, Add filter, row actions for edit and delete. Drawn on the C6 page."
+  },
+  "c6.detail": {
+   "size": [
+    320,
+    170
+   ],
+   "prims": [
+    {
+     "p": "nav"
+    },
+    {
+     "p": "bar",
+     "x": 10,
+     "y": 19,
+     "w": 70,
+     "h": 4,
+     "op": 0.95
+    },
+    {
+     "p": "box",
+     "x": 262,
+     "y": 16,
+     "w": 48,
+     "h": 9,
+     "fill": "bar",
+     "rx": 2
+    },
+    {
+     "p": "bar",
+     "x": 267,
+     "y": 19.5,
+     "w": 38,
+     "h": 2.2
+    },
+    {
+     "p": "bar",
+     "x": 12,
+     "y": 30.0,
+     "w": 18,
+     "h": 2.4,
+     "op": 0.5
+    },
+    {
+     "p": "bar",
+     "x": 52,
+     "y": 30.0,
+     "w": 24,
+     "h": 2.4,
+     "op": 0.9
+    },
+    {
+     "p": "box",
+     "x": 10,
+     "y": 35.5,
+     "w": 92,
+     "h": 0.3,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 12,
+     "y": 36.5,
+     "w": 18,
+     "h": 2.4,
+     "op": 0.5
+    },
+    {
+     "p": "bar",
+     "x": 52,
+     "y": 36.5,
+     "w": 24,
+     "h": 2.4,
+     "op": 0.9
+    },
+    {
+     "p": "box",
+     "x": 10,
+     "y": 42.0,
+     "w": 92,
+     "h": 0.3,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 12,
+     "y": 43.0,
+     "w": 18,
+     "h": 2.4,
+     "op": 0.5
+    },
+    {
+     "p": "bar",
+     "x": 52,
+     "y": 43.0,
+     "w": 24,
+     "h": 2.4,
+     "op": 0.9
+    },
+    {
+     "p": "box",
+     "x": 10,
+     "y": 48.5,
+     "w": 92,
+     "h": 0.3,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 12,
+     "y": 49.5,
+     "w": 18,
+     "h": 2.4,
+     "op": 0.5
+    },
+    {
+     "p": "bar",
+     "x": 52,
+     "y": 49.5,
+     "w": 24,
+     "h": 2.4,
+     "op": 0.9
+    },
+    {
+     "p": "box",
+     "x": 10,
+     "y": 55.0,
+     "w": 92,
+     "h": 0.3,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 12,
+     "y": 56.0,
+     "w": 18,
+     "h": 2.4,
+     "op": 0.5
+    },
+    {
+     "p": "bar",
+     "x": 52,
+     "y": 56.0,
+     "w": 24,
+     "h": 2.4,
+     "op": 0.9
+    },
+    {
+     "p": "box",
+     "x": 10,
+     "y": 61.5,
+     "w": 92,
+     "h": 0.3,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "bar",
+     "x": 12,
+     "y": 62.5,
+     "w": 18,
+     "h": 2.4,
+     "op": 0.5
+    },
+    {
+     "p": "bar",
+     "x": 52,
+     "y": 62.5,
+     "w": 24,
+     "h": 2.4,
+     "op": 0.9
+    },
+    {
+     "p": "box",
+     "x": 10,
+     "y": 68.0,
+     "w": 92,
+     "h": 0.3,
+     "fill": "border",
+     "rx": 0
+    },
+    {
+     "p": "card",
+     "x": 8,
+     "y": 72,
+     "w": 304,
+     "h": 44
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 76,
+     "w": 50,
+     "h": 3.5,
+     "op": 0.95
+    },
+    {
+     "p": "box",
+     "x": 10,
+     "y": 84,
+     "w": 300,
+     "h": 5,
+     "fill": "bar",
+     "rx": 0,
+     "op": 0.55
+    },
+    {
+     "p": "row",
+     "y": 88,
+     "cells": [
+      [
+       112,
+       34,
+       "n"
+      ],
+      [
+       176,
+       50,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ],
+     "h": 12
+    },
+    {
+     "p": "row",
+     "y": 100,
+     "cells": [
+      [
+       112,
+       50,
+       "n"
+      ],
+      [
+       176,
+       50,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ],
+     "h": 12
+    },
+    {
+     "p": "card",
+     "x": 8,
+     "y": 120,
+     "w": 304,
+     "h": 46
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 124,
+     "w": 64,
+     "h": 3.5,
+     "op": 0.95
+    },
+    {
+     "p": "box",
+     "x": 254,
+     "y": 122,
+     "w": 54,
+     "h": 8,
+     "fill": "blue",
+     "rx": 2,
+     "op": 0.85
+    },
+    {
+     "p": "bar",
+     "x": 259,
+     "y": 125,
+     "w": 44,
+     "h": 2.2,
+     "op": 0.9
+    },
+    {
+     "p": "row",
+     "y": 134,
+     "cells": [
+      [
+       112,
+       50,
+       "g"
+      ]
+     ],
+     "grey": true,
+     "h": 12
+    },
+    {
+     "p": "row",
+     "y": 146,
+     "cells": [
+      [
+       112,
+       50,
+       "g"
+      ]
+     ],
+     "grey": true,
+     "h": 12
+    }
+   ],
+   "name": "Detail",
+   "status": {
+    "text": "shipped + proposed",
+    "class": "even"
+   },
+   "caption": "Shipped: conditions and details panels, the documents table. Proposed: the Pages without German block with Create German versions."
+  },
+  "c8.overview": {
+   "size": [
+    320,
+    170
+   ],
+   "prims": [
+    {
+     "p": "nav",
+     "active": 2
+    },
+    {
+     "p": "bar",
+     "x": 14,
+     "y": 19,
+     "w": 40,
+     "h": 5,
+     "op": 0.95
+    },
+    {
+     "p": "card",
+     "x": 8,
+     "y": 30,
+     "w": 304,
+     "h": 134
+    },
+    {
+     "p": "title",
+     "y": 36,
+     "w": 40
+    },
+    {
+     "p": "tabs",
+     "y": 54
+    },
+    {
+     "p": "head",
+     "y": 73,
+     "cols": [
+      [
+       14,
+       6
+      ],
+      [
+       36,
+       22
+      ],
+      [
+       112,
+       26
+      ],
+      [
+       176,
+       20
+      ],
+      [
+       238,
+       20
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 81,
+     "cells": [
+      [
+       112,
+       40,
+       "n"
+      ],
+      [
+       176,
+       34,
+       "v"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 97,
+     "cells": [
+      [
+       112,
+       40,
+       "n"
+      ],
+      [
+       176,
+       34,
+       "v"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 113,
+     "cells": [
+      [
+       112,
+       40,
+       "n"
+      ],
+      [
+       176,
+       34,
+       "n"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 129,
+     "cells": [
+      [
+       112,
+       40,
+       "n"
+      ],
+      [
+       176,
+       34,
+       "v"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    }
+   ],
+   "name": "A1 · Overview",
+   "status": {
+    "text": "drawn, built",
+    "class": "win"
+   },
+   "caption": "Releases with documents and variants counts, tabs Active, Scheduled, Open, and when each publishes."
+  },
+  "c8.detail": {
+   "size": [
+    320,
+    170
+   ],
+   "prims": [
+    {
+     "p": "nav",
+     "active": 2
+    },
+    {
+     "p": "bar",
+     "x": 10,
+     "y": 19,
+     "w": 70,
+     "h": 4,
+     "op": 0.95
+    },
+    {
+     "p": "card",
+     "x": 8,
+     "y": 30,
+     "w": 304,
+     "h": 134
+    },
+    {
+     "p": "title",
+     "y": 36
+    },
+    {
+     "p": "tabs",
+     "y": 54
+    },
+    {
+     "p": "head",
+     "y": 73,
+     "cols": [
+      [
+       14,
+       6
+      ],
+      [
+       36,
+       24
+      ],
+      [
+       112,
+       22
+      ],
+      [
+       176,
+       24
+      ],
+      [
+       238,
+       24
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 81,
+     "cells": [
+      [
+       112,
+       40,
+       "v"
+      ],
+      [
+       176,
+       46,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 97,
+     "cells": [
+      [
+       112,
+       40,
+       "n"
+      ],
+      [
+       176,
+       46,
+       "n"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 113,
+     "cells": [
+      [
+       112,
+       40,
+       "v"
+      ],
+      [
+       176,
+       46,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    },
+    {
+     "p": "row",
+     "y": 129,
+     "cells": [
+      [
+       112,
+       40,
+       "v"
+      ],
+      [
+       176,
+       46,
+       "r"
+      ],
+      [
+       238,
+       24,
+       "t"
+      ]
+     ]
+    }
+   ],
+   "name": "A2 · Release detail",
+   "status": {
+    "text": "drawn, built",
+    "class": "win"
+   },
+   "caption": "Documents in the release with the version each carries and what happens on publish (Publishes German, Publishes base)."
+  },
+  "c5.flow": {
+   "size": [
+    320,
+    64
+   ],
+   "prims": [
+    {
+     "p": "flowBox",
+     "label": "Pick a lens",
+     "kind": "n"
+    },
+    {
+     "p": "flowBox",
+     "label": "Select rows",
+     "kind": "n"
+    },
+    {
+     "p": "flowBox",
+     "label": "Bulk bar",
+     "kind": "v"
+    },
+    {
+     "p": "flowBox",
+     "label": "Confirm",
+     "kind": "n"
+    },
+    {
+     "p": "flowBox",
+     "label": "Result",
+     "kind": "r"
+    }
+   ],
+   "name": "Flow",
+   "status": {
+    "text": "from the journeys",
+    "class": "even"
+   },
+   "caption": "Pick a lens, select rows, act from the bulk bar, confirm, see the result (journeys j05, j10, j11)."
+  },
+  "c6.flow": {
+   "size": [
+    320,
+    64
+   ],
+   "prims": [
+    {
+     "p": "flowBox",
+     "label": "Overview",
+     "kind": "n"
+    },
+    {
+     "p": "flowBox",
+     "label": "Detail",
+     "kind": "n"
+    },
+    {
+     "p": "flowBox",
+     "label": "Create versions",
+     "kind": "v"
+    },
+    {
+     "p": "flowBox",
+     "label": "Add to release",
+     "kind": "r"
+    },
+    {
+     "p": "flowBox",
+     "label": "Delete",
+     "kind": "n"
+    }
+   ],
+   "name": "Actions",
+   "status": {
+    "text": "create, edit, delete shipped; the rest proposed",
+    "class": "even"
+   },
+   "caption": "Overview to detail, then Create versions and Add to release from the bulk bar (proposed). Definition create, edit and delete exist in the shipped tool."
+  },
+  "c8.flow": {
+   "size": [
+    320,
+    64
+   ],
+   "prims": [
+    {
+     "p": "flowBox",
+     "label": "Releases",
+     "kind": "n"
+    },
+    {
+     "p": "flowBox",
+     "label": "Release detail",
+     "kind": "r"
+    },
+    {
+     "p": "flowBox",
+     "label": "Document in a variant",
+     "kind": "v"
+    },
+    {
+     "p": "flowBox",
+     "label": "Publish on date",
+     "kind": "n"
+    }
+   ],
+   "name": "Flow",
+   "status": {
+    "text": "from the journeys",
+    "class": "even"
+   },
+   "caption": "From the release list into a release, then into a variant document and the publish moment."
+  },
+  "c1.a": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "pill",
+      "x": 160,
+      "y": 3,
+      "w": 26
+     },
+     {
+      "kind": "box",
+      "x": 1,
+      "y": 13,
+      "w": 198,
+      "h": 8
+     }
+    ]
+   },
+   "name": "A · One control",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "The version pill with a label that shows or hides the row; the menu adds a dimension."
+  },
+  "c1.b": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "pill",
+      "x": 140,
+      "y": 3,
+      "w": 16
+     },
+     {
+      "kind": "pill",
+      "x": 160,
+      "y": 3,
+      "w": 16
+     },
+     {
+      "kind": "box",
+      "x": 100,
+      "y": 14,
+      "w": 92,
+      "h": 42
+     }
+    ]
+   },
+   "name": "B · Two controls",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "A state pill plus a Variants control that opens one panel."
+  },
+  "c1.c": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "pill",
+      "x": 70,
+      "y": 14,
+      "w": 26,
+      "h": 7
+     },
+     {
+      "kind": "pill",
+      "x": 100,
+      "y": 14,
+      "w": 26,
+      "h": 7
+     }
+    ]
+   },
+   "name": "C · Shipped bar",
+   "status": {
+    "text": "exploration",
+    "class": "open"
+   },
+   "caption": "The shipped bar: Version and Variant filters under the navbar."
+  },
+  "c2.a": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "pill",
+      "x": 60,
+      "y": 14.5,
+      "w": 24,
+      "h": 7
+     },
+     {
+      "kind": "pill",
+      "x": 88,
+      "y": 14.5,
+      "w": 24,
+      "h": 7
+     },
+     {
+      "kind": "pill",
+      "x": 116,
+      "y": 14.5,
+      "w": 24,
+      "h": 7
+     },
+     {
+      "kind": "pill",
+      "x": 144,
+      "y": 14.5,
+      "w": 24,
+      "h": 7
+     }
+    ]
+   },
+   "name": "A · Grouped dropdowns",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "Variants first, a divider, then Published, Draft and Releases (as in PR #39)."
+  },
+  "c2.b": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "box",
+      "x": 60,
+      "y": 14.5,
+      "w": 40,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 104,
+      "y": 14.5,
+      "w": 40,
+      "h": 7
+     }
+    ]
+   },
+   "name": "B · Per-axis controls",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "Exploration: one control per axis (state, audience, locale)."
+  },
+  "c3.a": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 24.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 38.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 52.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 66.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 80.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 30,
+      "y": 34,
+      "w": 42,
+      "h": 22
+     }
+    ]
+   },
+   "name": "A · v1 read-only popover",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "Icon on every row; hover opens a read-only popover; click opens document and inventory."
+  },
+  "c3.b": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 24.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 38.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 52.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 66.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 40,
+      "y": 80.5,
+      "w": 7,
+      "h": 7
+     },
+     {
+      "kind": "box",
+      "x": 30,
+      "y": 34,
+      "w": 34,
+      "h": 26
+     },
+     {
+      "kind": "box",
+      "x": 66,
+      "y": 34,
+      "w": 30,
+      "h": 20
+     }
+    ]
+   },
+   "name": "B · v2 flyout menu",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "The same icon with a flyout menu of versions."
+  },
+  "c3.c": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "dot",
+      "x": 44,
+      "y": 28
+     },
+     {
+      "kind": "dot",
+      "x": 44,
+      "y": 42
+     },
+     {
+      "kind": "dot",
+      "x": 44,
+      "y": 56
+     },
+     {
+      "kind": "dot",
+      "x": 44,
+      "y": 70
+     },
+     {
+      "kind": "dot",
+      "x": 44,
+      "y": 84
+     }
+    ]
+   },
+   "name": "C · Dot as control",
+   "status": {
+    "text": "exploration",
+    "class": "open"
+   },
+   "caption": "Exploration: the status dot is the control."
+  },
+  "c4.a": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "frame": "inspector",
+    "shapes": [
+     {
+      "kind": "box",
+      "x": 144,
+      "y": 12.5,
+      "w": 55,
+      "h": 87
+     }
+    ]
+   },
+   "name": "A · Document lens, side panel",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "The document lens in the inspector: grouped by publish date, sort, filter, Expand."
+  },
+  "c4.b": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "box",
+      "x": 96,
+      "y": 26,
+      "w": 64,
+      "h": 50
+     }
+    ]
+   },
+   "name": "B · Popover from Manage versions",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "The same document lens, as a popover from Manage versions."
+  },
+  "c4.c": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "frame": "inspector",
+    "shapes": [
+     {
+      "kind": "box",
+      "x": 148,
+      "y": 24,
+      "w": 47,
+      "h": 6
+     },
+     {
+      "kind": "box",
+      "x": 148,
+      "y": 36,
+      "w": 47,
+      "h": 6
+     },
+     {
+      "kind": "box",
+      "x": 148,
+      "y": 48,
+      "w": 47,
+      "h": 6
+     }
+    ]
+   },
+   "name": "C · Andrej's panel (original)",
+   "status": {
+    "text": "exploration",
+    "class": "open"
+   },
+   "caption": "Andrej's original panel in the inspector, for comparison."
+  },
+  "c7.a": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "box",
+      "x": 53,
+      "y": 25,
+      "w": 143,
+      "h": 10
+     }
+    ]
+   },
+   "name": "A · Explicit banner",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "A banner on a missing variant, with Create variant, in every version."
+  },
+  "c7.b": {
+   "size": [
+    200,
+    100
+   ],
+   "generic": {
+    "shapes": [
+     {
+      "kind": "box",
+      "x": 130,
+      "y": 14.5,
+      "w": 60,
+      "h": 5
+     }
+    ]
+   },
+   "name": "B · Always live in Drafts",
+   "status": {
+    "text": "candidate",
+    "class": "even"
+   },
+   "caption": "No banner in Drafts; a hint in the pane header. Banner only in Published and releases."
+  }
+ }
+}
