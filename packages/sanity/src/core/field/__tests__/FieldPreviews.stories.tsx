@@ -4,7 +4,8 @@ import {FieldPreviewsStory} from './FieldPreviewsStory'
 
 /**
  * Reuses the in-package harness: ui5 Box padding on string / number / slug
- * review-changes previews. Values are static (no timestamps).
+ * and date-only review-changes previews. Values are static (no timestamps,
+ * no local-timezone datetime).
  */
 const meta = {
   title: 'Field/Previews',
