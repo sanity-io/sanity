@@ -122,7 +122,7 @@ function FavoriteButton({
         size={1}
         muted
         icon={isFavorited ? StarFilledIcon : StarIcon}
-        style={{margin: '-0.375rem', ...(disabled && {color: '(var(--inert-foreground))'})}}
+        style={{margin: '-0.375rem', ...(disabled && {color: 'var(--inert-foreground)'})}}
       />
     </Button>
   )
