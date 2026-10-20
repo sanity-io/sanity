@@ -48,21 +48,70 @@ export interface ToastValues {
   detail?: string
 }
 
-export const PREVIEW_VALUES: ToastValues = {variant: 'German', document: 'Summer landing page', count: 12, failed: 2, orphans: 3, verb: 'create'}
+export const PREVIEW_VALUES: ToastValues = {
+  variant: 'German',
+  document: 'Summer landing page',
+  count: 12,
+  failed: 2,
+  orphans: 3,
+  verb: 'create',
+}
 
 const PAST = {create: 'created', publish: 'published', delete: 'deleted'} as const
 const GERUND = {create: 'Creating', publish: 'Publishing', delete: 'Deleting'} as const
 const plural = (n: number, one: string, many: string) => (n === 1 ? one : many)
 
 export const TOAST_EVENTS: ToastEvent[] = [
-  {id: 'version-created', label: 'Version created', tone: 'positive', title: '', action: 'Open', duration: 5000},
-  {id: 'versions-created', label: 'Versions created in bulk', tone: 'positive', title: '', action: 'Show', duration: 5000},
-  {id: 'definition-created', label: 'Definition created', tone: 'positive', title: '', action: 'View', duration: 5000},
+  {
+    id: 'version-created',
+    label: 'Version created',
+    tone: 'positive',
+    title: '',
+    action: 'Open',
+    duration: 5000,
+  },
+  {
+    id: 'versions-created',
+    label: 'Versions created in bulk',
+    tone: 'positive',
+    title: '',
+    action: 'Show',
+    duration: 5000,
+  },
+  {
+    id: 'definition-created',
+    label: 'Definition created',
+    tone: 'positive',
+    title: '',
+    action: 'View',
+    duration: 5000,
+  },
   {id: 'version-deleted', label: 'Version deleted', tone: 'positive', title: '', duration: 5000},
-  {id: 'definition-deleted', label: 'Definition deleted, versions left behind', tone: 'caution', title: '', action: 'Show versions', duration: 10000},
+  {
+    id: 'definition-deleted',
+    label: 'Definition deleted, versions left behind',
+    tone: 'caution',
+    title: '',
+    action: 'Show versions',
+    duration: 10000,
+  },
   {id: 'published', label: 'Published', tone: 'positive', title: '', duration: 5000},
-  {id: 'some-failed', label: 'Some failed', tone: 'caution', title: '', action: 'Show failures', duration: NO_TIMER},
-  {id: 'failed', label: 'Failed', tone: 'critical', title: '', action: 'Try again', duration: NO_TIMER},
+  {
+    id: 'some-failed',
+    label: 'Some failed',
+    tone: 'caution',
+    title: '',
+    action: 'Show failures',
+    duration: NO_TIMER,
+  },
+  {
+    id: 'failed',
+    label: 'Failed',
+    tone: 'critical',
+    title: '',
+    action: 'Try again',
+    duration: NO_TIMER,
+  },
   {id: 'in-progress', label: 'In progress', tone: 'neutral', title: '', duration: NO_TIMER},
 ]
 
@@ -70,23 +119,51 @@ export const TOAST_EVENTS: ToastEvent[] = [
 export function toastCopy(id: ToastEventId, v: ToastValues): {title: string; description?: string} {
   switch (id) {
     case 'version-created':
-      return {title: `${v.variant} version created`, description: `${v.document} now has its own ${v.variant} version.`}
+      return {
+        title: `${v.variant} version created`,
+        description: `${v.document} now has its own ${v.variant} version.`,
+      }
     case 'versions-created':
       return {title: `${v.count} ${v.variant} ${plural(v.count, 'version', 'versions')} created`}
     case 'definition-created':
-      return {title: `${v.variant} definition created`, description: `${v.variant} is ready to use on documents.`}
+      return {
+        title: `${v.variant} definition created`,
+        description: `${v.variant} is ready to use on documents.`,
+      }
     case 'version-deleted':
-      return {title: v.count > 1 ? `${v.count} ${v.variant} versions deleted` : `${v.variant} version deleted`}
+      return {
+        title:
+          v.count > 1 ? `${v.count} ${v.variant} versions deleted` : `${v.variant} version deleted`,
+      }
     case 'definition-deleted':
-      return {title: `${v.variant} definition deleted`, description: `${v.orphans} ${plural(v.orphans, 'version no longer matches a definition.', 'versions no longer match a definition.')}`}
+      return {
+        title: `${v.variant} definition deleted`,
+        description: `${v.orphans} ${plural(v.orphans, 'version no longer matches a definition.', 'versions no longer match a definition.')}`,
+      }
     case 'published':
-      return {title: v.count > 1 ? `${v.count} ${v.variant} versions published` : `${v.variant} version published`}
+      return {
+        title:
+          v.count > 1
+            ? `${v.count} ${v.variant} versions published`
+            : `${v.variant} version published`,
+      }
     case 'some-failed':
-      return {title: `${v.count - v.failed} of ${v.count} ${v.variant} versions ${PAST[v.verb]}`, description: v.verb === 'create' ? `${v.failed} failed and ${plural(v.failed, 'is', 'are')} still missing.` : `${v.failed} failed and ${plural(v.failed, 'was', 'were')} not ${PAST[v.verb]}.`}
+      return {
+        title: `${v.count - v.failed} of ${v.count} ${v.variant} versions ${PAST[v.verb]}`,
+        description:
+          v.verb === 'create'
+            ? `${v.failed} failed and ${plural(v.failed, 'is', 'are')} still missing.`
+            : `${v.failed} failed and ${plural(v.failed, 'was', 'were')} not ${PAST[v.verb]}.`,
+      }
     case 'failed':
-      return {title: `Couldn't ${v.verb} the ${v.variant} version`, description: v.detail ?? 'The request timed out. Nothing was changed.'}
+      return {
+        title: `Couldn't ${v.verb} the ${v.variant} version`,
+        description: v.detail ?? 'The request timed out. Nothing was changed.',
+      }
     case 'in-progress':
-      return {title: `${GERUND[v.verb]} ${v.count} ${v.variant} ${plural(v.count, 'version', 'versions')}...`}
+      return {
+        title: `${GERUND[v.verb]} ${v.count} ${v.variant} ${plural(v.count, 'version', 'versions')}...`,
+      }
   }
 }
 

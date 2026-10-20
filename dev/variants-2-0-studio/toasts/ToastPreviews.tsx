@@ -17,7 +17,10 @@ const TONE_DOT: Record<ToastEvent['tone'], string> = {
 }
 
 /** The drawn examples: one version deleted or published, twelve created. */
-const EXAMPLE: Partial<Record<ToastEvent['id'], Partial<ToastValues>>> = {'version-deleted': {count: 1}, published: {count: 1}}
+const EXAMPLE: Partial<Record<ToastEvent['id'], Partial<ToastValues>>> = {
+  'version-deleted': {count: 1},
+  'published': {count: 1},
+}
 
 const durationText = (ms: number) => (Number.isFinite(ms) ? `${ms / 1000} s` : 'until dismissed')
 
@@ -30,16 +33,32 @@ export function ToastPreviews() {
           Result toasts
         </Text>
         <Text muted size={0}>
-          The stock Studio toast, one at a time. Pick Button or Link in Look to change how the action shows. Click a row to show its toast.
+          The stock Studio toast, one at a time. Pick Button or Link in Look to change how the
+          action shows. Click a row to show its toast.
         </Text>
       </Stack>
       <Stack gap={2}>
         {TOAST_EVENTS.map((event) => {
           const copy = toastCopy(event.id, {...PREVIEW_VALUES, ...EXAMPLE[event.id]})
           return (
-            <Card border key={event.id} padding={3} radius={3} style={{background: 'var(--card-bg-color)'}}>
+            <Card
+              border
+              key={event.id}
+              padding={3}
+              radius={3}
+              style={{background: 'var(--card-bg-color)'}}
+            >
               <Flex align="center" gap={3}>
-                <span aria-hidden="true" style={{background: TONE_DOT[event.tone], borderRadius: 9999, flexShrink: 0, height: 8, width: 8}} />
+                <span
+                  aria-hidden="true"
+                  style={{
+                    background: TONE_DOT[event.tone],
+                    borderRadius: 9999,
+                    flexShrink: 0,
+                    height: 8,
+                    width: 8,
+                  }}
+                />
                 <Box flex={1}>
                   <Stack gap={1}>
                     <Text size={1} weight="medium">
@@ -50,7 +69,8 @@ export function ToastPreviews() {
                       {copy.description ? ` · ${copy.description}` : ''}
                     </Text>
                     <Text muted size={0}>
-                      {event.tone} · {event.action ? `action: ${event.action}` : 'no action'} · {durationText(event.duration)}
+                      {event.tone} · {event.action ? `action: ${event.action}` : 'no action'} ·{' '}
+                      {durationText(event.duration)}
                       {PREVIEW_ONLY.has(event.id) ? ' · preview only: no flow in this studio' : ''}
                     </Text>
                   </Stack>
