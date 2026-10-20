@@ -368,6 +368,44 @@ describe('FormBuilder', () => {
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
   })
 
+  it('suspends the form, not the pane, for a custom schema input', async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const input = deferredComponent<InputProps>()
+
+    const customInputSchemaTypes = [
+      defineType({
+        type: 'document',
+        name: 'test',
+        title: 'Test',
+        fields: [
+          {
+            type: 'array',
+            name: 'models',
+            of: [{type: 'string'}],
+            components: {input: input.Lazy},
+          },
+        ],
+      }),
+    ]
+
+    await renderFormBuilder({
+      documentValue: {_id: 'drafts.test', _type: 'test', models: ['model-a']},
+      config: {schema: {types: customInputSchemaTypes}},
+      pane: true,
+    })
+
+    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.getByTestId('pane')).toBeInTheDocument()
+    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+
+    await act(async () => {
+      input.resolve(PassThroughInput)
+    })
+
+    expect(await screen.findByTestId('field-models', {}, {timeout: 10_000})).toBeInTheDocument()
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+  })
+
   it('suspends the form, not the pane, while a lazy field component loads', async () => {
     mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
     const field = deferredComponent<FieldProps>()
