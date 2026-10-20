@@ -1,6 +1,11 @@
 import {expect} from '@playwright/test'
 
 import {
+  closeDocumentGroupInventory,
+  getDocumentGroupInventory,
+  openDocumentGroupInventory,
+} from '../../helpers/documentGroupInventory'
+import {
   expectCreatedOrEditedStatus,
   expectPublishedStatus,
   expectUnpublishedStatus,
@@ -31,8 +36,7 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   await publishButton.click()
   await expectPublishedStatus(documentStatus)
 
-  const inventoryButton = page.getByTestId('action-document-group-inventory')
-  const inventory = page.getByTestId('document-group-inventory')
+  const inventory = getDocumentGroupInventory(page)
 
   const publishedVariant = inventory
     .locator('[data-variant-set="Published"]')
@@ -43,12 +47,12 @@ test(`should be able to unpublish a published document`, async ({page, createDra
     .getByRole('button', {name: 'All users (Default)', exact: true})
 
   // Open the inventory and switch to the published variant.
-  await inventoryButton.click()
+  await openDocumentGroupInventory(page)
   await expect(publishedVariant).toBeVisible()
   await publishedVariant.click()
 
-  // Close the inventory so the unpublish action is interactable.
-  await inventoryButton.click()
+  // Close the inventory, so the navigation below starts from a pane without an open inspector.
+  await closeDocumentGroupInventory(page)
 
   await expect(unpublishButton).toBeVisible()
   await unpublishButton.click()
@@ -66,7 +70,7 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   await expectUnpublishedStatus(documentStatus)
 
   // Once unpublished, the published variant no longer exists, so it's removed from the inventory.
-  await inventoryButton.click()
+  await openDocumentGroupInventory(page)
   await expect(publishedVariant).toBeHidden()
 
   // Switch to the draft variant and confirm the document is unpublished.

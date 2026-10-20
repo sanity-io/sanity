@@ -1,7 +1,5 @@
-import CloseIcon from '@sanity/icons/Close'
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {PortalProvider} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -113,10 +111,6 @@ export interface DocumentGroupInventoryManageProps extends DocumentGroupInventor
    */
   referringDocuments$: Observable<ReferringDocuments>
   /**
-   * Request the parent to close the document group inventory.
-   */
-  requestClose?: () => void
-  /**
    * Pane-coupled presentational components injected by the consumer.
    */
   components: DocumentGroupInventoryComponents
@@ -151,7 +145,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const portalElementName = props.mode === 'readOnly' ? undefined : props.portalElementName
   const perspectiveList = props.mode === 'readOnly' ? undefined : props.perspectiveList
   const referringDocuments$ = props.mode === 'readOnly' ? undefined : props.referringDocuments$
-  const requestClose = props.mode === 'readOnly' ? undefined : props.requestClose
   const components = props.mode === 'readOnly' ? undefined : props.components
 
   const {beta} = useWorkspace()
@@ -166,7 +159,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const {state$: variants} = useVariantsStore()
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
-  const [menuPortalElement, setMenuPortalElement] = useState<HTMLDivElement | null>(null)
   const {feedbackDialogOpened} = useFeedbackTelemetry()
   const setVariant = useSetVariant()
   const {createVariantDocument} = useVariantDocumentOperations()
@@ -413,13 +405,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                     >
                       <Icon icon={FeedbackIcon} size={1} />
                     </TextButton>
-                    <TextButton
-                      onClick={requestClose}
-                      title={t('document-group-inventory.action.cancel')}
-                      aria-label={t('document-group-inventory.action.cancel')}
-                    >
-                      <Icon icon={CloseIcon} size={1} />
-                    </TextButton>
                   </Flex>
                 )}
                 <DocumentGroupFilter
@@ -436,7 +421,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                   selectedId={selectedId}
                   documentType={documentType}
                   readOnly={readOnly}
-                  menuPortalElement={menuPortalElement}
                   perspectiveList={perspectiveList}
                   onSelect={onSelect}
                 />
@@ -444,12 +428,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
             </Body>
             {!readOnly && (
               <Footer>
-                <Button
-                  text={t('document-group-inventory.action.cancel')}
-                  size="large"
-                  mode="bleed"
-                  onClick={requestClose}
-                />
                 {canCreateVariant && (
                   <Button
                     text={t('document-group.create-variant')}
@@ -473,7 +451,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           </>
         )}
       </Container>
-      <div ref={setMenuPortalElement} />
       {isDeletionActive &&
         typeof portalElementName !== 'undefined' &&
         typeof components !== 'undefined' && (
@@ -506,19 +483,9 @@ const Select: ComponentType<{
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   readOnly: boolean
-  menuPortalElement: HTMLElement | null
   /** Absent in read-only mode, where the version context menu is not rendered. */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
-}> = ({
-  machine,
-  inventoryRef,
-  selectedId,
-  documentType,
-  onSelect,
-  readOnly,
-  menuPortalElement,
-  perspectiveList,
-}) => {
+}> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
 
   const hasFilterString = useSelector(
@@ -578,7 +545,6 @@ const Select: ComponentType<{
                   documentType={documentType}
                   onSelect={onSelect}
                   isSelected={selectedId === variant.id}
-                  menuPortalElement={menuPortalElement}
                   perspectiveList={perspectiveList}
                 />
               ),
@@ -618,22 +584,12 @@ const ManagedVariantRow: ComponentType<{
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   isSelected: boolean
-  menuPortalElement: HTMLElement | null
   /**
    * Always supplied by manage mode, where this row is rendered. Optional only
    * so the caller can pick the row by mode rather than by prop presence.
    */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
-}> = ({
-  variant,
-  machine,
-  inventoryRef,
-  documentType,
-  onSelect,
-  isSelected,
-  menuPortalElement,
-  perspectiveList,
-}) => {
+}> = ({variant, machine, inventoryRef, documentType, onSelect, isSelected, perspectiveList}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
   // Derived from `_system` rather than the id, because `_system` is authoritative: it
@@ -710,29 +666,26 @@ const ManagedVariantRow: ComponentType<{
           />
         }
       />
-      <PortalProvider element={menuPortalElement}>
-        <VersionContextMenuPopover
-          contextMenu={contextMenu}
-          popoverRef={popoverRef}
-          referenceElement={referenceElement}
-          documentGroupId={documentGroupId}
-          documentType={documentType}
-          bundleId={bundleId}
-          releases={pendingReleases}
-          releasesLoading={releasesLoading}
-          versionId={versionId}
-          onDiscard={openDiscardDialog}
-          onCreateRelease={openCreateReleaseDialog}
-          onCopyToDrafts={handleCopyToDrafts}
-          onCreateVersion={handleAddVersion}
-          disabled={isLocked}
-          release={release}
-          isScheduledDraft={isScheduledDraft}
-          scheduledDraftMenuActions={scheduledDraftMenuActions}
-          portal={Boolean(menuPortalElement)}
-          isDiscardable={false}
-        />
-      </PortalProvider>
+      <VersionContextMenuPopover
+        contextMenu={contextMenu}
+        popoverRef={popoverRef}
+        referenceElement={referenceElement}
+        documentGroupId={documentGroupId}
+        documentType={documentType}
+        bundleId={bundleId}
+        releases={pendingReleases}
+        releasesLoading={releasesLoading}
+        versionId={versionId}
+        onDiscard={openDiscardDialog}
+        onCreateRelease={openCreateReleaseDialog}
+        onCopyToDrafts={handleCopyToDrafts}
+        onCreateVersion={handleAddVersion}
+        disabled={isLocked}
+        release={release}
+        isScheduledDraft={isScheduledDraft}
+        scheduledDraftMenuActions={scheduledDraftMenuActions}
+        isDiscardable={false}
+      />
       <VersionContextMenuDialogs
         dialogState={dialogState}
         onClose={closeDialog}

@@ -13,6 +13,7 @@ import {useSingletonBadge} from './documentBadges/SingletonBadge'
 import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'
+import {documentGroupInspector} from './panes/document/inspectors/documentGroup'
 import {incomingReferencesInspector} from './panes/document/inspectors/incomingReferences'
 import {validationInspector} from './panes/document/inspectors/validation'
 import {router} from './router'
@@ -119,10 +120,14 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         // we need to check whether the document badges already exist in the Studio config
         return Array.from(new Set([...prevBadges, ...documentBadges, ...singletonBadge]))
       },
-      inspectors: (prevInspectors) => {
+      inspectors: (prevInspectors, context) => {
+        const structureInspectors = context.beta?.documentGroupInventory?.enabled
+          ? [...inspectors, documentGroupInspector]
+          : inspectors
+
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the inspectors already exist in the Studio config
-        return Array.from(new Set([...prevInspectors, ...inspectors]))
+        return Array.from(new Set([...prevInspectors, ...structureInspectors]))
       },
     },
 

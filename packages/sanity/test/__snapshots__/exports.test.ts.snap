@@ -90,7 +90,6 @@ exports[`exports snapshot 1`] = `
     "DiffTooltip": "function",
     "DivergencesProvider": "function",
     "DocumentGroupInventory": "function",
-    "DocumentGroupInventoryAction": "function",
     "DocumentPreviewPresence": "function",
     "DocumentStatus": "function",
     "DocumentStatusIndicator": "function",
