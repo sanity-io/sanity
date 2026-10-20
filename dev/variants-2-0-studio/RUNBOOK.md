@@ -37,11 +37,11 @@ The first visit after a start can reload by itself once while the dev server pre
 sometimes a failed module fetch in the console). Open `http://localhost:3350/structure/book` once, wait for the list, and refresh.
 After that every step on the demo path loads in under 5 seconds. Presentation takes about 4.7 seconds to connect on a warm server (up to 9 seconds on the first visit after a start) and the grid about 9 seconds (three preview frames connect one by one).
 
-| Variable | Effect |
-|---|---|
-| `SANITY_STUDIO_GRID=1` | Adds the `Presentation grid` tool. |
+| Variable                                             | Effect                                                                                                                                             |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SANITY_STUDIO_GRID=1`                               | Adds the `Presentation grid` tool.                                                                                                                 |
 | `SANITY_STUDIO_PREVIEW_ORIGIN=http://localhost:3456` | Presentation uses the Northfold storefront instead of the stand-in preview. The storefront has no visual editing, so it shows `Unable to connect`. |
-| `SANITY_STUDIO_DATASET`, `SANITY_STUDIO_PROJECT_ID` | Another dataset or project. The schema fits `variants-2-0` only. |
+| `SANITY_STUDIO_DATASET`, `SANITY_STUDIO_PROJECT_ID`  | Another dataset or project. The schema fits `variants-2-0` only.                                                                                   |
 
 ## Test data
 
@@ -56,22 +56,41 @@ After that every step on the demo path loads in under 5 seconds. Presentation ta
 
 ## The navbar tools
 
-| Tool | What it is |
-|---|---|
-| Structure | Documents. Holds C1 (version and audience), C2 (pills), C3 (list icon), C4 (version list), C7 (banners), C9 (field marks). |
-| Presentation | The shipped tool with the stand-in preview. Has the audience control and the `On this page` list. |
-| Inventory | C5: one table, four views (Document, Definition, Dimension, Visitor). |
-| Design slots | C5 shown in place, with a list of where every component lives. |
-| Variants | The shipped Variants tool (the flag `beta.variants` is on) plus the C6 additions. |
-| Releases | The shipped Releases tool, unchanged (C8). |
-| Presentation grid | Spike. Several preview frames, each with its own audience, perspective and viewport. |
+| Tool              | What it is                                                                                                                 |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Structure         | Documents. Holds C1 (version and audience), C2 (pills), C3 (list icon), C4 (version list), C7 (banners), C9 (field marks). |
+| Presentation      | The shipped tool with the stand-in preview. Has the audience control and the `On this page` list.                          |
+| Inventory         | C5: one table, four views (Document, Definition, Dimension, Visitor).                                                      |
+| Design slots      | C5 shown in place, with a list of where every component lives.                                                             |
+| Variants          | The shipped Variants tool (the flag `beta.variants` is on) plus the C6 additions.                                          |
+| Releases          | The shipped Releases tool, unchanged (C8).                                                                                 |
+| Presentation grid | Spike. Several preview frames, each with its own audience, perspective and viewport.                                       |
 
 ## Design options window
 
-Click `Design options` (bottom left). `Show` sets every component. Each component row has its own A, B or C.
-Click a component to see its options as cards with a diagram. `Stock` shows the shipped Studio.
-A preset is a saved combination. Shared presets are in `options/presets.json`. Yours are kept in the browser.
-`Copy link` puts the state in the URL (`?design=`). `Pop out` moves the window to its own screen.
+Click `Design options` (bottom left). The window has four zones, top to bottom:
+
+- **Title bar**: icon buttons for Pop out, Dock, Minimise and Close (tooltips, no text). Drag the bar to move the window.
+- **Preset line**: the preset menu (it says when the config is modified), previous and next (`[` and `]`), `Save as…` and `Update`.
+- **Settings**: three groups. **World** (Stage, Dimensions: a dropdown, GA only), **Look** (Shape Round | Box; Row layout Left | Actions right | Centred;
+  Pill when the row is open Summary | Version and count; Toast action Button | Link), **Options for all** (Stock, A, B, C, Final: one click sets every component).
+  Under 900px wide the groups collapse to one line of values and a `Settings` button that opens them in a popover.
+- **Body**: the component list (Studio chrome, Inventory, Document, Releases, Feedback) and, for the chosen component, its options as cards with a diagram,
+  a status and `Figma` and `Storybook` link buttons. Frame previews are behind `Show frame previews`. `Feedback > Result toasts` previews each toast.
+- **Footer**: `Reset all`, then `Options remote`, `Journeys remote`, `Copy link` and `Hide until refresh` (icon-only under 1100px; the Storybook base shows at the top right of the body).
+
+A preset is a saved combination. Shared presets are in `options/presets.json`. Yours are kept in the browser. The Look group is global like the theme: a preset keeps it.
+`Copy link` puts the state in the URL (`?design=`, for example `show.a,stage.ga,shape.box,rowlayout.centered,pill.summary,toast.link`).
+Storybook links carry `globals=theme:…;shape:…;rowLayout:left|actionsRight|centered;pillWhenOpen:summary|versionCount;toastAction:button|link`.
+Screenshots of the window: `node journeys/shoot-window.mts <tag>` (900 and 1400px, light and dark; 720px for the Settings popover).
+
+## Result toasts
+
+The stock Studio toast (`useToast().push`, 380px, `TOAST_WIDTH` in `toasts/ResultToast.tsx`), one at a time (one id, so a result replaces the one on screen).
+Nine events (`toasts/events.ts`): version created, versions created in bulk, definition created, version deleted, definition deleted with versions left,
+published, some failed, failed, in progress. 5 s success, 10 s caution, no timer for failures. The action is a filled button on the close icon's edge or a text link
+(Look > Toast action). Wired to the bulk dialog (create, publish, delete) and the banner `Create variant`. Definition created and deleted are preview-only: those flows are in the
+stock Variants tool. Check: `node journeys/verify-toasts.mts`.
 
 ## Journeys
 
@@ -104,7 +123,7 @@ BroadcastChannel (same origin only). Both can be open at the same time.
   There is no separate Journeys button any more; the done marks keep their storage key (`variants-2-0-studio:journey-checks`).
 - **Moving the Design options button.** Drag the grip (⋮) on its left to put it anywhere; the place is remembered, and a double-click on the grip sends it back to the bottom left.
 - **Design options remote** (`/static/options-remote.html`): `Options remote` at the bottom of the Design options window, or the button in the Journeys remote.
-  Show (Stock, A, B, C, Final), Stage, Dimensions (GA), presets and one button per option slot of every component.
+  Show (Stock, A, B, C, Final), Shape, Row layout, Pill when the row is open, Toast action, Stage, Dimensions (GA), presets and one button per option slot of every component.
 - **Which studio tab it moves.** A remote opened from the studio's own button is bound to the tab you clicked in (`?tab=`). Without that, it uses the
   tab you last clicked or typed in. The header has a `Studio tab` picker and a `Find it` button that shows a banner in the tab it drives. Other
   tabs ignore the commands. The status line shows that tab's live preset, stage and path; if the tab does not reach the step's route the remote says so.
@@ -135,15 +154,15 @@ Screenshots and `run.json` go to `journeys-captures/` (not committed). The scrip
 
 ## PROPOSED changes in `packages/sanity` (marked `PROPOSED` in the code)
 
-| File | What | Why |
-|---|---|---|
-| `structure/components/paneItem/DocumentListItemOverride.tsx` | Hook for a list row's status area | C3 icon on every row |
-| `core/perspective/navbar/PerspectiveMenuExtension.tsx` (+ ReleasesList, ReleasesNav) | Extra rows in the version menu | C1 A |
-| `structure/panes/document/documentPanel/DocumentPaneExtension.tsx` (+ DocumentPanel, DocumentPanelHeader) | Slots for banners and pills; pills also in the inventory header | C2, C7, context line |
-| `core/variants/tool/detail/VariantDetailExtension.tsx` (+ VariantDocumentsTable, VariantDocumentPreview, types) | Grey rows, bulk bar, one row per version | C6 |
-| `core/variants/plugin/components/ShippedPerspectiveBar.tsx` (+ VariantsStudioNavbar, StudioNavbar) | Hide the shipped bar | C1 option C |
-| `core/variants/components/dialog/VariantEditNotice.tsx` (+ VariantDialog, EditVariantDialog) | Notice in the Edit dialog | "N documents are affected" |
-| `presentation/preview/PreviewHeaderExtension.tsx` (+ PreviewHeader) | Slot in the preview header | Audience control in Presentation |
+| File                                                                                                            | What                                                            | Why                              |
+| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------- |
+| `structure/components/paneItem/DocumentListItemOverride.tsx`                                                    | Hook for a list row's status area                               | C3 icon on every row             |
+| `core/perspective/navbar/PerspectiveMenuExtension.tsx` (+ ReleasesList, ReleasesNav)                            | Extra rows in the version menu                                  | C1 A                             |
+| `structure/panes/document/documentPanel/DocumentPaneExtension.tsx` (+ DocumentPanel, DocumentPanelHeader)       | Slots for banners and pills; pills also in the inventory header | C2, C7, context line             |
+| `core/variants/tool/detail/VariantDetailExtension.tsx` (+ VariantDocumentsTable, VariantDocumentPreview, types) | Grey rows, bulk bar, one row per version                        | C6                               |
+| `core/variants/plugin/components/ShippedPerspectiveBar.tsx` (+ VariantsStudioNavbar, StudioNavbar)              | Hide the shipped bar                                            | C1 option C                      |
+| `core/variants/components/dialog/VariantEditNotice.tsx` (+ VariantDialog, EditVariantDialog)                    | Notice in the Edit dialog                                       | "N documents are affected"       |
+| `presentation/preview/PreviewHeaderExtension.tsx` (+ PreviewHeader)                                             | Slot in the preview header                                      | Audience control in Presentation |
 
 ## Known gaps and not verified
 
@@ -155,5 +174,5 @@ Screenshots and `run.json` go to `journeys-captures/` (not committed). The scrip
 - Presentation shows the shipped header (not the C2 pills) when a variant is chosen. At a 325 px pane it truncates.
 - Field marks: the shipped mark covers fields only. Array items, removed items and portable text blocks carry nothing. C9 B and C are candidates.
 - Saved views in the version list are a candidate (`Save current view` is disabled).
-- Lint hook: commits were made with `--no-verify` because two ported Storybook files have lint errors.
+- Lint hook: two commits (`a28baf1b0f`, `9a51630470`) were made with `--no-verify` because the hook now flags code that was already there: `options/FloatingOptions.tsx` (react/hooks, hooks passed as provider values), `c7/Banners.tsx` (react/todo, try/finally) and the ported `c4/inventory/model.tsx` (set-state-in-effect). Everything else goes through the hook.
 - Not run on a phone, in light theme, or on the deployed preview.

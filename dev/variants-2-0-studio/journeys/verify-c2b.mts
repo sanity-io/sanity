@@ -38,13 +38,32 @@ for (const theme of ['light', 'dark'] as const) {
     const label = (await p.getByTestId('other-versions').innerText()).replace(/\n/g, ' ')
     log(/^Other versions · \d+$/.test(label), 'B: one "Other versions · N" button', label)
     await p.getByTestId('other-versions').click()
-    await p.getByRole('menuitem', {name: 'Open the version inventory…'}).waitFor({timeout: 5000})
+    await p.getByRole('menuitem', {name: /Open the version inventory…/}).waitFor({timeout: 5000})
     const items = await p.getByRole('menuitem').allInnerTexts()
-    log(items.length >= 2 && items.at(-1) === 'Open the version inventory…', 'B: the popover lists variants and releases and ends with "Open the version inventory…"', items.join(' | '))
+    log(items.length >= 2 && items.at(-1)?.startsWith('Open the version inventory…'), 'B: the popover lists variants and releases and ends with "Open the version inventory…"', items.join(' | '))
     await p.waitForTimeout(500)
+    if (theme === 'light') {
+      const rows = await p.evaluate(() => {
+        const menu = document.querySelector('[data-testid=open-inventory]')!.closest('[role=menu]')!
+        const list = [...menu.querySelectorAll('[data-testid^=variant-], [data-testid^=release-]')]
+        const l = [...menu.querySelectorAll('label, [data-ui=Label]')].find((e) => /variants/i.test(e.textContent ?? ''))
+        const c = l ? getComputedStyle(l) : null
+        return {
+          variants: menu.querySelectorAll('[data-testid^=variant-]').length,
+          releases: menu.querySelectorAll('[data-testid^=release-]').length,
+          heights: list.map((e) => Math.round(e.getBoundingClientRect().height)),
+          heading: c ? {fs: c.fontSize, fw: c.fontWeight, ls: c.letterSpacing, tt: c.textTransform} : null,
+          last: menu.querySelector('[data-testid=open-inventory]')?.textContent ?? '',
+        }
+      })
+      log(rows.variants <= 4 && rows.releases <= 2 && rows.variants > 0, 'B: the popover lists at most four variants and two releases', `${rows.variants} variants, ${rows.releases} releases`)
+      log(rows.heights.every((h) => h === 50), 'B: rows with a second line are 50px', rows.heights.join(','))
+      log(!!rows.heading && rows.heading.tt === 'uppercase' && rows.heading.fw === '600', 'B: section headings are uppercase, 600', JSON.stringify(rows.heading))
+      log(/ · \d+ more$/.test(rows.last), 'B: the last row says how many more are in the inventory', rows.last)
+    }
     await shot('B2-popover')
     // Pick a variant: it becomes a chip.
-    const variantItem = p.getByRole('menuitem').filter({hasText: /·/}).first()
+    const variantItem = p.locator('[role=menu] [data-testid^=variant-]').first()
     await variantItem.click()
     await p.waitForTimeout(1200)
     const chip = p.getByTestId('variant-chip')
@@ -55,7 +74,7 @@ for (const theme of ['light', 'dark'] as const) {
     log((await p.getByTestId('variant-chip').count()) === 0, 'B: the x on the chip returns to the base document')
     // The inventory.
     await p.getByTestId('other-versions').click()
-    await p.getByRole('menuitem', {name: 'Open the version inventory…'}).click()
+    await p.getByRole('menuitem', {name: /Open the version inventory…/}).click()
     await p.waitForTimeout(1500)
     log((await p.locator('[data-testid=inventory-expand]').count()) > 0 || (await p.locator('[data-testid=inventory-toolbar]').count()) > 0, 'B: "Open the version inventory…" opens the inventory panel')
   } catch (e) {

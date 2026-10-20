@@ -1,22 +1,25 @@
-import {CloseIcon} from '@sanity/icons/Close'
-import {Box, Flex, Text} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {CloseIcon} from '@sanity/icons/Close'
+import {LaunchIcon} from '@sanity/icons/Launch'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {type ReactElement, useState} from 'react'
 import {ReleaseAvatarIcon, usePerspective, useSetPerspective} from 'sanity'
 
-import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
 import {usePerspectiveState} from '../c1/state'
-import {DocumentVersionsLens, WideOverlay} from '../c5/ActionableLenses'
-import {useCorpus} from '../c5/useCorpus'
+import {useVariantDefinitions} from '../c1/world'
 import {InventoryExpandContext} from '../c4/inventory/expandContext'
 import {LiveInventory} from '../c4/inventory/LiveInventory'
-import {useVariantDefinitions} from '../c1/world'
+import {DocumentVersionsLens, WideOverlay} from '../c5/ActionableLenses'
+import {useCorpus} from '../c5/useCorpus'
 import {useVersionList} from '../data/useVersionList'
 import {type AudienceVersion} from '../data/versions'
+import {MenuHeading, ShippedRow} from './menuRows'
 
 /**
  * C2 V1 (document pills), live data: one row of version pills for the open document. It is added under the pane
@@ -37,19 +40,42 @@ const stateWord = (v: AudienceVersion) =>
 function glyph(v: AudienceVersion) {
   if (v.state === 'published') return <ReleaseAvatarIcon release="published" />
   if (v.state === 'draft') return <ReleaseAvatarIcon release="drafts" />
-  return <ReleaseAvatarIcon releaseType={v.state === 'scheduled' ? 'scheduled' : v.state === 'asap' ? 'asap' : 'undecided'} />
+  return (
+    <ReleaseAvatarIcon
+      releaseType={
+        v.state === 'scheduled' ? 'scheduled' : v.state === 'asap' ? 'asap' : 'undecided'
+      }
+    />
+  )
 }
 
-function DropdownPill(props: {text: string; items: {key: string; text: string; icon: ReactElement; onClick?: () => void}[]; testId: string}) {
+function DropdownPill(props: {
+  text: string
+  items: {key: string; text: string; icon: ReactElement; onClick?: () => void}[]
+  testId: string
+}) {
   return (
     <MenuButton
-      button={<Chip data-testid={props.testId} iconRight={ChevronDownIcon} mode="ghost" text={props.text} />}
+      button={
+        <Chip
+          data-testid={props.testId}
+          iconRight={ChevronDownIcon}
+          mode="ghost"
+          text={props.text}
+        />
+      }
       id={props.testId}
       menu={
         <Menu padding={1}>
           {props.items.length ? (
             props.items.map((item) => (
-              <MenuItem disabled={!item.onClick} icon={item.icon} key={item.key} onClick={item.onClick} text={item.text} />
+              <MenuItem
+                disabled={!item.onClick}
+                icon={item.icon}
+                key={item.key}
+                onClick={item.onClick}
+                text={item.text}
+              />
             ))
           ) : (
             <MenuItem disabled text="None" />
@@ -61,6 +87,22 @@ function DropdownPill(props: {text: string; items: {key: string; text: string; i
   )
 }
 
+/** How many of each the popover lists before it sends the viewer to the inventory (as the Storybook exploration does). */
+const SHORT_VARIANTS = 4
+const SHORT_RELEASES = 2
+
+/** What a version is, the way the menu says it: "published", "draft", or the release name. */
+const hasWord = (v: AudienceVersion) =>
+  v.state === 'published' ? 'published' : v.state === 'draft' ? 'draft' : (v.release ?? v.state)
+
+/** The second line of a release row: "scheduled 31 Oct", "ASAP" or "undecided". */
+const releaseSubtitle = (v: AudienceVersion) =>
+  v.state === 'scheduled'
+    ? `scheduled${v.when ? ` ${v.when}` : ''}`
+    : v.state === 'asap'
+      ? 'ASAP'
+      : v.state
+
 const TRACK_RADIUS = 'var(--v2-pill-radius, 999px)'
 
 /**
@@ -69,8 +111,17 @@ const TRACK_RADIUS = 'var(--v2-pill-radius, 999px)'
  * 13px medium text; the other is 13px regular and muted. A green dot for Published, an amber ring for Draft. With a release shown,
  * neither half is chosen.
  */
-function PublishedToggle(props: {chosen: 'published' | 'drafts' | null; hasPublished: boolean; onPick: (version: 'published' | 'drafts') => void}) {
-  const segment = (version: 'published' | 'drafts', label: string, dot: ReactElement, disabled = false) => {
+function PublishedToggle(props: {
+  chosen: 'published' | 'drafts' | null
+  hasPublished: boolean
+  onPick: (version: 'published' | 'drafts') => void
+}) {
+  const segment = (
+    version: 'published' | 'drafts',
+    label: string,
+    dot: ReactElement,
+    disabled = false,
+  ) => {
     const chosen = props.chosen === version
     return (
       <button
@@ -82,9 +133,10 @@ function PublishedToggle(props: {chosen: 'published' | 'drafts' | null; hasPubli
         style={{
           alignItems: 'center',
           background: chosen ? 'var(--card-bg-color, #fff)' : 'transparent',
-          border: 0,
           borderRadius: `calc(${TRACK_RADIUS} - 2px)`,
+          border: chosen ? '1px solid var(--card-border-color)' : '1px solid transparent',
           boxShadow: chosen ? '0 1px 3px rgba(0, 0, 0, 0.18)' : 'none',
+          boxSizing: 'border-box',
           color: chosen ? 'var(--card-fg-color)' : 'var(--card-muted-fg-color)',
           cursor: disabled ? 'default' : 'pointer',
           display: 'inline-flex',
@@ -123,7 +175,9 @@ function PublishedToggle(props: {chosen: 'published' | 'drafts' | null; hasPubli
       role="radiogroup"
       style={{
         alignItems: 'center',
-        background: 'var(--card-badge-default-bg-color)',
+        // The default badge background is almost white in light (#eeeef1), so a white thumb is lost on it: the track is that token one step deeper.
+        background:
+          'color-mix(in srgb, var(--card-badge-default-bg-color) 85%, var(--card-fg-color))',
         border: '1px solid var(--card-border-color)',
         borderRadius: TRACK_RADIUS,
         boxSizing: 'border-box',
@@ -163,7 +217,19 @@ function VariantChip(props: {text: string; onRemove: () => void}) {
         aria-label="Back to the base document"
         data-testid="variant-chip-remove"
         onClick={props.onRemove}
-        style={{alignItems: 'center', background: 'none', border: 0, borderRadius: 9999, color: 'inherit', cursor: 'pointer', display: 'inline-flex', height: 19, justifyContent: 'center', padding: 0, width: 19}}
+        style={{
+          alignItems: 'center',
+          background: 'none',
+          border: 0,
+          borderRadius: 9999,
+          color: 'inherit',
+          cursor: 'pointer',
+          display: 'inline-flex',
+          height: 19,
+          justifyContent: 'center',
+          padding: 0,
+          width: 19,
+        }}
         type="button"
       >
         <CloseIcon style={{fontSize: 16}} />
@@ -172,7 +238,15 @@ function VariantChip(props: {text: string; onRemove: () => void}) {
   )
 }
 
-export function DocumentPillsV1({documentId, option, manage}: {documentId: string; option: 'a' | 'b'; manage?: ReactElement}) {
+export function DocumentPillsV1({
+  documentId,
+  option,
+  manage,
+}: {
+  documentId: string
+  option: 'a' | 'b'
+  manage?: ReactElement
+}) {
   const versions = useVersionList(documentId)
   const {selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
@@ -193,7 +267,26 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
   const variants = versions.filter((v) => v.audience !== null)
   // Option B: everything but the base's published and draft, and the variants grouped by audience with what each has.
   const others = versions.filter((v) => v.audience !== null || !!v.release)
-  const byAudience = [...variants.reduce((map, v) => map.set(v.audience as string, [...(map.get(v.audience as string) ?? []), v]), new Map<string, AudienceVersion[]>())]
+  // The popover is short: the first four variants and the first two releases; the last row opens the inventory.
+  const byAudience = [
+    ...variants.reduce(
+      (map, v) => map.set(v.audience as string, [...(map.get(v.audience as string) ?? []), v]),
+      new Map<string, AudienceVersion[]>(),
+    ),
+  ]
+  const baseReleases = [
+    ...releases
+      .filter((v) => v.audience === null)
+      .reduce(
+        (map, v) => map.set(v.bundleId ?? v.release ?? '', v),
+        new Map<string, AudienceVersion>(),
+      )
+      .values(),
+  ]
+  const shownVariants = byAudience.slice(0, SHORT_VARIANTS)
+  const shownReleases = baseReleases.slice(0, SHORT_RELEASES)
+  const hidden =
+    byAudience.length - shownVariants.length + baseReleases.length - shownReleases.length
   const narrowed = Object.keys(address.chosen).length > 0
   const current = selectedPerspectiveName ?? 'drafts'
 
@@ -220,7 +313,13 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
 
   return (
     // It replaces the stock pills in the pane header (PROPOSED slot), so it takes the header's own row, no border.
-    <Flex align="center" data-testid={`doc-pills-${option}`} gap={2} style={{flex: '1 1 0%', minWidth: 0}} wrap="wrap">
+    <Flex
+      align="center"
+      data-testid={`doc-pills-${option}`}
+      gap={2}
+      style={{flex: '1 1 0%', minWidth: 0}}
+      wrap="wrap"
+    >
       {option === 'a' ? (
         <>
           {/* Follows PR #39: Variants first, a divider, then Published, Draft and Releases. */}
@@ -229,12 +328,33 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
             testId="pills-variants"
             text={`Variants · ${variants.length}`}
           />
-          <div aria-hidden data-testid="pills-divider" style={{alignSelf: 'stretch', width: 1, margin: '4px', background: 'var(--card-border-color)'}} />
+          <div
+            aria-hidden
+            data-testid="pills-divider"
+            style={{
+              alignSelf: 'stretch',
+              width: 1,
+              margin: '4px',
+              background: 'var(--card-border-color)',
+            }}
+          />
           {published && (
-            <Chip icon={<ReleaseAvatarIcon release="published" />} mode="ghost" onClick={() => setPerspective('published')} selected={current === 'published'} text="Published" />
+            <Chip
+              icon={<ReleaseAvatarIcon release="published" />}
+              mode="ghost"
+              onClick={() => setPerspective('published')}
+              selected={current === 'published'}
+              text="Published"
+            />
           )}
           {/* The stock row always offers Draft (it can be created), so this does too. */}
-          <Chip icon={<ReleaseAvatarIcon release="drafts" />} mode="ghost" onClick={() => setPerspective('drafts')} selected={current === 'drafts'} text="Draft" />
+          <Chip
+            icon={<ReleaseAvatarIcon release="drafts" />}
+            mode="ghost"
+            onClick={() => setPerspective('drafts')}
+            selected={current === 'drafts'}
+            text="Draft"
+          />
           <DropdownPill
             items={releaseItems}
             testId="pills-releases"
@@ -249,28 +369,62 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
             hasPublished={!!published}
             onPick={(version) => setPerspective(version)}
           />
-          {narrowed ? <VariantChip onRemove={() => address.setChosen({})} text={address.valueTitles.join(', ')} /> : null}
+          {narrowed ? (
+            <VariantChip
+              onRemove={() => address.setChosen({})}
+              text={address.valueTitles.join(', ')}
+            />
+          ) : null}
           <span ref={setOtherAnchor} style={{display: 'inline-flex'}}>
             <MenuButton
-              button={<Chip data-testid="other-versions" iconRight={ChevronDownIcon} mode="ghost" style={{height: 25}} text={`Other versions · ${others.length}`} />}
+              button={
+                <Chip
+                  data-testid="other-versions"
+                  iconRight={ChevronDownIcon}
+                  mode="ghost"
+                  style={{height: 25}}
+                  text={`Other versions · ${others.length}`}
+                />
+              }
               id="other-versions"
               menu={
                 <Menu padding={1}>
-                  {byAudience.length ? <MenuItem disabled text="Variants" /> : null}
-                  {byAudience.map(([audience, list]) => (
-                    <MenuItem
-                      icon={glyph(list[0])}
-                      key={audience}
-                      onClick={selectVariant(list[0])}
-                      text={`${audience} · ${list.map(stateWord).join(', ')}`}
-                    />
-                  ))}
-                  {releaseItems.length ? <MenuItem disabled text="Releases" /> : null}
-                  {releaseItems.map((item) => (
-                    <MenuItem icon={item.icon} key={item.key} onClick={item.onClick} text={item.text} />
-                  ))}
-                  {!byAudience.length && !releaseItems.length ? <MenuItem disabled text="No other versions" /> : null}
-                  <MenuItem data-testid="open-inventory" onClick={() => setInventoryOpen(true)} text="Open the version inventory…" />
+                  <Stack gap={1}>
+                    {shownVariants.length ? <MenuHeading>Variants</MenuHeading> : null}
+                    {shownVariants.map(([audience, list]) => (
+                      <ShippedRow
+                        icon={<RhombusIcon />}
+                        key={audience}
+                        onClick={selectVariant(list[0])}
+                        subtitle={list.map(hasWord).join(', ')}
+                        testId={`variant-${audience}`}
+                        title={audience}
+                      />
+                    ))}
+                    {shownReleases.length ? <MenuHeading>Releases</MenuHeading> : null}
+                    {shownReleases.map((v) => (
+                      <ShippedRow
+                        icon={glyph(v)}
+                        key={v.bundleId ?? v.release}
+                        onClick={() => v.bundleId && setPerspective(v.bundleId)}
+                        subtitle={releaseSubtitle(v)}
+                        testId={`release-${v.bundleId ?? v.release}`}
+                        title={v.release ?? ''}
+                      />
+                    ))}
+                    <Card borderTop marginTop={1} paddingTop={1}>
+                      <MenuItem
+                        data-testid="open-inventory"
+                        icon={LaunchIcon}
+                        onClick={() => setInventoryOpen(true)}
+                        text={
+                          hidden > 0
+                            ? `Open the version inventory… · ${hidden} more`
+                            : 'Open the version inventory…'
+                        }
+                      />
+                    </Card>
+                  </Stack>
                 </Menu>
               }
               popover={{placement: 'bottom-start', portal: true}}
@@ -279,8 +433,20 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
           <Popover
             content={
               <Box style={{height: 520, overflow: 'hidden', width: 360}}>
-                <InventoryExpandContext.Provider value={corpus ? () => { setInventoryOpen(false); setExpanded(true) } : null}>
-                  <LiveInventory documentId={documentId} title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId} />
+                <InventoryExpandContext.Provider
+                  value={
+                    corpus
+                      ? () => {
+                          setInventoryOpen(false)
+                          setExpanded(true)
+                        }
+                      : null
+                  }
+                >
+                  <LiveInventory
+                    documentId={documentId}
+                    title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId}
+                  />
                 </InventoryExpandContext.Provider>
               </Box>
             }
@@ -296,7 +462,12 @@ export function DocumentPillsV1({documentId, option, manage}: {documentId: strin
           />
           {expanded && corpus ? (
             <WideOverlay onClose={() => setExpanded(false)} title="Version inventory">
-              <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={documentId} onPin={() => undefined} />
+              <DocumentVersionsLens
+                corpus={corpus}
+                definitions={definitions}
+                docId={documentId}
+                onPin={() => undefined}
+              />
             </WideOverlay>
           ) : null}
         </>
