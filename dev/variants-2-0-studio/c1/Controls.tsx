@@ -100,8 +100,10 @@ export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
   return {
     extraRows: rows,
     labelSuffix: s.valueTitles.length ? (
-      <Text data-testid="pill-values" muted size={1} style={{marginLeft: -4, whiteSpace: 'nowrap'}}>
-        , {s.valueTitles.join(', ')}
+      // One string in one style: "Drafts, Loyal customers" (the comma follows the word), or "Drafts, 4 variants" when it would be too wide.
+      // The stock label sits in a box with 8px of padding on each side; the negative margin closes the gap before the comma.
+      <Text data-testid="pill-values" size={1} style={{marginLeft: -8, paddingRight: 8, whiteSpace: 'nowrap'}} weight="medium">
+        , {s.valueTitles.join(', ').length <= FIT_CHARS ? s.valueTitles.join(', ') : `${s.valueTitles.length} variants`}
       </Text>
     ) : null,
     // Only once something is set does the label do anything.
