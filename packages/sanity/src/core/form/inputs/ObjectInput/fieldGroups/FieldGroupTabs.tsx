@@ -149,7 +149,8 @@ export const FieldGroupTabs = memo(function FieldGroupTabs({
   const validation = useChildValidation(props.path, true)
 
   return (
-    <Root data-testid="field-group-root">
+    // Initial focus on open lands on the selected group's first input, not on its tab.
+    <Root data-skip-initial-focus="" data-testid="field-group-root">
       <GroupTabs {...props} disabled={disabled} onClick={handleClick} validation={validation} />
       <GroupSelect {...props} disabled={disabled} onSelect={handleClick} validation={validation} />
     </Root>

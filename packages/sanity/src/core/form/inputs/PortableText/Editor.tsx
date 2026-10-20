@@ -184,7 +184,12 @@ export function Editor(props: EditorProps): ReactNode {
       {isActive && !hideToolbar && (
         <BoundaryElementProvider element={isFullscreen ? rootElement : boundaryElement}>
           <TooltipDelayGroupProvider>
-            <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
+            {/* Initial focus on open lands in the editable, not on the toolbar above it. */}
+            <ToolbarCard
+              data-skip-initial-focus=""
+              data-testid="pt-editor__toolbar-card"
+              shadow={1}
+            >
               <Toolbar
                 collapsible={collapsibleToolbar}
                 hotkeys={hotkeys}
