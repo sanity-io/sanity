@@ -2,7 +2,8 @@ import {ArrowDownIcon} from '@sanity/icons/ArrowDown'
 import {ArrowUpIcon} from '@sanity/icons/ArrowUp'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Button, Card, Flex, Text} from '@sanity/ui'
+import {Button as SortHeaderButton, Card, Flex, Text} from '@sanity/ui' // the header sort button needs padding 1, which the Studio Button does not offer
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {type ReactNode, useMemo, useState} from 'react'
 
 // Ported from the Storybook Variants 2.0 exploration (table/InventoryTable.tsx, ae8ed6f9e7): a table from Sanity UI
@@ -74,8 +75,7 @@ export function DataTable<T extends {id: string}>(props: {
               column.header ? (
                 column.header
               ) : column.sort ? (
-                <Button
-                  fontSize={1}
+                <SortHeaderButton
                   iconRight={sort?.key === column.key ? (sort.dir === 1 ? ArrowUpIcon : ArrowDownIcon) : undefined}
                   mode="bleed"
                   onClick={() =>

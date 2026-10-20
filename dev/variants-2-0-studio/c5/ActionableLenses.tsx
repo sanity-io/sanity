@@ -1,4 +1,6 @@
-import {Badge, Box, Button, Card, Flex, Layer, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Badge, Box, Button as SortHeaderButton, Card, Flex, Layer, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
+import {CONTROL_HEIGHT} from '../shared/sizes'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type ReactNode, useMemo, useState} from 'react'
 import {useSetVariant} from 'sanity'
@@ -79,7 +81,7 @@ export function Notice({bulk}: {bulk: ReturnType<typeof useBulk>}) {
         <Box flex={1}>
           <Text size={1}>{bulk.notice}</Text>
         </Box>
-        <Button fontSize={0} mode="bleed" onClick={() => bulk.setNotice(null)} padding={2} text="Dismiss" />
+        <Button mode="bleed" onClick={() => bulk.setNotice(null)} text="Dismiss" />
       </Flex>
     </Card>
   )
@@ -241,9 +243,8 @@ export function DocumentVersionsLens(props: {
   const all = visible.length > 0 && selectedRows.length === visible.length
 
   const sortHeader = (by: 'address' | 'state' | 'updated', label: string) => (
-    <Button
+    <SortHeaderButton
       data-testid={`sort-${by}`}
-      fontSize={1}
       mode="bleed"
       onClick={() => setSort((cur) => ({by, order: cur.by === by && cur.order === 'asc' ? 'desc' : 'asc'}))}
       padding={1}
@@ -278,7 +279,7 @@ export function DocumentVersionsLens(props: {
         return (
           <span onClick={(event) => event.stopPropagation()}>
             <MenuButton
-              button={<Button aria-label={`Actions for ${r.address}`} fontSize={1} mode="bleed" padding={2} style={{height: 25, width: 25}} text="⋯" />}
+              button={<Button aria-label={`Actions for ${r.address}`} mode="bleed" style={{height: CONTROL_HEIGHT, width: CONTROL_HEIGHT}} text="⋯" />}
               id={`row-menu-${r.id}`}
               menu={
                 <Menu>
@@ -330,8 +331,8 @@ export function DocumentVersionsLens(props: {
             <Box flex={1} />
           </>
         )}
-        {onBack ? <Button fontSize={1} mode="bleed" onClick={onBack} padding={2} style={{height: 25}} text="Back to this document" /> : null}
-        {onExpand ? <Button fontSize={1} mode="ghost" onClick={onExpand} padding={2} style={{height: 25}} text="Expand" /> : null}
+        {onBack ? <Button mode="bleed" onClick={onBack} text="Back to this document" /> : null}
+        {onExpand ? <Button mode="ghost" onClick={onExpand} text="Expand" /> : null}
       </Flex>
       <Notice bulk={bulk} />
       <Flex align="center" data-testid="lens-command-lane" gap={1} wrap="wrap">
@@ -344,11 +345,11 @@ export function DocumentVersionsLens(props: {
           }}
           padding={2}
           placeholder="Find an address"
-          style={{height: 25, width: mini ? 130 : 180}}
+          style={{height: CONTROL_HEIGHT, width: mini ? 130 : 180}}
           value={filter.text}
         />
         <MenuButton
-          button={<Button data-testid="filter-button" fontSize={1} mode="ghost" padding={2} style={{height: 25}} text={filter.state.length + filter.address.length + filter.release.length ? `Filter · ${filter.state.length + filter.address.length + filter.release.length}` : 'Filter'} />}
+          button={<Button data-testid="filter-button" mode="ghost" text={filter.state.length + filter.address.length + filter.release.length ? `Filter · ${filter.state.length + filter.address.length + filter.release.length}` : 'Filter'} />}
           id="lens-filter-menu"
           menu={
             <Menu data-testid="filter-menu" padding={0}>
@@ -370,10 +371,10 @@ export function DocumentVersionsLens(props: {
           }
           popover={{portal: true, placement: 'bottom-start'}}
         />
-        {activeFilters ? <Button data-testid="filter-clear" fontSize={1} mode="bleed" onClick={() => setFilter(NO_LENS_FILTER)} padding={2} style={{height: 25}} text="Clear filters" /> : null}
-        <Button data-testid="group-toggle" fontSize={1} mode="ghost" onClick={() => setGroupBy(groupBy === 'date' ? 'none' : 'date')} padding={2} selected={groupBy === 'date'} style={{height: 25}} text={mini ? 'Group' : 'Group by publish date'} />
+        {activeFilters ? <Button data-testid="filter-clear" mode="bleed" onClick={() => setFilter(NO_LENS_FILTER)} text="Clear filters" /> : null}
+        <Button data-testid="group-toggle" mode="ghost" onClick={() => setGroupBy(groupBy === 'date' ? 'none' : 'date')} selected={groupBy === 'date'} text={mini ? 'Group' : 'Group by publish date'} />
         <MenuButton
-          button={<Button data-testid="view-picker" fontSize={1} mode="ghost" padding={2} style={{height: 25}} text={mini ? 'View' : `View: ${currentView?.label ?? 'Custom'}`} />}
+          button={<Button data-testid="view-picker" mode="ghost" text={mini ? 'View' : `View: ${currentView?.label ?? 'Custom'}`} />}
           id="lens-view-menu"
           menu={
             <Menu data-testid="view-menu" padding={0}>
@@ -474,7 +475,7 @@ export function DefinitionDocumentsLens(props: {corpus: Corpus; definitions: Sys
       width: 100,
       render: (r) =>
         r.kind === 'absent' ? (
-          <Button fontSize={1} mode="bleed" onClick={() => bulk.open('create', [targetOf(r)])} padding={2} text="Create" />
+          <Button mode="bleed" onClick={() => bulk.open('create', [targetOf(r)])} text="Create" />
         ) : null,
     },
   ]
@@ -545,7 +546,7 @@ export function WideOverlay(props: {title: string; onClose: () => void; children
                 {props.title}
               </Text>
             </Box>
-            <Button fontSize={1} mode="bleed" onClick={props.onClose} padding={2} style={{height: 25}} text="Close" />
+            <Button mode="bleed" onClick={props.onClose} text="Close" />
           </Flex>
           <Box padding={4} style={{borderTop: '1px solid var(--card-border-color)', overflow: 'auto'}}>
             {props.children}

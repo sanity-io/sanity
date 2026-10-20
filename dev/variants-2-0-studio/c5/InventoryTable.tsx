@@ -1,4 +1,5 @@
-import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {type ReactNode, useState} from 'react'
 
 import {useDimensions, useVariantDefinitions} from '../c1/world'
@@ -27,13 +28,10 @@ function Segment<T extends string>(props: {value: T; options: {id: T; label: str
       {props.options.map((option) => (
         <Button
           aria-checked={props.value === option.id}
-          fontSize={1}
           key={option.id}
           mode={props.value === option.id ? 'default' : 'ghost'}
           onClick={() => props.onChange(option.id)}
-          padding={2}
           role="radio"
-          style={{height: 25}}
           text={option.label}
           tone={props.value === option.id ? 'primary' : 'default'}
         />

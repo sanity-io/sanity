@@ -1,4 +1,5 @@
-import {Button, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {useMemo, useRef} from 'react'
 import {type DocumentInVariantGroup, type UseVariantDetailExtension} from 'sanity'
 
@@ -87,7 +88,7 @@ export const useVariantDetailOverride: UseVariantDetailExtension = ({variantId})
       const row = datum as DocumentInVariantGroup
       if (!row.absent) return null
       const target = targetOf(row.rowKey ?? row.groupId)
-      return target ? <Button fontSize={1} mode="bleed" onClick={() => bulk.open('create', [target])} padding={2} style={{height: 25}} text="Create" /> : null
+      return target ? <Button mode="bleed" onClick={() => bulk.open('create', [target])} text="Create" /> : null
     },
     banner: (
       <>

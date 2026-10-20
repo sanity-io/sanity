@@ -1,4 +1,5 @@
-import {Box, Button, Card, Flex, Select, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Select, Stack, Text} from '@sanity/ui'
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {type ReactNode, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -137,7 +138,6 @@ export function VisitorLens({corpus, definitions, dimensions}: {corpus: Corpus; 
         ))}
         <Box flex={1} />
         <Button
-          fontSize={1}
           mode="ghost"
           onClick={() => {
             // The studio shows what this visitor is served: Published, with the matching definition as the variant,
@@ -148,8 +148,6 @@ export function VisitorLens({corpus, definitions, dimensions}: {corpus: Corpus; 
             const variant = meets[0] ? `&variant=${shortId(meets[0]._id)}` : ''
             router.navigateUrl({path: `/structure/book?perspective=published${variant}`})
           }}
-          padding={2}
-          style={{height: 25}}
           text="Open in the studio as this visitor"
         />
       </Flex>
@@ -163,7 +161,7 @@ export function VisitorLens({corpus, definitions, dimensions}: {corpus: Corpus; 
             title: '',
             width: 120,
             render: (r) => (
-              <Button fontSize={1} mode="bleed" onClick={() => openVersion(r.id, r.type, r.servedId, 'published')} padding={2} style={{height: 25}} text="Open" />
+              <Button mode="bleed" onClick={() => openVersion(r.id, r.type, r.servedId, 'published')} text="Open" />
             ),
           },
         ]}

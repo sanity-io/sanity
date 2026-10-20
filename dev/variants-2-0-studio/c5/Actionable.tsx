@@ -1,4 +1,5 @@
-import {Box, Button, Card, Dialog, Flex, Select, Stack, Text} from '@sanity/ui'
+import {Box, Card, Dialog, Flex, Select, Stack, Text} from '@sanity/ui'
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useClient} from 'sanity'
 
@@ -101,12 +102,9 @@ export function BulkActionButtons(props: {targets: Target[]; variantLabel?: stri
         return (
           <Button
             disabled={usable.length === 0}
-            fontSize={1}
             key={op}
             mode="ghost"
             onClick={() => onOpen(op, usable, targets.length - usable.length)}
-            padding={2}
-            style={{height: 25}}
             text={op === 'create' ? `Create ${variantLabel} version` : LABEL[op]}
           />
         )
@@ -127,7 +125,7 @@ export function BulkBar(props: {bulk: BulkState; targets: Target[]; variantLabel
         </Text>
         <BulkActionButtons onOpen={bulk.open} targets={targets} variantLabel={variantLabel} />
         <Box flex={1} />
-        <Button fontSize={1} mode="bleed" onClick={bulk.clear} padding={2} style={{height: 25}} text="Clear" />
+        <Button mode="bleed" onClick={bulk.clear} text="Clear" />
       </Flex>
     </Card>
   )

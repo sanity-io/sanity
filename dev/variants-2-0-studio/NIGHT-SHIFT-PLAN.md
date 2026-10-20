@@ -1,0 +1,2 @@
+
+- Token audit (Sonnet agent, code read only, nothing run): colours almost clean (1 real literal, a 0.45 black scrim at c5/ActionableLenses.tsx:531); neither scope imports ui5 directly (both use @sanity/ui 4.2.1 plus Studio ui-components wrappers); 28 spacing/radius literal lines in the studio, 20 in Storybook; bare v4 Button in 12 studio files with about 14 height:25 overrides; hand-rolled WideOverlay, a raw checkbox, hand-drawn state dots. Report: TOKEN-AUDIT.md.
