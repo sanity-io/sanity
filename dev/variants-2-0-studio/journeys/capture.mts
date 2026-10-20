@@ -313,7 +313,7 @@ async function walk(page: Page, journey: (typeof journeys)[number]) {
     case 'j10': {
       // Throwaway document with a Members draft, so the delete can really run.
       await x.createOrReplace({_id: DOCS[0], _type: 'book', title: 'C5 test 1'})
-      await x.action({actionType: 'sanity.action.document.variant.create', publishedId: DOCS[0], variantId: MEMBERS, bundleId: 'drafts', document: {_type: 'book', title: 'C5 test 1'}} as never)
+      await x.action({actionType: 'sanity.action.document.variant.create', publishedId: DOCS[0], variantId: MEMBERS, bundleId: 'drafts', document: {_type: 'book', title: 'C5 test 1'}} as never).catch(() => undefined) // j05 may already have created it
       created.push({doc: DOCS[0], variant: MEMBERS, bundle: 'drafts'})
       const URL = `/structure/book;${DOCS[0]}%2Cinspect%3Dvariants-inventory?perspective=drafts&variant=${MEMBERS}&preset=open-beta-a`
       await page.goto(`${base}${URL}`)

@@ -87,6 +87,7 @@ node journeys/capture.mts            # all journeys; or name some: node journeys
 node journeys/verify.mts             # bulk actions, C4 lens, visitor lens
 node journeys/verify-d1.mts          # delete one version, delete all versions
 node journeys/verify-open.mts        # open a version as a document
+node journeys/verify-crud.mts       # create and delete, by clicks: a variant definition and a variant document (throwaway data)
 node journeys/verify-pills.mts       # C2 A pill order (Variants, divider, Published, Draft, Releases)
 node journeys/dryrun.mts             # the demo path above, timed, with console errors and a contrast check in light and dark
 ```
