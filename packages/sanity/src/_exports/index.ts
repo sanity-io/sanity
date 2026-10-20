@@ -1015,6 +1015,12 @@ export {
   type UsePerspectiveMenuExtension,
 } from '../core/perspective/navbar/PerspectiveMenuExtension'
 export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
+// PROPOSED: replaces the Variants tool's "Add filter" control (Variants 2.0 test studio).
+export {
+  VariantFilterAddControlProvider,
+  type RenderVariantFilterAddControl,
+  type VariantFilterAddControlProps,
+} from '../core/variants/tool/overview/VariantFilterAddControl'
 export {
   type PerspectiveContextValue,
   type PerspectiveStack,

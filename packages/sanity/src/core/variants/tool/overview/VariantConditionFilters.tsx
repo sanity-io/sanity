@@ -14,6 +14,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantConditionIcon} from '../detail/variantConditionIcons'
 import {type ConditionFacet} from '../util'
+import {useVariantFilterAddControl} from './VariantFilterAddControl'
 
 // Condition keys are authored strings ("brand", "market", …); present them title-cased.
 function facetLabel(key: string): string {
@@ -315,6 +316,7 @@ export function VariantConditionFilters({
   onChange: (next: Record<string, string[]>) => void
 }): React.JSX.Element | null {
   const {t} = useTranslation(variantsLocaleNamespace)
+  const renderAddControl = useVariantFilterAddControl()
 
   const activeChips: ActiveChip[] = Object.entries(value).flatMap(([key, values]) =>
     values.map((val) => ({
@@ -353,7 +355,16 @@ export function VariantConditionFilters({
         </Box>
 
         <Box style={{flex: 'none'}}>
-          <AddFilterMenu facets={facets} onToggleValue={toggleValue} value={value} />
+          {renderAddControl ? (
+            renderAddControl({
+              facets,
+              onClear: () => onChange({}),
+              onToggleValue: toggleValue,
+              value,
+            })
+          ) : (
+            <AddFilterMenu facets={facets} onToggleValue={toggleValue} value={value} />
+          )}
         </Box>
 
         {hasActive && (

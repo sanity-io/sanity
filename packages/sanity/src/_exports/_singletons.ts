@@ -1,5 +1,6 @@
 export {ActiveWorkspaceMatcherContext} from '../_singletons/context/ActiveWorkspaceMatcherContext'
 export {DocumentListArrangeContext} from '../_singletons/context/DocumentListArrangeContext'
+export {VariantFilterAddControlContext} from '../_singletons/context/VariantFilterAddControlContext'
 export {AddonDatasetContext} from '../_singletons/context/AddonDatasetContext'
 export {AppIdCacheContext} from '../_singletons/context/AppIdCacheContext'
 export {ArrayItemRootElementContext} from '../_singletons/context/ArrayItemRootElementContext'
