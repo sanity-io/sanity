@@ -56,6 +56,7 @@ function render() {
   group('Shape', ...[['round', 'Round'], ['box', 'Box']].map(([id, label]) => btn(label, o.shape === id, () => send({type: 'shape', shape: id}), {shape: id})))
   group('Row layout', ...[['left', 'Left'], ['actionsRight', 'Actions right'], ['centered', 'Centred']].map(([id, label]) => btn(label, o.rowLayout === id, () => send({type: 'rowLayout', rowLayout: id}), {rowlayout: id})))
   group('Pill when the row is open', ...[['summary', 'Summary'], ['versionCount', 'Version and count']].map(([id, label]) => btn(label, o.pillWhenOpen === id, () => send({type: 'pillWhenOpen', pillWhenOpen: id}), {pill: id})))
+  group('Toast action', ...[['button', 'Button'], ['link', 'Link']].map(([id, label]) => btn(label, o.toastAction === id, () => send({type: 'toastAction', toastAction: id}), {toast: id})))
   group('Stage', ...o.stages.map((s) => btn(s.label, status.stage === s.id, () => send({type: 'stage', stage: s.id}), {stage: s.id})))
   if (status.stage === 'ga') group('Dimensions', ...o.dimensions.map((d) => btn(d.label, o.dimensionLimit === d.value, () => send({type: 'dimensions', limit: d.value}), {dim: String(d.value)})))
   group('Preset', ...o.presets.map((p) => btn(p.name, status.preset === p.id, () => send({type: 'preset', preset: p.id}), {preset: p.id})))

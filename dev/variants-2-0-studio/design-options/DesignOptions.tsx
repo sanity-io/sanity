@@ -33,6 +33,7 @@ import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {getConfig, NOT_DRAWN_LABEL} from './config'
 import {OptionDiagram, SpecDiagram} from './diagram'
+import {ToastPreviews} from '../toasts/ToastPreviews'
 import {PresetBar} from './PresetBar'
 import {
   designLink,
@@ -47,6 +48,7 @@ import {
   setOverride,
   setPillWhenOpen,
   setRowLayout,
+  setToastAction,
   setShape,
   setStage,
   type State,
@@ -90,6 +92,7 @@ const SURFACE = {
   selected:
     'linear-gradient(180deg, color-mix(in srgb, var(--card-badge-suggest-dot-color) 9%, var(--card-bg-color)) 0%, var(--card-bg-color) 70%)',
 }
+const TOASTS_ID = '__toasts'
 const WINDOW_KEY = () => `${getConfig().storageKey}:window`
 const DEFAULT_SIZE = {w: 720, h: 560}
 const MIN_SIZE = {w: 560, h: 400}
@@ -327,7 +330,7 @@ function LinkButton(props: {
 
 /** A Storybook link that cannot end on Storybook's error page: a missing story opens the nearest valid one, with a note. */
 function StoryLink({id}: {id: string}) {
-  const {shape, rowLayout, pillWhenOpen} = useOptionState()
+  const {shape, rowLayout, pillWhenOpen, toastAction} = useOptionState()
   const [ids, setIds] = useState<string[] | null>(null)
   useEffect(() => {
     let alive = true
@@ -340,7 +343,7 @@ function StoryLink({id}: {id: string}) {
   const target = missing ? (nearestStory(id, ids) ?? id) : id
   return (
     <LinkButton
-      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape};rowLayout:${rowLayout};pillWhenOpen:${pillWhenOpen}`}
+      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape};rowLayout:${rowLayout};pillWhenOpen:${pillWhenOpen};toastAction:${toastAction}`}
       label={missing ? 'Storybook (moved)' : 'Storybook'}
       moved={missing}
       testId="story-link"
@@ -808,6 +811,18 @@ function SettingsGroups({
                     value={state.pillWhenOpen}
                   />,
                 )}
+                {control(
+                  'Toast action',
+                  <Segmented
+                    ariaLabel="Toast action"
+                    onChange={(value) => setToastAction(value)}
+                    options={[
+                      {value: 'button', label: 'Button', title: 'A filled button at the bottom right of the toast'},
+                      {value: 'link', label: 'Link', title: 'An underlined text link under the message'},
+                    ]}
+                    value={state.toastAction}
+                  />,
+                )}
               </>,
             )
           : null}
@@ -844,6 +859,7 @@ function ConfigBody({
   const [copied, setCopied] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [framesOn, setFramesOn] = useState(false)
+  const toastsSelected = selectedId === TOASTS_ID
   const stock = state.global === 'stock'
   const selected =
     getConfig().components.find((c) => c.id === selectedId) ?? getConfig().components[0]
@@ -949,8 +965,31 @@ function ConfigBody({
                 })}
               </Stack>
             ))}
+            <Stack gap={1}>
+              <Box paddingX={2}>
+                <Label>Feedback</Label>
+              </Box>
+              <Card
+                aria-current={toastsSelected}
+                as="button"
+                data-testid="rail-toasts"
+                onClick={() => setSelectedId(TOASTS_ID)}
+                padding={2}
+                radius={2}
+                selected={toastsSelected}
+                style={{cursor: 'pointer', textAlign: 'left', width: '100%'}}
+                tone="default"
+              >
+                <Text size={1}>Result toasts</Text>
+              </Card>
+            </Stack>
           </Stack>
         </Box>
+        {toastsSelected ? (
+          <Box flex={1} padding={3} style={{overflow: 'auto'}}>
+            <ToastPreviews />
+          </Box>
+        ) : (
         <Box flex={1} padding={3} style={{overflow: 'auto'}}>
           <Stack gap={3}>
             <Stack gap={1}>
@@ -1015,6 +1054,7 @@ function ConfigBody({
             {framesOn ? <FramesGallery component={selected} /> : null}
           </Stack>
         </Box>
+        )}
       </Flex>
 
       <Box padding={2} style={SURFACE.footer}>

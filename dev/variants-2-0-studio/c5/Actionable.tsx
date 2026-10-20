@@ -2,9 +2,12 @@ import {Box, Card, Checkbox, Dialog, Flex, Select, Stack, Text} from '@sanity/ui
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useClient} from 'sanity'
+import {useRouter} from 'sanity/router'
 
 import {buildActions, type Op, type RowResult, runOp, type Target} from './operations'
 import type {SystemVariant} from '../c1/model'
+import type {ToastValues} from '../toasts/events'
+import {useResultToast} from '../toasts/ResultToast'
 import type {Corpus} from './useCorpus'
 
 // The bulk bar and the confirm dialog of the C5 table (Figma E5, node 3:5679): select rows, the bar offers what applies,
@@ -178,6 +181,8 @@ export function ConfirmDialog(props: {
 }) {
   const {bulk, corpus, address, onDone, definitions = []} = props
   const client = useWriteClient()
+  const showToast = useResultToast()
+  const router = useRouter()
   const [where, setWhere] = useState('drafts')
   const [results, setResults] = useState<RowResult[] | null>(null)
   const [running, setRunning] = useState(false)
@@ -200,10 +205,24 @@ export function ConfirmDialog(props: {
 
   const run = async () => {
     setRunning(true)
+    // Result toasts (Figma C7 / T1): the one toast on screen is the progress, then it is replaced by the result.
+    const verb: ToastValues['verb'] | null = op === 'create' || op === 'publish' ? op : op === 'delete' || op === 'deleteAll' ? 'delete' : null
+    const variant = address.replace(/^the /, '').replace(/^./, (c) => c.toUpperCase())
+    const toastValues: Partial<ToastValues> = {variant, document: targets[0]?.title ?? 'The document', count: n, ...(verb ? {verb} : {})}
+    if (verb && n > 1) showToast('in-progress', toastValues)
     const out = await runOp(client, op, targets, effectiveWhere)
     setResults(out)
     setRunning(false)
     const ok = out.filter((r) => r.ok).length
+    if (verb) {
+      const failed = out.length - ok
+      const detail = out.find((r) => !r.ok)?.message
+      if (failed === 0) {
+        const id = verb === 'create' ? (n === 1 ? 'version-created' : 'versions-created') : verb === 'publish' ? 'published' : 'version-deleted'
+        showToast(id, toastValues, id === 'version-created' ? () => router.navigateIntent('edit', {id: targets[0].docId}) : undefined)
+      } else if (ok === 0) showToast('failed', {...toastValues, detail}, () => void run())
+      else showToast('some-failed', {...toastValues, failed})
+    }
     bulk.setNotice(
       ok === out.length
         ? `${ok} ${ok === 1 ? 'version' : 'versions'} ${{publish: 'published', unpublish: 'unpublished', delete: 'deleted', deleteAll: 'deleted (all versions)', create: 'created', addToRelease: 'added'}[op]}${needsWhere ? ` in ${whereLabel}` : ''}.`

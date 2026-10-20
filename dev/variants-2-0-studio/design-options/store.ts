@@ -15,6 +15,7 @@ export type Stage = string
 
 export type RowLayout = 'left' | 'actionsRight' | 'centered'
 export type PillWhenOpen = 'summary' | 'versionCount'
+export type ToastAction = 'button' | 'link'
 
 export interface State {
   global: GlobalChoice
@@ -28,6 +29,8 @@ export interface State {
   rowLayout: RowLayout
   /** What the top-right pill shows while the address row is open: the full `summary` or the `count` (version and a count badge, the default). Global like the shape. */
   pillWhenOpen: PillWhenOpen
+  /** How a result toast shows its action: a filled `button` at the bottom right (default) or a `link` under the message. Global like the shape. */
+  toastAction: ToastAction
   /** The preset this config started from (null = none). The config is "modified" when it no longer equals it. */
   preset: string | null
 }
@@ -45,6 +48,7 @@ function defaults(): State {
     shape: 'round',
     rowLayout: 'actionsRight',
     pillWhenOpen: 'versionCount',
+    toastAction: 'button',
     preset: null,
   }
 }
@@ -63,6 +67,7 @@ export function serializeDesign(current: State): string {
   if (current.shape === 'box') parts.push('shape.box')
   if (current.rowLayout !== 'actionsRight') parts.push(`rowlayout.${current.rowLayout}`)
   if (current.pillWhenOpen !== 'versionCount') parts.push('pill.summary')
+  if (current.toastAction !== 'button') parts.push('toast.link')
   for (const [component, option] of Object.entries(current.overrides).sort(([a], [b]) =>
     a.localeCompare(b),
   ))
@@ -84,6 +89,8 @@ export function parseDesign(value: string): State | null {
       if (val === 'box') next.shape = 'box'
     } else if (key === 'rowlayout') {
       if (val === 'left' || val === 'centered') next.rowLayout = val
+    } else if (key === 'toast') {
+      if (val === 'link') next.toastAction = 'link'
     } else if (key === 'pill') {
       if (val === 'summary') next.pillWhenOpen = 'summary'
     } else if (key === 'dim') {
@@ -168,6 +175,7 @@ export function isModified(current: State = state ?? defaults()): boolean {
       shape: 'round',
       rowLayout: 'actionsRight',
       pillWhenOpen: 'versionCount',
+      toastAction: 'button',
     }) !== normalise(preset.design)
   )
 }
@@ -249,6 +257,10 @@ export function setRowLayout(rowLayout: RowLayout) {
   commit({...current(), rowLayout})
 }
 
+export function setToastAction(toastAction: ToastAction) {
+  commit({...current(), toastAction})
+}
+
 export function setPillWhenOpen(pillWhenOpen: PillWhenOpen) {
   commit({...current(), pillWhenOpen})
 }
@@ -319,6 +331,7 @@ export function applyPreset(id: string) {
       shape: current().shape,
       rowLayout: current().rowLayout,
       pillWhenOpen: current().pillWhenOpen,
+      toastAction: current().toastAction,
       preset: preset.id,
     })
 }

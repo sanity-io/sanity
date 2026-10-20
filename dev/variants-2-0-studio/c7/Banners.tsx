@@ -5,6 +5,7 @@ import {useClient, usePerspective} from 'sanity'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
 import {useVersionList} from '../data/useVersionList'
+import {useResultToast} from '../toasts/ResultToast'
 import {type AudienceVersion} from '../data/versions'
 
 /**
@@ -48,6 +49,7 @@ export function DocumentBannerV1({documentId, option}: {documentId: string; docu
   const shown = useShownVariant()
   const {selectedPerspectiveName} = usePerspective()
   const studioClient = useClient({apiVersion: 'X'})
+  const showToast = useResultToast()
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   if (!versions || !shown) return null
@@ -73,8 +75,10 @@ export function DocumentBannerV1({documentId, option}: {documentId: string; docu
       } as never)
       // The version list refreshes on window focus.
       window.dispatchEvent(new Event('focus'))
+      showToast('version-created', {variant: shown.title, document: 'This document'})
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
+      showToast('failed', {variant: shown.title, verb: 'create', detail: e instanceof Error ? e.message : String(e)}, () => void create())
     } finally {
       setCreating(false)
     }
