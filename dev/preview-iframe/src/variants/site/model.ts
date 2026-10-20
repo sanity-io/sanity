@@ -6,6 +6,37 @@ import {stegaClean} from '@sanity/client/stega'
 // FIXTURE: everything in VARIANT_COPY, CAMPAIGNS and the German strings is site copy that lives in this file, not in
 // the dataset (the dataset has no hero, tagline, price or image fields). Covers are generated placeholders.
 
+/** A dereferenced document (author, series, publisher, place): only the fields the site reads. */
+export interface Ref {
+  _id: string
+  _type: string
+  name?: string
+  title?: string
+  about?: string
+  bio?: string
+  blurb?: string
+  born?: number
+  country?: string
+  town?: Ref | null
+  hq?: Ref | null
+  bookCount?: number
+  books?: Book[]
+}
+
+export interface PtChild {
+  _type: string
+  _key?: string
+  text?: string
+  marks?: string[]
+  author?: Ref | null
+}
+export interface PtBlock {
+  _type: string
+  _key?: string
+  style?: string
+  children?: PtChild[]
+}
+
 export interface Book {
   _id: string
   _type: string
@@ -16,6 +47,14 @@ export interface Book {
   promo?: string
   badge?: string
   cta?: string
+  /** Resolved references: `null` when the target does not resolve (a weak reference to an unpublished draft). */
+  author?: Ref | null
+  series?: Ref | null
+  publisher?: Ref | null
+  /** The raw publisher reference id, to tell "no publisher" from "publisher not published yet". */
+  publisherRef?: string | null
+  related?: (Book | null)[] | null
+  notes?: PtBlock[] | null
 }
 
 export interface Parsed {
@@ -42,7 +81,7 @@ export function parse(book: Book): Parsed {
   return {
     book,
     title: stegaClean(book.title ?? 'Untitled'),
-    author: match?.[1],
+    author: stegaClean(book.author?.name ?? match?.[1] ?? '') || undefined,
     year: match?.[2],
     note: match ? undefined : subtitle || undefined,
     hue: hash(book._id) % 360,
@@ -60,18 +99,57 @@ export interface VariantCopy {
 
 // FIXTURE: copy per variant definition id. Composite ids (audience + locale) fall back to the audience entry and the language.
 export const VARIANT_COPY: Record<string, VariantCopy> = {
-  base: {label: 'Everyone', hero: 'Books from the fjords and the islands', promo: 'A small shop for northern writing, ordered by hand.'},
-  'aud-members': {label: 'Members', hero: 'The members’ shelf', promo: 'Members read first: early access to every new list.'},
-  'aud-first-time-visitors': {label: 'First-time visitors', hero: 'A good first book', promo: 'New here? Start with the books our readers keep recommending.'},
-  'aud-lapsed-customers': {label: 'Lapsed customers', hero: 'Welcome back', promo: 'It has been a while. Here is what changed on the shelves.'},
-  'aud-loyal-customers': {label: 'Loyal customers', hero: 'Thank you for reading with us', promo: 'Loyal readers see every new edition first.'},
-  'aud-returning-visitors': {label: 'Returning visitors', hero: 'Pick up where you left off', promo: 'Your next book is probably on this shelf.'},
-  'aud-students': {label: 'Students', hero: 'For the reading list', promo: 'Student editions are marked on the shelf.'},
-  'aud-nordic-region': {label: 'Nordic region', hero: 'From the north, for the north', promo: 'Delivery inside the Nordics is handled by our own van.'},
+  'base': {
+    label: 'Everyone',
+    hero: 'Books from the fjords and the islands',
+    promo: 'A small shop for northern writing, ordered by hand.',
+  },
+  'aud-members': {
+    label: 'Members',
+    hero: 'The members’ shelf',
+    promo: 'Members read first: early access to every new list.',
+  },
+  'aud-first-time-visitors': {
+    label: 'First-time visitors',
+    hero: 'A good first book',
+    promo: 'New here? Start with the books our readers keep recommending.',
+  },
+  'aud-lapsed-customers': {
+    label: 'Lapsed customers',
+    hero: 'Welcome back',
+    promo: 'It has been a while. Here is what changed on the shelves.',
+  },
+  'aud-loyal-customers': {
+    label: 'Loyal customers',
+    hero: 'Thank you for reading with us',
+    promo: 'Loyal readers see every new edition first.',
+  },
+  'aud-returning-visitors': {
+    label: 'Returning visitors',
+    hero: 'Pick up where you left off',
+    promo: 'Your next book is probably on this shelf.',
+  },
+  'aud-students': {
+    label: 'Students',
+    hero: 'For the reading list',
+    promo: 'Student editions are marked on the shelf.',
+  },
+  'aud-nordic-region': {
+    label: 'Nordic region',
+    hero: 'From the north, for the north',
+    promo: 'Delivery inside the Nordics is handled by our own van.',
+  },
 }
 
 const GERMAN = {
-  nav: {home: 'Start', list: 'Katalog', campaign: 'Aktion', about: 'Über uns'},
+  nav: {
+    home: 'Start',
+    list: 'Katalog',
+    authors: 'Autoren',
+    series: 'Reihen',
+    campaign: 'Aktion',
+    about: 'Über uns',
+  },
   allBooks: 'Alle Bücher',
   featured: 'Ausgewählt',
   catalogue: 'Katalog',
@@ -91,9 +169,39 @@ const GERMAN = {
   viewingVersion: (label: string) => `Sie sehen die Version: ${label}`,
   highlights: 'In dieser Ausgabe',
   defaultCta: 'In den Warenkorb',
+  brand: 'Nordische Bibliothek',
+  sale: 'Bibliotheksverkauf',
+  onSale: 'Im Angebot',
+  authors: 'Autorinnen und Autoren',
+  seriesLabel: 'Reihen',
+  by: 'Von',
+  inSeries: 'Reihe',
+  publisherLabel: 'Verlag',
+  publisherPending: 'Verlag noch nicht veröffentlicht',
+  born: 'Geboren',
+  homeTown: 'Heimatort',
+  booksBy: 'Bücher von',
+  booksIn: 'Bücher in dieser Reihe',
+  booksFrom: 'Bücher dieses Verlags',
+  books: 'Bücher',
+  book: 'Buch',
+  noBooks: 'Noch keine Bücher.',
+  readerNotes: 'Notizen der Redaktion',
+  loading: 'Lädt …',
+  notFound: 'Nicht gefunden.',
+  headquarters: 'Sitz',
+  browse: 'Stöbern',
+  saleLine: 'Ausgewählte Bücher, jetzt im Angebot.',
 }
 const ENGLISH: typeof GERMAN = {
-  nav: {home: 'Home', list: 'Catalogue', campaign: 'Campaign', about: 'About'},
+  nav: {
+    home: 'Home',
+    list: 'Catalogue',
+    authors: 'Authors',
+    series: 'Series',
+    campaign: 'Campaign',
+    about: 'About',
+  },
   allBooks: 'All books',
   featured: 'Featured',
   catalogue: 'Catalogue',
@@ -113,11 +221,35 @@ const ENGLISH: typeof GERMAN = {
   viewingVersion: (label: string) => `You are viewing the ${label} version`,
   highlights: 'In this edition',
   defaultCta: 'Add to cart',
+  brand: 'Nordic Library',
+  sale: 'Library sale',
+  onSale: 'On sale',
+  authors: 'Authors',
+  seriesLabel: 'Series',
+  by: 'By',
+  inSeries: 'Series',
+  publisherLabel: 'Publisher',
+  publisherPending: 'Publisher not published yet',
+  born: 'Born',
+  homeTown: 'Home town',
+  booksBy: 'Books by',
+  booksIn: 'Books in this series',
+  booksFrom: 'Books from this publisher',
+  books: 'books',
+  book: 'book',
+  noBooks: 'No books yet.',
+  readerNotes: 'Reader notes',
+  loading: 'Loading…',
+  notFound: 'Not found.',
+  headquarters: 'Based in',
+  browse: 'Browse',
+  saleLine: 'A selection of books, on sale now.',
 }
 export const strings = (lang: Lang) => (lang === 'de' ? GERMAN : ENGLISH)
 
 /** The audience part of a variant id: "aud-loyal-customers__loc-de-de" -> "aud-loyal-customers". */
-const audienceOf = (variant?: string) => variant?.split('__').find((part) => part.startsWith('aud-'))
+const audienceOf = (variant?: string) =>
+  variant?.split('__').find((part) => part.startsWith('aud-'))
 
 export function copyFor(variant: string | undefined, lang: Lang): VariantCopy {
   const audience = audienceOf(variant)
@@ -130,15 +262,37 @@ export const langOf = (variant?: string): Lang => (variant?.includes('loc-de-de'
 
 // FIXTURE: the campaign the page shows follows the release that is previewed, or the variant (campaign dimension).
 const CAMPAIGNS: Record<string, {name: string; line: string; lineDe: string}> = {
-  rBlackFriday: {name: 'Black Friday', line: 'One day, the whole northern list at the shop’s own pace.', lineDe: 'Ein Tag, die ganze nordische Liste in unserem Tempo.'},
-  rHalloween: {name: 'Halloween', line: 'Long nights, short stories.', lineDe: 'Lange Nächte, kurze Geschichten.'},
-  rUndecided: {name: 'Autumn Catalogue Refresh', line: 'The autumn list, reshuffled.', lineDe: 'Die Herbstliste, neu gemischt.'},
+  rBlackFriday: {
+    name: 'Black Friday',
+    line: 'One day, the whole northern list at the shop’s own pace.',
+    lineDe: 'Ein Tag, die ganze nordische Liste in unserem Tempo.',
+  },
+  rHalloween: {
+    name: 'Halloween',
+    line: 'Long nights, short stories.',
+    lineDe: 'Lange Nächte, kurze Geschichten.',
+  },
+  rUndecided: {
+    name: 'Autumn Catalogue Refresh',
+    line: 'The autumn list, reshuffled.',
+    lineDe: 'Die Herbstliste, neu gemischt.',
+  },
 }
-const DEFAULT_CAMPAIGN = {name: 'Autumn Catalogue Refresh', line: 'The autumn list, reshuffled.', lineDe: 'Die Herbstliste, neu gemischt.'}
+const DEFAULT_CAMPAIGN = {
+  name: 'Autumn Catalogue Refresh',
+  line: 'The autumn list, reshuffled.',
+  lineDe: 'Die Herbstliste, neu gemischt.',
+}
 
 export function campaignFor(perspective: unknown, variant: string | undefined, lang: Lang) {
   const stack = Array.isArray(perspective) ? perspective.map(String) : [String(perspective)]
   const release = stack.find((p) => p in CAMPAIGNS)
-  const picked = release ? CAMPAIGNS[release] : variant?.includes('black-friday') ? CAMPAIGNS.rBlackFriday : variant?.includes('halloween') ? CAMPAIGNS.rHalloween : DEFAULT_CAMPAIGN
+  const picked = release
+    ? CAMPAIGNS[release]
+    : variant?.includes('black-friday')
+      ? CAMPAIGNS.rBlackFriday
+      : variant?.includes('halloween')
+        ? CAMPAIGNS.rHalloween
+        : DEFAULT_CAMPAIGN
   return {name: picked.name, line: lang === 'de' ? picked.lineDe : picked.line}
 }

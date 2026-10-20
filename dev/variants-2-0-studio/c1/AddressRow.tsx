@@ -92,7 +92,25 @@ function AddressChip(props: {
  * chip per dimension value, "Add dimension" and "Clear". It pushes the studio down (it is in the flow, not
  * an overlay). The same state drives the pill, the Variants control and the document pane.
  */
-export function AddressRow() {
+/** The shell of the row: a card under the navbar, or (navLayout C) a plain inline group inside the navbar. */
+function RowShell(props: {inline: boolean; children: React.ReactNode}) {
+  if (props.inline)
+    return (
+      <div
+        data-testid="address-row-inline"
+        style={{alignItems: 'center', display: 'flex', minWidth: 0}}
+      >
+        {props.children}
+      </div>
+    )
+  return (
+    <Card borderBottom data-testid="address-row" paddingX={3} paddingY={2}>
+      {props.children}
+    </Card>
+  )
+}
+
+export function AddressRow({inline = false}: {inline?: boolean} = {}) {
   const s = usePerspectiveState()
   const {chosen, dimensions} = s
   const [open, setOpen] = useState(false)
@@ -103,7 +121,9 @@ export function AddressRow() {
   const narrowed = Object.keys(chosen).length > 0
   const allSet = dimensions.every((d) => chosen[d.name])
   // LIVE: open beta has exactly one dimension and no Add dimension button or pending chip.
-  const {stage, rowLayout} = useOptionState()
+  const {stage, rowLayout: rowLayoutOption} = useOptionState()
+  // navLayout C puts the whole perspective in the navbar: left aligned, no width cap, no Showing label and no action group (Add dimension lives in the menu).
+  const rowLayout = inline ? 'left' : rowLayoutOption
   const rowWidth = useOption('rowWidth')
   const maxWidth = rowWidth === 'a' ? undefined : rowWidth === 'c' ? 880 : 1200
   const openBeta = stage === 'open-beta'
@@ -130,7 +150,7 @@ export function AddressRow() {
   }, [pendingEl, addEl, openBeta, s])
 
   // LIVE: the fixture's `world.variantsEnabled` is gone; the host only mounts this row when the design is on.
-  if (!s.rowShown) return null
+  if (!s.rowShown && !inline) return null
 
   const close = () => setOpen(false)
   const remove = (name: string) => {
@@ -139,16 +159,18 @@ export function AddressRow() {
     s.setChosen(next)
   }
   return (
-    <Card borderBottom data-testid="address-row" paddingX={3} paddingY={2}>
+    <RowShell inline={inline}>
       <Flex
         align="center"
         data-layout={rowLayout}
         data-testid="address-row-layout"
         gap={2}
         style={{
-          ...(rowLayout === 'centered' ? {display: 'grid', gridTemplateColumns: '1fr auto 1fr'} : null),
-          marginInline: 'auto',
-          maxWidth,
+          ...(rowLayout === 'centered'
+            ? {display: 'grid', gridTemplateColumns: '1fr auto 1fr'}
+            : null),
+          marginInline: inline ? undefined : 'auto',
+          maxWidth: inline ? undefined : maxWidth,
         }}
         wrap="wrap"
       >
@@ -160,9 +182,11 @@ export function AddressRow() {
           style={{flex: rowLayout === 'actionsRight' ? 1 : undefined}}
           wrap="wrap"
         >
-          <Text muted size={1}>
-            Showing
-          </Text>
+          {inline ? null : (
+            <Text muted size={1}>
+              Showing
+            </Text>
+          )}
           <StateMenu
             trigger={
               <DimensionButton
@@ -237,45 +261,47 @@ export function AddressRow() {
             />
           ) : null}
         </Flex>
-        <Flex
-          align="center"
-          data-testid="address-row-actions"
-          gap={2}
-          justify="flex-end"
-          style={{marginLeft: rowLayout === 'actionsRight' ? 'auto' : undefined}}
-        >
-          {!openBeta && !s.pending ? (
-            <div ref={setAddEl}>
+        {inline ? null : (
+          <Flex
+            align="center"
+            data-testid="address-row-actions"
+            gap={2}
+            justify="flex-end"
+            style={{marginLeft: rowLayout === 'actionsRight' ? 'auto' : undefined}}
+          >
+            {!openBeta && !s.pending ? (
+              <div ref={setAddEl}>
+                <Button
+                  data-testid="row-add"
+                  disabled={allSet}
+                  icon={AddIcon}
+                  mode="bleed"
+                  onClick={() => {
+                    // Add dimension raises the pending chip and its picker; a second click takes both away again.
+                    if (s.pending) {
+                      s.setPending(false)
+                      close()
+                    } else s.setPending(true)
+                  }}
+                  text="Add dimension"
+                  tooltipProps={null}
+                />
+              </div>
+            ) : null}
+            {narrowed ? (
               <Button
-                data-testid="row-add"
-                disabled={allSet}
-                icon={AddIcon}
+                data-testid="row-clear"
                 mode="bleed"
                 onClick={() => {
-                  // Add dimension raises the pending chip and its picker; a second click takes both away again.
-                  if (s.pending) {
-                    s.setPending(false)
-                    close()
-                  } else s.setPending(true)
+                  s.setChosen({})
+                  s.setPending(false)
                 }}
-                text="Add dimension"
+                text="Clear"
                 tooltipProps={null}
               />
-            </div>
-          ) : null}
-          {narrowed ? (
-            <Button
-              data-testid="row-clear"
-              mode="bleed"
-              onClick={() => {
-                s.setChosen({})
-                s.setPending(false)
-              }}
-              text="Clear"
-              tooltipProps={null}
-            />
-          ) : null}
-        </Flex>
+            ) : null}
+          </Flex>
+        )}
       </Flex>
       <Picker
         anchor={anchor ?? addEl}
@@ -298,6 +324,6 @@ export function AddressRow() {
         open={open}
         start={start}
       />
-    </Card>
+    </RowShell>
   )
 }

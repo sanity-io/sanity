@@ -4,10 +4,12 @@ import {
   ShippedPerspectiveBarProvider,
   VariantDetailExtensionProvider,
   VariantEditNoticeProvider,
+  VariantFilterAddControlProvider,
 } from 'sanity'
 import {DocumentListItemOverrideProvider, DocumentPaneExtensionProvider} from 'sanity/structure'
 
 import {useOptionAExtension} from '../c1/Controls'
+import {renderPickerAddFilter} from '../c1/PickerAddFilter'
 import {PerspectiveProvider} from '../c1/state'
 import {useRowOverride} from '../c3/RowOverride'
 import {EditNotice} from '../c6/EditNotice'
@@ -39,6 +41,8 @@ const EXTENSIONS = {
 }
 
 export function LayoutWithFloatingOptions(props: LayoutProps) {
+  // The Variants tool's Add filter uses the perspective bar's picker; Stock keeps the shipped menu.
+  const stock = useOption('c1') === STOCK_OPTION
   return (
     <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
       <PerspectiveProvider>
@@ -47,7 +51,9 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
             <VariantEditNoticeProvider value={EditNotice}>
               <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
                 <DocumentPaneExtensionProvider value={EXTENSIONS.documentPane}>
-                  {props.renderDefault(props)}
+                  <VariantFilterAddControlProvider value={stock ? null : renderPickerAddFilter}>
+                    {props.renderDefault(props)}
+                  </VariantFilterAddControlProvider>
                   <DesignOptions />
                   <RemoteListener />
                   <ShapeStyles />

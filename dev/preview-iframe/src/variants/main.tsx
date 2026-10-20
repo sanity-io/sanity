@@ -5,11 +5,13 @@ import {useEffect, useRef, useState} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {useLiveMode, useQuery} from './loader'
-import type {Book} from './site/model'
+import  {type Book} from './site/model'
+import {queryFor} from './site/queries'
 import {Site} from './site/Site'
 
 // The Nordic Books site: the preview for the Presentation tool and the Presentation grid, for the Variants 2.0 test studio.
-//  - Routes: `?route=home | list | campaign | about | book:<id>` (and `fm:<id>` for the field-marks document). Default: home.
+//  - Routes: `?route=home | list | authors | author:<id> | series | series:<id> | publisher:<id> | book:<id> | campaign | about`
+//    (and `fm:<id>` for the field-marks document). Default: home. One GROQ query per route kind (site/queries.ts).
 //  - Every frame is independent: the route and an optional locked variant (`?variant=<id>`) come from this iframe's own
 //    URL. No cookies, no shared state, so several frames can run at once.
 //  - Inside Presentation, perspective and variant arrive from the Studio (`enableVisualEditing`), content arrives through
@@ -21,15 +23,21 @@ const route = params.get('route') ?? 'home' // grid frames: one route per frame 
 const lockedVariant = params.get('variant') ?? undefined
 const gridFrame = params.get('frame')
 
-// Every document of the shop: both book types (the dataset has `book` and the live-edit `bookLive`).
-const LIST = `*[_type in ["book", "bookLive"]] | order(title asc) {_id, _type, title, subtitle, blurb, highlights, promo, badge, cta}`
 const FM = `*[_type == "fieldMarksTest" && _id == $id][0] {_id, _type, title, subtitle}`
-const ONE = `*[_type in ["book", "bookLive"] && _id == $id][0] {_id, _type, title, subtitle, blurb, highlights, promo, badge, cta}`
 
 /** Where a link goes. In Presentation the iframe reloads with a new `?route=`; the locked variant (if any) is kept. */
-const hrefFor = (to: string) => `?route=${encodeURIComponent(to)}${lockedVariant ? `&variant=${lockedVariant}` : ''}`
+const hrefFor = (to: string) =>
+  `?route=${encodeURIComponent(to)}${lockedVariant ? `&variant=${lockedVariant}` : ''}`
 
-function Badge({perspective, variant, route}: {perspective: unknown; variant?: string; route: string}) {
+function Badge({
+  perspective,
+  variant,
+  route,
+}: {
+  perspective: unknown
+  variant?: string
+  route: string
+}) {
   return (
     <div className="state" data-testid="preview-state">
       {JSON.stringify(perspective)} · variant {variant ?? 'none'} · route {route}
@@ -43,8 +51,12 @@ function LiveFieldMarks({id}: {id: string}) {
   const attr = createDataAttribute({id: data._id, type: data._type})
   return (
     <article>
-      <h1 data-sanity={attr('title').toString()} style={{font: '600 26px system-ui'}}>{data.title}</h1>
-      <h2 data-sanity={attr('subtitle').toString()} style={{font: '16px system-ui', opacity: 0.7}}>{data.subtitle}</h2>
+      <h1 data-sanity={attr('title').toString()} style={{font: '600 26px system-ui'}}>
+        {data.title}
+      </h1>
+      <h2 data-sanity={attr('subtitle').toString()} style={{font: '16px system-ui', opacity: 0.7}}>
+        {data.subtitle}
+      </h2>
     </article>
   )
 }
@@ -57,7 +69,9 @@ function Main() {
   const [variant, setVariant] = useState<string | undefined>(lockedVariant)
   // The site is a single page: a link changes the route without reloading, so the Presentation connection stays up.
   const [route, setRoute] = useState(routeOf(window.location.search))
-  const reportNavigation = useRef<((update: {type: 'push' | 'replace' | 'pop'; url: string}) => void) | null>(null)
+  const reportNavigation = useRef<
+    ((update: {type: 'push' | 'replace' | 'pop'; url: string}) => void) | null
+  >(null)
   const go = (to: string) => {
     const url = hrefFor(to)
     window.history.pushState({}, '', url)
@@ -90,7 +104,8 @@ function Main() {
               return
             }
             const next = new URL(update.url, window.location.href)
-            if (update.type === 'push') window.history.pushState({}, '', next.pathname + next.search)
+            if (update.type === 'push')
+              window.history.pushState({}, '', next.pathname + next.search)
             else window.history.replaceState({}, '', next.pathname + next.search)
             setRoute(routeOf(next.search))
           },
@@ -99,9 +114,9 @@ function Main() {
     [],
   )
   useLiveMode({})
-  const books = useQuery<Book[]>(LIST, {}).data ?? null
-  const id = route.startsWith('book:') ? route.slice('book:'.length) : ''
-  const book = useQuery<Book | null>(ONE, {id}).data ?? null
+  // One query per route kind; the hook re-subscribes when the route changes the query.
+  const {query, params} = queryFor(route)
+  const result = useQuery(query, params)
   if (route.startsWith('fm:')) {
     return (
       <main style={{margin: '0 auto', maxWidth: 720, padding: 16}}>
@@ -112,7 +127,15 @@ function Main() {
   }
   return (
     <>
-      <Site book={route.startsWith('book:') ? book : null} books={books} navigate={hrefFor} onNavigate={go} perspective={perspective} route={route} variant={variant} />
+      <Site
+        data={result.data ?? null}
+        loading={result.loading}
+        navigate={hrefFor}
+        onNavigate={go}
+        perspective={perspective}
+        route={route}
+        variant={variant}
+      />
       <Badge perspective={perspective} route={route} variant={variant} />
     </>
   )
@@ -123,13 +146,17 @@ function Main() {
 // variant. The visual-editing handshake still runs, so the perspective and variant arrive over this frame's own channel.
 // A link inside a frame asks the grid to change the frame's route (`grid-navigate`); nothing reloads.
 function GridMain() {
-  const [data, setData] = useState<{list: Book[] | null; book: Book | null}>({list: null, book: null})
+  const [data, setData] = useState<{list: Book[] | null; book: Book | null}>({
+    list: null,
+    book: null,
+  })
   const [perspective, setPerspective] = useState<unknown>('published')
   const [variant, setVariant] = useState<string | undefined>(lockedVariant)
   const [connected, setConnected] = useState(0)
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'grid-data' && event.data.frame === gridFrame) setData({list: event.data.list ?? null, book: event.data.book ?? null})
+      if (event.data?.type === 'grid-data' && event.data.frame === gridFrame)
+        setData({list: event.data.list ?? null, book: event.data.book ?? null})
     }
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)
@@ -148,10 +175,11 @@ function GridMain() {
   return (
     <>
       <Site
-        book={route.startsWith('book:') ? data.book : null}
-        books={data.list}
+        data={route.startsWith('book:') ? data.book : data.list}
         navigate={hrefFor}
-        onNavigate={(to) => window.parent.postMessage({type: 'grid-navigate', frame: gridFrame, route: to}, '*')}
+        onNavigate={(to) =>
+          window.parent.postMessage({type: 'grid-navigate', frame: gridFrame, route: to}, '*')
+        }
         perspective={perspective}
         route={route}
         variant={variant}
@@ -162,4 +190,6 @@ function GridMain() {
   )
 }
 
-createRoot(document.getElementById('root') as HTMLElement).render(params.get('mode') === 'grid' ? <GridMain /> : <Main />)
+createRoot(document.getElementById('root') as HTMLElement).render(
+  params.get('mode') === 'grid' ? <GridMain /> : <Main />,
+)

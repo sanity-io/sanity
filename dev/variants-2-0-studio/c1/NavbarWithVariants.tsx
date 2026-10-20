@@ -6,6 +6,7 @@ import {useComparison} from '../compare/useCompare'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {AddressRow} from './AddressRow'
 import {VariantsControl} from './Controls'
+import {NavLayoutStyles} from './NavLayout'
 
 /**
  * Studio's navbar plus C1:
@@ -17,22 +18,29 @@ export function NavbarWithVariants(props: NavbarProps) {
   const option = useOption('c1')
   const compare = useOption('compare')
   const comparison = useComparison()
+  const navLayout = useOption('navLayout')
   const renderVariants = useCallback(() => <VariantsControl />, [])
-  const actions = useMemo(
-    (): NavbarProps['__internal_actions'] =>
+  const renderInline = useCallback(() => <AddressRow inline />, [])
+  const actions = useMemo((): NavbarProps['__internal_actions'] => {
+    const base = props.__internal_actions ?? []
+    const withVariants =
       option === 'b'
-        ? [
-            ...(props.__internal_actions ?? []),
-            {location: 'topbar', name: 'variants-topbar', render: renderVariants},
-          ]
-        : props.__internal_actions,
-    [option, props.__internal_actions, renderVariants],
-  )
+        ? [...base, {location: 'topbar' as const, name: 'variants-topbar', render: renderVariants}]
+        : base
+    // navLayout C: the whole global perspective inside the navbar (the row under it is removed).
+    return navLayout === 'c' && option !== STOCK_OPTION && option !== 'c'
+      ? [
+          ...withVariants,
+          {location: 'topbar' as const, name: 'address-in-bar', render: renderInline},
+        ]
+      : withVariants
+  }, [option, navLayout, props.__internal_actions, renderVariants, renderInline])
   return (
     <>
+      <NavLayoutStyles />
       {props.renderDefault({...props, __internal_actions: actions})}
       {/* Option C is the shipped Perspective Filter bar only: no address row. */}
-      {option === STOCK_OPTION || option === 'c' ? null : <AddressRow />}
+      {option === STOCK_OPTION || option === 'c' || navLayout === 'c' ? null : <AddressRow />}
       {/* E9 compare C: one header across both panes. */}
       {compare === 'c' && comparison ? <CompareHeader comparison={comparison} /> : null}
     </>

@@ -290,13 +290,33 @@ export const ROW_WIDTH: ComponentDef = {
   independent: true,
   built: true,
   scope: 'Open beta',
-  cover: 'How wide the content of the address row (the Showing row under the navbar) may grow. On a very wide screen it stretched to both corners.',
+  cover:
+    'How wide the content of the address row (the Showing row under the navbar) may grow. On a very wide screen it stretched to both corners.',
   pick: 'Default B is a recommendation, not a decision.',
   where: 'Any page with the Showing row open.',
   options: [
-    {id: 'a', label: 'Full', summary: 'Edge to edge, as before.', oneLiner: 'Edge to edge.', status: 'final'},
-    {id: 'b', label: 'Contained · 1200', summary: 'Content up to 1200 px wide, centred; the row keeps its line edge to edge. Recommended.', oneLiner: 'Up to 1200 px, centred. Recommended.', status: 'candidate'},
-    {id: 'c', label: 'Compact · 880', summary: 'Content up to 880 px wide, centred.', oneLiner: 'Up to 880 px, centred.', status: 'candidate'},
+    {
+      id: 'a',
+      label: 'Full',
+      summary: 'Edge to edge, as before.',
+      oneLiner: 'Edge to edge.',
+      status: 'final',
+    },
+    {
+      id: 'b',
+      label: 'Contained · 1200',
+      summary:
+        'Content up to 1200 px wide, centred; the row keeps its line edge to edge. Recommended.',
+      oneLiner: 'Up to 1200 px, centred. Recommended.',
+      status: 'candidate',
+    },
+    {
+      id: 'c',
+      label: 'Compact · 880',
+      summary: 'Content up to 880 px wide, centred.',
+      oneLiner: 'Up to 880 px, centred.',
+      status: 'candidate',
+    },
   ],
 }
 
@@ -320,6 +340,52 @@ export const LOCAL_MATCH: ComponentDef = {
       label: 'L5a: keep the row',
       summary: 'The row stays and says "matches global".',
       status: 'candidate',
+    },
+  ],
+}
+
+/**
+ * Where the tools and the global perspective sit in the navbar (Figma E9 3c: N1 439:12761, N3 440:2, N2 440:1529). A is today, B moves the
+ * tools to the left after the workspace and search and Create to the right (the address row stays under the navbar), C is B plus the whole
+ * global perspective in the navbar, with no row under it. The row layout and the row width do nothing in C (there is no row).
+ */
+export const NAV_LAYOUT: ComponentDef = {
+  id: 'navLayout',
+  tag: 'NV',
+  title: 'Navbar layout',
+  defaultOption: 'a',
+  independent: true,
+  built: true,
+  scope: 'Open beta',
+  cover:
+    'Where the tools and the global perspective sit in the navbar. Row layout and Row width are not used with C: there is no row under the navbar.',
+  pick: 'Faheem asked to flip between the three live. C is the vision frame (E9 3c), not decided.',
+  where: 'The navbar, on every page.',
+  options: [
+    {
+      id: 'a',
+      label: 'Today',
+      summary: 'The shipped navbar: tools centred, the address row under it.',
+      oneLiner: 'Tools centred, row under the navbar.',
+      status: 'final',
+    },
+    {
+      id: 'b',
+      label: 'Tools left',
+      summary:
+        'Tools left after the workspace; search and Create on the right, before tasks and the account. The address row stays under the navbar.',
+      oneLiner: 'Tools left; search and Create right.',
+      status: 'candidate',
+      refs: `${FIGMA}; 3c N1 439:12761`,
+    },
+    {
+      id: 'c',
+      label: 'Tools left, address in the bar',
+      summary:
+        "B, plus the whole global perspective (bundle chip, dimension chips) in the navbar, left of search. The row under the navbar is removed; a chip's close removes it.",
+      oneLiner: 'B plus the perspective inside the navbar.',
+      status: 'candidate',
+      refs: `${FIGMA}; 3c N3 440:2, N2 440:1529`,
     },
   ],
 }
