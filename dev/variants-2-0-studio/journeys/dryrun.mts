@@ -155,13 +155,13 @@ for (const theme of ['light', 'dark'] as const) {
     await page.getByRole('dialog').getByRole('radio', {name: 'A', exact: true}).first().click()
     return 'opened, Show B then A'
   })
-  await step('5b Journeys panel', async () => {
+  await step('5b Journeys remote opens from the Journeys button', async () => {
     await page.keyboard.press('Escape')
-    await page.getByRole('button', {name: 'Journeys', exact: true}).click()
-    await page.getByText('From the base document').first().click()
-    await page.getByRole('button', {name: 'Start journey'}).click()
-    await page.waitForTimeout(1500)
-    return 'journey started'
+    const [popup] = await Promise.all([context.waitForEvent('page', {timeout: 8000}), page.getByRole('button', {name: 'Journeys', exact: true}).click()])
+    await popup.waitForSelector('#conn', {timeout: 8000})
+    const text = await popup.locator('#conn').innerText()
+    await popup.close()
+    return `remote opened (${text})`
   })
   await step('6 Presentation grid', async () => {
     await page.goto(`${base}/presentation-grid`)

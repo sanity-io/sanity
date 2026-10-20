@@ -30,22 +30,18 @@
 </header>
 <main id="main"><div class="row"><button id="openJourneys">Journeys remote ↗</button></div></main>
 <script type="module">
-const bc = new BroadcastChannel('variants-2-0-remote')
+import {connect, statusLine} from '/static/remote-core.js'
 const $ = (id) => document.getElementById(id)
-const newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
-const send = (m) => bc.postMessage({id: newId(), from: 'remote', origin: location.origin, ...m})
-const seen = new Set(); let status = null, lastSeen = 0
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e }
-bc.onmessage = (event) => {
-  const m = event.data
-  if (!m || m.from !== 'studio' || m.origin !== location.origin || m.type !== 'status' || seen.has(m.id)) return
-  seen.add(m.id); status = m; lastSeen = Date.now(); render()
-}
+const core = connect(() => render())
+const send = (m) => core.send(m)
+let status = null
 const LETTERS = 'ABCDEFGH'
 function render() {
-  const on = status && Date.now() - lastSeen < 7000
+  status = core.target()
+  const on = !!status
   $('conn').textContent = on ? 'Connected' : 'Not connected'; $('conn').className = 'pill ' + (on ? 'on' : 'off')
-  $('state').textContent = status ? `preset ${status.preset ?? '(custom)'} · stage ${status.stage} · ${status.path}` : 'No studio window found. Open the studio in another window of this browser.'
+  $('state').textContent = statusLine(core)
   Object.assign($('state').dataset, {preset: status?.preset ?? '', stage: status?.stage ?? '', path: status?.path ?? ''})
   const main = $('main'); main.replaceChildren()
   const top = el('div', 'row'); const oj = el('button', null, 'Journeys remote ↗'); oj.id = 'openJourneys'; top.append(oj); main.append(top)
@@ -71,8 +67,7 @@ function render() {
   main.append(comps)
   const tail = el('div', 'row'); tail.append(btn('Reset slots', false, () => send({type: 'reset'})), btn('Reset all', false, () => send({type: 'reset', all: true}))); main.append(tail)
 }
-setInterval(() => { send({type: 'hello'}); render() }, 2000)
-send({type: 'hello'}); render()
+render()
 </script>
 </body>
 </html>

@@ -17,8 +17,20 @@ await main.goto(`${base}/#token=${encodeURIComponent(token)}`)
 await main.waitForTimeout(3500)
 await main.goto(`${base}/structure/book`)
 await main.getByRole('button', {name: 'Design options'}).waitFor({timeout: 40000})
-const remote = await context.newPage()
-await remote.goto(`${base}/static/remote.html`)
+// Two more studio tabs listen as well. The rule: commands go to the tab that was active most recently (here: `main`).
+const extra = []
+for (const path of ['/presentation', '/releases']) {
+  const tab = await context.newPage()
+  await tab.goto(`${base}/#token=${encodeURIComponent(token)}`)
+  await tab.waitForTimeout(2500)
+  await tab.goto(`${base}${path}`)
+  await tab.getByRole('button', {name: 'Design options'}).waitFor({timeout: 40000})
+  extra.push(tab)
+}
+await main.bringToFront()
+await main.mouse.click(600, 400)
+// Open the remote the way a user does: the Journeys button of the studio tab. The remote starts bound to that tab.
+const [remote] = await Promise.all([context.waitForEvent('page'), main.getByRole('button', {name: 'Journeys', exact: true}).click()])
 let steps = 0
 let matched = 0
 const misses: string[] = []
@@ -36,26 +48,25 @@ try {
       expectedPreset = wantPreset
       const wantPath = (step.route ?? '').split('?')[0]
       await remote.locator(`#steps button[data-step="${i}"]`).click()
-      let got = {preset: '', path: ''}
+      // The truth is the studio page itself: its own pathname, read here, not what it reports.
+      let real = ''
       try {
-        await remote.waitForFunction(
-          ({p, path}) => {
-            const s = document.getElementById('state')!
-            return s.dataset.preset === p && (path === '' || (s.dataset.path ?? '').split('?')[0].startsWith(path))
-          },
-          {p: wantPreset, path: wantPath},
-          {timeout: 15000},
-        )
+        await main.waitForFunction((path) => path === '' || window.location.pathname.startsWith(path), wantPath, {timeout: 15000})
       } catch {
         // reported below
       }
-      got = {preset: (await remote.locator('#state').getAttribute('data-preset')) ?? '', path: (await remote.locator('#state').getAttribute('data-path')) ?? ''}
-      const ok = got.preset === wantPreset && (wantPath === '' || got.path.split('?')[0].startsWith(wantPath))
+      real = await main.evaluate(() => window.location.pathname)
+      await remote.waitForFunction((p) => document.getElementById('state')?.dataset.preset === p, wantPreset, {timeout: 6000}).catch(() => undefined)
+      const reported = {preset: (await remote.locator('#state').getAttribute('data-preset')) ?? '', path: (await remote.locator('#state').getAttribute('data-path')) ?? ''}
+      const ok = real.startsWith(wantPath) && reported.preset === wantPreset && (wantPath === '' || reported.path.startsWith(wantPath))
       if (ok) matched++
-      else misses.push(`${journey.id}-${i + 1}: want ${wantPreset} ${wantPath}, got ${got.preset} ${got.path}`)
+      else misses.push(`${journey.id}-${i + 1}: want ${wantPreset} ${wantPath}, studio is at ${real}, reports ${reported.preset} ${reported.path}`)
     }
   }
-  log(matched === steps, `Controller drove ${steps} steps; the reported route and preset matched on ${matched}`, misses.slice(0, 3).join(' | '))
+  log(matched === steps, `Controller drove ${steps} steps; the studio page's own pathname and the reported preset matched on ${matched}`, misses.slice(0, 3).join(' | '))
+  const others = await Promise.all(extra.map((t) => t.evaluate(() => window.location.pathname)))
+  log(others[0] === '/presentation' && others[1] === '/releases', 'The other studio tabs ignored the commands (only the most recently active tab acts)', others.join(', '))
+  log((await remote.locator('#state').getAttribute('data-tabs')) === '3', 'The status line counts the three studio tabs', await remote.locator('#state').innerText())
   // Keyboard and checks on the journeys remote.
   await remote.locator(`button.jr[data-journey="${journeys[0].id}"]`).click()
   await remote.locator('body').click({position: {x: 5, y: 5}})
@@ -72,7 +83,7 @@ try {
 
   // The Design options remote, open at the same time as the journeys remote.
   const options = await context.newPage()
-  await options.goto(`${base}/static/options-remote.html`)
+  await options.goto(`${base}/static/options-remote.html?tab=${new URL(remote.url()).searchParams.get('tab')}`)
   await options.waitForFunction(() => document.getElementById('conn')?.textContent === 'Connected', null, {timeout: 20000})
   log(true, 'Both remotes are connected at the same time')
   await options.locator('button[data-stage="ga"]').click()

@@ -79,18 +79,23 @@ Tick each step as you go. `options/journeys.json` is a copy of `docs/initiatives
 Copy the file again when it changes.
 `options/diagrams.json` is the same kind of copy of `docs/initiatives/curation-perspective-selector/diagrams.json`: the diagrams in the window (and the frames under the cards) draw from it.
 
-## Journeys remote
+## Journeys remote and Design options remote
 
-A controller for the Journeys, in its own window, that moves the studio window. Open it with `Open remote` in the Journeys panel or at
-the bottom of the Design options window (or go to http://localhost:3350/static/remote.html in another window of the same browser).
-It is a light static page (no studio load); it talks to the studio over a BroadcastChannel (same origin only).
+Two controllers, each in a window of its own, that move the studio window. They are static pages (no studio load) and talk to the studio over a
+BroadcastChannel (same origin only). Both can be open at the same time.
 
-- Pick a journey, then click a step or use the keys: `→` or `j` next step, `←` or `k` previous step. A step makes the studio apply the step's
-  preset and open its route, as `Go` in the panel does.
-- Buttons: previous and next journey, `Reset checks`, the Stage switch (Open beta, GA) and one button per preset. The done checkboxes share
-  the panel's browser storage, so both stay in sync.
-- The top line shows `Connected` and what the studio reports: its preset, stage and path. `Not connected` means no studio window is open.
-- Check: `node journeys/verify-remote.mts` drives all 54 steps from the controller and compares the reported route and preset.
+- **Journeys remote** (`/static/remote.html`): the `Journeys` button at the bottom left of the studio opens it (1280 x 860). It shows the journeys
+  on the left (flow status, actors, scope, steps and done counts), the designer's Studio Flows flow in the middle (phases, step cards, pain points,
+  success and failure; the card the current walk step plays is outlined, earlier cards carry a check) and the walk step at the bottom.
+  Keys: `→` or `j` next step, `←` or `k` previous step. `Go to step` makes the studio apply the step's preset and open its route.
+  The in-studio Journeys panel is gone; the done marks keep their storage key (`variants-2-0-studio:journey-checks`).
+- **Design options remote** (`/static/options-remote.html`): `Options remote` at the bottom of the Design options window, or the button in the Journeys remote.
+  Show (Stock, A, B, C, Final), Stage, Dimensions (GA), presets and one button per option slot of every component.
+- **Which studio tab it moves.** A remote opened from the studio's own button is bound to the tab you clicked in (`?tab=`). Without that, it uses the
+  tab you last clicked or typed in. The header has a `Studio tab` picker and a `Find it` button that shows a banner in the tab it drives. Other
+  tabs ignore the commands. The status line shows that tab's live preset, stage and path; if the tab does not reach the step's route the remote says so.
+- Data: `options/journeys.json` (from the initiative folder, with `flow` and `flowStep` per journey and step) and `options/studio-flows.json` (the extraction). Copy them again when they change.
+- Checks: `node journeys/verify-remote.mts` opens the remote from the button with three studio tabs listening, drives all 54 steps, and reads the studio page's own pathname after each.
 
 ## Run the walk (Playwright)
 

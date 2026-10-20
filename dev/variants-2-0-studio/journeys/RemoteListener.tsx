@@ -20,6 +20,7 @@ export type RemoteMessage =
   | {id: string; from: 'remote'; origin: string; type: 'option'; component: string; option: string | null}
   | {id: string; from: 'remote'; origin: string; type: 'dimensions'; limit: number | null}
   | {id: string; from: 'remote'; origin: string; type: 'reset'; all?: boolean}
+  | {id: string; from: 'remote'; origin: string; type: 'identify'}
 
 export interface StudioStatus {
   id: string
@@ -28,6 +29,13 @@ export interface StudioStatus {
   type: 'status'
   /** The command this status answers, when it does. */
   reply?: string
+  /** The tab that sent this status, when it last was active (ms), and whether it is visible. */
+  tab: string
+  activeAt: number
+  visible: boolean
+  /** The path the command was meant to reach, and whether this tab is there now (an answer to a `go`). */
+  wanted?: string
+  reached?: boolean
   preset?: string
   stage: string
   path: string
@@ -42,6 +50,21 @@ export interface StudioStatus {
   }
 }
 
+// Several studio tabs can listen at once. Rule: a command carries the tab it is for (the remote picks the tab that was
+// active most recently: clicked or typed in, or the one that opened the remote); the other tabs ignore it. A command without a target is for every tab.
+export const TAB_ID = `tab-${Math.random().toString(36).slice(2, 8)}`
+let activeAt = Date.now()
+const markActive = () => {
+  activeAt = Date.now()
+}
+if (typeof window !== 'undefined') {
+  // `focus` is left out on purpose: Presentation and other iframes grab focus on their own, which made a background tab look active.
+  for (const name of ['pointerdown', 'keydown']) window.addEventListener(name, markActive, true)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') markActive()
+  })
+}
+
 const newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
 export function RemoteListener() {
@@ -53,9 +76,10 @@ export function RemoteListener() {
   const routerRef = useRef(router)
   routerRef.current = router
 
-  const status = (reply?: string): StudioStatus => {
+  const status = (reply?: string, wanted?: string): StudioStatus => {
     const now = getOptionState()
-    return {id: newId(), from: 'studio', origin: window.location.origin, type: 'status', reply, preset: now.preset ?? undefined, stage: now.stage, path: window.location.pathname + window.location.search,
+    const path = window.location.pathname + window.location.search
+    return {id: newId(), from: 'studio', origin: window.location.origin, type: 'status', reply, tab: TAB_ID, activeAt, visible: document.visibilityState === 'visible', wanted, reached: wanted === undefined ? undefined : path.split('?')[0].startsWith(wanted.split('?')[0]), preset: now.preset ?? undefined, stage: now.stage, path: window.location.pathname + window.location.search,
       options: {
         global: now.global,
         dimensionLimit: now.dimensionLimit,
@@ -66,7 +90,7 @@ export function RemoteListener() {
       },
     }
   }
-  const post = (reply?: string) => channel.current?.postMessage(status(reply))
+  const post = (reply?: string, wanted?: string) => channel.current?.postMessage(status(reply, wanted))
 
   useEffect(() => {
     const bc = new BroadcastChannel(REMOTE_CHANNEL)
@@ -75,7 +99,15 @@ export function RemoteListener() {
       const m = event.data
       if (!m || m.from !== 'remote' || m.origin !== window.location.origin || seen.current.has(m.id)) return
       seen.current.add(m.id)
-      if (m.type === 'go') {
+      if ((m as {target?: string}).target && (m as {target?: string}).target !== TAB_ID) return
+      if (m.type === 'identify') {
+        // Shows which studio tab the remote is driving: a banner for a few seconds.
+        const banner = document.createElement('div')
+        banner.textContent = 'The Journeys remote is controlling this tab'
+        banner.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:2147483647;background:#4a54e8;color:#fff;padding:8px 14px;border-radius:6px;font:13px system-ui;box-shadow:0 4px 16px rgba(0,0,0,.3)'
+        document.body.append(banner)
+        window.setTimeout(() => banner.remove(), 3000)
+      } else if (m.type === 'go') {
         if (m.preset) applyPreset(m.preset)
         if (m.route) routerRef.current.navigateUrl({path: m.route})
       } else if (m.type === 'preset') applyPreset(m.preset)
@@ -85,7 +117,7 @@ export function RemoteListener() {
       else if (m.type === 'dimensions') setDimensionLimit(m.limit)
       else if (m.type === 'reset') (m.all ? resetOptions : resetOverrides)()
       // The route changes on the next tick; answer after it, and again from the effect below when the path moves.
-      window.setTimeout(() => post(m.id), 400)
+      window.setTimeout(() => post(m.id, m.type === 'go' ? m.route : undefined), 500)
     }
     post()
     return () => {
@@ -101,7 +133,7 @@ export function RemoteListener() {
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- `post` only reads refs and the store
   }, [routerState, optionState])
   useEffect(() => {
-    const id = window.setInterval(() => post(), 3000)
+    const id = window.setInterval(() => post(), 1000)
     return () => window.clearInterval(id)
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- `post` only reads refs and the store
   }, [])
