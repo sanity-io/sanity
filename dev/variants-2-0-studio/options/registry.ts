@@ -362,6 +362,8 @@ defineDesignOptions({
     ],
   },
   presets,
+  // The global pill shape (docs/initiatives/curation-perspective-selector/SHAPE-TOKEN.md): Round = shipped, Box = 3px.
+  shape: {variable: '--v2-pill-radius', round: '999px', box: '3px'},
   diagrams: diagrams as unknown as DiagramFile,
   links: {
     figmaFile: 'https://www.figma.com/design/C1T4EUScc9PMf5tqNo09Qs',

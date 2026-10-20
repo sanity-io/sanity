@@ -285,13 +285,19 @@ function renderFlow(highlight) {
   if (step && fs == null) main.append(el('div', 'quiet', 'This walk step does not play a designer step.'))
   if (highlight) requestAnimationFrame(() => track.querySelector('.card.cur')?.scrollIntoView({inline: 'center', block: 'nearest', behavior: 'smooth'}))
 }
+// The story link carries the same theme and shape as the studio (the shape follows the Design options window).
+function setStoryHref() {
+  const j = journey(), step = j.steps[pos.step], a = $('story')
+  a.hidden = !step?.story
+  if (step?.story) a.href = `${STORYBOOK}/?path=/story/${step.story}&globals=theme:${matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${core.target()?.options?.shape ?? 'round'}`
+}
 function renderDock() {
   const j = journey(), c = checks(), step = j.steps[pos.step]
   $('stepTitle').textContent = step ? `${pos.step + 1}/${j.steps.length}  ${step.title}` : 'This journey has no steps yet'
   $('stepMeta').textContent = step ? [step.component && `${step.component}${step.option ? ' ' + step.option : ''}`, `preset ${stepPreset(j, step)}`, step.route].filter(Boolean).join(' · ') : ''
   $('expect').textContent = step?.expect ? `Expect: ${step.expect}` : ''
   $('done').checked = !!c[`${j.id}:${pos.step}`]; $('done').disabled = !step
-  const a = $('story'); a.hidden = !step?.story; if (step?.story) a.href = `${STORYBOOK}/?path=/story/${step.story}`
+  setStoryHref()
   const steps = $('steps'); steps.replaceChildren()
   j.steps.forEach((_, i) => { const b = el('button', (i === pos.step ? 'cur ' : '') + (c[`${j.id}:${i}`] ? 'done' : ''), String(i + 1)); b.dataset.step = String(i); b.addEventListener('click', () => go(i)); steps.append(b) })
 }

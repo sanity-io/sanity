@@ -103,6 +103,8 @@ export interface DesignOptionsConfig {
   scenario: ScenarioConfig
   /** Shared presets (the ones that ship in the repo). Mine live in localStorage. */
   presets: PresetDef[]
+  /** A global shape switch (pill radius): the CSS variable every bound piece reads, and its value in each mode. */
+  shape?: {variable: string; round: string; box: string}
   links?: {figmaFile?: string; storybookBase?: string; /** A page that drives this window from another window (a remote). */ remote?: string; /** The remote for the journeys, next to the options remote. */ journeysRemote?: string}
   /** The shared diagram spec (options/diagrams.json). Options with a `diagramKey` draw from it. */
   diagrams?: DiagramFile

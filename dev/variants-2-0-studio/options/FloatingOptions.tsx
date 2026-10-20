@@ -8,6 +8,7 @@ import {EditNotice} from '../c6/EditNotice'
 import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
 import {DesignOptions} from '../design-options/DesignOptions'
 import {RemoteListener} from '../journeys/RemoteListener'
+import {ShapeStyles} from './ShapeStyles'
 import {useDocumentPaneOverride} from '../pane/useDocumentPaneOverride'
 import {STOCK_OPTION, useOption} from './store'
 
@@ -29,6 +30,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
             {props.renderDefault(props)}
             <DesignOptions />
             <RemoteListener />
+            <ShapeStyles />
           </DocumentPaneExtensionProvider>
           </VariantDetailExtensionProvider>
           </VariantEditNoticeProvider>

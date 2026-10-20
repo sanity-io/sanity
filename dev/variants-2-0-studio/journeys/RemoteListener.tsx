@@ -3,7 +3,7 @@ import {useRouter, useRouterState} from 'sanity/router'
 
 import {getConfig} from '../design-options/config'
 import {TAB_ID} from '../design-options/tab'
-import {applyPreset, getOptionState, resetOptions, resetOverrides, resolveOption, setDimensionLimit, setGlobalChoice, setOverride, setStage, useOptionState} from '../design-options/store'
+import {applyPreset, getOptionState, resetOptions, resetOverrides, resolveOption, setDimensionLimit, setGlobalChoice, setOverride, setShape, setStage, useOptionState} from '../design-options/store'
 
 // The studio end of the Journeys remote (static/remote.html, opened in another window of the same origin). Mounted once
 // with the Design options window, whether or not the Journeys panel is open. Commands arrive on a BroadcastChannel
@@ -20,6 +20,7 @@ export type RemoteMessage =
   | {id: string; from: 'remote'; origin: string; type: 'global'; choice: 'final' | 'stock' | number}
   | {id: string; from: 'remote'; origin: string; type: 'option'; component: string; option: string | null}
   | {id: string; from: 'remote'; origin: string; type: 'dimensions'; limit: number | null}
+  | {id: string; from: 'remote'; origin: string; type: 'shape'; shape: 'round' | 'box'}
   | {id: string; from: 'remote'; origin: string; type: 'reset'; all?: boolean}
   | {id: string; from: 'remote'; origin: string; type: 'identify'}
 
@@ -43,6 +44,7 @@ export interface StudioStatus {
   /** The Design options state, for the options remote: Show, dimension limit and each component's chosen option. */
   options: {
     global: 'final' | 'stock' | number
+    shape: 'round' | 'box'
     dimensionLimit: number | null
     stages: {id: string; label: string}[]
     dimensions: {value: number | null; label: string}[]
@@ -82,6 +84,7 @@ export function RemoteListener() {
     return {id: newId(), from: 'studio', origin: window.location.origin, type: 'status', reply, tab: TAB_ID, activeAt, visible: document.visibilityState === 'visible', wanted, reached: wanted === undefined ? undefined : path.split('?')[0].startsWith(wanted.split('?')[0]), preset: now.preset ?? undefined, stage: now.stage, path: window.location.pathname + window.location.search,
       options: {
         global: now.global,
+        shape: now.shape,
         dimensionLimit: now.dimensionLimit,
         stages: getConfig().scenario.stages,
         dimensions: (getConfig().scenario.dimensions ?? []).map((d) => ({value: d.value, label: d.label})),
@@ -113,6 +116,7 @@ export function RemoteListener() {
       } else if (m.type === 'preset') applyPreset(m.preset)
       else if (m.type === 'stage') setStage(m.stage)
       else if (m.type === 'global') setGlobalChoice(m.choice)
+      else if (m.type === 'shape') setShape(m.shape)
       else if (m.type === 'option') setOverride(m.component, m.option)
       else if (m.type === 'dimensions') setDimensionLimit(m.limit)
       else if (m.type === 'reset') (m.all ? resetOptions : resetOverrides)()

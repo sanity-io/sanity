@@ -19,6 +19,8 @@ export interface State {
   /** Show only the first N dimensions (null = all). */
   dimensionLimit: number | null
   stage: Stage
+  /** The global pill shape: round (shipped) or box (3px). Like the theme, a preset does not change it. */
+  shape: 'round' | 'box'
   /** The preset this config started from (null = none). The config is "modified" when it no longer equals it. */
   preset: string | null
 }
@@ -28,7 +30,7 @@ const PRESET_PARAM = 'preset'
 const LETTERS = 'abcdefgh'
 
 function defaults(): State {
-  return {global: 0, overrides: {}, dimensionLimit: null, stage: getConfig().scenario.stages[0].id, preset: null}
+  return {global: 0, overrides: {}, dimensionLimit: null, stage: getConfig().scenario.stages[0].id, shape: 'round', preset: null}
 }
 
 /**
@@ -40,6 +42,7 @@ export function serializeDesign(current: State): string {
     current.global === 'stock' || current.global === 'final' ? current.global : LETTERS[current.global]
   const parts = [`show.${show}`, `stage.${current.stage}`]
   if (current.dimensionLimit !== null) parts.push(`dim.${current.dimensionLimit}`)
+  if (current.shape === 'box') parts.push('shape.box')
   for (const [component, option] of Object.entries(current.overrides).sort()) parts.push(`${component}.${option}`)
   return parts.join(',')
 }
@@ -54,6 +57,8 @@ export function parseDesign(value: string): State | null {
       else if (LETTERS.includes(val)) next.global = LETTERS.indexOf(val)
     } else if (key === 'stage') {
       if (getConfig().scenario.stages.some((stage) => stage.id === val)) next.stage = val
+    } else if (key === 'shape') {
+      if (val === 'box') next.shape = 'box'
     } else if (key === 'dim') {
       next.dimensionLimit = Number(val) || null
     } else if (/^c\d+$/.test(key)) {
@@ -129,7 +134,7 @@ export function isMinePreset(id: string): boolean {
 /** True when the current config differs from the active preset. */
 export function isModified(current: State = state ?? defaults()): boolean {
   const preset = findPreset(current.preset)
-  return !!preset && serializeDesign(current) !== normalise(preset.design)
+  return !!preset && serializeDesign({...current, shape: 'round'}) !== normalise(preset.design)
 }
 
 // ---- State ------------------------------------------------------------------------------------------------------
@@ -201,6 +206,10 @@ export function setOverride(componentId: string, optionId: string | null) {
   commit({...current(), overrides})
 }
 
+export function setShape(shape: 'round' | 'box') {
+  commit({...current(), shape})
+}
+
 export function setStage(stage: Stage) {
   commit({...current(), stage})
 }
@@ -260,7 +269,8 @@ export function maxOptionCount(): number {
 export function applyPreset(id: string) {
   const preset = findPreset(id)
   const parsed = preset ? parseDesign(preset.design) : null
-  if (preset && parsed) commit({...parsed, preset: preset.id})
+  // The shape is global, like the theme: a preset keeps the one that is set.
+  if (preset && parsed) commit({...parsed, shape: current().shape, preset: preset.id})
 }
 
 /** Step to the previous (-1) or next (+1) preset, shared first then mine; wraps around. */

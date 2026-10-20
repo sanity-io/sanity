@@ -21,6 +21,7 @@ import {
   setDimensionLimit,
   setGlobalChoice,
   setOverride,
+  setShape,
   setStage,
   type State,
   useOptionState,
@@ -217,6 +218,7 @@ export function nearestStory(id: string, ids: string[]): string | null {
 
 /** A Storybook link that cannot end on Storybook's error page: a missing story opens the nearest valid one, with a note. */
 function StoryLink({id}: {id: string}) {
+  const {shape} = useOptionState()
   const [ids, setIds] = useState<string[] | null>(null)
   useEffect(() => {
     let alive = true
@@ -231,7 +233,7 @@ function StoryLink({id}: {id: string}) {
     <a
       data-moved={missing ? '' : undefined}
       data-testid="story-link"
-      href={`${getConfig().links?.storybookBase}/?path=/story/${target}`}
+      href={`${getConfig().links?.storybookBase}/?path=/story/${target}&globals=theme:${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'};shape:${shape}`}
       onClick={(e) => e.stopPropagation()}
       rel="noreferrer"
       style={{fontSize: 12}}
@@ -484,6 +486,17 @@ function ConfigBody({state, onHide}: {state: State; onHide?: () => void}) {
                 value={state.stage}
               />
             </Flex>
+            {getConfig().shape ? (
+              <Flex align="center" gap={2}>
+                <Label>Shape</Label>
+                <Segmented
+                  ariaLabel="Shape"
+                  onChange={(value) => setShape(value)}
+                  options={[{value: 'round', label: 'Round', title: 'Shipped: full-radius pills and chips'}, {value: 'box', label: 'Box', title: 'Proposal: 3px radius'}]}
+                  value={state.shape}
+                />
+              </Flex>
+            ) : null}
             {getConfig().scenario.dimensions && state.stage === getConfig().scenario.dimensionsStage ? (
               <Flex align="center" gap={2}>
                 <Label>Dimensions</Label>
@@ -893,6 +906,11 @@ export function DesignOptions() {
   const state = useOptionState()
   const [open, setOpen] = useState(false)
   const [hidden, setHidden] = useState(false)
+  // The global shape: one CSS variable that every Variants 2.0 pill and chip reads.
+  useEffect(() => {
+    const shape = getConfig().shape
+    if (shape) document.documentElement.style.setProperty(shape.variable, state.shape === 'box' ? shape.box : shape.round)
+  }, [state.shape])
   const [external, setExternal] = useState<Window | null>(null)
   const controlRef = useRef<HTMLButtonElement | null>(null)
 
