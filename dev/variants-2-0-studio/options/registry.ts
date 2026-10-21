@@ -203,6 +203,13 @@ export const COMPONENTS: ComponentDef[] = [
         status: 'archived',
         story: 'explorations-variants-2-0-c4-version-inventory-option-a--mini',
       },
+      {
+        id: 'd',
+        label: 'Handoff list',
+        summary:
+          "The open beta inventory: ONE list of the document's versions grouped by bundle (Published, Drafts, each release), each row the version title and its state, in the document inspector. No search, filter, sort, grouping options, views, priority view or info overlay. A row sets the global perspective (an open beta limitation). Built on Andrej's inventory model (the same live world), not his panel. Shared with the Handoff Studio (dev/variants-handoff-studio).",
+        status: 'candidate',
+      },
     ],
   },
   {
