@@ -10,11 +10,14 @@ const PostMessageFeatures: FC<PostMessagePreviewsProps> = (props) => {
   const {comlink} = props
 
   useEffect(() => {
-    return comlink.on('visual-editing/features', () => ({
+    const unsubscribe = comlink.on('visual-editing/features', () => ({
       features: {
         optimistic: true,
       },
     }))
+    return () => {
+      unsubscribe()
+    }
   }, [comlink])
 
   return null
