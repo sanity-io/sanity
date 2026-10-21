@@ -317,6 +317,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     if (targetDocumentState.status === 'variant-definition-document-not-found') {
+      // PROPOSED: a host that draws its own variant banners also says when the chosen variant no longer exists.
+      if (replacesVariantBanner) return null
       return (
         <VariantDefinitionNotFoundBanner
           requestedVariantName={targetDocumentState.requestedVariantName}
