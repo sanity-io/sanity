@@ -105,6 +105,7 @@
     "xstate": "^5.33.2"
   },
   "devDependencies": {
+    "@pandacss/vite": "catalog:",
     "@repo/package.bundle": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",

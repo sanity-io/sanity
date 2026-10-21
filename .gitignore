@@ -126,3 +126,6 @@ flake-report.json
 # Engine confidence local outputs and Stryker sandbox
 engine-confidence/reports/
 .stryker-tmp/
+
+# Panda CSS codegen (`panda codegen`, run by the package's `prepare` script and by its build)
+packages/sanity/styled-system

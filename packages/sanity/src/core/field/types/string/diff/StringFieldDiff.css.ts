@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const stringWrapper = style({
+export const stringWrapper = css({
   whiteSpace: 'pre-wrap',
   wordWrap: 'break-word',
 })

@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const wrappedCode = style({
+export const wrappedCode = css({
   whiteSpace: 'pre-wrap',
 })

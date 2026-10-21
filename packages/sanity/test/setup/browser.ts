@@ -1,6 +1,10 @@
 // Browser test setup - runs in a real browser, so no need for
 // IntersectionObserver/ResizeObserver/matchMedia mocks.
 
+// The studio's own static styles: the `.css.ts` modules under test resolve to class names, and
+// `@pandacss/vite` (vitest.browser.config.mts) fills this stylesheet with their CSS — the
+// counterpart of the `sanity/bundle.css` import the built entry chunks carry, loaded first like it.
+import './panda.css'
 // Both @sanity/ui generations ship their static styles as stylesheets consumers import
 // themselves; load both for test files that do not import the `sanity` entry point, which
 // would otherwise render `ui5` components without the v5 stylesheet. Same order as the studio

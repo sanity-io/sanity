@@ -1,4 +1,4 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
 /**
  * Scroller of the `CommandList` rendered by the list panes (`ListPaneContent`,
@@ -19,18 +19,15 @@ import {style} from '@vanilla-extract/css'
  * `::-webkit-scrollbar` (its scrollbar width is platform dependent and may be an overlay), so it
  * keeps the plain `space[3]` padding and `overflow-y: auto`.
  */
-export const paneCommandList = style({
-  paddingRight: 'var(--space-3)',
-  selectors: {
-    // Doubled class so `overflow-y` beats `CommandList`'s own `overflow-y: auto`, which
-    // styled-components injects as a single class after this stylesheet
-    '&&': {
-      '@supports': {
-        'selector(::-webkit-scrollbar)': {
-          overflowY: 'scroll',
-          paddingRight: 0,
-        },
-      },
+export const paneCommandList = css({
+  'paddingRight': 'var(--space-3)',
+
+  // Doubled class so `overflow-y` beats `CommandList`'s own `overflow-y: auto`, which
+  // styled-components injects as a single class after this stylesheet
+  '&&': {
+    '@supports selector(::-webkit-scrollbar)': {
+      overflowY: 'scroll',
+      paddingRight: 0,
     },
   },
 })

@@ -1,6 +1,78 @@
+import {fileURLToPath} from 'node:url'
+
+import {pandacss} from '@pandacss/vite'
+import {removeCascadeLayers} from '@sanity/pandacss-tsdown-plugin/vite'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
-import {defaultClientConditions, mergeConfig} from 'vite'
+import {defaultClientConditions, mergeConfig, type Plugin} from 'vite'
+
+/** The `sanity` package: the repository's only Panda CSS project (packages/sanity/panda.config.ts). */
+const SANITY_PACKAGE_DIR = fileURLToPath(new URL('../../packages/sanity/', import.meta.url))
+/** Module ids of its sources (Vite ids use forward slashes on every platform). */
+const RE_SANITY_PACKAGE_SOURCE = /\/packages\/sanity\/src\//
+/** The entry `sanity dev` and `sanity build` write for a studio. */
+const RE_STUDIO_RUNTIME_ENTRY = /[\\/]\.sanity[\\/]runtime[\\/]app\.js$/
+/** The stylesheet `@pandacss/vite` fills, see `sanityPandaCss()`. */
+const PANDA_CSS = fileURLToPath(new URL('./panda.css', import.meta.url))
+
+/**
+ * Builds the `sanity` package's Panda CSS from source: `sanity dev` resolves the workspace packages
+ * to their sources (the `monorepo` condition below), so the package's `.css.ts` modules are built
+ * here, while `sanity build` resolves the built package and the `bundle.css` it imports. The
+ * `@pandacss/vite` instance points at the package's Panda project: it rewrites the `css()` calls to
+ * class names and generates their CSS into `panda.css`, which the last plugin imports from the studio
+ * runtime entry — the counterpart of the built package's `sanity/bundle.css` import.
+ * `removeCascadeLayers()` takes Panda's cascade layers out of that CSS again, as `cascadeLayers:
+ * false` does for `bundle.css` (packages/sanity/tsdown.config.ts).
+ */
+function sanityPandaCss() {
+  const pandaCssImport: Plugin = {
+    name: 'test-studio:panda-css-import',
+    transform: {
+      filter: {id: RE_STUDIO_RUNTIME_ENTRY},
+      handler: (code) => ({code: `import ${JSON.stringify(PANDA_CSS)}\n${code}`, map: null}),
+    },
+  }
+  // No return type: `vite` resolves to one copy for this studio and to another for the plugins
+  // (two peer variants in the lockfile), whose `Plugin` types are not interchangeable
+  return [
+    pandacss({cwd: SANITY_PACKAGE_DIR, transform: true}),
+    removeCascadeLayers(['reset', 'base', 'tokens', 'recipes', 'utilities']),
+    pandaCssImport,
+  ]
+}
+
+/**
+ * `@sanity/vanilla-extract-vite-plugin` for the `.css.ts` modules of `@sanity/vision`, which
+ * `sanity dev` resolves to source and which are still vanilla-extract. The plugin compiles every
+ * `.css.ts` module of a build as vanilla-extract, so the `sanity` package's — Panda CSS, built by
+ * `sanityPandaCss()` — are excluded from its transform's hook filter here. Throws rather than
+ * failing open when the plugin's name or hook shape changes, so an upstream change shows up here
+ * and not as vision compiling `sanity`'s modules. Both this wrapper and the plugin go once vision
+ * moves to CSS modules (#15406).
+ */
+function visionVanillaExtract() {
+  const plugins = vanillaExtractPlugin()
+  const plugin = plugins.find((candidate) => candidate.name === 'sanity-vanilla-extract')
+  const transform = plugin?.transform
+  const include = typeof transform === 'object' ? transform.filter?.id : undefined
+  if (!plugin || typeof transform !== 'object' || !(include instanceof RegExp)) {
+    throw new Error(
+      '@sanity/vanilla-extract-vite-plugin changed its plugin name or transform hook shape; update visionVanillaExtract() in sanity.cli.ts',
+    )
+  }
+  return plugins.map((candidate) =>
+    candidate === plugin
+      ? {
+          ...plugin,
+          transform: {
+            ...transform,
+            filter: {...transform.filter, id: {include, exclude: RE_SANITY_PACKAGE_SOURCE}},
+          },
+        }
+      : candidate,
+  )
+}
 
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // Enables Vite DevTools (https://devtools.vite.dev) for both `sanity dev` and `sanity build`.
@@ -48,7 +120,11 @@ export default defineCliConfig({
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     let nextConfig = mergeConfig(viteConfig, {
-      plugins: [vanillaExtractPlugin()],
+      // `sanity dev` resolves the workspace packages to their sources (the `monorepo` condition
+      // below), so the Panda CSS `.css.ts` modules of `sanity` and the vanilla-extract ones of
+      // `@sanity/vision` are built here; `sanity build` uses the built packages and their
+      // `bundle.css`
+      plugins: command === 'serve' ? [...visionVanillaExtract(), ...sanityPandaCss()] : [],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
     })

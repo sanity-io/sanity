@@ -1,0 +1,7 @@
+/*
+ * The stylesheet `@pandacss/vite` (main.ts) fills with the CSS of the `sanity` package's `.css.ts`
+ * modules the stories render: Panda treats the CSS file that declares its layers as the generated
+ * CSS root. `removeCascadeLayers()` takes the layers out again, so the rules cascade unlayered like
+ * the published `bundle.css`.
+ */
+@layer reset, base, tokens, recipes, utilities;
