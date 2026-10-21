@@ -5,6 +5,11 @@
     "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a"
   },
   {
+    "id": "open-beta-locked-localized",
+    "name": "Open beta (locked) + localization plugin",
+    "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a,localization.b"
+  },
+  {
     "id": "today",
     "name": "Today (Stock)",
     "design": "show.stock,stage.open-beta"

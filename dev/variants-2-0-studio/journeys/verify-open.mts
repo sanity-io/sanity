@@ -48,6 +48,9 @@ try {
   // 4. shipped Variants tool row link
   await p.goto('http://localhost:3350/variants/aud-members?preset=open-beta-a')
   await p.waitForTimeout(11000)
+  // The tool lists every document, translated ones included, so the book is found through its search box rather than by its position.
+  await p.getByPlaceholder('Search documents').fill('Lighthouse Keeper')
+  await p.waitForTimeout(1500)
   await p.getByText('The Lighthouse Keeper').first().click()
   await p.waitForTimeout(8000)
   log(/book-lighthouse/.test(url()) && /variant=aud-members/.test(url()), 'shipped Variants-tool row opens the document at that version', url())

@@ -19,6 +19,7 @@ import {
   REVIEW_SET,
   ROW_WIDTH,
 } from './e9'
+import {LOCALIZATION, LOCALIZATION_GROUP} from './localization'
 import presets from './presets.json'
 
 export type {ComponentDef, OptionStatus}
@@ -398,7 +399,15 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
 }
 
 // The E9 switches (options/e9.ts) come after C1 to C9.
-COMPONENTS.push(...E9_COMPONENTS, LOCAL_MATCH, ROW_WIDTH, NAV_LAYOUT, PANE_CONTROL, REVIEW_SET)
+COMPONENTS.push(
+  ...E9_COMPONENTS,
+  LOCAL_MATCH,
+  ROW_WIDTH,
+  NAV_LAYOUT,
+  PANE_CONTROL,
+  REVIEW_SET,
+  LOCALIZATION,
+)
 
 // Diagram data on the 200 x 100 grid: the part that changes.
 const rows = [24, 38, 52, 66, 80]
@@ -560,6 +569,7 @@ defineDesignOptions({
     {label: 'Document', ids: ['c7', 'c9']},
     {label: 'Releases', ids: ['c8']},
     E9_GROUP,
+    LOCALIZATION_GROUP,
   ],
   scenario: {
     stages: [

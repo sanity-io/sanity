@@ -5,6 +5,8 @@ import {structureTool} from 'sanity/structure'
 import {NavbarWithVariants} from './c1/NavbarWithVariants'
 import {inventoryInspector} from './c4/InventoryInspector'
 import {E9Block, E9Field, E9Input, E9Item} from './fieldmarks/E9Marks'
+import {localization} from './localization/plugin'
+import {structure} from './localization/structure'
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
 import {ReviewSwitch, rememberStock} from './review/E9Review'
 import {schemaTypesFor} from './schemas'
@@ -56,12 +58,13 @@ export default defineConfig({
   projectId,
   dataset,
   plugins: [
-    structureTool(),
+    structureTool({structure}),
     presentationTool({
       allowOrigins: ['http://localhost:*', 'https://*.sanity.dev'],
       previewUrl: {origin: previewOrigin, preview: previewPath},
     }),
     variants2Options(),
+    localization(),
   ],
   schema: {types: schemaTypesFor(dataset)},
   scheduledDrafts: {enabled: true},

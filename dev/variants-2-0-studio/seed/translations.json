@@ -1,0 +1,416 @@
+{
+  "langs": ["da", "sv", "nb"],
+  "by": ["Af", "Av", "Av"],
+  "strings": {
+    "The Quiet Cartographer": {
+      "da": "Den stille kartograf",
+      "sv": "Den tysta kartografen",
+      "nb": "Den stille kartografen"
+    },
+    "A Field Guide to Small Hours": {
+      "da": "En feltguide til de små timer",
+      "sv": "En fältguide till de små timmarna",
+      "nb": "En feltguide til de små timer"
+    },
+    "Letters to a Young Gardener": {
+      "da": "Breve til en ung gartner",
+      "sv": "Brev till en ung trädgårdsmästare",
+      "nb": "Brev til en ung gartner"
+    },
+    "Glass Houses": {
+      "da": "Glashuse",
+      "sv": "Glashus",
+      "nb": "Glasshus"
+    },
+    "Harvest Moon Cookbook: Seasonal Recipes from the Fjord Villages of Western Norway and Beyond": {
+      "da": "Høstmåne-kogebogen: Sæsonopskrifter fra fjordbyerne i Vestnorge og videre",
+      "sv": "Skördemånens kokbok: Säsongsrecept från fjordbyarna i Västnorge och bortom",
+      "nb": "Høstmåne-kokeboken: Sesongoppskrifter fra fjordbygdene på Vestlandet og videre"
+    },
+    "The Lighthouse Keeper's Almanac": {
+      "da": "Fyrvogterens almanak",
+      "sv": "Fyrvaktarens almanacka",
+      "nb": "Fyrvokterens almanakk"
+    },
+    "Harbour Lights (2nd edition)": {
+      "da": "Havnelys (2. udgave)",
+      "sv": "Hamnljus (2:a upplagan)",
+      "nb": "Havnelys (2. utgave)"
+    },
+    "Salt & Ember": {
+      "da": "Salt & gløder",
+      "sv": "Salt & glöd",
+      "nb": "Salt & glør"
+    },
+    "The Ferry Timetable": {
+      "da": "Færgeplanen",
+      "sv": "Färjetidtabellen",
+      "nb": "Fergeruteboken"
+    },
+    "Tidewater": {
+      "da": "Tidevand",
+      "sv": "Tidvatten",
+      "nb": "Tidevann"
+    },
+    "Midsummer": {
+      "da": "Sankthans",
+      "sv": "Midsommar",
+      "nb": "Sankthans"
+    },
+    "Winterhold": {
+      "da": "Vinterborgen",
+      "sv": "Vinterfästet",
+      "nb": "Vinterborgen"
+    },
+    "Tide Almanac": {
+      "da": "Tidevandsalmanak",
+      "sv": "Tidvattensalmanacka",
+      "nb": "Tidevannsalmanakk"
+    },
+    "Atlas of Small Islands": {
+      "da": "Atlas over små øer",
+      "sv": "Atlas över små öar",
+      "nb": "Atlas over små øyer"
+    },
+    "A novel in tides": {
+      "da": "En roman i tidevand",
+      "sv": "En roman i tidvatten",
+      "nb": "En roman i tidevann"
+    },
+    "Live edit: no drafts": {
+      "da": "Live-redigering: ingen kladder",
+      "sv": "Liveredigering: inga utkast",
+      "nb": "Live-redigering: ingen utkast"
+    },
+    "A mapmaker in a fishing town draws what the sea takes away, one coastline at a time.": {
+      "da": "En kortmager i en fiskerby tegner det, havet tager, én kystlinje ad gangen.",
+      "sv": "En kartritare i en fiskeby ritar det som havet tar, en kustlinje i taget.",
+      "nb": "En kartmaker i en fiskeby tegner det havet tar, én kystlinje om gangen."
+    },
+    "Owls, moths and the quiet sounds of the night, with a field notebook for your own listening.": {
+      "da": "Ugler, natsommerfugle og nattens stille lyde, med en feltnotesbog til din egen lytning.",
+      "sv": "Ugglor, nattfjärilar och nattens tysta ljud, med en fältanteckningsbok för ditt eget lyssnande.",
+      "nb": "Ugler, nattsommerfugler og nattens stille lyder, med en feltnotatbok til din egen lytting."
+    },
+    "A retired head gardener writes to a beginner about soil, patience and the second year.": {
+      "da": "En pensioneret overgartner skriver til en begynder om jord, tålmodighed og andet år.",
+      "sv": "En pensionerad trädgårdsmästare skriver till en nybörjare om jord, tålamod och det andra året.",
+      "nb": "En pensjonert hageleder skriver til en nybegynner om jord, tålmodighet og det andre året."
+    },
+    "Essays on greenhouses, conservatories and what people grow when no one is watching.": {
+      "da": "Essays om drivhuse, orangerier og det, folk dyrker, når ingen ser på.",
+      "sv": "Essäer om växthus, orangerier och vad människor odlar när ingen tittar.",
+      "nb": "Essays om drivhus, orangerier og det folk dyrker når ingen ser på."
+    },
+    "Autumn cooking from the villages along the fjords, with the stories of the people who taught it.": {
+      "da": "Efterårsmad fra landsbyerne langs fjordene, med historierne om dem, der lærte det videre.",
+      "sv": "Höstmat från byarna längs fjordarna, med berättelserna om människorna som lärde ut den.",
+      "nb": "Høstmat fra bygdene langs fjordene, med historiene om menneskene som lærte det videre."
+    },
+    "A year on a Norwegian skerry, told through the weather, the lamp and the letters that arrived by boat.": {
+      "da": "Et år på en norsk skær, fortalt gennem vejret, lampen og de breve, der kom med båd.",
+      "sv": "Ett år på ett norskt skär, berättat genom vädret, lampan och breven som kom med båt.",
+      "nb": "Et år på et norsk skjær, fortalt gjennom været, lampen og brevene som kom med båt."
+    },
+    "Revised with a new chapter on the harbour reopening.": {
+      "da": "Revideret med et nyt kapitel om havnens genåbning.",
+      "sv": "Reviderad med ett nytt kapitel om hamnens återöppnande.",
+      "nb": "Revidert med et nytt kapittel om gjenåpningen av havnen."
+    },
+    "Coastal cooking over open fire, from smoked herring to burnt honey cake.": {
+      "da": "Kystmad over åben ild, fra røget sild til brændt honningkage.",
+      "sv": "Kustmat över öppen eld, från rökt sill till bränd honungskaka.",
+      "nb": "Kystmat over åpen ild, fra røkt sild til brent honningkake."
+    },
+    "The islands, one crossing at a time.": {
+      "da": "Øerne, én overfart ad gangen.",
+      "sv": "Öarna, en överfart i taget.",
+      "nb": "Øyene, én overfart om gangen."
+    },
+    "Two sisters, one harbour and a house that floods every spring.": {
+      "da": "To søstre, én havn og et hus, der oversvømmes hvert forår.",
+      "sv": "Två systrar, en hamn och ett hus som översvämmas varje vår.",
+      "nb": "To søstre, én havn og et hus som flommer over hver vår."
+    },
+    "The longest day of the year in a house that never fully darkens, over three generations.": {
+      "da": "Årets længste dag i et hus, der aldrig bliver helt mørkt, gennem tre generationer.",
+      "sv": "Årets längsta dag i ett hus som aldrig blir helt mörkt, över tre generationer.",
+      "nb": "Årets lengste dag i et hus som aldri blir helt mørkt, over tre generasjoner."
+    },
+    "A fantasy of a mountain keep that closes its gates when the first snow falls.": {
+      "da": "En fantasy om en bjergborg, der lukker sine porte, når den første sne falder.",
+      "sv": "En fantasy om en bergsborg som stänger sina portar när den första snön faller.",
+      "nb": "En fantasy om en fjellborg som stenger portene når den første snøen faller."
+    },
+    "Published only": {
+      "da": "Kun udgivet",
+      "sv": "Endast publicerad",
+      "nb": "Kun publisert"
+    },
+    "Debut novel": {
+      "da": "Debutroman",
+      "sv": "Debutroman",
+      "nb": "Debutroman"
+    },
+    "Shortlisted for a regional prize": {
+      "da": "Nomineret til en regional pris",
+      "sv": "Nominerad till ett regionalt pris",
+      "nb": "Nominert til en regional pris"
+    },
+    "Reading group questions": {
+      "da": "Spørgsmål til læseklubben",
+      "sv": "Frågor till läsecirkeln",
+      "nb": "Spørsmål til leseklubben"
+    },
+    "120 illustrated species": {
+      "da": "120 illustrerede arter",
+      "sv": "120 illustrerade arter",
+      "nb": "120 illustrerte arter"
+    },
+    "Audio QR codes": {
+      "da": "QR-koder med lyd",
+      "sv": "QR-koder med ljud",
+      "nb": "QR-koder med lyd"
+    },
+    "Night walk routes": {
+      "da": "Ruter til natvandringer",
+      "sv": "Rutter för nattvandringar",
+      "nb": "Ruter for nattvandring"
+    },
+    "Thirty-one letters": {
+      "da": "Enogtredive breve",
+      "sv": "Trettioett brev",
+      "nb": "Enogtretti brev"
+    },
+    "Planting calendar": {
+      "da": "Plantekalender",
+      "sv": "Planteringskalender",
+      "nb": "Plantekalender"
+    },
+    "Cold-climate notes": {
+      "da": "Noter om koldt klima",
+      "sv": "Anteckningar om kallt klimat",
+      "nb": "Notater om kaldt klima"
+    },
+    "Twelve essays": {
+      "da": "Tolv essays",
+      "sv": "Tolv essäer",
+      "nb": "Tolv essays"
+    },
+    "Archive photographs": {
+      "da": "Arkivfotografier",
+      "sv": "Arkivfotografier",
+      "nb": "Arkivfotografier"
+    },
+    "Index of plants": {
+      "da": "Planteregister",
+      "sv": "Växtregister",
+      "nb": "Planteregister"
+    },
+    "140 recipes": {
+      "da": "140 opskrifter",
+      "sv": "140 recept",
+      "nb": "140 oppskrifter"
+    },
+    "Village profiles": {
+      "da": "Landsbyportrætter",
+      "sv": "Byporträtt",
+      "nb": "Bygdeportretter"
+    },
+    "Preserving chapter": {
+      "da": "Kapitel om henkogning",
+      "sv": "Kapitel om konservering",
+      "nb": "Kapittel om konservering"
+    },
+    "Twelve monthly chapters": {
+      "da": "Tolv månedlige kapitler",
+      "sv": "Tolv månadskapitel",
+      "nb": "Tolv månedlige kapitler"
+    },
+    "Hand-drawn tide tables": {
+      "da": "Håndtegnede tidevandstabeller",
+      "sv": "Handritade tidvattenstabeller",
+      "nb": "Håndtegnede tidevannstabeller"
+    },
+    "Foreword by a retired pilot": {
+      "da": "Forord af en pensioneret lods",
+      "sv": "Förord av en pensionerad lots",
+      "nb": "Forord av en pensjonert los"
+    },
+    "New final chapter": {
+      "da": "Nyt afsluttende kapitel",
+      "sv": "Nytt avslutande kapitel",
+      "nb": "Nytt avsluttende kapittel"
+    },
+    "Updated photographs": {
+      "da": "Opdaterede fotografier",
+      "sv": "Uppdaterade fotografier",
+      "nb": "Oppdaterte fotografier"
+    },
+    "Revised index": {
+      "da": "Revideret register",
+      "sv": "Reviderat register",
+      "nb": "Revidert register"
+    },
+    "80 recipes": {
+      "da": "80 opskrifter",
+      "sv": "80 recept",
+      "nb": "80 oppskrifter"
+    },
+    "Fire-cooking primer": {
+      "da": "Introduktion til madlavning over ild",
+      "sv": "Introduktion till matlagning över eld",
+      "nb": "Innføring i matlaging over åpen ild"
+    },
+    "Seasonal menus": {
+      "da": "Sæsonmenuer",
+      "sv": "Säsongsmenyer",
+      "nb": "Sesongmenyer"
+    },
+    "Every crossing mapped": {
+      "da": "Hver overfart kortlagt",
+      "sv": "Varje överfart kartlagd",
+      "nb": "Hver overfart kartlagt"
+    },
+    "Seasonal timetables": {
+      "da": "Sæsonbestemte køreplaner",
+      "sv": "Säsongsbundna tidtabeller",
+      "nb": "Sesongbaserte rutetider"
+    },
+    "Island notes": {
+      "da": "Noter om øerne",
+      "sv": "Anteckningar om öarna",
+      "nb": "Notater om øyene"
+    },
+    "Literary fiction": {
+      "da": "Litterær fiktion",
+      "sv": "Skönlitteratur",
+      "nb": "Litterær skjønnlitteratur"
+    },
+    "Four-part structure": {
+      "da": "Firedelt opbygning",
+      "sv": "Fyradelad struktur",
+      "nb": "Firedelt struktur"
+    },
+    "Book club edition available": {
+      "da": "Udgave til læseklubber findes",
+      "sv": "Upplaga för läsecirklar finns",
+      "nb": "Utgave for leseklubber finnes"
+    },
+    "Three generations": {
+      "da": "Tre generationer",
+      "sv": "Tre generationer",
+      "nb": "Tre generasjoner"
+    },
+    "Translated into 11 languages": {
+      "da": "Oversat til 11 sprog",
+      "sv": "Översatt till 11 språk",
+      "nb": "Oversatt til 11 språk"
+    },
+    "Midsummer recipes appendix": {
+      "da": "Bilag med sankthansopskrifter",
+      "sv": "Bilaga med midsommarrecept",
+      "nb": "Vedlegg med sankthansoppskrifter"
+    },
+    "Standalone fantasy": {
+      "da": "Selvstændig fantasyroman",
+      "sv": "Fristående fantasyroman",
+      "nb": "Frittstående fantasyroman"
+    },
+    "Map endpapers": {
+      "da": "Kort på forsatsbladene",
+      "sv": "Kartor på försättsbladen",
+      "nb": "Kart på forsidebladene"
+    },
+    "Illustrated chapter heads": {
+      "da": "Illustrerede kapiteloverskrifter",
+      "sv": "Illustrerade kapitelrubriker",
+      "nb": "Illustrerte kapitteloverskrifter"
+    },
+    "Add to cart": {
+      "da": "Læg i kurv",
+      "sv": "Lägg i varukorgen",
+      "nb": "Legg i handlekurven"
+    },
+    "Free shipping over 300 kr.": {
+      "da": "Gratis fragt over 300 kr.",
+      "sv": "Fri frakt över 300 kr.",
+      "nb": "Gratis frakt over 300 kr."
+    },
+    "Written by ": {
+      "da": "Skrevet af ",
+      "sv": "Skriven av ",
+      "nb": "Skrevet av "
+    },
+    ", who also appears in the other books of the series.": {
+      "da": ", som også optræder i seriens andre bøger.",
+      "sv": ", som också förekommer i seriens andra böcker.",
+      "nb": ", som også er med i seriens andre bøker."
+    },
+    "Denmark": {
+      "da": "Danmark",
+      "sv": "Danmark",
+      "nb": "Danmark"
+    },
+    "Norway": {
+      "da": "Norge",
+      "sv": "Norge",
+      "nb": "Norge"
+    },
+    "Sweden": {
+      "da": "Sverige",
+      "sv": "Sverige",
+      "nb": "Sverige"
+    },
+    "Gothenburg": {
+      "da": "Göteborg",
+      "sv": "Göteborg",
+      "nb": "Göteborg"
+    },
+    "Literary fiction and essays.": {
+      "da": "Litterær fiktion og essays.",
+      "sv": "Skönlitteratur och essäer.",
+      "nb": "Litterær skjønnlitteratur og essays."
+    },
+    "Nordic classics in new editions.": {
+      "da": "Nordiske klassikere i nye udgaver.",
+      "sv": "Nordiska klassiker i nya upplagor.",
+      "nb": "Nordiske klassikere i nye utgaver."
+    },
+    "Small-run coastal nonfiction.": {
+      "da": "Kystfaglitteratur i små oplag.",
+      "sv": "Kustfakta i små upplagor.",
+      "nb": "Kystfaglitteratur i små opplag."
+    },
+    "Coastal Almanacs": {
+      "da": "Kystalmanakker",
+      "sv": "Kustalmanackor",
+      "nb": "Kystalmanakker"
+    },
+    "Field Guides": {
+      "da": "Feltguider",
+      "sv": "Fältguider",
+      "nb": "Feltguider"
+    },
+    "Small Hours": {
+      "da": "De små timer",
+      "sv": "De små timmarna",
+      "nb": "De små timer"
+    },
+    "Yearbooks of weather, tides and letters.": {
+      "da": "Årbøger om vejr, tidevand og breve.",
+      "sv": "Årsböcker om väder, tidvatten och brev.",
+      "nb": "Årbøker om vær, tidevann og brev."
+    },
+    "Practical guides, illustrated.": {
+      "da": "Praktiske guider, illustrerede.",
+      "sv": "Praktiska guider, illustrerade.",
+      "nb": "Praktiske guider, illustrerte."
+    },
+    "Short books for late evenings.": {
+      "da": "Korte bøger til sene aftener.",
+      "sv": "Korta böcker för sena kvällar.",
+      "nb": "Korte bøker til sene kvelder."
+    }
+  }
+}

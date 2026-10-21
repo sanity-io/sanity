@@ -1,5 +1,6 @@
 import {defineField, defineType} from 'sanity'
 
+import {languageField} from './language'
 import {referenceFields} from './people'
 
 // Nordic Books: the mock catalogue behind the Variants 2.0 fixtures (seed/nordic-books.json).
@@ -14,6 +15,8 @@ export const bookFields = [
   defineField({name: 'cta', type: 'string', title: 'Button label'}),
   // E9: real references (schemas/people.ts)
   ...referenceFields,
+  // The localization plugin's language field (hidden)
+  languageField,
 ]
 
 export const book = defineType({

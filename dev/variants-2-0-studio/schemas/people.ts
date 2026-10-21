@@ -1,5 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
+import {languageField} from './language'
+
 // Referenced types for the E9 multi-pane scenarios (seed/seed-refs.mts): books point at authors, publishers, series and places with real
 // references, hard and weak, in a field, in an array and inline in portable text. Some of the referenced documents have variants.
 
@@ -24,6 +26,7 @@ export const publisher = defineType({
     defineField({name: 'name', type: 'string'}),
     defineField({name: 'about', type: 'text', rows: 2}),
     defineField({name: 'headquarters', type: 'reference', to: [{type: 'place'}]}),
+    languageField,
   ],
   preview: {select: {title: 'name', subtitle: 'about'}},
 })
@@ -35,6 +38,7 @@ export const series = defineType({
   fields: [
     defineField({name: 'title', type: 'string'}),
     defineField({name: 'blurb', type: 'text', rows: 2}),
+    languageField,
   ],
   preview: {select: {title: 'title', subtitle: 'blurb'}},
 })
@@ -46,6 +50,7 @@ export const place = defineType({
   fields: [
     defineField({name: 'name', type: 'string'}),
     defineField({name: 'country', type: 'string'}),
+    languageField,
   ],
   preview: {select: {title: 'name', subtitle: 'country'}},
 })

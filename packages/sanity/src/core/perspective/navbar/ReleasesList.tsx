@@ -1,7 +1,7 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Spinner, Stack, Text, TextInput} from '@sanity/ui'
-import {type JSX, type RefObject, useMemo, useState} from 'react'
+import {type JSX, type RefObject, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
@@ -77,7 +77,8 @@ export function ReleasesList({
   )
   const entryCount =
     1 + (isDraftModelEnabled ? 1 : 0) + (areReleasesEnabled ? allEntries.length : 0)
-  const {searchable, query, needle, setQuery} = useReleaseMenuSearch(
+  const menuRef = useRef<HTMLDivElement | null>(null)
+  const {searchable, query, needle, size, setQuery} = useReleaseMenuSearch(
     search,
     entryCount,
     selectedPerspectiveName,
@@ -148,7 +149,11 @@ export function ReleasesList({
   const nothingMatches = Boolean(needle) && !showPublished && !showDrafts && !hasVisibleReleases
 
   return (
-    <Card radius={3}>
+    <Card
+      radius={3}
+      ref={menuRef}
+      style={size ? {minHeight: size.height, width: size.width} : undefined}
+    >
       <StickyTopCard borderBottom padding={1}>
         <Stack gap={1}>
           {searchable && search && (
@@ -158,7 +163,7 @@ export function ReleasesList({
                 data-testid="release-menu-search"
                 fontSize={1}
                 icon={SearchIcon}
-                onChange={(event) => setQuery(event.currentTarget.value)}
+                onChange={(event) => setQuery(event.currentTarget.value, menuRef.current)}
                 placeholder={search.placeholder}
                 value={query}
               />
@@ -208,19 +213,22 @@ export function ReleasesList({
           ))}
         </Stack>
       )}
-      <StickyBottomCard borderTop paddingY={1} paddingX={2}>
-        <Stack gap={1}>
-          {/* PROPOSED: a host's extra rows lead the bottom group, above View Scheduled Drafts (also with releases off). */}
-          {extension?.extraRows}
-          <ScheduledDraftsMenuItem />
-          {areReleasesEnabled && (
-            <>
-              <ViewContentReleasesMenuItem />
-              <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
-            </>
-          )}
-        </Stack>
-      </StickyBottomCard>
+      {/* While searching, only the entries show: the footer actions are not results. */}
+      {!needle && (
+        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
+          <Stack gap={1}>
+            {/* PROPOSED: a host's extra rows lead the bottom group, above View Scheduled Drafts (also with releases off). */}
+            {extension?.extraRows}
+            <ScheduledDraftsMenuItem />
+            {areReleasesEnabled && (
+              <>
+                <ViewContentReleasesMenuItem />
+                <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
+              </>
+            )}
+          </Stack>
+        </StickyBottomCard>
+      )}
     </Card>
   )
 }
