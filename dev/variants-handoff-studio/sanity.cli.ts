@@ -9,6 +9,7 @@ const dataset = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
 // `monorepo` condition so edits under packages/sanity/src hot-reload.
 export default defineCliConfig({
   api: {projectId, dataset},
+  deployment: {appId: 'tf6sfb2f5tuw6jtt3qysvelr'},
   reactStrictMode: true,
   unstable_bundledDev: false,
   reactCompiler: {
