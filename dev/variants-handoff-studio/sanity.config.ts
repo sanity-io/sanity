@@ -3,10 +3,9 @@ import {structureTool} from 'sanity/structure'
 
 import {NavbarWithVariants} from './c1/NavbarWithVariants'
 import {inventoryInspector} from './c4/InventoryInspector'
-import {fieldLevel, localization} from './localization/plugin'
-import {structure} from './localization/structure'
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
 import {schemaTypesFor} from './schemas'
+import {structure} from './structure'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'ppsg7ml5'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
@@ -29,7 +28,7 @@ export default defineConfig({
   title: 'Content Variants Handoff Studio',
   projectId,
   dataset,
-  plugins: [structureTool({structure}), variantsHandoffOptions(), localization(), fieldLevel],
+  plugins: [structureTool({structure}), variantsHandoffOptions()],
   schema: {types: schemaTypesFor(dataset)},
   scheduledDrafts: {enabled: true},
   // The Variants flag is ON: today's open-beta baseline (the shipped Variants tool, variant UI in the Studio). The

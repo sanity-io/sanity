@@ -56,7 +56,12 @@ export const VERSION_ROWS_GROQ = `*[_id in [$id, "drafts." + $id] || _system.gro
   _id, "variant": _system.variant._ref, "bundle": _system.bundleId, _createdAt, _updatedAt
 }`
 
-export const DEFINITIONS_GROQ = `*[_type == "system.variant"]{"id": string::split(_id, ".")[2], "title": coalesce(metadata.title, string::split(_id, ".")[2])}`
+/** The open beta has ONE dimension. The Handoff Studio shows Audience only; variants on other dimensions (locale, market) and composites are out of scope. */
+export const OPEN_BETA_DIMENSION = 'audience'
+export const inOpenBeta = (conditions: Record<string, unknown> | null | undefined) =>
+  Object.keys(conditions ?? {}).every((name) => name === OPEN_BETA_DIMENSION)
+
+export const DEFINITIONS_GROQ = `*[_type == "system.variant"]{"id": string::split(_id, ".")[2], conditions, "title": coalesce(metadata.title, string::split(_id, ".")[2])}`
 export const RELEASES_GROQ = `*[_type == "system.release"]{"id": string::split(_id, ".")[2], "title": metadata.title, "type": metadata.releaseType, state, "at": metadata.intendedPublishAt, "cardinality": metadata.cardinality}`
 
 const minutesBetween = (now: Date, iso: string) =>
@@ -89,6 +94,8 @@ export function toVersions(
 
   for (const row of rows) {
     const variantId = row.variant ? row.variant.replace(/^_\.variants\./, '') : null
+    // A variant outside the open beta dimension is not a version here.
+    if (variantId && !options.definitions.has(variantId)) continue
     const audience = variantId ? (options.definitions.get(variantId) ?? variantId) : null
     const base = {
       audience,

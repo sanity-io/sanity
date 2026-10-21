@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
 import {useClient} from 'sanity'
 
+import {inOpenBeta} from '../data/versions'
 import {useOptionState} from '../options/store'
 import {deriveDimensions, type DimensionSpec, type SystemVariant} from './model'
 
@@ -29,7 +30,7 @@ export function useVariantDefinitions(): SystemVariant[] {
         cache.set(key, pending)
       }
       pending
-        .then((next) => !cancelled && setVariants(next))
+        .then((next) => !cancelled && setVariants(next.filter((d) => inOpenBeta(d.conditions))))
         .catch(() => !cancelled && setVariants([]))
     }
     load(false)

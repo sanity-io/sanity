@@ -5,6 +5,7 @@ import {useClient} from 'sanity'
 import {
   type AudienceVersion,
   DEFINITIONS_GROQ,
+  inOpenBeta,
   RELEASES_GROQ,
   type RawVersionRow,
   type ReleaseInfo,
@@ -39,8 +40,13 @@ function createLoader(client: SanityClient): Loader {
     if (!lookup || Date.now() - lookupAt > CACHE_MS) {
       lookupAt = Date.now()
       lookup = Promise.all([client.fetch(DEFINITIONS_GROQ), client.fetch(RELEASES_GROQ)]).then(
-        ([defs, rels]: [Array<{id: string; title: string}>, ReleaseInfo[]]) => ({
-          definitions: new Map(defs.map((d) => [d.id, d.title])),
+        ([defs, rels]: [
+          Array<{id: string; title: string; conditions?: Record<string, unknown>}>,
+          ReleaseInfo[],
+        ]) => ({
+          definitions: new Map(
+            defs.filter((d) => inOpenBeta(d.conditions)).map((d) => [d.id, d.title]),
+          ),
           releases: new Map(rels.map((r) => [r.id, r])),
           at: Date.now(),
         }),

@@ -62,6 +62,8 @@ function DocumentPaneHost({children}: {children: ReactNode}) {
 export function LayoutWithFloatingOptions(props: LayoutProps) {
   return (
     <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
+      {/* The Versions pill is the way into the inventory (T2), so the footer's stock "Manage versions" button (core, no seam) is hidden. */}
+      <style>{`[data-testid="action-document-group-inventory"] {display: none !important}`}</style>
       <PerspectiveProvider>
         <PerspectiveMenuHost>
           <NeutralNavbarHost>
