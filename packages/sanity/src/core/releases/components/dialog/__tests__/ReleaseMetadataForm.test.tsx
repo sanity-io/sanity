@@ -40,6 +40,13 @@ const customLegalReviewField = defineField({
   components: {input: CustomLegalInput},
 })
 
+const signOffField = defineField({
+  name: 'signOff',
+  title: 'Sign-off',
+  type: 'object',
+  fields: [defineField({name: 'reviewer', title: 'Reviewer', type: 'string'})],
+})
+
 function ControlledMetadataForm(props: {
   initial: ReleaseMetadataRecord
   onChange: (metadata: ReleaseMetadataRecord) => void
@@ -141,6 +148,32 @@ describe('ReleaseMetadataForm', () => {
         }),
       )
     })
+  })
+
+  it('pulls metadata fields back by the empty form gutter and keeps Sign-off children inside it', async () => {
+    await renderWithFields(
+      [legalReviewField, signOffField],
+      <ControlledMetadataForm initial={{releaseType: 'asap'}} onChange={vi.fn()} />,
+    )
+
+    const legalReview = await screen.findByTestId('field-legalReview')
+    const reviewer = await screen.findByTestId('field-signOff.reviewer')
+    const align = legalReview.closest('[data-testid="release-metadata-form-align"]')
+
+    expect(align).toBeInstanceOf(HTMLElement)
+    expect(align).toHaveAttribute('data-gutter', 'true')
+    expect(align).toContainElement(reviewer)
+
+    const reviewerFieldset = reviewer.closest('fieldset')
+    expect(reviewerFieldset).toBeInstanceOf(HTMLFieldSetElement)
+    expect(align).toContainElement(reviewerFieldset)
+
+    const cssText = [...document.styleSheets]
+      .flatMap((sheet) => [...sheet.cssRules])
+      .map((rule) => rule.cssText)
+      .join('\n')
+      .replaceAll(/\s+/g, '')
+    expect(cssText).toContain('margin-inline:calc((var(--formGutterSize)+var(--formGutterGap))*-1)')
   })
 
   it('defaults a missing key once on create, then leaves a cleared value omitted', async () => {
