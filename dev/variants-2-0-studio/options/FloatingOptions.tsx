@@ -2,6 +2,7 @@ import {type ReactNode} from 'react'
 import {
   type LayoutProps,
   FieldSetRollupProvider,
+  NavbarNeutralProvider,
   PerspectiveMenuExtensionProvider,
   ShippedPerspectiveBarProvider,
   VariantDetailExtensionProvider,
@@ -56,6 +57,12 @@ function PerspectiveMenuHost({children}: {children: ReactNode}) {
   )
 }
 
+/** C1 B (the open beta design): the navbar keeps the default tone, so the state is said by the controls, not by a green or coloured bar. */
+function NeutralNavbarHost({children}: {children: ReactNode}) {
+  const neutral = useOption('c1') === 'b'
+  return <NavbarNeutralProvider value={neutral}>{children}</NavbarNeutralProvider>
+}
+
 export function LayoutWithFloatingOptions(props: LayoutProps) {
   // The Variants tool's Add filter uses the perspective bar's picker; Stock keeps the shipped menu.
   const stock = useOption('c1') === STOCK_OPTION
@@ -66,23 +73,25 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
       <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
         <PerspectiveProvider>
           <PerspectiveMenuHost>
-            <ShippedPerspectiveBarProvider value={EXTENSIONS.showShippedBar}>
-              <VariantEditNoticeProvider value={EditNotice}>
-                <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
-                  <DocumentPaneExtensionProvider value={EXTENSIONS.documentPane}>
-                    <VariantFilterAddControlProvider value={stock ? null : renderPickerAddFilter}>
-                      <FieldSetRollupProvider value={renderFieldSetRollup}>
-                        {props.renderDefault(props)}
-                      </FieldSetRollupProvider>
-                    </VariantFilterAddControlProvider>
-                    <DesignOptions />
-                    <RemoteListener />
-                    <ShapeStyles />
-                    <ResultToastStyles />
-                  </DocumentPaneExtensionProvider>
-                </VariantDetailExtensionProvider>
-              </VariantEditNoticeProvider>
-            </ShippedPerspectiveBarProvider>
+            <NeutralNavbarHost>
+              <ShippedPerspectiveBarProvider value={EXTENSIONS.showShippedBar}>
+                <VariantEditNoticeProvider value={EditNotice}>
+                  <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
+                    <DocumentPaneExtensionProvider value={EXTENSIONS.documentPane}>
+                      <VariantFilterAddControlProvider value={stock ? null : renderPickerAddFilter}>
+                        <FieldSetRollupProvider value={renderFieldSetRollup}>
+                          {props.renderDefault(props)}
+                        </FieldSetRollupProvider>
+                      </VariantFilterAddControlProvider>
+                      <DesignOptions />
+                      <RemoteListener />
+                      <ShapeStyles />
+                      <ResultToastStyles />
+                    </DocumentPaneExtensionProvider>
+                  </VariantDetailExtensionProvider>
+                </VariantEditNoticeProvider>
+              </ShippedPerspectiveBarProvider>
+            </NeutralNavbarHost>
           </PerspectiveMenuHost>
         </PerspectiveProvider>
       </DocumentListItemOverrideProvider>

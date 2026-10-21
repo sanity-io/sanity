@@ -1007,6 +1007,8 @@ export {
   type PerspectiveNotWriteableReason,
 } from '../core/perspective/isPerspectiveWriteable'
 export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
+// PROPOSED: keep the navbar's tone neutral whatever the perspective (Variants 2.0 test studio).
+export {NavbarNeutralProvider} from '../core/studio/components/navbar/NavbarNeutral'
 // PROPOSED: extension point for the navbar's perspective control (Variants 2.0 test studio).
 export {GlobalPerspectiveMenu} from '../core/perspective/navbar/GlobalPerspectiveMenu'
 export {

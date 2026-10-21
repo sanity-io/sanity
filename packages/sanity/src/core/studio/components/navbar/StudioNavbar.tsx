@@ -8,7 +8,7 @@ import {
   useMediaIndex,
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
-import {NavbarContext} from 'sanity/_singletons'
+import {NavbarContext, NavbarNeutralContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Grid, Flex, Box} from 'ui5'
@@ -92,6 +92,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   } = useContext(NavbarContext)
 
   const {selectedPerspective, perspectiveStack, selectedVariantName} = usePerspective()
+  // PROPOSED: a host can keep the navbar's tone neutral (no perspective colouring).
+  const neutralNavbar = useContext(NavbarNeutralContext)
 
   const ToolMenu = useToolMenuComponent()
 
@@ -195,7 +197,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
-          tone={getReleaseTone(selectedPerspective)}
+          tone={neutralNavbar ? 'default' : getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"
@@ -280,7 +282,9 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
-                {(!beta?.variants?.enabled || !showShippedPerspectiveBar) && <ReleasesNav withReleasesToolButton />}
+                {(!beta?.variants?.enabled || !showShippedPerspectiveBar) && (
+                  <ReleasesNav withReleasesToolButton />
+                )}
                 {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
                 <PresenceMenu />
