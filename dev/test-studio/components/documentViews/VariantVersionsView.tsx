@@ -395,7 +395,7 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
                     Last updated at:{' '}
                   </Text>
                   {formattedUpdatedAt ?? (
-                    <Text muted as="div" trim={true}>
+                    <Text muted as="span" trim={true}>
                       (unknown)
                     </Text>
                   )}
