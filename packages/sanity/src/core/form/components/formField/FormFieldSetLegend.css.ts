@@ -43,7 +43,6 @@ export const toggleButton = style({
 
 export const toggleIconBox = style({
   selectors: {
-    // Box sets width, height and margin on itself
     '&&': {
       width: '9px',
       height: '9px',

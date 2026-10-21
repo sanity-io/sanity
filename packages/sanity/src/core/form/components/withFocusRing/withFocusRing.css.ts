@@ -13,8 +13,6 @@ export const focusRing = style({
   },
   outline: 'none',
   selectors: {
-    // `&&`: the wrapped Card sets `border-radius` (radius prop) and `box-shadow` (shadow prop) itself;
-    // the styled(Card) override used to win those ties by injection order.
     '&&': {
       borderRadius: radiusVar,
       boxShadow: 'var(--card-focus-box-shadow)',

@@ -33,7 +33,6 @@ export const cardContainer = style({
   transition: 'opacity 150ms ease-in-out',
   opacity: 0,
   selectors: {
-    // Card sets border (border prop) and Box sets box-sizing (sizing prop) on itself
     '&&': {
       border: '1px solid var(--card-border-color)',
       boxSizing: 'border-box',

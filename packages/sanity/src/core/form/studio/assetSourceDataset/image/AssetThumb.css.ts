@@ -15,7 +15,6 @@ export const container = style({
   position: 'relative',
   zIndex: 1,
   selectors: {
-    // `&&`: Card (Box) sets `padding` on itself (`padding` prop, default 0)
     '&&': {
       paddingBottom: '100%',
     },

@@ -69,8 +69,6 @@ export const content = style({
 /** The `> .content > div` elements of the root (tag boxes and the input wrapper) */
 export const contentItem = style({
   selectors: {
-    // `&&&`: the tag Box (ui5) sets `display: block` through `.sui-display-block:not([hidden])`
-    // (0,2,0); the original `& > .content > div` selector beat it with (0,3,0).
     '&&&': {
       display: 'inline-block',
       verticalAlign: 'top',

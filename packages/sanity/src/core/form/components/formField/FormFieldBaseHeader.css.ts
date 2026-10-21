@@ -29,7 +29,6 @@ export const contentBoxPresenceOffsetVar = createVar()
 
 export const contentBox = style({
   selectors: {
-    // Box sets min-width and max-width on itself
     '&&': {
       maxWidth: `calc(100% - ${contentBoxPresenceOffsetVar})`,
       minWidth: '75%',
@@ -119,7 +118,6 @@ globalStyle(
 export const fieldActionsFlex = style({
   transition: 'opacity 150ms ease',
   selectors: {
-    // Flex sets gap on itself
     '&&': {
       gap: 'inherit',
     },

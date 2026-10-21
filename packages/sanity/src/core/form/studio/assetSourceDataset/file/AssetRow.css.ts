@@ -1,14 +1,10 @@
 import {style} from '@vanilla-extract/css'
 
 export const rowButton = style({
-  // Kept at (0,1,0) like the original: Button sets its own `box-shadow` under
-  // `&:not([data-disabled='true'])` (0,2,0), so this never applied to an enabled button, and
-  // `&&` would turn that into an order-dependent tie instead.
   boxShadow: 'none',
   minWidth: 0,
   cursor: 'pointer',
   selectors: {
-    // `&&`: Button sets `position: relative` on itself
     '&&': {
       position: 'initial',
     },
@@ -31,7 +27,6 @@ export const rowButton = style({
 
 export const rowButtonSelected = style({
   selectors: {
-    // `&&`: Button sets the `--card-*` color variables on itself
     '&&': {
       vars: {
         '--card-muted-fg-color': 'var(--card-bg-color)',
@@ -62,7 +57,6 @@ export const rowButtonUnselected = style({
 export const cardIconWrapper = style({
   flexShrink: 0,
   selectors: {
-    // `&&`: Card sets `background-color` on itself
     '&&': {
       backgroundColor: 'transparent',
     },
@@ -87,7 +81,6 @@ export const customFlex = style({
 
 export const customCardSelected = style({
   selectors: {
-    // `&&`: Card sets the `--card-*` color variables on itself
     '&&': {
       vars: {
         '--card-muted-fg-color': 'var(--card-bg-color)',
