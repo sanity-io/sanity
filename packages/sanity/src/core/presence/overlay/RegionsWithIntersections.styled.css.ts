@@ -20,8 +20,6 @@ export const overlayWrapper = style({
   zIndex: 13,
 })
 
-// Shared `RegionWrapper` mixin. `overflow: clip` was declared after `overflow: hidden` as a
-// fallback chain, which the array reproduces.
 const regionWrapper: StyleRule = {
   overflow: ['hidden', 'clip'],
   pointerEvents: 'none',
@@ -34,7 +32,6 @@ export const topVar = createVar()
 const topRegion = style({
   ...regionWrapper,
   zIndex: 100,
-  // the mixin's `position: absolute` stayed in the rule as a fallback for `sticky`
   position: ['absolute', 'sticky'],
   flex: 'none',
   height: '1px',
@@ -46,7 +43,6 @@ export const topRegionWrapper = styleVariants({
   debug: [topRegion, {backgroundColor: 'red'}],
 })
 
-// the original also declared `visibility: none`, an invalid value browsers drop
 const middleRegion = style(regionWrapper)
 
 export const middleRegionWrapper = styleVariants({

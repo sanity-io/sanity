@@ -6,7 +6,6 @@ export const rootLayout = style({
 
 export const root = style({})
 
-// the original also declared `min-width: none !important`, an invalid value browsers drop
 globalStyle(`${root} > div`, {
   maxWidth: 'none !important',
 })

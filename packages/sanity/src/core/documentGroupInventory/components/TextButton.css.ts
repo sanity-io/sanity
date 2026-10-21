@@ -16,8 +16,6 @@ export const textButton = style({
   color: ghostNeutralFgVar,
 })
 
-// @sanity/ui's Text sets `color` on itself with a single class (0,1,0), the same specificity
-// `.textButton *` has; the original only won that tie by styled-components injection order.
 globalStyle(`${textButton}${textButton} *`, {
   color: 'inherit',
 })

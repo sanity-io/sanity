@@ -50,8 +50,6 @@ globalStyle(`${table} tr > *:last-child`, {
 
 export const documentIdFlex = style({
   selectors: {
-    // ui5's Flex sets `min-height: 0` on itself through its `.sui-min-height` utility class
-    // (0,1,0); `min-block-size` cascades against that declaration, so double the class.
     '&&': {
       minBlockSize: '33px',
     },
