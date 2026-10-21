@@ -987,6 +987,7 @@ export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
 export {type ValidationLocaleResourceKeys} from '../core/i18n/bundles/validation'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
+export {InlineCode} from '../core/i18n/components/InlineCode'
 export {
   defineLocale,
   defineLocaleResourceBundle,
