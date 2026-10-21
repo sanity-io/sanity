@@ -1,6 +1,6 @@
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Button as UIButton, Card, Text} from '@sanity/ui'
-import {type CSSProperties} from 'react'
+import {type CSSProperties, type ReactNode, useState} from 'react'
 import {ReleaseAvatarIcon, useColorSchemeValue} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -11,20 +11,96 @@ import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {Tooltip} from '../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 import {StateGlyph} from './StateGlyph'
 
+// ---- Option A (v1): the versions icon button with the state dot as a badge on its corner. Kept as built, for the A/B pick.
+
+/** The badge: a disc or ring of 8px, its centre 22px right and 4px down from the button's corner. */
+const BADGE_HALO = 12
+const BADGE_CENTRE = {x: 22, y: 4}
+
 /**
- * C3 option D, the contained tile (Figma C3 "D contained tile · full spec", 22 Oct): the versions control is one tile with its own fill and
- * a 1px hairline, so colour never touches the row fill. It is laid out from the right: the versions icon keeps the tile's right edge, and the
- * marks (the base or release dot, the variant diamond) sit in a column to its left. With marks the tile is 43 × 29; with nothing to mark it
- * holds just the icon (29 × 29). Either way the icons line up down the list. The tile is the one control: a Studio Button in bleed mode, so
- * its hover fill is the Studio's own, in its own Card, so a selected row does not recolour it or its marks.
+ * The 25px icon button with the state dot as a badge on its top-right corner (SP4). The glyph is the
+ * Studio's own disc or ring; a 12px halo under it takes the button's current fill (the card colour
+ * at rest, the hover fill when the pointer is on the control), so it separates from the icon. The
+ * badge ignores the pointer: the button is the one hit area.
  */
-const TILE = {height: 29, withMarks: 43, iconOnly: 29}
+export function BadgedControl(props: {
+  dot: 'published' | 'draft' | 'variant' | null
+  children: ReactNode
+}) {
+  const [fill, setFill] = useState<string | undefined>(undefined)
+  return (
+    <span
+      onPointerEnter={(event) => {
+        const button = event.currentTarget.querySelector('button')
+        if (button && !button.disabled) {
+          requestAnimationFrame(() => setFill(getComputedStyle(button).backgroundColor))
+        }
+      }}
+      onPointerLeave={() => setFill(undefined)}
+      style={{position: 'relative', display: 'flex', lineHeight: 0}}
+    >
+      {props.children}
+      {props.dot ? (
+        <span
+          aria-hidden
+          data-state={props.dot}
+          data-testid="state-badge"
+          style={{
+            position: 'absolute',
+            left: BADGE_CENTRE.x - BADGE_HALO / 2,
+            top: BADGE_CENTRE.y - BADGE_HALO / 2,
+            width: BADGE_HALO,
+            height: BADGE_HALO,
+            borderRadius: '50%',
+            background: fill ?? 'var(--card-bg-color)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          {/* The icon box is 25 units for a 7-unit disc: 28px of box gives an 8px dot. */}
+          {/* The diamond fills more of its box than the disc does, so it gets a smaller box. */}
+          <span
+            style={{display: 'flex', flex: 'none', fontSize: props.dot === 'variant' ? 24 : 28}}
+          >
+            <StateGlyph state={props.dot} />
+          </span>
+        </span>
+      ) : null}
+    </span>
+  )
+}
+
+/** The SP4 button: the 25px icon button with a 1px border on hover (focus keeps the Button ring). */
+export const BadgeButton = styled(Button)`
+  cursor: pointer;
+  &:disabled {
+    cursor: default;
+  }
+  &:hover:not(:focus-visible):not(:disabled) {
+    box-shadow: inset 0 0 0 1px var(--card-border-color);
+  }
+`
+
+// ---- Option B: the contained tile.
+
+/**
+ * T3 option B, the contained tile (Figma C3 "Option B · contained tile, only where there is more (spec, 22 Oct)", 674:3362): the versions
+ * control is one tile with its own fill and a 1px hairline, so colour never touches the row fill. It is laid out from the right: the
+ * versions icon keeps the tile's right edge, and the marks (the base or release dot, the variant diamond) sit in a padded column to its
+ * left. With marks the tile is 51 × 29; with nothing to mark it holds just the icon (29 × 29). Either way the icons line up down the list.
+ * The tile is the one control: a Studio Button in bleed mode, so its hover fill is the Studio's own, in its own Card, so a selected row does
+ * not recolour it or its marks.
+ */
+const TILE = {height: 29, withMarks: 51, iconOnly: 29}
 /** The row's status slot is top-aligned inside its 8px padding: the tile is moved 8px from the row's right edge, centred on its 49px. */
 const TILE_OFFSET = {x: 4, y: 2}
 /** The versions icon's 25px box, 2px inside the tile's right and top edges. */
 const ICON_INSET = 2
-/** The marks' column: 16px slots, 1px from the tile's left edge; two marks at 1 and 13, one centred; each glyph's 25px box centred in it. */
-const MARK = {slot: 16, left: 1, top: [1, 13], centred: 6.5, glyph: 25}
+/** The marks' column: 16px slots whose centres sit 13px in from the tile's left edge; two marks at 1 and 13, one centred; each glyph's 25px
+ * box centred in its slot. */
+const MARK = {slot: 16, left: 5, top: [1, 13], centred: 6.5, glyph: 25}
 
 /** The hairline: the foreground at 14% (light) or 18% (dark); stronger on hover. */
 const HAIRLINE = {
@@ -76,6 +152,43 @@ function MarkGlyph({kind}: {kind: TileMark}) {
     )
   }
   return <StateGlyph size={MARK.glyph} state={kind} />
+}
+
+/**
+ * A document with nothing more than its base version: its state dot alone, no tile and no button, as the stock Studio shows it. The dot is
+ * centred where the tile's icon sits, so it keeps the icon column (Figma: a 16px slot at x 329.5, y 16.5 in the 360 × 49 row).
+ */
+export function BaseDotOnly({state}: {state: 'published' | 'draft'}) {
+  return (
+    <span
+      aria-label={`The base document is ${state}`}
+      data-testid="version-dot-only"
+      role="img"
+      style={{
+        position: 'relative',
+        left: TILE_OFFSET.x,
+        // As a block box the slot starts 2px lower than the tile's inline box, so it needs no vertical offset to centre on the row (measured).
+        top: 0,
+        width: TILE.iconOnly,
+        height: TILE.height,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <span
+        style={{
+          width: MARK.slot,
+          height: MARK.slot,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <StateGlyph size={MARK.glyph} state={state} />
+      </span>
+    </span>
+  )
 }
 
 export function TileControl(props: {

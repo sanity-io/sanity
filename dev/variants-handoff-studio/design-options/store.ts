@@ -214,9 +214,26 @@ export function isModified(current: State = state ?? defaults()): boolean {
 const storageKey = () => `${getConfig().storageKey}:options:v2`
 
 /** A shared link wins over the stored state; storage is the fallback, so reload keeps the choice. */
+/** The choices kept for a fixed design's adjustable components (TEMPORARY, see `adjustable`). */
+const adjustableKey = () => `${getConfig().storageKey}:adjustable:v1`
+
+function loadAdjustable(): Record<string, string> {
+  const ids = getConfig().adjustable ?? []
+  try {
+    const raw = window.localStorage.getItem(adjustableKey())
+    const saved = raw ? (JSON.parse(raw) as Record<string, string>) : {}
+    return Object.fromEntries(Object.entries(saved).filter(([id]) => ids.includes(id)))
+  } catch {
+    return {}
+  }
+}
+
 function load(): State {
   const fixed = getConfig().fixed
-  if (fixed) return parseDesign(fixed) ?? defaults()
+  if (fixed) {
+    const base = parseDesign(fixed) ?? defaults()
+    return {...base, overrides: {...base.overrides, ...loadAdjustable()}}
+  }
   try {
     const params = new URLSearchParams(window.location.search)
     const presetId = params.get(PRESET_PARAM)
@@ -250,8 +267,23 @@ function current(): State {
 }
 
 function commit(next: State) {
-  // A fixed design never changes.
-  if (getConfig().fixed) return
+  // A fixed design never changes, except for its adjustable components (TEMPORARY), which are kept in this browser.
+  const {fixed, adjustable = []} = getConfig()
+  if (fixed) {
+    const now = current()
+    const picked = Object.fromEntries(
+      adjustable.flatMap((id) => (next.overrides[id] ? [[id, next.overrides[id]]] : [])),
+    )
+    if (adjustable.every((id) => now.overrides[id] === picked[id])) return
+    state = {...now, overrides: {...now.overrides, ...picked}}
+    try {
+      window.localStorage.setItem(adjustableKey(), JSON.stringify(picked))
+    } catch {
+      // Storage can be blocked; the choice then lasts for this tab only.
+    }
+    listeners.forEach((listener) => listener())
+    return
+  }
   state = next
   try {
     window.localStorage.setItem(storageKey(), JSON.stringify(next))

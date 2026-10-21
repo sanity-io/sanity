@@ -7,7 +7,7 @@ import {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
 import {insideTriangle, type Point} from './hoverIntent'
-import {DotButton, TileControl, type TileMark} from './StateBadge'
+import {BadgeButton, BadgedControl, DotButton, TileControl, type TileMark} from './StateBadge'
 import {StateGlyph} from './StateGlyph'
 import {type AudienceVersion, type State} from './types'
 import {VersionDescription} from './VersionDescription'
@@ -78,10 +78,11 @@ export type MarkBehaviour = 's1' | 's2' | 's3'
  * - `icon`: the plain versions icon button (SP1, today).
  * - `pill`: ONE button holding the state glyph and the versions icon (SP2, SP3). The glyph is part
  *   of the button's label, not a second control.
+ * - `badge`: the plain icon button with the state glyph as a badge on its top-right corner (SP4; T3 option A).
  * - `tile`: option D, the contained tile: the icon and a column of marks (base dot, variant diamond) inside one 43 × 29 control.
  * - `dot`: Option B. No icon: the state dot is the control, in the same 25px square slot and chrome.
  */
-export type MarkTrigger = 'icon' | 'pill' | 'tile' | 'dot'
+export type MarkTrigger = 'icon' | 'pill' | 'badge' | 'tile' | 'dot'
 /** What a click on a pill in the popover (Option B) hands to the host. */
 export type VersionPick = {
   docId: string
@@ -111,7 +112,7 @@ export function VersionMark(props: {
   trigger?: MarkTrigger
   /** What the popover body shows (default: today's pills). */
   content?: PopoverContent
-  /** The base document's state, shown inside the `pill` trigger. */
+  /** The base document's state, shown inside the `pill` and `badge` triggers. */
   dot?: 'published' | 'draft' | 'variant' | null
   /** The `tile` trigger's marks, top to bottom: the base document's state or its earliest release, then the variant diamond. */
   marks?: readonly TileMark[]
@@ -326,6 +327,25 @@ export function VersionMark(props: {
                 onClick={onClick}
                 tooltipProps={null}
               />
+            )
+          }
+          if (trigger === 'badge') {
+            // SP4: the state dot is a badge on the corner of the icon button. It is a sibling of
+            // the button that ignores the pointer, so the control stays one hit area, and its halo
+            // follows the button's fill (read from the button on hover).
+            return (
+              <BadgedControl dot={dot}>
+                <BadgeButton
+                  aria-describedby={summary ? descId : undefined}
+                  aria-label={name}
+                  data-testid={`version-mark-${docId}`}
+                  disabled={!live}
+                  icon={DocumentsIcon}
+                  mode="bleed"
+                  onClick={onClick}
+                  tooltipProps={null}
+                />
+              </BadgedControl>
             )
           }
           if (trigger === 'tile') {

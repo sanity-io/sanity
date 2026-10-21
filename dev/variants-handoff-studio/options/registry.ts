@@ -163,6 +163,14 @@ export const COMPONENTS: ComponentDef[] = [
           'D and B together: with a perspective active the list is in two sections ("Has variant", "No variant for this perspective"), and the control on each row opens the v2 flyout (clickable version rows, it stays open while the pointer travels to it) instead of the read-only popover.',
         status: 'candidate',
       },
+      {
+        id: 'f',
+        label: 'Contained tile, only where there is more',
+        summary:
+          'A tile (own fill, 1px hairline) only on documents with more than a base version: the icon at its right edge, the state or release dot and the variant diamond in a column to its left. A base-only document shows its state dot alone.',
+        status: 'candidate',
+        refs: 'Figma C3 "Option B · contained tile, only where there is more (spec, 22 Oct)" 674:3362',
+      },
     ],
   },
   {
@@ -404,6 +412,7 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
     b: 'The same icon with a flyout menu of versions.',
     c: 'Exploration: the status dot is the control.',
     d: 'The list in two sections when a perspective is active: Has variant, No variant.',
+    f: 'A tile with the marks inside it, only on documents with more than a base version.',
   },
   c4: {
     a: "Andrej's panel in the inspector: views by publish date, stage and priority; sort, filters, saved views; Expand.",
@@ -596,7 +605,9 @@ defineDesignOptions({
   title: 'Design options',
   storageKey: 'variants-handoff-studio',
   // The Handoff Studio is one fixed design: the open beta (docs/initiatives/curation-perspective-selector/OPEN-BETA-HANDOFF-SCOPE.md).
-  fixed: 'show.a,stage.open-beta,navLayout.a,c1.b,c2.a,c3.a,c4.d',
+  fixed: 'show.a,stage.open-beta,navLayout.a,c1.b,c2.a,c3.f,c4.d',
+  // TEMPORARY (22 Oct): T3 stays switchable between A (v1, c3.a) and B (the tile, c3.f) until Faheem decides; remove with options/T3Switch.tsx.
+  adjustable: ['c3'],
   components: COMPONENTS,
   groups: [
     {label: 'Studio chrome', ids: ['c1', 'c2', 'c3', 'navLayout', 'rowWidth']},

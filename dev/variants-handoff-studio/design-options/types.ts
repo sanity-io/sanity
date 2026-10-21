@@ -117,6 +117,11 @@ export interface DesignOptionsConfig {
    * and every setter, so no window can change it.
    */
   fixed?: string
+  /**
+   * TEMPORARY: components a fixed design still lets a visitor switch (their choice is kept in this browser), for a decision still open.
+   * Remove the id once the option is decided.
+   */
+  adjustable?: readonly string[]
   /** A global shape switch (pill radius): the CSS variable every bound piece reads, and its value in each mode. */
   shape?: {variable: string; round: string; box: string}
   links?: {
