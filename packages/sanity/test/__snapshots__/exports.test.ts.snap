@@ -141,6 +141,7 @@ exports[`exports snapshot 1`] = `
     "HoveredFieldProvider": "object",
     "ImageInput": "function",
     "ImperativeToast": "function",
+    "InlineCode": "function",
     "InlinePreview": "function",
     "InsufficientPermissionsMessage": "function",
     "IntentButton": "function",
