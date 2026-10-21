@@ -247,14 +247,13 @@ function TableRow(props: {
       <div data-create-icon-box="">
         <span data-create-icon="">{props.icon}</span>
       </div>
-      <Stack data-testid={`${id}-left`} gap={1} style={{paddingTop: 1}}>
-        <Text data-testid={`${id}-title`} size={1} weight="medium">
+      {/* Plain line boxes, not two cap-trimmed Texts: the title and its meaning keep an even rhythm when either wraps. */}
+      <div data-create-label="" data-testid={`${id}-left`}>
+        <div data-create-title="" data-testid={`${id}-title`}>
           {props.title}
-        </Text>
-        <Text data-create-meaning="" muted size={1}>
-          {props.meaning}
-        </Text>
-      </Stack>
+        </div>
+        <div data-create-meaning="">{props.meaning}</div>
+      </div>
       <Stack data-create-controls="" data-testid={`${id}-controls`} gap={2}>
         {props.children}
       </Stack>
@@ -290,19 +289,25 @@ const MODE_CSS = `
 /* Group select-all is not offered while a version is being created. */
 [data-create-frame][data-mode] .inventory-group .inventory-checkbox { display: none !important; }
 /* The table: icon, label and control in fixed columns, so every row starts on the same edges; below 340px the control drops under the label. */
-[data-create-row] { display: grid; grid-template-columns: 25px minmax(0, 104px) minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 12px 16px; }
-[data-create-row] > [data-create-controls] { min-width: 0; padding: 7px 0 0 2px; }
-[data-create-icon-box] { width: 25px; height: 25px; margin-top: 1px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+/* The label column fits the longest label on one line (Figma: one line each); the pill is centred on the label, the icon on the title line. */
+[data-create-row] { display: grid; grid-template-columns: 25px minmax(0, 128px) minmax(0, 1fr); column-gap: 10px; align-items: center; padding: 12px 16px; }
+[data-create-row] > [data-create-controls] { min-width: 0; padding-left: 2px; }
+[data-create-icon-box] { width: 25px; height: 25px; align-self: start; margin-top: -4px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+[data-create-label], [data-create-head] { min-width: 0; font-family: var(--font-family-text, inherit); }
+[data-create-title] { font-size: 13px; line-height: 17px; font-weight: 500; color: var(--card-fg-color); }
+[data-create-meaning] { font-size: 12px; line-height: 16px; margin-top: 2px; color: var(--card-muted-fg-color); }
+[data-create-head] { padding: 14px 16px 12px; }
+[data-create-hint] { font-size: 12px; line-height: 16px; color: var(--card-muted-fg-color); font-family: var(--font-family-text, inherit); }
+[data-create-head-title] { font-size: 13px; line-height: 17px; font-weight: 600; color: var(--card-fg-color); }
+[data-create-head-sub] { font-size: 12px; line-height: 16px; margin-top: 3px; color: var(--card-muted-fg-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 [data-create-icon] { display: inline-flex; font-size: 21px; line-height: 0; overflow: visible; }
 [data-create-icon] svg { width: 21px; height: 21px; }
 /* The rhombus glyph fills 8 of its 25 units (the package glyph about 15): drawn at 34px, laid out at 25px, it reads the same size. */
 [data-create-icon] [data-diamond] svg { width: 34px; height: 34px; margin: -6.5px; }
 /* In a pill, the same correction against the 17px icons. */
-[data-create-frame] [data-add-pill] [data-diamond] svg, [data-testid="add-value-base"] [data-diamond] svg { width: 27px; height: 27px; margin: -5px; }
-/* The meaning line is 12px: between the theme's text sizes 0 (10px) and 1 (13px). */
-[data-create-meaning] > span { font-size: 12px; line-height: 16px; }
+[data-create-frame] [data-add-pill] [data-ui="Text"] [data-diamond] svg, [data-testid="add-value-base"] [data-diamond] svg { width: 27px; height: 27px; margin: -5px; }
 @container (max-width: 339px) {
-  [data-create-row] { grid-template-columns: 25px minmax(0, 1fr); }
+  [data-create-row] { grid-template-columns: 25px minmax(0, 1fr); align-items: start; row-gap: 10px; }
   [data-create-row] > [data-create-controls] { grid-column: 2; padding: 0; }
 }
 /* Pills: 17px icon, nothing clipped; a value wider than the column ends with an ellipsis. */
@@ -687,19 +692,15 @@ export function CreateVersion(props: {
     const text = readBack(draft)
     return (
       <Card borderBottom borderTop data-testid="add-block" tone="default">
-        <Stack gap={2} padding={3} paddingBottom={2}>
-          <Text size={1} weight="semibold">
-            Create version
-          </Text>
-          {/* One line: a long title ends with an ellipsis, and the whole of it shows on hover. */}
+        {/* The header starts on the rows' 16px edge. The subtitle keeps to one line: a long title ends with an ellipsis, and shows whole on hover. */}
+        <div data-create-head="">
+          <div data-create-head-title="">Create version</div>
           <Tooltip content={`A new version of ${props.documentTitle}`} placement="bottom-start">
-            <div style={{minWidth: 0}}>
-              <Text data-testid="add-subtitle" muted size={1} textOverflow="ellipsis">
-                A new version of {props.documentTitle}
-              </Text>
+            <div data-create-head-sub="" data-testid="add-subtitle">
+              A new version of {props.documentTitle}
             </div>
           </Tooltip>
-        </Stack>
+        </div>
         {variantsOn ? (
           <Card borderTop>
             <TableRow
@@ -710,9 +711,9 @@ export function CreateVersion(props: {
             >
               {variantControl}
               {existing ? (
-                <Text data-testid="add-exists-hint" muted size={1}>
+                <div data-create-hint="" data-testid="add-exists-hint">
                   {props.documentTitle} already has this version in {destTitle(draft.dest)}
-                </Text>
+                </div>
               ) : null}
             </TableRow>
           </Card>
@@ -726,9 +727,9 @@ export function CreateVersion(props: {
           >
             {bundleControl}
             {variantsOn || !existing ? null : (
-              <Text data-testid="add-exists-hint" muted size={1}>
+              <div data-create-hint="" data-testid="add-exists-hint">
                 {props.documentTitle} already has a version in {destTitle(draft.dest)}
-              </Text>
+              </div>
             )}
           </TableRow>
         </Card>
