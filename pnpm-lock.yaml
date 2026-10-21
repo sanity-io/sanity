@@ -717,10 +717,10 @@ importers:
     dependencies:
       '@sanity/sdk':
         specifier: ^3.9.1
-        version: 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+        version: 3.10.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/sdk-react':
         specifier: ^3.9.1
-        version: 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+        version: 3.10.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       react:
         specifier: 'catalog:'
         version: 19.3.1
@@ -1005,7 +1005,7 @@ importers:
         version: 2.2.3(@sanity/types@packages+@sanity+types)(react@19.3.1)(typescript@7.0.2)(vitest@5.0.4)
       '@sanity/sdk-react':
         specifier: ^3.9.1
-        version: 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+        version: 3.10.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/themer':
         specifier: ^0.10.4
         version: 0.10.4(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(typescript@7.0.2)
@@ -1812,7 +1812,7 @@ importers:
         version: 9.6.2(vitest@5.0.4)
       groq-js:
         specifier: ^2.0.0
-        version: 2.0.0
+        version: 2.0.1
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -2077,7 +2077,7 @@ importers:
         version: 2.0.3
       groq-js:
         specifier: ^2.0.0
-        version: 2.0.0
+        version: 2.0.1
       is-hotkey-esm:
         specifier: ^1.0.0
         version: 1.0.0
@@ -2331,11 +2331,11 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/schema
       '@sanity/sdk':
-        specifier: ^3.9.1
-        version: 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+        specifier: ^3.10.0
+        version: 3.10.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/sdk-react':
-        specifier: ^3.9.1
-        version: 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+        specifier: ^3.10.0
+        version: 3.10.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/telemetry':
         specifier: 'catalog:'
         version: 1.1.0(react@19.3.1)
@@ -2383,7 +2383,7 @@ importers:
         version: 1.0.1
       groq-js:
         specifier: ^2.0.0
-        version: 2.0.0
+        version: 2.0.1
       history:
         specifier: ^5.3.0
         version: 5.3.0
@@ -2687,7 +2687,7 @@ importers:
         version: 0.28.2
       groq-js:
         specifier: ^2.0.0
-        version: 2.0.0
+        version: 2.0.1
       mendoza:
         specifier: ^3.0.8
         version: 3.0.8
@@ -8297,10 +8297,6 @@ packages:
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
 
-  '@sanity/bifur-client@1.0.0':
-    resolution: {integrity: sha512-4cy7RytpkR0wm08EzEx9tL3XwoH7FqnAb9aUNskLmwpWzkFSs34amh19BvUq1TujmEqwCGLJARa+QWpOCoWpjw==}
-    engines: {node: '>=20.19'}
-
   '@sanity/bifur-client@2.0.2':
     resolution: {integrity: sha512-TL37rSZLXAcjGCAVuGXXatvFhfwLaGlxKK5ghBdQJ0ZvilmXt2AYSp/ww3/AhWH3/9afayaJ/mFs3d1fl1UWwg==}
     engines: {node: '>=22.12'}
@@ -8439,10 +8435,6 @@ packages:
   '@sanity/diff-match-patch@3.2.1':
     resolution: {integrity: sha512-Ll3BPOn9aPGeBUOFDZpKk0IObL+NI4tNq7VyOKj680xd+iCtfjnbcZZU0vpj94XozVGE0Zf+0FoYWXk2xJgZCg==}
     engines: {node: '>=18.18'}
-
-  '@sanity/diff-patch@6.0.0':
-    resolution: {integrity: sha512-oJ5kZQV6C/DAlcpRLEU7AcVWXrSPuJb3Z1TQ9tm/qZOVWJENwWln45jtepQEYolTIuGx9jUlhYUi3hGIkOt8RA==}
-    engines: {node: '>=18.2'}
 
   '@sanity/diff-patch@7.0.0':
     resolution: {integrity: sha512-e/xGFPWtDN5ZafxtG/DcP4URBk3EPblR+Ett1pT3AmiViNLPkHfwnG/Jj4+DlHkvcKTSw6jebuGVEFkumAxHQg==}
@@ -8591,14 +8583,14 @@ packages:
     resolution: {integrity: sha512-Qb5ZTHStp2jXeK+KlrbOnoD4LakdTS/JSvHwl91wnQmQVkIp/K965C5qgZsrnBKmNf5BHZ8KijPiApJWBe/KCQ==}
     engines: {node: '>=22'}
 
-  '@sanity/sdk-react@3.9.1':
-    resolution: {integrity: sha512-RLcDKy1ohfFWU5cYZKR6DzbafDVrXHU6hwZGg+s5MNZd0ow+i2KCv0+5qt6Poi2NGGUh+b0IYR1+CPiyC24m+g==}
+  '@sanity/sdk-react@3.10.0':
+    resolution: {integrity: sha512-FxvqXeUyk87oqn1w9r2hc0T/pBeZxsCIBgfW6+Witm+28aRUqcrAp2GyDBe53j1BqUzdsLJapxcETmyn14WROg==}
     peerDependencies:
       react: ^19.2.0
       react-dom: ^19.2.0
 
-  '@sanity/sdk@3.9.1':
-    resolution: {integrity: sha512-K5XWJAfFcFI/uOaXjOMzRLXwNtn2RloMnHtF+BhOFCu4d01cBpkna2hJNOy6zEFfetJNQYwpwkrNrve9zBrHbQ==}
+  '@sanity/sdk@3.10.0':
+    resolution: {integrity: sha512-bNuE5UnZpytr/MNSbEpYGSXKdRhsF5F5TM7t8V+Hzbzmd/1R62J4honY1OU21meb/8bz8MNOZsSpA5/DKjDTyQ==}
 
   '@sanity/signed-urls@2.0.5':
     resolution: {integrity: sha512-kg+LrXyk8tYNuCZnXrSRpTKR6dkbjkfBimGhqUs93VlfhSr56NkbS9N6zXqYRTg2mwbPYd/CAQHNX3SsXJgPcg==}
@@ -12432,8 +12424,8 @@ packages:
     resolution: {integrity: sha512-X3Zppy8KO/mDLSu5RylcO9zON+IwxV6y6aeIWsfNNBz0PaRboUmsTVgk3Zndqp9TgWCTFvCk+Z2W0uu0R3i5DA==}
     engines: {node: '>= 14'}
 
-  groq-js@2.0.0:
-    resolution: {integrity: sha512-kj56ZjnOFbgDt91zYwQ10jsVUtVGJqAKfRbAir0EvTK84O5ZsSyc0rDEm2P3jmAJkxs4X1DOG8vtaYJQIA/XCA==}
+  groq-js@2.0.1:
+    resolution: {integrity: sha512-v4GZDlS8T2hNQqnBRisdpMI8GnN7HMQ6bxfpEdz11rNbBUzyhM3aT8fwKbvl1gYVm+Lb1RN0phYdHh1liUzdGA==}
     engines: {node: '>=22.12'}
 
   gtoken@7.1.0:
@@ -21839,11 +21831,6 @@ snapshots:
     transitivePeerDependencies:
       - vitest
 
-  '@sanity/bifur-client@1.0.0':
-    dependencies:
-      nanoid: 5.1.16
-      rxjs: 7.8.2
-
   '@sanity/bifur-client@2.0.2':
     dependencies:
       nanoid: 6.0.2
@@ -22054,7 +22041,7 @@ snapshots:
       execa: 10.1.0
       form-data: 4.0.6
       get-latest-version: 6.0.1
-      groq-js: 2.0.0
+      groq-js: 2.0.1
       gunzip-maybe: 1.4.2
       import-meta-resolve: 4.2.0
       is-installed-globally: 1.0.1
@@ -22188,7 +22175,7 @@ snapshots:
       chokidar: 3.6.0
       globby: 11.1.0
       groq: link:packages/groq
-      groq-js: 2.0.0
+      groq-js: 2.0.1
       json5: 2.2.3
       lodash-es: 4.18.1
       obug: 3.0.0
@@ -22237,10 +22224,6 @@ snapshots:
       sha256-uint8array: 0.10.7
 
   '@sanity/diff-match-patch@3.2.1': {}
-
-  '@sanity/diff-patch@6.0.0':
-    dependencies:
-      '@sanity/diff-match-patch': 3.2.1
 
   '@sanity/diff-patch@7.0.0':
     dependencies:
@@ -22376,7 +22359,7 @@ snapshots:
       '@sanity/util': link:packages/@sanity/util
       arrify: 3.0.0
       get-it: 9.6.2(vitest@5.0.4)
-      groq-js: 2.0.0
+      groq-js: 2.0.1
       modern-tar: 0.8.5
       obug: 3.0.0
       p-map: 7.1.1
@@ -22461,7 +22444,7 @@ snapshots:
       cardinal: 2.1.1
       empathic: 2.1.0
       eventsource: 5.1.3
-      groq-js: 2.0.0
+      groq-js: 2.0.1
       jiti: 2.7.0
       mime-types: 3.0.2
       ora: 9.4.1
@@ -22508,12 +22491,12 @@ snapshots:
 
   '@sanity/schema-descriptor-utils@1.3.3': {}
 
-  '@sanity/sdk-react@3.9.1(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)':
+  '@sanity/sdk-react@3.10.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)':
     dependencies:
       '@module-federation/runtime': 2.9.2
       '@sanity/client': 8.11.0(vitest@5.0.4)
       '@sanity/message-protocol': 0.24.0
-      '@sanity/sdk': 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+      '@sanity/sdk': 3.10.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/types': link:packages/@sanity/types
       react: 19.3.1
       react-compiler-runtime: 1.0.0(react@19.3.1)
@@ -22527,13 +22510,13 @@ snapshots:
       - vitest
       - xstate
 
-  '@sanity/sdk@3.9.1(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)':
+  '@sanity/sdk@3.10.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)':
     dependencies:
-      '@sanity/bifur-client': 1.0.0
+      '@sanity/bifur-client': 2.0.2
       '@sanity/client': 8.11.0(vitest@5.0.4)
       '@sanity/comlink': 4.0.3
       '@sanity/diff-match-patch': 3.2.1
-      '@sanity/diff-patch': 6.0.0
+      '@sanity/diff-patch': 7.0.0
       '@sanity/id-utils': 1.1.0
       '@sanity/image-url': 2.1.1
       '@sanity/json-match': 1.0.5
@@ -22542,7 +22525,7 @@ snapshots:
       '@sanity/telemetry': 1.1.0(react@19.3.1)
       '@sanity/types': link:packages/@sanity/types
       groq: link:packages/groq
-      groq-js: 2.0.0
+      groq-js: 2.0.1
       reselect: 5.3.0
       rxjs: 7.8.2
       zustand: 5.0.15(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)
@@ -22750,7 +22733,7 @@ snapshots:
       '@module-federation/runtime': 2.9.2
       '@module-federation/vite': 1.23.5(typescript@7.0.2)(vite@8.3.5)
       '@sanity/cli-core': 3.12.0(@noble/hashes@2.4.0)(@types/node@24.19.2)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(oxc-transform-react@0.155.0)(tsx@4.23.15)(vitest@5.0.4)(yaml@2.9.1)
-      '@sanity/sdk': 3.9.1(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
+      '@sanity/sdk': 3.10.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.0.4)(xstate@5.33.2)
       '@sanity/types': link:packages/@sanity/types
       '@vitejs/plugin-react': 6.1.2(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.155.0)(vite@8.3.5)
       form-data: 4.0.6
@@ -26837,7 +26820,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  groq-js@2.0.0:
+  groq-js@2.0.1:
     dependencies:
       obug: 2.2.1
 
