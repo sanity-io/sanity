@@ -771,6 +771,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.field.untitled-field-label': 'Untitled',
   /** Accessibility label for the icon that indicates the field has a validation error */
   'form.validation.has-error-aria-label': 'Has error',
+  /** Accessible name for a validation icon that opens the document validation inspector */
+  'form.validation.open-inspector-aria-label': 'Show validation errors',
   /** Accessibility label for the icon that indicates the field has validation information */
   'form.validation.has-info-aria-label': 'Has information',
   /** Accessibility label for the icon that indicates the field has a validation warning */

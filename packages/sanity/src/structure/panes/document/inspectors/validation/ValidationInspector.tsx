@@ -10,6 +10,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {Card, type CardTone, Text} from '@sanity/ui'
+import {toString as pathToString} from '@sanity/util/paths'
 import {
   type ErrorInfo,
   Fragment,
@@ -31,11 +32,12 @@ import {Flex, Box, VStack} from 'ui5'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
-import {VALIDATION_PUBLISH_NOTICE_PARAM} from '../../constants'
+import {VALIDATION_PATH_PARAM, VALIDATION_PUBLISH_NOTICE_PARAM} from '../../constants'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
-import {publishNotice} from './ValidationInspector.css'
+import {highlightedCard, publishNotice, scrollTarget} from './ValidationInspector.css'
+import {highlightedValidationPaths} from './validationPath'
 
 /** Pause before the publish notice so the inspector is on screen first. */
 const PUBLISH_NOTICE_DELAY_MS = 300
@@ -61,6 +63,15 @@ export function ValidationInspector(props: DocumentInspectorProps) {
     () => mergeParseErrors(validation, parseErrors),
     [validation, parseErrors],
   )
+  const highlightedPaths = useMemo(
+    () => highlightedValidationPaths(params?.[VALIDATION_PATH_PARAM]),
+    [params],
+  )
+  const highlightedKey = params?.[VALIDATION_PATH_PARAM] ?? ''
+  const hasHighlightedMarker = mergedValidation.some((marker) =>
+    highlightedPaths.has(pathToString(marker.path)),
+  )
+  const listRef = useRef<HTMLDivElement>(null)
   const scrollerRef = useRef<HTMLDivElement>(null)
   const publishNoticeId = params?.[VALIDATION_PUBLISH_NOTICE_PARAM] || ''
   const [revealedNotice, setRevealedNotice] = useState<string | null>(null)
@@ -115,6 +126,16 @@ export function ValidationInspector(props: DocumentInspectorProps) {
     }
   }, [publishNoticeId])
 
+  useEffect(() => {
+    if (!highlightedKey || !hasHighlightedMarker) return
+    const frame = requestAnimationFrame(() => {
+      listRef.current
+        ?.querySelector('[data-validation-highlighted="true"]')
+        ?.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'nearest'})
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [hasHighlightedMarker, highlightedKey])
+
   const handleOpen = useCallback(
     (path: Path) => {
       onPathOpen(path)
@@ -167,18 +188,21 @@ export function ValidationInspector(props: DocumentInspectorProps) {
               </Box>
             )}
             {mergedValidation.length > 0 && (
-              <VStack gap={2}>
-                {mergedValidation.map((marker, i) => (
-                  <ValidationCard
-                    // oxlint-disable-next-line no-array-index-key
-                    key={i}
-                    marker={marker}
-                    onOpen={handleOpen}
-                    schemaType={schemaType}
-                    value={value}
-                  />
-                ))}
-              </VStack>
+              <div ref={listRef}>
+                <VStack gap={2}>
+                  {mergedValidation.map((marker, i) => (
+                    <ValidationCard
+                      // oxlint-disable-next-line no-array-index-key
+                      key={i}
+                      highlighted={highlightedPaths.has(pathToString(marker.path))}
+                      marker={marker}
+                      onOpen={handleOpen}
+                      schemaType={schemaType}
+                      value={value}
+                    />
+                  ))}
+                </VStack>
+              </div>
             )}
           </>
         )}
@@ -188,12 +212,13 @@ export function ValidationInspector(props: DocumentInspectorProps) {
 }
 
 function ValidationCard(props: {
+  highlighted: boolean
   marker: ValidationMarker
   onOpen: (path: Path) => void
   schemaType: ObjectSchemaType
   value: Partial<SanityDocument> | null
 }) {
-  const {marker, onOpen, schemaType, value} = props
+  const {highlighted, marker, onOpen, schemaType, value} = props
   const handleClick = useCallback(
     (event: MouseEvent) => {
       // Allow text selection: if the user selected text, don't navigate
@@ -222,35 +247,42 @@ function ValidationCard(props: {
       )}
 
       {!errorInfo && (
-        <Card
-          __unstable_focusRing
-          as="button"
-          onClick={handleClick}
-          padding={3}
-          radius={2}
-          style={{userSelect: 'text'}}
-          tone={MARKER_TONE[marker.level]}
+        <div
+          className={scrollTarget}
+          data-validation-highlighted={highlighted ? 'true' : undefined}
         >
-          <Flex alignItems="flex-start" gap={3}>
-            <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-              <Text size={1}>
-                <Icon />
-              </Text>
-            </Box>
+          <Card
+            __unstable_focusRing
+            as="button"
+            className={highlighted ? highlightedCard : undefined}
+            onClick={handleClick}
+            padding={3}
+            radius={2}
+            selected={highlighted}
+            style={{userSelect: 'text'}}
+            tone={MARKER_TONE[marker.level]}
+          >
+            <Flex alignItems="flex-start" gap={3}>
+              <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+                <Text size={1}>
+                  <Icon />
+                </Text>
+              </Box>
 
-            <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
-              <DocumentNodePathBreadcrumbs
-                path={marker.path}
-                schemaType={schemaType}
-                value={value}
-              />
+              <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
+                <DocumentNodePathBreadcrumbs
+                  path={marker.path}
+                  schemaType={schemaType}
+                  value={value}
+                />
 
-              <Text muted size={1}>
-                {marker.message}
-              </Text>
+                <Text muted size={1}>
+                  {marker.message}
+                </Text>
+              </Flex>
             </Flex>
-          </Flex>
-        </Card>
+          </Card>
+        </div>
       )}
     </ErrorBoundary>
   )

@@ -45,3 +45,23 @@ export function getFieldGroupValidationLevel(
 
   return highestLevel
 }
+
+/** Marker paths that belong to this group. The all-fields group is not a specific selection. */
+export function getFieldGroupValidationPaths(
+  group: FormFieldGroup,
+  groupPath: Path,
+  validation: FormNodeValidation[],
+): Path[] {
+  if (group.name === ALL_FIELDS_GROUP_NAME) return []
+
+  const paths: Path[] = []
+  for (const field of group.fields) {
+    const fieldPath = groupPath.concat(field.name)
+    for (const marker of validation) {
+      if (PathUtils.startsWith(fieldPath, marker.path)) {
+        paths.push(marker.path)
+      }
+    }
+  }
+  return paths
+}

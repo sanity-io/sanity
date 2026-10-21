@@ -6,6 +6,23 @@ export const statusIconWrapper = style({
   width: '25px',
 })
 
+export const statusIconButton = style([
+  statusIconWrapper,
+  {
+    alignItems: 'center',
+    appearance: 'none',
+    background: 'transparent',
+    border: 0,
+    color: 'inherit',
+    cursor: 'pointer',
+    display: 'flex',
+    font: 'inherit',
+    justifyContent: 'center',
+    margin: 0,
+    padding: 0,
+  },
+])
+
 export const styledStack = style({
   maxWidth: '200px',
 })

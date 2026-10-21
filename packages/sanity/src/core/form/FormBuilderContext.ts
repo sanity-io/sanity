@@ -44,6 +44,11 @@ export interface FormBuilderContextValue {
     }
     patchChannel: PatchChannel
     inspectOpen?: boolean
+    /**
+     * Opens the document validation inspector. `paths` are the markers to highlight.
+     * Omit them to open the list without a selection.
+     */
+    onOpenValidation?: (paths?: Path[]) => void
   }
 
   autoFocus?: boolean

@@ -70,6 +70,13 @@ export interface FormBuilderProps extends Omit<
   __internal_patchChannel: PatchChannel
   /** @internal Considered internal – do not use. */
   __internal_inspectOpen?: boolean
+  /**
+   * Opens the document validation inspector. Field and field-group validation icons
+   * call this when it is set. `paths` are the markers to highlight.
+   *
+   * @internal
+   */
+  __internal_onOpenValidation?: (paths?: Path[]) => void
 
   autoFocus?: boolean
   changesOpen?: boolean
@@ -103,6 +110,7 @@ export function FormBuilder(props: FormBuilderProps) {
     __internal_fieldActions: fieldActions,
     __internal_patchChannel: patchChannel,
     __internal_inspectOpen: inspectOpen,
+    __internal_onOpenValidation: onOpenValidation,
     autoFocus,
     changesOpen,
     collapsedFieldSets,
@@ -319,6 +327,7 @@ export function FormBuilder(props: FormBuilderProps) {
       __internal_fieldActions={fieldActions}
       __internal_patchChannel={patchChannel}
       __internal_inspectOpen={inspectOpen}
+      __internal_onOpenValidation={onOpenValidation}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
       collapsedFieldSets={collapsedFieldSets}

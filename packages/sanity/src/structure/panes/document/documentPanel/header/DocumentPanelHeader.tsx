@@ -45,6 +45,8 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
+import {VALIDATION_INSPECTOR_NAME} from '../../constants'
+import {validationPathParam} from '../../inspectors/validation/validationPath'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
@@ -103,6 +105,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     onMenuAction,
     onPaneClose,
     onPaneSplit,
+    openInspector,
     onSetMaximizedPane,
     menuItemGroups,
     schemaType,
@@ -111,6 +114,9 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     unstable_languageFilter,
     documentId,
   } = useDocumentPane()
+  const handleOpenValidation = useCallback(() => {
+    openInspector(VALIDATION_INSPECTOR_NAME, validationPathParam())
+  }, [openInspector])
   const {features} = useStructureTool()
   const {beta} = useWorkspace()
   const {index, BackLink, hasGroupSiblings} = usePaneRouter()
@@ -274,6 +280,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                       return (
                         <LanguageFilterComponent
                           key={`language-filter-${idx}`}
+                          onOpenValidation={handleOpenValidation}
                           schemaType={schemaType}
                         />
                       )

@@ -36,6 +36,8 @@ export interface FormBuilderProviderProps {
   __internal_patchChannel?: PatchChannel
   /** @internal */
   __internal_inspectOpen?: boolean
+  /** @internal */
+  __internal_onOpenValidation?: (paths?: Path[]) => void
 
   autoFocus?: boolean
   changesOpen?: boolean
@@ -87,6 +89,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     __internal_fieldActions: fieldActions = EMPTY_ARRAY,
     __internal_patchChannel: patchChannel = missingPatchChannel,
     __internal_inspectOpen: inspectOpen = false,
+    __internal_onOpenValidation: onOpenValidation,
     autoFocus,
     changesOpen,
     children,
@@ -142,6 +145,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         directUploads: image?.directUploads ?? true,
       },
       inspectOpen,
+      onOpenValidation,
       onChange,
     }),
     [
@@ -152,6 +156,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       image.assetSources,
       image?.directUploads,
       onChange,
+      onOpenValidation,
       patchChannel,
       inspectOpen,
       unstable?.CustomMarkers,

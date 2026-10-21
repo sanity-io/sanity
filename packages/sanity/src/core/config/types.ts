@@ -522,6 +522,11 @@ export interface DocumentLanguageFilterContext extends ConfigContext {
  */
 export type DocumentLanguageFilterComponent = ComponentType<{
   schemaType: ObjectSchemaType
+  /**
+   * Opens the document validation inspector. Language filters can call this from a
+   * validation error icon.
+   */
+  onOpenValidation?: () => void
 }>
 
 /**

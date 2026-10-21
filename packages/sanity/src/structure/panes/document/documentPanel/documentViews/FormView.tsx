@@ -1,3 +1,4 @@
+import {type Path} from '@sanity/types'
 import {focusFirstDescendant, Spinner, Text} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
@@ -24,6 +25,8 @@ import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
+import {VALIDATION_INSPECTOR_NAME} from '../../constants'
+import {validationPathParam} from '../../inspectors/validation/validationPath'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {useDocumentTitleField} from '../useDocumentTitleField'
@@ -59,6 +62,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     onPathOpen,
     onSetCollapsedFieldSet,
     onSetActiveFieldGroup,
+    openInspector,
     openPath,
     inspectOpen,
     compareValue,
@@ -67,6 +71,12 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     syncState,
     targetDocumentState,
   } = useDocumentPane()
+  const handleOpenValidation = useCallback(
+    (paths?: Path[]) => {
+      openInspector(VALIDATION_INSPECTOR_NAME, validationPathParam(paths))
+    },
+    [openInspector],
+  )
   const {selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
   // The scope of the document targeted by the selected perspective (undefined while the target is
@@ -282,6 +292,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
               <FormBuilder
                 __internal_fieldActions={fieldActions}
                 __internal_inspectOpen={inspectOpen}
+                __internal_onOpenValidation={handleOpenValidation}
                 __internal_patchChannel={patchChannel}
                 changed={formState.changed}
                 collapsedFieldSets={collapsedFieldSets}

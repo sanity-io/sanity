@@ -1,6 +1,7 @@
 import {type ComponentType, useCallback, type RefAttributes} from 'react'
 
 import {Tab} from '../../../../../ui-components/tab/Tab'
+import {groupTab} from './FieldGroupTabs.css'
 
 interface GroupType {
   'aria-controls': string
@@ -16,7 +17,7 @@ interface GroupType {
 
 export function GroupTab(props: GroupType & RefAttributes<HTMLButtonElement>) {
   // Separate props for resolving conditional hidden groups
-  const {ref, onClick, name, title, ...rest} = props
+  const {ref, onClick, name, title, iconRight, ...rest} = props
 
   // Here goes the content of our component
   const handleClick = useCallback(() => {
@@ -24,16 +25,19 @@ export function GroupTab(props: GroupType & RefAttributes<HTMLButtonElement>) {
   }, [name, onClick])
 
   return (
-    <Tab
-      data-testid={`group-tab-${name}`}
-      id={`${name}-tab`}
-      label={title}
-      ref={ref}
-      {...rest}
-      name={name}
-      title={title}
-      onClick={handleClick}
-    />
+    <span className={groupTab}>
+      <Tab
+        data-testid={`group-tab-${name}`}
+        id={`${name}-tab`}
+        label={title}
+        ref={ref}
+        {...rest}
+        name={name}
+        title={title}
+        onClick={handleClick}
+      />
+      {iconRight}
+    </span>
   )
 }
 
