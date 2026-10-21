@@ -7,7 +7,7 @@ import {
   PortalProvider,
   useMediaIndex,
 } from '@sanity/ui'
-import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useContext, useEffect, useId, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -181,6 +181,12 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
       })
   }, [actions, shouldRender.tools])
 
+  // Named side clusters get their own groups in a view transition that resizes the Studio (the
+  // Themer split preview), so they move as they are instead of being stretched with the Studio's
+  // snapshot. A name must be unique in the document, and the split preview renders two navbars.
+  const leftViewTransitionName = useId()
+  const rightViewTransitionName = useId()
+
   return (
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
@@ -196,7 +202,12 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
           <Grid className={navGrid} gap={1}>
             {/** Left flex */}
             <TooltipDelayGroupProvider>
-              <Flex alignItems="center" gap={2} justifyContent="flex-start">
+              <Flex
+                alignItems="center"
+                gap={2}
+                justifyContent="flex-start"
+                style={{viewTransitionName: leftViewTransitionName}}
+              >
                 <Flex alignItems="center" gap={2}>
                   {/* Menu button */}
                   {!shouldRender.tools && (
@@ -243,7 +254,12 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
             {/** Right flex */}
             <TooltipDelayGroupProvider>
-              <Flex alignItems="center" gap={1} justifyContent="flex-end">
+              <Flex
+                alignItems="center"
+                gap={1}
+                justifyContent="flex-end"
+                style={{viewTransitionName: rightViewTransitionName}}
+              >
                 {/* Search */}
                 <LayerProvider>
                   <SearchProvider fullscreen={shouldRender.searchFullscreen}>

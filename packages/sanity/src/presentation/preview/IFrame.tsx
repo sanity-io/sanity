@@ -2,14 +2,13 @@ import {motion, type VariantLabels, type Variants} from 'motion/react'
 import {
   type ReactEventHandler,
   useEffect,
+  useId,
   useImperativeHandle,
   useRef,
   type RefAttributes,
 } from 'react'
 import {createGlobalStyle, styled} from 'styled-components'
 import {Box} from 'ui5'
-
-import {useId} from '../useId'
 
 interface IFrameProps {
   animate: VariantLabels
