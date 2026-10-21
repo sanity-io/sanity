@@ -1,3 +1,4 @@
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
 
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
@@ -11,7 +12,6 @@ import {StateGlyph} from './StateGlyph'
 import {type AudienceVersion, type State} from './types'
 import {VersionDescription} from './VersionDescription'
 import {versionLines} from './versionLines'
-import {VersionsIcon} from './VersionsIcon'
 import {
   POPOVER_AUDIENCES,
   type PopoverContent,
@@ -337,7 +337,7 @@ export function VersionMark(props: {
                   aria-label={name}
                   data-testid={`version-mark-${docId}`}
                   disabled={!live}
-                  icon={VersionsIcon}
+                  icon={DocumentsIcon}
                   mode="bleed"
                   onClick={onClick}
                   tooltipProps={null}
@@ -352,8 +352,8 @@ export function VersionMark(props: {
               data-testid={`version-mark-${docId}`}
               disabled={!live}
               style={{cursor: live ? 'pointer' : 'default'}}
-              icon={trigger === 'pill' && dot ? <StateGlyph gap={2} state={dot} /> : VersionsIcon}
-              iconRight={trigger === 'pill' ? VersionsIcon : undefined}
+              icon={trigger === 'pill' && dot ? <StateGlyph gap={2} state={dot} /> : DocumentsIcon}
+              iconRight={trigger === 'pill' ? DocumentsIcon : undefined}
               mode="bleed"
               onClick={onClick}
               tooltipProps={null}
