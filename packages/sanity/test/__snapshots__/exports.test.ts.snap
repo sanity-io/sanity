@@ -1185,6 +1185,7 @@ exports[`exports snapshot 1`] = `
     "stringToPath": "function",
     "supportsTouch": "boolean",
     "toMutationPatches": "function",
+    "toSoftNavRoute": "function",
     "truncateString": "function",
     "uncaughtErrorHandler": "function",
     "unstable_useObserveDocument": "function",

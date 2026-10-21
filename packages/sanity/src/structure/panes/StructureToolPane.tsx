@@ -1,21 +1,11 @@
 import {dequal as isEqual} from 'dequal/lite'
 import {lazy, memo, Suspense, useEffect} from 'react'
-import {
-  recordStructurePaneKind,
-  type StructurePaneKind,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {PaneRouterProvider} from '../components/paneRouter/PaneRouterProvider'
 import {type PaneNode} from '../types'
 import {LoadingPane} from './loading'
+import {recordResolvedPaneKind} from './paneKindRecording'
 import {UnknownPane} from './unknown/UnknownPaneType'
-
-const PANE_TYPE_TO_SOFT_NAV_KIND = {
-  component: 'other',
-  document: 'document',
-  documentList: 'list',
-  list: 'list',
-} satisfies Record<PaneNode['type'], StructurePaneKind>
 
 interface StructureToolPaneProps {
   active: boolean
@@ -78,7 +68,7 @@ export const StructureToolPane = memo(
     const PaneComponent = paneMap[pane.type] || UnknownPane
 
     useEffect(() => {
-      recordStructurePaneKind(path, PANE_TYPE_TO_SOFT_NAV_KIND[pane.type] ?? 'other')
+      recordResolvedPaneKind(path, pane.type)
     }, [path, pane.type])
 
     return (

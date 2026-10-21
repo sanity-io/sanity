@@ -919,6 +919,7 @@ export {
   recordStructurePaneKind,
   type StructurePaneKind,
 } from '../core/studio/telemetry/paneKindRegistry'
+export {toSoftNavRoute} from '../core/studio/telemetry/softNavRoute'
 export {useTelemetryConsent} from '../core/studio/telemetry/useTelemetryConsent'
 export {
   UpsellDialogDismissed,
