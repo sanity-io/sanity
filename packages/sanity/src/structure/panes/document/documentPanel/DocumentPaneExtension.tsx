@@ -34,6 +34,11 @@ export interface DocumentPaneExtension {
    * (title and close) and the changes inspector drops its nested History / Review tabs: the row carries them.
    */
   inspectorTabs?: ReactNode
+  /**
+   * PROPOSED (open beta header): controls drawn in the compact header's right-hand group, just before the "..." menu (for example the panels as icon
+   * buttons). Only drawn with `compactHeader`.
+   */
+  headerPanels?: ReactNode
 }
 
 /** @internal */

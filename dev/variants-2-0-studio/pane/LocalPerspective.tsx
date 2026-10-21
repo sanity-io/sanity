@@ -9,6 +9,7 @@ import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {useVariantDefinitions} from '../c1/world'
 import {useCorpus} from '../c5/useCorpus'
 import {useVersionList} from '../data/useVersionList'
+import {useOption} from '../options/store'
 import {CubeIcon} from './Cube'
 import {lastPanel, useInspectorPanels} from './inspectorPanels'
 import {useCircleRegistry, useLocalBar} from './localBar'
@@ -108,7 +109,9 @@ export function LocalPerspectiveHeader({documentId}: {documentId: string}) {
   const registry = useCircleRegistry()
   const {panels, activeId, close} = useInspectorPanels()
   // H4: the pill is pressed while any panel is open; a click closes it, or opens the panel last used (Versions the first time).
-  const inventoryOpen = activeId !== undefined
+  // Switcher B: the other panels have icons in the header, so the pill is the way into Versions only.
+  const versionsOnly = useOption('inspectorSwitcher') === 'b'
+  const inventoryOpen = versionsOnly ? activeId === 'versions' : activeId !== undefined
   const count = versions?.length ?? 0
   const title = corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId
   const circleStyle: CSSProperties = {
@@ -161,7 +164,9 @@ export function LocalPerspectiveHeader({documentId}: {documentId: string}) {
         onClick={() =>
           inventoryOpen
             ? close()
-            : (panels.find((p) => p.id === lastPanel()) ?? panels[0])?.select()
+            : (
+                panels.find((p) => p.id === (versionsOnly ? 'versions' : lastPanel())) ?? panels[0]
+              )?.select()
         }
         style={{
           ...(inventoryOpen ? {background: PRESSED} : null),

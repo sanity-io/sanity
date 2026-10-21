@@ -20,6 +20,7 @@ import {
   ROW_WIDTH,
 } from './e9'
 import {ICONOGRAPHY_GROUP, MARK_SELECTED} from './iconography'
+import {INSPECTOR_SWITCHER} from './inspectorSwitcher'
 import {LOCALIZATION, LOCALIZATION_GROUP} from './localization'
 import presets from './presets.json'
 
@@ -409,6 +410,7 @@ COMPONENTS.push(
   REVIEW_SET,
   LOCALIZATION,
   MARK_SELECTED,
+  INSPECTOR_SWITCHER,
 )
 
 // Diagram data on the 200 x 100 grid: the part that changes.
@@ -568,7 +570,7 @@ defineDesignOptions({
   groups: [
     {label: 'Studio chrome', ids: ['c1', 'c2', 'c3', 'navLayout', 'rowWidth']},
     {label: 'Inventory', ids: ['c4', 'c5', 'c6']},
-    {label: 'Document', ids: ['c7', 'c9']},
+    {label: 'Document', ids: ['c7', 'c9', 'inspectorSwitcher']},
     {label: 'Releases', ids: ['c8']},
     E9_GROUP,
     LOCALIZATION_GROUP,

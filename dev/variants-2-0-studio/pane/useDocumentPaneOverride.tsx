@@ -13,6 +13,7 @@ import {InspectorTabs} from './InspectorTabs'
 import {LocalPerspectiveHeader, LocalPerspectiveRow} from './LocalPerspective'
 import {DocumentsCount, LocalRow} from './PaneAddress'
 import {PaneControl} from './PaneControl'
+import {HeaderPanelButtons, PanelTitleRow} from './PanelSwitcherB'
 
 /** The studio-wide state the pane extension reads (hooks run here, once, not per document). */
 export function useDocumentPaneOverrideState() {
@@ -23,11 +24,23 @@ export function useDocumentPaneOverrideState() {
   const compare = useOption('compare')
   const paneControl = useOption('paneControl')
   const c1 = useOption('c1')
+  const inspectorSwitcher = useOption('inspectorSwitcher')
   const tool = useRouterState((s) => s.tool as string | undefined)
   const comparison = useComparison()
   return useMemo(
-    () => ({c2, c7, c4, paneAddress, compare, paneControl, c1, tool, comparison}),
-    [c2, c7, c4, paneAddress, compare, paneControl, c1, tool, comparison],
+    () => ({
+      c2,
+      c7,
+      c4,
+      paneAddress,
+      compare,
+      paneControl,
+      c1,
+      inspectorSwitcher,
+      tool,
+      comparison,
+    }),
+    [c2, c7, c4, paneAddress, compare, paneControl, c1, inspectorSwitcher, tool, comparison],
   )
 }
 export type DocumentPaneOverrideState = ReturnType<typeof useDocumentPaneOverrideState>
@@ -37,7 +50,8 @@ export function resolveDocumentPaneOverride(
   state: DocumentPaneOverrideState,
 ): ResolveDocumentPaneExtension {
   return ({documentId, documentType}) => {
-    const {c2, c7, c4, paneAddress, compare, paneControl, c1, tool, comparison} = state
+    const {c2, c7, c4, paneAddress, compare, paneControl, c1, inspectorSwitcher, tool, comparison} =
+      state
     const manageIcon =
       c4 === 'b' ? <ManageVersions documentId={documentId} form="icon" /> : undefined
     // E9 paneAddress B and C replace the chips with a Documents count; C (and a compare) adds the local row under the header.
@@ -103,7 +117,9 @@ export function resolveDocumentPaneOverride(
       pills: headerPills,
       banners,
       compactHeader: c2 === 'c' ? true : undefined,
-      inspectorTabs: c2 === 'c' ? <InspectorTabs /> : undefined,
+      inspectorTabs:
+        c2 === 'c' ? inspectorSwitcher === 'b' ? <PanelTitleRow /> : <InspectorTabs /> : undefined,
+      headerPanels: c2 === 'c' && inspectorSwitcher === 'b' ? <HeaderPanelButtons /> : undefined,
     }
   }
 }

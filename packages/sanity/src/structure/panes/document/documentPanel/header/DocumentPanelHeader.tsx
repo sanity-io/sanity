@@ -331,6 +331,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                 {menuButtonNodes.map((item) => (
                   <PaneHeaderActionButton key={item.key} node={item} />
                 ))}
+                {compact && paneExtension?.headerPanels}
                 {editState && (
                   <RenderActionCollectionState group="paneActions">
                     {({states}) => (
