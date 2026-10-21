@@ -198,18 +198,18 @@ describe('warnCustomComponentSuspended', () => {
     expect(warn).toHaveBeenCalledTimes(1)
   })
 
-  it('describes a React.lazy component at the document root without a document type', () => {
+  it('describes a React.lazy component, and leaves out the document type when there is none', () => {
     const LazyInput = lazy(() => Promise.resolve({default: PassThroughInput}))
 
     warnCustomComponentSuspended({
       slot: 'input',
       component: LazyInput,
       schemaType: compileProduct({input: LazyInput}).models,
-      path: [],
+      path: ['models'],
     })
 
     expect(warn.mock.calls[0][0]).toMatch(
-      /^The custom input component \(a React\.lazy component\) at the document root \(schema type /,
+      /^The custom input component \(a React\.lazy component\) at "models" \(schema type /,
     )
   })
 })

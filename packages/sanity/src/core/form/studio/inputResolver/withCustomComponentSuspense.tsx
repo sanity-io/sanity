@@ -1,5 +1,5 @@
 import {type Path, type SchemaType} from '@sanity/types'
-import {Skeleton} from '@sanity/ui'
+import {rem, Skeleton} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 import {type ComponentType, Suspense, useContext, useEffect} from 'react'
 import {isLazy} from 'react-is'
@@ -28,7 +28,8 @@ const wrapped: Record<CustomComponentSlot, WeakMap<object, ComponentType<never>>
  * suspend on data that only settles once the document exists (an SDK projection of a new document
  * never does). Without a boundary of its own it would suspend the whole form, leaving no field to
  * edit that could create the document. A custom component that declares its own `Suspense` never
- * reaches this one.
+ * reaches this one. A document type's own input is the whole form, so at the root it keeps
+ * `FormBuilder`'s loading block instead.
  *
  * Cached per slot and component: resolvers run on every render in places, and a new component
  * identity would make React remount the node.
@@ -45,6 +46,9 @@ export function withCustomComponentSuspense<Props extends FormNodeProps>(
   if (cached) return cached as ComponentType<Props>
 
   function CustomComponentWithSuspense(props: Props) {
+    if (props.path.length === 0) {
+      return <Component {...props} />
+    }
     return (
       <Suspense
         fallback={
@@ -66,7 +70,9 @@ export function withCustomComponentSuspense<Props extends FormNodeProps>(
 
 /**
  * The skeleton cannot know the size of the component it replaces, so it also tells the
- * component's author to declare a `Suspense` that does.
+ * component's author to declare a `Suspense` that does. An input's skeleton has the height of a
+ * single-line input; boolean and datetime inputs render their own label, so for those the title is
+ * missing until the input loads.
  */
 function CustomComponentSuspenseFallback(
   props: FormNodeProps & {slot: CustomComponentSlot; component: ComponentType<never>},
@@ -80,7 +86,11 @@ function CustomComponentSuspenseFallback(
     warnCustomComponentSuspended({slot, component, schemaType, path, documentType})
   }, [slot, component, schemaType, path, documentType])
 
-  return <Skeleton data-testid={`custom-${slot}-fallback`} padding={3} radius={1} animated />
+  return slot === 'input' ? (
+    <Skeleton data-testid="custom-input-fallback" radius={1} animated style={{height: rem(35)}} />
+  ) : (
+    <Skeleton data-testid={`custom-${slot}-fallback`} padding={3} radius={1} animated />
+  )
 }
 
 const warned: Record<CustomComponentSlot, WeakSet<object>> = {
@@ -107,10 +117,9 @@ export function warnCustomComponentSuspended(options: {
   if (warned[slot].has(component)) return
   warned[slot].add(component)
 
-  const location = path.length > 0 ? `at "${pathToString(path)}"` : 'at the document root'
   const document = documentType ? ` of a "${documentType}" document` : ''
   console.warn(
-    `The custom ${slot} component ${describeComponent(component)} ${location}${document} ` +
+    `The custom ${slot} component ${describeComponent(component)} at "${pathToString(path)}"${document} ` +
       `(schema type "${schemaType.name}", components.${slot}) suspended without a <Suspense> ` +
       'boundary of its own, so Studio shows a generic skeleton in its place. Wrap the part of ' +
       'the component that suspends in <Suspense> with a fallback that reserves the space the ' +
