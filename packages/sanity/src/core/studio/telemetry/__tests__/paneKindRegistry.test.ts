@@ -41,4 +41,32 @@ describe('paneKindRegistry', () => {
 
     expect(getStructurePaneKind('author;knut')).toBe('document')
   })
+
+  it('evicts the oldest recorded path once the cap is reached', async () => {
+    const {recordStructurePaneKind, getStructurePaneKind, MAX_ENTRIES} = await importFresh()
+
+    Array.from({length: MAX_ENTRIES}, (_unused, index) => index).forEach((index) => {
+      recordStructurePaneKind(`path-${index}`, 'document')
+    })
+    expect(getStructurePaneKind('path-0')).toBe('document')
+
+    recordStructurePaneKind('path-overflow', 'list')
+
+    expect(getStructurePaneKind('path-0')).toBeUndefined()
+    expect(getStructurePaneKind('path-1')).toBe('document')
+    expect(getStructurePaneKind('path-overflow')).toBe('list')
+  })
+
+  it('does not evict anything when overwriting an already-recorded path at the cap', async () => {
+    const {recordStructurePaneKind, getStructurePaneKind, MAX_ENTRIES} = await importFresh()
+
+    Array.from({length: MAX_ENTRIES}, (_unused, index) => index).forEach((index) => {
+      recordStructurePaneKind(`path-${index}`, 'document')
+    })
+
+    recordStructurePaneKind('path-0', 'list')
+
+    expect(getStructurePaneKind('path-0')).toBe('list')
+    expect(getStructurePaneKind('path-1')).toBe('document')
+  })
 })

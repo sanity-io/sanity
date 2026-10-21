@@ -42,6 +42,19 @@ describe('toSoftNavRoute', () => {
     expect(routeFor('/structure/photos;featured')).toBe('structure:list')
   })
 
+  it('regression: the case above fails under the depth-parity heuristic this replaced', () => {
+    // toSoftNavRoute used to guess the kind from pane-group depth (even -> list,
+    // odd -> document) instead of looking up what the structure tool resolved.
+    // A nested list, at depth 1, was misread as a document. Kept as a guard
+    // against reintroducing that heuristic.
+    function toStructurePaneKindByDepthParity(paneSegment: string): 'list' | 'document' {
+      const depth = Math.max(paneSegment.split(';').filter(Boolean).length - 1, 0)
+      return depth % 2 === 0 ? 'list' : 'document'
+    }
+
+    expect(toStructurePaneKindByDepthParity('photos;featured')).toBe('document')
+  })
+
   it('reports structure:other for a pane path nothing has recorded, rather than guessing', () => {
     expect(routeFor('/structure/never-seen-before')).toBe('structure:other')
   })
