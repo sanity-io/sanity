@@ -1,4 +1,5 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Text} from '@sanity/ui'
 import {useEffect} from 'react'
 import {isReleaseDocument, usePerspective, useSetVariant} from 'sanity'
@@ -15,14 +16,14 @@ import {type AudienceVersion} from '../data/versions'
 
 /**
  * T6, the open beta banner (docs/initiatives/curation-perspective-selector/BANNERS-DECISION-2026-10-22.md, with its revision; Figma C7
- * 678:768, B1 to B6: every state in the suggest tone with the info icon and plain text): an audience is
+ * 678:768, B1 to B6: the info icon and plain text; tones per state, since the library banner has no tone property): an audience is
  * chosen and the open document has no version for it in the version the studio shows. Drawn with the Studio's own document banner; the stock
  * variant banners are replaced (VariantBannerReplacedProvider), so there is one.
- * - Drafts: a notice, no button. Core keeps the form editable and the first edit creates the version.
+ * - Drafts: a quiet notice (transparent), no button. Core keeps the form editable and the first edit creates the version.
  * - An open release: "Create version" opens the inventory in Create version mode, prefilled (this audience, this release, Nearest version). It
  *   never creates on its own.
  * - A scheduled release, Published: the text says why there is no action.
- * - The chosen variant no longer exists: "Back to All users".
+ * - The chosen variant no longer exists: caution with the warning icon, as core's not-found banner, and "Back to All users".
  * - With the inventory open there is no button: its own Create version is there.
  */
 
@@ -74,7 +75,6 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
             ? undefined
             : {
                 text: 'Back to All users',
-                tone: 'suggest',
                 mode: 'default',
                 onClick: () => {
                   setVariant({variantId: undefined as never})
@@ -91,8 +91,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
             )}
           </Text>
         }
-        icon={InfoOutlineIcon}
-        tone="suggest"
+        icon={WarningOutlineIcon}
+        tone="caution"
       />
     )
   }
@@ -128,7 +128,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
           'drafts',
         )}
         icon={InfoOutlineIcon}
-        tone="suggest"
+        tone="transparent"
       />
     )
   }
