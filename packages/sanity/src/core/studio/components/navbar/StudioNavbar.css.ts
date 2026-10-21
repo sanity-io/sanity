@@ -4,7 +4,6 @@ export const rootLayer = style({
   minHeight: 'auto',
   position: 'relative',
   selectors: {
-    // (0,2,0) already beats Layer's own `position: relative`
     "&[data-search-open='true']": {
       top: 0,
       position: 'sticky',
