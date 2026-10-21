@@ -24,10 +24,13 @@ export const useDocumentPaneOverride: UseDocumentPaneExtension = ({documentId, d
   const pills =
     paneAddress !== 'a' ? (
       <DocumentsCount documentId={documentId} manage={manageIcon} />
-    ) : c2 === 'a' || c2 === 'b' ? (
+    ) : c2 === 'a' || c2 === 'b' || c2 === 'c' ? (
       <DocumentPillsV1 documentId={documentId} manage={manageIcon} option={c2} />
     ) : undefined
-  const control = paneControl === 'b' ? <PaneControl documentId={documentId} /> : undefined
+  const control =
+    paneControl === 'b' || paneControl === 'c' ? (
+      <PaneControl documentId={documentId} onlyWhenNeeded={paneControl === 'c'} />
+    ) : undefined
   const headerPills =
     control && pills ? (
       <div style={{alignItems: 'center', display: 'flex', flex: '1 1 0%', gap: 8, minWidth: 0}}>

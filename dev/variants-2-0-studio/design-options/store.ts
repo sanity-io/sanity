@@ -227,7 +227,12 @@ function load(): State {
     }
     if (next) return next
     const raw = window.localStorage.getItem(storageKey())
-    return raw ? {...defaults(), ...JSON.parse(raw)} : defaults()
+    if (raw) return {...defaults(), ...JSON.parse(raw)}
+    // Nothing shared and nothing saved: the config's default preset, if it names one.
+    const starter = findPreset(getConfig().defaultPreset ?? null)
+    return starter
+      ? {...(parseDesign(starter.design) ?? defaults()), preset: starter.id}
+      : defaults()
   } catch {
     return defaults()
   }

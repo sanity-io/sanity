@@ -22,8 +22,8 @@ import {layerLabel, usePaneAddress} from './PaneAddress'
 const LAYER = 'layer'
 const NONE = 'none'
 
-export function PaneControl(props: {documentId: string}) {
-  const {held, local, set} = usePaneAddress()
+export function PaneControl(props: {documentId: string; onlyWhenNeeded?: boolean}) {
+  const {held, local, differs, reference, set} = usePaneAddress()
   const versions = useVersionList(props.documentId)
   const definitions = useVariantDefinitions()
   // The same dimensions the global bar offers (the stage and the Config limit apply), plus the layer.
@@ -63,10 +63,14 @@ export function PaneControl(props: {documentId: string}) {
     ? `Local · ${layerLabel(local.perspective)}${variantTitle ? ` · ${variantTitle}` : ''}`
     : 'Follows global'
 
+  // Open beta (locked): a pane that follows the global perspective says nothing, except a reference pane, which offers the unlock.
+  if (props.onlyWhenNeeded && !held && !reference) return null
+
   return (
     <>
       <span ref={setAnchor} style={{display: 'inline-flex'}}>
         <Chip
+          data-differs={differs ? '' : undefined}
           data-held={held ? '' : undefined}
           data-testid="pane-control"
           icon={
@@ -79,6 +83,7 @@ export function PaneControl(props: {documentId: string}) {
           iconRight={ChevronDownIcon}
           mode={held ? 'default' : 'ghost'}
           onClick={() => setOpen((o) => !o)}
+          tone={differs ? 'caution' : undefined}
           selected={open}
           text={text}
         />

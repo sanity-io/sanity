@@ -383,6 +383,15 @@ export const PANE_CONTROL: ComponentDef = {
       status: 'candidate',
       refs: `${FIGMA}; E10 D1 455:3372, D2 455:4558, D3 455:6226`,
     },
+    {
+      id: 'c',
+      label: 'Chip on reference and differing panes',
+      summary:
+        'B, but a pane that follows the global perspective says nothing about its address: the chip shows on a reference pane ("Follows global", the way to unlock it) and on any pane that holds its own address, tinted when it differs from global. Open beta (locked) uses this.',
+      oneLiner: 'Chip only where a pane can be unlocked or differs.',
+      status: 'candidate',
+      refs: `${FIGMA}; E10 V2 444:2, V3 444:2420, D1 455:3372, D3 455:6226`,
+    },
   ],
 }
 
@@ -455,7 +464,7 @@ export const LOCAL_MATCH: ComponentDef = {
 /**
  * Where the tools and the global perspective sit in the navbar (Figma E9 3c: N1 439:12761, N3 440:2, N2 440:1529). A is today, B moves the
  * tools to the left after the workspace and search and Create to the right (the address row stays under the navbar), C is B plus the whole
- * global perspective in the navbar, with no row under it. The row layout and the row width do nothing in C (there is no row).
+ * global perspective in the navbar, with no row under it, D is C with exactly two chips (the shipped pill hidden). The row layout and the row width do nothing in C (there is no row).
  */
 export const NAV_LAYOUT: ComponentDef = {
   id: 'navLayout',
@@ -494,6 +503,15 @@ export const NAV_LAYOUT: ComponentDef = {
       oneLiner: 'B plus the perspective inside the navbar.',
       status: 'candidate',
       refs: `${FIGMA}; 3c N3 440:2, N2 440:1529`,
+    },
+    {
+      id: 'd',
+      label: 'Two chips (open beta, locked)',
+      summary:
+        'C, with the shipped perspective pill and its menu hidden, so the global perspective is exactly two chips: the layer (Published, Drafts or a release) and the address (the one open-beta dimension: value and a cross to clear). The chips sit left of search and Create, which stay together on the right. No row under the navbar; the same chips are in every tool.',
+      oneLiner: 'C with exactly two chips; the shipped pill is hidden.',
+      status: 'candidate',
+      refs: `${FIGMA}; E10 V1 443:2728`,
     },
   ],
 }

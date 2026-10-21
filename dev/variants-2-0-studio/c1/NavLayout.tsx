@@ -1,6 +1,6 @@
 import {useOption} from '../options/store'
 
-// navLayout B and C: the navbar's three groups are flattened (display: contents) so each item can be ordered on one row, without touching core.
+// navLayout B, C and D: the navbar's three groups are flattened (display: contents) so each item can be ordered on one row, without touching core.
 //   [workspace] [tools ........ ] [global perspective (C)] [search] [Create] [version pill] [tasks, help, resources, account]
 // The navbar is `[data-testid="studio-navbar"] > Grid > (left Flex, tools Flex, right Flex)`; the selectors are positional, which is why this
 // lives in the design studio and not in core. Below about 1440 the tools fold into the stock More menu by themselves as the tools Flex shrinks.
@@ -19,9 +19,22 @@ const RULES = `
 [data-testid="studio-navbar"] > div > div:nth-child(3) > [data-ui="ReleasesNav"] { order: 12; }
 `
 
-/** Rendered once by the navbar override while navLayout is B or C. */
+// navLayout D (open beta, locked): C without the shipped perspective pill and its menu (the layer chip and the address chip are the whole global
+// perspective), and the chips left of search and Create. Hidden with CSS, so core is untouched; the Releases tool link stays.
+const LOCKED_RULES = `
+[data-testid="studio-navbar"] [data-testid="perspective-label-toggle"],
+[data-testid="studio-navbar"] [data-testid="global-perspective-menu-button"] { display: none !important; }
+[data-testid="studio-navbar"] > div > div > [data-testid="address-row-inline"] { order: 9 !important; }
+`
+
+/** Rendered once by the navbar override while navLayout is B, C or D. */
 export function NavLayoutStyles() {
   const layout = useOption('navLayout')
   if (layout === 'a') return null
-  return <style data-testid="nav-layout-styles">{RULES}</style>
+  return (
+    <style data-testid="nav-layout-styles">
+      {RULES}
+      {layout === 'd' ? LOCKED_RULES : null}
+    </style>
+  )
 }

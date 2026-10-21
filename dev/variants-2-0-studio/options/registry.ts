@@ -89,9 +89,12 @@ export const COMPONENTS: ComponentDef[] = [
       },
       {
         id: 'c',
-        label: 'Not drawn',
-        summary: 'A third option, if one is drawn.',
-        status: 'exploration',
+        label: 'Toggle only (open beta, locked)',
+        summary:
+          "The header shows only the Published | Draft toggle. No variant chip, no versions popover, no grouped pills: the variant is the navbar's address chip, the pane's own address is the pane control, and the versions are the inventory panel (C4 A, its Versions button in the header). A pane that holds its own layer flips that layer; one that follows global flips the global layer.",
+        oneLiner: 'Published | Draft toggle, nothing else.',
+        status: 'candidate',
+        refs: 'Figma E10 V1 443:2728, V2 444:2, V3 444:2420, V4 444:3823; C2 page, option B (the toggle)',
       },
     ],
   },
@@ -574,6 +577,7 @@ defineDesignOptions({
     ],
   },
   presets,
+  defaultPreset: 'open-beta-locked',
   // The global pill shape (docs/initiatives/curation-perspective-selector/SHAPE-TOKEN.md): Round = shipped, Box = 3px.
   shape: {variable: '--v2-pill-radius', round: '999px', box: '3px'},
   diagrams: diagrams as unknown as DiagramFile,

@@ -110,6 +110,8 @@ export interface DesignOptionsConfig {
   scenario: ScenarioConfig
   /** Shared presets (the ones that ship in the repo). Mine live in localStorage. */
   presets: PresetDef[]
+  /** The id of the shared preset a visitor with no link and no saved choice starts from. */
+  defaultPreset?: string
   /** A global shape switch (pill radius): the CSS variable every bound piece reads, and its value in each mode. */
   shape?: {variable: string; round: string; box: string}
   links?: {

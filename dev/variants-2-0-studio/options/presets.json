@@ -1,5 +1,10 @@
 [
   {
+    "id": "open-beta-locked",
+    "name": "Open beta (locked)",
+    "design": "show.a,stage.open-beta,navLayout.d,c2.c,c4.a,paneControl.c"
+  },
+  {
     "id": "today",
     "name": "Today (Stock)",
     "design": "show.stock,stage.open-beta"
