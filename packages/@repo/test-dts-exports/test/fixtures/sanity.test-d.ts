@@ -1295,7 +1295,7 @@ describe('sanity', () => {
     expectTypeOf<ArrayOfObjectsInputProps<any, any>>().toBeObject()
   })
   test('ArrayOfObjectsItem', () => {
-    expectTypeOf<typeof ArrayOfObjectsItem>().toBeFunction()
+    expectTypeOf<typeof ArrayOfObjectsItem>().not.toBeNever()
   })
   test('ArrayOfObjectsItemMember', () => {
     expectTypeOf<ArrayOfObjectsItemMember<any>>().toBeObject()
@@ -1505,7 +1505,7 @@ describe('sanity', () => {
     expectTypeOf<BlockDefinition>().toBeObject()
   })
   test('BlockEditor', () => {
-    expectTypeOf<typeof BlockEditor>().toBeFunction()
+    expectTypeOf<typeof BlockEditor>().not.toBeNever()
   })
   test('BlockImagePreview', () => {
     expectTypeOf<typeof BlockImagePreview>().toBeFunction()
@@ -2482,7 +2482,7 @@ describe('sanity', () => {
     expectTypeOf<FormattedDuration>().toBeObject()
   })
   test('FormBuilder', () => {
-    expectTypeOf<typeof FormBuilder>().toBeFunction()
+    expectTypeOf<typeof FormBuilder>().not.toBeNever()
   })
   test('FormBuilderContextValue', () => {
     expectTypeOf<FormBuilderContextValue>().toBeObject()
@@ -3310,7 +3310,7 @@ describe('sanity', () => {
     expectTypeOf<typeof MemberField>().not.toBeNever()
   })
   test('MemberFieldError', () => {
-    expectTypeOf<typeof MemberFieldError>().toBeFunction()
+    expectTypeOf<typeof MemberFieldError>().not.toBeNever()
   })
   test('MemberFieldProps', () => {
     expectTypeOf<MemberFieldProps>().toBeObject()
@@ -3589,7 +3589,7 @@ describe('sanity', () => {
     expectTypeOf<PortableTextChild>().not.toBeNever()
   })
   test('PortableTextInput', () => {
-    expectTypeOf<typeof PortableTextInput>().toBeFunction()
+    expectTypeOf<typeof PortableTextInput>().not.toBeNever()
   })
   test('PortableTextInputProps', () => {
     expectTypeOf<PortableTextInputProps>().toBeObject()

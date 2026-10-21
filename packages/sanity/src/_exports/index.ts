@@ -308,7 +308,7 @@ export {
 } from '../core/field/types'
 export {EditPortal} from '../core/form/components/EditPortal'
 export {EnhancedObjectDialog} from '../core/form/components/EnhancedObjectDialog'
-export {FormField, type FormFieldProps} from '../core/form/components/formField/FormField'
+export {type FormFieldProps} from '../core/form/components/formField/FormField'
 export {
   FormFieldHeaderText,
   type FormFieldHeaderTextProps,
@@ -317,15 +317,25 @@ export {
   FormFieldValidationStatus,
   type FormFieldValidationStatusProps,
 } from '../core/form/components/formField/FormFieldValidationStatus'
-export {
-  FormInput,
-} from '../core/form/components/FormInput'
 export {useFormValue} from '../core/form/contexts/FormValue'
 export {useGetFormValue} from '../core/form/contexts/GetFormValue'
 export {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
 export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
 export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 export {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
+// Code-split facades. Same names and props; the implementation loads on first render so the
+// form runtime and the Portable Text editor are not in the login screen's import graph.
+export {
+  ArrayOfObjectsItem,
+  FormBuilder,
+  FormField,
+  FormInput,
+  MemberField,
+  MemberFieldError,
+  ObjectInputMember,
+  PortableTextInput as BlockEditor,
+  PortableTextInput,
+} from '../core/form/lazy'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {ArrayOfObjectOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
 export {ArrayOfOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
@@ -340,10 +350,6 @@ export {EmailInput, type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
 export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
 export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
-export {
-  PortableTextInput as BlockEditor,
-  PortableTextInput,
-} from '../core/form/inputs/PortableText/PortableTextInput'
 export {SelectInput} from '../core/form/inputs/SelectInput'
 export {SlugInput, type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
 export {StringInput} from '../core/form/inputs/StringInput/StringInput'
@@ -352,22 +358,14 @@ export {TelephoneInput, type TelephoneInputProps} from '../core/form/inputs/Tele
 export {TextInput, type TextInputProps} from '../core/form/inputs/TextInput'
 export {UrlInput, type UrlInputProps} from '../core/form/inputs/UrlInput'
 export {type ArrayOfObjectsMemberProps} from '../core/form/members/array/ArrayOfObjectsInputMember'
-export {
-  ArrayOfObjectsItem,
-  type MemberItemProps,
-} from '../core/form/members/array/items/ArrayOfObjectsItem'
+export {type MemberItemProps} from '../core/form/members/array/items/ArrayOfObjectsItem'
 export {
   ArrayOfPrimitivesItem,
   type PrimitiveMemberItemProps,
 } from '../core/form/members/array/items/ArrayOfPrimitivesItem'
 export {MemberItemError} from '../core/form/members/array/MemberItemError'
-export {MemberField, type MemberFieldProps} from '../core/form/members/object/MemberField'
-export {MemberFieldError} from '../core/form/members/object/MemberFieldError'
-export {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
-export {
-  ObjectInputMember,
-  type ObjectInputMemberProps,
-} from '../core/form/members/object/ObjectInputMember'
+export {type MemberFieldProps} from '../core/form/members/object/MemberField'
+export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
 export {
   ObjectInputMembers,
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -459,7 +457,7 @@ export {
   useFormCallbacks,
 } from '../core/form/studio/contexts/FormCallbacks'
 export {type ReferenceInputOptions} from '../core/form/studio/contexts/ReferenceInputOptions'
-export {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilder'
+export {type FormBuilderProps} from '../core/form/studio/FormBuilder'
 export {FormProvider, type FormProviderProps} from '../core/form/studio/FormProvider'
 export {
   StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput,
