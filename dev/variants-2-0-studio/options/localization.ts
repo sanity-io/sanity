@@ -12,27 +12,44 @@ export const LOCALIZATION: ComponentDef = {
   built: true,
   scope: 'Open beta',
   cover:
-    'How teams localize in open beta, before variants: the document-level localization plugin gives each language its own document, joined by a metadata document. The Nordic Books content has Danish, Swedish and Norwegian versions.',
+    'How teams localize in open beta, before variants. Document-level: each language is its own document, joined by a metadata document. Field-level: one document with every language inside its fields. The Nordic Books content has Danish, Swedish and Norwegian versions both ways.',
   pick: 'A scenario, not a design choice: it shows how the plugin sits next to the open beta designs. Open a book to see the menu.',
   where:
-    'The document pane header (a language menu) and the document badges; open a book, series, publisher or place.',
+    'The document pane header (a language menu or filter), the navbar (a locale pill, field-level) and the lists; open a book, series, publisher or place.',
   options: [
     {
       id: 'a',
       label: 'Plugin off',
       summary:
-        'No plugin UI: the studio as it is. The translated documents are still in the dataset and in the lists.',
+        'No plugin UI: the studio as it is. The Content list shows English documents only (the translated documents and the field-level books are in the dataset, not listed).',
       oneLiner: 'No localization plugin UI.',
       status: 'final',
     },
     {
       id: 'b',
-      label: 'Plugin on',
+      label: 'Document-level plugin',
       summary:
-        "The plugin's language menu in the document header (English, Danish, Swedish, Norwegian: open or create a version) and its language badge. Takes effect on the next document you open.",
-      oneLiner: "The plugin's language menu and badge.",
+        "@sanity/document-internationalization: each language is its own document, joined by a metadata document. Its Translations menu in the document header (English, Danish, Swedish, Norwegian: open or create a version) and its language badge. The lists show every language's documents.",
+      oneLiner: 'One document per language; a Translations menu.',
       status: 'candidate',
       refs: '@sanity/document-internationalization 6.2.43',
+    },
+    {
+      id: 'c',
+      label: 'Field-level plugin',
+      summary:
+        'sanity-plugin-internationalized-array with its language filter: ONE document per book with every language inside its fields (the "Book (field-level)" list). The filter button in the document header and a locale pill in the navbar choose which languages the form shows.',
+      oneLiner: 'One document, every language in its fields; a locale pill.',
+      status: 'candidate',
+      refs: 'sanity-plugin-internationalized-array 5.3.6, @sanity/language-filter 5.0.23',
+    },
+    {
+      id: 'd',
+      label: 'Both',
+      summary:
+        'The document-level and the field-level plugins together, side by side: the same books stored both ways, to compare.',
+      oneLiner: 'Both approaches at once.',
+      status: 'exploration',
     },
   ],
 }

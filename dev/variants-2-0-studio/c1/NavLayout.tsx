@@ -19,6 +19,8 @@ const RULES = `
 [data-testid="studio-navbar"] > div > div:nth-child(3) > [data-ui="ReleasesNav"] { order: 12; }
 /* C1 B: the Variants control sits right after the state control */
 [data-testid="studio-navbar"] > div > div > [data-testid="open-beta-variants"] { order: 13; }
+/* the locale pill (localization C and D) sits after it */
+[data-testid="studio-navbar"] > div > div > [data-testid="locale-pill"] { order: 14; }
 `
 
 /** Rendered once by the navbar override while navLayout is B or C. */

@@ -6,8 +6,18 @@
   },
   {
     "id": "open-beta-locked-localized",
-    "name": "Open beta (locked) + localization plugin",
+    "name": "Open beta (locked) + document-level localization",
     "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a,localization.b"
+  },
+  {
+    "id": "open-beta-locked-localized-fields",
+    "name": "Open beta (locked) + field-level localization",
+    "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a,localization.c"
+  },
+  {
+    "id": "open-beta-locked-localized-both",
+    "name": "Open beta (locked) + both localization plugins",
+    "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a,localization.d"
   },
   {
     "id": "today",

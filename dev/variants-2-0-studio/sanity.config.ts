@@ -5,7 +5,7 @@ import {structureTool} from 'sanity/structure'
 import {NavbarWithVariants} from './c1/NavbarWithVariants'
 import {inventoryInspector} from './c4/InventoryInspector'
 import {E9Block, E9Field, E9Input, E9Item} from './fieldmarks/E9Marks'
-import {localization} from './localization/plugin'
+import {fieldLevel, localization} from './localization/plugin'
 import {structure} from './localization/structure'
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
 import {ReviewSwitch, rememberStock} from './review/E9Review'
@@ -65,6 +65,7 @@ export default defineConfig({
     }),
     variants2Options(),
     localization(),
+    fieldLevel,
   ],
   schema: {types: schemaTypesFor(dataset)},
   scheduledDrafts: {enabled: true},

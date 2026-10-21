@@ -88,3 +88,20 @@ for (const base of bases) {
   await tx.commit()
 }
 console.log(`translations: ${created} documents for ${bases.length} originals, ${bases.length} metadata documents`)
+
+// 3. The same books the field-level way: ONE document per book with every language inside its fields (sanity-plugin-internationalized-array 5, items
+//    `{_key, language, value}`), type bookFieldLevel, id `fl-<book id>`. From the published books only.
+const strings = (en: unknown, valueType: string) =>
+  ['en', ...dictionary.langs].map((lang) => ({_key: key(), _type: valueType, language: lang, value: lang === 'en' ? String(en ?? '') : say(String(en ?? ''), lang)}))
+const books = bases.filter((d) => d._type === 'book')
+for (const book of books) {
+  await x.createOrReplace({
+    _id: `fl-${book._id}`,
+    _type: 'bookFieldLevel',
+    title: strings(book.title, 'internationalizedArrayStringValue'),
+    subtitle: book.subtitle ?? '',
+    blurb: strings(book.blurb, 'internationalizedArrayTextValue'),
+    cta: strings(book.cta ?? 'Add to cart', 'internationalizedArrayStringValue'),
+  } as any)
+}
+console.log(`field-level books: ${books.length}`)

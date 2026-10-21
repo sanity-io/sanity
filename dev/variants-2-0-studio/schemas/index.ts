@@ -1,3 +1,4 @@
+import {bookFieldLevel} from './bookFieldLevel'
 import {bookTypes} from './books'
 import {e9Types} from './e9'
 import {fieldMarksTest} from './fieldMarks'
@@ -8,5 +9,5 @@ import {peopleTypes} from './people'
 export function schemaTypesFor(dataset: string) {
   return dataset === 'northfold'
     ? northfoldTypes
-    : [...bookTypes, fieldMarksTest, ...e9Types, ...peopleTypes]
+    : [...bookTypes, fieldMarksTest, ...e9Types, ...peopleTypes, bookFieldLevel]
 }

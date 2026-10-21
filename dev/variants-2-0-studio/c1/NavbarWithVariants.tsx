@@ -3,6 +3,7 @@ import {type NavbarProps} from 'sanity'
 
 import {CompareHeader} from '../compare/CompareHeader'
 import {useComparison} from '../compare/useCompare'
+import {LocalePill} from '../localization/LocalePill'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {AddressRow} from './AddressRow'
 import {NavLayoutStyles} from './NavLayout'
@@ -22,19 +23,39 @@ export function NavbarWithVariants(props: NavbarProps) {
   const inNavbar = navLayout === 'c'
   const renderInline = useCallback(() => <AddressRow inline />, [])
   const renderVariants = useCallback(() => <OpenBetaVariants />, [])
+  const renderLocale = useCallback(() => <LocalePill />, [])
+  // The localization switch C (field-level) and D (both): a locale pill after Variants, drawn from the language filter's state.
+  const localization = useOption('localization')
+  const localePill = localization === 'c' || localization === 'd'
   const actions = useMemo((): NavbarProps['__internal_actions'] => {
     const base = props.__internal_actions ?? []
+    const locale = localePill
+      ? [{location: 'topbar' as const, name: 'locale-pill', render: renderLocale}]
+      : []
     // C1 B: the stock state control stays as it is, and ONE control is added: Variants. No row.
     if (option === 'b')
       return [
         ...base,
         {location: 'topbar' as const, name: 'open-beta-variants', render: renderVariants},
+        ...locale,
       ]
     // navLayout C: the whole global perspective inside the navbar (the row under it is removed).
     return inNavbar && option !== STOCK_OPTION && option !== 'c'
-      ? [...base, {location: 'topbar' as const, name: 'address-in-bar', render: renderInline}]
-      : base
-  }, [option, inNavbar, props.__internal_actions, renderVariants, renderInline])
+      ? [
+          ...base,
+          {location: 'topbar' as const, name: 'address-in-bar', render: renderInline},
+          ...locale,
+        ]
+      : [...base, ...locale]
+  }, [
+    option,
+    inNavbar,
+    localePill,
+    props.__internal_actions,
+    renderVariants,
+    renderInline,
+    renderLocale,
+  ])
   return (
     <>
       <NavLayoutStyles />

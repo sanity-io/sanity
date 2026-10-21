@@ -1,4 +1,4 @@
-// The localization plugin scenario (switch `localization`: A off, B the document-level plugin on). Screenshots -> journeys-captures/e9-localization/.
+// The localization plugin scenario (switch `localization`: A off, B document-level, C field-level, D both). Screenshots -> journeys-captures/e9-localization/.
 // node journeys/verify-localization.mts
 import {mkdirSync, readFileSync} from 'node:fs'
 import {homedir} from 'node:os'
@@ -49,6 +49,39 @@ for (const on of [false, true]) {
   const {p, context} = await open(`/structure/book;book-lighthouse-da?design=${BASE},localization.b`)
   const text = await p.locator('body').innerText()
   log('on: the Danish version is its own document, with Danish text', /Fyrvogterens almanak/.test(text) && /Af Maren Halvorsen/.test(text))
+  await context.close()
+}
+
+// Field-level (C): one document per book with every language in its fields; a locale pill in the navbar; the filter hides a language in the form.
+{
+  const FL = `${BASE},localization.c`
+  const list = await open(`/structure/bookFieldLevel?design=${FL}`)
+  log('field-level: the Content list has "Book (field-level)", and the locale pill is in the navbar', /Book \(field-level\)/.test(await list.p.locator('body').innerText()) && (await list.p.getByTestId('locale-pill').count()) === 1)
+  await list.context.close()
+  const {p, context} = await open(`/structure/bookFieldLevel;fl-book-lighthouse?design=${FL}`)
+  const fields = () => p.locator('[data-testid="document-pane"] input[type="text"]').evaluateAll((els) => els.map((e) => (e as HTMLInputElement).value))
+  log('field-level: the title holds every language inside the one document', (await fields()).some((v) => /Fyrvogterens almanak/.test(v)) && (await fields()).some((v) => /Fyrvaktarens almanacka/.test(v)) && (await fields()).some((v) => /Fyrvokterens almanakk/.test(v)))
+  log('field-level: the pill reads "All (4)"', /All \(4\)/.test(await p.getByTestId('locale-pill-button').innerText()))
+  await p.getByTestId('locale-pill-button').click()
+  await p.waitForTimeout(1200)
+  log('field-level: the pill menu offers Show all locales and the four languages', (await p.getByTestId('locale-all').count()) === 1 && (await p.locator('[data-testid^="locale-"]:not([data-testid="locale-all"]):not([data-testid="locale-pill"]):not([data-testid="locale-pill-button"])').count()) === 4)
+  await p.screenshot({path: 'journeys-captures/e9-localization/locale-pill.png', clip: {x: 940, y: 0, width: 500, height: 330}})
+  await p.getByTestId('locale-da').click()
+  await p.waitForTimeout(1500)
+  log('field-level: choosing Danish off hides it in the form and the pill says "3 of 4"', !(await fields()).some((v) => /Fyrvogterens almanak/.test(v)) && (await fields()).some((v) => /Fyrvaktarens almanacka/.test(v)) && /3 of 4/.test(await p.getByTestId('locale-pill-button').innerText()))
+  await p.screenshot({path: 'journeys-captures/e9-localization/field-level-filtered.png'})
+  await context.close()
+}
+// Both (D): the two approaches side by side.
+{
+  const {p, context} = await open(`/structure/book;book-lighthouse?design=${BASE},localization.d`)
+  log('both: the document-level menu and the field-level pill are there together', (await p.getByRole('button', {name: 'Translations'}).count()) === 1 && (await p.getByTestId('locale-pill').count()) === 1)
+  await context.close()
+}
+// Off (A): none of it is visible.
+{
+  const {p, context} = await open(`/structure/book?design=${BASE}`)
+  log('off: no locale pill, and neither "Book (field-level)" nor "Translation metadata" in the Content list', (await p.getByTestId('locale-pill').count()) === 0 && !/Book \(field-level\)|Translation metadata/.test(await p.locator('body').innerText()))
   await context.close()
 }
 await b.close()
