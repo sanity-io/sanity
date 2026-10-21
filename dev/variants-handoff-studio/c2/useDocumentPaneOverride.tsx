@@ -18,8 +18,11 @@ export type DocumentPaneOverrideState = ReturnType<typeof useDocumentPaneOverrid
 export function resolveDocumentPaneOverride(
   state: DocumentPaneOverrideState,
 ): ResolveDocumentPaneExtension {
-  return ({documentId, documentType}) =>
-    state.c2 === 'a'
+  return ({documentId, documentType}) => ({
+    // The version inventory opens at the midpoint of the inspector's 320 to 540 px limits; the resize handle keeps both.
+    inspectorInitialWidth: (name) => (name === 'variants-inventory' ? 430 : undefined),
+    ...(state.c2 === 'a'
       ? {pills: <DocumentPillsV1 documentId={documentId} documentType={documentType} />}
-      : undefined
+      : {}),
+  })
 }

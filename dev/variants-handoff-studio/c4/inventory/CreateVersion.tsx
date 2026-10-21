@@ -20,6 +20,7 @@ import {ReleaseAvatarIcon} from 'sanity'
 import {RhombusIcon} from '../../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
 import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 import {DimensionIcon} from '../../c1/dimensionIcons'
 import {type InventoryEntry, type InventoryWorld} from './fixtures'
 
@@ -60,12 +61,16 @@ interface Draft {
   dest: Dest
   /** `nearest`, or the key of the version chosen. */
   source: string
+  /** Whether the editor has chosen anything yet: an address that exists by default is not announced until then. */
+  picked: boolean
 }
 
 /** What a + on a group header fixes: the bundle, or the variant. */
 interface Fixed {
   dest?: Dest
   variantId?: string
+  /** The workflow stage of the group a + was pressed on (Drafts only). */
+  stage?: 'draft' | 'inReview' | 'approved'
 }
 
 const DRAFTS: Dest = {kind: 'drafts'}
@@ -74,8 +79,49 @@ const BASE_LABEL = 'Base · all visitors'
 const matches = (query: string, text: string) =>
   !query.trim() || text.toLowerCase().includes(query.trim().toLowerCase())
 
+interface Searchable {
+  title: string
+  /** `audience: students`: the condition a variant definition names. */
+  condition?: string
+  id?: string
+}
+
+/**
+ * Menu search: titles first, then conditions, then IDs. An ID matches only whole or from its start, so a stray fragment never lists a row. A row
+ * found by its condition or ID says why.
+ */
+function search<T>(
+  items: readonly T[],
+  query: string,
+  get: (item: T) => Searchable,
+): {item: T; reason?: string}[] {
+  const q = query.trim().toLowerCase()
+  if (!q) return items.map((item) => ({item}))
+  const found: {item: T; reason?: string; score: number}[] = []
+  for (const item of items) {
+    const {title, condition, id} = get(item)
+    const t = title.toLowerCase()
+    if (t.startsWith(q)) found.push({item, score: 0})
+    else if (t.includes(q)) found.push({item, score: 1})
+    else if (condition?.toLowerCase().includes(q))
+      found.push({item, score: 2, reason: `Matches ${condition}`})
+    else if (id && id.toLowerCase().startsWith(q))
+      found.push({item, score: 3, reason: 'Matches ID'})
+  }
+  return found.sort((x, y) => x.score - y.score)
+}
+
 // Loose padding: the pill is as tall as a toolbar button and takes 12px at the sides.
-const PILL = {borderRadius: 999, paddingInline: 12} as const
+// Pills hug their content and sit at the start of the column; one wider than the column ends with an ellipsis (CSS) and says the whole of it on hover.
+const PILL = {
+  alignSelf: 'flex-start',
+  borderRadius: 999,
+  justifyContent: 'flex-start',
+  maxWidth: '100%',
+  paddingLeft: 10,
+  paddingRight: 8,
+  width: 'max-content',
+} as const
 
 const MenuOpenContext = createContext<(open: boolean) => void>(() => undefined)
 
@@ -84,6 +130,8 @@ function PillMenu(props: {
   testId: string
   text: string
   searchLabel: string
+  /** A menu with more than three options has a search field. */
+  searchable: boolean
   icon?: ReactNode
   boundary: HTMLElement | null
   children: (query: string) => ReactNode
@@ -100,6 +148,8 @@ function PillMenu(props: {
           iconRight={ChevronDownIcon}
           mode="ghost"
           style={PILL}
+          // The button type leaves `title` out; the whole value shows on hover when the pill ends with an ellipsis.
+          {...{title: props.text}}
           text={props.text}
           tooltipProps={null}
         />
@@ -107,30 +157,32 @@ function PillMenu(props: {
       id={props.testId}
       menu={
         <Menu data-testid={`${props.testId}-menu`} style={{minWidth: 240}}>
-          <Box padding={1}>
-            <TextInput
-              aria-label={props.searchLabel}
-              data-testid={`${props.testId}-search`}
-              fontSize={1}
-              // The menu would take typing for its own keys; only the arrows are its.
-              onKeyDown={(event) => {
-                if (event.key === 'Escape') {
-                  // The menu does not hear an Escape typed in the search field: close it from its pill.
-                  event.preventDefault()
-                  event.stopPropagation()
-                  event.currentTarget.ownerDocument
-                    .querySelector<HTMLElement>(`[data-testid="${props.testId}"]`)
-                    ?.click()
-                  return
-                }
-                if (!['ArrowDown', 'ArrowUp'].includes(event.key)) event.stopPropagation()
-              }}
-              onChange={(event) => setQuery(event.currentTarget.value)}
-              placeholder={props.searchLabel}
-              value={query}
-            />
-          </Box>
-          {props.children(query)}
+          {props.searchable ? (
+            <Box padding={1}>
+              <TextInput
+                aria-label={props.searchLabel}
+                data-testid={`${props.testId}-search`}
+                fontSize={1}
+                // The menu would take typing for its own keys; only the arrows are its.
+                onKeyDown={(event) => {
+                  if (event.key === 'Escape') {
+                    // The menu does not hear an Escape typed in the search field: close it from its pill.
+                    event.preventDefault()
+                    event.stopPropagation()
+                    event.currentTarget.ownerDocument
+                      .querySelector<HTMLElement>(`[data-testid="${props.testId}"]`)
+                      ?.click()
+                    return
+                  }
+                  if (!['ArrowDown', 'ArrowUp'].includes(event.key)) event.stopPropagation()
+                }}
+                onChange={(event) => setQuery(event.currentTarget.value)}
+                placeholder={props.searchLabel}
+                value={query}
+              />
+            </Box>
+          ) : null}
+          {props.children(props.searchable ? query : '')}
         </Menu>
       }
       onClose={() => {
@@ -172,7 +224,11 @@ function Item(props: {
   )
 }
 
-/** A row of the two-column table: an icon in a 25px gutter, the title and its meaning on the same edge, the control on the right. */
+/**
+ * A row of the two-column table (Figma C4, Create version): a grid of the icon (25px), the title with its meaning (one line each) and the control.
+ * The columns are fixed, so every row's icon, text and pill start on the same edges; the pill takes the remaining width and ends a long value with
+ * an ellipsis only after using it. The icon and the pill are centred on the two-line text block.
+ */
 function TableRow(props: {
   icon: ReactNode
   title: string
@@ -182,34 +238,34 @@ function TableRow(props: {
 }) {
   const id = props.testId
   return (
-    <Flex align="flex-start" data-testid={id} gap={3} padding={3}>
-      <Flex
-        align="flex-start"
-        data-testid={`${id}-left`}
-        gap={2}
-        style={{width: 140, flex: 'none'}}
-      >
-        <Flex align="center" justify="center" style={{width: 25, flex: 'none', height: 25}}>
-          <Text size={1}>{props.icon}</Text>
-        </Flex>
-        <Stack flex={1} gap={1} style={{paddingTop: 2}}>
-          <Text data-testid={`${id}-title`} size={1} weight="medium">
-            {props.title}
-          </Text>
-          <Text muted size={0}>
-            {props.meaning}
-          </Text>
-        </Stack>
-      </Flex>
-      <Stack data-testid={`${id}-controls`} flex={1} gap={2} style={{minWidth: 0}}>
+    <div data-create-row="" data-testid={id}>
+      <div data-create-icon-box="">
+        <span data-create-icon="">{props.icon}</span>
+      </div>
+      <Stack data-testid={`${id}-left`} gap={1} style={{paddingTop: 1}}>
+        <Text data-testid={`${id}-title`} size={1} weight="medium">
+          {props.title}
+        </Text>
+        <Text muted size={0}>
+          {props.meaning}
+        </Text>
+      </Stack>
+      <Stack data-create-controls="" data-testid={`${id}-controls`} gap={2}>
         {props.children}
       </Stack>
-    </Flex>
+    </div>
   )
 }
 
-const VariantDiamond = () => (
-  <span style={{display: 'inline-flex', color: 'var(--card-badge-suggest-icon-color)'}}>
+/** The rhombus fills little of its box, so in a table row (21px) it is drawn larger to match the package and documents icons. */
+const VariantDiamond = ({large}: {large?: boolean}) => (
+  <span
+    style={{
+      display: 'inline-flex',
+      color: 'var(--card-badge-suggest-icon-color)',
+      ...(large ? {transform: 'scale(1.5)'} : {}),
+    }}
+  >
     <RhombusIcon />
   </span>
 )
@@ -226,11 +282,26 @@ const destIcon = (d: Dest) =>
 // A pill keeps to its column and ends its text with an ellipsis, so a long one never widens the panel. A group header's title takes its count, or
 // the current mark, beside it. While the mode is on, the toolbar row (and the bulk bar that replaces it) leaves.
 const MODE_CSS = `
+[data-create-frame] { container-type: inline-size; }
 [data-create-frame][data-mode] [data-testid="inventory-toolbar"],
 [data-create-frame][data-mode] [data-testid="inventory-bulk-bar"] { display: none !important; }
+/* Group select-all is not offered while a version is being created. */
+[data-create-frame][data-mode] .inventory-group .inventory-checkbox { display: none !important; }
+/* The table: icon, label and control in fixed columns, so every row starts on the same edges; below 340px the control drops under the label. */
+[data-create-row] { display: grid; grid-template-columns: 25px minmax(0, 104px) minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 12px 16px; }
+[data-create-row] > [data-create-controls] { min-width: 0; padding: 7px 0 0 2px; }
+[data-create-icon-box] { width: 25px; height: 25px; margin-top: 1px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+[data-create-icon] { display: inline-flex; font-size: 21px; line-height: 0; overflow: visible; }
+[data-create-icon] svg { width: 21px; height: 21px; }
+@container (max-width: 339px) {
+  [data-create-row] { grid-template-columns: 25px minmax(0, 1fr); }
+  [data-create-row] > [data-create-controls] { grid-column: 2; padding: 0; }
+}
+/* Pills: 17px icon, nothing clipped; a value wider than the column ends with an ellipsis. */
 [data-create-frame] [data-add-pill] { max-width: 100%; min-width: 0; }
-[data-create-frame] [data-add-pill] [data-ui="Text"] { min-width: 0; }
-[data-create-frame] [data-add-pill] [data-ui="Text"] > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-block: 3px; margin-block: -3px; }
+[data-create-frame] [data-add-pill] [data-ui="Text"] { min-width: 0; overflow: visible; }
+[data-create-frame] [data-add-pill] [data-ui="Text"] svg { width: 17px; height: 17px; }
+[data-create-frame] [data-add-pill] [data-ui="Text"]:not(:has(svg)) > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-block: 3px; margin-block: -3px; }
 [data-create-frame] .inventory-group > div:nth-child(2) { display: flex; align-items: center; gap: 6px; }`
 
 const sameElements = (a: readonly HTMLElement[], b: readonly HTMLElement[]) =>
@@ -264,6 +335,8 @@ export function CreateVersion(props: {
   const [menuOpen, setMenuOpen] = useState(false)
   const [counts, setCounts] = useState<Record<string, number>>({})
   const collapsedByMode = useRef<string[]>([])
+  // Set when the block opens: if the default address already exists, the first step (the variant, or else the bundle) opens its menu.
+  const autoOpen = useRef(false)
   // The preview row's host: one element, moved under the target group's header while the mode is on.
   const [previewHost] = useState(() => document.createElement('div'))
   const pendingGroup = useRef<string | undefined>(props.received)
@@ -358,7 +431,7 @@ export function CreateVersion(props: {
   }, [mode, menuOpen, cancel])
 
   const patch = (next: Partial<Draft>) =>
-    setMode((m) => (m ? {...m, draft: {...m.draft, ...next}} : m))
+    setMode((m) => (m ? {...m, draft: {...m.draft, ...next, picked: true}} : m))
 
   const variantTitle = (id: string | undefined) =>
     id ? (variants.find((v) => v.id === id)?.title ?? id) : 'Base'
@@ -415,7 +488,7 @@ export function CreateVersion(props: {
       variantId: draft.variantId,
       changedFields: fromOf(draft)?.changedFields ?? [],
       updated: '0h ago',
-      ...(draft.dest.kind === 'drafts' ? {stage: 'draft' as const} : {}),
+      ...(draft.dest.kind === 'drafts' ? {stage: mode.fixed.stage ?? ('draft' as const)} : {}),
     }
     const received = targetHeader ? groupId(targetHeader) : group
     onCreate(entry, received)
@@ -441,29 +514,50 @@ export function CreateVersion(props: {
     setCurrentGroup(undefined)
     setMode({
       fixed,
-      draft: {variantId: fixed.variantId, dest: fixed.dest ?? startDest, source: 'nearest'},
+      draft: {
+        variantId: fixed.variantId,
+        dest: fixed.dest ?? startDest,
+        source: 'nearest',
+        picked: false,
+      },
     })
+    autoOpen.current = true
   }
+
+  // The default address exists: open the first step's menu, so the first thing to do is to choose.
+  useEffect(() => {
+    if (!autoOpen.current || !mode || !slot) return
+    autoOpen.current = false
+    const {draft} = mode
+    if (
+      !world.entries.some(
+        (e) => e.group === destGroup(draft.dest) && e.variantId === draft.variantId,
+      )
+    )
+      return
+    const pill =
+      slot.querySelector<HTMLElement>('[data-testid="add-pill-variant"]') ??
+      slot.querySelector<HTMLElement>('[data-testid="add-pill-bundle"]')
+    pill?.click()
+  }, [mode, slot, world.entries])
 
   // ---- the block
   const block = (current: {fixed: Fixed; draft: Draft}) => {
-    const {fixed, draft} = current
+    const {draft} = current
     const nearest = nearestOf(world, draft.variantId)
     const from = sourceEntry(draft)
-    const existing = existingOf(draft)
+    const found = existingOf(draft)
+    // The address exists by default (Base in Drafts): Create waits for a new one, and nothing is announced until the editor picks an existing address.
+    const existing = draft.picked ? found : undefined
+    const waiting = Boolean(found) && !draft.picked
     const variantPick = variants.find((v) => v.id === draft.variantId)
 
-    const variantControl = fixed.variantId ? (
-      <Flex align="center" data-testid="add-fixed-variant" gap={2}>
-        <Text size={1}>
-          <VariantDiamond />
-        </Text>
-        <Text size={1}>{variantTitle(fixed.variantId)}</Text>
-      </Flex>
-    ) : (
+    // Whatever the entry point knows (the group a + was pressed on) is only a preset: every row stays a dropdown.
+    const variantControl = (
       <PillMenu
         boundary={frame}
         icon={variantPick ? <DimensionIcon name={variantPick.dimension} /> : undefined}
+        searchable={variants.length + 1 > 3}
         searchLabel="Find a variant definition"
         testId="add-pill-variant"
         text={variantPick?.title ?? BASE_LABEL}
@@ -478,102 +572,100 @@ export function CreateVersion(props: {
                 text={BASE_LABEL}
               />
             ) : null}
-            {variants
-              .filter((v) => matches(q, v.title))
-              .map((v) => (
-                <Item
-                  icon={<DimensionIcon name={v.dimension} />}
-                  id={`add-value-${v.value}`}
-                  key={v.id}
-                  onClick={() => patch({variantId: v.id})}
-                  selected={draft.variantId === v.id}
-                  text={v.title}
-                />
-              ))}
+            {search(variants, q, (v) => ({
+              title: v.title,
+              condition: `${v.dimension}: ${v.value}`,
+              id: v.id,
+            })).map(({item: v, reason}) => (
+              <Item
+                icon={<DimensionIcon name={v.dimension} />}
+                id={`add-value-${v.value}`}
+                key={v.id}
+                onClick={() => patch({variantId: v.id})}
+                selected={draft.variantId === v.id}
+                sub={reason}
+                text={v.title}
+              />
+            ))}
           </>
         )}
       </PillMenu>
     )
 
-    const bundleControl = fixed.dest ? (
-      <Flex align="center" data-testid="add-fixed-bundle" gap={2}>
-        <Text size={1}>{destIcon(fixed.dest)}</Text>
-        <Text size={1}>{destTitle(fixed.dest)}</Text>
-      </Flex>
-    ) : (
-      <Flex>
-        <PillMenu
-          boundary={frame}
-          icon={destIcon(draft.dest)}
-          searchLabel="Find a bundle"
-          testId="add-pill-bundle"
-          text={destTitle(draft.dest)}
-        >
-          {(q) => (
-            <>
-              {destinations
-                .filter((d) => matches(q, destTitle(d)))
-                .map((d) => (
-                  <Item
-                    icon={destIcon(d)}
-                    id={`add-bundle-${destGroup(d)}`}
-                    key={destGroup(d)}
-                    onClick={() => patch({dest: d})}
-                    selected={destGroup(d) === destGroup(draft.dest)}
-                    text={destTitle(d)}
-                  />
-                ))}
-              {matches(q, 'Published') ? (
-                <Item
-                  disabled
-                  icon={<ReleaseAvatarIcon release="published" />}
-                  id="add-bundle-published"
-                  sub="Takes no new version"
-                  text="Published"
-                />
-              ) : null}
-            </>
-          )}
-        </PillMenu>
-      </Flex>
+    const bundleControl = (
+      <PillMenu
+        boundary={frame}
+        icon={destIcon(draft.dest)}
+        searchable={destinations.length + 1 > 3}
+        searchLabel="Find a bundle"
+        testId="add-pill-bundle"
+        text={destTitle(draft.dest)}
+      >
+        {(q) => (
+          <>
+            {search(destinations, q, (d) => ({
+              title: destTitle(d),
+              id: d.kind === 'release' ? d.name : undefined,
+            })).map(({item: d, reason}) => (
+              <Item
+                icon={destIcon(d)}
+                id={`add-bundle-${destGroup(d)}`}
+                key={destGroup(d)}
+                onClick={() => patch({dest: d})}
+                selected={destGroup(d) === destGroup(draft.dest)}
+                sub={reason}
+                text={destTitle(d)}
+              />
+            ))}
+            {matches(q, 'Published') ? (
+              <Item
+                disabled
+                icon={<ReleaseAvatarIcon release="published" />}
+                id="add-bundle-published"
+                sub="Takes no new version"
+                text="Published"
+              />
+            ) : null}
+          </>
+        )}
+      </PillMenu>
     )
 
     const documentControl = (
-      <Flex>
-        <PillMenu
-          boundary={frame}
-          icon={<DocumentsIcon />}
-          searchLabel="Find a version"
-          testId="add-pill-source"
-          text={draft.source === 'nearest' || !from ? 'Nearest version' : entryLabel(from)}
-        >
-          {(q) => (
-            <>
-              {matches(q, 'Nearest version') ? (
+      <PillMenu
+        boundary={frame}
+        icon={<DocumentsIcon />}
+        searchable={world.entries.length + 1 > 3}
+        searchLabel="Find a version"
+        testId="add-pill-source"
+        text={draft.source === 'nearest' || !from ? 'Nearest version' : entryLabel(from)}
+      >
+        {(q) => (
+          <>
+            {matches(q, 'Nearest version') ? (
+              <Item
+                id="add-source-nearest"
+                onClick={() => patch({source: 'nearest'})}
+                selected={draft.source === 'nearest'}
+                sub={nearest ? entryLabel(nearest) : undefined}
+                text="Nearest version"
+              />
+            ) : null}
+            <MenuDivider />
+            {world.entries
+              .filter((e) => matches(q, entryLabel(e)))
+              .map((e) => (
                 <Item
-                  id="add-source-nearest"
-                  onClick={() => patch({source: 'nearest'})}
-                  selected={draft.source === 'nearest'}
-                  sub={nearest ? entryLabel(nearest) : undefined}
-                  text="Nearest version"
+                  id={`add-source-${e.key}`}
+                  key={e.key}
+                  onClick={() => patch({source: e.key})}
+                  selected={draft.source === e.key}
+                  text={entryLabel(e)}
                 />
-              ) : null}
-              <MenuDivider />
-              {world.entries
-                .filter((e) => matches(q, entryLabel(e)))
-                .map((e) => (
-                  <Item
-                    id={`add-source-${e.key}`}
-                    key={e.key}
-                    onClick={() => patch({source: e.key})}
-                    selected={draft.source === e.key}
-                    text={entryLabel(e)}
-                  />
-                ))}
-            </>
-          )}
-        </PillMenu>
-      </Flex>
+              ))}
+          </>
+        )}
+      </PillMenu>
     )
 
     const text = readBack(draft)
@@ -583,14 +675,19 @@ export function CreateVersion(props: {
           <Text size={1} weight="semibold">
             Create version
           </Text>
-          <Text data-testid="add-subtitle" muted size={1}>
-            A new version of {props.documentTitle}
-          </Text>
+          {/* One line: a long title ends with an ellipsis, and the whole of it shows on hover. */}
+          <Tooltip content={`A new version of ${props.documentTitle}`} placement="bottom-start">
+            <div style={{minWidth: 0}}>
+              <Text data-testid="add-subtitle" muted size={1} textOverflow="ellipsis">
+                A new version of {props.documentTitle}
+              </Text>
+            </div>
+          </Tooltip>
         </Stack>
         {variantsOn ? (
           <Card borderTop>
             <TableRow
-              icon={<VariantDiamond />}
+              icon={<VariantDiamond large />}
               meaning="Who sees this version"
               testId="add-step-variant"
               title="Variant definition"
@@ -667,11 +764,12 @@ export function CreateVersion(props: {
                 <Button
                   aria-describedby="add-commit-description"
                   data-testid="add-commit"
+                  disabled={waiting}
                   mode="default"
                   onClick={commit}
                   text="Create version"
                   tone="primary"
-                  tooltipProps={{content: text}}
+                  tooltipProps={waiting ? null : {content: text}}
                 />
               </>
             )}
@@ -718,8 +816,19 @@ export function CreateVersion(props: {
               mode="bleed"
               onClick={(event: {stopPropagation: () => void}) => {
                 event.stopPropagation()
+                const stage = id.replace('stage-', '')
                 startMode(
-                  release ? {dest: release} : variant ? {variantId: variant.id} : {dest: DRAFTS},
+                  release
+                    ? {dest: release}
+                    : variant
+                      ? {variantId: variant.id}
+                      : {
+                          dest: DRAFTS,
+                          stage:
+                            stage === 'inReview' || stage === 'approved'
+                              ? stage
+                              : ('draft' as const),
+                        },
                 )
               }}
               tooltipProps={{content: askable ? 'Create version here' : 'Takes no new version'}}
@@ -777,7 +886,15 @@ export function CreateVersion(props: {
       style={{opacity: 0.6, borderBottom: '1px dashed var(--card-border-color)'}}
       tone="default"
     >
-      <Text size={1}>{variantLabel(draft.variantId)} · New</Text>
+      <Stack gap={2}>
+        <Text size={1}>{variantLabel(draft.variantId)}</Text>
+        <Text muted size={1}>
+          New · copied from{' '}
+          {fromOf(draft)
+            ? `the nearest version (${entryLabel(fromOf(draft)!)})`
+            : 'the nearest version'}
+        </Text>
+      </Stack>
     </Card>
   )
 
@@ -797,7 +914,7 @@ export function CreateVersion(props: {
             position: 'absolute',
             inset: 0,
             zIndex: 20,
-            background: 'color-mix(in srgb, var(--card-fg-color) 35%, transparent)',
+            background: 'rgba(0, 0, 0, 0.45)',
           }}
         />
       ) : null}

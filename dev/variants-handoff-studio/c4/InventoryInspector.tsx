@@ -12,7 +12,9 @@ import {LiveInventory} from './inventory/LiveInventory'
  */
 function Inventory({documentId}: DocumentInspectorProps) {
   const corpus = useCorpus()
-  const {closeInspector} = useDocumentPane()
+  const {closeInspector, value} = useDocumentPane()
+  // The corpus lists only the seeded documents; any other document is named by its own title field.
+  const own = typeof value.title === 'string' && value.title ? value.title : undefined
   return (
     <Flex direction="column" height="fill">
       <DocumentInspectorHeader
@@ -23,7 +25,7 @@ function Inventory({documentId}: DocumentInspectorProps) {
       <div style={{flex: 1, minHeight: 0}}>
         <LiveInventory
           documentId={documentId}
-          title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId}
+          title={corpus?.docs.find((d) => d.id === documentId)?.title ?? own ?? documentId}
         />
       </div>
     </Flex>
