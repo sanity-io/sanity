@@ -17,10 +17,11 @@ full reference; this skill is the operating card. Stored results are read throug
 ```bash
 pnpm build:bench                                              # required first: packages + bench studio
 pnpm bench help                                               # commands; `pnpm bench run --help` for flags
-pnpm bench scenarios                                          # singleString, arrayI18n, article, recipe, synthetic, syntheticLarge, loginReady, loginToTool, toolReady, emptyToolReady, loginToEmptyTool (+ customization scenarios)
+pnpm bench scenarios                                          # singleString, arrayI18n, article, recipe, synthetic, syntheticLarge, loginReady, loginToTool, toolReady, emptyToolReady, loginToEmptyTool, softNav (+ customization scenarios)
 pnpm bench run --scenario singleString --sessions 4           # absolute interaction run
 pnpm bench run --mode pageload --scenario singleString        # load vitals + bundle size
 pnpm bench run --mode inp --scenario singleString --sessions 3
+pnpm bench run --mode softnav --scenario softNav --sessions 4   # soft navigations: per-navigation soft LCP/FCP/INP/CLS
 pnpm bench run --mode soak --scenario singleString --minutes 5
 pnpm bench run --mode soak --scenario article --minutes 2       # long-session soak smoke (PTE body, menus, doc switches, live presence)
 pnpm --filter bench build:reference-config \

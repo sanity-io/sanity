@@ -6,6 +6,7 @@ import {articleWorkspace} from './studio/schemas/article'
 import {emptyToolWorkspace} from './studio/schemas/emptyTool'
 import {recipeWorkspace} from './studio/schemas/recipe'
 import {singleStringWorkspace} from './studio/schemas/singleString'
+import {softNavWorkspace} from './studio/schemas/softNav'
 import {structureToolWorkspace} from './studio/schemas/structureTool'
 import {syntheticWorkspace} from './studio/schemas/synthetic'
 
@@ -56,5 +57,10 @@ export default defineConfig([
     basePath: '/emptyTool',
     ...common,
     ...emptyToolWorkspace,
+  },
+  {
+    basePath: '/softNav',
+    ...common,
+    ...softNavWorkspace,
   },
 ])
