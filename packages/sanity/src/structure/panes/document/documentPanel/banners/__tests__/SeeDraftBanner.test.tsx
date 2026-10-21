@@ -1,10 +1,12 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type TargetDocumentState, usePerspective, useSetPerspective} from 'sanity'
+import {usePerspective} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {type TargetDocumentState} from '../../../../../../core/hooks/useTargetDocumentState'
+import {useSetPerspective} from '../../../../../../core/perspective/useSetPerspective'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {SeeDraftBanner} from '../SeeDraftBanner'
@@ -25,9 +27,13 @@ vi.mock('sanity', async () => {
   return {
     ...sanity,
     usePerspective: vi.fn(),
-    useSetPerspective: vi.fn(),
   }
 })
+
+// The banner imports the setter relatively (it is an internal), so the source module is mocked
+vi.mock('../../../../../../core/perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(),
+}))
 
 const {usePaneRouter} = vi.mocked(
   await import('../../../../../components/paneRouter/usePaneRouter'),

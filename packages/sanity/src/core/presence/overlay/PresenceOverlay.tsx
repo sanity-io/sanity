@@ -11,7 +11,9 @@ export interface PresenceOverlayProps {
 
 const DEFAULT_MARGINS: [number, number, number, number] = [0, 0, 0, 0]
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function PresenceOverlay({children, margins}: PresenceOverlayProps) {
   return (
     <PresenceTracker>
