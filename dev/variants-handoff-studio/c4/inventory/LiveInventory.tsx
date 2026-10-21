@@ -1,9 +1,10 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {useSetVariant} from 'sanity'
+import {useCallback, useMemo, useState, useSyncExternalStore} from 'react'
+import {useSetVariant, useWorkspace} from 'sanity'
 
 import {usePerspectiveState} from '../../c1/state'
 import {useVariantDefinitions} from '../../c1/world'
+import {CreateVersion, type VariantChoice} from './CreateVersion'
 import {type InventoryEntry} from './fixtures'
 import {InventoryConceptsProvider} from './model'
 import {useLiveWorld} from './useLiveWorld'
@@ -32,16 +33,69 @@ const HIDDEN = [
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 
 /**
+ * The versions made with Create version, per document. Choosing the new version moves the perspective, which remounts the document pane and this
+ * panel with it, so they are held here, outside the component, until the dataset lists them (a version is stored on its first edit).
+ * `received` is the group that took the new version: the remounted panel opens only that one, once.
+ */
+interface Made {
+  entries: InventoryEntry[]
+  received?: string
+}
+const NONE: Made = {entries: []}
+const made = new Map<string, Made>()
+const listeners = new Set<() => void>()
+const setMade = (documentId: string, next: Made) => {
+  made.set(documentId, next)
+  for (const listener of listeners) listener()
+}
+const subscribe = (listener: () => void) => {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+/**
  * Andrej's inventory side panel (Storybook PR #47), live: his `InventoryConceptsProvider` gets the live world, his `VersionInventoryPanel` is
  * rendered as he built it (his table, rows and Create variant). Two things are hidden with a scoped style, because the panel has no prop for them
  * (his files are not edited): search, filter, sort and view settings, the footer's create button (see HIDDEN), and the panel's own header.
  * Choosing a row sets the GLOBAL perspective (an open beta limitation) to the row's release and variant.
  */
 export function LiveInventory({documentId, title}: {documentId: string; title: string}) {
-  const world = useLiveWorld(documentId, title)
+  const live = useLiveWorld(documentId, title)
+  const workspace = useWorkspace()
   const state = usePerspectiveState()
   const setVariant = useSetVariant()
   const variants = useVariantDefinitions()
+  const mine = useSyncExternalStore(subscribe, () => made.get(documentId) ?? NONE)
+  const [frame, setFrame] = useState<HTMLElement | null>(null)
+
+  const world = useMemo(
+    () =>
+      live && {
+        ...live,
+        entries: [
+          ...live.entries,
+          ...mine.entries.filter((m) => !live.entries.some((e) => e.key === m.key)),
+        ],
+      },
+    [live, mine.entries],
+  )
+
+  const choices = useMemo(
+    (): VariantChoice[] =>
+      variants.flatMap((v) => {
+        const [dimension, value] = Object.entries(v.conditions)[0] ?? []
+        if (!dimension) return []
+        return [
+          {
+            id: shortId(v._id),
+            title: v.metadata?.title ?? shortId(v._id),
+            dimension,
+            value: String(value),
+          },
+        ]
+      }),
+    [variants],
+  )
 
   const variantFor = useCallback(
     (variantId: string | undefined) => variants.find((v) => shortId(v._id) === variantId),
@@ -72,6 +126,15 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
     [setVariant, variantFor, state],
   )
 
+  const onCreate = useCallback(
+    (entry: InventoryEntry, received: string) => {
+      setMade(documentId, {entries: [...(made.get(documentId)?.entries ?? []), entry], received})
+      // The form switches to the new version, so the global perspective moves to it (the open beta limit).
+      onSelect(entry)
+    },
+    [documentId, onSelect],
+  )
+
   if (!world) {
     return (
       <Card padding={3}>
@@ -82,13 +145,30 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
     )
   }
   return (
-    <Flex direction="column" height="fill">
+    <Flex
+      data-create-frame=""
+      direction="column"
+      height="fill"
+      ref={setFrame}
+      style={{position: 'relative'}}
+    >
       <style>{HIDDEN}</style>
       <Box flex={1} style={{minHeight: 0}}>
         <InventoryConceptsProvider selection={{currentEntryKey, onSelect}} world={world}>
           <VersionInventoryPanel />
         </InventoryConceptsProvider>
       </Box>
+      <CreateVersion
+        documentTitle={title}
+        draftsEnabled={workspace.document.drafts.enabled}
+        frame={frame}
+        onCreate={onCreate}
+        onReceived={() => setMade(documentId, {entries: mine.entries})}
+        received={mine.received}
+        onOpen={onSelect}
+        variants={choices}
+        world={world}
+      />
     </Flex>
   )
 }
