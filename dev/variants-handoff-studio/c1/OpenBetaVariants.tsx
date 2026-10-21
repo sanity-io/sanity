@@ -92,6 +92,11 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
         anchor={anchor}
         chosen={chosen}
         dimensions={dimensions}
+        idOf={(name, key) =>
+          definitions
+            .find((d) => Object.keys(d.conditions).length === 1 && d.conditions[name] === key)
+            ?._id.replace(/^_\.variants\./, '')
+        }
         onClear={() => choose(null)}
         onClose={() => setOpen(false)}
         onPick={(_dimension, key) => choose(key)}

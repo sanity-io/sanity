@@ -1,13 +1,14 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Flex} from '@sanity/ui'
+import {Box, Flex, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ReactElement} from 'react'
+import {type ReactElement, useState} from 'react'
 import {ReleaseAvatarIcon, usePerspective, useSchema, useSetPerspective, useWorkspace} from 'sanity'
 
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {rankSearch, SEARCH_FROM, type SearchFields} from '../c1/search'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
 import {useVersionList} from '../data/useVersionList'
@@ -49,11 +50,27 @@ function DropdownPill(props: {
     text: string
     icon: ReactElement
     onClick?: () => void
-    /** A variant listed under its release. */
+    /** A variant listed under its release: it is found, and shown, with the release above it. */
     indent?: boolean
+    /** What search matches an option by (the title is its text when this is left out). */
+    search?: Omit<SearchFields, 'title'>
   }[]
   testId: string
 }) {
+  const [query, setQuery] = useState('')
+  // An option is a top-level item with the indented items under it.
+  type Item = (typeof props.items)[number]
+  const groups: {head: Item; children: Item[]}[] = []
+  for (const item of props.items) {
+    const last = groups[groups.length - 1]
+    if (item.indent && last) last.children.push(item)
+    else groups.push({head: item, children: []})
+  }
+  const searchable = groups.length >= SEARCH_FROM
+  const found = rankSearch(groups, searchable ? query : '', (g) => ({
+    title: g.head.text,
+    ...g.head.search,
+  }))
   return (
     <MenuButton
       button={
@@ -66,19 +83,45 @@ function DropdownPill(props: {
       }
       id={props.testId}
       menu={
-        <Menu padding={1}>
-          {props.items.map((item) => (
-            <MenuItem
-              disabled={!item.onClick}
-              icon={item.icon}
-              key={item.key}
-              onClick={item.onClick}
-              style={item.indent ? {marginLeft: 24} : undefined}
-              text={item.text}
-            />
-          ))}
+        <Menu data-testid={`${props.testId}-menu`} padding={1} style={{minWidth: 240}}>
+          {searchable ? (
+            <Box padding={1}>
+              <TextInput
+                aria-label="Find"
+                data-testid={`${props.testId}-search`}
+                fontSize={1}
+                // The menu would take typing for its own keys; only the arrows are its.
+                onKeyDown={(event) => {
+                  if (!['ArrowDown', 'ArrowUp', 'Escape'].includes(event.key))
+                    event.stopPropagation()
+                }}
+                onChange={(event) => setQuery(event.currentTarget.value)}
+                placeholder="Find"
+                value={query}
+              />
+            </Box>
+          ) : null}
+          {found.flatMap(({item: g, reason}) =>
+            [g.head, ...g.children].map((item) => (
+              <MenuItem
+                __unstable_subtitle={item === g.head ? reason : undefined}
+                disabled={!item.onClick}
+                icon={item.icon}
+                key={item.key}
+                onClick={item.onClick}
+                style={item.indent ? {marginLeft: 24} : undefined}
+                text={item.text}
+              />
+            )),
+          )}
+          {searchable && !found.length ? (
+            <Box padding={3}>
+              <Text muted size={1}>{`Nothing matches “${query}”.`}</Text>
+            </Box>
+          ) : null}
         </Menu>
       }
+      onClose={() => setQuery('')}
       popover={{placement: 'bottom-start', portal: true}}
     />
   )
@@ -116,12 +159,23 @@ export function DocumentPillsV1({
     setPerspective(v.bundleId ?? (v.state === 'published' ? 'published' : 'drafts'))
     address.setChosen(definition ? definition.conditions : {})
   }
-  const variantItems = variants.map((v, i) => ({
-    key: `${v.audience}-${i}`,
-    text: `${v.audience} · ${stateWord(v)}`,
-    icon: glyph(v),
-    onClick: selectVariant(v),
-  }))
+  const variantItems = variants.map((v, i) => {
+    const definition = definitions.find((d) => d._id.replace(/^_\.variants\./, '') === v.variantId)
+    return {
+      key: `${v.audience}-${i}`,
+      text: `${v.audience} · ${stateWord(v)}`,
+      icon: glyph(v),
+      onClick: selectVariant(v),
+      search: {
+        condition: definition
+          ? Object.entries(definition.conditions)
+              .map(([name, value]) => `${name}: ${value}`)
+              .join(', ')
+          : undefined,
+        id: v.variantId ?? undefined,
+      },
+    }
+  })
   // One entry per RELEASE (the pill counts releases, not versions); the versions it holds are listed under it: the document, then its variants.
   const releaseGroups = [...new Set(releases.map((v) => v.bundleId))].flatMap((bundleId) => {
     const inRelease = releases.filter((v) => v.bundleId === bundleId)
@@ -132,6 +186,7 @@ export function DocumentPillsV1({
         text: stateWord({...head, audience: null}),
         icon: glyph(head),
         onClick: () => bundleId && setPerspective(bundleId),
+        search: {id: bundleId ?? undefined},
       },
       ...inRelease.map((v) => ({
         key: `release-${bundleId}-${v.audience ?? 'base'}`,

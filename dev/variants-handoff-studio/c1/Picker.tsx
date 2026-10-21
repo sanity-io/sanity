@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type FocusEvent, type KeyboardEvent, useEffect, useMemo, useRef, useState} from 'react'
+import {type FocusEvent, type KeyboardEvent, useEffect, useRef, useState} from 'react'
 
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit 6acf5bfa24, lib/explorations/variants-2-0/perspective/Picker.tsx).
@@ -38,6 +38,9 @@ export const SAVE_AS_COMPOSITE_REASON =
 
 const ITEM = '[data-ui="MenuItem"]'
 
+/** The row with no variant: the base document, worded as the T3 versions popover words it. */
+export const DEFAULT_LABEL = 'All users (Default)'
+
 /**
  * The panel's keyboard model. The rows are `tabindex=-1` items of real Menus, so Tab would leave
  * the panel; instead the panel is one focus group with four stops: the search box, the rail (or the
@@ -67,9 +70,12 @@ function Definition(props: {
   selected: boolean
   onClick: () => void
   trailing?: string
+  /** Why a search found it, when not by its title ("Matches audience: students", "Matches ID"). */
+  reason?: string
 }) {
   return (
     <MenuItem
+      __unstable_subtitle={props.reason}
       data-testid={props.testId}
       icon={<DimensionIcon name={props.dimension} selected={props.selected} />}
       iconRight={props.trailing ? <span>{props.trailing}</span> : undefined}
@@ -98,8 +104,10 @@ export function PickerContent(props: {
   /** `null` is the Default row: the dimension is cleared. */
   onPick: (dimension: string, key: string | null) => void
   onClear: () => void
+  /** The ID of the definition behind a value, so search can match it (whole or from its start). */
+  idOf?: (dimension: string, key: string) => string | undefined
 }) {
-  const {dimensions, chosen, onPick} = props
+  const {dimensions, chosen, onPick, idOf} = props
   const form = panelForm(dimensions.length)
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(
@@ -187,19 +195,29 @@ export function PickerContent(props: {
   }
   const searching = !!query.trim()
   const any = Object.keys(chosen).length > 0
-  const hits = useMemo(
-    () =>
-      searching
-        ? dimensions.flatMap((d) =>
-            d.values
-              .filter(([, title]) => matches(title, query) || matches(d.title, query))
-              .map(([key, title]) => ({d, key, title})),
-          )
-        : [],
-    [dimensions, query, searching],
-  )
-  const values = (d: DimensionSpec) =>
-    d.values.filter(([, title]) => !searching || matches(title, query))
+  // Search ranks titles first, then conditions, then IDs (an ID only whole or from its start); a value found by its condition or ID says why.
+  const ranked = (d: DimensionSpec) => {
+    const q = query.trim().toLowerCase()
+    const found: {key: string; title: string; reason?: string; score: number}[] = []
+    for (const [key, title] of d.values) {
+      const t = title.toLowerCase()
+      const condition = `${d.name}: ${key}`
+      const id = idOf?.(d.name, key)
+      if (!q || t.startsWith(q)) found.push({key, title, score: 0})
+      else if (t.includes(q)) found.push({key, title, score: 1})
+      else if (condition.toLowerCase().includes(q) || d.title.toLowerCase().includes(q))
+        found.push({key, title, score: 2, reason: `Matches ${condition}`})
+      else if (id?.toLowerCase().startsWith(q))
+        found.push({key, title, score: 3, reason: 'Matches ID'})
+    }
+    return found.sort((x, y) => x.score - y.score)
+  }
+  const hits = searching
+    ? dimensions
+        .flatMap((d) => ranked(d).map((hit) => ({d, ...hit})))
+        .sort((x, y) => x.score - y.score)
+    : []
+  const values = ranked
   const list = (d: DimensionSpec, withDefault?: boolean) => (
     <Menu
       shouldFocus={null}
@@ -207,20 +225,21 @@ export function PickerContent(props: {
       padding={0}
       style={{maxHeight: LIST_MAX, overflowY: 'auto'}}
     >
-      {withDefault && !searching ? (
+      {withDefault && matches(DEFAULT_LABEL, query) ? (
         <MenuItem
           data-testid={`picker-default-${d.name}`}
           onClick={() => onPick(d.name, null)}
           pressed={!chosen[d.name]}
           selected={!chosen[d.name]}
-          text="Default"
+          text={DEFAULT_LABEL}
         />
       ) : null}
-      {values(d).map(([key, title]) => (
+      {values(d).map(({key, title, reason}) => (
         <Definition
           dimension={d.name}
           key={key}
           onClick={() => onPick(d.name, key)}
+          reason={reason}
           selected={chosen[d.name] === key}
           testId={`picker-value-${d.name}-${key}`}
           title={title}
@@ -291,11 +310,12 @@ export function PickerContent(props: {
             </Flex>
           ) : searching ? (
             <Menu shouldFocus={null} padding={0} style={{maxHeight: LIST_MAX, overflowY: 'auto'}}>
-              {hits.map(({d, key, title}) => (
+              {hits.map(({d, key, title, reason}) => (
                 <Definition
                   dimension={d.name}
                   key={`${d.name}-${key}`}
                   onClick={() => onPick(d.name, key)}
+                  reason={reason}
                   selected={chosen[d.name] === key}
                   testId={`picker-value-${d.name}-${key}`}
                   title={title}
@@ -379,6 +399,7 @@ export function Picker(props: {
   onClear: () => void
   placement?: 'bottom-start' | 'bottom-end'
   testId?: string
+  idOf?: (dimension: string, key: string) => string | undefined
 }) {
   return (
     <MenuPopover
@@ -393,6 +414,7 @@ export function Picker(props: {
       <PickerContent
         chosen={props.chosen}
         dimensions={props.dimensions}
+        idOf={props.idOf}
         onClear={props.onClear}
         onPick={props.onPick}
         start={props.start}
