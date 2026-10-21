@@ -1,11 +1,17 @@
-import {render, screen} from '@testing-library/react'
+import {act, render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {type ComponentType} from 'react'
+import {type ComponentType, type RefAttributes, useImperativeHandle} from 'react'
 import {EMPTY} from 'rxjs'
-import {DocumentGroupInventory, type DocumentGroupInventoryProps, type SanityDocument} from 'sanity'
+import {
+  DocumentGroupInventory,
+  type DocumentGroupInventoryHandle,
+  type DocumentGroupInventoryProps,
+  type SanityDocument,
+} from 'sanity'
 import {test as baseTest, describe, expect, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useTestDocumentGroupInventoryHandle} from '../../../../../../../test/testUtils/useTestDocumentGroupInventoryHandle'
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
@@ -33,9 +39,28 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocument
 const mockUseDocumentPerspectiveList = useDocumentPerspectiveList as MockedFunction<
   typeof useDocumentPerspectiveList
 >
+type InventoryProps = DocumentGroupInventoryProps &
+  RefAttributes<DocumentGroupInventoryHandle | null>
+
 const mockDocumentGroupInventory = DocumentGroupInventory as MockedFunction<
-  ComponentType<DocumentGroupInventoryProps>
+  ComponentType<InventoryProps>
 >
+
+// Stands in for the inventory: runs the real inventory machine and exposes it through the handle,
+// without rendering the inventory itself.
+function FakeDocumentGroupInventory(
+  props: InventoryProps & {onHandle: (handle: DocumentGroupInventoryHandle) => void},
+) {
+  const {ref, onHandle} = props
+  const handle = useTestDocumentGroupInventoryHandle()
+
+  useImperativeHandle(ref, () => {
+    onHandle(handle)
+    return handle
+  }, [handle, onHandle])
+
+  return <div data-testid="document-group-inventory" />
+}
 
 function buildDocumentPaneValue({
   displayed = {_id: 'drafts.doc-123', _type: 'author'},
@@ -82,8 +107,25 @@ const test = baseTest
   )
   .extend('documentPaneValue', () => buildDocumentPaneValue())
   .extend('renderInspector', ({TestProvider, documentPaneValue}) => {
+    const onInventoryHandle = vi.fn<(handle: DocumentGroupInventoryHandle) => void>()
+
     mockUseDocumentPane.mockReturnValue(documentPaneValue)
     mockUseDocumentPerspectiveList.mockReturnValue({} as never)
+    mockDocumentGroupInventory.mockImplementation(function MockDocumentGroupInventory(
+      props: InventoryProps,
+    ) {
+      return <FakeDocumentGroupInventory {...props} onHandle={onInventoryHandle} />
+    })
+
+    function lastInventoryHandle(): DocumentGroupInventoryHandle {
+      const handle = onInventoryHandle.mock.lastCall?.[0]
+
+      if (typeof handle === 'undefined') {
+        throw new Error('Expected `DocumentGroupInventory` to have exposed its handle')
+      }
+
+      return handle
+    }
 
     // The test provider renders a spinner until the locale resources have loaded.
     return async () => {
@@ -96,7 +138,7 @@ const test = baseTest
 
       await screen.findByRole('heading', {name: 'Manage versions'})
 
-      return {onClose}
+      return {onClose, lastInventoryHandle}
     }
   })
 
@@ -148,6 +190,50 @@ describe('DocumentGroupInspector', () => {
     })
   })
 
+  test('renders the feedback action before the close button', async ({renderInspector}) => {
+    await renderInspector()
+
+    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback'})
+    const closeButton = screen.getByRole('button', {name: 'Close panel'})
+
+    expect(
+      feedbackButton.compareDocumentPosition(closeButton) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+  })
+
+  test('begins feedback in the inventory when the feedback action is pressed', async ({
+    renderInspector,
+  }) => {
+    const {lastInventoryHandle} = await renderInspector()
+
+    await userEvent.click(await screen.findByRole('button', {name: 'Send feedback'}))
+
+    expect(lastInventoryHandle().inventory.getSnapshot().matches('feedback')).toBe(true)
+    expect(screen.getByRole('button', {name: 'Send feedback'})).toBeDisabled()
+
+    act(() => lastInventoryHandle().inventory.send({type: 'feedback.end'}))
+
+    expect(screen.getByRole('button', {name: 'Send feedback'})).toBeEnabled()
+  })
+
+  test('disables the feedback action while the inventory refuses to begin feedback', async ({
+    renderInspector,
+  }) => {
+    const {lastInventoryHandle} = await renderInspector()
+
+    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback'})
+    expect(feedbackButton).toBeEnabled()
+
+    const {inventory} = lastInventoryHandle()
+
+    act(() =>
+      inventory.getSnapshot().context.variantCreationRef.send({type: 'createVariant.request'}),
+    )
+
+    expect(inventory.getSnapshot().matches('creatingVariant')).toBe(true)
+    expect(feedbackButton).toBeDisabled()
+  })
+
   describe('when the displayed document is not known yet', () => {
     test.override('documentPaneValue', () => ({
       ...buildDocumentPaneValue(),
@@ -161,6 +247,7 @@ describe('DocumentGroupInspector', () => {
       await renderInspector()
 
       expect(screen.queryByTestId('document-group-inventory')).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', {name: 'Send feedback'})).not.toBeInTheDocument()
     })
   })
 })

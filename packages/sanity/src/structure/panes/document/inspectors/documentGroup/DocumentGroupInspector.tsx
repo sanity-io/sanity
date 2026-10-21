@@ -1,9 +1,11 @@
 import {Card} from '@sanity/ui'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentGroupInventory,
   type DocumentGroupInventoryComponents,
+  DocumentGroupInventoryFeedbackAction,
+  type DocumentGroupInventoryHandle,
   type DocumentInspectorProps,
   getDocumentVersionVariantId,
   getReleaseIdFromReleaseDocumentId,
@@ -50,6 +52,8 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
 
   const setVariant = useSetVariant()
 
+  const [inventory, setInventory] = useState<DocumentGroupInventoryHandle | null>(null)
+
   // Picking a version in the inventory switches the pane to it.
   function selectDocumentGroupVariant(document: VersionInfoDocumentStub) {
     let bundle
@@ -84,6 +88,9 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   return (
     <Flex flexDirection="column" height="100%" overflow="hidden">
       <DocumentInspectorHeader
+        actions={
+          inventory && <DocumentGroupInventoryFeedbackAction inventory={inventory.inventory} />
+        }
         as="header"
         closeButtonLabel={structureT('document-inspector.error.close-button.aria-label')}
         flex="none"
@@ -96,6 +103,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             // The inventory's machines read their input once, so they must be recreated when the
             // document changes.
             key={documentId}
+            ref={setInventory}
             mode="manage"
             documentId={targetDocumentId}
             documentType={documentType}

@@ -1,4 +1,3 @@
-import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
@@ -19,7 +18,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {Text, VStack, Flex, Icon} from 'ui5'
+import {Text, VStack} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -29,7 +28,7 @@ import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
@@ -157,7 +156,6 @@ export function DocumentGroupInventory(
   const {beta} = useWorkspace()
   const variantsEnabled = beta?.variants?.enabled
   const {t} = useTranslation(studioLocaleNamespace)
-  const {t: feedbackT} = useTranslation(feedbackLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
@@ -388,23 +386,10 @@ export function DocumentGroupInventory(
         {!isVariantCreationActive && (
           <>
             <Header>
-              <VStack gap={4}>
-                {!readOnly && (
-                  <Flex gap={4} alignItems="center" justifyContent="flex-end">
-                    <TextButton
-                      onClick={() => inventoryRef.send({type: 'feedback.begin'})}
-                      title={feedbackT('feedback.menu-item')}
-                      aria-label={feedbackT('feedback.menu-item')}
-                    >
-                      <Icon icon={FeedbackIcon} size={1} />
-                    </TextButton>
-                  </Flex>
-                )}
-                <DocumentGroupFilter
-                  readOnly={isLocked}
-                  onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
-                />
-              </VStack>
+              <DocumentGroupFilter
+                readOnly={isLocked}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
+              />
             </Header>
             <Body>
               {schema && (
