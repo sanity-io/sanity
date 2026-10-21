@@ -162,14 +162,18 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           : this._message
 
         try {
-          const result = await validator(specConstraint, value, message, context)
+          // Composite rules must carry run state into their child rules. Custom
+          // callbacks still receive only the public validation context.
+          const validatorContext =
+            curr.flag === 'all' || curr.flag === 'either' ? {...context, __internal} : context
+          const result = await validator(specConstraint, value, message, validatorContext)
           return convertToValidationMarker(result, this._level, context, {
             code: fallbackCodeForRule(curr.flag),
           })
         } catch (err) {
           context.signal?.throwIfAborted()
+          markIncomplete?.()
           if (err instanceof ClientUnavailableError) {
-            markIncomplete?.()
             return []
           }
 
