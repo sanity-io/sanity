@@ -6,6 +6,7 @@ import {useSyncObservable} from 'react-rx'
 import {
   catchError,
   combineLatest,
+  defer,
   finalize,
   map,
   type Observable,
@@ -196,19 +197,22 @@ function getOrCreateCachedObservable<T>(
   cacheKey: string,
   createObservable: () => Observable<T>,
 ): Observable<T> {
-  const cached = cache.get(cacheKey)
-  if (cached) return cached
+  // Deferred so a render that never subscribes, such as one inside a hidden `<Activity>`, leaves no entry behind.
+  return defer(() => {
+    const cached = cache.get(cacheKey)
+    if (cached) return cached
 
-  const observable = createObservable().pipe(
-    finalize(() => cache.delete(cacheKey)),
-    share({
-      connector: () => new ReplaySubject(1),
-      resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
-    }),
-  )
+    const observable = createObservable().pipe(
+      finalize(() => cache.delete(cacheKey)),
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
+      }),
+    )
 
-  cache.set(cacheKey, observable)
-  return observable
+    cache.set(cacheKey, observable)
+    return observable
+  })
 }
 
 export function getOrCreateDocumentVersionsWithSystemObservable(options: {
