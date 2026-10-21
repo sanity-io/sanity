@@ -1,6 +1,6 @@
 import {Box, Button, Card, Flex, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useState} from 'react'
+import {type ReactNode, useEffect, useRef, useState} from 'react'
 import {ReleaseAvatarIcon, useClient, useSetVariant} from 'sanity'
 
 import {buildConditionFacets} from '../../../packages/sanity/src/core/variants/tool/util'
@@ -21,8 +21,10 @@ import {
   sameAddress,
   setAgainstPath,
 } from './address'
+import {BaseNote} from './BaseNote'
 import {ComposedCompareBar} from './composed/ComposedCompareBar'
 import {addressOfSide, sideOfAddress, type BundleOption} from './composed/composedModel'
+import {setReviewBase} from './reviewBase'
 import {useAddressDoc, useCompareActions} from './useCompare'
 
 // Compare C: ONE header across both panes (it sits under the navbar, in the page flow like the Showing row), as drawn on E9 413:6.
@@ -70,6 +72,8 @@ export function CompareHeader({
   const [creating, setCreating] = useState(false)
   const [refusal, setRefusal] = useState<string | null>(null)
   const setVariant = useSetVariant()
+  // The one base: an open comparison's Against IS the base, so the review panel and the list count follow it.
+  useEffect(() => setReviewBase(against, showing), [against, showing])
 
   const defOf = (id: string) => definitions.find((d) => d._id.replace(/^_\.variants\./, '') === id)
   const titleOf = (id: string) => (id === NONE ? 'Base' : (defOf(id)?.metadata?.title ?? id))
@@ -174,6 +178,147 @@ export function CompareHeader({
       ?.scrollIntoView({block: 'center', behavior: 'smooth'})
   }
 
+  const titleNode = (
+    <Text data-testid="compare-title" size={1} weight="semibold">
+      {title}
+    </Text>
+  )
+  const barNode = (
+    <>
+      {composed ? (
+        <ComposedBar
+          comparison={comparison}
+          definitions={definitions}
+          look={composed}
+          onRefuse={setRefusal}
+          releases={(versions ?? [])
+            .filter((v) => v.release && v.bundleId && !v.variantId)
+            .map((v) => ({id: v.bundleId as string, label: v.release as string}))}
+          setVariant={setVariant}
+        />
+      ) : (
+        <Flex align="center" gap={2}>
+          <Text muted size={1}>
+            Showing
+          </Text>
+          <span data-testid="compare-showing" style={chipStyle}>
+            <ReleaseAvatarIcon
+              release={showing.perspective === 'published' ? 'published' : 'drafts'}
+            />{' '}
+            {text(showing)}
+          </span>
+          <Text muted size={1}>
+            Against
+          </Text>
+          <Pick
+            items={options.map(({key, address}) => {
+              const allowed = isOneMove(showing, address)
+              return {
+                key,
+                text: allowed
+                  ? text(address)
+                  : `${text(address)} · Open beta compares one dimension at a time`,
+                selected: sameAddress(address, against),
+                disabled: !allowed,
+                onClick: () => actions.go(setAgainstPath(comparison, address)),
+              }
+            })}
+            testId="compare-against"
+            text={text(against)}
+          />
+        </Flex>
+      )}
+    </>
+  )
+  const countNode = (
+    <>
+      {kind === 'refused' ? (
+        <Flex align="center" gap={2} data-testid="compare-refused">
+          <Text size={1}>Open beta compares one dimension at a time.</Text>
+          <Button
+            data-testid="compare-way-back"
+            fontSize={1}
+            mode="ghost"
+            onClick={() => actions.go(setAgainstPath(comparison, wayBack))}
+            padding={2}
+            text={`Compare ${titleOf(against.variant)} at ${layerLabel(showing.perspective)}`}
+            tone="primary"
+          />
+        </Flex>
+      ) : missing ? (
+        <Flex align="center" gap={2} data-testid="compare-missing">
+          <Text size={1}>No version at this address: showing what it inherits.</Text>
+          {against.variant !== NONE ? (
+            <Button
+              data-testid="compare-create"
+              disabled={creating}
+              fontSize={1}
+              mode="ghost"
+              onClick={() => void create()}
+              padding={2}
+              text={`Create ${titleOf(against.variant)}`}
+              tone="primary"
+            />
+          ) : null}
+        </Flex>
+      ) : (
+        <span ref={setAnchor} style={{display: 'inline-flex'}}>
+          <Button
+            data-testid="compare-count"
+            disabled={!showingDoc.ready || !againstDoc.ready}
+            fontSize={1}
+            mode="bleed"
+            onClick={() => setListOpen((o) => !o)}
+            padding={2}
+            text={
+              total === 0
+                ? 'No changes'
+                : `${total} ${total === 1 ? 'change' : 'changes'} in ${fields.length} ${fields.length === 1 ? 'field' : 'fields'}`
+            }
+          />
+        </span>
+      )}
+    </>
+  )
+  const actionsNode = (
+    <>
+      <Button
+        data-testid="compare-copy"
+        fontSize={1}
+        mode="bleed"
+        onClick={copy}
+        padding={2}
+        text={copied ? 'Link copied' : 'Copy link'}
+      />
+      <Button
+        data-testid="compare-close"
+        fontSize={1}
+        mode="ghost"
+        onClick={actions.close}
+        padding={2}
+        text="Close comparison"
+      />
+    </>
+  )
+  const baseNode = (
+    <BaseNote
+      base={against}
+      label={text}
+      onReset={(to) => actions.go(setAgainstPath(comparison, to))}
+      showing={showing}
+    />
+  )
+  const passNode = (
+    <>
+      {refusal ? (
+        <Text data-testid="compare-refusal" size={1}>
+          {refusal}
+        </Text>
+      ) : null}
+      <PassControls />
+    </>
+  )
+
   return (
     <Card
       data-testid="compare-header"
@@ -183,124 +328,26 @@ export function CompareHeader({
       style={{borderBottom: '1px solid var(--card-border-color)'}}
       tone="transparent"
     >
-      <Flex align="center" gap={3} wrap="wrap">
-        <Text data-testid="compare-title" size={1} weight="semibold">
-          {title}
-        </Text>
-        {composed ? (
-          <ComposedBar
-            comparison={comparison}
-            definitions={definitions}
-            look={composed}
-            onRefuse={setRefusal}
-            releases={(versions ?? [])
-              .filter((v) => v.release && v.bundleId && !v.variantId)
-              .map((v) => ({id: v.bundleId as string, label: v.release as string}))}
-            setVariant={setVariant}
-          />
-        ) : (
-          <Flex align="center" gap={2}>
-            <Text muted size={1}>
-              Showing
-            </Text>
-            <span data-testid="compare-showing" style={chipStyle}>
-              <ReleaseAvatarIcon
-                release={showing.perspective === 'published' ? 'published' : 'drafts'}
-              />{' '}
-              {text(showing)}
-            </span>
-            <Text muted size={1}>
-              Against
-            </Text>
-            <Pick
-              items={options.map(({key, address}) => {
-                const allowed = isOneMove(showing, address)
-                return {
-                  key,
-                  text: allowed
-                    ? text(address)
-                    : `${text(address)} · Open beta compares one dimension at a time`,
-                  selected: sameAddress(address, against),
-                  disabled: !allowed,
-                  onClick: () => actions.go(setAgainstPath(comparison, address)),
-                }
-              })}
-              testId="compare-against"
-              text={text(against)}
-            />
-          </Flex>
-        )}
-        <Box flex={1} />
-        {/* A review pass held in the list shows here too, because the list pane folds away when two panes are open. */}
-        {refusal ? (
-          <Text data-testid="compare-refusal" size={1}>
-            {refusal}
-          </Text>
-        ) : null}
-        <PassControls />
-        {kind === 'refused' ? (
-          <Flex align="center" gap={2} data-testid="compare-refused">
-            <Text size={1}>Open beta compares one dimension at a time.</Text>
-            <Button
-              data-testid="compare-way-back"
-              fontSize={1}
-              mode="ghost"
-              onClick={() => actions.go(setAgainstPath(comparison, wayBack))}
-              padding={2}
-              text={`Compare ${titleOf(against.variant)} at ${layerLabel(showing.perspective)}`}
-              tone="primary"
-            />
-          </Flex>
-        ) : missing ? (
-          <Flex align="center" gap={2} data-testid="compare-missing">
-            <Text size={1}>No version at this address: showing what it inherits.</Text>
-            {against.variant !== NONE ? (
-              <Button
-                data-testid="compare-create"
-                disabled={creating}
-                fontSize={1}
-                mode="ghost"
-                onClick={() => void create()}
-                padding={2}
-                text={`Create ${titleOf(against.variant)}`}
-                tone="primary"
-              />
-            ) : null}
-          </Flex>
-        ) : (
-          <span ref={setAnchor} style={{display: 'inline-flex'}}>
-            <Button
-              data-testid="compare-count"
-              disabled={!showingDoc.ready || !againstDoc.ready}
-              fontSize={1}
-              mode="bleed"
-              onClick={() => setListOpen((o) => !o)}
-              padding={2}
-              text={
-                total === 0
-                  ? 'No changes'
-                  : `${total} ${total === 1 ? 'change' : 'changes'} in ${fields.length} ${fields.length === 1 ? 'field' : 'fields'}`
-              }
-            />
-          </span>
-        )}
-        <Button
-          data-testid="compare-copy"
-          fontSize={1}
-          mode="bleed"
-          onClick={copy}
-          padding={2}
-          text={copied ? 'Link copied' : 'Copy link'}
+      {composed === 'f' ? (
+        <FLayout
+          actions={actionsNode}
+          against={barNode}
+          base={baseNode}
+          count={countNode}
+          pass={passNode}
+          title={titleNode}
         />
-        <Button
-          data-testid="compare-close"
-          fontSize={1}
-          mode="ghost"
-          onClick={actions.close}
-          padding={2}
-          text="Close comparison"
-        />
-      </Flex>
+      ) : (
+        <Flex align="center" gap={3} wrap="wrap">
+          {titleNode}
+          {barNode}
+          {baseNode}
+          <Box flex={1} />
+          {passNode}
+          {countNode}
+          {actionsNode}
+        </Flex>
+      )}
       <Popover
         content={
           <Card data-testid="compare-list" padding={2} style={{minWidth: 340}}>
@@ -343,6 +390,112 @@ export function CompareHeader({
         referenceElement={anchor}
       />
     </Card>
+  )
+}
+
+/**
+ * Compare F (Figma E9 3b, L3 433:12409 and L2 433:13274): the compare band is "row two" of the lane. Wide (L3): one band; the Against control starts
+ * under the compared chip of the global row. Narrow (L2 fold): the band splits at the boundary between the two document panes: the left half holds the
+ * title and the count, the right half (over the Against pane) holds Against, Copy link and Close. The geometry is measured from the live panes
+ * and the compared chip, so it follows the window.
+ */
+const FOLD_BELOW = 1000
+
+interface Geometry {
+  left: number
+  right: number
+  chip: number | null
+  width: number
+}
+
+function FLayout(props: {
+  title: ReactNode
+  against: ReactNode
+  base: ReactNode
+  count: ReactNode
+  pass: ReactNode
+  actions: ReactNode
+}) {
+  const {title, against, base, count, pass, actions} = props
+  const ref = useRef<HTMLDivElement | null>(null)
+  const [geo, setGeo] = useState<Geometry | null>(null)
+  useEffect(() => {
+    const measure = () => {
+      const root = ref.current
+      if (!root) return
+      const box = root.getBoundingClientRect()
+      const panes = [...document.querySelectorAll<HTMLElement>('[data-testid="document-pane"]')]
+      const chip = [...document.querySelectorAll<HTMLElement>('[data-testid^="chip-"]')]
+        .at(-1)
+        ?.getBoundingClientRect()
+      const next: Geometry = {
+        left: panes[0] ? panes[0].getBoundingClientRect().left - box.left : 0,
+        right: panes[1] ? panes[1].getBoundingClientRect().left - box.left : box.width / 2,
+        chip: chip ? chip.left - box.left : null,
+        width: box.width,
+      }
+      setGeo((was) =>
+        was &&
+        Math.abs(was.left - next.left) < 1 &&
+        Math.abs(was.right - next.right) < 1 &&
+        Math.abs((was.chip ?? 0) - (next.chip ?? 0)) < 1 &&
+        Math.abs(was.width - next.width) < 1
+          ? was
+          : next,
+      )
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    if (ref.current) observer.observe(ref.current)
+    const timer = window.setInterval(measure, 700)
+    return () => {
+      observer.disconnect()
+      window.clearInterval(timer)
+    }
+  }, [])
+  const fold = !!geo && geo.width - geo.left < FOLD_BELOW
+  if (fold && geo) {
+    return (
+      <div data-fold="true" data-testid="compare-f" ref={ref}>
+        <Flex align="center" gap={3}>
+          <div style={{flex: 'none', width: Math.max(geo.left - 12, 0)}} />
+          <Flex
+            align="center"
+            gap={3}
+            style={{flex: 'none', width: Math.max(geo.right - geo.left - 12, 0)}}
+            wrap="wrap"
+          >
+            {title}
+            {count}
+          </Flex>
+          <Flex align="center" flex={1} gap={3} wrap="wrap">
+            {against}
+            {base}
+            <Box flex={1} />
+            {pass}
+            {actions}
+          </Flex>
+        </Flex>
+      </div>
+    )
+  }
+  return (
+    <div data-fold="false" data-testid="compare-f" ref={ref}>
+      <Flex align="center" gap={3}>
+        <div style={{flex: 'none', width: Math.max(geo ? geo.left - 12 : 0, 0)}} />
+        <div style={{flex: 'none'}}>{title}</div>
+        <div
+          style={{flex: 'none', marginLeft: geo?.chip ? Math.max(geo.chip - geo.left - 140, 0) : 0}}
+        >
+          {against}
+        </div>
+        {base}
+        <Box flex={1} />
+        {pass}
+        {count}
+        {actions}
+      </Flex>
+    </div>
   )
 }
 

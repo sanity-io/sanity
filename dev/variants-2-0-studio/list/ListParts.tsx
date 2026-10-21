@@ -6,10 +6,21 @@ import {useRouter} from 'sanity/router'
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
 import {type Address, NONE} from '../compare/address'
+import {BaseNote} from '../compare/BaseNote'
+import {useReviewBase} from '../compare/reviewBase'
 import {useGlobalAddress} from '../compare/useCompare'
 import {type AudienceVersion} from '../data/versions'
 import {useOption} from '../design-options/store'
-import {endPass, nextInPass, startPass, useDiffMap, useLooked, usePass} from './listStore'
+import {
+  endPass,
+  nextInPass,
+  startPass,
+  useChangedSince,
+  useDiffMap,
+  useLooked,
+  usePass,
+  useReleaseSet,
+} from './listStore'
 import {comparisonPath, docIdFromHref, openDocBesidePath} from './navigation'
 
 // E9 list parts. `listMark` (B, C) styles the "Has variant" side; `listFlyout` (B, C) adds a chevron flyout of versions with "Open beside" and
@@ -45,7 +56,9 @@ export function ReviewHeader(props: {
   const go = useGo()
   const total = orderedIds.filter((id) => map?.has(id)).length
   const differing = orderedIds.filter((id) => map?.get(id)?.differs)
-  const against: Address = {perspective: global.perspective, variant: NONE}
+  // The comparison opens against the one base (the published version unless the user picked another address).
+  const showing: Address = {perspective: global.perspective, variant: variantId}
+  const {base: against} = useReviewBase(showing)
   const open = (id: string) => go(comparisonPath(type, id, against))
 
   const inPass = option === 'c' && pass.active && pass.variantId === variantId
@@ -59,8 +72,18 @@ export function ReviewHeader(props: {
       <Stack gap={2}>
         {inPass ? null : (
           <Text data-testid="review-summary" size={1}>
-            {title} against Base · {map ? `${differing.length} of ${total} differ` : 'counting…'}
+            {title} · {map ? `${differing.length} of ${total} differ` : 'counting…'}
           </Text>
+        )}
+        {inPass ? null : (
+          <BaseNote
+            base={against}
+            label={baseLabel}
+            options={['published', 'drafts'].flatMap((perspective) =>
+              [NONE, variantId].map((variant) => ({perspective, variant})),
+            )}
+            showing={showing}
+          />
         )}
         {inPass ? (
           <PassControls />
@@ -84,6 +107,71 @@ export function ReviewHeader(props: {
   )
 }
 
+const baseLabel = (a: Address) =>
+  `${a.perspective === 'published' ? 'Published' : a.perspective === 'drafts' ? 'Drafts' : a.perspective} · ${a.variant === NONE ? 'Base' : a.variant}`
+
+/** reviewSet B and C: one line above the list for a release set (M3) and a changed-since count (M4). Both read the one base. */
+export function ReviewSetHeader(props: {type: string}) {
+  const {type} = props
+  const option = useOption('reviewSet')
+  const global = useGlobalAddress()
+  const showing: Address = {perspective: global.perspective, variant: NONE}
+  const {base} = useReviewBase(showing)
+  const release =
+    global.perspective !== 'published' && global.perspective !== 'drafts'
+      ? global.perspective
+      : null
+  const set = useReleaseSet(type, release, base)
+  const [days, setDays] = useState(7)
+  const since = useChangedSince(option === 'c' ? type : undefined, days)
+  return (
+    <Box
+      data-testid="review-set"
+      paddingX={3}
+      paddingY={2}
+      style={{borderBottom: '1px solid var(--card-border-color)'}}
+    >
+      <Stack gap={2}>
+        {release ? (
+          <Text data-testid="review-set-release" size={1}>
+            {release} ·{' '}
+            {set
+              ? `${set.total} documents · ${set.differs} differ from ${baseLabel(base)} · ${set.isNew} new`
+              : 'counting…'}
+          </Text>
+        ) : null}
+        {release ? (
+          <BaseNote
+            base={base}
+            label={baseLabel}
+            options={['published', 'drafts'].map((perspective) => ({perspective, variant: NONE}))}
+            showing={showing}
+          />
+        ) : null}
+        {option === 'c' ? (
+          <Flex align="center" gap={2}>
+            <Text data-testid="review-set-since" size={1}>
+              Changed since {days === 1 ? '1 day' : `${days} days`} ago ·{' '}
+              {since === null ? 'counting…' : `${since} documents`}
+            </Text>
+            {[1, 7, 30].map((n) => (
+              <Button
+                data-testid={`since-${n}`}
+                fontSize={1}
+                key={n}
+                mode={n === days ? 'default' : 'bleed'}
+                onClick={() => setDays(n)}
+                padding={2}
+                text={`${n}d`}
+              />
+            ))}
+          </Flex>
+        ) : null}
+      </Stack>
+    </Box>
+  )
+}
+
 /** The held pass: where it is, Next changed document, End review. In the list header, and in the compare header while the list pane is folded away. */
 export function PassControls() {
   const pass = usePass()
@@ -98,9 +186,9 @@ export function PassControls() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [pass.active])
+  const {base} = useReviewBase({perspective: global.perspective, variant: pass.variantId})
   if (!pass.active) return null
-  const open = (id: string) =>
-    go(comparisonPath(pass.type, id, {perspective: global.perspective, variant: NONE}))
+  const open = (id: string) => go(comparisonPath(pass.type, id, base))
   return (
     <Flex align="center" data-testid="pass-controls" gap={2}>
       <Text data-testid="review-pass-position" size={1} weight="semibold">

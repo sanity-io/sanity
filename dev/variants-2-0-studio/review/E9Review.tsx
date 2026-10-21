@@ -7,7 +7,9 @@ import {useDocumentPane} from 'sanity/structure'
 
 import {useVariantDefinitions} from '../c1/world'
 import {type Address, NONE, sameAddress} from '../compare/address'
+import {BaseNote} from '../compare/BaseNote'
 import {isOneMove} from '../compare/CompareHeader'
+import {setReviewBase, useReviewBase} from '../compare/reviewBase'
 import {useAddressDoc, useCompareActions} from '../compare/useCompare'
 import {useVersionList} from '../data/useVersionList'
 import {useOption} from '../design-options/store'
@@ -83,15 +85,9 @@ function E9Review(props: DocumentInspectorProps & {full: boolean}) {
   const actions = useCompareActions()
   const compare = useOption('compare')
 
-  // The default Against: the published version at this address; for a published view, the base (or the draft for the base).
-  const initial: Address =
-    local.perspective !== 'published'
-      ? {perspective: 'published', variant: local.variant}
-      : local.variant !== NONE
-        ? {perspective: 'published', variant: NONE}
-        : {perspective: 'drafts', variant: NONE}
-  const [chosen, setAgainst] = useState<Address | null>(null)
-  const against = chosen ?? initial
+  // The one base (compare/reviewBase): the published version at this address unless the user picked another address.
+  const {base: against} = useReviewBase(local)
+  const setAgainst = (address: Address) => setReviewBase(address, local)
   const againstDoc = useAddressDoc(docId, against)
   const [filter, setFilter] = useState<'all' | ChangeKind>('all')
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
@@ -215,6 +211,7 @@ function E9Review(props: DocumentInspectorProps & {full: boolean}) {
             text={text(against)}
           />
         </Flex>
+        <BaseNote base={against} label={text} showing={local} />
         <Flex align="center" gap={1} wrap="wrap">
           {FILTERS.map((k) => (
             <Button

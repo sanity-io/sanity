@@ -306,6 +306,51 @@ export const E9_COMPONENTS: ComponentDef[] = [
 ]
 
 /**
+ * Review sets in the list header for the base document (Figma E9 M3 424:31172 release against published, M4 425:24630 Changed since).
+ * Not decided. Default A: no header, as before.
+ */
+export const REVIEW_SET: ComponentDef = {
+  id: 'reviewSet',
+  tag: 'RS',
+  title: 'Review sets in the list',
+  defaultOption: 'a',
+  independent: true,
+  built: true,
+  scope: 'Open beta',
+  cover:
+    'A line above the document list that counts a set of documents to review: the documents of a release against the base (the published version by default), or the documents changed since a day.',
+  pick: 'Not decided. Both count against the one base (see "Comparing against").',
+  where: 'A document list, with a release as the global perspective (B, C) or any perspective (C).',
+  options: [
+    {
+      id: 'a',
+      label: 'None',
+      summary: 'No review-set line.',
+      oneLiner: 'No line.',
+      status: 'final',
+    },
+    {
+      id: 'b',
+      label: 'Release against published',
+      summary:
+        'With a release as the global perspective: "<release> · N documents · X differ from published · Y new". The counts read the one base.',
+      oneLiner: 'Release set, counted against the base.',
+      status: 'candidate',
+      refs: `${FIGMA}; M3 424:31172`,
+    },
+    {
+      id: 'c',
+      label: 'Release, and changed since',
+      summary:
+        'B, plus "Changed since 7 days ago": the documents edited since then (1 day, 7 days or 30 days), counted at document level.',
+      oneLiner: 'B plus a Changed since count.',
+      status: 'candidate',
+      refs: `${FIGMA}; M4 425:24630`,
+    },
+  ],
+}
+
+/**
  * A pane's own control for its local perspective (Figma E10 D1 455:3372, D2 455:4558, D3 455:6226). Night brief: A none, B on. Default A.
  */
 export const PANE_CONTROL: ComponentDef = {

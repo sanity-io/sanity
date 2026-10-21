@@ -13,7 +13,7 @@ import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporar
 import {type SystemVariant} from '../c1/model'
 import {useCorpus} from '../c5/useCorpus'
 import {createPerspectiveMatch} from '../data/matchCore'
-import {CmdClickOpensBeside, ListMarkStyles, ReviewHeader} from '../list/ListParts'
+import {CmdClickOpensBeside, ListMarkStyles, ReviewHeader, ReviewSetHeader} from '../list/ListParts'
 import {exactVariantId} from '../list/listStore'
 import {useOptionState, useOption} from '../options/store'
 
@@ -26,6 +26,7 @@ import {useOptionState, useOption} from '../options/store'
 const HAS = '__section-has-variant'
 const NONE = '__section-no-variant'
 const HEADER = '__section-review-header'
+const SET_HEADER = '__section-review-set'
 
 function SectionRow(props: {
   title: string
@@ -89,6 +90,26 @@ function SectionRow(props: {
   )
 }
 
+/** reviewSet: the list as it is, under a review-set line (M3, M4). */
+const arrangeWithSetHeader: DocumentListArrange = (items) => {
+  const type = items.find((item) => item._type !== DOCUMENT_LIST_SECTION_TYPE)?._type ?? ''
+  return {
+    items: [
+      {
+        _id: SET_HEADER,
+        _type: DOCUMENT_LIST_SECTION_TYPE,
+        _createdAt: '',
+        _updatedAt: '',
+        _rev: '',
+        hasPublished: false,
+        hasDraft: false,
+      },
+      ...items,
+    ],
+    renderSection: () => <ReviewSetHeader type={type} />,
+  }
+}
+
 /**
  * The provider: reads the perspective, the corpus and the options in a component of its own and gives the list a plain function that
  * arranges its rows. Mounted around the studio's layout.
@@ -102,6 +123,7 @@ export function ListArrangeProvider(props: {
   const {listWhenPerspective} = useOptionState()
   const listMark = useOption('listMark')
   const reviewPass = useOption('reviewPass')
+  const reviewSet = useOption('reviewSet')
   const {chosen, definitions} = props
   const perspective = useMemo(
     () => createPerspectiveMatch(chosen, definitions),
@@ -112,6 +134,8 @@ export function ListArrangeProvider(props: {
   const toggle = useCallback(() => setNoneCollapsed((v) => !v), [])
 
   const arrange = useMemo<DocumentListArrange | null>(() => {
+    // reviewSet (M3, M4): a header line over the plain list, with no variant perspective.
+    if (reviewSet !== 'a' && !perspective.active) return arrangeWithSetHeader
     if ((option !== 'd' && reviewPass === 'a') || !perspective.active || !corpus) return null
     const variantsOf = new Map(corpus.docs.map((d) => [d.id, d.variantIds]))
     return (items) => {
@@ -173,6 +197,7 @@ export function ListArrangeProvider(props: {
       }
     }
   }, [
+    reviewSet,
     option,
     perspective,
     corpus,

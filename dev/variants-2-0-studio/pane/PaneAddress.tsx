@@ -18,6 +18,9 @@ import {createVariantVersion} from '../c7/Banners'
 import {useVersionList} from '../data/useVersionList'
 import {useOption} from '../design-options/store'
 import {useResultToast} from '../toasts/ResultToast'
+import {Pick} from './Pick'
+
+export {Pick}
 
 // Option `paneAddress` (E9, Figma E9 413:5, states L0 to L6). One rule: a pane names its address ONLY when it differs from the global
 // perspective (the Showing row). Vocabulary: global perspective = what the whole studio shows; local perspective = what one pane shows.
@@ -58,49 +61,6 @@ export function usePaneAddress() {
       localVariant: next?.variant,
     })
   return {held, local, global, differs, set}
-}
-
-export function Pick(props: {
-  text: string
-  testId: string
-  items: {
-    key: string
-    text: string
-    icon?: ReactElement
-    selected: boolean
-    onClick: () => void
-    disabled?: boolean
-  }[]
-  icon?: ReactElement
-}) {
-  return (
-    <MenuButton
-      button={
-        <Chip
-          data-testid={props.testId}
-          icon={props.icon}
-          iconRight={ChevronDownIcon}
-          mode="ghost"
-          text={props.text}
-        />
-      }
-      id={props.testId}
-      menu={
-        <Menu padding={1}>
-          {props.items.map((item) => (
-            <MenuItem
-              icon={item.icon}
-              key={item.key}
-              onClick={item.onClick}
-              pressed={item.selected}
-              text={item.text}
-            />
-          ))}
-        </Menu>
-      }
-      popover={{placement: 'bottom-start', portal: true}}
-    />
-  )
 }
 
 export const layerLabel = (perspective: string) =>

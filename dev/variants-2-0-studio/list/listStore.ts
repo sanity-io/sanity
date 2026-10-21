@@ -1,6 +1,9 @@
 import {useEffect, useMemo, useSyncExternalStore} from 'react'
 import {useClient} from 'sanity'
 
+import {type Address, NONE} from '../compare/address'
+import {useReviewBase} from '../compare/reviewBase'
+import {useGlobalAddress} from '../compare/useCompare'
 import {deepEqual, type Json} from '../fieldmarks/markModel'
 
 // Data for the E9 list work: which documents of a list differ from their base for one variant ("Returning visitors against Base"),
@@ -34,32 +37,62 @@ export function exactVariantId(
   return exact ? exact._id.replace(/^_\.variants\./, '') : null
 }
 
-/** For every document of `type` that has the variant: does it differ from the base? (Raw, API version X; the published versions are compared.) */
+type RawDoc = Record<string, Json>
+
+const refOf = (d: RawDoc): string | null =>
+  (d._system as {variant?: {_ref?: string}} | undefined)?.variant?._ref ?? null
+
+/** The version of one document at an address, from every raw version of the type. A drafts address falls back to the published version. */
+function docAt(versions: readonly RawDoc[], id: string, address: Address): RawDoc | null {
+  const variant = address.variant === NONE ? null : `_.variants.${address.variant}`
+  const own = versions.filter((d) => baseId(String(d._id)) === id)
+  const ofVariant = own.filter((d) => refOf(d) === variant)
+  const published = ofVariant.find((d) => !/^(drafts|versions)\./.test(String(d._id)))
+  if (address.perspective === 'published') return published ?? null
+  if (address.perspective === 'drafts')
+    return ofVariant.find((d) => String(d._id).startsWith('drafts.')) ?? published ?? null
+  return ofVariant.find((d) => String(d._id).startsWith(`versions.${address.perspective}.`)) ?? null
+}
+
+/**
+ * For every document of `type` with a version at the variant: does the document at the SHOWING address (the global perspective, this variant)
+ * differ from its version at the BASE (compare/reviewBase: the published version unless the user picked another address)? Raw, API version X.
+ * The map is keyed by showing, base and type, so a new base recounts.
+ */
 export function useDiffMap(type: string | undefined, variantId: string | null): DiffMap | null {
   const base = useClient({apiVersion: 'X'})
   const client = useMemo(
     () => base.withConfig({apiVersion: 'X', perspective: 'raw', useCdn: false}),
     [base],
   )
-  const key = type && variantId ? `${type}|${variantId}` : ''
+  const global = useGlobalAddress()
+  const showing: Address = {perspective: global.perspective, variant: variantId ?? NONE}
+  const {base: against} = useReviewBase(showing)
+  const showingPerspective = showing.perspective
+  const basePerspective = against.perspective
+  const baseVariant = against.variant
+  const key =
+    type && variantId
+      ? `${type}|${showingPerspective}|${variantId}|${basePerspective}|${baseVariant}`
+      : ''
   useEffect(() => {
     if (!key || !type || !variantId || loading.has(key)) return
     loading.add(key)
-    void Promise.all([
-      client.fetch('*[_type == $type && !(_id match "drafts.*") && !(_id match "versions.*")]', {
-        type,
-      }) as Promise<Record<string, Json>[]>,
-      client.fetch(
-        '*[_type == $type && _system.variant._ref == $vref && !defined(_system.bundleId)]',
-        {type, vref: `_.variants.${variantId}`},
-      ) as Promise<Record<string, Json>[]>,
-    ])
-      .then(([bases, variants]) => {
-        const byId = new Map(bases.map((d) => [String(d._id), d]))
+    void (client.fetch('*[_type == $type]', {type}) as Promise<RawDoc[]>)
+      .then((all) => {
         const map: DiffMap = new Map()
-        for (const v of variants) {
-          const b = byId.get(baseId(String(v._id)))
-          if (b) map.set(baseId(String(v._id)), {differs: !deepEqual(b, v)})
+        const ids = new Set(
+          all
+            .filter((d) => refOf(d) === `_.variants.${variantId}`)
+            .map((d) => baseId(String(d._id))),
+        )
+        const here$ = {perspective: showingPerspective, variant: variantId}
+        const there$ = {perspective: basePerspective, variant: baseVariant}
+        for (const id of ids) {
+          const here = docAt(all, id, here$)
+          const there = docAt(all, id, there$)
+          // No version at the base means nothing to differ from; a missing showing version is not part of the pass.
+          if (here && there) map.set(id, {differs: !deepEqual(there, here)})
         }
         maps.set(key, map)
       })
@@ -68,12 +101,98 @@ export function useDiffMap(type: string | undefined, variantId: string | null): 
         loading.delete(key)
         emit()
       })
-  }, [client, key, type, variantId])
+  }, [client, key, type, variantId, showingPerspective, basePerspective, baseVariant])
   return useSyncExternalStore(subscribe, () => (key ? (maps.get(key) ?? null) : null))
+}
+
+// ---- Review sets (reviewSet B: a release against the base; C: changed since) ------------------------------------------------
+
+export interface SetCounts {
+  /** Documents in the set. */
+  total: number
+  /** Documents whose version differs from the base. */
+  differs: number
+  /** Documents with no version at the base. */
+  isNew: number
+}
+const setCounts = new Map<string, SetCounts>()
+const setLoading = new Set<string>()
+const emptySet: SetCounts = {total: 0, differs: 0, isNew: 0}
+
+function useRaw() {
+  const base = useClient({apiVersion: 'X'})
+  return useMemo(
+    () => base.withConfig({apiVersion: 'X', perspective: 'raw', useCdn: false}),
+    [base],
+  )
+}
+
+/** M3: the documents of one release against the base address. `null` while counting. */
+export function useReleaseSet(
+  type: string | undefined,
+  release: string | null,
+  against: Address,
+): SetCounts | null {
+  const client = useRaw()
+  const basePerspective = against.perspective
+  const key = type && release ? `release|${type}|${release}|${basePerspective}` : ''
+  useEffect(() => {
+    if (!key || !type || !release || setLoading.has(key)) return
+    setLoading.add(key)
+    void (client.fetch('*[_type == $type]', {type}) as Promise<RawDoc[]>)
+      .then((all) => {
+        const ids = new Set(
+          all
+            .filter((d) => String(d._id).startsWith(`versions.${release}.`))
+            .map((d) => baseId(String(d._id))),
+        )
+        const counts = {total: ids.size, differs: 0, isNew: 0}
+        for (const id of ids) {
+          const here = docAt(all, id, {perspective: release, variant: NONE})
+          const there = docAt(all, id, {perspective: basePerspective, variant: NONE})
+          if (!there) counts.isNew++
+          else if (here && !deepEqual(there, here)) counts.differs++
+        }
+        setCounts.set(key, counts)
+      })
+      .catch(() => setCounts.set(key, emptySet))
+      .finally(() => {
+        setLoading.delete(key)
+        emit()
+      })
+  }, [client, key, type, release, basePerspective])
+  return useSyncExternalStore(subscribe, () => (key ? (setCounts.get(key) ?? null) : null))
+}
+
+/** M4: the documents of a type edited in the last `days` days (any version), counted at document level. */
+export function useChangedSince(type: string | undefined, days: number): number | null {
+  const client = useRaw()
+  const day = new Date().toISOString().slice(0, 10)
+  const key = type ? `since|${type}|${days}|${day}` : ''
+  useEffect(() => {
+    if (!key || !type || setLoading.has(key)) return
+    setLoading.add(key)
+    const since = new Date(Date.now() - days * 86_400_000).toISOString()
+    void (
+      client.fetch('*[_type == $type && _updatedAt > $since]._id', {type, since}) as Promise<
+        string[]
+      >
+    )
+      .then((found) => {
+        setCounts.set(key, {total: new Set(found.map(baseId)).size, differs: 0, isNew: 0})
+      })
+      .catch(() => setCounts.set(key, emptySet))
+      .finally(() => {
+        setLoading.delete(key)
+        emit()
+      })
+  }, [client, key, type, days])
+  return useSyncExternalStore(subscribe, () => (key ? (setCounts.get(key)?.total ?? null) : null))
 }
 
 export function refreshDiffMaps() {
   maps.clear()
+  setCounts.clear()
   emit()
 }
 
