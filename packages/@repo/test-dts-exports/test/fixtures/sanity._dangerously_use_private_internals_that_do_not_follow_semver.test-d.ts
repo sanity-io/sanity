@@ -816,7 +816,6 @@ import type {
   useSearchMachine,
   UseSearchMachineOptions,
   useSearchMaxFieldDepth,
-  useSearchPartialIndexSettings,
   useSearchState,
   useSetPerspective,
   useSetVariant,
@@ -3336,10 +3335,8 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<UseSearchMachineOptions<any>>().toBeObject()
   })
   test('useSearchMaxFieldDepth', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useSearchMaxFieldDepth>().toBeFunction()
-  })
-  test('useSearchPartialIndexSettings', () => {
-    expectTypeOf<typeof useSearchPartialIndexSettings>().toBeFunction()
   })
   test('useSearchState', () => {
     expectTypeOf<typeof useSearchState>().toBeFunction()

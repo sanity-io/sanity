@@ -1541,8 +1541,8 @@ export {
 export {
   type PartialIndexSettings,
   type SearchPartialIndexSettings,
+  // oxlint-disable-next-line no-deprecated -- only the overload without field paths is deprecated
   useSearchMaxFieldDepth,
-  useSearchPartialIndexSettings,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
 export {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog'

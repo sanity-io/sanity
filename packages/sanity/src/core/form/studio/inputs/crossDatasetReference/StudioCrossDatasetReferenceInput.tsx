@@ -14,7 +14,7 @@ import {catchError, mergeMap} from 'rxjs/operators'
 import {type Source} from '../../../../config/types'
 import {type FIXME} from '../../../../FIXME'
 import {useDocumentPreviewStore} from '../../../../store/datastores'
-import {useSearchPartialIndexSettings} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {useSource} from '../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
@@ -99,8 +99,10 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         .clone()
     )
   }, [client, schemaType.dataset])
-  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} =
-    useSearchPartialIndexSettings(crossDatasetClient)
+  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchMaxFieldDepth(
+    crossDatasetClient,
+    true,
+  )
   const documentValue = useFormValue([]) as FIXME
 
   const handleSearch = useCallback(

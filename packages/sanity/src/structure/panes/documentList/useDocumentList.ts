@@ -26,7 +26,7 @@ import {
   catchWithCount,
   measureFirstMatch,
   useSchema,
-  useSearchPartialIndexSettings,
+  useSearchMaxFieldDepth,
   useWorkspace,
 } from 'sanity'
 
@@ -122,7 +122,10 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
   } = opts
   const {strategy: searchStrategy} = useWorkspace().search
   const schema = useSchema()
-  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchPartialIndexSettings()
+  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchMaxFieldDepth(
+    undefined,
+    true,
+  )
   const telemetry = useTelemetry()
 
   // Get the type name from the filter, if it is a simple type filter.

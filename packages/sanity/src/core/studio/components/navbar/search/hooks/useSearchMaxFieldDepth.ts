@@ -82,6 +82,15 @@ function toFieldPaths(
 }
 
 /**
+ * Resolves the maximum field depth to search when `search.unstable_partialIndexing` is enabled.
+ *
+ * @deprecated Pass `fieldPaths: true` to also get the field paths excluded from the dataset's
+ * partial index, which search must not boost: `useSearchMaxFieldDepth(client, true)`.
+ * @internal
+ * @hidden
+ */
+export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number
+/**
  * Resolves the dataset's partial index settings when `search.unstable_partialIndexing` is enabled:
  * the maximum field depth to search, and the field paths excluded from the index, which search
  * must not boost.
@@ -89,9 +98,14 @@ function toFieldPaths(
  * @internal
  * @hidden
  */
-export function useSearchPartialIndexSettings(
+export function useSearchMaxFieldDepth(
+  overrideClient: SanityClient | undefined,
+  fieldPaths: true,
+): SearchPartialIndexSettings
+export function useSearchMaxFieldDepth(
   overrideClient?: SanityClient,
-): SearchPartialIndexSettings {
+  withFieldPaths?: true,
+): number | SearchPartialIndexSettings {
   const isEnabled = useWorkspace().search?.unstable_partialIndexing?.enabled
   const workspaceClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const client = useMemo(() => overrideClient || workspaceClient, [overrideClient, workspaceClient])
@@ -134,13 +148,7 @@ export function useSearchPartialIndexSettings(
 
   const fieldPaths = useMemo(() => toFieldPaths(partialIndexSettings), [partialIndexSettings])
 
-  return useMemo(() => ({maxFieldDepth, fieldPaths}), [maxFieldDepth, fieldPaths])
-}
+  const settings = useMemo(() => ({maxFieldDepth, fieldPaths}), [maxFieldDepth, fieldPaths])
 
-/**
- * @internal
- * @hidden
- */
-export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
-  return useSearchPartialIndexSettings(overrideClient).maxFieldDepth
+  return withFieldPaths ? settings : maxFieldDepth
 }
