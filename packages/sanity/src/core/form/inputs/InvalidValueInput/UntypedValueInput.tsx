@@ -1,7 +1,7 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
-import {Grid, VStack} from 'ui5'
+import {Text, Grid, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -97,18 +97,18 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
     >
       <Details open={isDev} title={t('inputs.untyped-value.details.title')}>
         <VStack gap={3}>
-          <Text as="p" muted size={1}>
+          <Text as="p" muted size={1} trim={true} tone="caution">
             <Translate t={t} i18nKey="inputs.untyped-value.description" />
           </Text>
 
           {isSingleValidType && !isHoistedType && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="caution">
               <Translate t={t} i18nKey="inputs.untyped-value.details.description" />
             </Text>
           )}
 
           {!isSingleValidType && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="caution">
               {t('inputs.untyped-value.details.multi-type-description')}
             </Text>
           )}
@@ -116,7 +116,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
           {!isSingleValidType && (
             <VStack as="ul" gap={2}>
               {validTypes.map((validType) => (
-                <Text key={validType} as="li" muted size={1}>
+                <Text key={validType} as="li" muted size={1} trim={true} tone="caution">
                   <code>{validType}</code>
                 </Text>
               ))}
@@ -124,7 +124,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
           )}
 
           <VStack gap={2}>
-            <Text as="h4" weight="medium" size={1}>
+            <Text as="h4" weight="medium" size={1} trim={true} tone="caution">
               {t('inputs.untyped-value.details.json-dump-prefix')}
             </Text>
 

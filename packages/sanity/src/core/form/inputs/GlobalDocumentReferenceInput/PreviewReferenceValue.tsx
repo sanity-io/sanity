@@ -2,8 +2,8 @@ import {
   type GlobalDocumentReferenceSchemaType,
   type GlobalDocumentReferenceValue,
 } from '@sanity/types'
-import {Text, TextSkeleton} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {TextSkeleton} from '@sanity/ui'
+import {Text, Flex, type TextProps} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -21,8 +21,9 @@ export function PreviewReferenceValue(props: {
   hasStudioUrl?: boolean
   type: GlobalDocumentReferenceSchemaType
   referenceInfo: Loadable<GlobalDocumentReferenceInfo>
+  tone?: TextProps['tone']
 }): React.JSX.Element {
-  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
+  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo, tone} = props
   const {t} = useTranslation()
 
   if (referenceInfo.isLoading || referenceInfo.error || !referenceInfo.result) {
@@ -41,7 +42,7 @@ export function PreviewReferenceValue(props: {
   if (referenceInfo.result.availability?.available && !refType) {
     return (
       <Flex gap={2} padding={2} flexDirection="column">
-        <Text as="p">
+        <Text as="p" trim={true} tone={tone}>
           <Translate
             t={t}
             i18nKey="inputs.reference.global.invalid-type"
@@ -65,6 +66,7 @@ export function PreviewReferenceValue(props: {
       resourceId={type.resourceId}
       id={value._ref}
       showTypeLabel={showTypeLabel}
+      tone={tone}
     />
   )
 }
