@@ -43,7 +43,6 @@ for (const [hue, className] of Object.entries(iconBoxColor)) {
 
 export const avatarSkeleton = style({
   selectors: {
-    // `&&`: Skeleton is self-styled; `border-radius`/`width`/`height` are among its own declarations.
     '&&': {
       borderRadius: '50%',
       width: avatarSize1Var,
@@ -54,7 +53,6 @@ export const avatarSkeleton = style({
 
 export const nameSkeleton = style({
   selectors: {
-    // `&&`: Skeleton is self-styled; `width`/`height` are among its own declarations.
     '&&': {
       width: '6ch',
       height: textLineHeight0Var,

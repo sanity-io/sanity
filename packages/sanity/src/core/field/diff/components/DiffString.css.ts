@@ -5,8 +5,6 @@ export const radius1Var = createVar()
 
 export const roundedCard = style({
   selectors: {
-    // Rendered through `DiffCard as={RoundedCard}`, whose own `&&` rule sets border-radius on the
-    // same element; `&&&` outranks it without depending on stylesheet order.
     '&&&': {
       borderRadius: radius1Var,
     },
@@ -15,7 +13,6 @@ export const roundedCard = style({
 
 export const changeSegment = style({
   selectors: {
-    // `&&` keeps the inline display independent of stylesheet order
     '&&:not([hidden])': {
       display: 'inline',
       lineHeight: 'calc(1.25em + 2px)',

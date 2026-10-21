@@ -12,8 +12,6 @@ export const annotationWrapper = style({
   boxShadow: 'inset 0 0 0 1px var(--card-border-color)',
   whiteSpace: 'nowrap',
   alignItems: 'center',
-  // Pre-existing declaration carried over verbatim: `color(<var> a(10%))` is not valid CSS color
-  // syntax, so browsers drop it at computed-value time and no background renders.
   backgroundColor: 'color(var(--card-fg-color) a(10%))',
 
   selectors: {

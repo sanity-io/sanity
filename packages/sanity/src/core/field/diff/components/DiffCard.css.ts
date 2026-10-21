@@ -12,7 +12,6 @@ export const diffCard = style({
   position: 'relative',
   zIndex: 1,
   selectors: {
-    // Card sets these declarations itself
     '&&': {
       borderRadius: diffCardRadiusVar,
       backgroundColor: diffCardBgColorVar,
@@ -35,8 +34,6 @@ export const diffCard = style({
     },
     '&[data-hover]:hover::after, [data-from-to-layout]:hover &[data-hover]::after': {
       bottom: '-3px',
-      // Pre-existing typo (three dashes) carried over verbatim: the variable never resolves, so the
-      // declaration is invalid at computed-value time and no top border renders.
       borderTop: '1px solid var(---diff-card-bg-color)',
       borderBottom: '2px solid currentColor',
       borderBottomLeftRadius: diffCardRadiusVar,

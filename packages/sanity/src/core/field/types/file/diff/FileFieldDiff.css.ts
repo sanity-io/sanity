@@ -7,8 +7,6 @@ export const sizeDiffNegativeVar = createVar()
 
 export const sizeDiff = style({
   selectors: {
-    // Rendered as the element of a `Card`, whose own `&:not([hidden]) {display: block}` is (0,2,0);
-    // `&&` keeps this rule winning regardless of stylesheet order.
     '&&:not([hidden])': {
       display: 'inline-block',
     },

@@ -8,8 +8,6 @@ export const space1Var = createVar()
 export const roundedCard = style({
   padding: space1Var,
   selectors: {
-    // Rendered through `DiffCard as={RoundedCard}`, whose own `&&` rule sets border-radius on the
-    // same element; `&&&` outranks it without depending on stylesheet order.
     '&&&': {
       borderRadius: radius2Var,
     },

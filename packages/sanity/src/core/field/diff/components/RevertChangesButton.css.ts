@@ -5,9 +5,6 @@ export const revertChangesFgColorVar = createVar()
 
 export const revertChangesButton = style({
   selectors: {
-    // `&&`: Button's own hovered/pressed rules set the same `--card-*` variables from
-    // `.btn:not([data-disabled='true']):hover` (0,3,0); the extra class keeps this override winning
-    // regardless of stylesheet order.
     "&&:not([data-disabled='true']):hover, &&:not([data-disabled='true']):focus": {
       vars: {
         '--card-fg-color': revertChangesFgColorVar,
