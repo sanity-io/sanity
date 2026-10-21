@@ -8,6 +8,7 @@ import {DocumentVersionsLens, SharedInventory, WideOverlay} from '../c5/Actionab
 import {useCorpus} from '../c5/useCorpus'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PlaceholderSlot} from '../slots/PlaceholderSlot'
+import {CreateVersionInventory} from './CreateVersionInventory'
 import {HandoffList} from './HandoffList'
 import {InventoryExpandContext} from './inventory/expandContext'
 import {LiveInventory} from './inventory/LiveInventory'
@@ -72,12 +73,24 @@ function HandoffInventory({documentId}: {documentId: string}) {
   )
 }
 
+/** C4 E, "Create version": the inventory panel with the T4 Create version mode in its toolbar. */
+function CreateVersionPanel({documentId}: {documentId: string}) {
+  const corpus = useCorpus()
+  return (
+    <CreateVersionInventory
+      documentId={documentId}
+      title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId}
+    />
+  )
+}
+
 function Inventory({documentId}: DocumentInspectorProps) {
   const option = useOption('c4')
   // B is a popover from the pane (its inspector menu entry is hidden; a click on a list row's control still lands here).
   if (option === 'a' || option === 'b') return <PanelWithExpand documentId={documentId} />
   if (option === 'c') return <SharedFromCorpus documentId={documentId} />
   if (option === 'd') return <HandoffInventory documentId={documentId} />
+  if (option === 'e') return <CreateVersionPanel documentId={documentId} />
   return <PlaceholderSlot component="c4" />
 }
 

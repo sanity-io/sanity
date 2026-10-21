@@ -210,6 +210,13 @@ export const COMPONENTS: ComponentDef[] = [
           "The open beta inventory: ONE list of the document's versions grouped by bundle (Published, Drafts, each release), each row the version title and its state, in the document inspector. No search, filter, sort, grouping options, views, priority view or info overlay. A row sets the global perspective (an open beta limitation). Built on Andrej's inventory model (the same live world), not his panel. Shared with the Handoff Studio (dev/variants-handoff-studio).",
         status: 'candidate',
       },
+      {
+        id: 'e',
+        label: 'Create version',
+        summary:
+          "The inventory panel with the T4 Create version mode (Figma C4, 'Create version: the chosen pattern'). The toolbar keeps Views and a primary Create version; the button turns the row into a block with three rows (Variant definition, Bundle, Document), search and a scrim in every menu, groups collapsed with counts and a dimmed preview row. The commit is enabled whenever the address is new and becomes Open existing version when it exists. A + on a group header opens the same block with that group's step fixed. After Create the receiving group is current and the form switches to the new version (the global perspective moves). Shared with the Handoff Studio.",
+        status: 'candidate',
+      },
     ],
   },
   {
