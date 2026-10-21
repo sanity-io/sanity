@@ -3,8 +3,10 @@ import {type DashboardTopics, type ValueOf} from '@sanity/sdk/dashboard'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {stubMessageBusHost} from '../../../../test/testUtils/stubMessageBusHost'
-import {FederatedMediaLibraryAssetSource} from '../../form/studio/assetSourceMediaLibrary/federated/FederatedMediaLibraryAssetSource'
-import {MediaLibraryAssetSource} from '../../form/studio/assetSourceMediaLibrary/shared/MediaLibraryAssetSource'
+import {
+  FederatedMediaLibraryAssetSource,
+  MediaLibraryAssetSource,
+} from '../../form/studio/assetSourceMediaLibrary/createAssetSource'
 import {createMockAuthStore} from '../../store/auth/mock/createMockAuthStore'
 import {createSourceFromConfig} from '../resolveConfig'
 import {type SingleWorkspace} from '../types'

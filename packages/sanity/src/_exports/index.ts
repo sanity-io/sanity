@@ -422,7 +422,7 @@ export {type FieldValueError} from '../core/field/validation'
 export {type FIXME} from '../core/FIXME'
 export {EditPortal} from '../core/form/components/EditPortal'
 export {EnhancedObjectDialog} from '../core/form/components/EnhancedObjectDialog'
-export {FormField, type FormFieldProps} from '../core/form/components/formField/FormField'
+export {type FormFieldProps} from '../core/form/components/formField/FormField'
 export {
   FormFieldHeaderText,
   type FormFieldHeaderTextProps,
@@ -440,7 +440,6 @@ export {
   type FormFieldValidationWarning,
 } from '../core/form/components/formField/types'
 export {
-  FormInput,
   type FormInputAbsolutePathArg,
   type FormInputRelativePathArg,
 } from '../core/form/components/FormInput'
@@ -452,6 +451,19 @@ export {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
 export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
 export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 export {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
+// Code-split facades. Same names and props; the implementation loads on first render so the
+// form runtime and the Portable Text editor are not in the login screen's import graph.
+export {
+  ArrayOfObjectsItem,
+  FormBuilder,
+  FormField,
+  FormInput,
+  MemberField,
+  MemberFieldError,
+  ObjectInputMember,
+  PortableTextInput as BlockEditor,
+  PortableTextInput,
+} from '../core/form/lazy'
 export {type VirtualizerScrollInstance} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {ArrayOfObjectOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
@@ -467,11 +479,7 @@ export {EmailInput, type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
 export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
 export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
-export {
-  PortableTextInput as BlockEditor,
-  PortableTextInput,
-  type PortableTextMemberItem,
-} from '../core/form/inputs/PortableText/PortableTextInput'
+export {type PortableTextMemberItem} from '../core/form/inputs/PortableText/PortableTextInput'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
 export {SelectInput} from '../core/form/inputs/SelectInput'
 export {SlugInput, type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
@@ -482,22 +490,15 @@ export {TextInput, type TextInputProps} from '../core/form/inputs/TextInput'
 export {UrlInput, type UrlInputProps} from '../core/form/inputs/UrlInput'
 export {type ArrayOfObjectsMemberProps} from '../core/form/members/array/ArrayOfObjectsInputMember'
 export {type ArrayOfObjectsInputMembersProps} from '../core/form/members/array/ArrayOfObjectsInputMembers'
-export {
-  ArrayOfObjectsItem,
-  type MemberItemProps,
-} from '../core/form/members/array/items/ArrayOfObjectsItem'
+export {type MemberItemProps} from '../core/form/members/array/items/ArrayOfObjectsItem'
 export {
   ArrayOfPrimitivesItem,
   type PrimitiveMemberItemProps,
 } from '../core/form/members/array/items/ArrayOfPrimitivesItem'
 export {MemberItemError} from '../core/form/members/array/MemberItemError'
-export {MemberField, type MemberFieldProps} from '../core/form/members/object/MemberField'
-export {MemberFieldError} from '../core/form/members/object/MemberFieldError'
+export {type MemberFieldProps} from '../core/form/members/object/MemberField'
 export {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
-export {
-  ObjectInputMember,
-  type ObjectInputMemberProps,
-} from '../core/form/members/object/ObjectInputMember'
+export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
 export {
   ObjectInputMembers, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ObjectMembers,
@@ -605,7 +606,7 @@ export {
   type ReferenceInputOptions,
   type TemplateOption,
 } from '../core/form/studio/contexts/ReferenceInputOptions'
-export {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilder'
+export {type FormBuilderProps} from '../core/form/studio/FormBuilder'
 export {FormProvider, type FormProviderProps} from '../core/form/studio/FormProvider'
 export {
   StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput,
