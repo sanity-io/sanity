@@ -9,20 +9,20 @@ import {
   type DocumentActionComponent,
   type DocumentBadgeComponent,
   type DocumentFieldAction,
-  type DocumentFormNode,
   type DocumentInspector,
   type DocumentLanguageFilterComponent,
-  type DocumentSyncState,
   type EditStateFor,
   type NodeChronologyProps,
   type PatchEvent,
   type PermissionCheckResult,
   type ReleaseId,
   type StateTree,
-  type TargetDocumentState,
-  type TimelineStore,
 } from 'sanity'
 
+import {type DocumentFormNode} from '../../../core/form/store/types/nodes'
+import {type DocumentSyncState} from '../../../core/hooks/useDocumentSyncState'
+import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
+import {type TimelineStore} from '../../../core/store/history/useTimelineStore'
 import {type View} from '../../structureBuilder/types'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 

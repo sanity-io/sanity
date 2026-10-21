@@ -1,10 +1,11 @@
 import {renderHook} from '@testing-library/react'
 import {type ComponentType, type ReactNode, StrictMode} from 'react'
-import {type EditStateFor, SourceProvider, useWorkspace} from 'sanity'
+import {type EditStateFor, useWorkspace} from 'sanity'
 import {beforeAll, expect, it} from 'vitest'
 
 import {stubMessageBusHost} from '../../../../../test/testUtils/stubMessageBusHost'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {SourceProvider} from '../../../../core/studio/source'
 import {useDocumentApplicationContext} from '../useDocumentApplicationContext'
 
 // The mock workspace's project and dataset.

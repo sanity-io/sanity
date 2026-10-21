@@ -27,7 +27,7 @@ export interface ObjectInputMemberProps {
   renderPreview: RenderPreviewCallback
 }
 
-/** @internal */
+/** @public */
 export const ObjectInputMember = memo(function ObjectInputMember(props: ObjectInputMemberProps) {
   const {
     member,

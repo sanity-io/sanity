@@ -1,21 +1,21 @@
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
-  isCardinalityOneRelease,
   isVersionId,
-  ReleaseTitle,
   Translate,
-  useActiveReleases,
   useDocumentVersions,
   useOnlyHasVersions,
-  useSetPerspective,
   useTranslation,
-  VersionInlineBadge,
 } from 'sanity'
 import {Text, Flex, type TextProps} from 'ui5'
 
+import {useSetPerspective} from '../../../../../core/perspective/useSetPerspective'
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {useActiveReleases} from '../../../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {isCardinalityOneRelease} from '../../../../../core/util/releaseUtils'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 

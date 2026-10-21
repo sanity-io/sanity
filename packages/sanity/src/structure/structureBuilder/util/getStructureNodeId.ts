@@ -1,6 +1,7 @@
 import camelCase from 'lodash-es/camelCase.js'
-import {validateStructureNodeId} from 'sanity'
 import getSlug from 'speakingurl'
+
+import {validateStructureNodeId} from '../../../core/util/validateStructureNodeId'
 
 export function getStructureNodeId(title: string, id?: string): string {
   if (id) {

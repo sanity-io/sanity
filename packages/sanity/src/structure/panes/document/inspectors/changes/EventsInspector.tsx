@@ -5,28 +5,28 @@ import {motion} from 'motion/react'
 import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
-  ChangeFieldWrapper,
   ChangeList,
-  ChangesError,
-  type DocumentChangeContextInstance,
   type DocumentGroupEvent,
-  getTargetSiblings,
   isNonSelectableTerminalEvent,
-  isReleaseDocument,
-  LoadingBlock,
-  NoChanges,
   type ObjectDiff,
   type ObjectSchemaType,
-  ScrollContainer,
   Translate,
   useEditState,
-  useEvents,
   usePerspective,
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {Text, Flex, Box, Grid} from 'ui5'
 
+import {ChangeFieldWrapper} from '../../../../../core/changeIndicators/ChangeFieldWrapper'
+import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'
+import {ChangesError} from '../../../../../core/field/diff/components/ChangesError'
+import {NoChanges} from '../../../../../core/field/diff/components/NoChanges'
+import {type DocumentChangeContextInstance} from '../../../../../core/field/diff/contexts/DocumentChangeContext'
+import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {useEvents} from '../../../../../core/store/events/EventsProvider'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'

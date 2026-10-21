@@ -1,19 +1,19 @@
 import {defineField, defineType} from '@sanity/types'
-import type * as SanityExports from 'sanity'
-import {useDocumentPreviewValues} from 'sanity'
 import {describe, expect, test, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
+import type * as DocumentPreviewValuesExports from '../../../core/tasks/hooks/useDocumentPreviewValues'
+import {useDocumentPreviewValues} from '../../../core/tasks/hooks/useDocumentPreviewValues'
 import {RouterProvider} from '../../../router/RouterProvider'
 import {presentationUsEnglishLocaleBundle} from '../../i18n'
 import {router} from '../../router'
 import {type MainDocumentState} from '../../types'
 import {ContentEditor} from '../ContentEditor'
 
-vi.mock('sanity', async (importOriginal) => {
-  const actual = await importOriginal<typeof SanityExports>()
+vi.mock('../../../core/tasks/hooks/useDocumentPreviewValues', async (importOriginal) => {
+  const actual = await importOriginal<typeof DocumentPreviewValuesExports>()
   return {
     ...actual,
     useDocumentPreviewValues: vi.fn(actual.useDocumentPreviewValues),

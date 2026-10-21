@@ -2,7 +2,6 @@ import {renderHook} from '@testing-library/react'
 import {
   getVersionFromId,
   type ObjectSchemaType,
-  useAgentVersionDisplay,
   useDocumentVersions,
   usePerspective,
   type VersionInfoDocumentStub,
@@ -10,6 +9,7 @@ import {
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {useAgentVersionDisplay} from '../../../../../../../../core/store/agent/useAgentVersionDisplay'
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
