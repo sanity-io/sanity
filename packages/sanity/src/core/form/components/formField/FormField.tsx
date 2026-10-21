@@ -54,7 +54,9 @@ export interface FormFieldProps {
   changedFromBaseVariant?: boolean
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export const FormField = memo(function FormField(
   props: FormFieldProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {
