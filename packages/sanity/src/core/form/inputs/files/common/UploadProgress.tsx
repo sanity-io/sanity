@@ -47,7 +47,7 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
             gap={[3, 3, 2, 2]}
             flexDirection={['column', 'column', 'row']}
           >
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
               <Inline gap={2}>
                 <Translate
                   t={t}

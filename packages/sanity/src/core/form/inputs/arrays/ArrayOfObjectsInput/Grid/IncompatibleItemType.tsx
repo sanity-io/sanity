@@ -8,6 +8,7 @@ import {styled} from 'styled-components'
 import {Text, Box, Flex, VStack, type TextProps, Icon} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
+import {InlineCode} from '../../../../../i18n/components/InlineCode'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
 
@@ -66,6 +67,7 @@ export function IncompatibleItemType(props: Props) {
                 t={t}
                 i18nKey="inputs.array.error.current-schema-not-declare-description"
                 values={{typeName}}
+                components={{code: InlineCode}}
               />
             </Text>
             <Box>
@@ -116,6 +118,7 @@ export function IncompatibleItemType(props: Props) {
               t={t}
               i18nKey="inputs.array.error.type-is-incompatible-prompt"
               values={{typeName}}
+              components={{code: InlineCode}}
             />
           </Text>
         </Flex>

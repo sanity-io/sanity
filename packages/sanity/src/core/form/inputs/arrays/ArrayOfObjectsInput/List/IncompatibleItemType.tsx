@@ -5,9 +5,10 @@ import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Text, Box, Flex, VStack, type TextProps, Icon} from 'ui5'
+import {Text, Box, Flex, VStack, type TextProps, Icon, Inline} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
+import {InlineCode} from '../../../../../i18n/components/InlineCode'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
 
@@ -66,6 +67,7 @@ export function IncompatibleItemType(props: Props) {
                 t={t}
                 i18nKey="inputs.array.error.current-schema-not-declare-description"
                 values={{typeName}}
+                components={{code: InlineCode}}
               />
             </Text>
             <Box>
@@ -104,7 +106,7 @@ export function IncompatibleItemType(props: Props) {
       >
         <Flex alignItems="center">
           <Box marginRight={3}>
-            <Icon icon={UnknownIcon} style={{margin: '-0.4375rem', display: 'block'}} />
+            <Icon icon={UnknownIcon} tone={tone} style={{margin: '-0.4375rem', display: 'block'}} />
           </Box>
 
           <Box flexBasis="0%" flexGrow={1}>
@@ -113,6 +115,7 @@ export function IncompatibleItemType(props: Props) {
                 t={t}
                 i18nKey="inputs.array.error.type-is-incompatible-prompt"
                 values={{typeName}}
+                components={{code: InlineCode}}
               />
             </Text>
           </Box>
