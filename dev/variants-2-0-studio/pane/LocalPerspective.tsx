@@ -1,71 +1,193 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {DocumentsIcon} from '@sanity/icons/Documents'
-import {Badge, Box, Button, Flex, Text} from '@sanity/ui'
-import {useSyncExternalStore} from 'react'
+import {Box, Button, Flex, Text} from '@sanity/ui'
+import {type CSSProperties, useState} from 'react'
+import {createPortal} from 'react-dom'
 import {ReleaseAvatarIcon} from 'sanity'
-import {useDocumentPane, usePaneRouter} from 'sanity/structure'
+import {useDocumentPane} from 'sanity/structure'
 
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {useVariantDefinitions} from '../c1/world'
+import {useCorpus} from '../c5/useCorpus'
 import {useVersionList} from '../data/useVersionList'
-import {layerLabel, usePaneAddress} from './PaneAddress'
+import {useCircleRegistry, useLocalBar} from './localBar'
 import {Pick} from './Pick'
+import {layerLabel, usePaneAddress} from './usePaneAddress'
 
-// Open beta (locked), the document header (Figma C2 "Document header · selected for open beta": H1 521:42816, H2 521:42925, H3 521:43097):
-//   H1  following global: the state pill (the layer, collapsed) and a "N Versions" pill that opens the inventory panel.
-//   H2  the pill is clicked: a row "Local perspective" with the layer, the variant and "Follow global perspective"; the header pill steps aside.
-//   H3  the pane differs from global: the row collapses again and the header says "Local" before the state pill.
-// The footer's "Manage versions" is replaced by the Versions pill, so it is hidden here (a stock core button, no seam for it).
+// Open beta, the document header (Figma C2 "Document header · selected for open beta", section 561:35886; token frame 564:19198; spec
+// docs/initiatives/curation-perspective-selector/OPEN-BETA-HEADER-SPEC.md):
+//   - the perspective circle (P1 to P4) at the left of the header: a cube that says whose set the pane shows (muted outline = follows global, purple
+//     outline = its own), pressed with a caret while the bar is open;
+//   - "<title> · N versions" (H4) beside it: the one way into the inspector;
+//   - the bar under the header (B1 to B3): the state, "•", the variant, "Follow global perspective".
+// The footer's "Manage versions" is replaced by the pill, so it is hidden here (a stock core button behind a core flag, no seam for it).
 
 const NONE = 'none'
 const INVENTORY = 'variants-inventory'
+const PRESSED = 'var(--card-badge-default-bg-color)'
+const LOCAL_COLOR = 'var(--card-badge-suggest-icon-color)'
+const CIRCLE = 33
+// Figma 574:2: follows-global is the plain outline cube in muted grey with white faces; local is the purple one. No dashes.
+const MUTED = 'var(--card-muted-fg-color)'
 
-// Whether a pane's local row is open, shared by the header (which opens it) and the banner row (which shows it). Keyed by pane.
-const opened = new Set<string>()
-const listeners = new Set<() => void>()
-const subscribe = (listener: () => void) => {
-  listeners.add(listener)
-  return () => void listeners.delete(listener)
+const shortId = (id: string) => id.replace(/^_\.variants\./, '')
+
+/**
+ * The cube. `global`: the pane follows the global perspective (muted outline, white faces). `local`: the pane has its own (the variant mark colour). `outline`: the global
+ * set in the navbar (white faces, outline only).
+ */
+export function CubeIcon({kind, size = 24}: {kind: 'global' | 'local' | 'outline'; size?: number}) {
+  const stroke = kind === 'local' ? LOCAL_COLOR : MUTED
+  const dash = undefined
+  return (
+    <svg
+      aria-hidden="true"
+      data-cube={kind}
+      fill="none"
+      height={size}
+      viewBox="0 0 24 24"
+      width={size}
+    >
+      <path
+        d="M12 2.5 20.5 7.25v9.5L12 21.5 3.5 16.75v-9.5L12 2.5Z"
+        fill="var(--card-bg-color)"
+        stroke={stroke}
+        strokeDasharray={dash}
+        strokeLinejoin="round"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M3.5 7.25 12 12l8.5-4.75M12 12v9.5"
+        stroke={stroke}
+        strokeDasharray={dash}
+        strokeLinejoin="round"
+        strokeWidth="1.7"
+      />
+    </svg>
+  )
 }
 
-function useLocalRow(): [boolean, (open: boolean) => void] {
-  const {groupIndex, siblingIndex} = usePaneRouter()
-  const key = `${groupIndex}:${siblingIndex}`
-  const open = useSyncExternalStore(subscribe, () => opened.has(key))
-  const setOpen = (next: boolean) => {
-    if (next) opened.add(key)
-    else opened.delete(key)
-    listeners.forEach((listener) => listener())
+/**
+ * P4: the caret under the circle, 18 x 9, the bar's fill, a 1 px border on its two upper edges, opening into the bar. The header clips what hangs
+ * below its controls and sits above the content, so the caret is drawn from the bar, in the page layer, at the circle's centre.
+ */
+function Caret({bar}: {bar: HTMLElement | null}) {
+  const registry = useCircleRegistry()
+  const [spot, setSpot] = useState<{left: number; top: number; fill: string; line: string} | null>(
+    null,
+  )
+  const measure = () => {
+    const circle = registry.find()
+    if (!circle || !bar) return setSpot(null)
+    const c = circle.getBoundingClientRect()
+    const b = bar.getBoundingClientRect()
+    // Outside the theme the colour variables do not resolve, so the caret takes their values from the circle, which is inside it.
+    const theme = getComputedStyle(circle)
+    setSpot({
+      left: c.left + c.width / 2 - 9,
+      top: b.top - 10,
+      fill: theme.getPropertyValue('--card-badge-default-bg-color').trim(),
+      line: theme.getPropertyValue('--card-border-color').trim(),
+    })
   }
-  return [open, setOpen]
+  const watch = (el: Element | null) => {
+    if (!el) return undefined
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    if (bar) observer.observe(bar)
+    const circle = registry.find()
+    if (circle) observer.observe(circle)
+    window.addEventListener('resize', measure)
+    measure()
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }
+  return createPortal(
+    <svg
+      aria-hidden="true"
+      data-testid="local-bar-caret"
+      height="10"
+      ref={(el) => watch(el)}
+      style={{
+        left: spot?.left ?? -100,
+        pointerEvents: 'none',
+        position: 'fixed',
+        top: spot?.top ?? -100,
+        visibility: spot ? 'visible' : 'hidden',
+        zIndex: 300,
+      }}
+      viewBox="0 0 18 10"
+      width="18"
+    >
+      <path d="M0 9.5 9 .5l9 9" fill={spot?.fill} stroke={spot?.line} />
+      <rect fill={spot?.fill} height="2" width="16" x="1" y="8.5" />
+    </svg>,
+    document.body,
+  )
 }
 
-/** H1 and H3: the pills at the right of the header. */
+/** The pane's address: its own when it holds one, else the global one. `local` is true only while it differs from the global perspective. */
+function usePaneState() {
+  const {held, local, global, differs, set} = usePaneAddress()
+  return {shown: held ? local : global, local: differs, set, global}
+}
+
+/** H1 and H4: the perspective circle, then "<title> · N versions". */
 export function LocalPerspectiveHeader({documentId}: {documentId: string}) {
-  const {held, global, local, differs} = usePaneAddress()
+  const {local} = usePaneState()
   const versions = useVersionList(documentId)
+  const corpus = useCorpus()
   const pane = useDocumentPane()
-  const [open, setOpen] = useLocalRow()
-  const shown = held ? local.perspective : global.perspective
+  const [barOpen, setBarOpen] = useLocalBar()
+  const registry = useCircleRegistry()
   const inventoryOpen = pane.inspector?.name === INVENTORY
+  const count = versions?.length ?? 0
+  const title = corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId
+  const circleStyle: CSSProperties = {
+    alignItems: 'center',
+    background: barOpen ? PRESSED : 'transparent',
+    border: 0,
+    borderRadius: '50%',
+    color: 'var(--card-fg-color)',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    flex: 'none',
+    height: CIRCLE,
+    justifyContent: 'center',
+    padding: 0,
+    width: CIRCLE,
+  }
   return (
     <Flex align="center" data-testid="doc-pills-c" gap={2} style={{flex: '0 0 auto', minWidth: 0}}>
-      <style>{'[data-testid="action-document-group-inventory"] {display: none !important}'}</style>
-      {differs && !open ? (
-        <Badge data-testid="local-cue" style={{borderRadius: 999}} tone="caution">
-          Local
-        </Badge>
-      ) : null}
-      {open ? null : (
-        <Chip
-          data-testid="header-state"
-          icon={<ReleaseAvatarIcon release={shown === 'published' ? 'published' : 'drafts'} />}
-          iconRight={ChevronDownIcon}
-          mode="ghost"
-          onClick={() => setOpen(true)}
-          text={layerLabel(shown)}
-        />
-      )}
+      <style>{`
+        [data-testid="action-document-group-inventory"] {display: none !important}
+        [data-testid="perspective-circle"]:hover {background: ${PRESSED} !important}
+      `}</style>
+      <span style={{display: 'inline-flex', flex: 'none'}}>
+        <button
+          aria-label={
+            local
+              ? 'This document has its own perspective'
+              : 'This document follows the global perspective'
+          }
+          aria-pressed={barOpen}
+          data-local={local ? '' : undefined}
+          data-testid="perspective-circle"
+          ref={(el) => registry.register(el)}
+          onClick={() => setBarOpen(!barOpen)}
+          style={circleStyle}
+          title={
+            local
+              ? 'This document has its own perspective. Click to edit it, or to follow the global one.'
+              : "Follows the global perspective. Click to set this document's own."
+          }
+          type="button"
+        >
+          <CubeIcon kind={local ? 'local' : 'global'} />
+        </button>
+      </span>
       <Chip
         data-testid="header-versions"
         icon={DocumentsIcon}
@@ -73,26 +195,30 @@ export function LocalPerspectiveHeader({documentId}: {documentId: string}) {
         onClick={() =>
           inventoryOpen ? pane.closeInspector(INVENTORY) : pane.openInspector(INVENTORY)
         }
-        selected={inventoryOpen}
-        text={`${versions?.length ?? 0} Versions`}
+        style={{
+          ...(inventoryOpen ? {background: PRESSED} : null),
+          height: CIRCLE,
+          maxWidth: 360,
+          paddingLeft: 12,
+          paddingRight: 14,
+        }}
+        text={`${title} · ${count} ${count === 1 ? 'version' : 'versions'}`}
       />
     </Flex>
   )
 }
 
-/** H2: the row under the header, while it is open. */
+/** B1 to B3: the bar under the header, while it is open. */
 export function LocalPerspectiveRow({documentId}: {documentId: string}) {
-  const {global, local, set} = usePaneAddress()
-  const versions = useVersionList(documentId)
+  const {shown, set, local} = usePaneState()
   const definitions = useVariantDefinitions()
-  const [open, setOpen] = useLocalRow()
+  const versions = useVersionList(documentId)
+  const [open, setOpen] = useLocalBar()
+  const [barElement, setBarElement] = useState<HTMLElement | null>(null)
   if (!open) return null
 
   const titleOf = (id: string) =>
-    definitions.find((d) => d._id.replace(/^_\.variants\./, '') === id)?.metadata?.title ?? id
-  const variantIds = [
-    ...new Set((versions ?? []).map((v) => v.variantId).filter((v): v is string => !!v)),
-  ]
+    definitions.find((d) => shortId(d._id) === id)?.metadata?.title ?? id
   const releases = [
     ...new Map(
       (versions ?? [])
@@ -103,72 +229,75 @@ export function LocalPerspectiveRow({documentId}: {documentId: string}) {
         .map((v) => [v.bundleId as string, v.release ?? (v.bundleId as string)]),
     ).entries(),
   ]
-  // A change that makes the pane differ from global collapses the row: the header then says "Local" (H3).
-  const choose = (next: {perspective: string; variant: string}) => {
-    set(next)
-    if (next.perspective !== global.perspective || next.variant !== global.variant) setOpen(false)
-  }
   const layers = [
     {key: 'published', text: 'Published'},
     {key: 'drafts', text: 'Drafts'},
     ...releases.map(([id, title]) => ({key: id, text: title})),
   ]
+  const singles = definitions.filter((d) => Object.keys(d.conditions).length === 1)
+  const layerText =
+    layers.find((l) => l.key === shown.perspective)?.text ?? layerLabel(shown.perspective)
 
   return (
-    <Flex
-      align="center"
-      data-testid="local-perspective-row"
-      gap={2}
-      paddingX={3}
-      paddingY={2}
-      wrap="nowrap"
-    >
-      <Text muted size={1}>
-        Local perspective
-      </Text>
-      <Pick
-        icon={
-          <ReleaseAvatarIcon release={local.perspective === 'published' ? 'published' : 'drafts'} />
-        }
-        items={layers.map((layer) => ({
-          key: layer.key,
-          text: layer.text,
-          selected: local.perspective === layer.key,
-          onClick: () => choose({...local, perspective: layer.key}),
-        }))}
-        testId="local-state"
-        text={layerLabel(local.perspective)}
-      />
-      <Pick
-        items={[
-          {
-            key: NONE,
-            text: 'Default',
-            selected: local.variant === NONE,
-            onClick: () => choose({...local, variant: NONE}),
-          },
-          ...variantIds.map((id) => ({
-            key: id,
-            text: titleOf(id),
-            selected: local.variant === id,
-            onClick: () => choose({...local, variant: id}),
-          })),
-        ]}
-        testId="local-variants"
-        text={local.variant === NONE ? 'Default' : titleOf(local.variant)}
-      />
-      <Box flex={1} />
-      <Button
-        data-testid="local-follow-global"
-        fontSize={1}
-        mode="bleed"
-        onClick={() => {
-          set(null)
-          setOpen(false)
-        }}
-        padding={2}
-        text="Follow global perspective"
-      />
-    </Flex>
+    <div ref={setBarElement}>
+      <Caret bar={barElement} />
+      <Flex
+        align="center"
+        data-testid="local-perspective-row"
+        gap={2}
+        style={{background: PRESSED, padding: 20}}
+        wrap="nowrap"
+      >
+        <Pick
+          icon={
+            <ReleaseAvatarIcon
+              release={shown.perspective === 'published' ? 'published' : 'drafts'}
+            />
+          }
+          items={layers.map((layer) => ({
+            key: layer.key,
+            text: layer.text,
+            selected: shown.perspective === layer.key,
+            onClick: () => set({...shown, perspective: layer.key}),
+          }))}
+          testId="local-state"
+          text={layerText}
+        />
+        <Text muted size={1}>
+          •
+        </Text>
+        <Pick
+          icon={<RhombusIcon style={{'--card-icon-color': LOCAL_COLOR} as CSSProperties} />}
+          items={[
+            {
+              key: NONE,
+              text: 'Default',
+              selected: shown.variant === NONE,
+              onClick: () => set({...shown, variant: NONE}),
+            },
+            ...singles.map((d) => ({
+              key: shortId(d._id),
+              text: d.metadata?.title ?? shortId(d._id),
+              selected: shown.variant === shortId(d._id),
+              onClick: () => set({...shown, variant: shortId(d._id)}),
+            })),
+          ]}
+          testId="local-variants"
+          text={shown.variant === NONE ? 'Default' : titleOf(shown.variant)}
+        />
+        <Box flex={1} />
+        <Button
+          data-testid="local-follow-global"
+          fontSize={1}
+          mode="bleed"
+          onClick={() => {
+            set(null)
+            setOpen(false)
+          }}
+          padding={2}
+          text="Follow global perspective"
+        />
+      </Flex>
+    </div>
   )
 }

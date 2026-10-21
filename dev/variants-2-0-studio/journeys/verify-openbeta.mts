@@ -324,23 +324,23 @@ for (const width of [1440, 1280]) {
   await p.keyboard.press('Escape')
   await p.waitForTimeout(500)
 
-  // Local, following global (H1): the collapsed state pill and the Versions pill; nothing else, and no footer "Manage versions".
+  // The document header (Figma C2): the perspective circle and "<title> · N versions"; nothing else of the old header, no footer "Manage versions".
+  // The per-spec-ID checks live in verify-header.mts.
   log(
-    'document: follows global, no pane control, no toggle',
-    (await count(p, 'pane-control')) === 0 && (await count(p, 'published-toggle')) === 0,
-  )
-  log(
-    'document: no grouped pills, no variant chip, no versions popover',
-    (await count(p, 'pills-variants')) === 0 &&
+    'document: follows global, no pane control, no toggle, no grouped pills, no variant chip',
+    (await count(p, 'pane-control')) === 0 &&
+      (await count(p, 'published-toggle')) === 0 &&
+      (await count(p, 'pills-variants')) === 0 &&
       (await count(p, 'pills-releases')) === 0 &&
       (await count(p, 'variant-chip')) === 0 &&
       (await count(p, 'other-versions')) === 0,
   )
   log(
-    'document: the state pill reads the global layer, and a "N Versions" pill beside it',
-    /Draft/.test(await text(p, 'header-state')) &&
-      /^\d+ Versions$/.test(await text(p, 'header-versions')),
-    `${await text(p, 'header-state')} | ${await text(p, 'header-versions')}`,
+    'document: the circle (following global) and "<title> · N versions" sit in the header',
+    (await visible(p, 'perspective-circle')) &&
+      (await p.locator('[data-testid="perspective-circle"][data-local]').count()) === 0 &&
+      /· \d+ versions?$/.test(await text(p, 'header-versions')),
+    await text(p, 'header-versions'),
   )
   log(
     'document: no "Manage versions" in the footer, no Versions button in the header actions',
@@ -352,59 +352,36 @@ for (const width of [1440, 1280]) {
     clip: {x: 640, y: 55, width: 800, height: 120},
   })
 
-  // Local view (H2): the pill opens a row, and steps aside while it is open.
-  await p.getByTestId('header-state').click()
+  // The circle opens the bar (state, variant, Follow global perspective); a change makes the pane local; Follow global returns it.
+  await p.getByTestId('perspective-circle').click()
   await p.waitForTimeout(900)
   log(
-    'local row: the pill opens a "Local perspective" row, and the header pill steps aside',
+    'bar: the circle opens it with the state control, the variant control and Follow global perspective',
     (await visible(p, 'local-perspective-row')) &&
-      (await count(p, 'header-state')) === 0 &&
-      /Local perspective/.test(await text(p, 'local-perspective-row')),
-  )
-  log(
-    'local row: it has the state control, the variant control and Follow global perspective',
-    (await visible(p, 'local-state')) &&
+      (await visible(p, 'local-state')) &&
       (await visible(p, 'local-variants')) &&
       (await visible(p, 'local-follow-global')),
   )
-  await p.screenshot({
-    path: 'journeys-captures/e9-openbeta/header-h2.png',
-    clip: {x: 640, y: 55, width: 800, height: 160},
-  })
-  // Diverged (H3): a change makes the pane differ, the row collapses, the header says Local.
   await p.getByTestId('local-state').click()
   await p.waitForTimeout(700)
   await p.getByRole('menuitem', {name: 'Published'}).first().click()
   await p.waitForTimeout(1500)
   log(
-    'diverged: the row collapses and the header shows a Local cue before the state pill',
-    (await count(p, 'local-perspective-row')) === 0 &&
-      (await visible(p, 'local-cue')) &&
-      /Published/.test(await text(p, 'header-state')),
-  )
-  log(
-    'diverged: the pane holds its own address (the URL) and the global perspective did not move',
+    'diverged: the pane holds its own address (the URL), the circle turns local, the global perspective did not move',
     decodeURIComponent(p.url()).includes('localPerspective=published') &&
+      (await p.locator('[data-testid="perspective-circle"][data-local]').count()) === 1 &&
       /Draft/.test(await stateText(p)) &&
       variantParam(p) === 'aud-members',
   )
-  await p.screenshot({
-    path: 'journeys-captures/e9-openbeta/header-h3.png',
-    clip: {x: 640, y: 55, width: 800, height: 120},
-  })
-  await p.getByTestId('header-state').click()
-  await p.waitForTimeout(900)
   await p.getByTestId('local-follow-global').click()
   await p.waitForTimeout(1500)
   log(
-    'Follow global perspective: the pane follows again (no params, no cue, no row)',
+    'Follow global perspective: the pane follows again (no params, no local mark)',
     !decodeURIComponent(p.url()).includes('localPerspective') &&
-      (await count(p, 'local-cue')) === 0 &&
-      (await count(p, 'local-perspective-row')) === 0 &&
-      /Draft/.test(await text(p, 'header-state')),
+      (await p.locator('[data-testid="perspective-circle"][data-local]').count()) === 0,
   )
 
-  // Versions (H4): the pill opens the inventory side panel.
+  // Versions: the pill opens the inventory side panel.
   await p.getByTestId('header-versions').click()
   await p.waitForTimeout(2500)
   log(
@@ -439,21 +416,21 @@ for (const width of [1440, 1280]) {
 }
 
 {
-  // A reference pane opens following global, and the same state pill unlocks it and follows back.
+  // A reference pane opens following global; its own circle opens its own bar, for that pane only.
   const {p, context} = await open(REF)
-  const pill = p.getByTestId('header-state')
+  const circles = p.getByTestId('perspective-circle')
   log(
-    'reference: it follows global and says nothing beyond the state pill',
-    (await pill.count()) === 2 &&
-      (await count(p, 'local-cue')) === 0 &&
-      (await count(p, 'local-perspective-row')) === 0,
-    `${await pill.count()} state pills`,
+    'reference: it follows global (a dashed circle per pane, no bar, no local mark)',
+    (await circles.count()) === 2 &&
+      (await count(p, 'local-perspective-row')) === 0 &&
+      (await p.locator('[data-testid="perspective-circle"][data-local]').count()) === 0,
+    `${await circles.count()} circles`,
   )
-  await pill.nth(1).click()
+  await circles.nth(1).click()
   await p.waitForTimeout(900)
   log(
-    'reference: its state pill opens the local row for that pane only',
-    (await count(p, 'local-perspective-row')) === 1 && (await count(p, 'header-state')) === 1,
+    'reference: its circle opens the bar for that pane only',
+    (await count(p, 'local-perspective-row')) === 1,
   )
   await p.getByTestId('local-state').click()
   await p.waitForTimeout(700)
@@ -461,8 +438,9 @@ for (const width of [1440, 1280]) {
   await p.waitForTimeout(1800)
   const held = decodeURIComponent(p.url())
   log(
-    'reference: changing the address gives the pane its own (the URL holds it) and the Local cue appears',
-    held.includes('localPerspective=published') && (await count(p, 'local-cue')) === 1,
+    'reference: changing the address gives the pane its own (the URL holds it) and the circle turns local',
+    held.includes('localPerspective=published') &&
+      (await p.locator('[data-testid="perspective-circle"][data-local]').count()) === 1,
     held.split('/structure/')[1]?.slice(0, 110),
   )
   log(
@@ -470,14 +448,12 @@ for (const width of [1440, 1280]) {
     /Returning visitors/.test(await text(p, 'variants-chip')) && /Draft/.test(await stateText(p)),
   )
   await p.screenshot({path: 'journeys-captures/e9-openbeta/reference-local.png'})
-  await pill.nth(1).click()
-  await p.waitForTimeout(900)
   await p.getByTestId('local-follow-global').click()
   await p.waitForTimeout(1800)
   log(
     'reference: Follow global perspective returns it to global',
     !decodeURIComponent(p.url()).includes('localPerspective') &&
-      (await count(p, 'local-cue')) === 0,
+      (await p.locator('[data-testid="perspective-circle"][data-local]').count()) === 0,
   )
   await context.close()
 }

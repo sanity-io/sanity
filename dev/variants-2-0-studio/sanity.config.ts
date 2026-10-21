@@ -8,6 +8,7 @@ import {E9Block, E9Field, E9Input, E9Item} from './fieldmarks/E9Marks'
 import {fieldLevel, localization} from './localization/plugin'
 import {structure} from './localization/structure'
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
+import {namingTarget} from './pane/targetLabel'
 import {ReviewSwitch, rememberStock} from './review/E9Review'
 import {schemaTypesFor} from './schemas'
 import {designSlotsTool, inventoryTool, ToolMenuWithSlots} from './slots/DesignSlotsTool'
@@ -31,6 +32,9 @@ const variants2Options = definePlugin({
   ],
   // The stock Review changes inspector keeps its place; its body is the E9 panel while `reviewPanel` is B or C (A renders the stock one).
   document: {
+    // Open beta header (B5): the primary action names its target ("Publish France").
+    actions: (prev) =>
+      prev.map((action) => (action.action === 'publish' ? namingTarget(action) : action)),
     inspectors: (prev) => [
       ...prev.map((inspector) => {
         if (inspector.name !== 'sanity/structure/history') return inspector
