@@ -1,7 +1,7 @@
 import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
 import {Card} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Translate, useTranslation} from 'sanity'
+import {InlineCode, Translate, useTranslation} from 'sanity'
 import {Icon, Text, VStack} from 'ui5'
 
 export function TranslateExample() {
@@ -24,11 +24,7 @@ export function TranslateExample() {
           })}
         </Text>
         <Text as="div" trim={true}>
-          <Translate
-            t={t}
-            i18nKey="use-translation.with-styled-html"
-            components={{Code: StyledCode}}
-          />
+          <Translate t={t} i18nKey="use-translation.with-html" components={{code: InlineCode}} />
         </Text>
         <Text as="div" trim={true}>
           <Translate
@@ -98,11 +94,4 @@ function Bold({children}: {children?: ReactNode}) {
 }
 function InfoFilledIconComponent() {
   return <Icon muted icon={InfoFilledIcon} style={{margin: '-0.4375rem'}} />
-}
-function StyledCode({children}: {children?: ReactNode}) {
-  return (
-    <code style={{color: 'var(--foreground-low)', background: 'var(--background-low)'}}>
-      {children}
-    </code>
-  )
 }

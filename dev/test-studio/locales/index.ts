@@ -10,7 +10,6 @@ const enUSStrings = {
     'This value has XML in the interpolated value: <strong>{{value}}</strong>',
   'translate.with-formatter': 'This value has a list-formatter: {{countries, list}}',
   'use-translation.with-html': 'Apparently, <code>code</code> is an HTML element?',
-  'use-translation.with-styled-html': 'Apparently, <Code>code</Code> is an HTML element?',
   'use-translation.interpolation-example': 'This has {{ spaces }} around it, this one {{doesNot}}',
 
   // Used by `fieldGroupsWithI18n` debug schema type
@@ -39,7 +38,6 @@ const nbNO = defineLocaleResourceBundle({
     'translate.with-xml-in-value':
       'Denne verdien har XML i en interpolert verdi: <strong>{{value}}</strong>',
     'use-translation.with-html': 'Faktisk er <code>code</code> et HTML-element?',
-    'use-translation.with-styled-html': 'Faktisk er <Code>code</Code> et HTML-element?',
     // Used by `fieldGroupsWithI18n` debug schema type
     'field-groups.group-1': '🇳🇴 Gruppe 1',
     'field-groups.group-2': '🇳🇴 Gruppe 2',
