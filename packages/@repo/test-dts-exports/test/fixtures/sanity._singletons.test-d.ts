@@ -65,6 +65,7 @@ import type {
   FormBuilderContext,
   FormCallbacksContext,
   FormFieldPresenceContext,
+  FormRowGutterSuppressedContext,
   FormValueContext,
   FreeTrialContext,
   FullscreenPTEContext,
@@ -348,6 +349,9 @@ describe('sanity/_singletons', () => {
   })
   test('FormFieldPresenceContext', () => {
     expectTypeOf<typeof FormFieldPresenceContext>().not.toBeNever()
+  })
+  test('FormRowGutterSuppressedContext', () => {
+    expectTypeOf<typeof FormRowGutterSuppressedContext>().not.toBeNever()
   })
   test('FormValueContext', () => {
     expectTypeOf<typeof FormValueContext>().not.toBeNever()

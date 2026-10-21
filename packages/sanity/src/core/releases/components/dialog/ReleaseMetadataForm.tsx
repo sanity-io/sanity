@@ -13,8 +13,7 @@ import {styled} from 'styled-components'
 import {useEffectEvent} from 'use-effect-event'
 
 import {ChangeIndicatorsTracker} from '../../../changeIndicators/tracker'
-import {formGutterCustomProperties} from '../../../form/components/layout/formGutterCustomProperties'
-import {useFormGutterEnabled} from '../../../form/hooks/useFormGutterEnabled'
+import {SuppressFormRowGutter} from '../../../form/components/layout/FormRow'
 import {createPatchChannel} from '../../../form/patch/PatchChannel'
 import {useFormState} from '../../../form/store/useFormState'
 import {FormBuilder} from '../../../form/studio/FormBuilder'
@@ -102,14 +101,10 @@ function isSeedableInitialValue(value: unknown): boolean {
   return value !== undefined && value !== null && value !== ''
 }
 
-// Title and Description use the dialog gap and have no gutter column. This form
-// is the only surface that has to meet them: shift it back by the empty gutter,
-// and give its own stack that same gap. A field header already pads its label
-// by --space-2, so that pad counts as part of the gap. Nested fields keep the
-// document form's stack and indent.
+// Title and Description use the dialog gap. The gutter is off for these rows
+// (see SuppressFormRowGutter), so the stack only has to match that gap. A field
+// header already pads its label by --space-2, so that pad counts as part of it.
 const MetadataFormAlign = styled.div`
-  ${(props) => formGutterCustomProperties(props.theme)}
-  margin-inline: calc((var(--formGutterSize) + var(--formGutterGap)) * -1);
   margin-block-start: calc(var(--space-2) * -1);
 
   & > [data-ui='VStack'] {
@@ -298,44 +293,42 @@ function ReleaseMetadataFieldsForm(
     displayInlineChanges: false,
   })
   useBindFormBuilderState(builderState, formState, true)
-  const gutterEnabled = useFormGutterEnabled()
 
   if (!formState) return null
 
   return (
     <ChangeIndicatorsTracker>
-      <MetadataFormAlign
-        data-gutter={gutterEnabled ? 'true' : undefined}
-        data-testid="release-metadata-form-align"
-      >
-        <FormBuilder
-          __internal_patchChannel={patchChannel}
-          id="root"
-          onChange={handleChange}
-          onPathFocus={builderState.onPathFocus}
-          onPathBlur={builderState.onPathBlur}
-          onPathOpen={builderState.onPathOpen}
-          onFieldGroupSelect={builderState.onFieldGroupSelect}
-          onSetFieldSetCollapsed={builderState.onSetFieldSetCollapsed}
-          onSetPathCollapsed={builderState.onSetPathCollapsed}
-          collapsedPaths={builderState.collapsedPaths}
-          collapsedFieldSets={builderState.collapsedFieldSets}
-          changed={false}
-          focusPath={formState.focusPath}
-          focused={formState.focused}
-          groups={formState.groups}
-          validation={markers}
-          members={formState.members}
-          presence={EMPTY_ARRAY}
-          schemaType={compiled.schemaType}
-          value={formValue}
-          openPath={builderState.openPath}
-          readOnly={readOnly}
-          hasUpstreamVersion={false}
-          hasBaseVariant={false}
-          changesOpen={false}
-        />
-      </MetadataFormAlign>
+      <SuppressFormRowGutter>
+        <MetadataFormAlign data-testid="release-metadata-form-align">
+          <FormBuilder
+            __internal_patchChannel={patchChannel}
+            id="root"
+            onChange={handleChange}
+            onPathFocus={builderState.onPathFocus}
+            onPathBlur={builderState.onPathBlur}
+            onPathOpen={builderState.onPathOpen}
+            onFieldGroupSelect={builderState.onFieldGroupSelect}
+            onSetFieldSetCollapsed={builderState.onSetFieldSetCollapsed}
+            onSetPathCollapsed={builderState.onSetPathCollapsed}
+            collapsedPaths={builderState.collapsedPaths}
+            collapsedFieldSets={builderState.collapsedFieldSets}
+            changed={false}
+            focusPath={formState.focusPath}
+            focused={formState.focused}
+            groups={formState.groups}
+            validation={markers}
+            members={formState.members}
+            presence={EMPTY_ARRAY}
+            schemaType={compiled.schemaType}
+            value={formValue}
+            openPath={builderState.openPath}
+            readOnly={readOnly}
+            hasUpstreamVersion={false}
+            hasBaseVariant={false}
+            changesOpen={false}
+          />
+        </MetadataFormAlign>
+      </SuppressFormRowGutter>
     </ChangeIndicatorsTracker>
   )
 }

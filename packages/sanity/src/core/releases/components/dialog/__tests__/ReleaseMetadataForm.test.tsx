@@ -150,19 +150,22 @@ describe('ReleaseMetadataForm', () => {
     })
   })
 
-  it('pulls metadata fields back by the empty form gutter and keeps Sign-off children inside it', async () => {
+  it('omits the gutter on metadata rows and keeps it on Sign-off children', async () => {
     await renderWithFields(
       [legalReviewField, signOffField],
       <ControlledMetadataForm initial={{releaseType: 'asap'}} onChange={vi.fn()} />,
     )
 
     const legalReview = await screen.findByTestId('field-legalReview')
+    const signOff = await screen.findByTestId('field-signOff')
     const reviewer = await screen.findByTestId('field-signOff.reviewer')
     const align = legalReview.closest('[data-testid="release-metadata-form-align"]')
 
     expect(align).toBeInstanceOf(HTMLElement)
-    expect(align).toHaveAttribute('data-gutter', 'true')
     expect(align).toContainElement(reviewer)
+    expect(legalReview.querySelector('[data-ui="FormRow"]')).not.toHaveAttribute('data-gutter')
+    expect(signOff.closest('[data-ui="FormRow"]')).not.toHaveAttribute('data-gutter')
+    expect(reviewer.querySelector('[data-ui="FormRow"]')).toHaveAttribute('data-gutter', 'true')
 
     const reviewerFieldset = reviewer.closest('fieldset')
     expect(reviewerFieldset).toBeInstanceOf(HTMLFieldSetElement)
@@ -173,7 +176,9 @@ describe('ReleaseMetadataForm', () => {
       .map((rule) => rule.cssText)
       .join('\n')
       .replaceAll(/\s+/g, '')
-    expect(cssText).toContain('margin-inline:calc((var(--formGutterSize)+var(--formGutterGap))*-1)')
+    expect(cssText).not.toContain(
+      'margin-inline:calc((var(--formGutterSize)+var(--formGutterGap))*-1)',
+    )
     expect(cssText).toContain('margin-block-start:calc(var(--space-2)*-1)')
     expect(cssText).toContain('gap:calc(var(--space-5)-var(--space-2))')
   })
