@@ -12,7 +12,7 @@ import {
   useUser,
 } from 'sanity'
 import {css, styled} from 'styled-components'
-import {Text, Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, Icon, type IconProps} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
@@ -163,10 +163,13 @@ export function TimelineItem({
               justifyContent="center"
               $color={TIMELINE_ITEM_EVENT_TONE[type]}
             >
-              <Text size={0} as="div" trim={true}>
-                {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
-                {IconComponent && <IconComponent />}
-              </Text>
+              {IconComponent && (
+                <Icon
+                  size={0}
+                  icon={IconComponent as IconProps['icon']}
+                  style={{margin: '-0.3125rem', color: 'inherit'}}
+                />
+              )}
             </IconBox>
           </div>
           <VStack gap={2}>

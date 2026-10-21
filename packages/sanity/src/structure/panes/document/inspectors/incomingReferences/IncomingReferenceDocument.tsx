@@ -22,7 +22,7 @@ export const IncomingReferenceDocument = (props: {
     return (
       <Card radius={2} tone="critical">
         <Box paddingY={4} paddingX={3}>
-          <Text size={1} as="div" trim={true}>
+          <Text size={1} as="div" trim={true} tone="critical">
             {t('incoming-references-pane.schema-type-not-found', {type: document._type})}
           </Text>
         </Box>

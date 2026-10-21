@@ -18,7 +18,7 @@ import {
   useParseErrors,
   useTranslation,
 } from 'sanity'
-import {Text, Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
@@ -129,13 +129,13 @@ function ValidationCard(props: {
     [marker, onOpen],
   )
   const [errorInfo, setErrorInfo] = useState<{error: Error; info: ErrorInfo} | null>(null)
-  const Icon = MARKER_ICON[marker.level]
+  const MarkerIcon = MARKER_ICON[marker.level]
 
   return (
     <ErrorBoundary onCatch={setErrorInfo}>
       {errorInfo && (
         <Card padding={3} radius={2} tone="critical">
-          <Text size={1} as="div" trim={true}>
+          <Text size={1} as="div" trim={true} tone="critical">
             {errorInfo.error.message}
           </Text>
         </Card>
@@ -153,9 +153,11 @@ function ValidationCard(props: {
         >
           <Flex alignItems="flex-start" gap={3}>
             <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-              <Text size={1} as="div" trim={true}>
-                <Icon />
-              </Text>
+              <Icon
+                size={1}
+                icon={MarkerIcon}
+                style={{color: 'var(--card-fg-color)', margin: '-0.375rem'}}
+              />
             </Box>
 
             <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
@@ -165,7 +167,13 @@ function ValidationCard(props: {
                 value={value}
               />
 
-              <Text muted size={1} as="div" trim={true}>
+              <Text
+                muted
+                size={1}
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
+              >
                 {marker.message}
               </Text>
             </Flex>

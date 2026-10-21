@@ -12,7 +12,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tab} from '../../../../../ui-components/tab/Tab'
@@ -103,9 +103,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
               </Box>
             }
           >
-            <Text size={0} muted as="div" trim={true}>
-              <InfoOutlineIcon fontSize={1} />
-            </Text>
+            <Icon size={0} muted icon={InfoOutlineIcon} style={{margin: '-0.3125rem'}} />
           </Tooltip>
           <Text size={0} muted as="div" trim={true}>
             <Translate
