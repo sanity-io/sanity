@@ -1,4 +1,5 @@
 /dist
+/generated
 
 .env.*
 !.env.example

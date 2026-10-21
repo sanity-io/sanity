@@ -20,35 +20,7 @@ import {
   restingAnchor,
   type Size,
 } from './corners'
-import {
-  adoption,
-  checkbox,
-  closeButton,
-  cssMeter,
-  cssMeterFill,
-  dot,
-  donut,
-  donutValue,
-  escapeCount,
-  escapeCountValue,
-  escapeDetails,
-  group,
-  groupHeading,
-  handleDragging,
-  header,
-  headerRow,
-  legend,
-  lifted,
-  metricLabel,
-  panel,
-  root,
-  rootDragging,
-  row,
-  rowCount,
-  rowLabel,
-  sectionDivider,
-  trigger,
-} from './styleOutline.css'
+import styles from './styleOutline.module.css'
 import {
   STYLE_OUTLINE_ATTRIBUTE,
   STYLE_OUTLINE_STORAGE_KEY,
@@ -78,6 +50,17 @@ const DEFAULT_STATE: PanelState = {open: false, active: [], corner: DEFAULT_CORN
 
 // This tab only. A reload re-evaluates the module and shows the panel again.
 let dismissedForSession = false
+
+// The outlines painted over the nodes of each selected style system, one rule per system, from
+// the registry that also defines the selectors the census counts (so the widget outlines exactly
+// what it counts). Overlapping nodes (eg a `styled(ui5Box)`) match several systems at once, and
+// styled-components must win so the debt stays visible. Its exclusion `:not()` gives it the higher
+// specificity today; keep it last in STYLE_SYSTEMS so it still wins on order should that exclusion
+// ever go away.
+const OUTLINE_RULES = STYLE_SYSTEMS.map(
+  ({id, color, selector}) =>
+    `html[${STYLE_OUTLINE_ATTRIBUTE}~="${id}"] ${selector} { outline: 1px solid ${color} !important; outline-offset: -1px; }`,
+).join('\n')
 
 function classNames(...values: (string | false | null | undefined)[]): string {
   return values.filter(Boolean).join(' ')
@@ -311,7 +294,7 @@ export default function StyleOutlinePanel() {
   return (
     <motion.div
       ref={widgetRef}
-      className={classNames(root, dragging && rootDragging)}
+      className={classNames(styles.root, dragging && styles.rootDragging)}
       style={{x, y}}
       // Hangs the widget off its docked corner. Read from the ref so that the origin
       // and the anchor it belongs to are always written in the same render.
@@ -329,16 +312,17 @@ export default function StyleOutlinePanel() {
       data-corner={corner}
       data-testid="style-outline"
     >
+      <style>{OUTLINE_RULES}</style>
       {open ? (
         <fieldset
-          className={classNames(panel, dragging && lifted)}
+          className={classNames(styles.panel, dragging && styles.lifted)}
           aria-label="Style outline"
           data-testid="style-outline-panel"
         >
-          <div className={headerRow}>
+          <div className={styles.headerRow}>
             <button
               type="button"
-              className={classNames(header, dragging && handleDragging)}
+              className={classNames(styles.header, dragging && styles.handleDragging)}
               title="Drag to a corner, or click to collapse"
               aria-expanded
               data-testid="style-outline-collapse"
@@ -348,7 +332,7 @@ export default function StyleOutlinePanel() {
             </button>
             <button
               type="button"
-              className={closeButton}
+              className={styles.closeButton}
               aria-label="Close"
               data-testid="style-outline-close"
               onPointerDown={(event) => event.stopPropagation()}
@@ -365,13 +349,13 @@ export default function StyleOutlinePanel() {
               </svg>
             </button>
           </div>
-          <section className={group} aria-labelledby="style-outline-ui-adoption">
-            <h2 className={groupHeading} id="style-outline-ui-adoption">
+          <section className={styles.group} aria-labelledby="style-outline-ui-adoption">
+            <h2 className={styles.groupHeading} id="style-outline-ui-adoption">
               UI v5 adoption
             </h2>
-            <div className={adoption}>
+            <div className={styles.adoption}>
               <div
-                className={donut}
+                className={styles.donut}
                 style={{
                   background: `conic-gradient(${STYLE_SYSTEMS[0].color} ${
                     ui5Percentage ?? 0
@@ -381,66 +365,69 @@ export default function StyleOutlinePanel() {
                 aria-label={`@sanity/ui v5 makes up ${formatPercentage(ui5Percentage)} of UI components`}
                 data-testid="style-outline-ui-adoption-chart"
               >
-                <span className={donutValue}>{formatPercentage(ui5Percentage)}</span>
+                <span className={styles.donutValue}>{formatPercentage(ui5Percentage)}</span>
               </div>
-              <div className={legend}>
-                <div className={row}>
-                  <span className={dot} style={{background: STYLE_SYSTEMS[0].color}} />
-                  <span className={rowLabel}>{STYLE_SYSTEMS[0].label}</span>
-                  <span className={rowCount}>
+              <div className={styles.legend}>
+                <div className={styles.row}>
+                  <span className={styles.dot} style={{background: STYLE_SYSTEMS[0].color}} />
+                  <span className={styles.rowLabel}>{STYLE_SYSTEMS[0].label}</span>
+                  <span className={styles.rowCount}>
                     {ui5Count.toLocaleString()} · {formatPercentage(ui5Percentage)}
                   </span>
                 </div>
-                <div className={row}>
-                  <span className={dot} style={{background: STYLE_SYSTEMS[1].color}} />
-                  <span className={rowLabel}>{STYLE_SYSTEMS[1].label}</span>
-                  <span className={rowCount}>
+                <div className={styles.row}>
+                  <span className={styles.dot} style={{background: STYLE_SYSTEMS[1].color}} />
+                  <span className={styles.rowLabel}>{STYLE_SYSTEMS[1].label}</span>
+                  <span className={styles.rowCount}>
                     {ui4Count.toLocaleString()} · {formatPercentage(ui4Percentage)}
                   </span>
                 </div>
               </div>
             </div>
           </section>
-          <div className={sectionDivider} />
-          <section className={group} aria-labelledby="style-outline-styled-escape">
-            <h2 className={groupHeading} id="style-outline-styled-escape">
+          <div className={styles.sectionDivider} />
+          <section className={styles.group} aria-labelledby="style-outline-styled-escape">
+            <h2 className={styles.groupHeading} id="style-outline-styled-escape">
               Styled-components escape
             </h2>
-            <div className={escapeDetails}>
-              <div className={escapeCount}>
-                <span className={escapeCountValue}>
+            <div className={styles.escapeDetails}>
+              <div className={styles.escapeCount}>
+                <span className={styles.escapeCountValue}>
                   {styledCount === undefined ? '—' : styledCount.toLocaleString()}
                 </span>
-                <span className={metricLabel}>components</span>
+                <span className={styles.metricLabel}>components</span>
               </div>
               <div
-                className={rowCount}
+                className={styles.rowCount}
                 title={`${metrics?.stylesheets.inaccessible ?? 0} unreadable stylesheets`}
               >
                 {formatPercentage(styledRulePercentage)} of CSS rules
               </div>
             </div>
             <div
-              className={cssMeter}
+              className={styles.cssMeter}
               role="img"
               aria-label={`styled-components supplies ${formatPercentage(styledRulePercentage)} of readable CSS rules`}
               data-testid="style-outline-styled-rules-meter"
             >
-              <span className={cssMeterFill} style={{width: `${styledRulePercentage ?? 0}%`}} />
+              <span
+                className={styles.cssMeterFill}
+                style={{width: `${styledRulePercentage ?? 0}%`}}
+              />
             </div>
           </section>
-          <div className={sectionDivider} />
-          <section className={group} aria-labelledby="style-outline-debug">
-            <h2 className={groupHeading} id="style-outline-debug">
+          <div className={styles.sectionDivider} />
+          <section className={styles.group} aria-labelledby="style-outline-debug">
+            <h2 className={styles.groupHeading} id="style-outline-debug">
               Debug outlines
             </h2>
             {STYLE_SYSTEMS.map((system) => (
-              <label key={system.id} className={row}>
-                <span className={dot} style={{background: system.color}} />
-                <span className={rowLabel}>{system.label}</span>
+              <label key={system.id} className={styles.row}>
+                <span className={styles.dot} style={{background: system.color}} />
+                <span className={styles.rowLabel}>{system.label}</span>
                 <input
                   type="checkbox"
-                  className={checkbox}
+                  className={styles.checkbox}
                   checked={active.includes(system.id)}
                   onChange={() => toggleSystem(system.id)}
                   data-testid={`style-outline-toggle-${system.id}`}
@@ -452,7 +439,11 @@ export default function StyleOutlinePanel() {
       ) : (
         <button
           type="button"
-          className={classNames(trigger, dragging && handleDragging, dragging && lifted)}
+          className={classNames(
+            styles.trigger,
+            dragging && styles.handleDragging,
+            dragging && styles.lifted,
+          )}
           title="Drag to a corner, or click to open"
           aria-label="Style migrations"
           aria-expanded={false}
@@ -462,7 +453,7 @@ export default function StyleOutlinePanel() {
           {STYLE_SYSTEMS.map((system) => (
             <span
               key={system.id}
-              className={dot}
+              className={styles.dot}
               style={{background: system.color, opacity: active.includes(system.id) ? 1 : 0.3}}
             />
           ))}

@@ -42,7 +42,7 @@ import {RequestPanel} from '../request/RequestPanel'
 import {ResizableSplit} from '../ResizableSplit'
 import {type QueryEdit} from '../response/FunctionsTab'
 import {ResponsePanel} from '../response/ResponsePanel'
-import {hiddenPane, paneFill, splitPaneContainer} from '../vista.css'
+import styles from '../vista.module.css'
 import {getQueryTabId, QUERY_TAB_PANEL_ID} from './QueryTabBar'
 
 const MIN_PANE_SIZE = {columns: 280, stacked: 160}
@@ -488,7 +488,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
         </Flex>
         <Box
           aria-labelledby="vista-mobile-request-tab"
-          className={cx(paneFill, mobilePane !== 'request' && hiddenPane)}
+          className={cx(styles.paneFill, mobilePane !== 'request' && styles.hiddenPane)}
           flexBasis="0%"
           flexGrow={1}
           id="vista-mobile-request-pane"
@@ -498,7 +498,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
         </Box>
         <Box
           aria-labelledby="vista-mobile-response-tab"
-          className={cx(paneFill, mobilePane !== 'response' && hiddenPane)}
+          className={cx(styles.paneFill, mobilePane !== 'response' && styles.hiddenPane)}
           flexBasis="0%"
           flexGrow={1}
           id="vista-mobile-response-pane"
@@ -522,7 +522,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   // wider window is clamped by the split for as long as the window is narrower (the request
   // pane, with its three panels, wins when there is no room for both)
   return (
-    <Box {...panelProps} className={splitPaneContainer} ref={setSplitContainer}>
+    <Box {...panelProps} className={styles.splitPaneContainer} ref={setSplitContainer}>
       <ResizableSplit
         key={layout}
         label={t('vista.split.request-response')}
@@ -535,8 +535,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
         split={layout === 'stacked' ? 'horizontal' : 'vertical'}
         testId="vista-split"
       >
-        <Box className={paneFill}>{requestPanel}</Box>
-        <Box className={paneFill}>{responsePanel}</Box>
+        <Box className={styles.paneFill}>{requestPanel}</Box>
+        <Box className={styles.paneFill}>{responsePanel}</Box>
       </ResizableSplit>
     </Box>
   )

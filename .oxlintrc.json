@@ -501,7 +501,7 @@
       }
     },
     {
-      // @sanity/vision has been fully migrated off styled-components to vanilla-extract,
+      // @sanity/vision has been fully migrated off styled-components to CSS modules,
       // so ban all styled-components imports here (oxlint overrides replace, rather than
       // merge, the global no-restricted-imports rule, so the other restrictions are repeated)
       "files": ["packages/@sanity/vision/**"],
@@ -512,7 +512,7 @@
             "paths": [
               {
                 "name": "styled-components",
-                "message": "styled-components is banned in @sanity/vision. Please use vanilla-extract (`@vanilla-extract/css`) in a `.css.ts` file instead."
+                "message": "styled-components is banned in @sanity/vision. Please use a CSS module (`*.module.css`) instead."
               },
               {
                 "name": "react",

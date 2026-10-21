@@ -1,6 +1,22 @@
 {
   "extends": "../tsconfig.dev",
+  // The first two are what `../tsconfig.dev.json` includes (all of `dev/`), written relative to this
+  // file; `*.module.css` is only for css-modules-kit: the TypeScript program skips files it cannot
+  // load
+  "include": ["../**/*.ts", "../**/*.tsx", "**/*.module.css"],
   "compilerOptions": {
-    "isolatedModules": false
+    "isolatedModules": false,
+    // Overlays `generated` on the studio, so `import styles from './X.module.css'` resolves to the
+    // `generated/**/X.module.css.d.ts` css-modules-kit writes for it
+    "rootDirs": [".", "generated"]
+  },
+  // css-modules-kit (`pnpm css:types`, which `cmk --check` keeps in sync), with the token options of
+  // packages/@sanity/vision/tsconfig.json: what Lightning CSS exports for a CSS module
+  "cmkOptions": {
+    "enabled": true,
+    "dtsOutDir": "generated",
+    "animation": true,
+    "container": true,
+    "dashedIdents": false
   }
 }

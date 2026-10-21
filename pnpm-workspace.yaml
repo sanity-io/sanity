@@ -42,9 +42,6 @@ catalog:
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
   '@types/react-is': ^19.3.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.3.1
-  '@vanilla-extract/css': ^1.21.3
-  '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.2
   '@vitest/browser-playwright': ^5.0.4
   cobe: ^2.0.1
@@ -66,6 +63,8 @@ catalog:
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
   ui5: npm:@sanity/ui@5.0.0-alpha.17
   tsdown: ^0.23.1
+  # Pins its `tsdown` peer to the exact release it ships with, so bump it together with `tsdown`
+  '@tsdown/css': ^0.23.1
   typescript: ^7.0.2
   vite: ^8.3.4
   vitest: ^5.0.4
@@ -98,7 +97,6 @@ minimumReleaseAgeExclude:
   - '@yuku-toolchain/types'
   - '@types/*'
   - '@typescript/*'
-  - '@vanilla-extract/*'
   - '@vercel/stega'
   - '@yuku-toolchain/*'
   - '@tanstack/react-virtual@3.14.19'
@@ -184,6 +182,8 @@ trustPolicyExclude:
   # provenance; 1.1.0 and 2.0.0 without it, by a listed maintainer who also publishes
   # @pierre/diffs (which has never shipped provenance)
   - '@pierre/theme@2.0.0'
+  # Published without the provenance of 4.0.2; @css-modules-kit/codegen depends on ^4.0.3
+  - chokidar@4.0.3
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0

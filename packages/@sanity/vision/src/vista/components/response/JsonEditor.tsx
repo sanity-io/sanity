@@ -4,7 +4,7 @@ import {Box, Flex} from 'ui5'
 
 import {paramsExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
-import {jsonEditorBox} from '../vista.css'
+import styles from '../vista.module.css'
 
 /**
  * A JSON editor whose text can also be replaced from outside, by a loaded document or a template.
@@ -36,7 +36,7 @@ export function JsonEditor(props: {
         <Box flexBasis="0%" flexGrow={1} />
         {actions}
       </Flex>
-      <Card border className={jsonEditorBox} data-testid={testId} radius={2}>
+      <Card border className={styles.jsonEditorBox} data-testid={testId} radius={2}>
         <VisionCodeMirror
           extensions={paramsExtensions}
           initialValue={value}

@@ -2,7 +2,7 @@ import {useEffect, useMemo, useRef} from 'react'
 
 import {resultJsonExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
-import {resultJson} from '../vista.css'
+import styles from '../vista.module.css'
 
 /**
  * The result as indented JSON in a read-only editor, so any part of it can be selected and
@@ -17,7 +17,7 @@ export function ResultJson(props: {id: string; value: unknown}) {
   }, [text])
 
   return (
-    <div className={resultJson} data-testid="vista-result-json" id={props.id}>
+    <div className={styles.resultJson} data-testid="vista-result-json" id={props.id}>
       <VisionCodeMirror extensions={resultJsonExtensions} initialValue={text} ref={editorRef} />
     </div>
   )
