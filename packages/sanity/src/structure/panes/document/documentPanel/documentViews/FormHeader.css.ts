@@ -16,8 +16,6 @@ export const titleContainer = style({
   'containerType': 'inline-size',
   '@supports': {
     'not (container-type: inline-size)': {
-      // Pre-existing `!important`, copied verbatim: Flex's own `.sui-display-flex:not([hidden])`
-      // rule has (0,2,0) specificity, which a plain class cannot beat.
       display: 'none !important',
     },
   },

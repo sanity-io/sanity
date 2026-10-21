@@ -15,9 +15,6 @@ export const textButton = style({
   cursor: 'pointer',
 })
 
-// `&&`: the descendant `Text` sets `color: var(--card-fg-color)` on itself with (0,1,0);
-// the original rule won on styled-components injection order, so double the class to win by
-// specificity regardless of stylesheet order.
 globalStyle(`${textButton}${textButton} *`, {
   color: 'inherit',
 })
