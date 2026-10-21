@@ -5,7 +5,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useMemo, useState} from 'react'
 import {type SanityClient} from 'sanity'
 import {useLink} from 'sanity/router'
-import {Text, Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {type SessionSummary, type TagSlice} from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
@@ -193,6 +193,7 @@ function RegressionRow(props: {
                 style={{overflowWrap: 'anywhere'}}
                 as="div"
                 trim={true}
+                tone={confirming ? 'critical' : undefined}
               >
                 {session.description || session.title || session._id}
               </Text>
@@ -218,33 +219,66 @@ function RegressionRow(props: {
               )}
             </Flex>
             {session.resultSubject && (
-              <Text size={1} muted truncate={1} as="div" trim={true}>
+              <Text
+                size={1}
+                muted
+                truncate={1}
+                as="div"
+                trim={true}
+                tone={confirming ? 'critical' : undefined}
+              >
                 {session.result?.firstBadSha?.slice(0, 7)} {session.resultSubject}
               </Text>
             )}
             {session.result?.note && (
-              <Text size={1} muted style={{overflowWrap: 'anywhere'}} as="div" trim={true}>
+              <Text
+                size={1}
+                muted
+                style={{overflowWrap: 'anywhere'}}
+                as="div"
+                trim={true}
+                tone={confirming ? 'critical' : undefined}
+              >
                 {session.result.note}
               </Text>
             )}
             <Flex alignItems="center" gap={2} flexWrap="wrap">
               {session.result?.linearIssue && (
-                <Text size={0} muted as="div" trim={true}>
+                <Text
+                  size={0}
+                  muted
+                  as="div"
+                  trim={true}
+                  tone={confirming ? 'critical' : undefined}
+                >
                   {session.result.linearIssue} ·
                 </Text>
               )}
               {session.createdBy && (
-                <Text size={0} muted as="div" trim={true}>
+                <Text
+                  size={0}
+                  muted
+                  as="div"
+                  trim={true}
+                  tone={confirming ? 'critical' : undefined}
+                >
                   {session.createdBy} ·
                 </Text>
               )}
               {session.createdAt && <RelativeDate dateTime={session.createdAt} size={0} muted />}
-              <Text size={0} muted as="div" trim={true}>
+              <Text size={0} muted as="div" trim={true} tone={confirming ? 'critical' : undefined}>
                 ·
               </Text>
-              <Text size={0} as="div" trim={true}>
+              <Text size={0} as="div" trim={true} tone={confirming ? 'critical' : undefined}>
                 <a href={sessionHref} onClick={sessionLink.onClick}>
-                  Open in Bisect <LaunchIcon />
+                  Open in Bisect{' '}
+                  <Icon
+                    size={0}
+                    muted
+                    icon={LaunchIcon}
+                    tone={confirming ? 'critical' : undefined}
+                    style={{margin: '-0.3125rem'}}
+                  />
                 </a>
               </Text>
             </Flex>

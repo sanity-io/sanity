@@ -75,7 +75,7 @@ export function DiagnosticsTool() {
 
                   {error ? (
                     <Card padding={3} radius={2} tone="critical">
-                      <Text size={1} as="div" trim={true}>
+                      <Text size={1} as="div" trim={true} tone="critical">
                         {error}
                       </Text>
                     </Card>

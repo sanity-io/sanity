@@ -26,7 +26,7 @@ export function IncludedIn(props: {releases: TagSlice[]}) {
   const visible = expanded ? releases : releases.slice(0, limit)
   const hiddenCount = releases.length - visible.length
   return (
-    <Text size={1} muted as="div" trim={true}>
+    <Text size={1} muted as="div" trim={true} style={{color: 'var(--card-muted-fg-color)'}}>
       {releases.length === 0 ? (
         'Not included in any release yet.'
       ) : (

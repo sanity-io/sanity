@@ -333,14 +333,14 @@ export function SessionView(props: {
 
           {dataError && (
             <Card padding={4} radius={3} tone="critical">
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="critical">
                 Failed to load: {dataError}
               </Text>
             </Card>
           )}
           {live.error && (
             <Card padding={4} radius={3} tone="critical">
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="critical">
                 Failed to load session: {live.error}
               </Text>
             </Card>
@@ -352,7 +352,7 @@ export function SessionView(props: {
           )}
           {session === null && (
             <Card padding={4} radius={3} tone="caution">
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="caution">
                 This session no longer exists.
               </Text>
             </Card>
@@ -370,7 +370,7 @@ export function SessionView(props: {
 
           {session && chainResult && !chainResult.ok && (
             <Card padding={4} radius={3} tone="caution">
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="caution">
                 {chainErrorCopy(
                   chainResult.reason,
                   session.good?.label ?? session.good?.sha?.slice(0, 7) ?? 'unknown',
@@ -389,7 +389,7 @@ export function SessionView(props: {
                   until the conflicting one is gone. */}
               <Flex alignItems="center" gap={3}>
                 <Box flex={1}>
-                  <Text size={1} as="div" trim={true}>
+                  <Text size={1} as="div" trim={true} tone="caution">
                     Conflicting marks: <code>{state.goodMarkSha.slice(0, 10)}</code> is marked good
                     but is newer than bad-marked <code>{state.badMarkSha.slice(0, 10)}</code>. Undo
                     a mark to resolve.

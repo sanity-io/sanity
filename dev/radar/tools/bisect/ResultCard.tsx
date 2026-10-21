@@ -136,7 +136,7 @@ export function ResultCard(props: {
           selected step clears it, so an unrated regression stays possible */}
       {annotations.regression && (
         <Flex alignItems="center" gap={2} flexWrap="wrap">
-          <Text size={1} muted as="div" trim={true}>
+          <Text size={1} muted as="div" trim={true} tone="critical">
             Severity
           </Text>
           {SEVERITIES.map((severity) => {
@@ -159,7 +159,7 @@ export function ResultCard(props: {
       {state.suspects.length > 0 && (
         <Card padding={3} radius={2} tone="caution">
           <VStack gap={3}>
-            <Text size={1} weight="semibold" as="div" trim={true}>
+            <Text size={1} weight="semibold" as="div" trim={true} tone="caution">
               {/* Two different reasons the range stays untested: a releases-only
                   session never proposes non-release commits (most have builds —
                   the drill-down below tests them), while in a commit-granular
@@ -171,7 +171,7 @@ export function ResultCard(props: {
               — any of these could be the culprit:
             </Text>
             {state.suspects.map((suspect) => (
-              <Text key={suspect.sha} size={1} as="div" trim={true}>
+              <Text key={suspect.sha} size={1} as="div" trim={true} tone="caution">
                 <a href={commitUrl(suspect.sha)} target="_blank" rel="noreferrer">
                   <code>{suspect.sha.slice(0, 10)}</code> {suspect.subject}
                 </a>

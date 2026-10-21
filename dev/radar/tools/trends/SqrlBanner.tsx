@@ -169,13 +169,13 @@ function RegressedInputs(props: {latest: SqrlLatest}) {
   return (
     <Card tone="critical" border padding={3} radius={2} data-testid="sqrl-regressed-inputs">
       <VStack gap={3}>
-        <Text size={1} weight="semibold" as="div" trim={true}>
+        <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
           Regressed inputs ({regressed.length})
         </Text>
         <VStack gap={2}>
           {regressed.map((input) => (
             <Flex key={input.key} alignItems="center" justifyContent="space-between" gap={3}>
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="critical">
                 {input.label}{' '}
                 <span style={{opacity: 0.7}}>· {pillarLabelFor(latest, input.pillar)}</span>
               </Text>
@@ -185,13 +185,14 @@ function RegressedInputs(props: {latest: SqrlLatest}) {
                 style={{fontVariantNumeric: 'tabular-nums'}}
                 as="div"
                 trim={true}
+                tone="critical"
               >
                 {formatSignedPoints(input.contributionPoints)} pts
               </Text>
             </Flex>
           ))}
         </VStack>
-        <Text size={0} muted as="div" trim={true}>
+        <Text size={0} muted as="div" trim={true} tone="critical">
           Last 7 runs worse than the prior 21; points are the input&apos;s contribution against the
           reference.
         </Text>
@@ -335,7 +336,7 @@ export function SqrlBanner(props: {
         )}
         {state.status === 'error' && (
           <Card tone="critical" border padding={3} radius={2}>
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} tone="critical">
               Couldn&apos;t load SQRL scores: {state.message}. Reload the page to try again.
             </Text>
           </Card>

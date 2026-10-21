@@ -23,7 +23,7 @@ import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
 import {useIntentLink} from 'sanity/router'
-import {Text, Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack, Icon} from 'ui5'
 
 import {
   BISECT_COMMITS_QUERY,
@@ -390,7 +390,7 @@ export function ReleasesTool() {
               <Flex alignItems="center" gap={3}>
                 <Box style={{flexShrink: 0}}>
                   <Flex as={Text} size={1} weight="medium" alignItems="center" gap={2}>
-                    <SanityMonogram style={ICON_IN_FLEX} />
+                    <Icon size={1} icon={SanityMonogram} style={ICON_IN_FLEX} />
                     <span>Test Studio Path</span>
                   </Flex>
                 </Box>
@@ -419,7 +419,7 @@ export function ReleasesTool() {
 
           {error && (
             <Card padding={4} radius={3} tone="critical">
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="critical">
                 Failed to load: {error}
               </Text>
             </Card>
@@ -724,11 +724,11 @@ function IconLink(props: {
   icon: ComponentType<SVGProps<SVGSVGElement>>
   children: ReactNode
 }) {
-  const {href, icon: Icon, children} = props
+  const {href, icon: IconComponent, children} = props
   return (
     <Text size={1} as="div" trim={true}>
       <Flex as="a" href={href} target="_blank" rel="noreferrer" alignItems="center" gap={1}>
-        <Icon style={ICON_IN_FLEX} />
+        <Icon size={1} icon={IconComponent} style={ICON_IN_FLEX} />
         <span>{children}</span>
       </Flex>
     </Text>
@@ -925,8 +925,8 @@ function ReleaseRow(props: {
             first line only says that it is, this says why — what npm prints */}
         {!collapsed && showDeprecation && tag.npm?.deprecated && (
           <Card padding={3} radius={2} tone="caution">
-            <Flex as={Text} size={1} alignItems="flex-start" gap={2}>
-              <WarningOutlineIcon style={ICON_IN_FLEX} />
+            <Flex as={Text} size={1} alignItems="flex-start" gap={2} tone="caution">
+              <Icon size={1} icon={WarningOutlineIcon} style={ICON_IN_FLEX} />
               <span style={{overflowWrap: 'anywhere'}}>Deprecated: {tag.npm.deprecated}</span>
             </Flex>
           </Card>

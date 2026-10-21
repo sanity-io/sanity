@@ -105,7 +105,7 @@ export function NewSessionDialog(props: {
             <Card padding={3} radius={2} tone="caution">
               <Flex alignItems="center" gap={3}>
                 <Box flex={1}>
-                  <Text size={1} as="div" trim={true}>
+                  <Text size={1} as="div" trim={true} tone="caution">
                     Good ({shortLabel(good)}) is newer than bad ({shortLabel(bad)}) — the endpoints
                     look swapped.
                   </Text>
@@ -124,7 +124,7 @@ export function NewSessionDialog(props: {
           )}
           {good && bad && chainCheck && !chainCheck.ok && !isSwapped && (
             <Card padding={3} radius={2} tone="caution">
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="caution">
                 {chainErrorCopy(chainCheck.reason, shortLabel(good), shortLabel(bad))}
               </Text>
             </Card>
@@ -212,13 +212,13 @@ function EndpointPicker(props: {
           <Flex alignItems="center" gap={3}>
             <Box flex={1} style={{minWidth: 0}}>
               <VStack gap={2}>
-                <Text size={1} as="div" trim={true}>
+                <Text size={1} as="div" trim={true} tone={tone}>
                   <code>{value.sha.slice(0, 10)}</code>
                   {value.label && value.label !== value.sha.slice(0, 7) ? ` (${value.label})` : ''}
                 </Text>
                 {selected ? (
                   <>
-                    <Text size={1} truncate={1} as="div" trim={true}>
+                    <Text size={1} truncate={1} as="div" trim={true} tone={tone}>
                       {selected.subject}
                     </Text>
                     <Flex alignItems="center" gap={2}>
@@ -233,7 +233,7 @@ function EndpointPicker(props: {
                         }
                       />
                       {selected.authorName && (
-                        <Text size={0} muted as="div" trim={true}>
+                        <Text size={0} muted as="div" trim={true} tone={tone}>
                           {selected.authorName} ·
                         </Text>
                       )}
@@ -243,7 +243,7 @@ function EndpointPicker(props: {
                 ) : (
                   // A tag can point off-mainline (release-branch cut) — the
                   // chain check below is what decides if it's usable
-                  <Text size={0} muted as="div" trim={true}>
+                  <Text size={0} muted as="div" trim={true} tone={tone}>
                     not on the synced mainline
                   </Text>
                 )}

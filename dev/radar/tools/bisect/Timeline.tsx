@@ -272,7 +272,13 @@ function TestCard(props: {
       tone="primary"
       heading={
         <Flex alignItems="center" gap={2}>
-          <Text size={1} weight="semibold" as="div" trim={true}>
+          <Text
+            size={1}
+            weight="semibold"
+            as="div"
+            trim={true}
+            style={{color: 'var(--card-fg-color)'}}
+          >
             {headingText}
           </Text>
           <Box flex={1} />
@@ -294,7 +300,7 @@ function TestCard(props: {
     >
       <IncludedIn releases={releases} />
       {!commit.testStudioUrl && (
-        <Text size={1} muted as="div" trim={true}>
+        <Text size={1} muted as="div" trim={true} style={{color: 'var(--card-muted-fg-color)'}}>
           No preview build for this commit — test it from a checkout instead.
         </Text>
       )}
@@ -315,7 +321,7 @@ function TestCard(props: {
         {version && <InstallChip version={version} />}
         <Box flex={1} />
         <Flex alignItems="center" gap={2}>
-          <Text size={1} muted as="div" trim={true}>
+          <Text size={1} muted as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
             Mark as
           </Text>
           <Button

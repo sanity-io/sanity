@@ -6,7 +6,7 @@ import {type SVGProps, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
-import {Text, Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack, Icon} from 'ui5'
 
 import {compareTagsSemverDesc, regressionsByTag, withoutEolLines} from '../releases/releaseInfo'
 import {RELEASE_LINES_QUERY, type ReleaseLineSlice} from '../releases/releaseLines'
@@ -26,7 +26,7 @@ import {RelativeDate} from './RelativeDate'
 import {type ChainVerdict, mergeChainVerdict, resolveSessionChains} from './sessionChains'
 import {createSession, type NewSessionInput} from './sessions'
 import {SessionView} from './SessionView'
-import {isSeverity, SEVERITY_LABEL, SEVERITY_TONE} from './severity'
+import {SEVERITY_LABEL, SEVERITY_TONE} from './severity'
 import {pluralize} from './text'
 
 interface LiveState<T> {
@@ -271,7 +271,7 @@ export function BisectTool() {
 
           {error && (
             <Card padding={4} radius={3} tone="critical">
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="critical">
                 Failed to load: {error}
               </Text>
             </Card>
@@ -366,9 +366,7 @@ function SessionTree(props: {
               // heading, says "narrows down the one above" without words
               <Flex key={child._id} alignItems="flex-start" gap={1}>
                 <Box paddingTop={3} style={{flexShrink: 0}}>
-                  <Text size={1} muted as="div" trim={true}>
-                    <EnterRightIcon />
-                  </Text>
+                  <Icon size={1} muted icon={EnterRightIcon} style={{margin: '-0.375rem'}} />
                 </Box>
                 <Box flex={1} style={{minWidth: 0}}>
                   <SessionTree
@@ -539,9 +537,7 @@ function SessionRow(props: {
               </Text>
               <Card padding={2} radius={2} border tone="transparent">
                 <Flex alignItems="center" gap={2}>
-                  <Text size={1} muted as="div" trim={true}>
-                    <GitMergeIcon />
-                  </Text>
+                  <Icon size={1} muted icon={GitMergeIcon} style={{margin: '-0.375rem'}} />
                   <Text size={1} as="div" trim={true}>
                     <a
                       href={commitUrl(firstBadSha)}

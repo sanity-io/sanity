@@ -109,7 +109,7 @@ export function AddRegressionDialog(props: {
 
           {selected && encoded && !encoded.ok && (
             <Card padding={3} radius={2} tone="caution">
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="caution">
                 {selected.tag} has no resolvable previous release on the synced mainline
                 (off-mainline cut, or before the sync cutoff) — its regressions can't be recorded
                 here.

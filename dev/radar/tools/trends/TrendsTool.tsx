@@ -503,12 +503,24 @@ function SeriesCard(props: {
                   textAlign: 'left',
                 }}
               >
-                <Text size={1} weight="medium" as="div" trim={true}>
+                <Text
+                  size={1}
+                  weight="medium"
+                  as="div"
+                  trim={true}
+                  tone={badge ? badge.tone : undefined}
+                >
                   {series.title}
                 </Text>
               </Box>
             ) : (
-              <Text size={1} weight="medium" as="div" trim={true}>
+              <Text
+                size={1}
+                weight="medium"
+                as="div"
+                trim={true}
+                tone={badge ? badge.tone : undefined}
+              >
                 {series.title}
               </Text>
             )}
@@ -555,7 +567,7 @@ function SeriesCard(props: {
             whole point of maximizing is more context per chart, not just a
             bigger plot. */}
         {expanded && (
-          <Text size={1} muted as="div" trim={true}>
+          <Text size={1} muted as="div" trim={true} tone={badge ? badge.tone : undefined}>
             {series.description}
             {seriesHasCalibration(series) ? ` ${CALIBRATION_EXPLAINER}` : ''}
           </Text>
@@ -571,6 +583,7 @@ function SeriesCard(props: {
                 aria-label={`Latest run: ${formatValue(latest.value, series.unit)}`}
                 as="div"
                 trim={true}
+                tone={badge ? badge.tone : undefined}
               >
                 {formatValue(latest.value, series.unit)}
               </Text>
@@ -1547,19 +1560,37 @@ export function TrendsTool() {
             {showHelp && (
               <Card tone="primary" border padding={3} radius={2}>
                 <VStack gap={3}>
-                  <Text size={1} muted as="div" trim={true}>
+                  <Text
+                    size={1}
+                    muted
+                    as="div"
+                    trim={true}
+                    style={{color: 'var(--card-muted-fg-color)'}}
+                  >
                     One benchmark run per day of the studio built from <code>main</code>, measured
                     against a local API mock (no network, no real project); see{' '}
                     <code>perf/bench</code>. Each chart tracks one metric over time. Click anywhere
                     in a chart to open the nearest run, with links to the PR, commit, and CI run.
                   </Text>
-                  <Text size={1} muted as="div" trim={true}>
+                  <Text
+                    size={1}
+                    muted
+                    as="div"
+                    trim={true}
+                    style={{color: 'var(--card-muted-fg-color)'}}
+                  >
                     Because the CI machine varies day to day, absolute numbers depend on the host:
                     before trusting a spike, check the host calibration in the Calibration tab. If
                     it spikes on the same day, suspect the runner, not the studio. Flat lines are
                     the goal; the ⓘ on each chart explains what it measures.
                   </Text>
-                  <Text size={1} muted as="div" trim={true}>
+                  <Text
+                    size={1}
+                    muted
+                    as="div"
+                    trim={true}
+                    style={{color: 'var(--card-muted-fg-color)'}}
+                  >
                     The SQRL banner at the top is one score across the metrics below, where higher
                     is better and 100 is late June 2026. Each input counts as its late-June value
                     divided by today's, so any metric getting faster or lighter raises it. A
@@ -1572,7 +1603,7 @@ export function TrendsTool() {
 
             {error && (
               <Card tone="critical" border padding={3} radius={2}>
-                <Text size={1} as="div" trim={true}>
+                <Text size={1} as="div" trim={true} tone="critical">
                   Couldn't load benchmark runs: {error}. Reload the page to try again.
                 </Text>
               </Card>

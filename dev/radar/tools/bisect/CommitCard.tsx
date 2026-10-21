@@ -19,19 +19,19 @@ export function CommitCard(props: {
     <Card padding={4} radius={3} border tone={tone}>
       <VStack gap={3}>
         {heading}
-        <Text size={2} weight="medium" as="div" trim={true}>
+        <Text size={2} weight="medium" as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
           <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
             {commit.subject}
           </a>
         </Text>
         <Flex alignItems="center" gap={3} flexWrap="wrap">
-          <Text size={1} as="div" trim={true}>
+          <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
             <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
               <code>{commit.sha.slice(0, 10)}</code>
             </a>
           </Text>
           {typeof commit.prNumber === 'number' && (
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
               <a href={prUrl(commit.prNumber)} target="_blank" rel="noreferrer">
                 #{commit.prNumber}
               </a>
@@ -44,7 +44,7 @@ export function CommitCard(props: {
             avatarUrl={commit.authorAvatarUrl}
           />
           {commit.authorName && (
-            <Text size={1} muted as="div" trim={true}>
+            <Text size={1} muted as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
               {commit.authorName} ·
             </Text>
           )}
