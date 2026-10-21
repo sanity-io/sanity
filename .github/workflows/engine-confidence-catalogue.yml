@@ -2,8 +2,8 @@ name: Engine confidence catalogue
 permissions: {}
 
 # The Engine confidence bug catalogue applies patches to engine sources. When
-# engine code moves, a patch can stop applying and the weekly score silently
-# loses an entry. This cheap check runs `git apply --check` on every patch
+# engine code moves, a patch can stop applying and the weekly catalogue job
+# fails. This cheap check runs `git apply --check` on every patch
 # whenever the engine or the catalogue changes. It is not a required check.
 on:
   pull_request:
@@ -12,7 +12,7 @@ on:
       - "packages/@sanity/mutator/src/**"
       - "packages/sanity/src/core/store/document/**"
       - "packages/sanity/src/core/form/**"
-      - "packages/sanity/src/structure/panes/document/**"
+      - ".github/workflows/engine-confidence-catalogue.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}

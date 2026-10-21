@@ -2,15 +2,17 @@ name: Engine confidence
 permissions: {}
 
 # Weekly Engine confidence score: how well the tests guard the document
-# engine (mutator, document store, form patching, Portable Text sync). Two
-# Stryker mutation runs and a catalogue of known-bug patches that the suites
-# must still catch are folded into one engineConfidenceRun document, stored in
-# the Studio Radar dataset and shown on the Radar "Engine confidence" tab.
+# engine (mutator, document store, form patching, Portable Text sync). The
+# score is Stryker's mutation score alone, from two mutation runs. The
+# known-bug catalogue is stored in the same engineConfidenceRun document as
+# supporting detail and never feeds the score, so a catalogue failure still
+# stores the score. The document lands in the Studio Radar dataset and shows on
+# the Radar "Engine confidence" tab.
 #
 # Thursdays on main only, never pull_request: the store job holds the dataset
 # write token, which must never run PR-authored code (same stance as
-# sync-git-metrics.yml and bench.yml). The measuring jobs hold no token. A
-# failed run is safe to re-run: the stored document id is the ISO week, so a
+# sync-git-metrics.yml and bench.yml). The measuring jobs hold no write token.
+# A failed run is safe to re-run: the stored document id is the ISO week, so a
 # re-run replaces that week's document.
 #
 # Stryker results are incremental: each run reuses the previous successful
@@ -159,6 +161,8 @@ jobs:
 
   score:
     needs: [plan, stryker, catalogue]
+    # The catalogue is supporting detail, so its failure must not block the score
+    if: ${{ !cancelled() && needs.stryker.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -179,6 +183,7 @@ jobs:
           path: engine-confidence/reports/stryker
 
       - uses: actions/download-artifact@v8
+        if: needs.catalogue.result == 'success'
         with:
           name: engine-confidence-catalogue
           path: engine-confidence/reports/catalogue
@@ -238,5 +243,5 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": ":alert-dot: \"${{ github.workflow }}\" (${{ github.event_name }}) failed - this week's Engine confidence score was not stored (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
+              "text": ":alert-dot: \"${{ github.workflow }}\" (${{ github.event_name }}) failed - check which job failed (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
             }

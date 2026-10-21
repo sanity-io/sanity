@@ -41,6 +41,7 @@ export interface Tier1Target {
 
 export type Tier1Config = Record<StrykerTargetId, Tier1Target>
 
+// Fixes the runner joining describe and test names with ' ' where Vitest 5 filters on ' > '
 export const STRYKER_PATCH_PATH = 'patches/@stryker-mutator__vitest-runner@10.0.0.patch'
 
 export function readJsonFile<Shape>(filePath: string): Shape {

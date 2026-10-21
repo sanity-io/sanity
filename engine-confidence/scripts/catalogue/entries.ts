@@ -23,7 +23,6 @@ export const CATALOGUE_CHECK_PATH_PREFIXES = [
   'packages/@sanity/mutator/src/',
   'packages/sanity/src/core/store/document/',
   'packages/sanity/src/core/form/',
-  'packages/sanity/src/structure/panes/document/',
 ]
 
 /** Files the unified diff in `patchText` touches, repo-relative. */

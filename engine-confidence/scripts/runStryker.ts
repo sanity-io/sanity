@@ -181,6 +181,7 @@ async function runTarget(
     `${JSON.stringify(meta, null, 2)}\n`,
   )
 
+  // Without the vitest-runner patch, mutants covered only by tests inside a describe run no test
   const zeroTestSurvivors = zeroTestSurvivorsOf(report)
   const dryRunFloor = pinnedConfig.stryker.dryRunFloor[target]
   const guardFailures = [

@@ -53,13 +53,13 @@ For a quicker pass, `catalogue --suites unit:mutator,unit:engine` skips the fuzz
 
 ## The pinned config
 
-`config.json`, `tier1.json`, `exclusions.json`, everything in `stryker/`, the Stryker patch in `patches/` and the two `@stryker-mutator/*` versions define the measurement. Their sha256 is `pinnedHash` in `config.json`. Run `pnpm engine-confidence pin` after changing any of them: it writes the new hash and increments `version`. A unit test fails when the hash is stale, so the pull request catches an unpinned change.
+`config.json`, `tier1.json`, `exclusions.json`, everything in `stryker/`, the Stryker patch in `patches/` and the four `@stryker-mutator/*` versions define the measurement. Their sha256 is `pinnedHash` in `config.json`. Run `pnpm engine-confidence pin` after changing any of them: it writes the new hash and increments `version`. A unit test fails when the hash is stale, so the pull request catches an unpinned change.
 
 The catalogue and the installed Vitest version are left out of the hash, so adding an entry or bumping Vitest does not break the series.
 
 ## The Stryker runner patch
 
-`@stryker-mutator/vitest-runner@10.0.0` joins suite and test names with a space and Vitest 5 matches names joined with `>`. Without the patch every test inside a `describe` is filtered out and the mutant is reported as survived. `patches/@stryker-mutator__vitest-runner@10.0.0.patch` fixes the join. The zero-test survivor guard in `stryker` fails the run if the patch is lost.
+`@stryker-mutator/vitest-runner@10.0.0` joins suite and test names with a space and Vitest 5 matches names joined with `>`. Without the patch every test inside a `describe` is filtered out and the mutant is reported as survived. `patches/@stryker-mutator__vitest-runner@10.0.0.patch` fixes the join. The zero-test survivor guard in `stryker` fails the run if the patch is lost. The bug is in the runner, and the upstream fix is [stryker-js#6214](https://github.com/stryker-mutator/stryker-js/pull/6214). Drop the patch once a release includes it.
 
 ## The catalogue
 
