@@ -13,7 +13,7 @@ export const STRYKER_TARGET_IDS = ['sanity', 'mutator'] as const
 export type StrykerTargetId = (typeof STRYKER_TARGET_IDS)[number]
 
 /** The target the core Studio engine score covers. */
-export const STUDIO_ENGINE_TARGET: StrykerTargetId = 'sanity'
+export const STUDIO_ENGINE_TARGET = 'sanity' satisfies StrykerTargetId
 
 export const CATALOGUE_SUITE_IDS = ['unit:mutator', 'unit:engine', 'fuzz:pt', 'e2e'] as const
 export type CatalogueSuiteId = (typeof CATALOGUE_SUITE_IDS)[number]
@@ -265,17 +265,11 @@ export function coveredMutationScoreOf(counts: MutantCounts): number | undefined
   return covered === 0 ? undefined : detectedMutants(counts) / covered
 }
 
-/** The Stryker score over the files of one target, or not measured when none of its mutants were scored. */
-export function targetScoreOf(
-  files: readonly Pick<MutatedFileResult, 'target' | 'counts'>[],
-  target: StrykerTargetId,
-): TargetScore {
-  const counts = files
-    .filter((file) => file.target === target)
-    .reduce((total, file) => addMutantCounts(total, file.counts), emptyMutantCounts())
+/** The Stryker score of `counts`, or not measured with `unscoredReason` when none of its mutants were scored. */
+export function scoreOfCounts(counts: MutantCounts, unscoredReason: string): TargetScore {
   const ratio = mutationScoreOf(counts)
   if (ratio === undefined) {
-    return {status: 'not-measured', reason: `Stryker reported no scored mutants for ${target}`}
+    return {status: 'not-measured', reason: unscoredReason}
   }
   const coveredRatio = coveredMutationScoreOf(counts)
   return {
@@ -284,6 +278,17 @@ export function targetScoreOf(
     ...(coveredRatio === undefined ? {} : {coveredRatio}),
     counts,
   }
+}
+
+/** The Stryker score over the files of one target, or not measured when none of its mutants were scored. */
+export function targetScoreOf(
+  files: readonly Pick<MutatedFileResult, 'target' | 'counts'>[],
+  target: StrykerTargetId,
+): TargetScore {
+  const counts = files
+    .filter((file) => file.target === target)
+    .reduce((total, file) => addMutantCounts(total, file.counts), emptyMutantCounts())
+  return scoreOfCounts(counts, `Stryker reported no scored mutants for ${target}`)
 }
 
 export function isEntryCaught(entry: Pick<CatalogueEntryResult, 'results'>): boolean {

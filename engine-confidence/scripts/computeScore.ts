@@ -6,7 +6,6 @@ import {parseArgs} from 'node:util'
 
 import {
   addMutantCounts,
-  coveredMutationScoreOf,
   detectedMutants,
   emptyMutantCounts,
   ENGINE_CONFIDENCE_RUN_TYPE,
@@ -17,7 +16,7 @@ import {
   isoWeekOf,
   type KnownBugsSummary,
   missedMutants,
-  mutationScoreOf,
+  scoreOfCounts,
   STRYKER_TARGET_IDS,
   type StrykerTargetId,
   STUDIO_ENGINE_TARGET,
@@ -98,16 +97,12 @@ function strykerScore(
     (total, file) => addMutantCounts(total, file.counts),
     emptyMutantCounts(),
   )
-  const ratio = mutationScoreOf(counts)
-  if (ratio === undefined) {
-    return {status: 'not-measured', reason: 'Stryker reported no scored mutants'}
+  const measured = scoreOfCounts(counts, 'Stryker reported no scored mutants')
+  if (measured.status === 'not-measured') {
+    return measured
   }
-  const coveredRatio = coveredMutationScoreOf(counts)
   return {
-    status: 'measured',
-    ratio,
-    ...(coveredRatio === undefined ? {} : {coveredRatio}),
-    counts,
+    ...measured,
     targets: strykerTargets.map((input, index) => ({
       _key: `target-${index}`,
       target: input.target,

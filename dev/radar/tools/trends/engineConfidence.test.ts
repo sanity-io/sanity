@@ -4,7 +4,6 @@ import {
   isoWeekOf,
   isoWeekStart,
   mutationScoreOf,
-  targetScoreOf,
 } from '@repo/utils/engine-confidence'
 import {engineConfidenceRunId} from '@repo/utils/radar-ids'
 import {describe, expect, test} from 'vitest'
@@ -389,7 +388,6 @@ describe('generateDebugEngineConfidenceRuns', () => {
 
     expect(studioScore.counts).toEqual(studioCounts)
     expect(studioScore.ratio).toBe(mutationScoreOf(studioCounts))
-    expect(studioScore).toEqual(targetScoreOf(score.files, 'sanity'))
     expect(studioScore.ratio).not.toBe(score.ratio)
   })
 

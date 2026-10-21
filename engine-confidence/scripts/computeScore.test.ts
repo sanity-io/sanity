@@ -188,13 +188,14 @@ describe('buildRunDocument', () => {
       status: 'measured',
       counts: {killed: 8, survived: 2, noCoverage: 17},
     })
-    if (studioScore.status === 'measured' && score.status === 'measured') {
-      expect(studioScore.ratio).toBeCloseTo(8 / 27)
-      expect(studioScore.coveredRatio).toBeCloseTo(8 / 10)
-      expect(studioScore.ratio).not.toBeCloseTo(score.ratio)
-      expect(studioScore).not.toHaveProperty('files')
-      expect(studioScore).not.toHaveProperty('targets')
+    if (studioScore.status === 'not-measured' || score.status === 'not-measured') {
+      throw new Error('expected measured')
     }
+    expect(studioScore.ratio).toBeCloseTo(8 / 27)
+    expect(studioScore.coveredRatio).toBeCloseTo(8 / 10)
+    expect(studioScore.ratio).not.toBeCloseTo(score.ratio)
+    expect(studioScore).not.toHaveProperty('files')
+    expect(studioScore).not.toHaveProperty('targets')
   })
 
   test('leaves reviewed exclusions out of the core Studio engine score', () => {
