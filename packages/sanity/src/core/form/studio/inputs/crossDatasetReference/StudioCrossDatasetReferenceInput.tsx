@@ -9,10 +9,11 @@ import {
 import {get} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
 import {from, throwError} from 'rxjs'
-import {catchError, mergeMap} from 'rxjs/operators'
+import {catchError, map, mergeMap, take} from 'rxjs/operators'
 
 import {type Source} from '../../../../config/types'
 import {type FIXME} from '../../../../FIXME'
+import {useLatestWhenReady} from '../../../../hooks/useLatestWhenReady'
 import {useDocumentPreviewStore} from '../../../../store/datastores'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {useSource} from '../../../../studio/source'
@@ -99,26 +100,34 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         .clone()
     )
   }, [client, schemaType.dataset])
-  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchMaxFieldDepth(
-    crossDatasetClient,
-    true,
+  const partialIndexSettings = useSearchMaxFieldDepth(crossDatasetClient, true)
+  const partialIndexSettings$ = useLatestWhenReady(
+    partialIndexSettings,
+    !partialIndexSettings.isLoading,
   )
   const documentValue = useFormValue([]) as FIXME
 
   const handleSearch = useCallback(
     (searchString: string) =>
       from(resolveUserDefinedFilter(schemaType.options, documentValue, path, getClient)).pipe(
-        mergeMap(({filter, params}) =>
-          search(crossDatasetClient, searchString, schemaType, {
-            ...schemaType.options,
-            filter,
-            params,
-            tag: 'search.cross-dataset-reference',
-            maxFieldDepth,
-            partialIndexFieldPaths,
-            strategy: searchStrategy,
-            perspective: 'published',
-          }),
+        mergeMap((userDefinedFilter) =>
+          partialIndexSettings$.pipe(
+            take(1),
+            map((settings) => ({...userDefinedFilter, settings})),
+          ),
+        ),
+        mergeMap(
+          ({filter, params, settings: {maxFieldDepth, fieldPaths: partialIndexFieldPaths}}) =>
+            search(crossDatasetClient, searchString, schemaType, {
+              ...schemaType.options,
+              filter,
+              params,
+              tag: 'search.cross-dataset-reference',
+              maxFieldDepth,
+              partialIndexFieldPaths,
+              strategy: searchStrategy,
+              perspective: 'published',
+            }),
         ),
 
         catchError((err: SearchError) => {
@@ -137,8 +146,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
       path,
       getClient,
       crossDatasetClient,
-      maxFieldDepth,
-      partialIndexFieldPaths,
+      partialIndexSettings$,
       searchStrategy,
     ],
   )

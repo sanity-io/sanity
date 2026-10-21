@@ -33,6 +33,12 @@ export interface PartialIndexSettings {
  * @hidden
  */
 export interface SearchPartialIndexSettings {
+  /**
+   * `true` while the dataset's index settings are being fetched. Until then `maxFieldDepth` is the
+   * default and `fieldPaths` is `undefined`, so search should wait rather than send a query that
+   * the index may reject.
+   */
+  isLoading: boolean
   maxFieldDepth: number
   /**
    * `undefined` when partial indexing is disabled for the workspace, or the dataset excludes no
@@ -148,7 +154,12 @@ export function useSearchMaxFieldDepth(
 
   const fieldPaths = useMemo(() => toFieldPaths(partialIndexSettings), [partialIndexSettings])
 
-  const settings = useMemo(() => ({maxFieldDepth, fieldPaths}), [maxFieldDepth, fieldPaths])
+  const isLoading = Boolean(isEnabled) && indexSettings.isLoading
+
+  const settings = useMemo(
+    () => ({isLoading, maxFieldDepth, fieldPaths}),
+    [isLoading, maxFieldDepth, fieldPaths],
+  )
 
   return withFieldPaths ? settings : maxFieldDepth
 }

@@ -32,6 +32,7 @@ describe('useSearchMaxFieldDepth', () => {
 
     await waitFor(() => {
       expect(result.current).toEqual({
+        isLoading: false,
         maxFieldDepth: 2,
         fieldPaths: {
           excludeFieldPaths: ['analytics', 'analytics[]'],

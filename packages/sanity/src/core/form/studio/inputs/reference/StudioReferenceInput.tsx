@@ -9,8 +9,9 @@ import {
 import * as PathUtils from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
 import {combineLatest, from, of, throwError} from 'rxjs'
-import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
+import {catchError, map, mergeMap, switchMap, take} from 'rxjs/operators'
 
+import {useLatestWhenReady} from '../../../../hooks/useLatestWhenReady'
 import {useSchema} from '../../../../hooks/useSchema'
 import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
@@ -73,9 +74,10 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const {perspectiveStack, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const schema = useSchema()
-  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchMaxFieldDepth(
-    undefined,
-    true,
+  const partialIndexSettings = useSearchMaxFieldDepth(undefined, true)
+  const partialIndexSettings$ = useLatestWhenReady(
+    partialIndexSettings,
+    !partialIndexSettings.isLoading,
   )
   const documentPreviewStore = useDocumentPreviewStore()
   const {path, schemaType} = props
@@ -104,7 +106,14 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         getClient,
       }),
     ).pipe(
-      mergeMap(({filter, params, perspective: userDefinedFilterPerspective}) => {
+      mergeMap((userDefinedFilter) =>
+        partialIndexSettings$.pipe(
+          take(1),
+          map((settings) => ({...userDefinedFilter, settings})),
+        ),
+      ),
+      mergeMap(({filter, params, perspective: userDefinedFilterPerspective, settings}) => {
+        const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = settings
         const invalidPerspectives = getInvalidUserDefinedPerspectives(
           perspectiveStack,
           userDefinedFilterPerspective,

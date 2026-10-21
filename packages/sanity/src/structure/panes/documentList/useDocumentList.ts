@@ -122,10 +122,13 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
   } = opts
   const {strategy: searchStrategy} = useWorkspace().search
   const schema = useSchema()
-  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchMaxFieldDepth(
-    undefined,
-    true,
-  )
+  const {
+    isLoading: isLoadingIndexSettings,
+    maxFieldDepth,
+    fieldPaths: partialIndexFieldPaths,
+  } = useSearchMaxFieldDepth(undefined, true)
+  // Only a search term is scored, so a list without one does not depend on the index settings.
+  const waitForIndexSettings = Boolean(searchQuery) && isLoadingIndexSettings
   const telemetry = useTelemetry()
 
   // Get the type name from the filter, if it is a simple type filter.
@@ -138,6 +141,8 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
   const [[onFetchFullList$, onLoadFullList]] = useState(() => observableCallback())
 
   const queryResults$ = useMemo(() => {
+    if (waitForIndexSettings) return of(INITIAL_QUERY_STATE)
+
     const listenSearchQueryArgs = {
       client,
       filter: searchFilter,
@@ -282,6 +287,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     typeNameFromFilter,
     maxFieldDepth,
     partialIndexFieldPaths,
+    waitForIndexSettings,
     searchStrategy,
     onFetchFullList$,
     onRetry$,

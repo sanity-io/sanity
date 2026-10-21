@@ -9,9 +9,11 @@ import {
   useMemo,
   useState,
 } from 'react'
+import {switchMap, take} from 'rxjs'
 import {fromObservable} from 'xstate'
 
 import {useClient} from '../../../../../hooks/useClient'
+import {useLatestWhenReady} from '../../../../../hooks/useLatestWhenReady'
 import {isEqualSearchTerms} from '../../../../../search/common/isEqualSearchTerms'
 import {
   type Groq2024SearchResults,
@@ -90,7 +92,7 @@ export function useSearch({
   searchState: SearchState
 } {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const {maxFieldDepth, fieldPaths} = useSearchMaxFieldDepth(undefined, true)
+  const {isLoading, maxFieldDepth, fieldPaths} = useSearchMaxFieldDepth(undefined, true)
   const {strategy} = useWorkspace().search
 
   const search = useMemo(
@@ -104,12 +106,20 @@ export function useSearch({
       }),
     [schema, client, strategy, maxFieldDepth, fieldPaths],
   )
+  // The machine below keeps the actors of its first render, so it reads the current search from
+  // here. Searches started before the index settings resolve wait for them.
+  const search$ = useLatestWhenReady(search, !isLoading)
 
   const [machine] = useState(() => defineSearchMachine<SearchRequest, SearchResults>())
   const actorRef = useActorRef(
     machine.provide({
       actors: {
-        search: fromObservable(({input}) => search(input.query.terms, input.query.options)),
+        search: fromObservable(({input}) =>
+          search$.pipe(
+            take(1),
+            switchMap((currentSearch) => currentSearch(input.query.terms, input.query.options)),
+          ),
+        ),
       },
       guards: {
         'is same query': ({context, event}) => isEqualSearchRequest(context.query, event.query),

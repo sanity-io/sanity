@@ -15,7 +15,7 @@ interface SearchWeightEntry {
   type?: 'string' | 'pt'
 }
 
-const CACHE = new WeakMap<SchemaType | CrossDatasetType, Map<string, SearchSpec>>()
+const CACHE = new WeakMap<SchemaType | CrossDatasetType, SearchSpec>()
 
 const PREVIEW_FIELD_WEIGHT_MAP = {
   title: 10,
@@ -237,11 +237,7 @@ export function deriveSearchWeightsFromType2024({
   isCrossDataset,
   processPaths = (paths) => paths,
 }: DeriveSearchWeightsFromTypeOptions): SearchSpec {
-  // The dataset's partial index settings can lower `maxDepth` after a first search at the default.
-  const cacheKey = `${maxDepth}:${Boolean(isCrossDataset)}`
-  const cachedByOptions = CACHE.get(schemaType) ?? new Map<string, SearchSpec>()
-  CACHE.set(schemaType, cachedByOptions)
-  const cached = cachedByOptions.get(cacheKey)
+  const cached = CACHE.get(schemaType)
   if (cached) return cached
 
   const userSetWeights = getLeafWeights(schemaType, maxDepth, getUserSetWeight)
@@ -267,6 +263,6 @@ export function deriveSearchWeightsFromType2024({
     ),
   }
 
-  cachedByOptions.set(cacheKey, result)
+  CACHE.set(schemaType, result)
   return result
 }
