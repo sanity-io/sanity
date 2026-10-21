@@ -6,7 +6,11 @@ import {
   ShippedPerspectiveBarProvider,
   VariantFilterAddControlProvider,
 } from 'sanity'
-import {DocumentListItemOverrideProvider, DocumentPaneExtensionProvider} from 'sanity/structure'
+import {
+  DocumentListItemOverrideProvider,
+  DocumentPaneExtensionProvider,
+  VariantBannerReplacedProvider,
+} from 'sanity/structure'
 
 import {useOptionAExtension} from '../c1/Controls'
 import {isLockedNav} from '../c1/lockedNav'
@@ -56,7 +60,12 @@ function NeutralNavbarHost({children}: {children: ReactNode}) {
 function DocumentPaneHost({children}: {children: ReactNode}) {
   const state = useDocumentPaneOverrideState()
   const resolve = useMemo(() => resolveDocumentPaneOverride(state), [state])
-  return <DocumentPaneExtensionProvider value={resolve}>{children}</DocumentPaneExtensionProvider>
+  // T6: the pane's variant banners are ours (c7/OpenBetaBanner.tsx), so the stock "not in variant" and "variant not found" banners step aside.
+  return (
+    <VariantBannerReplacedProvider value>
+      <DocumentPaneExtensionProvider value={resolve}>{children}</DocumentPaneExtensionProvider>
+    </VariantBannerReplacedProvider>
+  )
 }
 
 /** The Handoff Studio's layout: the open beta seams only. There is no Design options window and no remote. */

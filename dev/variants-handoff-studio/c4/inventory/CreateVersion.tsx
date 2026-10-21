@@ -81,6 +81,34 @@ interface Fixed {
 }
 
 const DRAFTS: Dest = {kind: 'drafts'}
+
+/** A prefilled start (T6 banner "Create version"): who sees the version and the bundle it goes in; the document stays Nearest version. */
+export interface CreatePreset {
+  variantId: string
+  /** `drafts`, or a release name. */
+  bundle: string
+}
+const requests = new Map<string, CreatePreset>()
+/** Asks the inventory of a document to open in Create version mode, prefilled. It is read when the inventory mounts; it never creates. */
+export function requestCreateVersion(documentId: string, preset: CreatePreset) {
+  requests.set(documentId, preset)
+}
+
+/** Collapses every open group to its header and counts its rows; returns the counts and the groups it closed. */
+function collapseGroups(frame: HTMLElement | null) {
+  const counts: Record<string, number> = {}
+  const closed: string[] = []
+  for (const header of frame?.querySelectorAll<HTMLElement>('.inventory-group') ?? []) {
+    const id = groupId(header)
+    counts[id] =
+      header.parentElement?.querySelectorAll('[data-testid^="inventory-row-"]').length ?? 0
+    if (header.getAttribute('aria-expanded') === 'true') {
+      closed.push(id)
+      header.click()
+    }
+  }
+  return {counts, closed}
+}
 const BASE_LABEL = 'Base · all visitors'
 const HAS_VERSION = 'Has a version · Open it'
 
@@ -365,6 +393,8 @@ const groupId = (header: HTMLElement) =>
   header.dataset.testid?.replace('inventory-group-', '') ?? ''
 
 export function CreateVersion(props: {
+  /** The published id: a banner's prefilled request is kept by it. */
+  documentId: string
   frame: HTMLElement | null
   world: InventoryWorld
   documentTitle: string
@@ -385,7 +415,26 @@ export function CreateVersion(props: {
   const [toolbar, setToolbar] = useState<HTMLElement | null>(null)
   const [slot, setSlot] = useState<HTMLElement | null>(null)
   const [headers, setHeaders] = useState<HTMLElement[]>([])
-  const [mode, setMode] = useState<{fixed: Fixed; draft: Draft} | null>(null)
+  // A banner's "Create version" opens the inventory with the block already open and prefilled (presets, not locks).
+  const [mode, setMode] = useState<{fixed: Fixed; draft: Draft} | null>(() => {
+    const preset = requests.get(props.documentId)
+    if (!preset) return null
+    const release = world.releases.find((r) => r.name === preset.bundle)
+    const dest: Dest = release
+      ? {
+          kind: 'release',
+          name: release.name,
+          title: release.metadata?.title || release.name,
+          type: release.metadata?.releaseType ?? 'undecided',
+        }
+      : DRAFTS
+    return {fixed: {}, draft: {variantId: preset.variantId, dest, source: 'nearest', picked: false}}
+  })
+  // The groups collapse once they are on screen (the block opened before the list did).
+  const collapseOnScan = useRef(mode !== null)
+  useEffect(() => {
+    requests.delete(props.documentId)
+  }, [props.documentId])
   const [menuOpen, setMenuOpen] = useState(false)
   const [counts, setCounts] = useState<Record<string, number>>({})
   const collapsedByMode = useRef<string[]>([])
@@ -436,6 +485,12 @@ export function CreateVersion(props: {
       setSlot((current) => (current === container ? current : container))
       const groups = [...frame.querySelectorAll<HTMLElement>('.inventory-group')]
       setHeaders((current) => (sameElements(current, groups) ? current : groups))
+      if (collapseOnScan.current && groups.length) {
+        collapseOnScan.current = false
+        const {counts: next, closed} = collapseGroups(frame)
+        collapsedByMode.current = closed
+        setCounts(next)
+      }
     }
     scan()
     const observer = new MutationObserver(scan)
@@ -558,19 +613,8 @@ export function CreateVersion(props: {
 
   // The mode collapses the groups to their headers with a count of their rows.
   const startMode = (fixed: Fixed) => {
-    const found = [...(frame?.querySelectorAll<HTMLElement>('.inventory-group') ?? [])]
-    const next: Record<string, number> = {}
-    const open: string[] = []
-    for (const header of found) {
-      const id = groupId(header)
-      next[id] =
-        header.parentElement?.querySelectorAll('[data-testid^="inventory-row-"]').length ?? 0
-      if (header.getAttribute('aria-expanded') === 'true') {
-        open.push(id)
-        header.click()
-      }
-    }
-    collapsedByMode.current = open
+    const {counts: next, closed} = collapseGroups(frame)
+    collapsedByMode.current = closed
     setCounts(next)
     setCurrentGroup(undefined)
     setMode({

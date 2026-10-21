@@ -54,6 +54,11 @@ const subscribe = (listener: () => void) => {
   return () => listeners.delete(listener)
 }
 
+/** The versions made in this session for a document (in memory): a banner counts them as existing. */
+export function useMadeEntries(documentId: string): readonly InventoryEntry[] {
+  return useSyncExternalStore(subscribe, () => made.get(documentId) ?? NONE).entries
+}
+
 /**
  * Andrej's inventory side panel (Storybook PR #47), live: his `InventoryConceptsProvider` gets the live world, his `VersionInventoryPanel` is
  * rendered as he built it (his table, rows and Create variant). Two things are hidden with a scoped style, because the panel has no prop for them
@@ -168,6 +173,7 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
         </InventoryConceptsProvider>
       </Box>
       <CreateVersion
+        documentId={documentId}
         documentTitle={title}
         draftsEnabled={workspace.document.drafts.enabled}
         frame={frame}
