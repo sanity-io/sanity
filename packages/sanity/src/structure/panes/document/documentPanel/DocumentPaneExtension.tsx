@@ -39,6 +39,11 @@ export interface DocumentPaneExtension {
    * buttons). Only drawn with `compactHeader`.
    */
   headerPanels?: ReactNode
+  /**
+   * PROPOSED: the width an inspector opens at, by its name (undefined keeps the Studio's proportional default). The resize handle and the
+   * 320 to 540 px limits are unchanged; the value is clamped to them.
+   */
+  inspectorInitialWidth?: (inspectorName: string) => number | undefined
 }
 
 /** @internal */

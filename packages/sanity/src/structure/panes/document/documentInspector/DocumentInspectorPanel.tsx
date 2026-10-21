@@ -49,7 +49,8 @@ export function DocumentInspectorPanel(
 ): React.JSX.Element | null {
   const {documentId, documentType, flex} = props
   // PROPOSED: a host's tab row sits above the inspector, and the inspectors drop their own headers while it does.
-  const tabs = useDocumentPaneExtension({documentId, documentType})?.inspectorTabs
+  const extension = useDocumentPaneExtension({documentId, documentType})
+  const tabs = extension?.inspectorTabs
   const {collapsed} = usePane()
   const {closeInspector, inspector} = useDocumentPane()
   const {features} = useStructureTool()
@@ -82,6 +83,12 @@ export function DocumentInspectorPanel(
   )
 
   if (features.resizablePanes) {
+    const maxWidth = tabs ? DOCUMENT_INSPECTOR_TABS_MAX_WIDTH : DOCUMENT_INSPECTOR_MAX_WIDTH
+    const wanted = extension?.inspectorInitialWidth?.(inspector.name)
+    const initialWidth =
+      wanted === undefined
+        ? undefined
+        : Math.min(Math.max(wanted, DOCUMENT_INSPECTOR_MIN_WIDTH), maxWidth)
     return (
       <Resizable
         as="aside"
@@ -91,7 +98,8 @@ export function DocumentInspectorPanel(
           flexBasis: '0%',
         })}
         resizerPosition="left"
-        maxWidth={tabs ? DOCUMENT_INSPECTOR_TABS_MAX_WIDTH : DOCUMENT_INSPECTOR_MAX_WIDTH}
+        initialWidth={initialWidth}
+        maxWidth={maxWidth}
         minWidth={DOCUMENT_INSPECTOR_MIN_WIDTH}
       >
         {element}
