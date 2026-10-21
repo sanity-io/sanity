@@ -2,10 +2,10 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Badge, Box, Button, Card, Dialog, Select} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useMemo, useState} from 'react'
+import {type CSSProperties, useMemo, useState} from 'react'
 import {type SanityClient} from 'sanity'
 import {useLink} from 'sanity/router'
-import {Text, Flex, VStack, Icon} from 'ui5'
+import {Text, Flex, VStack, Icon, Link} from 'ui5'
 
 import {type SessionSummary, type TagSlice} from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
@@ -13,6 +13,12 @@ import {deleteSessions, updateResults} from '../bisect/sessions'
 import {isSeverity, SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from '../bisect/severity'
 import {pluralize} from '../bisect/text'
 import {bisectSessionPath, compareTagsSemverDesc, type ReleaseRegressions} from './releaseInfo'
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /** A confirmed regression with the release that gets the blame for it. */
 export interface ReleaseRegression {
@@ -270,16 +276,21 @@ function RegressionRow(props: {
                 ·
               </Text>
               <Text size={0} as="div" trim={true} tone={confirming ? 'critical' : undefined}>
-                <a href={sessionHref} onClick={sessionLink.onClick}>
+                <Link
+                  href={sessionHref}
+                  onClick={sessionLink.onClick}
+                  underlined={false}
+                  style={LINK_IN_TEXT}
+                >
                   Open in Bisect{' '}
                   <Icon
                     size={0}
                     muted
                     icon={LaunchIcon}
                     tone={confirming ? 'critical' : undefined}
-                    style={{margin: '-0.3125rem'}}
+                    style={{margin: '-0.3125rem', display: 'inline'}}
                   />
-                </a>
+                </Link>
               </Text>
             </Flex>
           </VStack>

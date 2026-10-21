@@ -1,11 +1,17 @@
 import {Card} from '@sanity/ui'
-import {type ReactNode} from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {type CSSProperties, type ReactNode} from 'react'
+import {Text, Flex, VStack, Link} from 'ui5'
 
 import {commitUrl, prUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
 import {type BisectCommit} from './bisect'
 import {RelativeDate} from './RelativeDate'
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /** One commit, fully identified: subject, sha, PR, author, age — plus slots. */
 export function CommitCard(props: {
@@ -19,22 +25,27 @@ export function CommitCard(props: {
     <Card padding={4} radius={3} border tone={tone}>
       <VStack gap={3}>
         {heading}
-        <Text size={2} weight="medium" as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
-          <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
+        <Text size={2} weight="medium" as="div" trim={true}>
+          <Link href={commitUrl(commit.sha)} openInNewTab underlined={false} style={LINK_IN_TEXT}>
             {commit.subject}
-          </a>
+          </Link>
         </Text>
         <Flex alignItems="center" gap={3} flexWrap="wrap">
-          <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
-            <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
+          <Text size={1} as="div" trim={true}>
+            <Link href={commitUrl(commit.sha)} openInNewTab underlined={false} style={LINK_IN_TEXT}>
               <code>{commit.sha.slice(0, 10)}</code>
-            </a>
+            </Link>
           </Text>
           {typeof commit.prNumber === 'number' && (
-            <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
-              <a href={prUrl(commit.prNumber)} target="_blank" rel="noreferrer">
+            <Text size={1} as="div" trim={true}>
+              <Link
+                href={prUrl(commit.prNumber)}
+                openInNewTab
+                underlined={false}
+                style={LINK_IN_TEXT}
+              >
                 #{commit.prNumber}
-              </a>
+              </Link>
             </Text>
           )}
           <AuthorAvatar

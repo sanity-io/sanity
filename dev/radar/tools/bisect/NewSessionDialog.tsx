@@ -1,6 +1,6 @@
 import {Badge, Box, Button, Card, Checkbox, Dialog, Select, TextArea, TextInput} from '@sanity/ui'
-import {useMemo, useState} from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {type CSSProperties, useMemo, useState} from 'react'
+import {Text, Flex, VStack, Link} from 'ui5'
 
 import {compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
@@ -16,6 +16,12 @@ interface Endpoint {
   sha: string
   label?: string
 }
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 function shortLabel(endpoint: Endpoint): string {
   return endpoint.label ?? endpoint.sha.slice(0, 7)
@@ -132,9 +138,14 @@ export function NewSessionDialog(props: {
           {good && bad && chainCheck?.ok && (
             <Text size={1} muted as="div" trim={true}>
               {pluralize(chainCheck.chain.length - 2, 'commit')} between good and bad —{' '}
-              <a href={compareUrl(good.sha, bad.sha)} target="_blank" rel="noreferrer">
+              <Link
+                href={compareUrl(good.sha, bad.sha)}
+                openInNewTab
+                underlined={false}
+                style={LINK_IN_TEXT}
+              >
                 compare on GitHub
-              </a>
+              </Link>
             </Text>
           )}
 

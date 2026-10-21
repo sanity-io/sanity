@@ -6,8 +6,8 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {PlayIcon} from '@sanity/icons/Play'
 import {UndoIcon} from '@sanity/icons/Undo'
 import {Badge, type BadgeTone, Box, Button, Card} from '@sanity/ui'
-import {type ReactNode, useMemo, useState} from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {type CSSProperties, type ReactNode, useMemo, useState} from 'react'
+import {Text, Flex, VStack, Link} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
@@ -45,6 +45,12 @@ const GAP_ZONE: Record<'bad' | 'unknown' | 'good', RowBadge> = {
   unknown: {tone: 'default', label: 'untested'},
   good: {tone: 'positive', label: 'good'},
 }
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /**
  * The session map, newest commit first: endpoints, bounds, visited commits,
@@ -226,9 +232,14 @@ function GapGroup(props: {
           />
           <Box flex={1} />
           <Text size={1} muted as="div" trim={true}>
-            <a href={compareUrl(entry.baseSha, entry.newestSha)} target="_blank" rel="noreferrer">
+            <Link
+              href={compareUrl(entry.baseSha, entry.newestSha)}
+              openInNewTab
+              underlined={false}
+              style={LINK_IN_TEXT}
+            >
               Compare on GitHub
-            </a>
+            </Link>
           </Text>
         </Flex>
       </Card>
@@ -369,15 +380,15 @@ function CommitRow(props: {commit: BisectCommit; badge: RowBadge; onPick?: () =>
           avatarUrl={commit.authorAvatarUrl}
         />
         <Text size={1} as="div" trim={true}>
-          <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
+          <Link href={commitUrl(commit.sha)} openInNewTab underlined={false} style={LINK_IN_TEXT}>
             <code>{commit.sha.slice(0, 7)}</code>
-          </a>
+          </Link>
         </Text>
         <Box flex={1} style={{minWidth: 0}}>
           <Text size={1} muted truncate={1} as="div" trim={true}>
-            <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
+            <Link href={commitUrl(commit.sha)} openInNewTab underlined={false} style={LINK_IN_TEXT}>
               {commit.subject}
-            </a>
+            </Link>
           </Text>
         </Box>
         {onPick && (

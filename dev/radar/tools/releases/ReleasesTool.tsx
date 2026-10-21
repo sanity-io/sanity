@@ -23,7 +23,7 @@ import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
 import {useIntentLink} from 'sanity/router'
-import {Text, Container, Flex, VStack, Icon} from 'ui5'
+import {Text, Container, Flex, VStack, Icon, Link} from 'ui5'
 
 import {
   BISECT_COMMITS_QUERY,
@@ -76,6 +76,11 @@ interface LiveState<T> {
  * icon and label; keep the vertical part, drop the horizontal.
  */
 const ICON_IN_FLEX: CSSProperties = {marginLeft: 0, marginRight: 0}
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /**
  * Every release, newest first: when it shipped (npm publish time when known),
@@ -727,7 +732,15 @@ function IconLink(props: {
   const {href, icon: IconComponent, children} = props
   return (
     <Text size={1} as="div" trim={true}>
-      <Flex as="a" href={href} target="_blank" rel="noreferrer" alignItems="center" gap={1}>
+      <Flex
+        as={Link}
+        href={href}
+        openInNewTab
+        underlined={false}
+        alignItems="center"
+        gap={1}
+        style={LINK_IN_TEXT}
+      >
         <Icon size={1} icon={IconComponent} style={ICON_IN_FLEX} />
         <span>{children}</span>
       </Flex>
@@ -847,9 +860,14 @@ function ReleaseRow(props: {
           {/* The version and what npm calls it read as one label */}
           <Flex alignItems="center" gap={2}>
             <Text size={2} weight="medium" as="div" trim={true}>
-              <a href={documentLink.href} onClick={documentLink.onClick}>
+              <Link
+                href={documentLink.href}
+                onClick={documentLink.onClick}
+                underlined={false}
+                style={LINK_IN_TEXT}
+              >
                 {tag.tag}
-              </a>
+              </Link>
             </Text>
             {tag.npm?.distTags?.map((distTag) => (
               <Badge key={distTag} tone="primary" fontSize={0}>

@@ -2,11 +2,11 @@ import {AddIcon} from '@sanity/icons/Add'
 import {EnterRightIcon} from '@sanity/icons/EnterRight'
 import {Badge, Box, Button, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {type SVGProps, useMemo, useState} from 'react'
+import {type CSSProperties, type SVGProps, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
-import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
-import {Text, Container, Flex, VStack, Icon} from 'ui5'
+import {InlineCode, useClient, useCurrentUser, useDocumentStore} from 'sanity'
+import {Text, Container, Flex, VStack, Icon, Link} from 'ui5'
 
 import {compareTagsSemverDesc, regressionsByTag, withoutEolLines} from '../releases/releaseInfo'
 import {RELEASE_LINES_QUERY, type ReleaseLineSlice} from '../releases/releaseLines'
@@ -33,6 +33,12 @@ interface LiveState<T> {
   data: T | null
   error: string | null
 }
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /**
  * Guided bisect over mainline history: pick a good and a bad commit, and the
@@ -539,42 +545,42 @@ function SessionRow(props: {
                 <Flex alignItems="center" gap={2}>
                   <Icon size={1} muted icon={GitMergeIcon} style={{margin: '-0.375rem'}} />
                   <Text size={1} as="div" trim={true}>
-                    <a
+                    <Link
                       href={commitUrl(firstBadSha)}
-                      target="_blank"
-                      rel="noreferrer"
+                      openInNewTab
+                      underlined={false}
                       title="Open the commit on GitHub"
                       onClick={stop}
                     >
-                      <code>{firstBadSha.slice(0, 10)}</code>
-                    </a>
+                      <InlineCode>{firstBadSha.slice(0, 10)}</InlineCode>
+                    </Link>
                   </Text>
                   {subject && (
                     <Box flex={1} style={{minWidth: 0}}>
                       <Text size={1} truncate={1} as="div" trim={true}>
-                        <a
+                        <Link
                           href={commitUrl(firstBadSha)}
-                          target="_blank"
-                          rel="noreferrer"
+                          openInNewTab
+                          underlined={false}
                           onClick={stop}
-                          style={{color: 'inherit', textDecoration: 'none'}}
                         >
                           {subject}
-                        </a>
+                        </Link>
                       </Text>
                     </Box>
                   )}
                   {prNumber !== undefined && (
                     <Text size={1} as="div" trim={true}>
-                      <a
+                      <Link
                         href={prUrl(prNumber)}
-                        target="_blank"
-                        rel="noreferrer"
+                        openInNewTab
+                        underlined={false}
                         title="Open the pull request on GitHub"
                         onClick={stop}
+                        style={LINK_IN_TEXT}
                       >
                         #{prNumber}
-                      </a>
+                      </Link>
                     </Text>
                   )}
                 </Flex>

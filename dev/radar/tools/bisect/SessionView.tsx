@@ -2,11 +2,11 @@ import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Badge, Box, Button, Card, Dialog} from '@sanity/ui'
 import {type ToastContextValue, useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type CSSProperties, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
-import {Text, Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack, Link} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {
@@ -37,6 +37,12 @@ interface LiveState {
   session: SessionDocument | null | undefined
   error: string | null
 }
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /** Error-toast curry, hoisted so the persist effect and the handlers share it. */
 function toastError(toast: ToastContextValue, title: string) {
@@ -286,15 +292,17 @@ export function SessionView(props: {
                 {session?.refines && (
                   <Text size={0} muted as="div" trim={true}>
                     Narrows down{' '}
-                    <a
+                    <Link
                       href={`?session=${encodeURIComponent(session.refines._id)}`}
                       onClick={(event) => {
                         event.preventDefault()
                         onOpenSession(session.refines!._id)
                       }}
+                      underlined={false}
+                      style={LINK_IN_TEXT}
                     >
                       {session.refines.title ?? session.refines._id}
-                    </a>{' '}
+                    </Link>{' '}
                     — counted as one regression
                   </Text>
                 )}
@@ -304,15 +312,17 @@ export function SessionView(props: {
                     {session.refinedBy.map((child, index) => (
                       <span key={child._id}>
                         {index > 0 && ', '}
-                        <a
+                        <Link
                           href={`?session=${encodeURIComponent(child._id)}`}
                           onClick={(event) => {
                             event.preventDefault()
                             onOpenSession(child._id)
                           }}
+                          underlined={false}
+                          style={LINK_IN_TEXT}
                         >
                           {child.title ?? child._id}
-                        </a>
+                        </Link>
                       </span>
                     ))}{' '}
                     — counted as one regression
@@ -480,27 +490,28 @@ function RangeStatus(props: {
           The bad commit is between
         </Text>
         <Badge tone="positive" fontSize={0}>
-          <a href={commitUrl(state.goodBound.sha)} target="_blank" rel="noreferrer">
+          <Link href={commitUrl(state.goodBound.sha)} openInNewTab underlined={false}>
             good {state.goodBound.sha.slice(0, 7)}
-          </a>
+          </Link>
         </Badge>
         <Text size={1} muted as="div" trim={true}>
           and
         </Text>
         <Badge tone="critical" fontSize={0}>
-          <a href={commitUrl(state.badBound.sha)} target="_blank" rel="noreferrer">
+          <Link href={commitUrl(state.badBound.sha)} openInNewTab underlined={false}>
             bad {state.badBound.sha.slice(0, 7)}
-          </a>
+          </Link>
         </Badge>
         <Text size={1} muted as="div" trim={true}>
           —{' '}
-          <a
+          <Link
             href={compareUrl(state.goodBound.sha, state.badBound.sha)}
-            target="_blank"
-            rel="noreferrer"
+            openInNewTab
+            underlined={false}
+            style={LINK_IN_TEXT}
           >
             {pluralize(state.unknownCount, 'commit')} in range
-          </a>
+          </Link>
           , about {pluralize(state.stepsLeft, 'commit')} left to test.
         </Text>
       </Flex>

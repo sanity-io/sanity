@@ -1,7 +1,8 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {UndoIcon} from '@sanity/icons/Undo'
 import {Badge, Box, Button, Card, TextArea} from '@sanity/ui'
-import {Text, Flex, VStack} from 'ui5'
+import {type CSSProperties} from 'react'
+import {Text, Flex, VStack, Link} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {type deriveBisectState} from './bisect'
@@ -13,6 +14,12 @@ import {withReproPath} from './reproPath'
 import {type ResultAnnotations} from './sessions'
 import {SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from './severity'
 import {pluralize} from './text'
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /**
  * The verdict, rendered in place in the timeline: the first bad commit with
@@ -172,9 +179,14 @@ export function ResultCard(props: {
             </Text>
             {state.suspects.map((suspect) => (
               <Text key={suspect.sha} size={1} as="div" trim={true} tone="caution">
-                <a href={commitUrl(suspect.sha)} target="_blank" rel="noreferrer">
+                <Link
+                  href={commitUrl(suspect.sha)}
+                  openInNewTab
+                  underlined={false}
+                  style={LINK_IN_TEXT}
+                >
                   <code>{suspect.sha.slice(0, 10)}</code> {suspect.subject}
-                </a>
+                </Link>
               </Text>
             ))}
             {onContinue && (

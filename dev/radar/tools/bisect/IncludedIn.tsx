@@ -1,5 +1,5 @@
 import {type CSSProperties, useState} from 'react'
-import {Text} from 'ui5'
+import {Link, Text} from 'ui5'
 
 import {releaseUrl} from '../trends/links'
 import {type TagSlice} from './data'
@@ -14,6 +14,12 @@ const linkButtonStyle: CSSProperties = {
   textDecoration: 'underline',
   cursor: 'pointer',
 }
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /**
  * "Included in v6.9.2 (stable), v6.10.0, … +12 more" — the releases whose
@@ -35,9 +41,14 @@ export function IncludedIn(props: {releases: TagSlice[]}) {
           {visible.map((release, index) => (
             <span key={release.tag}>
               {index > 0 && ', '}
-              <a href={releaseUrl(release.tag)} target="_blank" rel="noreferrer">
+              <Link
+                href={releaseUrl(release.tag)}
+                openInNewTab
+                underlined={false}
+                style={LINK_IN_TEXT}
+              >
                 {release.tag}
-              </a>
+              </Link>
               {release.npm?.distTags?.length ? ` (${release.npm.distTags.join(', ')})` : ''}
             </span>
           ))}
