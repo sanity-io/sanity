@@ -1,18 +1,16 @@
-// Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
-// explorations/variants-2-0, commit 6acf5bfa24, lib/explorations/variants-2-0/perspective/Picker.tsx).
-// Changes: imports point at this monorepo and ./model; LIVE: marks the few places that read live data.
-import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
-import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
-
 import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type FocusEvent, type KeyboardEvent, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type DimensionSpec} from './model'
-import {matches, type Chosen, valueTitle} from './model'
-import {MenuPopover} from './primitives'
+// Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
+// explorations/variants-2-0, commit 6acf5bfa24, lib/explorations/variants-2-0/perspective/Picker.tsx).
+// Changes: imports point at this monorepo and ./model; LIVE: marks the few places that read live data.
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
+import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {DimensionIcon} from './dimensionIcons'
+import {type DimensionSpec, matches, type Chosen, valueTitle} from './model'
+import {MenuPopover} from './primitives'
 
 /** How many dimensions pick the form: one is a list, two to four are columns, five or more a rail. */
 export type PanelForm = 'list' | 'columns' | 'rail'
@@ -29,6 +27,14 @@ export const panelWidth = (dimensions: number) => {
   return 640
 }
 const LIST_MAX = 336
+
+/**
+ * The label of the inert save stub in the columns form. One constant: the final wording (Save, Apply or Create) is an open
+ * decision, so changing it here changes it everywhere. The word "composite" is not used in the UI. The stub does nothing; saving a combination needs storage.
+ */
+export const SAVE_AS_COMPOSITE_LABEL = 'Save perspective as preset'
+export const SAVE_AS_COMPOSITE_REASON =
+  'Needs storage: a saved combination has nowhere to live yet.'
 
 /** "42 articles. 9 show the base document." Fixture constants. */
 export const HINT = '42 articles. 9 show the base document.'
@@ -333,21 +339,32 @@ export function PickerContent(props: {
               </Card>
             </Flex>
           )}
-          {any ? (
+          {any || form === 'columns' ? (
             <Card borderTop data-testid="picker-footer" paddingTop={2}>
               <Flex align="center" gap={2}>
                 <Box flex={1}>
                   <Text muted size={1}>
-                    {HINT}
+                    {any ? HINT : ''}
                   </Text>
                 </Box>
-                <Button
-                  data-testid="picker-clear"
-                  mode="bleed"
-                  onClick={props.onClear}
-                  text="Clear"
-                  tooltipProps={null}
-                />
+                {form === 'columns' ? (
+                  <Button
+                    data-testid="picker-save-composite"
+                    disabled
+                    mode="bleed"
+                    text={SAVE_AS_COMPOSITE_LABEL}
+                    tooltipProps={{content: SAVE_AS_COMPOSITE_REASON}}
+                  />
+                ) : null}
+                {any ? (
+                  <Button
+                    data-testid="picker-clear"
+                    mode="bleed"
+                    onClick={props.onClear}
+                    text="Clear"
+                    tooltipProps={null}
+                  />
+                ) : null}
               </Flex>
             </Card>
           ) : null}

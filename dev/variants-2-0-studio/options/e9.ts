@@ -306,6 +306,42 @@ export const E9_COMPONENTS: ComponentDef[] = [
 ]
 
 /**
+ * A pane's own control for its local perspective (Figma E10 D1 455:3372, D2 455:4558, D3 455:6226). Night brief: A none, B on. Default A.
+ */
+export const PANE_CONTROL: ComponentDef = {
+  id: 'paneControl',
+  tag: 'PC',
+  title: 'Pane perspective control',
+  defaultOption: 'a',
+  independent: true,
+  built: true,
+  scope: 'Open beta',
+  cover:
+    'A control in each document pane for that pane alone: it follows the global perspective, or holds its own (the local perspective).',
+  pick: 'Not decided. Works with Pane address C, whose local row shows the held address.',
+  where: 'The document pane header (open a document).',
+  options: [
+    {
+      id: 'a',
+      label: 'None',
+      summary:
+        'No pane control. A pane gets a local perspective only from a link or the compare lane.',
+      oneLiner: 'No control in the pane.',
+      status: 'final',
+    },
+    {
+      id: 'b',
+      label: 'Chip with the column picker',
+      summary:
+        'A chip in the pane header: "Follows global", or the pane\'s own address when it holds one. It opens the same column picker as the global bar, scoped to this pane. Clear means Follow global perspective.',
+      oneLiner: 'Header chip; same picker, this pane only.',
+      status: 'candidate',
+      refs: `${FIGMA}; E10 D1 455:3372, D2 455:4558, D3 455:6226`,
+    },
+  ],
+}
+
+/**
  * The address row's content width on wide screens. RECOMMENDATION (not decided): B, contained at 1200 px, because the row's content is a
  * sentence (Showing, chips, actions) that stops being readable when it spans a 2560 px screen; the row's line still runs edge to edge.
  */
@@ -417,4 +453,7 @@ export const NAV_LAYOUT: ComponentDef = {
   ],
 }
 
-export const E9_GROUP = {label: 'Compare and review (E9)', ids: E9_COMPONENTS.map((c) => c.id)}
+export const E9_GROUP = {
+  label: 'Compare and review (E9)',
+  ids: [...E9_COMPONENTS.map((c) => c.id), 'paneControl'],
+}
