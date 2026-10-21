@@ -16,9 +16,6 @@ export const menuItemIndicator = style({
   },
 })
 
-// `$inRange && !$last`: the connector that continues below the item. The original template also
-// declared `bottom: -var(--indicator-bottom)`, which is not valid CSS (`-var()` is not a function)
-// and was dropped by the browser at parse time, so it is intentionally not reproduced here.
 const menuItemIndicatorTail = {
   content: '""',
   display: 'block',
@@ -70,8 +67,6 @@ globalStyle(`${menuItemIndicatorInRange} > [data-ui='MenuItem']::after`, {
   bottom: 0,
 })
 
-// `$first` / `$last` refine the in-range rules above at equal specificity, so they must stay
-// defined after them in this file.
 export const menuItemIndicatorFirst = style({})
 
 globalStyle(`${menuItemIndicatorFirst} > [data-ui='MenuItem']::after`, {
@@ -97,9 +92,6 @@ globalStyle(`${menuItemIndicatorLast} > [data-ui='MenuItem']::after`, {
   display: 'none',
 })
 
-// The label is a ui5 Box rendered with `paddingLeft={2}`, whose `.sui-pl2` utility (0,1,0) lives in
-// a static stylesheet with no guaranteed order relative to this one. The runtime-injected rule used
-// to win that tie by insertion order; doubling the class wins it by specificity instead.
 export const menuLabelIndicator = style({
   position: 'relative',
   selectors: {

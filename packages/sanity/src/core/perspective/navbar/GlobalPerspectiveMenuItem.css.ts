@@ -1,9 +1,5 @@
 import {globalStyle, style, styleVariants} from '@vanilla-extract/css'
 
-// Button (mode="bleed") sets `--card-fg-color`, `--card-icon-color` and `background-color` on its
-// own class, and re-assigns the colour variables on `&:not([data-disabled='true']):hover`. The
-// runtime-injected wrapper used to win those ties by insertion order; the doubled class wins them
-// by specificity instead ((0,2,0) over (0,1,0), and (0,4,0) over (0,3,0) for the hover rule).
 const toggleLayerButtonBase = style({
   'selectors': {
     '&&': {
