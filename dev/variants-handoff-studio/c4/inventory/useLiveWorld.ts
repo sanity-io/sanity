@@ -27,7 +27,13 @@ export function useLiveWorld(documentId: string, title: string): InventoryWorld 
   const versions = useVersionList(documentId)
   const {data: releases} = useActiveReleases()
   const variants = useVariantDefinitions()
-  const dimensions = useDimensions()
+  // `useDimensions` returns a new array on every render; the world is keyed on its content so it stays the same object while nothing changed
+  // (the panel resets its selection whenever the world changes).
+  const dimensionsKey = JSON.stringify(useDimensions())
+  const dimensions = useMemo(
+    () => JSON.parse(dimensionsKey) as ReturnType<typeof useDimensions>,
+    [dimensionsKey],
+  )
 
   return useMemo(() => {
     if (!versions) return null

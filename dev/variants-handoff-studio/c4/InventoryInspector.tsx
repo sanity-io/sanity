@@ -4,10 +4,10 @@ import {type DocumentInspector, type DocumentInspectorProps} from 'sanity'
 import {DocumentInspectorHeader, useDocumentPane} from 'sanity/structure'
 
 import {useCorpus} from '../c5/useCorpus'
-import {HandoffList} from './HandoffList'
+import {LiveInventory} from './inventory/LiveInventory'
 
 /**
- * C4 option D, "Handoff list": the document's versions as one list grouped by bundle, in the document inspector, under the Studio's own
+ * C4 for the Handoff Studio: Andrej's inventory panel (without its toolbar), in the document inspector, under the Studio's own
  * inspector title row ("Versions" and a close button). The Versions entry sits in the inspector menu next to the Studio's own.
  */
 function Inventory({documentId}: DocumentInspectorProps) {
@@ -21,7 +21,7 @@ function Inventory({documentId}: DocumentInspectorProps) {
         title="Versions"
       />
       <div style={{flex: 1, minHeight: 0}}>
-        <HandoffList
+        <LiveInventory
           documentId={documentId}
           title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId}
         />

@@ -13,9 +13,9 @@ Project `ppsg7ml5`, dataset `variants-2-0` (private). The origin you serve from 
 | Change             | What it is                                                                                                                                              | Where |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
 | T1 Perspective bar | The stock state control plus one Variants control. The control is named by its dimension ("Audience") until a value is chosen. No bar under the navbar. | `c1/` |
-| T2 Document pills  | Variants group, divider, Published, Draft, Releases group, then a Versions button. Titles, never ids.                                                   | `c2/` |
+| T2 Document pills  | Variants group, divider, Published, Draft, Releases group (counts releases). Titles, never ids. The inventory opens from the pane header's own button.  | `c2/` |
 | T3 Document list   | The documents icon on each row; hover opens a read-only popover; a click opens the document with its inventory.                                         | `c3/` |
-| T4 Inventory       | One list of the document's versions grouped by bundle (Published, Drafts, each release), in the inspector.                                              | `c4/` |
+| T4 Inventory       | Andrej's inventory panel in the inspector, without its toolbar (a scoped style hides it; his files are not edited).                                     | `c4/` |
 
 A row in the inventory changes the GLOBAL perspective (an open beta limitation). The design is pinned in `options/registry.ts` (`fixed`).
 The exploration with every option is `dev/variants-2-0-studio` on branch `explorations/variants-2-0-studio`.

@@ -14,7 +14,7 @@ export default defineCliConfig({
   reactCompiler: {
     transform: 'oxc',
     target: '19',
-    sources: ['dev/variants-2-0-studio', '/sanity/src/'],
+    sources: ['dev/variants-handoff-studio', '/sanity/src/'],
   },
   async vite(viteConfig, {command, mode}) {
     const nextConfig = mergeConfig(viteConfig, {

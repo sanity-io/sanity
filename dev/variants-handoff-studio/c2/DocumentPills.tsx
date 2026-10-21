@@ -1,11 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Flex} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ReactElement} from 'react'
 import {ReleaseAvatarIcon, usePerspective, useSchema, useSetPerspective, useWorkspace} from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
 
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
@@ -16,9 +15,10 @@ import {type AudienceVersion} from '../data/versions'
 
 /**
  * C2 option A (the open beta, OPEN-BETA-HANDOFF-SCOPE T2): the document pills with their order and grouping changed, in the same place as the
- * Studio's own pills. Variants group first, a divider, Published, Drafts, then one Releases group (all releases in its menu), then a Versions
- * button that opens the inventory. Titles, never ids. A group is not drawn when it is empty: no Variants pill without variants, no Releases pill
- * without releases, no Drafts pill when the workspace has no draft model or the type is live edit.
+ * Studio's own pills. Variants group first, a divider, Published, Draft, then one Releases group: one entry per release in its menu, with the
+ * variants it holds under it, and the count is the number of releases. The way into the inventory is the pane header's own button, so there is
+ * no Versions pill. Titles, never ids. A group is not drawn when it is empty: no Variants pill without variants, no Releases pill without
+ * releases, no Draft pill when the workspace has no draft model or the type is live edit.
  */
 
 const stateWord = (v: AudienceVersion) =>
@@ -44,7 +44,14 @@ function glyph(v: AudienceVersion) {
 
 function DropdownPill(props: {
   text: string
-  items: {key: string; text: string; icon: ReactElement; onClick?: () => void}[]
+  items: {
+    key: string
+    text: string
+    icon: ReactElement
+    onClick?: () => void
+    /** A variant listed under its release. */
+    indent?: boolean
+  }[]
   testId: string
 }) {
   return (
@@ -66,28 +73,13 @@ function DropdownPill(props: {
               icon={item.icon}
               key={item.key}
               onClick={item.onClick}
+              style={item.indent ? {marginLeft: 24} : undefined}
               text={item.text}
             />
           ))}
         </Menu>
       }
       popover={{placement: 'bottom-start', portal: true}}
-    />
-  )
-}
-
-/** The Versions button: opens the inventory in the inspector, or closes it when it is open. */
-function VersionsButton() {
-  const {inspector, openInspector, closeInspector} = useDocumentPane()
-  const open = inspector?.name === 'variants-inventory'
-  return (
-    <Chip
-      data-testid="pills-versions"
-      icon={DocumentsIcon}
-      mode="ghost"
-      onClick={() => (open ? closeInspector() : openInspector('variants-inventory'))}
-      selected={open}
-      text="Versions"
     />
   )
 }
@@ -130,12 +122,27 @@ export function DocumentPillsV1({
     icon: glyph(v),
     onClick: selectVariant(v),
   }))
-  const releaseItems = releases.map((v) => ({
-    key: `${v.bundleId}-${v.audience ?? 'base'}`,
-    text: `${v.audience ? `${v.audience} · ` : ''}${stateWord(v)}`,
-    icon: glyph(v),
-    onClick: () => v.bundleId && setPerspective(v.bundleId),
-  }))
+  // One entry per RELEASE (the pill counts releases, not versions); the versions it holds are listed under it: the document, then its variants.
+  const releaseGroups = [...new Set(releases.map((v) => v.bundleId))].flatMap((bundleId) => {
+    const inRelease = releases.filter((v) => v.bundleId === bundleId)
+    const head = inRelease[0]
+    return [
+      {
+        key: `release-${bundleId}`,
+        text: stateWord({...head, audience: null}),
+        icon: glyph(head),
+        onClick: () => bundleId && setPerspective(bundleId),
+      },
+      ...inRelease.map((v) => ({
+        key: `release-${bundleId}-${v.audience ?? 'base'}`,
+        text: v.audience ?? 'Base document',
+        icon: <RhombusIcon />,
+        indent: true,
+        onClick: () => selectVariant(v)(),
+      })),
+    ]
+  })
+  const releaseCount = new Set(releases.map((v) => v.bundleId)).size
   const hasEarlierGroup = variants.length > 0
 
   return (
@@ -188,12 +195,11 @@ export function DocumentPillsV1({
       ) : null}
       {releases.length ? (
         <DropdownPill
-          items={releaseItems}
+          items={releaseGroups}
           testId="pills-releases"
-          text={`Releases · ${releases.length}`}
+          text={`Releases · ${releaseCount}`}
         />
       ) : null}
-      <VersionsButton />
     </Flex>
   )
 }
