@@ -1,14 +1,12 @@
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo} from 'react'
-import {
-  CreateReferenceButton,
-  type CreateReferenceOption,
-  getPublishedId,
-  isNonNullable,
-  useReferenceInputOptions,
-} from 'sanity'
+import {getPublishedId} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {CreateButton as CreateReferenceButton} from '../../../core/form/inputs/ReferenceInput/CreateButton'
+import {type CreateReferenceOption} from '../../../core/form/inputs/ReferenceInput/types'
+import {useReferenceInputOptions} from '../../../core/form/studio/contexts/ReferenceInputOptions'
+import {isNonNullable} from '../../../core/util/isNonNullable'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {type IncomingReferenceCreationParams} from './isIncomingReferenceCreation'
 import {type IncomingReferencesOptions} from './types'

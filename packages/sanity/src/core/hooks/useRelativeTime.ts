@@ -45,7 +45,7 @@ export interface RelativeTimeOptions {
   timeZone?: string
 }
 
-/** @internal */
+/** @public */
 export function useRelativeTime(time: Date | string, options: RelativeTimeOptions = {}): string {
   const [now, updateNow] = useReducer(
     // We don't care about the action input, every update should use the current time as the new state

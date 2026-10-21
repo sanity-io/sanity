@@ -30,7 +30,8 @@ export interface PreviewState {
 /**
  * Obtain a document's published and draft state, along with loading status.
  *
- * @internal
+ * @hidden
+ * @beta
  */
 export function getPreviewStateObservable(
   documentPreviewStore: DocumentPreviewStore,

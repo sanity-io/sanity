@@ -1,11 +1,8 @@
-import {
-  type SystemVariant,
-  type TargetDocumentState,
-  type TargetPerspective,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {type SystemVariant, type TargetPerspective} from 'sanity'
 import {describe, expect, it} from 'vitest'
 
+import {type TargetDocumentState} from '../../../../../core/hooks/useTargetDocumentState'
+import {type VersionInfoDocumentStub} from '../../../../../core/releases/store/types'
 import {
   getBadgeSystemDocument,
   getTargetBadgePerspective,

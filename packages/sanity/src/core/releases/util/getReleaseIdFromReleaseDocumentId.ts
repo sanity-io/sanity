@@ -14,7 +14,7 @@ export function isReleaseDocumentId(id: string): boolean {
 }
 
 /**
- * @internal
+ * @public
  * @param releaseDocumentId - the document id of the release
  */
 export function getReleaseIdFromReleaseDocumentId(releaseDocumentId: string): ReleaseId {

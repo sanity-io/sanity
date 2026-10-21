@@ -40,7 +40,7 @@ import {
   useState,
 } from 'react'
 import {createRoot} from 'react-dom/client'
-import {ChangeIndicatorsTracker, defaultLocale, type Locale, PatchEvent, set, unset} from 'sanity'
+import {type Locale, PatchEvent, set, unset} from 'sanity'
 import {
   DocumentIdContext,
   FormValueContext,
@@ -48,6 +48,9 @@ import {
   LocaleContext,
   type LocaleContextValue,
 } from 'sanity/_singletons'
+
+import {ChangeIndicatorsTracker} from '../../core/changeIndicators/tracker'
+import {defaultLocale} from '../../core/i18n/locales'
 
 /** Module-level so every mount shares one theme object (hosts push `scheme` as plain data). */
 const islandTheme = buildTheme()
