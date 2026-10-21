@@ -915,11 +915,9 @@ export {
 export {type NavbarContextValue} from '../core/studio/StudioLayout'
 export {StudioLayoutComponent} from '../core/studio/StudioLayoutComponent'
 export {
-  getStructurePaneKind,
   recordStructurePaneKind,
   type StructurePaneKind,
 } from '../core/studio/telemetry/paneKindRegistry'
-export {toSoftNavRoute} from '../core/studio/telemetry/softNavRoute'
 export {useTelemetryConsent} from '../core/studio/telemetry/useTelemetryConsent'
 export {
   UpsellDialogDismissed,

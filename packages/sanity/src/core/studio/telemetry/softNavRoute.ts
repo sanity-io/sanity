@@ -71,9 +71,12 @@ export function toSoftNavRoute(input: SoftNavRouteInput): string {
   const toolSegments = stripBasePath(pathname, input.basePath)
   if (toolSegments.length === 0) return OTHER
 
-  const [toolName, firstToolSegment] = toolSegments
+  const [toolName, firstToolSegment, secondToolSegment] = toolSegments
   if (toolName === 'intent') return toIntentRoute(firstToolSegment)
-  if (input.toolNames.includes(toolName)) return toToolRoute(toolName, firstToolSegment)
+  if (input.toolNames.includes(toolName)) {
+    if (firstToolSegment === 'intent') return toIntentRoute(secondToolSegment)
+    return toToolRoute(toolName, firstToolSegment)
+  }
 
   return OTHER
 }

@@ -67,6 +67,19 @@ describe('toSoftNavRoute', () => {
     expect(routeFor('/intent/some-future-intent/id=abc33')).toBe('intent:other')
   })
 
+  it('classifies a tool-scoped intent route the same way, e.g. global search landing in structure', () => {
+    expect(routeFor('/structure/intent/edit/id=abc33;type=article')).toBe('intent:edit')
+  })
+
+  it('records through a root-prefixed resolver path and looks up from the real URL it maps to', () => {
+    // Mirrors StructureToolPane, whose resolver path carries a root id the URL omits.
+    const resolverPath = 'root;book;knut'
+    const registryPath = resolverPath.split(';').slice(1).join(';')
+    recordStructurePaneKind(registryPath, 'document')
+
+    expect(routeFor('/structure/book;knut')).toBe('structure:document')
+  })
+
   it('falls back to other for an unknown tool name', () => {
     expect(routeFor('/some-removed-tool/whatever')).toBe('other')
   })
