@@ -13,6 +13,7 @@ import {useWorkspace} from '../../studio/workspace'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {usePublishedId} from '../contexts/DocumentIdProvider'
 import {createPatchChannel} from '../patch/PatchChannel'
+import {type PatchEvent} from '../patch/PatchEvent'
 import {useFormState} from '../store/useFormState'
 import {type FieldProps} from '../types/fieldProps'
 import {type FormDocumentValue} from '../types/formDocumentValue'
@@ -44,6 +45,7 @@ function noop() {
 
 interface RenderFormBuilderOptions {
   fieldActions?: FormBuilderProps['__internal_fieldActions']
+  onChange?: FormBuilderProps['onChange']
   documentValue?: FormDocumentValue | undefined
   formNodeId?: string
   config?: Partial<SingleWorkspace>
@@ -101,7 +103,7 @@ function PaneStandIn(props: {children: ReactNode}) {
 }
 
 function FormBuilderHarness(props: RenderFormBuilderOptions) {
-  const {fieldActions, documentValue, formNodeId} = props
+  const {fieldActions, documentValue, formNodeId, onChange = noop} = props
   const {schema} = useWorkspace()
   const schemaType = schema.get('test')
 
@@ -144,7 +146,7 @@ function FormBuilderHarness(props: RenderFormBuilderOptions) {
       id: formNodeId ?? formState?.id ?? '',
       level: formState?.level || 0,
       members: formState?.members || EMPTY_ARRAY,
-      onChange: noop,
+      onChange,
       onFieldGroupSelect: noop,
       onPathBlur: noop,
       onPathFocus: noop,
@@ -158,7 +160,7 @@ function FormBuilderHarness(props: RenderFormBuilderOptions) {
       validation: EMPTY_ARRAY,
       value: formState?.value as FormDocumentValue,
     }),
-    [fieldActions, formNodeId, formState, patchChannel, schemaType],
+    [fieldActions, formNodeId, formState, onChange, patchChannel, schemaType],
   )
 
   return <FormBuilder {...formBuilderProps} />
@@ -402,19 +404,57 @@ describe('FormBuilder', () => {
       return props.renderDefault(props)
     }
 
+    const onChange = vi.fn<(event: PatchEvent) => void>()
+
     await renderFormBuilder({
       documentValue: {_id: 'test', _type: 'test'},
       config: {schema: {types: [customInputTestType(NeverSettlingInput)]}},
+      onChange,
       pane: true,
     })
 
     const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
     expect(within(customField).getByTestId('custom-input-fallback')).toBeInTheDocument()
     expect(within(customField).queryByTestId('string-input')).not.toBeInTheDocument()
-    expect(
-      within(screen.getByTestId('field-title')).getByTestId('string-input'),
-    ).toBeInTheDocument()
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+
+    // Editing a sibling field is what creates a new document, so it must reach the form
+    await userEvent.type(within(screen.getByTestId('field-title')).getByRole('textbox'), 'x')
+    const patchedPaths = onChange.mock.calls.flatMap(([event]) =>
+      event.patches.map((patch) => patch.path),
+    )
+    expect(patchedPaths).toContainEqual(['title'])
+  })
+
+  it("keeps the form's loading block while the document type's own custom input suspends", async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const pending = new Promise<never>(noop)
+    function NeverSettlingDocumentInput(props: InputProps) {
+      use(pending)
+      return props.renderDefault(props)
+    }
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {
+        schema: {
+          types: [
+            defineType({
+              type: 'document',
+              name: 'test',
+              title: 'Test',
+              fields: [{type: 'string', name: 'title', title: 'Title'}],
+              components: {input: NeverSettlingDocumentInput},
+            }),
+          ],
+        },
+      },
+      pane: true,
+    })
+
+    expect(await screen.findByTestId('loading-block', {}, {timeout: 10_000})).toBeInTheDocument()
+    expect(screen.queryByTestId('custom-input-fallback')).not.toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
   })
 
