@@ -11,6 +11,14 @@ interface SoftNavRouteInput {
   toolNames: string[]
 }
 
+function parsePathname(navigationURL: string): string | undefined {
+  try {
+    return new URL(navigationURL).pathname
+  } catch {
+    return undefined
+  }
+}
+
 function toPathSegments(path: string): string[] {
   return path.split('/').filter(Boolean)
 }
@@ -45,9 +53,7 @@ function toStructureRegistryKey(decodedSegment: string): string {
 }
 
 function toStructurePaneKind(paneSegment: string | undefined): string {
-  // The structure router percent-encodes each ';'-separated group as a whole
-  // (encodePanesSegment), so a group's ',' params and '|' split-pane siblings
-  // only become literal again once decoded.
+  // The router percent-encodes each ';' group whole, so ',' params and '|' siblings are only literal once decoded.
   const decodedSegment = decodePaneSegment(paneSegment ?? '')
   if (decodedSegment === undefined) return OTHER
   return getStructurePaneKind(toStructureRegistryKey(decodedSegment)) ?? OTHER
@@ -59,12 +65,8 @@ function toToolRoute(toolName: string, firstToolSegment: string | undefined): st
 }
 
 export function toSoftNavRoute(input: SoftNavRouteInput): string {
-  let pathname: string
-  try {
-    pathname = new URL(input.navigationURL).pathname
-  } catch {
-    return OTHER
-  }
+  const pathname = parsePathname(input.navigationURL)
+  if (pathname === undefined) return OTHER
 
   const toolSegments = stripBasePath(pathname, input.basePath)
   if (toolSegments.length === 0) return OTHER

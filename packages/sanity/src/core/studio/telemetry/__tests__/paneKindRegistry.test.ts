@@ -4,6 +4,16 @@ function importFresh() {
   return import('../paneKindRegistry')
 }
 
+async function importFreshAtCapacity() {
+  const registry = await importFresh()
+  Array.from({length: registry.MAX_ENTRIES}, (_unused, index) => `path-${index}`).forEach(
+    (path) => {
+      registry.recordStructurePaneKind(path, 'document')
+    },
+  )
+  return registry
+}
+
 describe('paneKindRegistry', () => {
   afterEach(() => {
     vi.resetModules()
@@ -43,11 +53,7 @@ describe('paneKindRegistry', () => {
   })
 
   it('evicts the oldest recorded path once the cap is reached', async () => {
-    const {recordStructurePaneKind, getStructurePaneKind, MAX_ENTRIES} = await importFresh()
-
-    Array.from({length: MAX_ENTRIES}, (_unused, index) => index).forEach((index) => {
-      recordStructurePaneKind(`path-${index}`, 'document')
-    })
+    const {recordStructurePaneKind, getStructurePaneKind} = await importFreshAtCapacity()
     expect(getStructurePaneKind('path-0')).toBe('document')
 
     recordStructurePaneKind('path-overflow', 'list')
@@ -58,11 +64,7 @@ describe('paneKindRegistry', () => {
   })
 
   it('does not evict anything when overwriting an already-recorded path at the cap', async () => {
-    const {recordStructurePaneKind, getStructurePaneKind, MAX_ENTRIES} = await importFresh()
-
-    Array.from({length: MAX_ENTRIES}, (_unused, index) => index).forEach((index) => {
-      recordStructurePaneKind(`path-${index}`, 'document')
-    })
+    const {recordStructurePaneKind, getStructurePaneKind} = await importFreshAtCapacity()
 
     recordStructurePaneKind('path-0', 'list')
 
