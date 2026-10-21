@@ -17,6 +17,12 @@ async function open(design: string, width = 1440, theme: 'light' | 'dark' = 'lig
   await p.goto(`http://localhost:3350/structure/e9Set?perspective=drafts&variant=aud-returning-visitors&design=show.a,stage.open-beta,c3.d${design}`)
   await p.locator('a[href*="e9-set-"]').first().waitFor({timeout: 60000})
   await p.waitForTimeout(6000)
+  // The review base is the published version by default (one base, 21 Oct). The M1 sets compare the variant with the base document: pick it as the base (Drafts · Base: one move from Drafts · Returning visitors, so a comparison opened from the pass is not refused).
+  if (/reviewPass\.[bc]/.test(design) && (await p.getByTestId('base-pick').count())) {
+    await p.getByTestId('base-pick').click()
+    await p.getByRole('menuitem', {name: 'Drafts · Base'}).click()
+    await p.waitForTimeout(5000)
+  }
   return {p, context}
 }
 const count = (p: Page, id: string) => p.getByTestId(id).count()
@@ -70,7 +76,7 @@ for (const theme of ['light', 'dark'] as const) {
 for (const theme of ['light', 'dark'] as const) {
   const {p, context} = await open(',reviewPass.b', 1440, theme)
   if (theme === 'light') {
-    log('reviewPass B: the header counts "7 of 10 differ"', /Returning visitors against Base · 7 of 10 differ/.test((await p.getByTestId('review-summary').textContent()) ?? ''), String(await p.getByTestId('review-summary').textContent()))
+    log('reviewPass B: the header counts "7 of 10 differ"', /Returning visitors · 7 of 10 differ/.test((await p.getByTestId('review-summary').textContent()) ?? ''), String(await p.getByTestId('review-summary').textContent()))
     log('reviewPass B: a Differs word on each of the 7 rows', (await count(p, 'row-differs')) === 7, String(await count(p, 'row-differs')))
     log('reviewPass B: Review Returning visitors is offered', (await count(p, 'review-start')) === 1)
   }

@@ -40,18 +40,30 @@ export function exactVariantId(
 type RawDoc = Record<string, Json>
 
 const refOf = (d: RawDoc): string | null =>
-  (d._system as {variant?: {_ref?: string}} | undefined)?.variant?._ref ?? null
+  (d._system as {variant?: {_ref?: string}; bundleId?: string} | undefined)?.variant?._ref ?? null
+
+/** Which bundle a raw version sits in: `published`, `drafts` or a release id. The system field says it for variants; a base document says it by its id. */
+function bundleOf(d: RawDoc): string {
+  const system = d._system as {bundleId?: string; variant?: unknown} | undefined
+  if (system?.bundleId) return system.bundleId
+  // A variant without a bundle id is the published one (its id carries a scope id, not the bundle).
+  if (system?.variant) return 'published'
+  const id = String(d._id)
+  if (id.startsWith('drafts.')) return 'drafts'
+  return /^versions\.([^.]+)\./.exec(id)?.[1] ?? 'published'
+}
+
+/** What a reader would compare: the content, without the system fields (`_id`, `_rev`, `_system`, times). */
+const content = (d: RawDoc): RawDoc =>
+  Object.fromEntries(Object.entries(d).filter(([key]) => !key.startsWith('_') || key === '_type'))
 
 /** The version of one document at an address, from every raw version of the type. A drafts address falls back to the published version. */
 function docAt(versions: readonly RawDoc[], id: string, address: Address): RawDoc | null {
   const variant = address.variant === NONE ? null : `_.variants.${address.variant}`
-  const own = versions.filter((d) => baseId(String(d._id)) === id)
-  const ofVariant = own.filter((d) => refOf(d) === variant)
-  const published = ofVariant.find((d) => !/^(drafts|versions)\./.test(String(d._id)))
-  if (address.perspective === 'published') return published ?? null
-  if (address.perspective === 'drafts')
-    return ofVariant.find((d) => String(d._id).startsWith('drafts.')) ?? published ?? null
-  return ofVariant.find((d) => String(d._id).startsWith(`versions.${address.perspective}.`)) ?? null
+  const ofVariant = versions.filter((d) => refOf(d) === variant && baseId(String(d._id)) === id)
+  const inBundle = (bundle: string) => ofVariant.find((d) => bundleOf(d) === bundle) ?? null
+  if (address.perspective === 'drafts') return inBundle('drafts') ?? inBundle('published')
+  return inBundle(address.perspective)
 }
 
 /**
@@ -92,7 +104,7 @@ export function useDiffMap(type: string | undefined, variantId: string | null): 
           const here = docAt(all, id, here$)
           const there = docAt(all, id, there$)
           // No version at the base means nothing to differ from; a missing showing version is not part of the pass.
-          if (here && there) map.set(id, {differs: !deepEqual(there, here)})
+          if (here && there) map.set(id, {differs: !deepEqual(content(there), content(here))})
         }
         maps.set(key, map)
       })
@@ -151,7 +163,7 @@ export function useReleaseSet(
           const here = docAt(all, id, {perspective: release, variant: NONE})
           const there = docAt(all, id, {perspective: basePerspective, variant: NONE})
           if (!there) counts.isNew++
-          else if (here && !deepEqual(there, here)) counts.differs++
+          else if (here && !deepEqual(content(there), content(here))) counts.differs++
         }
         setCounts.set(key, counts)
       })

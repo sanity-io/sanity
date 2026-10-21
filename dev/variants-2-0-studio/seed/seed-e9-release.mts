@@ -16,17 +16,23 @@ const setBase = (i: number) => ({
 })
 const have = await x.fetch(`defined(*[_id == $id][0]._id)`, {id: '_.releases.rE9m3'})
 if (!have) await x.action({actionType: 'sanity.action.release.create', releaseId: 'rE9m3', metadata: {title: 'E9 base release', releaseType: 'undecided'}} as never)
-async function versionOf(publishedId: string, document: Record<string, unknown>) {
+// The release version starts from the published document, so only the fields named here differ from it.
+const publishedContent = async (id: string) => {
+  const doc = (await x.fetch('*[_id == $id][0]', {id})) as Record<string, unknown> | null
+  return Object.fromEntries(Object.entries(doc ?? {}).filter(([k]) => !k.startsWith('_') || k === '_type'))
+}
+async function versionOf(publishedId: string, changes: Record<string, unknown>) {
+  const document = {...(await publishedContent(publishedId)), ...changes}
   const create = {actionType: 'sanity.action.document.version.create', publishedId, document: {_id: `versions.rE9m3.${publishedId}`, ...document}}
   try {
     await x.action(create as never, {tag: 'variants-2-0.seed.e9'})
   } catch (e) {
     if (!/already exists/i.test(body(e))) throw e
-    await x.action({actionType: 'sanity.action.document.version.discard', versionId: `versions.rE9m3.${publishedId}`, purge: true} as never)
+    await x.action({actionType: 'sanity.action.document.version.discard', versionId: `versions.rE9m3.${publishedId}`} as never)
     await x.action(create as never, {tag: 'variants-2-0.seed.e9'})
   }
 }
-for (const i of [3, 4]) await versionOf(`e9-set-${String(i + 1).padStart(2, '0')}`, {...setBase(i), blurb: `${TITLES[i]}: the release blurb, new this autumn.`})
-await versionOf('e9-set-06', {...setBase(5)})
+for (const i of [3, 4]) await versionOf(`e9-set-${String(i + 1).padStart(2, '0')}`, {blurb: `${TITLES[i]}: the release blurb, new this autumn.`})
+await versionOf('e9-set-06', {})
 await versionOf('e9-set-14', {_type: 'e9Set', title: 'A Book Not Yet Published', subtitle: 'By Author 14', blurb: 'Only in the release.', promo: 'Free shipping over 300 kr.', cta: 'Add to cart'})
 console.log('rE9m3 done')
