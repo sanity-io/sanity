@@ -3,13 +3,12 @@ import {SearchIcon} from '@sanity/icons/Search'
 // oxlint-disable-next-line no-restricted-imports -- the chevron trigger needs the hit-area style only @sanity/ui Button accepts
 import {Button, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ChangeEvent, useCallback, useState} from 'react'
+import {type ChangeEvent, lazy, Suspense, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
 import {oversizedButtonStyle} from '../../styles'
@@ -27,6 +26,20 @@ import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 const OversizedButton = styled(Button)`
   ${oversizedButtonStyle}
 `
+
+// Opened from the menu, so the dialog (form, date handling) is fetched on first use rather
+// than with the navbar. Opening the menu starts the fetch, so the chunk is normally there by
+// the time the item is clicked and the dialog opens without a wait.
+const importCreateReleaseDialog = () =>
+  import('../../../releases/components/dialog/CreateReleaseDialog.lazy')
+
+const CreateReleaseDialog = lazy(importCreateReleaseDialog)
+
+function preloadCreateReleaseDialog() {
+  importCreateReleaseDialog().catch(() => {
+    // Ignored: rendering the lazy dialog surfaces load failures through the error boundary.
+  })
+}
 
 /**
  * Labelled chip used when variants are on. The classic pill keeps its own
@@ -142,7 +155,10 @@ export function ReleasesMenu({
         }
         id="releases-menu"
         onClose={handleMenuClose}
-        onOpen={lockMenuWidth}
+        onOpen={() => {
+          lockMenuWidth()
+          preloadCreateReleaseDialog()
+        }}
         ref={triggerRef}
         menu={
           <Menu
@@ -191,7 +207,9 @@ export function ReleasesMenu({
         }}
       />
       {createBundleDialogOpen && (
-        <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        <Suspense fallback={null}>
+          <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        </Suspense>
       )}
     </>
   )
