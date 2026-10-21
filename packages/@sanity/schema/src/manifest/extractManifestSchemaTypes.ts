@@ -99,6 +99,13 @@ type ValidationRuleTransformer = (rule: RuleSpec) => ManifestValidationRule | un
 
 const MAX_CUSTOM_PROPERTY_DEPTH = 5
 
+// Same symbol as `markInternalValidator` in `@sanity/validation`. Schema cannot
+// import that package. Built-in validators such as slug structure and uniqueness
+// are re-applied from the type name when a manifest is reconstructed, so they
+// must not be serialized as `{flag: 'custom'}` (reconstruction would install a
+// placeholder that throws and blocks publish).
+const INTERNAL_VALIDATOR = Symbol.for('@sanity/validation/internalValidator')
+
 const noopIconResolver: IconResolver = () => undefined
 
 export async function extractCreateWorkspaceManifest(
@@ -426,6 +433,10 @@ function transformValidation(validation: SchemaValidationValue): Validation {
           const {flag, constraint} = rule
 
           if (disallowedFlags.includes(flag)) {
+            return false
+          }
+
+          if (typeof constraint === 'function' && INTERNAL_VALIDATOR in constraint) {
             return false
           }
 

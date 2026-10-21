@@ -177,6 +177,24 @@ describe('manifest-deployed slug validation', () => {
     )
   })
 
+  it('uses the default uniqueness check when a custom isUnique callback cannot be serialized', async () => {
+    const isUnique = vi.fn(async () => false)
+    const {schema} = manifestRoundTrip([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'slug', type: 'slug', options: {isUnique}}],
+      },
+    ])
+    const {client, fetch} = createClient(true)
+
+    await expect(
+      validate(schema, createDocument({slug: {_type: 'slug', current: 'hello'}}), client),
+    ).resolves.toEqual({status: 'passed', markers: []})
+    expect(isUnique).not.toHaveBeenCalled()
+    expect(fetch).toHaveBeenCalledOnce()
+  })
+
   it('keeps an authored slug rule together with the built-in checks', async () => {
     const {schema, source} = manifestRoundTrip([
       {
