@@ -8,6 +8,7 @@ import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporar
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {valueTitle} from '../c1/model'
 import {rankSearch, SEARCH_FROM, type SearchFields} from '../c1/search'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
@@ -167,11 +168,12 @@ export function DocumentPillsV1({
       icon: glyph(v),
       onClick: selectVariant(v),
       search: {
-        condition: definition
-          ? Object.entries(definition.conditions)
-              .map(([name, value]) => `${name}: ${value}`)
-              .join(', ')
-          : undefined,
+        condition: (() => {
+          const [name, value] = Object.entries(definition?.conditions ?? {})[0] ?? []
+          if (!name) return undefined
+          const spec = address.dimensions.find((d) => d.name === name)
+          return {dimension: name, value: spec ? valueTitle(spec, String(value)) : String(value)}
+        })(),
         id: v.variantId ?? undefined,
       },
     }

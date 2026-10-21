@@ -20,10 +20,13 @@ import {
 import {createPortal} from 'react-dom'
 import {ReleaseAvatarIcon} from 'sanity'
 
+import {isReleaseScheduledOrScheduling} from '../../../../packages/sanity/src/core/releases/util/util'
+import {isCardinalityOneRelease} from '../../../../packages/sanity/src/core/util/releaseUtils'
 import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
 import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 import {DimensionIcon} from '../../c1/dimensionIcons'
+import {rankSearch, SEARCH_FROM} from '../../c1/search'
 import {type InventoryEntry, type InventoryWorld} from './fixtures'
 
 // T4 "Create version" (OPEN-BETA-HANDOFF-SCOPE, T4; Figma C4 "Create version: the chosen pattern"), live. Mirrors the Storybook reference
@@ -50,6 +53,8 @@ export interface VariantChoice {
   title: string
   dimension: string
   value: string
+  /** The value's title, which search shows as the reason ("Matches audience: First-time visitors"); the slug when it has none. */
+  valueTitle?: string
 }
 
 type Dest = {kind: 'drafts'} | {kind: 'release'; name: string; title: string; type: string}
@@ -81,38 +86,6 @@ const HAS_VERSION = 'Has a version · Open it'
 
 const matches = (query: string, text: string) =>
   !query.trim() || text.toLowerCase().includes(query.trim().toLowerCase())
-
-interface Searchable {
-  title: string
-  /** `audience: students`: the condition a variant definition names. */
-  condition?: string
-  id?: string
-}
-
-/**
- * Menu search: titles first, then conditions, then IDs. An ID matches only whole or from its start, so a stray fragment never lists a row. A row
- * found by its condition or ID says why.
- */
-function search<T>(
-  items: readonly T[],
-  query: string,
-  get: (item: T) => Searchable,
-): {item: T; reason?: string}[] {
-  const q = query.trim().toLowerCase()
-  if (!q) return items.map((item) => ({item}))
-  const found: {item: T; reason?: string; score: number}[] = []
-  for (const item of items) {
-    const {title, condition, id} = get(item)
-    const t = title.toLowerCase()
-    if (t.startsWith(q)) found.push({item, score: 0})
-    else if (t.includes(q)) found.push({item, score: 1})
-    else if (condition?.toLowerCase().includes(q))
-      found.push({item, score: 2, reason: `Matches ${condition}`})
-    else if (id && id.toLowerCase().startsWith(q))
-      found.push({item, score: 3, reason: 'Matches ID'})
-  }
-  return found.sort((x, y) => x.score - y.score)
-}
 
 // Pills hug their content and sit at the start of the column; one wider than the column ends with an ellipsis and says the whole of it on hover.
 const PILL = {
@@ -423,14 +396,21 @@ export function CreateVersion(props: {
   const pendingGroup = useRef<string | undefined>(props.received)
   const [currentGroup, setCurrentGroup] = useState<string | undefined>(props.received)
 
-  const openReleases: Dest[] = world.releases
-    .filter((r) => r.state !== 'archived' && r.state !== 'published')
-    .map((r) => ({
-      kind: 'release',
-      name: r.name,
-      title: r.metadata?.title || r.name,
-      type: r.metadata?.releaseType ?? 'undecided',
-    }))
+  // Bundles a new version can go in: open releases. Archived and published releases are left out, and so are scheduled drafts (single-document
+  // bundles). A scheduled release is locked, as the Studio locks it: listed in the menu, not a target.
+  const toDest = (r: (typeof world.releases)[number]): Dest => ({
+    kind: 'release',
+    name: r.name,
+    title: r.metadata?.title || r.name,
+    type: r.metadata?.releaseType ?? 'undecided',
+  })
+  const listed = world.releases.filter(
+    (r) =>
+      !['archived', 'archiving', 'published', 'publishing'].includes(r.state ?? '') &&
+      !isCardinalityOneRelease(r),
+  )
+  const openReleases: Dest[] = listed.filter((r) => !isReleaseScheduledOrScheduling(r)).map(toDest)
+  const lockedReleases: Dest[] = listed.filter(isReleaseScheduledOrScheduling).map(toDest)
   const destinations: Dest[] = [...(draftsEnabled ? [DRAFTS] : []), ...openReleases]
   const startDest = destinations[0] ?? DRAFTS
 
@@ -643,7 +623,7 @@ export function CreateVersion(props: {
       <PillMenu
         boundary={frame}
         icon={variantPick ? <DimensionIcon name={variantPick.dimension} /> : <VariantDiamond />}
-        searchable={variants.length + 1 > 3}
+        searchable={variants.length + 1 >= SEARCH_FROM}
         searchLabel="Find a variant definition"
         testId="add-pill-variant"
         text={variantPick?.title ?? BASE_LABEL}
@@ -660,9 +640,9 @@ export function CreateVersion(props: {
                 text={BASE_LABEL}
               />
             ) : null}
-            {search(variants, q, (v) => ({
+            {rankSearch(variants, q, (v) => ({
               title: v.title,
-              condition: `${v.dimension}: ${v.value}`,
+              condition: {dimension: v.dimension, value: v.valueTitle ?? v.value},
               id: v.id,
             })).map(({item: v, reason}) => (
               <Item
@@ -685,27 +665,32 @@ export function CreateVersion(props: {
       <PillMenu
         boundary={frame}
         icon={destIcon(draft.dest)}
-        searchable={destinations.length + 1 > 3}
+        searchable={destinations.length + lockedReleases.length + 1 >= SEARCH_FROM}
         searchLabel="Find a bundle"
         testId="add-pill-bundle"
         text={destTitle(draft.dest)}
       >
         {(q) => (
           <>
-            {search(destinations, q, (d) => ({
+            {rankSearch([...destinations, ...lockedReleases], q, (d) => ({
               title: destTitle(d),
               id: d.kind === 'release' ? d.name : undefined,
-            })).map(({item: d, reason}) => (
-              <Item
-                icon={destIcon(d)}
-                id={`add-bundle-${destGroup(d)}`}
-                key={destGroup(d)}
-                onClick={() => patch({dest: d})}
-                selected={destGroup(d) === destGroup(draft.dest)}
-                sub={reason}
-                text={destTitle(d)}
-              />
-            ))}
+            })).map(({item: d, reason}) => {
+              // A scheduled release is locked (as the Studio locks it): listed, dimmed, not a target.
+              const locked = lockedReleases.includes(d)
+              return (
+                <Item
+                  disabled={locked}
+                  icon={destIcon(d)}
+                  id={`add-bundle-${destGroup(d)}`}
+                  key={destGroup(d)}
+                  onClick={locked ? undefined : () => patch({dest: d})}
+                  selected={destGroup(d) === destGroup(draft.dest)}
+                  sub={reason ?? (locked ? 'Scheduled · locked' : undefined)}
+                  text={destTitle(d)}
+                />
+              )
+            })}
             {matches(q, 'Published') ? (
               <Item
                 disabled
@@ -724,7 +709,7 @@ export function CreateVersion(props: {
       <PillMenu
         boundary={frame}
         icon={<DocumentIcon />}
-        searchable={world.entries.length + 1 > 3}
+        searchable={world.entries.length + 1 >= SEARCH_FROM}
         searchLabel="Find a version"
         testId="add-pill-source"
         text={draft.source === 'nearest' || !from ? 'Nearest version' : entryLabel(from)}
@@ -889,6 +874,7 @@ export function CreateVersion(props: {
   const groupButtons = headers.map((header) => {
     const id = groupId(header)
     const release = openReleases.find((d) => d.kind === 'release' && d.name === id)
+    const locked = lockedReleases.some((d) => d.kind === 'release' && d.name === id)
     const isDrafts = id.startsWith('stage-') && id !== 'stage-published'
     const variant = variants.find((v) => id === `${v.dimension}-${v.value}`)
     const askable = Boolean(release || (isDrafts && draftsEnabled) || (variant && variantsOn))
@@ -898,7 +884,11 @@ export function CreateVersion(props: {
           <Box data-add-anchor="" style={{flex: 'none'}}>
             <Button
               aria-label={
-                askable ? 'Create version in this group' : 'This group takes no new version'
+                askable
+                  ? 'Create version in this group'
+                  : locked
+                    ? 'Scheduled releases are locked'
+                    : 'This group takes no new version'
               }
               data-testid={`add-group-${id}`}
               disabled={!askable}
@@ -921,7 +911,13 @@ export function CreateVersion(props: {
                         },
                 )
               }}
-              tooltipProps={{content: askable ? 'Create version here' : 'Takes no new version'}}
+              tooltipProps={{
+                content: askable
+                  ? 'Create version here'
+                  : locked
+                    ? 'Scheduled releases are locked'
+                    : 'Takes no new version',
+              }}
             />
           </Box>,
           header,

@@ -11,6 +11,7 @@ import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/Menu
 import {DimensionIcon} from './dimensionIcons'
 import {type DimensionSpec, matches, type Chosen, valueTitle} from './model'
 import {MenuPopover} from './primitives'
+import {rankSearch} from './search'
 
 /** How many dimensions pick the form: one is a list, two to four are columns, five or more a rail. */
 export type PanelForm = 'list' | 'columns' | 'rail'
@@ -195,23 +196,13 @@ export function PickerContent(props: {
   }
   const searching = !!query.trim()
   const any = Object.keys(chosen).length > 0
-  // Search ranks titles first, then conditions, then IDs (an ID only whole or from its start); a value found by its condition or ID says why.
-  const ranked = (d: DimensionSpec) => {
-    const q = query.trim().toLowerCase()
-    const found: {key: string; title: string; reason?: string; score: number}[] = []
-    for (const [key, title] of d.values) {
-      const t = title.toLowerCase()
-      const condition = `${d.name}: ${key}`
-      const id = idOf?.(d.name, key)
-      if (!q || t.startsWith(q)) found.push({key, title, score: 0})
-      else if (t.includes(q)) found.push({key, title, score: 1})
-      else if (condition.toLowerCase().includes(q) || d.title.toLowerCase().includes(q))
-        found.push({key, title, score: 2, reason: `Matches ${condition}`})
-      else if (id?.toLowerCase().startsWith(q))
-        found.push({key, title, score: 3, reason: 'Matches ID'})
-    }
-    return found.sort((x, y) => x.score - y.score)
-  }
+  // The open beta search rule (./search): titles, then conditions (shown with the value's title), then IDs, with the reason under the rest.
+  const ranked = (d: DimensionSpec) =>
+    rankSearch(d.values, query, ([key, title]) => ({
+      title,
+      condition: {dimension: d.name, value: title},
+      id: idOf?.(d.name, key),
+    })).map(({item: [key, title], reason}, rank) => ({key, title, reason, score: rank}))
   const hits = searching
     ? dimensions
         .flatMap((d) => ranked(d).map((hit) => ({d, ...hit})))
