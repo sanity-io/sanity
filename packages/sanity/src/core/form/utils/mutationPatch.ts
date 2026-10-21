@@ -18,7 +18,8 @@ export function toMutationPatches(patches: FormPatch[]): MutationPatch[] {
 }
 
 /**
- * @internal
+ * @hidden
+ * @beta
  */
 export function fromMutationPatches(
   origin: FormPatchOrigin,

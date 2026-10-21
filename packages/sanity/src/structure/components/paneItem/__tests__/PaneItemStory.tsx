@@ -1,8 +1,8 @@
 import {Card, Stack} from '@sanity/ui'
-import {LocaleProvider} from 'sanity'
 import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {LocaleProvider} from '../../../../core/i18n/components/LocaleProvider'
 import {type PaneRouterContextValue} from '../../paneRouter/types'
 import {PaneRouterContext} from '../../paneRouter/usePaneRouter'
 import {PaneItem} from '../PaneItem'

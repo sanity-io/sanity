@@ -1,6 +1,7 @@
 import {memo, useCallback} from 'react'
-import {SingleDocReleaseProvider, useSource} from 'sanity'
 
+import {SingleDocReleaseProvider} from '../../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {useSource} from '../../../core/studio/source'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentEventsPane} from './DocumentEventsPane'
 import {DocumentPaneWithLegacyTimelineStore} from './DocumentPaneLegacyTimeline'
@@ -8,7 +9,8 @@ import {DocumentPerspectiveProvider} from './DocumentPerspectiveProvider'
 import {type DocumentPaneProviderProps} from './types'
 
 /**
- * @internal
+ * @hidden
+ * @beta
  */
 export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

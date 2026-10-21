@@ -1,6 +1,8 @@
 import {type DocumentFieldAction} from './types'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function defineDocumentFieldAction(fieldAction: DocumentFieldAction): DocumentFieldAction {
   return fieldAction
 }
