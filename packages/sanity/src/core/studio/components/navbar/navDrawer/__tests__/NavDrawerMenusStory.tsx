@@ -1,9 +1,9 @@
 import {DashboardIcon} from '@sanity/icons/Dashboard'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {MasterDetailIcon} from '@sanity/icons/MasterDetail'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {RouterProvider} from 'sanity/router'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type Tool} from '../../../../../config/types'
@@ -46,7 +46,7 @@ export function NavDrawerMenusStory() {
           <Card padding={4} style={{maxWidth: 280}}>
             <VStack gap={5}>
               <VStack gap={2}>
-                <Text muted size={1} weight="medium">
+                <Text muted size={1} weight="medium" as="div" trim={true}>
                   tool menu (structure active)
                 </Text>
                 <Card padding={2}>
@@ -54,7 +54,7 @@ export function NavDrawerMenusStory() {
                 </Card>
               </VStack>
               <VStack gap={2}>
-                <Text muted size={1} weight="medium">
+                <Text muted size={1} weight="medium" as="div" trim={true}>
                   appearance menu (system selected)
                 </Text>
                 <AppearanceMenu setScheme={NOOP} />

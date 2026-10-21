@@ -1,7 +1,6 @@
 import {StarIcon} from '@sanity/icons/Star'
 import {StarFilledIcon} from '@sanity/icons/StarFilled'
 import {useFavorite, useUpdateFavorite} from '@sanity/sdk-react'
-import {Text} from '@sanity/ui'
 import {Suspense, useOptimistic, useTransition} from 'react'
 import {
   getPublishedId,
@@ -10,6 +9,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
+import {Icon, Text} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -110,11 +110,20 @@ function FavoriteButton({
       aria-label={description}
       aria-live="assertive"
       tooltipProps={{
-        content: <Text size={1}>{description}</Text>,
+        content: (
+          <Text size={1} as="div" trim={true}>
+            {description}
+          </Text>
+        ),
         placement: 'right',
       }}
     >
-      <Text size={1}>{isFavorited ? <StarFilledIcon /> : <StarIcon />}</Text>
+      <Icon
+        size={1}
+        muted
+        icon={isFavorited ? StarFilledIcon : StarIcon}
+        style={{margin: '-0.375rem', ...(disabled && {color: 'var(--inert-foreground)'})}}
+      />
     </Button>
   )
 }

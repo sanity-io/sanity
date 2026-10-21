@@ -1,9 +1,9 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 export const useTestPopoverDialogAction: DocumentActionComponent = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -26,7 +26,7 @@ export const useTestPopoverDialogAction: DocumentActionComponent = () => {
         type: 'popover',
         content: (
           <Flex padding={4} gap={4} flexDirection="column">
-            <Text>
+            <Text as="div" trim={true}>
               This is the <code>popover</code> dialog
             </Text>
             <Button onClick={handleClose} text="Close" />

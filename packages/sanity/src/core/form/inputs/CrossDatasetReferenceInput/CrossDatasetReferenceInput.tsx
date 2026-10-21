@@ -334,6 +334,11 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                         showStudioUrlIcon
                         hasStudioUrl={!!studioUrl}
                         type={schemaType}
+                        tone={
+                          !readOnly && (loadableReferenceInfo.error || errors.length > 0)
+                            ? 'critical'
+                            : undefined
+                        }
                       />
                     </PreviewCard>
                   ) : (
@@ -353,6 +358,11 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                         referenceInfo={loadableReferenceInfo}
                         showStudioUrlIcon
                         type={schemaType}
+                        tone={
+                          !readOnly && (loadableReferenceInfo.error || errors.length > 0)
+                            ? 'critical'
+                            : undefined
+                        }
                       />
                     </PreviewCard>
                   )}

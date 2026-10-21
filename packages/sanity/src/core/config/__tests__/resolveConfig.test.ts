@@ -7,7 +7,7 @@ import {createMockAuthStore} from '../../store/auth/mock/createMockAuthStore'
 import {VARIANTS_NAME} from '../../variants/plugin'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
-import {type PluginOptions} from '../types'
+import {type DocumentInspectorContext, type PluginOptions} from '../types'
 
 describe('resolveConfig', () => {
   it('throws on invalid tools property', async () => {
@@ -846,6 +846,51 @@ describe('beta document group inventory config', () => {
     ).rejects.toThrow(
       'Expected `beta.documentGroupInventory.enabled` to be a boolean, but received string',
     )
+  })
+})
+
+describe('document inspectors context', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  async function resolveInspectorsContext({beta}: Pick<PluginOptions, 'beta'>) {
+    const received: Array<DocumentInspectorContext> = []
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta,
+      document: {
+        inspectors: (prev, context) => {
+          received.push(context)
+          return prev
+        },
+      },
+    })
+
+    source.document.inspectors({documentType: 'article', documentId: 'someArticle'})
+
+    return {source, context: received[0]}
+  }
+
+  it('receives the resolved beta config', async () => {
+    const {source, context} = await resolveInspectorsContext({
+      beta: {documentGroupInventory: {enabled: true}},
+    })
+
+    expect(context.beta).toBe(source.beta)
+    expect(context.beta?.documentGroupInventory?.enabled).toBe(true)
+  })
+
+  it('receives resolved values rather than the raw beta config', async () => {
+    const {context} = await resolveInspectorsContext({beta: {variants: {enabled: true}}})
+
+    expect(context.beta?.documentGroupInventory?.enabled).toBe(true)
+  })
+
+  it('receives resolved defaults when no beta config is set', async () => {
+    const {context} = await resolveInspectorsContext({})
+
+    expect(context.beta?.documentGroupInventory?.enabled).toBe(false)
   })
 })
 

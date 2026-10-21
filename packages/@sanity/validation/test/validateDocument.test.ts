@@ -704,11 +704,14 @@ describe('validateDocument', () => {
             name: 'coded',
             type: 'string',
             validation: (rule: Rule) =>
-              rule.custom(() => ({
-                code: 'custom.reserved-title',
-                details: {reservedTitle: 'Reserved'},
-                message: 'This title is reserved',
-              })),
+              rule.custom(() => [
+                {
+                  code: 'custom.reserved-title',
+                  details: {reservedTitle: 'Reserved'},
+                  message: 'This title is reserved',
+                },
+                {code: 'custom.second', message: 'Second failure'},
+              ]),
           },
           {
             name: 'uncoded',
@@ -736,12 +739,18 @@ describe('validateDocument', () => {
       schema,
     })
 
+    expect(markers).toHaveLength(4)
     expect(markers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           code: 'custom.reserved-title',
           details: {reservedTitle: 'Reserved'},
           message: 'This title is reserved',
+          path: ['coded'],
+        }),
+        expect.objectContaining({
+          code: 'custom.second',
+          message: 'Second failure',
           path: ['coded'],
         }),
         expect.objectContaining({

@@ -1,7 +1,7 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {NewDocumentListOption} from '../NewDocumentListOption'
@@ -39,7 +39,7 @@ export function NewDocumentListOptionStory() {
       <Card padding={4} style={{maxWidth: 360}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               default permitted
             </Text>
             <NewDocumentListOption
@@ -50,7 +50,7 @@ export function NewDocumentListOptionStory() {
             />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               inline permitted
             </Text>
             <NewDocumentListOption
@@ -61,7 +61,7 @@ export function NewDocumentListOptionStory() {
             />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               inline disabled
             </Text>
             <NewDocumentListOption

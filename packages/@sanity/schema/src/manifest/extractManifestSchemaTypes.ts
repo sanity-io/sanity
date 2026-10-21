@@ -21,6 +21,7 @@ import {
 import startCase from 'lodash-es/startCase.js'
 import {type ComponentType, type ReactNode} from 'react'
 
+import {isInternalValidator} from '../legacy/internalValidators'
 import {Rule as ConcreteRuleClass} from '../legacy/Rule'
 import {Schema as SchemaBuilder} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
@@ -424,6 +425,12 @@ function transformValidation(validation: SchemaValidationValue): Validation {
           }
 
           const {flag, constraint} = rule
+
+          // Built-in callbacks are inferred again from the type on reconstruction.
+          // Serializing them as custom rules would replace them with unavailable validators.
+          if (flag === 'custom' && isInternalValidator(constraint)) {
+            return false
+          }
 
           if (disallowedFlags.includes(flag)) {
             return false

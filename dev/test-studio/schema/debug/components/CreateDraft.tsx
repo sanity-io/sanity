@@ -1,4 +1,4 @@
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {
   getDefaultVariant,
@@ -9,7 +9,7 @@ import {
   useVariantDocumentOperations,
 } from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 export function CreateDraft() {
   const {documentId, documentType, value, targetDocumentState} = useDocumentPane()
@@ -61,7 +61,11 @@ export function CreateDraft() {
         text={'Create Draft'}
         disabled={Boolean(draftId) || creatingDraft}
       />
-      {error && <Text size={0}>{error.message}</Text>}
+      {error && (
+        <Text size={0} as="div" trim={true}>
+          {error.message}
+        </Text>
+      )}
     </VStack>
   )
 }
