@@ -1,4 +1,4 @@
-import {Card, Skeleton, Text} from '@sanity/ui'
+import {Card, Skeleton} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
@@ -12,7 +12,7 @@ import {
   useUser,
 } from 'sanity'
 import {css, styled} from 'styled-components'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
@@ -79,11 +79,11 @@ const UserLine = ({userId}: {userId: string}) => {
       <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
       <Box>
         {loading || !user?.displayName ? (
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <NameSkeleton animated />
           </Text>
         ) : (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {user.displayName}
           </Text>
         )}
@@ -96,7 +96,7 @@ const TooltipContent = ({collaborators}: {collaborators: string[]}) => {
   return (
     <Flex paddingBottom={1} flexDirection="column">
       <Box padding={1} paddingBottom={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('timeline.changes.title')}
         </Text>
       </Box>
@@ -163,16 +163,25 @@ export function TimelineItem({
               justifyContent="center"
               $color={TIMELINE_ITEM_EVENT_TONE[type]}
             >
-              {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
-              <Text size={0}>{IconComponent && <IconComponent />}</Text>
+              <Text size={0} as="div" trim={true}>
+                {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
+                {IconComponent && <IconComponent />}
+              </Text>
             </IconBox>
           </div>
           <VStack gap={2}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type]) || <code>{type}</code>}
             </Text>
 
-            <Text as="time" size={1} muted dateTime={timestamp} title={formattedTimestamp}>
+            <Text
+              as="time"
+              size={1}
+              muted
+              dateTime={timestamp}
+              title={formattedTimestamp}
+              trim={true}
+            >
               {updatedTimeAgo}
             </Text>
           </VStack>

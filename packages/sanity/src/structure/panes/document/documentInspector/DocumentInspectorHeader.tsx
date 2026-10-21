@@ -1,9 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, type CardProps, Text} from '@sanity/ui'
+import {Card, type CardProps} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ElementType, type HTMLProps, type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -36,7 +36,7 @@ export function DocumentInspectorHeader(
     <Card {...restProps} as={forwardedAs} className={clsx(root, className)}>
       <Flex padding={2}>
         <Box flexBasis="0%" flexGrow={1} padding={3}>
-          <Text as="h1" size={1} weight="medium">
+          <Text as="h1" size={1} weight="medium" trim={true}>
             {title}
           </Text>
         </Box>

@@ -1,5 +1,5 @@
-import {Card, Text} from '@sanity/ui'
-import {VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {DocumentInspectorHeader} from '../DocumentInspectorHeader'
@@ -22,7 +22,7 @@ export function DocumentInspectorHeaderStory() {
       <Card padding={4} style={{maxWidth: 420}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               title only
             </Text>
             <DocumentInspectorHeader
@@ -32,7 +32,7 @@ export function DocumentInspectorHeaderStory() {
             />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               wrapping title
             </Text>
             <DocumentInspectorHeader
@@ -42,7 +42,7 @@ export function DocumentInspectorHeaderStory() {
             />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               title and slot
             </Text>
             <DocumentInspectorHeader
@@ -51,7 +51,7 @@ export function DocumentInspectorHeaderStory() {
               title="Review changes"
             >
               <Card padding={3} tone="transparent">
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   Compare this draft with the published document.
                 </Text>
               </Card>

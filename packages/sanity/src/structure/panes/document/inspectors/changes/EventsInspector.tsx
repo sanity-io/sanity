@@ -1,6 +1,6 @@
 import {diffInput, wrap} from '@sanity/diff'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, Card, Spinner, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Spinner} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -24,7 +24,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {Flex, Box, Grid} from 'ui5'
+import {Text, Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
@@ -95,10 +95,10 @@ function CompareWithPublishedView() {
     <Flex gap={2} marginBottom={3} flexDirection="column" data-testid="compare-with-published">
       <Card borderBottom paddingBottom={3}>
         <Flex gap={3} paddingTop={1} flexDirection="column">
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t('events.compare-with-published.title')}
           </Text>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             <Translate
               i18nKey="events.compare-with-published.description"
               t={t}
@@ -188,10 +188,10 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     return (
       <Box paddingX={2}>
         <Flex padding={3} gap={3} flexDirection="column">
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t('timeline.error.no-document-history-title')}
           </Text>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {t('timeline.error.no-document-history-description')}
           </Text>
         </Flex>
@@ -207,7 +207,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
           gridTemplateColumns="48px 1fr"
           style={{alignItems: 'center', gap: '0.25em'}}
         >
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('changes.inspector.from-label')}
           </Text>
           <EventsTimelineMenu
@@ -216,7 +216,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             mode="since"
             placement="bottom-start"
           />
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('changes.inspector.to-label')}
           </Text>
           <EventsTimelineMenu
@@ -233,7 +233,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             transition={{delay: 0.2, duration: 0.2}}
           >
             <Flex className={spinnerContainer} justifyContent="center" alignItems="center" gap={2}>
-              <Text muted size={0}>
+              <Text muted size={0} as="div" trim={true}>
                 {t('changes.loading-changes')}
               </Text>
               <Spinner size={0} />
@@ -325,10 +325,10 @@ function SameRevisionSelected() {
       transition={{delay: 0.2, duration: 0.2}}
     >
       <Flex gap={3} paddingTop={2} flexDirection="column">
-        <Text size={1} weight="medium" as="h3">
+        <Text size={1} weight="medium" as="h3" trim={true}>
           {t('changes.same-revision-selected-title')}
         </Text>
-        <Text as="p" size={1} muted>
+        <Text as="p" size={1} muted trim={true}>
           <Translate i18nKey="changes.same-revision-selected-description" t={t} />
         </Text>
       </Flex>
