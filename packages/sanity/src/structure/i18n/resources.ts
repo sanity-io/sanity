@@ -14,6 +14,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.copy-document-url.label': 'Copy',
   /** Label for the "Copy document URL" menu item */
   'action.copy-link-to-document.label': 'Copy document URL',
+  /** Label for the "Share" command in the document pane's "..." menu (copies the link to the document) */
+  'action.share-document.label': 'Share',
   /** Tooltip when action button is disabled because the operation is not ready   */
   'action.delete.disabled.not-ready': 'Operation not ready',
   /** Tooltip when action button is disabled because the document does not exist */

@@ -438,7 +438,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
             <LegacyLayerProvider zOffset="paneHeader">
               {paneExtension?.banners}
               {banners}
-              <DocumentPanelSubHeader />
+              {/* PROPOSED: the compact header drops the title row; the form names the document. A row of view tabs stays. */}
+              {paneExtension?.compactHeader && views.length <= 1 ? null : (
+                <DocumentPanelSubHeader />
+              )}
             </LegacyLayerProvider>
             <DocumentBox flexBasis="0%" flexGrow={2}>
               {/* The scroll container is the visible region for everything portaled into the pane

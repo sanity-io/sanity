@@ -61,6 +61,10 @@ export {
   type DocumentLimitUpsellContextValue,
 } from '../_singletons/context/DocumentLimitContext'
 export {DocumentPaneContext} from '../_singletons/context/DocumentPaneContext'
+export {
+  DocumentInspectorTabsContext,
+  DocumentPaneExtensionContext,
+} from '../_singletons/context/DocumentPaneExtensionContext'
 export {DocumentPaneInfoContext} from '../_singletons/context/DocumentPaneInfoContext'
 // oxlint-disable-next-line no-deprecated -- kept exported to avoid a breaking change; remove in the next major
 export {EditDialogOuterBoundaryContext} from '../_singletons/context/EditDialogOuterBoundaryContext'

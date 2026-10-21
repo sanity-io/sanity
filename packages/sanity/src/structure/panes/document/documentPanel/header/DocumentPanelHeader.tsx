@@ -45,12 +45,14 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
+import {INSPECT_ACTION_PREFIX, VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPaneExtension} from '../DocumentPaneExtension'
 import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
+import {CommandsMenuButton} from './CommandsMenuButton'
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
-import {useDocumentPaneExtension} from '../DocumentPaneExtension'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {DocumentTargetBadges} from './DocumentTargetBadges'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
@@ -127,9 +129,42 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     ? zIndex.paneHeader[1]
     : zIndex.paneHeader
 
+  const compact = paneExtension?.compactHeader === true
+
+  // Compact: only commands stay in the "..." menu. The inspector entries are tabs (the validation one stays a button, it only shows with problems),
+  // Inline changes is a switch in Review changes, Share is a menu command.
+  const headerMenuItems = useMemo(() => {
+    if (!compact) return menuItems
+    const order = [
+      'compareVersions',
+      'inspect',
+      'production-preview',
+      `${INSPECT_ACTION_PREFIX}${VALIDATION_INSPECTOR_NAME}`,
+    ]
+    return order.flatMap((action) => menuItems.filter((item) => item.action === action))
+  }, [compact, menuItems])
+
   const menuNodes = useMemo(
-    () => resolveMenuNodes({actionHandler: onMenuAction, fieldActions, menuItems, menuItemGroups}),
-    [onMenuAction, fieldActions, menuItemGroups, menuItems],
+    () =>
+      resolveMenuNodes({
+        actionHandler: onMenuAction,
+        fieldActions: compact ? [] : fieldActions,
+        menuItems: headerMenuItems,
+        menuItemGroups,
+      }),
+    [compact, onMenuAction, fieldActions, menuItemGroups, headerMenuItems],
+  )
+  const documentCommandNodes = useMemo(
+    () =>
+      compact
+        ? resolveMenuNodes({
+            actionHandler: onMenuAction,
+            fieldActions,
+            menuItems: [],
+            menuItemGroups: [],
+          })
+        : [],
+    [compact, onMenuAction, fieldActions],
   )
 
   const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
@@ -222,8 +257,17 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
           hidden={collapsed}
           style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
           borderBottom
+          borderTop={compact}
         >
-          <Flex gap={3} paddingY={3} justifyContent="space-between" alignItems="center">
+          <Flex
+            gap={3}
+            paddingY={compact ? 0 : 3}
+            // 45 px in all, borders included: a 29 px control, 7 px above and below, and the 1 px borders.
+            style={compact ? {paddingBlock: 7} : undefined}
+            justifyContent="space-between"
+            alignItems="center"
+            data-compact-header={compact ? '' : undefined}
+          >
             {/* PROPOSED: a host's pills (C2) are drawn in both layouts and then replace the document group inventory row. */}
             {(!hasDocumentGroupInventory || paneExtension?.pills) && (
               <HorizontalScroller $showGradient={showGradient}>
@@ -283,7 +327,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                   </>
                 )}
 
-                <CopyDocumentActions />
+                {!compact && <CopyDocumentActions />}
                 {menuButtonNodes.map((item) => (
                   <PaneHeaderActionButton key={item.key} node={item} />
                 ))}
@@ -291,6 +335,11 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                   <RenderActionCollectionState group="paneActions">
                     {({states}) => (
                       <DocumentPanelHeaderActionDialogDeferred
+                        commandGroups={
+                          compact
+                            ? groupCommands(contextMenuNodes, documentCommandNodes)
+                            : undefined
+                        }
                         contextMenuNodes={contextMenuNodes}
                         setReferenceElement={setReferenceElement}
                         referenceElement={referenceElement}
@@ -361,8 +410,24 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
   )
 })
 
+/**
+ * The compact header's command groups, in the order of the menu: pane commands (Compare versions, Inspect, Open preview), then the document's
+ * field commands (Copy and Paste document). Create new task and Share follow, added by the menu itself.
+ */
+function groupCommands(
+  paneNodes: _PaneMenuNode[],
+  documentNodes: _PaneMenuNode[],
+): _PaneMenuNode[][] {
+  const flat = paneNodes.flatMap((node) => (node.type === 'group' ? node.children : [node]))
+  return [
+    flat.filter((node) => node.type === 'item'),
+    documentNodes.filter((node) => node.type !== 'divider'),
+  ]
+}
+
 const DocumentPanelHeaderActionDialogDeferred = memo(
   function DocumentPanelHeaderActionDialogDeferred(props: {
+    commandGroups?: _PaneMenuNode[][]
     states: ResolvedAction[]
     setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
     referenceElement: HTMLElement | null
@@ -377,6 +442,7 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
 
     return (
       <DocumentPanelHeaderActionDialog
+        commandGroups={props.commandGroups}
         setReferenceElement={setReferenceElement}
         referenceElement={referenceElement}
         contextMenuNodes={contextMenuNodes}
@@ -391,38 +457,48 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
 )
 
 const DocumentPanelHeaderActionDialog = memo(function DocumentPanelHeaderActionDialog(props: {
+  commandGroups?: _PaneMenuNode[][]
   states: DocumentActionDescription[]
   setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
   referenceElement: HTMLElement | null
   contextMenuNodes: _PaneMenuNode[]
 }) {
-  const {states, setReferenceElement, contextMenuNodes, referenceElement} = props
+  const {states, setReferenceElement, contextMenuNodes, referenceElement, commandGroups} = props
 
   const renderActionDialog = useCallback<
     ({handleAction}: {handleAction: (idx: number) => void}) => React.ReactNode
   >(
-    ({handleAction}) => (
-      <div ref={setReferenceElement}>
-        <PaneContextMenuButton
-          key="context-menu"
-          nodes={contextMenuNodes}
-          actionsNodes={
-            states.length > 0
-              ? states.map((actionState, actionIndex) => (
-                  <ActionMenuListItem
-                    key={actionState.label}
-                    actionState={actionState}
-                    disabled={Boolean(actionState.disabled)}
-                    index={actionIndex}
-                    onAction={handleAction}
-                  />
-                ))
-              : undefined
-          }
-        />
-      </div>
-    ),
-    [contextMenuNodes, setReferenceElement, states],
+    ({handleAction}) => {
+      const actionsNodes =
+        states.length > 0
+          ? states.map((actionState, actionIndex) => (
+              <ActionMenuListItem
+                key={actionState.label}
+                actionState={actionState}
+                disabled={Boolean(actionState.disabled)}
+                index={actionIndex}
+                onAction={handleAction}
+              />
+            ))
+          : undefined
+      if (commandGroups) {
+        return (
+          <div ref={setReferenceElement}>
+            <CommandsMenuButton actionsNodes={actionsNodes} groups={commandGroups} />
+          </div>
+        )
+      }
+      return (
+        <div ref={setReferenceElement}>
+          <PaneContextMenuButton
+            key="context-menu"
+            nodes={contextMenuNodes}
+            actionsNodes={actionsNodes}
+          />
+        </div>
+      )
+    },
+    [commandGroups, contextMenuNodes, setReferenceElement, states],
   )
 
   return (

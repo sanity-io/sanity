@@ -24,13 +24,13 @@ import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__/documentP
 import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 
 /**
- * Renders a dropdown button in the document panel header with two actions:
+ * The two copy actions of the document panel header:
  * - Copy link to document (perspective-aware URL)
  * - Copy document ID (prefixed for versions/drafts, plain for published and live edit types)
  *
  * @internal
  */
-export function CopyDocumentActions() {
+export function useCopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
   const targetDocumentState = useTargetDocumentState(documentId)
   const siblings = getTargetSiblings(targetDocumentState)
@@ -123,6 +123,17 @@ export function CopyDocumentActions() {
     })
   }, [contextAwareDocumentId, pushToast, t, telemetry])
 
+  return {contextAwareDocumentId, handleCopyId, handleCopyLink}
+}
+
+/**
+ * Renders a dropdown button in the document panel header with two actions (see `useCopyDocumentActions`).
+ *
+ * @internal
+ */
+export function CopyDocumentActions() {
+  const {t} = useTranslation(structureLocaleNamespace)
+  const {contextAwareDocumentId, handleCopyId, handleCopyLink} = useCopyDocumentActions()
   if (!contextAwareDocumentId) {
     return null
   }

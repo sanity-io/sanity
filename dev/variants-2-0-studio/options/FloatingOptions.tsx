@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {
   type LayoutProps,
   FieldSetRollupProvider,
@@ -24,7 +24,10 @@ import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
 import {DesignOptions} from '../design-options/DesignOptions'
 import {renderFieldSetRollup} from '../fieldmarks/E9Marks'
 import {RemoteListener} from '../journeys/RemoteListener'
-import {useDocumentPaneOverride} from '../pane/useDocumentPaneOverride'
+import {
+  resolveDocumentPaneOverride,
+  useDocumentPaneOverrideState,
+} from '../pane/useDocumentPaneOverride'
 import {ResultToastStyles} from '../toasts/ResultToast'
 import {MarkStyles} from './MarkStyles'
 import {ShapeStyles} from './ShapeStyles'
@@ -45,7 +48,6 @@ const EXTENSIONS = {
   rowOverride: useRowOverride,
   showShippedBar: useShowShippedBar,
   variantDetail: useVariantDetailOverride,
-  documentPane: useDocumentPaneOverride,
 }
 
 /** The perspective menu's extension is a value: this calls the hook that builds it (it reads the perspective state) and provides the result. */
@@ -64,6 +66,13 @@ function NeutralNavbarHost({children}: {children: ReactNode}) {
   return <NavbarNeutralProvider value={neutral}>{children}</NavbarNeutralProvider>
 }
 
+/** The pane extension (C2 pills, C7 banners, the compact header): built from the studio-wide state, one function for every pane. */
+function DocumentPaneHost({children}: {children: ReactNode}) {
+  const state = useDocumentPaneOverrideState()
+  const resolve = useMemo(() => resolveDocumentPaneOverride(state), [state])
+  return <DocumentPaneExtensionProvider value={resolve}>{children}</DocumentPaneExtensionProvider>
+}
+
 export function LayoutWithFloatingOptions(props: LayoutProps) {
   // The Variants tool's Add filter uses the perspective bar's picker; Stock keeps the shipped menu.
   const stock = useOption('c1') === STOCK_OPTION
@@ -78,7 +87,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
               <ShippedPerspectiveBarProvider value={EXTENSIONS.showShippedBar}>
                 <VariantEditNoticeProvider value={EditNotice}>
                   <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
-                    <DocumentPaneExtensionProvider value={EXTENSIONS.documentPane}>
+                    <DocumentPaneHost>
                       <VariantFilterAddControlProvider value={stock ? null : renderPickerAddFilter}>
                         <FieldSetRollupProvider value={renderFieldSetRollup}>
                           {props.renderDefault(props)}
@@ -89,7 +98,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
                       <ShapeStyles />
                       <MarkStyles />
                       <ResultToastStyles />
-                    </DocumentPaneExtensionProvider>
+                    </DocumentPaneHost>
                   </VariantDetailExtensionProvider>
                 </VariantEditNoticeProvider>
               </ShippedPerspectiveBarProvider>

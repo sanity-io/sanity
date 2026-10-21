@@ -11,7 +11,7 @@ export {
   type DocumentPaneExtension,
   type DocumentPaneExtensionArgs,
   DocumentPaneExtensionProvider,
-  type UseDocumentPaneExtension,
+  type ResolveDocumentPaneExtension,
 } from '../structure/panes/document/documentPanel/DocumentPaneExtension'
 // PROPOSED: extension point for document list rows (Variants 2.0 test studio).
 export {
