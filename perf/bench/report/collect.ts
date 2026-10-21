@@ -14,6 +14,13 @@ import {type DiffInterval} from '../stats/bootstrap'
 import {type Verdict} from '../stats/gate'
 import {median, summarize} from '../stats/quantiles'
 import {
+  SOFT_NAVIGATION_METRICS,
+  type SoftNavigationMetric,
+  softNavigationMetricLabel,
+  softNavigationSamples,
+  type SoftNavigationMeasurement,
+} from '../stats/softNav'
+import {
   type BenchRunDocument,
   type MetricReport,
   type ResourceSide,
@@ -758,5 +765,51 @@ export function collectSettle(
     interruptions: {experiment: {count: 0, totalMs: 0}},
     loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
     ...styleBlock(censusesOf(sessions)),
+  }
+}
+
+const SOFT_NAVIGATION_UNITS: Record<SoftNavigationMetric, MetricReport['unit']> = {
+  softLcpMs: 'ms',
+  softFcpMs: 'ms',
+  softInpMs: 'ms',
+  softClsScore: 'cls',
+  clickToReadyMs: 'ms',
+}
+
+/** Each session's values stay one array so the session, not the navigation, is the bootstrap unit. */
+export function collectSoftNav(
+  scenario: string,
+  sessions: SoftNavigationMeasurement[][],
+  sourceFile?: string,
+): ScenarioReport {
+  const navigationLabels = [
+    ...new Set(sessions.flatMap((navigations) => navigations.map(({label}) => label))),
+  ]
+  const metrics = navigationLabels.flatMap((label) =>
+    SOFT_NAVIGATION_METRICS.flatMap((metric): MetricReport[] => {
+      const samples = sessions.map((navigations) =>
+        softNavigationSamples(navigations, label, metric),
+      )
+      const summary = summarize(samples.flat())
+      if (summary.n === 0) return []
+      return [
+        {
+          label: softNavigationMetricLabel(label, metric),
+          unit: SOFT_NAVIGATION_UNITS[metric],
+          presentAsEfps: false,
+          experiment: {sessions: samples, summary},
+        },
+      ]
+    }),
+  )
+  return {
+    scenario,
+    ...(sourceFile ? {sourceFile} : {}),
+    kind: 'pageload',
+    mode: 'softnav',
+    metrics,
+    failures: [],
+    interruptions: {experiment: {count: 0, totalMs: 0}},
+    loafAttribution: [],
   }
 }
