@@ -326,6 +326,46 @@ const pickMember = async (p: Page) => {
   await context.close()
 }
 
+{
+  // B6: the bar's variant list is long (every definition): it scrolls inside a limited height, filters once long, keeps its width while filtered.
+  const {p, context} = await open(url())
+  await p.getByTestId('perspective-circle').click()
+  await p.waitForTimeout(800)
+  await p.getByTestId('local-variants').click()
+  await p.waitForTimeout(800)
+  const list = p.getByTestId('local-variants-list')
+  const box = await list.boundingBox()
+  log(
+    'B6',
+    'a long variant list scrolls within a limited height and has a search field',
+    (await p.getByTestId('local-variants-search').count()) === 1 &&
+      (await list.evaluate((e) => e.scrollHeight > e.clientHeight)) &&
+      (box?.height ?? 9999) <= 400,
+    `${Math.round(box?.height ?? 0)} px`,
+  )
+  await p.getByTestId('local-variants-search').fill('nor')
+  await p.waitForTimeout(500)
+  const filtered = await list.locator('[role=menuitem]').allInnerTexts()
+  const box2 = await list.boundingBox()
+  log(
+    'B6b',
+    'typing filters the list, the width stays and the height follows the entries',
+    filtered.length > 0 &&
+      filtered.every((t) => /nor/i.test(t)) &&
+      Math.abs((box2?.width ?? 0) - (box?.width ?? 0)) < 2 &&
+      (box2?.height ?? 0) < (box?.height ?? 0),
+    filtered.join(', '),
+  )
+  await p.getByRole('menuitem', {name: 'Norway'}).first().click()
+  await p.waitForTimeout(1200)
+  log(
+    'B6c',
+    'picking from the filtered list makes the pane local to that variant',
+    decodeURIComponent(p.url()).includes('localVariant='),
+  )
+  await context.close()
+}
+
 await b.close()
 console.log(failed ? `${failed} FAILED` : 'ALL PASS')
 process.exit(failed ? 1 : 0)
