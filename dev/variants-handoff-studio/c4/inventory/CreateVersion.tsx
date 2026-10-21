@@ -470,16 +470,23 @@ export function CreateVersion(props: {
     const scan = () => {
       const found = frame.querySelector<HTMLElement>('[data-testid="inventory-toolbar"]')
       setToolbar((current) => (current === found ? current : found))
+      // The block sits just above the list. A panel without the list's test id (the older copy of his panel in the Design Studio) gets it just
+      // after the toolbar row (or its wrapper) instead, which the mode hides: the same place on screen.
       const list = frame.querySelector<HTMLElement>('[data-testid="inventory-list"]')
-      let container: HTMLElement | null = null
-      if (list?.parentElement) {
-        const before = list.previousElementSibling as HTMLElement | null
+      const anchor =
+        list ??
+        (found?.nextElementSibling as HTMLElement | null) ??
+        (found?.parentElement?.nextElementSibling as HTMLElement | null) ??
+        null
+      let container: HTMLElement | null = anchor?.dataset.addSlot !== undefined ? anchor : null
+      if (!container && anchor?.parentElement) {
+        const before = anchor.previousElementSibling as HTMLElement | null
         container = before?.dataset.addSlot !== undefined ? before : null
         if (!container) {
-          container = list.ownerDocument.createElement('div')
+          container = anchor.ownerDocument.createElement('div')
           container.dataset.addSlot = ''
           container.style.flex = 'none'
-          list.parentElement.insertBefore(container, list)
+          anchor.parentElement.insertBefore(container, anchor)
         }
       }
       setSlot((current) => (current === container ? current : container))
