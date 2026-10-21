@@ -5,8 +5,8 @@ import {type PerspectiveMenuExtension} from './PerspectiveMenuExtension'
 /**
  * PROPOSED (Variants 2.0 test studio): the state of a host's search for a long perspective menu (see `PerspectiveMenuExtension.search`).
  * The search shows only when the menu holds more than `search.above` entries. The text belongs to the perspective it was typed under: picking an
- * entry changes the perspective, so the next opening starts empty. While a search is typed the menu keeps the size it had when the first
- * character was typed (`size`), so filtering never makes it jump.
+ * entry changes the perspective, so the next opening starts empty. While a search is typed the menu keeps the width it had when the first
+ * character was typed (`size`), so filtering never makes it jump sideways; the height follows the number of entries.
  *
  * @internal
  */

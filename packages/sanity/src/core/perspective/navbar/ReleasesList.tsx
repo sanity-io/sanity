@@ -149,11 +149,7 @@ export function ReleasesList({
   const nothingMatches = Boolean(needle) && !showPublished && !showDrafts && !hasVisibleReleases
 
   return (
-    <Card
-      radius={3}
-      ref={menuRef}
-      style={size ? {minHeight: size.height, width: size.width} : undefined}
-    >
+    <Card radius={3} ref={menuRef} style={size ? {width: size.width} : undefined}>
       <StickyTopCard borderBottom padding={1}>
         <Stack gap={1}>
           {searchable && search && (
