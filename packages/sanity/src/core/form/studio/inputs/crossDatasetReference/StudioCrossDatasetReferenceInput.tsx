@@ -99,7 +99,10 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         .clone()
     )
   }, [client, schemaType.dataset])
-  const maxFieldDepth = useSearchMaxFieldDepth(crossDatasetClient)
+  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchMaxFieldDepth(
+    crossDatasetClient,
+    true,
+  )
   const documentValue = useFormValue([]) as FIXME
 
   const handleSearch = useCallback(
@@ -112,6 +115,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
             params,
             tag: 'search.cross-dataset-reference',
             maxFieldDepth,
+            partialIndexFieldPaths,
             strategy: searchStrategy,
             perspective: 'published',
           }),
@@ -127,7 +131,16 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         }),
       ),
 
-    [schemaType, documentValue, path, getClient, crossDatasetClient, maxFieldDepth, searchStrategy],
+    [
+      schemaType,
+      documentValue,
+      path,
+      getClient,
+      crossDatasetClient,
+      maxFieldDepth,
+      partialIndexFieldPaths,
+      searchStrategy,
+    ],
   )
 
   const getReferenceInfo = useMemo(

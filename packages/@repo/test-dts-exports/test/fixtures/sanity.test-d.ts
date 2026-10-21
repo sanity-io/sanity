@@ -1141,6 +1141,7 @@ import type {
   parseStudioDiagnostics,
   PartialContext,
   PartialExcept,
+  PartialIndexFieldPaths,
   PartialIndexSettings,
   passthroughErrorHandler,
   PasteData,
@@ -1382,6 +1383,7 @@ import type {
   SearchOperatorParams,
   SearchOperatorType,
   SearchOptions,
+  SearchPartialIndexSettings,
   SearchPopover,
   SearchPopoverProps,
   SearchProvider,
@@ -5306,6 +5308,9 @@ describe('sanity', () => {
   test('PartialExcept', () => {
     expectTypeOf<PartialExcept<any, any>>().not.toBeNever()
   })
+  test('PartialIndexFieldPaths', () => {
+    expectTypeOf<PartialIndexFieldPaths>().toBeObject()
+  })
   test('PartialIndexSettings', () => {
     expectTypeOf<PartialIndexSettings>().toBeObject()
   })
@@ -6030,6 +6035,9 @@ describe('sanity', () => {
   })
   test('SearchOptions', () => {
     expectTypeOf<SearchOptions>().not.toBeNever()
+  })
+  test('SearchPartialIndexSettings', () => {
+    expectTypeOf<SearchPartialIndexSettings>().toBeObject()
   })
   test('SearchPopover', () => {
     expectTypeOf<typeof SearchPopover>().toBeFunction()
@@ -7160,6 +7168,7 @@ describe('sanity', () => {
     expectTypeOf<UseSearchMachineOptions<any>>().toBeObject()
   })
   test('useSearchMaxFieldDepth', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useSearchMaxFieldDepth>().toBeFunction()
   })
   test('useSearchState', () => {
