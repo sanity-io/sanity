@@ -21,6 +21,7 @@ import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplica
 import {LiveManifestRegisterProvider} from './manifest'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {PluginProviders} from './PluginProviders'
+import {PreloadStudioShell} from './preloadStudioShell'
 import {AuthenticateScreen} from './screens/AuthenticateScreen'
 import {ConfigErrorsScreen} from './screens/ConfigErrorsScreen'
 import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
@@ -76,6 +77,7 @@ export function StudioProvider({
       <UserApplicationCacheProvider>
         <LiveUserApplicationProvider>
           <LiveManifestRegisterProvider />
+          <PreloadStudioShell />
           <WorkspaceLoader
             LoadingComponent={LoadingBlock}
             ConfigErrorsComponent={ConfigErrorsScreen}
