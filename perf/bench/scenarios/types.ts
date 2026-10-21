@@ -305,10 +305,8 @@ export type ScenarioStep =
        * A soft navigation: a trusted click on `selector`, then wait until the
        * URL has changed and matches `url` (tested against pathname + search)
        * and `ready` is visible. Records `bench:navigate:<label>` from the
-       * click's event timestamp to readiness, evaluated in-page each animation
-       * frame. Chrome counts the click as a soft navigation when it changes the
-       * URL and paints; the collector's `softNavigations` holds that entry.
-       * `ready` must not already be visible before the click.
+       * click's event timestamp to readiness. `ready` must not already be
+       * visible before the click.
        */
       kind: 'navigate'
       label: string

@@ -178,16 +178,13 @@ function install(): void {
     }
   })
 
-  // The painted element's tag and the nearest data-testid, capped: every
-  // keystroke emits one of these, so the descriptor stays small
+  // Capped because every keystroke emits a paint entry
   function describePaintedElement(element: Element | null | undefined): string {
-    if (!element) return '(detached)'
+    if (element == null) return '(detached)'
     const tag = element.tagName.toLowerCase()
     const testId = element.closest('[data-testid]')?.getAttribute('data-testid')
-    return (testId ? `${tag} in [data-testid="${testId}"]` : tag).slice(
-      0,
-      PAINTED_ELEMENT_MAX_LENGTH,
-    )
+    const description = testId ? `${tag} in [data-testid="${testId}"]` : tag
+    return description.slice(0, PAINTED_ELEMENT_MAX_LENGTH)
   }
 
   function classifyPaintedElement(element: Element | null | undefined): PaintedElementKind {
@@ -197,8 +194,7 @@ function install(): void {
     return 'other'
   }
 
-  // Chrome emits a candidate per larger paint; only the largest per
-  // interaction is kept until the next take()
+  // Chrome emits a candidate per larger paint; keep the largest per interaction
   observe('interaction-contentful-paint', (entries) => {
     for (const entry of entries) {
       const paint = entry as PerformanceEntry & {
@@ -206,6 +202,7 @@ function install(): void {
         largestContentfulPaint?: {size: number; element: Element | null}
       }
       const size = paint.largestContentfulPaint?.size ?? 0
+      const element = paint.largestContentfulPaint?.element
       const kept = largestPaintByInteraction.get(paint.interactionId)
       if (kept && kept.size >= size) continue
       largestPaintByInteraction.set(paint.interactionId, {
@@ -214,8 +211,8 @@ function install(): void {
         startTime: paint.startTime,
         duration: paint.duration,
         size,
-        element: describePaintedElement(paint.largestContentfulPaint?.element),
-        elementKind: classifyPaintedElement(paint.largestContentfulPaint?.element),
+        element: describePaintedElement(element),
+        elementKind: classifyPaintedElement(element),
       })
     }
   })

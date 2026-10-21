@@ -174,11 +174,7 @@ const NAVIGATE_MEASURE_PREFIX = navigateMeasureName('')
 /** The click's timestamp and the soft navigation's startTime differ by rounding, never by a frame. */
 const SOFT_NAVIGATION_MATCH_MS = 16
 
-/**
- * Labels of the `navigate` steps Chrome recorded no soft navigation for, in
- * order: a navigate measure matches the soft navigation that starts at its
- * click.
- */
+/** Labels of the `navigate` steps whose click starts no soft navigation, in order. */
 export function navigationsWithoutSoftNavigation(
   measures: MeasureSample[],
   softNavigations: SoftNavigationSample[],
@@ -194,7 +190,6 @@ export function navigationsWithoutSoftNavigation(
     .map((measure) => measure.name.slice(NAVIGATE_MEASURE_PREFIX.length))
 }
 
-/** See the `navigate` step. */
 async function navigate(
   context: StepContext,
   step: Extract<ScenarioStep, {kind: 'navigate'}>,
@@ -202,8 +197,7 @@ async function navigate(
   const {page} = context
   const measureName = navigateMeasureName(step.label)
   const previousUrl = page.url()
-  // The click's hardware timestamp is the soft navigation's startTime, so
-  // the measure starts where Chrome's entry does
+  // Starts at the click's event timestamp, which is the soft navigation's startTime
   await page.evaluate(
     ({name}) =>
       window.addEventListener(

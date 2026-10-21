@@ -68,10 +68,7 @@ export interface ResourceSample {
   responseEnd: number
 }
 
-/**
- * A `soft-navigation` entry: Chrome's record of a trusted interaction that
- * changed the URL and painted. Every later entry carries its `navigationId`.
- */
+/** A `soft-navigation` entry: a trusted interaction that changed the URL and painted. */
 export interface SoftNavigationSample {
   url: string
   navigationType: string
@@ -83,19 +80,13 @@ export interface SoftNavigationSample {
   duration: number
 }
 
-/**
- * What a soft LCP landed on: the document title heading, an image, content
- * inside a form field, or anything else. Splits image-led document opens from
- * title-led ones.
- */
+/** What a soft LCP landed on, to split image-led document opens from title-led ones. */
 export type PaintedElementKind = 'title' | 'image' | 'field' | 'other'
 
 /**
- * The largest `interaction-contentful-paint` entry an interaction caused
- * since the last take(), one per interaction. Chrome emits these for every
- * interaction that paints content, typing included, and a larger paint can
- * land after a later take(), so take the largest per `interactionId` across
- * drains.
+ * The largest `interaction-contentful-paint` an interaction caused since the
+ * last take(). A larger one can land after a later take(), so take the
+ * largest per `interactionId` across drains.
  */
 export interface InteractionContentfulPaintSample {
   interactionId: number

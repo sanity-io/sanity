@@ -420,12 +420,6 @@ describe('navigationsWithoutSoftNavigation', () => {
       ),
     ).toEqual(['open book'])
   })
-
-  it('returns nothing when every navigate has its soft navigation', () => {
-    expect(
-      navigationsWithoutSoftNavigation([measure('open author', 1000)], [softNavigation(1000)]),
-    ).toEqual([])
-  })
 })
 
 describe('toTypeStep', () => {

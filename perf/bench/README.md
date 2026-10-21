@@ -32,11 +32,11 @@ runner (tsx CLI, runs from HEAD)
 
 The collector observes `soft-navigation` and `interaction-contentful-paint` entries in every mode. Chromium 151+ emits a soft navigation for a trusted click that changes the URL and paints; the pinned Playwright Chromium has it on with no flags.
 
-- `softNavigations`: one entry per soft navigation. `startTime` is the click, `duration` runs to the first contentful paint (soft FCP).
-- `interactionContentfulPaints`: the largest paint each interaction caused since the last `take()`, with the painted element's tag and nearest `data-testid` and its kind (`title`, `image`, `field` or `other`). Chrome emits these for every interaction that paints content, typing included, and a larger paint can land after a later `take()`, so take the largest per `interactionId` across drains. Soft LCP is the largest one matching the soft navigation's `interactionId`; on a document open it is usually the title heading, painted once the document data is on screen, so read its time and split by kind, never by size.
+- `softNavigations`: one entry per soft navigation. `startTime` is the click, `duration` runs to soft FCP.
+- `interactionContentfulPaints`: the largest paint each interaction caused since the last `take()`, with the painted element's tag, nearest `data-testid` and kind (`title`, `image`, `field` or `other`). Typing emits these too, and a larger paint can land after a later `take()`, so take the largest per `interactionId` across drains. Soft LCP is the largest one matching the soft navigation's `interactionId`; on a document open it is usually the title heading, so split by kind, never by size.
 - Every event and layout-shift sample carries a `navigationId`, so INP and CLS split per navigation. The click that starts a soft navigation still belongs to the previous one.
 
-Only a trusted click counts, and two clicks less than a paint apart produce no entry. The `navigate` step drives one (see [Adding a scenario](#adding-a-scenario)); `visitDocument` (pushState from script) never produces a soft navigation. `navigationsWithoutSoftNavigation` (`runner/session/steps.ts`) names the `navigate` labels that Chrome recorded no soft navigation for.
+Only a trusted click counts, and two clicks less than a paint apart produce no entry. The `navigate` step drives one; `visitDocument` (pushState from script) never does. `navigationsWithoutSoftNavigation` (`runner/session/steps.ts`) names the `navigate` labels Chrome recorded no soft navigation for.
 
 ### The mock's contract (verified against studio source)
 
