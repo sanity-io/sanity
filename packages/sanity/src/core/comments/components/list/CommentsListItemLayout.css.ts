@@ -42,7 +42,6 @@ export const grayFgVar = createVar()
 export const timeText = style({
   minWidth: 'max-content',
   selectors: {
-    // `&&` beats ui5 Text's own `color` (`.sui-Text`, `.sui-Text:where(.sui-text-muted)`)
     '&&': {
       vars: {
         '--card-fg-color': grayFgVar,
@@ -54,7 +53,6 @@ export const timeText = style({
 
 export const intentText = style({
   selectors: {
-    // `&&` beats ui5 Text's own `color` (`.sui-Text`, `.sui-Text:where(.sui-text-muted)`)
     '&&': {
       vars: {
         '--card-fg-color': grayFgVar,
@@ -67,7 +65,6 @@ export const intentText = style({
 /** `theme.avatar.sizes[$size].size` */
 export const avatarSizeVar = createVar()
 
-// `&&` beats ui5 Flex's default `minHeight="0"` (`.sui-min-height {min-height: var(--min-height)}`)
 export const headerFlex = style({
   selectors: {
     '&&': {
@@ -97,7 +94,6 @@ export const innerStack = style({
 export const retryCardButton = style({
   selectors: {
     /* Add not on hover */
-    // (0,2,0) beats Card's own root `background-color: var(--card-bg-color)` (0,1,0)
     '&&:not(:hover)': {
       backgroundColor: 'transparent',
     },

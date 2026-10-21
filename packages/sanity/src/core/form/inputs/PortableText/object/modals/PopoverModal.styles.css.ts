@@ -17,7 +17,6 @@ export const contentHeaderBox = style({
   position: 'relative',
   zIndex: 10,
   selectors: {
-    // Box sets `min-height: 0` on itself (`.sui-min-height`)
     '&&': {
       minHeight: 'auto',
     },

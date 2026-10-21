@@ -43,7 +43,6 @@ export const contextMenuBox = style({
 export const timeText = style({
   minWidth: 'max-content',
   selectors: {
-    // `&&` beats ui5 Text's own `color` (`.sui-Text`, `.sui-Text:where(.sui-text-muted)`)
     '&&': {
       vars: {
         '--card-fg-color': grayFgVar,
@@ -55,7 +54,6 @@ export const timeText = style({
 
 export const intentText = style({
   selectors: {
-    // `&&` beats ui5 Text's own `color` (`.sui-Text`, `.sui-Text:where(.sui-text-muted)`)
     '&&': {
       vars: {
         '--card-fg-color': grayFgVar,
@@ -67,7 +65,6 @@ export const intentText = style({
 
 export const headerFlex = style({
   selectors: {
-    // `&&` beats ui5 Flex's own `min-height: var(--min-height)` (`.sui-min-height`)
     '&&': {
       minHeight: avatarSizeVar,
     },
@@ -86,7 +83,6 @@ export const innerStack = style({
 
 export const errorFlex = style({
   selectors: {
-    // `&&` beats ui5 Flex's own `min-height: var(--min-height)` (`.sui-min-height`)
     '&&': {
       minHeight: avatarSizeVar,
     },

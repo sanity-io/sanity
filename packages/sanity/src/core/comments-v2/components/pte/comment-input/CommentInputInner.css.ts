@@ -24,7 +24,6 @@ export const rootCard = style({
   },
 
   selectors: {
-    // Card sets border-radius (radius defaults to 0) and box-shadow on itself
     '&&': {
       borderRadius: radius2Var,
       boxShadow: 'var(--input-box-shadow)',
@@ -89,7 +88,6 @@ export const actionsFlex = style({
 
 export const buttonDivider = style({
   selectors: {
-    // MenuDivider sets height on itself
     '&&': {
       height: '20px',
       width: '1px',

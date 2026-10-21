@@ -2,7 +2,6 @@ import {createVar, style} from '@vanilla-extract/css'
 
 export const headerFlex = style({
   selectors: {
-    // `&&` beats ui5 Flex's own `min-height: var(--min-height)` (`.sui-min-height`)
     '&&': {
       minHeight: '25px',
     },
@@ -17,7 +16,6 @@ export const breadcrumbsButton = style({
   // in the breadcrumbs component
   maxWidth: '100%',
   selectors: {
-    // `&&` beats Button's own enabled-state `--card-fg-color` (the hover states stay stronger)
     '&&': {
       vars: {
         '--card-fg-color': baseFgVar,

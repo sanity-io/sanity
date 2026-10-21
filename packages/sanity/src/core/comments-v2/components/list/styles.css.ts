@@ -7,7 +7,6 @@ export const threadCardActiveBgVar = createVar()
 
 export const threadCard = style({
   selectors: {
-    // `&&` beats Card's own `background-color: var(--card-bg-color)`
     '&&': {
       backgroundColor: threadCardDefaultBgVar,
     },

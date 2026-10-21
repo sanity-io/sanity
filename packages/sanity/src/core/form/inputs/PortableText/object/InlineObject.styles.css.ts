@@ -27,13 +27,11 @@ export const root = style({
   'height': 'calc(1em - 1px)',
   'cursor': 'default',
   'selectors': {
-    // Card sets `padding: 0`, `border-radius`, and `box-shadow` on itself
     '&&': {
       padding: '2px',
       borderRadius: radius2Var,
       boxShadow: 'inset 0 0 0 1px var(--card-border-color)',
     },
-    // Card sets `display: block` on itself through `&:not([hidden])`
     '&&:not([hidden])': {
       display: 'inline-flex',
       alignItems: 'center',

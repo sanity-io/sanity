@@ -24,13 +24,11 @@ export const rootCard = style({
   },
 
   selectors: {
-    // `&&` beats Card's own `border-radius` (radius defaults to 0) and `box-shadow`
     '&&': {
       borderRadius: radius2Var,
       boxShadow: 'var(--input-box-shadow)',
     },
 
-    // `&&` keeps this rule above the `&&` root rule, as the original (0,2,0) sat above its (0,1,0) root
     "&&:not([data-expand-on-focus='false'], :focus-within)": {
       background: 'transparent',
       boxShadow: 'unset',
@@ -61,7 +59,6 @@ export const editableWrap = style({
   maxHeight: '20vh',
   overflowY: 'auto',
 
-  // (0,3,0)+ beats ui5 Box's default `minHeight="0"` (`.sui-min-height`, (0,1,0))
   selectors: {
     [`${rootCard}[data-focused='true']:focus-within &`]: {
       minHeight: '1em',
@@ -77,7 +74,6 @@ export const editableWrap = style({
   },
 })
 
-// Both selectors are (0,4,0); the `:focus-within` one is emitted last so it wins, as in the original
 export const commentInputActions = style({
   selectors: {
     [`${rootCard}[data-expand-on-focus='true'] &:not([hidden])`]: {
@@ -92,7 +88,6 @@ export const commentInputActions = style({
 
 export const buttonDivider = style({
   selectors: {
-    // `&&` beats MenuDivider's own dimensions
     '&&': {
       height: '20px',
       width: '1px',

@@ -27,7 +27,6 @@ export const styledPopover = style({
   },
 })
 
-// The wrapper is a Flex rendered by Popover; (0,2,0) matches the original descendant rule
 globalStyle(`${styledPopover} [data-ui='Popover__wrapper']`, {
   borderRadius: radius3Var,
   display: 'flex',

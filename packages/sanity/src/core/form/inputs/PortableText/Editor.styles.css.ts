@@ -15,7 +15,6 @@ export const root = style({
       overflow: 'auto',
       height: '19em',
     },
-    // Card sets `display: block` on itself through `&:not([hidden])`
     '&&:not([hidden])': {
       display: 'flex',
     },

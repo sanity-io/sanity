@@ -2,7 +2,6 @@ import {createVar, style} from '@vanilla-extract/css'
 
 export const inlineBox = style({
   selectors: {
-    // `&&` beats ui5 Box's own `&:not([hidden]) {display: block}` (0,2,0) from the `display` prop
     '&&:not([data-hidden])': {
       display: 'inline',
     },

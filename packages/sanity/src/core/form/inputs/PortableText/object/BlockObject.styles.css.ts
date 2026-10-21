@@ -37,7 +37,6 @@ export const root = style({
   'pointerEvents': 'all',
   'position': 'relative',
   'selectors': {
-    // Card sets `border-radius` and `box-shadow` on itself
     '&&': {
       borderRadius: radius1Var,
       boxShadow: '0 0 0 1px var(--card-border-color)',
@@ -84,10 +83,6 @@ export const root = style({
 })
 
 export const previewContainer = style({
-  // Copied from the styled(Flex) rule; the Flex's own display rule (ui5's
-  // `.sui-display-flex:not([hidden])`, (0,2,0)) outranked it before the migration too, so the
-  // element stays a flex container.
-  display: 'block',
   position: 'relative',
   width: '100%',
   userSelect: 'none',

@@ -35,7 +35,6 @@ export const fontWeightMediumVar = createVar()
 
 export const expandButton = style({
   selectors: {
-    // `&&` beats Button's own `font: inherit` shorthand
     '&&': {
       fontWeight: fontWeightMediumVar,
     },

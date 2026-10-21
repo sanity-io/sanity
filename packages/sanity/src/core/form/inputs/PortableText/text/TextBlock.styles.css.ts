@@ -166,7 +166,6 @@ export const tooltipBox = style({
 export const textFlex = style({
   position: 'relative',
   selectors: {
-    // Flex (Box) sets `padding: 0` on itself
     '&&': {
       paddingLeft: listPaddingLeftVar,
     },

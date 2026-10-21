@@ -64,7 +64,6 @@ export const userBox = style({
 export const userText = style({
   mixBlendMode: 'unset',
   selectors: {
-    // `Text` sets `color: var(--card-fg-color)` on the same element
     '&&': {
       color: presenceCursorFgVar,
     },
