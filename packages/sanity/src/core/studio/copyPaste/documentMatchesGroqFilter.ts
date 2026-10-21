@@ -1,5 +1,4 @@
 import {type Path, type ReferenceOptions, type SanityDocument} from '@sanity/types'
-import {evaluate, parse} from 'groq-js'
 
 import {type Source} from '../../config/types'
 import {resolveUserDefinedFilter} from '../../form/studio/inputs/reference/resolveUserDefinedFilter'
@@ -35,6 +34,8 @@ export async function documentMatchesGroqFilter(ctx: {
     const params = options.params || {}
     const query = `*[${options.filter}]`
 
+    // Loaded on demand for the same reason as in the grants store: keeps groq-js off the boot path
+    const {evaluate, parse} = await import('groq-js')
     const tree = parse(query, params)
     const value = await evaluate(tree, {
       params,
