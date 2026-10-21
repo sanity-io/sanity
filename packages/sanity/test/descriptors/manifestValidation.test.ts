@@ -86,7 +86,7 @@ describe.each(['manifest', 'descriptor'] as const)('%s validation roundtrip', (f
       format,
     )
     const result = await validateDocument({schema, document: {...document, value}})
-    expect(result.status).toBe('failed')
+    expect(result.complete).toBe(true)
     expect(result.markers).toEqual([expect.objectContaining({code, path: ['value']})])
   })
 
@@ -117,7 +117,7 @@ describe.each(['manifest', 'descriptor'] as const)('%s validation roundtrip', (f
               customValidation,
               document: {...document, slug: {_type: type, current: 'hello'}},
             }),
-          ).resolves.toEqual({status: 'passed', markers: []}),
+          ).resolves.toEqual({status: 'passed', complete: true, markers: []}),
         ),
       )
       expect(request).toHaveBeenCalledTimes(2)
@@ -168,6 +168,7 @@ describe.each(['manifest', 'descriptor'] as const)('%s validation roundtrip', (f
     )
     await expect(validateDocument({schema, document})).resolves.toEqual({
       status: 'passed',
+      complete: true,
       markers: [],
     })
     const result = await validateDocument({
@@ -199,10 +200,11 @@ describe.each(['manifest', 'descriptor'] as const)('%s validation roundtrip', (f
     const {client} = createValidationClient()
     await expect(validateDocument({...options, client, customValidation: false})).resolves.toEqual({
       status: 'notEvaluated',
+      complete: false,
       markers: [],
     })
     const result = await validateDocument({...options, client})
-    expect(result.status).toBe('failed')
+    expect(result.complete).toBe(false)
     expect(result.markers).toEqual([
       expect.objectContaining({
         message: expect.stringContaining('reconstructed from a serialized schema manifest'),
