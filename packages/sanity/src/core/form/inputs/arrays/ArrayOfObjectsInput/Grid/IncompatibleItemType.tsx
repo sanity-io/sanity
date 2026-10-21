@@ -72,7 +72,12 @@ export function IncompatibleItemType(props: Props) {
             </Text>
             <Box>
               <Text size={1} as="div" trim={true}>
-                <Icon size={1} muted icon={BulbOutlineIcon} style={{margin: '-0.375rem'}} />{' '}
+                <Icon
+                  size={1}
+                  muted
+                  icon={BulbOutlineIcon}
+                  style={{margin: '-0.375rem', display: 'inline'}}
+                />{' '}
                 {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
@@ -106,12 +111,7 @@ export function IncompatibleItemType(props: Props) {
       >
         <Flex gap={4} marginTop={2} flexDirection="column">
           <Flex margin={1} justifyContent="center">
-            <Icon
-              size={4}
-              icon={UnknownIcon}
-              tone={tone}
-              style={{margin: '-0.5625rem', display: 'block'}}
-            />
+            <Icon size={4} icon={UnknownIcon} tone={tone} style={{margin: '-0.5625rem'}} />
           </Flex>
           <Text align="center" size={1} as="div" trim={true} tone={tone}>
             <Translate

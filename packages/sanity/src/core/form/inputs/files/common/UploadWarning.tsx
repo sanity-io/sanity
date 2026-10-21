@@ -26,7 +26,6 @@ export function UploadWarning({onClearStale}: Props) {
             style={{
               margin: '-0.3125rem',
               marginLeft: '-0.375rem',
-              display: 'block',
             }}
           />
         </Box>
