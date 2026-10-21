@@ -6,7 +6,7 @@ import {visionLocaleNamespace} from '../../i18n'
 import {useVistaExperience, type VistaLayout} from '../store/VistaActorContext'
 import {CollapsiblePanel, type CollapsiblePanelTab, PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
 import {ResizableSplit} from './ResizableSplit'
-import {paneFill, splitPaneContainer} from './vista.css'
+import * as styles from './vista.module.css'
 
 /** The main area may never be dragged smaller than this */
 const MIN_MAIN_HEIGHT = 120
@@ -41,7 +41,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
 
   return (
     <Flex data-testid={testId} flexDirection="column" height="100%">
-      <Box className={splitPaneContainer}>
+      <Box className={styles.splitPaneContainer}>
         <ResizableSplit
           allowResize={!collapsed}
           label={t('vista.split.bottom-panel')}
@@ -54,8 +54,8 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
           split="horizontal"
           testId={`${testId}-split`}
         >
-          <Flex className={paneFill}>{children}</Flex>
-          <Box className={paneFill}>
+          <Flex className={styles.paneFill}>{children}</Flex>
+          <Box className={styles.paneFill}>
             <CollapsiblePanel
               activeTabId={activeTabId}
               collapsed={collapsed}

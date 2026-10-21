@@ -63,13 +63,12 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
+    "@repo/css-modules-kit": "workspace:*",
     "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vanilla-extract/css": "catalog:",
     "@vitejs/devtools": "^0.8.0",
     "@vitejs/devtools-oxc": "^0.8.0",
     "@vitejs/devtools-rolldown": "^0.8.0",

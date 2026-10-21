@@ -141,6 +141,7 @@
       "matchPackageNames": [
         "@sanity/tsdown-config",
         "tsdown",
+        "@tsdown/css",
         "typescript",
         "@typescript/typescript6"
       ]
@@ -149,6 +150,7 @@
       "description": "Keep typedoc/ts-morph workspaces on the TypeScript 6 API alias (dep name typescript -> @typescript/typescript6); block bumps to typescript@7",
       "matchDepNames": ["typescript"],
       "matchFileNames": [
+        "packages/@repo/css-modules-kit/package.json",
         "packages/@repo/test-dts-exports/package.json",
         "packages/@repo/typedoc/package.json"
       ],

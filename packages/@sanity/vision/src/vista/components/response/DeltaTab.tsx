@@ -14,7 +14,7 @@ import {
   loadRevision,
   loadRevisions,
 } from '../../util/deltaQuery'
-import {drawerScroller} from '../vista.css'
+import * as styles from '../vista.module.css'
 import {JsonEditor} from './JsonEditor'
 
 /** Edits settle this long before the query is evaluated again */
@@ -415,7 +415,7 @@ function DeltaResult(props: {
         </Card>
       )}
       {evaluation.status === 'done' && typeof evaluation.value !== 'boolean' && (
-        <Card border className={drawerScroller} padding={3} radius={2}>
+        <Card border className={styles.drawerScroller} padding={3} radius={2}>
           <Code data-testid="vista-delta-value" size={1}>
             {JSON.stringify(evaluation.value, null, 2) ?? 'null'}
           </Code>

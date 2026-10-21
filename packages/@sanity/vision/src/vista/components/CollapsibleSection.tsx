@@ -6,7 +6,7 @@ import {Box, Flex} from 'ui5'
 
 import {cx} from '../util/cx'
 import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
-import {collapsibleSection, sectionBody} from './vista.css'
+import * as styles from './vista.module.css'
 
 export interface CollapsibleSectionProps {
   /** Prefix for the element ids and test ids */
@@ -38,7 +38,7 @@ export function CollapsibleSection(props: CollapsibleSectionProps) {
   return (
     <Flex
       as="section"
-      className={cx(collapsibleSection, expanded && className)}
+      className={cx(styles.collapsibleSection, expanded && className)}
       data-expanded={expanded}
       data-testid={`${id}-panel`}
       ref={ref}
@@ -76,7 +76,7 @@ export function CollapsibleSection(props: CollapsibleSectionProps) {
       {expanded && (
         <Box
           aria-labelledby={`${id}-toggle`}
-          className={sectionBody}
+          className={styles.sectionBody}
           id={`${id}-content`}
           role="region"
         >

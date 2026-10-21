@@ -26,7 +26,7 @@ import {type VistaDrawer, type VistaTab} from '../../store/types'
 import {useSavedQueriesApi, useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {selectActiveTab, selectDatasets} from '../../store/vistaMachine'
 import {savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
-import {listItemButton, previewCode, scrollArea} from '../vista.css'
+import * as styles from '../vista.module.css'
 
 interface QueryListPanelProps {
   mode: VistaDrawer
@@ -258,7 +258,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
         )}
       </Flex>
 
-      <Box className={scrollArea} flexBasis="0%" flexGrow={1}>
+      <Box className={styles.scrollArea} flexBasis="0%" flexGrow={1}>
         {visibleItems.length === 0 ? (
           <Box padding={4}>
             <Text muted size={1}>
@@ -302,7 +302,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         </Box>
                       ) : (
                         <Button
-                          className={listItemButton}
+                          className={styles.listItemButton}
                           data-testid="vista-saved-query-open"
                           justify="flex-start"
                           mode="bleed"
@@ -316,7 +316,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                               {query.title || t('label.untitled-query')}
                             </Text>
                             {preview && (
-                              <Box className={previewCode}>
+                              <Box className={styles.previewCode}>
                                 <Code size={0}>{preview}</Code>
                               </Box>
                             )}

@@ -1,0 +1,182 @@
+.root :global(.sidebarPanes .Pane) {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.queryRecallPaneContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.queryRecallPaneWrapper {
+  min-height: 0;
+}
+
+/* The resizer handles `@rexxars/react-split-pane` renders between the panes */
+
+.root :global(.Resizer) {
+  background: var(--card-border-color);
+  opacity: 1;
+  z-index: 1;
+  box-sizing: border-box;
+  background-clip: padding-box;
+  border: solid transparent;
+}
+
+.root :global(.Resizer:hover) {
+  border-color: var(--card-shadow-ambient-color);
+}
+
+.root :global(.Resizer.horizontal) {
+  height: 11px;
+  margin: -5px 0;
+  border-width: 5px 0;
+  cursor: row-resize;
+  width: 100%;
+  z-index: 4;
+}
+
+.root :global(.Resizer.vertical) {
+  width: 11px;
+  margin: 0 -5px;
+  border-width: 0 5px;
+  cursor: col-resize;
+  /* To prevent the resizer from being hidden behind CodeMirror scroll area */
+  z-index: 2;
+}
+
+.root :global(.Resizer.disabled) {
+  cursor: not-allowed;
+}
+
+.root :global(.Resizer.disabled:hover) {
+  border-color: transparent;
+}
+
+.header {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 6;
+  overflow: visible;
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+/* Overrides the background-color @sanity/ui's Card sets on itself */
+.header.header {
+  background: var(--card-bg-color);
+}
+
+.styledLabel {
+  flex: 1;
+}
+
+.splitpaneContainer {
+  position: relative;
+  min-height: 0;
+  z-index: 1;
+}
+
+.queryCopyLink {
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.inputBackgroundContainer {
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  padding: 0;
+  margin: 0;
+  z-index: 10;
+  right: 0;
+}
+
+.inputBackgroundContainer .styledLabel {
+  user-select: none;
+}
+
+.inputBackgroundContainerLeft {
+  /* This is so its aligned with the gutters of CodeMirror */
+  left: 33px;
+}
+
+.inputContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  flex-direction: column;
+}
+
+.resultOuterContainer {
+  height: 100%;
+}
+
+.resultInnerContainer {
+  position: relative;
+}
+
+.resultContainer {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  max-width: 100%;
+}
+
+.resultContainerInvalid.resultContainerInvalid::after {
+  content: '';
+  background-color: var(--card-bg-color);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.result {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+}
+
+.resultFooter {
+  border-top: 1px solid var(--card-border-color);
+  flex-wrap: wrap;
+}
+
+.timingsCard {
+  position: relative;
+}
+
+.timingsTextContainer {
+  height: 100%;
+  min-height: var(--vision-timings-text-min-height);
+}
+
+.downloadsCard {
+  position: relative;
+}
+
+/* Overrides the transform and pseudo-elements @sanity/ui's Text applies for baseline trimming */
+.saveResultLabel.saveResultLabel {
+  transform: initial;
+}
+
+.saveResultLabel.saveResultLabel::before,
+.saveResultLabel.saveResultLabel::after {
+  content: none;
+}
+
+.saveResultLabel > span {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: var(--vision-save-result-gap);
+  align-items: center;
+}
+
+.controlsContainer {
+  border-top: 1px solid var(--card-border-color);
+}

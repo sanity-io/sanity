@@ -1,66 +1,50 @@
-import {fileURLToPath} from 'node:url'
-
-import {pandacss} from '@pandacss/vite'
+import {viteCssModules} from '@repo/css-modules-kit'
+import {sanityPandaCss} from '@repo/pandacss/vite'
 import {defineConfig} from '@repo/test-config/vitest'
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact from '@vitejs/plugin-react'
+import {type Plugin} from 'vite'
 
-/** The `sanity` package: the repository's only Panda CSS project (packages/sanity/panda.config.ts). */
-const SANITY_PACKAGE_DIR = fileURLToPath(new URL('../../sanity/', import.meta.url))
-/** Module ids of its sources (Vite ids use forward slashes on every platform). */
-const RE_SANITY_PACKAGE_SOURCE = /\/packages\/sanity\/src\//
+const STYLE_INJECTION = '__vite__updateStyle(__vite__id, __vite__css)'
 
 /**
- * `@sanity/vanilla-extract-vite-plugin` for this package's own `.css.ts` modules. The plugin
- * compiles every `.css.ts` module of a build as vanilla-extract, so the `sanity` package's — Panda
- * CSS, built by the `@pandacss/vite` instance below — are excluded from its transform's hook filter
- * here; unscoped, it compiles them as vanilla-extract and fails on the missing `@vanilla-extract/css`
- * import. Throws rather than failing open when the plugin's name or hook shape changes, so an
- * upstream change shows up here and not as this suite compiling `sanity`'s modules. Both this
- * wrapper and the plugin go once this package moves to CSS modules (#15406).
+ * Keeps the class names of a compiled CSS module and drops the stylesheet Vitest would inject into
+ * the document, so this jsdom suite runs without styles like the `sanity` one: vision's stylesheet
+ * hides parts of the trees the tests query (the root key of a result, for one).
  */
-function vanillaExtractExceptSanity() {
-  const plugins = vanillaExtractPlugin()
-  const plugin = plugins.find((candidate) => candidate.name === 'sanity-vanilla-extract')
-  const transform = plugin?.transform
-  const include = typeof transform === 'object' ? transform.filter?.id : undefined
-  if (!plugin || typeof transform !== 'object' || !(include instanceof RegExp)) {
-    throw new Error(
-      '@sanity/vanilla-extract-vite-plugin changed its plugin name or transform hook shape; update vanillaExtractExceptSanity() in vitest.config.mts',
-    )
-  }
-  return plugins.map((candidate) =>
-    candidate === plugin
-      ? {
-          ...plugin,
-          transform: {
-            ...transform,
-            filter: {...transform.filter, id: {include, exclude: RE_SANITY_PACKAGE_SOURCE}},
-          },
+function cssModulesWithoutStyles(): Plugin {
+  return {
+    name: 'vision:css-modules-without-styles',
+    enforce: 'post',
+    transform: {
+      filter: {id: /\.module\.css(?:\?|$)/},
+      handler(code, id) {
+        if (!code.includes('__vite__updateStyle')) return null
+        if (!code.includes(STYLE_INJECTION)) {
+          throw new Error(`Found no \`${STYLE_INJECTION}\` to drop in ${id}`)
         }
-      : candidate,
-  )
+        return {code: code.replace(STYLE_INJECTION, ''), map: null}
+      },
+    },
+  }
 }
 
-// Two `.css.ts` compilers meet in this suite. Vision's own `.css.ts` modules are vanilla-extract
-// and still need its transform in jsdom for file scoping (they throw "Styles were unable to be
-// assigned to a file" without it); style *injection* is skipped via `disableRuntimeStyles` below,
-// since no jsdom test asserts on styles or vanilla-extract class names. The `sanity` sources the
-// tests resolve to (the `monorepo` condition) are Panda CSS, so their `.css.ts` modules get the
-// `@pandacss/vite` instance pointed at that package, which rewrites their `css()` calls to class
-// names; no stylesheet is loaded in jsdom.
 export default defineConfig({
+  // Vision's CSS modules compile with Lightning CSS and the pattern of the package build, so the
+  // class names the tests render are the ones `lib/bundle.css` ships (`test.css` below opts them in)
+  css: viteCssModules,
   test: {
     environment: 'jsdom',
+    css: {include: [/\.module\.css$/]},
     setupFiles: [
-      '@vanilla-extract/css/disableRuntimeStyles',
       // Fail tests during which react-dom reports a prop leaking onto a DOM element
       '@repo/test-config/vitest/failOnReactDomPropWarnings',
     ],
   },
   plugins: [
-    ...vanillaExtractExceptSanity(),
-    pandacss({cwd: SANITY_PACKAGE_DIR, transform: true}),
+    cssModulesWithoutStyles(),
+    // The `sanity` sources the tests resolve to (the `monorepo` condition) are Panda CSS, which
+    // this rewrites to class names; without an `entry`, no stylesheet is imported into jsdom
+    ...sanityPandaCss(),
     // React Compiler through `oxc-transform-react` (no babel), same as packages/sanity
     viteReact({compiler: {target: '19'}}),
   ],
