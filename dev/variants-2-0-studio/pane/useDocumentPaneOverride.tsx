@@ -9,6 +9,7 @@ import {PaneBar} from '../compare/PaneBar'
 import {useComparison} from '../compare/useCompare'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PresentationContextLine} from '../presentation/PresentationContextLine'
+import {InspectorTabs} from './InspectorTabs'
 import {LocalPerspectiveHeader, LocalPerspectiveRow} from './LocalPerspective'
 import {DocumentsCount, LocalRow} from './PaneAddress'
 import {PaneControl} from './PaneControl'
@@ -98,6 +99,11 @@ export function resolveDocumentPaneOverride(
     )
       return undefined
     // The open beta header (c2 C): compact, one header for the pane, commands-only "..." menu (core seam `compactHeader`).
-    return {pills: headerPills, banners, compactHeader: c2 === 'c' ? true : undefined}
+    return {
+      pills: headerPills,
+      banners,
+      compactHeader: c2 === 'c' ? true : undefined,
+      inspectorTabs: c2 === 'c' ? <InspectorTabs /> : undefined,
+    }
   }
 }

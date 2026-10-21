@@ -1,7 +1,7 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Card, TabList, TabPanel, Text} from '@sanity/ui'
-import {useState} from 'react'
+import {Card, Switch, TabList, TabPanel, Text} from '@sanity/ui'
+import {useContext, useState} from 'react'
 import {
   type DocumentInspectorProps,
   isReleaseDocument,
@@ -12,6 +12,8 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
+import {DocumentInspectorTabsContext} from 'sanity/_singletons'
+import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
@@ -21,6 +23,7 @@ import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
+import {useDocumentPane} from '../../useDocumentPane'
 import {ChangesInspector} from './ChangesInspector'
 import {EventsInspector} from './EventsInspector'
 import {EventsSelector} from './EventsSelector'
@@ -47,6 +50,11 @@ export function ChangesTabs(props: DocumentInspectorProps) {
   const {t: tCore} = useTranslation()
   const isReady = params?.inspect === HISTORY_INSPECTOR_NAME
   const {selectedPerspective} = usePerspective()
+  // PROPOSED: a host's tab row carries History and Review changes, and the Inline changes command becomes a switch at the top of Review changes.
+  const tabsActive = useContext(DocumentInspectorTabsContext)
+  const {onMenuAction} = useDocumentPane()
+  const {stickyParams} = useRouter()
+  const inlineChanges = stickyParams.displayInlineChanges === 'true'
 
   const paneRouterTab = isValidTab(params?.changesInspectorTab)
     ? params.changesInspectorTab
@@ -68,33 +76,48 @@ export function ChangesTabs(props: DocumentInspectorProps) {
       data-ready={isReady ? '' : undefined}
       ref={setParentRef}
     >
-      <Card paddingBottom={1}>
-        <Flex alignItems="center" padding={3} gap={2}>
-          <TabList gap={1} flex={1}>
-            <Tab
-              aria-controls="history-panel"
-              id="history-tab"
-              label={t('changes.tab.history')}
-              onClick={() => setPaneRouterTab('history')}
-              selected={paneRouterTab === 'history'}
+      {tabsActive ? null : (
+        <Card paddingBottom={1}>
+          <Flex alignItems="center" padding={3} gap={2}>
+            <TabList gap={1} flex={1}>
+              <Tab
+                aria-controls="history-panel"
+                id="history-tab"
+                label={t('changes.tab.history')}
+                onClick={() => setPaneRouterTab('history')}
+                selected={paneRouterTab === 'history'}
+              />
+              <Tab
+                aria-controls="review-changes-panel"
+                id="changes-tab"
+                label={t('changes.tab.review-changes')}
+                onClick={() => setPaneRouterTab('review')}
+                selected={paneRouterTab === 'review'}
+              />
+            </TabList>
+            <Button
+              aria-label={t('changes.action.close-label')}
+              icon={CloseIcon}
+              mode="bleed"
+              onClick={props.onClose}
+              tooltipProps={{content: t('document-inspector.close-button.tooltip')}}
             />
-            <Tab
-              aria-controls="review-changes-panel"
-              id="changes-tab"
-              label={t('changes.tab.review-changes')}
-              onClick={() => setPaneRouterTab('review')}
-              selected={paneRouterTab === 'review'}
-            />
-          </TabList>
-          <Button
-            aria-label={t('changes.action.close-label')}
-            icon={CloseIcon}
-            mode="bleed"
-            onClick={props.onClose}
-            tooltipProps={{content: t('document-inspector.close-button.tooltip')}}
+          </Flex>
+        </Card>
+      )}
+      {tabsActive && paneRouterTab === 'review' ? (
+        <Flex alignItems="center" gap={3} justifyContent="space-between" padding={3}>
+          <Text as="label" htmlFor="show-changes-in-form" size={1}>
+            {t('changes.inline-switch.label')}
+          </Text>
+          <Switch
+            checked={inlineChanges}
+            data-testid="show-changes-in-form"
+            id="show-changes-in-form"
+            onChange={() => onMenuAction({action: 'toggleInlineChanges', title: ''})}
           />
         </Flex>
-      </Card>
+      ) : null}
       <Card padding={2} marginBottom={3} marginX={3} tone="neutral" border radius={3}>
         <Flex gap={2} alignItems="flex-start">
           <Tooltip

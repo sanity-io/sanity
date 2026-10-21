@@ -1,7 +1,8 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Card, type CardProps, Text} from '@sanity/ui'
-import {type ElementType, type HTMLProps, type ReactNode} from 'react'
+import {type ElementType, type HTMLProps, type ReactNode, useContext} from 'react'
 import {useTranslation} from 'sanity'
+import {DocumentInspectorTabsContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
@@ -28,6 +29,9 @@ export function DocumentInspectorHeader(
 ) {
   const {as: forwardedAs, children, closeButtonLabel, onClose, title, ...restProps} = props
   const {t} = useTranslation(structureLocaleNamespace)
+  // PROPOSED: while a host's tab row is shown it names the panel and closes the pane, so the inspector has no header of its own.
+  const tabsActive = useContext(DocumentInspectorTabsContext)
+  if (tabsActive) return <>{children}</>
 
   return (
     <Root {...restProps} as={forwardedAs}>

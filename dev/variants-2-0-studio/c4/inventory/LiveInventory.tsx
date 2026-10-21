@@ -103,6 +103,10 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   }
   return (
     <Flex direction="column" height="fill">
+      {/* Open beta header: the tab row names the panel and the pane closes it, so the panel's own header (title, expand, close) goes (R3, R6). */}
+      {paneMode ? (
+        <style>{`[data-testid="inventory-header"] {display: none !important}`}</style>
+      ) : null}
       {lensOpen || paneMode ? null : <VisitorLensLine onOpen={() => setLensOpen(true)} />}
       <HidePriorityView />
       {compare !== 'a' ? (

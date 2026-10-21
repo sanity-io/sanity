@@ -3,7 +3,6 @@ import {Box, Button, Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {ReleaseAvatarIcon} from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
 
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
@@ -11,6 +10,7 @@ import {useVariantDefinitions} from '../c1/world'
 import {useCorpus} from '../c5/useCorpus'
 import {useVersionList} from '../data/useVersionList'
 import {CubeIcon} from './Cube'
+import {lastPanel, useInspectorPanels} from './inspectorPanels'
 import {useCircleRegistry, useLocalBar} from './localBar'
 import {Pick} from './Pick'
 import {LOCAL_OUTLINE, stateToneOf} from './stateTone'
@@ -25,7 +25,6 @@ import {layerLabel, usePaneAddress} from './usePaneAddress'
 // The footer's "Manage versions" is replaced by the pill, so it is hidden here (a stock core button behind a core flag, no seam for it).
 
 const NONE = 'none'
-const INVENTORY = 'variants-inventory'
 const PRESSED = 'var(--card-badge-default-bg-color)'
 const WHITE_CHIP: CSSProperties = {background: 'var(--card-bg-color)', border: 0, boxShadow: 'none'}
 const LOCAL_COLOR = 'var(--card-badge-suggest-icon-color)'
@@ -105,10 +104,11 @@ export function LocalPerspectiveHeader({documentId}: {documentId: string}) {
   const {local, shown} = usePaneState()
   const versions = useVersionList(documentId)
   const corpus = useCorpus()
-  const pane = useDocumentPane()
   const [barOpen, setBarOpen] = useLocalBar()
   const registry = useCircleRegistry()
-  const inventoryOpen = pane.inspector?.name === INVENTORY
+  const {panels, activeId, close} = useInspectorPanels()
+  // H4: the pill is pressed while any panel is open; a click closes it, or opens the panel last used (Versions the first time).
+  const inventoryOpen = activeId !== undefined
   const count = versions?.length ?? 0
   const title = corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId
   const circleStyle: CSSProperties = {
@@ -159,7 +159,9 @@ export function LocalPerspectiveHeader({documentId}: {documentId: string}) {
         icon={DocumentsIcon}
         mode="ghost"
         onClick={() =>
-          inventoryOpen ? pane.closeInspector(INVENTORY) : pane.openInspector(INVENTORY)
+          inventoryOpen
+            ? close()
+            : (panels.find((p) => p.id === lastPanel()) ?? panels[0])?.select()
         }
         style={{
           ...(inventoryOpen ? {background: PRESSED} : null),
