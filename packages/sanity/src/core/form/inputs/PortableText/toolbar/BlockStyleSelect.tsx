@@ -1,7 +1,6 @@
 import {useEditor} from '@portabletext/editor'
 import {isActiveStyle} from '@portabletext/editor/selectors'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Text} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -9,6 +8,7 @@ import {
 } from '@sanity/ui/menu'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Text} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
@@ -156,7 +156,11 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         return <CustomComponent>{title}</CustomComponent>
       }
 
-      return <Text>{title}</Text>
+      return (
+        <Text as="div" trim={true}>
+          {title}
+        </Text>
+      )
     },
     [t],
   )

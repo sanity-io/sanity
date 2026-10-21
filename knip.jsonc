@@ -25,6 +25,8 @@
         // Used by the boundaries jsPlugin via `settings["import/resolver"]` in .oxlintrc.json,
         // which knip can't trace (unlike jsPlugins, which it detects)
         "eslint-import-resolver-typescript",
+        // Pins @babel/core 7 so Stryker's @babel/core 8 does not win the Sanity CLI's @rolldown/plugin-babel peer
+        "@babel/core",
       ],
       "ignoreBinaries": [
         // No root packages provide these binaries
@@ -116,6 +118,10 @@
     },
     "packages/@repo/utils": {
       "project": ["src/**/*.ts"],
+    },
+    "engine-confidence": {
+      "entry": ["scripts/*.ts", "stryker/*.{mjs,mts,ts}"],
+      "project": ["**/*.{ts,mts,mjs}"],
     },
     "packages/@repo/oxlint-plugin-i18n": {
       // test/fixtures holds locale resource files the rule tests read from disk, not imports

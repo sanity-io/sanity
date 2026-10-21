@@ -95,9 +95,10 @@ export function RunDetailPopover(props: {
       ? compareUrl(previousPoint.sha, point.sha)
       : undefined
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const documentType = point.documentType ?? 'benchRun'
   const documentLink = useIntentLink({
     intent: 'edit',
-    params: {id: point.runId, type: 'benchRun'},
+    params: {id: point.runId, type: documentType},
   })
   // Two copy affordances share the previous point as `ab_from`: the bare
   // dispatch command (for someone who already knows what they suspect) and
@@ -109,7 +110,10 @@ export function RunDetailPopover(props: {
   // has no URL that prefills a workflow_dispatch form — so the affordance is
   // a copyable command, previous point as reference, this point as experiment
   const abCommand =
-    previousPoint && FULL_SHA.test(previousPoint.sha) && FULL_SHA.test(point.sha)
+    documentType === 'benchRun' &&
+    previousPoint &&
+    FULL_SHA.test(previousPoint.sha) &&
+    FULL_SHA.test(point.sha)
       ? abDispatchCommand(previousPoint.sha, point.sha)
       : undefined
   const backlinks = backlinksFor(point)
@@ -438,24 +442,26 @@ export function RunDetailPopover(props: {
                 {/* A paste-ready brief for a coding agent: the full signal
                     (metric, both commits, delta, backlinks) plus the A/B
                     dispatch / bisect recipe from perf/bench/README.md */}
-                <Button
-                  mode="ghost"
-                  fontSize={1}
-                  icon={promptCopy.state === 'copied' ? CheckmarkIcon : RobotIcon}
-                  tone={promptCopy.state === 'copied' ? 'positive' : 'default'}
-                  text={
-                    promptCopy.state === 'copied'
-                      ? 'Copied'
-                      : promptCopy.state === 'failed'
-                        ? 'Copy failed'
-                        : 'Copy investigation prompt'
-                  }
-                  aria-label="Copy an investigation brief for a coding agent to the clipboard"
-                  onClick={() =>
-                    previousPoint &&
-                    promptCopy.copy(buildInvestigationPrompt(series, point, previousPoint))
-                  }
-                />
+                {documentType === 'benchRun' && (
+                  <Button
+                    mode="ghost"
+                    fontSize={1}
+                    icon={promptCopy.state === 'copied' ? CheckmarkIcon : RobotIcon}
+                    tone={promptCopy.state === 'copied' ? 'positive' : 'default'}
+                    text={
+                      promptCopy.state === 'copied'
+                        ? 'Copied'
+                        : promptCopy.state === 'failed'
+                          ? 'Copy failed'
+                          : 'Copy investigation prompt'
+                    }
+                    aria-label="Copy an investigation brief for a coding agent to the clipboard"
+                    onClick={() =>
+                      previousPoint &&
+                      promptCopy.copy(buildInvestigationPrompt(series, point, previousPoint))
+                    }
+                  />
+                )}
               </VStack>
             )}
 
@@ -463,7 +469,7 @@ export function RunDetailPopover(props: {
             <Box style={{borderTop: '1px solid var(--card-border-color)'}} paddingTop={3}>
               <Flex alignItems="center" justifyContent="space-between" gap={2}>
                 <Badge tone="default" fontSize={0}>
-                  benchRun
+                  {documentType}
                 </Badge>
                 <Button
                   as="a"

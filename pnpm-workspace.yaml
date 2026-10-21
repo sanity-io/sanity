@@ -1,6 +1,7 @@
 packages:
   - dev/*
   - perf/*
+  - engine-confidence
   - examples/*
   - scripts
   - e2e
@@ -57,7 +58,7 @@ catalog:
   styled-components: ^6.6.0
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
-  ui5: npm:@sanity/ui@5.0.0-alpha.14
+  ui5: npm:@sanity/ui@5.0.0-alpha.15
   tsdown: ^0.23.1
   typescript: ^7.0.2
   vite: ^8.3.4
@@ -188,3 +189,7 @@ trustPolicyExclude:
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
+patchedDependencies:
+  # The runner joins describe and test names with ' ' but Vitest 5 filters on ' > ', so tests
+  # inside a describe never run against a mutant and it reports as survived. Drop once fixed upstream
+  '@stryker-mutator/vitest-runner@10.0.0': patches/@stryker-mutator__vitest-runner@10.0.0.patch

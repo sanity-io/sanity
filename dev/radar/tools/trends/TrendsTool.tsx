@@ -2,6 +2,7 @@
 import {STYLE_SYSTEMS} from '@repo/utils/style-systems'
 import {ActivityIcon} from '@sanity/icons/Activity'
 import {BoltIcon} from '@sanity/icons/Bolt'
+import {BugIcon} from '@sanity/icons/Bug'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ClockIcon} from '@sanity/icons/Clock'
@@ -67,9 +68,28 @@ import {
   UI_OVERVIEW_KEY,
   vitalSections,
 } from './data'
-import {DEBUG_SOURCES, type DebugSource, generateDebugRuns, generateDebugTags} from './debugData'
+import {
+  DEBUG_SOURCES,
+  type DebugSource,
+  generateDebugEngineConfidenceRuns,
+  generateDebugRuns,
+  generateDebugTags,
+} from './debugData'
 import {deltaLabel, type DriftResult, worstBySeries} from './drift'
 import {DriftFeed} from './DriftFeed'
+import {
+  ENGINE_CONFIDENCE_DETAIL_QUERY,
+  ENGINE_CONFIDENCE_DETAIL_TAG,
+  ENGINE_CONFIDENCE_QUERY,
+  ENGINE_CONFIDENCE_TAG,
+  deepLinkTargetLoaded,
+  type EngineConfidenceDetail,
+  engineConfidenceDetailOf,
+  type EngineConfidenceRunSummary,
+  engineConfidenceSeries,
+  filterEngineRunsByRange,
+} from './engineConfidence'
+import {EngineConfidencePanel} from './EngineConfidencePanel'
 import {type LayerState, useLayerState} from './layers'
 import {sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
@@ -94,6 +114,7 @@ const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
   styles: ColorWheelIcon,
   soak: DropIcon,
   settle: SyncIcon,
+  engine: BugIcon,
   environment: ControlsIcon,
 }
 
@@ -183,6 +204,11 @@ const FOCUS_PULSE_CSS = `
 
 interface LiveState {
   runs: TrendRun[] | null
+  error: string | null
+}
+
+interface EngineLiveState {
+  runs: EngineConfidenceRunSummary[] | null
   error: string | null
 }
 
@@ -1239,7 +1265,49 @@ export function TrendsTool() {
   )
   const liveTags = useObservable(liveTags$, [])
 
+  // Own stream and error state: an engine query failure must not blank the bench tabs, nor the reverse
+  const engineLive$ = useMemo(
+    () =>
+      documentStore.listenQuery(ENGINE_CONFIDENCE_QUERY, {}, {tag: ENGINE_CONFIDENCE_TAG}).pipe(
+        map((result): EngineLiveState => ({
+          runs: result as EngineConfidenceRunSummary[],
+          error: null,
+        })),
+        catchError((error: unknown) =>
+          of<EngineLiveState>({
+            runs: null,
+            error: error instanceof Error ? error.message : String(error),
+          }),
+        ),
+      ),
+    [documentStore],
+  )
+  const engineLive = useObservable(engineLive$, {runs: null, error: null})
+  const engineDetailLive$ = useMemo(
+    () =>
+      documentStore
+        .listenQuery(ENGINE_CONFIDENCE_DETAIL_QUERY, {}, {tag: ENGINE_CONFIDENCE_DETAIL_TAG})
+        .pipe(
+          map((result) => result as EngineConfidenceDetail | null),
+          catchError(() => of<EngineConfidenceDetail | null>(null)),
+        ),
+    [documentStore],
+  )
+  const engineDetailLive = useObservable(engineDetailLive$, null)
+
   const debugRuns = useMemo(() => (source === 'live' ? null : generateDebugRuns(source)), [source])
+  const debugEngineRuns = useMemo(
+    () => (source === 'live' ? null : generateDebugEngineConfidenceRuns(source)),
+    [source],
+  )
+  const engineRuns = source === 'live' ? engineLive.runs : debugEngineRuns
+  const engineDetail = useMemo(() => {
+    if (source === 'live') return engineDetailLive
+    const newest = debugEngineRuns?.at(-1)
+    return newest ? engineConfidenceDetailOf(newest) : null
+  }, [source, engineDetailLive, debugEngineRuns])
+  const engineError = source === 'live' ? engineLive.error : null
+  const engineLoading = source === 'live' && engineLive.runs === null && engineLive.error === null
   const runs = source === 'live' ? live.runs : debugRuns
   // Debug sources get synthetic tags too, so the marker layer (including label
   // collision) is testable offline like every other layer — see SPEC
@@ -1289,6 +1357,7 @@ export function TrendsTool() {
     () => styleAggregate.filter((entry) => !entry.hidden),
     [styleAggregate],
   )
+  const engineHistorySeries = useMemo(() => engineConfidenceSeries(engineRuns ?? []), [engineRuns])
   /**
    * Drift is computed over *all* history for the selected branches, never the
    * range-filtered view. Its baseline is defined in runs (last 7 vs prior 21),
@@ -1303,8 +1372,17 @@ export function TrendsTool() {
     const all = buildSeries(
       (runs ?? []).filter((run) => run.git && selectedBranches.includes(run.git.branch)),
     )
-    return [...all, ...aggregateStyleSeries(all.filter((entry) => entry.group === 'styles'))]
-  }, [runs, selectedBranches])
+    return [
+      ...all,
+      ...aggregateStyleSeries(all.filter((entry) => entry.group === 'styles')),
+      ...engineHistorySeries,
+    ]
+  }, [runs, selectedBranches, engineHistorySeries])
+  const engineRunsInRange = useMemo(
+    () => filterEngineRunsByRange(engineRuns ?? [], rangeDays),
+    [engineRuns, rangeDays],
+  )
+  const engineSeries = useMemo(() => engineConfidenceSeries(engineRunsInRange), [engineRunsInRange])
   const soakSlopes = useMemo(() => soakSlopeSeries(filtered), [filtered])
   // End-of-run soak values across runs — the "where did it land" history that
   // complements the slope view
@@ -1339,11 +1417,11 @@ export function TrendsTool() {
   // — a deep link to either must still resolve to its tab.
   const groupById = useMemo(() => {
     const map = new Map<string, TrendGroup>()
-    for (const entry of [...series, ...visibleAggregate, calibration]) {
+    for (const entry of [...series, ...visibleAggregate, calibration, ...engineSeries]) {
       map.set(entry.key, entry.group)
     }
     return map
-  }, [series, visibleAggregate, calibration])
+  }, [series, visibleAggregate, calibration, engineSeries])
 
   // Every chart the tool can show, by key — what `?max=` resolves against.
   // The soak views, the environment tab and the style aggregate build their
@@ -1395,11 +1473,21 @@ export function TrendsTool() {
   // charts don't exist yet (listenQuery hasn't emitted), so an immediate
   // scroll would silently no-op and the ring would expire unseen.
   const pendingDeepLink = useRef(chartParam)
+  const engineRunsLoaded = engineRuns !== null
   useEffect(() => {
-    if (!pendingDeepLink.current || series.length === 0) return
-    setFocusedKey(pendingDeepLink.current)
-    pendingDeepLink.current = ''
-  }, [series])
+    const seriesKey = pendingDeepLink.current
+    const targetLoaded =
+      seriesKey.length > 0 &&
+      deepLinkTargetLoaded({
+        seriesKey,
+        benchSeriesLoaded: series.length > 0,
+        engineRunsLoaded,
+      })
+    if (targetLoaded) {
+      setFocusedKey(seriesKey)
+      pendingDeepLink.current = ''
+    }
+  }, [series, engineRunsLoaded])
   const focusMetric = (seriesKey: string) => {
     // One history entry per jump: push the chart param, then clear any
     // explicit tab on that same entry (replace) — the active tab derives from
@@ -1673,7 +1761,18 @@ export function TrendsTool() {
                     <Text size={1} muted as="div" trim={true}>
                       {activeTab.description}
                     </Text>
-                    {activeTab.id === 'soak' ? (
+                    {activeTab.id === 'engine' ? (
+                      <EngineConfidencePanel
+                        runs={engineRunsInRange}
+                        series={engineSeries}
+                        detail={engineRunsInRange.length > 0 ? engineDetail : null}
+                        loading={engineLoading}
+                        error={engineError}
+                        tags={tags}
+                        cardId={chartDomId}
+                        focusedKey={focusedKey}
+                      />
+                    ) : activeTab.id === 'soak' ? (
                       <SoakPanel
                         slopes={soakSlopes}
                         endValues={soakEndValues}

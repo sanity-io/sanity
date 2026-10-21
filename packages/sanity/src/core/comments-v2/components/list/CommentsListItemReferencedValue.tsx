@@ -82,7 +82,11 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
           {!hasReferencedValue && (
             <Tooltip content={tooltipText}>
               <InlineBox>
-                <Icon size={1} icon={LinkRemovedIcon} style={{margin: '-0.375rem'}} />
+                <Icon
+                  size={1}
+                  icon={LinkRemovedIcon}
+                  style={{margin: '-0.375rem', display: 'inline'}}
+                />
               </InlineBox>
             </Tooltip>
           )}

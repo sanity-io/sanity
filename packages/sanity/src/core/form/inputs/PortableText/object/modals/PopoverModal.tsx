@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {BoundaryElementProvider, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {BoundaryElementProvider, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {
   type ComponentProps,
   type ReactNode,
@@ -11,7 +11,7 @@ import {
 } from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {type PopoverProps} from '../../../../../../ui-components/popover/Popover'
@@ -146,7 +146,9 @@ function Content(props: PopoverEditDialogProps) {
             <ContentHeaderBox flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
               <Flex alignItems="center">
                 <Box flexBasis="0%" flexGrow={1} padding={2}>
-                  <Text weight="medium">{title}</Text>
+                  <Text weight="medium" as="div" trim={true}>
+                    {title}
+                  </Text>
                 </Box>
 
                 <Button
