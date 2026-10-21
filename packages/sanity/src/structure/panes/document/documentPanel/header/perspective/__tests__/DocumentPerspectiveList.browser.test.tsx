@@ -4,12 +4,8 @@ import {type ReactNode} from 'react'
 import {
   type EditStateFor,
   getVersionFromId,
-  LocaleProvider,
   type PerspectiveContextValue,
-  useActiveReleases,
-  useArchivedReleases,
   useDocumentVersions,
-  type VersionInfoDocumentStub,
 } from 'sanity'
 import {
   DocumentPaneContext,
@@ -24,6 +20,10 @@ import {page} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../../test/browser/TestWrapper'
+import {LocaleProvider} from '../../../../../../../core/i18n/components/LocaleProvider'
+import {type VersionInfoDocumentStub} from '../../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
+import {useArchivedReleases} from '../../../../../../../core/releases/store/useArchivedReleases'
 import {type PaneRouterContextValue} from '../../../../../../components/paneRouter/types'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
