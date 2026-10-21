@@ -72,7 +72,7 @@ for (const width of [1440, 1280]) {
     const items = await visibleItems(p)
     first ??= items
     log(`Variants, click ${i + 1}: the same single dropdown opens (flat list, Default row)`, items.length >= 4 && items.includes('picker-default-audience') && JSON.stringify(items) === JSON.stringify(first) && (await p.locator('[data-testid="address-picker"]:visible').count()) === 1, `${items.length} items`)
-    log(`Variants, click ${i + 1}: no row or bar appears`, (await count(p, 'address-row')) === 0)
+    log(`Variants, click ${i + 1}: no row or bar appears, and nothing under the list`, (await count(p, 'address-row')) === 0 && (await count(p, 'picker-footer')) === 0)
     await p.getByTestId(`picker-value-audience-${picks[i]}`).click()
     await p.waitForTimeout(2000)
     log(`Variants, pick ${i + 1}: the control updates and the global variant moves`, variantParam(p) === `aud-${picks[i]}` && (await text(p, 'variants-chip')).length > 0 && (await visibleItems(p)).length === 0, `variant=${variantParam(p)}, "${await text(p, 'variants-chip')}"`)
@@ -106,6 +106,25 @@ for (const width of [1440, 1280]) {
     await p.keyboard.press('Escape')
     await p.waitForTimeout(500)
   }
+
+  // The state menu has a search once it holds more than 7 entries (Published, Drafts and releases; not the footer actions).
+  const entries = () => p.locator('[data-testid="release-menu"] [role="menuitem"]:visible').allInnerTexts()
+  await p.getByTestId('global-perspective-menu-button').click()
+  await p.waitForTimeout(900)
+  const all = await entries()
+  log('state control: a menu of more than 7 entries shows a search field', (await visible(p, 'release-menu-search')) && all.length > 7, `${all.length} items`)
+  await p.getByTestId('release-menu-search').fill('e9')
+  await p.waitForTimeout(600)
+  const found = (await entries()).join('|')
+  log('state control, search: it filters the entries and keeps the footer actions', /E9 review release/.test(found) && /E9 base release/.test(found) && !/Halloween/.test(found) && /New release/.test(found), found.replace(/\s+/g, ' ').slice(0, 120))
+  await p.getByTestId('release-menu-search').fill('zzzz')
+  await p.waitForTimeout(600)
+  log('state control, search: nothing matches says so', await visible(p, 'release-menu-search-empty'))
+  await p.getByTestId('release-menu-search').fill('')
+  await p.waitForTimeout(600)
+  log('state control, search: clearing restores every entry', (await entries()).length === all.length)
+  await p.keyboard.press('Escape')
+  await p.waitForTimeout(500)
 
   // Local: the document follows global and says nothing.
   log('document: follows global, no pane control', (await count(p, 'pane-control')) === 0)

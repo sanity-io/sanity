@@ -1,15 +1,16 @@
-import {createContext, type ReactNode, useContext} from 'react'
+import {type ReactNode, useContext} from 'react'
+import {PerspectiveMenuExtensionContext} from 'sanity/_singletons'
 
 /**
  * PROPOSED (Variants 2.0 test studio, branch explorations/variants-2-0-studio; not in stock Studio).
  *
  * An extension point on the navbar's perspective control (`ReleasesNav` and its `GlobalPerspectiveMenu`):
- * extra rows at the foot of the menu, and a suffix after the label. The Variants 2.0 C1 Option A puts
+ * extra rows at the foot of the menu, a suffix after the label, and a search field for a long menu. The Variants 2.0 C1 Option A puts
  * "Narrow by dimension…" in this menu and the chosen variant values next to "Drafts". Today the menu has no
  * slot for either.
  *
- * It is a hook, so the host can decide per render and read its own state. The default returns `undefined`,
- * so Studio is unchanged unless a provider is mounted.
+ * It is a value, so the host can decide per render from its own state (it calls its own hook and provides the result).
+ * The default is `undefined`, so Studio is unchanged unless a provider is mounted.
  *
  * @internal
  */
@@ -26,21 +27,22 @@ export interface PerspectiveMenuExtension {
   /** `aria-expanded` of the label control, when it toggles something. */
   labelExpanded?: boolean
   labelTitle?: string
+  /**
+   * A search field at the top of the menu, shown only when the menu holds MORE than `above` entries (Published, Drafts and
+   * the releases; not the footer actions). It filters those entries by their label. The host supplies the words, so Studio
+   * carries no new strings: `placeholder` for the field and `empty` for when nothing matches.
+   */
+  search?: {
+    above: number
+    placeholder: string
+    empty: (query: string) => ReactNode
+  }
 }
 
-/** @internal */
-export type UsePerspectiveMenuExtension = () => PerspectiveMenuExtension | undefined
-
-const noExtension: UsePerspectiveMenuExtension = () => undefined
-
-const PerspectiveMenuExtensionContext = createContext<UsePerspectiveMenuExtension>(noExtension)
-
-/** @internal Provide a hook (a stable function) that extends the perspective menu. */
+/** @internal Provide what extends the perspective menu: a value the host computes with its own hooks (`undefined` adds nothing). */
 export const PerspectiveMenuExtensionProvider = PerspectiveMenuExtensionContext.Provider
 
 /** @internal */
 export function usePerspectiveMenuExtension(): PerspectiveMenuExtension | undefined {
-  // The context value is a stable hook supplied once by the host, so calling it keeps the hook order.
-  const useExtension = useContext(PerspectiveMenuExtensionContext)
-  return useExtension()
+  return useContext(PerspectiveMenuExtensionContext)
 }

@@ -16,6 +16,8 @@ const NAVBAR_HEIGHT = 33
 /** Padding between the icons and the pill's edges, so it is as roomy as the stock pill; the chevron stays at the right end. */
 const PADDING_X = 14
 const CHEVRON_INSET = 4
+/** The icon's own margin is -6px each side; a little less on the right gives the label more room. */
+const ICON_STYLE = {marginRight: -2} as const
 /** What the control says when no variant is picked: the same word as the first row of its list. */
 const RESTING_LABEL = 'Default'
 
@@ -53,7 +55,7 @@ export function OpenBetaVariants() {
         <AddressChip
           accessibleName={`${dimension.title}: ${valueTitle(dimension, value)}`}
           height={NAVBAR_HEIGHT}
-          icon={<DimensionIcon name={dimension.name} />}
+          icon={<DimensionIcon name={dimension.name} style={ICON_STYLE} />}
           paddingX={PADDING_X}
           onOpen={() => setOpen(true)}
           onRemove={() => choose(null)}
@@ -67,7 +69,7 @@ export function OpenBetaVariants() {
         <Card border radius="full" style={{height: NAVBAR_HEIGHT, overflow: 'hidden'}}>
           <Button
             data-testid="variants-button"
-            icon={<DimensionIcon name={dimension.name} />}
+            icon={<DimensionIcon name={dimension.name} style={ICON_STYLE} />}
             iconRight={ChevronDownIcon}
             mode="bleed"
             onClick={() => setOpen(true)}

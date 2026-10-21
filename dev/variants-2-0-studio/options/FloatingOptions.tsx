@@ -1,3 +1,4 @@
+import {type ReactNode} from 'react'
 import {
   type LayoutProps,
   FieldSetRollupProvider,
@@ -40,10 +41,19 @@ const useShowShippedBar = () => {
  */
 const EXTENSIONS = {
   rowOverride: useRowOverride,
-  perspectiveMenu: useOptionAExtension,
   showShippedBar: useShowShippedBar,
   variantDetail: useVariantDetailOverride,
   documentPane: useDocumentPaneOverride,
+}
+
+/** The perspective menu's extension is a value: this calls the hook that builds it (it reads the perspective state) and provides the result. */
+function PerspectiveMenuHost({children}: {children: ReactNode}) {
+  const extension = useOptionAExtension()
+  return (
+    <PerspectiveMenuExtensionProvider value={extension}>
+      {children}
+    </PerspectiveMenuExtensionProvider>
+  )
 }
 
 export function LayoutWithFloatingOptions(props: LayoutProps) {
@@ -55,7 +65,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
     <VariantBannerReplacedProvider value={c7 === 'a' || c7 === 'b'}>
       <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
         <PerspectiveProvider>
-          <PerspectiveMenuExtensionProvider value={EXTENSIONS.perspectiveMenu}>
+          <PerspectiveMenuHost>
             <ShippedPerspectiveBarProvider value={EXTENSIONS.showShippedBar}>
               <VariantEditNoticeProvider value={EditNotice}>
                 <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
@@ -73,7 +83,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
                 </VariantDetailExtensionProvider>
               </VariantEditNoticeProvider>
             </ShippedPerspectiveBarProvider>
-          </PerspectiveMenuExtensionProvider>
+          </PerspectiveMenuHost>
         </PerspectiveProvider>
       </DocumentListItemOverrideProvider>
     </VariantBannerReplacedProvider>

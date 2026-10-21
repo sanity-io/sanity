@@ -36,9 +36,6 @@ export const SAVE_AS_COMPOSITE_LABEL = 'Save perspective as preset'
 export const SAVE_AS_COMPOSITE_REASON =
   'Needs storage: a saved combination has nowhere to live yet.'
 
-/** "42 articles. 9 show the base document." Fixture constants. */
-export const HINT = '42 articles. 9 show the base document.'
-
 const ITEM = '[data-ui="MenuItem"]'
 
 /**
@@ -339,14 +336,11 @@ export function PickerContent(props: {
               </Card>
             </Flex>
           )}
-          {any || form === 'columns' ? (
+          {/* One dimension is a flat list with a Default row: nothing under it. The other forms keep Clear (and the save stub). */}
+          {form !== 'list' && (any || form === 'columns') ? (
             <Card borderTop data-testid="picker-footer" paddingTop={2}>
               <Flex align="center" gap={2}>
-                <Box flex={1}>
-                  <Text muted size={1}>
-                    {any ? HINT : ''}
-                  </Text>
-                </Box>
+                <Box flex={1} />
                 {form === 'columns' ? (
                   <Button
                     data-testid="picker-save-composite"

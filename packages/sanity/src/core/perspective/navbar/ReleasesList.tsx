@@ -1,6 +1,7 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Card, Spinner, Stack} from '@sanity/ui'
-import {type JSX, type RefObject, useMemo} from 'react'
+import {SearchIcon} from '@sanity/icons/Search'
+import {Box, Card, Spinner, Stack, Text, TextInput} from '@sanity/ui'
+import {type JSX, type RefObject, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
@@ -21,6 +22,7 @@ import {
 import {usePerspectiveMenuExtension} from './PerspectiveMenuExtension'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
+import {useReleaseMenuSearch} from './useReleaseMenuSearch'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
 import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
 
@@ -61,28 +63,40 @@ export function ReleasesList({
   const extension = usePerspectiveMenuExtension()
   const {bundles: agentBundles} = useAgentBundles()
 
-  const releases = useMemo(
-    () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
-    [allReleases],
-  )
-
   const {
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
   } = useWorkspace()
 
-  const sortedReleaseTypeReleases = useMemo(
-    () =>
-      orderedReleaseTypes.reduce<Record<ReleaseType, ReleaseDocument[]>>(
-        (ReleaseTypeReleases, releaseType) => ({
-          ...ReleaseTypeReleases,
-          [releaseType]: releases.filter(({metadata}) => metadata.releaseType === releaseType),
-        }),
-        {} as Record<ReleaseType, ReleaseDocument[]>,
-      ),
-    [releases],
+  // PROPOSED: a host's search for a long menu. The count is the versions and releases (not the footer actions).
+  const search = extension?.search
+  const allEntries = useMemo(
+    () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
+    [allReleases],
   )
+  const entryCount =
+    1 + (isDraftModelEnabled ? 1 : 0) + (areReleasesEnabled ? allEntries.length : 0)
+  const {searchable, query, needle, setQuery} = useReleaseMenuSearch(
+    search,
+    entryCount,
+    selectedPerspectiveName,
+  )
+  const matchesQuery = (label: string) => !needle || label.toLowerCase().includes(needle)
+
+  const sortedReleaseTypeReleases = useMemo(() => {
+    const visible = allEntries.filter(
+      (release) =>
+        !needle || (release.metadata.title || release._id).toLowerCase().includes(needle),
+    )
+    return orderedReleaseTypes.reduce<Record<ReleaseType, ReleaseDocument[]>>(
+      (ReleaseTypeReleases, releaseType) => ({
+        ...ReleaseTypeReleases,
+        [releaseType]: visible.filter(({metadata}) => metadata.releaseType === releaseType),
+      }),
+      {} as Record<ReleaseType, ReleaseDocument[]>,
+    )
+  }, [allEntries, needle])
 
   const range: LayerRange = useMemo(() => {
     const isDraftsPerspective = typeof selectedPerspectiveName === 'undefined'
@@ -126,21 +140,50 @@ export function ReleasesList({
     )
   }
 
+  const showPublished = matchesQuery('published')
+  const showDrafts = isDraftModelEnabled && matchesQuery('drafts')
+  const hasVisibleReleases = orderedReleaseTypes.some(
+    (releaseType) => sortedReleaseTypeReleases[releaseType].length > 0,
+  )
+  const nothingMatches = Boolean(needle) && !showPublished && !showDrafts && !hasVisibleReleases
+
   return (
     <Card radius={3}>
       <StickyTopCard borderBottom padding={1}>
         <Stack gap={1}>
-          <GlobalPerspectiveMenuItem
-            rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
-            release={'published'}
-            menuItemProps={menuItemProps}
-          />
-          {isDraftModelEnabled && (
+          {searchable && search && (
+            <Box padding={1}>
+              <TextInput
+                autoFocus
+                data-testid="release-menu-search"
+                fontSize={1}
+                icon={SearchIcon}
+                onChange={(event) => setQuery(event.currentTarget.value)}
+                placeholder={search.placeholder}
+                value={query}
+              />
+            </Box>
+          )}
+          {showPublished && (
             <GlobalPerspectiveMenuItem
-              rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
+              rangePosition={isRangeVisible && !needle ? getRangePosition(range, 0) : undefined}
+              release={'published'}
+              menuItemProps={menuItemProps}
+            />
+          )}
+          {showDrafts && (
+            <GlobalPerspectiveMenuItem
+              rangePosition={isRangeVisible && !needle ? getRangePosition(range, 1) : undefined}
               release={LATEST}
               menuItemProps={menuItemProps}
             />
+          )}
+          {nothingMatches && search && (
+            <Box data-testid="release-menu-search-empty" padding={3}>
+              <Text muted size={1}>
+                {search.empty(query)}
+              </Text>
+            </Box>
           )}
         </Stack>
       </StickyTopCard>
@@ -158,7 +201,7 @@ export function ReleasesList({
               key={releaseType}
               releaseType={releaseType}
               releases={sortedReleaseTypeReleases[releaseType]}
-              range={range}
+              range={needle ? {...range, lastIndex: -1} : range}
               currentGlobalBundleMenuItemRef={scrollElementRef}
               menuItemProps={menuItemProps}
             />

@@ -21,6 +21,9 @@ import {DimensionButton, StateMenu, VersionGlyph} from './StateMenu'
 // Flush segments: the buttons inside the chip have no radius of their own; the chip's outer radius clips their hover fill.
 /** How far the chevron sits from the end of its button when the chip has extra horizontal room. */
 const CHEVRON_INSET = 4
+const CROSS_PADDING = 2
+/** The navbar's cross is drawn smaller by scaling (it stays centred where the layout puts it). */
+const CROSS_SCALE = 0.65
 const chipInner = (height: number) =>
   ({borderRadius: 0, height: height - 2, minHeight: height - 2}) as const
 
@@ -65,8 +68,11 @@ export function AddressChip(props: {
   const inner = chipInner(height)
   const mainStyle =
     paddingX === undefined ? inner : {...inner, paddingLeft: paddingX, paddingRight: CHEVRON_INSET}
-  const crossStyle =
-    paddingX === undefined ? inner : {...inner, paddingLeft: paddingX, paddingRight: paddingX}
+  // The navbar's cross is compact: a smaller icon and little padding (the space is tight there).
+  const compact = paddingX !== undefined
+  const crossStyle = compact
+    ? {...inner, paddingLeft: CROSS_PADDING, paddingRight: CROSS_PADDING}
+    : inner
   return (
     // UI-CONSISTENCY section 2: 25px including the 1px border, so the buttons inside are 23px.
     <Card
@@ -91,7 +97,7 @@ export function AddressChip(props: {
         <Button
           aria-label={removeLabel}
           data-testid={removeTestId}
-          icon={CloseIcon}
+          icon={compact ? <CloseIcon style={{transform: `scale(${CROSS_SCALE})`}} /> : CloseIcon}
           mode="bleed"
           onClick={onRemove}
           style={crossStyle}

@@ -1012,7 +1012,6 @@ export {GlobalPerspectiveMenu} from '../core/perspective/navbar/GlobalPerspectiv
 export {
   type PerspectiveMenuExtension,
   PerspectiveMenuExtensionProvider,
-  type UsePerspectiveMenuExtension,
 } from '../core/perspective/navbar/PerspectiveMenuExtension'
 export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
 // PROPOSED: a roll-up mark in a field set's header (Variants 2.0 test studio).
