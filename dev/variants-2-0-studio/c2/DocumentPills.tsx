@@ -19,7 +19,6 @@ import {DocumentVersionsLens, WideOverlay} from '../c5/ActionableLenses'
 import {useCorpus} from '../c5/useCorpus'
 import {useVersionList} from '../data/useVersionList'
 import {type AudienceVersion} from '../data/versions'
-import {usePaneAddress} from '../pane/PaneAddress'
 import {MenuHeading, ShippedRow} from './menuRows'
 
 /**
@@ -245,11 +244,10 @@ export function DocumentPillsV1({
   manage,
 }: {
   documentId: string
-  option: 'a' | 'b' | 'c'
+  option: 'a' | 'b'
   manage?: ReactElement
 }) {
   const versions = useVersionList(documentId)
-  const pane = usePaneAddress()
   const {selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
   const address = usePerspectiveState()
@@ -291,28 +289,6 @@ export function DocumentPillsV1({
     byAudience.length - shownVariants.length + baseReleases.length - shownReleases.length
   const narrowed = Object.keys(address.chosen).length > 0
   const current = selectedPerspectiveName ?? 'drafts'
-
-  // Option C (open beta, locked): only the toggle. The variant is the navbar's address chip, the pane's own address is the pane control, and the
-  // versions are the inventory panel (C4 A). The toggle drives the GLOBAL layer, the same state as the navbar's layer chip (Faheem, 21 Oct), also on
-  // a pane that holds its own address.
-  if (option === 'c') {
-    const shown = pane.global.perspective
-    return (
-      <Flex
-        align="center"
-        data-testid="doc-pills-c"
-        gap={2}
-        style={{flex: '0 0 auto', minWidth: 0}}
-      >
-        <PublishedToggle
-          chosen={shown === 'published' ? 'published' : shown === 'drafts' ? 'drafts' : null}
-          hasPublished={!!published}
-          onPick={(version) => setPerspective(version)}
-        />
-        {manage}
-      </Flex>
-    )
-  }
 
   // Choosing a variant sets the address (version and values) like the inventory and the C1 row do.
   const selectVariant = (v: AudienceVersion) => () => {

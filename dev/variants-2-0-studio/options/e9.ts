@@ -383,15 +383,6 @@ export const PANE_CONTROL: ComponentDef = {
       status: 'candidate',
       refs: `${FIGMA}; E10 D1 455:3372, D2 455:4558, D3 455:6226`,
     },
-    {
-      id: 'c',
-      label: 'Chip on reference and differing panes',
-      summary:
-        'B, but a pane that follows the global perspective says nothing about its address: the chip shows on a reference pane ("Follows global", the way to unlock it) and on any pane that holds its own address, tinted when it differs from global. Open beta (locked) uses this.',
-      oneLiner: 'Chip only where a pane can be unlocked or differs.',
-      status: 'candidate',
-      refs: `${FIGMA}; E10 V2 444:2, V3 444:2420, D1 455:3372, D3 455:6226`,
-    },
   ],
 }
 

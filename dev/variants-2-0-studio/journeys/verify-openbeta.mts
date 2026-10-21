@@ -1,5 +1,5 @@
 // "Open beta (locked)" = C1 option B: two controls in the navbar (the stock state control and one Variants control), no row and no bar. A document follows
-// global and shows only a Published | Draft toggle and a Versions button; a pane can be unlocked and followed back.
+// global and shows only the collapsed state pill and a Versions pill; the pill opens a local row, a change collapses it to a "Local" cue.
 // Screenshots -> journeys-captures/e9-openbeta/<state>.png.   node journeys/verify-openbeta.mts
 import {mkdirSync, readFileSync} from 'node:fs'
 import {homedir} from 'node:os'
@@ -21,7 +21,7 @@ async function open(path: string, width = 1440) {
   return {p, context}
 }
 const G = 'perspective=drafts&variant=aud-returning-visitors'
-const LOCKED = 'show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a,paneControl.c'
+const LOCKED = 'show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a'
 const DOC = `/structure/e9Case;e9-visitors?design=${LOCKED}&${G}`
 const REF = `/structure/book;book-lighthouse;author-maren-halvorsen,type=author,parentRefPath=author?design=${LOCKED}&${G}`
 const count = (p: Page, id: string) => p.getByTestId(id).count()
@@ -126,23 +126,37 @@ for (const width of [1440, 1280]) {
   await p.keyboard.press('Escape')
   await p.waitForTimeout(500)
 
-  // Local: the document follows global and says nothing.
-  log('document: follows global, no pane control', (await count(p, 'pane-control')) === 0)
+  // Local, following global (H1): the collapsed state pill and the Versions pill; nothing else, and no footer "Manage versions".
+  log('document: follows global, no pane control, no toggle', (await count(p, 'pane-control')) === 0 && (await count(p, 'published-toggle')) === 0)
   log('document: no grouped pills, no variant chip, no versions popover', (await count(p, 'pills-variants')) === 0 && (await count(p, 'pills-releases')) === 0 && (await count(p, 'variant-chip')) === 0 && (await count(p, 'other-versions')) === 0)
-  log('document: only the Published | Draft toggle', (await count(p, 'published-toggle')) === 1 && (await count(p, 'toggle-published')) === 1 && (await count(p, 'toggle-drafts')) === 1)
+  log('document: the state pill reads the global layer, and a "N Versions" pill beside it', /Draft/.test(await text(p, 'header-state')) && /^\d+ Versions$/.test(await text(p, 'header-versions')), `${await text(p, 'header-state')} | ${await text(p, 'header-versions')}`)
+  log('document: no "Manage versions" in the footer, no Versions button in the header actions', !(await visible(p, 'action-document-group-inventory')) && (await p.getByRole('button', {name: /^versions$/i}).count()) === 0)
+  await p.screenshot({path: 'journeys-captures/e9-openbeta/header-h1.png', clip: {x: 640, y: 55, width: 800, height: 120}})
 
-  // The toggle drives the global layer: the stock state control shows it.
-  await p.getByTestId('toggle-published').click()
-  await p.waitForTimeout(2000)
-  log('toggle: Published is chosen and the state control follows', (await p.getByTestId('toggle-published').getAttribute('aria-checked')) === 'true' && /Published/.test(await stateText(p)), (await stateText(p)).replace(/\s+/g, ' '))
-  await p.getByTestId('toggle-drafts').click()
-  await p.waitForTimeout(2000)
-  log('toggle: Draft is chosen again and the state control follows', (await p.getByTestId('toggle-drafts').getAttribute('aria-checked')) === 'true' && /Draft/.test(await stateText(p)), (await stateText(p)).replace(/\s+/g, ' '))
+  // Local view (H2): the pill opens a row, and steps aside while it is open.
+  await p.getByTestId('header-state').click()
+  await p.waitForTimeout(900)
+  log('local row: the pill opens a "Local perspective" row, and the header pill steps aside', (await visible(p, 'local-perspective-row')) && (await count(p, 'header-state')) === 0 && /Local perspective/.test(await text(p, 'local-perspective-row')))
+  log('local row: it has the state control, the variant control and Follow global perspective', (await visible(p, 'local-state')) && (await visible(p, 'local-variants')) && (await visible(p, 'local-follow-global')))
+  await p.screenshot({path: 'journeys-captures/e9-openbeta/header-h2.png', clip: {x: 640, y: 55, width: 800, height: 160}})
+  // Diverged (H3): a change makes the pane differ, the row collapses, the header says Local.
+  await p.getByTestId('local-state').click()
+  await p.waitForTimeout(700)
+  await p.getByRole('menuitem', {name: 'Published'}).first().click()
+  await p.waitForTimeout(1500)
+  log('diverged: the row collapses and the header shows a Local cue before the state pill', (await count(p, 'local-perspective-row')) === 0 && (await visible(p, 'local-cue')) && /Published/.test(await text(p, 'header-state')))
+  log('diverged: the pane holds its own address (the URL) and the global perspective did not move', decodeURIComponent(p.url()).includes('localPerspective=published') && /Draft/.test(await stateText(p)) && variantParam(p) === 'aud-members')
+  await p.screenshot({path: 'journeys-captures/e9-openbeta/header-h3.png', clip: {x: 640, y: 55, width: 800, height: 120}})
+  await p.getByTestId('header-state').click()
+  await p.waitForTimeout(900)
+  await p.getByTestId('local-follow-global').click()
+  await p.waitForTimeout(1500)
+  log('Follow global perspective: the pane follows again (no params, no cue, no row)', !decodeURIComponent(p.url()).includes('localPerspective') && (await count(p, 'local-cue')) === 0 && (await count(p, 'local-perspective-row')) === 0 && /Draft/.test(await text(p, 'header-state')))
 
-  // Versions opens the inventory side panel.
-  await p.getByRole('button', {name: /^versions$/i}).first().click()
+  // Versions (H4): the pill opens the inventory side panel.
+  await p.getByTestId('header-versions').click()
   await p.waitForTimeout(2500)
-  log('Versions: opens the inventory side panel', await visible(p, 'version-inventory-panel'))
+  log('Versions: the pill opens the inventory side panel', await visible(p, 'version-inventory-panel'))
   await p.screenshot({path: 'journeys-captures/e9-openbeta/versions-panel.png'})
   await context.close()
 }
@@ -159,30 +173,26 @@ for (const width of [1440, 1280]) {
 }
 
 {
-  // A reference pane opens following global, and can be unlocked and followed back.
+  // A reference pane opens following global, and the same state pill unlocks it and follows back.
   const {p, context} = await open(REF)
-  const chip = p.getByTestId('pane-control')
-  log('reference: only the reference pane offers the control (the book says nothing)', (await chip.count()) === 1, String(await chip.count()))
-  log('reference: it reads Follows global', /Follows global/.test(await text(p, 'pane-control')))
-  await p.screenshot({path: 'journeys-captures/e9-openbeta/reference-follows.png'})
-  await chip.first().click()
-  await p.waitForTimeout(1200)
-  log('reference: the chip unlocks the same picker, scoped to the pane', (await count(p, 'pane-control-picker')) > 0)
-  await p.getByTestId('picker-value-layer-published').first().click()
+  const pill = p.getByTestId('header-state')
+  log('reference: it follows global and says nothing beyond the state pill', (await pill.count()) === 2 && (await count(p, 'local-cue')) === 0 && (await count(p, 'local-perspective-row')) === 0, `${await pill.count()} state pills`)
+  await pill.nth(1).click()
+  await p.waitForTimeout(900)
+  log('reference: its state pill opens the local row for that pane only', (await count(p, 'local-perspective-row')) === 1 && (await count(p, 'header-state')) === 1)
+  await p.getByTestId('local-state').click()
+  await p.waitForTimeout(700)
+  await p.getByRole('menuitem', {name: 'Published'}).first().click()
   await p.waitForTimeout(1800)
   const held = decodeURIComponent(p.url())
-  log('reference: changing the address gives the pane its own (the URL holds it)', held.includes('localPerspective=published'), held.split('/structure/')[1]?.slice(0, 110))
-  log('reference: the cue appears (Local, tinted, differs)', /Local · Published/.test(await text(p, 'pane-control')) && (await chip.first().getAttribute('data-differs')) !== null)
+  log('reference: changing the address gives the pane its own (the URL holds it) and the Local cue appears', held.includes('localPerspective=published') && (await count(p, 'local-cue')) === 1, held.split('/structure/')[1]?.slice(0, 110))
   log('reference: the global perspective did not move', /Returning visitors/.test(await text(p, 'variants-chip')) && /Draft/.test(await stateText(p)))
-  // The toggle drives the GLOBAL layer, also in a pane that holds its own address.
-  await p.getByTestId('toggle-published').nth(1).click()
-  await p.waitForTimeout(2000)
-  log('reference: the toggle in a pane drives the global layer (the state control follows)', /Published/.test(await stateText(p)) && decodeURIComponent(p.url()).includes('localPerspective=published'), (await stateText(p)).replace(/\s+/g, ' '))
   await p.screenshot({path: 'journeys-captures/e9-openbeta/reference-local.png'})
-  if ((await count(p, 'picker-clear')) === 0) await chip.first().click()
-  await p.getByTestId('picker-clear').first().click()
+  await pill.nth(1).click()
+  await p.waitForTimeout(900)
+  await p.getByTestId('local-follow-global').click()
   await p.waitForTimeout(1800)
-  log('reference: Follow global perspective returns it to global', !decodeURIComponent(p.url()).includes('localPerspective') && /Follows global/.test(await text(p, 'pane-control')))
+  log('reference: Follow global perspective returns it to global', !decodeURIComponent(p.url()).includes('localPerspective') && (await count(p, 'local-cue')) === 0)
   await context.close()
 }
 

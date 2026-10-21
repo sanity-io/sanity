@@ -8,6 +8,7 @@ import {PaneBar} from '../compare/PaneBar'
 import {useComparison} from '../compare/useCompare'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PresentationContextLine} from '../presentation/PresentationContextLine'
+import {LocalPerspectiveHeader, LocalPerspectiveRow} from './LocalPerspective'
 import {DocumentsCount, LocalRow} from './PaneAddress'
 import {PaneControl} from './PaneControl'
 
@@ -27,13 +28,12 @@ export const useDocumentPaneOverride: UseDocumentPaneExtension = ({documentId, d
   const pills =
     paneAddress !== 'a' ? (
       <DocumentsCount documentId={documentId} manage={manageIcon} />
-    ) : c2 === 'a' || c2 === 'b' || c2 === 'c' ? (
+    ) : c2 === 'a' || c2 === 'b' ? (
       <DocumentPillsV1 documentId={documentId} manage={manageIcon} option={c2} />
+    ) : c2 === 'c' ? (
+      <LocalPerspectiveHeader documentId={documentId} />
     ) : undefined
-  const control =
-    paneControl === 'b' || paneControl === 'c' ? (
-      <PaneControl documentId={documentId} onlyWhenNeeded={paneControl === 'c'} />
-    ) : undefined
+  const control = paneControl === 'b' ? <PaneControl documentId={documentId} /> : undefined
   const headerPills =
     control && pills ? (
       <div style={{alignItems: 'center', display: 'flex', flex: '1 1 0%', gap: 8, minWidth: 0}}>
@@ -65,6 +65,7 @@ export const useDocumentPaneOverride: UseDocumentPaneExtension = ({documentId, d
   const banners = (
     <>
       {paneBar}
+      {c2 === 'c' ? <LocalPerspectiveRow documentId={documentId} /> : null}
       {localRow}
       {context}
       {manage}

@@ -37,15 +37,11 @@ interface Address {
 
 const NONE = 'none'
 
-/** The global address (router sticky params), the pane's local one (pane params), whether the pane differs from the global one, and whether it is a reference pane. */
+/** The global address (router sticky params), the pane's local one (pane params), and whether the pane differs from the global one. */
 export function usePaneAddress() {
   const paneRouter = usePaneRouter()
   const router = useRouter()
-  const params = paneRouter.params as {
-    localPerspective?: string
-    localVariant?: string
-    parentRefPath?: string
-  }
+  const params = paneRouter.params as {localPerspective?: string; localVariant?: string}
   const stickyPerspective = router.stickyParams.perspective
   const stickyVariant = router.stickyParams.variant
   const global: Address = {
@@ -58,15 +54,13 @@ export function usePaneAddress() {
     : global
   const differs =
     held && (local.perspective !== global.perspective || local.variant !== global.variant)
-  // A pane opened from a reference field carries the path of that field.
-  const reference = Boolean(params.parentRefPath)
   const set = (next: Address | null) =>
     paneRouter.setParams({
       ...paneRouter.params,
       localPerspective: next?.perspective,
       localVariant: next?.variant,
     })
-  return {held, local, global, differs, reference, set}
+  return {held, local, global, differs, set}
 }
 
 export const layerLabel = (perspective: string) =>

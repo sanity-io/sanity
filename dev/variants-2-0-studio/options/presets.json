@@ -2,7 +2,7 @@
   {
     "id": "open-beta-locked",
     "name": "Open beta (locked)",
-    "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a,paneControl.c"
+    "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a"
   },
   {
     "id": "today",

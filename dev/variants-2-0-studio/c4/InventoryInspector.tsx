@@ -3,9 +3,9 @@ import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {type DocumentInspector, type DocumentInspectorProps} from 'sanity'
 
+import {useVariantDefinitions} from '../c1/world'
 import {DocumentVersionsLens, SharedInventory, WideOverlay} from '../c5/ActionableLenses'
 import {useCorpus} from '../c5/useCorpus'
-import {useVariantDefinitions} from '../c1/world'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PlaceholderSlot} from '../slots/PlaceholderSlot'
 import {InventoryExpandContext} from './inventory/expandContext'
@@ -20,7 +20,14 @@ import {LiveInventory} from './inventory/LiveInventory'
 function SharedFromCorpus({documentId}: {documentId: string}) {
   const corpus = useCorpus()
   const definitions = useVariantDefinitions()
-  if (!corpus) return <Card padding={3}><Text muted size={1}>Loading versions…</Text></Card>
+  if (!corpus)
+    return (
+      <Card padding={3}>
+        <Text muted size={1}>
+          Loading versions…
+        </Text>
+      </Card>
+    )
   return <SharedInventory corpus={corpus} definitions={definitions} docId={documentId} />
 }
 
@@ -33,12 +40,20 @@ function PanelWithExpand({documentId}: {documentId: string}) {
     <Flex direction="column" height="fill">
       <Box flex={1} overflow="hidden">
         <InventoryExpandContext.Provider value={corpus ? () => setExpanded(true) : null}>
-          <LiveInventory documentId={documentId} title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId} />
+          <LiveInventory
+            documentId={documentId}
+            title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId}
+          />
         </InventoryExpandContext.Provider>
       </Box>
       {expanded && corpus ? (
         <WideOverlay onClose={() => setExpanded(false)} title="Version inventory">
-          <DocumentVersionsLens corpus={corpus} definitions={definitions} docId={documentId} onPin={() => undefined} />
+          <DocumentVersionsLens
+            corpus={corpus}
+            definitions={definitions}
+            docId={documentId}
+            onPin={() => undefined}
+          />
         </WideOverlay>
       ) : null}
     </Flex>
@@ -56,11 +71,16 @@ function Inventory({documentId}: DocumentInspectorProps) {
 export const inventoryInspector: DocumentInspector = {
   name: 'variants-inventory',
   component: Inventory,
-  useMenuItem: () => ({
-    // Stock: no inspector entry at all. Option B opens the inventory as a popover instead.
-    hidden: useOption('c4') === STOCK_OPTION || useOption('c4') === 'b',
-    icon: DocumentsIcon,
-    title: 'Versions',
-    showAsAction: true,
-  }),
+  useMenuItem: () => {
+    const c4 = useOption('c4')
+    const c2 = useOption('c2')
+    return {
+      // Stock: no inspector entry at all. Option B opens the inventory as a popover instead. The Versions pill in the header (C2 C) opens it, so
+      // the stock inspector button is hidden then.
+      hidden: c4 === STOCK_OPTION || c4 === 'b' || c2 === 'c',
+      icon: DocumentsIcon,
+      title: 'Versions',
+      showAsAction: true,
+    }
+  },
 }

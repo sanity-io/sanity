@@ -89,12 +89,12 @@ export const COMPONENTS: ComponentDef[] = [
       },
       {
         id: 'c',
-        label: 'Toggle only (open beta, locked)',
+        label: 'Collapsed state pill and Versions (open beta, locked)',
         summary:
-          "The header shows only the Published | Draft toggle. No variant chip, no versions popover, no grouped pills: the variant is the navbar's address chip, the pane's own address is the pane control, and the versions are the inventory panel (C4 A, its Versions button in the header). A pane that holds its own layer flips that layer; one that follows global flips the global layer.",
-        oneLiner: 'Published | Draft toggle, nothing else.',
+          'The header shows the state control collapsed to one rounded pill (the layer: Drafts, Published or a release) and a "N Versions" pill that opens the inventory panel (C4 A); the footer\'s "Manage versions" is hidden. Clicking the state pill opens a row "Local perspective" under the header (the layer, the variant, Follow global perspective) while the header pill steps aside; when the pane then differs from global the row collapses and the header says "Local" before the pill. A pane that follows global says nothing.',
+        oneLiner: 'One state pill, a Versions pill, a local row on demand.',
         status: 'candidate',
-        refs: 'Figma E10 V1 443:2728, V2 444:2, V3 444:2420, V4 444:3823; C2 page, option B (the toggle)',
+        refs: 'Figma C2 · Document pills, section Document header · selected for open beta: H1 521:42816, H2 521:42925, H3 521:43097',
       },
     ],
   },
