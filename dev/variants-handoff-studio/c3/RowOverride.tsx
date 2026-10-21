@@ -5,7 +5,8 @@ import {type UseDocumentListItemOverride} from 'sanity/structure'
 import {usePerspectiveMatch} from '../data/match'
 import {useVersionList} from '../data/useVersionList'
 import {STOCK_OPTION, useOption} from '../options/store'
-import {baseDot} from './types'
+import {type TileMark} from './StateBadge'
+import {baseDot, earliestRelease} from './types'
 import {VersionMark} from './VersionMark'
 
 /**
@@ -17,8 +18,10 @@ import {VersionMark} from './VersionMark'
 /** Name of the inspector registered in c4/InventoryInspector.tsx. */
 const INVENTORY_INSPECTOR = 'variants-inventory'
 
-/** Keeps the 25px slot while the versions load, so rows do not jump. */
-const SLOT = <span style={{display: 'block', width: 25, height: 25}} />
+/** Keeps the tile's 43 × 29 slot while the versions load, so rows do not jump (Figma C3 D, "Loading (slot kept)"). */
+const SLOT = (
+  <span data-testid="version-tile-slot" style={{display: 'block', width: 43, height: 29}} />
+)
 
 export const useRowOverride: UseDocumentListItemOverride = ({
   documentId,
@@ -42,22 +45,25 @@ export const useRowOverride: UseDocumentListItemOverride = ({
   if (versions === null) return {status: SLOT, tooltip: null}
   if (versions.length === 0) return {status: defaultStatus, tooltip: null}
 
-  // One indicator, reactive to the perspective (call of 20 Oct). With no perspective it is the base document's state: one icon, the draft over the
-  // published one, and none when the document exists only in a release. With a perspective the state dot goes and a diamond marks only the
-  // documents that have a variant matching it.
-  const dot: 'published' | 'draft' | 'variant' | null = !perspective.active
-    ? baseDot(versions)
-    : perspective.best(versions.flatMap((v) => (v.variantId ? [v.variantId] : [])))
-      ? 'variant'
-      : null
+  // Option D (Figma C3 "D contained tile", 22 Oct). With no audience chosen: the base document's dot (the draft over the published one, none when
+  // the document exists only in a release) and a diamond when the document has any variant. With an audience chosen: the diamond only, and
+  // only when a variant matches it; otherwise the tile is empty.
+  const variantIds = versions.flatMap((v) => (v.variantId ? [v.variantId] : []))
+  // A document that exists only in releases is marked with its earliest release's dot (Faheem, 22 Oct), not left empty.
+  const base = baseDot(versions) ?? earliestRelease(versions)
+  const marks: TileMark[] = !perspective.active
+    ? [...(base ? [base] : []), ...(variantIds.length ? (['variant'] as const) : [])]
+    : perspective.best(variantIds)
+      ? ['variant']
+      : []
 
   return {
     status: (
       <VersionMark
         docId={documentId}
-        dot={dot}
+        marks={marks}
         onOpenPane={openWithInventory}
-        trigger="badge"
+        trigger="tile"
         versions={versions}
       />
     ),

@@ -37,6 +37,22 @@ export const hasMoreThanBase = (versions: readonly AudienceVersion[]) =>
  * LIVE: with no base document (it exists only in a release) there is no badge at all; the Storybook original
  * fell back to the other versions' states, which would fake a ring. Decided in the handoff, 19 Oct.
  */
+/**
+ * The release a document that exists only in releases is marked with: the earliest, in the Studio's release order (as soon as possible,
+ * then scheduled by date, then undecided).
+ */
+export function earliestRelease(
+  versions: readonly AudienceVersion[],
+): 'asap' | 'scheduled' | 'undecided' | null {
+  const rank = (v: AudienceVersion) =>
+    v.state === 'asap' ? 0 : v.state === 'scheduled' ? 1 : v.state === 'undecided' ? 2 : 3
+  const inReleases = [...versions]
+    .filter((v) => v.audience === null && rank(v) < 3)
+    .sort((a, b) => rank(a) - rank(b) || (a.releaseAt ?? '').localeCompare(b.releaseAt ?? ''))
+  const first = inReleases[0]
+  return first ? (first.state as 'asap' | 'scheduled' | 'undecided') : null
+}
+
 export function baseDot(versions: readonly AudienceVersion[]): 'published' | 'draft' | null {
   const base = versions.filter(
     (v) => v.audience === null && (v.state === 'published' || v.state === 'draft'),

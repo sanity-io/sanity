@@ -30,6 +30,8 @@ export interface AudienceVersion {
   updatedAt?: string
   /** `published`, `drafts` or a release id. */
   bundleId?: string
+  /** The release's intended publish time (ISO), when it has one: orders a document's releases. */
+  releaseAt?: string
   /** The short variant id (the `_id` after `_.variants.`), `undefined` for the base document. */
   variantId?: string
 }
@@ -126,6 +128,7 @@ export function toVersions(
         state,
         bundleId: bundle,
         release: release.title ?? bundle,
+        ...(release.at ? {releaseAt: release.at} : {}),
         ...(release.cardinality === 'one' ? {scheduledDraft: true} : {}),
         ...(state === 'scheduled' && release.at
           ? {
