@@ -397,6 +397,10 @@ export {
   type DocumentGroupInventoryHandle,
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
+export {
+  DocumentGroupInventoryFeedbackAction,
+  type DocumentGroupInventoryFeedbackActionProps,
+} from '../core/documentGroupInventory/components/DocumentGroupInventoryFeedbackAction'
 export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {
   type DocumentGroupInventoryComponents,

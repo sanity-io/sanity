@@ -197,6 +197,8 @@ import type {
   documentFromEditorWithInitialValue,
   DocumentGroupInventory,
   DocumentGroupInventoryComponents,
+  DocumentGroupInventoryFeedbackAction,
+  DocumentGroupInventoryFeedbackActionProps,
   DocumentGroupInventoryHandle,
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
@@ -1475,6 +1477,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('DocumentGroupInventoryComponents', () => {
     expectTypeOf<DocumentGroupInventoryComponents>().toBeObject()
+  })
+  test('DocumentGroupInventoryFeedbackAction', () => {
+    expectTypeOf<typeof DocumentGroupInventoryFeedbackAction>().toBeFunction()
+  })
+  test('DocumentGroupInventoryFeedbackActionProps', () => {
+    expectTypeOf<DocumentGroupInventoryFeedbackActionProps>().toBeObject()
   })
   test('DocumentGroupInventoryHandle', () => {
     expectTypeOf<DocumentGroupInventoryHandle>().toBeObject()
