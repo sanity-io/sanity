@@ -21,7 +21,10 @@ import {type ObjectItem} from './types/itemProps'
 // (with `autoUpdates: true` the entry graph is fetched through the import map, untouched by
 // tree-shaking). Internal code keeps importing the implementations directly; only the public
 // exports go through these wrappers, which keep the implementation's signature and load it on
-// first render behind their own Suspense boundary.
+// first render. Leaf facades carry their own Suspense; form-tree facades (FormInput, MemberField,
+// ObjectInputMember, ArrayOfObjectsItem) do not — they render nested members whose middleware is
+// often lazy(), and those suspensions must bubble to FormBuilder or the PTE per-block boundary
+// (see useMiddlewareComponents).
 
 const LazyFormField = lazy(() =>
   import('./components/formField/FormField').then((module) => ({default: module.FormField})),
@@ -86,11 +89,8 @@ const LazyFormInput = lazy(() =>
 export function FormInput(
   props: ComponentProps<typeof FormInputImplementation>,
 ): React.JSX.Element {
-  return (
-    <Suspense fallback={null}>
-      <LazyFormInput {...props} />
-    </Suspense>
-  )
+  // No Suspense: nested form middleware must suspend to FormBuilder / PTE, not blank this subtree.
+  return <LazyFormInput {...props} />
 }
 
 const LazyArrayOfObjectsFunctions = lazy(() =>
@@ -146,11 +146,8 @@ const LazyArrayOfObjectsItem = lazy(() =>
  * @hidden
  * @beta */
 export function ArrayOfObjectsItem(props: MemberItemProps): React.JSX.Element {
-  return (
-    <Suspense fallback={null}>
-      <LazyArrayOfObjectsItem {...props} />
-    </Suspense>
-  )
+  // No Suspense: nested form middleware must suspend to FormBuilder / PTE, not blank this subtree.
+  return <LazyArrayOfObjectsItem {...props} />
 }
 
 const LazyMemberItemError = lazy(() =>
@@ -176,11 +173,8 @@ const LazyMemberField = lazy(() =>
  * @hidden
  * @beta */
 export function MemberField(props: MemberFieldProps): React.JSX.Element {
-  return (
-    <Suspense fallback={null}>
-      <LazyMemberField {...props} />
-    </Suspense>
-  )
+  // No Suspense: nested form middleware must suspend to FormBuilder / PTE, not blank this subtree.
+  return <LazyMemberField {...props} />
 }
 
 const LazyMemberFieldError = lazy(() =>
@@ -210,11 +204,8 @@ const LazyObjectInputMember = lazy(() =>
  * @public
  */
 export function ObjectInputMember(props: ObjectInputMemberProps): React.JSX.Element {
-  return (
-    <Suspense fallback={null}>
-      <LazyObjectInputMember {...props} />
-    </Suspense>
-  )
+  // No Suspense: nested form middleware must suspend to FormBuilder / PTE, not blank this subtree.
+  return <LazyObjectInputMember {...props} />
 }
 
 const LazyFormBuilder = lazy(() =>
