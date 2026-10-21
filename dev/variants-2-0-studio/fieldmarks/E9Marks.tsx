@@ -145,6 +145,7 @@ const BAR_CSS = `
 [data-e9-mark][data-selected] [data-e9-bar] { width: 7px; }
 [data-e9-mark]:focus-visible { outline: 2px solid var(--card-focus-ring-color); outline-offset: 1px; border-radius: 3px; }
 [data-e9-mark] [data-e9-bar] { flex: none; width: 3px; transition: width 120ms; border-radius: 2px; align-self: stretch; }
+[data-e9-mark] [data-e9-glyph] { align-self: flex-start; border: 1px solid; border-radius: 3px; box-sizing: border-box; flex: none; font-size: 9px; font-weight: 700; height: 14px; line-height: 12px; text-align: center; width: 14px; }
 [data-e9-mark] [data-e9-word] { font-size: 11px; line-height: 14px; font-weight: 600; width: ${GUTTER_WIDTH - 10}px; white-space: normal; overflow-wrap: normal; padding-top: 1px; }
 [data-testid="change-bar__marker"], [data-testid="change-bar__button"] { opacity: 0 !important; pointer-events: none !important; }
 `
@@ -315,7 +316,13 @@ function GutterMark(props: {
         <span data-e9-word="" style={{color: tone.fg, width: wordWidth}}>
           {spec.label}
         </span>
-      ) : null}
+      ) : (
+        // Too little room for the word: the bar keeps the first letter of the word (C Changed, D Differs, A Added, R Removed, M Moved), so
+        // the kind is not lost. The full word stays in the tooltip and the accessible name.
+        <span data-e9-glyph="" style={{borderColor: tone.fg, color: tone.fg}}>
+          {spec.label.slice(0, 1).toUpperCase()}
+        </span>
+      )}
     </button>
   )
   if (!peek) return button

@@ -222,3 +222,22 @@ The Field marks test type gained a collapsed fieldset, `Advanced` (`seoTitle`, `
 Authors with variants: Maren Halvorsen (Members, published), Elif Demir (Returning visitors, published only), Ines Marques (Members, published and a newer draft); the others have none. Versions in a scheduled release cannot be mutated and keep no references (five documents).
 
 A reference opens in a new pane in stock Studio; the second pane can hold its own perspective, set by URL: `/structure/book;book-lighthouse;author-maren-halvorsen,type=author,localPerspective=published,localVariant=aud-members?design=show.a,stage.open-beta,paneAddress.c`. Incoming references: the stock pane menu entry "Incoming references" and the delete dialog; hard and weak references are the stock reference field and its "weak" badge. `node journeys/verify-refs.mts`.
+
+## Hosted studio: deploy check and CORS (for Faheem; not done by an agent)
+
+Deploy: every push to `explorations/variants-2-0-studio` builds in the Vercel project `variants-2-0-studio` (team Sanity Sandbox, deployments are SSO-protected: only people in that team can open them). The build of head `d1b16b1cfc` is READY at https://variants-2-0-studio-jbv9lw0x9.sanity.dev (inspector: https://vercel.com/sanity-sandbox/variants-2-0-studio/4rRabEHJzJj1hN8zHwCyBiUVcFSS). Each push gets a new URL; Vercel's page for the project lists the branch alias that stays the same.
+
+Why CORS matters: the studio reads the private dataset `variants-2-0` of project `ppsg7ml5` from the browser. A new origin gets "CORS origin not allowed" until it is added, and it must be added WITH credentials (the dataset is private and the studio signs in with the Sanity session).
+
+Steps (needs a login with admin rights on the project; an agent connection for this project is blocked by an organization scope check, so this is yours to do):
+
+1. Open https://www.sanity.io/manage/project/ppsg7ml5 and sign in.
+2. API, then CORS origins, then Add CORS origin.
+3. Origin: the branch alias of the Vercel project, or `https://variants-2-0-studio-*.sanity.dev` to cover every push (a wildcard in the host is accepted). No path, no trailing slash.
+4. Turn on "Allow credentials". Save.
+5. Open the deployment URL while signed in to the Vercel team. The studio should load and show documents. If the browser console shows a CORS error, the origin differs from the one added (check the scheme and the host).
+6. To undo it: remove the origin on the same page.
+
+CLI alternative, same effect: `npx sanity cors add "https://variants-2-0-studio-*.sanity.dev" --credentials` from a folder linked to project `ppsg7ml5`.
+
+Not covered by CORS: signing in inside the hosted studio uses the Sanity login; if the login page refuses the origin, that origin also needs to be listed under the project's Studio hosts / auth settings.

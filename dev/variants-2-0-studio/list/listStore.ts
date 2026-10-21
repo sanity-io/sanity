@@ -14,6 +14,9 @@ import {deepEqual, type Json} from '../fieldmarks/markModel'
 export type DiffMap = Map<string, {differs: boolean}>
 
 const maps = new Map<string, DiffMap>()
+/** The most recent map per type and variant, whatever the base was, for the list order (changed documents first). */
+const latest = new Map<string, DiffMap>()
+const counter = {version: 0}
 const loading = new Set<string>()
 const listeners = new Set<() => void>()
 const emit = () => listeners.forEach((l) => l())
@@ -107,6 +110,8 @@ export function useDiffMap(type: string | undefined, variantId: string | null): 
           if (here && there) map.set(id, {differs: !deepEqual(content(there), content(here))})
         }
         maps.set(key, map)
+        latest.set(`${type}|${variantId}`, map)
+        counter.version++
       })
       .catch(() => maps.set(key, new Map()))
       .finally(() => {
@@ -201,6 +206,11 @@ export function useChangedSince(type: string | undefined, days: number): number 
   }, [client, key, type, days])
   return useSyncExternalStore(subscribe, () => (key ? (setCounts.get(key)?.total ?? null) : null))
 }
+
+/** Changes whenever a diff map arrives, so the list re-arranges itself. */
+export const useDiffVersion = () => useSyncExternalStore(subscribe, () => counter.version)
+export const peekDiffMap = (type: string, variantId: string): DiffMap | undefined =>
+  latest.get(`${type}|${variantId}`)
 
 export function refreshDiffMaps() {
   maps.clear()

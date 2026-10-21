@@ -72,7 +72,10 @@ export function ReviewHeader(props: {
       <Stack gap={2}>
         {inPass ? null : (
           <Text data-testid="review-summary" size={1}>
-            {title} · {map ? `${differing.length} of ${total} differ` : 'counting…'}
+            {title} ·{' '}
+            {map
+              ? `${differing.length} of ${total} differ from ${baseLabel(against)}`
+              : 'counting…'}
           </Text>
         )}
         {inPass ? null : (

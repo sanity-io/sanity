@@ -26,11 +26,13 @@ const D = 'design=show.a,stage.open-beta'
 {
   const {p, context} = await open(`/structure/e9Set?perspective=drafts&variant=aud-returning-visitors&${D},c3.d,reviewPass.b`)
   log('list: the base is stated', (await text(p, 'base-text')).startsWith('Comparing against: Published'), await text(p, 'base-text'))
+  log('list: the first view says what is compared', /differ from Published · /.test(await text(p, 'review-summary')), await text(p, 'review-summary'))
   log('list: at the default there is no way-back button', (await p.getByTestId('base-reset').count()) === 0)
   await p.getByTestId('base-pick').click()
   await p.getByRole('menuitem', {name: 'Published · Base'}).click()
   await p.waitForTimeout(5000)
   log('list: with Published · Base as the base, 7 of 10 differ', (await text(p, 'review-summary')).includes('7 of 10 differ'), await text(p, 'review-summary'))
+  log('list: documents that differ are listed first', (await p.locator('a[href*="e9-set-"]').first().getByTestId('row-differs').count()) === 1)
   log('list: a chosen base shows the way back', (await p.getByTestId('base-reset').count()) === 1)
   await p.screenshot({path: 'journeys-captures/e9-base/list-chosen.png'})
   await p.getByTestId('base-reset').click()
@@ -76,6 +78,15 @@ for (const [width, fold] of [[1760, 'false'], [1280, 'true']] as const) {
   log(`F at ${width}: the band is there`, (await f.count()) === 1)
   log(`F at ${width}: fold = ${fold}`, (await f.getAttribute('data-fold')) === fold, String(await f.getAttribute('data-fold')))
   await p.screenshot({path: `journeys-captures/e9-base/f-${width}.png`})
+  await context.close()
+}
+// 5. Narrow pane: the mark keeps a letter in the bar, so the kind is not lost.
+{
+  const {p, context} = await open(`/structure/fieldMarksTest;fm-2?perspective=drafts&variant=aud-returning-visitors&${D},fieldMarks.b`, 700, 'light', '[data-testid="document-pane"]')
+  const glyphs = await p.locator('[data-e9-glyph]').count()
+  const words = await p.locator('[data-e9-word]').count()
+  log('narrow pane: marks without room show a letter in the bar', glyphs > 0 && glyphs >= words, `glyphs ${glyphs}, words ${words}`)
+  await p.screenshot({path: 'journeys-captures/e9-base/marks-narrow.png'})
   await context.close()
 }
 await b.close()

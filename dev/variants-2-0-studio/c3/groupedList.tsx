@@ -14,7 +14,7 @@ import {type SystemVariant} from '../c1/model'
 import {useCorpus} from '../c5/useCorpus'
 import {createPerspectiveMatch} from '../data/matchCore'
 import {CmdClickOpensBeside, ListMarkStyles, ReviewHeader, ReviewSetHeader} from '../list/ListParts'
-import {exactVariantId} from '../list/listStore'
+import {exactVariantId, peekDiffMap, useDiffVersion} from '../list/listStore'
 import {useOptionState, useOption} from '../options/store'
 
 /**
@@ -124,6 +124,7 @@ export function ListArrangeProvider(props: {
   const listMark = useOption('listMark')
   const reviewPass = useOption('reviewPass')
   const reviewSet = useOption('reviewSet')
+  const diffVersion = useDiffVersion()
   const {chosen, definitions} = props
   const perspective = useMemo(
     () => createPerspectiveMatch(chosen, definitions),
@@ -161,19 +162,32 @@ export function ListArrangeProvider(props: {
       const type = items.find((item) => item._type !== DOCUMENT_LIST_SECTION_TYPE)?._type ?? ''
       const withHeader = reviewPass !== 'a' && variantId
       const header = withHeader ? [section(HEADER)] : []
+      // Faheem's rule: what changed against the base is the first thing shown. Documents that differ come first within "Has variant".
+      // `diffVersion` re-runs this when a map arrives.
+      const diff =
+        reviewPass !== 'a' && variantId && diffVersion >= 0
+          ? peekDiffMap(type, variantId)
+          : undefined
+      const hasOrdered = diff
+        ? [...has].sort(
+            (a, b) =>
+              Number(diff.get(getPublishedId(b._id))?.differs ?? false) -
+              Number(diff.get(getPublishedId(a._id))?.differs ?? false),
+          )
+        : has
       const sorted = listWhenPerspective === 'sorted'
       const grouped =
         option !== 'd'
           ? items
           : sorted
-            ? [...has, ...none]
-            : [section(HAS), ...has, section(NONE), ...(noneCollapsed ? [] : none)]
+            ? [...hasOrdered, ...none]
+            : [section(HAS), ...hasOrdered, section(NONE), ...(noneCollapsed ? [] : none)]
       return {
         items: [...header, ...grouped],
         renderSection: (item) =>
           item._id === HEADER ? (
             <ReviewHeader
-              orderedIds={has.map((h) => getPublishedId(h._id))}
+              orderedIds={hasOrdered.map((h) => getPublishedId(h._id))}
               title={variantTitle}
               type={type}
               variantId={variantId ?? ''}
@@ -197,6 +211,7 @@ export function ListArrangeProvider(props: {
       }
     }
   }, [
+    diffVersion,
     reviewSet,
     option,
     perspective,
