@@ -122,3 +122,6 @@ dev/test-studio/.react-compiler-bailout-report.json
 # Local output of `pnpm e2e:flake-report`
 flake-report.md
 flake-report.json
+
+# Cursor hooks state like continual-learning
+/.cursor/hooks
