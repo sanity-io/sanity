@@ -9,15 +9,12 @@ export const cellRoot = style({
   containerType: 'inline-size',
   width: '100%',
   selectors: {
-    // Flex (Box) sets `min-width: 0` on itself
     '&&': {
       minWidth: 0,
     },
   },
 })
 
-// Kept at single-class specificity like the styled(Text) rule it replaces: Text's own
-// `&:not([hidden]) {display: block}` (0,2,0) outranks it, so the outcome is unchanged.
 export const nameText = style({
   'minWidth': 0,
   '@container': {
