@@ -27,7 +27,7 @@
 export const namespaces = {
   'studio': {
     constants: ['studioLocaleNamespace'],
-    resources: ['packages/sanity/src/core/i18n/bundles/studio.ts'],
+    resources: ['packages/sanity/src/core/i18n/bundles/studio/resources.ts'],
     registeredBy: 'the default locale (`core/i18n/locales.ts`)',
   },
   'validation': {

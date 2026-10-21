@@ -1,6 +1,6 @@
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {useCallback, useState} from 'react'
+import {lazy, Suspense, useCallback, useState} from 'react'
 import semver from 'semver'
 import {styled} from 'styled-components'
 
@@ -14,12 +14,23 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useRenderingContext} from '../../../../store/renderingContext/useRenderingContext'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
-import {DiagnosticsDialog} from './DiagnosticsDialog'
 import {DiagnosticsMenuItem} from './DiagnosticsMenuItem'
 import {FeedbackMenuItem} from './FeedbackMenuItem'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
-import {StudioInfoDialog} from './StudioInfoDialog'
+
+// The dialogs behind the help menu are only needed after a click, so they load on demand
+// instead of shipping with the navbar. `StudioFeedbackDialog` is imported statically on purpose:
+// it is an export of the `sanity` entry, so it is in the entry's static graph either way, and
+// a dynamic import of a module the entry also exports statically makes the bundler emit a
+// namespace object for it, whose runtime helper can land in a chunk that imports `sanity`
+// itself — a cycle the CLI's vite SSR worker (`sanity schema deploy`) cannot evaluate.
+const DiagnosticsDialog = lazy(() =>
+  import('./DiagnosticsDialog').then((module) => ({default: module.DiagnosticsDialog})),
+)
+const StudioInfoDialog = lazy(() =>
+  import('./StudioInfoDialog').then((module) => ({default: module.StudioInfoDialog})),
+)
 
 const StyledMenu = styled(Menu)`
   max-width: 300px;
@@ -81,16 +92,18 @@ export function ResourcesButton() {
 
   return (
     <>
-      {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
-      {diagnosticsDialogOpen && <DiagnosticsDialog onClose={handleCloseDiagnostics} />}
-      {feedbackDialogOpen && (
-        <StudioFeedbackDialog
-          dsn={STUDIO_DSN}
-          feedbackVersion="1"
-          source="studio-help-menu"
-          onClose={handleCloseFeedback}
-        />
-      )}
+      <Suspense fallback={null}>
+        {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
+        {diagnosticsDialogOpen && <DiagnosticsDialog onClose={handleCloseDiagnostics} />}
+        {feedbackDialogOpen && (
+          <StudioFeedbackDialog
+            dsn={STUDIO_DSN}
+            feedbackVersion="1"
+            source="studio-help-menu"
+            onClose={handleCloseFeedback}
+          />
+        )}
+      </Suspense>
       <MenuButton
         button={
           <StatusButton
