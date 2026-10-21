@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
-import {type TargetPerspective, type VersionInfoDocumentStub, type Workspace} from 'sanity'
+import {type TargetPerspective, type Workspace} from 'sanity'
 
+import {type VersionInfoDocumentStub} from '../core/releases/store/types'
 import {isLiveEditEnabled} from './components/paneItem/helpers'
 
 export interface ShouldShowSeeDraftBannerContext {

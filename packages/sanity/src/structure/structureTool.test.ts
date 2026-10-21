@@ -1,13 +1,13 @@
 import {
   type ConfigContext,
   createSchema,
-  defaultLocale,
   type DocumentBadgeComponent,
   type DocumentBadgesContext,
   type LocaleSource,
 } from 'sanity'
 import {describe, expect, it} from 'vitest'
 
+import {defaultLocale} from '../core/i18n/locales'
 import {useLiveEditBadge} from './documentBadges/LiveEditBadge'
 import {useSingletonBadge} from './documentBadges/SingletonBadge'
 import {structureTool} from './structureTool'

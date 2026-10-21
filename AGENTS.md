@@ -355,42 +355,57 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
-### `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
+### Public `sanity` entries never export `@internal` symbols
 
-Every declaration that `sanity`, `sanity/structure` or `sanity/router` exports under the
-`@internal` TSDoc release tag is also exported from
+Everything a studio or plugin can reach through `sanity`, `sanity/structure`, `sanity/router` and
+`sanity/presentation` is public API. Symbols tagged `@internal` are exported from
 `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
 (`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts`),
 an entry whose name spells out its contract: anything on it can change or disappear in any
-release. The public entries still export those symbols today; the entry is the migration target
-for consumers that depend on them, ahead of the public entries dropping them in a future major.
-`packages/@repo/test-dts-exports/test/internals-entry-completeness.test.ts` (part of
-`pnpm test:exports`) fails when an `@internal` export of a public entry is missing from the entry,
-when the two entries export different declarations under one name, or when the entry exports
-something that is not tagged `@internal`.
+release. `packages/@repo/test-dts-exports/test/internal-exports.test.ts` (part of
+`pnpm test:exports`) runs against the built `.d.ts` files and enforces both directions: a public
+entry that exports an `@internal` declaration fails, and so does an entry export that is not
+tagged `@internal`.
 
 Rules that follow from this:
 
-- A new `@internal` export on a public barrel needs a matching line in the internals barrel
-  (grouped by source module, `type` specifiers kept). Consumers outside `packages/sanity`
-  (`@sanity/vision`, the dev studios, plugins) import internals from the entry, never from
-  `sanity`. Inside the package, `src/core`, `src/structure` and `src/router` keep importing
-  relatively: the entry re-exports modules from all three areas, so importing it from any of them
-  is an import cycle, and a lazily loaded module that imports the entry drags the whole barrel in
-  with it. The boundaries rules in `.oxlintrc.json` only allow the entry itself to import from the
-  three areas.
-- The entry is generated from the tags, not curated: whether a symbol belongs there is decided by
-  its `@internal` tag. Retagging a symbol (`@internal` → `@beta`/`@public`, or the other way) is
-  the API decision; check sanity.io/docs and the published first-party plugins before demoting a
-  symbol, and remember that `@sanity/cli`, `@sanity/cli-core` and `@sanity/cli-build` load the
-  studio's local `sanity` package at runtime (`resolveLocalPackage('sanity')`) and destructure
-  `renderStudio`, `resolveConfig`, `createSchema`, `SchemaError`, `createDefaultIcon`,
-  `generateStudioManifest`, `uploadSchema` and `validateDocument` from the root. The one
-  deliberate exception is `createAuthStore` (deprecated since v3.15.0): it keeps its
-  `@internal @deprecated` tags because those tell customers to stop using it, it stays off the
-  entry so the deprecated `sanity` import remains the only one, and it is listed in
-  `PUBLIC_BY_USAGE` in the completeness test; its removal is governed by the deprecation, not by
-  the internals moving. Do not retag it.
+- A new `@internal` export goes into the dangerous internals barrel (grouped by source module,
+  `type` specifiers kept), never into `index.ts`, `structure.ts`, `router.ts` or
+  `presentation.ts`. Consumers outside `packages/sanity` (`@sanity/vision`, the dev studios,
+  plugins) import it from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+  Inside the package, `src/core`, `src/structure` and `src/router` import internals relatively;
+  the boundaries rules in `.oxlintrc.json` only allow the entry itself to import from the three
+  areas. Core importing it would pull the whole barrel into `lib/index.js`; structure importing it
+  is a cycle, because the barrel re-exports structure modules (`DocumentPane`, `Pane`,
+  `StructureToolProvider`, …), which in vitest also makes
+  `vi.mock('sanity/_dangerously…', importOriginal)` invisible to the component under test.
+  Structure tests mock the source module they need (`vi.mock('../../core/hooks/useX', …)`), like
+  core tests do. `src/presentation` imports internals relatively for the same reasons, and
+  because a lazily loaded module (an i18n `resources` chunk, a `lazy()` component) that imports
+  the entry drags the whole barrel in with it.
+- A symbol carries exactly one release tag. `@internal` plus `@beta`/`@public` on the same
+  declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that.
+- Tagging something `@public`/`@beta` moves it onto a public entry; tagging it `@internal` moves
+  it off. Both are API changes: removing a named ESM export breaks consumers at module
+  evaluation time, and auto-updating studios pick minors up without a rebuild, so check
+  sanity.io/docs and the published first-party plugins (`@sanity/assist`,
+  `@sanity/document-internationalization`, `sanity-plugin-media`, `@sanity/code-input`, …)
+  before demoting a symbol. The CLI is a consumer too, and an invisible one: `@sanity/cli`,
+  `@sanity/cli-core` and `@sanity/cli-build` load the studio's local `sanity` package at runtime
+  (`resolveLocalPackage('sanity')`) and destructure `renderStudio`, `resolveConfig`,
+  `createSchema`, `SchemaError`, `createDefaultIcon`, `generateStudioManifest`, `uploadSchema`
+  and `validateDocument` from the root, so `sanity schema extract/deploy`, `sanity manifest
+  extract` and `sanity documents validate` break at runtime (not at build time) if one of them
+  leaves the root. They are tagged `@hidden @public`; grep the CLI packages in `node_modules`
+  for `resolveLocalPackage('sanity'` before touching them.
+- `createAuthStore` (deprecated since v3.15.0) and `CreateAuthStoreOptions` are the one deliberate
+  exception: they keep their `@internal @deprecated` tags because those tell customers to stop
+  using it, and they stay on `sanity` and off the entry so the deprecated import remains the only
+  one. They are listed in `PUBLIC_BY_USAGE` in `internal-exports.test.ts`; their removal is
+  governed by the deprecation, not by the internals moving. Do not retag it.
+- Two router leaf modules (`src/router/stickyParams.ts`, `src/router/utils/jsonParamsEncoding.ts`)
+  are the `sanity/router__shared` file category in `.oxlintrc.json`, so `src/core` can import
+  them relatively without them being exported from the public `sanity/router` entry.
 - The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
   404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
@@ -1444,3 +1459,14 @@ Debugging notes:
 - To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.
 - Every branch with a PR gets its own `End-to-End Tests` run (8 shards) against the same staging project, and the shards share GitHub's runner IP range. Pushing a whole stack of PRs at once therefore rate-limits the runs against each other: the failed attempts show the studio's "Too many requests" dialog in the `error-context` page snapshot and in `studio-request-error.txt`, with dozens of flaky retries. Push (or re-run) stacked branches a few at a time instead of all at once, and treat a run whose failures all show that dialog as platform-caused, not as a regression.
 - A new Playwright version means a new browser-cache key. The `install` job creates it, but when several runs start together only one can reserve the key and the others log `Unable to reserve cache with key … another job may be creating this cache`; their `playwright-test` shards then miss the restore and fall back to installing browsers themselves. `e2e/globalSetup.ts` always launches chromium (it warms the preview with the first configured project), so that fallback installs chromium alongside the matrix browser — a firefox shard without chromium fails in global setup with `browserType.launch: Executable doesn't exist` before running a single test.
+
+<!-- BEGIN:turborepo-agent-rules -->
+
+# This is NOT the Turborepo you know
+
+Turborepo configuration, task behavior, and CLI commands can vary between installed versions and may differ from your training data. Resolve the `turbo` package from this file's directory or relevant workspace; in monorepos, it may not be visible from the repository root. For example, run `node -p "require.resolve('turbo/package.json')"` from a workspace that depends on `turbo`.
+
+Read `docs/README.md` inside that installed package first, then read the relevant pages from its `docs/` directory before changing Turborepo configuration or commands. Heed deprecation notices. These bundled docs match the installed package version and are available without network access.
+
+This block is written and re-added by `turbo` before repository-scoped commands when an AI agent is detected. In the Turborepo source repository, its template is defined in `crates/turborepo-cli/src/cli/agent_guidance.rs`. Removing the managed block while updates are enabled means a later qualifying invocation will add it again. Set `"agentGuidance": false` in the root `turbo.json` or `turbo.jsonc` to opt out; this does not remove an existing block. Keep the block committed with your work to avoid an uncommitted change on the next agent invocation.
+<!-- END:turborepo-agent-rules -->

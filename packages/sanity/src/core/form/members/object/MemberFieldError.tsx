@@ -10,7 +10,9 @@ import {DuplicateKeysAlert} from './errors/DuplicateKeysAlert'
 import {MissingKeysAlert} from './errors/MissingKeysAlert'
 import {MixedArrayAlert} from './errors/MixedArrayAlert'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function MemberFieldError(props: {member: FieldError}) {
   const {member} = props
   const {onChange} = useFormCallbacks()

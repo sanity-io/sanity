@@ -2,7 +2,9 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type ArrayItemError} from '../../store/types/memberErrors'
 import {IncompatibleItemType} from './IncompatibleItemType'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function MemberItemError(props: {member: ArrayItemError}) {
   const {member} = props
   const {t} = useTranslation()

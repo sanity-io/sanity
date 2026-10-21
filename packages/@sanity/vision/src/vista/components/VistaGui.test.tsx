@@ -5,7 +5,8 @@ import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {Subject} from 'rxjs'
-import {type PerspectiveContextValue, useScheduledDraftsEnabled} from 'sanity'
+import {type PerspectiveContextValue} from 'sanity'
+import {useScheduledDraftsEnabled} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
@@ -110,8 +111,6 @@ vi.mock('sanity', async () => {
     usePerspective: () =>
       useSyncExternalStore(sanityMocks.subscribePerspective, sanityMocks.getPerspective),
     useClient: sanityMocks.useClient,
-    useActiveReleases: vi.fn(() => ({data: [], loading: false})),
-    useScheduledDraftsEnabled: vi.fn(() => false),
     useWorkspace: vi.fn(() => ({document: {drafts: {enabled: true}}})),
     useTranslation: () => ({
       t: (key: string, options?: {message?: string; version?: string}) => {
@@ -120,22 +119,29 @@ vi.mock('sanity', async () => {
       },
     }),
     defineLocaleResourceBundle: (bundle: unknown) => bundle,
-    defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-    VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
-    RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: '2025-02-19'},
     getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
-    isCardinalityOneRelease: () => false,
-    sortReleases: <T,>(releases: T[]) => releases,
-    getVariantTitle: (variant: {title?: string}) => variant.title,
-    getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
     useSchema: () => undefined,
-    useKeyValueStore: () => ({getKey: vi.fn(), setKey: vi.fn()}),
     useCurrentUser: () => ({id: 'user-1'}),
     useDateTimeFormat: () => ({format: () => 'a date'}),
-    ContextMenuButton: (props: Record<string, unknown>) => <button type="button" {...props} />,
     UserAvatar: () => null,
   }
 })
+
+// Internals that Vision imports from the internals entry; mocked without the real barrel so the
+// structure modules it re-exports do not load against the partial `sanity` mock above
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  useActiveReleases: vi.fn(() => ({data: [], loading: false})),
+  useScheduledDraftsEnabled: vi.fn(() => false),
+  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
+  RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: '2025-02-19'},
+  isCardinalityOneRelease: () => false,
+  sortReleases: <T,>(releases: T[]) => releases,
+  getVariantTitle: (variant: {title?: string}) => variant.title,
+  getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
+  useKeyValueStore: () => ({getKey: vi.fn(), setKey: vi.fn()}),
+  ContextMenuButton: (props: Record<string, unknown>) => <button type="button" {...props} />,
+}))
 
 vi.mock('sanity/router', () => ({
   IntentLink: ({children}: {children: ReactNode}) => <a href="#intent">{children}</a>,
