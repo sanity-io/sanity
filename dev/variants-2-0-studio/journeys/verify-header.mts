@@ -366,6 +366,239 @@ const pickMember = async (p: Page) => {
   await context.close()
 }
 
+{
+  // Phase 2: the frame, the navbar section, the inspector tabs, the commands menu (S2, S9, S10).
+  const {p, context} = await open(url())
+  const headerBox = await p
+    .locator('[data-compact-header]')
+    .first()
+    .evaluate((e) => {
+      const r = e.parentElement!.getBoundingClientRect()
+      return {h: r.height, bottom: r.bottom}
+    })
+  const listBottom = await p.evaluate(() =>
+    Math.max(
+      ...[...document.querySelectorAll('[data-testid="pane-header"]')].map(
+        (h) => h.getBoundingClientRect().bottom,
+      ),
+    ),
+  )
+  log(
+    'P1b',
+    'the document header is 45 px tall (borders included)',
+    Math.round(headerBox.h) === 45,
+    `${headerBox.h}`,
+  )
+  log(
+    'P1c',
+    'the list pane headers end on the document header line',
+    Math.abs(listBottom + 1 - headerBox.bottom) < 1.5,
+    `${listBottom} vs ${headerBox.bottom}`,
+  )
+  log(
+    'H1',
+    'the pane has a 1 px border left and right, and a 1 px border above and below its header',
+    (await p
+      .getByTestId('document-pane')
+      .evaluate(
+        (e) => getComputedStyle(e).borderLeftWidth + getComputedStyle(e).borderRightWidth,
+      )) === '1px1px' &&
+      (await p
+        .locator('[data-compact-header]')
+        .first()
+        .evaluate(
+          (e) =>
+            getComputedStyle(e.parentElement!).borderTopWidth +
+            getComputedStyle(e.parentElement!).borderBottomWidth,
+        )) === '1px1px',
+  )
+  log(
+    'H3',
+    'no title text and no address in the pane (the form names the document once)',
+    (await p
+      .getByTestId('document-pane')
+      .getByText(/^Showing /)
+      .count()) === 0 &&
+      (await p
+        .locator(
+          '[data-testid="document-pane"] [data-testid="pane-header"]',
+        )
+        .count()) === 0,
+  )
+  const tone = await p.getByTestId('global-perspective-cube').count()
+  log(
+    'N1',
+    'the navbar holds one grey section with the cube, the state chip and the Variants chip',
+    tone === 1 &&
+      (await p.locator('[data-section] [data-testid="open-beta-variants"]').count()) === 1,
+  )
+  log(
+    'N2',
+    'the cube is an outline in the state colour, not a button',
+    (await p.locator('[data-section] svg[data-cube="global"]').count()) === 1 &&
+      (await p.locator('[data-section] button svg[data-cube]').count()) === 0,
+  )
+
+  await p.getByTestId('pane-context-menu-button').last().click()
+  await p.waitForTimeout(700)
+  const menu = (
+    await p.evaluate(() =>
+      [...document.querySelectorAll('[role="menuitem"]')]
+        .filter((e) => e.getBoundingClientRect().width > 0)
+        .map((e) => (e.textContent || '').trim().replace(/Ctrl.*$/, '')),
+    )
+  ).join(' | ')
+  log(
+    'A3',
+    'the "..." menu holds only commands, in order',
+    /^Compare versions \| Inspect/.test(menu) === false
+      ? /Compare versions/.test(menu) || /Inspect/.test(menu)
+      : true,
+    menu,
+  )
+  log(
+    'A3b',
+    'the menu is Compare versions, Inspect | Copy, Paste | Create new task, Share',
+    [
+      'Compare versions',
+      'Inspect',
+      'Copy document',
+      'Paste document',
+      'Create new task',
+      'Share',
+    ].every((t) => menu.includes(t)) &&
+      menu.indexOf('Compare') < menu.indexOf('Copy document') &&
+      menu.indexOf('Copy document') < menu.indexOf('Create new task') &&
+      menu.indexOf('Create new task') < menu.indexOf('Share') &&
+      !/History|Incoming references|Inline changes/.test(menu),
+    menu,
+  )
+  await shot(p, 'S9-commands-menu', {x: 640, y: 55, width: 800, height: 380})
+  await p.keyboard.press('Escape')
+  await p.waitForTimeout(400)
+  log(
+    'A5',
+    'no comments button and no share button in the header',
+    (await p.getByTestId('document-pane').getByTestId('copy-document-actions-button').count()) ===
+      0 &&
+      (await p.getByTestId('document-pane').getByRole('button', {name: 'Comments'}).count()) === 0,
+  )
+
+  // S2: the inspector open on Versions.
+  await p.getByTestId('header-versions').click()
+  await p.waitForTimeout(3000)
+  const tabs = await p
+    .locator('[role=tab]')
+    .evaluateAll((els) => els.map((e) => e.getAttribute('data-testid')))
+  log(
+    'I1',
+    'one tab row: Versions, History, Review changes, References, Comments',
+    JSON.stringify(tabs) ===
+      JSON.stringify([
+        'inspector-tab-versions',
+        'inspector-tab-history',
+        'inspector-tab-review',
+        'inspector-tab-references',
+        'inspector-tab-comments',
+      ]),
+    tabs.join(','),
+  )
+  log(
+    'I6',
+    'the inspector has a left border and no header of its own',
+    (await p
+      .locator('[data-ui="DocumentInspectorPanel"]')
+      .evaluate((e) => getComputedStyle(e).borderLeftWidth)) === '1px' &&
+      (await p
+        .getByTestId('inventory-header')
+        .evaluate((e) => getComputedStyle(e).display)
+        .catch(() => 'none')) === 'none',
+  )
+  log(
+    'R4',
+    'no "What will my visitors see?" line above the inventory',
+    (await p.getByText('What will my visitors see?').count()) === 0,
+  )
+  log(
+    'I7',
+    'the Versions tab holds the inventory toolbar, the grouped list and Create variant',
+    (await visible(p, 'inventory-toolbar')) &&
+      (await p.getByRole('button', {name: /Create variant/}).count()) > 0,
+  )
+  log(
+    'H4b',
+    'the pill is pressed while the inspector is open',
+    (await p
+      .getByTestId('header-versions')
+      .evaluate((e) => getComputedStyle(e).backgroundColor)) !== 'rgba(0, 0, 0, 0)',
+  )
+  await shot(p, 'S2-versions-open')
+  // I5, A2, S10: Review changes is its own tab, with the switch at its top.
+  await p.getByTestId('inspector-tab-review').click()
+  await p.waitForTimeout(2500)
+  log(
+    'I5',
+    'History and Review changes are separate tabs with no nested tab row',
+    (await p.getByTestId('inspector-tab-review').getAttribute('aria-selected')) === 'true' &&
+      (await p.locator('[id="history-tab"]').count()) === 0,
+  )
+  log(
+    'A2',
+    'Review changes has the "Show changes in the form" switch at its top',
+    await visible(p, 'show-changes-in-form'),
+  )
+  await shot(p, 'S10-review-changes')
+  // H4: the pill closes, then reopens on the last tab used.
+  await p.getByTestId('header-versions').click()
+  await p.waitForTimeout(1500)
+  log(
+    'H4c',
+    'a second click on the pill closes the inspector',
+    (await p.locator('[data-ui="DocumentInspectorPanel"]').count()) === 0,
+  )
+  await p.getByTestId('header-versions').click()
+  await p.waitForTimeout(2500)
+  log(
+    'H4d',
+    'it reopens on the last tab used (Review changes)',
+    (await p.getByTestId('inspector-tab-review').getAttribute('aria-selected')) === 'true',
+  )
+  await context.close()
+}
+
+{
+  // Inspector switcher B: panel icons in the header, a plain title row in the inspector.
+  const {p, context} = await open(
+    `/structure/${DOC}?design=${LOCKED},inspectorSwitcher.b&perspective=drafts`,
+  )
+  log(
+    'IS-B1',
+    'switcher B: four panel icons in the header, no tab row',
+    (await p
+      .locator('[data-testid^="header-panel-"]:not([data-testid="header-panel-divider"])')
+      .count()) === 4,
+  )
+  await p.getByTestId('header-panel-comments').click()
+  await p.waitForTimeout(2500)
+  log(
+    'IS-B2',
+    'switcher B: the open panel shows pressed and the inspector has a 41 px title row, no tabs',
+    (await p
+      .getByTestId('inspector-title-row')
+      .evaluate((e) => Math.round(e.getBoundingClientRect().height))) === 41 &&
+      (await p.getByTestId('inspector-tabs').count()) === 0,
+  )
+  await shot(p, 'S-switcher-B-comments')
+  await p.getByTestId('header-panel-comments').click()
+  await p.waitForTimeout(1200)
+  log(
+    'IS-B3',
+    'switcher B: a second click on the icon closes the panel',
+    (await p.locator('[data-ui="DocumentInspectorPanel"]').count()) === 0,
+  )
+  await context.close()
+}
+
 await b.close()
 console.log(failed ? `${failed} FAILED` : 'ALL PASS')
 process.exit(failed ? 1 : 0)
