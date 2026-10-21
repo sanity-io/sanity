@@ -2,6 +2,7 @@ import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState, useSyncExternalStore} from 'react'
 import {useSetVariant, useWorkspace} from 'sanity'
 
+import {valueTitle} from '../c1/model'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
 import {CreateVersion, type VariantChoice} from './inventory/CreateVersion'
@@ -88,10 +89,18 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
             title: v.metadata?.title ?? shortId(v._id),
             dimension,
             value: String(value),
+            valueTitle: valueTitle(
+              state.dimensions.find((d) => d.name === dimension) ?? {
+                name: dimension,
+                title: dimension,
+                values: [],
+              },
+              String(value),
+            ),
           },
         ]
       }),
-    [variants],
+    [variants, state.dimensions],
   )
 
   const variantFor = useCallback(
