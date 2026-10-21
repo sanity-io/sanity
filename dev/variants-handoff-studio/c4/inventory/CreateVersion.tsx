@@ -3,7 +3,7 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {DocumentIcon} from '@sanity/icons/Document'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {PackageIcon} from '@sanity/icons/Package'
-import {Badge, Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Badge, Box, Button as UIButton, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider} from '@sanity/ui/menu'
 import {
   createContext,
@@ -12,13 +12,13 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
 import {createPortal} from 'react-dom'
 import {ReleaseAvatarIcon} from 'sanity'
 
-import {RhombusIcon} from '../../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
 import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../packages/sanity/src/ui-components/tooltip/Tooltip'
@@ -113,17 +113,38 @@ function search<T>(
   return found.sort((x, y) => x.score - y.score)
 }
 
-// Loose padding: the pill is as tall as a toolbar button and takes 12px at the sides.
-// Pills hug their content and sit at the start of the column; one wider than the column ends with an ellipsis (CSS) and says the whole of it on hover.
+// Pills hug their content and sit at the start of the column; one wider than the column ends with an ellipsis and says the whole of it on hover.
 const PILL = {
   alignSelf: 'flex-start',
   borderRadius: 999,
-  justifyContent: 'flex-start',
   maxWidth: '100%',
-  paddingLeft: 10,
-  paddingRight: 8,
   width: 'max-content',
 } as const
+
+/**
+ * A glyph in a slot as wide as what it paints. Studio icons draw into a 25-unit box with different margins (the diamond fills half of it, the
+ * drafts dot a sixth), so a fixed icon box gives every pill a different inset and gap. Sized to the painted glyph, every pill has the same 11px
+ * inset, 8px gap and chevron inset. Measured once per glyph in a layout effect, written to the slot's style (no state).
+ */
+function Glyph(props: {children: ReactNode; glyphKey: string}) {
+  const ref = useRef<HTMLSpanElement | null>(null)
+  const {glyphKey} = props
+  useLayoutEffect(() => {
+    const slot = ref.current
+    if (!slot || !glyphKey) return
+    const rects = [...slot.querySelectorAll('path, circle, rect, ellipse, polygon')]
+      .map((shape) => shape.getBoundingClientRect())
+      .filter((rect) => rect.width > 0)
+    if (!rects.length) return
+    const width = Math.max(...rects.map((r) => r.right)) - Math.min(...rects.map((r) => r.left))
+    slot.style.width = `${Math.round(width * 2) / 2}px`
+  }, [glyphKey])
+  return (
+    <span data-pill-glyph="" ref={ref}>
+      <Text size={1}>{props.children}</Text>
+    </span>
+  )
+}
 
 const MenuOpenContext = createContext<(open: boolean) => void>(() => undefined)
 
@@ -135,6 +156,8 @@ function PillMenu(props: {
   /** A menu with more than three options has a search field. */
   searchable: boolean
   icon?: ReactNode
+  /** What the icon is, so its slot is measured again when it changes (the text alone may not change with it). */
+  glyphKey?: string
   boundary: HTMLElement | null
   children: (query: string) => ReactNode
 }) {
@@ -143,18 +166,30 @@ function PillMenu(props: {
   return (
     <MenuButton
       button={
-        <Button
+        // The content is laid out here, not by the Button's icon and text props: see Glyph.
+        <UIButton
           data-add-pill=""
           data-testid={props.testId}
-          icon={props.icon as never}
-          iconRight={ChevronDownIcon}
           mode="ghost"
+          padding={0}
+          radius="full"
           style={PILL}
-          // The button type leaves `title` out; the whole value shows on hover when the pill ends with an ellipsis.
-          {...{title: props.text}}
-          text={props.text}
-          tooltipProps={null}
-        />
+          title={props.text}
+        >
+          <Flex align="center" data-pill-row="">
+            {props.icon ? (
+              <Glyph glyphKey={props.glyphKey ?? props.text}>{props.icon}</Glyph>
+            ) : null}
+            <Box data-pill-text="" flex={1}>
+              <Text size={1} textOverflow="ellipsis">
+                {props.text}
+              </Text>
+            </Box>
+            <Glyph glyphKey="chevron">
+              <ChevronDownIcon />
+            </Glyph>
+          </Flex>
+        </UIButton>
       }
       id={props.testId}
       menu={
@@ -261,14 +296,29 @@ function TableRow(props: {
   )
 }
 
-/** The variant tone's rhombus. Its glyph fills little of its box, so MODE_CSS draws it larger wherever it sits beside other icons. */
+/**
+ * The variant tone's diamond, drawn to fill its 25-unit box as the Studio icons do (the temporary Rhombus glyph fills only a third of it), so it
+ * sits at 1em like the package and documents icons in a row, a pill or a menu item, with no size correction around it.
+ */
 const VariantDiamond = () => (
-  <span
+  <svg
     data-diamond=""
-    style={{display: 'inline-flex', color: 'var(--card-badge-suggest-icon-color)'}}
+    // Sanity UI centres an icon in a cap-trimmed Text line by this attribute, as it does every @sanity/icons icon.
+    data-sanity-icon="diamond"
+    fill="none"
+    height="1em"
+    style={{color: 'var(--card-badge-suggest-icon-color)'}}
+    viewBox="0 0 25 25"
+    width="1em"
   >
-    <RhombusIcon />
-  </span>
+    <path
+      d="M12.5 4.75L20.25 12.5L12.5 20.25L4.75 12.5Z"
+      fill="currentColor"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+    />
+  </svg>
 )
 
 const destIcon = (d: Dest) =>
@@ -302,19 +352,15 @@ const MODE_CSS = `
 [data-create-head-sub] { font-size: 12px; line-height: 16px; margin-top: 3px; color: var(--card-muted-fg-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 [data-create-icon] { display: inline-flex; font-size: 21px; line-height: 0; overflow: visible; }
 [data-create-icon] svg { width: 21px; height: 21px; }
-/* The rhombus glyph fills 8 of its 25 units (the package glyph about 15): drawn at 34px, laid out at 25px, it reads the same size. */
-[data-create-icon] [data-diamond] svg { width: 34px; height: 34px; margin: -6.5px; }
-/* In a pill, the same correction against the 17px icons. */
-[data-create-frame] [data-add-pill] [data-ui="Text"] [data-diamond] svg, [data-testid="add-value-base"] [data-diamond] svg { width: 27px; height: 27px; margin: -5px; }
 @container (max-width: 339px) {
   [data-create-row] { grid-template-columns: 25px minmax(0, 1fr); align-items: start; row-gap: 10px; }
   [data-create-row] > [data-create-controls] { grid-column: 2; padding: 0; }
 }
-/* Pills: 17px icon, nothing clipped; a value wider than the column ends with an ellipsis. */
-[data-create-frame] [data-add-pill] { max-width: 100%; min-width: 0; }
-[data-create-frame] [data-add-pill] [data-ui="Text"] { min-width: 0; overflow: visible; }
-[data-create-frame] [data-add-pill] [data-ui="Text"] svg { width: 17px; height: 17px; }
-[data-create-frame] [data-add-pill] [data-ui="Text"]:not(:has(svg)) > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-block: 3px; margin-block: -3px; }
+/* Pills: 29px tall, 11px to the glyph, 8px to the text, 10px after the chevron. */
+[data-create-frame] [data-add-pill] { max-width: 100%; min-width: 0; height: 29px; }
+[data-create-frame] [data-pill-row] { height: 29px; padding: 0 10px 0 11px; gap: 8px; min-width: 0; }
+[data-create-frame] [data-pill-text] { min-width: 0; }
+[data-pill-glyph] { display: inline-flex; justify-content: center; flex: none; overflow: visible; }
 [data-create-frame] .inventory-group > div:nth-child(2) { display: flex; align-items: center; gap: 6px; }`
 
 const sameElements = (a: readonly HTMLElement[], b: readonly HTMLElement[]) =>
