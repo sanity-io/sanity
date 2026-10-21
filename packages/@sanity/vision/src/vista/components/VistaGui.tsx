@@ -34,7 +34,7 @@ const STACKED_BREAKPOINT = 900
 /** Below this width one column shows at a time and the sidebar floats over the content */
 const MOBILE_BREAKPOINT = 600
 
-export function getVistaLayout(width: number): VistaLayout {
+function getVistaLayout(width: number): VistaLayout {
   if (width < MOBILE_BREAKPOINT) return 'mobile'
   if (width < STACKED_BREAKPOINT) return 'stacked'
   return 'columns'
