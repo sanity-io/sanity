@@ -1,8 +1,12 @@
 // The compare model (compare/address.ts): reading and writing comparisons in the structure URL. Pure. node journeys/verify-compare-model.mts
-import {closePath, compareKind, compareTitle, openBesidePath, readComparison, setAgainstPath} from '../compare/address.ts'
+import {closePath, compareKind, compareTitle, isOneMove, openBesidePath, readComparison, setAgainstPath} from '../compare/address.ts'
 let failed = 0
 const ok = (name: string, pass: boolean, note = '') => { console.log(`${pass ? 'PASS' : 'FAIL'} ${name}${note ? ` - ${note}` : ''}`); if (!pass) failed++ }
 const g = {perspective: 'drafts', variant: 'aud-returning-visitors'}
+// The one-dimension cap (E checks it in the pane bar and in the global bar, since the global bar no longer sees the Against side).
+ok('one move: the same variant in another layer', isOneMove(g, {perspective: 'published', variant: g.variant}))
+ok('one move: another variant in the same layer', isOneMove(g, {perspective: 'drafts', variant: 'aud-members'}))
+ok('two moves are refused', !isOneMove(g, {perspective: 'published', variant: 'aud-members'}))
 const one = '/structure/e9Case;e9-visitors'
 const opened = openBesidePath(one, 'e9-visitors', {perspective: 'published', variant: 'aud-members'}, g)!
 ok('open beside appends one group', decodeURIComponent(opened) === '/structure/e9Case;e9-visitors;e9-visitors,localPerspective=published,localVariant=aud-members', decodeURIComponent(opened))

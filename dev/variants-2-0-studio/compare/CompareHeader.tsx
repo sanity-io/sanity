@@ -17,6 +17,7 @@ import {
   compareKind,
   compareTitle,
   type Comparison,
+  isOneMove,
   NONE,
   sameAddress,
   setAgainstPath,
@@ -31,10 +32,6 @@ import {useAddressDoc, useCompareActions} from './useCompare'
 // Title by what differs (D12), Showing and Against, "N changes in M fields" (opens the change list: C5), Copy link, Close comparison.
 //   C4  no version at the Against address: the fallback is shown, "Create <value>", nothing is written until the editor acts
 //   C6  two dimensions differ: refused, with a one-click way back to a comparison the open beta can show
-
-/** One-move options: the other address may differ from Showing in ONE coordinate (the layer, or the variant), never both (R2). */
-export const isOneMove = (showing: Address, candidate: Address) =>
-  showing.perspective === candidate.perspective || showing.variant === candidate.variant
 
 const META = new Set(['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system'])
 
@@ -341,7 +338,7 @@ export function CompareHeader({
         <Flex align="center" gap={3} wrap="wrap">
           {titleNode}
           {barNode}
-          {baseNode}
+          {composed === 'e' ? null : baseNode}
           <Box flex={1} />
           {passNode}
           {countNode}
@@ -533,13 +530,15 @@ function ComposedBar(props: {
     },
     definitions,
   )
-  const counterpart = sideOfAddress(comparison.against, definitions)
+  // Compare E: each pane carries its own bar, so the Against row (and its ⇄) lives there, and this bar stays ONE row: Showing only.
+  const paneBars = look === 'e'
+  const counterpart = paneBars ? undefined : sideOfAddress(comparison.against, definitions)
   return (
     <ComposedCompareBar
       anchor={anchor}
       bundles={bundles}
       clearable={false}
-      comparable
+      comparable={!paneBars}
       counterpart={counterpart}
       facets={facets}
       instanceId={`compare-${look}`}
@@ -548,6 +547,15 @@ function ComposedBar(props: {
       onAnchorChange={(side) => {
         // Showing is the global perspective: moving it moves the whole studio (the Against pane keeps its own address).
         const next = addressOfSide(side, definitions)
+        // Without the Against row the bar cannot see the second pane, so the one-dimension cap is checked here.
+        if (
+          paneBars &&
+          !isOneMove(
+            {perspective: next.perspective, variant: next.variant ?? NONE},
+            comparison.against,
+          )
+        )
+          return onRefuse('Open beta compares one dimension at a time.')
         const definition = definitions.find(
           (d) => d._id.replace(/^_\.variants\./, '') === next.variant,
         )

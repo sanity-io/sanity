@@ -97,8 +97,8 @@ export const E9_COMPONENTS: ComponentDef[] = [
         id: 'e',
         label: 'Pane bars, shared rung',
         summary:
-          'D, plus a pane-scope bar above each pane (no row label, not clearable, not comparable) whose collapse rung is shared, so the dimensions line up across panes.',
-        oneLiner: 'D plus a bar above each pane.',
+          'A pane-scope bar above each pane (no row label, not clearable) whose collapse rung is shared, so the dimensions line up across panes. The global bar stays ONE row (Showing only, the same height before and after a comparison starts); the Against side lives in the Against pane bar: the ⇄ marker, "Comparing against: X" with Back to Published, and the one-dimension cap (refused in the pane bar and in the global bar).',
+        oneLiner: 'A bar above each pane; the global bar stays one row.',
         status: 'candidate',
         refs: `${FIGMA}; 3b L4 434:2999`,
       },

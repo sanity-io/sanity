@@ -101,5 +101,39 @@ for (const look of ['d', 'e', 'f'] as const) {
     }
   }
 }
+{
+  // E (decision: each pane carries its own bar, so the global bar keeps ONE row and does not grow when a comparison starts).
+  const height = async (p: Page, id: string) => Math.round((await p.getByTestId(id).first().boundingBox())?.height ?? -1)
+  const inner = (p: Page, sel: string) => p.locator(sel).first().evaluate((el) => (el as HTMLElement).innerText).catch(() => '')
+  const solo = await open('/structure/e9Case;e9-visitors' + D('e'))
+  const before = await height(solo.p, 'address-row')
+  await solo.context.close()
+  const {p, context} = await open(pane('aud-members') + D('e'))
+  const after = await height(p, 'address-row')
+  log('E: the global bar is the same height before and after the comparison starts', before > 0 && before === after, `${before}px -> ${after}px`)
+  const header = await height(p, 'compare-header')
+  const headerText = await inner(p, '[data-testid="compare-header"]')
+  log('E: the global bar has no Against row (no label, no reserved row)', !/\bAgainst\b/.test(headerText) && (await p.getByTestId('reserved-row').count()) === 0, headerText.replace(/\s+/g, ' ').slice(0, 80))
+  const d = await open(pane('aud-members') + D('d'))
+  const headerD = await height(d.p, 'compare-header')
+  await d.context.close()
+  log('E: the compare band is one row (shorter than D, which keeps two)', header > 0 && header < headerD, `E ${header}px, D ${headerD}px`)
+  log('E: the compare band no longer carries the base note', (await p.getByTestId('compare-header').getByTestId('base-note').count()) === 0)
+  const against = p.locator('[data-testid="pane-bar"][data-side="against"]')
+  const showing = p.locator('[data-testid="pane-bar"][data-side="showing"]')
+  log('E: the Against pane bar carries the ⇄', (await against.count()) === 1 && (await against.getByTestId('pane-bar-compared').count()) === 1)
+  log('E: the Showing pane bar has no ⇄ and no base note', (await showing.getByTestId('pane-bar-compared').count()) === 0 && (await showing.getByTestId('base-note').count()) === 0)
+  log('E: the Against pane bar names the base and offers Back to Published', /Comparing against:/.test(await inner(p, '[data-testid="pane-bar"][data-side="against"]')) && (await against.getByTestId('base-reset').count()) === 1)
+  const hs = [Math.round((await showing.boundingBox())?.height ?? -1), Math.round((await against.boundingBox())?.height ?? -2)]
+  log('E: both pane bars are the same height, so the two forms line up', hs[0] === hs[1] && hs[0] > 0, `${hs[0]}px / ${hs[1]}px`)
+  await p.screenshot({path: 'journeys-captures/e9-compare/E-against-bar-1440-light.png', clip: {x: 0, y: 0, width: 1440, height: 420}})
+  await against.getByTestId('base-reset').click()
+  await p.waitForTimeout(3000)
+  log('E: Back to Published in the Against pane bar returns to the default base', (await text(p, 'compare-title')) === 'Seeing what changed since Published' && (await against.getByTestId('base-reset').count()) === 0, String(await text(p, 'compare-title')))
+  const hs2 = [Math.round((await showing.boundingBox())?.height ?? -1), Math.round((await against.boundingBox())?.height ?? -2)]
+  log('E: the pane bars stay the same height at the default base', hs2[0] === hs2[1] && hs2[0] > 0, `${hs2[0]}px / ${hs2[1]}px`)
+  log('E: the global bar is still the same height after the way back', (await height(p, 'address-row')) === before)
+  await context.close()
+}
 await b.close()
 process.exit(failed ? 1 : 0)

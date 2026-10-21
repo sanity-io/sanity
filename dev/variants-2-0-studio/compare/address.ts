@@ -24,6 +24,10 @@ export interface Comparison {
 export const sameAddress = (a: Address, b: Address) =>
   a.perspective === b.perspective && a.variant === b.variant
 
+/** One-move options: the other address may differ from Showing in ONE coordinate (the layer, or the variant), never both (R2). */
+export const isOneMove = (showing: Address, candidate: Address) =>
+  showing.perspective === candidate.perspective || showing.variant === candidate.variant
+
 const PREFIX = '/structure/'
 
 /** The decoded groups of a structure path (`['e9Case', 'e9-visitors', 'e9-visitors,localVariant=aud-members']`), or null. */

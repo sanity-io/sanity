@@ -6,9 +6,8 @@ import {type DocumentInspectorProps, insert, PatchEvent, set, unset} from 'sanit
 import {useDocumentPane} from 'sanity/structure'
 
 import {useVariantDefinitions} from '../c1/world'
-import {type Address, NONE, sameAddress} from '../compare/address'
+import {type Address, isOneMove, NONE, sameAddress} from '../compare/address'
 import {BaseNote} from '../compare/BaseNote'
-import {isOneMove} from '../compare/CompareHeader'
 import {setReviewBase, useReviewBase} from '../compare/reviewBase'
 import {useAddressDoc, useCompareActions} from '../compare/useCompare'
 import {useVersionList} from '../data/useVersionList'
