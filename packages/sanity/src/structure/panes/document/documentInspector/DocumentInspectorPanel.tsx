@@ -1,5 +1,6 @@
 import {Suspense, useCallback} from 'react'
 import {Resizable} from 'sanity'
+import {keyframes, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {usePane} from '../../../components/pane/usePane'
@@ -15,6 +16,27 @@ import {
 } from '../documentPanel/DocumentPaneExtension'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentInspectorErrorBoundary} from './DocumentInspectorErrorBoundary'
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+`
+
+/** PROPOSED: with a host tab row, a switched panel eases in instead of jumping. Keyed by the inspector, so it replays on every switch. */
+const PanelFade = styled.div`
+  flex: 1 1 0%;
+  min-height: 0;
+  animation: ${fadeIn} 200ms cubic-bezier(0.2, 0, 0, 1);
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+`
 
 interface DocumentInspectorPanelProps {
   documentId: string
@@ -52,7 +74,7 @@ export function DocumentInspectorPanel(
     <DocumentInspectorTabsProvider value>
       <div style={{display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0}}>
         <div style={{flex: 'none'}}>{tabs}</div>
-        <div style={{flex: '1 1 0%', minHeight: 0}}>{content}</div>
+        <PanelFade key={inspector.name}>{content}</PanelFade>
       </div>
     </DocumentInspectorTabsProvider>
   ) : (

@@ -1,8 +1,8 @@
-import {ClockIcon} from '@sanity/icons/Clock'
 import {CommentIcon} from '@sanity/icons/Comment'
 import {DocumentsIcon} from '@sanity/icons/Documents'
-import {EditIcon} from '@sanity/icons/Edit'
-import {LinkIcon} from '@sanity/icons/Link'
+import {RestoreIcon} from '@sanity/icons/Restore'
+import {SyncIcon} from '@sanity/icons/Sync'
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {type ComponentType, useContext, useEffect} from 'react'
 import {CommentsContext} from 'sanity/_singletons'
 import {useDocumentPane, usePaneRouter} from 'sanity/structure'
@@ -35,9 +35,9 @@ const KNOWN: {
   icon: ComponentType
 }[] = [
   {id: 'versions', inspector: INVENTORY, title: 'Versions', icon: DocumentsIcon},
-  {id: 'history', inspector: HISTORY, tab: 'history', title: 'History', icon: ClockIcon},
-  {id: 'review', inspector: HISTORY, tab: 'review', title: 'Review changes', icon: EditIcon},
-  {id: 'references', inspector: REFERENCES, title: 'References', icon: LinkIcon},
+  {id: 'history', inspector: HISTORY, tab: 'history', title: 'History', icon: RestoreIcon},
+  {id: 'review', inspector: HISTORY, tab: 'review', title: 'Review changes', icon: TransferIcon},
+  {id: 'references', inspector: REFERENCES, title: 'References', icon: SyncIcon},
   {id: 'comments', inspector: COMMENTS, title: 'Comments', icon: CommentIcon},
 ]
 
