@@ -1,8 +1,7 @@
 import {ResourceProvider} from '@sanity/sdk-react'
 import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
 import {type ReactNode} from 'react'
-import type * as SanityExports from 'sanity'
-import {useDocumentPreviewValues, useSchema, useValuePreview} from 'sanity'
+import {useSchema} from 'sanity'
 import {DocumentPaneContext, PaneRouterContext, ResolvedPanesContext} from 'sanity/_singletons'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -11,6 +10,8 @@ import {page} from 'vitest/browser'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {stubMessageBusHost} from '../../../../../../../test/testUtils/stubMessageBusHost'
+import {useValuePreview} from '../../../../../../core/preview/useValuePreview'
+import {useDocumentPreviewValues} from '../../../../../../core/tasks/hooks/useDocumentPreviewValues'
 import {type PaneRouterContextValue} from '../../../../../components/paneRouter/types'
 import {type Panes} from '../../../../../structureResolvers/useResolvedPanes'
 import {type PaneNode} from '../../../../../types'
@@ -19,13 +20,14 @@ import {DocumentHeaderBreadcrumb} from '../DocumentHeaderBreadcrumb'
 import {DocumentHeaderTitle} from '../DocumentHeaderTitle'
 import {FavoriteToggle} from '../FavoriteToggle'
 
-vi.mock('sanity', async (importOriginal) => {
-  const actual = await importOriginal<typeof SanityExports>()
-  return {
-    ...actual,
-    useDocumentPreviewValues: vi.fn(actual.useDocumentPreviewValues),
-    useValuePreview: vi.fn(actual.useValuePreview),
-  }
+// The hooks are internals, so the components import them relatively; mock the source modules.
+vi.mock('../../../../../../core/preview/useValuePreview', async (importOriginal) => {
+  const actual = await importOriginal<{useValuePreview: typeof useValuePreview}>()
+  return {...actual, useValuePreview: vi.fn(actual.useValuePreview)}
+})
+vi.mock('../../../../../../core/tasks/hooks/useDocumentPreviewValues', async (importOriginal) => {
+  const actual = await importOriginal<{useDocumentPreviewValues: typeof useDocumentPreviewValues}>()
+  return {...actual, useDocumentPreviewValues: vi.fn(actual.useDocumentPreviewValues)}
 })
 
 const {settleChromaticEndState} = testHelpers()

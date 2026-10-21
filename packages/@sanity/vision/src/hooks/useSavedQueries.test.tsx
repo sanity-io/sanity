@@ -35,10 +35,12 @@ const client = {
 const currentUser = {id: 'user-1'}
 
 vi.mock('sanity', () => ({
-  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
-  useKeyValueStore: () => keyValueStore,
   useClient: () => client,
   useCurrentUser: () => currentUser,
+}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
+  useKeyValueStore: () => keyValueStore,
 }))
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))

@@ -1,22 +1,16 @@
 export {IntentLink, type IntentLinkProps} from '../router/IntentLink'
 export {Link, type LinkProps} from '../router/Link'
-export {_createNode, route, type RouteNodeOptions, type RouteObject} from '../router/route'
+export {route, type RouteNodeOptions, type RouteObject} from '../router/route'
 export {RouterProvider, type RouterProviderProps} from '../router/RouterProvider'
 export {RouteScope, type RouteScopeProps} from '../router/RouteScope'
 export {StateLink, type StateLinkProps} from '../router/StateLink'
-export {STICKY_PARAMS} from '../router/stickyParams'
 export {
   type BaseIntentParams,
   type IntentJsonParams,
   type IntentParameters,
-  type InternalSearchParam,
-  type MatchError,
-  type MatchOk,
-  type MatchResult,
   type NavigateBaseOptions,
   type NavigateOptions,
   type NavigateOptionsWithState,
-  type NextStateOrOptions,
   type Route,
   type RouteChildren,
   type Router,
@@ -32,6 +26,11 @@ export {useLink, type UseLinkOptions} from '../router/useLink'
 export {RouterContext, useRouter} from '../router/useRouter'
 export {useRouterState} from '../router/useRouterState'
 export {useStateLink, type UseStateLinkOptions} from '../router/useStateLink'
-export {decodeJsonParams, encodeJsonParams} from '../router/utils/jsonParamsEncoding'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {withRouter, WithRouter, type WithRouterProps} from '../router/withRouter'
+
+// Already deprecated before this PR, so their removal is governed by their own deprecation
+// (several promise "the next major" explicitly) rather than by the internals moving — the same
+// reasoning #14842 applied to `createAuthStore`. Listed in `KEPT_FOR_COMPATIBILITY`.
+// oxlint-disable-next-line no-deprecated -- deprecated before this PR; its removal is governed by its own deprecation
+export {withRouter} from '../router/withRouter'
+// oxlint-disable-next-line no-deprecated -- deprecated before this PR; its removal is governed by its own deprecation
+export {type WithRouterProps} from '../router/withRouter'

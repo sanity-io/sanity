@@ -1,14 +1,14 @@
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  isCardinalityOneRelease,
-  isReleaseDocument,
   type TargetPerspective,
   useGetDefaultPerspective,
-  useSetPerspective,
-  useSingleDocRelease,
 } from 'sanity'
 
+import {useSetPerspective} from '../../core/perspective/useSetPerspective'
+import {isReleaseDocument} from '../../core/releases/store/types'
+import {useSingleDocRelease} from '../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {isCardinalityOneRelease} from '../../core/util/releaseUtils'
 import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 
 interface PerspectiveNavigator {

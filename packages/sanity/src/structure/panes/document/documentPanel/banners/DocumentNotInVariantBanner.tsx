@@ -1,21 +1,20 @@
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {
-  getDefaultVariant,
-  getVariantTitle,
-  isDraftPerspective,
-  isPublishedPerspective,
-  isReleaseDocument,
   Translate,
-  useConditionalToast,
   useDocumentVersions,
   useGetDefaultPerspective,
   usePerspective,
   useTranslation,
-  useVariantDocumentOperations,
 } from 'sanity'
 import {Text} from 'ui5'
 
+import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
+import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {isDraftPerspective, isPublishedPerspective} from '../../../../../core/releases/util/util'
+import {useVariantDocumentOperations} from '../../../../../core/variants/hooks/useVariantDocumentOperations'
+import {getVariantTitle} from '../../../../../core/variants/tool/util'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
