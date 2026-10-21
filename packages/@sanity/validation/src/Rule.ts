@@ -1,5 +1,6 @@
 /* oxlint-disable typescript/no-deprecated -- this is the concrete implementation of the legacy Rule internals */
 import {Rule as BaseRule} from '@sanity/schema'
+import {isInternalValidator} from '@sanity/schema/_internal'
 import {
   type CustomValidator,
   type Rule as IRule,
@@ -12,7 +13,6 @@ import get from 'lodash-es/get.js'
 
 import {ClientUnavailableError} from './clientUnavailable'
 import {validationMarkerCodes} from './codes'
-import {isInternalValidator} from './internalValidators'
 import {type InternalValidationContext} from './types'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
