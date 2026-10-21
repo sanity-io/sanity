@@ -163,6 +163,14 @@ export const COMPONENTS: ComponentDef[] = [
           'D and B together: with a perspective active the list is in two sections ("Has variant", "No variant for this perspective"), and the control on each row opens the v2 flyout (clickable version rows, it stays open while the pointer travels to it) instead of the read-only popover.',
         status: 'candidate',
       },
+      {
+        id: 'f',
+        label: 'Contained tile (open beta B)',
+        summary:
+          "The Handoff Studio's T3 option B: a tile (own fill, 1px hairline) only on documents with more than a base version, the icon at its right edge and the state or release dot and the variant diamond in a column to its left. A base-only document shows its state dot alone. Option A is the open beta's v1; the pick between A and F is Faheem's.",
+        status: 'candidate',
+        refs: 'Figma C3 "Option B · contained tile, only where there is more (spec, 22 Oct)" 674:3362',
+      },
     ],
   },
   {
@@ -298,7 +306,7 @@ export const COMPONENTS: ComponentDef[] = [
     cover:
       'The banner (or its absence) on a document that has no version for the variant the studio shows, in Drafts, Published and a release, with progress and not-found. Option A: an explicit banner with Create variant, always. Option B: always live in Drafts, with a header hint; banner only for Published and releases.',
     scope: 'Open beta',
-    pick: 'Fork drawn 19 Oct',
+    pick: 'Open beta pick: D (22 Oct, BANNERS-DECISION-2026-10-22). A and B were the fork drawn 19 Oct.',
     built: true,
     where: 'Open a document with a variant chosen in the row: a V1 banner at the top of the pane.',
     options: [
@@ -323,6 +331,14 @@ export const COMPONENTS: ComponentDef[] = [
         label: 'Not drawn',
         summary: 'A third option, if one is drawn.',
         status: 'exploration',
+      },
+      {
+        id: 'd',
+        label: 'Open beta pick',
+        summary:
+          "The Handoff Studio's T6 (BANNERS-DECISION-2026-10-22): one way to create, a button only where it can act. Drafts: a quiet notice, the first edit creates the version (core). An open release: Create version opens C4 E's Create version, prefilled. A scheduled release and Published: text only. A deleted variant: Back to All users. No button with the inventory open. In memory only. Use with C4 E.",
+        status: 'final',
+        refs: 'Figma C7 678:768 (B1 to B6)',
       },
     ],
   },
@@ -367,7 +383,7 @@ export const COMPONENTS: ComponentDef[] = [
     cover:
       'The gutter mark that says a field differs from the base variant. The shipped mark (a purple rhombus per field, divergence first, read only) stays; B and C are candidates drawn through the public form overrides.',
     scope: 'Open beta',
-    pick: 'Portable text field-level for beta; block-level is a candidate',
+    pick: 'Open beta pick: A, the shipped field-level mark (22 Oct). Block-level portable text is a candidate.',
     where: 'The document form of a variant (try the Field marks test document).',
     options: [
       {
@@ -411,6 +427,7 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
     b: 'The same icon with a flyout menu of versions.',
     c: 'Exploration: the status dot is the control.',
     d: 'The list in two sections when a perspective is active: Has variant, No variant.',
+    f: 'A tile with the marks inside it, only on documents with more than a base version.',
   },
   c4: {
     a: "Andrej's panel in the inspector: views by publish date, stage and priority; sort, filters, saved views; Expand.",
@@ -427,6 +444,7 @@ const ONE_LINERS: Record<string, Record<string, string>> = {
   c7: {
     a: 'A banner on a missing variant, with Create variant, in every version.',
     b: 'No banner in Drafts; a hint in the pane header. Banner only in Published and releases.',
+    d: 'The open beta pick: a button only where it can act; Create version opens the prefilled Create version.',
   },
   c8: {a: 'The Releases tool with a Variants count, a version column and an On publish column.'},
   c9: {

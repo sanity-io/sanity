@@ -6,6 +6,7 @@ import {isLockedNav} from '../c1/lockedNav'
 import {DocumentPillsV1} from '../c2/DocumentPills'
 import {ManageVersions} from '../c4/ManageVersions'
 import {DocumentBannerV1} from '../c7/Banners'
+import {OpenBetaBanner} from '../c7/OpenBetaBanner'
 import {PaneBar} from '../compare/PaneBar'
 import {useComparison} from '../compare/useCompare'
 import {STOCK_OPTION, useOption} from '../options/store'
@@ -78,9 +79,12 @@ export function resolveDocumentPaneOverride(
       paneAddress === 'c' || compare !== 'a' ? (
         <LocalRow documentId={documentId} documentType={documentType} />
       ) : undefined
+    // C7 D, the open beta pick (the Handoff Studio's T6): one banner; its Create version opens C4 E's Create version, prefilled.
     const banner =
       c7 === 'a' || c7 === 'b' ? (
         <DocumentBannerV1 documentId={documentId} documentType={documentType} option={c7} />
+      ) : c7 === 'd' ? (
+        <OpenBetaBanner documentId={documentId} />
       ) : undefined
     // C4 B: the inventory as a popover from "Manage versions".
     // Presentation (P2): the version's context line and a way back to "On this page".

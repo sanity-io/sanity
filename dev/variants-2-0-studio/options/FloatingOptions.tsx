@@ -87,10 +87,10 @@ function DocumentPaneHost({children}: {children: ReactNode}) {
 export function LayoutWithFloatingOptions(props: LayoutProps) {
   // The Variants tool's Add filter uses the perspective bar's picker; Stock keeps the shipped menu.
   const stock = useOption('c1') === STOCK_OPTION
-  // Our missing-variant banner (C7 A or B) replaces the stock one: one banner, not two.
+  // Our missing-variant banner (C7 A, B or D) replaces the stock ones: one banner, not two.
   const c7 = useOption('c7')
   return (
-    <VariantBannerReplacedProvider value={c7 === 'a' || c7 === 'b'}>
+    <VariantBannerReplacedProvider value={c7 === 'a' || c7 === 'b' || c7 === 'd'}>
       <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
         <PerspectiveProvider>
           <PerspectiveMenuHost>

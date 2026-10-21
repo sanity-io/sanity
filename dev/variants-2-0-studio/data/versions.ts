@@ -30,6 +30,8 @@ export interface AudienceVersion {
   updatedAt?: string
   /** `published`, `drafts` or a release id. */
   bundleId?: string
+  /** The release's intended publish time (ISO), when it has one: orders a document's releases. */
+  releaseAt?: string
   /** The short variant id (the `_id` after `_.variants.`), `undefined` for the base document. */
   variantId?: string
 }
@@ -56,17 +58,27 @@ export const VERSION_ROWS_GROQ = `*[_id in [$id, "drafts." + $id] || _system.gro
   _id, "variant": _system.variant._ref, "bundle": _system.bundleId, _createdAt, _updatedAt
 }`
 
-export const DEFINITIONS_GROQ = `*[_type == "system.variant"]{"id": string::split(_id, ".")[2], "title": coalesce(metadata.title, string::split(_id, ".")[2])}`
+/** The open beta has ONE dimension. The Handoff Studio shows Audience only; variants on other dimensions (locale, market) and composites are out of scope. */
+export const OPEN_BETA_DIMENSION = 'audience'
+export const inOpenBeta = (conditions: Record<string, unknown> | null | undefined) =>
+  Object.keys(conditions ?? {}).every((name) => name === OPEN_BETA_DIMENSION)
+
+export const DEFINITIONS_GROQ = `*[_type == "system.variant"]{"id": string::split(_id, ".")[2], conditions, "title": coalesce(metadata.title, string::split(_id, ".")[2])}`
 export const RELEASES_GROQ = `*[_type == "system.release"]{"id": string::split(_id, ".")[2], "title": metadata.title, "type": metadata.releaseType, state, "at": metadata.intendedPublishAt, "cardinality": metadata.cardinality}`
 
-const minutesBetween = (now: Date, iso: string) => Math.max(0, Math.round((now.getTime() - new Date(iso).getTime()) / 60000))
+const minutesBetween = (now: Date, iso: string) =>
+  Math.max(0, Math.round((now.getTime() - new Date(iso).getTime()) / 60000))
 
 function dateLabel(iso: string, timeZone: string | undefined) {
-  return new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'short', timeZone}).format(new Date(iso))
+  return new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'short', timeZone}).format(
+    new Date(iso),
+  )
 }
 
 function timeOfDay(iso: string, timeZone: string | undefined) {
-  return new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: '2-digit', timeZone}).format(new Date(iso))
+  return new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: '2-digit', timeZone}).format(
+    new Date(iso),
+  )
 }
 
 export function toVersions(
@@ -84,6 +96,8 @@ export function toVersions(
 
   for (const row of rows) {
     const variantId = row.variant ? row.variant.replace(/^_\.variants\./, '') : null
+    // A variant outside the open beta dimension is not a version here.
+    if (variantId && !options.definitions.has(variantId)) continue
     const audience = variantId ? (options.definitions.get(variantId) ?? variantId) : null
     const base = {
       audience,
@@ -107,15 +121,20 @@ export function toVersions(
       const release = options.releases.get(bundle)
       // Versions in archived or published releases no longer represent anything live.
       if (!release || release.state === 'archived' || release.state === 'published') continue
-      const state: VersionState = release.type === 'asap' ? 'asap' : release.type === 'scheduled' ? 'scheduled' : 'undecided'
+      const state: VersionState =
+        release.type === 'asap' ? 'asap' : release.type === 'scheduled' ? 'scheduled' : 'undecided'
       out.push({
         ...base,
         state,
         bundleId: bundle,
         release: release.title ?? bundle,
+        ...(release.at ? {releaseAt: release.at} : {}),
         ...(release.cardinality === 'one' ? {scheduledDraft: true} : {}),
         ...(state === 'scheduled' && release.at
-          ? {when: dateLabel(release.at, options.timeZone), at: timeOfDay(release.at, options.timeZone)}
+          ? {
+              when: dateLabel(release.at, options.timeZone),
+              at: timeOfDay(release.at, options.timeZone),
+            }
           : {}),
       })
     }

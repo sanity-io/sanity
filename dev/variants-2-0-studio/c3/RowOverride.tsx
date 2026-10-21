@@ -6,11 +6,13 @@ import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
 import {usePerspectiveMatch} from '../data/match'
 import {useVersionList} from '../data/useVersionList'
+import {type AudienceVersion} from '../data/versions'
 import {RowExtras} from '../list/ListParts'
 import {exactVariantId} from '../list/listStore'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {PageVersionLabel, pageVersion, usePresentationAudience} from '../presentation/pageVersion'
-import {baseDot, hasMoreThanBase} from './types'
+import {BaseDotOnly, type TileMark} from './StateBadge'
+import {baseDot, earliestRelease, hasMoreThanBase} from './types'
 import {VersionMark, type VersionPick} from './VersionMark'
 
 /**
@@ -27,6 +29,46 @@ const INVENTORY_INSPECTOR = 'variants-inventory'
 
 /** Keeps the 25px slot while the versions load, so rows do not jump. */
 const SLOT = <span style={{display: 'block', width: 25, height: 25}} />
+
+/** Nothing to show, in the icon column's width, so the row keeps its layout. */
+function EmptySlot() {
+  return <span aria-hidden style={{display: 'block', width: 29, height: 29}} />
+}
+
+/**
+ * C3 F: a document with only a base version shows its state dot alone (no tile, no button); one with more shows the tile. With no audience: the
+ * base dot, or a release-only document's earliest release dot, then a diamond when it has any variant. With an audience: the diamond only where a
+ * variant matches; otherwise the tile holds just the icon. Same as the Handoff Studio (c3/RowOverride.tsx there).
+ */
+function tileStatus(
+  versions: readonly AudienceVersion[],
+  perspective: ReturnType<typeof usePerspectiveMatch>,
+  documentId: string,
+  openWithInventory: (id: string) => void,
+) {
+  if (versions.length === 0) return null
+  const variantIds = versions.flatMap((v) => (v.variantId ? [v.variantId] : []))
+  const hasMore =
+    variantIds.length > 0 ||
+    versions.some((v) => v.bundleId !== 'published' && v.bundleId !== 'drafts')
+  const base = baseDot(versions)
+  if (!hasMore) return !perspective.active && base ? <BaseDotOnly state={base} /> : <EmptySlot />
+  const first = base ?? earliestRelease(versions)
+  const marks: TileMark[] = !perspective.active
+    ? [...(first ? [first] : []), ...(variantIds.length ? (['variant'] as const) : [])]
+    : perspective.best(variantIds)
+      ? ['variant']
+      : []
+  return (
+    <VersionMark
+      docId={documentId}
+      marks={marks}
+      onOpenPane={openWithInventory}
+      trigger="tile"
+      versions={versions}
+    />
+  )
+}
 
 const useBaseRowOverride: UseDocumentListItemOverride = ({
   documentId,
@@ -67,6 +109,10 @@ const useBaseRowOverride: UseDocumentListItemOverride = ({
       tooltip: null,
     }
   }
+  // C3 F, the contained tile (the Handoff Studio's T3 option B; Figma C3 674:3362): the tile only where there is more than a base version.
+  if (option === 'f')
+    return {status: tileStatus(versions, perspective, documentId, openWithInventory), tooltip: null}
+
   if (versions.length === 0 || (!SHOW_ON_EVERY_ROW && !hasMoreThanBase(versions))) {
     return {status: defaultStatus, tooltip: null}
   }
