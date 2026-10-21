@@ -37,6 +37,7 @@ import {
   DivergencesProvider,
   useDocumentDivergences,
 } from '../../../core/form/contexts/DivergencesProvider'
+import {preloadStringInputPortableText} from '../../../core/form/inputs/StringInput/StringInput'
 import {ParseErrorsProvider} from '../../../core/form/studio/contexts/ParseErrors'
 import {useDocumentForm} from '../../../core/form/useDocumentForm'
 import {useDocumentIdStack} from '../../../core/hooks/useDocumentIdStack'
@@ -307,6 +308,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [onOlderRevision, revisionDocument, lastNonDeletedRevId, lastRevisionDocument],
   )
 
+  const displayInlineChanges = router.stickyParams.displayInlineChanges === 'true'
+
   const {
     editState,
     upstreamEditState,
@@ -345,9 +348,15 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     readOnly: getIsReadOnly,
     onFocusPath,
     getFormDocumentValue: getDisplayed,
-    displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
+    displayInlineChanges,
     isOlderRevision: onOlderRevision,
   })
+
+  // The inline-changes string input is code-split; start its download with the form's so the
+  // string fields render it directly instead of the plain input followed by a swap.
+  useEffect(() => {
+    if (displayInlineChanges) void preloadStringInputPortableText()
+  }, [displayInlineChanges])
 
   const isVersionDocument = Boolean(selectedReleaseId && isVersionId(value._id))
   const isScheduledDraft = Boolean(

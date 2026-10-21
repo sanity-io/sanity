@@ -2656,7 +2656,7 @@ describe('sanity', () => {
     expectTypeOf<CommentsIntentProviderProps>().toBeObject()
   })
   test('CommentsList', () => {
-    expectTypeOf<typeof CommentsList>().not.toBeNever()
+    expectTypeOf<typeof CommentsList>().toBeFunction()
   })
   test('CommentsListBreadcrumbItem', () => {
     expectTypeOf<CommentsListBreadcrumbItem>().toBeObject()
@@ -2665,7 +2665,7 @@ describe('sanity', () => {
     expectTypeOf<CommentsListBreadcrumbItemLegacy>().toBeObject()
   })
   test('CommentsListLegacy', () => {
-    expectTypeOf<typeof CommentsListLegacy>().not.toBeNever()
+    expectTypeOf<typeof CommentsListLegacy>().toBeFunction()
   })
   test('CommentsProvider', () => {
     expectTypeOf<typeof CommentsProvider>().not.toBeNever()
