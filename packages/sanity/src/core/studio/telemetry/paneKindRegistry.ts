@@ -9,10 +9,16 @@ export const MAX_ENTRIES = 500
 
 /** @internal */
 export function recordStructurePaneKind(path: string, kind: StructurePaneKind): void {
-  if (!paneKindByPath.has(path) && paneKindByPath.size >= MAX_ENTRIES) {
-    const oldestPath = paneKindByPath.keys().next().value
-    if (oldestPath !== undefined) paneKindByPath.delete(oldestPath)
+  if (paneKindByPath.has(path)) {
+    paneKindByPath.set(path, kind)
+    return
   }
+
+  if (paneKindByPath.size >= MAX_ENTRIES) {
+    const [oldestPath] = paneKindByPath.keys()
+    paneKindByPath.delete(oldestPath)
+  }
+
   paneKindByPath.set(path, kind)
 }
 
