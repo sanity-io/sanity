@@ -61,7 +61,7 @@ catalog:
   ui5: npm:@sanity/ui@5.0.0-alpha.17
   tsdown: ^0.23.1
   typescript: ^7.0.2
-  vite: ^8.3.4
+  vite: ^8.3.5
   vitest: ^5.0.4
   vitest-browser-react: ^2.3.0
 
