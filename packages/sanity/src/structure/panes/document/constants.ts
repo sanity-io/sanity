@@ -16,6 +16,12 @@ export const DEFAULT_MENU_ITEM_GROUPS: PaneMenuItemGroup[] = [{id: 'inspectors'}
 // inspectors
 export const HISTORY_INSPECTOR_NAME = 'sanity/structure/history'
 export const VALIDATION_INSPECTOR_NAME = 'sanity/structure/validation'
+/**
+ * Pane param set when Publish opens the inspector because validation failed.
+ * A new value on each click replays the notice, including when the inspector
+ * is already open.
+ */
+export const VALIDATION_PUBLISH_NOTICE_PARAM = 'validationPublishNotice'
 export const INCOMING_REFERENCES_INSPECTOR_NAME = 'sanity/structure/incoming-references'
 
 // timeline

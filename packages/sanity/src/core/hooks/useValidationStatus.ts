@@ -21,8 +21,8 @@ export function useValidationStatus(
   )
 
   // Kept synchronous: consumers use this as a write-side gate, not just for
-  // display. PublishAction enables publish from `hasValidationErrors` and
-  // fires `doPublish()` once `isValidating` is false and `revision` matches
+  // display. PublishAction opens the validation inspector when `hasValidationErrors`
+  // is set, and fires `doPublish()` once `isValidating` is false and `revision` matches
   // the live edit revision — and reference-driven revalidation re-runs
   // validation without changing the document revision, so a deferred (stale
   // but revision-matching) "valid" snapshot could publish before live errors

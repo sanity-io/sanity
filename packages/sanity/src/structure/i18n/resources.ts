@@ -101,7 +101,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Please fix the validation errors before publishing',
   /** Toast title when trying to publish with validation errors */
   'action.publish.validation-issues-toast.title': 'Validation errors',
-  /** Tooltip when the "Publish" document action is disabled due to validation issues */
+  /** Tooltip for the "Publish" document action when validation errors block publishing */
   'action.publish.validation-issues.tooltip':
     'There are validation errors that need to be fixed before this document can be published',
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
