@@ -1,5 +1,6 @@
 /* oxlint-disable typescript/no-deprecated -- marker and Rule compatibility require legacy internals */
 import {type SanityClient} from '@sanity/client'
+import {markInternalValidator} from '@sanity/schema/_internal'
 import {
   isKeyedObject,
   isTypedObject,
@@ -20,19 +21,17 @@ import {
   defer,
   from,
   lastValueFrom,
-  merge,
   type Observable,
   of,
   throwError,
 } from 'rxjs'
-import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
+import {catchError, map, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {cancelWith} from './abortSignal'
 import {ClientUnavailableError} from './clientUnavailable'
 import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
 import {type LocaleSource} from './i18n/types'
-import {markInternalValidator} from './internalValidators'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
 import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
@@ -747,14 +746,13 @@ function validateItemObservable({
   // run validation for nested values (conditionally)
   let nestedChecks: Array<Observable<ValidationMarker[]>> = []
 
-  const selfIsRequired = rules.some((rule) => rule.isRequired())
   const shouldRunNestedObjectValidation =
     // run nested validation for objects
     type?.jsonType === 'object' &&
     // if the value is truthy
     (!!value || // or
       // (the value is null or undefined) and the top-level value is required
-      ((value === null || value === undefined) && selfIsRequired))
+      ((value === null || value === undefined) && rules.some((rule) => rule.isRequired())))
 
   if (shouldRunNestedObjectValidation) {
     const fieldTypes = type.fields.reduce<Record<string, SchemaType>>((acc, field) => {
@@ -847,10 +845,18 @@ function validateItemObservable({
     )
   }
 
+  // A single leaf rule already emits the complete marker array.
+  if (
+    selfChecks.length === 1 &&
+    nestedChecks.length === 0 &&
+    !rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)
+  ) {
+    return concat(pace(), selfChecks[0])
+  }
+
   // Every check waits for its turn as the run's pacer sees fit (see `ValidationScheduling`).
-  return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
+  return from([...selfChecks, ...nestedChecks]).pipe(
     mergeMap((validateNode) => concat(pace(), validateNode), 40),
-    mergeAll(),
     toArray(),
     map(flatten),
     map((results) => {

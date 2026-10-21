@@ -14,6 +14,7 @@ export {
 } from '../descriptors/uploadSchema'
 export type {DescriptorRequester} from '../descriptors/transport'
 export {isActionEnabled} from '../legacy/actionUtils'
+export {isInternalValidator, markInternalValidator} from '../legacy/internalValidators'
 export {
   DEFAULT_MAX_FIELD_DEPTH,
   resolveSearchConfig,

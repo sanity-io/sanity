@@ -1,8 +1,7 @@
 import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {type PreviewProps} from 'sanity'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
@@ -15,7 +14,10 @@ import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 function CustomObjectPreview(props: PreviewProps) {
   return (
     <Box padding={1}>
-      <Text>Custom preview block:</Text> {props.renderDefault({...props})}
+      <Text as="div" trim={true}>
+        Custom preview block:
+      </Text>{' '}
+      {props.renderDefault({...props})}
     </Box>
   )
 }

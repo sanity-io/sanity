@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["**/*.ts", "**/*.mts"],
+  "exclude": ["node_modules", "reports", "stryker/vitest.*.config.mts"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "module": "Preserve",
+    "skipLibCheck": true,
+    "customConditions": ["monorepo"]
+  }
+}

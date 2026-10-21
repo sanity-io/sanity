@@ -1,9 +1,8 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-import {Flex, Box, type PaddingProps} from 'ui5'
+import {Text, Flex, Box, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
@@ -192,8 +191,10 @@ export function TextBlock(props: TextBlockProps) {
       <TextFlex alignItems="flex-start" $level={value?.level}>
         {listItem && (
           <ListPrefixWrapper contentEditable={false}>
-            <Text data-list-prefix="">
-              <TextContainer />
+            <Text data-list-prefix="" as="div" trim={true}>
+              <span>
+                <TextContainer />
+              </span>
             </Text>
           </ListPrefixWrapper>
         )}

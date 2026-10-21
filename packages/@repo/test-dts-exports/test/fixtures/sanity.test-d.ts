@@ -571,6 +571,8 @@ import type {
   ExpandOperation,
   ExpandPathOperation,
   FallbackDiff,
+  FederatedAssetSourcesConfig,
+  FederatedAssetSourceViewInfo,
   FeedbackContext,
   FeedbackContextValue,
   FeedbackDialog,
@@ -1139,6 +1141,7 @@ import type {
   parseStudioDiagnostics,
   PartialContext,
   PartialExcept,
+  PartialIndexFieldPaths,
   PartialIndexSettings,
   passthroughErrorHandler,
   PasteData,
@@ -1345,6 +1348,7 @@ import type {
   ScheduledPublishingPluginOptions,
   SchedulesContext,
   Schema,
+  SchemaAssetSources,
   SchemaError,
   SchemaErrorContext,
   SchemaPluginOptions,
@@ -1379,6 +1383,7 @@ import type {
   SearchOperatorParams,
   SearchOperatorType,
   SearchOptions,
+  SearchPartialIndexSettings,
   SearchPopover,
   SearchPopoverProps,
   SearchProvider,
@@ -3585,6 +3590,12 @@ describe('sanity', () => {
   test('FallbackDiff', () => {
     expectTypeOf<typeof FallbackDiff>().not.toBeNever()
   })
+  test('FederatedAssetSourcesConfig', () => {
+    expectTypeOf<FederatedAssetSourcesConfig>().toBeObject()
+  })
+  test('FederatedAssetSourceViewInfo', () => {
+    expectTypeOf<FederatedAssetSourceViewInfo>().toBeObject()
+  })
   test('FeedbackContext', () => {
     expectTypeOf<typeof FeedbackContext>().not.toBeNever()
   })
@@ -5297,6 +5308,9 @@ describe('sanity', () => {
   test('PartialExcept', () => {
     expectTypeOf<PartialExcept<any, any>>().not.toBeNever()
   })
+  test('PartialIndexFieldPaths', () => {
+    expectTypeOf<PartialIndexFieldPaths>().toBeObject()
+  })
   test('PartialIndexSettings', () => {
     expectTypeOf<PartialIndexSettings>().toBeObject()
   })
@@ -5917,6 +5931,9 @@ describe('sanity', () => {
   test('Schema', () => {
     expectTypeOf<Schema>().toBeObject()
   })
+  test('SchemaAssetSources', () => {
+    expectTypeOf<SchemaAssetSources>().not.toBeNever()
+  })
   test('SchemaError', () => {
     expectTypeOf<SchemaError>().not.toBeNever()
   })
@@ -6018,6 +6035,9 @@ describe('sanity', () => {
   })
   test('SearchOptions', () => {
     expectTypeOf<SearchOptions>().not.toBeNever()
+  })
+  test('SearchPartialIndexSettings', () => {
+    expectTypeOf<SearchPartialIndexSettings>().toBeObject()
   })
   test('SearchPopover', () => {
     expectTypeOf<typeof SearchPopover>().toBeFunction()
@@ -7148,6 +7168,7 @@ describe('sanity', () => {
     expectTypeOf<UseSearchMachineOptions<any>>().toBeObject()
   })
   test('useSearchMaxFieldDepth', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useSearchMaxFieldDepth>().toBeFunction()
   })
   test('useSearchState', () => {
@@ -7316,7 +7337,7 @@ describe('sanity', () => {
     expectTypeOf<typeof validateWorkspaces>().toBeFunction()
   })
   test('validation', () => {
-    expectTypeOf<typeof validation>().not.toBeNever()
+    expectTypeOf<typeof validation>().toBeFunction()
   })
   test('ValidationBuilder', () => {
     expectTypeOf<ValidationBuilder<any, any>>().not.toBeNever()

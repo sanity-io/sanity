@@ -90,7 +90,7 @@ export function useSearch({
   searchState: SearchState
 } {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const maxFieldDepth = useSearchMaxFieldDepth()
+  const {maxFieldDepth, fieldPaths} = useSearchMaxFieldDepth(undefined, true)
   const {strategy} = useWorkspace().search
 
   const search = useMemo(
@@ -100,8 +100,9 @@ export function useSearch({
         unique: true,
         strategy,
         maxDepth: maxFieldDepth,
+        partialIndexFieldPaths: fieldPaths,
       }),
-    [schema, client, strategy, maxFieldDepth],
+    [schema, client, strategy, maxFieldDepth, fieldPaths],
   )
 
   const [machine] = useState(() => defineSearchMachine<SearchRequest, SearchResults>())
