@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {ClientError, type SanityClient} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
 import {lastValueFrom, of, throwError} from 'rxjs'
 import {describe, expect, it, type Mock, vi} from 'vitest'
@@ -43,6 +43,23 @@ function typeByName(name: string): SchemaType {
 
 function createMockClient(fetch: Mock): SanityClient {
   return {observable: {fetch}} as unknown as SanityClient
+}
+
+function unsupportedScoreExpressionError() {
+  return new ClientError({
+    statusCode: 400,
+    statusMessage: 'Bad Request',
+    headers: {},
+    body: {
+      error: {
+        type: 'validationError',
+        description:
+          'score() function received unexpected expression: analytics.pageName match text::query($__query)',
+      },
+    },
+    url: 'https://api.sanity.io/v2024-01-01/data/query/test',
+    method: 'GET',
+  })
 }
 
 describe('createGroq2024Search two-phase orchestration', () => {
@@ -107,5 +124,58 @@ describe('createGroq2024Search two-phase orchestration', () => {
     expect(fetch).toHaveBeenCalledTimes(2)
     expect(fetch.mock.calls[1][1].__refIds).toBeUndefined()
     expect(result.hits).toEqual([{hit: {_id: 'book-1', _type: 'book'}}])
+  })
+
+  // https://linear.app/sanity/issue/SAPP-4706
+  describe('unsupported score() expression fallback (partial indexing)', () => {
+    // `book` has a reference-traversing preview path, so phase one runs first (call 1) ahead
+    // of the main search (calls 2+) — matching the two-phase orchestration exercised above.
+    it('retries once without scoring when score() rejects a boosted path', async () => {
+      const fetch = vi
+        .fn()
+        .mockReturnValueOnce(of([])) // phase one: no reference ids resolved
+        .mockReturnValueOnce(throwError(() => unsupportedScoreExpressionError())) // scored attempt
+        .mockReturnValueOnce(of([{_id: 'book-1', _type: 'book'}])) // retried, unscored attempt
+
+      const search = createGroq2024Search([typeByName('book')], createMockClient(fetch), {})
+
+      const result = await lastValueFrom(search({query: 'jane', types: [typeByName('book')]}))
+
+      expect(fetch).toHaveBeenCalledTimes(3)
+      const [scoredQuery] = fetch.mock.calls[1]
+      const [unscoredQuery] = fetch.mock.calls[2]
+      expect(scoredQuery).toContain('score(')
+      expect(unscoredQuery).not.toContain('score(')
+      expect(result.hits).toEqual([{hit: {_id: 'book-1', _type: 'book'}}])
+    })
+
+    it('does not retry a second time if the unscored attempt also fails that way', async () => {
+      const fetch = vi
+        .fn()
+        .mockReturnValueOnce(of([]))
+        .mockReturnValueOnce(throwError(() => unsupportedScoreExpressionError()))
+        .mockReturnValueOnce(throwError(() => unsupportedScoreExpressionError()))
+
+      const search = createGroq2024Search([typeByName('book')], createMockClient(fetch), {})
+
+      await expect(
+        lastValueFrom(search({query: 'jane', types: [typeByName('book')]})),
+      ).rejects.toThrow('score() function received unexpected expression')
+      expect(fetch).toHaveBeenCalledTimes(3)
+    })
+
+    it('rethrows unrelated errors without retrying', async () => {
+      const fetch = vi
+        .fn()
+        .mockReturnValueOnce(of([]))
+        .mockReturnValueOnce(throwError(() => new Error('network error')))
+
+      const search = createGroq2024Search([typeByName('book')], createMockClient(fetch), {})
+
+      await expect(
+        lastValueFrom(search({query: 'jane', types: [typeByName('book')]})),
+      ).rejects.toThrow('network error')
+      expect(fetch).toHaveBeenCalledTimes(2)
+    })
   })
 })

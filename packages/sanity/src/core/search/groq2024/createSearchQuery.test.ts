@@ -703,4 +703,68 @@ describe('createSearchQuery', () => {
       expect(query).not.toContain('->')
     })
   })
+
+  // https://linear.app/sanity/issue/SAPP-4706
+  describe('forceUnscored (partial-indexing fallback)', () => {
+    const getType = () => Schema.compile({types: schemaTypes}).get('basic-schema-test')
+
+    it('skips score() even when the default _score sort would otherwise request it', () => {
+      const {query} = createSearchQuery(
+        {query: 'test', types: [getType()]},
+        '',
+        {},
+        {
+          forceUnscored: true,
+        },
+      )
+
+      expect(query).not.toContain('score(')
+      expect(query).not.toContain('boost(')
+      expect(query).toContain(
+        '*[_type in $__types && ([@, _id] match text::query($__query) || references($__rawQuery))]',
+      )
+    })
+
+    it('skips score() even when an explicit sort requests _score ordering', () => {
+      const {query} = createSearchQuery(
+        {query: 'test', types: [getType()]},
+        '',
+        {sort: [{field: '_score', direction: 'desc'}]},
+        {forceUnscored: true},
+      )
+
+      expect(query).not.toContain('score(')
+    })
+
+    it('still ORs references() into the filter, unaffected by forceUnscored', () => {
+      const {query} = createSearchQuery(
+        {query: 'test', types: [getType()]},
+        '',
+        {},
+        {referenceIds: ['author-1'], forceUnscored: true},
+      )
+
+      expect(query).toContain(
+        '([@, _id] match text::query($__query) || references($__rawQuery)) || references($__refIds)',
+      )
+      expect(query).not.toContain('score(')
+    })
+
+    it('leaves an already-unscored query (sorted on a plain field) untouched', () => {
+      const scored = createSearchQuery(
+        {query: 'test', types: [getType()]},
+        '',
+        {sort: [{field: 'title', direction: 'asc'}]},
+        {},
+      )
+      const forced = createSearchQuery(
+        {query: 'test', types: [getType()]},
+        '',
+        {sort: [{field: 'title', direction: 'asc'}]},
+        {forceUnscored: true},
+      )
+
+      expect(forced.query).toBe(scored.query)
+    })
+  })
 })

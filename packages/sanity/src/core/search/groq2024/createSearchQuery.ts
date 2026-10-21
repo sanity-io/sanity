@@ -58,6 +58,13 @@ function isSchemaType(
 export interface ReferenceSearchOptions {
   referenceIds?: string[]
   referenceWeight?: number
+  /**
+   * Skips `score()` entirely, even when `sort` would otherwise request `_score` ordering.
+   * Used by `createGroq2024Search` to retry a search that `score()` rejected because one of
+   * its boosted paths isn't covered by the dataset's index — e.g. a field excluded by a
+   * dataset's partial-indexing configuration. See `isUnsupportedScoreExpressionError`.
+   */
+  forceUnscored?: boolean
 }
 
 /**
@@ -79,7 +86,7 @@ export function createSearchQuery(
     comments,
     filter,
   }: SearchOptions & SearchFactoryOptions = {},
-  {referenceIds, referenceWeight = 5}: ReferenceSearchOptions = {},
+  {referenceIds, referenceWeight = 5, forceUnscored = false}: ReferenceSearchOptions = {},
 ): SearchQuery {
   const hasReferenceIds = Array.isArray(referenceIds) && referenceIds.length > 0
   const specs = searchTerms.types
@@ -118,7 +125,7 @@ export function createSearchQuery(
     .concat(baseMatch)
 
   const inputSortOrder = sort ?? [{field: '_score', direction: 'desc'}]
-  const isScored = inputSortOrder.some(({field}) => field === '_score')
+  const isScored = !forceUnscored && inputSortOrder.some(({field}) => field === '_score')
 
   // Compile each sort entry into its `{expression, projectionIndex}`
   // shape. Every entry is projected into

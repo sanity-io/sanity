@@ -12,6 +12,7 @@ import {
 import {createReferenceResolveQuery} from './createReferenceResolveQuery'
 import {createSearchQuery} from './createSearchQuery'
 import {getNextCursor} from './getNextCursor'
+import {isUnsupportedScoreExpressionError} from './isUnsupportedScoreExpressionError'
 
 function getSearchTerms(
   searchParams: string | SearchTerms,
@@ -60,12 +61,15 @@ export const createGroq2024Search: SearchStrategyFactory<Groq2024SearchResults> 
       0,
     )
 
-    const runMainSearch = (referenceIds?: string[]): Observable<Groq2024SearchResults> => {
+    const runMainSearch = (
+      referenceIds?: string[],
+      {forceUnscored = false}: {forceUnscored?: boolean} = {},
+    ): Observable<Groq2024SearchResults> => {
       const {query, params, options, sortOrder, compiledSortEntries} = createSearchQuery(
         searchTerms,
         searchParams,
         mergedOptions,
-        {referenceIds, referenceWeight: maxReferenceWeight},
+        {referenceIds, referenceWeight: maxReferenceWeight, forceUnscored},
       )
 
       return client.observable.fetch<SanityDocumentLike[]>(query, params, options).pipe(
@@ -87,6 +91,15 @@ export const createGroq2024Search: SearchStrategyFactory<Groq2024SearchResults> 
               ? getNextCursor({lastResult, sortOrder, compiledSortEntries})
               : undefined,
           }
+        }),
+        catchError((error: unknown) => {
+          // `score()` rejects a boosted path the dataset's index doesn't cover — e.g. a field
+          // excluded by a dataset's partial-indexing configuration. Retry once without scoring
+          // rather than failing the whole search; `forceUnscored` guards against retrying twice.
+          if (forceUnscored || !isUnsupportedScoreExpressionError(error)) {
+            throw error
+          }
+          return runMainSearch(referenceIds, {forceUnscored: true})
         }),
       )
     }
