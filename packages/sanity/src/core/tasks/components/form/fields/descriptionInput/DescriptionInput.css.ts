@@ -14,8 +14,6 @@ export const descriptionInputRootEdit = style({})
 globalStyle(`${descriptionInputRoot} [data-ui='CommentInputEditableWrap']`, {
   overflow: 'hidden',
   padding: editableWrapPaddingVar,
-  // `!important` is carried over from the original rule: it has to beat the (0,3,0)/(0,4,0)
-  // `min-height` rules CommentInputInner puts on the same element.
   minHeight: `${editableWrapMinHeightVar} !important`,
 })
 
@@ -24,6 +22,5 @@ globalStyle(`${descriptionInputRootEdit} #comment-input-root`, {
 })
 
 globalStyle(`${descriptionInputRoot} [data-ui='CommentInputActions']`, {
-  // `!important` carried over from the original rule (see above)
   display: 'none !important',
 })

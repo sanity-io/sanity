@@ -2,8 +2,6 @@ import {style} from '@vanilla-extract/css'
 
 export const rootFlex = style({
   'selectors': {
-    // The ui5 Flex defaults `minHeight="0"` through `.sui-min-height` (0,1,0) in the static ui5
-    // sheet; the styled() wrapper only won that tie by injection order, so add a second class.
     '&&': {
       minHeight: '100%',
     },
@@ -33,8 +31,6 @@ export const sidebarMotionLayer = style({
       right: 0,
       top: 0,
       selectors: {
-        // Layer sets `position: relative` on its root (0,1,0); the styled() wrapper only won that
-        // tie by injection order, so add a second class.
         '&&': {
           position: 'absolute',
         },

@@ -7,8 +7,6 @@ export const inputPlaceholderColorVar = createVar()
 
 export const emptyReferenceRoot = style({
   selectors: {
-    // Card's `border` prop sets `border` with `&&` (0,2,0); the styled() wrapper's (0,2,0)
-    // pseudo-class rules only won by injection order, so match them with a second class.
     '&&:focus': {
       border: '1px solid var(--card-focus-ring-color)',
     },
@@ -25,7 +23,6 @@ export const emptyReferenceRoot = style({
 export const placeholder = style({
   marginLeft: '3px',
   selectors: {
-    // Text sets `color` on itself
     '&&': {
       color: inputPlaceholderColorVar,
     },
@@ -64,10 +61,6 @@ globalStyle(
   },
 )
 
-// Rendered as `<Card as={CardLink} data-as="button">`, so Card's `&[data-as='button']` rules
-// (0,2,0) share this element: `width: stretch` and `cursor: default` beat the single-class
-// `width`/`cursor` below, exactly as they did before the migration. The focus box-shadow tied
-// with Card's `box-shadow: var(--card-focus-ring-box-shadow)` and won by order, hence `&&`.
 export const styledIntentLink = style({
   textDecoration: 'none',
   width: '100%',
