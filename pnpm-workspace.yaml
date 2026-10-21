@@ -43,7 +43,7 @@ catalog:
   '@vitest/browser-playwright': ^5.0.4
   cobe: ^2.0.1
   dequal: ^2.0.3
-  get-it: ^9.6.1
+  get-it: ^9.6.2
   jsdom: ^29.1.1
   oxc-parser: ^0.153.0
   oxc-transform-react: ^0.154.0
