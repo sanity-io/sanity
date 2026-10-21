@@ -189,3 +189,4 @@ patchedDependencies:
   # The runner joins describe and test names with ' ' but Vitest 5 filters on ' > ', so tests
   # inside a describe never run against a mutant and it reports as survived. Drop once fixed upstream
   '@stryker-mutator/vitest-runner@10.0.0': patches/@stryker-mutator__vitest-runner@10.0.0.patch
+  motion-dom@14.6.0: patches/motion-dom@14.6.0.patch
