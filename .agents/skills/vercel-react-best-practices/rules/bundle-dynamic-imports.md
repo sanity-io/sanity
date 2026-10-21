@@ -21,10 +21,15 @@ function CodePanel({code}: {code: string}) {
 
 **Correct (Monaco loads on demand):**
 
+```ts
+// monaco-editor.lazy.ts
+export {MonacoEditor as default} from './monaco-editor'
+```
+
 ```tsx
 import dynamic from 'next/dynamic'
 
-const MonacoEditor = dynamic(() => import('./monaco-editor').then((m) => m.MonacoEditor), {
+const MonacoEditor = dynamic(() => import('./monaco-editor.lazy'), {
   ssr: false,
 })
 
