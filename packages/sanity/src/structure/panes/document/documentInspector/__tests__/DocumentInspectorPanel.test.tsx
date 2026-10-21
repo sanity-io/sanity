@@ -7,10 +7,6 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {DocumentInspectorPanel} from '../DocumentInspectorPanel'
 
-vi.mock('../../../../components/pane/usePane', () => ({
-  usePane: vi.fn(() => ({collapsed: false})),
-}))
-
 vi.mock('../../../../useStructureTool', () => ({
   useStructureTool: vi.fn(() => ({features: {resizablePanes: false}})),
 }))

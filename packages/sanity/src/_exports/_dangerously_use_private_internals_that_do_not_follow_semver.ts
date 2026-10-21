@@ -95,6 +95,7 @@ export {
   InsufficientPermissionsMessage,
   type InsufficientPermissionsMessageProps,
 } from '../core/components/InsufficientPermissionsMessage'
+export {LazyActivity, type LazyActivityProps} from '../core/components/lazyActivity/LazyActivity'
 export {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
 export {PopoverDialog} from '../core/components/popoverDialog/PopoverDialog'
 export {PortalBoundaryProvider} from '../core/components/portalBoundary/PortalBoundaryProvider'
