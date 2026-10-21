@@ -1,6 +1,7 @@
 packages:
   - dev/*
   - perf/*
+  - engine-confidence
   - examples/*
   - scripts
   - e2e
@@ -188,3 +189,7 @@ trustPolicyExclude:
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
+patchedDependencies:
+  # The runner joins describe and test names with ' ' but Vitest 5 filters on ' > ', so tests
+  # inside a describe never run against a mutant and it reports as survived. Drop once fixed upstream
+  '@stryker-mutator/vitest-runner@10.0.0': patches/@stryker-mutator__vitest-runner@10.0.0.patch

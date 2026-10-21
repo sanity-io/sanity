@@ -67,3 +67,8 @@ export function sqrlScoreId(sha: string): string {
 export function bisectSessionId(uuid: string): string {
   return `bisect-session-${radarIdSlug(uuid)}`
 }
+
+/** `engineConfidenceRun` document, one per ISO week (`2026-W42`), so a re-run that week replaces it. */
+export function engineConfidenceRunId(isoWeek: string): string {
+  return `engine-confidence-run-${radarIdSlug(isoWeek)}`
+}
