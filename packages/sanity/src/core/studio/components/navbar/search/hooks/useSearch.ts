@@ -27,7 +27,7 @@ import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
-import {useSearchMaxFieldDepth} from './useSearchMaxFieldDepth'
+import {useSearchPartialIndexSettings} from './useSearchMaxFieldDepth'
 
 interface SearchRequest {
   debounceTime?: number
@@ -90,7 +90,7 @@ export function useSearch({
   searchState: SearchState
 } {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const maxFieldDepth = useSearchMaxFieldDepth()
+  const {maxFieldDepth, fieldPaths} = useSearchPartialIndexSettings()
   const {strategy} = useWorkspace().search
 
   const search = useMemo(
@@ -100,8 +100,9 @@ export function useSearch({
         unique: true,
         strategy,
         maxDepth: maxFieldDepth,
+        partialIndexFieldPaths: fieldPaths,
       }),
-    [schema, client, strategy, maxFieldDepth],
+    [schema, client, strategy, maxFieldDepth, fieldPaths],
   )
 
   const [machine] = useState(() => defineSearchMachine<SearchRequest, SearchResults>())

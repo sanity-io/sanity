@@ -6,6 +6,7 @@ import {
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
+import {type PartialIndexFieldPaths} from '../../../../../search/common/types'
 import {createSearch} from '../../../../../search/search'
 import {collate} from '../../../../../util/draftUtils'
 
@@ -19,7 +20,7 @@ export function search(
   client: SanityClient,
   textTerm: string,
   type: CrossDatasetReferenceSchemaType,
-  options: ReferenceFilterSearchOptions,
+  options: ReferenceFilterSearchOptions & {partialIndexFieldPaths?: PartialIndexFieldPaths},
 ): Observable<SearchHit[]> {
   const searchStrategy = createSearch(type.to, client, {
     ...options,

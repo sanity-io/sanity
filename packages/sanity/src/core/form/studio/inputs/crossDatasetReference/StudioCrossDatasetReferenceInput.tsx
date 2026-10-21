@@ -14,7 +14,7 @@ import {catchError, mergeMap} from 'rxjs/operators'
 import {type Source} from '../../../../config/types'
 import {type FIXME} from '../../../../FIXME'
 import {useDocumentPreviewStore} from '../../../../store/datastores'
-import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {useSearchPartialIndexSettings} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {useSource} from '../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
@@ -99,7 +99,8 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         .clone()
     )
   }, [client, schemaType.dataset])
-  const maxFieldDepth = useSearchMaxFieldDepth(crossDatasetClient)
+  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} =
+    useSearchPartialIndexSettings(crossDatasetClient)
   const documentValue = useFormValue([]) as FIXME
 
   const handleSearch = useCallback(
@@ -112,6 +113,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
             params,
             tag: 'search.cross-dataset-reference',
             maxFieldDepth,
+            partialIndexFieldPaths,
             strategy: searchStrategy,
             perspective: 'published',
           }),
@@ -127,7 +129,16 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         }),
       ),
 
-    [schemaType, documentValue, path, getClient, crossDatasetClient, maxFieldDepth, searchStrategy],
+    [
+      schemaType,
+      documentValue,
+      path,
+      getClient,
+      crossDatasetClient,
+      maxFieldDepth,
+      partialIndexFieldPaths,
+      searchStrategy,
+    ],
   )
 
   const getReferenceInfo = useMemo(

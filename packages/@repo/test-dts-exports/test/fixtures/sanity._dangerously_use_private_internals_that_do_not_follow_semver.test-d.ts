@@ -526,6 +526,7 @@ import type {
   parseRetryAfter,
   parseStudioDiagnostics,
   PartialExcept,
+  PartialIndexFieldPaths,
   PartialIndexSettings,
   passthroughErrorHandler,
   pathsAreEqual,
@@ -620,6 +621,7 @@ import type {
   SearchMachineInput,
   SearchMachineState,
   SearchOptions,
+  SearchPartialIndexSettings,
   SearchPopover,
   SearchPopoverProps,
   SearchProvider,
@@ -814,6 +816,7 @@ import type {
   useSearchMachine,
   UseSearchMachineOptions,
   useSearchMaxFieldDepth,
+  useSearchPartialIndexSettings,
   useSearchState,
   useSetPerspective,
   useSetVariant,
@@ -2463,6 +2466,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('PartialExcept', () => {
     expectTypeOf<PartialExcept<any, any>>().not.toBeNever()
   })
+  test('PartialIndexFieldPaths', () => {
+    expectTypeOf<PartialIndexFieldPaths>().toBeObject()
+  })
   test('PartialIndexSettings', () => {
     expectTypeOf<PartialIndexSettings>().toBeObject()
   })
@@ -2745,6 +2751,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('SearchOptions', () => {
     expectTypeOf<SearchOptions>().not.toBeNever()
+  })
+  test('SearchPartialIndexSettings', () => {
+    expectTypeOf<SearchPartialIndexSettings>().toBeObject()
   })
   test('SearchPopover', () => {
     expectTypeOf<typeof SearchPopover>().toBeFunction()
@@ -3328,6 +3337,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useSearchMaxFieldDepth', () => {
     expectTypeOf<typeof useSearchMaxFieldDepth>().toBeFunction()
+  })
+  test('useSearchPartialIndexSettings', () => {
+    expectTypeOf<typeof useSearchPartialIndexSettings>().toBeFunction()
   })
   test('useSearchState', () => {
     expectTypeOf<typeof useSearchState>().toBeFunction()

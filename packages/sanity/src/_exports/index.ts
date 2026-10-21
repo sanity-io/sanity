@@ -1166,6 +1166,7 @@ export {getSearchableTypes} from '../core/search/common/getSearchableTypes'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {isPerspectiveRaw} from '../core/search/common/isPerspectiveRaw'
 export {
+  type PartialIndexFieldPaths,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchSort,
@@ -1539,7 +1540,9 @@ export {
 } from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
 export {
   type PartialIndexSettings,
+  type SearchPartialIndexSettings,
   useSearchMaxFieldDepth,
+  useSearchPartialIndexSettings,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
 export {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog'

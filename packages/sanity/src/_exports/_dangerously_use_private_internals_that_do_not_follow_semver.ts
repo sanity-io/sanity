@@ -624,6 +624,7 @@ export {
   isPerspectiveRaw,
 } from '../core/search/common/isPerspectiveRaw'
 export {
+  type PartialIndexFieldPaths,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchSort,
@@ -848,7 +849,9 @@ export {useSearchState} from '../core/studio/components/navbar/search/contexts/s
 export {operatorDefinitions} from '../core/studio/components/navbar/search/definitions/operators/defaultOperators'
 export {
   type PartialIndexSettings,
+  type SearchPartialIndexSettings,
   useSearchMaxFieldDepth,
+  useSearchPartialIndexSettings,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
 export {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog'

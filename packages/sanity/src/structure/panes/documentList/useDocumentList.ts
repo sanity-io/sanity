@@ -26,7 +26,7 @@ import {
   catchWithCount,
   measureFirstMatch,
   useSchema,
-  useSearchMaxFieldDepth,
+  useSearchPartialIndexSettings,
   useWorkspace,
 } from 'sanity'
 
@@ -122,7 +122,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
   } = opts
   const {strategy: searchStrategy} = useWorkspace().search
   const schema = useSchema()
-  const maxFieldDepth = useSearchMaxFieldDepth()
+  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchPartialIndexSettings()
   const telemetry = useTelemetry()
 
   // Get the type name from the filter, if it is a simple type filter.
@@ -147,6 +147,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
       sort: sortOrder || DEFAULT_ORDERING,
       staticTypeNames: typeNameFromFilter,
       maxFieldDepth,
+      partialIndexFieldPaths,
       searchStrategy,
       sortByRelevance: searchSortByRelevance,
     }
@@ -277,6 +278,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     searchSortByRelevance,
     typeNameFromFilter,
     maxFieldDepth,
+    partialIndexFieldPaths,
     searchStrategy,
     onFetchFullList$,
     onRetry$,

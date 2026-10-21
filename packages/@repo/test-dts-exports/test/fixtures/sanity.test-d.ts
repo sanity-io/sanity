@@ -1141,6 +1141,7 @@ import type {
   parseStudioDiagnostics,
   PartialContext,
   PartialExcept,
+  PartialIndexFieldPaths,
   PartialIndexSettings,
   passthroughErrorHandler,
   PasteData,
@@ -1382,6 +1383,7 @@ import type {
   SearchOperatorParams,
   SearchOperatorType,
   SearchOptions,
+  SearchPartialIndexSettings,
   SearchPopover,
   SearchPopoverProps,
   SearchProvider,
@@ -1757,6 +1759,7 @@ import type {
   useSearchMachine,
   UseSearchMachineOptions,
   useSearchMaxFieldDepth,
+  useSearchPartialIndexSettings,
   useSearchState,
   useSetImmediateValidation,
   useSetPerspective,
@@ -5306,6 +5309,9 @@ describe('sanity', () => {
   test('PartialExcept', () => {
     expectTypeOf<PartialExcept<any, any>>().not.toBeNever()
   })
+  test('PartialIndexFieldPaths', () => {
+    expectTypeOf<PartialIndexFieldPaths>().toBeObject()
+  })
   test('PartialIndexSettings', () => {
     expectTypeOf<PartialIndexSettings>().toBeObject()
   })
@@ -6030,6 +6036,9 @@ describe('sanity', () => {
   })
   test('SearchOptions', () => {
     expectTypeOf<SearchOptions>().not.toBeNever()
+  })
+  test('SearchPartialIndexSettings', () => {
+    expectTypeOf<SearchPartialIndexSettings>().toBeObject()
   })
   test('SearchPopover', () => {
     expectTypeOf<typeof SearchPopover>().toBeFunction()
@@ -7161,6 +7170,9 @@ describe('sanity', () => {
   })
   test('useSearchMaxFieldDepth', () => {
     expectTypeOf<typeof useSearchMaxFieldDepth>().toBeFunction()
+  })
+  test('useSearchPartialIndexSettings', () => {
+    expectTypeOf<typeof useSearchPartialIndexSettings>().toBeFunction()
   })
   test('useSearchState', () => {
     expectTypeOf<typeof useSearchState>().toBeFunction()
