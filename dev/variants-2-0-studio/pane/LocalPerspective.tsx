@@ -25,8 +25,11 @@ import {layerLabel, usePaneAddress} from './usePaneAddress'
 const NONE = 'none'
 const INVENTORY = 'variants-inventory'
 const PRESSED = 'var(--card-badge-default-bg-color)'
+// A set's base: grey, or the positive tint while its state is Published (the only Published cue). Chips inside it are white and borderless.
+const POSITIVE = 'var(--card-badge-positive-bg-color)'
+const WHITE_CHIP: CSSProperties = {background: 'var(--card-bg-color)', border: 0, boxShadow: 'none'}
 const LOCAL_COLOR = 'var(--card-badge-suggest-icon-color)'
-const CIRCLE = 33
+const CIRCLE = 29
 // Figma 574:2: follows-global is the plain outline cube in muted grey with white faces; local is the purple one. No dashes.
 const MUTED = 'var(--card-muted-fg-color)'
 
@@ -86,7 +89,7 @@ function Caret({bar}: {bar: HTMLElement | null}) {
     setSpot({
       left: c.left + c.width / 2 - 9,
       top: b.top - 10,
-      fill: theme.getPropertyValue('--card-badge-default-bg-color').trim(),
+      fill: theme.getPropertyValue('--card-bg-color').trim(),
       line: theme.getPropertyValue('--card-border-color').trim(),
     })
   }
@@ -244,48 +247,64 @@ export function LocalPerspectiveRow({documentId}: {documentId: string}) {
       <Flex
         align="center"
         data-testid="local-perspective-row"
-        gap={2}
-        style={{background: PRESSED, padding: 20}}
+        justify="space-between"
+        style={{
+          background: 'var(--card-bg-color)',
+          borderBottom: '1px solid var(--card-border-color)',
+          padding: 12,
+        }}
         wrap="nowrap"
       >
-        <Pick
-          icon={
-            <ReleaseAvatarIcon
-              release={shown.perspective === 'published' ? 'published' : 'drafts'}
-            />
-          }
-          items={layers.map((layer) => ({
-            key: layer.key,
-            text: layer.text,
-            selected: shown.perspective === layer.key,
-            onClick: () => set({...shown, perspective: layer.key}),
-          }))}
-          testId="local-state"
-          text={layerText}
-        />
-        <Text muted size={1}>
-          •
-        </Text>
-        <Pick
-          icon={<RhombusIcon style={{'--card-icon-color': LOCAL_COLOR} as CSSProperties} />}
-          items={[
-            {
-              key: NONE,
-              text: 'Default',
-              selected: shown.variant === NONE,
-              onClick: () => set({...shown, variant: NONE}),
-            },
-            ...singles.map((d) => ({
-              key: shortId(d._id),
-              text: d.metadata?.title ?? shortId(d._id),
-              selected: shown.variant === shortId(d._id),
-              onClick: () => set({...shown, variant: shortId(d._id)}),
-            })),
-          ]}
-          testId="local-variants"
-          text={shown.variant === NONE ? 'Default' : titleOf(shown.variant)}
-        />
-        <Box flex={1} />
+        <div
+          data-published={shown.perspective === 'published' ? '' : undefined}
+          data-testid="local-set"
+          style={{
+            alignItems: 'center',
+            background: shown.perspective === 'published' ? POSITIVE : PRESSED,
+            borderRadius: 9999,
+            boxShadow: local ? `inset 0 0 0 1px ${LOCAL_COLOR}` : undefined,
+            display: 'inline-flex',
+            gap: 6,
+            padding: 4,
+          }}
+        >
+          <Pick
+            icon={
+              <ReleaseAvatarIcon
+                release={shown.perspective === 'published' ? 'published' : 'drafts'}
+              />
+            }
+            items={layers.map((layer) => ({
+              key: layer.key,
+              text: layer.text,
+              selected: shown.perspective === layer.key,
+              onClick: () => set({...shown, perspective: layer.key}),
+            }))}
+            style={WHITE_CHIP}
+            testId="local-state"
+            text={layerText}
+          />
+          <Pick
+            icon={<RhombusIcon style={{'--card-icon-color': LOCAL_COLOR} as CSSProperties} />}
+            items={[
+              {
+                key: NONE,
+                text: 'Default',
+                selected: shown.variant === NONE,
+                onClick: () => set({...shown, variant: NONE}),
+              },
+              ...singles.map((d) => ({
+                key: shortId(d._id),
+                text: d.metadata?.title ?? shortId(d._id),
+                selected: shown.variant === shortId(d._id),
+                onClick: () => set({...shown, variant: shortId(d._id)}),
+              })),
+            ]}
+            style={WHITE_CHIP}
+            testId="local-variants"
+            text={shown.variant === NONE ? 'Default' : titleOf(shown.variant)}
+          />
+        </div>
         <Button
           data-testid="local-follow-global"
           fontSize={1}

@@ -62,9 +62,9 @@ const pickMember = async (p: Page) => {
   const box = await circle.boundingBox()
   log(
     'P1',
-    'a 33 px circle at the left of the header, no chevron',
-    Math.round(box?.width ?? 0) === 33 &&
-      Math.round(box?.height ?? 0) === 33 &&
+    'a 29 px circle at the left of the header, no chevron',
+    Math.round(box?.width ?? 0) === 29 &&
+      Math.round(box?.height ?? 0) === 29 &&
       (await circle.locator('svg').count()) === 1 &&
       (await circle.getAttribute('aria-pressed')) === 'false',
   )
@@ -132,17 +132,18 @@ const pickMember = async (p: Page) => {
   )
   log(
     'B1',
-    'the bar is under the header, 20 px padding on both axes',
+    'the bar is under the header, white, 12 px padding on both axes, a 1 px bottom border',
     (await bar.evaluate((e) => {
       const cs = getComputedStyle(e as HTMLElement)
       return [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft].join(' ')
-    })) === '20px 20px 20px 20px',
+    })) === '12px 12px 12px 12px' &&
+      (await bar.evaluate((e) => getComputedStyle(e as HTMLElement).borderBottomWidth)) === '1px',
   )
   const row = (await bar.innerText()).replace(/\s+/g, ' ')
   log(
     'B2',
-    'the bar holds the state, "•", the variant and "Follow global perspective" at the right, with no "This document" label',
-    /Drafts • Default Follow global perspective/.test(row) && !/This document/.test(row),
+    'the bar holds one set (state, variant, no "•") and "Follow global perspective" at the right, with no "This document" label',
+    /Drafts Default Follow global perspective/.test(row) && !/This document/.test(row),
   )
   const followBox = await p.getByTestId('local-follow-global').boundingBox()
   const barBox = await bar.boundingBox()

@@ -292,6 +292,8 @@ for (const width of [1440, 1280]) {
       const r = el.getBoundingClientRect()
       return `${Math.round(r.width)}x${Math.round(r.height)}`
     })
+  const widthOf = (size: string) => size.split('x')[0]
+  const heightOf = (size: string) => Number(size.split('x')[1])
   const before = await menuSize()
   await p.getByTestId('release-menu-search').fill('e9')
   await p.waitForTimeout(600)
@@ -305,15 +307,16 @@ for (const width of [1440, 1280]) {
     found.replace(/\s+/g, ' ').slice(0, 120),
   )
   log(
-    'state control, search: the menu keeps its size while filtering',
-    (await menuSize()) === before,
+    'state control, search: the menu keeps its width while filtering, and its height follows the entries',
+    widthOf(await menuSize()) === widthOf(before) && heightOf(await menuSize()) < heightOf(before),
     `${before} -> ${await menuSize()}`,
   )
   await p.getByTestId('release-menu-search').fill('zzzz')
   await p.waitForTimeout(600)
   log(
-    'state control, search: nothing matches says so, at the same size',
-    (await visible(p, 'release-menu-search-empty')) && (await menuSize()) === before,
+    'state control, search: nothing matches says so, at the same width',
+    (await visible(p, 'release-menu-search-empty')) &&
+      widthOf(await menuSize()) === widthOf(before),
   )
   await p.getByTestId('release-menu-search').fill('')
   await p.waitForTimeout(600)

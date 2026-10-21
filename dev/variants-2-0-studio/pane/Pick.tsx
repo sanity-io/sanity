@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Menu} from '@sanity/ui/menu'
-import {type ReactElement} from 'react'
+import {type CSSProperties, type ReactElement} from 'react'
 
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
@@ -19,6 +19,7 @@ export function Pick(props: {
     disabled?: boolean
   }[]
   icon?: ReactElement
+  style?: CSSProperties
 }) {
   return (
     <MenuButton
@@ -28,6 +29,7 @@ export function Pick(props: {
           icon={props.icon}
           iconRight={ChevronDownIcon}
           mode="ghost"
+          style={props.style}
           text={props.text}
         />
       }
