@@ -10,7 +10,7 @@ function PaddedControlsIcon() {
     <Icon
       muted
       icon={ControlsIcon}
-      style={{padding: '0 0.25rem', margin: '-0.4375rem', display: 'inline-block'}}
+      style={{padding: '0 0.25rem', margin: '-0.4375rem', display: 'inline'}}
     />
   )
 }

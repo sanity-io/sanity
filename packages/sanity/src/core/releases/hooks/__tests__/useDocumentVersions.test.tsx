@@ -2,6 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {getPublishedId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
+import {Activity} from 'react'
 import {BehaviorSubject, concat, NEVER, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -124,6 +125,18 @@ describe('useDocumentVersions', () => {
     expect(result.current.loading).toBe(true)
     expect(result.current.error).toBe(null)
     expect(result.current.data).toEqual([])
+  })
+
+  it('leaves no cache entries behind when rendered inside a hidden Activity', async () => {
+    await setupMocks({releases: [activeASAPRelease], versionIds: ['drafts.document-1']})
+
+    const {unmount} = renderHook(() => useDocumentVersions({documentId: 'document-1'}), {
+      wrapper: ({children}) => <Activity mode="hidden">{children}</Activity>,
+    })
+    unmount()
+
+    expect(observableCache.size).toBe(0)
+    expect(withSystemCache.size).toBe(0)
   })
 
   it('should return an empty array if no versions are found', async () => {

@@ -13,6 +13,7 @@ import {
   formatTick,
   formatValue,
   primaryLines,
+  type SeriesBreak,
   type TrendSeries,
   type TrendTag,
   type TrendUnit,
@@ -93,8 +94,10 @@ export function WeeklyBars(props: {
   width: number
   height: number
   tags?: TrendTag[]
+  /** Weeks where the measurement changed, drawn as a dashed rule with a label. */
+  breaks?: SeriesBreak[]
 }) {
-  const {series, buckets, variant, width, height, tags = []} = props
+  const {series, buckets, variant, width, height, tags = [], breaks = []} = props
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
   const [selected, setSelected] = useState<WeekBucket | null>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -129,6 +132,13 @@ export function WeeklyBars(props: {
   const bandwidth = xScale.bandwidth()
   const monthIndices = new Set(monthTickIndices(buckets))
   const wow = weekOverWeek(buckets)
+
+  const breakMarks = breaks.flatMap((entry) => {
+    const index = buckets.findIndex((bucket) => bucket.weekStart.getTime() === entry.date.getTime())
+    return index === -1
+      ? []
+      : [{label: entry.label, x: (xScale(index) ?? 0) - (xScale.step() - bandwidth) / 2}]
+  })
 
   const hovered = hoverIndex === null ? null : buckets[hoverIndex]
   const hoverX = hoverIndex === null ? null : (xScale(hoverIndex) ?? 0) + bandwidth / 2
@@ -214,6 +224,22 @@ export function WeeklyBars(props: {
               </g>
             )
           })}
+          {breakMarks.map((mark) => (
+            <g key={`${mark.label}-${mark.x}`} data-testid="series-break" pointerEvents="none">
+              <line
+                x1={mark.x}
+                x2={mark.x}
+                y1={0}
+                y2={innerHeight}
+                stroke={COLOR.axis}
+                strokeWidth={1}
+                strokeDasharray="4 3"
+              />
+              <text x={mark.x + 4} y={10} fill={COLOR.axis} fontSize={10}>
+                {mark.label}
+              </text>
+            </g>
+          ))}
           {hoverX !== null && (
             <line
               x1={hoverX}
@@ -382,8 +408,12 @@ export function WeeklyCard(props: {
   goal: 'higher' | 'lower'
   tags?: TrendTag[]
   height?: number
+  breaks?: SeriesBreak[]
+  /** DOM id for deep-link scrolling, and the focus pulse while it is the jumped-to chart. */
+  domId?: string
+  focused?: boolean
 }) {
-  const {title, description, series, variant, goal, tags} = props
+  const {title, description, series, variant, goal, tags, breaks, domId, focused} = props
   const height = props.height ?? 160
   // The headline line: a lone line, or a paired chart's v5 line (the share
   // variant draws its complement as the remainder, so one line is the whole
@@ -406,7 +436,13 @@ export function WeeklyCard(props: {
   )
 
   return (
-    <Card border padding={3} radius={2}>
+    <Card
+      id={domId}
+      border
+      padding={3}
+      radius={2}
+      className={focused ? 'chart-focus-pulse' : undefined}
+    >
       <VStack gap={3}>
         <Flex alignItems="center" justifyContent="space-between" gap={3}>
           <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
@@ -472,6 +508,7 @@ export function WeeklyCard(props: {
                 width={width}
                 height={height}
                 tags={tags}
+                breaks={breaks}
               />
             )}
           </ParentSize>
