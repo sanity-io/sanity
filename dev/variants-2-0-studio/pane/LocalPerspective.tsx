@@ -10,8 +10,10 @@ import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {useVariantDefinitions} from '../c1/world'
 import {useCorpus} from '../c5/useCorpus'
 import {useVersionList} from '../data/useVersionList'
+import {CubeIcon} from './Cube'
 import {useCircleRegistry, useLocalBar} from './localBar'
 import {Pick} from './Pick'
+import {LOCAL_OUTLINE, stateToneOf} from './stateTone'
 import {layerLabel, usePaneAddress} from './usePaneAddress'
 
 // Open beta, the document header (Figma C2 "Document header · selected for open beta", section 561:35886; token frame 564:19198; spec
@@ -25,50 +27,11 @@ import {layerLabel, usePaneAddress} from './usePaneAddress'
 const NONE = 'none'
 const INVENTORY = 'variants-inventory'
 const PRESSED = 'var(--card-badge-default-bg-color)'
-// A set's base: grey, or the positive tint while its state is Published (the only Published cue). Chips inside it are white and borderless.
-const POSITIVE = 'var(--card-badge-positive-bg-color)'
 const WHITE_CHIP: CSSProperties = {background: 'var(--card-bg-color)', border: 0, boxShadow: 'none'}
 const LOCAL_COLOR = 'var(--card-badge-suggest-icon-color)'
 const CIRCLE = 29
-// Figma 574:2: follows-global is the plain outline cube in muted grey with white faces; local is the purple one. No dashes.
-const MUTED = 'var(--card-muted-fg-color)'
 
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
-
-/**
- * The cube. `global`: the pane follows the global perspective (muted outline, white faces). `local`: the pane has its own (the variant mark colour). `outline`: the global
- * set in the navbar (white faces, outline only).
- */
-export function CubeIcon({kind, size = 24}: {kind: 'global' | 'local' | 'outline'; size?: number}) {
-  const stroke = kind === 'local' ? LOCAL_COLOR : MUTED
-  const dash = undefined
-  return (
-    <svg
-      aria-hidden="true"
-      data-cube={kind}
-      fill="none"
-      height={size}
-      viewBox="0 0 24 24"
-      width={size}
-    >
-      <path
-        d="M12 2.5 20.5 7.25v9.5L12 21.5 3.5 16.75v-9.5L12 2.5Z"
-        fill="var(--card-bg-color)"
-        stroke={stroke}
-        strokeDasharray={dash}
-        strokeLinejoin="round"
-        strokeWidth="1.7"
-      />
-      <path
-        d="M3.5 7.25 12 12l8.5-4.75M12 12v9.5"
-        stroke={stroke}
-        strokeDasharray={dash}
-        strokeLinejoin="round"
-        strokeWidth="1.7"
-      />
-    </svg>
-  )
-}
 
 /**
  * P4: the caret under the circle, 18 x 9, the bar's fill, a 1 px border on its two upper edges, opening into the bar. The header clips what hangs
@@ -139,7 +102,7 @@ function usePaneState() {
 
 /** H1 and H4: the perspective circle, then "<title> · N versions". */
 export function LocalPerspectiveHeader({documentId}: {documentId: string}) {
-  const {local} = usePaneState()
+  const {local, shown} = usePaneState()
   const versions = useVersionList(documentId)
   const corpus = useCorpus()
   const pane = useDocumentPane()
@@ -188,7 +151,7 @@ export function LocalPerspectiveHeader({documentId}: {documentId: string}) {
           }
           type="button"
         >
-          <CubeIcon kind={local ? 'local' : 'global'} />
+          <CubeIcon filled={local} tone={stateToneOf(shown.perspective)} />
         </button>
       </span>
       <Chip
@@ -260,9 +223,9 @@ export function LocalPerspectiveRow({documentId}: {documentId: string}) {
           data-testid="local-set"
           style={{
             alignItems: 'center',
-            background: shown.perspective === 'published' ? POSITIVE : PRESSED,
+            background: stateToneOf(shown.perspective).bg,
             borderRadius: 9999,
-            boxShadow: local ? `inset 0 0 0 1px ${LOCAL_COLOR}` : undefined,
+            boxShadow: local ? LOCAL_OUTLINE : undefined,
             display: 'inline-flex',
             gap: 6,
             padding: 4,
