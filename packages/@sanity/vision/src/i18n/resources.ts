@@ -203,6 +203,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Explanation at the top of the export query dialog */
   'vista.export-query.description':
     'Run this query outside of the studio with one of these snippets.',
+  /** Note under the curl snippet when the query is sent as a request body rather than in the URL */
+  'vista.export-query.post-body-note':
+    'The query and params come to {{size}} characters as search params; from {{limit}} on, @sanity/client sends them as a JSON body rather than in the URL, so the snippet does the same.',
   /** Title of the dialog that exports the query as code snippets */
   'vista.export-query.title': 'Export query',
   /** Note about authentication in the export query dialog */
@@ -606,6 +609,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.network.endpoint.api': 'API',
   /** The API CDN answered */
   'vista.network.endpoint.cdn': 'API CDN',
+  /** In the Network panel: the HTTP method the query was sent with */
+  'vista.network.method': 'Method',
+  /** The query and its params went in the URL */
+  'vista.network.method.get': 'GET, with the query and params in the URL',
+  /** The query and its params went in the request body */
+  'vista.network.method.post': 'POST, with the query and params as a JSON body',
+  /** Under the method of a POST request: why the query was not sent in the URL */
+  'vista.network.method.post-explained':
+    'The query and params come to {{size}} characters as search params; from {{limit}} on, @sanity/client sends them as a JSON body, since the API limits the length of a URL. The options stay in the URL.',
   /** In the Network panel: the region the query ran in */
   'vista.network.region': 'Query ran in',
   /** The response did not say where the query ran */
@@ -766,6 +778,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.params.view.label': 'Edit params as',
   /** Toast shown after a query URL was pasted and loaded into the tab */
   'vista.paste.parsed': 'Loaded query from pasted URL',
+  /** Toast shown after a curl command for a query was pasted and loaded into the tab */
+  'vista.paste.parsed-curl': 'Loaded query from pasted cURL command',
   /** Toast shown when a pasted URL used a content variant the tab does not send */
   'vista.paste.unavailable-variant':
     'The pasted URL used the "{{variant}}" variant; select it in the navbar to run the query with it.',
@@ -828,6 +842,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.response.sync-tags': 'Sync tags',
   /** Shown when the response carried no sync tags */
   'vista.response.sync-tags.none': 'No sync tags in the response',
+  /** Under the query URL when the request went out as a POST body rather than that URL */
+  'vista.response.url.sent-as-post':
+    'Sent as a POST body: the query and params are too long for a URL, so @sanity/client sent them as JSON. Pasting this URL into Vision still loads the query.',
   /** Accessible label for the result actions menu */
   'vista.result.actions': 'Result actions',
   /** Toast shown after the result was copied */

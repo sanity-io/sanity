@@ -1,5 +1,6 @@
 import {type ContentSourceMap, type SanityClient, type SyncTag} from '@sanity/client'
 
+import {type QueryRequestMethod} from '../../util/queryRequestMethod'
 import {type QueryNetwork} from '../util/queryNetwork'
 
 /** Whether a tab queries the workspace's dataset, following it, or one pinned by hand */
@@ -177,6 +178,12 @@ export interface FetchHistoryEntry {
 
 export interface VistaResponseMeta {
   url: string
+  /**
+   * How the query was sent: `GET` with the query and params in `url`, or `POST` with them as a
+   * JSON body once they are too long for a URL. What the transport reported, or the client's
+   * rule (`queryRequestMethod`) where it could not be read.
+   */
+  method: QueryRequestMethod
   ms: number
   e2eMs: number
   payloadBytes: number
