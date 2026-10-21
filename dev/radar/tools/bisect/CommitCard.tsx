@@ -44,7 +44,7 @@ export function CommitCard(props: {
             avatarUrl={commit.authorAvatarUrl}
           />
           {commit.authorName && (
-            <Text size={1} muted as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
+            <Text size={1} muted as="div" trim={true} style={{color: 'var(--card-muted-fg-color)'}}>
               {commit.authorName} ·
             </Text>
           )}

@@ -349,7 +349,7 @@ export function WeeklyBars(props: {
                     if (!previous || previous.value === null) return null
                     return (
                       <Text size={0} muted as="div" trim={true}>
-                        {formatDelta(hovered.value - previous.value, unit)}vs week of{' '}
+                        {formatDelta(hovered.value - previous.value, unit)} vs week of{' '}
                         {weekLabel(previous.weekStart)}
                       </Text>
                     )
