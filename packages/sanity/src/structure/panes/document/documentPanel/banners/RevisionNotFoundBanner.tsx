@@ -1,6 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
+import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -17,7 +17,11 @@ export function RevisionNotFoundBanner() {
       tone="caution"
       data-test-id="revision-not-found-banner"
       icon={WarningOutlineIcon}
-      content={<Text size={1}>{t('banners.revision-not-found.description')}</Text>}
+      content={
+        <Text size={1} as="div" trim={true} tone="caution">
+          {t('banners.revision-not-found.description')}
+        </Text>
+      }
     />
   )
 }
