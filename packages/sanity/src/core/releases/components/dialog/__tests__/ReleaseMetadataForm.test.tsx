@@ -174,6 +174,8 @@ describe('ReleaseMetadataForm', () => {
       .join('\n')
       .replaceAll(/\s+/g, '')
     expect(cssText).toContain('margin-inline:calc((var(--formGutterSize)+var(--formGutterGap))*-1)')
+    expect(cssText).toContain('margin-block-start:calc(var(--space-2)*-1)')
+    expect(cssText).toContain('gap:calc(var(--space-5)-var(--space-2))')
   })
 
   it('defaults a missing key once on create, then leaves a cleared value omitted', async () => {
