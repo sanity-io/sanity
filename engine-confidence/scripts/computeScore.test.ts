@@ -109,11 +109,15 @@ function scoreInputs(overrides: Partial<ScoreInputs> = {}): ScoreInputs {
 
 const EXCLUDED_SOURCE = 'export const empty = []\n'
 
-function mutatorTargetWith(status: 'Survived' | 'Killed'): StrykerTargetInput {
+function emptyFileTarget(
+  target: StrykerRunMeta['target'],
+  packageDir: string,
+  status: 'Survived' | 'Killed',
+): StrykerTargetInput {
   return {
-    target: 'mutator',
-    packageDir: 'packages/@sanity/mutator',
-    meta: runMeta('mutator'),
+    target,
+    packageDir,
+    meta: runMeta(target),
     report: {
       files: {
         'src/empty.ts': {
@@ -140,6 +144,10 @@ function mutatorTargetWith(status: 'Survived' | 'Killed'): StrykerTargetInput {
   }
 }
 
+function mutatorTargetWith(status: 'Survived' | 'Killed'): StrykerTargetInput {
+  return emptyFileTarget('mutator', 'packages/@sanity/mutator', status)
+}
+
 const emptyArrayExclusion = {
   file: 'packages/@sanity/mutator/src/empty.ts',
   mutatorName: 'ArrayDeclaration',
@@ -155,7 +163,7 @@ describe('buildRunDocument', () => {
     expect(document._id).toBe('engine-confidence-run-2026-w42')
     expect(document.isoWeek).toBe(isoWeekOf(new Date('2026-10-15T03:00:00.000Z')))
     expect(document._type).toBe('engineConfidenceRun')
-    expect(document.schemaVersion).toBe(1)
+    expect(document.schemaVersion).toBe(2)
   })
 
   test('scores the mutation score from the merged Stryker reports', () => {
@@ -171,6 +179,49 @@ describe('buildRunDocument', () => {
       expect(score.files.map((file) => file._key)).toEqual(['file-0', 'file-1', 'file-2', 'file-3'])
       expect(score.targets.map((target) => target._key)).toEqual(['target-0', 'target-1'])
     }
+  })
+
+  test('scores the core Studio engine from the sanity files only', () => {
+    const {score, studioScore} = buildRunDocument(scoreInputs())
+
+    expect(studioScore).toMatchObject({
+      status: 'measured',
+      counts: {killed: 8, survived: 2, noCoverage: 17},
+    })
+    if (studioScore.status === 'measured' && score.status === 'measured') {
+      expect(studioScore.ratio).toBeCloseTo(8 / 27)
+      expect(studioScore.coveredRatio).toBeCloseTo(8 / 10)
+      expect(studioScore.ratio).not.toBeCloseTo(score.ratio)
+      expect(studioScore).not.toHaveProperty('files')
+      expect(studioScore).not.toHaveProperty('targets')
+    }
+  })
+
+  test('leaves reviewed exclusions out of the core Studio engine score', () => {
+    const [, mutatorTarget] = strykerTargets
+    const studioTarget = emptyFileTarget('sanity', 'packages/sanity', 'Survived')
+    const exclusion = {
+      ...emptyArrayExclusion,
+      file: 'packages/sanity/src/empty.ts',
+      contextHash: undefined,
+    }
+    const withRegister = buildRunDocument(
+      scoreInputs({strykerTargets: [studioTarget, mutatorTarget], exclusions: [exclusion]}),
+    ).studioScore
+    const withoutRegister = buildRunDocument(
+      scoreInputs({strykerTargets: [studioTarget, mutatorTarget]}),
+    ).studioScore
+
+    expect(withRegister).toMatchObject({
+      status: 'measured',
+      ratio: 1,
+      counts: {excluded: 1, survived: 0, killed: 1},
+    })
+    expect(withoutRegister).toMatchObject({
+      status: 'measured',
+      ratio: 0.5,
+      counts: {excluded: 0, survived: 1, killed: 1},
+    })
   })
 
   test('counts reviewed exclusions apart from ignored and leaves them out of the ratio', () => {
@@ -240,6 +291,15 @@ describe('buildRunDocument', () => {
     })
   })
 
+  test('reports the core Studio engine score as not measured with the same reason when the score is not', () => {
+    const document = buildRunDocument(scoreInputs({strykerTargets: [strykerTargets[0]]}))
+
+    expect(document.studioScore).toEqual({
+      status: 'not-measured',
+      reason: 'No Stryker report for target: mutator',
+    })
+  })
+
   test('copies the pinned config into the document', () => {
     const document = buildRunDocument(scoreInputs())
 
@@ -255,10 +315,15 @@ describe('buildRunDocument', () => {
 })
 
 describe('renderSummary', () => {
-  test('puts the score and the known bugs count in a markdown table', () => {
+  test('puts both scores and the known bugs count in a markdown table', () => {
     const summary = renderSummary(buildRunDocument(scoreInputs()))
 
     expect(summary).toContain('### Engine confidence 2026-W42')
+    expect(summary).toContain('Total engine: **52.3%** · Core Studio engine: **29.6%** (config v1)')
+    expect(summary).toContain(
+      '| Total engine score (Studio + @sanity/mutator) | 52.3% (23 detected',
+    )
+    expect(summary).toContain('| Core Studio engine score | 29.6% (8 detected, 19 missed')
     expect(summary).toContain('0 ignored by rule, 0 excluded after review')
     expect(summary).toContain('| Known bugs caught (not part of the score) | 1/2 |')
   })

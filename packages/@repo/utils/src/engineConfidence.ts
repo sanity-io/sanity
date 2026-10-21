@@ -7,10 +7,13 @@
  */
 
 export const ENGINE_CONFIDENCE_RUN_TYPE = 'engineConfidenceRun'
-export const ENGINE_CONFIDENCE_SCHEMA_VERSION = 1
+export const ENGINE_CONFIDENCE_SCHEMA_VERSION = 2
 
 export const STRYKER_TARGET_IDS = ['sanity', 'mutator'] as const
 export type StrykerTargetId = (typeof STRYKER_TARGET_IDS)[number]
+
+/** The target the core Studio engine score covers. */
+export const STUDIO_ENGINE_TARGET: StrykerTargetId = 'sanity'
 
 export const CATALOGUE_SUITE_IDS = ['unit:mutator', 'unit:engine', 'fuzz:pt', 'e2e'] as const
 export type CatalogueSuiteId = (typeof CATALOGUE_SUITE_IDS)[number]
@@ -75,8 +78,22 @@ export interface MeasuredScore {
   files: MutatedFileResult[]
 }
 
-/** The engine confidence score: the Stryker mutation score, nothing else. */
+/** The total engine score: the Stryker mutation score, nothing else. */
 export type EngineConfidenceScore = MeasuredScore | NotMeasured
+
+export interface MeasuredTargetScore {
+  status: 'measured'
+  /** Stryker's mutation score over the target's files. */
+  ratio: number
+  /** Leaves out mutants no test reaches; absent when every mutant is uncovered. */
+  coveredRatio?: number
+  counts: MutantCounts
+}
+
+export type TargetScore = MeasuredTargetScore | NotMeasured
+
+/** The core Studio engine score: the Stryker score over the `sanity` target, leaving out `@sanity/mutator`. */
+export type StudioEngineScore = TargetScore
 
 export type CatalogueSeverity = 'S1' | 'S2' | 'S3'
 
@@ -176,7 +193,10 @@ export interface EngineConfidenceRunDocument {
     runAttempt?: number
   }
   config: EngineConfidenceConfig
+  /** Total engine score: Studio plus `@sanity/mutator`. */
   score: EngineConfidenceScore
+  /** Core Studio engine score: the document store and form patch code in `packages/sanity`. */
+  studioScore: StudioEngineScore
   knownBugs: KnownBugsSummary
 }
 
@@ -243,6 +263,27 @@ export function mutationScoreOf(counts: MutantCounts): number | undefined {
 export function coveredMutationScoreOf(counts: MutantCounts): number | undefined {
   const covered = detectedMutants(counts) + counts.survived
   return covered === 0 ? undefined : detectedMutants(counts) / covered
+}
+
+/** The Stryker score over the files of one target, or not measured when none of its mutants were scored. */
+export function targetScoreOf(
+  files: readonly Pick<MutatedFileResult, 'target' | 'counts'>[],
+  target: StrykerTargetId,
+): TargetScore {
+  const counts = files
+    .filter((file) => file.target === target)
+    .reduce((total, file) => addMutantCounts(total, file.counts), emptyMutantCounts())
+  const ratio = mutationScoreOf(counts)
+  if (ratio === undefined) {
+    return {status: 'not-measured', reason: `Stryker reported no scored mutants for ${target}`}
+  }
+  const coveredRatio = coveredMutationScoreOf(counts)
+  return {
+    status: 'measured',
+    ratio,
+    ...(coveredRatio === undefined ? {} : {coveredRatio}),
+    counts,
+  }
 }
 
 export function isEntryCaught(entry: Pick<CatalogueEntryResult, 'results'>): boolean {

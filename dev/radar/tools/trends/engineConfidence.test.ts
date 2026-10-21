@@ -1,8 +1,10 @@
 import {
+  addMutantCounts,
   emptyMutantCounts,
   isoWeekOf,
   isoWeekStart,
   mutationScoreOf,
+  targetScoreOf,
 } from '@repo/utils/engine-confidence'
 import {engineConfidenceRunId} from '@repo/utils/radar-ids'
 import {describe, expect, test} from 'vitest'
@@ -14,11 +16,13 @@ import {
   deepLinkTargetLoaded,
   ENGINE_CONFIDENCE_EXPLAINER,
   ENGINE_SCORE_KEY,
+  ENGINE_STUDIO_SCORE_KEY,
   engineConfidenceDetailOf,
   engineConfidenceSeries,
   type EngineConfidenceDetail,
   type EngineConfidenceRunSummary,
   type EngineScoreSummary,
+  type EngineStudioScoreSummary,
   filterEngineRunsByRange,
   worstFiles,
 } from './engineConfidence'
@@ -37,6 +41,7 @@ function summaryRun(
   weekIndex: number,
   options: {
     score?: number
+    studioScore?: number
     configVersion?: number
   } = {},
 ): EngineConfidenceRunSummary {
@@ -51,6 +56,9 @@ function summaryRun(
     runner: {runId: `run${weekIndex}`, runAttempt: 1},
     config: {version: options.configVersion ?? 1},
     score: options.score === undefined ? NOT_MEASURED : measured(options.score),
+    ...(options.studioScore === undefined
+      ? {}
+      : {studioScore: measured(options.studioScore) satisfies EngineStudioScoreSummary}),
     knownBugs: {status: 'not-measured', reason: 'no catalogue results'},
   }
 }
@@ -64,9 +72,13 @@ function seriesByKey(series: ReturnType<typeof engineConfidenceSeries>, key: str
 describe('engineConfidenceSeries', () => {
   const runs = [summaryRun(0, {score: 0.7}), summaryRun(1, {score: 0.72})]
 
-  test('builds a single score series in the engine group', () => {
+  test('builds the total and core Studio score series in the engine group', () => {
     const series = engineConfidenceSeries(runs)
-    expect(series.map((entry) => entry.key)).toEqual([ENGINE_SCORE_KEY])
+    expect(series.map((entry) => entry.key)).toEqual([ENGINE_SCORE_KEY, ENGINE_STUDIO_SCORE_KEY])
+    expect(series.map((entry) => entry.title)).toEqual([
+      'Total engine confidence',
+      'Core Studio engine confidence',
+    ])
     expect(series.every((entry) => entry.group === 'engine')).toBe(true)
     expect(series.every((entry) => entry.unit === 'percent' && entry.goal === 'higher')).toBe(true)
     expect(
@@ -97,6 +109,20 @@ describe('engineConfidenceSeries', () => {
     expect(seriesByKey(series, ENGINE_SCORE_KEY).lines[0].points).toHaveLength(2)
   })
 
+  test('reads the Studio series from studioScore and leaves a gap for a run without it', () => {
+    const mixed = [
+      summaryRun(0, {score: 0.7}),
+      summaryRun(1, {score: 0.72, studioScore: 0.8}),
+      summaryRun(2, {score: 0.73, studioScore: 0.82}),
+    ]
+    const series = engineConfidenceSeries(mixed)
+    const studio = seriesByKey(series, ENGINE_STUDIO_SCORE_KEY)
+
+    expect(studio.lines[0].points.map((point) => point.runId)).toEqual([mixed[1]._id, mixed[2]._id])
+    expect(studio.lines[0].points[0].value).toBeCloseTo(80)
+    expect(seriesByKey(series, ENGINE_SCORE_KEY).lines[0].points).toHaveLength(3)
+  })
+
   test('orders points oldest first regardless of input order', () => {
     const score = seriesByKey(engineConfidenceSeries([...runs].reverse()), ENGINE_SCORE_KEY)
     expect(score.lines[0].points.map((point) => point.runId)).toEqual(runs.map((run) => run._id))
@@ -107,14 +133,17 @@ describe('engineConfidenceSeries', () => {
       summaryRun(0, {score: 0.7, configVersion: 1}),
       summaryRun(1, {score: 0.7, configVersion: 2}),
     ])
-    const score = seriesByKey(series, ENGINE_SCORE_KEY)
-    expect(score.drift).toEqual({recentRuns: 2, baselineRuns: 4, minimumRuns: 4})
-    expect(score.breaks).toEqual([{date: isoWeekStart(summaryRun(1).isoWeek), label: 'config v2'}])
+    const expectedBreaks = [{date: isoWeekStart(summaryRun(1).isoWeek), label: 'config v2'}]
+    series.forEach((entry) => {
+      expect(entry.drift).toEqual({recentRuns: 2, baselineRuns: 4, minimumRuns: 4})
+      expect(entry.breaks).toEqual(expectedBreaks)
+    })
   })
 
   test('the explainer names the series break and keeps known bugs out of the score', () => {
     expect(ENGINE_CONFIDENCE_EXPLAINER).toContain('breaks the series')
     expect(ENGINE_CONFIDENCE_EXPLAINER).toContain('does not feed the score')
+    expect(ENGINE_CONFIDENCE_EXPLAINER).toContain('@sanity/mutator')
   })
 })
 
@@ -301,7 +330,7 @@ describe('generateDebugEngineConfidenceRuns', () => {
   test('is valid stored documents: ids follow the week', () => {
     for (const run of demo) {
       expect(run._type).toBe('engineConfidenceRun')
-      expect(run.schemaVersion).toBe(1)
+      expect(run.schemaVersion).toBe(2)
       expect(run._id).toBe(engineConfidenceRunId(run.isoWeek))
       expect(run.isoWeek).toBe(isoWeekOf(new Date(run.startedAt)))
     }
@@ -347,6 +376,21 @@ describe('generateDebugEngineConfidenceRuns', () => {
     expect(score.ratio).toBe(mutationScoreOf(score.counts))
     expect(score.files.every((file, index) => file._key === `file-${index}`)).toBe(true)
     expect(score.targets.map((target) => target._key)).toEqual(['target-0', 'target-1'])
+  })
+
+  test('derives the core Studio score from the sanity files only', () => {
+    const {score, studioScore} = demo.at(-1)!
+    if (score.status !== 'measured' || studioScore.status !== 'measured') {
+      throw new Error('expected measured')
+    }
+    const studioCounts = score.files
+      .filter((file) => file.target === 'sanity')
+      .reduce((sum, file) => addMutantCounts(sum, file.counts), emptyMutantCounts())
+
+    expect(studioScore.counts).toEqual(studioCounts)
+    expect(studioScore.ratio).toBe(mutationScoreOf(studioCounts))
+    expect(studioScore).toEqual(targetScoreOf(score.files, 'sanity'))
+    expect(studioScore.ratio).not.toBe(score.ratio)
   })
 
   test('reports ignored and excluded mutants outside the ratio, summing to the totals', () => {
@@ -415,6 +459,7 @@ describe('generateDebugEngineConfidenceRuns', () => {
   test('feeds the series mapper and the detail derivation', () => {
     const series = engineConfidenceSeries(demo)
     expect(seriesByKey(series, ENGINE_SCORE_KEY).lines[0].points).toHaveLength(20)
+    expect(seriesByKey(series, ENGINE_STUDIO_SCORE_KEY).lines[0].points).toHaveLength(20)
     const detail = engineConfidenceDetailOf(demo.at(-1)!)
     expect(detail.isoWeek).toBe(demo.at(-1)!.isoWeek)
     expect(worstFiles(detail)[0].path).toContain('@sanity/mutator/src/document/')

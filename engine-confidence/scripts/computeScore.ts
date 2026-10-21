@@ -20,6 +20,9 @@ import {
   mutationScoreOf,
   STRYKER_TARGET_IDS,
   type StrykerTargetId,
+  STUDIO_ENGINE_TARGET,
+  type StudioEngineScore,
+  targetScoreOf,
 } from '@repo/utils/engine-confidence'
 import {engineConfidenceRunId, gitCommitId} from '@repo/utils/radar-ids'
 
@@ -117,6 +120,12 @@ function strykerScore(
   }
 }
 
+function studioEngineScore(score: EngineConfidenceScore): StudioEngineScore {
+  return score.status === 'measured'
+    ? targetScoreOf(score.files, STUDIO_ENGINE_TARGET)
+    : {status: 'not-measured', reason: score.reason}
+}
+
 function knownBugsSummary(catalogue: CatalogueResultsFile | undefined): KnownBugsSummary {
   if (catalogue === undefined) {
     return {status: 'not-measured', reason: 'No catalogue results were found'}
@@ -135,6 +144,7 @@ function knownBugsSummary(catalogue: CatalogueResultsFile | undefined): KnownBug
 export function buildRunDocument(inputs: ScoreInputs): EngineConfidenceRunDocument {
   const {pinnedConfig, startedAt} = inputs
   const score = strykerScore(inputs.strykerTargets, inputs.exclusions)
+  const studioScore = studioEngineScore(score)
   const knownBugs = knownBugsSummary(inputs.catalogue)
   const isoWeek = isoWeekOf(startedAt)
   const fuzzSuite = pinnedConfig.catalogue.suites['fuzz:pt']
@@ -159,6 +169,7 @@ export function buildRunDocument(inputs: ScoreInputs): EngineConfidenceRunDocume
       fuzzRuns: fuzzSuite.runs,
     },
     score,
+    studioScore,
     knownBugs,
   }
 }
@@ -255,16 +266,23 @@ function percentOf(ratio: number | undefined): string {
   return ratio === undefined ? 'not measured' : `${(ratio * 100).toFixed(1)}%`
 }
 
+function scoreDetail(score: EngineConfidenceScore | StudioEngineScore): string {
+  return score.status === 'measured'
+    ? `${percentOf(score.ratio)} (${detectedMutants(score.counts)} detected, ${missedMutants(score.counts)} missed, ${score.counts.ignored} ignored by rule, ${score.counts.excluded} excluded after review)`
+    : score.reason
+}
+
 export function renderSummary(document: EngineConfidenceRunDocument): string {
-  const {score, knownBugs} = document
+  const {score, studioScore, knownBugs} = document
   return [
     `### Engine confidence ${document.isoWeek}`,
     '',
-    `Score: **${percentOf(score.status === 'measured' ? score.ratio : undefined)}** (config v${document.config.version})`,
+    `Total engine: **${percentOf(score.status === 'measured' ? score.ratio : undefined)}** · Core Studio engine: **${percentOf(studioScore.status === 'measured' ? studioScore.ratio : undefined)}** (config v${document.config.version})`,
     '',
     '| Measure | Result |',
     '| --- | --- |',
-    `| Stryker mutation score | ${score.status === 'measured' ? `${percentOf(score.ratio)} (${detectedMutants(score.counts)} detected, ${missedMutants(score.counts)} missed, ${score.counts.ignored} ignored by rule, ${score.counts.excluded} excluded after review)` : score.reason} |`,
+    `| Total engine score (Studio + @sanity/mutator) | ${scoreDetail(score)} |`,
+    `| Core Studio engine score | ${scoreDetail(studioScore)} |`,
     `| Known bugs caught (not part of the score) | ${knownBugs.status === 'measured' ? `${knownBugs.caughtEntries}/${knownBugs.activeEntries}` : knownBugs.reason} |`,
     '',
   ].join('\n')
