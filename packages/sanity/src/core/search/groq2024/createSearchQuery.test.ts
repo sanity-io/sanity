@@ -2,6 +2,7 @@ import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
+import {createSchema} from '../../schema/createSchema'
 import {DEFAULT_LIMIT} from '../weighted/createSearchQuery'
 import {createSearchQuery} from './createSearchQuery'
 
@@ -648,6 +649,76 @@ describe('createSearchQuery', () => {
       `)
 
       expect(query).toContain('cover[].cards[].title match text::query($__query), 5)')
+    })
+  })
+
+  describe('partial index field paths', () => {
+    const getOrderConfirmationType = () =>
+      createSchema({
+        name: 'partial-index',
+        types: [
+          defineType({
+            name: 'orderConfirmation',
+            type: 'document',
+            preview: {select: {title: 'analytics.pageName', subtitle: 'heading'}},
+            fields: [
+              defineField({name: 'heading', type: 'string'}),
+              defineField({
+                name: 'analytics',
+                type: 'object',
+                fields: [defineField({name: 'pageName', type: 'string'})],
+              }),
+            ],
+          }),
+        ],
+      }).get('orderConfirmation')!
+
+    it('boosts preview fields when no field paths are excluded', () => {
+      const {query} = createSearchQuery({query: 'order', types: [getOrderConfirmationType()]}, '')
+
+      expect(query).toContain(
+        'boost(_type in ["orderConfirmation"] && analytics.pageName match text::query($__query), 10)',
+      )
+    })
+
+    it('does not boost fields excluded from the partial index', () => {
+      const {query} = createSearchQuery({query: 'order', types: [getOrderConfirmationType()]}, '', {
+        partialIndexFieldPaths: {
+          excludeFieldPaths: ['content', 'content[]', 'analytics', 'analytics[]'],
+          includeFieldPaths: ['content'],
+        },
+      })
+
+      expect(query).not.toContain('analytics.pageName')
+      expect(query).toContain(
+        'boost(_type in ["orderConfirmation"] && heading match text::query($__query), 5)',
+      )
+      // Documents are still found through the base match, which covers every indexed field.
+      expect(query).toContain('([@, _id] match text::query($__query) || references($__rawQuery))')
+    })
+
+    it('boosts an excluded field again once it is explicitly included', () => {
+      const {query} = createSearchQuery({query: 'order', types: [getOrderConfirmationType()]}, '', {
+        partialIndexFieldPaths: {
+          excludeFieldPaths: ['analytics'],
+          includeFieldPaths: ['analytics.pageName'],
+        },
+      })
+
+      expect(query).toContain(
+        'boost(_type in ["orderConfirmation"] && analytics.pageName match text::query($__query), 10)',
+      )
+    })
+
+    it('applies the excluded field paths of each query to the same schema type', () => {
+      const type = getOrderConfirmationType()
+      const excluded = createSearchQuery({query: 'order', types: [type]}, '', {
+        partialIndexFieldPaths: {excludeFieldPaths: ['analytics']},
+      })
+      const unrestricted = createSearchQuery({query: 'order', types: [type]}, '')
+
+      expect(excluded.query).not.toContain('analytics.pageName')
+      expect(unrestricted.query).toContain('analytics.pageName')
     })
   })
 
