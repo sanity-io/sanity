@@ -8,7 +8,8 @@
 // 3. `Element.prototype.setAttribute` receiving an object: react-dom validates neither the name
 //    nor the value of an all-lowercase unknown prop (`params={{…}}` renders silently as
 //    `params="[object Object]"`, `tags={['a', 'b']}` as `tags="a,b"`), so the attribute write is
-//    the only trace such a leak leaves.
+//    the only trace such a leak leaves. react-dom before 19.3 converts the value to a string
+//    first, so the guard compares a string value with the prop React rendered the element with.
 //
 // Register it through `setupFiles`, or import it from an existing setup file. Works in jsdom and
 // in vitest browser mode alike — both run the development build of react-dom, which is the only
@@ -142,12 +143,62 @@ function describeAttributeValue(value) {
   return `"${text}"${kind}`
 }
 
+/**
+ * The prop objects React rendered `element` with: the `__reactProps$…` object it keeps on every
+ * element, plus both fibers' props, since an update writes the attributes before it replaces
+ * `__reactProps$…` with the new props.
+ *
+ * @param {Element} element
+ * @returns {Record<string, unknown>[]}
+ */
+function reactPropsOf(element) {
+  /** @type {Record<string, unknown>[]} */
+  const props = []
+  for (const key of Object.keys(element)) {
+    if (key.startsWith('__reactProps$')) {
+      props.push(/** @type {any} */ (element)[key])
+    } else if (key.startsWith('__reactFiber$')) {
+      const fiber = /** @type {any} */ (element)[key]
+      for (const node of [fiber, fiber?.alternate]) {
+        if (node) props.push(node.pendingProps, node.memoizedProps)
+      }
+    }
+  }
+  return props.filter((value) => typeof value === 'object' && value !== null)
+}
+
+/**
+ * The object behind an attribute value. react-dom 19.3 passes it to `setAttribute` as it is;
+ * earlier versions convert it first (`'' + value`), so an array or a `Date` arrives as a string
+ * that only the prop React rendered with can tell apart from a real one.
+ *
+ * @param {Element} element
+ * @param {string} name
+ * @param {unknown} value
+ * @returns {unknown}
+ */
+function objectBehindAttributeValue(element, name, value) {
+  if (isObjectAttributeValue(value)) return value
+  if (typeof value !== 'string') return undefined
+  for (const props of reactPropsOf(element)) {
+    const prop = props[name]
+    if (typeof prop !== 'object' || prop === null) continue
+    try {
+      if (String(prop) === value) return prop
+    } catch {
+      // A prop that cannot be converted to a string is not what was written.
+    }
+  }
+  return undefined
+}
+
 if (typeof Element !== 'undefined') {
   const {setAttribute} = Element.prototype
   Element.prototype.setAttribute = function patchedSetAttribute(name, value) {
-    if (isObjectAttributeValue(value)) {
+    const object = objectBehindAttributeValue(this, name, value)
+    if (object !== undefined) {
       captured.push(
-        `Attribute \`${name}\` on <${this.tagName.toLowerCase()}> was set to ${describeAttributeValue(value)}: an object-valued prop reached the DOM element.`,
+        `Attribute \`${name}\` on <${this.tagName.toLowerCase()}> was set to ${describeAttributeValue(object)}: an object-valued prop reached the DOM element.`,
       )
     }
     return setAttribute.call(this, name, value)
