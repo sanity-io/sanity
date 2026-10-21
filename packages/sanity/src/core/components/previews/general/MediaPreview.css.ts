@@ -14,7 +14,6 @@ export const mediaFlex = style({
 
 export const mediaSkeleton = style({
   selectors: {
-    // Skeleton sets its own dimensions
     '&&': {
       width: '100%',
       height: '100%',

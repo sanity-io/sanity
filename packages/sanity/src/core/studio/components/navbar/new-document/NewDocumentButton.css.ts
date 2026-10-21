@@ -5,14 +5,12 @@ export const radius3Var = createVar()
 
 export const popover = style({})
 
-// Descendant rule, like the original `[data-ui='Popover__wrapper'] {…}` block: (0,2,0)
 globalStyle(`${popover} [data-ui='Popover__wrapper']`, {
   width: '320px',
   display: 'flex',
   flexDirection: 'column',
   borderRadius: radius3Var,
   position: 'relative',
-  // `overflow: hidden` fallback followed by `overflow: clip`
   overflow: ['hidden', 'clip'],
 })
 
@@ -47,7 +45,6 @@ export const popoverListFlex = style({
   // We want the max height to be the height of the list items multiplied by the max number of items.
   maxHeight: `calc(${itemHeightVar} * ${maxItemsVar} + var(--list-padding))`,
   selectors: {
-    // `&&` beats Flex's own `min-height` (ui5 Flex defaults `minHeight` to 0)
     '&&': {
       minHeight: `calc((${itemHeightVar} * 1))`,
     },

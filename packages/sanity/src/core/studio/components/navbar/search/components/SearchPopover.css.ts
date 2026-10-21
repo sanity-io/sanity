@@ -13,7 +13,6 @@ export const motionOverlay = style({
   right: 0,
   top: 0,
   selectors: {
-    // Card sets background-color: var(--card-bg-color) itself
     '&&': {
       backgroundColor: 'var(--card-backdrop-color)',
     },
@@ -28,7 +27,6 @@ export const searchMotionCard = style({
   top: `${Y_POSITION}vh`,
   width: `min(calc(100vw - ${popoverInputPaddingVar} * 2), ${popoverMaxWidthVar})`,
   selectors: {
-    // Card (via Box) sets display under `&:not([hidden])` (0,2,0); the original used !important
     '&&&': {
       display: 'flex',
     },

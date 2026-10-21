@@ -15,8 +15,6 @@ globalStyle(`${transparentInputBackground} input + span`, {
   background: 'transparent',
 })
 
-// Same (0,2,1) specificity as the original `.root [data-qa='clear-button']`: beats the Button's
-// base and `:not([data-disabled])` rules, but not its `:focus` box-shadow rules.
 globalStyle(`${customTextInputBox} [data-qa='clear-button']`, {
   background: 'none',
   boxShadow: 'none',

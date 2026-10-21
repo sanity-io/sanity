@@ -4,18 +4,8 @@ import {createVar, globalStyle, style} from '@vanilla-extract/css'
 /** `space[3]`, set on the close button by `UpsellDialog`. */
 export const space3Var = createVar()
 
-/**
- * Absolute positioned button to close the dialog.
- *
- * Button sets `position`, `background-color`, `border-radius`, `color` and the `--card-*`
- * variables on its root at (0,1,0); `&&` outranks them regardless of sheet order, and still yields
- * to Button's own hover rule (0,3,0) like the original did.
- */
+/** Absolute positioned button to close the dialog. */
 export const closeButton = style({
-  /**
-   * Stays at (0,1,0): Button's enabled rule `&:not([data-disabled='true'])` (0,2,0) outranked this
-   * declaration in the original too, so raising it here would change the rendering.
-   */
   boxShadow: 'none',
   selectors: {
     '&&': {

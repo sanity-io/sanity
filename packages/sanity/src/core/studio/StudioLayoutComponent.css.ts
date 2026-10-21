@@ -8,7 +8,6 @@ export const searchFullscreenPortalCard = style({
   width: '100%',
   zIndex: 200,
   selectors: {
-    /** Card sets `overflow` from its `overflow="auto"` prop at (0,1,0); `&&` keeps this override winning. */
     '&&': {
       overflow: ['hidden', 'clip'],
     },

@@ -8,14 +8,10 @@ export const monogramContainer = style({
 })
 
 export const truncateBadge = style({
-  // Kept at single-class specificity on purpose: Badge's own
-  // `&:not([hidden]) { display: inline-block }` (0,2,0) outranked this declaration in the
-  // original too, so the badge keeps rendering inline-block.
   display: 'block',
 })
 
-// Badge wraps its children in `<Text><span>…</span></Text>`; this targets that span. The class
-// is doubled because Text's own inner-span rule has the same specificity and can load later.
+// Badge wraps its children in `<Text><span>…</span></Text>`; this targets that span.
 globalStyle(`${truncateBadge}${truncateBadge} span`, {
   display: 'block',
   whiteSpace: 'nowrap',

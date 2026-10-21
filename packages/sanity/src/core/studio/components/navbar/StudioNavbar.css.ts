@@ -19,7 +19,6 @@ export const rootLayer = style({
   minHeight: 'auto',
   position: 'relative',
   selectors: {
-    // (0,2,0) already beats Layer's own `position: relative`
     "&[data-search-open='true']": {
       top: 0,
       position: 'sticky',
@@ -31,7 +30,6 @@ export const navbar = style({
   containerName: navbarContainer,
   containerType: 'inline-size',
   selectors: {
-    // `&&` beats ui5 Card's own line-height regardless of stylesheet order
     '&&': {
       lineHeight: 0,
     },

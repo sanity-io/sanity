@@ -32,11 +32,7 @@ export const semiboldSpan = style({
   fontWeight: textSemiboldWeightVar,
 })
 
-/**
- * Forces the icon to leave the necessary space to the right or left it has surrounding text.
- * Text's own `& [data-sanity-icon]` rule sets `margin` at (0,2,0); `&&[data-sanity-icon]` (0,3,0)
- * outranks it regardless of sheet order.
- */
+/** Forces the icon to leave the necessary space to the right or left it has surrounding text. */
 export const inlineIconTextLeft = style({
   selectors: {
     '&&[data-sanity-icon]': {
@@ -57,7 +53,6 @@ export const link = style({
   fontWeight: 600,
 })
 
-/** `!important` is carried over from the original rule (it outranks Text's `& a` color). */
 export const linkTextColor = style({
   color: 'var(--card-muted-fg-color) !important',
 })
@@ -69,7 +64,6 @@ export const dynamicIconContainer = style({
   lineHeight: 0,
 })
 
-/** Defined after `dynamicIconContainer` so it wins the equal-specificity `display` tie. */
 export const dynamicIconContainerInline = style({
   display: 'inline-block',
 })

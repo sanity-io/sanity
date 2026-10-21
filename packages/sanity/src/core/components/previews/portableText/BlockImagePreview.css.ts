@@ -7,7 +7,6 @@ export const headerFlex = style({
   position: 'relative',
   zIndex: 1,
   selectors: {
-    // Flex (Box) sets height on itself
     '&&': {
       height: `${PREVIEW_SIZES.block.media.height / 16}rem`,
     },
@@ -19,7 +18,6 @@ export const mediaCardRatioVar = createVar()
 export const mediaCard = style({
   position: 'relative',
   selectors: {
-    // Card (Box) sets overflow and padding on itself
     '&&': {
       overflow: 'hidden',
       paddingBottom: mediaCardRatioVar,

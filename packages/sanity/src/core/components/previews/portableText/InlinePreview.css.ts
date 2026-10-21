@@ -60,7 +60,6 @@ export const textSpan = style({
   verticalAlign: 'top',
   minWidth: 0,
   selectors: {
-    // Text sets font-size, font-weight, line-height and padding on itself
     '&&': {
       fontSize: `calc(${textSpanFontSizeVar} / 16 * 1em)`,
       fontWeight: textSpanFontWeightVar,
