@@ -33,7 +33,7 @@ export function getAnnotationAtPath(diff: Diff, diffPath: string | Path): Annota
   return getAnnotationAt(diff, path)
 }
 
-/** @internal */
+/** @public */
 export function getDiffAtPath(diff: Diff, diffPath: string | Path): Diff | undefined {
   const path: Path = Array.isArray(diffPath) ? diffPath : stringToPath(diffPath)
   return getDiffAt(diff, path)

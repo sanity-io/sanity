@@ -6,12 +6,12 @@ import {
   useActiveReleases,
   useDocumentVersions,
   usePerspective,
-  useReleasesToolAvailable,
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {useReleasesToolAvailable} from '../../../../../../../../core/schedules/hooks/useReleasesToolAvailable'
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
@@ -30,6 +30,9 @@ vi.mock('sanity', async (importOriginal) => ({
   useActiveReleases: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
+}))
+
+vi.mock('../../../../../../../../core/schedules/hooks/useReleasesToolAvailable', () => ({
   useReleasesToolAvailable: vi.fn(),
 }))
 
