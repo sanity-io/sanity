@@ -48,7 +48,7 @@ export function takeHashParam(name: AuthHashParam): string | undefined {
 
   const newUrl = new URL(window.location.href)
   newUrl.hash = params.filter((param) => param && !isParam(param)).join('&')
-  history.replaceState(null, '', newUrl)
+  history.replaceState(history.state, '', newUrl)
 
   return value
 }

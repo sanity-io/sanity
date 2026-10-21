@@ -66,7 +66,7 @@ import {
   refreshDashboardToken as defaultRefreshDashboardToken,
 } from './dashboardToken'
 import {consumeHashClaim} from './hashClaim'
-import {consumeHashToken as defaultConsumeHashToken} from './hashToken'
+import {consumeHashToken as defaultConsumeHashToken, removeHashTokenFromUrl} from './hashToken'
 import {clearHashSessionId, getHashSessionId as defaultGetSessionId} from './sessionId'
 import {recordHashClaimUrl} from './unclaimedProjectStorage'
 
@@ -362,18 +362,22 @@ function createStandaloneAuthStore({
   // * if loginMethod == "cookie"
   //    1. HTTP cookie
 
+  // A cookie-only store leaves the token for a sibling store that can use it: storing it would
+  // turn on token auth for every workspace and tab on the project.
+  function takeUsableHashToken(): string | undefined {
+    if (isCookielessCompatibleLoginMethod(loginMethod)) {
+      return consumeHashToken()
+    }
+    removeHashTokenFromUrl()
+    return undefined
+  }
+
   const tokenStorage = createBroadcastStorage<{token?: string}>(
     getAuthTokenStorageKey(projectId),
     // sets the initial value
     (currentTokenValue) => {
-      if (!isCookielessCompatibleLoginMethod(loginMethod)) {
-        // note: this will also clear any existing state
-        // note2: if there is another workspace for the same project using token auth, merely initializing this
-        // store will log you out. Need to find a better way to deal with this
-        // return undefined
-      }
       consumeHashClaimUrl(projectId)
-      const hashToken = consumeHashToken()
+      const hashToken = takeUsableHashToken()
       // use hash token if it exists, assume authenticated
       return hashToken ? {token: hashToken, authenticated: true} : currentTokenValue
     },
@@ -508,10 +512,8 @@ function createStandaloneAuthStore({
             // when the studio mounts), but it must not stay in the URL.
             clearHashSessionId()
             consumeHashClaimUrl(projectId)
-            const hashToken = consumeHashToken()
-            // A cookie-only workspace removes the token from the URL but doesn't take it in:
-            // storing it would turn on token auth for sibling workspaces and other tabs.
-            if (hashToken && isCookielessCompatibleLoginMethod(loginMethod)) {
+            const hashToken = takeUsableHashToken()
+            if (hashToken) {
               tokenStorage.update({token: hashToken})
             }
           }),

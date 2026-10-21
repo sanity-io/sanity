@@ -26,7 +26,7 @@ export function useDashboardRouteHandler(): void {
     // The host has already pushed its URL onto the browser history it shares with Studio.
     const {pathname, search, hash} = window.location
     const hostUrl = `${pathname}${search}${hash}`
-    const studioUrl = `${history.location.pathname}${history.location.search}${history.location.hash}`
+    const studioUrl = `${history.location.pathname}${history.location.search}${removeAuthHashParams(history.location.hash)}`
     if (hostUrl !== studioUrl) navigateUrl({path: hostUrl, replace: true})
   })
 

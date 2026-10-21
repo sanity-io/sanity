@@ -51,7 +51,7 @@ describe('credentials in the URL hash when the studio fails to boot', {timeout: 
 
   afterEach(() => {
     for (const spy of consoleSpies) spy.mockRestore()
-    window.location.hash = ''
+    window.history.replaceState(null, '', window.location.pathname)
     delete globalThis.__SANITY_AUTH_HASH_PARAMS__
   })
 

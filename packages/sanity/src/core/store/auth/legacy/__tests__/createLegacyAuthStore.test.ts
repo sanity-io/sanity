@@ -13,6 +13,7 @@ import {promiseWithResolvers} from '../../../../util/promiseWithResolvers'
 import {type AuthStore} from '../../types'
 import {AUTH_STATE_SETTLE_TIMEOUT_MS} from '../constants'
 import {_createLegacyAuthStore, createLegacyAuthStore} from '../createLegacyAuthStore'
+import {consumeHashToken} from '../hashToken'
 
 // Mock supportsLocalStorage to return true so createBroadcastStorage uses localStorage.
 // In jsdom/Node.js it returns false because process.versions.node is defined.
@@ -1913,7 +1914,9 @@ describe('createLegacyAuthStore: workbench OS token', () => {
   })
 })
 
-describe('createLegacyAuthStore: hash session id', () => {
+describe('createLegacyAuthStore: hash credentials', () => {
+  const PASTED_TOKEN = 'pasted-hash-token-0123456789abcdef'
+
   beforeEach(() => {
     localStorage.clear()
   })
@@ -1922,6 +1925,8 @@ describe('createLegacyAuthStore: hash session id', () => {
     localStorage.clear()
     // Not `location.hash = ''`: its queued hashchange would reach the next test's store.
     window.history.replaceState(null, '', window.location.pathname)
+    // Drains a token a cookie store left for a token store, so it can't reach the next test.
+    consumeHashToken()
   })
 
   it.each(['cookie', 'token', 'dual'] as const)(
@@ -1956,33 +1961,68 @@ describe('createLegacyAuthStore: hash session id', () => {
   )
 
   it('removes a #token= fragment pasted into an open tab without taking it in (cookie)', async () => {
-    const mock = createMockClientFactory()
-    // First call is the boot-time intake, second the hashchange.
-    const consumeHashToken = vi
-      .fn<() => string | undefined>()
-      .mockReturnValueOnce(undefined)
-      .mockReturnValueOnce('pasted-hash-token-0123456789abcdef')
-
     const store = _createLegacyAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
-      clientFactory: mock.factory,
+      clientFactory: createMockClientFactory().factory,
       getSessionId: () => undefined,
       consumeHashToken,
     })
     const sub = store.state.subscribe(() => {})
 
     try {
+      window.history.replaceState(null, '', `#token=${PASTED_TOKEN}&keep=me`)
       window.dispatchEvent(new HashChangeEvent('hashchange'))
 
-      await vi.waitFor(() => {
-        expect(consumeHashToken).toHaveBeenCalledTimes(2)
-      })
+      expect(window.location.hash).toBe('#keep=me')
       expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull()
     } finally {
       sub.unsubscribe()
     }
+  })
+
+  it('leaves a #token= pasted into an open tab for a token store that a cookie store heard first', async () => {
+    const cookieStore = _createLegacyAuthStore({
+      projectId: 'cookie-project',
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: createMockClientFactory().factory,
+      getSessionId: () => undefined,
+      consumeHashToken,
+    })
+    const tokenStore = _createLegacyAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'token',
+      clientFactory: createMockClientFactory().factory,
+      getSessionId: () => undefined,
+      consumeHashToken,
+    })
+    const subscriptions = [cookieStore, tokenStore].map((store) => store.state.subscribe(() => {}))
+
+    try {
+      window.history.replaceState(null, '', `#token=${PASTED_TOKEN}`)
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+
+      expect(JSON.parse(localStorage.getItem(TOKEN_STORAGE_KEY)!)).toEqual({token: PASTED_TOKEN})
+      expect(window.location.hash).toBe('')
+    } finally {
+      subscriptions.forEach((subscription) => subscription.unsubscribe())
+    }
+  })
+
+  it('does not store a #token= present at load in a cookie store', () => {
+    _createLegacyAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: createMockClientFactory().factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => PASTED_TOKEN,
+    })
+
+    expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull()
   })
 })
 
