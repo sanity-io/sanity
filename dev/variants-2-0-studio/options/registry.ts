@@ -156,6 +156,13 @@ export const COMPONENTS: ComponentDef[] = [
         status: 'candidate',
         refs: 'Figma C3 page, section Document list indicator: L4 option D grouped 341:1720 (L3 sorted 341:1305)',
       },
+      {
+        id: 'e',
+        label: 'Grouped list + flyout',
+        summary:
+          'D and B together: with a perspective active the list is in two sections ("Has variant", "No variant for this perspective"), and the control on each row opens the v2 flyout (clickable version rows, it stays open while the pointer travels to it) instead of the read-only popover.',
+        status: 'candidate',
+      },
     ],
   },
   {

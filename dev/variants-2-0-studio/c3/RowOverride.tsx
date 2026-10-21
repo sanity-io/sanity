@@ -77,12 +77,13 @@ const useBaseRowOverride: UseDocumentListItemOverride = ({
   const dot: 'published' | 'draft' | 'variant' | null = !perspective.active
     ? baseDot(versions)
     : option !== 'd' &&
+        option !== 'e' &&
         perspective.best(versions.flatMap((v) => (v.variantId ? [v.variantId] : [])))
       ? 'variant'
       : null
 
-  if (option === 'b') {
-    // v2: the flyout. Clickable rows, and the popover stays open while the pointer travels to it.
+  if (option === 'b' || option === 'e') {
+    // v2: the flyout (E: the same flyout on the grouped list). Clickable rows, and the popover stays open while the pointer travels to it.
     return {
       status: (
         <VersionMark

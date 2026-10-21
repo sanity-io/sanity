@@ -120,6 +120,8 @@ export function ListArrangeProvider(props: {
   children: ReactNode
 }) {
   const option = useOption('c3')
+  // D and E arrange the list in sections when a perspective is active; E's rows carry the flyout (see RowOverride).
+  const groupsRows = option === 'd' || option === 'e'
   const {listWhenPerspective} = useOptionState()
   const listMark = useOption('listMark')
   const reviewPass = useOption('reviewPass')
@@ -137,7 +139,7 @@ export function ListArrangeProvider(props: {
   const arrange = useMemo<DocumentListArrange | null>(() => {
     // reviewSet (M3, M4): a header line over the plain list, with no variant perspective.
     if (reviewSet !== 'a' && !perspective.active) return arrangeWithSetHeader
-    if ((option !== 'd' && reviewPass === 'a') || !perspective.active || !corpus) return null
+    if ((!groupsRows && reviewPass === 'a') || !perspective.active || !corpus) return null
     const variantsOf = new Map(corpus.docs.map((d) => [d.id, d.variantIds]))
     return (items) => {
       const has = items.filter(
@@ -176,12 +178,11 @@ export function ListArrangeProvider(props: {
           )
         : has
       const sorted = listWhenPerspective === 'sorted'
-      const grouped =
-        option !== 'd'
-          ? items
-          : sorted
-            ? [...hasOrdered, ...none]
-            : [section(HAS), ...hasOrdered, section(NONE), ...(noneCollapsed ? [] : none)]
+      const grouped = !groupsRows
+        ? items
+        : sorted
+          ? [...hasOrdered, ...none]
+          : [section(HAS), ...hasOrdered, section(NONE), ...(noneCollapsed ? [] : none)]
       return {
         items: [...header, ...grouped],
         renderSection: (item) =>
@@ -213,7 +214,7 @@ export function ListArrangeProvider(props: {
   }, [
     diffVersion,
     reviewSet,
-    option,
+    groupsRows,
     perspective,
     corpus,
     listWhenPerspective,
