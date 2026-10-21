@@ -105,6 +105,10 @@ import restrictedVersionActions from './debug/restrictedVersionActions'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
 import {
+  sdkProjectionFieldUnwrapped,
+  sdkProjectionItemUnwrapped,
+} from './debug/sdkProjectionFieldAndItem'
+import {
   sdkProjectionGuardOnly,
   sdkProjectionUnwrapped,
   sdkProjectionWrapped,
@@ -300,7 +304,9 @@ export function createSchemaTypes(projectId: string) {
     suspendingInputLazy,
     suspendingInputPerInstance,
     suspendingInputPerInstanceWrapped,
+    sdkProjectionFieldUnwrapped,
     sdkProjectionGuardOnly,
+    sdkProjectionItemUnwrapped,
     sdkProjectionUnwrapped,
     sdkProjectionWrapped,
     locationResolverTest,

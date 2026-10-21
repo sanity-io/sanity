@@ -1,32 +1,37 @@
 ---
-name: sanity-custom-input-suspense
-description: Fix a Sanity Studio custom input that suspends without its own Suspense boundary, so it loads without layout shift and never blocks new documents. Use when the console warns "The custom input ... suspended without a <Suspense> boundary of its own", when a custom input uses React.lazy, use(), App SDK hooks (useDocumentProjection, useQuery, useDocument) or another suspending data library, or when a field shows a skeleton that never goes away on new documents.
+name: sanity-form-component-suspense
+description: Fix a Sanity Studio custom form component (components.input, components.field or components.item) that suspends without its own Suspense boundary, so it loads without layout shift and never blocks new documents. Use when the console warns "The custom input/field/item component ... suspended without a <Suspense> boundary of its own", when a custom form component uses React.lazy, use(), App SDK hooks (useDocumentProjection, useQuery, useDocument) or another suspending data library, or when a field or array item shows a skeleton that never goes away on new documents.
 ---
 
-# Custom inputs that suspend
+# Custom form components that suspend
 
-Studio wraps every schema type's `components.input` in a fallback boundary so one suspending
-input cannot blank the form. That fallback is a generic skeleton: it does not know the input's
-size, so the form shifts when the input loads, and Studio warns about it in the console. The fix
-always lives in the input: declare a `Suspense` around the part that suspends, with a fallback
-that takes the same space as what it stands in for.
+Studio wraps every schema type's custom `components.input`, `components.field` and
+`components.item` in a fallback boundary so one suspending component cannot blank the form. That
+fallback is a generic skeleton: it does not know the component's size, so the form shifts when the
+component loads, and Studio warns about it in the console. The fix always lives in the component:
+declare a `Suspense` around the part that suspends, with a fallback that takes the same space as
+what it stands in for. A component with its own boundary never reaches Studio's, and never warns.
 
 ## Workflow
 
-1. **Find the input.** The warning names the component, the field path and the schema type, and
-   logs the component itself; click it in the browser console to open its source. React DevTools'
-   Suspense tab shows which component inside it actually suspended.
+1. **Find the component.** The warning names the slot (`components.input`, `.field` or `.item`),
+   the component, the path, the document type and the schema type, and logs the component itself;
+   click it in the browser console to open its source. Production builds minify the name, so use
+   the path and document type there. React DevTools' Suspense tab shows which component inside it
+   actually suspended.
 2. **Find what suspends.** Usually one of: `React.lazy`, `use(promise)`, an App SDK hook
    (`useDocumentProjection`, `useDocument`, `useQuery`, `useDocuments`), or a library in suspense
    mode (`useSuspenseQuery`).
 3. **Move it into its own component** if it is not already, and wrap only that component in
-   `<Suspense>` inside the input. Keep `props.renderDefault(props)` outside the boundary, so the
-   built-in input never unmounts (and never loses focus while someone types) when the async part
-   suspends again.
+   `<Suspense>` inside the custom component. Keep `props.renderDefault(props)` outside the
+   boundary, so the built-in input, field or item never unmounts (and never loses focus while
+   someone types) when the async part suspends again.
 4. **Reserve the space.** The fallback must have the size of the loaded UI:
    - Additive UI (warnings, previews, counts): render it after `renderDefault` so it never pushes
-     the input down, and give the fallback the height of one loaded row.
-   - A whole input that loads lazily: a skeleton with the input's height, not `null`.
+     the rest down, and give the fallback the height of one loaded row.
+   - A whole component that loads lazily: a skeleton with the component's height, not `null`.
+   - Array items: the list is virtualized and measures each row, so an item fallback that is
+     shorter or taller than the loaded row makes the rows below it jump. Match the row height.
 5. **Do not suspend on a document that does not exist yet.** A new document only exists once the
    first edit creates it, and SDK hooks that read the current document wait for it forever. Gate
    on `useFormValue(['_createdAt'])`: it is unset until the document exists.
