@@ -25,6 +25,8 @@ import {
  */
 const EVENT_DURATION_THRESHOLD = 16
 
+const PAINTED_ELEMENT_MAX_LENGTH = 120
+
 function install(): void {
   const events: EventTimingSample[] = []
   const loafs: LoafSample[] = []
@@ -33,7 +35,7 @@ function install(): void {
   const measures: MeasureSample[] = []
   const resources: ResourceSample[] = []
   const softNavigations: SoftNavigationSample[] = []
-  const interactionContentfulPaints: InteractionContentfulPaintSample[] = []
+  const largestPaintByInteraction = new Map<number, InteractionContentfulPaintSample>()
   let largestContentfulPaint: PaintSample | null = null
 
   function observe(
@@ -105,10 +107,10 @@ function install(): void {
     }
   })
 
-  // Describe a node compactly. data-testid first (stable across
+  // Describe a shifted node compactly. data-testid first (stable across
   // refactors), @sanity/ui's data-ui second, tag#id.class as the fallback —
-  // enough to find the element, small enough to store per entry.
-  function describeNode(node: Node | null | undefined): string {
+  // enough to find the element, small enough to store per shift.
+  function describeShiftedNode(node: Node | null | undefined): string {
     if (!node || !(node instanceof Element)) return '(detached)'
     const testId = node.getAttribute('data-testid')
     if (testId) return `[data-testid="${testId}"]`
@@ -133,7 +135,7 @@ function install(): void {
         startTime: shift.startTime,
         value: shift.value,
         hadRecentInput: shift.hadRecentInput,
-        sources: (shift.sources ?? []).map((source) => describeNode(source.node)),
+        sources: (shift.sources ?? []).map((source) => describeShiftedNode(source.node)),
         navigationId: navigationIdOf(shift),
       })
     }
@@ -175,19 +177,36 @@ function install(): void {
     }
   })
 
+  // The painted element's tag and the nearest data-testid, capped: every
+  // keystroke emits one of these, so the descriptor stays small
+  function describePaintedElement(element: Element | null | undefined): string {
+    if (!element) return '(detached)'
+    const tag = element.tagName.toLowerCase()
+    const testId = element.closest('[data-testid]')?.getAttribute('data-testid')
+    return (testId ? `${tag} in [data-testid="${testId}"]` : tag).slice(
+      0,
+      PAINTED_ELEMENT_MAX_LENGTH,
+    )
+  }
+
+  // Chrome emits a candidate per larger paint; only the largest per
+  // interaction is kept until the next take()
   observe('interaction-contentful-paint', (entries) => {
     for (const entry of entries) {
       const paint = entry as PerformanceEntry & {
         interactionId: number
         largestContentfulPaint?: {size: number; element: Element | null}
       }
-      interactionContentfulPaints.push({
+      const size = paint.largestContentfulPaint?.size ?? 0
+      const kept = largestPaintByInteraction.get(paint.interactionId)
+      if (kept && kept.size >= size) continue
+      largestPaintByInteraction.set(paint.interactionId, {
         interactionId: paint.interactionId,
         navigationId: navigationIdOf(paint),
         startTime: paint.startTime,
         duration: paint.duration,
-        size: paint.largestContentfulPaint?.size ?? 0,
-        element: describeNode(paint.largestContentfulPaint?.element),
+        size,
+        element: describePaintedElement(paint.largestContentfulPaint?.element),
       })
     }
   })
@@ -214,8 +233,9 @@ function install(): void {
         measures: measures.splice(0),
         resources: resources.splice(0),
         softNavigations: softNavigations.splice(0),
-        interactionContentfulPaints: interactionContentfulPaints.splice(0),
+        interactionContentfulPaints: [...largestPaintByInteraction.values()],
       }
+      largestPaintByInteraction.clear()
       return taken
     },
   }

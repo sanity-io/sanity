@@ -4,6 +4,7 @@ import {type ScenarioStep, type StepContext} from '../../../scenarios/types'
 import {
   milestoneMeasureName,
   navigateMeasureName,
+  navigationsWithoutSoftNavigation,
   resolveLocator,
   runStep,
   toTypeStep,
@@ -388,6 +389,42 @@ describe('runStep navigate', () => {
       message: '[readiness-timeout] navigation "open author" never reached /\\/author;author-1$/',
       diagnostics: ['console: boom'],
     })
+  })
+})
+
+describe('navigationsWithoutSoftNavigation', () => {
+  const softNavigation = (startTime: number) => ({
+    url: 'https://localhost:3411/test/structure/author;author-1',
+    navigationType: 'push',
+    navigationId: 2,
+    interactionId: 100,
+    startTime,
+    duration: 120,
+  })
+  const measure = (label: string, startTime: number) => ({
+    name: navigateMeasureName(label),
+    startTime,
+    duration: 400,
+  })
+
+  it('names the navigate labels Chrome recorded no soft navigation for', () => {
+    expect(
+      navigationsWithoutSoftNavigation(
+        [
+          measure('open author', 1000.4),
+          measure('open book', 3000.2),
+          measure('open author', 5000.7),
+          {name: 'bench:milestone:tool visible', startTime: 0, duration: 200},
+        ],
+        [softNavigation(1000), softNavigation(5001)],
+      ),
+    ).toEqual(['open book'])
+  })
+
+  it('returns nothing when every navigate has its soft navigation', () => {
+    expect(
+      navigationsWithoutSoftNavigation([measure('open author', 1000)], [softNavigation(1000)]),
+    ).toEqual([])
   })
 })
 

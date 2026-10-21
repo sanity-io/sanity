@@ -1,5 +1,6 @@
 import {type Locator, type Page} from 'playwright'
 
+import {type MeasureSample, type SoftNavigationSample} from '../../instrumentation/types'
 import {
   type InteractionTarget,
   type ScenarioStep,
@@ -167,6 +168,30 @@ async function awaitEditable(context: StepContext, field: string): Promise<void>
 /** The measure name a `navigate` step records (click → destination ready). */
 export function navigateMeasureName(label: string): string {
   return `bench:navigate:${label}`
+}
+
+const NAVIGATE_MEASURE_PREFIX = navigateMeasureName('')
+/** The click's timestamp and the soft navigation's startTime differ by rounding, never by a frame. */
+const SOFT_NAVIGATION_MATCH_MS = 16
+
+/**
+ * Labels of the `navigate` steps Chrome recorded no soft navigation for, in
+ * order: a navigate measure matches the soft navigation that starts at its
+ * click.
+ */
+export function navigationsWithoutSoftNavigation(
+  measures: MeasureSample[],
+  softNavigations: SoftNavigationSample[],
+): string[] {
+  return measures
+    .filter((measure) => measure.name.startsWith(NAVIGATE_MEASURE_PREFIX))
+    .filter((measure) =>
+      softNavigations.every(
+        (softNavigation) =>
+          Math.abs(softNavigation.startTime - measure.startTime) > SOFT_NAVIGATION_MATCH_MS,
+      ),
+    )
+    .map((measure) => measure.name.slice(NAVIGATE_MEASURE_PREFIX.length))
 }
 
 /** See the `navigate` step. */

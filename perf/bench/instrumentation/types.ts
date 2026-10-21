@@ -84,11 +84,11 @@ export interface SoftNavigationSample {
 }
 
 /**
- * An `interaction-contentful-paint` entry: the largest paint an interaction
- * caused so far. Emitted for every interaction that paints content, typing
- * included, and again whenever a larger paint lands, possibly after a later
- * take(). Soft LCP is the largest one whose `interactionId` matches the soft
- * navigation's.
+ * The largest `interaction-contentful-paint` entry an interaction caused
+ * since the last take(), one per interaction. Chrome emits these for every
+ * interaction that paints content, typing included, and a larger paint can
+ * land after a later take(), so take the largest per `interactionId` across
+ * drains.
  */
 export interface InteractionContentfulPaintSample {
   interactionId: number
@@ -98,7 +98,7 @@ export interface InteractionContentfulPaintSample {
   duration: number
   /** Painted area of the largest element, in px². */
   size: number
-  /** Compact descriptor of that element, as in `LayoutShiftSample.sources`. */
+  /** That element's tag and nearest `data-testid`, e.g. `span in [data-testid="field-title"]`. */
   element: string
 }
 
