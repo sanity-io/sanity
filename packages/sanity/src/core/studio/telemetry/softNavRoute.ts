@@ -1,3 +1,5 @@
+import {getStructurePaneKind} from './paneKindRegistry'
+
 const KNOWN_INTENT_NAMES = new Set(['create', 'edit', 'duplicate'])
 
 const OTHER = 'other'
@@ -26,15 +28,19 @@ function toIntentRoute(intentName: string | undefined): string {
   return `intent:${OTHER}`
 }
 
-function toStructurePaneKind(paneSegment: string | undefined): 'list' | 'document' {
-  const groups = (paneSegment ?? '').split(';').filter(Boolean)
-  // Assumes the common structure shape: list, then the document it opens, then a list inside it, and so on.
-  const depth = Math.max(groups.length - 1, 0)
-  return depth % 2 === 0 ? 'list' : 'document'
+function toStructureRegistryKey(paneSegment: string | undefined): string {
+  return (paneSegment ?? '')
+    .split(';')
+    .filter(Boolean)
+    .map((group) => group.split(',')[0])
+    .join(';')
 }
 
 function toToolRoute(toolName: string, firstToolSegment: string | undefined): string {
-  if (toolName === 'structure') return `structure:${toStructurePaneKind(firstToolSegment)}`
+  if (toolName === 'structure') {
+    const kind = getStructurePaneKind(toStructureRegistryKey(firstToolSegment)) ?? OTHER
+    return `structure:${kind}`
+  }
   return toolName
 }
 

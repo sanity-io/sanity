@@ -1,5 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
+import {recordStructurePaneKind} from '../paneKindRegistry'
 import {toSoftNavRoute} from '../softNavRoute'
 
 const STUDIO_ORIGIN = 'https://my-studio.sanity.studio'
@@ -14,27 +15,35 @@ function routeFor(path: string, basePath = '/'): string {
 }
 
 describe('toSoftNavRoute', () => {
-  it('classifies the root structure pane as a list', () => {
-    expect(routeFor('/structure')).toBe('structure:list')
-  })
+  it('classifies a list pane using the kind the structure tool recorded for that path', () => {
+    recordStructurePaneKind('author', 'list')
 
-  it('classifies a single-level structure pane as a list', () => {
     expect(routeFor('/structure/author')).toBe('structure:list')
   })
 
-  it('classifies a document pane opened from a list', () => {
+  it('classifies a document pane the same way', () => {
+    recordStructurePaneKind('author;knut', 'document')
+
     expect(routeFor('/structure/author;knut')).toBe('structure:document')
   })
 
-  it('classifies a document pane carrying params and a payload', () => {
-    expect(routeFor('/structure/author;knut,view=detail,eyJmb28iOiJiYXIifQ')).toBe(
+  it('looks up a pane carrying params and a payload by its id chain alone', () => {
+    recordStructurePaneKind('author;knut-with-params', 'document')
+
+    expect(routeFor('/structure/author;knut-with-params,view=detail,eyJmb28iOiJiYXIifQ')).toBe(
       'structure:document',
     )
   })
 
-  it('classifies nested panes by group depth parity (list, document, list, document)', () => {
-    expect(routeFor('/structure/author;knut;posts;my-post')).toBe('structure:document')
-    expect(routeFor('/structure/author;knut;posts')).toBe('structure:list')
+  it('classifies a nested list opened inside a list as a list', () => {
+    recordStructurePaneKind('photos', 'list')
+    recordStructurePaneKind('photos;featured', 'list')
+
+    expect(routeFor('/structure/photos;featured')).toBe('structure:list')
+  })
+
+  it('reports structure:other for a pane path nothing has recorded, rather than guessing', () => {
+    expect(routeFor('/structure/never-seen-before')).toBe('structure:other')
   })
 
   it('reports a bare tool name for non-structure tools, with no pane kind', () => {
@@ -67,14 +76,30 @@ describe('toSoftNavRoute', () => {
   })
 
   it('respects a non-root workspace basePath', () => {
-    expect(routeFor('/my-workspace/structure/author;knut', '/my-workspace')).toBe(
+    recordStructurePaneKind('author;knut-scoped', 'document')
+
+    expect(routeFor('/my-workspace/structure/author;knut-scoped', '/my-workspace')).toBe(
       'structure:document',
     )
   })
 
   it('never includes a document id, slug, or raw query string in the result', () => {
+    recordStructurePaneKind('author;very-specific-document-id-123', 'document')
+
     expect(routeFor('/structure/author;very-specific-document-id-123?foo=bar')).toBe(
       'structure:document',
     )
+  })
+
+  it('derives the route from the reported navigationURL, not from a later navigation', () => {
+    recordStructurePaneKind('author;first-opened', 'document')
+
+    const firstNavRoute = routeFor('/structure/author;first-opened')
+
+    // A metric can report after the user has already navigated again.
+    routeFor('/structure/second-opened')
+
+    expect(routeFor('/structure/author;first-opened')).toBe(firstNavRoute)
+    expect(firstNavRoute).toBe('structure:document')
   })
 })
