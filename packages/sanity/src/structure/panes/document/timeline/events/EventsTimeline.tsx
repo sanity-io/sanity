@@ -91,16 +91,13 @@ export const EventsTimeline = ({
   const handleExpandParent = useCallback(
     (event: DocumentGroupEvent) => async () => {
       const parentId = event.id
+      const isExpanding = !expandedParents.has(parentId)
 
-      let isExpanding = false
       setExpandedParents((prev) => {
         const next = new Set(prev)
 
         if (prev.has(parentId)) next.delete(parentId)
-        else {
-          isExpanding = true
-          next.add(parentId)
-        }
+        else next.add(parentId)
 
         return next
       })
@@ -118,7 +115,7 @@ export const EventsTimeline = ({
         })
       }
     },
-    [fetchEventChildren, setExpandingParents],
+    [expandedParents, fetchEventChildren, setExpandingParents],
   )
 
   const handleSelectChunk = useCallback(

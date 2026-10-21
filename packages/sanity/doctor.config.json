@@ -1,0 +1,41 @@
+{
+  "$schema": "https://react.doctor/schema/config.json",
+  "ignore": {
+    "overrides": [
+      {
+        "files": ["src/_singletons/**"],
+        "rules": ["import/consistent-type-specifier-style"]
+      },
+      {
+        "files": [
+          "src/core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizedArrayList.tsx",
+          "src/core/form/inputs/files/common/useAssetSourceUploader.ts",
+          "src/core/form/members/array/items/ArrayOfObjectsItem.tsx",
+          "src/core/form/members/object/fields/ArrayOfObjectsField.tsx",
+          "src/core/form/studio/assetSourceDataset/file/AssetRow.tsx",
+          "src/core/form/studio/assetSourceMediaLibrary/shared/UploadAssetDialog.tsx",
+          "src/core/perspective/navbar/useScrollIndicatorVisibility.ts",
+          "src/core/presence/overlay/WithIntersection.tsx",
+          "src/core/releases/tool/detail/documentTable/DocumentTableColumnDefs.tsx",
+          "src/presentation/overlays/PostMessageDocuments.tsx",
+          "src/structure/panes/document/documentPanel/header/hook/useChipScrollPosition.tsx"
+        ],
+        "rules": ["react-doctor/effect-needs-cleanup"]
+      },
+      {
+        "files": [
+          "src/core/form/inputs/PortableText/PortableTextInput.tsx",
+          "src/core/form/inputs/PortableText/hooks/useMemberValidation.tsx",
+          "src/core/form/inputs/PortableText/hooks/usePortableTextMembers.tsx",
+          "src/core/form/studio/contexts/Presence.tsx"
+        ],
+        "rules": ["react-doctor/no-ref-current-in-render"]
+      }
+    ]
+  },
+
+  "rules": {
+    "react-doctor/require-reduced-motion": "off",
+    "react-doctor/no-layout-property-animation": "warn"
+  }
+}

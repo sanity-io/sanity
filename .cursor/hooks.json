@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "command": "node .cursor/hooks/react-doctor.mjs",
+        "matcher": "Write|Edit|MultiEdit|ApplyPatch",
+        "timeout": 120
+      }
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+# React Doctor — advisory scan using the local npm package (not the GitHub Action).
+#
+# Docs: https://www.react.doctor
+# Source: https://github.com/millionco/react-doctor
+
+name: React Doctor
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: ["main"]
+
+permissions: {}
+
+concurrency:
+  group: react-doctor-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  react-doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Scan changed files
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            BASE="origin/${BASE_REF}"
+          else
+            BASE="HEAD~1"
+          fi
+          pnpm doctor -- --yes --no-score --blocking none --scope changed --base "$BASE" --project sanity
