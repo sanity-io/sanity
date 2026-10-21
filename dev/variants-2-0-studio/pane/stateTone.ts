@@ -11,8 +11,13 @@ export interface StateTone {
 }
 
 export function stateToneOf(perspective: string | undefined): StateTone {
+  // The stock navbar names no perspective for Drafts (it is the default), so a missing name is Drafts too.
   const name =
-    perspective === 'drafts' ? 'caution' : perspective === 'published' ? 'positive' : 'default'
+    perspective === undefined || perspective === 'drafts'
+      ? 'caution'
+      : perspective === 'published'
+        ? 'positive'
+        : 'default'
   return {
     bg: `var(--card-badge-${name}-bg-color)`,
     icon: `var(--card-badge-${name}-icon-color)`,

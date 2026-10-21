@@ -50,6 +50,8 @@ export function AddressChip(props: {
   height?: number
   /** Extra horizontal padding in px on each button (the navbar pill is roomier than the row chip). */
   paddingX?: number
+  /** No outline: the chip sits on a base of its own (the open beta navbar's section). */
+  borderless?: boolean
 }) {
   const {
     text,
@@ -63,6 +65,7 @@ export function AddressChip(props: {
     captureEl,
     height = 25,
     paddingX,
+    borderless = false,
   } = props
   // The room is between the icons and the edges: the main button has it on the left (its chevron stays at the right end), the cross on both sides.
   const inner = chipInner(height)
@@ -76,7 +79,7 @@ export function AddressChip(props: {
   return (
     // UI-CONSISTENCY section 2: 25px including the 1px border, so the buttons inside are 23px.
     <Card
-      border
+      border={!borderless}
       data-testid={testId}
       radius={CHIP_SHAPE === 'round' ? 'full' : 2}
       ref={captureEl}

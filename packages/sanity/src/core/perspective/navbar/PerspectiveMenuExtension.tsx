@@ -1,4 +1,4 @@
-import {type ReactNode, useContext} from 'react'
+import {type CSSProperties, type ReactNode, useContext} from 'react'
 import {PerspectiveMenuExtensionContext} from 'sanity/_singletons'
 
 /**
@@ -36,6 +36,16 @@ export interface PerspectiveMenuExtension {
     above: number
     placeholder: string
     empty: (query: string) => ReactNode
+  }
+  /**
+   * One grey section that holds the whole global perspective (the open beta navbar): a `leading` mark before the state control and a `trailing`
+   * control after it (the Variants control). The state control becomes a borderless white chip inside it, and the section takes `style`
+   * (its base, by state, radius and padding) instead of the stock bordered pill.
+   */
+  section?: {
+    leading?: ReactNode
+    trailing?: ReactNode
+    style?: CSSProperties
   }
 }
 

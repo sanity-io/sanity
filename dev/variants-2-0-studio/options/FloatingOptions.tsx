@@ -18,6 +18,7 @@ import {
 import {useOptionAExtension} from '../c1/Controls'
 import {renderPickerAddFilter} from '../c1/PickerAddFilter'
 import {PerspectiveProvider} from '../c1/state'
+import {useNavbarSection} from '../c1/useNavbarSection'
 import {useRowOverride} from '../c3/RowOverride'
 import {EditNotice} from '../c6/EditNotice'
 import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
@@ -52,7 +53,14 @@ const EXTENSIONS = {
 
 /** The perspective menu's extension is a value: this calls the hook that builds it (it reads the perspective state) and provides the result. */
 function PerspectiveMenuHost({children}: {children: ReactNode}) {
-  const extension = useOptionAExtension()
+  const base = useOptionAExtension()
+  const section = useNavbarSection()
+  const c1 = useOption('c1')
+  // C1 B (the open beta navbar): the global perspective is one grey section.
+  const extension = useMemo(
+    () => (c1 === 'b' && base ? {...base, section} : base),
+    [base, section, c1],
+  )
   return (
     <PerspectiveMenuExtensionProvider value={extension}>
       {children}

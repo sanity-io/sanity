@@ -13,6 +13,8 @@ import {useVariantDefinitions} from './world'
 
 /** The stock state pill's height (33px with its border): the two controls are the same size. */
 const NAVBAR_HEIGHT = 33
+/** The chips inside the grey section (4 px of base around them). */
+const SECTION_HEIGHT = 25
 /** Padding between the icons and the pill's edges, so it is as roomy as the stock pill; the chevron stays at the right end. */
 const PADDING_X = 14
 const CHEVRON_INSET = 4
@@ -26,7 +28,9 @@ const RESTING_LABEL = 'Default'
  * It owns no state. The router's `variant` param is the only copy of the choice: this reads it (through `chosen`, derived from it in the locked
  * navbar) and writes it. Open beta has one dimension, so the picker is one flat list with a Default row; a click always opens it.
  */
-export function OpenBetaVariants() {
+export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
+  // In the navbar's grey section the control is a white chip without an outline, 29 px tall, like the state control beside it.
+  const height = inSection ? SECTION_HEIGHT : NAVBAR_HEIGHT
   const {chosen, dimensions} = usePerspectiveState()
   const definitions = useVariantDefinitions()
   const setVariant = useSetVariant()
@@ -54,7 +58,8 @@ export function OpenBetaVariants() {
       {value ? (
         <AddressChip
           accessibleName={`${dimension.title}: ${valueTitle(dimension, value)}`}
-          height={NAVBAR_HEIGHT}
+          borderless={inSection}
+          height={height}
           icon={<DimensionIcon name={dimension.name} style={ICON_STYLE} />}
           paddingX={PADDING_X}
           onOpen={() => setOpen(true)}
@@ -66,7 +71,7 @@ export function OpenBetaVariants() {
         />
       ) : (
         // Resting: the same outlined capsule as the applied control and the stock state pill, with nothing in it but the label.
-        <Card border radius="full" style={{height: NAVBAR_HEIGHT, overflow: 'hidden'}}>
+        <Card border={!inSection} radius="full" style={{height, overflow: 'hidden'}}>
           <Button
             data-testid="variants-button"
             icon={<DimensionIcon name={dimension.name} style={ICON_STYLE} />}
@@ -75,8 +80,8 @@ export function OpenBetaVariants() {
             onClick={() => setOpen(true)}
             style={{
               borderRadius: 0,
-              height: NAVBAR_HEIGHT - 2,
-              minHeight: NAVBAR_HEIGHT - 2,
+              height: inSection ? height : height - 2,
+              minHeight: inSection ? height : height - 2,
               paddingLeft: PADDING_X,
               paddingRight: CHEVRON_INSET,
             }}

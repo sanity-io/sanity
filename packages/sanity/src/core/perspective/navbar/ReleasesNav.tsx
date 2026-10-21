@@ -56,15 +56,10 @@ export const ReleasesNav: ComponentType<Props> = ({
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   // PROPOSED: a host may add a suffix after the label.
   const extension = usePerspectiveMenuExtension()
-  return (
-    <ReleasesNavContainer
-      flex="none"
-      tone="inherit"
-      radius="full"
-      data-ui="ReleasesNav"
-      border={border}
-    >
-      {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
+  // PROPOSED: a host's section holds the state control and its own controls in one base (no border; the state control is a white chip inside it).
+  const section = extension?.section
+  const state = (
+    <>
       {extension?.onLabelClick ? (
         // PROPOSED: the label and suffix become one control (the host toggles something with it).
         // The capture phase keeps a release label's own link from navigating.
@@ -100,6 +95,39 @@ export const ReleasesNav: ComponentType<Props> = ({
         areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
         menuItemProps={menuItemProps}
       />
+    </>
+  )
+  return (
+    <ReleasesNavContainer
+      flex="none"
+      tone="inherit"
+      radius="full"
+      data-ui="ReleasesNav"
+      border={section ? false : border}
+      data-section={section ? '' : undefined}
+      style={section?.style}
+    >
+      {!section && withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
+      {section ? (
+        <>
+          {section.leading}
+          <div
+            data-testid="perspective-section-state"
+            style={{
+              alignItems: 'center',
+              background: 'var(--card-bg-color)',
+              borderRadius: 9999,
+              display: 'flex',
+            }}
+          >
+            {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
+            {state}
+          </div>
+          {section.trailing}
+        </>
+      ) : (
+        state
+      )}
     </ReleasesNavContainer>
   )
 }

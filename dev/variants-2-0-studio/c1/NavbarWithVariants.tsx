@@ -7,7 +7,6 @@ import {LocalePill} from '../localization/LocalePill'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {AddressRow} from './AddressRow'
 import {NavLayoutStyles} from './NavLayout'
-import {OpenBetaVariants} from './OpenBetaVariants'
 
 /**
  * Studio's navbar plus C1:
@@ -22,7 +21,6 @@ export function NavbarWithVariants(props: NavbarProps) {
   const navLayout = useOption('navLayout')
   const inNavbar = navLayout === 'c'
   const renderInline = useCallback(() => <AddressRow inline />, [])
-  const renderVariants = useCallback(() => <OpenBetaVariants />, [])
   const renderLocale = useCallback(() => <LocalePill />, [])
   // The localization switch C (field-level) and D (both): a locale pill after Variants, drawn from the language filter's state.
   const localization = useOption('localization')
@@ -33,12 +31,8 @@ export function NavbarWithVariants(props: NavbarProps) {
       ? [{location: 'topbar' as const, name: 'locale-pill', render: renderLocale}]
       : []
     // C1 B: the stock state control stays as it is, and ONE control is added: Variants. No row.
-    if (option === 'b')
-      return [
-        ...base,
-        {location: 'topbar' as const, name: 'open-beta-variants', render: renderVariants},
-        ...locale,
-      ]
+    // The Variants control is inside the grey section the state control draws (see useOptionAExtension), so it is not a separate action.
+    if (option === 'b') return [...base, ...locale]
     // navLayout C: the whole global perspective inside the navbar (the row under it is removed).
     return inNavbar && option !== STOCK_OPTION && option !== 'c'
       ? [
@@ -47,15 +41,7 @@ export function NavbarWithVariants(props: NavbarProps) {
           ...locale,
         ]
       : [...base, ...locale]
-  }, [
-    option,
-    inNavbar,
-    localePill,
-    props.__internal_actions,
-    renderVariants,
-    renderInline,
-    renderLocale,
-  ])
+  }, [option, inNavbar, localePill, props.__internal_actions, renderInline, renderLocale])
   return (
     <>
       <NavLayoutStyles />
