@@ -1,5 +1,6 @@
 /* oxlint-disable typescript/no-deprecated -- marker and Rule compatibility require legacy internals */
 import {type SanityClient} from '@sanity/client'
+import {markInternalValidator} from '@sanity/schema/_internal'
 import {
   isKeyedObject,
   isTypedObject,
@@ -31,7 +32,6 @@ import {ClientUnavailableError} from './clientUnavailable'
 import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
 import {type LocaleSource} from './i18n/types'
-import {markInternalValidator} from './internalValidators'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
 import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'

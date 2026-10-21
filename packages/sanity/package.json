@@ -253,6 +253,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
+    "@sanity/schema-descriptor-utils": "catalog:",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.18",
     "@storybook/react-vite": "^10.6.2",
