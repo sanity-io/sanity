@@ -1,0 +1,7 @@
+/*
+ * The stylesheet `@pandacss/vite` (vitest.browser.config.mts) fills with the CSS of the package's
+ * `.css.ts` modules: Panda treats the CSS file that declares its layers as the generated CSS root.
+ * `removeCascadeLayers()` then takes the layers out again, so the suite renders the rules unlayered
+ * like the published `bundle.css`.
+ */
+@layer reset, base, tokens, recipes, utilities;

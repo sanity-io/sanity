@@ -40,7 +40,8 @@
     "vite": "catalog:"
   },
   "devDependencies": {
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@pandacss/vite": "catalog:",
+    "@sanity/pandacss-tsdown-plugin": "catalog:",
     "@types/react": "catalog:",
     "oxc-transform-react": "catalog:",
     "rimraf": "catalog:"

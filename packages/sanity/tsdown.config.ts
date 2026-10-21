@@ -25,16 +25,21 @@ export default defineConfig({
   // `babel-plugin-react-compiler` pass
   reactCompiler: {transform: 'oxc', target: '19'},
   styledComponents: true,
-  // Extracts the CSS from vanilla-extract `.css.ts` files into `lib/bundle.css` and wires up the
-  // conditional `./bundle.css` export pattern (self-referential import + node shim), like the
-  // `rollup: {vanillaExtract: true}` option in `@sanity/pkg-utils` did.
+  // Rewrites the `css()` calls of the Panda CSS `.css.ts` files (panda.config.ts) into class
+  // names, extracts their CSS into `lib/bundle.css` and wires up the conditional `./bundle.css`
+  // export pattern (self-referential import + node shim), like the `rollup: {vanillaExtract: true}`
+  // option in `@sanity/pkg-utils` did for vanilla-extract.
   // The `import 'sanity/bundle.css'` this injects into the entry barrels is also why package.json
   // declares `sideEffects: true`: with `false` or a `*.css` allowlist, bundlers bypass the
   // side-effect-free barrels and eliminate the bare CSS import together with them, before the
-  // stylesheet's own side-effect status is ever consulted (see #13322 and #13332)
-  // `identifiers: 'safe'` includes the package version in the class-name hash so a release
-  // cannot reuse the previous release's names (SAPP-4639).
-  vanillaExtract: {identifiers: 'safe'},
+  // stylesheet's own side-effect status is ever consulted (see #13322 and #13332).
+  // The stylesheet stays unminified so the diff between two published versions is readable, and
+  // ships without Panda's cascade layers: CSS outside any layer beats every layered rule
+  // regardless of specificity, so a layered stylesheet would lose its hover, focus and selected
+  // states to any unlayered rule of a consumer — styled-components output, a reset like
+  // Tailwind's preflight, the studio's own GlobalStyle. `cascadeLayers: false` orders the rules
+  // the way the layers did and leaves every selector as specific as it was.
+  panda: {minify: false, cascadeLayers: false},
   define: {
     // Injects the version `SANITY_VERSION` reports (see `src/core/version.ts`). An explicit
     // env var wins so preview releases can attach their own version (see pkg-pr-new.yml),

@@ -24,7 +24,8 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.6.0",
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@pandacss/vite": "catalog:",
+    "@sanity/pandacss-tsdown-plugin": "catalog:",
     "@storybook/addon-vitest": "^10.6.3",
     "@storybook/react-vite": "^10.6.3",
     "@types/react": "catalog:",

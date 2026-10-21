@@ -1,9 +1,7 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const contentFlex = style({
-  selectors: {
-    '&&': {
-      minHeight: '100px',
-    },
+export const contentFlex = css({
+  '&&': {
+    minHeight: '100px',
   },
 })

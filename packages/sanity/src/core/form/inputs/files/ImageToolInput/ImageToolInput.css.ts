@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const placeholder = style({
+export const placeholder = css({
   minHeight: '6em',
 })

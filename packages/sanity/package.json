@@ -34,6 +34,9 @@
   "type": "module",
   "sideEffects": true,
   "types": "./lib/index.d.ts",
+  "imports": {
+    "#styled-system/*": "./styled-system/*/index.js"
+  },
   "exports": {
     ".": {
       "monorepo": "./src/_exports/index.ts",
@@ -101,6 +104,7 @@
     "./package.json": "./package.json"
   },
   "publishConfig": {
+    "imports": {},
     "exports": {
       ".": "./lib/index.js",
       "./_dangerously_use_private_internals_that_do_not_follow_semver": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver.js",
@@ -130,6 +134,7 @@
     "build": "tsdown",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "coverage": "vitest --coverage",
+    "prepare": "panda codegen",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:browser": "vitest run -c vitest.browser.config.mts",
@@ -195,7 +200,6 @@
     "@sanity/validation": "workspace:*",
     "@sentry/react": "^11.8.0",
     "@tanstack/react-virtual": "^3.14.19",
-    "@vanilla-extract/dynamic": "catalog:",
     "@xstate/react": "^6.1.0",
     "clsx": "^2.1.1",
     "color2k": "^2.0.4",
@@ -249,12 +253,14 @@
   },
   "devDependencies": {
     "@chromatic-com/vitest": "^1.0.1",
+    "@pandacss/dev": "catalog:",
+    "@pandacss/vite": "catalog:",
     "@repo/package.bundle": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
+    "@sanity/pandacss-tsdown-plugin": "catalog:",
     "@sanity/schema-descriptor-utils": "catalog:",
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.18",
     "@storybook/react-vite": "^10.6.2",
     "@testing-library/jest-dom": "^7.0.1",
@@ -270,7 +276,6 @@
     "@types/speakingurl": "^13.0.6",
     "@types/use-sync-external-store": "^1.7.0",
     "@types/wicg-task-scheduling": "^2024.1.0",
-    "@vanilla-extract/css": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "blob-polyfill": "^9.0.20240710",

@@ -12,6 +12,9 @@ packages:
   - packages/sanity/fixtures/examples/*
 
 allowBuilds:
+  # Panda CSS dependency; its postinstall is only a fallback downloader, the native binary arrives
+  # through platform-specific optionalDependencies
+  '@parcel/watcher': false
   '@playwright/browser-chromium': false
   '@swc/core': false
   better-sqlite3: false
@@ -25,9 +28,12 @@ allowBuilds:
 catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
+  '@pandacss/dev': ^2.2.0
+  '@pandacss/vite': ^2.2.0
   '@playwright/test': 1.64.0
   '@sanity/client': ^8.10.1
   '@sanity/migrate': ^8.0.5
+  '@sanity/pandacss-tsdown-plugin': ^0.3.0
   '@sanity/schema-descriptor-utils': 1.3.3
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.31.2
