@@ -978,6 +978,13 @@ label neither starts a run nor cancels one in flight. Pushes to `main` are never
 what keeps the auto-accepted baselines current for labeled PRs to diff against. The Playwright
 e2e snapshots are uploaded by `e2e.yml` and are not part of this gate.
 
+A Playwright archive captures the DOM as it is at the `takeChromaticSnapshot` call, so wait for
+every region it will show, not just the one the spec is about: the navbar settles long before the
+tool below it, whose panes lazy-load behind a `LoadingPane` spinner. `takeChromaticSnapshot` waits
+out visible `LoadingBlock`s as a backstop. Content that cannot settle under the archive fixture at
+all — document previews, whose listener the fixture's CDP instrumentation breaks — belongs in
+`test.use({ignoreSelectors: [...]})` rather than in a wait that would time out.
+
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
 pnpm build:storybook                  # Static build via turbo (dev/storybook/storybook-static)
