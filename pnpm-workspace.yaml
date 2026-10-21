@@ -56,7 +56,7 @@ catalog:
   styled-components: ^6.6.0
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
-  ui5: npm:@sanity/ui@5.0.0-alpha.14
+  ui5: npm:@sanity/ui@5.0.0-alpha.15
   tsdown: ^0.23.1
   typescript: ^7.0.2
   vite: ^8.3.4
