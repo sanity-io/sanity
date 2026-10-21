@@ -6,7 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "sanity build",
-    "dev": "sanity dev --port 3351",
+    "dev": "sanity dev --port 3333",
     "seed": "node seed/seed.mts",
     "start": "sanity preview --port 3351"
   },

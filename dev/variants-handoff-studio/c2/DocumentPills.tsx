@@ -57,6 +57,10 @@ function DropdownPill(props: {
     search?: Omit<SearchFields, 'title'>
   }[]
   testId: string
+  /** The leading glyph, as the stock Published and Draft chips have one: it gives the pill their left inset and size. */
+  icon: ReactElement
+  /** The perspective in view is one of its entries (a release): marked like the stock chips mark theirs. */
+  selected?: boolean
 }) {
   const [query, setQuery] = useState('')
   // An option is a top-level item with the indented items under it.
@@ -77,8 +81,14 @@ function DropdownPill(props: {
       button={
         <Chip
           data-testid={props.testId}
+          icon={props.icon}
           iconRight={ChevronDownIcon}
           mode="ghost"
+          // The chevron's glyph sits 0.7px inside its box: the right inset is taken to the glyph, so it ends 12px from the edge like the
+          // stock chips' text does.
+          paddingRight={0}
+          selected={props.selected}
+          style={{paddingRight: 11.3}}
           text={props.text}
         />
       }
@@ -213,6 +223,7 @@ export function DocumentPillsV1({
     >
       {variants.length ? (
         <DropdownPill
+          icon={<RhombusIcon />}
           items={variantItems}
           testId="pills-variants"
           text={`Variants · ${variants.length}`}
@@ -252,7 +263,10 @@ export function DocumentPillsV1({
       ) : null}
       {releases.length ? (
         <DropdownPill
+          // The release glyph its menu rows use: the release in view, else the first one.
+          icon={glyph(releases.find((v) => v.bundleId === current) ?? releases[0])}
           items={releaseGroups}
+          selected={releases.some((v) => v.bundleId === current)}
           testId="pills-releases"
           text={`Releases · ${releaseCount}`}
         />
