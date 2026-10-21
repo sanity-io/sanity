@@ -100,31 +100,18 @@ function isSeedableInitialValue(value: unknown): boolean {
   return value !== undefined && value !== null && value !== ''
 }
 
-// Title and Description sit on the card edge, one dialog gap (--space-5) apart.
-// The form gutter is an empty column on this surface, so pull the builder back
-// by that column and its gap. Nested rows stay in the body cell, and Sign-off's
-// children keep the fieldset indent.
-//
-// The object stack is --space-6, and each field header pads the label. Cancel
-// the pad so the gap from one control to the next label matches Title to
-// Description. Fieldset legends only have the header pad; primitive labels add
-// another --space-1, so drop that extra before measuring the stack.
-const MetadataFormGutterAlign = styled.div`
+// Title and Description use the dialog gap and have no gutter column. This form
+// is the only surface that has to meet them: shift it back by the empty gutter,
+// and give its own stack that same gap. A field header already pads its label
+// by --space-2, so that pad counts as part of the gap. Nested fields keep the
+// document form's stack and indent.
+const MetadataFormAlign = styled.div`
   ${(props) => formGutterCustomProperties(props.theme)}
   margin-inline: calc((var(--formGutterSize) + var(--formGutterGap)) * -1);
   margin-block-start: calc(var(--space-2) * -1);
 
   & > [data-ui='VStack'] {
     gap: calc(var(--space-5) - var(--space-2));
-  }
-
-  &
-    > [data-ui='VStack']
-    > [data-testid^='field-']
-    [data-ui='fieldHeaderContentBox']
-    > [data-ui='VStack']
-    > [data-ui='Flex'] {
-    padding-top: 0;
   }
 `
 
@@ -295,7 +282,7 @@ function ReleaseMetadataFieldsForm(
 
   return (
     <ChangeIndicatorsTracker>
-      <MetadataFormGutterAlign
+      <MetadataFormAlign
         data-gutter={gutterEnabled ? 'true' : undefined}
         data-testid="release-metadata-form-align"
       >
@@ -326,7 +313,7 @@ function ReleaseMetadataFieldsForm(
           hasBaseVariant={false}
           changesOpen={false}
         />
-      </MetadataFormGutterAlign>
+      </MetadataFormAlign>
     </ChangeIndicatorsTracker>
   )
 }
