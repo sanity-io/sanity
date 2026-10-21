@@ -1,5 +1,11 @@
 import {useMemo} from 'react'
-import {prepareForPreview, useTranslation, useValuePreview, isGoingToUnpublish} from 'sanity'
+import {
+  EMPTY_ARRAY,
+  prepareForPreview,
+  useTranslation,
+  useValuePreview,
+  isGoingToUnpublish,
+} from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
@@ -62,8 +68,11 @@ export function useDocumentTitle(): UseDocumentTitle {
     enabled: subscribed && !isDeleted,
     schemaType,
     value: documentValue,
-    // Documents that are going to be unpublished need to be handled specially
-    perspectiveStack: editState?.version && isGoingToUnpublish(editState?.version) ? [] : undefined,
+    // Documents that are going to be unpublished need to be handled specially.
+    // EMPTY_ARRAY (not an inline `[]`) so the observable memo inside
+    // useValuePreview keeps a stable key while this state holds.
+    perspectiveStack:
+      editState?.version && isGoingToUnpublish(editState?.version) ? EMPTY_ARRAY : undefined,
   })
 
   if (connectionState === 'connecting' && !subscribed) {

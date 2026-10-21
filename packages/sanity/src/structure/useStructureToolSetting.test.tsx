@@ -16,7 +16,11 @@ const keyValueStore = {
   getKey: (key: string) => merge(of(stored.get(key) ?? null), NEVER),
   setKey,
 }
-vi.mock('sanity', () => ({
+// Partial mock: the hook also uses the real `useShallowUnique` to stabilize
+// `defaultValue`, and these tests cover exactly the key/default-change
+// behavior it affects.
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   useKeyValueStore: () => keyValueStore,
 }))
 

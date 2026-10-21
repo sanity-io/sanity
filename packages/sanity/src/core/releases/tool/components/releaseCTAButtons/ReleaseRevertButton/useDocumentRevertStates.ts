@@ -11,6 +11,7 @@ import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
 import {useStudioErrorHandler} from '../../../../../studio/requestErrors/useStudioErrorHandler'
 import {getPublishedId} from '../../../../../util/draftUtils'
+import {useShallowUnique} from '../../../../../util/useShallowUnique'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
 import {type DocumentInRelease} from '../../../detail/types'
 
@@ -201,11 +202,15 @@ function historyUnavailable(documentId: string, message: string): DocumentRevert
  * known target.
  */
 export const useDocumentRevertStates = (
-  releaseDocuments: DocumentInRelease[],
+  unstableReleaseDocuments: DocumentInRelease[],
 ): DocumentRevertStates | null => {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
   const errorHandler = useStudioErrorHandler()
+  // Keyed on contents so a rebuilt-but-equal array does not refetch the
+  // transaction log and revert revisions (the observable identity below
+  // feeds react-rx).
+  const releaseDocuments = useShallowUnique(unstableReleaseDocuments)
   const publishTransactionId = releaseDocuments[0]?.document._rev
   const {dataset} = client.config()
 
