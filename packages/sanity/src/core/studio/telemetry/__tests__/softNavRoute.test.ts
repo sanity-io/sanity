@@ -27,12 +27,18 @@ describe('toSoftNavRoute', () => {
     expect(routeFor('/structure/author;knut')).toBe('structure:document')
   })
 
-  it('looks up a pane carrying params and a payload by its id chain alone', () => {
-    recordStructurePaneKind('author;knut-with-params', 'document')
+  it('looks up a pane carrying params by its id chain alone, decoding the group the router encodes', () => {
+    recordStructurePaneKind('book;book-a', 'document')
 
-    expect(routeFor('/structure/author;knut-with-params,view=detail,eyJmb28iOiJiYXIifQ')).toBe(
-      'structure:document',
-    )
+    const encodedGroup = encodeURIComponent('book-a,inspect=sanity%2Fstructure%2Fvalidation')
+    expect(routeFor(`/structure/book;${encodedGroup}`)).toBe('structure:document')
+  })
+
+  it('looks up a split-pane group by its first sibling, decoding the group the router encodes', () => {
+    recordStructurePaneKind('book;book-a', 'list')
+
+    const encodedGroup = encodeURIComponent('book-a|,')
+    expect(routeFor(`/structure/book;${encodedGroup}`)).toBe('structure:list')
   })
 
   it('classifies a nested list opened inside a list as a list', () => {
@@ -44,6 +50,10 @@ describe('toSoftNavRoute', () => {
 
   it('reports structure:other for a pane path nothing has recorded, rather than guessing', () => {
     expect(routeFor('/structure/never-seen-before')).toBe('structure:other')
+  })
+
+  it('reports structure:other for a group with a malformed percent-encoding', () => {
+    expect(routeFor('/structure/author;%E0%A4%A')).toBe('structure:other')
   })
 
   it('reports a bare tool name for non-structure tools, with no pane kind', () => {

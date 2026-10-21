@@ -28,19 +28,33 @@ function toIntentRoute(intentName: string | undefined): string {
   return `intent:${OTHER}`
 }
 
-function toStructureRegistryKey(paneSegment: string | undefined): string {
-  return (paneSegment ?? '')
+function decodePaneSegment(paneSegment: string): string | undefined {
+  try {
+    return decodeURIComponent(paneSegment)
+  } catch {
+    return undefined
+  }
+}
+
+function toStructureRegistryKey(decodedSegment: string): string {
+  return decodedSegment
     .split(';')
     .filter(Boolean)
-    .map((group) => group.split(',')[0])
+    .map((group) => group.split('|')[0].split(',')[0])
     .join(';')
 }
 
+function toStructurePaneKind(paneSegment: string | undefined): string {
+  // The structure router percent-encodes each ';'-separated group as a whole
+  // (encodePanesSegment), so a group's ',' params and '|' split-pane siblings
+  // only become literal again once decoded.
+  const decodedSegment = decodePaneSegment(paneSegment ?? '')
+  if (decodedSegment === undefined) return OTHER
+  return getStructurePaneKind(toStructureRegistryKey(decodedSegment)) ?? OTHER
+}
+
 function toToolRoute(toolName: string, firstToolSegment: string | undefined): string {
-  if (toolName === 'structure') {
-    const kind = getStructurePaneKind(toStructureRegistryKey(firstToolSegment)) ?? OTHER
-    return `structure:${kind}`
-  }
+  if (toolName === 'structure') return `structure:${toStructurePaneKind(firstToolSegment)}`
   return toolName
 }
 
