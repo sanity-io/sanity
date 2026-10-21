@@ -52,6 +52,12 @@ export interface MemberItemProps {
   renderBlock?: RenderBlockCallback
   renderInlineBlock?: RenderBlockCallback
   renderItem: RenderArrayOfObjectsItemCallback
+  /**
+   * Item renderer forwarded into the item input. Defaults to `renderItem`.
+   * Grid items render their own card, but nested arrays must keep the resolved
+   * item component instead of inheriting that card.
+   */
+  renderInputItem?: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderPreview: RenderPreviewCallback
@@ -72,8 +78,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderInlineBlock,
     renderInput,
     renderItem,
+    renderInputItem,
     renderPreview,
   } = props
+  const inputRenderItem = renderInputItem ?? renderItem
   const {t} = useTranslation()
 
   const {
@@ -347,7 +355,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       renderField,
       renderInlineBlock,
       renderInput,
-      renderItem,
+      renderItem: inputRenderItem,
       renderPreview,
       schemaType: member.item.schemaType,
       validation: member.item.validation,
@@ -392,7 +400,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderField,
     renderInlineBlock,
     renderInput,
-    renderItem,
+    inputRenderItem,
     renderPreview,
   ])
 
