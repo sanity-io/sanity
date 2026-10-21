@@ -6,7 +6,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Text, Flex, Grid, VStack} from 'ui5'
+import {Text, Flex, Grid, VStack, Link} from 'ui5'
 
 import {CALIBRATION_EXPLAINER, type TrendTag} from './data'
 import {type DebugSource} from './debugData'
@@ -110,9 +110,14 @@ function Headline(props: {latest: SqrlLatest; series: SqrlPoint[]; asOfMs: numbe
       <ChangeRow change={changes.sinceThirtyDays} label="since 30 days ago" />
       <Text size={1} muted as="div" trim={true}>
         Commit{' '}
-        <a href={commitUrl(latest.git.sha)} target="_blank" rel="noreferrer">
+        <Link
+          href={commitUrl(latest.git.sha)}
+          openInNewTab
+          underlined={false}
+          style={{color: 'var(--card-link-color)'}}
+        >
           {latest.git.sha.slice(0, 7)}
-        </a>
+        </Link>
         {Number.isFinite(committedMs) ? ` · ${formatCommitDate(committedMs)}` : ''}
       </Text>
     </VStack>

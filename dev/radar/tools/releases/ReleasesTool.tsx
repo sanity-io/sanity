@@ -390,7 +390,7 @@ export function ReleasesTool() {
               <Flex alignItems="center" gap={3}>
                 <Box style={{flexShrink: 0}}>
                   <Flex as={Text} size={1} weight="medium" alignItems="center" gap={2}>
-                    <Icon size={1} icon={SanityMonogram} style={ICON_IN_FLEX} />
+                    <Icon size={1} icon={SanityMonogram} style={{marginRight: '-0.375rem'}} />
                     <span>Test Studio Path</span>
                   </Flex>
                 </Box>

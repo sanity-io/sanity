@@ -5,8 +5,8 @@ import {Badge, type BadgeTone, Button, Card} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
-import {useDocumentStore} from 'sanity'
-import {Text, Container, Flex, Box, VStack} from 'ui5'
+import {InlineCode, useDocumentStore} from 'sanity'
+import {Text, Container, Flex, Box, VStack, Link} from 'ui5'
 
 import {formatValue} from '../trends/data'
 import {ciRunUrl, commitUrl, dispatchRunsUrl} from '../trends/links'
@@ -84,10 +84,10 @@ export function ComparisonsTool() {
             </Text>
             <Card padding={3} radius={2} tone="transparent" border>
               <Text size={1} as="div" trim={true}>
-                <code>
+                <InlineCode>
                   gh workflow run bench.yml -R sanity-io/sanity -f ab_from=&lt;sha&gt; -f
                   ab_to=&lt;sha&gt;
-                </code>
+                </InlineCode>
               </Text>
             </Card>
             {/* A dispatched run takes ~30 minutes to land here; the runs list
@@ -221,9 +221,9 @@ function ShaLink(props: {sha: string | undefined}) {
   }
   return (
     <Text size={1} as="div" trim={true}>
-      <a href={commitUrl(sha)} target="_blank" rel="noreferrer">
-        <code>{sha.slice(0, 10)}</code>
-      </a>
+      <Link href={commitUrl(sha)} openInNewTab underlined={false}>
+        <InlineCode>{sha.slice(0, 10)}</InlineCode>
+      </Link>
     </Text>
   )
 }
