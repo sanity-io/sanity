@@ -25,7 +25,7 @@ async function open(path: string, width = 1440) {
   await p.waitForTimeout(7000)
   return {p, context}
 }
-const LOCKED = 'show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a'
+const LOCKED = 'show.a,stage.open-beta,navLayout.b,c1.d,c2.c,c4.a'
 const DOC = 'book;book-lighthouse'
 const url = (extra = '') => `/structure/${DOC}${extra}?design=${LOCKED}&perspective=drafts`
 const count = (p: Page, id: string) => p.getByTestId(id).count()
@@ -419,11 +419,7 @@ const pickMember = async (p: Page) => {
       .getByTestId('document-pane')
       .getByText(/^Showing /)
       .count()) === 0 &&
-      (await p
-        .locator(
-          '[data-testid="document-pane"] [data-testid="pane-header"]',
-        )
-        .count()) === 0,
+      (await p.locator('[data-testid="document-pane"] [data-testid="pane-header"]').count()) === 0,
   )
   const tone = await p.getByTestId('global-perspective-cube').count()
   log(
@@ -597,6 +593,64 @@ const pickMember = async (p: Page) => {
     (await p.locator('[data-ui="DocumentInspectorPanel"]').count()) === 0,
   )
   await context.close()
+}
+
+{
+  // C1 D: the state control is ONE button (click opens the menu at once, no link to the Releases tool). E: the stock split control. B: plain two controls.
+  const d = await open(url())
+  const single = d.p.getByTestId('perspective-single-control')
+  log(
+    'C1-D1',
+    'D: the state control is one button inside the section, with no link to the Releases tool',
+    (await single.count()) === 1 &&
+      (await d.p.locator('[data-section] [data-testid="releases-tool-link"]').count()) === 0,
+  )
+  await single.click()
+  await d.p.waitForTimeout(700)
+  log(
+    'C1-D2',
+    'D: one click on the state control opens its menu at once',
+    await visible(d.p, 'release-menu'),
+  )
+  await shot(d.p, 'C1-D-menu', {x: 840, y: 0, width: 600, height: 420})
+  await d.p.keyboard.press('Escape')
+  const cube = await d.p
+    .getByTestId('global-perspective-cube')
+    .locator('svg')
+    .evaluate((e) => Math.round(e.getBoundingClientRect().width))
+  const pad = await d.p.locator('[data-section]').evaluate((e) => getComputedStyle(e).paddingTop)
+  log(
+    'C1-D3',
+    'D: the cube is 18 px and the section has 6 px of padding around the chips',
+    cube === 18 && pad === '6px',
+    `${cube} px, ${pad}`,
+  )
+  await d.context.close()
+
+  const e = await open(
+    `/structure/${DOC}?design=${LOCKED.replace('c1.d', 'c1.e')}&perspective=drafts`,
+  )
+  log(
+    'C1-E1',
+    'E: the section keeps the stock split control (a link to the Releases tool and a chevron)',
+    (await e.p.locator('[data-section] [data-testid="releases-tool-link"]').count()) === 1 &&
+      (await e.p.getByTestId('perspective-single-control').count()) === 0,
+  )
+  await shot(e.p, 'C1-E-section', {x: 840, y: 0, width: 600, height: 60})
+  await e.context.close()
+
+  const bb = await open(
+    `/structure/${DOC}?design=${LOCKED.replace('c1.d', 'c1.b')}&perspective=drafts`,
+  )
+  log(
+    'C1-B1',
+    'B: the plain two controls, no section and no cube',
+    (await bb.p.locator('[data-section]').count()) === 0 &&
+      (await bb.p.getByTestId('global-perspective-cube').count()) === 0 &&
+      (await bb.p.getByTestId('open-beta-variants').count()) === 1,
+  )
+  await shot(bb.p, 'C1-B-plain', {x: 840, y: 0, width: 600, height: 60})
+  await bb.context.close()
 }
 
 await b.close()

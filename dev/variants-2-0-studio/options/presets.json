@@ -2,22 +2,32 @@
   {
     "id": "open-beta-locked",
     "name": "Open beta (locked)",
+    "design": "show.a,stage.open-beta,navLayout.b,c1.d,c2.c,c4.a"
+  },
+  {
+    "id": "open-beta-locked-plain",
+    "name": "Open beta (locked), plain two controls",
     "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a"
+  },
+  {
+    "id": "open-beta-locked-split",
+    "name": "Open beta (locked), grouped section with the stock split state control",
+    "design": "show.a,stage.open-beta,navLayout.b,c1.e,c2.c,c4.a"
   },
   {
     "id": "open-beta-locked-localized",
     "name": "Open beta (locked) + document-level localization",
-    "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a,localization.b"
+    "design": "show.a,stage.open-beta,navLayout.b,c1.d,c2.c,c4.a,localization.b"
   },
   {
     "id": "open-beta-locked-localized-fields",
     "name": "Open beta (locked) + field-level localization",
-    "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a,localization.c"
+    "design": "show.a,stage.open-beta,navLayout.b,c1.d,c2.c,c4.a,localization.c"
   },
   {
     "id": "open-beta-locked-localized-both",
     "name": "Open beta (locked) + both localization plugins",
-    "design": "show.a,stage.open-beta,navLayout.b,c1.b,c2.c,c4.a,localization.d"
+    "design": "show.a,stage.open-beta,navLayout.b,c1.d,c2.c,c4.a,localization.d"
   },
   {
     "id": "today",
@@ -51,47 +61,47 @@
   },
   {
     "id": "e9-a",
-    "name": "E9 · A today",
+    "name": "E9 \u00b7 A today",
     "design": "show.a,stage.open-beta"
   },
   {
     "id": "e9-b",
-    "name": "E9 · B",
+    "name": "E9 \u00b7 B",
     "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.b,compare.b,reviewPanel.b,listMark.b,listFlyout.b,reviewPass.b,fieldMarks.b"
   },
   {
     "id": "e9-c",
-    "name": "E9 · C",
+    "name": "E9 \u00b7 C",
     "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.c,compare.c,reviewPanel.c,listMark.c,listFlyout.c,reviewPass.c,fieldMarks.c"
   },
   {
     "id": "e9-data",
-    "name": "E9 · Data's recommendation (not decided)",
+    "name": "E9 \u00b7 Data's recommendation (not decided)",
     "design": "show.a,stage.open-beta,c2.b,c3.d,compare.c,fieldMarks.b,listFlyout.b,listMark.b,paneAddress.c,reviewPanel.c,reviewPass.b"
   },
   {
     "id": "e9-nav-b",
-    "name": "E9 · Nav B",
+    "name": "E9 \u00b7 Nav B",
     "design": "show.a,stage.open-beta,navLayout.b"
   },
   {
     "id": "e9-nav-c",
-    "name": "E9 · Nav C (vision)",
+    "name": "E9 \u00b7 Nav C (vision)",
     "design": "show.a,stage.open-beta,navLayout.c,compare.c,paneAddress.c,reviewPanel.c,fieldMarks.b"
   },
   {
     "id": "e9-compare-d",
-    "name": "E9 · Compare D",
+    "name": "E9 \u00b7 Compare D",
     "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.c,reviewPanel.c,fieldMarks.b,compare.d"
   },
   {
     "id": "e9-compare-e",
-    "name": "E9 · Compare E",
+    "name": "E9 \u00b7 Compare E",
     "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.c,reviewPanel.c,fieldMarks.b,compare.e"
   },
   {
     "id": "e9-compare-f",
-    "name": "E9 · Compare F (lane row two)",
+    "name": "E9 \u00b7 Compare F (lane row two)",
     "design": "show.a,stage.open-beta,c2.b,c3.d,paneAddress.c,reviewPanel.c,fieldMarks.b,compare.f"
   }
 ]

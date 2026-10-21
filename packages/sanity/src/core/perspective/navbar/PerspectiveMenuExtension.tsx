@@ -46,6 +46,10 @@ export interface PerspectiveMenuExtension {
     leading?: ReactNode
     trailing?: ReactNode
     style?: CSSProperties
+    /**
+     * The state control is ONE button that opens the menu (the icon and label are not a link to the Releases tool), so the whole chip is one target.
+     */
+    singleControl?: boolean
   }
 }
 

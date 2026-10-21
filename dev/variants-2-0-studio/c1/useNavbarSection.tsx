@@ -9,7 +9,7 @@ import {OpenBetaVariants} from './OpenBetaVariants'
  * green, a release neutral), an outline cube leads it (not a button), the stock state control is a white chip, then the Variants control. Through
  * the PROPOSED `section` of the perspective menu extension.
  */
-export function useNavbarSection(): PerspectiveMenuExtension['section'] {
+export function useNavbarSection(single: boolean): PerspectiveMenuExtension['section'] {
   const {selectedPerspectiveName} = usePerspective()
   const tone = stateToneOf(selectedPerspectiveName)
   return {
@@ -19,10 +19,12 @@ export function useNavbarSection(): PerspectiveMenuExtension['section'] {
         style={{alignItems: 'center', display: 'inline-flex', flex: 'none'}}
         title="Global perspective"
       >
-        <CubeIcon size={22} tone={tone} />
+        <CubeIcon size={18} tone={tone} />
       </span>
     ),
     trailing: <OpenBetaVariants inSection />,
-    style: {background: tone.bg, gap: 6, margin: 0, padding: '4px 4px 4px 12px'},
+    singleControl: single,
+    // Roomy: the chips sit comfortably inside the base, with the cube a little smaller than the chips.
+    style: {background: tone.bg, gap: 8, margin: 0, padding: '6px 6px 6px 14px'},
   }
 }

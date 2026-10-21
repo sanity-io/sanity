@@ -13,6 +13,7 @@ import {useRouterState} from 'sanity/router'
 import {ListArrangeProvider} from '../c3/groupedList'
 import {useOption} from '../options/store'
 import {useStableEvent} from '../shared/useStableEvent'
+import {isLockedNav} from './lockedNav'
 import {type Chosen, type DimensionSpec, valueTitle} from './model'
 import {useDimensions, useVariantDefinitions} from './world'
 
@@ -64,7 +65,7 @@ export function PerspectiveProvider({children}: {children: ReactNode}) {
   const tool = useRouterState((state) => state.tool as string | undefined)
   const [ownChosen, setChosen] = useState<Chosen>({})
   // C1 B (the open beta design): the router's variant param is the ONLY copy of the choice. `chosen` is read from it, and nothing is synced.
-  const locked = useOption('c1') === 'b'
+  const locked = isLockedNav(useOption('c1'))
   const [rowShown, setRowShown] = useState(false)
   const [pending, setPending] = useState(false)
 

@@ -50,9 +50,24 @@ export const COMPONENTS: ComponentDef[] = [
         id: 'b',
         label: 'Two controls',
         summary:
-          "The stock state control (Drafts, Published or a release; its menu unchanged) and ONE added Variants control: one flat list for the one dimension with a Default row; applied, it shows one value and a cross. No row, no bar. The router's variant param is the only copy of the choice. Selected for open beta (Open beta (locked) uses it). One dimension only: on GA use A.",
+          "The stock state control (Drafts, Published or a release; its menu unchanged) and ONE added Variants control: one flat list for the one dimension with a Default row; applied, it shows one value and a cross. No row, no bar. The router's variant param is the only copy of the choice. The plain pair, kept as it was (no grouping, no cube). One dimension only: on GA use A.",
         status: 'candidate',
         refs: 'Figma C1 Option B section 192:3139 (handoff C1 page)',
+      },
+      {
+        id: 'd',
+        label: 'Grouped section',
+        summary:
+          'The same two controls, grouped in ONE grey section that is the global perspective: an outline cube leads it (not a button), then the state control and the Variants control as white chips. The base says the state (Drafts yellow, Published green, a release neutral). The state control is ONE button: click anywhere on it and its menu opens (no link to the Releases tool inside it), the same logic as the Variants control. Selected for open beta (Open beta (locked) uses it).',
+        status: 'candidate',
+        refs: 'Figma C1 section 555:3897 (states), 541:1818',
+      },
+      {
+        id: 'e',
+        label: 'Grouped section, split state control',
+        summary:
+          'The grouped section of D, with the state control as it ships: the state icon and label open the Releases tool (tooltip "View scheduling"), the chevron opens the menu. Kept to compare with D: two things side by side with different behaviours.',
+        status: 'exploration',
       },
       {
         id: 'c',

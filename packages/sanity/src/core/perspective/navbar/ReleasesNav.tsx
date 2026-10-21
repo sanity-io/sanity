@@ -10,6 +10,7 @@ import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 import {usePerspectiveMenuExtension} from './PerspectiveMenuExtension'
+import {SingleStateControl} from './SingleStateControl'
 
 const ReleasesNavContainer = styled(Card)`
   position: relative;
@@ -120,8 +121,20 @@ export const ReleasesNav: ComponentType<Props> = ({
               display: 'flex',
             }}
           >
-            {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
-            {state}
+            {section.singleControl ? (
+              // PROPOSED: one button, the trigger of the menu (no link to the Releases tool inside it).
+              <GlobalPerspectiveMenu
+                areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
+                menuItemProps={menuItemProps}
+                selectedPerspectiveName={selectedPerspectiveName}
+                trigger={<SingleStateControl selectedPerspective={selectedPerspective} />}
+              />
+            ) : (
+              <>
+                {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
+                {state}
+              </>
+            )}
           </div>
           {section.trailing}
         </>

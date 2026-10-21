@@ -16,6 +16,7 @@ import {
 } from 'sanity/structure'
 
 import {useOptionAExtension} from '../c1/Controls'
+import {hasNavSection, isLockedNav} from '../c1/lockedNav'
 import {renderPickerAddFilter} from '../c1/PickerAddFilter'
 import {PerspectiveProvider} from '../c1/state'
 import {useNavbarSection} from '../c1/useNavbarSection'
@@ -55,11 +56,12 @@ const EXTENSIONS = {
 /** The perspective menu's extension is a value: this calls the hook that builds it (it reads the perspective state) and provides the result. */
 function PerspectiveMenuHost({children}: {children: ReactNode}) {
   const base = useOptionAExtension()
-  const section = useNavbarSection()
   const c1 = useOption('c1')
+  // D: the state control is one button; E keeps the stock split control.
+  const section = useNavbarSection(c1 === 'd')
   // C1 B (the open beta navbar): the global perspective is one grey section.
   const extension = useMemo(
-    () => (c1 === 'b' && base ? {...base, section} : base),
+    () => (hasNavSection(c1) && base ? {...base, section} : base),
     [base, section, c1],
   )
   return (
@@ -71,7 +73,7 @@ function PerspectiveMenuHost({children}: {children: ReactNode}) {
 
 /** C1 B (the open beta design): the navbar keeps the default tone, so the state is said by the controls, not by a green or coloured bar. */
 function NeutralNavbarHost({children}: {children: ReactNode}) {
-  const neutral = useOption('c1') === 'b'
+  const neutral = isLockedNav(useOption('c1'))
   return <NavbarNeutralProvider value={neutral}>{children}</NavbarNeutralProvider>
 }
 

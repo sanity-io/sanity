@@ -5,6 +5,7 @@ import {type PerspectiveMenuExtension} from 'sanity'
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {STOCK_OPTION, useOption, useOptionState} from '../options/store'
+import {isLockedNav} from './lockedNav'
 import {Picker} from './Picker'
 import {usePerspectiveState} from './state'
 import {DimensionButton} from './StateMenu'
@@ -87,7 +88,7 @@ export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
   const {stage, pillWhenOpen} = useOptionState()
   const openBeta = stage === 'open-beta'
   // C1 B (the open beta design): the state menu is the stock one, with a search field when it holds more than 7 entries (Figma B2b).
-  if (option === 'b') return STATE_MENU_SEARCH
+  if (isLockedNav(option)) return STATE_MENU_SEARCH
   if (option !== 'a') return undefined
 
   const narrowed = Object.keys(s.chosen).length > 0

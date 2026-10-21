@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import {useRouterState} from 'sanity/router'
 import {type ResolveDocumentPaneExtension} from 'sanity/structure'
 
+import {isLockedNav} from '../c1/lockedNav'
 import {DocumentPillsV1} from '../c2/DocumentPills'
 import {ManageVersions} from '../c4/ManageVersions'
 import {DocumentBannerV1} from '../c7/Banners'
@@ -86,7 +87,7 @@ export function resolveDocumentPaneOverride(
     // Open beta (locked): a pane says nothing about its address (its "Showing ..." line would be a perspective row that appears when a value is
     // added). The line stays in Presentation, where it carries "On this page".
     const context =
-      c1 === 'b' && tool !== 'presentation' ? undefined : (
+      isLockedNav(c1) && tool !== 'presentation' ? undefined : (
         <PresentationContextLine documentId={documentId} />
       )
     const manage = c4 === 'b' && !pills ? <ManageVersions documentId={documentId} /> : undefined
