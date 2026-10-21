@@ -33,6 +33,8 @@ export interface FormProviderProps {
   __internal_patchChannel: PatchChannel
   /** @internal Considered internal, do not use. */
   __internal_inspectOpen?: boolean
+  /** @internal Considered internal, do not use. */
+  __internal_onOpenValidation?: (paths?: Path[]) => void
 
   autoFocus?: boolean
   changesOpen?: boolean
@@ -72,6 +74,7 @@ export function FormProvider(props: FormProviderProps) {
     __internal_fieldActions: fieldActions,
     __internal_patchChannel: patchChannel,
     __internal_inspectOpen: inspectOpen,
+    __internal_onOpenValidation: onOpenValidation,
     autoFocus,
     changesOpen,
     children,
@@ -147,6 +150,7 @@ export function FormProvider(props: FormProviderProps) {
       __internal_fieldActions={fieldActions}
       __internal_patchChannel={patchChannel}
       __internal_inspectOpen={inspectOpen}
+      __internal_onOpenValidation={onOpenValidation}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
       collapsedFieldSets={collapsedFieldSets}

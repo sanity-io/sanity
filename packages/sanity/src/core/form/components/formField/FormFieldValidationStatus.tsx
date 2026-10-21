@@ -1,11 +1,13 @@
 import {type FormNodeValidation} from '@sanity/types'
 import {type Placement, Text} from '@sanity/ui'
+import {type MouseEvent, useCallback, useContext} from 'react'
+import {FormBuilderContext} from 'sanity/_singletons'
 import {Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {statusIconWrapper, styledStack} from './FormFieldValidationStatus.css'
+import {statusIconButton, statusIconWrapper, styledStack} from './FormFieldValidationStatus.css'
 import {StatusIcon} from './ValidationStatusIcon'
 
 /** @internal */
@@ -34,8 +36,26 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
 
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
+  // oxlint-disable-next-line no-deprecated -- same internal channel as __internal_inspectOpen
+  const openValidation = useContext(FormBuilderContext)?.__internal.onOpenValidation
+  const {t} = useTranslation()
 
   const status = hasErrors ? 'error' : hasWarnings ? 'warning' : 'info'
+
+  const handleOpen = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      openValidation?.(validation.map((item) => item.path))
+    },
+    [openValidation, validation],
+  )
+
+  const icon = (
+    <Text size={fontSize} weight="medium">
+      <StatusIcon status={status} />
+    </Text>
+  )
 
   return (
     <Tooltip
@@ -57,11 +77,19 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       placement={placement}
       fallbackPlacements={['bottom', 'right', 'left']}
     >
-      <div className={statusIconWrapper}>
-        <Text size={fontSize} weight="medium">
-          <StatusIcon status={status} />
-        </Text>
-      </div>
+      {openValidation ? (
+        <button
+          aria-label={t('form.validation.open-inspector-aria-label')}
+          className={statusIconButton}
+          data-testid="input-validation-status-button"
+          onClick={handleOpen}
+          type="button"
+        >
+          {icon}
+        </button>
+      ) : (
+        <div className={statusIconWrapper}>{icon}</div>
+      )}
     </Tooltip>
   )
 }

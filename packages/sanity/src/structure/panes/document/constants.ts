@@ -17,6 +17,11 @@ export const DEFAULT_MENU_ITEM_GROUPS: PaneMenuItemGroup[] = [{id: 'inspectors'}
 export const HISTORY_INSPECTOR_NAME = 'sanity/structure/history'
 export const VALIDATION_INSPECTOR_NAME = 'sanity/structure/validation'
 /**
+ * Pane param listing the validation marker paths to highlight in the inspector.
+ * A JSON array of `pathToString` values. Empty clears the highlight.
+ */
+export const VALIDATION_PATH_PARAM = 'validationPath'
+/**
  * Pane param set when Publish opens the inspector because validation failed.
  * A new value on each click replays the notice, including when the inspector
  * is already open.

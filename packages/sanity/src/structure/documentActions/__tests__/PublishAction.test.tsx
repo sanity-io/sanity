@@ -19,6 +19,7 @@ import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {
   VALIDATION_INSPECTOR_NAME,
   VALIDATION_PUBLISH_NOTICE_PARAM,
+  VALIDATION_PATH_PARAM,
 } from '../../panes/document/constants'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {usePublishAction} from '../PublishAction'
@@ -207,6 +208,7 @@ describe('usePublishAction', () => {
     expect(openInspector).toHaveBeenCalledWith(
       VALIDATION_INSPECTOR_NAME,
       expect.objectContaining({
+        [VALIDATION_PATH_PARAM]: '',
         [VALIDATION_PUBLISH_NOTICE_PARAM]: expect.stringMatching(/^\d+$/),
       }),
     )
@@ -229,6 +231,7 @@ describe('usePublishAction', () => {
       expect(openInspector).toHaveBeenCalledWith(
         VALIDATION_INSPECTOR_NAME,
         expect.objectContaining({
+          [VALIDATION_PATH_PARAM]: '',
           [VALIDATION_PUBLISH_NOTICE_PARAM]: expect.stringMatching(/^\d+$/),
         }),
       ),

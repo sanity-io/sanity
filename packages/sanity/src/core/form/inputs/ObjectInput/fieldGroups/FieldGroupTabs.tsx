@@ -1,13 +1,18 @@
 import {type FormNodeValidation, type Path} from '@sanity/types'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
-import {type ChangeEvent, memo, useCallback} from 'react'
+import {type ChangeEvent, type MouseEvent, memo, useCallback, useContext} from 'react'
+import {FormBuilderContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {StatusIcon} from '../../../components/formField/ValidationStatusIcon'
 import {type FormFieldGroup} from '../../../store/types/fieldGroup'
 import {useChildValidation} from '../../../studio/contexts/Validation'
-import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
+import {groupValidationIcon} from './FieldGroupTabs.css'
+import {
+  getFieldGroupValidationLevel,
+  getFieldGroupValidationPaths,
+} from './getFieldGroupValidationLevel'
 import {GroupOption, GroupTab} from './GroupTab'
 
 interface FieldGroupTabsProps {
@@ -17,6 +22,36 @@ interface FieldGroupTabsProps {
   onClick?: (name: string) => void
   shouldAutoFocus?: boolean
   path: Path
+}
+
+function GroupValidationIcon(props: {paths: Path[]; status: 'error' | 'warning' | 'info'}) {
+  const {paths, status} = props
+  // oxlint-disable-next-line no-deprecated -- same internal channel as __internal_inspectOpen
+  const openValidation = useContext(FormBuilderContext)?.__internal.onOpenValidation
+  const {t} = useTranslation()
+
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      openValidation?.(paths)
+    },
+    [openValidation, paths],
+  )
+
+  if (!openValidation) return <StatusIcon status={status} />
+
+  return (
+    <button
+      aria-label={t('form.validation.open-inspector-aria-label')}
+      className={groupValidationIcon}
+      data-testid="field-group-validation-button"
+      onClick={handleClick}
+      type="button"
+    >
+      <StatusIcon status={status} />
+    </button>
+  )
 }
 
 const Root = styled(ElementQuery)`
@@ -57,6 +92,7 @@ const GroupTabs = ({
           : group.title || group.name
 
         const validationLevel = getFieldGroupValidationLevel(group, path, validation)
+        const validationPaths = getFieldGroupValidationPaths(group, path, validation)
 
         return (
           <GroupTab
@@ -65,7 +101,11 @@ const GroupTabs = ({
             autoFocus={shouldAutoFocus && group.selected}
             disabled={disabled || group.disabled}
             icon={group?.icon}
-            iconRight={validationLevel ? <StatusIcon status={validationLevel} /> : undefined}
+            iconRight={
+              validationLevel ? (
+                <GroupValidationIcon paths={validationPaths} status={validationLevel} />
+              ) : undefined
+            }
             name={group.name}
             onClick={onClick}
             selected={Boolean(group.selected)}
