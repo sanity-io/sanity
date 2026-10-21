@@ -62,6 +62,12 @@ async function measureState(
   state: StartupState,
   token?: string,
 ): Promise<StartupMeasurement> {
+  // Default resource timing buffer is 250; authenticated boot issues many API
+  // requests that would otherwise push later same-origin JS chunks out of the buffer.
+  await page.addInitScript(() => {
+    performance.setResourceTimingBufferSize(10_000)
+  })
+
   const hash = token ? `#token=${encodeURIComponent(token)}` : ''
   await page.goto(`${origin}${workspacePath}${hash}`, {waitUntil: 'domcontentloaded'})
 
