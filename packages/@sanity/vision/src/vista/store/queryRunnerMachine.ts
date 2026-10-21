@@ -16,6 +16,7 @@ import {
   type SnapshotFrom,
 } from 'xstate'
 
+import {queryRequestMethod} from '../../util/queryRequestMethod'
 import {getPayloadBytes} from '../util/payloadSize'
 import {fetchWithNetwork, type QueryNetwork} from '../util/queryNetwork'
 import {getLiveRefetchTags} from '../util/syncTags'
@@ -223,6 +224,9 @@ export const queryRunnerMachine = setup({
                 const e2eMs = Date.now() - context.startedAt
                 const meta: VistaResponseMeta = {
                   url: context.request?.url || '',
+                  method:
+                    network?.method ??
+                    queryRequestMethod(context.request?.query ?? '', context.request?.params ?? {}),
                   ms: response.ms,
                   e2eMs,
                   payloadBytes: getPayloadBytes(response.result),

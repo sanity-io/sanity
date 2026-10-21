@@ -1,6 +1,11 @@
 import {createClient} from '@sanity/client'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
+import {
+  encodedQuerySize,
+  QUERY_URL_SIZE_LIMIT,
+  queryRequestMethod,
+} from '../../util/queryRequestMethod'
 import {fetchWithNetwork} from './queryNetwork'
 
 function respond(body: unknown, headers: Record<string, string>, status = 200): Response {
@@ -45,6 +50,7 @@ describe('fetchWithNetwork', () => {
     )
     expect(first.response).toMatchObject({result: [1], ms: 3})
     expect(first.network).toEqual({
+      method: 'GET',
       viaCdn: true,
       cacheHit: false,
       shard: 'gcp-eu-w1-01-prod-1028',
@@ -77,6 +83,51 @@ describe('fetchWithNetwork', () => {
     expect(first.network).toMatchObject({viaCdn: false, cacheHit: false, traceId: 'cccc2222'})
     expect(again.network).toMatchObject({viaCdn: false, cacheHit: false})
     expect(first.network?.shard).toBeUndefined()
+  })
+
+  it('sends the query as the installed client does at the URL size limit, and reports the method', async () => {
+    const fetchMock = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) =>
+      respond({query: '*', result: [], ms: 1}, {traceparent: '00-eeee3333-ffff-01'}),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+    // `*` is not percent-encoded, so `?query=` plus the stars is the string the client measures
+    const queryOfEncodedSize = (size: number) => '*'.repeat(size - '?query='.length)
+    const under = queryOfEncodedSize(QUERY_URL_SIZE_LIMIT - 1)
+    const at = queryOfEncodedSize(QUERY_URL_SIZE_LIMIT)
+    expect(encodedQuerySize(under, {})).toBe(11263)
+    expect(encodedQuerySize(at, {})).toBe(11264)
+
+    // One short of the limit: GET, query and params in the URL
+    const {network: underNetwork} = await fetchWithNetwork(
+      client,
+      under,
+      {},
+      {filterResponse: false, tag: 'vista'},
+    )
+    const [underUrl, underInit] = fetchMock.mock.calls[0]
+    expect(underInit?.method).toBe('GET')
+    expect(underInit?.body).toBeUndefined()
+    expect(new URL(String(underUrl)).searchParams.get('query')).toBe(under)
+    expect(underNetwork?.method).toBe('GET')
+    expect(queryRequestMethod(under, {})).toBe('GET')
+
+    // At the limit: POST, `{query, params}` as a JSON body, only the options left in the URL
+    const {network: atNetwork} = await fetchWithNetwork(
+      client,
+      at,
+      {id: 1},
+      {filterResponse: false, perspective: 'published', tag: 'vista'},
+    )
+    const [atUrl, atInit] = fetchMock.mock.calls[1]
+    expect(atInit?.method).toBe('POST')
+    expect(JSON.parse(String(atInit?.body))).toEqual({query: at, params: {id: 1}})
+    const atSearchParams = new URL(String(atUrl)).searchParams
+    expect(atSearchParams.has('query')).toBe(false)
+    expect(atSearchParams.has('$id')).toBe(false)
+    expect(atSearchParams.get('perspective')).toBe('published')
+    expect(atSearchParams.get('tag')).toBe('vista')
+    expect(atNetwork?.method).toBe('POST')
+    expect(queryRequestMethod(at, {id: 1})).toBe('POST')
   })
 
   it('rejects with the client’s own errors', async () => {

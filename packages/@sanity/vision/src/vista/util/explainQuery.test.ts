@@ -1,17 +1,23 @@
 import {type PromptRequest} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
+import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
 import {type ExplainQueryClient, explainQuery, fetchQueryPlan} from './explainQuery'
 
 const PLAN = 'Pipeline {\n  r1: StreamStep {\n    $0: Fetch {Filter: (_type == "author")}\n  }\n}\n'
 
+/** A query without params that encodes to `?query=` of exactly `size` characters */
+const queryOfEncodedSize = (size: number) => '*'.repeat(size - '?query='.length)
+
+type RecordedRequest = Omit<Parameters<ExplainQueryClient['request']>[0], 'signal'>
+
 function createClient(responses: {request?: unknown; prompt?: unknown}) {
-  const requests: {url: string; tag: string}[] = []
+  const requests: RecordedRequest[] = []
   const prompts: {apiVersion: string; request: PromptRequest}[] = []
   const client: ExplainQueryClient = {
     getDataUrl: (operation, path = '') => `/data/${operation}/test${path}`,
-    request: ({url, tag}) => {
-      requests.push({url, tag})
+    request: ({signal: _signal, ...request}) => {
+      requests.push(request)
       return Promise.resolve(responses.request)
     },
     withConfig: ({apiVersion}) => ({
@@ -40,7 +46,38 @@ describe('fetchQueryPlan', () => {
     expect(url.searchParams.get('query')).toBe('*[_type == $type]')
     expect(url.searchParams.get('$type')).toBe('"author"')
     expect(url.searchParams.get('explain')).toBe('true')
-    expect(requests[0].tag).toBe('vista.explain')
+    expect(requests[0]).toMatchObject({
+      method: 'GET',
+      body: undefined,
+      canUseCdn: true,
+      tag: 'vista.explain',
+    })
+  })
+
+  it('posts the query and params as a body from the client’s URL size limit on, with explain in the URL', async () => {
+    const {client, requests} = createClient({request: {result: [], explain: PLAN}})
+    const under = {query: queryOfEncodedSize(QUERY_URL_SIZE_LIMIT - 1), params: {}}
+    const at = {query: queryOfEncodedSize(QUERY_URL_SIZE_LIMIT), params: {}}
+    const withParams = {
+      query: '*[_type == $type]',
+      params: {type: 'x'.repeat(QUERY_URL_SIZE_LIMIT)},
+    }
+
+    await fetchQueryPlan(client, under)
+    expect(requests[0].method).toBe('GET')
+    expect(new URL(requests[0].url, 'https://a.api.sanity.io').searchParams.get('query')).toBe(
+      under.query,
+    )
+
+    for (const explained of [at, withParams]) {
+      await fetchQueryPlan(client, explained)
+      const request = requests[requests.length - 1]
+      expect(request.method).toBe('POST')
+      expect(request.body).toEqual(explained)
+      expect(request.canUseCdn).toBe(true)
+      expect(request.url).toBe('/data/query/test?explain=true')
+    }
+    expect(await fetchQueryPlan(client, at)).toBe(PLAN.trim())
   })
 
   it('rejects a response without a plan', async () => {
