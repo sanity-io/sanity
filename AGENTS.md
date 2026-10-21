@@ -1079,6 +1079,8 @@ pnpm test:e2e --ui          # Interactive mode
 
 Playwright `webServer.command` must be `node --run <script>`, never `pnpm`. pnpm 12.6+ (`@pnpm/exe`) detaches the script into its own process group, so Playwright's teardown `kill(-pid)` never reaps vite/sanity, the runner never prints its summary, and the GHA job sits until `timeout-minutes` (auth 15m, embedded 30m). `node --run` stays in the webServer process group and dies with it.
 
+`pnpm --filter e2e test:connection-ceiling` checks the HTTP/2 stream cap against a local server. Chromium queues the next request once held `EventSource` streams reach the server cap. Studio requires HTTP/2, so the script does not cover HTTP/1.1. It does not start Studio, and it does not run as part of `pnpm test` or `pnpm test:e2e`.
+
 ## Pre-commit Hook
 
 Lefthook runs on commit (see `lefthook.yml`), which:
