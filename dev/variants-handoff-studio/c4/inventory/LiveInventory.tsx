@@ -22,6 +22,8 @@ const HIDDEN = [
   'inventory-filter-bar',
   'inventory-sort-menu',
   'inventory-view-settings',
+  // On hold (Faheem, 21 Oct): no modal create form. The footer's Create variant (and Add missing variant) is hidden until the inline create is designed.
+  'inventory-footer',
 ]
   .map((id) => `[data-testid="${id}"]`)
   .join(', ')
@@ -32,7 +34,7 @@ const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 /**
  * Andrej's inventory side panel (Storybook PR #47), live: his `InventoryConceptsProvider` gets the live world, his `VersionInventoryPanel` is
  * rendered as he built it (his table, rows and Create variant). Two things are hidden with a scoped style, because the panel has no prop for them
- * (his files are not edited): search, filter, sort and view settings (see HIDDEN), and the panel's own header.
+ * (his files are not edited): search, filter, sort and view settings, the footer's create button (see HIDDEN), and the panel's own header.
  * Choosing a row sets the GLOBAL perspective (an open beta limitation) to the row's release and variant.
  */
 export function LiveInventory({documentId, title}: {documentId: string; title: string}) {
