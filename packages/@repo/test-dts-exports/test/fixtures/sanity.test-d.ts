@@ -571,6 +571,8 @@ import type {
   ExpandOperation,
   ExpandPathOperation,
   FallbackDiff,
+  FederatedAssetSourcesConfig,
+  FederatedAssetSourceViewInfo,
   FeedbackContext,
   FeedbackContextValue,
   FeedbackDialog,
@@ -1345,6 +1347,7 @@ import type {
   ScheduledPublishingPluginOptions,
   SchedulesContext,
   Schema,
+  SchemaAssetSources,
   SchemaError,
   SchemaErrorContext,
   SchemaPluginOptions,
@@ -3584,6 +3587,12 @@ describe('sanity', () => {
   })
   test('FallbackDiff', () => {
     expectTypeOf<typeof FallbackDiff>().not.toBeNever()
+  })
+  test('FederatedAssetSourcesConfig', () => {
+    expectTypeOf<FederatedAssetSourcesConfig>().toBeObject()
+  })
+  test('FederatedAssetSourceViewInfo', () => {
+    expectTypeOf<FederatedAssetSourceViewInfo>().toBeObject()
   })
   test('FeedbackContext', () => {
     expectTypeOf<typeof FeedbackContext>().not.toBeNever()
@@ -5917,6 +5926,9 @@ describe('sanity', () => {
   test('Schema', () => {
     expectTypeOf<Schema>().toBeObject()
   })
+  test('SchemaAssetSources', () => {
+    expectTypeOf<SchemaAssetSources>().not.toBeNever()
+  })
   test('SchemaError', () => {
     expectTypeOf<SchemaError>().not.toBeNever()
   })
@@ -7316,7 +7328,7 @@ describe('sanity', () => {
     expectTypeOf<typeof validateWorkspaces>().toBeFunction()
   })
   test('validation', () => {
-    expectTypeOf<typeof validation>().not.toBeNever()
+    expectTypeOf<typeof validation>().toBeFunction()
   })
   test('ValidationBuilder', () => {
     expectTypeOf<ValidationBuilder<any, any>>().not.toBeNever()
