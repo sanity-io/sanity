@@ -83,3 +83,7 @@ Not built or limited: list M3 (release against Published) and M4 (Changed since)
 ## Open beta header (Figma C2, phase 1: studio-only)
 
 With `c2` = C (the Open beta (locked) default) the document header shows the perspective circle (`pane/LocalPerspective.tsx`: a muted outline cube while the pane follows the global perspective, a purple one when it holds its own; solid lines, no dashes) and the pill "<title> · N versions", which opens the inventory inspector. The circle opens the bar under the header (state, variant, Follow global perspective). A row click in the inventory opens that version in that pane only (`c4/inventory/LiveInventory.tsx`). The footer's publish action names the shown variant (`pane/targetLabel.ts`). Per-spec-ID checks: `node journeys/verify-header.mts` (screenshots in `journeys-captures/e9-header/`). Phase 2 (one header across form and inspector, tab row, navbar section, "…" menu) needs core seams and is not in this commit.
+
+## Iconography (Design options)
+
+A section for marks and glyphs, one switch each (`options/iconography.ts`, styles in `options/MarkStyles.tsx`). First entry `markSelected`: the version mark on a selected list row (A as today, B white halo, C inverse, D solid tile). `node journeys/verify-icons.mts` shoots every value to `journeys-captures/e9-icons/`.

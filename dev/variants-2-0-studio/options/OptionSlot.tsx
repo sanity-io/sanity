@@ -1,7 +1,6 @@
 import {type ReactNode} from 'react'
 
 import {PlaceholderSlot} from '../slots/PlaceholderSlot'
-
 import {useOption} from './store'
 
 interface OptionSlotProps {

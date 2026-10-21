@@ -26,6 +26,7 @@ import {renderFieldSetRollup} from '../fieldmarks/E9Marks'
 import {RemoteListener} from '../journeys/RemoteListener'
 import {useDocumentPaneOverride} from '../pane/useDocumentPaneOverride'
 import {ResultToastStyles} from '../toasts/ResultToast'
+import {MarkStyles} from './MarkStyles'
 import {ShapeStyles} from './ShapeStyles'
 import {STOCK_OPTION, useOption} from './store'
 
@@ -86,6 +87,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
                       <DesignOptions />
                       <RemoteListener />
                       <ShapeStyles />
+                      <MarkStyles />
                       <ResultToastStyles />
                     </DocumentPaneExtensionProvider>
                   </VariantDetailExtensionProvider>

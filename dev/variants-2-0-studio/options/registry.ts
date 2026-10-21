@@ -19,6 +19,7 @@ import {
   REVIEW_SET,
   ROW_WIDTH,
 } from './e9'
+import {ICONOGRAPHY_GROUP, MARK_SELECTED} from './iconography'
 import {LOCALIZATION, LOCALIZATION_GROUP} from './localization'
 import presets from './presets.json'
 
@@ -407,6 +408,7 @@ COMPONENTS.push(
   PANE_CONTROL,
   REVIEW_SET,
   LOCALIZATION,
+  MARK_SELECTED,
 )
 
 // Diagram data on the 200 x 100 grid: the part that changes.
@@ -570,6 +572,7 @@ defineDesignOptions({
     {label: 'Releases', ids: ['c8']},
     E9_GROUP,
     LOCALIZATION_GROUP,
+    ICONOGRAPHY_GROUP,
   ],
   scenario: {
     stages: [
