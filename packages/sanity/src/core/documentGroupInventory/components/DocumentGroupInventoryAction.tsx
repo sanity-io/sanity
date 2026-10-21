@@ -1,14 +1,12 @@
 import {LayerProvider, useClickOutsideEvent} from '@sanity/ui'
-import {type ComponentType, type PropsWithChildren, useMemo, useRef} from 'react'
-import {useObservable} from 'react-rx'
-import {map} from 'rxjs'
+import {type ComponentType, type PropsWithChildren, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {Button as BaseButton} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
 import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
+import {useIsDocumentGroupInventoryAvailable} from '../hooks/useIsDocumentGroupInventoryAvailable'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
@@ -28,15 +26,7 @@ export const DocumentGroupInventoryAction: ComponentType<
   const buttonElement = useRef<HTMLButtonElement | null>(null)
   const popoverElement = useRef<HTMLDivElement | null>(null)
 
-  const versionState = useDocumentVersionsObservable({documentId})
-
-  const isAvailable = useObservable(
-    useMemo(
-      () => versionState.pipe(map(({loading, versions}) => !loading && versions.length !== 0)),
-      [versionState],
-    ),
-    false,
-  )
+  const isAvailable = useIsDocumentGroupInventoryAvailable({documentId})
 
   useClickOutsideEvent(
     (event) => {
