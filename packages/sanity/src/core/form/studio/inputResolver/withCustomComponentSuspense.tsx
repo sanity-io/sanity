@@ -1,7 +1,7 @@
 import {type Path, type SchemaType} from '@sanity/types'
 import {Skeleton} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
-import {type ComponentType, type ReactNode, Suspense, useContext, useEffect} from 'react'
+import {type ComponentType, Suspense, useContext, useEffect} from 'react'
 import {isLazy} from 'react-is'
 import {FormValueContext} from 'sanity/_singletons'
 
@@ -12,49 +12,73 @@ import {FormValueContext} from 'sanity/_singletons'
  */
 export type CustomComponentSlot = 'input' | 'field' | 'item'
 
-interface CustomComponentSuspenseProps {
-  slot: CustomComponentSlot
+interface FormNodeProps {
   schemaType: SchemaType
   path: Path
-  children: ReactNode
+}
+
+const wrapped: Record<CustomComponentSlot, WeakMap<object, ComponentType<never>>> = {
+  input: new WeakMap(),
+  field: new WeakMap(),
+  item: new WeakMap(),
 }
 
 /**
- * Wraps a form node in a fallback boundary when its schema type declares a custom component for
- * the slot. A custom component can suspend on data that only settles once the document exists (an
- * SDK projection of a new document never does). Without a boundary of its own it would suspend the
- * whole form, leaving no field to edit that could create the document. A custom component that
- * declares its own `Suspense` never reaches this one.
+ * Wraps a schema type's custom form component in a fallback boundary. A custom component can
+ * suspend on data that only settles once the document exists (an SDK projection of a new document
+ * never does). Without a boundary of its own it would suspend the whole form, leaving no field to
+ * edit that could create the document. A custom component that declares its own `Suspense` never
+ * reaches this one.
+ *
+ * Cached per slot and component: resolvers run on every render in places, and a new component
+ * identity would make React remount the node.
  *
  * @internal
  */
-export function CustomComponentSuspense(props: CustomComponentSuspenseProps): ReactNode {
-  const {slot, schemaType, path, children} = props
-  if (!schemaType.components?.[slot]) {
-    return children
+export function withCustomComponentSuspense<Props extends FormNodeProps>(
+  slot: CustomComponentSlot,
+  Component: ComponentType<Props>,
+): ComponentType<Props> {
+  // Erased to the props-agnostic type the cache and the warning work with
+  const component = Component as ComponentType<never>
+  const cached = wrapped[slot].get(component)
+  if (cached) return cached as ComponentType<Props>
+
+  function CustomComponentWithSuspense(props: Props) {
+    return (
+      <Suspense
+        fallback={
+          <CustomComponentSuspenseFallback
+            slot={slot}
+            component={component}
+            schemaType={props.schemaType}
+            path={props.path}
+          />
+        }
+      >
+        <Component {...props} />
+      </Suspense>
+    )
   }
-  return (
-    <Suspense
-      fallback={<CustomComponentSuspenseFallback slot={slot} schemaType={schemaType} path={path} />}
-    >
-      {children}
-    </Suspense>
-  )
+  wrapped[slot].set(component, CustomComponentWithSuspense as ComponentType<never>)
+  return CustomComponentWithSuspense
 }
 
 /**
  * The skeleton cannot know the size of the component it replaces, so it also tells the
  * component's author to declare a `Suspense` that does.
  */
-function CustomComponentSuspenseFallback(props: Omit<CustomComponentSuspenseProps, 'children'>) {
-  const {slot, schemaType, path} = props
+function CustomComponentSuspenseFallback(
+  props: FormNodeProps & {slot: CustomComponentSlot; component: ComponentType<never>},
+) {
+  const {slot, component, schemaType, path} = props
   // Read without `useFormValue`, which throws outside a provider: a fallback must not crash
   const documentType = useContext(FormValueContext)?.value?._type
 
   // An effect, not render: only a fallback React actually commits means the component suspended.
   useEffect(() => {
-    warnCustomComponentSuspended({slot, schemaType, path, documentType})
-  }, [slot, schemaType, path, documentType])
+    warnCustomComponentSuspended({slot, component, schemaType, path, documentType})
+  }, [slot, component, schemaType, path, documentType])
 
   return <Skeleton data-testid={`custom-${slot}-fallback`} padding={3} radius={1} animated />
 }
@@ -74,13 +98,13 @@ const warned: Record<CustomComponentSlot, WeakSet<object>> = {
  */
 export function warnCustomComponentSuspended(options: {
   slot: CustomComponentSlot
+  component: ComponentType<never>
   schemaType: SchemaType
   path: Path
   documentType?: string
 }): void {
-  const {slot, schemaType, path, documentType} = options
-  const component = schemaType.components?.[slot]
-  if (!component || warned[slot].has(component)) return
+  const {slot, component, schemaType, path, documentType} = options
+  if (warned[slot].has(component)) return
   warned[slot].add(component)
 
   const location = path.length > 0 ? `at "${pathToString(path)}"` : 'at the document root'
@@ -100,7 +124,8 @@ export function warnCustomComponentSuspended(options: {
   )
 }
 
-function describeComponent(Component: ComponentType): string {
+function describeComponent(component: ComponentType<never>): string {
+  const Component = component as ComponentType
   // react-is classifies elements, not component types
   if (isLazy(<Component />)) return '(a React.lazy component)'
   const name = Component.displayName || Component.name

@@ -13,7 +13,13 @@ import {createSchema} from '../../../schema/createSchema'
 import {type StringFieldProps} from '../../types/fieldProps'
 import {type StringInputProps} from '../../types/inputProps'
 import {type ObjectItemProps} from '../../types/itemProps'
-import {warnCustomComponentSuspended} from '../CustomComponentSuspense'
+import {defaultResolveFieldComponent} from './fieldResolver'
+import {defaultResolveInputComponent} from './inputResolver'
+import {defaultResolveItemComponent} from './itemResolver'
+import {
+  warnCustomComponentSuspended,
+  withCustomComponentSuspense,
+} from './withCustomComponentSuspense'
 
 function compileProduct(options: {
   input?: ComponentType<StringInputProps>
@@ -53,6 +59,57 @@ function compileProduct(options: {
   return {models: product.fields[0].type, review: reviews.of[0]}
 }
 
+function PassThroughInput(props: StringInputProps) {
+  return props.renderDefault(props)
+}
+function PassThroughField(props: StringFieldProps) {
+  return props.renderDefault(props)
+}
+function PassThroughItem(props: ObjectItemProps) {
+  return props.renderDefault(props)
+}
+
+describe('withCustomComponentSuspense', () => {
+  it('returns one wrapper per slot and component, so resolving again never remounts the node', () => {
+    const first = withCustomComponentSuspense('input', PassThroughInput)
+
+    expect(first).not.toBe(PassThroughInput)
+    expect(withCustomComponentSuspense('input', PassThroughInput)).toBe(first)
+    expect(withCustomComponentSuspense('field', PassThroughInput)).not.toBe(first)
+  })
+
+  it("wraps a schema type's custom input, field and item when the resolvers resolve them", () => {
+    const {models, review} = compileProduct({
+      input: PassThroughInput,
+      field: PassThroughField,
+      item: PassThroughItem,
+    })
+
+    expect(defaultResolveInputComponent(models)).toBe(
+      withCustomComponentSuspense('input', PassThroughInput),
+    )
+    expect(defaultResolveFieldComponent(models)).toBe(
+      withCustomComponentSuspense('field', PassThroughField),
+    )
+    expect(defaultResolveItemComponent(review)).toBe(
+      withCustomComponentSuspense('item', PassThroughItem),
+    )
+  })
+
+  it('leaves the built-in components unwrapped', () => {
+    const {models, review} = compileProduct({})
+    const builtIns = [
+      defaultResolveInputComponent(models),
+      defaultResolveFieldComponent(models),
+      defaultResolveItemComponent(review),
+    ]
+
+    for (const builtIn of builtIns) {
+      expect(builtIn.name).not.toBe('CustomComponentWithSuspense')
+    }
+  })
+})
+
 // Warnings are once per slot and component, so each case declares its own component
 describe('warnCustomComponentSuspended', () => {
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
@@ -68,6 +125,7 @@ describe('warnCustomComponentSuspended', () => {
 
     warnCustomComponentSuspended({
       slot: 'input',
+      component: CheckModelHasSize,
       schemaType: compileProduct({input: CheckModelHasSize}).models,
       path: ['models'],
       documentType: 'product',
@@ -93,6 +151,7 @@ describe('warnCustomComponentSuspended', () => {
 
     warnCustomComponentSuspended({
       slot: 'field',
+      component: ModelField,
       schemaType: compileProduct({field: ModelField}).models,
       path: ['models'],
     })
@@ -110,6 +169,7 @@ describe('warnCustomComponentSuspended', () => {
 
     warnCustomComponentSuspended({
       slot: 'item',
+      component: ReviewItem,
       schemaType: compileProduct({item: ReviewItem}).review,
       path: ['reviews', {_key: 'first'}],
       documentType: 'product',
@@ -126,19 +186,24 @@ describe('warnCustomComponentSuspended', () => {
     }
     const {review} = compileProduct({item: SharedItem})
 
-    warnCustomComponentSuspended({slot: 'item', schemaType: review, path: ['reviews', {_key: 'a'}]})
-    warnCustomComponentSuspended({slot: 'item', schemaType: review, path: ['reviews', {_key: 'b'}]})
+    for (const _key of ['a', 'b']) {
+      warnCustomComponentSuspended({
+        slot: 'item',
+        component: SharedItem,
+        schemaType: review,
+        path: ['reviews', {_key}],
+      })
+    }
 
     expect(warn).toHaveBeenCalledTimes(1)
   })
 
   it('describes a React.lazy component at the document root without a document type', () => {
-    const LazyInput = lazy(() =>
-      Promise.resolve({default: (props: StringInputProps) => props.renderDefault(props)}),
-    )
+    const LazyInput = lazy(() => Promise.resolve({default: PassThroughInput}))
 
     warnCustomComponentSuspended({
       slot: 'input',
+      component: LazyInput,
       schemaType: compileProduct({input: LazyInput}).models,
       path: [],
     })
@@ -146,17 +211,5 @@ describe('warnCustomComponentSuspended', () => {
     expect(warn.mock.calls[0][0]).toMatch(
       /^The custom input component \(a React\.lazy component\) at the document root \(schema type /,
     )
-  })
-
-  it('stays quiet when the schema type has no custom component for the slot', () => {
-    function OnlyAnInput(props: StringInputProps) {
-      return props.renderDefault(props)
-    }
-    const {models} = compileProduct({input: OnlyAnInput})
-
-    warnCustomComponentSuspended({slot: 'field', schemaType: models, path: ['models']})
-    warnCustomComponentSuspended({slot: 'item', schemaType: models, path: ['models']})
-
-    expect(warn).not.toHaveBeenCalled()
   })
 })

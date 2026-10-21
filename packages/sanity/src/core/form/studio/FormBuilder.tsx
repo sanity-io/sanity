@@ -349,7 +349,7 @@ export function FormBuilder(props: FormBuilderProps) {
                 <EnhancedObjectDialogProvider>
                   {/* Form nodes have no fixed size, so a lazy form component brings its own boundary;
                       a schema type's custom input, field or item gets one from
-                      `CustomComponentSuspense`. This one catches the rest: suspending the pane
+                      `withCustomComponentSuspense`. This one catches the rest: suspending the pane
                       instead would hide it after it committed, detach the refs it keeps in state,
                       and remount the form in a loop. */}
                   <Suspense fallback={<LoadingBlock showText />}>
