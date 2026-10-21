@@ -339,10 +339,10 @@ const MODE_CSS = `
 /* Group select-all is not offered while a version is being created. */
 [data-create-frame][data-mode] .inventory-group .inventory-checkbox { display: none !important; }
 /* The table: icon, label and control in fixed columns, so every row starts on the same edges; below 340px the control drops under the label. */
-/* The label column fits the longest label on one line (Figma: one line each); the pill is centred on the label, the icon on the title line. */
+/* The label column fits the longest label on one line (Figma: one line each). Icon, label and pill share the row's centre (Figma C4). */
 [data-create-row] { display: grid; grid-template-columns: 25px minmax(0, 128px) minmax(0, 1fr); column-gap: 10px; align-items: center; padding: 12px 16px; }
 [data-create-row] > [data-create-controls] { min-width: 0; padding-left: 2px; }
-[data-create-icon-box] { width: 25px; height: 25px; align-self: start; margin-top: -4px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+[data-create-icon-box] { width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; overflow: visible; }
 [data-create-label], [data-create-head] { min-width: 0; font-family: var(--font-family-text, inherit); }
 [data-create-title] { font-size: 13px; line-height: 17px; font-weight: 500; color: var(--card-fg-color); }
 [data-create-meaning] { font-size: 12px; line-height: 16px; margin-top: 2px; color: var(--card-muted-fg-color); }
@@ -354,6 +354,7 @@ const MODE_CSS = `
 [data-create-icon] svg { width: 21px; height: 21px; }
 @container (max-width: 339px) {
   [data-create-row] { grid-template-columns: 25px minmax(0, 1fr); align-items: start; row-gap: 10px; }
+  [data-create-icon-box] { margin-top: -4px; }
   [data-create-row] > [data-create-controls] { grid-column: 2; padding: 0; }
 }
 /* Pills: 29px tall, 11px to the glyph, 8px to the text, 10px after the chevron. */
