@@ -75,10 +75,10 @@ export function MenuPopover(props: {
       open
       padding={0}
       placement={props.placement ?? 'bottom-start'}
+      portal
       radius={3}
       referenceElement={anchor}
       shadow={3}
     />
   )
 }
-

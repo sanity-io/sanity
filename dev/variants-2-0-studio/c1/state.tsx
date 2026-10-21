@@ -11,6 +11,7 @@ import {useActiveReleases, usePerspective, useSetPerspective, useSetVariant} fro
 import {useRouterState} from 'sanity/router'
 
 import {ListArrangeProvider} from '../c3/groupedList'
+import {useOption} from '../options/store'
 import {useStableEvent} from '../shared/useStableEvent'
 import {type Chosen, type DimensionSpec, valueTitle} from './model'
 import {useDimensions, useVariantDefinitions} from './world'
@@ -61,7 +62,9 @@ export function PerspectiveProvider({children}: {children: ReactNode}) {
   const {selectedVariantName} = usePerspective()
   const setVariantParam = useSetVariant()
   const tool = useRouterState((state) => state.tool as string | undefined)
-  const [chosen, setChosen] = useState<Chosen>({})
+  const [ownChosen, setChosen] = useState<Chosen>({})
+  // C1 B (the open beta design): the router's variant param is the ONLY copy of the choice. `chosen` is read from it, and nothing is synced.
+  const locked = useOption('c1') === 'b'
   const [rowShown, setRowShown] = useState(false)
   const [pending, setPending] = useState(false)
 
@@ -69,13 +72,13 @@ export function PerspectiveProvider({children}: {children: ReactNode}) {
   // When it names a definition the bar does not show yet, the bar takes that definition's values and opens its row, so
   // Presentation, Structure and the rest all show the same bar for the same context.
   const readParam = useStableEvent((name: string | undefined, defs: typeof definitions) => {
-    if (!name) return
+    if (!name || locked) return
     const id = name.replace(/^_\.variants\./, '')
     const definition = defs.find((v) => v._id.replace(/^_\.variants\./, '') === id)
     if (!definition) return
     const same =
-      Object.keys(definition.conditions).length === Object.keys(chosen).length &&
-      Object.entries(definition.conditions).every(([k, v]) => chosen[k] === v)
+      Object.keys(definition.conditions).length === Object.keys(ownChosen).length &&
+      Object.entries(definition.conditions).every(([k, v]) => ownChosen[k] === v)
     if (same) return
     setChosen({...definition.conditions})
     setRowShown(true)
@@ -88,7 +91,7 @@ export function PerspectiveProvider({children}: {children: ReactNode}) {
   // (Structure keeps reading the bar's own state; the param is the same context, shared by every tool.)
   const writeParam = useStableEvent(
     (own: Chosen, inTool: string | undefined, defs: typeof definitions) => {
-      if (inTool !== 'presentation') return
+      if (inTool !== 'presentation' || locked) return
       const entries = Object.entries(own)
       const exact = entries.length
         ? defs.find((v) => {
@@ -107,8 +110,15 @@ export function PerspectiveProvider({children}: {children: ReactNode}) {
     },
   )
   useEffect(() => {
-    writeParam(chosen, tool, definitions)
-  }, [chosen, tool, definitions, writeParam])
+    writeParam(ownChosen, tool, definitions)
+  }, [ownChosen, tool, definitions, writeParam])
+
+  // Locked: the values of the definition the variant param names (none when it names nothing).
+  const fromParam = useMemo<Chosen>(() => {
+    const id = selectedVariantName?.replace(/^_\.variants\./, '')
+    return definitions.find((v) => v._id.replace(/^_\.variants\./, '') === id)?.conditions ?? {}
+  }, [selectedVariantName, definitions])
+  const chosen = locked ? fromParam : ownChosen
 
   const version: VersionId = selectedPerspectiveName ?? 'drafts'
   const setVersion = useCallback((next: VersionId) => setPerspective(next), [setPerspective])

@@ -293,9 +293,10 @@ export function DocumentPillsV1({
   const current = selectedPerspectiveName ?? 'drafts'
 
   // Option C (open beta, locked): only the toggle. The variant is the navbar's address chip, the pane's own address is the pane control, and the
-  // versions are the inventory panel (C4 A). A pane that holds its own layer flips that layer; one that follows global flips the global one.
+  // versions are the inventory panel (C4 A). The toggle drives the GLOBAL layer, the same state as the navbar's layer chip (Faheem, 21 Oct), also on
+  // a pane that holds its own address.
   if (option === 'c') {
-    const shown = pane.held ? pane.local.perspective : current
+    const shown = pane.global.perspective
     return (
       <Flex
         align="center"
@@ -306,9 +307,7 @@ export function DocumentPillsV1({
         <PublishedToggle
           chosen={shown === 'published' ? 'published' : shown === 'drafts' ? 'drafts' : null}
           hasPublished={!!published}
-          onPick={(version) =>
-            pane.held ? pane.set({...pane.local, perspective: version}) : setPerspective(version)
-          }
+          onPick={(version) => setPerspective(version)}
         />
         {manage}
       </Flex>

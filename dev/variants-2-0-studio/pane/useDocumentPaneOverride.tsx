@@ -1,3 +1,4 @@
+import {useRouterState} from 'sanity/router'
 import {type UseDocumentPaneExtension} from 'sanity/structure'
 
 import {DocumentPillsV1} from '../c2/DocumentPills'
@@ -18,6 +19,8 @@ export const useDocumentPaneOverride: UseDocumentPaneExtension = ({documentId, d
   const paneAddress = useOption('paneAddress')
   const compare = useOption('compare')
   const paneControl = useOption('paneControl')
+  const c1 = useOption('c1')
+  const tool = useRouterState((state) => state.tool as string | undefined)
   const comparison = useComparison()
   const manageIcon = c4 === 'b' ? <ManageVersions documentId={documentId} form="icon" /> : undefined
   // E9 paneAddress B and C replace the chips with a Documents count; C (and a compare) adds the local row under the header.
@@ -50,7 +53,12 @@ export const useDocumentPaneOverride: UseDocumentPaneExtension = ({documentId, d
     ) : undefined
   // C4 B: the inventory as a popover from "Manage versions".
   // Presentation (P2): the version's context line and a way back to "On this page".
-  const context = <PresentationContextLine documentId={documentId} />
+  // Open beta (locked): a pane says nothing about its address (its "Showing ..." line would be a perspective row that appears when a value is
+  // added). The line stays in Presentation, where it carries "On this page".
+  const context =
+    c1 === 'b' && tool !== 'presentation' ? undefined : (
+      <PresentationContextLine documentId={documentId} />
+    )
   const manage = c4 === 'b' && !pills ? <ManageVersions documentId={documentId} /> : undefined
   // Compare E: a pane-scope bar above each pane of a comparison.
   const paneBar = compare === 'e' && comparison ? <PaneBar documentId={documentId} /> : undefined

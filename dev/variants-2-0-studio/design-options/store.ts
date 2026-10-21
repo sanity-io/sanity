@@ -210,7 +210,8 @@ export function isModified(current: State = state ?? defaults()): boolean {
 
 // ---- State ------------------------------------------------------------------------------------------------------
 
-const storageKey = () => `${getConfig().storageKey}:options`
+// `v2`: the saved choices from before Open beta (locked) became the default are dropped once. Mine (saved presets) is a separate key and stays.
+const storageKey = () => `${getConfig().storageKey}:options:v2`
 
 /** A shared link wins over the stored state; storage is the fallback, so reload keeps the choice. */
 function load(): State {

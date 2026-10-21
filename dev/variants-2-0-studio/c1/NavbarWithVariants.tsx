@@ -5,8 +5,8 @@ import {CompareHeader} from '../compare/CompareHeader'
 import {useComparison} from '../compare/useCompare'
 import {STOCK_OPTION, useOption} from '../options/store'
 import {AddressRow} from './AddressRow'
-import {VariantsControl} from './Controls'
 import {NavLayoutStyles} from './NavLayout'
+import {OpenBetaVariants} from './OpenBetaVariants'
 
 /**
  * Studio's navbar plus C1:
@@ -19,29 +19,30 @@ export function NavbarWithVariants(props: NavbarProps) {
   const compare = useOption('compare')
   const comparison = useComparison()
   const navLayout = useOption('navLayout')
-  const inNavbar = navLayout === 'c' || navLayout === 'd'
-  const renderVariants = useCallback(() => <VariantsControl />, [])
+  const inNavbar = navLayout === 'c'
   const renderInline = useCallback(() => <AddressRow inline />, [])
+  const renderVariants = useCallback(() => <OpenBetaVariants />, [])
   const actions = useMemo((): NavbarProps['__internal_actions'] => {
     const base = props.__internal_actions ?? []
-    const withVariants =
-      option === 'b'
-        ? [...base, {location: 'topbar' as const, name: 'variants-topbar', render: renderVariants}]
-        : base
-    // navLayout C and D: the whole global perspective inside the navbar (the row under it is removed).
+    // C1 B: the stock state control stays as it is, and ONE control is added: Variants. No row.
+    if (option === 'b')
+      return [
+        ...base,
+        {location: 'topbar' as const, name: 'open-beta-variants', render: renderVariants},
+      ]
+    // navLayout C: the whole global perspective inside the navbar (the row under it is removed).
     return inNavbar && option !== STOCK_OPTION && option !== 'c'
-      ? [
-          ...withVariants,
-          {location: 'topbar' as const, name: 'address-in-bar', render: renderInline},
-        ]
-      : withVariants
+      ? [...base, {location: 'topbar' as const, name: 'address-in-bar', render: renderInline}]
+      : base
   }, [option, inNavbar, props.__internal_actions, renderVariants, renderInline])
   return (
     <>
       <NavLayoutStyles />
       {props.renderDefault({...props, __internal_actions: actions})}
       {/* Option C is the shipped Perspective Filter bar only: no address row. */}
-      {option === STOCK_OPTION || option === 'c' || inNavbar ? null : <AddressRow />}
+      {option === STOCK_OPTION || option === 'c' || option === 'b' || inNavbar ? null : (
+        <AddressRow />
+      )}
       {/* E9 compare C: one header across both panes. */}
       {compare !== 'a' && compare !== 'b' && comparison ? (
         <CompareHeader

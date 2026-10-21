@@ -47,7 +47,7 @@ export const COMPONENTS: ComponentDef[] = [
         id: 'b',
         label: 'Two controls',
         summary:
-          'Document state and Variants, top right. The chevron on Variants shows or hides the row; one panel, forms by dimension count (1, 2 to 4, 5+).',
+          "The stock state control (Drafts, Published or a release; its menu unchanged) and ONE added Variants control: one flat list for the one dimension with a Default row; applied, it shows one value and a cross. No row, no bar. The router's variant param is the only copy of the choice. Selected for open beta (Open beta (locked) uses it). One dimension only: on GA use A.",
         status: 'candidate',
         refs: 'Figma C1 Option B section 192:3139 (handoff C1 page)',
       },

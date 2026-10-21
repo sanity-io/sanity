@@ -19,7 +19,10 @@ import {usePerspectiveState} from './state'
 import {DimensionButton, StateMenu, VersionGlyph} from './StateMenu'
 
 // Flush segments: the buttons inside the chip have no radius of their own; the chip's outer radius clips their hover fill.
-const CHIP_INNER = {borderRadius: 0, height: 23, minHeight: 23} as const
+/** How far the chevron sits from the end of its button when the chip has extra horizontal room. */
+const CHEVRON_INSET = 4
+const chipInner = (height: number) =>
+  ({borderRadius: 0, height: height - 2, minHeight: height - 2}) as const
 
 /**
  * An address chip, built as the real `PerspectiveFilter` pill is: one `Card` (radius 2 = 3px, 1px
@@ -30,7 +33,7 @@ const CHIP_INNER = {borderRadius: 0, height: 23, minHeight: 23} as const
  * before the pill, which a chip does not have. The library's Address Chip is not in the Studio
  * source yet.
  */
-function AddressChip(props: {
+export function AddressChip(props: {
   text: string
   accessibleName: string
   icon?: ReactElement
@@ -40,6 +43,10 @@ function AddressChip(props: {
   removeLabel: string
   removeTestId: string
   captureEl?: (el: HTMLElement | null) => void
+  /** Outer height in px including the border: 25 in the row, 33 in the navbar (the stock state pill). */
+  height?: number
+  /** Extra horizontal padding in px on each button (the navbar pill is roomier than the row chip). */
+  paddingX?: number
 }) {
   const {
     text,
@@ -51,7 +58,15 @@ function AddressChip(props: {
     removeLabel,
     removeTestId,
     captureEl,
+    height = 25,
+    paddingX,
   } = props
+  // The room is between the icons and the edges: the main button has it on the left (its chevron stays at the right end), the cross on both sides.
+  const inner = chipInner(height)
+  const mainStyle =
+    paddingX === undefined ? inner : {...inner, paddingLeft: paddingX, paddingRight: CHEVRON_INSET}
+  const crossStyle =
+    paddingX === undefined ? inner : {...inner, paddingLeft: paddingX, paddingRight: paddingX}
   return (
     // UI-CONSISTENCY section 2: 25px including the 1px border, so the buttons inside are 23px.
     <Card
@@ -59,7 +74,7 @@ function AddressChip(props: {
       data-testid={testId}
       radius={CHIP_SHAPE === 'round' ? 'full' : 2}
       ref={captureEl}
-      style={{height: 25, overflow: 'hidden'}}
+      style={{height, overflow: 'hidden'}}
     >
       <Flex align="center">
         <Button
@@ -68,7 +83,7 @@ function AddressChip(props: {
           iconRight={ChevronDownIcon}
           mode="bleed"
           onClick={onOpen}
-          style={CHIP_INNER}
+          style={mainStyle}
           text={text}
           tooltipProps={null}
         />
@@ -79,7 +94,7 @@ function AddressChip(props: {
           icon={CloseIcon}
           mode="bleed"
           onClick={onRemove}
-          style={CHIP_INNER}
+          style={crossStyle}
           tooltipProps={null}
         />
       </Flex>
