@@ -14,6 +14,8 @@ export interface EventTimingSample {
   processingEnd: number
   /** startTime → next paint, rounded to 8ms granularity by the browser. */
   duration: number
+  /** The hard or soft navigation the event belongs to. */
+  navigationId: number
 }
 
 /** One Long Animation Frame entry with script attribution. */
@@ -39,6 +41,8 @@ export interface LayoutShiftSample {
    * can name its culprit instead of just existing.
    */
   sources: string[]
+  /** The hard or soft navigation the shift belongs to. */
+  navigationId: number
 }
 
 export interface NavigationSample {
@@ -64,6 +68,40 @@ export interface ResourceSample {
   responseEnd: number
 }
 
+/**
+ * A `soft-navigation` entry: Chrome's record of a trusted interaction that
+ * changed the URL and painted. Every later entry carries its `navigationId`.
+ */
+export interface SoftNavigationSample {
+  url: string
+  navigationType: string
+  navigationId: number
+  interactionId: number
+  /** The interaction's timestamp. */
+  startTime: number
+  /** startTime → first contentful paint (soft FCP). */
+  duration: number
+}
+
+/**
+ * An `interaction-contentful-paint` entry: the largest paint an interaction
+ * caused so far. Emitted for every interaction that paints content, typing
+ * included, and again whenever a larger paint lands, possibly after a later
+ * take(). Soft LCP is the largest one whose `interactionId` matches the soft
+ * navigation's.
+ */
+export interface InteractionContentfulPaintSample {
+  interactionId: number
+  navigationId: number
+  startTime: number
+  /** startTime → this paint. */
+  duration: number
+  /** Painted area of the largest element, in px². */
+  size: number
+  /** Compact descriptor of that element, as in `LayoutShiftSample.sources`. */
+  element: string
+}
+
 export interface BenchEntries {
   events: EventTimingSample[]
   loafs: LoafSample[]
@@ -73,6 +111,8 @@ export interface BenchEntries {
   navigation: NavigationSample | null
   measures: MeasureSample[]
   resources: ResourceSample[]
+  softNavigations: SoftNavigationSample[]
+  interactionContentfulPaints: InteractionContentfulPaintSample[]
 }
 
 export interface BenchCollector {

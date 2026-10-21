@@ -1,7 +1,13 @@
 import {describe, expect, it} from 'vitest'
 
 import {type ScenarioStep, type StepContext} from '../../../scenarios/types'
-import {milestoneMeasureName, resolveLocator, runStep, toTypeStep} from '../steps'
+import {
+  milestoneMeasureName,
+  navigateMeasureName,
+  resolveLocator,
+  runStep,
+  toTypeStep,
+} from '../steps'
 
 interface FakeLocator {
   selector: string
@@ -69,6 +75,7 @@ function createFakePage(pageOptions: {readOnly?: boolean; probeLands?: boolean} 
   }
   const page = {
     log,
+    url: () => 'https://localhost:4311/test/structure/author',
     locator: (selector: string) => makeLocator(log, selector),
     getByLabel: (label: string, options?: {exact?: boolean}) =>
       makeLocator(log, label, undefined, options),
@@ -335,6 +342,50 @@ describe('runStep load steps', () => {
     await expect(runStep(context, {kind: 'awaitEditable', field: 'title'})).rejects.toMatchObject({
       reason: 'probe-timeout',
       message: '[probe-timeout] probe keystroke never landed (boot-cold)',
+      diagnostics: ['console: boom'],
+    })
+  })
+})
+
+describe('runStep navigate', () => {
+  const step: ScenarioStep = {
+    kind: 'navigate',
+    label: 'open author',
+    selector: {testId: 'pane-item-author-1'},
+    url: /\/author;author-1$/,
+    ready: '[data-testid="document-panel"] [data-testid="field-name"]',
+  }
+
+  it('clicks the target and waits in-page for the URL change and readiness', async () => {
+    const context = fakeContext()
+    expect(await runStep(context, step)).toEqual({interactions: 1})
+    expect(context.page.log.clicks).toEqual(['[data-testid="pane-item-author-1"]'])
+    expect(context.page.log.waitedFor).toEqual([
+      {
+        measureName: navigateMeasureName('open author'),
+        previousUrl: 'https://localhost:4311/test/structure/author',
+        urlSource: '\\/author;author-1$',
+        urlFlags: '',
+        ready: '[data-testid="document-panel"] [data-testid="field-name"]',
+        readyWhen: 'visible',
+      },
+    ])
+  })
+
+  it('passes readyWhen filled through to the in-page wait', async () => {
+    const context = fakeContext()
+    await runStep(context, {...step, readyWhen: 'filled'} as ScenarioStep)
+    expect(context.page.log.waitedFor).toMatchObject([{readyWhen: 'filled'}])
+  })
+
+  it('throws a readiness-timeout naming the navigation when it never becomes ready', async () => {
+    const context = {
+      ...fakeContext(createFakePage({probeLands: false})),
+      diagnostics: () => ['console: boom'],
+    }
+    await expect(runStep(context, step)).rejects.toMatchObject({
+      reason: 'readiness-timeout',
+      message: '[readiness-timeout] navigation "open author" never reached /\\/author;author-1$/',
       diagnostics: ['console: boom'],
     })
   })

@@ -9,11 +9,13 @@ import {
   type BenchCollector,
   type BenchEntries,
   type EventTimingSample,
+  type InteractionContentfulPaintSample,
   type LayoutShiftSample,
   type LoafSample,
   type MeasureSample,
   type PaintSample,
   type ResourceSample,
+  type SoftNavigationSample,
 } from './types'
 
 /**
@@ -30,6 +32,8 @@ function install(): void {
   const layoutShifts: LayoutShiftSample[] = []
   const measures: MeasureSample[] = []
   const resources: ResourceSample[] = []
+  const softNavigations: SoftNavigationSample[] = []
+  const interactionContentfulPaints: InteractionContentfulPaintSample[] = []
   let largestContentfulPaint: PaintSample | null = null
 
   function observe(
@@ -46,6 +50,10 @@ function install(): void {
     }
   }
 
+  function navigationIdOf(entry: PerformanceEntry): number {
+    return (entry as PerformanceEntry & {navigationId?: number}).navigationId ?? 0
+  }
+
   observe(
     'event',
     (entries) => {
@@ -58,6 +66,7 @@ function install(): void {
           processingStart: event.processingStart,
           processingEnd: event.processingEnd,
           duration: event.duration,
+          navigationId: navigationIdOf(event),
         })
       }
     },
@@ -96,10 +105,10 @@ function install(): void {
     }
   })
 
-  // Describe a shifted node compactly. data-testid first (stable across
+  // Describe a node compactly. data-testid first (stable across
   // refactors), @sanity/ui's data-ui second, tag#id.class as the fallback —
-  // enough to find the element, small enough to store per shift.
-  function describeShiftedNode(node: Node | null | undefined): string {
+  // enough to find the element, small enough to store per entry.
+  function describeNode(node: Node | null | undefined): string {
     if (!node || !(node instanceof Element)) return '(detached)'
     const testId = node.getAttribute('data-testid')
     if (testId) return `[data-testid="${testId}"]`
@@ -124,7 +133,8 @@ function install(): void {
         startTime: shift.startTime,
         value: shift.value,
         hadRecentInput: shift.hadRecentInput,
-        sources: (shift.sources ?? []).map((source) => describeShiftedNode(source.node)),
+        sources: (shift.sources ?? []).map((source) => describeNode(source.node)),
+        navigationId: navigationIdOf(shift),
       })
     }
   })
@@ -148,8 +158,42 @@ function install(): void {
     }
   })
 
+  observe('soft-navigation', (entries) => {
+    for (const entry of entries) {
+      const softNavigation = entry as PerformanceEntry & {
+        navigationType: string
+        interactionId: number
+      }
+      softNavigations.push({
+        url: softNavigation.name,
+        navigationType: softNavigation.navigationType,
+        navigationId: navigationIdOf(softNavigation),
+        interactionId: softNavigation.interactionId,
+        startTime: softNavigation.startTime,
+        duration: softNavigation.duration,
+      })
+    }
+  })
+
+  observe('interaction-contentful-paint', (entries) => {
+    for (const entry of entries) {
+      const paint = entry as PerformanceEntry & {
+        interactionId: number
+        largestContentfulPaint?: {size: number; element: Element | null}
+      }
+      interactionContentfulPaints.push({
+        interactionId: paint.interactionId,
+        navigationId: navigationIdOf(paint),
+        startTime: paint.startTime,
+        duration: paint.duration,
+        size: paint.largestContentfulPaint?.size ?? 0,
+        element: describeNode(paint.largestContentfulPaint?.element),
+      })
+    }
+  })
+
   const collector: BenchCollector = {
-    version: 1,
+    version: 2,
     take(): BenchEntries {
       const navigation = performance.getEntriesByType('navigation')[0] as
         | PerformanceNavigationTiming
@@ -169,6 +213,8 @@ function install(): void {
           : null,
         measures: measures.splice(0),
         resources: resources.splice(0),
+        softNavigations: softNavigations.splice(0),
+        interactionContentfulPaints: interactionContentfulPaints.splice(0),
       }
       return taken
     },

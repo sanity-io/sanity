@@ -164,6 +164,72 @@ async function awaitEditable(context: StepContext, field: string): Promise<void>
     })
 }
 
+/** The measure name a `navigate` step records (click → destination ready). */
+export function navigateMeasureName(label: string): string {
+  return `bench:navigate:${label}`
+}
+
+/** See the `navigate` step. */
+async function navigate(
+  context: StepContext,
+  step: Extract<ScenarioStep, {kind: 'navigate'}>,
+): Promise<void> {
+  const {page} = context
+  const measureName = navigateMeasureName(step.label)
+  const previousUrl = page.url()
+  // The click's hardware timestamp is the soft navigation's startTime, so
+  // the measure starts where Chrome's entry does
+  await page.evaluate(
+    ({name}) =>
+      window.addEventListener(
+        'pointerdown',
+        (event) => performance.mark(`${name}:start`, {startTime: event.timeStamp}),
+        {capture: true, once: true},
+      ),
+    {name: measureName},
+  )
+  await resolveLocator(page, step.selector).click({timeout: context.timeoutMs})
+  await page
+    .waitForFunction(
+      ({measureName: name, previousUrl: before, urlSource, urlFlags, ready, readyWhen}) => {
+        const markName = `${name}:start`
+        const target = document.querySelector<HTMLElement>(ready)
+        const content =
+          target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement
+            ? target.value
+            : (target?.textContent ?? '')
+        const arrived =
+          window.location.href !== before &&
+          new RegExp(urlSource, urlFlags).test(window.location.pathname + window.location.search) &&
+          Boolean(target?.checkVisibility()) &&
+          (readyWhen === 'visible' || content.length > 0)
+        const start = performance.getEntriesByName(markName, 'mark').at(-1)
+        if (arrived && start) {
+          performance.measure(name, {start: start.startTime})
+          performance.clearMarks(markName)
+          return true
+        }
+        return false
+      },
+      {
+        measureName,
+        previousUrl,
+        urlSource: step.url.source,
+        urlFlags: step.url.flags,
+        ready: step.ready,
+        readyWhen: step.readyWhen ?? 'visible',
+      },
+      {timeout: context.timeoutMs, polling: 'raf'},
+    )
+    .catch(() => {
+      throw new SessionError(
+        'readiness-timeout',
+        `navigation "${step.label}" never reached ${step.url}${context.label ? ` (${context.label})` : ''}`,
+        context.diagnostics?.() ?? [],
+      )
+    })
+}
+
 async function visitDocument(
   context: StepContext,
   step: Extract<ScenarioStep, {kind: 'visitDocument'}>,
@@ -261,6 +327,9 @@ export async function runStep(context: StepContext, step: ScenarioStep): Promise
       }
       return {interactions: clicks + repeat}
     }
+    case 'navigate':
+      await navigate(context, step)
+      return {interactions: 1}
     case 'visitDocument':
       await visitDocument(context, step)
       return {interactions: 0}
