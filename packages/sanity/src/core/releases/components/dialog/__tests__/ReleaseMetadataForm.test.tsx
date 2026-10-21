@@ -333,6 +333,128 @@ describe('ReleaseMetadataForm', () => {
       }),
     )
   })
+
+  it('enables save when a rule reads a sibling on the metadata document', async () => {
+    const onValidityChange = vi.fn()
+    const reviewNote = defineField({
+      name: 'reviewNote',
+      title: 'Review note',
+      type: 'string',
+      validation: (rule) =>
+        rule.custom((_value, context) => {
+          return context.document?.legalReview === 'reviewed' ? true : 'Needs legal review'
+        }),
+    })
+
+    await renderWithFields(
+      [legalReviewField, reviewNote],
+      <ControlledMetadataForm
+        initial={{releaseType: 'asap', legalReview: 'reviewed', reviewNote: 'ok'}}
+        onChange={vi.fn()}
+        onValidityChange={onValidityChange}
+      />,
+    )
+
+    await waitFor(() => expect(onValidityChange).toHaveBeenCalledWith(true))
+    expect(screen.queryByText('Release metadata validation failed')).toBeNull()
+  })
+
+  it('settles a rejected validation check as invalid', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const onValidityChange = vi.fn()
+    const reviewNote = defineField({
+      name: 'reviewNote',
+      title: 'Review note',
+      type: 'string',
+      validation: (rule) => rule.custom(() => Promise.reject(undefined)),
+    })
+
+    await renderWithFields(
+      [reviewNote],
+      <ControlledMetadataForm
+        initial={{reviewNote: 'ok'}}
+        onChange={vi.fn()}
+        onValidityChange={onValidityChange}
+      />,
+    )
+
+    expect(await screen.findByText('Release metadata validation failed')).toBeInTheDocument()
+    expect(
+      within(screen.getByTestId('field-reviewNote')).getAllByTestId('input-validation-icon-error')
+        .length,
+    ).toBeGreaterThan(0)
+    expect(onValidityChange).toHaveBeenCalledWith(false)
+    expect(onValidityChange).not.toHaveBeenCalledWith(true)
+    expect(error).toHaveBeenCalledWith('Release metadata validation failed', expect.anything())
+
+    const input = within(screen.getByTestId('field-reviewNote')).getByRole('textbox')
+    await userEvent.type(input, 'x')
+    expect(input).toHaveValue('okx')
+    expect(onValidityChange).not.toHaveBeenCalledWith(true)
+    error.mockRestore()
+  })
+
+  it('skips a rejected initial value and leaves the field editable', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const initialValue = vi.fn(() => Promise.reject(new Error('bad initial value')))
+    const onChange = vi.fn()
+    const reviewNote = defineField({
+      name: 'reviewNote',
+      title: 'Review note',
+      type: 'string',
+      initialValue,
+    })
+
+    await renderWithFields(
+      [reviewNote],
+      <ControlledMetadataForm initial={{releaseType: 'asap'}} onChange={onChange} />,
+    )
+
+    const input = within(await screen.findByTestId('field-reviewNote')).getByRole('textbox')
+    await waitFor(() => expect(initialValue.mock.calls.length).toBeGreaterThan(0))
+    const callsBeforeEdit = initialValue.mock.calls.length
+    expect(onChange).not.toHaveBeenCalled()
+    expect(error).toHaveBeenCalledWith('Release metadata initial value failed', expect.any(Error))
+
+    await userEvent.type(input, 'Ok')
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(expect.objectContaining({reviewNote: 'Ok'}))
+    })
+    expect(initialValue).toHaveBeenCalledTimes(callsBeforeEdit)
+    error.mockRestore()
+  })
+
+  it('skips a throwing initial value without retrying it', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const initialValue = vi.fn((): string => {
+      throw new Error('bad initial value')
+    })
+    const onChange = vi.fn()
+    const reviewNote = defineField({
+      name: 'reviewNote',
+      title: 'Review note',
+      type: 'string',
+      initialValue,
+    })
+
+    await renderWithFields(
+      [reviewNote],
+      <ControlledMetadataForm initial={{releaseType: 'asap'}} onChange={onChange} />,
+    )
+
+    const input = within(await screen.findByTestId('field-reviewNote')).getByRole('textbox')
+    await waitFor(() => expect(error).toHaveBeenCalled())
+    const callsBeforeEdit = initialValue.mock.calls.length
+    expect(callsBeforeEdit).toBeGreaterThan(0)
+    expect(onChange).not.toHaveBeenCalled()
+
+    await userEvent.type(input, 'Ok')
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(expect.objectContaining({reviewNote: 'Ok'}))
+    })
+    expect(initialValue).toHaveBeenCalledTimes(callsBeforeEdit)
+    error.mockRestore()
+  })
 })
 
 describe('ReleaseForm metadata fields', () => {

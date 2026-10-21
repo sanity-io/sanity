@@ -19,6 +19,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useRef,
   useState,
 } from 'react'
 import {Text, Flex, VStack, Icon} from 'ui5'
@@ -55,6 +56,9 @@ export function ReleaseForm(props: {
   const metadataFields = metadataFieldsEnabled ? configuredFields : NO_METADATA_FIELDS
 
   const id = value._id
+  // Recovery is a mount action. A parent that passes a new onChange each render
+  // must not restore again after seeding writes the same draft back to storage.
+  const didRestore = useRef(false)
 
   useEffect(() => {
     if (metadataFieldsEnabled) return
@@ -63,6 +67,8 @@ export function ReleaseForm(props: {
   }, [metadataFieldsEnabled, onValidityChange])
 
   useEffect(() => {
+    if (didRestore.current) return
+    didRestore.current = true
     const storedData = getStoredReleaseData()
     if (!storedData || !hasStoredReleaseData(storedData)) return
     onChange({

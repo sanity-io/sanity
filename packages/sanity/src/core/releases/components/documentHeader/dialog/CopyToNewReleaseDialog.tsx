@@ -2,7 +2,7 @@ import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useState} from 'react'
+import {useCallback, useState} from 'react'
 import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -75,9 +75,9 @@ export function CopyToNewReleaseDialog(props: {
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
   const invalid = getIsReleaseInvalid(release) || !metadataValid
 
-  const handleOnChange = (releaseMetadata: EditableReleaseDocument) => {
+  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
     setRelease(releaseMetadata)
-  }
+  }, [])
 
   const handleAddVersion = () => {
     onCreateVersion(newReleaseId)

@@ -3,6 +3,7 @@ import {
   type FieldDefinition,
   type InitialValueResolverContext,
   type ObjectSchemaType,
+  type SanityDocument,
   type Schema,
   type ValidationMarker,
 } from '@sanity/types'
@@ -47,6 +48,7 @@ import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadata
 
 const NO_FIELDS: readonly FieldDefinition[] = []
 const NO_MARKERS: ValidationMarker[] = []
+const VALIDATION_FAILED_MESSAGE = 'Release metadata validation failed'
 
 interface ReleaseMetadataFormProps {
   metadata: EditableReleaseDocument['metadata']
@@ -179,10 +181,18 @@ function ReleaseMetadataFieldsForm(
       {},
       DEFAULT_MAX_RECURSION_DEPTH,
       context,
-    ).then((initial) => {
-      if (!active || !isRecord(initial)) return
-      setInitialValues(initial)
-    })
+    ).then(
+      (initial) => {
+        if (!active || !isRecord(initial)) return
+        setInitialValues(initial)
+      },
+      (error: unknown) => {
+        if (!active) return
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Release metadata initial value failed', error)
+        }
+      },
+    )
     return () => {
       active = false
     }
@@ -218,7 +228,9 @@ function ReleaseMetadataFieldsForm(
       schema: compiled.schema,
       type: compiled.schemaType,
       parent: undefined,
-      document: undefined,
+      // The synthetic form value is the document context rules read. It is not
+      // a Content Lake document and this check does not mutate one.
+      document: value as SanityDocument,
       getDocumentExists: undefined,
       environment: 'studio',
       signal: undefined,
@@ -234,15 +246,25 @@ function ReleaseMetadataFieldsForm(
       (error: unknown) => {
         if (!active || id !== requestId.current) return
         if (process.env.NODE_ENV !== 'production') {
-          console.error('Release metadata validation failed', error)
+          console.error(VALIDATION_FAILED_MESSAGE, error)
         }
+        setSettled({
+          value,
+          markers: [
+            {
+              level: 'error',
+              message: VALIDATION_FAILED_MESSAGE,
+              path: fieldNames.slice(0, 1),
+            },
+          ],
+        })
       },
     )
     return () => {
       active = false
     }
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- reportValidity is a useEffectEvent and must stay out of the dependency array
-  }, [client, compiled.schema, compiled.schemaType, currentUser, formValue, i18n])
+  }, [client, compiled.schema, compiled.schemaType, currentUser, fieldNames, formValue, i18n])
 
   useEffect(() => {
     reportValidity(valid)

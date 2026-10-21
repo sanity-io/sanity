@@ -1,5 +1,5 @@
 import {defineField} from '@sanity/types'
-import {render, screen, waitFor, within} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -28,8 +28,22 @@ const reviewNote = defineField({
   validation: (rule) => rule.required(),
 })
 
+const legalReviewField = defineField({
+  name: 'legalReview',
+  title: 'Legal review',
+  type: 'string',
+  initialValue: 'notReviewed',
+  options: {
+    list: [
+      {title: 'Not reviewed', value: 'notReviewed'},
+      {title: 'Reviewed', value: 'reviewed'},
+    ],
+  },
+})
+
 describe('CopyToNewReleaseDialog metadata fields', () => {
   beforeEach(() => {
+    localStorage.clear()
     useReleaseOperationsMockReturn.createRelease.mockClear()
   })
 
@@ -71,5 +85,80 @@ describe('CopyToNewReleaseDialog metadata fields', () => {
         }),
       )
     })
+  })
+
+  it('seeds an initial value once without looping', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        releases: {metadata: {fields: [legalReviewField]}},
+      },
+    })
+    render(
+      <CopyToNewReleaseDialog
+        documentType="author"
+        onClose={vi.fn()}
+        onCreateVersion={vi.fn()}
+        release="r1"
+        title="Spring"
+        versionId="drafts.author-1"
+      />,
+      {wrapper},
+    )
+
+    const select = within(await screen.findByTestId('field-legalReview')).getByRole('combobox')
+    await waitFor(() => expect(select).toHaveValue('0'))
+    await waitFor(() => expect(screen.getByTestId('confirm-button')).toBeEnabled())
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50))
+    })
+    expect(select).toHaveValue('0')
+    expect(screen.getByTestId('confirm-button')).toBeEnabled()
+    const stored = localStorage.getItem('studio.release-form.recovery')
+    expect(stored).toContain('notReviewed')
+  })
+
+  it('keeps a recovered metadata value without looping', async () => {
+    localStorage.setItem(
+      'studio.release-form.recovery',
+      JSON.stringify({
+        title: 'Kept title',
+        fields: {legalReview: 'reviewed'},
+      }),
+    )
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        releases: {metadata: {fields: [legalReviewField]}},
+      },
+    })
+    render(
+      <CopyToNewReleaseDialog
+        documentType="author"
+        onClose={vi.fn()}
+        onCreateVersion={vi.fn()}
+        release="r1"
+        title="Spring"
+        versionId="drafts.author-1"
+      />,
+      {wrapper},
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('release-form-title')).toHaveValue('Kept title')
+    })
+    const select = within(await screen.findByTestId('field-legalReview')).getByRole('combobox')
+    await waitFor(() => expect(select).toHaveValue('1'))
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50))
+    })
+    expect(screen.getByTestId('release-form-title')).toHaveValue('Kept title')
+    expect(select).toHaveValue('1')
   })
 })
