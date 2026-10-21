@@ -121,6 +121,11 @@ export function resolveDocumentPaneOverride(
       inspectorTabs:
         c2 === 'c' ? inspectorSwitcher === 'b' ? <PanelTitleRow /> : <InspectorTabs /> : undefined,
       headerPanels: c2 === 'c' && inspectorSwitcher === 'b' ? <HeaderPanelButtons /> : undefined,
+      // C4 E: the inventory opens at the midpoint of its 320–540px range (core seam `inspectorInitialWidth`); the limits stay.
+      inspectorInitialWidth:
+        c4 === 'e'
+          ? (name: string) => (name === 'variants-inventory' ? 430 : undefined)
+          : undefined,
     }
   }
 }
