@@ -2,6 +2,7 @@ import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {DocumentIcon} from '@sanity/icons/Document'
 import {DocumentsIcon} from '@sanity/icons/Documents'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {PackageIcon} from '@sanity/icons/Package'
 import {Badge, Box, Button as UIButton, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider} from '@sanity/ui/menu'
@@ -321,6 +322,27 @@ const VariantDiamond = () => (
   </svg>
 )
 
+/**
+ * Why the commit became "Open existing version": an "i" beside the pill with the sentence as its tooltip, so the row keeps its height. The same
+ * sentence describes the Open existing version button for assistive technology.
+ */
+function ExistsInfo({text}: {text: string}) {
+  return (
+    <>
+      <Tooltip content={text} placement="top">
+        <span aria-label={text} data-testid="add-exists-hint" role="img" tabIndex={0}>
+          <Text muted size={1}>
+            <InfoOutlineIcon />
+          </Text>
+        </span>
+      </Tooltip>
+      <span hidden id="add-exists-description">
+        {text}
+      </span>
+    </>
+  )
+}
+
 const destIcon = (d: Dest) =>
   d.kind === 'drafts' ? (
     <ReleaseAvatarIcon release="drafts" />
@@ -347,7 +369,6 @@ const MODE_CSS = `
 [data-create-title] { font-size: 13px; line-height: 17px; font-weight: 500; color: var(--card-fg-color); }
 [data-create-meaning] { font-size: 12px; line-height: 16px; margin-top: 2px; color: var(--card-muted-fg-color); }
 [data-create-head] { padding: 14px 16px 12px; }
-[data-create-hint] { font-size: 12px; line-height: 16px; color: var(--card-muted-fg-color); font-family: var(--font-family-text, inherit); }
 [data-create-head-title] { font-size: 13px; line-height: 17px; font-weight: 600; color: var(--card-fg-color); }
 [data-create-head-sub] { font-size: 12px; line-height: 16px; margin-top: 3px; color: var(--card-muted-fg-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 [data-create-icon] { display: inline-flex; font-size: 21px; line-height: 0; overflow: visible; }
@@ -756,12 +777,14 @@ export function CreateVersion(props: {
               testId="add-step-variant"
               title="Variant definition"
             >
-              {variantControl}
-              {existing ? (
-                <div data-create-hint="" data-testid="add-exists-hint">
-                  {props.documentTitle} already has this version in {destTitle(draft.dest)}
-                </div>
-              ) : null}
+              <Flex align="center" gap={2}>
+                {variantControl}
+                {existing ? (
+                  <ExistsInfo
+                    text={`${props.documentTitle} already has this version in ${destTitle(draft.dest)}`}
+                  />
+                ) : null}
+              </Flex>
             </TableRow>
           </Card>
         ) : null}
@@ -772,12 +795,14 @@ export function CreateVersion(props: {
             testId="add-step-bundle"
             title="Bundle"
           >
-            {bundleControl}
-            {variantsOn || !existing ? null : (
-              <div data-create-hint="" data-testid="add-exists-hint">
-                {props.documentTitle} already has a version in {destTitle(draft.dest)}
-              </div>
-            )}
+            <Flex align="center" gap={2}>
+              {bundleControl}
+              {variantsOn || !existing ? null : (
+                <ExistsInfo
+                  text={`${props.documentTitle} already has a version in ${destTitle(draft.dest)}`}
+                />
+              )}
+            </Flex>
           </TableRow>
         </Card>
         <Card borderTop>
@@ -807,6 +832,7 @@ export function CreateVersion(props: {
             {existing ? (
               // The version is already there: the commit becomes a way to open it.
               <Button
+                aria-describedby="add-exists-description"
                 data-testid="add-open-existing"
                 mode="ghost"
                 onClick={() => {
