@@ -13,6 +13,7 @@ import {
   type LayoutShiftSample,
   type LoafSample,
   type MeasureSample,
+  type PaintedElementKind,
   type PaintSample,
   type ResourceSample,
   type SoftNavigationSample,
@@ -189,6 +190,13 @@ function install(): void {
     )
   }
 
+  function classifyPaintedElement(element: Element | null | undefined): PaintedElementKind {
+    if (element?.closest('[data-testid^="document-panel-document-title"]')) return 'title'
+    if (element instanceof HTMLImageElement || element instanceof SVGImageElement) return 'image'
+    if (element?.closest('[data-testid^="field-"]')) return 'field'
+    return 'other'
+  }
+
   // Chrome emits a candidate per larger paint; only the largest per
   // interaction is kept until the next take()
   observe('interaction-contentful-paint', (entries) => {
@@ -207,6 +215,7 @@ function install(): void {
         duration: paint.duration,
         size,
         element: describePaintedElement(paint.largestContentfulPaint?.element),
+        elementKind: classifyPaintedElement(paint.largestContentfulPaint?.element),
       })
     }
   })

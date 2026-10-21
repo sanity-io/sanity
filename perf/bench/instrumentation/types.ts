@@ -84,6 +84,13 @@ export interface SoftNavigationSample {
 }
 
 /**
+ * What a soft LCP landed on: the document title heading, an image, content
+ * inside a form field, or anything else. Splits image-led document opens from
+ * title-led ones.
+ */
+export type PaintedElementKind = 'title' | 'image' | 'field' | 'other'
+
+/**
  * The largest `interaction-contentful-paint` entry an interaction caused
  * since the last take(), one per interaction. Chrome emits these for every
  * interaction that paints content, typing included, and a larger paint can
@@ -100,6 +107,7 @@ export interface InteractionContentfulPaintSample {
   size: number
   /** That element's tag and nearest `data-testid`, e.g. `span in [data-testid="field-title"]`. */
   element: string
+  elementKind: PaintedElementKind
 }
 
 export interface BenchEntries {
