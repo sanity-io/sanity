@@ -829,6 +829,7 @@ import type {
   InitialValueState,
   InitialValueSuccessMsg,
   InitialValueTemplateItem,
+  InlineCode,
   InlineFieldDefinition,
   InlinePreview,
   InlinePreviewProps,
@@ -4368,6 +4369,9 @@ describe('sanity', () => {
   })
   test('InitialValueTemplateItem', () => {
     expectTypeOf<InitialValueTemplateItem>().toBeObject()
+  })
+  test('InlineCode', () => {
+    expectTypeOf<typeof InlineCode>().toBeFunction()
   })
   test('InlineFieldDefinition', () => {
     expectTypeOf<InlineFieldDefinition>().not.toBeNever()
