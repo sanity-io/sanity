@@ -26,6 +26,8 @@ import {
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../i18n'
+import {VALIDATION_INSPECTOR_NAME} from '../panes/document/constants'
+import {publishValidationParams} from '../panes/document/inspectors/validation/validationPath'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
   DocumentPublished,
@@ -64,7 +66,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
 
-  const {changesOpen, documentId, documentType, value, targetDocumentState} = useDocumentPane()
+  const {changesOpen, documentId, documentType, openInspector, value, targetDocumentState} =
+    useDocumentPane()
   // The scope of the document targeted by the selected perspective (undefined when the target is
   // still resolving or the draft/published pair applies). While resolving, the action is disabled
   // below instead of silently operating on the base pair.
@@ -130,7 +133,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       doPublish()
     } else {
-      // User tried to publish before validation was complete
+      // Validation finished after the click and found errors. Show them instead of publishing.
+      openInspector(VALIDATION_INSPECTOR_NAME, publishValidationParams())
       toast.push({
         title: t('action.publish.validation-issues-toast.title'),
         description: t('action.publish.validation-issues-toast.description'),
@@ -142,14 +146,15 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     isSyncing,
     doPublish,
     hasValidationErrors,
+    openInspector,
     publishScheduled,
+    t,
+    toast,
     validationStatus.revision,
     revision,
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     isValidating,
     validationStatus.isValidating,
-    toast,
-    t,
   ])
 
   useEffect(() => {
@@ -211,6 +216,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   }, [shouldSetPublishScheduled])
 
   const handle = useCallback(() => {
+    if (hasValidationErrors) {
+      openInspector(VALIDATION_INSPECTOR_NAME, publishValidationParams())
+      return
+    }
     telemetry.log(DocumentPublished, {
       publishedImmediately,
       previouslyPublished,
@@ -220,7 +229,15 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     } else {
       doPublish()
     }
-  }, [publishedImmediately, previouslyPublished, telemetry, setPublishScheduled, doPublish])
+  }, [
+    publishedImmediately,
+    previouslyPublished,
+    telemetry,
+    setPublishScheduled,
+    doPublish,
+    openInspector,
+    hasValidationErrors,
+  ])
 
   return useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) {
@@ -275,7 +292,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       editState?.transactionSyncLock?.enabled ||
       publishState?.status === 'publishing' ||
       publishState?.status === 'published' ||
-      hasValidationErrors ||
       publish.disabled ||
       !isTargetReady,
     )
@@ -315,7 +331,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     publishScheduled,
     editState?.transactionSyncLock?.enabled,
     publishState,
-    hasValidationErrors,
     publish.disabled,
     isTargetReady,
     t,

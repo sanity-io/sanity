@@ -69,6 +69,8 @@ const validationLocaleStrings = defineLocalesResources('validation', {
   'panel.close-button-aria-label': 'Close validation',
   /** Message shown when the validation panel is opened but there are no errors/warnings */
   'panel.no-errors-message': 'No validation errors',
+  /** Notice at the top of the validation panel when publishing was blocked by errors */
+  'panel.publish-blocked-message': 'This errors need to be fixed before publishing.',
   /** Title for the actual "Validation" panel/feature */
   'panel.title': 'Validation',
   /** Message shown when the validation panel is opened but the document is going to unpublish */

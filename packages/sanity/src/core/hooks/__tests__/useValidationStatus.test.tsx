@@ -8,8 +8,8 @@ import {useValidationStatus} from '../useValidationStatus'
 
 /**
  * Guards the synchronous read in `useValidationStatus`. Its consumers use it
- * as a write-side gate: `PublishAction` enables publish from
- * `hasValidationErrors` and fires `doPublish()` once `isValidating` is false
+ * as a write-side gate: `PublishAction` opens the validation inspector when
+ * `hasValidationErrors` is set, and fires `doPublish()` once `isValidating` is false
  * and `validationStatus.revision` matches the live edit revision.
  * Reference-driven revalidation re-runs validation without changing the
  * document revision, so a deferred read would let a stale — but

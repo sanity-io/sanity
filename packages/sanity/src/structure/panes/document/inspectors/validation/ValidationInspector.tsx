@@ -10,7 +10,16 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {Card, type CardTone, Text} from '@sanity/ui'
-import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
+import {
+  type ErrorInfo,
+  Fragment,
+  type MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   type DocumentInspectorProps,
   isGoingToUnpublish,
@@ -21,9 +30,15 @@ import {
 import {Flex, Box, VStack} from 'ui5'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
+import {VALIDATION_PUBLISH_NOTICE_PARAM} from '../../constants'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
+import {publishNotice} from './ValidationInspector.css'
+
+/** Pause before the publish notice so the inspector is on screen first. */
+const PUBLISH_NOTICE_DELAY_MS = 300
 
 const MARKER_ICON: Record<'error' | 'warning' | 'info', IconComponent> = {
   error: ErrorOutlineIcon,
@@ -40,12 +55,65 @@ const MARKER_TONE: Record<'error' | 'warning' | 'info', CardTone> = {
 export function ValidationInspector(props: DocumentInspectorProps) {
   const {onClose} = props
   const {onFocus, onPathOpen, schemaType, validation, value, editState} = useDocumentPane()
+  const {params} = usePaneRouter()
   const parseErrors = useParseErrors()
   const mergedValidation = useMemo(
     () => mergeParseErrors(validation, parseErrors),
     [validation, parseErrors],
   )
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const publishNoticeId = params?.[VALIDATION_PUBLISH_NOTICE_PARAM] || ''
+  const [revealedNotice, setRevealedNotice] = useState<string | null>(null)
   const {t} = useTranslation('validation')
+
+  useEffect(() => {
+    if (!publishNoticeId) return
+
+    const scroller = scrollerRef.current
+    let frame = 0
+    let delay = 0
+    let fallback = 0
+    let revealed = false
+    let onScroll: (() => void) | undefined
+
+    const reveal = () => {
+      if (revealed) return
+      revealed = true
+      delay = window.setTimeout(() => {
+        frame = requestAnimationFrame(() => setRevealedNotice(publishNoticeId))
+      }, PUBLISH_NOTICE_DELAY_MS)
+    }
+
+    const stopWaitingForScroll = () => {
+      if (onScroll && scroller) scroller.removeEventListener('scroll', onScroll)
+      onScroll = undefined
+      window.clearTimeout(fallback)
+    }
+
+    if (!scroller || scroller.scrollTop <= 1) {
+      reveal()
+    } else {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      scroller.scrollTo({top: 0, behavior: reduceMotion ? 'auto' : 'smooth'})
+      onScroll = () => {
+        if (scroller.scrollTop > 1) return
+        stopWaitingForScroll()
+        reveal()
+      }
+      scroller.addEventListener('scroll', onScroll, {passive: true})
+      // Smooth scrolling can fail to emit a final scroll event. Reveal anyway.
+      fallback = window.setTimeout(() => {
+        stopWaitingForScroll()
+        reveal()
+      }, 700)
+    }
+
+    return () => {
+      cancelAnimationFrame(frame)
+      window.clearTimeout(delay)
+      stopWaitingForScroll()
+    }
+  }, [publishNoticeId])
 
   const handleOpen = useCallback(
     (path: Path) => {
@@ -68,7 +136,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
         title={t('panel.title')}
       />
 
-      <Card flex={1} overflow="auto" padding={3}>
+      <Card flex={1} overflow="auto" padding={3} ref={scrollerRef}>
         {isVersionGoingToUnpublish ? (
           <Box padding={2}>
             <Text muted size={1}>
@@ -77,6 +145,20 @@ export function ValidationInspector(props: DocumentInspectorProps) {
           </Box>
         ) : (
           <>
+            {revealedNotice === publishNoticeId && (
+              <div
+                className={publishNotice}
+                data-testid="validation-publish-notice"
+                key={publishNoticeId}
+                role="status"
+              >
+                <Card padding={3} radius={2} tone="critical" border>
+                  <Box paddingY={2}>
+                    <Text size={1}>{t('panel.publish-blocked-message')}</Text>
+                  </Box>
+                </Card>
+              </div>
+            )}
             {mergedValidation.length === 0 && (
               <Box padding={2}>
                 <Text muted size={1}>

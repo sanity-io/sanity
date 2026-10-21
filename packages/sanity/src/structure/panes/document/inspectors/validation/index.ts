@@ -15,7 +15,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {VALIDATION_INSPECTOR_NAME} from '../../constants'
+import {VALIDATION_INSPECTOR_NAME, VALIDATION_PUBLISH_NOTICE_PARAM} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ValidationInspector} from './ValidationInspector'
 
@@ -67,4 +67,7 @@ export const validationInspector: DocumentInspector = {
   name: VALIDATION_INSPECTOR_NAME,
   component: ValidationInspector,
   useMenuItem,
+  onClose: ({params}) => ({
+    params: {...params, [VALIDATION_PUBLISH_NOTICE_PARAM]: undefined},
+  }),
 }
