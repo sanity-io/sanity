@@ -10,7 +10,6 @@ import {useEffectEvent} from 'use-effect-event'
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
-import {parseQueryUrl} from '../../../util/parseQueryUrl'
 import {useContentSize} from '../../hooks/useContentSize'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useFollowNavbarPerspective} from '../../hooks/useFollowNavbarPerspective'
@@ -37,6 +36,7 @@ import {cx} from '../../util/cx'
 import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
+import {parseQueryPaste} from '../../util/parseQueryPaste'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VistaShortcutId} from '../../util/shortcuts'
 import {RequestPanel} from '../request/RequestPanel'
@@ -380,7 +380,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       }
     },
     onPaste: (text) => {
-      const parsed = parseQueryUrl(text, datasets)
+      const parsed = parseQueryPaste(text, datasets)
       if (!parsed) {
         return false
       }
@@ -394,7 +394,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
         closable: true,
         id: 'vista-paste',
         status: 'info',
-        title: t('vista.paste.parsed'),
+        title: t(parsed.source === 'curl' ? 'vista.paste.parsed-curl' : 'vista.paste.parsed'),
       })
       if (parsed.hasUnsupportedPerspective) {
         toast.push({

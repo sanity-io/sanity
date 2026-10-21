@@ -2,11 +2,19 @@ import {type PromptRequest} from '@sanity/client'
 
 import {encodeQueryString} from '../../util/encodeQueryString'
 import {isPlainObject} from '../../util/isPlainObject'
+import {type QueryRequestMethod, queryRequestMethod} from '../../util/queryRequestMethod'
 
 /** What explaining a query needs of a client; a `SanityClient` has it */
 export interface ExplainQueryClient {
   getDataUrl: (operation: string, path?: string) => string
-  request: (options: {url: string; tag: string; signal?: AbortSignal}) => Promise<unknown>
+  request: (options: {
+    url: string
+    method: QueryRequestMethod
+    body: {query: string; params: Record<string, unknown>} | undefined
+    canUseCdn: boolean
+    tag: string
+    signal?: AbortSignal
+  }) => Promise<unknown>
   withConfig: (config: {apiVersion: string}) => {
     agent: {action: {prompt: (request: PromptRequest) => Promise<unknown>}}
   }
@@ -21,15 +29,26 @@ export interface ExplainedQuery {
  * The Content Lake's plan for a query: how it fetches, filters, sorts and projects. `explain`
  * is a query endpoint option `@sanity/client`'s `fetch` has no way to send, so the query URL is
  * requested directly; the client still adds its perspective and variant. The query runs, as any
- * fetch of it would.
+ * fetch of it would, and travels as `fetch` would send it: in the URL while the query and params
+ * fit one, as a JSON body from the client's size limit on, with `explain` staying in the URL
+ * either way.
  */
 export async function fetchQueryPlan(
   client: ExplainQueryClient,
   {query, params}: ExplainedQuery,
   signal?: AbortSignal,
 ): Promise<string> {
+  const method = queryRequestMethod(query, params)
   const response = await client.request({
-    url: client.getDataUrl('query', encodeQueryString(query, params, {explain: 'true'})),
+    url: client.getDataUrl(
+      'query',
+      method === 'GET' ? encodeQueryString(query, params, {explain: 'true'}) : '?explain=true',
+    ),
+    method,
+    body: method === 'POST' ? {query, params} : undefined,
+    // `request` only lets a GET through the API CDN on its own; `fetch` sends a posted query
+    // there too, so the plan comes from wherever the query would have run
+    canUseCdn: true,
     tag: 'vista.explain',
     signal,
   })

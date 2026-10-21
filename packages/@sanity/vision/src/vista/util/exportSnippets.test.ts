@@ -1,6 +1,8 @@
 import {describe, expect, it} from 'vitest'
 
-import {buildExportSnippets, toQueryConstantName} from './exportSnippets'
+import {encodeQueryString} from '../../util/encodeQueryString'
+import {QUERY_URL_SIZE_LIMIT, queryRequestMethod} from '../../util/queryRequestMethod'
+import {buildExportSnippets, toPostQueryUrl, toQueryConstantName} from './exportSnippets'
 
 const base = {
   query: '*[_type == "author" && _id == $id]{name}',
@@ -63,6 +65,44 @@ describe('buildExportSnippets', () => {
         `  perspective: 'published',`,
         '})',
       ].join('\n'),
+    )
+  })
+
+  it('posts the query and params as a JSON body once they are too long for a URL, as the client does', () => {
+    // Shell-quoted, as `'\''`, since the body is a shell word
+    const query = `*[_type == 'author' && _id == $id]{name} // ${'x'.repeat(QUERY_URL_SIZE_LIMIT)}`
+    const params = {id: "it's"}
+    const search = encodeQueryString(query, params)
+    const url = `https://abc.apicdn.sanity.io/v2025-02-19/data/query/production${search}&perspective=published&resultSourceMap=true`
+    expect(queryRequestMethod(query, params)).toBe('POST')
+
+    const [curl, client] = buildExportSnippets({...base, query, params, url})
+
+    expect(curl.method).toBe('POST')
+    expect(curl.code).toBe(
+      [
+        `curl 'https://abc.apicdn.sanity.io/v2025-02-19/data/query/production?perspective=published&resultSourceMap=true' \\`,
+        '  -H "Authorization: Bearer $SANITY_API_TOKEN" \\',
+        `  -H 'Content-Type: application/json' \\`,
+        `  --data-raw '${JSON.stringify({query, params}).replace(/'/g, `'\\''`)}'`,
+      ].join('\n'),
+    )
+    expect(
+      JSON.parse(curl.code.split('--data-raw ')[1].slice(1, -1).replace(/'\\''/g, "'")),
+    ).toEqual({query, params})
+    // The client applies the rule itself when it runs the snippet
+    expect(client.code).toContain('const result = await client.fetch(query, params)')
+    expect(buildExportSnippets(base)[0].method).toBe('GET')
+  })
+
+  it('strips the query and params from the URL a POST goes to, keeping the options', () => {
+    expect(
+      toPostQueryUrl(
+        'https://abc.api.sanity.io/v1/data/query/p?query=*&%24id=1&perspective=drafts&variant=fr',
+      ),
+    ).toBe('https://abc.api.sanity.io/v1/data/query/p?perspective=drafts&variant=fr')
+    expect(toPostQueryUrl('https://abc.api.sanity.io/v1/data/query/p?query=*&$id=1')).toBe(
+      'https://abc.api.sanity.io/v1/data/query/p',
     )
   })
 

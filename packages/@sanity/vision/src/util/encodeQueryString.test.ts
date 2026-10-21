@@ -18,6 +18,17 @@ describe('encodeQueryString', () => {
     expect(params.get('variant')).toBe('french')
   })
 
+  it('leaves out a param whose value is undefined, as the client does', () => {
+    const params = new URLSearchParams(
+      encodeQueryString('*', {id: 'a', missing: undefined, nothing: null}),
+    )
+
+    expect(params.get('$id')).toBe('"a"')
+    expect(params.has('$missing')).toBe(false)
+    // `null` is JSON, so it is sent
+    expect(params.get('$nothing')).toBe('null')
+  })
+
   it('omits variant when it is undefined', () => {
     const encoded = encodeQueryString('*[_type == "book"]', {}, {perspective: 'published'})
     const params = new URLSearchParams(encoded)

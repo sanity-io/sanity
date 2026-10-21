@@ -156,6 +156,7 @@ describe('HistoryTab', () => {
 
   it('marks the fetches the API CDN answered, and its cache hits', () => {
     const network = {
+      method: 'GET' as const,
       viaCdn: true,
       cacheHit: false,
       shard: undefined,
