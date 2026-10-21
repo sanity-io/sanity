@@ -21,8 +21,10 @@ import type {
   groupProblems,
   IconResolver,
   isActionEnabled,
+  isInternalValidator,
   ManifestSchemaType,
   ManifestWorkspaceFile,
+  markInternalValidator,
   ParsedWorkspaceSchemaId,
   parseWorkspaceSchemaId,
   PreparedSchemaUpload,
@@ -108,11 +110,17 @@ describe('@sanity/schema/_internal', () => {
   test('isActionEnabled', () => {
     expectTypeOf<typeof isActionEnabled>().not.toBeNever()
   })
+  test('isInternalValidator', () => {
+    expectTypeOf<typeof isInternalValidator>().toBeFunction()
+  })
   test('ManifestSchemaType', () => {
     expectTypeOf<ManifestSchemaType>().toBeObject()
   })
   test('ManifestWorkspaceFile', () => {
     expectTypeOf<ManifestWorkspaceFile>().toBeObject()
+  })
+  test('markInternalValidator', () => {
+    expectTypeOf<typeof markInternalValidator>().toBeFunction()
   })
   test('ParsedWorkspaceSchemaId', () => {
     expectTypeOf<ParsedWorkspaceSchemaId>().toBeObject()

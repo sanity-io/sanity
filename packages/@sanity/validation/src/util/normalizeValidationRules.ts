@@ -1,3 +1,4 @@
+import {markInternalValidator} from '@sanity/schema/_internal'
 import {
   isArrayOfObjectsSchemaType,
   type Rule,
@@ -9,7 +10,6 @@ import {
 } from '@sanity/types'
 import {dequal as isEqual} from 'dequal/lite'
 
-import {markInternalValidator} from '../internalValidators'
 import {Rule as RuleClass} from '../Rule'
 import {slugStructureValidator, slugUniquenessValidator} from '../validators/slugValidator'
 import {getTypeChain} from './getTypeChain'
