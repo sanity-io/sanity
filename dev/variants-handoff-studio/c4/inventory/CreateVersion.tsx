@@ -1,5 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {PackageIcon} from '@sanity/icons/Package'
 import {Badge, Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
@@ -75,6 +76,7 @@ interface Fixed {
 
 const DRAFTS: Dest = {kind: 'drafts'}
 const BASE_LABEL = 'Base · all visitors'
+const HAS_VERSION = 'Has a version · Open it'
 
 const matches = (query: string, text: string) =>
   !query.trim() || text.toLowerCase().includes(query.trim().toLowerCase())
@@ -209,11 +211,14 @@ function Item(props: {
   icon?: ReactNode
   disabled?: boolean
   selected?: boolean
+  /** The option already has a version in the chosen bundle: dimmed, and choosing it opens that version. */
+  had?: unknown
   onClick?: () => void
 }) {
   return (
     <MenuItem
-      __unstable_subtitle={props.sub}
+      __unstable_subtitle={props.had && !props.sub ? HAS_VERSION : props.sub}
+      style={props.had ? {opacity: 0.55} : undefined}
       data-testid={props.id}
       disabled={props.disabled}
       icon={props.icon as never}
@@ -246,7 +251,7 @@ function TableRow(props: {
         <Text data-testid={`${id}-title`} size={1} weight="medium">
           {props.title}
         </Text>
-        <Text muted size={0}>
+        <Text data-create-meaning="" muted size={1}>
           {props.meaning}
         </Text>
       </Stack>
@@ -257,14 +262,11 @@ function TableRow(props: {
   )
 }
 
-/** The rhombus fills little of its box, so in a table row (21px) it is drawn larger to match the package and documents icons. */
-const VariantDiamond = ({large}: {large?: boolean}) => (
+/** The variant tone's rhombus. Its glyph fills little of its box, so MODE_CSS draws it larger wherever it sits beside other icons. */
+const VariantDiamond = () => (
   <span
-    style={{
-      display: 'inline-flex',
-      color: 'var(--card-badge-suggest-icon-color)',
-      ...(large ? {transform: 'scale(1.5)'} : {}),
-    }}
+    data-diamond=""
+    style={{display: 'inline-flex', color: 'var(--card-badge-suggest-icon-color)'}}
   >
     <RhombusIcon />
   </span>
@@ -293,6 +295,12 @@ const MODE_CSS = `
 [data-create-icon-box] { width: 25px; height: 25px; margin-top: 1px; display: flex; align-items: center; justify-content: center; overflow: visible; }
 [data-create-icon] { display: inline-flex; font-size: 21px; line-height: 0; overflow: visible; }
 [data-create-icon] svg { width: 21px; height: 21px; }
+/* The rhombus glyph fills 8 of its 25 units (the package glyph about 15): drawn at 34px, laid out at 25px, it reads the same size. */
+[data-create-icon] [data-diamond] svg { width: 34px; height: 34px; margin: -6.5px; }
+/* In a pill, the same correction against the 17px icons. */
+[data-create-frame] [data-add-pill] [data-diamond] svg, [data-testid="add-value-base"] [data-diamond] svg { width: 27px; height: 27px; margin: -5px; }
+/* The meaning line is 12px: between the theme's text sizes 0 (10px) and 1 (13px). */
+[data-create-meaning] > span { font-size: 12px; line-height: 16px; }
 @container (max-width: 339px) {
   [data-create-row] { grid-template-columns: 25px minmax(0, 1fr); }
   [data-create-row] > [data-create-controls] { grid-column: 2; padding: 0; }
@@ -551,12 +559,17 @@ export function CreateVersion(props: {
     const existing = draft.picked ? found : undefined
     const waiting = Boolean(found) && !draft.picked
     const variantPick = variants.find((v) => v.id === draft.variantId)
+    // A definition that already has a version in the chosen bundle is dimmed. Choosing it sets that address, and the commit becomes "Open existing
+    // version" (one menu per pill: the menu itself never opens a version).
+    const hasIn = (variantId: string | undefined) =>
+      world.entries.find((e) => e.group === destGroup(draft.dest) && e.variantId === variantId)
+    const choose = (variantId: string | undefined) => patch({variantId})
 
     // Whatever the entry point knows (the group a + was pressed on) is only a preset: every row stays a dropdown.
     const variantControl = (
       <PillMenu
         boundary={frame}
-        icon={variantPick ? <DimensionIcon name={variantPick.dimension} /> : undefined}
+        icon={variantPick ? <DimensionIcon name={variantPick.dimension} /> : <VariantDiamond />}
         searchable={variants.length + 1 > 3}
         searchLabel="Find a variant definition"
         testId="add-pill-variant"
@@ -566,8 +579,10 @@ export function CreateVersion(props: {
           <>
             {matches(q, BASE_LABEL) ? (
               <Item
+                had={hasIn(undefined)}
+                icon={<VariantDiamond />}
                 id="add-value-base"
-                onClick={() => patch({variantId: undefined})}
+                onClick={() => choose(undefined)}
                 selected={!draft.variantId}
                 text={BASE_LABEL}
               />
@@ -581,9 +596,10 @@ export function CreateVersion(props: {
                 icon={<DimensionIcon name={v.dimension} />}
                 id={`add-value-${v.value}`}
                 key={v.id}
-                onClick={() => patch({variantId: v.id})}
+                had={hasIn(v.id)}
+                onClick={() => choose(v.id)}
                 selected={draft.variantId === v.id}
-                sub={reason}
+                sub={reason ?? (hasIn(v.id) ? HAS_VERSION : undefined)}
                 text={v.title}
               />
             ))}
@@ -634,7 +650,7 @@ export function CreateVersion(props: {
     const documentControl = (
       <PillMenu
         boundary={frame}
-        icon={<DocumentsIcon />}
+        icon={<DocumentIcon />}
         searchable={world.entries.length + 1 > 3}
         searchLabel="Find a version"
         testId="add-pill-source"
@@ -687,7 +703,7 @@ export function CreateVersion(props: {
         {variantsOn ? (
           <Card borderTop>
             <TableRow
-              icon={<VariantDiamond large />}
+              icon={<VariantDiamond />}
               meaning="Who sees this version"
               testId="add-step-variant"
               title="Variant definition"
