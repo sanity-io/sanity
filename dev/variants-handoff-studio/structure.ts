@@ -8,8 +8,8 @@ const ENGLISH_ONLY = '_type == $type && (!defined(language) || language == "en")
 export const structure: StructureResolver = (S) =>
   S.list()
     .title('Content')
-    .items(
-      S.documentTypeListItems()
+    .items([
+      ...S.documentTypeListItems()
         .filter((item) => TYPES.includes(item.getId() ?? ''))
         .map((item) => {
           const id = item.getId() as string
@@ -20,4 +20,7 @@ export const structure: StructureResolver = (S) =>
             .icon(item.getIcon())
             .child(S.documentTypeList(id).title(title).filter(ENGLISH_ONLY).params({type: id}))
         }),
-    )
+      S.divider(),
+      // T5: the document that shows the shipped field marks on every node kind (open fm-1 as Members, in Published).
+      S.documentTypeListItem('fieldMarksTest').title('Field marks test'),
+    ])
