@@ -1,5 +1,6 @@
 import {type Locator, type Page} from 'playwright'
 
+import {type MeasureSample, type SoftNavigationSample} from '../../instrumentation/types'
 import {
   type InteractionTarget,
   type ScenarioStep,
@@ -164,6 +165,90 @@ async function awaitEditable(context: StepContext, field: string): Promise<void>
     })
 }
 
+/** The measure name a `navigate` step records (click → destination ready). */
+export function navigateMeasureName(label: string): string {
+  return `bench:navigate:${label}`
+}
+
+const NAVIGATE_MEASURE_PREFIX = navigateMeasureName('')
+/** The click's timestamp and the soft navigation's startTime differ by rounding, never by a frame. */
+const SOFT_NAVIGATION_MATCH_MS = 16
+
+/** Labels of the `navigate` steps whose click starts no soft navigation, in order. */
+export function navigationsWithoutSoftNavigation(
+  measures: MeasureSample[],
+  softNavigations: SoftNavigationSample[],
+): string[] {
+  return measures
+    .filter((measure) => measure.name.startsWith(NAVIGATE_MEASURE_PREFIX))
+    .filter((measure) =>
+      softNavigations.every(
+        (softNavigation) =>
+          Math.abs(softNavigation.startTime - measure.startTime) > SOFT_NAVIGATION_MATCH_MS,
+      ),
+    )
+    .map((measure) => measure.name.slice(NAVIGATE_MEASURE_PREFIX.length))
+}
+
+async function navigate(
+  context: StepContext,
+  step: Extract<ScenarioStep, {kind: 'navigate'}>,
+): Promise<void> {
+  const {page} = context
+  const measureName = navigateMeasureName(step.label)
+  const previousUrl = page.url()
+  // Starts at the click's event timestamp, which is the soft navigation's startTime
+  await page.evaluate(
+    ({name}) =>
+      window.addEventListener(
+        'pointerdown',
+        (event) => performance.mark(`${name}:start`, {startTime: event.timeStamp}),
+        {capture: true, once: true},
+      ),
+    {name: measureName},
+  )
+  await resolveLocator(page, step.selector).click({timeout: context.timeoutMs})
+  await page
+    .waitForFunction(
+      ({measureName: name, previousUrl: before, urlSource, urlFlags, ready, readyWhen}) => {
+        const markName = `${name}:start`
+        const target = document.querySelector<HTMLElement>(ready)
+        const content =
+          target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement
+            ? target.value
+            : (target?.textContent ?? '')
+        const arrived =
+          window.location.href !== before &&
+          new RegExp(urlSource, urlFlags).test(window.location.pathname + window.location.search) &&
+          Boolean(target?.checkVisibility()) &&
+          (readyWhen === 'visible' || content.length > 0)
+        const start = performance.getEntriesByName(markName, 'mark').at(-1)
+        if (arrived && start) {
+          performance.measure(name, {start: start.startTime})
+          performance.clearMarks(markName)
+          return true
+        }
+        return false
+      },
+      {
+        measureName,
+        previousUrl,
+        urlSource: step.url.source,
+        urlFlags: step.url.flags,
+        ready: step.ready,
+        readyWhen: step.readyWhen ?? 'visible',
+      },
+      {timeout: context.timeoutMs, polling: 'raf'},
+    )
+    .catch(() => {
+      throw new SessionError(
+        'readiness-timeout',
+        `navigation "${step.label}" never reached ${step.url}${context.label ? ` (${context.label})` : ''}`,
+        context.diagnostics?.() ?? [],
+      )
+    })
+}
+
 async function visitDocument(
   context: StepContext,
   step: Extract<ScenarioStep, {kind: 'visitDocument'}>,
@@ -261,6 +346,9 @@ export async function runStep(context: StepContext, step: ScenarioStep): Promise
       }
       return {interactions: clicks + repeat}
     }
+    case 'navigate':
+      await navigate(context, step)
+      return {interactions: 1}
     case 'visitDocument':
       await visitDocument(context, step)
       return {interactions: 0}
