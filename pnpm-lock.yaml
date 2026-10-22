@@ -1944,8 +1944,8 @@ importers:
         specifier: ^1.2.3
         version: 1.2.5
       '@pierre/diffs':
-        specifier: ^1.5.2
-        version: 1.5.2(@shikijs/themes@4.5.0)(react-dom@19.3.1)(react@19.3.1)
+        specifier: ^1.6.0
+        version: 1.6.0(@shikijs/themes@4.5.0)(react-dom@19.3.1)(react@19.3.1)
       '@rexxars/react-json-inspector':
         specifier: ^9.0.1
         version: 9.0.1(react@19.3.1)
@@ -6994,8 +6994,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@pierre/diffs@1.5.2':
-    resolution: {integrity: sha512-QVxIWQEnNoko22k63maERzozd29+FtaUNpRrZiw603WMe5R1mFSED+jMtPkcVP3SDYS1DWg5K7sa7sJbr3xkNQ==}
+  '@pierre/diffs@1.6.0':
+    resolution: {integrity: sha512-bO8sUiwF7Y1VU3DpYc0jwJz8SVhL53Qp9S9sUaHZJWznuQv9xRLgaeX4yNBysiA7uY70R2Aq7kCcTwPfW89GzQ==}
     peerDependencies:
       react: ^18.3.1 || ^19.0.0
       react-dom: ^18.3.1 || ^19.0.0
@@ -7004,6 +7004,9 @@ packages:
         optional: true
       react-dom:
         optional: true
+
+  '@pierre/highlights@0.1.3':
+    resolution: {integrity: sha512-fI7BQu1IRtxBQthK8+Z0aEADcxHBEHSZnWUmE/gKvn7BfwPcaBkh9OiXi4eEQBf4MrtzUNaYTOXJTW4yWUD9QQ==}
 
   '@pierre/theme@2.0.0':
     resolution: {integrity: sha512-yNDd9GYLQl1mEUJR8AneJ5e4ohLIHQd/wZLWr4fagt78vS2RwwZNW530vVgHqXFAyFVcFlRmGUD5ramXH46OXw==}
@@ -8088,10 +8091,6 @@ packages:
 
   '@shikijs/themes@4.5.0':
     resolution: {integrity: sha512-zGb87H3UBbpuI4yoh5UguB1XbU+2BDU3kflM7UfZ+Cy2hWo9lBtqjSVK20gmLY6ukYl040hAypGXMgud9vul8Q==}
-    engines: {node: '>=20'}
-
-  '@shikijs/transformers@4.5.0':
-    resolution: {integrity: sha512-LM7twi043qCC3gRyGQfjoC2/sowzbEltWuruyRtT3RlBlk1hKzWk9ETnU7RcDBoVWQBmC8Mebnr7p28W7kPoaA==}
     engines: {node: '>=20'}
 
   '@shikijs/types@3.23.0':
@@ -19855,11 +19854,11 @@ snapshots:
   '@oxlint/binding-win32-x64-msvc@1.88.0':
     optional: true
 
-  '@pierre/diffs@1.5.2(@shikijs/themes@4.5.0)(react-dom@19.3.1)(react@19.3.1)':
+  '@pierre/diffs@1.6.0(@shikijs/themes@4.5.0)(react-dom@19.3.1)(react@19.3.1)':
     dependencies:
+      '@pierre/highlights': 0.1.3
       '@pierre/theme': 2.0.0
       '@pierre/theming': 1.0.1(@pierre/theme@2.0.0)(@shikijs/themes@4.5.0)(react-dom@19.3.1)(react@19.3.1)(shiki@4.5.0)
-      '@shikijs/transformers': 4.5.0
       diff: 9.0.0
       hast-util-to-html: 9.0.5
       lru_map: 0.4.1
@@ -19869,6 +19868,8 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
     transitivePeerDependencies:
       - '@shikijs/themes'
+
+  '@pierre/highlights@0.1.3': {}
 
   '@pierre/theme@2.0.0': {}
 
@@ -21387,11 +21388,6 @@ snapshots:
 
   '@shikijs/themes@4.5.0':
     dependencies:
-      '@shikijs/types': 4.5.0
-
-  '@shikijs/transformers@4.5.0':
-    dependencies:
-      '@shikijs/core': 4.5.0
       '@shikijs/types': 4.5.0
 
   '@shikijs/types@3.23.0':
