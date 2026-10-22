@@ -1,11 +1,20 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {DotIcon} from '@sanity/icons/Dot'
 import {Box, Flex, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ReactElement, useState} from 'react'
-import {ReleaseAvatarIcon, usePerspective, useSchema, useSetPerspective, useWorkspace} from 'sanity'
+import {type CSSProperties, type ReactElement, useState} from 'react'
+import {
+  ReleaseAvatarIcon,
+  usePerspective,
+  useSchema,
+  useSetPerspective,
+  useSetVariant,
+  useWorkspace,
+} from 'sanity'
 
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
+import {RELEASE_TYPES_TONES} from '../../../packages/sanity/src/core/releases/util/const'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {valueTitle} from '../c1/model'
@@ -39,6 +48,23 @@ function glyph(v: AudienceVersion) {
     <ReleaseAvatarIcon
       releaseType={
         v.state === 'scheduled' ? 'scheduled' : v.state === 'asap' ? 'asap' : 'undecided'
+      }
+    />
+  )
+}
+
+/**
+ * The release mark the PILL carries: the same dot as the Published and Draft chips, in the release type's tone. The type icon (clock, bolt) is
+ * 13px wide where the other pills' marks are 4 to 7px, so in the row it reads as a different kind of pill; the menu rows keep the type icon.
+ */
+function releaseDot(v: AudienceVersion) {
+  const type = v.state === 'scheduled' ? 'scheduled' : v.state === 'asap' ? 'asap' : 'undecided'
+  return (
+    <DotIcon
+      style={
+        {
+          '--card-icon-color': `var(--card-badge-${RELEASE_TYPES_TONES[type].tone}-icon-color)`,
+        } as CSSProperties
       }
     />
   )
@@ -146,8 +172,9 @@ export function DocumentPillsV1({
   documentType: string
 }) {
   const versions = useVersionList(documentId)
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName, selectedVariantName} = usePerspective()
   const setPerspective = useSetPerspective()
+  const setVariant = useSetVariant()
   const address = usePerspectiveState()
   const definitions = useVariantDefinitions()
   const schemaType = useSchema().get(documentType)
@@ -164,12 +191,18 @@ export function DocumentPillsV1({
   const showDrafts = draftsEnabled && !schemaType?.liveEdit
   const showPublished = Boolean(published) || (!showDrafts && !releases.length)
 
-  // Choosing a variant sets the address (version and values) like the inventory does.
+  const currentVariant = selectedVariantName?.replace(/^_\.variants\./, '')
+  const versionOf = (v: AudienceVersion) =>
+    v.bundleId ?? (v.state === 'published' ? 'published' : 'drafts')
+  // Choosing a variant sets the address like the inventory does: ONE navigation sets the version and the router's variant param (in the open
+  // beta that param is the only copy of the choice; `setChosen` alone changed the version and left the variant behind).
   const selectVariant = (v: AudienceVersion) => () => {
     const definition = definitions.find((d) => d._id.replace(/^_\.variants\./, '') === v.variantId)
-    setPerspective(v.bundleId ?? (v.state === 'published' ? 'published' : 'drafts'))
+    setVariant({variantId: definition?._id as never, perspective: versionOf(v) as never})
     address.setChosen(definition ? definition.conditions : {})
   }
+  const isCurrent = (v: AudienceVersion) =>
+    (v.variantId ?? undefined) === currentVariant && versionOf(v) === current
   const variantItems = variants.map((v, i) => {
     const definition = definitions.find((d) => d._id.replace(/^_\.variants\./, '') === v.variantId)
     return {
@@ -225,6 +258,8 @@ export function DocumentPillsV1({
         <DropdownPill
           icon={<RhombusIcon />}
           items={variantItems}
+          // A variant of this document is in view: marked like the Releases pill marks a release.
+          selected={variants.some(isCurrent)}
           testId="pills-variants"
           text={`Variants · ${variants.length}`}
         />
@@ -263,8 +298,8 @@ export function DocumentPillsV1({
       ) : null}
       {releases.length ? (
         <DropdownPill
-          // The release glyph its menu rows use: the release in view, else the first one.
-          icon={glyph(releases.find((v) => v.bundleId === current) ?? releases[0])}
+          // The release in view, else the first one, as a dot (its menu rows keep the type icon).
+          icon={releaseDot(releases.find((v) => v.bundleId === current) ?? releases[0])}
           items={releaseGroups}
           selected={releases.some((v) => v.bundleId === current)}
           testId="pills-releases"
