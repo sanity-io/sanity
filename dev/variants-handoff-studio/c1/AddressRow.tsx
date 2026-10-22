@@ -52,6 +52,8 @@ export function AddressChip(props: {
   paddingX?: number
   /** No outline: the chip sits on a base of its own (the open beta navbar's section). */
   borderless?: boolean
+  /** The main button's tooltip ("Audience: Students"); none when left out. */
+  tooltip?: string
 }) {
   const {
     text,
@@ -66,6 +68,7 @@ export function AddressChip(props: {
     height = 25,
     paddingX,
     borderless = false,
+    tooltip,
   } = props
   // The room is between the icons and the edges: the main button has it on the left (its chevron stays at the right end), the cross on both sides.
   const inner = chipInner(height)
@@ -94,7 +97,7 @@ export function AddressChip(props: {
           onClick={onOpen}
           style={mainStyle}
           text={text}
-          tooltipProps={null}
+          tooltipProps={tooltip ? {content: tooltip} : null}
         />
         <div className={SegmentDivider} />
         <Button

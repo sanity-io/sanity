@@ -13,7 +13,7 @@ import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/Menu
 import {AddressChip} from './AddressRow'
 import {DimensionIcon} from './dimensionIcons'
 import {valueTitle} from './model'
-import {Picker} from './Picker'
+import {DEFAULT_TITLE, Picker} from './Picker'
 import {usePerspectiveState} from './state'
 import {reloadVariantDefinitions, useVariantDefinitions} from './world'
 
@@ -77,11 +77,13 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
           removeTestId="variants-chip-remove"
           testId="variants-chip"
           text={valueTitle(dimension, value)}
+          tooltip={`${dimension.title}: ${valueTitle(dimension, value)}`}
         />
       ) : (
         // Resting: the same outlined capsule as the applied control and the stock state pill, with nothing in it but the label.
         <Card border={!inSection} radius="full" style={{height, overflow: 'hidden'}}>
           <Button
+            aria-label={`${dimension.title}: ${DEFAULT_TITLE}`}
             data-testid="variants-button"
             icon={<DimensionIcon name={dimension.name} style={ICON_STYLE} />}
             iconRight={ChevronDownIcon}
@@ -94,8 +96,9 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
               paddingLeft: PADDING_X,
               paddingRight: CHEVRON_INSET,
             }}
-            text={dimension.title}
-            tooltipProps={null}
+            // The value, as the state control says "Drafts" and not "Perspective"; the dimension titles the menu and the tooltip.
+            text={DEFAULT_TITLE}
+            tooltipProps={{content: `${dimension.title}: ${DEFAULT_TITLE}`}}
           />
         </Card>
       )}
