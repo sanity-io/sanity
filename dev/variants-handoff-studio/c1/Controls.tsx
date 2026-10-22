@@ -67,16 +67,6 @@ export const CHIP_SHAPE: 'round' | 'box' = 'round'
  */
 export const PILL_ALWAYS_OPENS_MENU = true
 
-/** C1 B: the stock state menu gains only a search field, once it holds more than 7 entries (versions and releases, not the footer actions). */
-export const STATE_MENU_SEARCH_ABOVE = 7
-const STATE_MENU_SEARCH: PerspectiveMenuExtension = {
-  search: {
-    above: STATE_MENU_SEARCH_ABOVE,
-    placeholder: 'Find a version or release',
-    empty: (query) => `Nothing matches “${query}”.`,
-  },
-}
-
 /**
  * C1 OPTION A (one control): the stock version pill, extended through the PROPOSED `PerspectiveMenuExtensionProvider`.
  * Its menu gains the first row of the bottom card, and the pill shows the chosen values after "Drafts".
@@ -87,8 +77,8 @@ export function useOptionAExtension(): PerspectiveMenuExtension | undefined {
   const s = usePerspectiveState()
   const {stage, pillWhenOpen} = useOptionState()
   const openBeta = stage === 'open-beta'
-  // C1 B (the open beta design): the state menu is the stock one, with a search field when it holds more than 7 entries (Figma B2b).
-  if (isLockedNav(option)) return STATE_MENU_SEARCH
+  // C1 B (the open beta design): the state menu is the stock one. Its search field, list and actions are core's own now (all studios).
+  if (isLockedNav(option)) return undefined
   if (option !== 'a') return undefined
 
   const narrowed = Object.keys(s.chosen).length > 0

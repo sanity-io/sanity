@@ -34,7 +34,12 @@ export const panelWidth = (dimensions: number) => {
   if (form === 'columns') return dimensions * COLUMN_WIDTH + (dimensions - 1) * 20 + 24
   return 640
 }
-const LIST_MAX = 336
+/**
+ * The list shows 10 rows before it scrolls, as the state menu next to it does (core's RELEASE_MENU_VISIBLE_ROWS): the same count of rows,
+ * not the same pixels. Rows are the Studio's 33px MenuItem; the 4px is the list's end padding, as in the state menu.
+ */
+const VISIBLE_ROWS = 10
+const LIST_MAX = VISIBLE_ROWS * 33 + 4
 
 /**
  * The label of the inert save stub in the columns form. One constant: the final wording (Save, Apply or Create) is an open
