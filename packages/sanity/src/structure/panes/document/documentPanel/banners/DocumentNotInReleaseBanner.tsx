@@ -6,6 +6,7 @@ import {
   getReleaseTone,
   isAgentBundleName,
   LATEST,
+  RELEASES_INTENT,
   ReleaseTitle,
   type SystemBundle,
   type TargetPerspective,
@@ -15,6 +16,7 @@ import {
   useVersionOperations,
   VersionInlineBadge,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -61,6 +63,7 @@ export function DocumentNotInReleaseBanner({
   const {t: tCore} = useTranslation()
 
   const {createVersion} = useVersionOperations()
+  const {navigateIntent} = useRouter()
 
   const isAnonymousBundle = typeof currentRelease === 'string'
   const releaseTitle = isAnonymousBundle
@@ -116,7 +119,12 @@ export function DocumentNotInReleaseBanner({
       content={
         <Text size={1}>
           <Translate
-            i18nKey="banners.release.not-in-release"
+            // PROPOSED: a scheduled release says why nothing can be added, and where to go (Unschedule is in the Releases tool).
+            i18nKey={
+              isScheduledRelease
+                ? 'banners.release.scheduled-locked'
+                : 'banners.release.not-in-release'
+            }
             t={t}
             values={{
               title: releaseTitle,
@@ -127,14 +135,21 @@ export function DocumentNotInReleaseBanner({
               fallbackTitle: tCore('release.placeholder-untitled-release'),
             }}
           />
-          {/* PROPOSED: a scheduled release says why there is no button, as the variant banners do. */}
-          {isScheduledRelease ? <> {t('banners.release.scheduled-locked')}</> : null}
         </Text>
       }
-      // Adding to a scheduled release is not allowed
+      // Adding to a scheduled release is not allowed. PROPOSED: its banner opens the release instead, where it can be unscheduled.
       action={
         isScheduledRelease
-          ? undefined
+          ? isAnonymousBundle
+            ? undefined
+            : {
+                text: t('banners.release.action.open-release'),
+                mode: 'ghost',
+                onClick: () =>
+                  navigateIntent(RELEASES_INTENT, {
+                    id: getReleaseIdFromReleaseDocumentId(currentRelease._id),
+                  }),
+              }
           : {
               text: isAgentBundleName(currentRelease)
                 ? t('banners.release.action.add-to-bundle')
