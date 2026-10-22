@@ -369,6 +369,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.file.meta-info-fallback-title': 'Untitled',
   /** The label displayed to indicate a document's value is different to its base variant. */
   'changes.from-base-variant.label': 'Changed from base variant',
+  /** PROPOSED: the base-variant mark's tooltip, before the chips naming the base variant and the slot: "Differs from [All users] [Draft]" */
+  'changes.from-base-variant.differs-from': 'Differs from',
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
   'changes.image.crop-changed': 'Crop changed',
   /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */
