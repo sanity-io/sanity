@@ -271,7 +271,9 @@ export function OpenBetaPills({
 
   const currentVariant = selectedVariantName?.replace(/^_\.variants\./, '')
   // Every pill is a proxy for the navbar: ONE navigation sets the version and the router's variant param together, as the navbar toggle and the
-  // inventory do (in the open beta that param is the only copy of the choice). A base pill clears the variant, so it shows the base document.
+  // inventory do (in the open beta that param is the only copy of the choice). The two pill menus are independent axes, like the navbar chips
+  // (Faheem, 22 Oct): Variants sets who, and Published, Draft or a release sets where, KEEPING the variant. Back to the base is only All users
+  // (Default) in the Variants menu, or the navbar audience's cross.
   const goTo = (perspective: ReleaseId, definition?: (typeof definitions)[number]) => {
     const id = definition?._id
     setVariant({variantId: id && isVariantId(id) ? id : undefined, perspective})
@@ -279,8 +281,10 @@ export function OpenBetaPills({
   }
   const definitionOf = (v: AudienceVersion) =>
     definitions.find((d) => d._id.replace(/^_\.variants\./, '') === v.variantId)
-  // One selected pill: Variants while a variant is chosen, else the base pill whose version is in view.
-  const baseInView = !currentVariant
+  // The variant in view (or none): every Published, Draft and release choice keeps it.
+  const viewedDefinition = definitions.find(
+    (d) => d._id.replace(/^_\.variants\./, '') === currentVariant,
+  )
   // One row per VARIANT this document has (not per version): picking it sets only the variant and keeps the Published, Draft or release in
   // view, which the other pills change. A variant with no version there still opens; the T6 banner says so.
   const viewedVariant = variants.find((v) => v.variantId === currentVariant)
@@ -351,17 +355,14 @@ export function OpenBetaPills({
       key: `release-${bundleId}`,
       text: stateWord({...head, audience: null}),
       icon: glyph(head),
-      onClick: () => goTo(bundleId),
-      selected: baseInView && current === bundleId,
+      onClick: () => goTo(bundleId, viewedDefinition),
+      selected: current === bundleId,
       search: {id: bundleId},
     }
   })
   // Then every other active release, greyed but clickable, as the Variants menu lists the variants this document has none of: picking one
   // moves to that release and KEEPS the variant in view, where the T6 banner offers Create version (or, for a locked or scheduled release, says
   // so with no button, as it already does).
-  const viewedDefinition = definitions.find(
-    (d) => d._id.replace(/^_\.variants\./, '') === currentVariant,
-  )
   const missingReleaseItems = activeReleases
     .filter((release) => !isCardinalityOneRelease(release))
     .map((release) => ({release, id: getReleaseIdFromReleaseDocumentId(release._id)}))
@@ -421,8 +422,9 @@ export function OpenBetaPills({
           data-testid="pills-published"
           icon={<ReleaseAvatarIcon release="published" />}
           mode="ghost"
-          onClick={() => goTo('published')}
-          selected={baseInView && current === 'published'}
+          onClick={() => goTo('published', viewedDefinition)}
+          // Both axes apply: the version in view is selected as well as the Variants pill naming the variant.
+          selected={current === 'published'}
           text="Published"
         />
       ) : null}
@@ -431,8 +433,8 @@ export function OpenBetaPills({
           data-testid="pills-drafts"
           icon={<ReleaseAvatarIcon release="drafts" />}
           mode="ghost"
-          onClick={() => goTo('drafts')}
-          selected={baseInView && current === 'drafts'}
+          onClick={() => goTo('drafts', viewedDefinition)}
+          selected={current === 'drafts'}
           text="Draft"
         />
       ) : null}
@@ -441,7 +443,8 @@ export function OpenBetaPills({
           // The release in view, else the first one, as a dot (its menu rows keep the type icon).
           icon={releaseDot(releases.find((v) => v.bundleId === current) ?? releases[0])}
           items={[...releaseItems, ...missingReleaseItems]}
-          selected={baseInView && releases.some((v) => v.bundleId === current)}
+          // Any release in view, this document's or another (picked from the greyed rows).
+          selected={current !== 'published' && current !== 'drafts'}
           testId="pills-releases"
           text={`Releases · ${releaseCount}`}
         />
