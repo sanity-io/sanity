@@ -3,11 +3,11 @@
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Badge, Card, type CardTone, Text} from '@sanity/ui'
+import {Badge, Card, type CardTone} from '@sanity/ui'
 import {MenuDivider, MenuItem as UIMenuItem} from '@sanity/ui/menu'
 import {Fragment, useCallback} from 'react'
 import {type SemVer} from 'semver'
-import {Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -155,20 +155,29 @@ function StudioVersion({
     <UIMenuItem padding={2} onClick={action} data-testid={testId}>
       <Flex alignItems="flex-start">
         <Flex flexDirection="column" flexBasis="0%" flexGrow={1} gap={2} padding={1}>
-          <Text size={1} weight="medium">
+          <Text
+            size={1}
+            weight="medium"
+            tone={deprecatedVersion ? 'caution' : undefined}
+            as="div"
+            trim={true}
+          >
             {t('help-resources.studio')}
           </Text>
           {deprecatedVersion ? (
             <Flex alignItems="center" gap={2}>
-              <TextWithTone size={1} tone="caution">
-                <WarningOutlineIcon />
-              </TextWithTone>
+              <Icon
+                tone="caution"
+                size={1}
+                icon={WarningOutlineIcon}
+                style={{margin: '-0.375rem'}}
+              />
               <TextWithTone size={1} tone="caution">
                 {subtitle}
               </TextWithTone>
             </Flex>
           ) : (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {subtitle}
             </Text>
           )}

@@ -5,6 +5,8 @@
 import {soakSettleMinute, steadySoakSamples} from '@repo/utils/soak-settle'
 import {STYLE_METRICS, STYLE_SYSTEMS, styleMetricFor} from '@repo/utils/style-systems'
 
+import {ENGINE_CONFIDENCE_EXPLAINER} from './engineConfidence'
+
 export interface TrendRun {
   _id: string
   startedAt: string
@@ -192,12 +194,27 @@ export interface TrendPoint {
    * popover say "released as" instead of bracketing between two releases.
    */
   releaseTag?: string
-  /** benchRun document id — opens the run in the studio. */
+  /** Document id — opens the run in the studio. */
   runId: string
+  /** Type of the document `runId` names. Absent = `benchRun`. */
+  documentType?: 'benchRun' | 'engineConfidenceRun'
   /** Backlink metadata (GitHub PR / commit / CI run). */
   prNumber?: number
   ciRunId?: string
   ciRunAttempt?: number
+}
+
+/** Window sizes for drift detection, in points of the series. */
+export interface DriftWindows {
+  recentRuns: number
+  baselineRuns: number
+  /** Fewest points a series needs before it is compared at all. */
+  minimumRuns: number
+}
+
+export interface SeriesBreak {
+  date: Date
+  label: string
 }
 
 /**
@@ -281,6 +298,17 @@ export interface TrendSeries {
    * the cross-scenario adoption score is computed from (aggregateStyleSeries).
    */
   hidden?: boolean
+  /**
+   * Drift windows for a series that does not tick once per commit. Absent =
+   * the bench defaults (see `DEFAULT_DRIFT_WINDOWS` in drift.ts).
+   */
+  drift?: DriftWindows
+  /**
+   * Points where the measurement itself changed (a pinned-config version
+   * bump). Drift never compares across the newest one, and weekly cards draw a
+   * dashed rule at it.
+   */
+  breaks?: SeriesBreak[]
   /** One line per branch (usually just one — comparison overlays several). */
   lines: TrendLine[]
 }
@@ -318,6 +346,7 @@ export type TrendGroup =
   | 'styles'
   | 'soak'
   | 'settle'
+  | 'engine'
   | 'environment'
 
 /**
@@ -455,6 +484,11 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
       'red-by-design scenarios exercising a known unfixed footgun, which chart a constant ' +
       'non-zero line until the fix lands (and warn when it does). Measured against the ' +
       'customization build (perf/bench/studio-customizations). Lower is better on every series.',
+  },
+  {
+    id: 'engine',
+    title: 'Engine confidence',
+    description: ENGINE_CONFIDENCE_EXPLAINER,
   },
   {
     id: 'environment',

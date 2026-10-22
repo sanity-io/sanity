@@ -4,11 +4,10 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  Text,
 } from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
-import {Box, Flex, Grid, VStack} from 'ui5'
+import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -82,7 +81,7 @@ export function InvalidValue(props: InvalidValueProps) {
 
           <Box padding={3}>
             {resolution.action && (
-              <Text as="p" muted size={1}>
+              <Text as="p" muted size={1} trim={true} tone="caution">
                 {t('inputs.portable-text.invalid-value.action-disclaimer')}
               </Text>
             )}
@@ -91,7 +90,7 @@ export function InvalidValue(props: InvalidValueProps) {
       }
     >
       <VStack gap={3}>
-        <Text as="p" muted size={1}>
+        <Text as="p" muted size={1} trim={true} tone="caution">
           <Translate t={t} i18nKey={resolution.i18n.description} values={resolution.i18n.values} />
         </Text>
 

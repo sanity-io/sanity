@@ -122,3 +122,7 @@ dev/test-studio/.react-compiler-bailout-report.json
 # Local output of `pnpm e2e:flake-report`
 flake-report.md
 flake-report.json
+
+# Engine confidence local outputs and Stryker sandbox
+engine-confidence/reports/
+.stryker-tmp/

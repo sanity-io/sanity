@@ -72,6 +72,7 @@
     "e2e:start": "pnpm --filter studio-e2e-testing preview",
     "embedded-studio-vite:dev": "pnpm --filter e2e-embedded-studio-vite dev",
     "embedded-studio-vite:test": "pnpm --filter e2e-embedded-studio-vite test",
+    "engine-confidence": "pnpm --silent --filter engine-confidence run",
     "example:blog-studio": "cd examples/studios/blog-studio && pnpm start",
     "example:clean-studio": "cd examples/studios/clean-studio && pnpm start",
     "example:ecommerce-studio": "cd examples/studios/ecommerce-studio && pnpm start",
@@ -113,6 +114,7 @@
     "watch": "pnpm --filter @sanity/* --filter sanity watch"
   },
   "devDependencies": {
+    "@babel/core": "7.29.7",
     "@repo/bundle-manager": "workspace:*",
     "@repo/oxlint-plugin-i18n": "workspace:*",
     "@repo/release-notes": "workspace:*",
@@ -144,6 +146,6 @@
     "vite": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@12.11.2",
+  "packageManager": "pnpm@12.14.0",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }
