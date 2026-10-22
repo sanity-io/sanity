@@ -89,10 +89,10 @@ export interface StudioProps {
    * @beta */
   unstable_noAuthBoundary?: boolean
   /**
-   * The module CDN URL `sanity` was loaded from, for studios not loaded through the document's import map.
+   * The `sanity` import map entry, for a studio whose `sanity` doesn't load through the document's import map.
    * @hidden
    * @beta */
-  unstable_sanityModuleUrl?: string
+  unstable_importMapUrl?: string
   /**
    * The app ID to connect to the message bus with, for a `sanity` the app's build didn't compile.
    * @hidden
@@ -112,7 +112,7 @@ export function Studio(props: StudioProps): React.JSX.Element {
     unstable_globalStyles: globalStyles,
     unstable_history,
     unstable_noAuthBoundary,
-    unstable_sanityModuleUrl,
+    unstable_importMapUrl,
     unstable_appId,
   } = props
 
@@ -124,7 +124,7 @@ export function Studio(props: StudioProps): React.JSX.Element {
       scheme={scheme}
       unstable_history={unstable_history}
       unstable_noAuthBoundary={unstable_noAuthBoundary}
-      unstable_sanityModuleUrl={unstable_sanityModuleUrl}
+      unstable_importMapUrl={unstable_importMapUrl}
       unstable_appId={unstable_appId}
     >
       {globalStyles && <GlobalStyle />}
