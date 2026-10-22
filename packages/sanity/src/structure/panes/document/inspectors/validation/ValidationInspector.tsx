@@ -156,7 +156,7 @@ function ValidationCard(props: {
               <Icon
                 size={1}
                 icon={MarkerIcon}
-                style={{color: 'var(--card-fg-color)', margin: '-0.375rem'}}
+                style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
               />
             </Box>
 
