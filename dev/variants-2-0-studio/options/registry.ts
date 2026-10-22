@@ -177,7 +177,7 @@ export const COMPONENTS: ComponentDef[] = [
         id: 'g',
         label: "Core's dots (open beta)",
         summary:
-          "No control on the rows: core's status dots exactly as shipped. Only their hover changed, in core: it opens from the dots (not the row) and lists the document's versions grouped by audience, with no dates and nothing clickable. Open beta pick (22 Oct call with Pedro, Ash and Jordan), reversing option A.",
+          'No control on the rows: core\'s status dots exactly as shipped. Only their hover changed, in core: it opens from the dots (not the row) and is the v1 popover (option A\'s: one line per audience with its states as flat labels, five lines then "and N more versions"), with no dates and nothing clickable. Open beta pick (22 Oct call with Pedro, Ash and Jordan), reversing option A.',
         status: 'candidate',
       },
     ],
