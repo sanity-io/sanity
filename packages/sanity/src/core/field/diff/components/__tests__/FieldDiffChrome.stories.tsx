@@ -4,7 +4,8 @@ import {FieldDiffChromeStory} from './FieldDiffChromeStory'
 
 /**
  * Reuses the in-package harness: review-changes chrome (ValueError,
- * ChangesError, MetaInfo, ChangeBreadcrumb) after the ui5 Box migration.
+ * ChangesError, MetaInfo, ChangeBreadcrumb, NoChanges) after the ui5
+ * Box / Flex migration.
  */
 const meta = {
   title: 'Field/Diff Chrome',
