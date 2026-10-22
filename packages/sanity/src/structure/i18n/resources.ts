@@ -212,6 +212,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.release.action.add-to-bundle': 'Add to bundle',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.add-to-release': 'Add to release',
+  /** The add-to-release button's text while the document is being added */
+  'banners.release.action.adding': 'Adding…',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.open-to-edit': 'Open release to edit',
   /** Toast description in case an error occurs when adding a document to a release  */
@@ -241,6 +243,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This document is part of the <VersionBadge/> release',
   /** The text for the banner that appears when a document is not in the current global release */
   'banners.release.not-in-release': 'Not in the <VersionBadge>{{title}}</VersionBadge> release.',
+  /** Follows the not-in-release text when the release is scheduled, so the banner says why it has no button */
+  'banners.release.scheduled-locked': 'Scheduled releases are locked.',
   /** Description of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
   'banners.release.waiting.description':
     'Please hold tight while the document is added to the release. It should not take longer than a few seconds.',

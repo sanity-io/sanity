@@ -77,7 +77,8 @@ export function DocumentNotInReleaseBanner({
         : getReleaseIdFromReleaseDocumentId(currentRelease._id)
 
       try {
-        await createVersion(bundleId, documentId)
+        // PROPOSED: in place: the studio already shows this release, so there is nowhere to go.
+        await createVersion(bundleId, documentId, {navigate: false})
         setVersionCreateState({status: 'created', lastUpdate: new Date()})
       } catch (err) {
         toast.push({
@@ -126,6 +127,8 @@ export function DocumentNotInReleaseBanner({
               fallbackTitle: tCore('release.placeholder-untitled-release'),
             }}
           />
+          {/* PROPOSED: a scheduled release says why there is no button, as the variant banners do. */}
+          {isScheduledRelease ? <> {t('banners.release.scheduled-locked')}</> : null}
         </Text>
       }
       // Adding to a scheduled release is not allowed
@@ -138,6 +141,8 @@ export function DocumentNotInReleaseBanner({
                 : t('banners.release.action.add-to-release'),
               tone: tone,
               disabled: Boolean(versionCreateState),
+              // PROPOSED: the button says it is working until the version arrives and the banner goes.
+              ...(versionCreateState ? {text: t('banners.release.action.adding')} : {}),
               onClick: handleAddToRelease,
               mode: 'default',
             }
