@@ -1,4 +1,4 @@
-import {type BadgeTone} from '@sanity/ui'
+import {type BadgeTone, Card} from '@sanity/ui'
 import {type FC, type PropsWithChildren, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -10,6 +10,9 @@ const StyledVersionInlineBadge = styled.span<{$tone?: BadgeTone}>((props) => {
   const {$tone} = props
   return css`
     color: var(--card-badge-${$tone ?? 'default'}-fg-color);
+    /* The chip is its own tone scope: its glyph takes the chip's icon colour, never the surrounding card's (a caution banner turned a
+       purple chip's rhombus yellow). A glyph that sets its own colour (a release's) keeps it. */
+    --card-icon-color: var(--card-badge-${$tone ?? 'default'}-icon-color);
     background-color: var(--card-badge-${$tone ?? 'default'}-bg-color);
     border-radius: 3px;
     text-decoration: none;
@@ -48,10 +51,20 @@ export const VersionInlineBadge = ({
   /** PROPOSED: a glyph before the name (the release's or the version's), in its own tone. */
   icon?: ReactNode
 }>) => (
-  <StyledVersionInlineBadge $tone={$tone}>
-    {icon ? <span data-version-badge-glyph="">{icon}</span> : null}
-    <span data-version-badge-text="">{children}</span>
-  </StyledVersionInlineBadge>
+  // PROPOSED: the chip is its own tone scope. Inside a tinted card (a purple or yellow banner) every badge colour is drawn from that card's
+  // palette, so a neutral release chip in a purple banner read purple, like the variant chip beside it, and a glyph took the banner's
+  // icon colour. A transparent default-tone card resets the palette, so the chip's colours are its own tone's wherever it sits.
+  <Card
+    as="span"
+    data-version-badge=""
+    style={{background: 'transparent', display: 'inline', verticalAlign: 'baseline'}}
+    tone="default"
+  >
+    <StyledVersionInlineBadge $tone={$tone}>
+      {icon ? <span data-version-badge-glyph="">{icon}</span> : null}
+      <span data-version-badge-text="">{children}</span>
+    </StyledVersionInlineBadge>
+  </Card>
 )
 
 /**
