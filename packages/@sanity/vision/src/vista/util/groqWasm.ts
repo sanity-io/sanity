@@ -43,6 +43,14 @@ export class GroqSyntaxError extends Error {
   }
 }
 
+/**
+ * Rules that do not apply to a query playground. `unlimited-query` flags every top-level `*[…]`
+ * without a slice, which is how most queries are written while exploring a dataset in Vision.
+ * Filtered on the kebab-cased id: the wasm wrapper's `rules` option keys on the Rust snake_case
+ * id instead, so disabling it there would depend on that quirk.
+ */
+const IGNORED_RULES: ReadonlySet<string> = new Set(['unlimited-query'])
+
 let groqWasm: Promise<GroqWasmModule> | undefined
 
 function loadGroqWasm(): Promise<GroqWasmModule> {
@@ -125,7 +133,8 @@ export async function formatGroq(query: string, width?: number): Promise<string>
 
 /**
  * Runs the `groq-lint` rules (joins in filters, unindexable comparisons, deep pagination, ...)
- * over a query. Rejects with a {@link GroqSyntaxError} when the query does not parse.
+ * over a query, leaving out the {@link IGNORED_RULES}. Rejects with a {@link GroqSyntaxError}
+ * when the query does not parse.
  */
 export async function lintGroq(query: string): Promise<GroqFinding[]> {
   const wasm = await loadGroqWasm()
@@ -135,7 +144,10 @@ export async function lintGroq(query: string): Promise<GroqFinding[]> {
   } catch (error) {
     throw toSyntaxError(error, query)
   }
-  return toGroqFindings(findings, query)
+  return toGroqFindings(
+    findings.filter((finding) => !IGNORED_RULES.has(finding.ruleId)),
+    query,
+  )
 }
 
 /** Converts the wasm findings' byte spans into ranges of `query`; a finding without a span covers all of it */

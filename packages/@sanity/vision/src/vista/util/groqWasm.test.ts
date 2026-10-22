@@ -78,6 +78,13 @@ describe('lintGroq', () => {
     expect(await lintGroq('')).toEqual([])
   })
 
+  it('leaves out the unlimited-query rule, which would flag every exploratory query', async () => {
+    expect(await lintGroq('*')).toEqual([])
+    // Other rules on the same query still get through
+    const query = '*[_type == "post" && author->name == "x"]'
+    expect((await lintGroq(query)).map((finding) => finding.ruleId)).toEqual(['join-in-filter'])
+  })
+
   it('converts byte offsets to string indices', async () => {
     const query = '*[title == "wörld" && author->name == "x"]{title}'
     const [finding] = await lintGroq(query)
