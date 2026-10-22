@@ -163,7 +163,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
           'scheduled',
         )}
         icon={InfoOutlineIcon}
-        tone="suggest"
+        // The release's own tone (neutral), as core's banner for the base document: purple is the variants' colour.
+        tone={getReleaseTone(release ?? 'drafts')}
       />
     )
   }
