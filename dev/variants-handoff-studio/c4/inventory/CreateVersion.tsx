@@ -39,13 +39,6 @@ import {type InventoryEntry, type InventoryWorld} from './fixtures'
 // is on the groups collapse to their headers with counts and a dimmed preview row sits under the target group. A + on a group header opens the same
 // block with the step that group fixes shown as a fact.
 
-/**
- * Create version and the group "+" are the second step, their own ticket after the open beta's (Faheem, 22 Oct): a muted "Step 2" badge
- * beside the toolbar's button and "Step 2: Create version" on each group "+". The T6 banner's Create version is not labelled. Set false to drop it.
- */
-const SHOW_STEP_2 = true
-const STEP_2 = 'Step 2'
-
 /** The version a copy starts from by default: the variant's own, else the base's; a draft first. */
 function nearestOf(world: InventoryWorld, variantId: string | undefined) {
   const own = variantId ? world.entries.filter((e) => e.variantId === variantId) : []
@@ -972,12 +965,7 @@ export function CreateVersion(props: {
   const toolbarButton =
     toolbar &&
     createPortal(
-      <Flex align="center" data-add-anchor="" gap={2} style={{flex: 'none'}}>
-        {SHOW_STEP_2 ? (
-          <Badge data-testid="add-step-2" fontSize={0} tone="default">
-            {STEP_2}
-          </Badge>
-        ) : null}
+      <Box data-add-anchor="" style={{flex: 'none'}}>
         <Button
           data-testid="add-toolbar-button"
           mode="default"
@@ -986,7 +974,7 @@ export function CreateVersion(props: {
           tone="primary"
           tooltipProps={null}
         />
-      </Flex>,
+      </Box>,
       toolbar,
     )
 
@@ -994,7 +982,8 @@ export function CreateVersion(props: {
     const id = groupId(header)
     const release = openReleases.find((d) => d.kind === 'release' && d.name === id)
     const locked = lockedReleases.some((d) => d.kind === 'release' && d.name === id)
-    const isDrafts = id.startsWith('stage-') && id !== 'stage-published'
+    // By publish date's Drafts group is `drafts`; By stage's are `stage-…` (kept for the Design Studio's other views).
+    const isDrafts = id === 'drafts' || (id.startsWith('stage-') && id !== 'stage-published')
     const variant = variants.find((v) => id === `${v.dimension}-${v.value}`)
     const askable = Boolean(release || (isDrafts && draftsEnabled) || (variant && variantsOn))
     return (
@@ -1032,9 +1021,7 @@ export function CreateVersion(props: {
               }}
               tooltipProps={{
                 content: askable
-                  ? SHOW_STEP_2
-                    ? `${STEP_2}: Create version`
-                    : 'Create version here'
+                  ? 'Create version here'
                   : locked
                     ? 'Scheduled releases are locked'
                     : 'Takes no new version',

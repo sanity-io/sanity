@@ -24,6 +24,8 @@ const HIDDEN = [
   'inventory-filter-bar',
   'inventory-sort-menu',
   'inventory-view-settings',
+  // One view, By publish date (SAPP-4724, Faheem 22 Oct): By stage is gone, so the switcher goes with it.
+  'inventory-view-menu',
   // On hold (Faheem, 21 Oct): no modal create form. The footer's Create variant (and Add missing variant) is hidden until the inline create is designed.
   'inventory-footer',
 ]
@@ -148,7 +150,11 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
     >
       <style>{HIDDEN}</style>
       <Box flex={1} style={{minHeight: 0}}>
-        <InventoryConceptsProvider selection={{currentEntryKey, onSelect}} world={world}>
+        <InventoryConceptsProvider
+          initialView="publishDate"
+          selection={{currentEntryKey, onSelect}}
+          world={world}
+        >
           <VersionInventoryPanel />
         </InventoryConceptsProvider>
       </Box>
