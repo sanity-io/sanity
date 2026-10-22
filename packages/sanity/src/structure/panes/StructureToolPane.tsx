@@ -3,6 +3,7 @@ import {lazy, memo, Suspense, useEffect} from 'react'
 import {
   recordStructurePaneKind,
   type StructurePaneKind,
+  toRegistryPath,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {PaneRouterProvider} from '../components/paneRouter/PaneRouterProvider'
@@ -10,7 +11,7 @@ import {type PaneNode} from '../types'
 import {LoadingPane} from './loading'
 import {UnknownPane} from './unknown/UnknownPaneType'
 
-const PANE_TYPE_TO_SOFT_NAV_KIND = {
+const PANE_KIND_BY_PANE_TYPE = {
   component: 'other',
   document: 'document',
   documentList: 'list',
@@ -31,6 +32,7 @@ interface StructureToolPaneProps {
   selected: boolean
   siblingIndex: number
   maximized: boolean
+  toolName: string
   onSetMaximizedPane?: () => void
 }
 
@@ -72,17 +74,19 @@ export const StructureToolPane = memo(
       selected,
       siblingIndex,
       maximized,
+      toolName,
       onSetMaximizedPane,
     } = props
 
     const PaneComponent = paneMap[pane.type] || UnknownPane
 
     useEffect(() => {
-      // The resolver path starts with the root node's id, which the URL omits; strip it by
-      // position because a custom structure can rename the root.
-      const registryPath = path.split(';').slice(1).join(';')
-      recordStructurePaneKind(registryPath, PANE_TYPE_TO_SOFT_NAV_KIND[pane.type] ?? 'other')
-    }, [path, pane.type])
+      recordStructurePaneKind(
+        toolName,
+        toRegistryPath(path),
+        PANE_KIND_BY_PANE_TYPE[pane.type] ?? 'other',
+      )
+    }, [toolName, path, pane.type])
 
     return (
       <PaneRouterProvider

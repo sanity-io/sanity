@@ -20,6 +20,7 @@ import {StructureTitle} from './StructureTitle'
 
 interface StructureToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
+  toolName: string
 }
 
 const StyledPaneLayout = styled(PaneLayout)`
@@ -32,7 +33,10 @@ const isSaveHotkey = isHotkey('mod+s')
 /**
  * @internal
  */
-export const StructureTool = memo(function StructureTool({onPaneChange}: StructureToolProps) {
+export const StructureTool = memo(function StructureTool({
+  onPaneChange,
+  toolName,
+}: StructureToolProps) {
   const {push: pushToast} = useToast()
   const schema = useSchema()
   const {navigate} = useRouter()
@@ -236,6 +240,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
                     selected={selected}
                     siblingIndex={siblingIndex}
                     maximized={maximized}
+                    toolName={toolName}
                     onSetMaximizedPane={() => onSetMaximizedPane(paneData)}
                   />
                 )}

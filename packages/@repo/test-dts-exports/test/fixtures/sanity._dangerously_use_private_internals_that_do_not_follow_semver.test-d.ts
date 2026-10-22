@@ -559,6 +559,8 @@ import type {
   PrimitiveFieldProps,
   PUBLISHED,
   ReactHook,
+  recordStructurePaneKind,
+  recordStructureTool,
   Rect,
   ReferenceAutocomplete,
   ReferenceDiff,
@@ -662,6 +664,7 @@ import type {
   stringToPath,
   StructureBuilderOptions,
   StructureNodeIdValidationResult,
+  StructurePaneKind,
   StructureToolContextValue,
   StructureToolFeatures,
   StructureToolPaneActionHandler,
@@ -694,6 +697,7 @@ import type {
   ToastParams,
   toMutationPatches,
   TooltipOfDisabled,
+  toRegistryPath,
   TrackedArea,
   TrackedChange,
   TrackerContextGetSnapshot,
@@ -2567,6 +2571,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
   })
+  test('recordStructurePaneKind', () => {
+    expectTypeOf<typeof recordStructurePaneKind>().toBeFunction()
+  })
+  test('recordStructureTool', () => {
+    expectTypeOf<typeof recordStructureTool>().toBeFunction()
+  })
   test('Rect', () => {
     expectTypeOf<Rect>().toBeObject()
   })
@@ -2877,6 +2887,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('StructureNodeIdValidationResult', () => {
     expectTypeOf<StructureNodeIdValidationResult>().not.toBeNever()
   })
+  test('StructurePaneKind', () => {
+    expectTypeOf<StructurePaneKind>().not.toBeNever()
+  })
   test('StructureToolContextValue', () => {
     expectTypeOf<StructureToolContextValue>().toBeObject()
   })
@@ -2972,6 +2985,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('TooltipOfDisabled', () => {
     expectTypeOf<typeof TooltipOfDisabled>().toBeFunction()
+  })
+  test('toRegistryPath', () => {
+    expectTypeOf<typeof toRegistryPath>().toBeFunction()
   })
   test('TrackedArea', () => {
     expectTypeOf<TrackedArea>().toBeObject()

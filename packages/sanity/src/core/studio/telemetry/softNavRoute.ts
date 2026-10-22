@@ -1,4 +1,4 @@
-import {getStructurePaneKind} from './paneKindRegistry'
+import {getStructurePaneKind, isStructureTool} from './paneKindRegistry'
 
 const KNOWN_INTENT_NAMES = new Set(['create', 'edit', 'duplicate'])
 
@@ -44,7 +44,7 @@ function decodePaneSegment(paneSegment: string): string | undefined {
   }
 }
 
-function toStructureRegistryKey(decodedSegment: string): string {
+function toRegistryPathFromUrl(decodedSegment: string): string {
   return decodedSegment
     .split(';')
     .filter(Boolean)
@@ -52,15 +52,16 @@ function toStructureRegistryKey(decodedSegment: string): string {
     .join(';')
 }
 
-function toStructurePaneKind(paneSegment: string | undefined): string {
+function toStructurePaneKind(toolName: string, paneSegment: string | undefined): string {
   // The router percent-encodes each ';' group whole, so ',' params and '|' siblings are only literal once decoded.
   const decodedSegment = decodePaneSegment(paneSegment ?? '')
   if (decodedSegment === undefined) return OTHER
-  return getStructurePaneKind(toStructureRegistryKey(decodedSegment)) ?? OTHER
+  return getStructurePaneKind(toolName, toRegistryPathFromUrl(decodedSegment)) ?? OTHER
 }
 
 function toToolRoute(toolName: string, firstToolSegment: string | undefined): string {
-  if (toolName === 'structure') return `structure:${toStructurePaneKind(firstToolSegment)}`
+  if (isStructureTool(toolName))
+    return `structure:${toStructurePaneKind(toolName, firstToolSegment)}`
   return toolName
 }
 

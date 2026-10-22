@@ -916,7 +916,9 @@ export {type NavbarContextValue} from '../core/studio/StudioLayout'
 export {StudioLayoutComponent} from '../core/studio/StudioLayoutComponent'
 export {
   recordStructurePaneKind,
+  recordStructureTool,
   type StructurePaneKind,
+  toRegistryPath,
 } from '../core/studio/telemetry/paneKindRegistry'
 export {useTelemetryConsent} from '../core/studio/telemetry/useTelemetryConsent'
 export {
