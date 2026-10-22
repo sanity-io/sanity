@@ -338,8 +338,9 @@ How the CSS reaches a page:
 - **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
   `property: value` pair once, grouped by property with the values sorted; a modifier class that
   must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)
-  instead of relying on being declared later, and parent-state selectors refer to a literal
-  marker class on the parent (`ElementWithChangeBar.css.ts`).
+  instead of relying on being declared later, and parent-state selectors key on data attributes
+  the parent renders (`'[data-change-bar-wrapper][data-focused] &'` in
+  `ElementWithChangeBar.css.ts`), never on a class that exists only to be targeted.
 
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 

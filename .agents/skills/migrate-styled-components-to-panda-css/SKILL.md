@@ -24,7 +24,7 @@ PR only converts component styles.
 - **Small PRs.** Migrate one component (or one tightly-coupled cluster) per PR, conventional-commit
   titled, e.g. `refactor(structure): migrate Scroller to Panda CSS`.
 - **Reference implementations:**
-  `packages/sanity/src/core/changeIndicators/ElementWithChangeBar.*` (marker classes for
+  `packages/sanity/src/core/changeIndicators/ElementWithChangeBar.*` (data attributes for
   parent-state selectors), `packages/sanity/src/structure/panes/document/document-layout/DocumentLayout.*`,
   and for the dynamic shapes `packages/sanity/src/core/components/popoverDialog/PopoverContainer.*`
   (responsive widths through per-breakpoint variables) and
@@ -161,12 +161,16 @@ Consequences:
   The same holds for a `styled(LocalStyledThing)` chain, which styled-components ordered for you.
 - **Shorthands come before longhands.** `padding: 0` in one class and `paddingLeft: '4px'` in
   another on the same element always resolve to the longhand, regardless of order.
-- **Parent-state selectors need a fixed class on the parent.** A Panda class name is a list of
-  atomic names, so `` `${parent}:hover &` `` cannot be built from it. Give the parent a literal
-  marker class (`const wrapperMarker = 'sanity-changeBarWrapper'`, attached next to its atomic
-  classes) and write `[`.${wrapperMarker}:hover &`]: {...}` on the child — see
-  `ElementWithChangeBar.css.ts`. Attribute selectors the component already renders
-  (`'[data-ui="Card"] &'`) work the same way without a marker.
+- **Parent-state selectors key on data attributes, never on an empty class.** A Panda class name
+  is a list of atomic names, so `` `${parent}:hover &` `` cannot be built from it, and a class
+  that exists only to be targeted is not an option either. Have the parent render its identity
+  and state as data attributes (`data-change-bar-wrapper=""`, `data-focused={hasFocus ? '' :
+  undefined}`) and write `'[data-change-bar-wrapper][data-focused] &': {...}` or
+  `'[data-change-bar-wrapper]:hover &': {...}` on the child — see `ElementWithChangeBar.css.ts`.
+  Read a state attribute together with the identity attribute: generic names like `data-focused`
+  and `data-disabled` are rendered by other components too, and `:not([data-changed])` on its own
+  matches every ancestor. Attributes a library component already renders (`'[data-ui="Card"] &'`)
+  work the same way.
 - **`@media` blocks are grouped.** Panda emits a file's media queries after the base rules,
   which is what styled-components effectively did too. Media conditions cannot read custom
   properties, so theme breakpoints are written as literals from the default theme (table
@@ -256,8 +260,8 @@ position: `'& img'`, `'& > span'`, `'& .third-party-class'`, `'[data-ui="Card"] 
 preference:
 
 1. Put a class directly on the child if you render it yourself.
-2. ``[`.${parentMarker}:hover &`]: {...}`` on the child class for parent-state-dependent rules,
-   with a literal marker class on the parent.
+2. `'[data-parent][data-state] &': {...}` on the child class for parent-state-dependent rules,
+   keyed on data attributes the parent renders (see the cascade model).
 3. `'& img': {...}` on the parent class when you don't control the child (library-rendered DOM) —
    always scoped under a local class.
 

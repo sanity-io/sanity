@@ -1,15 +1,14 @@
 import {css} from '#styled-system/css'
 
-// The wrapper's own classes are atomic (one per declaration), so the rules of the marker and the
-// button below that depend on the wrapper's state refer to it through these fixed marker classes,
-// which `ChangeBarWrapper` attaches next to the atomic ones.
-const changeBarWrapperMarker = 'sanity-changeBarWrapper'
-export const changeBarWrapperDisabled = 'sanity-changeBarWrapperDisabled'
-export const changeBarWrapperFocused = 'sanity-changeBarWrapperFocused'
-export const changeBarWrapperNotChanged = 'sanity-changeBarWrapperNotChanged'
-export const changeBarWrapperReviewOpen = 'sanity-changeBarWrapperReviewOpen'
+// The marker and the button below take their state from the wrapper. Its own classes are atomic
+// (one per declaration), so their rules key on the data attributes `ChangeBarWrapper` renders
+// instead: `data-change-bar-wrapper` names the wrapper, and `data-changed`, `data-disabled`,
+// `data-focused` and `data-review-changes-open` are present while that state holds. The marker
+// reads the state attributes together with the wrapper attribute, so a `data-focused` on some
+// other ancestor cannot match.
+const wrapper = '[data-change-bar-wrapper]'
 
-export const changeBarWrapper = `${changeBarWrapperMarker} ${css({
+export const changeBarWrapper = css({
   '--change-bar-offset': '4px',
   'display': 'flex',
   'position': 'relative',
@@ -18,7 +17,7 @@ export const changeBarWrapper = `${changeBarWrapperMarker} ${css({
       zIndex: 10,
     },
   },
-})}`
+})
 
 export const changeBarMarker = css({
   'position': 'absolute',
@@ -38,30 +37,30 @@ export const changeBarMarker = css({
     backgroundColor: 'var(--card-badge-caution-dot-color)',
     borderRadius: '0.5px',
   },
-  [`.${changeBarWrapperMarker} &`]: {
+  [`${wrapper} &`]: {
     '&::after': {
       opacity: 0.5,
     },
   },
-  [`.${changeBarWrapperFocused} &`]: {
+  [`${wrapper}[data-focused] &`]: {
     '&::after': {
       opacity: 1,
     },
   },
   /* hide when field is not changed */
-  [`.${changeBarWrapperNotChanged} &`]: {
+  [`${wrapper}:not([data-changed]) &`]: {
     '&::after': {
       opacity: 0,
       pointerEvents: 'none',
     },
   },
-  [`.${changeBarWrapperDisabled} &`]: {
+  [`${wrapper}[data-disabled] &`]: {
     '&::after': {
       display: 'none',
     },
   },
   '@media (hover: hover)': {
-    [`.${changeBarWrapperMarker}:hover &`]: {
+    [`${wrapper}:hover &`]: {
       '&::after': {
         opacity: 1,
       },
@@ -87,7 +86,10 @@ export const changeBarButton = css({
     outline: 0,
   },
   /* hide the change bar button when review changes is open */
-  [`.${changeBarWrapperReviewOpen} &`]: {
+  // Read on its own (the attribute name is this wrapper's) rather than together with the wrapper
+  // attribute: at that same specificity, the hover effect below, emitted later, keeps winning
+  // over this rule on hover, as it always has.
+  '[data-review-changes-open] &': {
     opacity: 0,
   },
 })
