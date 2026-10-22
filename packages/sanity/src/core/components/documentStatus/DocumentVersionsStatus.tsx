@@ -24,6 +24,8 @@ const MAX_LINES = 5
 const SHOWN_STATES = 2
 /** The popover's width, as the v1 design draws it. */
 const WIDTH = 400
+/** A state label's widest: a long release name ends in an ellipsis, so the audience's name keeps its room. */
+const LABEL_MAX = 132
 
 type VersionState = 'published' | 'draft' | 'scheduled' | 'asap' | 'undecided'
 
@@ -125,7 +127,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
             ) : (
               <Box flex={1} />
             )}
-            <Flex flex="none" gap={1} justify="flex-end">
+            <Flex gap={1} justify="flex-end" style={{flexShrink: 0, minWidth: 0}}>
               {states.slice(0, SHOWN_STATES).map(({item, state}) => (
                 <StateLabel key={item.version._id} state={state} text={stateWord(item, state)} />
               ))}
@@ -173,8 +175,11 @@ function StateLabel({state, text}: {state: VersionState; text: string}) {
         gap: 8,
         height: 25,
         padding: '0 4px',
+        maxWidth: LABEL_MAX,
+        minWidth: 0,
         whiteSpace: 'nowrap',
       }}
+      title={text}
       tone={STATE_TONE[state]}
     >
       <Text size={1}>
@@ -186,7 +191,11 @@ function StateLabel({state, text}: {state: VersionState; text: string}) {
           <ReleaseAvatarIcon releaseType={state} />
         )}
       </Text>
-      <Text size={1}>{text}</Text>
+      <Box style={{minWidth: 0}}>
+        <Text size={1} textOverflow="ellipsis">
+          {text}
+        </Text>
+      </Box>
     </Card>
   )
 }
