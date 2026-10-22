@@ -5,6 +5,8 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   isReleaseDocument,
+  ReleaseAvatarIcon,
+  type ReleaseDocument,
   RELEASES_INTENT,
   usePerspective,
   useSetVariant,
@@ -13,6 +15,7 @@ import {
 import {useRouter} from 'sanity/router'
 import {useDocumentPane} from 'sanity/structure'
 
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {Banner} from '../../../packages/sanity/src/structure/panes/document/documentPanel/banners/Banner'
 import {usePerspectiveState} from '../c1/state'
 import {useCreateVariantVersion} from '../data/useCreateVariantVersion'
@@ -38,6 +41,37 @@ import {useBannerCase} from './useBannerCase'
 /** The inspector the inventory opens in (c4/InventoryInspector.tsx). */
 const INVENTORY = 'variants-inventory'
 
+/**
+ * Faheem, 23 Oct: a banner never names the document ("This document"; its title is right under the banner), and names the variant and the
+ * version or release as inline display chips, core's chip for release names (not controls), with their glyph and tone.
+ */
+function VariantChip({title}: {title: string}) {
+  return (
+    <VersionInlineBadge $tone="suggest" icon={<RhombusIcon />}>
+      {title}
+    </VersionInlineBadge>
+  )
+}
+
+function PublishedChip() {
+  return (
+    <VersionInlineBadge $tone="positive" icon={<ReleaseAvatarIcon release="published" />}>
+      Published
+    </VersionInlineBadge>
+  )
+}
+
+function ReleaseChip({release, title}: {release: ReleaseDocument | undefined; title: string}) {
+  return (
+    <VersionInlineBadge
+      $tone={getReleaseTone(release ?? 'drafts')}
+      icon={release ? <ReleaseAvatarIcon release={release} /> : undefined}
+    >
+      {title}
+    </VersionInlineBadge>
+  )
+}
+
 export function OpenBetaBanner({documentId}: {documentId: string}) {
   const {setChosen} = usePerspectiveState()
   const setVariant = useSetVariant()
@@ -47,9 +81,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const inventoryOpen = pane.inspector?.name === INVENTORY
   const {selectedPerspective} = usePerspective()
   const {navigateIntent} = useRouter()
-  // A document's own name: its title, or its name (an author has no title field).
-  const own = [pane.value?.title, pane.value?.name].find((t) => typeof t === 'string' && t)
-  const documentTitle = typeof own === 'string' ? own : 'This document'
+  const release = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
 
   // No banner of ours, or core's own not-in-release banner (with Add to release) for the base document.
   if (!banner || banner.kind === 'base-release') return null
@@ -73,7 +105,9 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
         content={
           <Text data-testid="open-beta-banner" data-case="deleted" size={1}>
             {banner.goneTitle ? (
-              <>The {banner.goneTitle} variant no longer exists.</>
+              <>
+                The <VariantChip title={banner.goneTitle} /> variant no longer exists.
+              </>
             ) : (
               'The chosen variant no longer exists.'
             )}
@@ -110,7 +144,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
         action={createAction}
         content={say(
           <>
-            {documentTitle} has no {audience} version yet. Create it to start editing.
+            This document has no <VariantChip title={audience} /> version yet. Create it to start
+            editing.
           </>,
           'drafts',
         )}
@@ -125,8 +160,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
       <Banner
         content={say(
           <>
-            {documentTitle} has no published {audience} version. Published takes no new version:
-            switch to Drafts or an open release to create one.
+            This document has no <VariantChip title={audience} /> version in <PublishedChip />.
+            Switch to Drafts or an open release to create one.
           </>,
           'published',
         )}
@@ -137,7 +172,6 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   }
 
   if (banner.kind === 'scheduled') {
-    const release = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
     return (
       <Banner
         action={
@@ -154,11 +188,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
         }
         content={say(
           <>
-            {/* The release named in the same chip core's banner uses. */}
-            <VersionInlineBadge $tone={getReleaseTone(release ?? 'drafts')}>
-              {releaseTitle}
-            </VersionInlineBadge>{' '}
-            is scheduled, so its contents are locked. Unschedule it to add this version.
+            <ReleaseChip release={release} title={releaseTitle} /> is scheduled, so its contents are
+            locked. Unschedule it to add this version.
           </>,
           'scheduled',
         )}
@@ -174,7 +205,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
       action={createAction}
       content={say(
         <>
-          {documentTitle} has no {audience} version in {releaseTitle}. It shows the base content.
+          This document has no <VariantChip title={audience} /> version in{' '}
+          <ReleaseChip release={release} title={releaseTitle} />. It shows the base content.
         </>,
         'release',
       )}
