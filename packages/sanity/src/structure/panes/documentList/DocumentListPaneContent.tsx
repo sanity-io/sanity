@@ -72,12 +72,12 @@ interface DocumentListPaneContentProps {
 
 const SKELETON_ITEMS = [...Array(30).keys()]
 
-function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
-  const {layout} = props
+function LoadingView(props: {layout?: GeneralPreviewLayoutKey; count?: number}) {
+  const {layout, count} = props
 
   return (
     <Stack paddingX={3} paddingY={2} paddingTop={0} gap={1}>
-      {SKELETON_ITEMS.map((num) => (
+      {(count === undefined ? SKELETON_ITEMS : SKELETON_ITEMS.slice(0, count)).map((num) => (
         <SanityDefaultPreview key={num} isPlaceholder layout={layout} />
       ))}
     </Stack>
@@ -118,6 +118,10 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
+  // The count of the list last on screen, for the skeleton rows while it reloads (updated during render when a load settles with items; an empty
+  // pass between two lists does not reset it).
+  const [settledCount, setSettledCount] = useState(0)
+  if (!isLoading && items.length > 0 && items.length !== settledCount) setSettledCount(items.length)
   const [shouldRender, setShouldRender] = useState(!collapsed)
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -279,6 +283,13 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return noDocumentsContent
     }
 
+    // PROPOSED (Studio-wide): a list that was already on screen reloading (a perspective or variant change) shows core's skeleton rows at
+    // once, as many as it had, in place of a blank pane (the spinner variant drew nothing, the initial one waited 300ms). A first load and
+    // a search are unchanged.
+    if (isLoading && settledCount > 0 && !hasSearchQuery && loadingVariant !== 'subtle') {
+      return <LoadingView count={Math.min(settledCount, SKELETON_ITEMS.length)} layout={layout} />
+    }
+
     if (loadingVariant === 'initial' && isLoading) {
       return (
         <Delay ms={300}>
@@ -322,6 +333,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     collapsed,
     error,
     handleEndReached,
+    hasSearchQuery,
     index,
     isConnected,
     isLoading,
@@ -337,6 +349,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     renderItem,
     retryCount,
     searchInputElement,
+    settledCount,
     shouldRender,
     t,
   ])
