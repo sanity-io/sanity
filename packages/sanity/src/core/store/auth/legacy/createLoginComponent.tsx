@@ -2,11 +2,11 @@
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Badge, Card, Heading, Text} from '@sanity/ui'
+import {Badge, Card, Heading} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Icon, Link} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -199,20 +199,24 @@ export function createLoginComponent({
         <Card padding={4} radius={2} shadow={1} tone="caution">
           <Flex>
             <Box>
-              <Text size={1}>
-                <WarningOutlineIcon />
-              </Text>
+              <Icon
+                size={1}
+                muted
+                icon={WarningOutlineIcon}
+                tone="caution"
+                style={{margin: '-0.375rem'}}
+              />
             </Box>
             <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={4} flexDirection="column">
-              <Text as="h1" size={1} weight="medium">
+              <Text as="h1" size={1} weight="medium" trim={true} tone="caution">
                 No login providers available
               </Text>
-              <Text as="p" muted size={1}>
+              <Text as="p" muted size={1} trim={true} tone="caution">
                 The <code>auth.providers</code> setting in your Studio configuration resolved to an
                 empty list. An empty array replaces the default providers with none rather than
                 falling back to them.
               </Text>
-              <Text as="p" muted size={1}>
+              <Text as="p" muted size={1} trim={true} tone="caution">
                 Remove <code>auth.providers</code> to use the defaults, or set it to the providers
                 you want.
               </Text>
@@ -226,14 +230,15 @@ export function createLoginComponent({
                   />
                 </Flex>
               )}
-              <Text as="p" muted size={1}>
-                <a
+              <Text as="p" muted size={1} trim={true}>
+                <Link
                   href="https://www.sanity.io/docs/configuration#dc516e8cb39e"
-                  rel="noreferrer"
-                  target="_blank"
+                  openInNewTab
+                  underlined={false}
+                  style={{color: 'var(--card-link-color)'}}
                 >
                   Learn about auth configuration &rarr;
-                </a>
+                </Link>
               </Text>
             </Flex>
           </Flex>
@@ -289,7 +294,7 @@ function LastUsedProviderButton(props: {href: string; provider: AuthProvider}) {
         Last used
       </Badge>
       <ProviderButton autoFocus tone="primary" {...props} />
-      <Text size={0} align="center" style={{margin: '13px 0 13px 0'}}>
+      <Text size={0} align="center" style={{margin: '13px 0 13px 0'}} as="div" trim={true}>
         OR
       </Text>
     </Flex>
