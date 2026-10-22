@@ -9,7 +9,7 @@ const SANITY_PACKAGE_DIR = fileURLToPath(new URL('../../../sanity/', import.meta
 /** The stylesheet `@pandacss/vite` fills with the generated CSS (`@repo/pandacss/panda.css`). */
 const PANDA_CSS = fileURLToPath(new URL('./panda.css', import.meta.url))
 /** The entry `sanity dev` and `sanity build` write for a studio. */
-const RE_STUDIO_RUNTIME_ENTRY = /[\\/]\.sanity[\\/]runtime[\\/]app\.js$/
+const RE_STUDIO_RUNTIME_ENTRY = /[\\/]\.sanity[\\/]runtime[\\/]app\.js(?:\?|$)/
 
 export interface SanityPandaCssOptions {
   /**
