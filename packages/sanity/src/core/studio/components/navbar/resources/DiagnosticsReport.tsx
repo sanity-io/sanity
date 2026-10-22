@@ -1,7 +1,8 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
-import {Badge, type BadgeTone, Box, Card, Heading, Switch, Text, type TextAlign} from '@sanity/ui'
+import {DownloadIcon} from '@sanity/icons/Download'
+import {Badge, type BadgeTone, Box, Card, Heading, Switch} from '@sanity/ui'
 import {type ReactNode, useState} from 'react'
-import {Flex, Grid, type GapProps, VStack} from 'ui5'
+import {Text, Flex, Grid, type GapProps, type TextProps, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
@@ -23,6 +24,7 @@ const BYTE_UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'] as const
 /** @internal */
 export interface DiagnosticsReportProps {
   diagnostics: StudioDiagnostics
+  onDownloadSchema?: () => void
   onRunAgain: () => void
   runAgainLabel?: string
 }
@@ -30,6 +32,7 @@ export interface DiagnosticsReportProps {
 /** @internal */
 export function DiagnosticsReport({
   diagnostics,
+  onDownloadSchema,
   onRunAgain,
   runAgainLabel = 'Run again',
 }: DiagnosticsReportProps) {
@@ -79,7 +82,7 @@ export function DiagnosticsReport({
           </Box>
           <Flex alignItems="stretch" flexDirection={['column', 'row']} gap={4}>
             <VStack gap={2}>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 UTC time
               </Text>
               <Switch
@@ -89,7 +92,14 @@ export function DiagnosticsReport({
               />
             </VStack>
             <VStack gap={2}>
-              <Text aria-hidden="true" muted size={1} style={{visibility: 'hidden'}}>
+              <Text
+                aria-hidden="true"
+                muted
+                size={1}
+                style={{visibility: 'hidden'}}
+                as="div"
+                trim={true}
+              >
                 {runAgainLabel}
               </Text>
               <Button mode="default" onClick={onRunAgain} text={runAgainLabel} />
@@ -121,7 +131,21 @@ export function DiagnosticsReport({
           <DetailRow label="API host" monospace value={studio.apiHost} />
         </ReportSection>
 
-        <ReportSection testId="diagnostics-schema" title="Schema">
+        <ReportSection
+          action={
+            onDownloadSchema ? (
+              <Button
+                aria-label="Download schema"
+                icon={DownloadIcon}
+                mode="bleed"
+                onClick={onDownloadSchema}
+                tooltipProps={{content: 'Download schema'}}
+              />
+            ) : undefined
+          }
+          testId="diagnostics-schema"
+          title="Schema"
+        >
           <DetailRow label="Document types" value={schema.documentTypes} />
           <DetailRow label="Object types" value={schema.objectTypes} />
           <DetailRow label="Primitive types" value={schema.primitiveTypes} />
@@ -203,17 +227,17 @@ export function DiagnosticsReport({
                   justifyContent="space-between"
                 >
                   <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
-                    <Text size={1} weight="semibold">
+                    <Text size={1} weight="semibold" as="div" trim={true}>
                       <span className={codeValue}>{request.path}</span>
                     </Text>
                     {request.detail || request.error ? (
-                      <Text muted size={1}>
+                      <Text muted size={1} as="div" trim={true}>
                         {request.detail || request.error}
                       </Text>
                     ) : null}
                   </Flex>
                   <Flex alignItems="center" gap={3}>
-                    <Text muted size={1}>
+                    <Text muted size={1} as="div" trim={true}>
                       {formatMilliseconds(request.durationMs)}
                     </Text>
                     <StatusBadge status={request.status} />
@@ -229,10 +253,12 @@ export function DiagnosticsReport({
 }
 
 function ReportSection({
+  action,
   children,
   testId,
   title,
 }: {
+  action?: ReactNode
   children: ReactNode
   testId?: string
   title: string
@@ -240,9 +266,16 @@ function ReportSection({
   return (
     <Card border data-testid={testId} padding={4} radius={2}>
       <VStack gap={4}>
-        <Heading as="h2" size={1}>
-          {title}
-        </Heading>
+        <Flex position="relative">
+          <Heading as="h2" size={1}>
+            {title}
+          </Heading>
+          {action ? (
+            <Flex alignItems="center" height="100%" position="absolute" right={0} top={0}>
+              {action}
+            </Flex>
+          ) : null}
+        </Flex>
         <VStack gap={3}>{children}</VStack>
       </VStack>
     </Card>
@@ -267,15 +300,17 @@ function DetailRow({
   return (
     <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
       <Box flex={wideLabel ? 3 : 1}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {label}
         </Text>
       </Box>
       <Box flex={2} style={{minWidth: 0, textAlign: 'right'}}>
         <Text
           size={1}
-          textOverflow={truncate ? 'ellipsis' : undefined}
+          truncate={truncate ? 1 : undefined}
           title={truncate && typeof displayValue === 'string' ? displayValue : undefined}
+          as="div"
+          trim={true}
         >
           {monospace ? <span className={codeValue}>{displayValue}</span> : displayValue}
         </Text>
@@ -320,7 +355,13 @@ function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
       <DetailRow label="CSS rules inserted by JS" value={ruleCount.toLocaleString()} wideLabel />
       <DetailRow label="CSS size inserted by JS" value={formatByteSize(sizeBytes)} wideLabel />
       {multipleRuntimes ? (
-        <Text data-testid="diagnostics-styled-components-sheets" muted size={1}>
+        <Text
+          data-testid="diagnostics-styled-components-sheets"
+          muted
+          size={1}
+          as="div"
+          trim={true}
+        >
           {sheets
             .map(
               (sheet) =>
@@ -368,7 +409,7 @@ function NetworkReport({
         <DetailRow label="TLS" value={formatMilliseconds(timing.secureConnectionMs)} />
       ) : null}
       {protocol.error ? (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {protocol.error}
         </Text>
       ) : null}
@@ -386,7 +427,7 @@ function ListenReport({
   return (
     <VStack gap={4}>
       <Flex alignItems="center" gap={2} flexWrap="wrap">
-        <Text size={1} weight="semibold">
+        <Text size={1} weight="semibold" as="div" trim={true}>
           {title}
         </Text>
         <StatusBadge status={result.status} />
@@ -409,7 +450,7 @@ function ListenReport({
         ]}
       />
       {result.error ? (
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {result.error}
         </Text>
       ) : null}
@@ -435,20 +476,20 @@ function MetricGrid({gap = 4, metrics}: {gap?: GapProps['gap']; metrics: MetricP
   )
 }
 
-function getMetricAlignment(index: number): TextAlign {
+function getMetricAlignment(index: number): 'center' | 'left' | 'right' {
   const column = index % 3
   if (column === 1) return 'center'
   if (column === 2) return 'right'
   return 'left'
 }
 
-function Metric({align, label, value}: MetricProps & {align: TextAlign[]}) {
+function Metric({align, label, value}: MetricProps & {align: TextProps['align']}) {
   return (
     <VStack gap={2}>
-      <Text align={align} muted size={1}>
+      <Text align={align} muted size={1} as="div" trim={true}>
         {label}
       </Text>
-      <Text align={align} size={1} weight="semibold">
+      <Text align={align} size={1} weight="semibold" as="div" trim={true}>
         {value ?? 'Unknown'}
       </Text>
     </VStack>

@@ -117,6 +117,27 @@ describe('getOrCreateDocumentVersionsWithSystemObservable', () => {
     withSystemCache.clear()
   })
 
+  it('creates no cache entries until subscribed', () => {
+    const {documentPreviewStore} = createSystemlessPreviewStore(['versions.rASAP.lazy-document'])
+
+    const observable = getOrCreateDocumentVersionsWithSystemObservable({
+      documentPreviewStore,
+      publishedId: 'lazy-document',
+      projectId: 'test-project',
+      dataset: 'test',
+      releases$: new BehaviorSubject<ReleaseDocument[]>([asapReleaseDocument]),
+    })
+
+    expect(observableCache.size).toBe(0)
+    expect(withSystemCache.size).toBe(0)
+
+    const subscription = observable.subscribe()
+
+    expect(withSystemCache.size).toBe(1)
+
+    subscription.unsubscribe()
+  })
+
   it('runs the derivation once for N subscribers', () => {
     const {documentPreviewStore, observePathsSpy} = createSystemlessPreviewStore([
       'versions.rASAP.document-1',

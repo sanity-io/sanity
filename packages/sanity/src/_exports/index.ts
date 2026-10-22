@@ -347,6 +347,8 @@ export {
   type DocumentLanguageFilterResolver,
   type DocumentLayoutProps,
   type DocumentPluginOptions,
+  type FederatedAssetSourcesConfig,
+  type FederatedAssetSourceViewInfo,
   type FormBuilderComponentResolverContext,
   type GroupableActionDescription,
   type MediaLibraryConfig,
@@ -985,6 +987,7 @@ export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
 export {type ValidationLocaleResourceKeys} from '../core/i18n/bundles/validation'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
+export {InlineCode} from '../core/i18n/components/InlineCode'
 export {
   defineLocale,
   defineLocaleResourceBundle,
@@ -1164,6 +1167,7 @@ export {getSearchableTypes} from '../core/search/common/getSearchableTypes'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {isPerspectiveRaw} from '../core/search/common/isPerspectiveRaw'
 export {
+  type PartialIndexFieldPaths,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchSort,
@@ -1537,6 +1541,8 @@ export {
 } from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
 export {
   type PartialIndexSettings,
+  type SearchPartialIndexSettings,
+  // oxlint-disable-next-line no-deprecated -- only the overload without field paths is deprecated
   useSearchMaxFieldDepth,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'

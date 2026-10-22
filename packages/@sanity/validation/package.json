@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "6.19.0",
+  "version": "6.20.0",
   "description": "Document validation for Sanity schemas",
   "keywords": [
     "cms",
@@ -53,6 +53,7 @@
     "access": "public"
   },
   "scripts": {
+    "bench": "vitest bench --run --config vitest.bench.config.mts",
     "build": "tsdown",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",

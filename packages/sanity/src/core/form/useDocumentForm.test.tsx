@@ -93,4 +93,28 @@ describe('useDocumentForm', () => {
     act(() => result.current.onFocus(['title']))
     await waitFor(() => expect(result.current.openPath).toEqual([]))
   })
+
+  it('records collapsed paths and fieldsets from the form handlers', () => {
+    act(() => {
+      result.current.onSetCollapsedPath(['body'], true)
+      result.current.onSetCollapsedFieldSet(['meta'], false)
+    })
+
+    expect(result.current.collapsedPaths).toEqual({
+      value: undefined,
+      children: {body: {value: true}},
+    })
+    expect(result.current.collapsedFieldSets).toEqual({
+      value: undefined,
+      children: {meta: {value: false}},
+    })
+  })
+
+  it('clears the focus path when the form blurs', async () => {
+    act(() => result.current.onFocus(['title']))
+    await waitFor(() => expect(result.current.focusPath).toEqual(['title']))
+
+    act(() => result.current.onBlur(['title']))
+    await waitFor(() => expect(result.current.focusPath).toEqual([]))
+  })
 })

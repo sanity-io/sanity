@@ -382,7 +382,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           onClick={onClick}
           padding={0}
           onKeyPress={onKeyPress}
-          title={t('asset-source.file.asset-list.item.select-file-tooltip', {
+          title={t('asset-source.file.asset-list.action.select-file.title', {
             filename: originalFilename,
           })}
           $isSelected={isSelected}

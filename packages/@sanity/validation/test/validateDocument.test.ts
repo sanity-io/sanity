@@ -6,6 +6,7 @@ import {
   type SanityDocument,
   type SchemaTypeDefinition,
   type ValidationContext,
+  type ValidationMarker,
 } from '@sanity/types'
 import {Observable, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
@@ -212,7 +213,7 @@ describe('validateDocument', () => {
 
     await expect(
       validateDocument({client, document, maxCustomValidationConcurrency: 1, schema}),
-    ).resolves.toMatchObject({status: 'passed'})
+    ).resolves.toMatchObject({complete: true, markers: []})
     expect(queuedValidator).toHaveBeenCalledOnce()
   })
 
@@ -283,7 +284,7 @@ describe('validateDocument', () => {
     expect(teardown).toHaveBeenCalledOnce()
   })
 
-  it('reports passed, failed, and not-evaluated document outcomes', async () => {
+  it('reports findings independently of completeness', async () => {
     const schema = createSchema([
       {
         name: 'article',
@@ -305,11 +306,11 @@ describe('validateDocument', () => {
         document: createDocument({_type: 'article', title: 'Hello'}),
         schema,
       }),
-    ).resolves.toEqual({status: 'passed', markers: []})
+    ).resolves.toEqual({status: 'passed', complete: true, markers: []})
 
     await expect(
       validateDocument({document: createDocument({_type: 'article'}), schema}),
-    ).resolves.toMatchObject({status: 'failed', markers: [expect.any(Object)]})
+    ).resolves.toMatchObject({status: 'failed', complete: true, markers: [expect.any(Object)]})
 
     await expect(
       validateDocument({
@@ -320,8 +321,9 @@ describe('validateDocument', () => {
         }),
         schema,
       }),
-    ).resolves.toEqual({
+    ).resolves.toMatchObject({
       status: 'notEvaluated',
+      complete: false,
       markers: [],
     })
   })
@@ -344,11 +346,246 @@ describe('validateDocument', () => {
       schema,
     })
 
-    expect(result.status).toBe('failed')
     expect(result.markers).toEqual([
       expect.objectContaining({code: validationMarkerCodes.objectUnknownField}),
     ])
     expect(customValidator).not.toHaveBeenCalled()
+  })
+
+  it.each(['error', 'warning', 'info'] as const)(
+    'exposes incomplete evaluation alongside a %s finding',
+    async (level) => {
+      const schema = createSchema([
+        {
+          name: 'article',
+          type: 'document',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+              validation: (rule: Rule) => [rule.required()[level](), rule.custom(() => true)],
+            },
+          ],
+        },
+      ])
+
+      const result = await validateDocument({document: createDocument({_type: 'article'}), schema})
+
+      expect(result).toMatchObject({
+        status: 'failed',
+        complete: false,
+        markers: [expect.objectContaining({code: validationMarkerCodes.valueRequired, level})],
+      })
+    },
+  )
+
+  it.each(['all', 'either'] as const)(
+    'tracks skipped and throwing validators nested in Rule.%s',
+    async (operator) => {
+      const customValidator = vi.fn(() => {
+        throw new Error('Unavailable custom service')
+      })
+      const schema = createSchema([
+        {
+          name: 'article',
+          type: 'document',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+              validation: (rule: Rule) =>
+                rule[operator]([rule.custom(customValidator), rule.min(10)]),
+            },
+          ],
+        },
+      ])
+      const document = createDocument({_type: 'article', title: 'Short'})
+      const {client} = createMockClient()
+
+      const skipped = await validateDocument({schema, document})
+      expect(customValidator).not.toHaveBeenCalled()
+      expect(skipped.complete).toBe(false)
+      await expect(
+        validateDocument({schema, document, client, customValidation: false}),
+      ).resolves.toMatchObject({complete: false})
+      expect(customValidator).not.toHaveBeenCalled()
+
+      const failed = await validateDocument({schema, document, client})
+      expect(failed.complete).toBe(false)
+      expect(failed.markers).toEqual([
+        expect.objectContaining({
+          code:
+            operator === 'all'
+              ? validationMarkerCodes.ruleAllFailed
+              : validationMarkerCodes.ruleEitherFailed,
+          details: {
+            causes: expect.arrayContaining([
+              expect.objectContaining({code: validationMarkerCodes.validationException}),
+              expect.objectContaining({code: validationMarkerCodes.stringMinimumLength}),
+            ]),
+          },
+        }),
+      ])
+    },
+  )
+
+  it.each(['all', 'either'] as const)(
+    'limits nested custom validators in Rule.%s without blocking progress',
+    async (operator) => {
+      const releases: (() => void)[] = []
+      const custom = vi.fn(
+        () =>
+          new Promise<true>((resolve) => {
+            releases.push(() => resolve(true))
+          }),
+      )
+      const schema = createSchema([
+        {
+          name: 'article',
+          type: 'document',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+              validation: (rule: Rule) =>
+                rule[operator]([
+                  rule.all([rule.custom(custom), rule.custom(custom)]),
+                  rule.custom(custom),
+                ]),
+            },
+          ],
+        },
+      ])
+      const {client} = createMockClient()
+      const pending = validateDocument({
+        schema,
+        client,
+        maxCustomValidationConcurrency: 1,
+        document: createDocument({_type: 'article', title: 'Title'}),
+      })
+      for (let index = 0; index < 3; index++) {
+        await vi.waitFor(() => expect(custom).toHaveBeenCalledTimes(index + 1))
+        releases.shift()?.()
+      }
+      await expect(pending).resolves.toMatchObject({complete: true, markers: []})
+    },
+  )
+
+  it('keeps completeness conservative when an either alternative passes and another throws', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.either([
+                rule.min(1),
+                rule.custom(() => {
+                  throw new Error('Unavailable')
+                }),
+              ]),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+    await expect(
+      validateDocument({
+        schema,
+        client,
+        document: createDocument({_type: 'article', title: 'Title'}),
+      }),
+    ).resolves.toMatchObject({complete: false, markers: []})
+  })
+
+  it('rejects cancellation while a nested custom validator is pending', async () => {
+    const custom = vi.fn(
+      (_value: unknown, context: ValidationContext) =>
+        new Promise<true>((_resolve, reject) => {
+          context.signal?.addEventListener('abort', () => reject(context.signal?.reason), {
+            once: true,
+          })
+        }),
+    )
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) => rule.either([rule.all([rule.custom(custom)])]),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+    const controller = new AbortController()
+    const pending = validateDocument({
+      schema,
+      client,
+      signal: controller.signal,
+      document: createDocument({_type: 'article', title: 'Title'}),
+    })
+    const reason = new Error('Cancelled nested validation')
+    const rejection = expect(pending).rejects.toBe(reason)
+    await vi.waitFor(() => expect(custom).toHaveBeenCalledOnce())
+    controller.abort(reason)
+    await rejection
+  })
+
+  it('marks malformed custom validator results incomplete', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) => rule.custom(() => undefined as unknown as true),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+    await expect(
+      validateDocument({
+        schema,
+        client,
+        document: createDocument({_type: 'article', title: 'Title'}),
+      }),
+    ).resolves.toMatchObject({
+      complete: false,
+      markers: [expect.objectContaining({code: validationMarkerCodes.validationException})],
+    })
+  })
+
+  it('identifies a skipped network check independently of a local failure', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'title', type: 'string', validation: (rule: Rule) => rule.required()},
+          {name: 'author', type: 'reference', to: [{type: 'article'}]},
+        ],
+      },
+    ])
+
+    const result = await validateDocument({
+      document: createDocument({_type: 'article', author: {_type: 'reference', _ref: 'author'}}),
+      schema,
+    })
+
+    expect(result).toMatchObject({
+      complete: false,
+      markers: [expect.objectContaining({code: validationMarkerCodes.valueRequired})],
+    })
   })
 
   it('reports field rules as not evaluated when custom validation is disabled', async () => {
@@ -369,8 +606,8 @@ describe('validateDocument', () => {
       schema,
     })
 
-    expect(result).toEqual({
-      status: 'notEvaluated',
+    expect(result).toMatchObject({
+      complete: false,
       markers: [],
     })
     expect(customValidator).not.toHaveBeenCalled()
@@ -402,8 +639,8 @@ describe('validateDocument', () => {
       schema,
     })
 
-    expect(result).toEqual({
-      status: 'notEvaluated',
+    expect(result).toMatchObject({
+      complete: false,
       markers: [],
     })
     expect(pureValidator).not.toHaveBeenCalled()
@@ -435,8 +672,8 @@ describe('validateDocument', () => {
         }),
         schema,
       }),
-    ).resolves.toEqual({
-      status: 'notEvaluated',
+    ).resolves.toMatchObject({
+      complete: false,
       markers: [],
     })
     expect(mediaValidator).not.toHaveBeenCalled()
@@ -465,13 +702,13 @@ describe('validateDocument', () => {
 
     await expect(
       validateDocument({client, customValidation: false, document, schema}),
-    ).resolves.toEqual({
-      status: 'notEvaluated',
+    ).resolves.toMatchObject({
+      complete: false,
       markers: [],
     })
 
     await expect(validateDocument({client, document, schema})).resolves.toMatchObject({
-      status: 'failed',
+      complete: false,
       markers: [expect.objectContaining({code: validationMarkerCodes.validationException})],
     })
   })
@@ -495,7 +732,6 @@ describe('validateDocument', () => {
       schema,
     })
 
-    expect(result.status).toBe('failed')
     expect(result.markers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({code: validationMarkerCodes.referenceInvalid}),
@@ -530,7 +766,7 @@ describe('validateDocument', () => {
       schema,
     })
 
-    expect(result).toEqual({status: 'notEvaluated', markers: []})
+    expect(result).toMatchObject({complete: false, markers: []})
     expect(fetch).toHaveBeenCalledOnce()
     expect(customIsUnique).not.toHaveBeenCalled()
   })
@@ -561,8 +797,8 @@ describe('validateDocument', () => {
     })
 
     expect(getDocumentExists).toHaveBeenCalledWith(expect.objectContaining({id: 'author-id'}))
-    expect(result).toEqual({
-      status: 'notEvaluated',
+    expect(result).toMatchObject({
+      complete: false,
       markers: [],
     })
   })
@@ -637,12 +873,10 @@ describe('validateDocument', () => {
     try {
       // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
       await expect(validateDocumentWithWorkspace({document, workspace})).resolves.toEqual([])
-      await expect(validateMarkers({client, document, schema})).resolves.toEqual([
-        expect.objectContaining({
-          level: 'warning',
-          message: "Could not find schema type for type 'missing', skipping validation",
-        }),
-      ])
+      await expect(validateDocument({client, document, schema})).resolves.toMatchObject({
+        complete: false,
+        markers: [expect.objectContaining({code: validationMarkerCodes.documentUnknownType})],
+      })
       expect(warnSpy).toHaveBeenCalledWith(
         'Schema type for object type "%s" not found, skipping validation',
         'missing',
@@ -704,11 +938,14 @@ describe('validateDocument', () => {
             name: 'coded',
             type: 'string',
             validation: (rule: Rule) =>
-              rule.custom(() => ({
-                code: 'custom.reserved-title',
-                details: {reservedTitle: 'Reserved'},
-                message: 'This title is reserved',
-              })),
+              rule.custom(() => [
+                {
+                  code: 'custom.reserved-title',
+                  details: {reservedTitle: 'Reserved'},
+                  message: 'This title is reserved',
+                },
+                {code: 'custom.second', message: 'Second failure'},
+              ]),
           },
           {
             name: 'uncoded',
@@ -736,12 +973,18 @@ describe('validateDocument', () => {
       schema,
     })
 
+    expect(markers).toHaveLength(4)
     expect(markers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           code: 'custom.reserved-title',
           details: {reservedTitle: 'Reserved'},
           message: 'This title is reserved',
+          path: ['coded'],
+        }),
+        expect.objectContaining({
+          code: 'custom.second',
+          message: 'Second failure',
           path: ['coded'],
         }),
         expect.objectContaining({
@@ -786,7 +1029,45 @@ describe('validateDocument', () => {
     ])
   })
 
-  it('codes exceptions thrown by custom validators', async () => {
+  it.each([
+    {code: validationMarkerCodes.validationException, complete: false},
+    {code: validationMarkerCodes.documentUnknownType, complete: false},
+    {code: validationMarkerCodes.ruleAllFailed, complete: false},
+    {code: validationMarkerCodes.ruleEitherFailed, complete: false},
+    {code: 'custom.business-rule', complete: true},
+  ])(
+    'recognizes exception results from compiled rules with code $code',
+    async ({code, complete}) => {
+      const exception = {code: validationMarkerCodes.validationException, message: 'Service failed'}
+      const marker: ValidationMarker = {
+        code,
+        level: 'error',
+        message: 'Compiled rule result',
+        path: ['title'],
+        details: {
+          causes: [{code: validationMarkerCodes.ruleAllFailed, details: {causes: [exception]}}],
+        },
+      }
+      // Older compiled Rule implementations can catch exceptions without notifying this engine.
+      const compiledRule = {
+        _rules: [],
+        isRequired: () => false,
+        validate: async () => [marker],
+      } as unknown as Rule
+      const schema = createSchema([
+        {
+          name: 'article',
+          type: 'document',
+          fields: [{name: 'title', type: 'string', validation: compiledRule}],
+        },
+      ])
+      await expect(
+        validateDocument({schema, document: createDocument({_type: 'article', title: 'Title'})}),
+      ).resolves.toMatchObject({complete, markers: [marker]})
+    },
+  )
+
+  it('reports incomplete evaluation alongside exception markers', async () => {
     const schema = createSchema([
       {
         name: 'article',
@@ -806,18 +1087,53 @@ describe('validateDocument', () => {
     const {client} = createMockClient()
 
     await expect(
-      validateMarkers({
+      validateDocument({
         client,
         document: createDocument({_type: 'article', title: 'Title'}),
         schema,
       }),
-    ).resolves.toEqual([
-      expect.objectContaining({
-        code: validationMarkerCodes.validationException,
-        message: expect.stringContaining('Custom validator failed'),
-        path: ['title'],
-      }),
+    ).resolves.toEqual({
+      status: 'failed',
+      complete: false,
+      markers: [
+        expect.objectContaining({
+          code: validationMarkerCodes.validationException,
+          message: expect.stringContaining('Custom validator failed'),
+          path: ['title'],
+        }),
+      ],
+    })
+  })
+
+  it('reports a validation engine exception as incomplete evaluation', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [],
+        validation: () => {
+          throw new Error('Unable to construct validation rules')
+        },
+      },
     ])
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    try {
+      await expect(
+        validateDocument({document: createDocument({_type: 'article'}), schema}),
+      ).resolves.toEqual({
+        status: 'failed',
+        complete: false,
+        markers: [
+          expect.objectContaining({
+            code: validationMarkerCodes.validationException,
+            message: 'Unable to construct validation rules',
+            path: [],
+          }),
+        ],
+      })
+    } finally {
+      errorSpy.mockRestore()
+    }
   })
 
   it('keeps built-in metadata when a rule overrides the message', async () => {
@@ -851,23 +1167,27 @@ describe('validateDocument', () => {
     ])
   })
 
-  it('returns a coded marker for an unknown document type', async () => {
+  it('reports an unknown document type as incomplete evaluation', async () => {
     const schema = createSchema([])
     const {client} = createMockClient()
 
     await expect(
-      validateMarkers({
+      validateDocument({
         client,
         document: createDocument({_type: 'missing'}),
         schema,
       }),
-    ).resolves.toEqual([
-      expect.objectContaining({
-        code: validationMarkerCodes.documentUnknownType,
-        details: {documentType: 'missing'},
-        level: 'warning',
-      }),
-    ])
+    ).resolves.toEqual({
+      status: 'failed',
+      complete: false,
+      markers: [
+        expect.objectContaining({
+          code: validationMarkerCodes.documentUnknownType,
+          details: {documentType: 'missing'},
+          level: 'warning',
+        }),
+      ],
+    })
   })
 
   it('provides the configured client to executable custom validators', async () => {

@@ -5,10 +5,10 @@ import {
   isReference,
   isReferenceSchemaType,
 } from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
-import {Box, VStack} from 'ui5'
+import {Text, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -69,7 +69,7 @@ export function UnknownFields(props: Props) {
       status="warning"
       title={<>{t('inputs.object.unknown-fields.warning.title', {count: fieldsLen})}</>}
     >
-      <Text as="p" muted size={1}>
+      <Text as="p" muted size={1} trim={true} tone="caution">
         <>{t('inputs.object.unknown-fields.warning.description', {count: fieldsLen})}</>
       </Text>
 
@@ -79,7 +79,7 @@ export function UnknownFields(props: Props) {
         title={t('inputs.object.unknown-fields.warning.details.title')}
       >
         <Box marginBottom={3}>
-          <Text as="p" muted size={1}>
+          <Text as="p" muted size={1} trim={true} tone="caution">
             <>{t('inputs.object.unknown-fields.warning.details.description', {count: fieldsLen})}</>
           </Text>
         </Box>
@@ -155,7 +155,7 @@ function UnknownField({
 
       {readOnly && (
         <Box padding={3}>
-          <Text as="p" muted size={1}>
+          <Text as="p" muted size={1} trim={true} tone="caution">
             <Translate t={t} i18nKey="inputs.object.unknown-fields.read-only.description" />
           </Text>
         </Box>

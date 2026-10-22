@@ -23,7 +23,13 @@
  * choices and the alternatives that were rejected are in SPEC.md, "Drift
  * feed" — this header only repeats the numbers the constants below depend on.
  */
-import {formatValue, type TrendPoint, type TrendSeries, type TrendUnit} from './data'
+import {
+  type DriftWindows,
+  formatValue,
+  type TrendPoint,
+  type TrendSeries,
+  type TrendUnit,
+} from './data'
 
 interface DriftThreshold {
   absolute: number
@@ -55,8 +61,7 @@ function thresholdFor(unit: TrendUnit): DriftThreshold {
 }
 
 /** Window sizes, in runs — one point per commit, merged in `buildSeries`. */
-const RECENT_RUNS = 7
-const BASELINE_RUNS = 21
+const DEFAULT_DRIFT_WINDOWS: DriftWindows = {recentRuns: 7, baselineRuns: 21, minimumRuns: 10}
 
 /**
  * How many standard errors the window difference must clear. 2.5 is a nominal
@@ -246,18 +251,20 @@ function computeBaseline(
   points: TrendPoint[],
   threshold: DriftThreshold,
   goal: TrendSeries['goal'],
+  windows: DriftWindows,
 ): DriftBaseline | null {
+  const {recentRuns, baselineRuns, minimumRuns} = windows
   // null here means "not enough history to compare", never "nothing moved" —
   // a computed-but-quiet comparison comes back as direction: 'neutral' instead
-  if (points.length < 10) return null // need a meaningful prior window
+  if (points.length < minimumRuns) return null // need a meaningful prior window
   // Slice the points (not the values) so the same windows that produce the
   // medians also carry their timestamps to the chart overlay
-  const windowPoints = points.slice(-(RECENT_RUNS + BASELINE_RUNS))
+  const windowPoints = points.slice(-(recentRuns + baselineRuns))
   const values = windowPoints.map((point) => point.value)
-  const recentPoints = windowPoints.slice(-RECENT_RUNS)
-  const priorPoints = windowPoints.slice(0, -RECENT_RUNS)
-  const recentValues = values.slice(-RECENT_RUNS)
-  const priorValues = values.slice(0, -RECENT_RUNS)
+  const recentPoints = windowPoints.slice(-recentRuns)
+  const priorPoints = windowPoints.slice(0, -recentRuns)
+  const recentValues = values.slice(-recentRuns)
+  const priorValues = values.slice(0, -recentRuns)
   const recent = median(recentValues)
   const prior = median(priorValues)
   if (recent === null || prior === null) return null
@@ -339,8 +346,22 @@ export function computeDrift(seriesList: TrendSeries[]): DriftResult[] {
       // complement or mirror; judging it too would flag every move twice, once
       // in each direction
       if (line.secondary) continue
-      const points = [...line.points].sort((a, b) => a.date.getTime() - b.date.getTime())
-      const baseline = computeBaseline(points, threshold, series.goal)
+      const sorted = [...line.points].sort(
+        (earlier, later) => earlier.date.getTime() - later.date.getTime(),
+      )
+      // A measurement-config change makes the points before it a different
+      // series, so only what follows the newest break is compared
+      const newestBreakMs = Math.max(
+        Number.NEGATIVE_INFINITY,
+        ...(series.breaks ?? []).map((entry) => entry.date.getTime()),
+      )
+      const points = sorted.filter((point) => point.date.getTime() >= newestBreakMs)
+      const baseline = computeBaseline(
+        points,
+        threshold,
+        series.goal,
+        series.drift ?? DEFAULT_DRIFT_WINDOWS,
+      )
       if (!baseline) continue
       const newest = points.at(-1)!
       results.push({

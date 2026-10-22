@@ -1,8 +1,8 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 import {useCallback, useImperativeHandle, useMemo, type RefAttributes} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -90,14 +90,14 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
 
   return (
     <Alert status="error" suffix={suffix} title={t('inputs.invalid-value.title')}>
-      <Text as="p" muted size={1}>
+      <Text as="p" muted size={1} trim={true} tone="critical">
         {t('inputs.invalid-value.description')}
       </Text>
 
       <Details marginTop={4} open={isDev} title={t('inputs.invalid-value.details.title')}>
         <VStack gap={3}>
           {validTypes.length === 1 && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="critical">
               <Translate
                 t={t}
                 i18nKey="inputs.invalid-value.details.description"
@@ -109,13 +109,13 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
           )}
 
           {validTypes.length === 1 && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="critical">
               {t('inputs.invalid-value.details.possible-reason')}
             </Text>
           )}
 
           {validTypes.length !== 1 && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="critical">
               {t('inputs.invalid-value.details.multi-type-description')}
             </Text>
           )}
@@ -123,7 +123,7 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
           {validTypes.length !== 1 && (
             <VStack as="ul" gap={2}>
               {validTypes.map((validType) => (
-                <Text key={validType} as="li">
+                <Text key={validType} as="li" trim={true} tone="critical">
                   <code>{validType}</code>
                 </Text>
               ))}
@@ -131,7 +131,7 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
           )}
 
           <Flex marginTop={2} gap={2} flexDirection="column">
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true} tone="critical">
               <Translate
                 t={t}
                 i18nKey="inputs.invalid-value.current-type"

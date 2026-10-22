@@ -116,4 +116,50 @@ describe('Media Library plugin iframe payloads', () => {
     expect(parsed.pickerPersistenceKey).toBe(expectedPickerKey)
     expect(parsed.disableNavigation).toBe(true)
   })
+
+  test('UploadAssetsDialog scales iframe progress fractions to the uploader contract', async () => {
+    const {UploadAssetsDialog} = await import('../shared/UploadAssetDialog')
+    const client = createMockSanityClient() as any as SanityClient
+    const updateFile = vi.fn()
+    const uploader = {
+      upload: vi.fn(),
+      abort: noop,
+      updateFile,
+      subscribe: () => noop,
+      getFiles: () => [],
+      reset: noop,
+    } as any
+
+    await renderWithStudioTree(
+      client,
+      {projectId: 'p1', dataset: 'd1', name: 'ws1'},
+      <UploadAssetsDialog open onClose={noop} onSelect={noop} uploader={uploader} />,
+    )
+
+    const iframe = document.querySelector<HTMLIFrameElement>('iframe')
+    expect(iframe?.contentWindow).toBeTruthy()
+
+    // The plugin's postMessage protocol reports progress as 0-1 fractions;
+    // `AssetSourceUploadFile.progress` is documented 0-100 (BUGBOT 433772fc:
+    // the pass-through PickerModeUploader no longer rescales on emit).
+    const dispatch = (files: {id: string; status: string; progress: number}[]) =>
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: {type: 'uploadProgress', files},
+          source: iframe!.contentWindow,
+        }),
+      )
+
+    dispatch([{id: 'file-1', status: 'uploading', progress: 0.5}])
+    expect(updateFile).toHaveBeenCalledWith('file-1', {
+      status: 'uploading',
+      progress: 50,
+      error: undefined,
+    })
+
+    // Terminal statuses are held back for the uploadResponse flush; only the
+    // (scaled) progress is written immediately.
+    dispatch([{id: 'file-1', status: 'complete', progress: 1}])
+    expect(updateFile).toHaveBeenCalledWith('file-1', {progress: 100})
+  })
 })

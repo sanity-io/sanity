@@ -1,9 +1,9 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
@@ -122,7 +122,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
         <Box padding={1} data-testid="inline-object-toolbar-popover" ref={contentRef}>
           <Flex gap={1}>
             <Box padding={2}>
-              <Text weight="medium" size={1}>
+              <Text weight="medium" size={1} as="div" trim={true}>
                 {title}
               </Text>
             </Box>

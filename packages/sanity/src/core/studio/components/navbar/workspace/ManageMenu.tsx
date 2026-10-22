@@ -1,9 +1,9 @@
 import {AddUserIcon} from '@sanity/icons/AddUser'
 import {CogIcon} from '@sanity/icons/Cog'
-import {Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
 import {Suspense, use} from 'react'
 import {type ObservablePromise} from 'react-rx'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -15,7 +15,11 @@ import {WorkspacePreviewIcon} from './WorkspacePreview'
 
 function ProjectName({promise}: {promise: ObservablePromise<string | null>}) {
   const name = use(promise)
-  return name ? <Text size={0}>{name}</Text> : null
+  return name ? (
+    <Text size={0} as="div" trim={true}>
+      {name}
+    </Text>
+  ) : null
 }
 
 export function ManageMenu({
@@ -46,7 +50,7 @@ export function ManageMenu({
           <Suspense fallback={<TextSkeleton size={0} animated style={{width: '8ch'}} />}>
             <ProjectName promise={projectNamePromise} />
           </Suspense>
-          <Text size={2} weight="medium">
+          <Text size={2} weight="medium" as="div" trim={true}>
             {activeWorkspace.title}
           </Text>
         </Flex>

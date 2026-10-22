@@ -5,6 +5,7 @@ import {
   buildSeries,
   calibrationSeries,
   soakLatestValueSeries,
+  soakSlopeSeries,
   formatTick,
   formatValue,
   lineName,
@@ -420,6 +421,63 @@ test('soak history points carry the soak shard calibration and host', () => {
   const [point] = latencySeries!.lines[0].points
   expect(point.calibrationMs).toBe(9)
   expect(point.host?.cpuModel).toBe('Intel Xeon 8370C')
+})
+
+type TrendScenario = NonNullable<TrendRun['scenarios']>[number]
+
+function soakScenario(
+  scenario: string,
+  listenersAt: (minute: number) => number,
+  settleMinute?: number,
+): TrendScenario {
+  return {
+    scenario,
+    kind: 'interaction',
+    mode: 'soak',
+    metrics: [],
+    soak: {
+      minutes: 10,
+      ...(settleMinute === undefined ? {} : {settleMinute}),
+      samples: Array.from({length: 11}, (_, minute) => ({
+        minute,
+        heapMb: 30,
+        domNodes: 1000,
+        listeners: listenersAt(minute),
+        latencyP50Ms: minute === 0 ? null : 32,
+        cpuTaskMs: minute === 0 ? null : 30_000,
+        connections: 9,
+        requests: 200,
+      })),
+    },
+  }
+}
+
+function listenerSlope(scenarios: TrendScenario[]): number | undefined {
+  const series = soakSlopeSeries([{...run({id: 'a', sha: 'sha-1', day: 0, value: 0}), scenarios}])
+  return series.find((entry) => entry.key === 'soak:slope:listeners')?.lines[0].points[0].value
+}
+
+// The first minutes of a soak race the lazy mount: 768 listeners at minute 0
+// and 1,243 from minute 1 on read as growth over the whole run, and as flat
+// from the settle minute.
+test('soak slopes start at the settle minute', () => {
+  const mountRace = (minute: number) => (minute === 0 ? 768 : 1243)
+  expect(listenerSlope([soakScenario('singleString', mountRace)])).toBe(0)
+
+  const lateLeak = (minute: number) => (minute < 4 ? 1000 : 1000 + (minute - 4) * 10)
+  const fromMinuteTwo = listenerSlope([soakScenario('singleString', lateLeak)])
+  const fromMinuteFour = listenerSlope([soakScenario('singleString', lateLeak, 4)])
+  expect(fromMinuteFour).toBeCloseTo(10)
+  expect(fromMinuteTwo).toBeLessThan(fromMinuteFour ?? 0)
+})
+
+test('soak series follow the singleString soak when a run carries several', () => {
+  const growing = (minute: number) => 1000 + minute * 50
+  const flat = () => 1000
+  expect(
+    listenerSlope([soakScenario('article', growing), soakScenario('singleString', flat)]),
+  ).toBe(0)
+  expect(listenerSlope([soakScenario('article', growing)])).toBeUndefined()
 })
 
 // Host calibration lives at 5–9ms — whole-ms rounding would collapse its whole

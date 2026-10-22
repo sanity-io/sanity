@@ -213,7 +213,7 @@ describe('validation scheduling', () => {
     // 200 blocks are a few thousand nodes: a yield per hundred of them, and far from one per node
     expect(scheduler.yield.mock.calls.length).toBeGreaterThan(5)
     expect(scheduler.yield.mock.calls.length).toBeLessThan(200)
-    expect(result.status).toBe('failed')
+    expect(result.complete).toBe(true)
     expect(result.markers).toHaveLength(1 + 20)
   })
 
@@ -268,7 +268,7 @@ describe('validation scheduling', () => {
     }))
 
     expect(page.requestIdleCallback).not.toHaveBeenCalled()
-    expect(result.status).toBe('failed')
+    expect(result.complete).toBe(true)
     expect(sortMarkers(result.markers).map(markerIdentity)).toEqual(
       sortMarkers([TITLE_TOO_SHORT, ...linkMarkers]).map(markerIdentity),
     )
@@ -308,7 +308,7 @@ describe('validation scheduling', () => {
     const requested = page.requestIdleCallback.mock.results.map(({value}) => value)
 
     scheduling.next('immediate')
-    const {status, markers} = await result
+    const {complete, markers} = await result
 
     // The stalled page never ran an idle callback: the nodes that were waiting for one went ahead,
     // and nothing after the switch asked for one.
@@ -322,7 +322,7 @@ describe('validation scheduling', () => {
       code: validationMarkerCodes.custom,
       message: 'Link requires a URL',
     }))
-    expect(status).toBe('failed')
+    expect(complete).toBe(true)
     expect(sortMarkers(markers).map(markerIdentity)).toEqual(
       sortMarkers([TITLE_TOO_SHORT, ...linkMarkers]).map(markerIdentity),
     )
@@ -358,7 +358,7 @@ describe('validation scheduling', () => {
 
     expect(idlePage.requestIdleCallback).toHaveBeenCalled()
     expect(immediatePage.requestIdleCallback).not.toHaveBeenCalled()
-    expect(immediate.status).toBe(idle.status)
+    expect(immediate.complete).toBe(idle.complete)
     expect(sortMarkers(immediate.markers)).toEqual(sortMarkers(idle.markers))
   })
 
@@ -421,7 +421,7 @@ describe('validation scheduling', () => {
       expect(page.requestIdleCallback).not.toHaveBeenCalled()
       expect(scheduler.yield.mock.calls.length > 0).toBe(hasSchedulerYield)
       expect(setImmediate.mock.calls.length > 0).toBe(!hasSchedulerYield)
-      expect(result).toEqual({status: 'passed', markers: []})
+      expect(result).toEqual({status: 'passed', complete: true, markers: []})
     },
   )
 })

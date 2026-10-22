@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -15,7 +14,7 @@ import {
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex, type TextProps} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -97,7 +96,7 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
       tone={tone}
       data-testid="open-release-to-edit-banner"
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>
           <Flex flexDirection={'row'} gap={1} flexWrap="wrap">
             <ReleaseTitle title={firstRelease.metadata.title} fallback={fallback}>
               {({displayTitle}) =>

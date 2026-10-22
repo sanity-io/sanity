@@ -1,4 +1,4 @@
-import {focusFirstDescendant, Spinner, Text} from '@sanity/ui'
+import {focusFirstDescendant, Spinner} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
@@ -20,12 +20,13 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
+import {useDocumentTitleField} from '../useDocumentTitleField'
 import {FormHeader} from './FormHeader'
 
 interface FormViewProps {
@@ -73,6 +74,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
   const scopeId = getTargetScopeId(targetDocumentState)
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
+  const titleField = useDocumentTitleField()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.
@@ -257,7 +259,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
               >
                 <Spinner muted />
                 <Box marginTop={3}>
-                  <Text align="center" muted size={1}>
+                  <Text align="center" muted size={1} as="div" trim={true}>
                     {t('document-view.form-view.loading')}
                   </Text>
                 </Box>
@@ -265,7 +267,9 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
             </Delay>
           ) : formState === null || hidden ? (
             <Box padding={2}>
-              <Text>{t('document-view.form-view.form-hidden')}</Text>
+              <Text as="div" trim={true}>
+                {t('document-view.form-view.form-hidden')}
+              </Text>
             </Box>
           ) : (
             <>
@@ -274,6 +278,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
                   documentId={documentId}
                   schemaType={formState.schemaType}
                   title={title}
+                  onTitleClick={titleField.editable && !isReadOnly ? titleField.focus : undefined}
                 />
               </FormRow>
               <FormBuilder

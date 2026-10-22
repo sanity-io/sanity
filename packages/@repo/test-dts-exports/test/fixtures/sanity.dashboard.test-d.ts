@@ -5,6 +5,7 @@
 import type {
   AssetSource,
   AssetSourceComponentProps,
+  ServiceBus,
   unstable_defineService,
   unstable_defineView,
 } from 'sanity/dashboard'
@@ -16,6 +17,9 @@ describe('sanity/dashboard', () => {
   })
   test('AssetSourceComponentProps', () => {
     expectTypeOf<AssetSourceComponentProps>().toBeObject()
+  })
+  test('ServiceBus', () => {
+    expectTypeOf<ServiceBus>().toBeObject()
   })
   test('unstable_defineService', () => {
     expectTypeOf<typeof unstable_defineService>().toBeFunction()

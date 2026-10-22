@@ -58,7 +58,17 @@ export function releaseLineId(major: number): string {
   return `release-line-v${major}`
 }
 
+/** `sqrlScore` document — one per measured main commit, so a recompute replaces it in place. */
+export function sqrlScoreId(sha: string): string {
+  return `sqrl-score-${radarIdSlug(sha)}`
+}
+
 /** `bisectSession` document — user-created, so a random uuid rather than a derived id. */
 export function bisectSessionId(uuid: string): string {
   return `bisect-session-${radarIdSlug(uuid)}`
+}
+
+/** `engineConfidenceRun` document, one per ISO week (`2026-W42`), so a re-run that week replaces it. */
+export function engineConfidenceRunId(isoWeek: string): string {
+  return `engine-confidence-run-${radarIdSlug(isoWeek)}`
 }

@@ -265,6 +265,27 @@ See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The 
 
 Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL.md`, running and dispatching the suite, the `trigger:perf-bench` label, dispatch inputs), `sanity-radar` (`.agents/skills/sanity-radar/SKILL.md`, the Studio Radar dashboard in `dev/radar` and how to query its dataset) and `sanity-radar-investigate` (`.agents/skills/sanity-radar-investigate/SKILL.md`, the regression-hunting procedure from a drift flag or investigation prompt to a confirmed culprit).
 
+### Engine confidence score (No Auth Required locally)
+
+The Engine confidence score measures how well the tests guard the document engine (`@sanity/mutator`, the document store, form patching, Portable Text sync). It is Stryker's mutation score across two mutation runs, stored as `score.ratio`. It is one field, so reporting that reads the dataset directly needs no understanding of how it is computed. A catalogue of known-bug patches is also replayed and stored as `knownBugs`, shown in Radar as supporting detail ("X of N known bugs caught"), but it never feeds the score. The producer lives in `engine-confidence/` and `engine-confidence/README.md` carries the detail.
+
+```bash
+pnpm engine-confidence stryker --target mutator --full   # also: --target sanity; omit --full for an incremental run
+pnpm engine-confidence catalogue                         # --suites unit:mutator,unit:engine skips fuzz; --only <ids>; --check-only
+pnpm engine-confidence score                             # writes engine-confidence/reports/engine-confidence-run.json
+pnpm engine-confidence store <file> --dry-run            # prints the document id and body, needs no token
+pnpm engine-confidence pin                               # recomputes config.json's pinnedHash and bumps version when it changed
+pnpm engine-confidence unit                              # the package's unit tests
+```
+
+- **Run it in a disposable checkout.** Stryker's in-place mode rewrites the tier-1 sources until it finishes, and the catalogue applies patches to real sources. A killed run leaves them mutated; the next run refuses a dirty tree. Recover with `git checkout -- packages/sanity/src packages/@sanity/mutator/src`. Run the two Stryker targets one after the other, never at once.
+- **Local recipe:** `pnpm build`, then `stryker --target mutator --full`, `stryker --target sanity --full`, `catalogue`, `score`, and `store reports/engine-confidence-run.json --dry-run` (`pnpm engine-confidence` runs from `engine-confidence/`, so paths are relative to it). `git status --short packages/` must be empty afterwards.
+- **`config.version` is the series-break marker.** Any change to `config.json`, `tier1.json`, `exclusions.json`, `engine-confidence/stryker/`, the vitest-runner patch (it works around a runner bug where tests inside a `describe` never run against a mutant under Vitest 5) or the four `@stryker-mutator/*` specifiers changes the pinned hash. Run `pin` and commit the result; a unit test fails on the pull request when the hash is stale. Catalogue growth is not hashed.
+- **Workflows.** `Engine confidence` (`.github/workflows/engine-confidence.yml`) runs Thursdays 03:00 UTC on `main` only, plus manual dispatch, and stores one document per ISO week. It never runs on pull requests, and only its `store` job holds `RADAR_SANITY_WRITE_TOKEN`. `Engine confidence catalogue` (`.github/workflows/engine-confidence-catalogue.yml`) runs on pull requests that touch engine files or the catalogue and checks that every patch still applies. It is not a required check.
+- **The exclusion register** (`engine-confidence/exclusions.json`) holds reviewed mutants that no test could ever catch. `score` exits 8 when an entry is stale (matches no mutant) or matches a mutant a test detected; fix the entry, never the check. Unreachable code and assumption-based equivalence do not qualify. The README has the rules.
+- **Refreshing a patch the PR check flagged:** rebase the patch onto the changed engine code, confirm with `git apply --check`, then run `catalogue --only <id>` to confirm the verdict. `engine-confidence/README.md` has the steps.
+- **Where it shows:** the Radar "Engine confidence" tab (`dev/radar`, `/trends?tab=engine`). `?source=demo` renders it offline. To see a real local run there, copy `engine-confidence/reports/engine-confidence-run.json` into the gitignored `dev/radar/tools/trends/__local__/`; demo mode uses it as the newest week.
+
 ### E2E Tests (Token Required)
 
 E2E tests require authentication tokens. Add these to `.env.local` in the repo root:
@@ -473,6 +494,19 @@ this for object literals in the JSX attribute; maps built during render via `use
 functions are equally wrong even though the rule cannot see them. See the `sanity-i18n-translate`
 skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion patterns.
 
+### Locale namespaces: plugin strings stay inside the plugin
+
+Only `studio`, `validation`, `copy-paste` and `feedback` (plus `comments`, whose plugin is always
+included) are registered in every studio. Every other namespace (`releases`, `tasks`, `canvas`,
+`structure`, ...) is registered by a plugin that a studio can leave out, and a component that
+reads it while that plugin is not loaded renders raw keys. Strings for code that renders outside
+a plugin (core components, form inputs, previews, the navbar) go in the `studio` bundle. Two
+in-repo oxlint rules check this: `@repo/i18n/no-plugin-namespace-outside-plugin` and
+`@repo/i18n/no-missing-translation-key` (keys must exist in the en-US resources of the namespace
+they are read from). Both read the namespace table in
+`packages/@repo/oxlint-plugin-i18n/src/namespaces.mjs`; update it when adding a namespace or
+changing which plugin registers one.
+
 ### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
 
 React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the
@@ -493,6 +527,13 @@ every effect cleanup in the subtree and showing runs the effects again, without 
 - Never reorder keyed siblings that hold an `<iframe>`. React moves the DOM node when the key
   order changes, and a re-inserted iframe reloads. `useMountedTools` renders tools in workspace
   order for this reason even though eviction is least-recently-used.
+- `@sanity/ui`'s `useElementSize` (4.2.4) stops reporting after a reveal. Its shared
+  `_elementSizeObserver` keeps one `ResizeObserver` per element and disconnects it when the last
+  subscriber leaves, but never forgets the element, so the effect re-run after a reveal finds the
+  cached entry and creates no new observer: the hook keeps the size from before hiding, also for
+  later resizes. Any layout derived from it inside a tool (Vision's column/stacked breakpoints,
+  `PaneLayout`, `DocumentLayout`, the PTE toolbar) freezes. Vision's redesign measures with its
+  own `useContentSize`, which observes afresh on every effect run; the fix belongs in `@sanity/ui`.
 - Hidden content keeps `display: none` on its topmost host nodes only, and portals under the
   boundary are hidden too (`hideOrUnhideNearestPortals`); descendants report their own `display`.
 
@@ -563,6 +604,25 @@ that already accepts the value, or drop that case from the typed call. Do not wi
 union solely so a test type-checks. A single `as T` on a deliberately incomplete object is
 fine when the test is the error path for a missing field. This rule does not apply to
 production source.
+
+#### Prefer real implementations over test-file doubles
+
+Drive the unit through its production API and the same factories production uses.
+Do not add mock functions, stub components, or a parallel compiler to the test file
+just to reach a branch.
+
+- Compile schemas with Studio `createSchema` plus `defineType` / `defineField`
+  (`packages/sanity/src/core/schema/createSchema.ts`). That path validates, parents
+  the builtin schema, and runs `inferValidation`. Do not hand-roll
+  `@sanity/schema` `Schema.compile({types: [...]})` unless the test is about that
+  compiler.
+- Call the production function (`createPrepareFormState()`, an exported mapper)
+  without `vi.fn` decorator spies unless the suite is about call counts.
+- Typed lookups of a production union (`fieldMember`, `errorMember`) are accessors,
+  not doubles. A schema-construction helper for a depth fixture is fine. A second
+  fake form tree, or a local `vi.mock` of the module under test, is not.
+- A harness that needs a mock client and a page of `vi.fn` callbacks is the wrong
+  seam when the unit is a pure function. Prefer the smaller call.
 
 #### Vitest 5 specifics
 
@@ -1090,10 +1150,11 @@ Notes:
 ### Creating a New Test
 
 1. Place the test next to its source (`MyComponent.test.tsx`) or in a `__tests__/` directory beside it — both conventions are in use, so match the sibling files
-2. Use existing test patterns from similar files
-3. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
+2. Drive the unit through its production API and the same factories production uses (see Testing > Prefer real implementations over test-file doubles). Do not copy a sibling's `vi.fn` decorator suite or `Schema.compile` factory if a real `createSchema` path exists
+3. Use existing test patterns from similar files when those patterns already do that
+4. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
 
-For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories the test helpers (`createTestProvider`, the `test/form` input harnesses, the client and router mocks) and the determinism rules for that package.
+For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories when `createTestProvider` and the `test/form` input harnesses are the right seam (Studio React context), and when to call `createSchema` plus the production function instead.
 
 ### Updating Snapshots
 
@@ -1334,15 +1395,17 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **`pnpm build` can fail in the VM with `unable to spawn child process: Exec format error (os error 8)`.** Turbo itself starts (it prints its version and the task graph) but cannot spawn the per-package build, so every task fails within milliseconds. Reproducible on a clean `main` and independent of the Node version, so it is an environment artifact, not your change. Build through pnpm instead — `-r run` executes in topological order, same as turbo: `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`.
 - **Every `turbo run` (`pnpm build`, `pnpm test:exports`) appends a `turborepo-agent-rules` block to `AGENTS.md` when it detects an AI agent**, even when its tasks then fail with the spawn error above. The block is not part of your change: revert it with `git checkout -- AGENTS.md`. `pnpm test:exports` fails the same way, so after building through pnpm run its two packages directly: in `packages/@repo/test-dts-exports`, `node generate.mjs && pnpm exec oxfmt "test/fixtures/**"` regenerates the d.ts fixtures (no diff means the export surface is unchanged) and `pnpm exec vitest run` checks them; in `packages/@repo/test-exports`, `pnpm test` runs the ESM/CJS checks.
+- **Edits to vanilla-extract `.css.ts` files may not reach the browser in `sanity dev` bundledDev mode.** The JS module reloads with new class hashes while the injected stylesheet keeps the old rules, so styles silently stop applying (elements carry a class no rule matches). Restart `sanity dev` after changing `.css.ts` files rather than debugging the styles.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
 - **Timezone-sensitive snapshots in `@sanity/validation`.** `test/dates.test.ts` snapshots render datetimes in `America/Los_Angeles`. The package Vitest config sets that timezone for its workers, including when run through the root suite.
 - **`isUsingLegacyHttp.test.ts` fails in the VM on any branch.** The "reuses one legacy protocol probe across callers and subscriptions" case resolves `[undefined, undefined, undefined]` instead of `[false, false, false]`. It reproduces on a clean detached `main` with main's own lockfile, and the `Unit tests` job is green on the same commit in CI, so treat it as an environment artifact like the timezone snapshots above rather than a regression in your change.
 - **`pnpm lint:workflows` needs zizmor installed first.** It is not in the image and is not an npm package: `pip3 install --user zizmor`, then run it with `PATH="$HOME/.local/bin:$PATH"`. Baseline before blaming your change — a clean `main` currently reports 11 high-severity findings with zizmor 1.30.1 (CI pins an older version), so compare finding counts with and without your change rather than requiring zero.
 - **`pnpm depcheck` fails on a clean checkout of `main` in the VM** (knip reports the root `lefthook` devDependency as unused, plus a `knip.jsonc` config hint). Baseline before blaming your change: `git stash push -u && pnpm depcheck; git stash pop`.
-- **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files.
+- **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files. Read the churn before reverting it, though. After a rebase onto a base that moved a dependency's version elsewhere in the workspace (e.g. `motion` `^13.4.2` → `^13.4.4`), your package's importer entry can point at a `version:` that no longer has a `packages:`/`snapshots:` entry; `pnpm install --frozen-lockfile` accepts that, CI installs nothing for it, and only that package fails (`Cannot find module 'motion/react'` from oxlint and vitest, `Rolldown failed to resolve import` from `sanity build`). In that case the rewrite of the importer entry is the fix: align your `package.json` range with the rest of the workspace and commit the two lockfile lines, leaving the rest of the churn out.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
   - This has bitten agents more than once. The freeze is unrecoverable in practice: the shell stops spawning processes and even file reads time out, and the VM is eventually rebuilt, **losing every uncommitted change**. Sequence the work so linting happens before the studio starts, and commit and push before starting any manual verification.
   - The repo-wide check can outgrow the VM's free memory even on its own: its type-aware pass (`tsgolint`) has peaked above 3.5 GB in a VM with about 4.5 GB available. Run it inside a memory-capped cgroup so that only the lint gets killed if it runs out: `sudo mkdir -p /sys/fs/cgroup/lint && echo 3500M | sudo tee /sys/fs/cgroup/lint/memory.max`, then `bash -c 'echo $$ | sudo tee /sys/fs/cgroup/lint/cgroup.procs >/dev/null; exec pnpm check:oxlint'`; `grep oom_kill /sys/fs/cgroup/lint/memory.events` shows whether it was killed. For a change confined to one package, `pnpm exec oxlint --disable-nested-config --quiet packages/<package>` lints and type-checks just that package's files in a few seconds, and CI still runs the full check.
+- **bundledDev serves a lazily imported module's top-level `await` inside a non-async factory the first time it compiles that chunk.** Symptom: the first use of a feature behind an `import()` of a dependency whose browser entry uses top-level await (Vision's Prettify and lint, which lazy-load `@sanity-labs/groq-wasm`) fails with `SyntaxError: Unexpected reserved word`, and every retry on that page fails the same way because the browser caches the errored module. The served `/@vite/lazy?id=…&rolldown-lazy=1` chunk shows the cause: `registerFactory(id, "esm", (function () { … await fetch(wasmUrl) … }))`. Once the chunk has been requested, the dev bundler folds the module into the initial bundle and a page reload works (the `.wasm` is then fetched on load). Classic `sanity dev` (native ESM) and `sanity build` are unaffected. This is upstream vite/rolldown behavior; reload before concluding the feature is broken.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 - **Recording demo videos: drive the browser with Playwright rather than the screen recorder.** The screen recorder auto-zooms toward cursor activity and has truncated clips mid-interaction, producing unusable artifacts. Playwright records a fixed viewport, so the framing cannot drift:

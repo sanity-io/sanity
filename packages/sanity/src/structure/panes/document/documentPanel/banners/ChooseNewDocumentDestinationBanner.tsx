@@ -1,7 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback} from 'react'
 import {
   getReleaseTone,
@@ -17,7 +16,7 @@ import {
   useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -89,7 +88,7 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
       data-testid="choose-new-document-destination-banner"
       content={
         <Flex alignItems="center" gap={2}>
-          <Text size={1}>
+          <Text size={1} as="div" trim={true} tone="caution">
             {reason === 'PUBLISHED_NOT_WRITEABLE' &&
               t('banners.choose-new-document-destination.cannot-create-published-document')}
             {reason === 'DRAFTS_NOT_WRITEABLE' &&

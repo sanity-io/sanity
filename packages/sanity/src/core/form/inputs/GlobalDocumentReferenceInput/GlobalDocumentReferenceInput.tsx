@@ -352,6 +352,11 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                     showStudioUrlIcon
                     hasStudioUrl
                     type={schemaType}
+                    tone={
+                      !readOnly && (loadableReferenceInfo.error || errors.length > 0)
+                        ? 'critical'
+                        : undefined
+                    }
                   />
                 </PreviewCard>
               ) : (
@@ -371,6 +376,11 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                     value={value}
                     referenceInfo={loadableReferenceInfo}
                     type={schemaType}
+                    tone={
+                      !readOnly && (loadableReferenceInfo.error || errors.length > 0)
+                        ? 'critical'
+                        : undefined
+                    }
                   />
                 </PreviewCard>
               )}
