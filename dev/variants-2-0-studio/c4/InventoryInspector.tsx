@@ -2,6 +2,7 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {type DocumentInspector, type DocumentInspectorProps} from 'sanity'
+import {DocumentInspectorHeader, useDocumentPane} from 'sanity/structure'
 
 import {useVariantDefinitions} from '../c1/world'
 import {DocumentVersionsLens, SharedInventory, WideOverlay} from '../c5/ActionableLenses'
@@ -73,14 +74,31 @@ function HandoffInventory({documentId}: {documentId: string}) {
   )
 }
 
-/** C4 E, "Create version": the inventory panel with the T4 Create version mode in its toolbar. */
+/**
+ * C4 E, "Create version": the inventory panel with the T4 Create version mode in its toolbar, under the Studio's own inspector title row
+ * ("Versions" and a close button that closes the inspector), as in the Handoff Studio.
+ */
 function CreateVersionPanel({documentId}: {documentId: string}) {
   const corpus = useCorpus()
+  const {closeInspector, value} = useDocumentPane()
+  // The corpus lists only the seeded documents; any other document is named by its own title (or name) field.
+  const named = [value.title, value.name].find((t) => typeof t === 'string' && t)
+  const own = typeof named === 'string' ? named : undefined
   return (
-    <CreateVersionInventory
-      documentId={documentId}
-      title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId}
-    />
+    <Flex direction="column" height="fill">
+      <DocumentInspectorHeader
+        closeButtonLabel="Close versions"
+        // The click event must not reach closeInspector: it takes an inspector name, and an event names none, so nothing would close.
+        onClose={() => closeInspector()}
+        title="Versions"
+      />
+      <div style={{flex: 1, minHeight: 0}}>
+        <CreateVersionInventory
+          documentId={documentId}
+          title={corpus?.docs.find((d) => d.id === documentId)?.title ?? own ?? documentId}
+        />
+      </div>
+    </Flex>
   )
 }
 

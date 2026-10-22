@@ -5,6 +5,8 @@ import {useSetVariant, useWorkspace} from 'sanity'
 import {valueTitle} from '../c1/model'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
+import {inOpenBeta} from '../data/versions'
+import {useOptionState} from '../options/store'
 import {CreateVersion, type VariantChoice} from './inventory/CreateVersion'
 import {type InventoryEntry} from './inventory/fixtures'
 import {InventoryConceptsProvider} from './inventory/model'
@@ -23,6 +25,8 @@ const HIDDEN = [
   'inventory-sort-menu',
   'inventory-view-settings',
   'inventory-footer',
+  // The panel's own header: its close is a placeholder. The Studio's inspector title row replaces it (as the Handoff Studio's), with a close that works.
+  'inventory-header',
 ]
   .map((id) => `[data-testid="${id}"]`)
   .join(', ')
@@ -61,13 +65,25 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
   const received = useSyncExternalStore(subscribe, () => receivedBy.get(documentId))
   const [frame, setFrame] = useState<HTMLElement | null>(null)
 
-  const world = live
+  // The open beta stage has one dimension (Audience), as the Handoff Studio: versions of a variant on another dimension are not listed. GA lists all.
+  const {stage} = useOptionState()
+  const inScope = useCallback(
+    (variantId: string | undefined) =>
+      stage !== 'open-beta' ||
+      !variantId ||
+      inOpenBeta(variants.find((v) => shortId(v._id) === variantId)?.conditions),
+    [stage, variants],
+  )
+  const world = useMemo(
+    () => live && {...live, entries: live.entries.filter((e) => inScope(e.variantId))},
+    [live, inScope],
+  )
 
   const choices = useMemo(
     (): VariantChoice[] =>
       variants.flatMap((v) => {
         const [dimension, value] = Object.entries(v.conditions)[0] ?? []
-        if (!dimension) return []
+        if (!dimension || !inScope(shortId(v._id))) return []
         return [
           {
             id: shortId(v._id),
@@ -85,7 +101,7 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
           },
         ]
       }),
-    [variants, state.dimensions],
+    [variants, state.dimensions, inScope],
   )
 
   const variantFor = useCallback(
