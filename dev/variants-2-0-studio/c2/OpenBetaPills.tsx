@@ -267,6 +267,8 @@ export function OpenBetaPills({
   const current = selectedPerspectiveName ?? 'drafts'
   // Live edit has no draft, and a workspace without the draft model has none either.
   const showDrafts = draftsEnabled && !schemaType?.liveEdit
+  // The default version, where unselecting a release goes back to: Drafts, or Published where the drafts model is off.
+  const defaultVersion: ReleaseId = draftsEnabled ? 'drafts' : 'published'
   const showPublished = Boolean(published) || (!showDrafts && !releases.length)
 
   const currentVariant = selectedVariantName?.replace(/^_\.variants\./, '')
@@ -307,7 +309,11 @@ export function OpenBetaPills({
       key: `variant-${v.variantId ?? v.audience}`,
       text: v.audience ?? '',
       icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
-      onClick: v.variantId && !definition ? undefined : () => goTo(current, definition),
+      // Picking the chosen variant again unselects it: back to All users, keeping the version in view (Faheem, 22 Oct).
+      onClick:
+        v.variantId && !definition
+          ? undefined
+          : () => goTo(current, v.variantId === currentVariant ? undefined : definition),
       trailing: SHOW_VERSION_COUNT ? <VersionCount versions={group} /> : undefined,
       selected: Boolean(v.variantId) && v.variantId === currentVariant,
       search: {
@@ -341,7 +347,7 @@ export function OpenBetaPills({
         key: `variant-missing-${id}`,
         text: definition.metadata?.title ?? id,
         icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
-        onClick: () => goTo(current, definition),
+        onClick: () => goTo(current, id === currentVariant ? undefined : definition),
         muted: true,
         selected: id === currentVariant,
         search: {id},
@@ -355,7 +361,8 @@ export function OpenBetaPills({
       key: `release-${bundleId}`,
       text: stateWord({...head, audience: null}),
       icon: glyph(head),
-      onClick: () => goTo(bundleId, viewedDefinition),
+      // Picking the release in view again unselects it: back to the default version, keeping the variant (as the navbar chip's cross).
+      onClick: () => goTo(current === bundleId ? defaultVersion : bundleId, viewedDefinition),
       selected: current === bundleId,
       search: {id: bundleId},
     }
@@ -376,7 +383,7 @@ export function OpenBetaPills({
           : ''
       }`,
       icon: <ReleaseAvatarIcon releaseType={release.metadata.releaseType} />,
-      onClick: () => goTo(id, viewedDefinition),
+      onClick: () => goTo(current === id ? defaultVersion : id, viewedDefinition),
       muted: true,
       selected: current === id,
       search: {id},
