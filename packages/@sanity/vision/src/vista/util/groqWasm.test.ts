@@ -67,22 +67,31 @@ describe('lintGroq', () => {
     const query = '*[_type == "post" && author->name == "x"]{title}'
     const findings = await lintGroq(query)
 
-    expect(findings.map((finding) => finding.ruleId)).toEqual(['join-in-filter'])
+    expect(findings.map((finding) => finding.ruleId)).toEqual(['join-in-filter', 'unlimited-query'])
     expect(findings[0].severity).toBe('error')
     expect(findings[0].message).toContain('Avoid joins')
     expect(query.slice(findings[0].from, findings[0].to)).toBe('author->')
   })
 
-  it('returns nothing for clean or blank queries', async () => {
-    expect(await lintGroq('*[_type == "post"]{title}')).toEqual([])
+  it('returns nothing for a blank query', async () => {
     expect(await lintGroq('')).toEqual([])
   })
 
-  it('leaves out the unlimited-query rule, which would flag every exploratory query', async () => {
-    expect(await lintGroq('*')).toEqual([])
-    // Other rules on the same query still get through
-    const query = '*[_type == "post" && author->name == "x"]'
-    expect((await lintGroq(query)).map((finding) => finding.ruleId)).toEqual(['join-in-filter'])
+  it('reports unlimited-query for an unsliced top-level filter and not once it is sliced', async () => {
+    const query = '*[_type == "post"]'
+    const findings = await lintGroq(query)
+
+    expect(findings.map((finding) => finding.ruleId)).toEqual(['unlimited-query'])
+    expect(findings[0].severity).toBe('warning')
+    expect(query.slice(findings[0].from, findings[0].to)).toBe('[_type == "post"]')
+
+    // A projection does not bound the result; the filter is still what the rule underlines
+    const projected = '*[_type == "post"]{title}'
+    const [projectedFinding] = await lintGroq(projected)
+    expect(projectedFinding.ruleId).toBe('unlimited-query')
+    expect(projected.slice(projectedFinding.from, projectedFinding.to)).toBe('[_type == "post"]')
+
+    expect(await lintGroq(`${query}[0...10]`)).toEqual([])
   })
 
   it('converts byte offsets to string indices', async () => {
