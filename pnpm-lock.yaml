@@ -1111,6 +1111,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
+      '@vanilla-extract/css':
+        specifier: 'catalog:'
+        version: 1.21.3(babel-plugin-macros@3.1.0)
       '@vitejs/devtools':
         specifier: ^0.8.0
         version: 0.8.0(@vitejs/devtools-oxc@0.8.0)(@vitejs/devtools-rolldown@0.8.0)(@vitejs/devtools-vite@0.8.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)

@@ -7,22 +7,23 @@ import {defaultClientConditions, mergeConfig} from 'vite'
 const RE_SANITY_PACKAGE_SOURCE = /\/packages\/sanity\/src\//
 
 /**
- * `@sanity/vanilla-extract-vite-plugin` for the `.css.ts` modules of `@sanity/vision`, which
- * `sanity dev` resolves to source and which are still vanilla-extract. The plugin compiles every
- * `.css.ts` module of a build as vanilla-extract, so the `sanity` package's — Panda CSS, built by
- * `studioPandaCss()` from `@repo/pandacss` — are excluded from its transform's hook filter here.
- * Throws rather than failing open when the plugin's name or hook shape changes, so an upstream
- * change shows up here and not as vision compiling `sanity`'s modules. Both this wrapper and the
- * plugin go once vision moves to CSS modules (#15406).
+ * `@sanity/vanilla-extract-vite-plugin` for the `.css.ts` modules that are still vanilla-extract:
+ * this studio's own (`plugins/style-outline/styleOutline.css.ts`) and those of `@sanity/vision`,
+ * which `sanity dev` resolves to source. The plugin compiles every `.css.ts` module of a build as
+ * vanilla-extract, so the `sanity` package's — Panda CSS, built by `studioPandaCss()` from
+ * `@repo/pandacss` — are excluded from its transform's hook filter here. Throws rather than
+ * failing open when the plugin's name or hook shape changes, so an upstream change shows up here
+ * and not as vision's or the studio's modules compiling `sanity`'s. The wrapper (and the plugin,
+ * once the studio's own modules follow) goes when they move to CSS modules (#15406).
  */
-function visionVanillaExtract() {
+function vanillaExtractExceptSanity() {
   const plugins = vanillaExtractPlugin()
   const plugin = plugins.find((candidate) => candidate.name === 'sanity-vanilla-extract')
   const transform = plugin?.transform
   const include = typeof transform === 'object' ? transform.filter?.id : undefined
   if (!plugin || typeof transform !== 'object' || !(include instanceof RegExp)) {
     throw new Error(
-      '@sanity/vanilla-extract-vite-plugin changed its plugin name or transform hook shape; update visionVanillaExtract() in sanity.cli.ts',
+      '@sanity/vanilla-extract-vite-plugin changed its plugin name or transform hook shape; update vanillaExtractExceptSanity() in sanity.cli.ts',
     )
   }
   return plugins.map((candidate) =>
@@ -84,11 +85,11 @@ export default defineCliConfig({
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     let nextConfig = mergeConfig(viteConfig, {
-      // `sanity dev` resolves the workspace packages to their sources (the `monorepo` condition
-      // below), so the Panda CSS `.css.ts` modules of `sanity` and the vanilla-extract ones of
-      // `@sanity/vision` are built here; `sanity build` uses the built packages and their
-      // `bundle.css`
-      plugins: command === 'serve' ? [...visionVanillaExtract(), ...studioPandaCss()] : [],
+      // The studio's own `.css.ts` modules are vanilla-extract under both commands. `sanity dev`
+      // also resolves the workspace packages to their sources (the `monorepo` condition below), so
+      // the Panda CSS `.css.ts` modules of `sanity` and the vanilla-extract ones of `@sanity/vision`
+      // are built here too; `sanity build` uses the built packages and their `bundle.css`
+      plugins: [...vanillaExtractExceptSanity(), ...(command === 'serve' ? studioPandaCss() : [])],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
     })

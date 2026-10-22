@@ -5,7 +5,7 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Card, type CardTone} from '@sanity/ui'
 import {MenuDivider, MenuItem as UIMenuItem} from '@sanity/ui/menu'
-import {type CSSProperties, Fragment, useCallback} from 'react'
+import {Fragment, useCallback} from 'react'
 import {type SemVer} from 'semver'
 import {Text, Flex, Icon} from 'ui5'
 
@@ -36,14 +36,6 @@ interface ResourcesMenuItemProps {
 function reload() {
   document.location.reload()
 }
-
-// The studio version item is a v4 `MenuItem` holding ui5 `Text`. v4 colors its hovered and
-// selected states through the `--card-*` variables, which the v4 `Text` of the other items reads;
-// ui5 `Text` reads the ui5 foreground tokens instead, which a v4 item does not set, so without
-// this the title stayed dark and the subtitle muted on the selected background (as in
-// NewDocumentListOption, where the ui5 text of an option follows the card the same way).
-const CARD_FG_STYLE: CSSProperties = {color: 'var(--card-fg-color)'}
-const CARD_MUTED_FG_STYLE: CSSProperties = {color: 'var(--card-muted-fg-color)'}
 
 export function ResourcesMenuItems({
   error,
@@ -169,7 +161,6 @@ function StudioVersion({
             tone={deprecatedVersion ? 'caution' : undefined}
             as="div"
             trim={true}
-            style={deprecatedVersion ? undefined : CARD_FG_STYLE}
           >
             {t('help-resources.studio')}
           </Text>
@@ -186,7 +177,7 @@ function StudioVersion({
               </TextWithTone>
             </Flex>
           ) : (
-            <Text muted size={1} as="div" trim={true} style={CARD_MUTED_FG_STYLE}>
+            <Text muted size={1} as="div" trim={true}>
               {subtitle}
             </Text>
           )}

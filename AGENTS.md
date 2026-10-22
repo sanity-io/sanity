@@ -259,16 +259,17 @@ content-hashed class names with the `sanity-` prefix (`sanity-HgOzd`) and `stric
 — and `#styled-system` is mapped in that package's manifest alone; nothing outside `packages/sanity`
 writes Panda CSS. The `migrate-styled-components-to-panda-css` skill
 (`.agents/skills/migrate-styled-components-to-panda-css/SKILL.md`) is the authoring guide: the
-`&&` specificity trick, the cascade model, descendant selectors and dynamic values. Styles outside
-the package are plain CSS modules (`*.module.css`, which Vite compiles with no setup — the test
-studio's `plugins/style-outline/styleOutline.module.css`, for one), except `@sanity/vision`, whose
-`.css.ts` modules stay vanilla-extract until it moves to CSS modules
-([#15406](https://github.com/sanity-io/sanity/pull/15406)): the `vanillaExtract` tsdown option,
-and `@sanity/vanilla-extract-vite-plugin` in the apps that build it from source. Shared tooling
-versions live in the pnpm catalog (`@pandacss/dev`, `@pandacss/vite`,
-`@sanity/pandacss-tsdown-plugin`); the Vite apps that build the package from source get their
-Panda wiring from `@repo/pandacss` (`packages/@repo/pandacss`, its README says when an app needs
-it) instead of declaring those themselves.
+`&&` specificity trick, the cascade model, descendant selectors and dynamic values. Outside the
+package, vanilla-extract stays where it is for now — the `.css.ts` modules of `@sanity/vision`
+(with its `vanillaExtract` tsdown option) and the test studio's
+`plugins/style-outline/styleOutline.css.ts` — until
+[#15406](https://github.com/sanity-io/sanity/pull/15406) moves them to CSS modules; the apps
+that build those from source keep `@sanity/vanilla-extract-vite-plugin` (the test studio's
+`sanity.cli.ts`, vision's vitest suite), wrapped as described below. Shared tooling versions live
+in the pnpm catalog (`@pandacss/dev`, `@pandacss/vite`, `@sanity/pandacss-tsdown-plugin`); the
+Vite apps that build the package from source get their Panda wiring from `@repo/pandacss`
+(`packages/@repo/pandacss`, its README says when an app needs it) instead of declaring those
+themselves.
 
 How the CSS reaches a page:
 
@@ -302,12 +303,12 @@ How the CSS reaches a page:
   `sanity` from npm needs none of this: `bundle.css` is a plain stylesheet that Vite's built-in CSS
   support loads. The CDN bundle in `@repo/package.bundle` builds the package for publishing and
   keeps its own `pandacss()` call, `panda.css` and import plugin (it imports the stylesheet from
-  every library entry). Where vision's vanilla-extract `.css.ts` modules are built in the same
-  graph (`sanity dev` of the test studio, vision's vitest suite),
-  `@sanity/vanilla-extract-vite-plugin` is wrapped so that its transform's hook filter excludes
-  `packages/sanity/src/` — it would otherwise compile the Panda modules as vanilla-extract and
-  fail on the missing `@vanilla-extract/css` import; the wrapper throws if the plugin's name or
-  hook shape changes. The jsdom suites of `sanity` and `@sanity/vision` register `@pandacss/vite`
+  every library entry). Where vanilla-extract `.css.ts` modules are built in the same graph (the
+  test studio's `sanity.cli.ts`: its own style-outline plugin under both commands and vision's
+  modules under `sanity dev`; vision's vitest suite), `@sanity/vanilla-extract-vite-plugin` is
+  wrapped so that its transform's hook filter excludes `packages/sanity/src/` — it would otherwise
+  compile the Panda modules as vanilla-extract and fail on the missing `@vanilla-extract/css`
+  import; the wrapper throws if the plugin's name or hook shape changes. The jsdom suites of `sanity` and `@sanity/vision` register `@pandacss/vite`
   directly, with the same `cwd` and `transform: true`, but load no stylesheet: no jsdom test
   asserts on styles.
 - **No cascade layers.** Panda writes its rules into `@layer` blocks (`reset`, `base`, `tokens`,
