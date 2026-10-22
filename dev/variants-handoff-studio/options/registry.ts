@@ -605,9 +605,8 @@ defineDesignOptions({
   title: 'Design options',
   storageKey: 'variants-handoff-studio',
   // The Handoff Studio is one fixed design: the open beta (docs/initiatives/curation-perspective-selector/OPEN-BETA-HANDOFF-SCOPE.md).
-  fixed: 'show.a,stage.open-beta,navLayout.a,c1.b,c2.a,c3.f,c4.d',
-  // TEMPORARY (22 Oct): T3 stays switchable between A (v1, c3.a) and B (the tile, c3.f) until Faheem decides; remove with options/T3Switch.tsx.
-  adjustable: ['c3'],
+  // T3 is A (v1), decided 22 Oct (SAPP-4723).
+  fixed: 'show.a,stage.open-beta,navLayout.a,c1.b,c2.a,c3.a,c4.d',
   components: COMPONENTS,
   groups: [
     {label: 'Studio chrome', ids: ['c1', 'c2', 'c3', 'navLayout', 'rowWidth']},

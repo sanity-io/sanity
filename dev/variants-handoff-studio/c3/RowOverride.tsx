@@ -5,8 +5,7 @@ import {type UseDocumentListItemOverride} from 'sanity/structure'
 import {usePerspectiveMatch} from '../data/match'
 import {useVersionList} from '../data/useVersionList'
 import {STOCK_OPTION, useOption} from '../options/store'
-import {BaseDotOnly, type TileMark} from './StateBadge'
-import {baseDot, earliestRelease} from './types'
+import {baseDot} from './types'
 import {VersionMark} from './VersionMark'
 
 /**
@@ -18,15 +17,10 @@ import {VersionMark} from './VersionMark'
 /** Name of the inspector registered in c4/InventoryInspector.tsx. */
 const INVENTORY_INSPECTOR = 'variants-inventory'
 
-/** Keeps the control's 43 × 29 slot while the versions load, so rows do not jump (Figma C3 B, "Loading (slot kept)"). */
+/** Keeps the control's slot while the versions load, so rows do not jump. */
 const SLOT = (
-  <span data-testid="version-tile-slot" style={{display: 'block', width: 43, height: 29}} />
+  <span data-testid="version-mark-slot" style={{display: 'block', width: 43, height: 29}} />
 )
-
-/** Nothing to show, in the icon column's width, so the row keeps its layout. */
-function EmptySlot() {
-  return <span aria-hidden style={{display: 'block', width: 29, height: 29}} />
-}
 
 export const useRowOverride: UseDocumentListItemOverride = ({
   documentId,
@@ -53,57 +47,21 @@ export const useRowOverride: UseDocumentListItemOverride = ({
 
   const variantIds = versions.flatMap((v) => (v.variantId ? [v.variantId] : []))
 
-  // T3 option A (v1): the versions icon on every row with the state dot as a badge. One indicator, reactive to the perspective (call of 20
-  // Oct): with no perspective, the base document's state (the draft over the published one, none for a document only in a release); with a
-  // perspective, a diamond only on documents with a matching variant.
-  if (option === 'a') {
-    const dot: 'published' | 'draft' | 'variant' | null = !perspective.active
-      ? baseDot(versions)
-      : perspective.best(variantIds)
-        ? 'variant'
-        : null
-    return {
-      status: (
-        <VersionMark
-          docId={documentId}
-          dot={dot}
-          onOpenPane={openWithInventory}
-          trigger="badge"
-          versions={versions}
-        />
-      ),
-      tooltip: null,
-    }
-  }
-
-  // T3 option B (Figma C3 674:3362, 22 Oct): the tile only where there is more than a base version (a variant, or a version in a release).
-  const hasMore =
-    variantIds.length > 0 ||
-    versions.some((v) => v.bundleId !== 'published' && v.bundleId !== 'drafts')
-  const base = baseDot(versions)
-  if (!hasMore) {
-    // Base only: the state dot alone, no tile and no button. With an audience chosen there is nothing to mark.
-    return {
-      status: !perspective.active && base ? <BaseDotOnly state={base} /> : <EmptySlot />,
-      tooltip: null,
-    }
-  }
-  // With no audience: the base dot, or the earliest release's dot for a document only in releases, then a diamond when there is any
-  // variant. With an audience: the diamond only, and only when a variant matches; otherwise the tile holds just the icon.
-  const first = base ?? earliestRelease(versions)
-  const marks: TileMark[] = !perspective.active
-    ? [...(first ? [first] : []), ...(variantIds.length ? (['variant'] as const) : [])]
+  // T3 option A (v1), locked for the open beta (SAPP-4723, Faheem 22 Oct): the versions icon on every row with the state dot as a badge. One
+  // indicator, reactive to the perspective (call of 20 Oct): with no perspective, the base document's state (the draft over the published one,
+  // none for a document only in a release); with a perspective, a diamond only on documents with a matching variant.
+  const dot: 'published' | 'draft' | 'variant' | null = !perspective.active
+    ? baseDot(versions)
     : perspective.best(variantIds)
-      ? ['variant']
-      : []
-
+      ? 'variant'
+      : null
   return {
     status: (
       <VersionMark
         docId={documentId}
-        marks={marks}
+        dot={dot}
         onOpenPane={openWithInventory}
-        trigger="tile"
+        trigger="badge"
         versions={versions}
       />
     ),

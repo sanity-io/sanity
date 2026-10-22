@@ -22,7 +22,6 @@ import {
 } from '../c2/useDocumentPaneOverride'
 import {useRowOverride} from '../c3/RowOverride'
 import {STOCK_OPTION, useOption} from './store'
-import {T3Switch} from './T3Switch'
 
 /** C1 option C, and Stock, keep the shipped perspective bar; the Handoff Studio is fixed on C1 B, so it never shows. */
 const useShowShippedBar = () => {
@@ -81,8 +80,6 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
               <DocumentPaneHost>
                 <VariantFilterAddControlProvider value={renderPickerAddFilter}>
                   {props.renderDefault(props)}
-                  {/* TEMPORARY: the T3 A/B switch, until Faheem decides (options/T3Switch.tsx). */}
-                  <T3Switch />
                 </VariantFilterAddControlProvider>
               </DocumentPaneHost>
             </ShippedPerspectiveBarProvider>

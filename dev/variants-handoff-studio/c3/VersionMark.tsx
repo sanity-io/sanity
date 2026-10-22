@@ -7,7 +7,7 @@ import {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popover'
 import {insideTriangle, type Point} from './hoverIntent'
-import {BadgeButton, BadgedControl, DotButton, TileControl, type TileMark} from './StateBadge'
+import {BadgeButton, BadgedControl, DotButton} from './StateBadge'
 import {StateGlyph} from './StateGlyph'
 import {type AudienceVersion, type State} from './types'
 import {VersionDescription} from './VersionDescription'
@@ -79,10 +79,9 @@ export type MarkBehaviour = 's1' | 's2' | 's3'
  * - `pill`: ONE button holding the state glyph and the versions icon (SP2, SP3). The glyph is part
  *   of the button's label, not a second control.
  * - `badge`: the plain icon button with the state glyph as a badge on its top-right corner (SP4; T3 option A).
- * - `tile`: option D, the contained tile: the icon and a column of marks (base dot, variant diamond) inside one 43 × 29 control.
  * - `dot`: Option B. No icon: the state dot is the control, in the same 25px square slot and chrome.
  */
-export type MarkTrigger = 'icon' | 'pill' | 'badge' | 'tile' | 'dot'
+export type MarkTrigger = 'icon' | 'pill' | 'badge' | 'dot'
 /** What a click on a pill in the popover (Option B) hands to the host. */
 export type VersionPick = {
   docId: string
@@ -114,8 +113,6 @@ export function VersionMark(props: {
   content?: PopoverContent
   /** The base document's state, shown inside the `pill` and `badge` triggers. */
   dot?: 'published' | 'draft' | 'variant' | null
-  /** The `tile` trigger's marks, top to bottom: the base document's state or its earliest release, then the variant diamond. */
-  marks?: readonly TileMark[]
   /** `a` (default): flat labels in the popover. `b`: clickable chips. */
   option?: 'a' | 'b'
   /** Option B: a pill was clicked. Without it a pill click opens the inventory unscoped. */
@@ -346,29 +343,6 @@ export function VersionMark(props: {
                   tooltipProps={null}
                 />
               </BadgedControl>
-            )
-          }
-          if (trigger === 'tile') {
-            // Option D: one tile, the icon and the marks inside it. The marks are part of the one control's label.
-            const marks = props.marks ?? []
-            const said = marks
-              .map((kind) =>
-                kind === 'variant'
-                  ? '. It has a variant'
-                  : kind === 'published' || kind === 'draft'
-                    ? `. The base document is ${kind}`
-                    : `. It is in a release (${kind === 'asap' ? 'as soon as possible' : kind})`,
-              )
-              .join('')
-            return (
-              <TileControl
-                describedBy={summary ? descId : undefined}
-                disabled={!live}
-                label={`${versions.length} ${versions.length === 1 ? 'version' : 'versions'}${said}. Open the document and its version inventory`}
-                marks={marks}
-                onClick={onClick}
-                testId={`version-mark-${docId}`}
-              />
             )
           }
           return (
