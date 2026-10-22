@@ -19,6 +19,7 @@ import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporar
 import {Banner} from '../../../packages/sanity/src/structure/panes/document/documentPanel/banners/Banner'
 import {usePerspectiveState} from '../c1/state'
 import {useCreateVariantVersion} from '../data/useCreateVariantVersion'
+import {dateLabel} from '../data/versions'
 import {useBannerCase} from './useBannerCase'
 
 /**
@@ -61,11 +62,28 @@ function PublishedChip() {
   )
 }
 
+/**
+ * Faheem, 23 Oct: the release's kind is a word in the sentence, the chip is its identity. "the ASAP release", "the undecided release", and
+ * an at-time release not yet scheduled is "the release" (it is not called scheduled until it is).
+ */
+function releaseKindWord(release: ReleaseDocument | undefined) {
+  const type = release?.metadata.releaseType
+  return type === 'asap'
+    ? 'ASAP release '
+    : type === 'undecided'
+      ? 'undecided release '
+      : 'release '
+}
+
+/** A release as the Releases pill names it: a scheduled one with its date ("Black Friday · 20 Nov"), others by title alone. */
 function ReleaseChip({release, title}: {release: ReleaseDocument | undefined; title: string}) {
+  const at =
+    release?.metadata.releaseType === 'scheduled' ? release.metadata.intendedPublishAt : undefined
   return (
     <VersionInlineBadge
       $tone={getReleaseTone(release ?? 'drafts')}
       icon={release ? <ReleaseAvatarIcon release={release} /> : undefined}
+      suffix={at ? `· ${dateLabel(at, undefined)}` : undefined}
     >
       {title}
     </VersionInlineBadge>
@@ -188,8 +206,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
         }
         content={say(
           <>
-            <ReleaseChip release={release} title={releaseTitle} /> is scheduled, so its contents are
-            locked. Unschedule it to add this version.
+            The scheduled release <ReleaseChip release={release} title={releaseTitle} /> is locked.
+            Unschedule it to add this version.
           </>,
           'scheduled',
         )}
@@ -205,7 +223,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
       action={createAction}
       content={say(
         <>
-          This document has no <VariantChip title={audience} /> version in{' '}
+          This document has no <VariantChip title={audience} /> version in the{' '}
+          {releaseKindWord(release)}
           <ReleaseChip release={release} title={releaseTitle} />. It shows the base content.
         </>,
         'release',
