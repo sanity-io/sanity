@@ -69,7 +69,8 @@ export const RELEASES_GROQ = `*[_type == "system.release"]{"id": string::split(_
 const minutesBetween = (now: Date, iso: string) =>
   Math.max(0, Math.round((now.getTime() - new Date(iso).getTime()) / 60000))
 
-function dateLabel(iso: string, timeZone: string | undefined) {
+/** A day and month (20 Nov), as the version rows name a scheduled release's date. */
+export function dateLabel(iso: string, timeZone: string | undefined) {
   return new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'short', timeZone}).format(
     new Date(iso),
   )

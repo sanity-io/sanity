@@ -4,7 +4,16 @@ import {DotIcon} from '@sanity/icons/Dot'
 import {Box, Flex, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type CSSProperties, type ReactElement, useState} from 'react'
-import {ReleaseAvatarIcon, usePerspective, useSchema, useSetVariant, useWorkspace} from 'sanity'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  isCardinalityOneRelease,
+  ReleaseAvatarIcon,
+  useActiveReleases,
+  usePerspective,
+  useSchema,
+  useSetVariant,
+  useWorkspace,
+} from 'sanity'
 
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {type ReleaseId} from '../../../packages/sanity/src/core/perspective/types'
@@ -17,16 +26,16 @@ import {Tooltip} from '../../../packages/sanity/src/ui-components/tooltip/Toolti
 import {DimensionIcon} from '../c1/dimensionIcons'
 import {valueTitle} from '../c1/model'
 import {DEFAULT_LABEL} from '../c1/Picker'
-import {rankSearch, SEARCH_FROM, type SearchFields} from '../c1/search'
+import {rankSearch, type SearchFields} from '../c1/search'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
 import {useVersionList} from '../data/useVersionList'
-import {type AudienceVersion} from '../data/versions'
+import {type AudienceVersion, dateLabel} from '../data/versions'
 
 /**
  * C2 option A (the open beta, OPEN-BETA-HANDOFF-SCOPE T2): the document pills with their order and grouping changed, in the same place as the
- * Studio's own pills. Variants group first, a divider, Published, Draft, then one Releases group: one entry per release in its menu, with the
- * variants it holds under it, and the count is the number of releases. The way into the inventory is the pane header's own button, so there is
+ * Studio's own pills. Variants group first, a divider, Published, Draft, then one Releases group: one flat entry per release in its menu, then
+ * the other active releases greyed, and the count is the number of releases this document is in. The way into the inventory is the pane header's own button, so there is
  * no Versions pill. Titles, never ids. A group is not drawn when it is empty: no Variants pill without variants, no Releases pill without
  * releases, no Draft pill when the workspace has no draft model or the type is live edit.
  */
@@ -101,7 +110,17 @@ function VersionCount({versions}: {versions: readonly AudienceVersion[]}) {
         <DocumentsIcon
           style={{fontSize: '1.15em', margin: '-3.5px 0', position: 'relative', top: 1.5}}
         />
-        {n}
+        {/* A fixed-width, right-aligned number: one- and two-digit counts line up down the menu. */}
+        <span
+          style={{
+            display: 'inline-block',
+            fontVariantNumeric: 'tabular-nums',
+            minWidth: '2ch',
+            textAlign: 'right',
+          }}
+        >
+          {n}
+        </span>
       </span>
     </Tooltip>
   )
@@ -109,9 +128,8 @@ function VersionCount({versions}: {versions: readonly AudienceVersion[]}) {
 
 const isVariantId = (id: string): id is SystemVariant['_id'] => id.startsWith('_.variants.')
 
-/** The version a row of the list lives in: its release, else Published or Drafts. */
-const versionOf = (v: AudienceVersion): ReleaseId =>
-  v.bundleId ?? (v.state === 'published' ? 'published' : 'drafts')
+/** The menus show 10 rows before they scroll, as the navbar's menus do (the same count of rows); rows are the 33px MenuItem. */
+const LIST_MAX = 10 * 33 + 4
 
 function DropdownPill(props: {
   text: string
@@ -126,8 +144,6 @@ function DropdownPill(props: {
     selected?: boolean
     /** Greyed but clickable: a variant this document has no version of yet (picking it shows the banner's Create version). */
     muted?: boolean
-    /** A variant listed under its release: it is found, and shown, with the release above it. */
-    indent?: boolean
     /** What search matches an option by (the title is its text when this is left out). */
     search?: Omit<SearchFields, 'title'>
   }[]
@@ -140,19 +156,8 @@ function DropdownPill(props: {
   tone?: 'suggest'
 }) {
   const [query, setQuery] = useState('')
-  // An option is a top-level item with the indented items under it.
-  type Item = (typeof props.items)[number]
-  const groups: {head: Item; children: Item[]}[] = []
-  for (const item of props.items) {
-    const last = groups[groups.length - 1]
-    if (item.indent && last) last.children.push(item)
-    else groups.push({head: item, children: []})
-  }
-  const searchable = groups.length >= SEARCH_FROM
-  const found = rankSearch(groups, searchable ? query : '', (g) => ({
-    title: g.head.text,
-    ...g.head.search,
-  }))
+  // Search at the top, always, then the rows in a list that scrolls past 10 rows (the navbar menus' pattern, with no footer).
+  const found = rankSearch(props.items, query, (item) => ({title: item.text, ...item.search}))
   return (
     <MenuButton
       button={
@@ -173,27 +178,27 @@ function DropdownPill(props: {
       id={props.testId}
       menu={
         <Menu data-testid={`${props.testId}-menu`} padding={1} style={{minWidth: 240}}>
-          {searchable ? (
-            <Box padding={1}>
-              <TextInput
-                aria-label="Find"
-                data-testid={`${props.testId}-search`}
-                fontSize={1}
-                // The menu would take typing for its own keys; only the arrows are its.
-                onKeyDown={(event) => {
-                  if (!['ArrowDown', 'ArrowUp', 'Escape'].includes(event.key))
-                    event.stopPropagation()
-                }}
-                onChange={(event) => setQuery(event.currentTarget.value)}
-                placeholder="Find"
-                value={query}
-              />
-            </Box>
-          ) : null}
-          {found.flatMap(({item: g, reason}) =>
-            [g.head, ...g.children].map((item) => (
+          <Box padding={1}>
+            <TextInput
+              aria-label="Find"
+              data-testid={`${props.testId}-search`}
+              fontSize={1}
+              // The menu would take typing for its own keys; only the arrows are its.
+              onKeyDown={(event) => {
+                if (!['ArrowDown', 'ArrowUp', 'Escape'].includes(event.key)) event.stopPropagation()
+              }}
+              onChange={(event) => setQuery(event.currentTarget.value)}
+              placeholder="Find"
+              value={query}
+            />
+          </Box>
+          <div
+            data-testid={`${props.testId}-list`}
+            style={{maxHeight: LIST_MAX, overflowY: 'auto'}}
+          >
+            {found.map(({item, reason}) => (
               <MenuItem
-                __unstable_subtitle={item === g.head ? reason : undefined}
+                __unstable_subtitle={reason}
                 disabled={!item.onClick}
                 icon={item.icon}
                 iconRight={item.trailing}
@@ -201,15 +206,12 @@ function DropdownPill(props: {
                 selected={item.selected}
                 key={item.key}
                 onClick={item.onClick}
-                style={{
-                  ...(item.indent ? {marginLeft: 24} : {}),
-                  ...(item.muted ? {opacity: 0.55} : {}),
-                }}
+                style={item.muted ? {opacity: 0.55} : undefined}
                 text={item.text}
               />
-            )),
-          )}
-          {searchable && !found.length ? (
+            ))}
+          </div>
+          {!found.length ? (
             <Box padding={3}>
               <Text muted size={1}>{`Nothing matches “${query}”.`}</Text>
             </Box>
@@ -236,6 +238,7 @@ export function DocumentPillsV1({
   const definitions = useVariantDefinitions()
   const schemaType = useSchema().get(documentType)
   const draftsEnabled = useWorkspace().document.drafts.enabled
+  const {data: activeReleases} = useActiveReleases()
   // Never render nothing: the pane header's chip scroller observes this row's element.
   if (!versions) return <Flex data-testid="doc-pills-a" gap={1} />
 
@@ -258,12 +261,6 @@ export function DocumentPillsV1({
   }
   const definitionOf = (v: AudienceVersion) =>
     definitions.find((d) => d._id.replace(/^_\.variants\./, '') === v.variantId)
-  // A variant whose definition is gone is listed but cannot be opened (it would land on the base document).
-  const selectVariant = (v: AudienceVersion) => {
-    const definition = definitionOf(v)
-    if (v.variantId && !definition) return undefined
-    return () => goTo(versionOf(v), definition)
-  }
   // One selected pill: Variants while a variant is chosen, else the base pill whose version is in view.
   const baseInView = !currentVariant
   // One row per VARIANT this document has (not per version): picking it sets only the variant and keeps the Published, Draft or release in
@@ -290,6 +287,7 @@ export function DocumentPillsV1({
       icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
       onClick: v.variantId && !definition ? undefined : () => goTo(current, definition),
       trailing: SHOW_VERSION_COUNT ? <VersionCount versions={group} /> : undefined,
+      selected: Boolean(v.variantId) && v.variantId === currentVariant,
       search: {
         condition: name
           ? {dimension: name, value: spec ? valueTitle(spec, String(value)) : String(value)}
@@ -326,27 +324,43 @@ export function DocumentPillsV1({
         search: {id},
       }
     })
-  // One entry per RELEASE (the pill counts releases, not versions); the versions it holds are listed under it: the document, then its variants.
-  const releaseGroups = [...new Set(releases.map((v) => v.bundleId))].flatMap((bundleId) => {
-    const inRelease = releases.filter((v) => v.bundleId === bundleId)
-    const head = inRelease[0]
-    return [
-      {
-        key: `release-${bundleId}`,
-        text: stateWord({...head, audience: null}),
-        icon: glyph(head),
-        onClick: bundleId ? () => goTo(bundleId) : undefined,
-        search: {id: bundleId ?? undefined},
-      },
-      ...inRelease.map((v) => ({
-        key: `release-${bundleId}-${v.audience ?? 'base'}`,
-        text: v.audience ?? 'Base document',
-        icon: <RhombusIcon />,
-        indent: true,
-        onClick: selectVariant(v),
-      })),
-    ]
+  // One flat row per RELEASE this document is in (the pill counts releases, not versions); no variants nested under them (22 Oct call).
+  const releaseIds = [...new Set(releases.flatMap((v) => (v.bundleId ? [v.bundleId] : [])))]
+  const releaseItems = releaseIds.map((bundleId) => {
+    const head = releases.find((v) => v.bundleId === bundleId) as AudienceVersion
+    return {
+      key: `release-${bundleId}`,
+      text: stateWord({...head, audience: null}),
+      icon: glyph(head),
+      onClick: () => goTo(bundleId),
+      selected: baseInView && current === bundleId,
+      search: {id: bundleId},
+    }
   })
+  // Then every other active release, greyed but clickable, as the Variants menu lists the variants this document has none of: picking one
+  // moves to that release and KEEPS the variant in view, where the T6 banner offers Create version (or, for a locked or scheduled release, says
+  // so with no button, as it already does).
+  const viewedDefinition = definitions.find(
+    (d) => d._id.replace(/^_\.variants\./, '') === currentVariant,
+  )
+  const missingReleaseItems = activeReleases
+    .filter((release) => !isCardinalityOneRelease(release))
+    .map((release) => ({release, id: getReleaseIdFromReleaseDocumentId(release._id)}))
+    .filter(({id}) => !releaseIds.includes(id))
+    .map(({release, id}) => ({
+      key: `release-missing-${id}`,
+      // A scheduled release carries its date, as the rows above do ("Black Friday · 20 Nov"): two releases may share a title.
+      text: `${release.metadata.title || 'Untitled release'}${
+        release.metadata.releaseType === 'scheduled' && release.metadata.intendedPublishAt
+          ? ` · ${dateLabel(release.metadata.intendedPublishAt, undefined)}`
+          : ''
+      }`,
+      icon: <ReleaseAvatarIcon releaseType={release.metadata.releaseType} />,
+      onClick: () => goTo(id, viewedDefinition),
+      muted: true,
+      selected: current === id,
+      search: {id},
+    }))
   const releaseCount = new Set(releases.map((v) => v.bundleId)).size
   const hasEarlierGroup = variants.length > 0
 
@@ -407,7 +421,7 @@ export function DocumentPillsV1({
         <DropdownPill
           // The release in view, else the first one, as a dot (its menu rows keep the type icon).
           icon={releaseDot(releases.find((v) => v.bundleId === current) ?? releases[0])}
-          items={releaseGroups}
+          items={[...releaseItems, ...missingReleaseItems]}
           selected={baseInView && releases.some((v) => v.bundleId === current)}
           testId="pills-releases"
           text={`Releases · ${releaseCount}`}
