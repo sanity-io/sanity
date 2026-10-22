@@ -131,6 +131,8 @@ function DropdownPill(props: {
   icon: ReactElement
   /** The perspective in view is one of its entries (a release): marked like the stock chips mark theirs. */
   selected?: boolean
+  /** The pill's tone when selected: the Variants pill is purple (suggest), the variant colour, with a variant in view. */
+  tone?: 'suggest'
 }) {
   const [query, setQuery] = useState('')
   // An option is a top-level item with the indented items under it.
@@ -158,6 +160,7 @@ function DropdownPill(props: {
           // stock chips' text does.
           paddingRight={0}
           selected={props.selected}
+          tone={props.selected ? props.tone : undefined}
           style={{paddingRight: 11.3}}
           text={props.text}
         />
@@ -255,6 +258,7 @@ export function DocumentPillsV1({
   const baseInView = !currentVariant
   // One row per VARIANT this document has (not per version): picking it sets only the variant and keeps the Published, Draft or release in
   // view, which the other pills change. A variant with no version there still opens; the T6 banner says so.
+  const viewedVariant = variants.find((v) => v.variantId === currentVariant)
   const variantGroups = [...new Set(variants.map((v) => v.variantId ?? v.audience))].map((key) =>
     variants.filter((v) => (v.variantId ?? v.audience) === key),
   )
@@ -315,9 +319,11 @@ export function DocumentPillsV1({
           icon={<RhombusIcon />}
           items={variantItems}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
-          selected={variants.some((v) => v.variantId === currentVariant)}
+          selected={Boolean(viewedVariant)}
           testId="pills-variants"
-          text={`Variants · ${variantGroups.length}`}
+          // With a variant of this document in view the pill names it, in purple (Faheem, 22 Oct); otherwise it counts the variants.
+          text={viewedVariant?.audience ?? `Variants · ${variantGroups.length}`}
+          tone="suggest"
         />
       ) : null}
       {hasEarlierGroup ? (
