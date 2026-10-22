@@ -6,7 +6,7 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
-import {LATEST, PUBLISHED} from '../../releases/util/const'
+import {LATEST, PUBLISHED, RELEASE_TYPES_TONES} from '../../releases/util/const'
 import {useWorkspace} from '../../studio/workspace'
 import {readVersionType} from '../../util/versionsUtils'
 import {useAllVariants} from '../../variants/store/useAllVariants'
@@ -30,7 +30,7 @@ type VersionState = 'published' | 'draft' | 'scheduled' | 'asap' | 'undecided'
 const STATE_TONE: Record<VersionState, BadgeTone> = {
   published: 'positive',
   draft: 'caution',
-  scheduled: 'suggest',
+  scheduled: RELEASE_TYPES_TONES.scheduled.tone,
   asap: 'caution',
   undecided: 'default',
 }

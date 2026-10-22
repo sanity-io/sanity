@@ -81,6 +81,6 @@ describe('VersionContextMenuItem', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenuItem release={mockRelease} />, {wrapper})
-    expect(screen.getByTestId('release-avatar-suggest')).toBeInTheDocument()
+    expect(screen.getByTestId('release-avatar-neutral')).toBeInTheDocument()
   })
 })

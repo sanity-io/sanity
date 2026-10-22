@@ -28,8 +28,9 @@ export const RELEASE_TYPES_TONES: Record<ReleaseType, {tone: BadgeTone}> = {
   asap: {
     tone: 'caution',
   },
+  // PROPOSED: neutral, as releases take the neutral tone; purple (suggest) is the variants' colour, and the two clashed side by side.
   scheduled: {
-    tone: 'suggest',
+    tone: 'neutral',
   },
   undecided: {
     tone: 'neutral',

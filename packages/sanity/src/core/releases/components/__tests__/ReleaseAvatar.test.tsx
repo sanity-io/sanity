@@ -30,7 +30,7 @@ describe('ReleaseAvatarIcon', () => {
   it('renders ClockIcon for scheduled releases', () => {
     render(<ReleaseAvatarIcon release={scheduledRelease} />)
 
-    expect(screen.getByTestId('release-avatar-suggest')).toHaveAttribute(
+    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
       'data-sanity-icon',
       'clock',
     )
@@ -87,7 +87,7 @@ describe('ReleaseAvatarIcon', () => {
   it('renders the clock-small icon for scheduled releases when size is small', () => {
     render(<ReleaseAvatarIcon release={scheduledRelease} size="small" />)
 
-    expect(screen.getByTestId('release-avatar-suggest')).toHaveAttribute(
+    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
       'data-sanity-icon',
       'clock-small',
     )
