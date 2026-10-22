@@ -57,7 +57,31 @@ export interface VariantChoice {
   valueTitle?: string
 }
 
-type Dest = {kind: 'drafts'} | {kind: 'release'; name: string; title: string; type: string}
+type Dest =
+  | {kind: 'drafts'}
+  | {kind: 'release'; name: string; title: string; type: string; when: string}
+
+/** A release choice's quiet second line: when it publishes ("Nov 28, 10:00"), "ASAP", or "No date" for an undecided release. */
+const DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+})
+const publishWhen = (type: string, at: string | undefined) =>
+  type === 'asap' ? 'ASAP' : at ? DATE_FORMAT.format(new Date(at)) : 'No date'
+
+const releaseDest = (r: InventoryWorld['releases'][number]): Dest => {
+  const type = r.metadata?.releaseType ?? 'undecided'
+  return {
+    kind: 'release',
+    name: r.name,
+    title: r.metadata?.title || r.name,
+    type,
+    when: publishWhen(type, r.metadata?.intendedPublishAt),
+  }
+}
 
 const destGroup = (d: Dest) => (d.kind === 'drafts' ? 'drafts' : d.name)
 const destTitle = (d: Dest) => (d.kind === 'drafts' ? 'Drafts' : d.title)
@@ -420,14 +444,7 @@ export function CreateVersion(props: {
     const preset = requests.get(props.documentId)
     if (!preset) return null
     const release = world.releases.find((r) => r.name === preset.bundle)
-    const dest: Dest = release
-      ? {
-          kind: 'release',
-          name: release.name,
-          title: release.metadata?.title || release.name,
-          type: release.metadata?.releaseType ?? 'undecided',
-        }
-      : DRAFTS
+    const dest: Dest = release ? releaseDest(release) : DRAFTS
     return {fixed: {}, draft: {variantId: preset.variantId, dest, source: 'nearest', picked: false}}
   })
   // The groups collapse once they are on screen (the block opened before the list did).
@@ -447,12 +464,7 @@ export function CreateVersion(props: {
 
   // Bundles a new version can go in: open releases. Archived and published releases are left out, and so are scheduled drafts (single-document
   // bundles). A scheduled release is locked, as the Studio locks it: listed in the menu, not a target.
-  const toDest = (r: (typeof world.releases)[number]): Dest => ({
-    kind: 'release',
-    name: r.name,
-    title: r.metadata?.title || r.name,
-    type: r.metadata?.releaseType ?? 'undecided',
-  })
+  const toDest = releaseDest
   const listed = world.releases.filter(
     (r) =>
       !['archived', 'archiving', 'published', 'publishing'].includes(r.state ?? '') &&
@@ -716,8 +728,8 @@ export function CreateVersion(props: {
       <PillMenu
         boundary={frame}
         icon={destIcon(draft.dest)}
-        searchable={destinations.length + lockedReleases.length + 1 >= SEARCH_FROM}
-        searchLabel="Find a bundle"
+        searchable={destinations.length + lockedReleases.length >= SEARCH_FROM}
+        searchLabel="Find where to add it"
         testId="add-pill-bundle"
         text={destTitle(draft.dest)}
       >
@@ -737,20 +749,14 @@ export function CreateVersion(props: {
                   key={destGroup(d)}
                   onClick={locked ? undefined : () => patch({dest: d})}
                   selected={destGroup(d) === destGroup(draft.dest)}
-                  sub={reason ?? (locked ? 'Scheduled · locked' : undefined)}
+                  sub={
+                    reason ??
+                    (d.kind === 'release' ? (locked ? `${d.when} · Locked` : d.when) : undefined)
+                  }
                   text={destTitle(d)}
                 />
               )
             })}
-            {matches(q, 'Published') ? (
-              <Item
-                disabled
-                icon={<ReleaseAvatarIcon release="published" />}
-                id="add-bundle-published"
-                sub="Takes no new version"
-                text="Published"
-              />
-            ) : null}
           </>
         )}
       </PillMenu>
@@ -829,7 +835,7 @@ export function CreateVersion(props: {
             icon={<PackageIcon />}
             meaning="Where it lives"
             testId="add-step-bundle"
-            title="Bundle"
+            title="Add to"
           >
             <Flex align="center" gap={2}>
               {bundleControl}
