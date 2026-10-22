@@ -26,7 +26,7 @@ catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
   '@playwright/test': 1.64.0
-  '@sanity/client': ^8.9.0
+  '@sanity/client': ^8.10.1
   '@sanity/migrate': ^8.0.5
   '@sanity/schema-descriptor-utils': 1.3.3
   '@sanity/telemetry': ^1.1.0
