@@ -13,13 +13,15 @@ import {LiveInventory} from './inventory/LiveInventory'
 function Inventory({documentId}: DocumentInspectorProps) {
   const corpus = useCorpus()
   const {closeInspector, value} = useDocumentPane()
-  // The corpus lists only the seeded documents; any other document is named by its own title field.
-  const own = typeof value.title === 'string' && value.title ? value.title : undefined
+  // The corpus lists only the seeded documents; any other document is named by its own title (or name) field.
+  const named = [value.title, value.name].find((t) => typeof t === 'string' && t)
+  const own = typeof named === 'string' ? named : undefined
   return (
     <Flex direction="column" height="fill">
       <DocumentInspectorHeader
         closeButtonLabel="Close versions"
-        onClose={closeInspector}
+        // The click event must not reach closeInspector: it takes an inspector name, and an event names none, so nothing closed.
+        onClose={() => closeInspector()}
         title="Versions"
       />
       <div style={{flex: 1, minHeight: 0}}>
