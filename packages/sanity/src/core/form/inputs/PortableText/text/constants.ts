@@ -3,10 +3,6 @@ import {type PaddingProps} from 'ui5'
 
 export const TEXT_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-export const TEXT_BULLET_MARKERS = ['●', '○', '■']
-
-export const TEXT_NUMBER_FORMATS = ['number', 'lower-alpha', 'lower-roman']
-
 export const TEXT_DECORATOR_TAGS: Record<string, ElementType> = {
   'em': 'em',
   'strike-through': 's',
