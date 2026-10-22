@@ -1,15 +1,21 @@
+import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Card} from '@sanity/ui'
-import {useState} from 'react'
+import {type MouseEvent, useState} from 'react'
 import {useSetVariant} from 'sanity'
+import {useStateLink} from 'sanity/router'
 
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
+import {CreateVariantDialog} from '../../../packages/sanity/src/core/variants/components/dialog/CreateVariantDialog'
+import {type SystemVariant} from '../../../packages/sanity/src/core/variants/types'
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
+import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {AddressChip} from './AddressRow'
 import {DimensionIcon} from './dimensionIcons'
 import {valueTitle} from './model'
-import {Picker} from './Picker'
+import {DEFAULT_TITLE, Picker} from './Picker'
 import {usePerspectiveState} from './state'
-import {useVariantDefinitions} from './world'
+import {reloadVariantDefinitions, useVariantDefinitions} from './world'
 
 /** The stock state pill's height (33px with its border): the two controls are the same size. */
 const NAVBAR_HEIGHT = 33
@@ -20,8 +26,8 @@ const PADDING_X = 14
 const CHEVRON_INSET = 4
 /** The icon's own margin is -6px each side; a little less on the right gives the label more room. */
 const ICON_STYLE = {marginRight: -2} as const
-/** What the control says when no variant is picked: the same word as the first row of its list. */
-const RESTING_LABEL = 'Default'
+
+const isVariantId = (id: string): id is SystemVariant['_id'] => id.startsWith('_.variants.')
 
 /**
  * The open beta navbar's second control (C1 option B, Figma 192:3139): the Variants control, next to the stock state control. Nothing else.
@@ -36,6 +42,9 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
   const setVariant = useSetVariant()
   const [open, setOpen] = useState(false)
   const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+  const [creating, setCreating] = useState(false)
+  // The Releases menu's two footer rows, for variants: the tool, and the tool's own create dialog.
+  const viewAll = useStateLink({state: {tool: 'variants'}})
   const dimension = dimensions[0]
   if (!dimension) return null
 
@@ -49,7 +58,7 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
             const entries = Object.entries(d.conditions)
             return entries.length === 1 && d.conditions[dimension.name] === key
           })
-    setVariant({variantId: definition?._id as never})
+    setVariant({variantId: definition && isVariantId(definition._id) ? definition._id : undefined})
     setOpen(false)
   }
 
@@ -68,11 +77,13 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
           removeTestId="variants-chip-remove"
           testId="variants-chip"
           text={valueTitle(dimension, value)}
+          tooltip={`${dimension.title}: ${valueTitle(dimension, value)}`}
         />
       ) : (
         // Resting: the same outlined capsule as the applied control and the stock state pill, with nothing in it but the label.
         <Card border={!inSection} radius="full" style={{height, overflow: 'hidden'}}>
           <Button
+            aria-label={`${dimension.title}: ${DEFAULT_TITLE}`}
             data-testid="variants-button"
             icon={<DimensionIcon name={dimension.name} style={ICON_STYLE} />}
             iconRight={ChevronDownIcon}
@@ -85,8 +96,9 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
               paddingLeft: PADDING_X,
               paddingRight: CHEVRON_INSET,
             }}
-            text={RESTING_LABEL}
-            tooltipProps={null}
+            // The value, as the state control says "Drafts" and not "Perspective"; the dimension titles the menu and the tooltip.
+            text={DEFAULT_TITLE}
+            tooltipProps={{content: `${dimension.title}: ${DEFAULT_TITLE}`}}
           />
         </Card>
       )}
@@ -94,11 +106,52 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
         anchor={anchor}
         chosen={chosen}
         dimensions={dimensions}
+        idOf={(name, key) =>
+          definitions
+            .find((d) => Object.keys(d.conditions).length === 1 && d.conditions[name] === key)
+            ?._id.replace(/^_\.variants\./, '')
+        }
         onClear={() => choose(null)}
+        footer={
+          <>
+            <MenuItem
+              as="a"
+              data-testid="variants-view-all"
+              href={viewAll.href}
+              icon={RhombusIcon}
+              onClick={(event: MouseEvent<HTMLElement>) => {
+                setOpen(false)
+                viewAll.onClick(event)
+              }}
+              text="View all"
+            />
+            <MenuItem
+              data-testid="variants-create-new"
+              icon={AddIcon}
+              onClick={() => {
+                setOpen(false)
+                setCreating(true)
+              }}
+              text={`New ${dimension.title.toLowerCase()}`}
+            />
+          </>
+        }
         onClose={() => setOpen(false)}
         onPick={(_dimension, key) => choose(key)}
         open={open}
       />
+      {creating ? (
+        // As New release selects the release it made, New audience selects the variant it made.
+        <CreateVariantDialog
+          onCancel={() => setCreating(false)}
+          onSubmit={(id) => {
+            setCreating(false)
+            // The new definition is not in the loaded list yet: reload it, so the navbar names the new variant at once (no page reload).
+            reloadVariantDefinitions()
+            if (isVariantId(id)) setVariant({variantId: id})
+          }}
+        />
+      ) : null}
     </div>
   )
 }

@@ -1,7 +1,14 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type FocusEvent, type KeyboardEvent, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type FocusEvent,
+  type KeyboardEvent,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit 6acf5bfa24, lib/explorations/variants-2-0/perspective/Picker.tsx).
@@ -11,6 +18,7 @@ import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/Menu
 import {DimensionIcon} from './dimensionIcons'
 import {type DimensionSpec, matches, type Chosen, valueTitle} from './model'
 import {MenuPopover} from './primitives'
+import {rankSearch} from './search'
 
 /** How many dimensions pick the form: one is a list, two to four are columns, five or more a rail. */
 export type PanelForm = 'list' | 'columns' | 'rail'
@@ -37,6 +45,11 @@ export const SAVE_AS_COMPOSITE_REASON =
   'Needs storage: a saved combination has nowhere to live yet.'
 
 const ITEM = '[data-ui="MenuItem"]'
+
+/** The value with no variant: what the navbar button says when it is chosen (Faheem, 22 Oct: the button names the value, not the dimension). */
+export const DEFAULT_TITLE = 'All users'
+/** The row with no variant: the base document, worded as the T3 versions popover words it. Only the menu row says "(Default)". */
+export const DEFAULT_LABEL = `${DEFAULT_TITLE} (Default)`
 
 /**
  * The panel's keyboard model. The rows are `tabindex=-1` items of real Menus, so Tab would leave
@@ -67,9 +80,12 @@ function Definition(props: {
   selected: boolean
   onClick: () => void
   trailing?: string
+  /** Why a search found it, when not by its title ("Matches audience: students", "Matches ID"). */
+  reason?: string
 }) {
   return (
     <MenuItem
+      __unstable_subtitle={props.reason}
       data-testid={props.testId}
       icon={<DimensionIcon name={props.dimension} selected={props.selected} />}
       iconRight={props.trailing ? <span>{props.trailing}</span> : undefined}
@@ -98,8 +114,12 @@ export function PickerContent(props: {
   /** `null` is the Default row: the dimension is cleared. */
   onPick: (dimension: string, key: string | null) => void
   onClear: () => void
+  /** The ID of the definition behind a value, so search can match it (whole or from its start). */
+  idOf?: (dimension: string, key: string) => string | undefined
+  /** Rows under the list form, like the Releases menu's View all and New release: menu items, hidden while searching. */
+  footer?: ReactNode
 }) {
-  const {dimensions, chosen, onPick} = props
+  const {dimensions, chosen, onPick, idOf} = props
   const form = panelForm(dimensions.length)
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(
@@ -187,19 +207,19 @@ export function PickerContent(props: {
   }
   const searching = !!query.trim()
   const any = Object.keys(chosen).length > 0
-  const hits = useMemo(
-    () =>
-      searching
-        ? dimensions.flatMap((d) =>
-            d.values
-              .filter(([, title]) => matches(title, query) || matches(d.title, query))
-              .map(([key, title]) => ({d, key, title})),
-          )
-        : [],
-    [dimensions, query, searching],
-  )
-  const values = (d: DimensionSpec) =>
-    d.values.filter(([, title]) => !searching || matches(title, query))
+  // The open beta search rule (./search): titles, then conditions (shown with the value's title), then IDs, with the reason under the rest.
+  const ranked = (d: DimensionSpec) =>
+    rankSearch(d.values, query, ([key, title]) => ({
+      title,
+      condition: {dimension: d.name, value: title},
+      id: idOf?.(d.name, key),
+    })).map(({item: [key, title], reason}, rank) => ({key, title, reason, score: rank}))
+  const hits = searching
+    ? dimensions
+        .flatMap((d) => ranked(d).map((hit) => ({d, ...hit})))
+        .sort((x, y) => x.score - y.score)
+    : []
+  const values = ranked
   const list = (d: DimensionSpec, withDefault?: boolean) => (
     <Menu
       shouldFocus={null}
@@ -207,20 +227,21 @@ export function PickerContent(props: {
       padding={0}
       style={{maxHeight: LIST_MAX, overflowY: 'auto'}}
     >
-      {withDefault && !searching ? (
+      {withDefault && matches(DEFAULT_LABEL, query) ? (
         <MenuItem
           data-testid={`picker-default-${d.name}`}
           onClick={() => onPick(d.name, null)}
           pressed={!chosen[d.name]}
           selected={!chosen[d.name]}
-          text="Default"
+          text={DEFAULT_LABEL}
         />
       ) : null}
-      {values(d).map(([key, title]) => (
+      {values(d).map(({key, title, reason}) => (
         <Definition
           dimension={d.name}
           key={key}
           onClick={() => onPick(d.name, key)}
+          reason={reason}
           selected={chosen[d.name] === key}
           testId={`picker-value-${d.name}-${key}`}
           title={title}
@@ -266,7 +287,17 @@ export function PickerContent(props: {
             value={query}
           />
           {form === 'list' && spec ? (
-            list(spec, true)
+            <>
+              {list(spec, true)}
+              {/* While searching, only the entries show: the footer rows are not results (as in the Releases menu). */}
+              {props.footer && !searching ? (
+                <Card borderTop data-testid="picker-footer-rows" paddingTop={2}>
+                  <Menu shouldFocus={null} padding={0}>
+                    <Stack gap={1}>{props.footer}</Stack>
+                  </Menu>
+                </Card>
+              ) : null}
+            </>
           ) : form === 'columns' ? (
             <Flex gap={4}>
               {dimensions.map((d) => (
@@ -291,11 +322,12 @@ export function PickerContent(props: {
             </Flex>
           ) : searching ? (
             <Menu shouldFocus={null} padding={0} style={{maxHeight: LIST_MAX, overflowY: 'auto'}}>
-              {hits.map(({d, key, title}) => (
+              {hits.map(({d, key, title, reason}) => (
                 <Definition
                   dimension={d.name}
                   key={`${d.name}-${key}`}
                   onClick={() => onPick(d.name, key)}
+                  reason={reason}
                   selected={chosen[d.name] === key}
                   testId={`picker-value-${d.name}-${key}`}
                   title={title}
@@ -379,6 +411,8 @@ export function Picker(props: {
   onClear: () => void
   placement?: 'bottom-start' | 'bottom-end'
   testId?: string
+  idOf?: (dimension: string, key: string) => string | undefined
+  footer?: ReactNode
 }) {
   return (
     <MenuPopover
@@ -393,6 +427,8 @@ export function Picker(props: {
       <PickerContent
         chosen={props.chosen}
         dimensions={props.dimensions}
+        footer={props.footer}
+        idOf={props.idOf}
         onClear={props.onClear}
         onPick={props.onPick}
         start={props.start}
