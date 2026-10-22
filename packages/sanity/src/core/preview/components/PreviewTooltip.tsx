@@ -1,9 +1,18 @@
-import {type MouseEvent, type ReactNode, useCallback, useEffect, useState} from 'react'
+import {
+  type FocusEvent,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
-import {Tooltip, type TooltipProps} from '../../../ui-components/tooltip/Tooltip'
+import {Popover, type PopoverProps} from '../../../ui-components/popover/Popover'
+import {TOOLTIP_DELAY_PROPS} from '../../../ui-components/tooltip/constants'
 
 // PROPOSED (the v1 versions popover): it opens to the right of the status icons, top aligned, and falls back to the left, below or above.
-const TOOLTIP_FALLBACK_PLACEMENTS: TooltipProps['fallbackPlacements'] = [
+const TOOLTIP_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = [
   'left-start',
   'bottom-start',
   'top-start',
@@ -26,23 +35,45 @@ export function PreviewTooltip(props: {children: ReactNode; content: ReactNode})
   const {children, content} = props
   const [hovered, setHovered] = useState(false)
   const [suspended, setSuspended] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+  const rowRef = useRef<HTMLDivElement | null>(null)
 
   // The `mouseover`/`mouseout` pair is used (rather than mouseenter/mouseleave)
-  // because the Tooltip clones its child and replaces any mouseenter/mouseleave
-  // handlers on it with its own.
+  // because mouseover bubbles from the row's descendants, so entering any part of the row counts.
   const handleMouseOver = useCallback(() => {
+    // PROPOSED: the whole row opens it, as shipped, but it is placed beside the part of the row marked as its anchor (the status icons), so it
+    // does not cover the row's text. Without a mark, it is placed beside the row.
+    const row = rowRef.current
+    setAnchor(row?.querySelector<HTMLElement>('[data-preview-tooltip-anchor]') ?? row)
     setHovered(true)
   }, [])
 
-  const handleMouseOut = useCallback((event: MouseEvent<HTMLDivElement>) => {
-    // Moving between descendants of the row also fires mouseout; only reset
-    // when the pointer actually leaves the row.
-    if (event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget)) {
-      return
+  const handleMouseOut = useCallback(
+    (event: MouseEvent<HTMLDivElement> | FocusEvent<HTMLDivElement>) => {
+      // Moving between descendants of the row also fires mouseout; only reset
+      // when the pointer actually leaves the row.
+      if (
+        event.relatedTarget instanceof Node &&
+        event.currentTarget.contains(event.relatedTarget)
+      ) {
+        return
+      }
+      setHovered(false)
+      setOpen(false)
+      setSuspended(false)
+    },
+    [],
+  )
+
+  // Opens after the tooltip delay (it closes at once when the pointer leaves the row).
+  useEffect(() => {
+    if (!hovered) {
+      return undefined
     }
-    setHovered(false)
-    setSuspended(false)
-  }, [])
+    const timeout = setTimeout(() => setOpen(true), TOOLTIP_DELAY_PROPS.open)
+    return () => clearTimeout(timeout)
+  }, [hovered])
 
   useEffect(() => {
     if (!hovered) {
@@ -54,20 +85,38 @@ export function PreviewTooltip(props: {children: ReactNode; content: ReactNode})
     return () => window.removeEventListener('scroll', handleScroll, {capture: true})
   }, [hovered])
 
+  const shown = open && !suspended && Boolean(anchor)
+
   return (
-    <Tooltip
-      content={content}
-      disabled={suspended}
-      // The page, not the pane, is its boundary: a list pane is narrower than the popover, which would otherwise flip over the list.
-      boundaryElement={typeof document === 'undefined' ? null : document.body}
-      fallbackPlacements={TOOLTIP_FALLBACK_PLACEMENTS}
-      placement="right-start"
-    >
-      {/* Currently tooltips won't trigger without a wrapping element */}
-      {/* oxlint-disable-next-line jsx-a11y/mouse-events-have-key-events -- focus/blur handlers here would be dead code: the Tooltip clones this element and installs its own onFocus/onBlur (keyboard support), while the scroll suppression is inherently pointer-driven */}
-      <div onMouseOut={handleMouseOut} onMouseOver={handleMouseOver}>
+    <>
+      {/* Focus opens and closes it too, as the tooltip did. */}
+      <div
+        onBlur={handleMouseOut}
+        onFocus={handleMouseOver}
+        onMouseOut={handleMouseOut}
+        onMouseOver={handleMouseOver}
+        ref={rowRef}
+      >
         {children}
       </div>
-    </Tooltip>
+      {/* A popover rather than a tooltip, since a tooltip can only be placed beside the element that opens it. It keeps the tooltip's look.
+      It is mounted only while shown: a closed popover stays mounted (hidden), and its content would stay in the page for every row. */}
+      {shown ? (
+        <Popover
+          content={content}
+          fallbackPlacements={TOOLTIP_FALLBACK_PLACEMENTS}
+          // The page, not the pane, is its boundary: a list pane is narrower than the popover, which would otherwise flip over the list.
+          floatingBoundary={typeof document === 'undefined' ? null : document.body}
+          open
+          padding={2}
+          placement="right-start"
+          portal
+          radius={2}
+          referenceElement={anchor}
+          shadow={2}
+          style={{pointerEvents: 'none'}}
+        />
+      ) : null}
+    </>
   )
 }
