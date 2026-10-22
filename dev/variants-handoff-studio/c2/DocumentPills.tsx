@@ -3,18 +3,13 @@ import {DotIcon} from '@sanity/icons/Dot'
 import {Box, Flex, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type CSSProperties, type ReactElement, useState} from 'react'
-import {
-  ReleaseAvatarIcon,
-  usePerspective,
-  useSchema,
-  useSetPerspective,
-  useSetVariant,
-  useWorkspace,
-} from 'sanity'
+import {ReleaseAvatarIcon, usePerspective, useSchema, useSetVariant, useWorkspace} from 'sanity'
 
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
+import {type ReleaseId} from '../../../packages/sanity/src/core/perspective/types'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {RELEASE_TYPES_TONES} from '../../../packages/sanity/src/core/releases/util/const'
+import {type SystemVariant} from '../../../packages/sanity/src/core/variants/types'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {valueTitle} from '../c1/model'
@@ -59,16 +54,17 @@ function glyph(v: AudienceVersion) {
  */
 function releaseDot(v: AudienceVersion) {
   const type = v.state === 'scheduled' ? 'scheduled' : v.state === 'asap' ? 'asap' : 'undecided'
-  return (
-    <DotIcon
-      style={
-        {
-          '--card-icon-color': `var(--card-badge-${RELEASE_TYPES_TONES[type].tone}-icon-color)`,
-        } as CSSProperties
-      }
-    />
-  )
+  const style: CSSProperties & {'--card-icon-color': string} = {
+    '--card-icon-color': `var(--card-badge-${RELEASE_TYPES_TONES[type].tone}-icon-color)`,
+  }
+  return <DotIcon style={style} />
 }
+
+const isVariantId = (id: string): id is SystemVariant['_id'] => id.startsWith('_.variants.')
+
+/** The version a row of the list lives in: its release, else Published or Drafts. */
+const versionOf = (v: AudienceVersion): ReleaseId =>
+  v.bundleId ?? (v.state === 'published' ? 'published' : 'drafts')
 
 function DropdownPill(props: {
   text: string
@@ -173,7 +169,6 @@ export function DocumentPillsV1({
 }) {
   const versions = useVersionList(documentId)
   const {selectedPerspectiveName, selectedVariantName} = usePerspective()
-  const setPerspective = useSetPerspective()
   const setVariant = useSetVariant()
   const address = usePerspectiveState()
   const definitions = useVariantDefinitions()
@@ -192,19 +187,27 @@ export function DocumentPillsV1({
   const showPublished = Boolean(published) || (!showDrafts && !releases.length)
 
   const currentVariant = selectedVariantName?.replace(/^_\.variants\./, '')
-  const versionOf = (v: AudienceVersion) =>
-    v.bundleId ?? (v.state === 'published' ? 'published' : 'drafts')
-  // Choosing a variant sets the address like the inventory does: ONE navigation sets the version and the router's variant param (in the open
-  // beta that param is the only copy of the choice; `setChosen` alone changed the version and left the variant behind).
-  const selectVariant = (v: AudienceVersion) => () => {
-    const definition = definitions.find((d) => d._id.replace(/^_\.variants\./, '') === v.variantId)
-    setVariant({variantId: definition?._id as never, perspective: versionOf(v) as never})
+  // Every pill is a proxy for the navbar: ONE navigation sets the version and the router's variant param together, as the navbar toggle and the
+  // inventory do (in the open beta that param is the only copy of the choice). A base pill clears the variant, so it shows the base document.
+  const goTo = (perspective: ReleaseId, definition?: (typeof definitions)[number]) => {
+    const id = definition?._id
+    setVariant({variantId: id && isVariantId(id) ? id : undefined, perspective})
     address.setChosen(definition ? definition.conditions : {})
   }
+  const definitionOf = (v: AudienceVersion) =>
+    definitions.find((d) => d._id.replace(/^_\.variants\./, '') === v.variantId)
+  // A variant whose definition is gone is listed but cannot be opened (it would land on the base document).
+  const selectVariant = (v: AudienceVersion) => {
+    const definition = definitionOf(v)
+    if (v.variantId && !definition) return undefined
+    return () => goTo(versionOf(v), definition)
+  }
+  // One selected pill: the one whose document is in view. The base pills only while no variant is chosen.
   const isCurrent = (v: AudienceVersion) =>
     (v.variantId ?? undefined) === currentVariant && versionOf(v) === current
+  const baseInView = !currentVariant
   const variantItems = variants.map((v, i) => {
-    const definition = definitions.find((d) => d._id.replace(/^_\.variants\./, '') === v.variantId)
+    const definition = definitionOf(v)
     return {
       key: `${v.audience}-${i}`,
       text: `${v.audience} · ${stateWord(v)}`,
@@ -230,7 +233,7 @@ export function DocumentPillsV1({
         key: `release-${bundleId}`,
         text: stateWord({...head, audience: null}),
         icon: glyph(head),
-        onClick: () => bundleId && setPerspective(bundleId),
+        onClick: bundleId ? () => goTo(bundleId) : undefined,
         search: {id: bundleId ?? undefined},
       },
       ...inRelease.map((v) => ({
@@ -238,7 +241,7 @@ export function DocumentPillsV1({
         text: v.audience ?? 'Base document',
         icon: <RhombusIcon />,
         indent: true,
-        onClick: () => selectVariant(v)(),
+        onClick: selectVariant(v),
       })),
     ]
   })
@@ -281,8 +284,8 @@ export function DocumentPillsV1({
           data-testid="pills-published"
           icon={<ReleaseAvatarIcon release="published" />}
           mode="ghost"
-          onClick={() => setPerspective('published')}
-          selected={current === 'published'}
+          onClick={() => goTo('published')}
+          selected={baseInView && current === 'published'}
           text="Published"
         />
       ) : null}
@@ -291,8 +294,8 @@ export function DocumentPillsV1({
           data-testid="pills-drafts"
           icon={<ReleaseAvatarIcon release="drafts" />}
           mode="ghost"
-          onClick={() => setPerspective('drafts')}
-          selected={current === 'drafts'}
+          onClick={() => goTo('drafts')}
+          selected={baseInView && current === 'drafts'}
           text="Draft"
         />
       ) : null}
@@ -301,7 +304,7 @@ export function DocumentPillsV1({
           // The release in view, else the first one, as a dot (its menu rows keep the type icon).
           icon={releaseDot(releases.find((v) => v.bundleId === current) ?? releases[0])}
           items={releaseGroups}
-          selected={releases.some((v) => v.bundleId === current)}
+          selected={baseInView && releases.some((v) => v.bundleId === current)}
           testId="pills-releases"
           text={`Releases · ${releaseCount}`}
         />
