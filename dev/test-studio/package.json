@@ -63,6 +63,7 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
+    "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/lodash-es": "^4.17.12",

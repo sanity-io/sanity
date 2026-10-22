@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const numberWrapper = style({
+export const numberWrapper = css({
   wordBreak: 'break-all',
 })

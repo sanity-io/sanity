@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const centeredStroke = style({
+export const centeredStroke = css({
   position: 'absolute',
   top: '50%',
   left: '50%',

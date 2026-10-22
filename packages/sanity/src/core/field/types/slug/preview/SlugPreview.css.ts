@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const slugWrapper = style({
+export const slugWrapper = css({
   wordBreak: 'break-all',
   whiteSpace: 'pre-wrap',
 })

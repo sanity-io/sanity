@@ -248,6 +248,100 @@ The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with 
 
 The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
 
+### Panda CSS
+
+The static styles of the `sanity` package are [Panda CSS](https://panda-css.com) `css()` calls in
+`.css.ts` modules next to the components, imported from the generated `#styled-system/css`
+runtime (`panda codegen` writes it to the gitignored `packages/sanity/styled-system/` directory on
+`pnpm install`, through the package's `prepare` script). `packages/sanity/panda.config.ts` is the
+**only Panda project in the repository** — the `} satisfies Config)` pattern, no presets,
+content-hashed class names with the `sanity-` prefix (`sanity-HgOzd`) and `strictPropertyValues`
+— and `#styled-system` is mapped in that package's manifest alone; nothing outside `packages/sanity`
+writes Panda CSS. The `migrate-styled-components-to-panda-css` skill
+(`.agents/skills/migrate-styled-components-to-panda-css/SKILL.md`) is the authoring guide: the
+`&&` specificity trick, the cascade model, descendant selectors and dynamic values. Outside the
+package, vanilla-extract stays where it is for now — the `.css.ts` modules of `@sanity/vision`
+(with its `vanillaExtract` tsdown option) and the test studio's
+`plugins/style-outline/styleOutline.css.ts` — until
+[#15406](https://github.com/sanity-io/sanity/pull/15406) moves them to CSS modules; the apps
+that build those from source keep `@sanity/vanilla-extract-vite-plugin` (the test studio's
+`sanity.cli.ts`, vision's vitest suite), wrapped as described below. Shared tooling versions live
+in the pnpm catalog (`@pandacss/dev`, `@pandacss/vite`, `@sanity/pandacss-tsdown-plugin`); the
+Vite apps that build the package from source get their Panda wiring from `@repo/pandacss`
+(`packages/@repo/pandacss`, its README says when an app needs it) instead of declaring those
+themselves.
+
+How the CSS reaches a page:
+
+- **The published package:** `panda: {minify: false, cascadeLayers: false}` in `tsdown.config.ts`
+  (the `@sanity/pandacss-tsdown-plugin` options of `@sanity/tsdown-config`; unminified so the
+  diff between two published versions stays readable, see below for the layers) rewrites every
+  `css()` call into its class names at build time, extracts the CSS into `lib/bundle.css`,
+  injects `import 'sanity/bundle.css'` into the entry chunks and publishes the conditional
+  `./bundle.css` export (`browser`/`style` → the stylesheet, `node`/`default` → a no-op shim).
+  The published code carries no Panda runtime, which is why the manifest resets `imports`
+  under `publishConfig`. A `css()` call the build cannot resolve statically (computed values,
+  loops) makes it warn and bundle the runtime — keep the style objects literal.
+- **Vite apps that build the package from source** (the dev studios through `sanity.cli.ts`,
+  Storybook, the vitest browser suite, `dev/studio-diagnostics-viewer`) resolve the workspace
+  packages to their sources (the `monorepo` export condition), so they bundle the package's
+  `.css.ts` modules themselves and register `sanityPandaCss()` from `@repo/pandacss/vite`
+  (`packages/@repo/pandacss`): `pandacss({cwd: <packages/sanity>, transform: true})` from
+  `@pandacss/vite`, pointed at the package's Panda project (`cwd` resolves the config, its
+  `include` globs and the codegen `outdir` there), and
+  `removeCascadeLayers(['reset', 'base', 'tokens', 'recipes', 'utilities'])` from
+  `@sanity/pandacss-tsdown-plugin/vite`, which gives the generated CSS the shape of `bundle.css`
+  (below). `@pandacss/vite` appends the generated CSS to the CSS module of the build that declares
+  Panda's layers, which is the one-line `@repo/pandacss/panda.css` with the
+  `@layer reset, base, tokens, recipes, utilities;` statement — the dev counterpart of the
+  `sanity/bundle.css` import the built package carries. Storybook's `.storybook/preview.tsx` and
+  `packages/sanity/test/setup/browser.ts` import it directly; a studio's `sanity.cli.ts`
+  (`studioPandaCss()`) and the viewer's `vite.config.ts` (the `entry` option) have the import
+  injected into their entry (`.sanity/runtime/app.js`, `src/main.tsx`) by a tiny transform plugin,
+  registered for dev only. A `sanity build` (and the viewer's build) resolves the built package
+  and its `bundle.css`, so nothing Panda runs there — which is also why a studio that installs
+  `sanity` from npm needs none of this: `bundle.css` is a plain stylesheet that Vite's built-in CSS
+  support loads. The CDN bundle in `@repo/package.bundle` builds the package for publishing and
+  keeps its own `pandacss()` call, `panda.css` and import plugin (it imports the stylesheet from
+  every library entry). Where vanilla-extract `.css.ts` modules are built in the same graph (the
+  test studio's `sanity.cli.ts`: its own style-outline plugin under both commands and vision's
+  modules under `sanity dev`; vision's vitest suite), `@sanity/vanilla-extract-vite-plugin` is
+  wrapped so that its transform's hook filter excludes `packages/sanity/src/` — it would otherwise
+  compile the Panda modules as vanilla-extract and fail on the missing `@vanilla-extract/css`
+  import; the wrapper throws if the plugin's name or hook shape changes. The jsdom suites of `sanity` and `@sanity/vision` register `@pandacss/vite`
+  directly, with the same `cwd` and `transform: true`, but load no stylesheet: no jsdom test
+  asserts on styles.
+- **No cascade layers.** Panda writes its rules into `@layer` blocks (`reset`, `base`, `tokens`,
+  `recipes`, `utilities`), and the studio's CSS ships without them: CSS outside any layer beats
+  every layered rule regardless of specificity, so a layered stylesheet loses its hover, focus and
+  selected states to any unlayered rule that also matches — styled-components output, a reset
+  like Tailwind's preflight, the studio's own `GlobalStyle` (the splash tests and the ui5 team's
+  write-up confirmed it). `cascadeLayers: false` removes the blocks and statements after
+  Lightning CSS has run and orders the rules the way the layers did (a layer's sublayers before
+  its own rules, unlayered rules last), so every selector stays as specific as Panda wrote it and
+  the studio's rules cascade like the vanilla-extract output did: by specificity, then source
+  order. The same pass runs on the dev stylesheets and the CDN bundle through
+  `removeCascadeLayers()`, which removes the named layers (and their sublayers) from every CSS
+  module after `@pandacss/vite` has filled `@repo/pandacss/panda.css` (the CDN bundle's own
+  `panda.css`), and leaves other layers alone — which is why that file declares Panda's default
+  layer names (how `@pandacss/vite` recognizes its root stylesheet) and still ends up without a
+  single `@layer`. Panda's `polyfill` option is
+  not an alternative: it emulates the layer order with `:not(#\#…)` selector chains that inflate
+  every rule's specificity. The studio declares no `@layer` statement of its own either: with
+  `bundle.css` unlayered and `@sanity/ui` ≥ 4.4.8 (the catalog version) shipping its static styles
+  unlayered too ([ui#3235](https://github.com/sanity-io/ui/pull/3235)), the only layer left on a
+  studio page is `ui5`'s `sui`, which unlayered rules beat whatever the order, so there is nothing
+  to order it against — the same situation as before the migration. What this means when
+  authoring: the studio's rules beat `@sanity/ui`'s on the same element by specificity and order
+  alone — a plain class beats a styled-components base rule that loads later only when it is more
+  specific, which is what the `&&` doubling is for.
+- **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
+  `property: value` pair once, grouped by property with the values sorted; a modifier class that
+  must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)
+  instead of relying on being declared later, and parent-state selectors key on data attributes
+  the parent renders (`'[data-change-bar-wrapper][data-focused] &'` in
+  `ElementWithChangeBar.css.ts`), never on a class that exists only to be targeted.
+
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
 The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
@@ -925,24 +1019,33 @@ TypeScript 6 applies the augmentation in both cases. Workaround: put the side-ef
 a vitest setup file (registered via `test.setupFiles`) instead of the test file that uses the
 matchers — see `packages/@sanity/schema/test/setup.ts` and its `vitest.config.mts`.
 
-#### Vanilla-extract in jsdom tests
+#### Panda CSS and vanilla-extract in jsdom tests
 
-The `sanity` and `@sanity/vision` jsdom suites import
+The static styles of `sanity` are [Panda CSS](https://panda-css.com) `css()` calls in `.css.ts`
+modules (see [Panda CSS](#panda-css) below). The `sanity` jsdom suite registers `@pandacss/vite`
+with `transform: true` (`packages/sanity/vitest.config.mts`), which rewrites those calls to the
+class names the package build ships; no stylesheet is loaded in jsdom, so class name identifiers
+resolve but computed styles are not available. `@sanity/vision` is still on vanilla-extract: its
+suite keeps the vanilla-extract transform for its own `.css.ts` modules (they need it to resolve)
+and imports
 [`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
-(`packages/sanity/test/setup/environment.ts`, and as a direct vitest `setupFiles` entry in
-`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips injecting real stylesheets
-into jsdom. Class name identifiers still resolve, but computed styles are not available.
+as a `setupFiles` entry (`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips
+injecting real stylesheets into jsdom — the same end state. Its tests also resolve `sanity` to
+source, whose `.css.ts` modules are Panda, so the config registers both compilers the way the
+test studio's `sanity.cli.ts` does (there through `@repo/pandacss`): `@pandacss/vite` pointed at
+`packages/sanity` for those, and the vanilla-extract plugin wrapped so its transform skips
+`packages/sanity/src/` (unscoped, it compiles `sanity`'s Panda modules as vanilla-extract and
+fails).
 
 Conventions that follow from this:
 
-- **Do not assert on vanilla-extract class names or computed styles in jsdom tests.** Assert on
+- **Do not assert on generated class names or computed styles in jsdom tests.** Assert on
   `data-testid` attributes instead. Visual/style behavior belongs in the vitest browser mode
-  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit) or the Playwright e2e tests, where
-  runtime styles stay enabled.
-- **Keep `vanillaExtractPlugin()` in the vitest configs.** The plugin's transform assigns file
-  scopes to `.css.ts` modules; without it any test that (transitively) imports a `.css.ts` file
-  throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
-  injection, not the transform.
+  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit, where `test/setup/browser.ts` loads
+  the generated stylesheet) or the Playwright e2e tests.
+- **A `.css.ts` module exports class name strings, nothing else renders.** A `css()` call outside
+  a `.css.ts` file is neither extracted nor rewritten (the Panda config only `include`s those
+  files), so it evaluates to the right class names at runtime but has no CSS behind them.
 
 #### @sanity/ui overlays stay mounted when closed
 
@@ -983,7 +1086,7 @@ Visual regression runs on Chromatic via `.github/workflows/chromatic.yml` from t
 Storybook stories, and the vitest browser-mode suite captured in place by `@chromatic-com/vitest`
 (every `*.browser.test.tsx` end state becomes a snapshot, no test changes). Stories are co-located
 with their source under `packages/**/src/**/__tests__` and cover states no browser test renders:
-authored migration sentinels for `ui-components` and vanilla-extract-migrated components, plus
+authored migration sentinels for `ui-components` and Panda-migrated components, plus
 harness stories built on the same `TestWrapper` mock studio. Browser tests keep their harness
 component inline (`function FooHarness()` in the test file); every `*Story.tsx` is a Storybook
 harness owned by a `*.stories.tsx`. Do not extract a browser test's harness into a `*Story.tsx`
@@ -1392,7 +1495,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
   pnpm dlx skills list
   ```
 
-- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
+- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"` (the installed version differs between VM images — check `ls ~/.nvm/versions/node/`, e.g. `v22.23.3`).
 - **`pnpm build` can fail in the VM with `unable to spawn child process: Exec format error (os error 8)`.** Turbo itself starts (it prints its version and the task graph) but cannot spawn the per-package build, so every task fails within milliseconds. Reproducible on a clean `main` and independent of the Node version, so it is an environment artifact, not your change. Build through pnpm instead — `-r run` executes in topological order, same as turbo: `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`.
 - **Every `turbo run` (`pnpm build`, `pnpm test:exports`) appends a `turborepo-agent-rules` block to `AGENTS.md` when it detects an AI agent**, even when its tasks then fail with the spawn error above. The block is not part of your change: revert it with `git checkout -- AGENTS.md`. `pnpm test:exports` fails the same way, so after building through pnpm run its two packages directly: in `packages/@repo/test-dts-exports`, `node generate.mjs && pnpm exec oxfmt "test/fixtures/**"` regenerates the d.ts fixtures (no diff means the export surface is unchanged) and `pnpm exec vitest run` checks them; in `packages/@repo/test-exports`, `pnpm test` runs the ESM/CJS checks.
 - **Edits to vanilla-extract `.css.ts` files may not reach the browser in `sanity dev` bundledDev mode.** The JS module reloads with new class hashes while the injected stylesheet keeps the old rules, so styles silently stop applying (elements carry a class no rule matches). Restart `sanity dev` after changing `.css.ts` files rather than debugging the styles.
