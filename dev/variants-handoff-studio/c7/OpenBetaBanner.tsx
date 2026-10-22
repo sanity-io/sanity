@@ -1,7 +1,16 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Text} from '@sanity/ui'
-import {useSetVariant} from 'sanity'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  getReleaseTone,
+  isReleaseDocument,
+  RELEASES_INTENT,
+  usePerspective,
+  useSetVariant,
+  VersionInlineBadge,
+} from 'sanity'
+import {useRouter} from 'sanity/router'
 import {useDocumentPane} from 'sanity/structure'
 
 import {Banner} from '../../../packages/sanity/src/structure/panes/document/documentPanel/banners/Banner'
@@ -18,7 +27,9 @@ import {useBannerCase} from './useBannerCase'
  *   22 Oct: "Create version should actually just create a version, keeping the current perspective"). It is core's create, as core's own
  *   banner sends it (data/useCreateVariantVersion). Drafts is caution, as the Design Studio's C7 option A: the document cannot be edited in
  *   place without the version.
- * - A scheduled release, Published: the text says why there is no action.
+ * - Published: the text says why there is no action.
+ * - A scheduled release: the text says its contents are locked and how to add the version (unschedule it), with "Open release", which opens it
+ *   in the Releases tool where Unschedule is; as core's own banner says for the base document. Nothing can be added from here.
  * - The chosen variant no longer exists: caution with the warning icon, as core's not-found banner, and "Back to All users".
  * - Create version shows with the inventory open too (it is one click), and the inventory's toolbar Create version then steps aside (22 Oct
  *   call: one on screen). Back to All users is left out while the inventory is open. The decision is c7/useBannerCase.ts.
@@ -34,6 +45,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const {create, status} = useCreateVariantVersion(documentId)
   const banner = useBannerCase(documentId)
   const inventoryOpen = pane.inspector?.name === INVENTORY
+  const {selectedPerspective} = usePerspective()
+  const {navigateIntent} = useRouter()
   // A document's own name: its title, or its name (an author has no title field).
   const own = [pane.value?.title, pane.value?.name].find((t) => typeof t === 'string' && t)
   const documentTitle = typeof own === 'string' ? own : 'This document'
@@ -124,12 +137,28 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   }
 
   if (banner.kind === 'scheduled') {
+    const release = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
     return (
       <Banner
+        action={
+          release
+            ? {
+                mode: 'ghost',
+                onClick: () =>
+                  navigateIntent(RELEASES_INTENT, {
+                    id: getReleaseIdFromReleaseDocumentId(release._id),
+                  }),
+                text: 'Open release',
+              }
+            : undefined
+        }
         content={say(
           <>
-            {documentTitle} has no {audience} version in {releaseTitle}. Scheduled releases are
-            locked.
+            {/* The release named in the same chip core's banner uses. */}
+            <VersionInlineBadge $tone={getReleaseTone(release ?? 'drafts')}>
+              {releaseTitle}
+            </VersionInlineBadge>{' '}
+            is scheduled, so its contents are locked. Unschedule it to add this version.
           </>,
           'scheduled',
         )}
