@@ -17,7 +17,7 @@
   "devDependencies": {
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "oxlint": "^1.88.0",
+    "oxlint": "^1.89.0",
     "vitest": "catalog:"
   }
 }
