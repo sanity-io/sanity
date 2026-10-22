@@ -1,6 +1,6 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Button, Card, Stack, Text} from '@sanity/ui'
-import {useMemo} from 'react'
+import {Suspense, use, useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useNumberFormat, useProjectStore, useTranslation} from 'sanity'
 import {Flex} from 'ui5'
@@ -11,7 +11,9 @@ import {
   type AiCredits,
   aiSpendingLimitUrl,
   aiUsageUrl,
+  canUpsellAiCredits,
 } from '../util/aiCredits'
+import {type AiCreditsUpsellContextValue, useAiCreditsUpsell} from './AiCreditsUpsellContext'
 
 export interface AiCreditsStatusProps {
   /** The credits as last read, or as the response that turned a request down reported them */
@@ -72,14 +74,69 @@ interface AiCreditsLimitCardProps {
 }
 
 /**
- * The organization is out of AI credits: what that means, and where the limit is raised. Agent
- * Actions turn every request down until then, so this stands where their result would.
+ * The organization is out of AI credits: what that means, and the way to more of them. Agent
+ * Actions turn every request down until then, so this stands where their result would. Where a
+ * bigger plan comes with more credits and the upsell content has arrived, the way is the upsell
+ * dialog; otherwise, and while the content is on its way, it is the spending limit in Manage.
  */
 function AiCreditsLimitCard({credits, apiHost}: AiCreditsLimitCardProps) {
+  const upsell = useAiCreditsUpsell()
+  const manageCard = <AiCreditsLimitCardContent apiHost={apiHost} credits={credits} />
+  if (!upsell || !canUpsellAiCredits(credits)) return manageCard
+  return (
+    <Suspense fallback={manageCard}>
+      <UpsellableAiCreditsLimitCard apiHost={apiHost} credits={credits} upsell={upsell} />
+    </Suspense>
+  )
+}
+
+interface UpsellableAiCreditsLimitCardProps extends AiCreditsLimitCardProps {
+  upsell: AiCreditsUpsellContextValue
+}
+
+/** The card once the upsell content is settled: with the Upgrade button when the content came */
+function UpsellableAiCreditsLimitCard({
+  credits,
+  apiHost,
+  upsell,
+}: UpsellableAiCreditsLimitCardProps) {
+  const {upsellData} = use(upsell.upsellDataPromise)
+  const handleUpgrade = useCallback(() => upsell.openDialog('ai_credits_card'), [upsell])
+  return (
+    <AiCreditsLimitCardContent
+      apiHost={apiHost}
+      credits={credits}
+      onUpgrade={upsellData ? handleUpgrade : undefined}
+    />
+  )
+}
+
+interface AiCreditsLimitCardContentProps extends AiCreditsLimitCardProps {
+  /** Opens the upsell dialog; without it, the primary action leads to the spending limit in Manage */
+  onUpgrade?: () => void
+}
+
+function AiCreditsLimitCardContent({credits, apiHost, onUpgrade}: AiCreditsLimitCardContentProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const numberFormat = useNumberFormat()
   const organizationId = useOrganizationId()
   const {used, quota} = credits
+
+  let description: string
+  if (used === undefined || quota === undefined) {
+    description = t(
+      onUpgrade
+        ? 'vista.ai-credits.limit.description-upgrade-unknown'
+        : 'vista.ai-credits.limit.description-unknown',
+    )
+  } else {
+    description = t(
+      onUpgrade
+        ? 'vista.ai-credits.limit.description-upgrade'
+        : 'vista.ai-credits.limit.description',
+      {used: numberFormat.format(used), quota: numberFormat.format(quota)},
+    )
+  }
 
   return (
     <Card border data-testid="vista-ai-credits-limit" padding={3} radius={2}>
@@ -88,12 +145,7 @@ function AiCreditsLimitCard({credits, apiHost}: AiCreditsLimitCardProps) {
           {t('vista.ai-credits.limit.title')}
         </Text>
         <Text muted size={1}>
-          {used === undefined || quota === undefined
-            ? t('vista.ai-credits.limit.description-unknown')
-            : t('vista.ai-credits.limit.description', {
-                used: numberFormat.format(used),
-                quota: numberFormat.format(quota),
-              })}
+          {description}
         </Text>
         <Flex gap={2} justifyContent="flex-end">
           <Button
@@ -107,17 +159,28 @@ function AiCreditsLimitCard({credits, apiHost}: AiCreditsLimitCardProps) {
             target="_blank"
             text={t('vista.ai-credits.limit.learn-more')}
           />
-          <Button
-            as="a"
-            data-testid="vista-ai-credits-manage"
-            fontSize={1}
-            href={aiSpendingLimitUrl(apiHost, organizationId)}
-            padding={2}
-            rel="noreferrer"
-            target="_blank"
-            text={t('vista.ai-credits.limit.manage')}
-            tone="primary"
-          />
+          {onUpgrade ? (
+            <Button
+              data-testid="vista-ai-credits-upgrade"
+              fontSize={1}
+              onClick={onUpgrade}
+              padding={2}
+              text={t('vista.ai-credits.limit.upgrade')}
+              tone="primary"
+            />
+          ) : (
+            <Button
+              as="a"
+              data-testid="vista-ai-credits-manage"
+              fontSize={1}
+              href={aiSpendingLimitUrl(apiHost, organizationId)}
+              padding={2}
+              rel="noreferrer"
+              target="_blank"
+              text={t('vista.ai-credits.limit.manage')}
+              tone="primary"
+            />
+          )}
         </Flex>
       </Stack>
     </Card>

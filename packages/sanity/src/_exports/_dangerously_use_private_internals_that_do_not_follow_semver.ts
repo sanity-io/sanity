@@ -505,6 +505,7 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimeAgo,
 } from '../core/hooks/useTimeAgo'
+export {NO_UPSELL_DATA, type UpsellTelemetryLogs, useUpsellData} from '../core/hooks/useUpsellData'
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
@@ -922,6 +923,8 @@ export {
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
 } from '../core/studio/upsell/__telemetry__/upsell.telemetry'
+export {type UpsellDataResult} from '../core/studio/upsell/types'
+export {UpsellDialog, type UpsellDialogProps} from '../core/studio/upsell/UpsellDialog'
 export {
   type InterpolationProp,
   UpsellDescriptionSerializer,

@@ -21,6 +21,7 @@ import {
 } from '../../util/mutations'
 import {summarizeSchema} from '../../util/schemaSummary'
 import {AiCreditsStatus} from '../AiCreditsStatus'
+import {useAiCreditsUpsell} from '../AiCreditsUpsellContext'
 import {PromptRow} from '../PromptRow'
 
 type GenerateStatus =
@@ -66,6 +67,7 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
   const [status, setStatus] = useState<GenerateStatus>({type: 'idle'})
   const controllerRef = useRef<AbortController | null>(null)
   const credits = useAiCredits(client)
+  const upsell = useAiCreditsUpsell()
 
   useEffect(() => () => controllerRef.current?.abort(), [])
 
@@ -97,7 +99,10 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
     } catch (error) {
       if (controller.signal.aborted) return
       const limit = readAiCreditsLimit(error)
-      if (limit) reportAiCreditsLimit(client, limit)
+      if (limit) {
+        reportAiCreditsLimit(client, limit)
+        upsell?.requestTurnedDown(limit)
+      }
       setStatus({
         type: 'failed',
         message: error instanceof Error ? error.message : String(error),
@@ -105,7 +110,7 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
         limit,
       })
     }
-  }, [client, dataset, mutationOptions, onGenerated, request, result, schema])
+  }, [client, dataset, mutationOptions, onGenerated, request, result, schema, upsell])
 
   const generating = status.type === 'generating'
   const lastAttempt = status.type === 'failed' ? status.lastAttempt : undefined
