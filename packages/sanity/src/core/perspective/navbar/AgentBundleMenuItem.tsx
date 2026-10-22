@@ -1,9 +1,8 @@
 import {SparkleIcon} from '@sanity/icons/Sparkle'
-import {Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- MenuItem with custom children not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
 import {type CSSProperties, memo, useCallback} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type AgentBundle} from '../../store/agent/createAgentBundlesStore'
@@ -12,6 +11,7 @@ import {useSetPerspective} from '../useSetPerspective'
 
 const iconStyle: CSSProperties & {'--card-icon-color': string} = {
   '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
+  'margin': '-0.375rem',
 }
 
 /**
@@ -39,9 +39,7 @@ export const AgentBundleMenuItem = memo(function AgentBundleMenuItem({
     <MenuItem onClick={handleClick} padding={1} pressed={active} selected={active}>
       <Flex alignItems="flex-start" gap={1}>
         <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingX={3} paddingY={2}>
-          <Text size={1} style={iconStyle}>
-            <SparkleIcon />
-          </Text>
+          <Icon size={1} style={iconStyle} icon={SparkleIcon} />
         </Box>
         <Flex
           flexBasis="0%"
@@ -53,7 +51,7 @@ export const AgentBundleMenuItem = memo(function AgentBundleMenuItem({
           flexDirection="column"
         >
           <Flex gap={3} alignItems="center">
-            <Text size={1} weight="medium" style={{minWidth: 0}}>
+            <Text size={1} weight="medium" style={{minWidth: 0}} as="div" trim={true}>
               {label}
             </Text>
           </Flex>
