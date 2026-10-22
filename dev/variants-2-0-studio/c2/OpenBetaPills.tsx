@@ -4,7 +4,7 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {DotIcon} from '@sanity/icons/Dot'
 import {Box, Flex, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type CSSProperties, type ReactElement, useState} from 'react'
+import {type ComponentProps, type CSSProperties, type ReactElement, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
@@ -20,6 +20,7 @@ import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporar
 import {type ReleaseId} from '../../../packages/sanity/src/core/perspective/types'
 import {Chip} from '../../../packages/sanity/src/core/releases/components/Chip'
 import {RELEASE_TYPES_TONES} from '../../../packages/sanity/src/core/releases/util/const'
+import {getReleaseTone} from '../../../packages/sanity/src/core/releases/util/getReleaseTone'
 import {type SystemVariant} from '../../../packages/sanity/src/core/variants/types'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
@@ -157,8 +158,9 @@ function DropdownPill(props: {
   icon: ReactElement
   /** The perspective in view is one of its entries (a release): marked like the stock chips mark theirs. */
   selected?: boolean
-  /** The pill's tone when selected: the Variants pill is purple (suggest), the variant colour, with a variant in view. */
-  tone?: 'suggest'
+  /** The pill's tone when selected: it fills with its own tone (Faheem, 22 Oct), the Variants pill purple (suggest), the Releases pill the
+   * release in view's (grey for scheduled and undecided, yellow for ASAP). */
+  tone?: ComponentProps<typeof Chip>['tone']
   /** With a choice in view, a cross after the pill clears it (as the navbar chips' cross does), with this accessible name. */
   clear?: {label: string; onClick: () => void}
 }) {
@@ -464,16 +466,6 @@ export function OpenBetaPills({
   const inViewRelease = activeReleases.find(
     (release) => getReleaseIdFromReleaseDocumentId(release._id) === current,
   )
-  const inViewDot = inViewRelease
-    ? releaseDot({
-        state:
-          inViewRelease.metadata.releaseType === 'scheduled'
-            ? 'scheduled'
-            : inViewRelease.metadata.releaseType === 'asap'
-              ? 'asap'
-              : 'undecided',
-      } as AudienceVersion)
-    : undefined
   const hasEarlierGroup = variants.length > 0
 
   return (
@@ -517,22 +509,28 @@ export function OpenBetaPills({
       {showPublished ? (
         <Chip
           data-testid="pills-published"
-          icon={<ReleaseAvatarIcon release="published" />}
+          // Selected, the dot takes the filled pill's own icon colour (as the Variants pill's glyph does): the green dot on the green fill is
+          // under 3:1 in the light theme.
+          icon={current === 'published' ? <DotIcon /> : <ReleaseAvatarIcon release="published" />}
           mode="ghost"
           onClick={() => goTo('published', viewedDefinition)}
           // Both axes apply: the version in view is selected as well as the Variants pill naming the variant.
           selected={current === 'published'}
+          // Selected, it fills with its own tone, as the Variants pill does with purple (Faheem, 22 Oct): green.
           text="Published"
+          tone={current === 'published' ? 'positive' : undefined}
         />
       ) : null}
       {showDrafts ? (
         <Chip
           data-testid="pills-drafts"
-          icon={<ReleaseAvatarIcon release="drafts" />}
+          icon={current === 'drafts' ? <DotIcon /> : <ReleaseAvatarIcon release="drafts" />}
           mode="ghost"
           onClick={() => goTo('drafts', viewedDefinition)}
           selected={current === 'drafts'}
           text="Draft"
+          // Yellow, the draft's tone.
+          tone={current === 'drafts' ? 'caution' : undefined}
         />
       ) : null}
       {releases.length ? (
@@ -543,14 +541,21 @@ export function OpenBetaPills({
               : undefined
           }
           // The release in view, else the first one, as a dot (its menu rows keep the type icon).
+          // With a release in view the pill is filled in its tone, and the dot takes the fill's own icon colour, as the other pills' do.
           icon={
-            inViewDot ?? releaseDot(releases.find((v) => v.bundleId === current) ?? releases[0])
+            inViewRelease ? (
+              <DotIcon />
+            ) : (
+              releaseDot(releases.find((v) => v.bundleId === current) ?? releases[0])
+            )
           }
           items={[...releaseItems, ...missingReleaseItems]}
           // Any release in view, this document's or another (picked from the greyed rows).
           selected={current !== 'published' && current !== 'drafts'}
           testId="pills-releases"
           text={inView?.text ?? `Releases · ${releaseCount}`}
+          // The release in view's tone, as core gives it.
+          tone={inViewRelease ? getReleaseTone(inViewRelease) : undefined}
         />
       ) : null}
       {manage}
