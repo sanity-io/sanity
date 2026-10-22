@@ -54,13 +54,10 @@ describe('ReleaseAvatarIcon', () => {
     )
   })
 
-  it('renders the dashed clock for undecided releases', () => {
+  it('renders DotIcon for undecided releases', () => {
     render(<ReleaseAvatarIcon release={activeUndecidedRelease} />)
 
-    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
-      'data-sanity-icon',
-      'clock-dashed',
-    )
+    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute('data-sanity-icon', 'dot')
   })
 
   it('renders DotIcon with caution tone for drafts perspective', () => {
@@ -111,12 +108,12 @@ describe('ReleaseAvatarIcon', () => {
     )
   })
 
-  it('renders the small dashed clock for undecided releases when size is small', () => {
+  it('renders the small dot for undecided releases when size is small', () => {
     render(<ReleaseAvatarIcon release={activeUndecidedRelease} size="small" />)
 
     expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
       'data-sanity-icon',
-      'clock-dashed-small',
+      'circle-small',
     )
   })
 
