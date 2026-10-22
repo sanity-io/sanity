@@ -2,7 +2,12 @@ import {type MouseEvent, type ReactNode, useCallback, useEffect, useState} from 
 
 import {Tooltip, type TooltipProps} from '../../../ui-components/tooltip/Tooltip'
 
-const TOOLTIP_FALLBACK_PLACEMENTS: TooltipProps['fallbackPlacements'] = ['top-end', 'bottom-end']
+// PROPOSED (the v1 versions popover): it opens to the right of the status icons, top aligned, and falls back to the left, below or above.
+const TOOLTIP_FALLBACK_PLACEMENTS: TooltipProps['fallbackPlacements'] = [
+  'left-start',
+  'bottom-start',
+  'top-start',
+]
 
 /**
  * Hover tooltip for preview rows (e.g. the document status tooltip in
@@ -53,8 +58,10 @@ export function PreviewTooltip(props: {children: ReactNode; content: ReactNode})
     <Tooltip
       content={content}
       disabled={suspended}
+      // The page, not the pane, is its boundary: a list pane is narrower than the popover, which would otherwise flip over the list.
+      boundaryElement={typeof document === 'undefined' ? null : document.body}
       fallbackPlacements={TOOLTIP_FALLBACK_PLACEMENTS}
-      placement="right"
+      placement="right-start"
     >
       {/* Currently tooltips won't trigger without a wrapping element */}
       {/* oxlint-disable-next-line jsx-a11y/mouse-events-have-key-events -- focus/blur handlers here would be dead code: the Tooltip clones this element and installs its own onFocus/onBlur (keyboard support), while the scroll suppression is inherently pointer-driven */}

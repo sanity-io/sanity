@@ -619,6 +619,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
   /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
+  /** The versions popover on a document's status icons: the word for an ASAP release version */
+  'document-group.status.asap': 'ASAP',
+  /** The versions popover's last line, when not every audience fits */
+  'document-group.status.more_one': 'and {{count}} more version',
+  /** The versions popover's last line, when not every audience fits */
+  'document-group.status.more_other': 'and {{count}} more versions',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
   'document-group.subject.variant_one': 'variant',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
