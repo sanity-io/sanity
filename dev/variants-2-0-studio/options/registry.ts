@@ -2,6 +2,7 @@
 // Two options is the rule from the calls, but nothing here assumes it: add a third by adding an
 // entry to `options`. `final` marks the chosen option once the design is signed off.
 
+import {ADDRESS_PICKER} from '../c10/component'
 import {defineDesignOptions, getComponent} from '../design-options/config'
 import {
   type ComponentDef,
@@ -466,6 +467,7 @@ COMPONENTS.push(
   LOCALIZATION,
   MARK_SELECTED,
   INSPECTOR_SWITCHER,
+  ADDRESS_PICKER,
 )
 
 // Diagram data on the 200 x 100 grid: the part that changes.
@@ -631,7 +633,7 @@ defineDesignOptions({
       ids: ['c1', 'c2', 'c3', 'c4', 'c9', 'c7'],
       tags: {c1: 'T1', c2: 'T2', c3: 'T3', c4: 'T4', c9: 'T5', c7: 'T6'},
     },
-    {label: 'GA candidates', ids: ['c5', 'c6', 'c8'], collapsed: true},
+    {label: 'GA candidates', ids: ['c5', 'c6', 'c8', 'c10'], collapsed: true},
     {
       label: 'Compare and review (E9)',
       ids: [...E9_GROUP.ids, 'localMatch', 'reviewSet', 'navLayout', 'rowWidth'],

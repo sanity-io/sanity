@@ -412,4 +412,27 @@ export const DRAWINGS: Record<string, Record<string, DiagramSpec>> = {
       ],
     },
   },
+
+  // C10 Create pattern: the "+" type list under the navbar. A: picking a type opens a blank document. B: a small address form opens
+  // beside the list (Type, Variant, Add to, Start from) with Create document at its foot.
+  c10: {
+    a: {
+      shapes: [
+        box(4, 13, 40, 26),
+        ...[18, 25, 32].map((y) => box(8, y, 30, 4)),
+        box(56, 16, 138, 80),
+      ],
+    },
+    b: {
+      shapes: [
+        box(4, 13, 40, 26),
+        ...[18, 25, 32].map((y) => box(8, y, 30, 4)),
+        box(47, 13, 76, 50),
+        ...[19, 27, 35, 43].map((y) => pill(78, y, 32, 5)),
+        diamond(53, 29.5, 2.5),
+        dot(53, 37.5, 2),
+        box(98, 53, 20, 5, true),
+      ],
+    },
+  },
 }

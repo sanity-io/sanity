@@ -23,6 +23,7 @@ import {useNavbarSection} from '../c1/useNavbarSection'
 import {useRowOverride} from '../c3/RowOverride'
 import {EditNotice} from '../c6/EditNotice'
 import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
+import {AddressPickerHost} from '../c10/AddressPicker'
 import {DesignOptions} from '../design-options/DesignOptions'
 import {renderFieldSetRollup} from '../fieldmarks/E9Marks'
 import {ChromeStyles} from '../pane/ChromeStyles'
@@ -104,6 +105,8 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
                         </FieldSetRollupProvider>
                       </VariantFilterAddControlProvider>
                       <DesignOptions />
+                      {/* C10 B: the address picker beside the navbar and list pane "+" type lists (nothing on A). */}
+                      <AddressPickerHost />
                       <ShapeStyles />
                       <MarkStyles />
                       <ChromeStyles />
