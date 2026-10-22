@@ -1716,6 +1716,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
   'release.menu.view-releases': 'View Content Releases',
+  /** Accessible label of the cross on the navbar's perspective chip: it goes back to the default perspective (Drafts, or Published) */
+  'release.navbar.clear': 'Back to {{perspective}}',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Label for published releases in navbar */
