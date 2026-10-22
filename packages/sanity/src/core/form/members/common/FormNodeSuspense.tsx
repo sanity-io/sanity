@@ -99,7 +99,7 @@ export function warnFormNodeSuspended(options: {
     'an App SDK hook that reads the current document, skip that part until the document exists: ' +
     "on a new document the fallback would otherwise never go away. React DevTools' Suspense tab " +
     'shows which component suspended. An agent skill walks through the fix: npx skills add ' +
-    'sanity-io/sanity --skill sanity-form-component-suspense.'
+    'sanity-io/agent-toolkit --skill sanity-form-component-suspense.'
 
   if (warned.has(message)) return
   warned.add(message)
