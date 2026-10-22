@@ -2,7 +2,7 @@ import {type ReleaseType} from '@sanity/client'
 import {type BadgeTone, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {useRelativeTime} from '../../hooks/useRelativeTime'
+import {useCompactRelativeTime} from '../../hooks/useRelativeTime'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
@@ -168,11 +168,11 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
 }
 
 /**
- * PROPOSED (Faheem, 22 Oct, option B): the line's most recent edit, as core's minimal relative time ("5 min", "3 hr", "2 wk"; a date past
- * a month), muted, in a right column so the lines' times align. Stock Studio's status says "Edited 2 wk. ago" the same way.
+ * PROPOSED (Faheem, 22 Oct, option B): the line's most recent edit, as core's compact relative time ("now", "5 min", "3 days", "2 wk",
+ * "1 mo"; a few characters at most, never a date), muted, in a right column so the lines' times align. Stock Studio's status says "Edited 2 wk. ago" the same way.
  */
 function LineTime({time}: {time: number}) {
-  const label = useRelativeTime(new Date(time), {minimal: true})
+  const label = useCompactRelativeTime(new Date(time))
   if (!time) return null
   return (
     <Box data-testid="audience-line-time" flex="none" style={{minWidth: 48, textAlign: 'right'}}>

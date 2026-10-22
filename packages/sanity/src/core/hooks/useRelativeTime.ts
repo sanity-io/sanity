@@ -198,3 +198,69 @@ function useFormatRelativeTime(
 
   return {timestamp: t('relative-time.just-now'), refreshInterval: FIVE_SECONDS}
 }
+
+/**
+ * PROPOSED: a compact relative time for the past, a few characters at most, always a number and a short unit: "now", "5 min", "3 hr",
+ * "1 day", "3 days" (never "yesterday"), "2 wk", "1 mo", "1 yr", and no calendar dates. The words are i18n keys, so the units stay
+ * controllable and translatable. Refreshed as `useRelativeTime` is.
+ *
+ * @internal
+ */
+export function useCompactRelativeTime(time: Date | string): string {
+  const {t} = useTranslation()
+  const [now, updateNow] = useReducer(
+    () => Date.now(),
+    null,
+    () => Date.now(),
+  )
+  const date = time instanceof Date ? time : new Date(time)
+  const {label, refreshInterval} = compactRelativeTime(date, now, t)
+
+  useEffect(() => {
+    if (refreshInterval === null) return undefined
+    // A tick after each interval, as useRelativeTime does (no pile-up of timers).
+    let timerId: number | null = null
+    const tick = () => {
+      timerId = window.setTimeout(() => {
+        updateNow()
+        tick()
+      }, refreshInterval)
+    }
+    tick()
+    return () => {
+      if (timerId !== null) clearTimeout(timerId)
+    }
+  }, [refreshInterval])
+
+  return label
+}
+
+function compactRelativeTime(
+  date: Date,
+  now: number,
+  t: ReturnType<typeof useTranslation>['t'],
+): {label: string; refreshInterval: number | null} {
+  if (!date.getTime()) return {label: '', refreshInterval: null}
+  const minutes = differenceInMinutes(now, date)
+  if (minutes < 1) return {label: t('relative-time.compact.now'), refreshInterval: TWENTY_SECONDS}
+  if (minutes < 60)
+    return {label: t('relative-time.compact.minute', {count: minutes}), refreshInterval: ONE_MINUTE}
+  const hours = differenceInHours(now, date)
+  if (hours < 24)
+    return {label: t('relative-time.compact.hour', {count: hours}), refreshInterval: ONE_MINUTE}
+  const days = differenceInDays(now, date)
+  if (days < 7)
+    return {label: t('relative-time.compact.day', {count: days}), refreshInterval: ONE_HOUR}
+  if (days < 30)
+    return {
+      label: t('relative-time.compact.week', {count: Math.floor(days / 7)}),
+      refreshInterval: ONE_HOUR,
+    }
+  const years = differenceInYears(now, date)
+  if (years < 1)
+    return {
+      label: t('relative-time.compact.month', {count: Math.max(1, differenceInMonths(now, date))}),
+      refreshInterval: ONE_HOUR,
+    }
+  return {label: t('relative-time.compact.year', {count: years}), refreshInterval: ONE_HOUR}
+}
