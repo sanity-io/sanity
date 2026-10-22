@@ -1,8 +1,17 @@
 import {type ButtonMode, type ButtonTone, Card, type CardTone, Text} from '@sanity/ui'
 import {type ComponentType, type ElementType, type ReactNode} from 'react'
-import {Flex, Box} from 'ui5'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
+import {
+  action as actionSlot,
+  content as contentColumn,
+  icon as iconCell,
+  root,
+  row,
+  spacer,
+  text,
+} from './Banner.css'
 
 interface BannerProps {
   action?: {
@@ -26,21 +35,28 @@ export function Banner(props: BannerProps) {
   return (
     <Box padding={1}>
       <Card radius={3} paddingX={2} paddingY={paddingY} tone={tone} {...rest}>
-        <Flex alignItems="center" gap={3} paddingX={2}>
-          {Icon && (
-            <Text size={0}>
-              <Icon />
-            </Text>
-          )}
-
-          <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2}>
-            {content}
-          </Flex>
-
-          {action && (
-            <Button {...action} mode={action.mode || 'ghost'} tone={action.tone || 'default'} />
-          )}
-        </Flex>
+        {/* PROPOSED (Studio-wide): the text is at most 560px and wraps, and the action has a fixed column on the right, kept when there is
+            no action, so every banner's text and button line up. On a narrow banner the action goes under the text. */}
+        <div className={root}>
+          <div className={row}>
+            <div className={text}>
+              {Icon && (
+                <div className={iconCell}>
+                  <Text size={0}>
+                    <Icon />
+                  </Text>
+                </div>
+              )}
+              <div className={contentColumn}>{content}</div>
+            </div>
+            <div className={spacer} />
+            <div className={actionSlot}>
+              {action && (
+                <Button {...action} mode={action.mode || 'ghost'} tone={action.tone || 'default'} />
+              )}
+            </div>
+          </div>
+        </div>
       </Card>
     </Box>
   )
