@@ -1,4 +1,4 @@
-import {Card, Text, type BadgeTone} from '@sanity/ui'
+import {Card, type BadgeTone} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {memo, type RefAttributes, type SVGProps} from 'react'
 import {
@@ -17,7 +17,7 @@ import {
   type TargetPerspective,
 } from 'sanity'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex, Icon, type TextProps} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {isLiveEditEnabled} from '../../../../components/paneItem/helpers'
@@ -93,15 +93,17 @@ function getPerspectiveBadgeTone(selectedPerspective: TargetPerspective): BadgeT
 
 const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
   selectedPerspective,
+  tone,
 }: {
   selectedPerspective: TargetPerspective
+  tone?: TextProps['tone']
 }) {
   const {t} = useTranslation()
 
   if (isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective)) {
     return (
       <BadgeContainer padding={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true} tone={tone}>
           {isPublishedPerspective(selectedPerspective)
             ? t('release.chip.published')
             : t('release.chip.global.drafts')}
@@ -127,7 +129,7 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
 
   return (
     <BadgeContainer padding={2}>
-      <Text size={1} textOverflow="ellipsis" weight="medium">
+      <Text size={1} truncate={1} weight="medium" as="div" trim={true} tone={tone}>
         {t('version.agent-bundle.proposed-changes')}
       </Text>
     </BadgeContainer>
@@ -138,10 +140,8 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
   return (
     <BadgeContainer padding={2}>
       <Flex alignItems="center" gap={2}>
-        <Text size={0}>
-          <RhombusIcon />
-        </Text>
-        <Text size={1} weight="medium">
+        <Icon muted size={0} icon={RhombusIcon} tone="suggest" style={{margin: '-0.3125rem'}} />
+        <Text size={1} weight="medium" as="div" trim={true} tone="suggest">
           {getVariantTitle(variant)}
         </Text>
       </Flex>
@@ -164,6 +164,7 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
   const isTargetMissing = isTargetBadgeMissing({isLiveEdit, state: targetDocumentState, bundle})
   const badgeOpacity = isTargetMissing ? 0.5 : 1
   const selectedVariantBadge = getSelectedVariantFromState(targetDocumentState, selectedVariant)
+  const perspectiveBadgeTone = getPerspectiveBadgeTone(badgePerspective)
 
   return (
     <Tooltip
@@ -180,11 +181,14 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
       >
         <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
           <TargetBadge
-            tone={getPerspectiveBadgeTone(badgePerspective)}
+            tone={perspectiveBadgeTone}
             radius={4}
             data-ui="DocumentTargetPerspectiveBadge"
           >
-            <PerspectiveBadgeLabel selectedPerspective={badgePerspective} />
+            <PerspectiveBadgeLabel
+              selectedPerspective={badgePerspective}
+              tone={perspectiveBadgeTone as TextProps['tone']}
+            />
           </TargetBadge>
         </BadgeMotionWrapper>
         {selectedVariantBadge ? (

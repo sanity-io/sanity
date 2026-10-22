@@ -1,6 +1,7 @@
-import {Inline, Text} from '@sanity/ui'
+import {Inline} from '@sanity/ui'
 import {useState, type RefAttributes} from 'react'
 import {set, type StringInputProps} from 'sanity'
+import {Text} from 'ui5'
 
 export function HooksBasedStringInput(props: StringInputProps & RefAttributes<any>) {
   const {ref, value, schemaType, onChange} = props
@@ -18,7 +19,9 @@ export function HooksBasedStringInput(props: StringInputProps & RefAttributes<an
           value={value}
         />
       ) : (
-        <Text as="span">{value}</Text>
+        <Text as="span" trim={true}>
+          {value}
+        </Text>
       )}
       <button type="button" onClick={() => setIsEditing(!isEditing)}>
         {isEditing ? 'Stop editing' : 'Start editing'}

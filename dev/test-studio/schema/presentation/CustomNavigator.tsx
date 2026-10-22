@@ -1,9 +1,9 @@
 import {AddDocumentIcon} from '@sanity/icons/AddDocument'
-import {Button, Card, Text} from '@sanity/ui'
+import {Button, Card} from '@sanity/ui'
 import {useActiveWorkspace} from 'sanity'
 import {usePresentationNavigate, usePresentationParams} from 'sanity/presentation'
 import {useIntentLink} from 'sanity/router'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 export function CustomNavigator(): React.JSX.Element {
   const navigate = usePresentationNavigate()
@@ -34,10 +34,12 @@ export function CustomNavigator(): React.JSX.Element {
             radius={2}
           >
             <VStack gap={2}>
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 Next.js
               </Text>
-              <Text>App Router</Text>
+              <Text as="div" trim={true}>
+                App Router
+              </Text>
             </VStack>
           </Card>
           <Card
@@ -48,10 +50,12 @@ export function CustomNavigator(): React.JSX.Element {
             radius={2}
           >
             <VStack gap={2}>
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 Next.js
               </Text>
-              <Text>Pages Router</Text>
+              <Text as="div" trim={true}>
+                Pages Router
+              </Text>
             </VStack>
           </Card>
           <Card
@@ -61,7 +65,9 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith('https://preview-kit-remix')}
             radius={2}
           >
-            <Text>Remix</Text>
+            <Text as="div" trim={true}>
+              Remix
+            </Text>
           </Card>
           <Card
             as="button"
@@ -70,7 +76,9 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith('https://next.sanity.build')}
             radius={2}
           >
-            <Text>Blocked test</Text>
+            <Text as="div" trim={true}>
+              Blocked test
+            </Text>
           </Card>
           <Card
             as="button"
@@ -90,7 +98,9 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith(`${location.origin}${studioBasePath}`)}
             radius={2}
           >
-            <Text>Recursion test</Text>
+            <Text as="div" trim={true}>
+              Recursion test
+            </Text>
           </Card>
         </Flex>
         <Flex padding={2} gap={1} flexDirection="column">

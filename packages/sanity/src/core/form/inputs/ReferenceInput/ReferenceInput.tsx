@@ -1,4 +1,4 @@
-import {Text, useClickOutsideEvent} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
 import {
@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
@@ -395,7 +395,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
                   </Flex>
                 }
               >
-                <Text size={1}>
+                <Text size={1} as="div" trim={true} tone="caution">
                   <Translate
                     i18nKey="inputs.reference.error.nonexistent-document-description"
                     t={t}

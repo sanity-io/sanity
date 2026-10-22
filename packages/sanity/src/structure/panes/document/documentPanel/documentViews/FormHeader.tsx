@@ -1,10 +1,10 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Heading, Inline, Text} from '@sanity/ui'
+import {Heading, Inline} from '@sanity/ui'
 import {type MouseEvent} from 'react'
 import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
-import {Box, PressArea, VStack} from 'ui5'
+import {Text, Box, PressArea, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -86,7 +86,7 @@ export const FormHeader = ({documentId, schemaType, title, onTitleClick}: Docume
     <TitleContainer marginBottom={6} gap={4}>
       {!isSingleton && (
         <Inline gap={1}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {schemaType.title ?? schemaType.name}
           </Text>
           {description && (
