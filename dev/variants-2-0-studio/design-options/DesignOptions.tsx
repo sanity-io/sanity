@@ -466,53 +466,6 @@ function OptionCard(props: {
   )
 }
 
-const PILL: Record<string, string> = {
-  win: 'var(--card-badge-positive-dot-color)',
-  even: 'var(--card-badge-suggest-dot-color)',
-  open: 'var(--card-muted-fg-color)',
-}
-
-/** The spec keys that belong to a component: its own, then each option's card diagram and extra frames. */
-function frameKeys(component: ComponentDef): string[] {
-  const keys = component.options.flatMap((o) =>
-    o.diagramKey ? [o.diagramKey, ...(o.frames ?? [])] : [],
-  )
-  return [...new Set([...keys, ...(component.frames ?? [])])]
-}
-
-/** Every drawn frame of the component, with its status and caption (the same spec the tracker reads). */
-function FramesGallery({component}: {component: ComponentDef}) {
-  const file = getConfig().diagrams
-  const entries = frameKeys(component).flatMap((key) =>
-    file?.diagrams[key] ? [{key, entry: file.diagrams[key]}] : [],
-  )
-  if (!entries.length) return null
-  return (
-    <Stack data-testid="frames-gallery" gap={2}>
-      <Label>Frames</Label>
-      <div
-        style={{
-          display: 'grid',
-          gap: 12,
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        }}
-      >
-        {entries.map(({key, entry}) => (
-          <figure key={key} style={{margin: 0}}>
-            <SpecDiagram entry={entry} />
-            <figcaption style={{fontSize: 12, marginTop: 6}}>
-              <b>{entry.name}</b>{' '}
-              <span style={{color: PILL[entry.status.class]}}>● {entry.status.text}</span>
-              <br />
-              <span style={{color: 'var(--card-muted-fg-color)'}}>{entry.caption}</span>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-    </Stack>
-  )
-}
-
 function Label({children, accent}: {children: string; accent?: boolean}) {
   return (
     <Text
@@ -553,8 +506,10 @@ function RailRow(props: {
   state: State
   selected: boolean
   onSelect: () => void
+  /** The group's name for this component (T1 to T6 in the open beta group), instead of its own tag. */
+  tag?: string
 }) {
-  const {component, state, selected, onSelect} = props
+  const {component, state, selected, onSelect, tag} = props
   const stock = state.global === 'stock'
   const active = resolveOption(component, state)
   const changed =
@@ -577,7 +532,7 @@ function RailRow(props: {
     >
       <Flex align="center" gap={2}>
         <Text muted={!selected} size={0}>
-          {(component.tag ?? component.id).toUpperCase()}
+          {(tag ?? component.tag ?? component.id).toUpperCase()}
         </Text>
         <Box flex={1}>
           <Text size={1}>{name}</Text>
@@ -939,18 +894,16 @@ function SettingsGroups({
 function ConfigBody({
   state,
   onHide,
-  compact,
   iconOnly,
 }: {
   state: State
   onHide?: () => void
-  compact?: boolean
   iconOnly?: boolean
 }) {
   const [selectedId, setSelectedId] = useState('c1')
+  const [unfolded, setUnfolded] = useState<Record<string, boolean>>({})
   const [copied, setCopied] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const [framesOn, setFramesOn] = useState(false)
   const toastsSelected = selectedId === TOASTS_ID
   const stock = state.global === 'stock'
   const selected =
@@ -989,40 +942,36 @@ function ConfigBody({
       <Box padding={3}>
         <Stack gap={3}>
           <PresetBar state={state} />
-          {compact ? (
-            <div style={{position: 'relative'}}>
-              <Flex align="center" gap={3}>
-                <Text data-testid="settings-summary" muted size={1} style={{flex: 1}}>
-                  {settingsSummary(state)}
-                </Text>
-                <Button
-                  aria-expanded={settingsOpen}
-                  fontSize={1}
-                  icon={CogIcon}
-                  mode="ghost"
-                  onClick={() => setSettingsOpen((v) => !v)}
-                  padding={2}
-                  selected={settingsOpen}
-                  style={{height: 25}}
-                  text="Settings"
-                />
-              </Flex>
-              {settingsOpen ? (
-                <Card
-                  border
-                  data-testid="settings-popover"
-                  padding={3}
-                  radius={3}
-                  shadow={3}
-                  style={{left: 0, position: 'absolute', right: 0, top: 33, zIndex: 5}}
-                >
-                  <SettingsGroups showOptions={showOptions} state={state} />
-                </Card>
-              ) : null}
-            </div>
-          ) : (
-            <SettingsGroups showOptions={showOptions} state={state} />
-          )}
+          <div style={{position: 'relative'}}>
+            <Flex align="center" gap={3}>
+              <Text data-testid="settings-summary" muted size={1} style={{flex: 1}}>
+                {settingsSummary(state)}
+              </Text>
+              <Button
+                aria-expanded={settingsOpen}
+                fontSize={1}
+                icon={CogIcon}
+                mode="ghost"
+                onClick={() => setSettingsOpen((v) => !v)}
+                padding={2}
+                selected={settingsOpen}
+                style={{height: 25}}
+                text="Settings"
+              />
+            </Flex>
+            {settingsOpen ? (
+              <Card
+                border
+                data-testid="settings-popover"
+                padding={3}
+                radius={3}
+                shadow={3}
+                style={{left: 0, position: 'absolute', right: 0, top: 33, zIndex: 5}}
+              >
+                <SettingsGroups showOptions={showOptions} state={state} />
+              </Card>
+            ) : null}
+          </div>
         </Stack>
       </Box>
 
@@ -1038,25 +987,68 @@ function ConfigBody({
           }}
         >
           <Stack gap={3}>
-            {getConfig().groups.map((group) => (
-              <Stack gap={1} key={group.label}>
-                <Box paddingX={2}>
-                  <Label>{group.label}</Label>
-                </Box>
-                {group.ids.map((id) => {
-                  const component = getConfig().components.find((c) => c.id === id)
-                  return component ? (
-                    <RailRow
-                      component={component}
-                      key={id}
-                      onSelect={() => setSelectedId(id)}
-                      selected={id === selectedId}
-                      state={state}
-                    />
-                  ) : null
-                })}
-              </Stack>
-            ))}
+            {getConfig().groups.map((group) => {
+              const folded =
+                !!group.collapsed && !unfolded[group.label] && !group.ids.includes(selectedId)
+              const changedHere = group.ids.filter((id) => {
+                const c = getConfig().components.find((x) => x.id === id)
+                return (
+                  c &&
+                  state.overrides[c.id] !== undefined &&
+                  resolveOption(c, state) !== showOption(c, state)
+                )
+              }).length
+              return (
+                <Stack gap={1} key={group.label}>
+                  {group.collapsed ? (
+                    <Card
+                      aria-expanded={!folded}
+                      as="button"
+                      data-testid="rail-group-toggle"
+                      onClick={() => setUnfolded((u) => ({...u, [group.label]: folded}))}
+                      padding={2}
+                      radius={2}
+                      style={{cursor: 'pointer', textAlign: 'left', width: '100%'}}
+                      tone="default"
+                    >
+                      <Flex align="center" gap={2}>
+                        <ChevronDownIcon
+                          style={{fontSize: 15, transform: folded ? 'rotate(-90deg)' : undefined}}
+                        />
+                        <Box flex={1}>
+                          <Label>{group.label}</Label>
+                        </Box>
+                        {changedHere ? (
+                          <StatusDot color="caution" title="Differs from Show" />
+                        ) : null}
+                        <Text muted size={0}>
+                          {group.ids.length}
+                        </Text>
+                      </Flex>
+                    </Card>
+                  ) : (
+                    <Box paddingX={2}>
+                      <Label accent>{group.label}</Label>
+                    </Box>
+                  )}
+                  {folded
+                    ? null
+                    : group.ids.map((id) => {
+                        const component = getConfig().components.find((c) => c.id === id)
+                        return component ? (
+                          <RailRow
+                            component={component}
+                            key={id}
+                            onSelect={() => setSelectedId(id)}
+                            selected={id === selectedId}
+                            state={state}
+                            tag={group.tags?.[id]}
+                          />
+                        ) : null
+                      })}
+                </Stack>
+              )
+            })}
             <Stack gap={1}>
               <Box paddingX={2}>
                 <Label>Feedback</Label>
@@ -1118,32 +1110,17 @@ function ConfigBody({
                   gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 350px))',
                 }}
               >
-                {selected.options.map((option, index) => (
+                {selected.options.map((option) => (
                   <OptionCard
                     chosen={!stock && option.id === active}
                     component={selected}
                     key={option.id}
-                    letter={LETTERS[index]}
+                    letter={option.id.toUpperCase()}
                     option={option}
                     stock={stock}
                   />
                 ))}
               </div>
-              {frameKeys(selected).length ? (
-                <Flex>
-                  <Button
-                    aria-pressed={framesOn}
-                    data-testid="frames-toggle"
-                    fontSize={1}
-                    mode="bleed"
-                    onClick={() => setFramesOn((v) => !v)}
-                    padding={2}
-                    style={{height: 31}}
-                    text={framesOn ? 'Hide frame previews' : 'Show frame previews'}
-                  />
-                </Flex>
-              ) : null}
-              {framesOn ? <FramesGallery component={selected} /> : null}
             </Stack>
           </Box>
         )}
@@ -1523,12 +1500,7 @@ function ConfigWindow(props: {
 
         {/* The window floats at z-index 1000000; its menus open above it. */}
         <LayerProvider zOffset={1000001}>
-          <ConfigBody
-            compact={rect.w < 900}
-            iconOnly={rect.w < 1100}
-            onHide={onHide}
-            state={state}
-          />
+          <ConfigBody iconOnly={rect.w < 1100} onHide={onHide} state={state} />
         </LayerProvider>
       </Card>
     </div>
@@ -1539,6 +1511,29 @@ function ConfigWindow(props: {
 // closed is per page load, and "hide" is deliberately not remembered: a refresh brings it back.
 /** The collapsed control and the floating window. Mount once, anywhere in the app. */
 const LAUNCHER_KEY = () => `${getConfig().storageKey}:launcher`
+const MODE_KEY = () => `${getConfig().storageKey}:panel`
+type PanelMode = 'open' | 'popped' | 'closed'
+
+/** The panel's last mode, so a refresh brings it back as it was. A popped-out window cannot reopen without a click. */
+function loadMode(): PanelMode {
+  try {
+    const raw = window.localStorage.getItem(MODE_KEY())
+    return raw === 'open' || raw === 'popped' ? raw : 'closed'
+  } catch {
+    return 'closed'
+  }
+}
+// While this page unloads, the pop-out closes too and reports it; that close must not be remembered as a choice.
+let unloading = false
+if (typeof window !== 'undefined') window.addEventListener('pagehide', () => (unloading = true))
+function saveMode(mode: PanelMode) {
+  if (unloading) return
+  try {
+    window.localStorage.setItem(MODE_KEY(), mode)
+  } catch {
+    // Not remembered this time.
+  }
+}
 
 /**
  * The collapsed control. Drag the grip to move it anywhere in the window (the place is remembered); double-click the grip
@@ -1548,7 +1543,13 @@ function Launcher({children}: {children: ReactNode}) {
   const [pos, setPos] = useState<{x: number; y: number} | null>(() => {
     try {
       const raw = window.localStorage.getItem(LAUNCHER_KEY())
-      return raw ? JSON.parse(raw) : null
+      if (!raw) return null
+      // A place saved in a taller or wider window can sit off-screen: pull it back inside.
+      const saved = JSON.parse(raw) as {x: number; y: number}
+      return {
+        x: Math.min(Math.max(saved.x, 0), window.innerWidth - 240),
+        y: Math.min(Math.max(saved.y, 0), window.innerHeight - 41),
+      }
     } catch {
       return null
     }
@@ -1558,6 +1559,12 @@ function Launcher({children}: {children: ReactNode}) {
   const clamp = (x: number, y: number) => ({
     x: Math.min(Math.max(x, 0), window.innerWidth - (box.current?.offsetWidth ?? 120)),
     y: Math.min(Math.max(y, 0), window.innerHeight - (box.current?.offsetHeight ?? 33)),
+  })
+  // Keep it inside the viewport when the browser window gets smaller.
+  useEffect(() => {
+    const onResize = () => setPos((p) => (p ? clamp(p.x, p.y) : p))
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
   })
   const save = (next: {x: number; y: number} | null) => {
     setPos(next)
@@ -1633,7 +1640,16 @@ function Launcher({children}: {children: ReactNode}) {
 
 export function DesignOptions() {
   const state = useOptionState()
-  const [open, setOpen] = useState(false)
+  const [open, setOpenState] = useState(() => loadMode() === 'open')
+  // After a refresh that closed the pop-out: offer it again (browsers open a window only from a click).
+  const [offerPopOut, setOfferPopOut] = useState(() => loadMode() === 'popped')
+  const setOpen = (next: boolean | ((v: boolean) => boolean)) =>
+    setOpenState((v) => {
+      const value = typeof next === 'function' ? next(v) : next
+      saveMode(value ? 'open' : 'closed')
+      if (value) setOfferPopOut(false)
+      return value
+    })
   const [hidden, setHidden] = useState(false)
   // The global shape: one CSS variable that every Variants 2.0 pill and chip reads.
   useEffect(() => {
@@ -1654,9 +1670,11 @@ export function DesignOptions() {
 
   const popOut = async (size: {w: number; h: number}) => {
     const win = await openExternalWindow(size)
+    setOfferPopOut(false)
     if (win) {
       setExternal(win)
-      setOpen(false)
+      setOpenState(false)
+      saveMode('popped')
     }
   }
   const bringBack = () => {
@@ -1732,6 +1750,23 @@ export function DesignOptions() {
             title={summary(state)}
           />
         </Card>
+        {offerPopOut && !external ? (
+          <Card radius={2} shadow={2}>
+            <Button
+              data-testid="pop-out-again"
+              fontSize={1}
+              icon={LaunchIcon}
+              mode="bleed"
+              onClick={() => {
+                const {w, h} = loadRect()
+                void popOut({w, h})
+              }}
+              padding={2}
+              text="Pop out again"
+              title="The refresh closed the popped-out window; one click opens it again"
+            />
+          </Card>
+        ) : null}
       </Launcher>
     </>
   )

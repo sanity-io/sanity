@@ -25,7 +25,6 @@ import {EditNotice} from '../c6/EditNotice'
 import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
 import {DesignOptions} from '../design-options/DesignOptions'
 import {renderFieldSetRollup} from '../fieldmarks/E9Marks'
-import {RemoteListener} from '../journeys/RemoteListener'
 import {ChromeStyles} from '../pane/ChromeStyles'
 import {
   resolveDocumentPaneOverride,
@@ -105,7 +104,6 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
                         </FieldSetRollupProvider>
                       </VariantFilterAddControlProvider>
                       <DesignOptions />
-                      <RemoteListener />
                       <ShapeStyles />
                       <MarkStyles />
                       <ChromeStyles />

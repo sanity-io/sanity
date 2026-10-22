@@ -1,6 +1,6 @@
-import type {CSSProperties} from 'react'
+import {type CSSProperties} from 'react'
 
-import type {DiagramEntry, DiagramPrim, DiagramSpec} from './types'
+import {type DiagramEntry, type DiagramPrim, type DiagramSpec} from './types'
 
 // Option diagrams. Two forms:
 //  - `OptionDiagram`: a 200 x 100 wire schematic of an app (top bar, list column, document pane), drawn from a
@@ -28,9 +28,20 @@ function Frame({inspector}: {inspector?: boolean}) {
       <line stroke={WIRE} x1={52} x2={paneRight} y1={24} y2={24} />
       <rect fill={FAINT} fillOpacity={0.4} height={5} rx={2} width={46} x={60} y={32} />
       {[44, 58, 72].map((y) => (
-        <rect fill="none" height={9} key={y} rx={2} stroke={WIRE} width={paneRight - 66} x={60} y={y} />
+        <rect
+          fill="none"
+          height={9}
+          key={y}
+          rx={2}
+          stroke={WIRE}
+          width={paneRight - 66}
+          x={60}
+          y={y}
+        />
       ))}
-      {inspector ? <line stroke={WIRE} x1={paneRight + 2} x2={paneRight + 2} y1={12} y2={100} /> : null}
+      {inspector ? (
+        <line stroke={WIRE} x1={paneRight + 2} x2={paneRight + 2} y1={12} y2={100} />
+      ) : null}
     </>
   )
 }
@@ -44,15 +55,62 @@ export function OptionDiagram({spec}: {spec?: DiagramSpec}) {
     <svg aria-hidden="true" style={SCALE} viewBox="0 0 200 100">
       <Frame inspector={spec?.frame === 'inspector'} />
       {dashed ? (
-        <rect fill="none" height={72} rx={3} stroke={FAINT} strokeDasharray="4 3" width={140} x={56} y={16} />
+        <rect
+          fill="none"
+          height={72}
+          rx={3}
+          stroke={FAINT}
+          strokeDasharray="4 3"
+          width={140}
+          x={56}
+          y={16}
+        />
       ) : (
-        spec?.shapes?.map((shape, i) =>
-          shape.kind === 'dot' ? (
-            <circle cx={shape.x} cy={shape.y} fill={PURPLE} fillOpacity={0.6} key={i} r={shape.w ?? 2.5} stroke={PURPLE} strokeWidth={1} />
-          ) : (
+        spec?.shapes?.map((shape, i) => {
+          const fillOpacity = shape.solid ? 0.8 : 0.35
+          if (shape.kind === 'dot')
+            return (
+              <circle
+                cx={shape.x}
+                cy={shape.y}
+                fill={PURPLE}
+                fillOpacity={shape.solid ? 0.9 : 0.6}
+                key={i}
+                r={shape.w ?? 2.5}
+                stroke={PURPLE}
+                strokeWidth={1}
+              />
+            )
+          if (shape.kind === 'diamond') {
+            const r = shape.w ?? 3
+            return (
+              <polygon
+                fill={PURPLE}
+                fillOpacity={shape.solid ? 0.9 : 0.6}
+                key={i}
+                points={`${shape.x},${shape.y - r} ${shape.x + r},${shape.y} ${shape.x},${shape.y + r} ${shape.x - r},${shape.y}`}
+                stroke={PURPLE}
+                strokeWidth={1}
+              />
+            )
+          }
+          if (shape.kind === 'line')
+            return (
+              <line
+                key={i}
+                stroke={PURPLE}
+                strokeLinecap="round"
+                strokeWidth={1.4}
+                x1={shape.x}
+                x2={shape.x + (shape.w ?? 0)}
+                y1={shape.y}
+                y2={shape.y + (shape.h ?? 0)}
+              />
+            )
+          return (
             <rect
               fill={PURPLE}
-              fillOpacity={0.35}
+              fillOpacity={fillOpacity}
               height={shape.h ?? 6}
               key={i}
               rx={shape.kind === 'pill' ? (shape.h ?? 6) / 2 : 2}
@@ -62,8 +120,8 @@ export function OptionDiagram({spec}: {spec?: DiagramSpec}) {
               x={shape.x}
               y={shape.y}
             />
-          ),
-        )
+          )
+        })
       )}
     </svg>
   )
@@ -84,7 +142,12 @@ const FILL: Record<string, string> = {
   black: '#000',
   none: 'none',
 }
-const CHIP: Record<string, [string, number]> = {n: [FILL.faint, 0.35], v: [FILL.violet, 0.45], r: [FILL.blue, 0.45], g: [FILL.faint, 0.2]}
+const CHIP: Record<string, [string, number]> = {
+  n: [FILL.faint, 0.35],
+  v: [FILL.violet, 0.45],
+  r: [FILL.blue, 0.45],
+  g: [FILL.faint, 0.2],
+}
 
 interface RectArgs {
   x: number
@@ -114,9 +177,19 @@ function R({x, y, w, h, fill = 'bar', stroke, rx = 1.5, op, dash}: RectArgs) {
     />
   )
 }
-const Bar = ({x, y, w, h = 3, op}: {x: number; y: number; w: number; h?: number; op?: number}) => <R h={h} op={op} w={w} x={x} y={y} />
+const Bar = ({x, y, w, h = 3, op}: {x: number; y: number; w: number; h?: number; op?: number}) => (
+  <R h={h} op={op} w={w} x={x} y={y} />
+)
 const Chip = ({x, y, w, kind = 'n'}: {x: number; y: number; w: number; kind?: string}) => (
-  <rect fill={CHIP[kind][0]} fillOpacity={CHIP[kind][1]} height={5} rx={1.5} width={w} x={x} y={y} />
+  <rect
+    fill={CHIP[kind][0]}
+    fillOpacity={CHIP[kind][1]}
+    height={5}
+    rx={1.5}
+    width={w}
+    x={x}
+    y={y}
+  />
 )
 
 function Nav({active = 3}: {active?: number}) {
@@ -125,7 +198,16 @@ function Nav({active = 3}: {active?: number}) {
       <R h={13} rx={0} w={320} x={0} y={0} />
       <R fill="brand" h={5} op={0.8} w={8} x={6} y={4} />
       {[0, 1, 2, 3, 4].map((i) => (
-        <R fill={i === active ? 'violet' : 'faint'} h={6} key={i} op={i === active ? 0.55 : 0.35} rx={2} w={22} x={108 + i * 27} y={3.5} />
+        <R
+          fill={i === active ? 'violet' : 'faint'}
+          h={6}
+          key={i}
+          op={i === active ? 0.55 : 0.35}
+          rx={2}
+          w={22}
+          x={108 + i * 27}
+          y={3.5}
+        />
       ))}
       <R h={5} rx={3} w={8} x={296} y={4} />
       <R h={5} rx={3} w={6} x={308} y={4} />
@@ -139,7 +221,15 @@ function Lens({active = 0, picker = true}: {active?: number; picker?: boolean}) 
       <Bar h={3.5} w={24} x={8} y={22} />
       {[0, 1, 2, 3].map((i) => (
         <g key={i}>
-          <R fill={i === active ? 'violet' : 'bar'} h={9} op={i === active ? 0.5 : undefined} rx={2} w={28} x={38 + i * 31} y={18} />
+          <R
+            fill={i === active ? 'violet' : 'bar'}
+            h={9}
+            op={i === active ? 0.5 : undefined}
+            rx={2}
+            w={28}
+            x={38 + i * 31}
+            y={18}
+          />
           <Bar h={2.2} op={0.9} w={18} x={43 + i * 31} y={21.5} />
         </g>
       ))}
@@ -153,11 +243,30 @@ function Lens({active = 0, picker = true}: {active?: number; picker?: boolean}) 
   )
 }
 
-function Tabs({y, n = 3, search = true, btn}: {y: number; n?: number; search?: boolean; btn?: string}) {
+function Tabs({
+  y,
+  n = 3,
+  search = true,
+  btn,
+}: {
+  y: number
+  n?: number
+  search?: boolean
+  btn?: string
+}) {
   return (
     <>
       {Array.from({length: n}, (_, i) => (
-        <R fill={i === 0 ? 'violet' : 'bar'} h={8} key={i} op={i === 0 ? 0.4 : undefined} rx={2} w={26} x={14 + i * 30} y={y} />
+        <R
+          fill={i === 0 ? 'violet' : 'bar'}
+          h={8}
+          key={i}
+          op={i === 0 ? 0.4 : undefined}
+          rx={2}
+          w={26}
+          x={14 + i * 30}
+          y={y}
+        />
       ))}
       {search ? (
         <>
@@ -180,7 +289,19 @@ function Tabs({y, n = 3, search = true, btn}: {y: number; n?: number; search?: b
   )
 }
 
-function Row({y, cells, grey, checked, h = 14}: {y: number; cells: [number, number, string][]; grey?: boolean; checked?: boolean; h?: number}) {
+function Row({
+  y,
+  cells,
+  grey,
+  checked,
+  h = 14,
+}: {
+  y: number
+  cells: [number, number, string][]
+  grey?: boolean
+  checked?: boolean
+  h?: number
+}) {
   const op = grey ? 0.35 : 0.9
   return (
     <>
@@ -215,7 +336,17 @@ const DIALOG_LINES: [number, number][] = [
   [34, 100],
 ]
 
-function Prim({prim, flowIndex, flowCount, width}: {prim: DiagramPrim; flowIndex: number; flowCount: number; width: number}) {
+function Prim({
+  prim,
+  flowIndex,
+  flowCount,
+  width,
+}: {
+  prim: DiagramPrim
+  flowIndex: number
+  flowCount: number
+  width: number
+}) {
   const a = prim
   switch (a.p) {
     case 'nav':
@@ -224,7 +355,17 @@ function Prim({prim, flowIndex, flowCount, width}: {prim: DiagramPrim; flowIndex
       return <Lens active={a.active} picker={a.picker !== false} />
     case 'card':
     case 'pane':
-      return <R fill="none" h={a.h} rx={a.rx ?? 2} stroke={a.stroke ?? 'border'} w={a.w} x={a.x} y={a.y} />
+      return (
+        <R
+          fill="none"
+          h={a.h}
+          rx={a.rx ?? 2}
+          stroke={a.stroke ?? 'border'}
+          w={a.w}
+          x={a.x}
+          y={a.y}
+        />
+      )
     case 'title':
       return (
         <>
@@ -266,7 +407,9 @@ function Prim({prim, flowIndex, flowCount, width}: {prim: DiagramPrim; flowIndex
             <g key={i}>
               <Bar h={2.6} op={0.9} w={lw} x={94} y={56 + i * 14} />
               <Bar h={2.4} op={0.5} w={vw} x={124} y={56 + i * 14} />
-              {i === 1 || i === 3 ? <Bar h={2.4} op={0.5} w={vw * 0.6} x={124} y={60 + i * 14} /> : null}
+              {i === 1 || i === 3 ? (
+                <Bar h={2.4} op={0.5} w={vw * 0.6} x={124} y={60 + i * 14} />
+              ) : null}
             </g>
           ))}
           <R h={10} rx={2} w={28} x={166} y={118} />
@@ -274,7 +417,19 @@ function Prim({prim, flowIndex, flowCount, width}: {prim: DiagramPrim; flowIndex
         </>
       )
     case 'box':
-      return <R dash={a.dash} fill={a.fill} h={a.h} op={a.op} rx={a.rx} stroke={a.stroke} w={a.w} x={a.x} y={a.y} />
+      return (
+        <R
+          dash={a.dash}
+          fill={a.fill}
+          h={a.h}
+          op={a.op}
+          rx={a.rx}
+          stroke={a.stroke}
+          w={a.w}
+          x={a.x}
+          y={a.y}
+        />
+      )
     case 'bar':
       return <Bar h={a.h} op={a.op} w={a.w} x={a.x} y={a.y} />
     case 'chip':
@@ -290,19 +445,44 @@ function Prim({prim, flowIndex, flowCount, width}: {prim: DiagramPrim; flowIndex
       const x = 8 + flowIndex * (bw + 14)
       const words = String(a.label).split(' ')
       const half = Math.floor(words.length / 2) || 1
-      const lines = String(a.label).length <= 11 ? [String(a.label)] : [words.slice(0, half).join(' '), words.slice(half).join(' ')].filter(Boolean)
+      const lines =
+        String(a.label).length <= 11
+          ? [String(a.label)]
+          : [words.slice(0, half).join(' '), words.slice(half).join(' ')].filter(Boolean)
       const y0 = 32 - (lines.length - 1) * 5
       const kind = a.kind === 'v' ? 'violet' : a.kind === 'r' ? 'blue' : 'bar'
       return (
         <>
-          <R fill={kind} h={44} op={kind === 'bar' ? undefined : 0.22} rx={3} stroke="border" w={bw} x={x} y={10} />
+          <R
+            fill={kind}
+            h={44}
+            op={kind === 'bar' ? undefined : 0.22}
+            rx={3}
+            stroke="border"
+            w={bw}
+            x={x}
+            y={10}
+          />
           {lines.map((l, j) => (
-            <text fill="var(--card-fg-color)" fontFamily="inherit" fontSize={8} key={j} textAnchor="middle" x={x + bw / 2} y={y0 + j * 10}>
+            <text
+              fill="var(--card-fg-color)"
+              fontFamily="inherit"
+              fontSize={8}
+              key={j}
+              textAnchor="middle"
+              x={x + bw / 2}
+              y={y0 + j * 10}
+            >
               {l}
             </text>
           ))}
           {flowIndex < flowCount - 1 ? (
-            <path d={`M${x + bw + 2} 32 H${x + bw + 12} m-3 -3 l3 3 l-3 3`} fill="none" stroke={FAINT} strokeWidth={1} />
+            <path
+              d={`M${x + bw + 2} 32 H${x + bw + 12} m-3 -3 l3 3 l-3 3`}
+              fill="none"
+              stroke={FAINT}
+              strokeWidth={1}
+            />
           ) : null}
         </>
       )
@@ -318,14 +498,24 @@ export function SpecDiagram({entry}: {entry: DiagramEntry}) {
   const [w, h] = entry.size
   const prims = entry.prims ?? []
   const flowCount = prims.filter((p) => p.p === 'flowBox').length
-  let flowIndex = -1
+  // Each primitive's place among the flow boxes (the last flow box at or before it), worked out before drawing.
+  const flowIndexes = prims.map(
+    (_, i) => prims.slice(0, i + 1).filter((p) => p.p === 'flowBox').length - 1,
+  )
   return (
     <svg aria-hidden="true" data-testid="spec-diagram" style={SCALE} viewBox={`0 0 ${w} ${h}`}>
-      <rect fill={FILL.bg} height={h - 1} stroke={FILL.border} strokeWidth={0.6} width={w - 1} x={0.5} y={0.5} />
-      {prims.map((prim, i) => {
-        if (prim.p === 'flowBox') flowIndex += 1
-        return <Prim flowCount={flowCount} flowIndex={flowIndex} key={i} prim={prim} width={w} />
-      })}
+      <rect
+        fill={FILL.bg}
+        height={h - 1}
+        stroke={FILL.border}
+        strokeWidth={0.6}
+        width={w - 1}
+        x={0.5}
+        y={0.5}
+      />
+      {prims.map((prim, i) => (
+        <Prim flowCount={flowCount} flowIndex={flowIndexes[i]} key={i} prim={prim} width={w} />
+      ))}
     </svg>
   )
 }

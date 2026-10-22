@@ -10,6 +10,7 @@ import {
   type OptionStatus,
 } from '../design-options/types'
 import diagrams from './diagrams.json'
+import {DRAWINGS} from './drawings'
 import {
   E9_COMPONENTS,
   E9_GROUP,
@@ -603,6 +604,8 @@ const STORIES: Record<string, Record<string, string>> = {
 }
 
 for (const component of COMPONENTS) {
+  // Card letters, rail letters and Options for all all read the option's place, so the place follows the id (C1 was a, b, d, e, c).
+  component.options.sort((x, y) => x.id.localeCompare(y.id))
   for (const option of component.options) {
     // C1 to C4 and C7 are drawn in the generic frame form of the shared spec (options/diagrams.json).
     const generic = `${component.id}.${option.id}`
@@ -612,7 +615,7 @@ for (const component of COMPONENTS) {
     if (story) option.story = story
     const oneLiner = ONE_LINERS[component.id]?.[option.id]
     if (oneLiner) option.oneLiner = oneLiner
-    const diagram = DIAGRAMS[component.id]?.[option.id]
+    const diagram = DIAGRAMS[component.id]?.[option.id] ?? DRAWINGS[component.id]?.[option.id]
     option.diagram = diagram ?? {dashed: true}
   }
 }
@@ -622,13 +625,23 @@ defineDesignOptions({
   storageKey: 'variants-2-0-studio',
   components: COMPONENTS,
   groups: [
-    {label: 'Studio chrome', ids: ['c1', 'c2', 'c3', 'navLayout', 'rowWidth']},
-    {label: 'Inventory', ids: ['c4', 'c5', 'c6']},
-    {label: 'Document', ids: ['c7', 'c9', 'inspectorSwitcher']},
-    {label: 'Releases', ids: ['c8']},
-    E9_GROUP,
-    LOCALIZATION_GROUP,
-    ICONOGRAPHY_GROUP,
+    // The open beta tickets first, under their ticket names (T1 to T6); everything else is an exploration, collapsed.
+    {
+      label: 'Open beta · T1 to T6',
+      ids: ['c1', 'c2', 'c3', 'c4', 'c9', 'c7'],
+      tags: {c1: 'T1', c2: 'T2', c3: 'T3', c4: 'T4', c9: 'T5', c7: 'T6'},
+    },
+    {label: 'GA candidates', ids: ['c5', 'c6', 'c8'], collapsed: true},
+    {
+      label: 'Compare and review (E9)',
+      ids: [...E9_GROUP.ids, 'localMatch', 'reviewSet', 'navLayout', 'rowWidth'],
+      collapsed: true,
+    },
+    {
+      label: 'Other explorations',
+      ids: ['inspectorSwitcher', ...LOCALIZATION_GROUP.ids, ...ICONOGRAPHY_GROUP.ids],
+      collapsed: true,
+    },
   ],
   scenario: {
     stages: [
@@ -652,8 +665,8 @@ defineDesignOptions({
   diagrams: diagrams as unknown as DiagramFile,
   links: {
     figmaFile: 'https://www.figma.com/design/C1T4EUScc9PMf5tqNo09Qs',
-    remote: '/static/options-remote.html',
-    journeysRemote: '/static/remote.html',
+    // The Options and Journeys remotes (static/options-remote.html, static/remote.html) are off until walkthroughs are rebuilt
+    // inside the studio (DESIGN-STUDIO-AUDIT-2026-10-23.md). Add the two links back to turn their buttons on.
     // The branch alias follows the newest deployment of explorations/variants-2-0. SANITY_STUDIO_STORYBOOK_BASE overrides it
     // (for example http://localhost:6006). Both hosted URLs sit behind a sign-in.
     storybookBase:

@@ -3,13 +3,19 @@
 
 export type OptionStatus = 'candidate' | 'final' | 'exploration' | 'not-drawn' | 'archived'
 
-/** A shape on the 200 x 100 diagram grid. `box` is a rounded rectangle, `pill` a fully rounded one, `dot` a circle. */
+/**
+ * A shape on the 200 x 100 diagram grid. `box` is a rounded rectangle, `pill` a fully rounded one, `dot` a circle
+ * (centre x, y; radius w). `diamond` is the variant mark (centre x, y; half-diagonal w). `line` runs from (x, y) to
+ * (x + w, y + h).
+ */
 export interface DiagramShape {
-  kind: 'box' | 'pill' | 'dot'
+  kind: 'box' | 'pill' | 'dot' | 'diamond' | 'line'
   x: number
   y: number
   w?: number
   h?: number
+  /** A stronger fill, for a part that is solid rather than a tint. */
+  solid?: boolean
 }
 
 export interface DiagramSpec {
@@ -106,7 +112,14 @@ export interface DesignOptionsConfig {
   /** localStorage prefix; keep it unique per project. */
   storageKey: string
   components: ComponentDef[]
-  groups: {label: string; ids: string[]}[]
+  groups: {
+    label: string
+    ids: string[]
+    /** Short names shown in the rail instead of the component's own tag (the open beta tickets are T1 to T6). */
+    tags?: Record<string, string>
+    /** Starts folded in the rail; it unfolds when it holds the selected component. */
+    collapsed?: boolean
+  }[]
   scenario: ScenarioConfig
   /** Shared presets (the ones that ship in the repo). Mine live in localStorage. */
   presets: PresetDef[]
