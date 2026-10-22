@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {Container, Heading, Text} from '@sanity/ui'
 import {clsx} from 'clsx'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {Activity, useCallback, useMemo} from 'react'
 import {
   CommandList,
   type CommandListRenderItemCallback,
@@ -99,27 +99,13 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
-  const [shouldRender, setShouldRender] = useState(!collapsed)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleEndReached = useCallback(() => {
-    if (shouldRender) {
+    if (!collapsed) {
       onEndReached()
     }
-  }, [onEndReached, shouldRender])
-
-  useEffect(() => {
-    if (collapsed) return undefined
-
-    const timer = setTimeout(() => {
-      setShouldRender(true)
-    }, 0)
-
-    return () => {
-      clearTimeout(timer)
-    }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-  }, [collapsed, items])
+  }, [collapsed, onEndReached])
 
   const renderItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
     (item, {activeIndex}) => {
@@ -202,10 +188,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   }, [filterIsSimpleTypeConstraint, hasSearchQuery, t])
 
   const mainContent = useMemo(() => {
-    if (!shouldRender) {
-      return null
-    }
-
     const isOnline = window.navigator.onLine
     if (error) {
       return (
@@ -268,14 +250,11 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return null
     }
 
-    // prevents bug when panes won't render if first rendered while collapsed
-    const key = `${index}-${collapsed}`
-
     return (
       <Box overflow="hidden" height="100%" className={clsx(rootBox, muted && rootBoxMuted)}>
         <Box className={commandListBox}>
           <CommandList
-            key={key}
+            key={index}
             activeItemDataAttr="data-hovered"
             ariaLabel={paneTitle}
             canReceiveFocus
@@ -297,7 +276,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   }, [
     autoRetry,
     canRetry,
-    collapsed,
     error,
     handleEndReached,
     index,
@@ -314,7 +292,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     renderItem,
     retryCount,
     searchInputElement,
-    shouldRender,
     t,
   ])
 
@@ -323,7 +300,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       data-testid="document-list-pane"
       overflow={layoutCollapsed || loadingVariant === 'initial' ? 'hidden' : 'auto'}
     >
-      {mainContent}
+      {/* While the pane is collapsed the list pre-renders (and stays mounted) at background
+          priority with its effects paused, making expansion instant without losing list state. */}
+      <Activity mode={collapsed ? 'hidden' : 'visible'}>{mainContent}</Activity>
     </PaneContent>
   )
 }
