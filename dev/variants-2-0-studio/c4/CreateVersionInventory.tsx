@@ -70,11 +70,10 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
     [stage, variants],
   )
   const world = useMemo(
-    // By publish date lists the drafts too, as a group under Published (his model, C4 E only).
+    // By publish date lists the drafts as a group under Published (his model, 6a96d926d8).
     () =>
       live && {
         ...live,
-        draftsInTimeline: true,
         entries: live.entries.filter((e) => inScope(e.variantId)),
       },
     [live, inScope],

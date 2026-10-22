@@ -53,8 +53,6 @@ export interface InventoryWorld {
   content?: Record<string, Record<string, unknown>>
   fields?: Record<string, unknown>
   related?: InventoryWorld[]
-  /** C4 E (approved by Faheem, 22 Oct): By publish date lists the drafts, as a group under Published. Unset, his views as built. */
-  draftsInTimeline?: boolean
 }
 
 export const baseWorld: InventoryWorld = {

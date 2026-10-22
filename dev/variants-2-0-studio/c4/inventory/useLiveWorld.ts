@@ -2,9 +2,9 @@ import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {useActiveReleases} from 'sanity'
 
+import {type SystemVariant} from '../../../../packages/sanity/src/core/variants/types'
 import {useDimensions, useVariantDefinitions} from '../../c1/world'
 import {useVersionList} from '../../data/useVersionList'
-import {type SystemVariant} from '../../../../packages/sanity/src/core/variants/types'
 import {type InventoryEntry, type InventoryWorld} from './fixtures'
 
 /** `3h ago`, `2d ago`, `1w ago`, `1mo ago`: the format Andrej's model parses (`ageInHours`). */
@@ -27,7 +27,13 @@ export function useLiveWorld(documentId: string, title: string): InventoryWorld 
   const versions = useVersionList(documentId)
   const {data: releases} = useActiveReleases()
   const variants = useVariantDefinitions()
-  const dimensions = useDimensions()
+  // `useDimensions` returns a new array on every render; the world is keyed on its content so it stays the same object while nothing changed
+  // (the panel resets its selection whenever the world changes).
+  const dimensionsKey = JSON.stringify(useDimensions())
+  const dimensions = useMemo(
+    () => JSON.parse(dimensionsKey) as ReturnType<typeof useDimensions>,
+    [dimensionsKey],
+  )
 
   return useMemo(() => {
     if (!versions) return null
@@ -41,7 +47,10 @@ export function useLiveWorld(documentId: string, title: string): InventoryWorld 
     }))
     return {
       // The model finds a release by `name`; make sure every live release carries one (its id after `_.releases.`).
-      releases: (releases ?? []).map((r) => ({...r, name: r.name ?? r._id.replace(/^_\.releases\./, '')})) as ReleaseDocument[],
+      releases: (releases ?? []).map((r) => ({
+        ...r,
+        name: r.name ?? r._id.replace(/^_\.releases\./, ''),
+      })) as ReleaseDocument[],
       entries,
       variants: variants as unknown as SystemVariant[],
       dimensions: dimensions.map((d) => ({
