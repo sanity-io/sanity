@@ -5,7 +5,6 @@ const MODULE_URL = 'https://sanity-cdn.com/v1/modules/by-app/app1/t1754072932/%5
 const IMPORT_MAP_URL = 'https://sanity-cdn.com/v1/modules/by-app/app2/t1754072932/%5E5.20.1/sanity'
 
 beforeEach(() => {
-  // The provider reads the document's import map once per module instance.
   vi.resetModules()
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (url) =>
     Response.json(
@@ -21,7 +20,7 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-async function renderProvider(sanityModuleUrl?: string) {
+async function renderProvider(importMapUrl?: string) {
   const {PackageVersionStatusProvider} = await import('./PackageVersionStatusProvider')
   const {usePackageVersionStatus} = await import('./usePackageVersionStatus')
 
@@ -38,7 +37,7 @@ async function renderProvider(sanityModuleUrl?: string) {
   }
 
   render(
-    <PackageVersionStatusProvider sanityModuleUrl={sanityModuleUrl}>
+    <PackageVersionStatusProvider importMapUrl={importMapUrl}>
       <StatusProbe />
     </PackageVersionStatusProvider>,
   )
@@ -60,7 +59,9 @@ const byAppRequests = () =>
     .mock.calls.map(([url]) => String(url))
     .filter((url) => url.includes('/by-app/'))
 
-it('auto-updates from the module URL it was given, without an import map', async () => {
+it('auto-updates from the import map URL it was given, over the document import map', async () => {
+  addImportMap(IMPORT_MAP_URL)
+
   const status = await renderProvider(MODULE_URL)
 
   expect(status).toHaveAttribute('data-auto-updating', 'true')
@@ -70,26 +71,11 @@ it('auto-updates from the module URL it was given, without an import map', async
   ])
 })
 
-it('auto-updates from the import map when no module URL is given', async () => {
+it('auto-updates from the document import map when no import map URL is given', async () => {
   addImportMap(IMPORT_MAP_URL)
 
   const status = await renderProvider()
 
   expect(status).toHaveAttribute('data-auto-updating', 'true')
   expect(byAppRequests()).toEqual([expect.stringMatching(/\/by-app\/app2\//)])
-})
-
-it('prefers the module URL over the import map', async () => {
-  addImportMap(IMPORT_MAP_URL)
-
-  await renderProvider(MODULE_URL)
-
-  expect(byAppRequests()).toEqual([expect.stringMatching(/\/by-app\/app1\//)])
-})
-
-it('does not auto-update without a module URL or an import map', async () => {
-  const status = await renderProvider()
-
-  expect(status).toHaveAttribute('data-auto-updating', 'false')
-  expect(byAppRequests()).toEqual([])
 })

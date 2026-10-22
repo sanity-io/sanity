@@ -56,7 +56,7 @@ export function StudioProvider({
   scheme,
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
-  unstable_sanityModuleUrl: sanityModuleUrl,
+  unstable_importMapUrl: importMapUrl,
   unstable_appId: appId,
 }: StudioProviderProps) {
   // Before any provider below connects to the message bus.
@@ -87,7 +87,7 @@ export function StudioProvider({
             ConfigErrorsComponent={ConfigErrorsScreen}
           >
             <LocaleProvider>
-              <PackageVersionStatusProvider sanityModuleUrl={sanityModuleUrl}>
+              <PackageVersionStatusProvider importMapUrl={importMapUrl}>
                 <ResourceCacheProvider>
                   <StudioTelemetryProvider>
                     <AppIdCacheProvider>
@@ -112,7 +112,7 @@ export function StudioProvider({
         </LiveUserApplicationProvider>
       </UserApplicationCacheProvider>
     ),
-    [children, sanityModuleUrl],
+    [children, importMapUrl],
   )
 
   return (

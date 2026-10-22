@@ -24,7 +24,7 @@ afterEach(() => {
 })
 
 it(
-  'polls the module URL it was given for the auto-updating version',
+  'polls the import map URL it was given for the auto-updating version',
   {timeout: 30_000},
   async () => {
     const fetch = vi
@@ -41,7 +41,7 @@ it(
       <StudioProvider
         config={config}
         unstable_noAuthBoundary
-        unstable_sanityModuleUrl="https://sanity-cdn.com/v1/modules/by-app/app1/t1754072932/%5E5.20.1/sanity"
+        unstable_importMapUrl="https://sanity-cdn.com/v1/modules/by-app/app1/t1754072932/%5E5.20.1/sanity"
       >
         {null}
       </StudioProvider>,
@@ -74,7 +74,6 @@ it('connects to the message bus with the app ID it was given', {timeout: 30_000}
     </StudioProvider>,
   )
 
-  // The providers connect while rendering, and a connection without an app ID isn't retried.
   await waitFor(() => expect(connectCalls).not.toHaveLength(0))
   expect(connectCalls[0]).toEqual({appId: 'app1'})
 })

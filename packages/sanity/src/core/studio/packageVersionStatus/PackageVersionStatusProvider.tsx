@@ -60,17 +60,17 @@ const REFERENCE_PACKAGE = 'sanity'
 
 export function PackageVersionStatusProvider({
   children,
-  sanityModuleUrl,
+  importMapUrl,
 }: {
   children: ReactNode
-  sanityModuleUrl?: string
+  importMapUrl?: string
 }) {
   const importMapInfo = useMemo(() => {
-    const importMapUrl = sanityModuleUrl ?? getSanityImportMapEntryValue()
-    if (!importMapUrl) {
+    const sanityImportMapUrl = importMapUrl ?? getSanityImportMapEntryValue()
+    if (!sanityImportMapUrl) {
       return undefined
     }
-    const result = parseImportMapModuleCdnUrl(importMapUrl)
+    const result = parseImportMapModuleCdnUrl(sanityImportMapUrl)
     if (!result.valid) {
       console.warn(
         new Error(
@@ -82,7 +82,7 @@ export function PackageVersionStatusProvider({
     return result.valid
       ? {...result, minVersion: semver.coerce(result.minVersion, {includePrerelease: true})!}
       : result
-  }, [sanityModuleUrl])
+  }, [importMapUrl])
   const currentVersion = useMemo(() => getCurrentVersion(), [])
 
   const isAutoUpdating = Boolean(importMapInfo)

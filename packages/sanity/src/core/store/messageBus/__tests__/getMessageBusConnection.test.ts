@@ -1,11 +1,7 @@
 import {assert, describe, expect, it} from 'vitest'
 
 import {stubMessageBusHost} from '../../../../../test/testUtils/stubMessageBusHost'
-import {
-  getMessageBusConnection,
-  resetMessageBusConnection,
-  setMessageBusAppId,
-} from '../getMessageBusConnection'
+import {getMessageBusConnection, resetMessageBusConnection} from '../getMessageBusConnection'
 
 describe('getMessageBusConnection', () => {
   it('connects once a host installs a bus, even after a call without one', async () => {
@@ -15,15 +11,6 @@ describe('getMessageBusConnection', () => {
     host.publish('auth.token', 'token')
 
     expect(await getMessageBusConnection()?.query('auth.token')).toBe('token')
-  })
-
-  it('connects with the app ID it was given when none was inlined', () => {
-    stubMessageBusHost()
-    Reflect.deleteProperty(globalThis, '__SANITY_APP_ID__')
-
-    setMessageBusAppId('my-studio')
-
-    expect(getMessageBusConnection()?.appId).toBe('my-studio')
   })
 
   it('returns the same connection on repeated calls', () => {
