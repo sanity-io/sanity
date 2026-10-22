@@ -1073,6 +1073,7 @@ export {
   SanityDefaultPreview,
   type SanityDefaultPreviewProps,
 } from '../core/preview/components/SanityDefaultPreview'
+export {PreviewTooltip} from '../core/preview/components/PreviewTooltip'
 export {
   createDocumentPreviewStore,
   type DocumentPreviewStore,

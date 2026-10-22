@@ -205,14 +205,24 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
     return resolveBlockImageDimensions(mediaProp)
   }, [layout, mediaProp, props.mediaDimensions])
 
+  // PROPOSED: the tooltip (the document's versions) opens from the status icons only, not from anywhere on the row. A row with no status
+  // keeps it on the row.
+  // A status given as a component (not a node) keeps the tooltip on the row.
+  const statusNode = typeof restProps.status === 'function' ? undefined : restProps.status
+  const tooltipOnStatus = Boolean(tooltip) && Boolean(statusNode)
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
       ...restProps,
       media,
       mediaDimensions: resolvedMediaDimensions,
+      status: tooltipOnStatus ? (
+        <PreviewTooltip content={tooltip}>{statusNode}</PreviewTooltip>
+      ) : (
+        restProps.status
+      ),
       title,
     }),
-    [media, resolvedMediaDimensions, restProps, title],
+    [media, resolvedMediaDimensions, restProps, statusNode, title, tooltip, tooltipOnStatus],
   )
 
   const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<
@@ -221,7 +231,7 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
 
   const children = <LayoutComponent {...previewProps} />
 
-  if (tooltip) {
+  if (tooltip && !tooltipOnStatus) {
     return <PreviewTooltip content={tooltip}>{children}</PreviewTooltip>
   }
 

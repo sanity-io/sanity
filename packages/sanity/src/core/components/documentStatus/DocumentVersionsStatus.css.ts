@@ -5,11 +5,6 @@ export const titleStack = style({
   width: '100%',
 })
 
-export const updatedAtText = style({
-  flex: 'none',
-  whiteSpace: 'nowrap',
-})
-
 export const versionStatusItem = style({
   selectors: {
     '&&': {

@@ -159,27 +159,30 @@ describe('DocumentVersionsStatus', () => {
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
 
-  it('prefixes the default variant title when variants are enabled', async () => {
+  it('heads the default group with the default variant title when variants are enabled', async () => {
     await renderStatus({
       versions: [publishedDefault, draftDefault],
       variantsEnabled: true,
     })
 
-    expect(screen.getByText('All users (Default) · Published')).toBeInTheDocument()
-    expect(screen.getByText('All users (Default) · Draft')).toBeInTheDocument()
-    expect(screen.queryByText('Published', {exact: true})).not.toBeInTheDocument()
+    // One heading for the variant, then each row names only its state (no dates).
+    expect(screen.getAllByText('All users (Default)')).toHaveLength(1)
+    expect(screen.getByText('Published', {exact: true})).toBeInTheDocument()
+    expect(screen.getByText('Draft', {exact: true})).toBeInTheDocument()
+    expect(screen.queryByText(/ · /)).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
 
-  it('shows the named variant title and rhombus when variants are enabled', async () => {
+  it('heads a variant group with the variant title and shows the rhombus when variants are enabled', async () => {
     await renderStatus({
       versions: [publishedVariant, draftVariant],
       variantsEnabled: true,
       variantsById: new Map([[variantAlphaAudience._id, variantAlphaAudience]]),
     })
 
-    expect(screen.getByText('Alpha audience · Published')).toBeInTheDocument()
-    expect(screen.getByText('Alpha audience · Draft')).toBeInTheDocument()
+    expect(screen.getAllByText('Alpha audience')).toHaveLength(1)
+    expect(screen.getByText('Published', {exact: true})).toBeInTheDocument()
+    expect(screen.getByText('Draft', {exact: true})).toBeInTheDocument()
     expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).toBeInTheDocument()
   })

@@ -3,16 +3,14 @@ import {useMemo} from 'react'
 import {Box} from 'ui5'
 
 import {useDocumentVersionTitle} from '../../hooks/useDocumentVersionTitle'
-import {useRelativeTime} from '../../hooks/useRelativeTime'
-import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useWorkspace} from '../../studio/workspace'
 import {useAllVariants} from '../../variants/store/useAllVariants'
+import {getVariantTitle} from '../../variants/tool/util'
 import {DocumentVersionIcons} from './DocumentVersionIcons'
-import {titleStack, updatedAtText, versionStatusItem} from './DocumentVersionsStatus.css'
-import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
+import {titleStack, versionStatusItem} from './DocumentVersionsStatus.css'
 import {
   type DocumentVersionStatusItem,
   groupDocumentVersionsForStatus,
@@ -41,6 +39,12 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
     [releasesById, variantsById, variantsEnabled, versions],
   )
 
+  const groupTitle = (variantId: string | undefined) => {
+    if (!variantId) return t('document-group.base-variant')
+    const variant = variantsById.get(variantId)
+    return variant ? getVariantTitle(variant) : variantId
+  }
+
   if (loading) {
     return (
       <Box padding={2}>
@@ -59,8 +63,18 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
           key={group.variantId ?? 'default'}
           paddingBottom={groupIndex < allGroups.length - 1 ? 1 : 0}
         >
+          {/* PROPOSED: with variants, each group is headed by its variant ("All users (Default)", "Students") and its rows name only the
+              state (Published, Draft, a release). Information only: nothing in it is clickable, and it shows no dates. */}
+          {variantsEnabled && (
+            <Box paddingBottom={1} paddingTop={2}>
+              {/* Plain muted text, not an uppercase Label: variant names keep their casing (de-DE). */}
+              <Text muted size={1}>
+                {groupTitle(group.variantId)}
+              </Text>
+            </Box>
+          )}
           {group.items.map((item) => (
-            <VersionStatus key={item.version._id} {...item} />
+            <VersionStatus key={item.version._id} {...item} stateOnly={variantsEnabled} />
           ))}
         </Card>
       ))}
@@ -68,30 +82,19 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   )
 }
 
-function VersionStatus({version}: DocumentVersionStatusItem) {
-  const {t} = useTranslation()
-  const schema = useSchema()
-  const liveEdit = Boolean(version._type && schema.get(version._type)?.liveEdit)
-
-  const {title, isTruncated, fullTitle} = useDocumentVersionTitle({version})
-
-  const updatedAt = useRelativeTime(version._updatedAt, {
-    minimal: true,
-    useTemporalPhrase: true,
+function VersionStatus({version, stateOnly}: DocumentVersionStatusItem & {stateOnly: boolean}) {
+  const {title, isTruncated, fullTitle, stateTitle, stateFullTitle} = useDocumentVersionTitle({
+    version,
   })
-  const timestampLabel = t(getDocumentVersionStatusTimestampKey(version, liveEdit), {
-    date: updatedAt,
-  })
+  const shown = stateOnly ? stateTitle : title
+  const full = stateOnly ? stateFullTitle : fullTitle
 
   return (
     <Box className={versionStatusItem}>
-      <Flex gap={2} justify="space-between" paddingY={2}>
-        <Stack className={titleStack} gap={2}>
-          <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
-            {title}
-          </Text>
-          <Text className={updatedAtText} muted size={1}>
-            {timestampLabel}
+      <Flex align="center" gap={2} justify="space-between" paddingY={2}>
+        <Stack className={titleStack}>
+          <Text size={1} title={isTruncated ? full : undefined} weight="medium">
+            {shown}
           </Text>
         </Stack>
         <Box paddingRight={2}>

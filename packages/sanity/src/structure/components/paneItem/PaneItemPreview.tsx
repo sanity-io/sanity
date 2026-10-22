@@ -16,6 +16,7 @@ import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getPublishedId,
+  PreviewTooltip,
   SanityDefaultPreview,
   useDocumentVersions,
   usePerspective,
@@ -91,11 +92,14 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const isLoading = previewIsLoading
 
+  // PROPOSED: the versions tooltip opens from the status icons only (not from the row, nor from the presence avatars beside them).
   const defaultStatus = isLoading ? null : (
     <TooltipDelayGroupProvider>
       <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentVersionsStatusIndicator documentVersions={versions} />
+        <PreviewTooltip content={<DocumentVersionsStatus documentGroupId={publishedId} />}>
+          <DocumentVersionsStatusIndicator documentVersions={versions} />
+        </PreviewTooltip>
       </Flex>
     </TooltipDelayGroupProvider>
   )
@@ -109,7 +113,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   })
   const status = isLoading ? null : override ? override.status : defaultStatus
 
-  const tooltip = override ? override.tooltip : <DocumentVersionsStatus documentGroupId={publishedId} />
+  const tooltip = override ? override.tooltip : undefined
 
   return (
     <SanityDefaultPreview
