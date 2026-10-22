@@ -69,6 +69,9 @@
   },
   "ignorePatterns": [
     "**/etc/*",
+    // Andrej's inventory panel, ported unedited from the Storybook (his files carry their own lint findings; do not edit them to satisfy lint).
+    // Added on Faheem's explicit request (22 Oct), as on the Handoff branch.
+    "dev/variants-2-0-studio/c4/inventory/{model,VersionInventoryPanel,InventoryMenus,DateSpanPicker,CreateVariantForm,CreateVariantIcon}.tsx",
     "**/.sanity/*",
     "**/public/*",
     "**/build/*",

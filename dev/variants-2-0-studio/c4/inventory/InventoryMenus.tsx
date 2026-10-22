@@ -1,15 +1,3 @@
-// Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/inventory-sidepanel (PR #47), commit 40041dec04, previously 310271b6e2 and db53306896, lib/explorations/variants/inventory-concepts/InventoryMenus.tsx).
-// Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
-import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
-import {Dialog} from '../../../../packages/sanity/src/ui-components/dialog/Dialog'
-import {MenuButton} from '../../../../packages/sanity/src/ui-components/menuButton/MenuButton'
-import {
-  MenuGroup,
-  type MenuGroupProps,
-} from '../../../../packages/sanity/src/ui-components/menuGroup/MenuGroup'
-import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/MenuItem'
-
 import {AddIcon} from '@sanity/icons/Add'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
@@ -23,15 +11,23 @@ import {useToast} from '@sanity/ui/toast'
 import {type FormEvent, type ReactNode, useEffect, useId, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
+// Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
+// explorations/inventory-sidepanel (PR #47), commit 10f3f729a9, lib/explorations/variants/inventory-concepts/InventoryMenus.tsx).
+// Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
+import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
+import {Dialog} from '../../../../packages/sanity/src/ui-components/dialog/Dialog'
+import {MenuButton} from '../../../../packages/sanity/src/ui-components/menuButton/MenuButton'
+import {
+  MenuGroup,
+  type MenuGroupProps,
+} from '../../../../packages/sanity/src/ui-components/menuGroup/MenuGroup'
+import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {PEOPLE, worldDimensions} from './fixtures'
 import {
   type GroupBy,
-  bundleOptions,
   type Filter,
   filterKey,
   type InventoryView,
-  MATCH_FILTER_LABELS,
-  type MatchFilter,
   sameFilter,
   type DateFilter,
   type DateKind,
@@ -129,12 +125,8 @@ function Check({
   )
 }
 
-const VIEW_ORDER: InventoryView[] = ['publishDate', 'stage', 'priority']
-/** The views menu says what By priority ranks for. */
-const VIEW_MENU_LABELS: Record<InventoryView, string> = {
-  ...VIEW_LABELS,
-  priority: 'By priority for this perspective',
-}
+// By stage first (Andrej, 2026-10-21: "In the order of the views, by Stage should come first").
+const VIEW_ORDER: InventoryView[] = ['stage', 'publishDate']
 
 /** A saved view's trash button shows on hover and focus. */
 const SavedViewRow = styled(Flex)`
@@ -289,7 +281,7 @@ export function ViewsMenu() {
                 checked={!savedViewId && option === view}
                 key={option}
                 onClick={() => setView(option)}
-                text={VIEW_MENU_LABELS[option]}
+                text={VIEW_LABELS[option]}
               />
             ))}
             <MenuDivider />
@@ -313,18 +305,9 @@ const SORT_LABELS: Record<SortBy, string> = {
   lastEdited: 'Last edited',
   name: 'Name',
   publishDate: 'Publish date',
-  priority: 'Priority',
 }
 /** Ascending and descending, not newest and oldest: the order applies to every sort, names included. */
 const ORDER_LABELS: Record<SortOrder, string> = {asc: 'Ascending', desc: 'Descending'}
-
-/**
- * By priority orders rows by who is served, so Group by has nothing to change there: it is disabled
- * in that view and says why (Captain's consistency call, 2026-10-15). Its Sort offers Priority
- * alone, ascending or descending, and starts on Descending, the serving order (Andrej, 2026-10-19:
- * "In the priority view we may want to sort by priority ascending or descending").
- */
-const PRIORITY_RANKS = {content: 'By priority groups by who is served'}
 
 // An element, not a component: MenuButton clones it to add its click handler and ARIA state.
 const SORT_BUTTON = (
@@ -338,12 +321,11 @@ const SORT_BUTTON = (
 )
 
 export function SortMenu() {
-  const {sort, setSort, priorityOrder, setPriorityOrder, view} = useInventoryConcepts()
-  const priorityView = view === 'priority'
+  const {sort, setSort} = useInventoryConcepts()
   // Choosing a sort keeps the order already set; Descending when none is.
   const sortBy = (by: SortBy) => setSort({by, order: sort?.order ?? 'desc'})
   const orderBy = (order: SortOrder) => setSort({by: sort?.by ?? 'lastEdited', order})
-  const sortOptions: SortBy[] = priorityView ? ['priority'] : (Object.keys(SORT_LABELS) as SortBy[])
+  const sortOptions = Object.keys(SORT_LABELS) as SortBy[]
   return (
     <MenuButton
       button={SORT_BUTTON}
@@ -353,9 +335,9 @@ export function SortMenu() {
           <Section>Sort by</Section>
           {sortOptions.map((by) => (
             <Check
-              checked={priorityView || sort?.by === by}
+              checked={sort?.by === by}
               key={by}
-              onClick={priorityView ? () => undefined : () => sortBy(by)}
+              onClick={() => sortBy(by)}
               text={SORT_LABELS[by]}
             />
           ))}
@@ -363,9 +345,9 @@ export function SortMenu() {
           <Section>Order</Section>
           {(Object.keys(ORDER_LABELS) as SortOrder[]).map((order) => (
             <Check
-              checked={(priorityView ? priorityOrder : sort?.order) === order}
+              checked={sort?.order === order}
               key={order}
-              onClick={priorityView ? () => setPriorityOrder(order) : () => orderBy(order)}
+              onClick={() => orderBy(order)}
               text={ORDER_LABELS[order]}
             />
           ))}
@@ -384,9 +366,9 @@ const GROUP_LABELS: Record<GroupBy, string> = {
   none: 'None',
 }
 
-/** ⋯ in the toolbar: View settings, with Group by as a submenu. */
+/** ⋯ in the toolbar: View settings, with Group as a submenu. */
 export function ViewSettingsMenu({extraItems}: {extraItems?: ReactNode}) {
-  const {groupBy, setGroupBy, view} = useInventoryConcepts()
+  const {groupBy, setGroupBy, showEmptyGroups, toggleShowEmptyGroups} = useInventoryConcepts()
   return (
     <MenuButton
       button={
@@ -405,13 +387,10 @@ export function ViewSettingsMenu({extraItems}: {extraItems?: ReactNode}) {
           <Section>View settings</Section>
           <MenuGroup
             data-testid="inventory-group-by"
-            disabled={view === 'priority'}
             popover={{placement: 'left-start'}}
-            tooltipProps={view === 'priority' ? PRIORITY_RANKS : undefined}
-            // Reads as a phrase, "Group by publish date" (Andrej, 2026-10-15); None reads "No grouping".
-            text={
-              groupBy === 'none' ? 'No grouping' : `Group by ${GROUP_LABELS[groupBy].toLowerCase()}`
-            }
+            // One name in every view and state (Andrej, 2026-10-20: "The group by language should
+            // always be called Group"); the submenu checks the current grouping.
+            text="Group"
           >
             {(['release', 'language', 'audience', 'experiment'] as GroupBy[]).map((option) => (
               <Check
@@ -424,9 +403,11 @@ export function ViewSettingsMenu({extraItems}: {extraItems?: ReactNode}) {
             <MenuDivider />
             <Check checked={groupBy === 'none'} onClick={() => setGroupBy('none')} text="None" />
           </MenuGroup>
-          <Check text="Show empty groups" />
-          <MenuDivider />
-          <Check text="Open in Variants tool" />
+          <Check
+            checked={showEmptyGroups}
+            onClick={toggleShowEmptyGroups}
+            text="Show empty groups"
+          />
         </Menu>
       }
       popover={{placement: 'bottom-end', portal: true}}
@@ -590,7 +571,7 @@ const peopleOptions = (kind: 'assignee' | 'editedBy'): FilterOption[] =>
 
 /** Each view's own filter kinds; the dimensions follow in every view. */
 function ViewFilterGroups() {
-  const {view, world} = useInventoryConcepts()
+  const {view} = useInventoryConcepts()
   if (view === 'publishDate') return <DateFilterGroup kind="publishDate" title="Publish date" />
   if (view === 'stage') {
     return (
@@ -623,28 +604,14 @@ function ViewFilterGroups() {
       </>
     )
   }
-  return (
-    <>
-      <FilterGroup
-        options={(Object.entries(MATCH_FILTER_LABELS) as [MatchFilter, string][]).map(
-          ([match, text]) => [text, {kind: 'match', match}],
-        )}
-        testId="inventory-filter-group-match"
-        title="Match for this visitor"
-      />
-      <FilterGroup
-        options={bundleOptions(world).map(([text, bundle]) => [text, {kind: 'bundle', bundle}])}
-        testId="inventory-filter-group-bundle"
-        title="Release"
-      />
-    </>
-  )
+  return null
 }
 
 /**
  * "+ Add filter" in the filter bar, the one place to add a filter (Andrej, 2026-10-20: "people should
- * be able to add filters only from that one place"): one short list of filter kinds, each a submenu. The view's own kinds come first (Publish date; Stage, Assignee, Edited by, Last edited;
- * Match for this visitor, Release), then Language, Audience and Experiment in every view.
+ * be able to add filters only from that one place"): one short list of filter kinds, each a submenu.
+ * The view's own kinds come first (Publish date; Stage, Assignee, Edited by, Last edited), then
+ * Language, Audience and Experiment in every view.
  */
 export function AddFilterMenu() {
   const {world} = useInventoryConcepts()

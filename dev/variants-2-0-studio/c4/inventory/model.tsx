@@ -7,6 +7,7 @@ import {
   type ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -14,11 +15,12 @@ import {
 import {useRouter} from 'sanity/router'
 
 // Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/inventory-sidepanel (PR #47), commit 9f990e031b, previously 40041dec04, 310271b6e2 and db53306896, lib/explorations/variants/inventory-concepts/model.tsx).
+// explorations/inventory-sidepanel (PR #47), commit 10f3f729a9, lib/explorations/variants/inventory-concepts/model.tsx).
 // Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
 import {PerspectiveProvider} from '../../../../packages/sanity/src/core/perspective/PerspectiveProvider'
 import {type ReleaseId} from '../../../../packages/sanity/src/core/perspective/types'
 import {useSetPerspective} from '../../../../packages/sanity/src/core/perspective/useSetPerspective'
+import {sortReleases} from '../../../../packages/sanity/src/core/releases/hooks/utils'
 import {formatRelativeLocale} from '../../../../packages/sanity/src/core/util/formatRelativeLocale'
 import {VARIANT_DOCUMENTS_PATH} from '../../../../packages/sanity/src/core/variants/store/constants'
 import {type SystemVariant} from '../../../../packages/sanity/src/core/variants/types'
@@ -61,17 +63,16 @@ import {
  * By publish date is the default: releases group the rows, in the order they go live (Andrej,
  * 2026-10-14: "The view is by publishing date. The releases are grouping within that view.").
  */
-export type InventoryView = 'publishDate' | 'stage' | 'priority'
+export type InventoryView = 'publishDate' | 'stage'
 
 export const VIEW_LABELS: Record<InventoryView, string> = {
   stage: 'By stage',
-  priority: 'By priority',
   publishDate: 'By publish date',
 }
 
 export type GroupBy = 'release' | DimensionName | 'none'
 
-export type SortBy = 'lastEdited' | 'name' | 'publishDate' | 'priority'
+export type SortBy = 'lastEdited' | 'name' | 'publishDate'
 export type SortOrder = 'desc' | 'asc'
 /** `undefined` keeps the stored order, which is the board's order. */
 export type Sort = {by: SortBy; order: SortOrder} | undefined
@@ -88,26 +89,12 @@ export type Filter =
   | {kind: 'stage'; stage: WorkflowStage | 'published'}
   | {kind: 'assignee'; person: string}
   | {kind: 'editedBy'; person: string}
-  | {kind: 'match'; match: MatchFilter}
   | {kind: 'bundle'; bundle: string}
-
-/**
- * By priority filters by how a row matches the visitor the Perspective bar describes, and by the
- * bundle it sits in (Andrej, 2026-10-15: "Build", on the per-view list).
- */
-export type MatchFilter = 'exact' | 'partial' | 'default' | 'none'
-
-export const MATCH_FILTER_LABELS: Record<MatchFilter, string> = {
-  exact: 'Exact',
-  partial: 'Partial',
-  default: 'Default',
-  none: 'No match',
-}
 
 /** Every scheduled draft is one bundle option, "Scheduled drafts". */
 export const SCHEDULED_DRAFTS = 'scheduledDrafts'
 
-/** By priority's Release options: drafts, each named release, the scheduled drafts, published. */
+/** The Release filter's options: drafts, each named release, the scheduled drafts, published. */
 export function bundleOptions(world: InventoryWorld): [string, string][] {
   const named = world.releases
     .filter((r) => r.metadata.cardinality !== 'one')
@@ -265,7 +252,6 @@ export function filterLabel(filter: Filter, world: InventoryWorld): string {
     return `Assigned to ${personLabel(filter.person).replace(/^Me$/, 'me')}`
   if (filter.kind === 'editedBy')
     return `Edited by ${personLabel(filter.person).replace(/^Me$/, 'me')}`
-  if (filter.kind === 'match') return `Match is ${MATCH_FILTER_LABELS[filter.match].toLowerCase()}`
   if (filter.kind === 'bundle') {
     const title = bundleOptions(world).find(([, id]) => id === filter.bundle)?.[0] ?? filter.bundle
     return `Release is ${title}`
@@ -306,7 +292,8 @@ function filterOffered(filter: Filter, view: InventoryView): boolean {
   if (filter.kind === 'dimension') return true
   if (filter.kind === 'publishDate') return view === 'publishDate'
   if (filter.kind === 'lastEdited') return view === 'stage'
-  if (filter.kind === 'match' || filter.kind === 'bundle') return view === 'priority'
+  // The Release filter is offered in no view's menu; a saved view can still hold it.
+  if (filter.kind === 'bundle') return false
   return view === 'stage'
 }
 
@@ -316,6 +303,11 @@ export const filterKey = (filter: Filter) =>
 
 /** Every view opens on Publish date, Ascending, unless the editor picks another sort. */
 const DEFAULT_SORT: Sort = {by: 'publishDate', order: 'asc'}
+/**
+ * By stage lists the rows by last edit, the newest first, until the editor picks a sort (Andrej,
+ * 2026-10-20: "The drafts should be ordered by last edited date").
+ */
+const STAGE_SORT: Sort = {by: 'lastEdited', order: 'desc'}
 
 /**
  * A view an editor kept: a name for one of the views, with its filters and sort (Andrej,
@@ -386,22 +378,23 @@ export interface InventoryRow {
   variant: SystemVariant | undefined
   title: string
   subtitle: string
-  /** Right-hand text: By priority's match only; the other views show none. */
-  meta?: string
   match: Match
   isBase: boolean
   isHere: boolean
+  /** The version visitors get with the bar's perspective; the row marks it with an icon. */
   isShown: boolean
   isSelected: boolean
-  /** Under a selected row this visitor is served: who sees what if it is deleted. */
-  fallback: string | undefined
+  /** By stage: when the version was last edited, which the row's subtitle leads with. */
+  editedAt?: string
+  /** By stage: the status icons' tooltip, the variant and where the version sits. */
+  statusLabel?: string
 }
 
 export interface InventoryGroup {
   id: string
   /** `undefined` for the one header-less group of an ungrouped list. */
   title: string | undefined
-  /** Grey text after the title: a release's publish date in By priority. */
+  /** Grey text after the title, joined by `secondaryJoin`. */
   secondary?: string
   /** What joins title and secondary; two spaces unless set. */
   secondaryJoin?: string
@@ -434,12 +427,6 @@ export function matchVariant(variant: SystemVariant | undefined, visitor: Visito
     ([dimension, value]) => visitor[dimension as DimensionName] === value,
   )
   return agrees ? {kind: 'conditions', count: conditions.length} : {kind: 'none'}
-}
-
-export function matchLabel(match: Match): string {
-  if (match.kind === 'default') return 'Default'
-  if (match.kind === 'none') return 'No match'
-  return match.count === 1 ? '1 condition' : `${match.count} conditions`
 }
 
 function tier(match: Match): number {
@@ -507,35 +494,25 @@ function releaseDateLabel(world: InventoryWorld, id: InventoryGroupId): string |
 }
 
 /**
- * When a row goes out, at the head of its subtitle, so the date reads in every view and grouping,
- * None included (Andrej, 2026-10-15: "When we group by none, currently there is no way to see the
- * actual date of publishing"). A published row says Published; a release row its release's
- * moment; an unscheduled draft has none.
+ * When a row goes out, at the head of its subtitle in By publish date, so the date reads in every
+ * grouping, None included (Andrej, 2026-10-15: "When we group by none, currently there is no way
+ * to see the actual date of publishing"): "Published Oct 12, 2026", "Scheduled for Oct 15, 2026,
+ * 10:00 AM", "As soon as possible" or "Undecided"; an unscheduled draft has none.
  */
 function publishMoment(world: InventoryWorld, entry: InventoryEntry): string | undefined {
   if (entry.group === 'drafts') return undefined
-  // A published row says Published, without a date (Andrej, 2026-10-15: "For the published rows,
-  // please call them published and remove the date").
-  if (entry.group === 'published') return 'Published'
+  // Each row repeats its group's date with what it means, so the date stays readable when the
+  // header has scrolled away (Andrej, 2026-10-20: "repeat the publishing date. Add
+  // published/scheduled on... so it's clear what this date is"). A published version's last edit
+  // is its publishing, so its date is the day it went out, as Studio's medium date.
+  if (entry.group === 'published') {
+    const at = new Date(Date.parse(FIXTURE_NOW) - ageInHours(entry) * 3_600_000)
+    return `Published ${DAY_ONLY.format(at)}`
+  }
   const release = releaseOf(world, entry.group)
   if (release?.metadata.releaseType === 'asap') return 'As soon as possible'
   const at = release?.metadata.intendedPublishAt
-  return at ? ABSOLUTE.format(new Date(at)) : 'Undecided'
-}
-
-/**
- * In By priority a row carries its state where the group header used to (Captain's brief,
- * 2026-10-15, from Faheem's "if there's a way we can distinguish visually/through labels between
- * draft/published/release/scheduled states"): Published, Draft, the release and when it goes out,
- * or Scheduled and its date.
- */
-function priorityState(world: InventoryWorld, entry: InventoryEntry): string {
-  if (entry.group === 'drafts') return 'Draft'
-  if (entry.group === 'published') return 'Published'
-  const release = releaseOf(world, entry.group)
-  const moment = publishMoment(world, entry)
-  if (release?.metadata.cardinality === 'one') return `Scheduled · ${moment}`
-  return `${releaseTitle(world, entry.group)} · ${moment}`
+  return at ? `Scheduled for ${ABSOLUTE.format(new Date(at))}` : 'Undecided'
 }
 
 /** A scheduled draft is a single-document release; Studio lists those as Scheduled Drafts. */
@@ -595,10 +572,8 @@ function timelineSlots(world: InventoryWorld): TimelineSlot[] {
   )
   return [
     {id: 'published', title: 'Published', icon: 'published', bundles: ['published']},
-    // Design Studio copy, approved by Faheem 22 Oct (C4 E only, via world.draftsInTimeline): the drafts are a group, under Published.
-    ...(world.draftsInTimeline
-      ? [{id: 'drafts', title: 'Drafts', icon: 'drafts' as const, bundles: ['drafts']}]
-      : []),
+    // Open beta (approved by Faheem, 22 Oct): By publish date is the only view, so the drafts are a group, under Published.
+    {id: 'drafts', title: 'Drafts', icon: 'drafts', bundles: ['drafts']},
     ...asap.map((r) => slot('As soon as possible', r)),
     ...scheduled.map((r) => slot(capitalise(publishDateLabel(at(r)!)), r)),
     ...undated.map((r) => slot('Undecided', r)),
@@ -616,21 +591,11 @@ function startOfDay(date: Date): number {
 }
 
 /**
- * How a version matches the visitor, as the Match filter names it: exact when its conditions are
- * every dimension the visitor has, partial when they are some of them. The base has no conditions,
- * so it matches exactly a visitor with no value in any dimension, and is the default otherwise
- * (Andrej, 2026-10-20: "in this state I would expect that the base is in the category Matching").
+ * A version's workflow stage. A version in a release is a draft until the release publishes, so it
+ * sits in Draft (Faheem, 2026-10-20: "this one is part of that release, but it's a draft").
  */
-function matchFilterOf(
-  world: InventoryWorld,
-  visitor: Visitor,
-  entry: InventoryEntry,
-): MatchFilter {
-  const match = matchVariant(variantFor(world, entry), visitor)
-  const chosen = Object.values(visitor).filter((value) => value !== undefined).length
-  if (match.kind === 'default') return chosen === 0 ? 'exact' : 'default'
-  if (match.kind !== 'conditions') return match.kind
-  return match.count === chosen ? 'exact' : 'partial'
+function stageOf(entry: InventoryEntry): WorkflowStage {
+  return entry.stage ?? 'draft'
 }
 
 /**
@@ -648,9 +613,10 @@ function filterMatches(
     return variantFor(world, entry)?.conditions?.[filter.dimension] === filter.value
   }
   if (filter.kind === 'stage') {
-    return filter.stage === 'published' ? entry.group === 'published' : entry.stage === filter.stage
+    return filter.stage === 'published'
+      ? entry.group === 'published'
+      : entry.group !== 'published' && stageOf(entry) === filter.stage
   }
-  if (filter.kind === 'match') return matchFilterOf(world, visitor, entry) === filter.match
   if (filter.kind === 'bundle') {
     if (filter.bundle !== SCHEDULED_DRAFTS) return entry.group === filter.bundle
     return releaseOf(world, entry.group)?.metadata.cardinality === 'one'
@@ -680,7 +646,7 @@ function filterMatches(
 }
 
 /**
- * By priority's ranking: what a query sent now with the Perspective bar's perspective would serve,
+ * The query ranking: what a query sent now with the Perspective bar's perspective would serve,
  * and in which order it falls back (Faheem: "If someone were to send a query right now, what would
  * the priority look like?"; Andrej, 2026-10-15: "show which is the winning variant for a particular
  * perspective and show the fallback variants in order of priority under each other").
@@ -692,29 +658,37 @@ function filterMatches(
  * its published version. A draft is never served (Andrej, 2026-10-20: "drafts are never served.
  * They need to be published to be served"), so with Drafts previewed the ranking is Published's
  * (Andrej, 2026-10-20: "It should be published.norwegian actually because the norwegian perspective
- * is selected"). Everything else is not served. Rows in `exclude` are skipped, which is how the fallback after a delete is
- * found.
+ * is selected"). Everything else is not served. Rows in `exclude` are skipped, which is how the
+ * fallback after a delete is found.
  */
 function priorityRanking(
   world: InventoryWorld,
   visitor: Visitor,
   release: string,
   exclude: ReadonlySet<string> = new Set(),
-): {served: InventoryEntry[]; rest: InventoryEntry[]} {
-  const ranked = (entries: InventoryEntry[]) =>
-    entries
-      .filter((entry) => !exclude.has(entry.key))
-      .map((entry) => ({entry, match: matchVariant(variantFor(world, entry), visitor)}))
-      .sort(
-        (a, b) =>
-          tier(b.match) - tier(a.match) || priorityOf(world, b.entry) - priorityOf(world, a.entry),
-      )
-  const bundles: string[] =
-    release === 'published' || release === 'drafts' ? ['published'] : [release, 'published']
+): InventoryEntry[] {
+  return rankIn(
+    world,
+    visitor,
+    release === 'published' || release === 'drafts' ? ['published'] : [release, 'published'],
+    exclude,
+  )
+}
+
+/**
+ * The versions in `bundles` that match the visitor, best first: more conditions, then priority,
+ * the base last; a variant's versions stay together, in the order of `bundles`.
+ */
+function rankIn(
+  world: InventoryWorld,
+  visitor: Visitor,
+  bundles: string[],
+  exclude: ReadonlySet<string> = new Set(),
+): InventoryEntry[] {
   // Variants that tie on match and priority keep the fixture's order, and each keeps its versions
   // together.
   const variantOrder = [...new Set(world.entries.map((entry) => entry.variantId ?? ''))]
-  const served = world.entries
+  return world.entries
     .filter((entry) => !exclude.has(entry.key) && bundles.includes(entry.group))
     .map((entry) => ({entry, match: matchVariant(variantFor(world, entry), visitor)}))
     .filter(({match}) => match.kind !== 'none')
@@ -727,52 +701,229 @@ function priorityRanking(
         bundles.indexOf(a.entry.group) - bundles.indexOf(b.entry.group),
     )
     .map(({entry}) => entry)
-  const servedKeys = new Set(served.map((entry) => entry.key))
-  const rest = ranked(world.entries.filter((entry) => !servedKeys.has(entry.key))).map(
-    ({entry}) => entry,
-  )
-  return {served, rest}
 }
 
-/** The row the visitor is served: the first of By priority's ranking. */
+/** The row the visitor is served: the first of the query ranking. */
 function shownEntryKey(
   world: InventoryWorld,
   visitor: Visitor,
   release: string,
   exclude: ReadonlySet<string> = new Set(),
 ): string | undefined {
-  return priorityRanking(world, visitor, release, exclude).served[0]?.key
+  return priorityRanking(world, visitor, release, exclude)[0]?.key
 }
 
 /** The proposal for J3, not checked against Studio: what this visitor is served once it is gone. */
-function fallbackText(world: InventoryWorld, fallbackKey: string | undefined): string {
+function fallbackText(
+  world: InventoryWorld,
+  fallbackKey: string | undefined,
+  count: number,
+): string {
+  const it = count === 1 ? 'it' : 'them'
   const entry = world.entries.find((e) => e.key === fallbackKey)
-  if (!entry) return 'If you delete it, this visitor sees no version of this document.'
+  if (!entry) return `If you delete ${it}, this visitor sees no version of this document.`
   const where =
     entry.group === 'published'
       ? 'published'
       : entry.group === 'drafts'
         ? 'draft'
         : releaseTitle(world, entry.group)
-  return `If you delete it, this visitor sees the ${where} ${titleOf(world, entry)} instead.`
+  return `If you delete ${it}, this visitor sees the ${where} ${titleOf(world, entry)} instead.`
 }
 
-/** The versions a view lists under its filters, before grouping. */
+/**
+ * What the delete dialog says this visitor gets instead, when the selection holds the version the
+ * visitor is served (Andrej, 2026-10-20: "that information of the fallback needs to go into the
+ * delete dialog"); `undefined` when the served version stays.
+ */
+export function deleteFallbackText(
+  world: InventoryWorld,
+  visitor: Visitor,
+  release: string,
+  selectedKeys: ReadonlySet<string>,
+): string | undefined {
+  const shownKey = shownEntryKey(world, visitor, release)
+  if (!shownKey || !selectedKeys.has(shownKey)) return undefined
+  return fallbackText(
+    world,
+    shownEntryKey(world, visitor, release, selectedKeys),
+    selectedKeys.size,
+  )
+}
+
+/** Whether the Perspective bar shows a release or scheduled draft, not Drafts or Published. */
+const isReleaseBar = (release: string) => release !== 'drafts' && release !== 'published'
+
+/**
+ * The bundles a visitor's query reads, in serving order: a release, then the releases Studio sorts
+ * after it (`getReleasesPerspectiveStack` over `sortReleases`), the ones that go out before it,
+ * then published. Drafts are never served (Andrej, 2026-10-20: "drafts are never served"), so
+ * with Drafts or Published in the bar it reads published alone.
+ */
+function servingOrder(world: InventoryWorld, release: string): string[] {
+  if (!isReleaseBar(release)) return ['published']
+  const sorted = sortReleases(world.releases).map((doc) => doc.name)
+  const at = sorted.indexOf(release)
+  return [...(at === -1 ? [release] : sorted.slice(at)), 'published']
+}
+
+/**
+ * The exact variant's short id: the variant whose conditions equal the bar's values. "All" in a
+ * dimension is no condition (Andrej, 2026-10-20: "all means no condition"), so with every
+ * dimension on All the base is exact, as `{id: undefined}`. `undefined` when no variant is exact.
+ */
+function exactVariantOf(
+  world: InventoryWorld,
+  visitor: Visitor,
+): {id: string | undefined} | undefined {
+  if (Object.values(visitor).every((value) => value === undefined)) return {id: undefined}
+  const variant = findExactVariant(world, visitor)
+  return variant ? {id: variant._id.slice(VARIANT_DOCUMENTS_PATH.length + 1)} : undefined
+}
+
+/**
+ * What the inventory's bottom bar says for the bar's perspective (Andrej, 2026-10-20: "move the
+ * informational area … to the button, absorb the Create variant button and make it contextual to
+ * the selected perspective"): one fact line when the bar's exact version is missing, and one
+ * action. The line names facts only (Andrej: "make the description more neutral").
+ */
+export interface ServedAnswer {
+  /** The version a visitor gets; the list marks it. `undefined` when none is served. */
+  served: InventoryEntry | undefined
+  /** What is missing, as a fact; `undefined` when nothing is. */
+  line: string | undefined
+  /** The card's one button: "Add missing variant" when something is missing, else "Create variant". */
+  action: string
+  /** What the action adds: a version of the exact variant in a bundle, a variant, or nothing. */
+  missing:
+    | {kind: 'version'; bundle: string; variantId: string | undefined}
+    | {kind: 'variant'}
+    | undefined
+}
+
+/**
+ * The version a visitor gets, in serving order: a release, then the releases that go out before
+ * it, then published. Drafts are never served (Andrej, 2026-10-20: "drafts are never served"), so
+ * with Drafts or Published in the bar a visitor gets the published version. The exact variant's
+ * version comes first; with none in that order, the best match.
+ */
+export function servedEntryOf(
+  world: InventoryWorld,
+  visitor: Visitor,
+  release: string,
+): InventoryEntry | undefined {
+  const order = servingOrder(world, release)
+  const exact = exactVariantOf(world, visitor)
+  const ofExact = (bundle: string) =>
+    exact
+      ? world.entries.find((entry) => entry.group === bundle && entry.variantId === exact.id)
+      : undefined
+  return order.flatMap((bundle) => ofExact(bundle) ?? [])[0] ?? rankIn(world, visitor, order)[0]
+}
+
+export function servedAnswer(options: {
+  world: InventoryWorld
+  visitor: Visitor
+  release: string
+}): ServedAnswer {
+  return servedFact(options)
+}
+
+function servedFact(options: {
+  world: InventoryWorld
+  visitor: Visitor
+  release: string
+}): ServedAnswer {
+  const {world, visitor, release} = options
+  const exact = exactVariantOf(world, visitor)
+  const inBar = exact
+    ? world.entries.find((entry) => entry.group === release && entry.variantId === exact.id)
+    : undefined
+  const exactTitle = exact?.id
+    ? (variantsById(world).get(exact.id)?.metadata?.title ?? exact.id)
+    : 'Base · all visitors'
+  // The bar's values, in dimension order, name a variant no definition carries, joined as a
+  // sentence (Andrej, 2026-10-21: "No variant for Danish and New visitors.").
+  const titles = worldDimensions(world).flatMap((dimension) => {
+    const option = dimension.values.find((o) => o.value === visitor[dimension.name])
+    return option ? [option.title] : []
+  })
+  const values =
+    titles.length > 1 ? `${titles.slice(0, -1).join(', ')} and ${titles.at(-1)}` : titles.join('')
+  const served = servedEntryOf(world, visitor, release)
+  if (!exact) {
+    return {
+      served,
+      line: `No variant for ${values}.`,
+      action: 'Add missing variant',
+      missing: {kind: 'variant'},
+    }
+  }
+  if (inBar) return {served, line: undefined, action: 'Create variant', missing: undefined}
+  const missing = {kind: 'version' as const, bundle: release, variantId: exact.id}
+  if (release === 'drafts') {
+    return {
+      served,
+      line: `${exactTitle} has no draft.`,
+      action: 'Add missing variant',
+      missing,
+    }
+  }
+  const barName = releaseTitle(world, release as InventoryGroupId)
+  return {
+    served,
+    line:
+      release === 'published'
+        ? `${exactTitle} has no published version.`
+        : `${barName} has no ${exactTitle} version.`,
+    action: 'Add missing variant',
+    missing,
+  }
+}
+
+/**
+ * Whether a version matches the search text (Andrej, 2026-10-20: "implement the search
+ * functionality that allows free text filtering"): its title, its variant's name, its bundle and
+ * the fields it changes, ignoring case.
+ */
+function matchesSearch(world: InventoryWorld, entry: InventoryEntry, search: string): boolean {
+  const query = search.trim().toLowerCase()
+  if (!query) return true
+  const bundle =
+    entry.group === 'drafts'
+      ? 'Draft'
+      : entry.group === 'published'
+        ? 'Published'
+        : releaseTitle(world, entry.group)
+  const text = [
+    variantsOn(world) ? titleOf(world, entry) : worldDocument(world).title,
+    variantFor(world, entry)?.metadata?.title,
+    bundle,
+    ...entry.changedFields,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+  return text.includes(query)
+}
+
+/** The versions a view lists under its filters and search, before grouping. */
 function visibleEntries(options: {
   world: InventoryWorld
   visitor: Visitor
+  release: string
   view: InventoryView
   filters: Filter[]
+  search?: string
 }): InventoryEntry[] {
-  const {world, visitor, view, filters} = options
-  return world.entries.filter(
-    (entry) =>
-      // The timeline holds what is live or will go live; By stage holds the unscheduled drafts, then
-      // what is published as the last stage.
-      // Design Studio copy, approved by Faheem 22 Oct (C4 E only): with world.draftsInTimeline, By publish date lists the drafts too.
-      (view === 'publishDate' && !world.draftsInTimeline ? entry.group !== 'drafts' : true) &&
-      (view === 'stage' ? entry.group === 'drafts' || entry.group === 'published' : true) &&
-      filters.every((f) => filterMatches(world, visitor, f, entry)),
+  const {world, visitor, view, filters, search = ''} = options
+  const passes = (entry: InventoryEntry) =>
+    filters.every((f) => filterMatches(world, visitor, f, entry)) &&
+    matchesSearch(world, entry, search)
+  return world.entries.filter((entry) =>
+    // The timeline holds what is live or will go live; By stage holds every version.
+    // Open beta (approved by Faheem, 22 Oct): By publish date lists the drafts too (was: drafts only in By stage).
+    passes(entry),
   )
 }
 
@@ -783,9 +934,10 @@ export function buildGroups(options: {
   view: InventoryView
   groupBy?: GroupBy
   sort?: Sort
-  /** By priority's order: Descending is the serving order, winner first. */
-  priorityOrder?: SortOrder
   filters?: Filter[]
+  search?: string
+  /** The ⋯ menu's Show empty groups: a group with no rows keeps its header and an empty line. */
+  showEmptyGroups?: boolean
   selectedKeys?: ReadonlySet<string>
   editedEntryKey: string | undefined
 }): InventoryGroup[] {
@@ -793,71 +945,51 @@ export function buildGroups(options: {
   const filters = options.filters ?? []
   const selectedKeys = options.selectedKeys ?? new Set<string>()
   const groupBy: GroupBy = options.groupBy ?? 'release'
-  const {sort, priorityOrder = 'desc'} = options
+  const {sort} = options
 
-  const shownKey = shownEntryKey(world, visitor, release)
-  const fallbackKey = selectedKeys.has(shownKey ?? '')
-    ? shownEntryKey(world, visitor, release, selectedKeys)
-    : undefined
-
-  const visible = visibleEntries({world, visitor, view, filters})
-  const ranking = view === 'priority' ? priorityRanking(world, visitor, release) : undefined
-  const servedKeys = new Set(ranking?.served.map((entry) => entry.key))
-
-  /**
-   * By priority's right-hand label: a served row says how it matches, a row that is not served why
-   * (Captain's brief, 2026-10-15): "No match" when its conditions disagree, "Not published" for a
-   * draft that matches, and "Not in this perspective" when it matches but sits in a release the bar
-   * does not preview. The section names
-   * the shown version, so its row does not (Andrej, 2026-10-19: "we don't need redundancy then in
-   * the actual row item"). A base that matches exactly gets a full match's label, not "Default".
-   */
-  const priorityMeta = (entry: InventoryEntry, match: Match) => {
-    if (servedKeys.has(entry.key))
-      return match.kind === 'default' && matchFilterOf(world, visitor, entry) === 'exact'
-        ? matchLabel({kind: 'conditions', count: 0})
-        : matchLabel(match)
-    if (match.kind === 'none') return 'No match'
-    return entry.group === 'drafts' ? 'Not published' : 'Not in this perspective'
-  }
+  const visible = visibleEntries({world, visitor, release, view, filters, search: options.search})
+  // The version visitors get keeps its place in the list; its label names it.
+  const servedKey = variantsOn(world) ? servedEntryOf(world, visitor, release)?.key : undefined
 
   const toRow = (entry: InventoryEntry): InventoryRow => {
     const variant = variantFor(world, entry)
     const match = matchVariant(variant, visitor)
     const isBase = !variant
-    const isShown = view === 'priority' && entry.key === shownKey
+    const isShown = entry.key === servedKey
     const isSelected = selectedKeys.has(entry.key)
     // The highlight alone marks the version the form edits; only the served row gets a label.
     // With variants off every row is the document itself: no base to name, no diamond.
     const detail = isBase && variantsOn(world) ? 'Base document' : changesText(entry)
-    const moment = view === 'priority' ? priorityState(world, entry) : publishMoment(world, entry)
+    // By stage's subtitle is the last edit, then the fields changed (Andrej, 2026-10-20: "For the
+    // subtitle we just want the last edited date and then which fields changed"); the row puts the
+    // edit time in front, in Studio's format.
+    const moment = view === 'stage' ? undefined : publishMoment(world, entry)
     const subtitle = [moment, detail].filter(Boolean).join(' · ')
+    const title = variantsOn(world) ? titleOf(world, entry) : worldDocument(world).title
     return {
       entry,
       variant,
-      title: variantsOn(world) ? titleOf(world, entry) : worldDocument(world).title,
+      title,
       subtitle,
-      meta: view === 'priority' ? priorityMeta(entry, match) : undefined,
       match,
       isBase,
       isHere: entry.key === editedEntryKey,
       isShown,
       isSelected,
-      fallback: isSelected && entry.key === shownKey ? fallbackText(world, fallbackKey) : undefined,
+      editedAt:
+        view === 'stage'
+          ? new Date(Date.parse(FIXTURE_NOW) - ageInHours(entry) * 3_600_000).toISOString()
+          : undefined,
+      statusLabel:
+        view === 'stage'
+          ? `${title} · ${entry.group === 'drafts' ? 'Draft' : releaseTitle(world, entry.group)}`
+          : undefined,
     }
   }
 
   const compare = (a: InventoryRow, b: InventoryRow): number => {
     if (!sort) return 0
     const dir = sort.order === 'asc' ? 1 : -1
-    // Ascending runs from the lowest priority to the highest, the match tier first and the
-    // definition's priority on a tie (Andrej, 2026-10-19: "The sorting option by priority should be
-    // from lowest to highest priority").
-    if (sort.by === 'priority')
-      return (
-        dir *
-        (tier(a.match) - tier(b.match) || priorityOf(world, a.entry) - priorityOf(world, b.entry))
-      )
     if (sort.by === 'name') return dir * a.title.localeCompare(b.title)
     if (sort.by === 'lastEdited') return dir * (ageInHours(b.entry) - ageInHours(a.entry))
     // Publish date: by the bundle a row goes out with, the earliest first for "Ascending".
@@ -869,66 +1001,13 @@ export function buildGroups(options: {
     visible.filter(predicate).map(toRow).sort(compare)
 
   let groups: InventoryGroup[]
-  if (ranking) {
-    // By priority sorts the versions by how they match the visitor, in serving order inside each
-    // section (Andrej, 2026-10-20: "matching and then served to this visitor"; "Partially matching"
-    // and "not matching"; Base in its own section, "Fallback"). With no value in any dimension the
-    // base matches fully and takes the match sections instead (Andrej, 2026-10-20: "in this state I
-    // would expect that the base is in the category Matching"). The first section holds the served
-    // version when it matches fully, and its name is the only mark on it (Andrej, 2026-10-20: "The
-    // section headers allow us to designate that"). The served list comes first, then the rest, so
-    // a served row leads its section. Every section starts open. Ascending turns each section
-    // round, lowest priority first; the sections stay apart (Andrej, 2026-10-19: "In the priority
-    // view we may want to sort by priority ascending or descending").
-    const visibleKeys = new Set(visible.map((entry) => entry.key))
-    const rowsFor = (entries: InventoryEntry[]) => {
-      const rows = entries.filter((entry) => visibleKeys.has(entry.key)).map(toRow)
-      return priorityOrder === 'asc' ? rows.reverse() : rows
-    }
-    const ordered = [...ranking.served, ...ranking.rest]
-    const kindOf = (entry: InventoryEntry) => matchFilterOf(world, visitor, entry)
-    const served = ranking.served[0]
-    const servedMatches = served && kindOf(served) === 'exact' ? served : undefined
-    const inRelease =
-      release === 'drafts' || release === 'published'
-        ? ''
-        : ` in ${releaseTitle(world, release as InventoryGroupId)}`
-    groups = [
-      {
-        id: 'priority-served',
-        title: `Matching and served to this visitor${inRelease}`,
-        rows: rowsFor(servedMatches ? [servedMatches] : []),
-        emptyText: 'No version matches this visitor.',
-      },
-      {
-        id: 'priority-matching',
-        title: 'Matching, not served',
-        rows: rowsFor(ordered.filter((e) => e !== servedMatches && kindOf(e) === 'exact')),
-      },
-      {
-        id: 'priority-partial',
-        title: 'Partially matching',
-        rows: rowsFor(ordered.filter((e) => kindOf(e) === 'partial')),
-      },
-      {
-        id: 'priority-fallback',
-        title: 'Fallback',
-        rows: rowsFor(ordered.filter((e) => kindOf(e) === 'default')),
-        emptyText: 'No fallback for this visitor.',
-      },
-      {
-        id: 'priority-not-matching',
-        title: 'Not matching',
-        rows: rowsFor(ordered.filter((e) => kindOf(e) === 'none')),
-      },
-    ]
-  } else if (view === 'stage') {
+  if (view === 'stage') {
     groups = [
       ...STAGES.map(([stage, title, icon]) => ({
         id: `stage-${stage}`,
         title,
         ...icon,
-        rows: rowsWhere((entry) => entry.group === 'drafts' && entry.stage === stage),
+        rows: rowsWhere((entry) => entry.group !== 'published' && stageOf(entry) === stage),
       })),
       // Published closes the workflow, at the very bottom (Andrej, 2026-10-14).
       {
@@ -979,6 +1058,15 @@ export function buildGroups(options: {
       },
     ]
   }
+  // Show empty groups keeps a group with no rows, with an empty line under its header (Andrej,
+  // 2026-10-20: "The show empty groups should work").
+  if (options.showEmptyGroups) {
+    groups = groups.map((group) =>
+      group.title !== undefined && group.emptyText === undefined
+        ? {...group, emptyText: 'No versions.'}
+        : group,
+    )
+  }
   return groups.filter((group) => group.rows.length > 0 || group.emptyText !== undefined)
 }
 
@@ -991,6 +1079,13 @@ interface InventoryConceptsValue {
   setRelease: (release: string) => void
   view: InventoryView
   setView: (view: InventoryView) => void
+  /**
+   * Opens the panel in the view for the bar's release, once per release group: By stage for Drafts
+   * and Published, By publish date for a release. A saved view the editor picked stays.
+   */
+  applyDefaultView: () => void
+  /** Forgets the applied default, so the next opening applies it again. Called on close. */
+  resetDefaultView: () => void
   /** The saved views, in the order the views menu lists them. */
   savedViews: SavedView[]
   /** The saved view the panel shows, until the editor picks a view. */
@@ -1010,9 +1105,6 @@ interface InventoryConceptsValue {
   setGroupBy: (groupBy: GroupBy) => void
   sort: Sort
   setSort: (sort: Sort) => void
-  /** By priority's own order, apart from the other views' sort; Descending until changed. */
-  priorityOrder: SortOrder
-  setPriorityOrder: (order: SortOrder) => void
   filters: Filter[]
   addFilter: (filter: Filter) => void
   removeFilter: (index: number) => void
@@ -1022,6 +1114,12 @@ interface InventoryConceptsValue {
    * "Hiding keeps the filters"). A saved view with filters opens it.
    */
   filterBarOpen: boolean
+  /** The search field's text, `undefined` while it is closed; it narrows every view. */
+  search: string | undefined
+  setSearch: (search: string | undefined) => void
+  /** The ⋯ menu's Show empty groups, off until turned on. */
+  showEmptyGroups: boolean
+  toggleShowEmptyGroups: () => void
   toggleFilterBar: () => void
   /**
    * The Specific date calendar is open, and whether its next day click extends the span. Held here,
@@ -1059,8 +1157,14 @@ interface InventoryConceptsValue {
   barVisible: boolean
   /** Shows or hides the Perspective bar, keeping the perspective; undefined where it always shows. */
   toggleBar: (() => void) | undefined
+  /** Shows the Perspective bar if it is hidden; undefined where it always shows. */
+  showBar: (() => void) | undefined
   /** Drafts with every dimension selector on All. */
   perspectiveIsDefault: boolean
+  /** What the bottom bar says and does for the bar's perspective, and which version is served. */
+  answer: ServedAnswer
+  /** Adds the bar's missing version of the exact variant to the prototype's versions. */
+  addMissingVersion: () => void
 }
 
 const InventoryConceptsContext = createContext<InventoryConceptsValue | null>(null)
@@ -1107,25 +1211,46 @@ export function InventoryConceptsProvider(props: {
     initialView = 'publishDate',
     initialVisitor = defaultVisitor,
     barUntilVariant,
-    world = baseWorld,
+    world: givenWorld = baseWorld,
     selection,
   } = props
+  // Versions "Add missing variant" created, on top of the story's world. The prototype keeps them
+  // here; Studio's form has no document for them.
+  const [added, setAdded] = useState<InventoryEntry[]>([])
+  const world = useMemo(
+    () =>
+      added.length > 0 ? {...givenWorld, entries: [...givenWorld.entries, ...added]} : givenWorld,
+    [givenWorld, added],
+  )
   const router = useRouter()
   const setPerspective = useSetPerspective()
   const stickyRelease = router.stickyParams.perspective
   const release = typeof stickyRelease === 'string' && stickyRelease ? stickyRelease : 'drafts'
   const [visitor, setVisitor] = useState<Visitor>(initialVisitor)
   const [view, setViewState] = useState<InventoryView>(initialView)
-  // LIVE: his three seeded sample views are mock data; saved views are a fast follow, so the list starts empty.
-  const [savedViews, setSavedViews] = useState<SavedView[]>(NO_SAVED_VIEWS)
+  const [
+    savedViews,
+    setSavedViews,
+  ] = // LIVE: his seeded sample views are mock data; saved views are a fast follow, so the list starts empty.
+    useState<SavedView[]>(NO_SAVED_VIEWS)
   const [savedViewId, setSavedViewId] = useState<string | undefined>()
   const savedViewCount = useRef(0)
   const [groupBy, setGroupBy] = useState<GroupBy>('release')
-  // By publish date sorts by publish date unless the editor picks another sort (Andrej, 2026-10-14).
-  const [sort, setSort] = useState<Sort>(DEFAULT_SORT)
-  const [priorityOrder, setPriorityOrder] = useState<SortOrder>('desc')
+  // By publish date sorts by publish date unless the editor picks another sort (Andrej, 2026-10-14);
+  // By stage by last edit until then. The sort menu reads the sort in force.
+  const [chosenSort, setChosenSort] = useState<Sort>(DEFAULT_SORT)
+  const [sortChosen, setSortChosen] = useState(false)
+  const setSort = useCallback((next: Sort) => {
+    setChosenSort(next)
+    setSortChosen(true)
+  }, [])
+  const sort: Sort = view === 'stage' && !sortChosen ? STAGE_SORT : chosenSort
   const [filters, setFilters] = useState<Filter[]>([])
   const [filterBarOpen, setFilterBarOpen] = useState(false)
+  // The search field: `undefined` while closed, else its text.
+  const [search, setSearch] = useState<string | undefined>()
+  const [showEmptyGroups, setShowEmptyGroups] = useState(false)
+  const toggleShowEmptyGroups = useCallback(() => setShowEmptyGroups((show) => !show), [])
   const toggleFilterBar = useCallback(() => setFilterBarOpen((open) => !open), [])
   const [selectedKeys, setSelectedKeys] = useState<ReadonlySet<string>>(new Set())
 
@@ -1135,6 +1260,24 @@ export function InventoryConceptsProvider(props: {
     // A filter only one view offers goes when the editor leaves that view; dimensions stay.
     setFilters((current) => current.filter((f) => filterOffered(f, next)))
   }, [])
+  // The view the panel opens in follows the bar's release (Andrej, 2026-10-21: "when in the drafts
+  // perspective or the published perspective we by default open the By Stage view … When release
+  // is selected … we open the view in by Publishing Date"). It applies once per release group, so
+  // a view the editor picks stays until the panel closes or the bar moves between Drafts or
+  // Published and a release. The panel remounts on every perspective change, so this cannot key
+  // on mounting.
+  const defaultViewGroup = useRef<'base' | 'release' | undefined>(undefined)
+  const releaseGroup = release === 'drafts' || release === 'published' ? 'base' : 'release'
+  const applyDefaultView = useCallback(() => {
+    if (defaultViewGroup.current === releaseGroup) return
+    defaultViewGroup.current = releaseGroup
+    if (savedViewId) return
+    // Open beta (approved by Faheem, 22 Oct): By publish date in every perspective (was: By stage on Drafts and Published).
+    setView('publishDate')
+  }, [releaseGroup, savedViewId, setView])
+  const resetDefaultView = useCallback(() => {
+    defaultViewGroup.current = undefined
+  }, [])
   const selectSavedView = useCallback(
     (id: string) => {
       const saved = savedViews.find((each) => each.id === id)
@@ -1142,9 +1285,7 @@ export function InventoryConceptsProvider(props: {
       setViewState(saved.view)
       setFilters(saved.filters)
       if (saved.filters.length > 0) setFilterBarOpen(true)
-      // By priority keeps its order apart from the other views' sort.
-      if (saved.view === 'priority') setPriorityOrder(saved.sort?.order ?? 'desc')
-      else setSort(saved.sort)
+      setSort(saved.sort)
       setSavedViewId(id)
     },
     [savedViews],
@@ -1153,11 +1294,10 @@ export function InventoryConceptsProvider(props: {
     (name: string) => {
       savedViewCount.current += 1
       const id = `saved-view-${savedViewCount.current}`
-      const kept: Sort = view === 'priority' ? {by: 'priority', order: priorityOrder} : sort
-      setSavedViews((current) => [...current, {id, name, view, filters, sort: kept}])
+      setSavedViews((current) => [...current, {id, name, view, filters, sort}])
       setSavedViewId(id)
     },
-    [view, filters, sort, priorityOrder],
+    [view, filters, sort],
   )
   const deleteSavedView = useCallback(
     (id: string) => {
@@ -1186,10 +1326,12 @@ export function InventoryConceptsProvider(props: {
       visibleEntries({
         world,
         visitor,
+        release,
         view,
         filters: [...filters.filter((f) => filterKey(f) !== filterKey(filter)), filter],
+        search,
       }).length,
-    [world, visitor, view, filters],
+    [world, visitor, release, view, filters, search],
   )
   const [datePicker, setDatePicker] = useState<DateKind | undefined>()
   const [spanExtending, setSpanExtending] = useState(false)
@@ -1207,13 +1349,7 @@ export function InventoryConceptsProvider(props: {
   const clearSelection = useCallback(() => setSelectedKeys(new Set()), [])
   // Another document's rows share keys with this one's ("published.base"): a new document starts
   // with nothing selected.
-  // Design Studio copy, approved by Faheem 22 Oct: reset during render when the world changes (was a
-  // useEffect, which the repo's lint rejects: set-state-in-effect, exhaustive-effect-dependencies).
-  const [selectionWorld, setSelectionWorld] = useState(world)
-  if (selectionWorld !== world) {
-    setSelectionWorld(world)
-    setSelectedKeys(new Set())
-  }
+  useEffect(() => setSelectedKeys(new Set()), [world])
 
   const setDimension = useCallback((dimension: DimensionName, value: string | undefined) => {
     setVisitor((current) => ({...current, [dimension]: value}))
@@ -1225,18 +1361,7 @@ export function InventoryConceptsProvider(props: {
   )
 
   const [entrySelections, setEntrySelections] = useState(0)
-  // By priority ranks for the bar's perspective, so opening it brings the bar in, from A's closed
-  // start or after the eye hid it (Andrej, 2026-10-15: "when somebody opens this view, we
-  // immediately need to show the perspective selector bar if it's hidden"). Hiding it again stays
-  // allowed, and leaving the view leaves the bar as it is.
-  // Design Studio copy, approved by Faheem 22 Oct: set during render when the view changes (was a
-  // useEffect, which the repo's lint rejects: set-state-in-effect).
-  const [barShown, setBarShown] = useState(view === 'priority')
-  const [barView, setBarView] = useState(view)
-  if (barView !== view) {
-    setBarView(view)
-    if (view === 'priority') setBarShown(true)
-  }
+  const [barShown, setBarShown] = useState(false)
   const selectEntry = useCallback(
     (entry: InventoryEntry) => {
       setEntrySelections((n) => n + 1)
@@ -1276,8 +1401,9 @@ export function InventoryConceptsProvider(props: {
         view,
         groupBy,
         sort,
-        priorityOrder,
         filters,
+        search,
+        showEmptyGroups,
         selectedKeys,
         editedEntryKey: currentEntryKey,
       }),
@@ -1288,18 +1414,47 @@ export function InventoryConceptsProvider(props: {
       view,
       groupBy,
       sort,
-      priorityOrder,
       filters,
+      search,
+      showEmptyGroups,
       selectedKeys,
       currentEntryKey,
     ],
   )
   const visibleCount = groups.reduce((n, group) => n + group.rows.length, 0)
+  const answer = useMemo(
+    () => servedAnswer({world, visitor, release}),
+    [world, visitor, release, currentEntryKey, selectedKeys],
+  )
+  // Adds the bar's missing version of the exact variant: a draft with Drafts in the bar, else a
+  // version in the bar's bundle. It starts as a copy of the variant's latest version's changes.
+  const addMissingVersion = useCallback(() => {
+    const missing = answer.missing
+    if (missing?.kind !== 'version') return
+    const like = world.entries.find((entry) => entry.variantId === missing.variantId)
+    setAdded((current) => [
+      ...current,
+      {
+        key: `${missing.bundle}.${missing.variantId ?? 'base'}`,
+        group: missing.bundle as InventoryGroupId,
+        variantId: missing.variantId,
+        changedFields: like?.changedFields ?? [],
+        updated: '0h ago',
+        ...(missing.bundle === 'drafts' ? {stage: 'draft' as const, editedBy: [ME]} : {}),
+      },
+    ])
+  }, [answer.missing, world.entries])
   const barVisible = !barUntilVariant || barShown
   // The navbar eye hides and shows the bar; hiding keeps the perspective (Andrej, 2026-10-14: "the
   // perspective bar should not be closed"; keeping it is the Captain's call, pending Andrej).
   const toggleBar = useMemo(
     () => (barUntilVariant && variantsOn(world) ? () => setBarShown((shown) => !shown) : undefined),
+    [barUntilVariant, world],
+  )
+  // Opening the inventory from Manage versions brings the bar in (Andrej, 2026-10-21: "Once manage
+  // versions is clicked, the perspective bar should appear"). Closing it leaves the bar as it is.
+  const showBar = useMemo(
+    () => (barUntilVariant && variantsOn(world) ? () => setBarShown(true) : undefined),
     [barUntilVariant, world],
   )
   const perspectiveIsDefault =
@@ -1314,6 +1469,8 @@ export function InventoryConceptsProvider(props: {
       setRelease,
       view,
       setView,
+      applyDefaultView,
+      resetDefaultView,
       savedViews,
       savedViewId,
       selectSavedView,
@@ -1324,12 +1481,14 @@ export function InventoryConceptsProvider(props: {
       setGroupBy,
       sort,
       setSort,
-      priorityOrder,
-      setPriorityOrder,
       filters,
       addFilter,
       removeFilter,
       filterBarOpen,
+      search,
+      setSearch,
+      showEmptyGroups,
+      toggleShowEmptyGroups,
       toggleFilterBar,
       resetFilters,
       countWith,
@@ -1350,7 +1509,10 @@ export function InventoryConceptsProvider(props: {
       visibleCount,
       barVisible,
       toggleBar,
+      showBar,
       perspectiveIsDefault,
+      answer,
+      addMissingVersion,
     }),
     [
       world,
@@ -1360,6 +1522,8 @@ export function InventoryConceptsProvider(props: {
       setRelease,
       view,
       setView,
+      applyDefaultView,
+      resetDefaultView,
       savedViews,
       savedViewId,
       selectSavedView,
@@ -1367,11 +1531,14 @@ export function InventoryConceptsProvider(props: {
       deleteSavedView,
       groupBy,
       sort,
-      priorityOrder,
       filters,
       addFilter,
       removeFilter,
       filterBarOpen,
+      search,
+      setSearch,
+      showEmptyGroups,
+      toggleShowEmptyGroups,
       toggleFilterBar,
       resetFilters,
       countWith,
@@ -1391,7 +1558,10 @@ export function InventoryConceptsProvider(props: {
       visibleCount,
       barVisible,
       toggleBar,
+      showBar,
       perspectiveIsDefault,
+      answer,
+      addMissingVersion,
     ],
   )
 

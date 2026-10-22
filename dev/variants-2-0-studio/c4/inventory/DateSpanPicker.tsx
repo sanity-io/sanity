@@ -1,5 +1,12 @@
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {Flex, Stack, Text} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useMemo, useState} from 'react'
+import {styled} from 'styled-components'
+
 // Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/variants-2-0, commit db53306896, lib/explorations/variants/inventory-concepts/DateSpanPicker.tsx).
+// explorations/inventory-sidepanel (PR #47), commit 10f3f729a9, lib/explorations/variants/inventory-concepts/DateSpanPicker.tsx).
 // Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
 import {MONTH_PICKER_VARIANT} from '../../../../packages/sanity/src/core/components/inputs/DateInputs/calendar/Calendar'
 import {DatePicker} from '../../../../packages/sanity/src/core/components/inputs/DateInputs/DatePicker'
@@ -9,14 +16,6 @@ import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../../packages/sanity/src/
 import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
 import {MenuButton} from '../../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/MenuItem'
-
-import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Flex, Stack, Text} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
-import {useMemo, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {
   dayKey,
   FIXTURE_NOW_DAY,
