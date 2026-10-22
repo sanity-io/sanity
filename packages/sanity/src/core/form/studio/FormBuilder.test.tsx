@@ -12,7 +12,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {setupVirtualListEnv} from '../../../../test/testUtils/setupVirtualListEnv'
@@ -23,6 +23,7 @@ import {useWorkspace} from '../../studio/workspace'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {usePublishedId} from '../contexts/DocumentIdProvider'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {resetFormNodeSuspendedWarningCache} from '../members/common/FormNodeSuspense'
 import {createPatchChannel} from '../patch/PatchChannel'
 import {type PatchEvent} from '../patch/PatchEvent'
 import {useFormState} from '../store/useFormState'
@@ -242,8 +243,23 @@ describe('FormBuilder', () => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const mockedUseEnhancedObjectDialog = useEnhancedObjectDialog as Mock
 
+  // The default comments plugin wraps every field and input in `React.lazy` components, so
+  // whichever case mounts a form first suspends on them while their chunks load. Mount one here
+  // and wait for its inputs, so no case depends on running after another.
+  beforeAll(async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const {unmount} = await renderFormBuilder({documentValue: {_id: 'test', _type: 'test'}})
+    await screen.findAllByTestId('string-input', {}, {timeout: 10_000})
+    unmount()
+    warn.mockRestore()
+    mockedUseEnhancedObjectDialog.mockReset()
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
+    // Suspension warnings are logged once per message, and the cases share a schema
+    resetFormNodeSuspendedWarningCache()
   })
 
   it('should render a studio form (without tree editing dialog)', async () => {
