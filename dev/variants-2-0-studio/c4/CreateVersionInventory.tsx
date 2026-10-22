@@ -14,16 +14,11 @@ import {useLiveWorld} from './inventory/useLiveWorld'
 import {VersionInventoryPanel} from './inventory/VersionInventoryPanel'
 
 /**
- * Option E is the handoff's toolbar: search, filter, sort, view settings and the footer's Create variant (which Create version replaces) are hidden
- * by test id, so the toolbar holds Views and the Create version button and fits the panel.
+ * Option E shows Andrej's full toolbar (views, grouping, sort, search, filters, view settings) with Create version beside it: the Design Studio's
+ * inventory is the fleshed-out one, the Handoff Studio's the trimmed one (Faheem, 22 Oct). Two things are hidden by test id: the footer's
+ * Create variant (Create version replaces it) and the panel's own header.
  */
 const HIDDEN = [
-  'inventory-search-toggle',
-  'inventory-search',
-  'inventory-filter-toggle',
-  'inventory-filter-bar',
-  'inventory-sort-menu',
-  'inventory-view-settings',
   'inventory-footer',
   // The panel's own header: its close is a placeholder. The Studio's inspector title row replaces it (as the Handoff Studio's), with a close that works.
   'inventory-header',
@@ -75,7 +70,13 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
     [stage, variants],
   )
   const world = useMemo(
-    () => live && {...live, entries: live.entries.filter((e) => inScope(e.variantId))},
+    // By publish date lists the drafts too, as a group under Published (his model, C4 E only).
+    () =>
+      live && {
+        ...live,
+        draftsInTimeline: true,
+        entries: live.entries.filter((e) => inScope(e.variantId)),
+      },
     [live, inScope],
   )
 
