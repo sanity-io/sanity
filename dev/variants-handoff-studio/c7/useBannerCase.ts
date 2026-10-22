@@ -26,7 +26,9 @@ function hasVariantHere(versions: readonly AudienceVersion[], variantId: string,
  * toolbar Create version steps aside while the banner offers its own (22 Oct call: one Create version on screen).
  * - `deleted`: the chosen variant no longer exists;
  * - `drafts`, `release`: no version of the chosen variant here, and one can be created (the banner's Create version);
- * - `published`, `scheduled`: no version here, and none can be created here.
+ * - `published`, `scheduled`: no version here, and none can be created here;
+ * - `base-release`: no variant chosen, an open release in view, and the base document is not in it. Core's own banner draws this one
+ *   ("Not in the … release." with Add to release); it is here so the inventory's toolbar Create version steps aside for it too.
  */
 export type BannerCase =
   | {kind: 'deleted'; goneTitle: string | undefined}
@@ -35,6 +37,7 @@ export type BannerCase =
       audience: string
       releaseTitle: string
     }
+  | {kind: 'base-release'}
   | null
 
 export function useBannerCase(documentId: string): BannerCase {
@@ -58,7 +61,16 @@ export function useBannerCase(documentId: string): BannerCase {
   }
 
   const entries = Object.entries(chosen)
-  if (!entries.length || !versions) return null
+  if (!versions) return null
+  if (!entries.length) {
+    // No variant: only an open release the base document is not in has a banner with a button (core's Add to release).
+    const open =
+      isReleaseDocument(selectedPerspective) && !isReleaseScheduledOrScheduling(selectedPerspective)
+    const inIt = versions.some((v) => v.audience === null && v.bundleId === selectedPerspectiveName)
+    return open && versions.some((v) => v.audience === null) && !inIt
+      ? {kind: 'base-release'}
+      : null
+  }
   const definition = definitions.find((d) => {
     const own = Object.entries(d.conditions)
     return own.length === entries.length && own.every(([name, key]) => chosen[name] === key)
@@ -78,5 +90,6 @@ export function useBannerCase(documentId: string): BannerCase {
   return {kind: 'release', audience, releaseTitle}
 }
 
-/** The banner shows its Create version (Drafts, or an open release). */
-export const bannerOffersCreate = (c: BannerCase) => c?.kind === 'drafts' || c?.kind === 'release'
+/** A banner shows a create button: Create version (Drafts, or an open release) or core's Add to release (the base document). */
+export const bannerOffersCreate = (c: BannerCase) =>
+  c?.kind === 'drafts' || c?.kind === 'release' || c?.kind === 'base-release'
