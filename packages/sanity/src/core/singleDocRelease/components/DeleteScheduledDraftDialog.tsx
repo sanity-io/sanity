@@ -1,11 +1,11 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
-import {Checkbox, Text} from '@sanity/ui'
+import {Checkbox} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {dequal} from 'dequal/lite'
 import omit from 'lodash-es/omit.js'
 import {type ChangeEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
@@ -294,7 +294,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
       ) : (
         <>
           <Box paddingX={2}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {t(dialogDescription.bodyKey)}
             </Text>
           </Box>
@@ -302,7 +302,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
             <>
               {dialogDescription.explanationKey && (
                 <Box paddingX={2}>
-                  <Text size={1} muted>
+                  <Text size={1} muted as="div" trim={true}>
                     {t(dialogDescription.explanationKey)}
                   </Text>
                 </Box>
@@ -315,7 +315,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
                       setCopyOverride(event.currentTarget.checked)
                     }
                   />
-                  <Text size={1} muted>
+                  <Text size={1} muted as="div" trim={true}>
                     {t('release.dialog.delete-schedule-draft.copy-checkbox')}
                   </Text>
                 </Flex>
@@ -361,7 +361,7 @@ function DeleteScheduledDraftDialogWithEmptyRelease({
       isDeleting={isDeleting}
     >
       <Box paddingX={2}>
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           {t('release.dialog.delete-schedule-draft.body-already-current')}
         </Text>
       </Box>
