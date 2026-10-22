@@ -10,6 +10,13 @@ import {type ChildLinkProps} from './types'
 export function ChildLink(props: ChildLinkProps & RefAttributes<HTMLAnchorElement>) {
   const {ref, childId, childPayload, childParameters, ...rest} = props
   const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
+  // PROPOSED (Studio-wide): opening another document in the same pane slot keeps the open inspector (its `inspect` param), so switching
+  // documents leaves the inspector's frame in place and only its content changes. A link that sets its own `inspect` wins.
+  const inspect = routerPanesState[groupIndex + 1]?.[0]?.params?.inspect
+  const params =
+    inspect && childParameters?.inspect === undefined
+      ? {...childParameters, inspect}
+      : childParameters
 
   return (
     <StateLink
@@ -18,7 +25,7 @@ export function ChildLink(props: ChildLinkProps & RefAttributes<HTMLAnchorElemen
       state={{
         panes: [
           ...routerPanesState.slice(0, groupIndex + 1),
-          [{id: childId, params: childParameters, payload: childPayload}],
+          [{id: childId, params, payload: childPayload}],
         ],
       }}
     />
