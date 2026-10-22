@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
-import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
+import {catchError, map, shareReplay, startWith, tap} from 'rxjs/operators'
 
 import {useSource} from '../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
@@ -43,6 +43,12 @@ function fetchFeatures({versionedClient}: {versionedClient: SanityClient}): Obse
 }
 
 const cachedFeatureRequest = new Map<string, Observable<string[]>>()
+/**
+ * PROPOSED (Studio-wide): the features last received per project. react-rx renders a hook's initial value on mount before a cached
+ * observable replays, so every remount of a document pane (it is keyed by document) showed "loading" for a pass, and what is gated on a
+ * feature (the Comments button in the pane header) disappeared and came back on each document switch. A known list is the initial value.
+ */
+const knownFeatures = new Map<string, string[]>()
 
 /**
  * Retrieves the features for a given project. This returns a cached observable.
@@ -57,7 +63,10 @@ function getFeatures({
 }): Observable<string[]> {
   let features = cachedFeatureRequest.get(projectId)
   if (!features) {
-    features = fetchFeatures({versionedClient}).pipe(shareReplay())
+    features = fetchFeatures({versionedClient}).pipe(
+      tap((list) => knownFeatures.set(projectId, list ?? EMPTY_ARRAY)),
+      shareReplay(),
+    )
     cachedFeatureRequest.set(projectId, features)
   }
   return features
@@ -70,6 +79,14 @@ export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
   const {projectId} = useSource()
 
   const req = getFeatures({projectId, versionedClient})
+  const known = knownFeatures.get(projectId)
+  const initialState = useMemo(
+    (): Features =>
+      known
+        ? {isLoading: false, enabled: known.includes(featureKey), features: known, error: null}
+        : INITIAL_LOADING_STATE,
+    [featureKey, known],
+  )
 
   const featureInfoObservable = useMemo(
     () =>
@@ -80,14 +97,14 @@ export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
           features,
           error: null,
         })),
-        startWith(INITIAL_LOADING_STATE),
+        startWith(initialState),
         catchError((error: Error) => {
           return of({isLoading: false, enabled: false, features: EMPTY_ARRAY, error})
         }),
       ),
-    [featureKey, req],
+    [featureKey, req, initialState],
   )
-  const featureInfo = useObservable(featureInfoObservable, INITIAL_LOADING_STATE)
+  const featureInfo = useObservable(featureInfoObservable, initialState)
 
   return featureInfo
 }
