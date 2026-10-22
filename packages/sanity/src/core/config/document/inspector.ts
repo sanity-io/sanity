@@ -23,6 +23,11 @@ export interface DocumentInspectorMenuItem {
   hotkeys?: string[]
   icon?: ComponentType
   showAsAction?: boolean
+  /**
+   * PROPOSED: with `showAsAction`, the inspector is ALSO listed in the document's menu (its inspectors group), so it can be found there
+   * as well as by its button in the pane header.
+   */
+  showInMenu?: boolean
   status?: ButtonTone
   title: string
   tone?: ButtonTone

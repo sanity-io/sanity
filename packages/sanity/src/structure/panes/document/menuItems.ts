@@ -31,25 +31,28 @@ function getInspectorItems({
   inspectors,
   inspectorMenuItems,
 }: GetMenuItemsParams): PaneMenuItem[] {
-  return inspectors
-    .map((inspector, index) => {
-      const menuItem = inspectorMenuItems[index]
+  return inspectors.flatMap((inspector, index): PaneMenuItem[] => {
+    const menuItem = inspectorMenuItems[index]
 
-      if (!menuItem || menuItem.hidden) return null
+    if (!menuItem || menuItem.hidden) return []
 
-      return {
-        action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
-        group: menuItem.showAsAction ? undefined : 'inspectors',
-        icon: menuItem.icon,
-        disabled: !hasValue,
-        selected: currentInspector?.name === inspector.name,
-        shortcut: menuItem.hotkeys?.join('+'),
-        showAsAction: menuItem.showAsAction,
-        title: menuItem.title,
-        tone: menuItem.tone,
-      }
-    })
-    .filter(Boolean) as PaneMenuItem[]
+    // The inspector menu item's tone is wider than a pane menu item's; the cast is the one the list had before.
+    const item = {
+      action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
+      group: menuItem.showAsAction ? undefined : 'inspectors',
+      icon: menuItem.icon,
+      disabled: !hasValue,
+      selected: currentInspector?.name === inspector.name,
+      shortcut: menuItem.hotkeys?.join('+'),
+      showAsAction: menuItem.showAsAction,
+      title: menuItem.title,
+      tone: menuItem.tone,
+    } as PaneMenuItem
+    // PROPOSED: a button in the header that is also an entry in the menu (`showInMenu`).
+    return menuItem.showAsAction && menuItem.showInMenu
+      ? [item, {...item, group: 'inspectors', showAsAction: false}]
+      : [item]
+  })
 }
 
 function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
