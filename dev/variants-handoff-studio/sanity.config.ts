@@ -10,10 +10,15 @@ import {structure} from './structure'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'ppsg7ml5'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
-// The stand-in preview (dev/preview-iframe, `vite --port 3334`, variants-preview.html) mounts @sanity/visual-editing against this dataset.
+// The stand-in preview (dev/preview-iframe, variants-preview.html) mounts @sanity/visual-editing against this dataset. Locally it runs
+// on `vite --port 3334`; the hosted Studio uses the same build on Vercel (variants-handoff-preview.sanity.dev, deployed 22 Oct).
 // Set SANITY_STUDIO_PREVIEW_ORIGIN=http://localhost:3456 to use the Northfold storefront instead.
-const previewOrigin = process.env.SANITY_STUDIO_PREVIEW_ORIGIN || 'http://localhost:3334'
-const previewPath = previewOrigin.endsWith(':3334') ? '/variants-preview.html?route=list' : '/'
+const previewOrigin =
+  process.env.SANITY_STUDIO_PREVIEW_ORIGIN ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://variants-handoff-preview.sanity.dev'
+    : 'http://localhost:3334')
+const previewPath = previewOrigin.endsWith(':3456') ? '/' : '/variants-preview.html?route=list'
 
 const variantsHandoffOptions = definePlugin({
   name: 'variants-handoff-studio',
