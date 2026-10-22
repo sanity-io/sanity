@@ -95,6 +95,11 @@ export interface StudioProps {
    * @hidden
    * @beta */
   unstable_sanityModuleUrl?: string
+  /**
+   * The app ID to connect to the message bus with, for a `sanity` the app's build didn't compile.
+   * @hidden
+   * @beta */
+  unstable_appId?: string
 }
 
 /**
@@ -110,6 +115,7 @@ export function Studio(props: StudioProps): React.JSX.Element {
     unstable_history,
     unstable_noAuthBoundary,
     unstable_sanityModuleUrl,
+    unstable_appId,
   } = props
 
   return (
@@ -121,6 +127,7 @@ export function Studio(props: StudioProps): React.JSX.Element {
       unstable_history={unstable_history}
       unstable_noAuthBoundary={unstable_noAuthBoundary}
       unstable_sanityModuleUrl={unstable_sanityModuleUrl}
+      unstable_appId={unstable_appId}
     >
       {globalStyles && <GlobalStyle />}
       <StudioLayout />
