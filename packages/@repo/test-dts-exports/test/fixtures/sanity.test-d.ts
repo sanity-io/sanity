@@ -466,6 +466,7 @@ import type {
   DocumentGroupEvent,
   DocumentGroupInventory,
   DocumentGroupInventoryComponents,
+  DocumentGroupInventoryHandle,
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
   DocumentGroupInventoryReferencePreviewLinkProps,
@@ -3266,10 +3267,13 @@ describe('sanity', () => {
     expectTypeOf<DocumentGroupEvent>().not.toBeNever()
   })
   test('DocumentGroupInventory', () => {
-    expectTypeOf<typeof DocumentGroupInventory>().not.toBeNever()
+    expectTypeOf<typeof DocumentGroupInventory>().toBeFunction()
   })
   test('DocumentGroupInventoryComponents', () => {
     expectTypeOf<DocumentGroupInventoryComponents>().toBeObject()
+  })
+  test('DocumentGroupInventoryHandle', () => {
+    expectTypeOf<DocumentGroupInventoryHandle>().toBeObject()
   })
   test('DocumentGroupInventoryPerspectiveList', () => {
     expectTypeOf<DocumentGroupInventoryPerspectiveList>().toBeObject()
