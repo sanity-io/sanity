@@ -8,11 +8,14 @@ import {Popover} from '../../../packages/sanity/src/ui-components/popover/Popove
  * A Popover that closes on Escape and on a press outside both the panel and its anchor. Keyboard
  * focus moves through the search box and the rows with the arrow keys.
  */
+const FIT = {maxWidth: 360, minWidth: 280, width: 'max-content'} as const
+
 export function MenuPopover(props: {
   anchor: HTMLElement | null
   open: boolean
   onDismiss: () => void
-  width: number
+  /** A fixed width, or `fit`: as wide as the widest row, 280 to 360px, as core's perspective menu (GlobalPerspectiveMenu). */
+  width: number | 'fit'
   children: ReactNode
   testId: string
   placement?: 'bottom-start' | 'bottom-end'
@@ -67,7 +70,12 @@ export function MenuPopover(props: {
   return (
     <Popover
       content={
-        <div data-testid={testId} onKeyDown={onKeyDown} ref={panelRef} style={{width}}>
+        <div
+          data-testid={testId}
+          onKeyDown={onKeyDown}
+          ref={panelRef}
+          style={width === 'fit' ? FIT : {width}}
+        >
           {children}
         </div>
       }

@@ -27,9 +27,10 @@ export const panelForm = (dimensions: number): PanelForm =>
 
 const COLUMN_WIDTH = 256
 const RAIL_WIDTH = 216
-export const panelWidth = (dimensions: number) => {
+export const panelWidth = (dimensions: number): number | 'fit' => {
   const form = panelForm(dimensions)
-  if (form === 'list') return 320
+  // One dimension: the flat list fits its widest row, as the state menu next to it does (the popover sets the bounds).
+  if (form === 'list') return 'fit'
   // Panel padding 12 on each side, 20 (the space token) between columns.
   if (form === 'columns') return dimensions * COLUMN_WIDTH + (dimensions - 1) * 20 + 24
   return 640
@@ -274,7 +275,9 @@ export function PickerContent(props: {
         byKeyboard.current = false
       }}
       ref={rootRef}
-      style={{width: panelWidth(dimensions.length)}}
+      style={{
+        width: panelWidth(dimensions.length) === 'fit' ? undefined : panelWidth(dimensions.length),
+      }}
     >
       <Box padding={3}>
         <Stack gap={2}>

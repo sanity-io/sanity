@@ -1,4 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {DotIcon} from '@sanity/icons/Dot'
 import {Box, Flex, Text, TextInput} from '@sanity/ui'
@@ -146,6 +147,8 @@ function DropdownPill(props: {
     selected?: boolean
     /** Greyed but clickable: a variant this document has no version of yet (picking it shows the banner's Create version). */
     muted?: boolean
+    /** A greyed row's tooltip: why it is greyed ("Not in Black Friday yet"). */
+    hint?: string
     /** What search matches an option by (the title is its text when this is left out). */
     search?: Omit<SearchFields, 'title'>
   }[]
@@ -156,24 +159,29 @@ function DropdownPill(props: {
   selected?: boolean
   /** The pill's tone when selected: the Variants pill is purple (suggest), the variant colour, with a variant in view. */
   tone?: 'suggest'
+  /** With a choice in view, a cross after the pill clears it (as the navbar chips' cross does), with this accessible name. */
+  clear?: {label: string; onClick: () => void}
 }) {
   const [query, setQuery] = useState('')
   // Search at the top, always, then the rows in a list that scrolls past 10 rows (the navbar menus' pattern, with no footer).
   const found = rankSearch(props.items, query, (item) => ({title: item.text, ...item.search}))
-  return (
+  const tone = props.selected ? props.tone : undefined
+  const menu = (
     <MenuButton
       button={
         <Chip
           data-testid={props.testId}
           icon={props.icon}
           iconRight={ChevronDownIcon}
-          mode="ghost"
+          // With a cross the pill is the first segment of one capsule, as the navbar chips are: the capsule draws the outline and clips the fill.
+          mode={props.clear ? 'bleed' : 'ghost'}
           // The chevron's glyph sits 0.7px inside its box: the right inset is taken to the glyph, so it ends 12px from the edge like the
           // stock chips' text does.
           paddingRight={0}
+          radius={props.clear ? 0 : 'full'}
           selected={props.selected}
-          tone={props.selected ? props.tone : undefined}
-          style={{paddingRight: 11.3}}
+          tone={tone}
+          style={{paddingRight: props.clear ? 8 : 11.3}}
           text={props.text}
         />
       }
@@ -210,6 +218,7 @@ function DropdownPill(props: {
                 onClick={item.onClick}
                 style={item.muted ? {opacity: 0.55} : undefined}
                 text={item.text}
+                tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
               />
             ))}
           </div>
@@ -223,6 +232,58 @@ function DropdownPill(props: {
       onClose={() => setQuery('')}
       popover={{placement: 'bottom-start', portal: true}}
     />
+  )
+  if (!props.clear) return menu
+  return (
+    <span
+      data-testid={`${props.testId}-capsule`}
+      style={{
+        alignItems: 'stretch',
+        borderRadius: 9999,
+        display: 'inline-flex',
+        flex: 'none',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      {menu}
+      {/* The hairline between the two targets, the pill's full height as on the navbar chips; readable on the selected fill too (the card's
+          border colour disappears on it). */}
+      <span
+        aria-hidden
+        style={{
+          alignSelf: 'stretch',
+          background: 'var(--card-muted-fg-color)',
+          flex: 'none',
+          opacity: 0.35,
+          width: 1,
+        }}
+      />
+      <Chip
+        aria-label={props.clear.label}
+        data-testid={`${props.testId}-clear`}
+        // Compact, as on the navbar chips: a smaller cross, with more room on the round end's side so it does not crowd the curve.
+        icon={<CloseIcon style={{transform: 'scale(0.8)'}} />}
+        mode="bleed"
+        onClick={props.clear.onClick}
+        paddingLeft={2}
+        paddingRight={3}
+        radius={0}
+        selected={props.selected}
+        tone={tone}
+      />
+      {/* The outline drawn over the segments (so it adds no height): the pill stays the stock chips' 25px. */}
+      <span
+        aria-hidden
+        style={{
+          borderRadius: 9999,
+          boxShadow: 'inset 0 0 0 1px var(--card-border-color)',
+          inset: 0,
+          pointerEvents: 'none',
+          position: 'absolute',
+        }}
+      />
+    </span>
   )
 }
 
@@ -274,8 +335,8 @@ export function OpenBetaPills({
   const currentVariant = selectedVariantName?.replace(/^_\.variants\./, '')
   // Every pill is a proxy for the navbar: ONE navigation sets the version and the router's variant param together, as the navbar toggle and the
   // inventory do (in the open beta that param is the only copy of the choice). The two pill menus are independent axes, like the navbar chips
-  // (Faheem, 22 Oct): Variants sets who, and Published, Draft or a release sets where, KEEPING the variant. Back to the base is only All users
-  // (Default) in the Variants menu, or the navbar audience's cross.
+  // (Faheem, 22 Oct): Variants sets who, and Published, Draft or a release sets where, KEEPING the variant. Back to the base is All users
+  // (Default) in the Variants menu, the Variants pill's cross, or the navbar audience's cross.
   const goTo = (perspective: ReleaseId, definition?: (typeof definitions)[number]) => {
     const id = definition?._id
     setVariant({variantId: id && isVariantId(id) ? id : undefined, perspective})
@@ -349,6 +410,7 @@ export function OpenBetaPills({
         icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
         onClick: () => goTo(current, id === currentVariant ? undefined : definition),
         muted: true,
+        hint: `No ${definition.metadata?.title ?? id} version yet`,
         selected: id === currentVariant,
         search: {id},
       }
@@ -385,10 +447,27 @@ export function OpenBetaPills({
       icon: <ReleaseAvatarIcon releaseType={release.metadata.releaseType} />,
       onClick: () => goTo(current === id ? defaultVersion : id, viewedDefinition),
       muted: true,
+      hint: `Not in ${release.metadata.title || 'Untitled release'} yet`,
       selected: current === id,
       search: {id},
     }))
   const releaseCount = new Set(releases.map((v) => v.bundleId)).size
+  // The release in view, if any (this document's, or another picked from the greyed rows): the pill names it and gets the cross, as the
+  // navbar chip does (Faheem, 22 Oct). The cross goes back to the default version, keeping the variant.
+  const inView = [...releaseItems, ...missingReleaseItems].find((item) => item.selected)
+  const inViewRelease = activeReleases.find(
+    (release) => getReleaseIdFromReleaseDocumentId(release._id) === current,
+  )
+  const inViewDot = inViewRelease
+    ? releaseDot({
+        state:
+          inViewRelease.metadata.releaseType === 'scheduled'
+            ? 'scheduled'
+            : inViewRelease.metadata.releaseType === 'asap'
+              ? 'asap'
+              : 'undecided',
+      } as AudienceVersion)
+    : undefined
   const hasEarlierGroup = variants.length > 0
 
   return (
@@ -403,6 +482,11 @@ export function OpenBetaPills({
       {variants.length ? (
         <DropdownPill
           icon={<RhombusIcon />}
+          clear={
+            viewedTitle
+              ? {label: `Back to ${DEFAULT_LABEL}`, onClick: () => goTo(current)}
+              : undefined
+          }
           items={[baseItem, ...variantItems, ...missingItems]}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
           selected={Boolean(viewedTitle)}
@@ -447,13 +531,20 @@ export function OpenBetaPills({
       ) : null}
       {releases.length ? (
         <DropdownPill
+          clear={
+            inView
+              ? {label: 'Leave release', onClick: () => goTo(defaultVersion, viewedDefinition)}
+              : undefined
+          }
           // The release in view, else the first one, as a dot (its menu rows keep the type icon).
-          icon={releaseDot(releases.find((v) => v.bundleId === current) ?? releases[0])}
+          icon={
+            inViewDot ?? releaseDot(releases.find((v) => v.bundleId === current) ?? releases[0])
+          }
           items={[...releaseItems, ...missingReleaseItems]}
           // Any release in view, this document's or another (picked from the greyed rows).
           selected={current !== 'published' && current !== 'drafts'}
           testId="pills-releases"
-          text={`Releases · ${releaseCount}`}
+          text={inView?.text ?? `Releases · ${releaseCount}`}
         />
       ) : null}
       {manage}
