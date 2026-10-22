@@ -468,9 +468,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 // The item's input opens in a dialog or popover, which has a boundary of its own
 const OBJECT_ITEM_COMPONENTS: readonly FormNodeComponentKey[] = ['item']
 
+// The height of a default preview row
 function ObjectItemBestEffortFallback() {
   return (
-    <Skeleton data-testid="custom-item-fallback" radius={1} animated style={{height: rem(35)}} />
+    <Skeleton data-testid="custom-item-fallback" radius={1} animated style={{height: rem(59)}} />
   )
 }
 
