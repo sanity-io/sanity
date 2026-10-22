@@ -369,8 +369,8 @@ describe('FormBuilder', () => {
       pane: true,
     })
 
-    // The form's own boundary shows its loading block; the pane above it stays committed, and
-    // the generic per-node middleware skeleton is gone.
+    // The middleware wraps the root input too, so the form's own boundary shows its loading block
+    // and no member renders a skeleton; the pane above it stays committed.
     expect(screen.getByTestId('loading-block')).toBeInTheDocument()
     expect(screen.getByTestId('pane')).toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
@@ -385,8 +385,9 @@ describe('FormBuilder', () => {
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
   })
 
-  it('suspends the form, not the pane, while a lazy field component loads', async () => {
+  it('suspends each field, not the form, while a lazy field component loads', async () => {
     mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
     const field = deferredComponent<FieldProps>()
 
     await renderFormBuilder({
@@ -395,11 +396,16 @@ describe('FormBuilder', () => {
       pane: true,
     })
 
-    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.getByTestId('custom-field-fallback')).toBeInTheDocument()
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
     expect(screen.getByTestId('pane')).toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
-    expect(document.querySelector('[data-ui="Skeleton"]')).toBeNull()
     expect(screen.queryByTestId('field-title')).not.toBeInTheDocument()
+    const warnings = suspenseWarnings(warn)
+    expect(warnings).toHaveLength(1)
+    expect(warnings[0][0]).toMatch(
+      /^A form component at "title" of a "test" document .*declares no custom field or input component, so it likely comes from a plugin's form\.components/,
+    )
 
     await act(async () => {
       field.resolve(PassThroughField)
@@ -408,7 +414,8 @@ describe('FormBuilder', () => {
     expect(await screen.findByTestId('field-title', {}, {timeout: 10_000})).toHaveTextContent(
       'Title',
     )
-    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
+    warn.mockRestore()
   })
 
   it("keeps the rest of the form editable while a schema type's custom input never settles", async () => {
@@ -429,9 +436,10 @@ describe('FormBuilder', () => {
       pane: true,
     })
 
-    const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
-    expect(within(customField).getByTestId('custom-input-fallback')).toBeInTheDocument()
-    expect(within(customField).queryByTestId('string-input')).not.toBeInTheDocument()
+    expect(
+      await screen.findByTestId('custom-field-fallback', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('field-custom')).not.toBeInTheDocument()
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
 
@@ -473,7 +481,7 @@ describe('FormBuilder', () => {
     })
 
     expect(await screen.findByTestId('loading-block', {}, {timeout: 10_000})).toBeInTheDocument()
-    expect(screen.queryByTestId('custom-input-fallback')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
     expect(suspenseWarnings(warn)).toHaveLength(0)
     warn.mockRestore()
@@ -507,7 +515,43 @@ describe('FormBuilder', () => {
     const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
     expect(within(customField).getByTestId('own-fallback')).toBeInTheDocument()
     expect(within(customField).getByTestId('string-input')).toBeInTheDocument()
-    expect(screen.queryByTestId('custom-input-fallback')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
+    expect(suspenseWarnings(warn)).toHaveLength(0)
+    warn.mockRestore()
+  })
+
+  it("lets a custom field's own Suspense catch its custom input suspending", async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const pending = new Promise<never>(noop)
+    function NeverSettlingInput(props: InputProps) {
+      use(pending)
+      return props.renderDefault(props)
+    }
+    function FieldWithOwnBoundary(props: FieldProps) {
+      return (
+        <Suspense fallback={<div data-testid="field-own-fallback" />}>
+          {props.renderDefault(props)}
+        </Suspense>
+      )
+    }
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {
+        schema: {
+          types: [
+            customComponentTestType({input: NeverSettlingInput, field: FieldWithOwnBoundary}),
+          ],
+        },
+      },
+      pane: true,
+    })
+
+    expect(
+      await screen.findByTestId('field-own-fallback', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
     expect(suspenseWarnings(warn)).toHaveLength(0)
     warn.mockRestore()
   })
@@ -666,17 +710,17 @@ describe('FormBuilder', () => {
       pane: true,
     })
 
-    const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
-    expect(within(customField).getByTestId('custom-input-fallback')).toBeInTheDocument()
+    expect(
+      await screen.findByTestId('custom-field-fallback', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
 
     await act(async () => {
       input.resolve(PassThroughInput)
     })
 
-    expect(
-      await within(customField).findByTestId('string-input', {}, {timeout: 10_000}),
-    ).toBeInTheDocument()
-    expect(within(customField).queryByTestId('custom-input-fallback')).not.toBeInTheDocument()
+    const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
+    expect(within(customField).getByTestId('string-input')).toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
     warn.mockRestore()
   })
 })
@@ -731,7 +775,9 @@ async function expectTitleEditable(onChange: Mock<(event: PatchEvent) => void>) 
 }
 
 function suspenseWarnings(warn: Mock) {
-  return warn.mock.calls.filter(([message]) => String(message).startsWith('The custom '))
+  return warn.mock.calls.filter(([message]) =>
+    /^(The custom |A form component )/.test(String(message)),
+  )
 }
 
 function removeClasses(html: string) {

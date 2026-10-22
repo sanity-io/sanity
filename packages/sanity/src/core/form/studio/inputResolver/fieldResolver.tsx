@@ -21,7 +21,6 @@ import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
 import {type FieldMember} from '../../store/types/members'
 import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../../types/fieldProps'
 import {getTypeChain} from './helpers'
-import {withCustomComponentSuspense} from './withCustomComponentSuspense'
 
 const EMPTY_ARRAY: never[] = []
 
@@ -312,9 +311,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
 export function defaultResolveFieldComponent(
   schemaType: SchemaType,
 ): ComponentType<Omit<FieldProps, 'renderDefault'>> {
-  if (schemaType.components?.field) {
-    return withCustomComponentSuspense('field', schemaType.components.field)
-  }
+  if (schemaType.components?.field) return schemaType.components.field
 
   if (isBooleanSchemaType(schemaType)) {
     return BooleanField as ComponentType<Omit<FieldProps, 'renderDefault'>>

@@ -1,24 +1,28 @@
 ---
 name: sanity-form-component-suspense
-description: Fix a Sanity Studio custom form component (components.input, components.field or components.item) that suspends without its own Suspense boundary, so it loads without layout shift and never blocks new documents. Use when the console warns "The custom input/field/item component ... suspended without a <Suspense> boundary of its own", when a custom form component uses React.lazy, use(), App SDK hooks (useDocumentProjection, useQuery, useDocument) or another suspending data library, or when a field or array item shows a skeleton that never goes away on new documents.
+description: Fix a Sanity Studio custom form component (components.input, components.field, components.item, or a plugin's form.components) that suspends without its own Suspense boundary, so it loads without layout shift and never blocks new documents. Use when the console warns "The custom input/field/item component ... suspended without a <Suspense> boundary of its own" or "A form component ... suspended without a <Suspense> boundary of its own", when a custom form component uses React.lazy, use(), App SDK hooks (useDocumentProjection, useQuery, useDocument) or another suspending data library, or when a field or array item shows a skeleton that never goes away on new documents.
 ---
 
 # Custom form components that suspend
 
-Studio wraps every schema type's custom `components.input`, `components.field` and
-`components.item` in a fallback boundary so one suspending component cannot blank the form. That
-fallback is a generic skeleton: it does not know the component's size, so the form shifts when the
-component loads, and Studio warns about it in the console. The fix always lives in the component:
-declare a `Suspense` around the part that suspends, with a fallback that takes the same space as
-what it stands in for. A component with its own boundary never reaches Studio's, and never warns.
+Studio puts a fallback boundary around every field and every array item, so one suspending
+component cannot blank the form. That fallback is a generic skeleton: it does not know the size of
+what it replaces, so the form shifts when the component loads, and Studio warns about it in the
+console. The fix always lives in your code: declare a `Suspense` around the part that suspends,
+with a fallback that takes the same space as what it stands in for. Any boundary you declare is
+closer to what suspends than Studio's, so it always wins and nothing warns. That includes a
+boundary in a custom field around `props.renderDefault(props)`, which also covers the field's
+input: use it when one fallback should cover both, for example a lazy input that also fetches.
 
 ## Workflow
 
-1. **Find the component.** The warning names the slot (`components.input`, `.field` or `.item`),
-   the component, the path, the document type and the schema type, and logs the component itself;
-   click it in the browser console to open its source. Production builds minify the name, so use
-   the path and document type there. React DevTools' Suspense tab shows which component inside it
-   actually suspended.
+1. **Find the component.** The warning names the custom components declared for that field or
+   item (`components.field`, `.input` or `.item`), the path, the document type and the schema type,
+   and logs the components themselves; click one in the browser console to open its source.
+   Production builds minify the names, so use the path and document type there. When the schema
+   type declares none, the warning starts with "A form component" and the culprit is usually a
+   plugin's `form.components`. React DevTools' Suspense tab shows which component actually
+   suspended.
 2. **Find what suspends.** Usually one of: `React.lazy`, `use(promise)`, an App SDK hook
    (`useDocumentProjection`, `useDocument`, `useQuery`, `useDocuments`), or a library in suspense
    mode (`useSuspenseQuery`).
