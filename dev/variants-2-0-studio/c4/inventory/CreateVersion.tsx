@@ -982,7 +982,8 @@ export function CreateVersion(props: {
     const id = groupId(header)
     const release = openReleases.find((d) => d.kind === 'release' && d.name === id)
     const locked = lockedReleases.some((d) => d.kind === 'release' && d.name === id)
-    const isDrafts = id.startsWith('stage-') && id !== 'stage-published'
+    // By publish date's Drafts group is `drafts`; By stage's are `stage-…` (kept for the Design Studio's other views).
+    const isDrafts = id === 'drafts' || (id.startsWith('stage-') && id !== 'stage-published')
     const variant = variants.find((v) => id === `${v.dimension}-${v.value}`)
     const askable = Boolean(release || (isDrafts && draftsEnabled) || (variant && variantsOn))
     return (
