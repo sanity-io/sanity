@@ -25,6 +25,8 @@ interface Loader {
 }
 
 const loaders = new Map<string, Loader>()
+/** Each document's last version list, by project, dataset and document. */
+const latest = new Map<string, AudienceVersion[]>()
 
 const ROWS_BY_IDS_GROQ = `*[string::split(_id, ".")[-1] in $ids]{
   _id, "variant": _system.variant._ref, "bundle": _system.bundleId, _createdAt, _updatedAt
@@ -90,7 +92,13 @@ function createLoader(client: SanityClient): Loader {
  */
 export function useVersionList(documentId: string, enabled = true): AudienceVersion[] | null {
   const studioClient = useClient({apiVersion: 'X'})
-  const [versions, setVersions] = useState<AudienceVersion[] | null>(null)
+  const {projectId, dataset} = studioClient.config()
+  const cacheKey = `${projectId}/${dataset}/${documentId}`
+  // A document's last list seeds a new reader, so a panel opened after the pills have loaded (the inventory) has it in its first render,
+  // and decisions made from it (the T6 banner case) are known before first paint. It is refreshed as before.
+  const [versions, setVersions] = useState<AudienceVersion[] | null>(
+    () => latest.get(cacheKey) ?? null,
+  )
 
   useEffect(() => {
     if (!enabled) return undefined
@@ -107,7 +115,10 @@ export function useVersionList(documentId: string, enabled = true): AudienceVers
     const run = () =>
       loader!
         .load(documentId)
-        .then((next) => !cancelled && setVersions(next))
+        .then((next) => {
+          latest.set(`${key}/${documentId}`, next)
+          return !cancelled && setVersions(next)
+        })
         .catch(() => !cancelled && setVersions([]))
     void run()
     window.addEventListener('focus', run)

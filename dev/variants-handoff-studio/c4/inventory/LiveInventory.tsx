@@ -6,6 +6,7 @@ import {useSetVariant, useWorkspace} from 'sanity'
 import {valueTitle} from '../../c1/model'
 import {usePerspectiveState} from '../../c1/state'
 import {useVariantDefinitions} from '../../c1/world'
+import {useBannerDecision} from '../../c7/useBannerCase'
 import {CreateVersion, type VariantChoice} from './CreateVersion'
 import {type InventoryEntry} from './fixtures'
 import {InventoryConceptsProvider} from './model'
@@ -84,6 +85,8 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const [frame, setFrame] = useState<HTMLElement | null>(null)
 
   const world = live
+  // The count shows only once the banner case is known (with the toolbar's Create version it is hidden; see HIDDEN).
+  const bannerPending = useBannerDecision(documentId).pending
 
   // The toolbar row, for its version count (the panel renders it; it is swapped for the bulk bar while selecting).
   const [toolbar, setToolbar] = useState<HTMLElement | null>(null)
@@ -189,7 +192,7 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
           <VersionInventoryPanel />
         </InventoryConceptsProvider>
       </Box>
-      {toolbar
+      {toolbar && !bannerPending
         ? createPortal(
             <Text data-testid="inventory-summary" muted size={1}>
               {versionCount(world.entries.length)}

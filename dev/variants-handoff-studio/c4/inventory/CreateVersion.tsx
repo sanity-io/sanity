@@ -27,7 +27,7 @@ import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/M
 import {Tooltip} from '../../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 import {DimensionIcon} from '../../c1/dimensionIcons'
 import {rankSearch, SEARCH_FROM} from '../../c1/search'
-import {bannerOffersCreate, useBannerCase} from '../../c7/useBannerCase'
+import {bannerOffersCreate, useBannerDecision} from '../../c7/useBannerCase'
 import {useCreateVariantVersion} from '../../data/useCreateVariantVersion'
 import {type InventoryEntry, type InventoryWorld} from './fixtures'
 
@@ -443,7 +443,9 @@ export function CreateVersion(props: {
   const {frame, world, variants, draftsEnabled, onCreate, onOpen, onReceived} = props
   // The one create implementation, shared with the T6 banner.
   const {create, createBaseVersion, status} = useCreateVariantVersion(props.documentId)
-  const bannerCreates = bannerOffersCreate(useBannerCase(props.documentId))
+  // While the banner case is not known yet, the toolbar shows neither its Create version nor its count (no wrong state on screen).
+  const decision = useBannerDecision(props.documentId)
+  const bannerCreates = bannerOffersCreate(decision.banner)
   const busy = status === 'creating'
   const {versions: documentVersions} = useDocumentVersions({documentId: props.documentId})
   // What the studio shows: the navbar's variant (short id) and the Drafts or release in view. The toolbar's Create version starts there.
@@ -981,6 +983,7 @@ export function CreateVersion(props: {
   // While the T6 banner offers its own Create version, the toolbar's steps aside: one on screen (22 Oct call). Without a banner it shows.
   const toolbarButton =
     toolbar &&
+    !decision.pending &&
     !bannerCreates &&
     createPortal(
       <Box data-add-anchor="" style={{flex: 'none'}}>
