@@ -18,7 +18,7 @@ import {
   useState,
 } from 'react'
 import {createPortal} from 'react-dom'
-import {getTargetDocument, ReleaseAvatarIcon, useDocumentVersions} from 'sanity'
+import {getTargetDocument, ReleaseAvatarIcon, useDocumentVersions, usePerspective} from 'sanity'
 
 import {isReleaseScheduledOrScheduling} from '../../../../packages/sanity/src/core/releases/util/util'
 import {isCardinalityOneRelease} from '../../../../packages/sanity/src/core/util/releaseUtils'
@@ -440,6 +440,10 @@ export function CreateVersion(props: {
   const {create, createBaseVersion, status} = useCreateVariantVersion(props.documentId)
   const busy = status === 'creating'
   const {versions: documentVersions} = useDocumentVersions({documentId: props.documentId})
+  // What the studio shows: the navbar's variant (short id) and the Drafts or release in view. The toolbar's Create version starts there.
+  const {selectedPerspectiveName, selectedVariantName} = usePerspective()
+  const viewedVariant = selectedVariantName?.replace(/^_\.variants\./, '')
+  const viewedGroup = selectedPerspectiveName ?? 'drafts'
   const variantsOn = variants.length > 0
   const [toolbar, setToolbar] = useState<HTMLElement | null>(null)
   const [slot, setSlot] = useState<HTMLElement | null>(null)
@@ -558,7 +562,7 @@ export function CreateVersion(props: {
       }
       collapsedByMode.current = []
     },
-    [frame],
+    [frame, setMenuOpen],
   )
   const cancel = useCallback(() => leave(), [leave])
 
@@ -665,11 +669,21 @@ export function CreateVersion(props: {
     collapsedByMode.current = closed
     setCounts(next)
     setCurrentGroup(undefined)
+    // From the toolbar (nothing fixed), with a variant chosen that this document has no version of in the Drafts or open release in view:
+    // the block starts on that address, so Create version is one click (Faheem, 22 Oct). Otherwise Base in the first destination, as before.
+    const viewedDest = destinations.find((d) => destGroup(d) === viewedGroup)
+    const startsOnView =
+      !fixed.variantId &&
+      !fixed.dest &&
+      viewedVariant !== undefined &&
+      viewedDest !== undefined &&
+      variants.some((v) => v.id === viewedVariant) &&
+      !world.entries.some((e) => e.group === viewedGroup && e.variantId === viewedVariant)
     setMode({
       fixed,
       draft: {
-        variantId: fixed.variantId,
-        dest: fixed.dest ?? startDest,
+        variantId: startsOnView ? viewedVariant : fixed.variantId,
+        dest: startsOnView ? viewedDest : (fixed.dest ?? startDest),
         source: 'nearest',
         picked: false,
       },

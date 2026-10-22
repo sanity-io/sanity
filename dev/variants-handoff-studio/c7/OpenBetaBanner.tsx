@@ -24,7 +24,8 @@ import {type AudienceVersion} from '../data/versions'
  *   place without the version.
  * - A scheduled release, Published: the text says why there is no action.
  * - The chosen variant no longer exists: caution with the warning icon, as core's not-found banner, and "Back to All users".
- * - With the inventory open there is no button: its own Create version is there.
+ * - Create version shows with the inventory open too (it is one click; the inventory's block starts on the same address). Back to All users
+ *   is left out while the inventory is open.
  */
 
 /** The inspector the inventory opens in (c4/InventoryInspector.tsx). */
@@ -113,15 +114,14 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
 
   // The button of the Drafts and open-release cases. It stays disabled from the click until the version is listed and the banner goes away.
   const busy = status === 'creating' || status === 'created'
-  const createAction = inventoryOpen
-    ? undefined
-    : {
-        disabled: busy,
-        mode: 'default' as const,
-        onClick: () => void create(),
-        text: busy ? 'Creating…' : 'Create version',
-        tone: version === 'drafts' ? ('primary' as const) : ('suggest' as const),
-      }
+  // Shown with the inventory open too: the banner creates in one click, where the inventory's block takes more (Faheem, 22 Oct).
+  const createAction = {
+    disabled: busy,
+    mode: 'default' as const,
+    onClick: () => void create(),
+    text: busy ? 'Creating…' : 'Create version',
+    tone: version === 'drafts' ? ('primary' as const) : ('suggest' as const),
+  }
 
   const say = (body: React.ReactNode, state: string) => (
     <Text data-case={state} data-testid="open-beta-banner" size={1}>
