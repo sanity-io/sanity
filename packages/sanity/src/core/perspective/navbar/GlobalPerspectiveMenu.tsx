@@ -13,9 +13,12 @@ import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
+// PROPOSED: the menu is as wide as its widest row (titles, View Scheduled Drafts, View Content Releases), never under 280px and never over
+// 360px, past which a long title wraps. The Variants menu next to it follows the same rule, so the two menus match.
 const StyledMenu = styled(Menu)`
-  min-width: 200px;
-  max-width: 320px;
+  min-width: 280px;
+  max-width: 360px;
+  width: max-content;
   /* Remove the default menu gap*/
   > [data-ui='Stack'] {
     gap: 0;
