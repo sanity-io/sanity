@@ -86,13 +86,11 @@ describe('ReleasesNav', () => {
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
   })
-  it('should have link to releases tool', async () => {
+  it('should be one button that opens the menu, with no link to the releases tool', async () => {
     await renderTest()
 
-    const releasesLink = screen.getByRole('link')
-
-    expect(releasesLink).toHaveAttribute('href', '/')
-    expect(releasesLink).not.toHaveAttribute('data-selected')
+    expect(screen.queryByRole('link')).toBeNull()
+    expect(screen.getByTestId('global-perspective-menu-button')).toHaveTextContent('Drafts')
   })
 
   it('should have dropdown menu for global perspectives', async () => {
@@ -114,6 +112,16 @@ describe('ReleasesNav', () => {
     await renderTest()
 
     screen.getByText('active Release')
+  })
+
+  it('should clear a chosen perspective back to the default one', async () => {
+    usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
+    usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
+
+    await renderTest()
+
+    await userEvent.click(screen.getByTestId('clear-perspective-button'))
+    expect(mockedSetPerspective).toHaveBeenCalledWith(undefined)
   })
 
   describe('global perspective menu', () => {

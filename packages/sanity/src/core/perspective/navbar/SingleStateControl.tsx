@@ -6,6 +6,8 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {isReleaseDocument} from '../../releases/store/types'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
+import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {type TargetPerspective} from '../types'
 
 /**
@@ -24,17 +26,24 @@ export function SingleStateControl(
   // The menu button hands its trigger the click handler, the ref and the aria attributes; they go on to the button.
   const {selectedPerspective, ...buttonProps} = props
   const {t} = useTranslation()
+  const {bundles} = useAgentBundles()
   const label = isPublishedPerspective(selectedPerspective)
     ? t('release.chip.published')
     : isDraftPerspective(selectedPerspective)
       ? t('release.chip.global.drafts')
       : isReleaseDocument(selectedPerspective)
         ? selectedPerspective.metadata?.title || t('release.placeholder-untitled-release')
-        : String(selectedPerspective)
+        : isAgentBundleName(selectedPerspective)
+          ? t(
+              bundles.some((b) => b.id === selectedPerspective)
+                ? 'version.agent-bundle.proposed-changes'
+                : 'version.agent-bundle.agent-changes',
+            )
+          : String(selectedPerspective)
   return (
     <Button
-      {...buttonProps}
       data-testid="perspective-single-control"
+      {...buttonProps}
       icon={<ReleaseAvatarIcon release={selectedPerspective} size="small" />}
       iconRight={ChevronDownIcon}
       mode="bleed"
