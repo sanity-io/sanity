@@ -79,7 +79,6 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
           removeTestId="variants-chip-remove"
           testId="variants-chip"
           text={valueTitle(dimension, value)}
-          tooltip={`${dimension.title}: ${valueTitle(dimension, value)}`}
         />
       ) : (
         // Resting: the same outlined capsule as the applied control and the stock state pill, with nothing in it but the label.
@@ -98,9 +97,10 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
               paddingLeft: PADDING_X,
               paddingRight: CHEVRON_INSET,
             }}
-            // The value, as the state control says "Drafts" and not "Perspective"; the dimension titles the menu and the tooltip.
+            // The value, as the state control says "Drafts" and not "Perspective"; the dimension titles the menu. No tooltip, as on the
+            // state control (Faheem, 22 Oct): the label says what is chosen, and the accessible name carries the dimension.
             text={DEFAULT_TITLE}
-            tooltipProps={{content: `${dimension.title}: ${DEFAULT_TITLE}`}}
+            tooltipProps={null}
           />
         </Card>
       )}
