@@ -73,6 +73,10 @@ export const ReleasesNav: ComponentType<Props> = ({
   const section = extension?.section
   // PROPOSED: the stock chip is ONE button that opens the menu (the state icon, the label and the chevron), and a cross that goes back to
   // the default perspective once another is chosen, like the Variants chip next to it. A host that extends the label keeps the split control.
+  // PROPOSED: the chip is one capsule with flush segments, as the Variants chip is: the buttons have no radius or inset of their own, they
+  // fill the capsule's height (31px inside the 1px border, 25px in a host's section) and its outline clips their hover fill.
+  const flushHeight = section ? 25 : 31
+  const flush = {borderRadius: 0, height: flushHeight, minHeight: flushHeight}
   const chip = (
     <>
       <GlobalPerspectiveMenu
@@ -83,12 +87,13 @@ export const ReleasesNav: ComponentType<Props> = ({
           <SingleStateControl
             data-testid="global-perspective-menu-button"
             selectedPerspective={selectedPerspective}
+            style={{...flush, paddingLeft: 14, paddingRight: 4}}
           />
         }
       />
       {!isDefaultPerspective && (
-        // The divider runs the chip's full height (through the container's 2px padding), as on the Variants chip.
-        <div className={SegmentDivider} style={{margin: '-2px 0'}} />
+        // The divider runs the chip's full height, as on the Variants chip.
+        <div className={SegmentDivider} />
       )}
       {!isDefaultPerspective && (
         <Button
@@ -102,8 +107,7 @@ export const ReleasesNav: ComponentType<Props> = ({
           icon={<CloseIcon style={{transform: 'scale(0.65)'}} />}
           mode="bleed"
           onClick={() => setPerspective(undefined)}
-          radius="full"
-          style={{paddingLeft: 2, paddingRight: 2}}
+          style={{...flush, paddingLeft: 2, paddingRight: 2}}
           tooltipProps={null}
         />
       )}
@@ -159,7 +163,10 @@ export const ReleasesNav: ComponentType<Props> = ({
       data-ui="ReleasesNav"
       border={section ? false : border}
       data-section={section ? '' : undefined}
-      style={section?.style}
+      // The stock chip has no inset: its segments are flush with the outline, which clips them.
+      style={
+        section?.style ?? (splitControl ? undefined : {gap: 0, overflow: 'hidden', padding: 0})
+      }
     >
       {!section && splitControl && withReleasesToolButton && releasesToolAvailable && (
         <ReleasesToolLink />
@@ -174,6 +181,7 @@ export const ReleasesNav: ComponentType<Props> = ({
               background: 'var(--card-bg-color)',
               borderRadius: 9999,
               display: 'flex',
+              overflow: section.singleControl ? 'hidden' : undefined,
             }}
           >
             {section.singleControl ? (

@@ -24,7 +24,7 @@ export function SingleStateControl(
   >,
 ): React.JSX.Element {
   // The menu button hands its trigger the click handler, the ref and the aria attributes; they go on to the button.
-  const {selectedPerspective, ...buttonProps} = props
+  const {selectedPerspective, style, ...buttonProps} = props
   const {t} = useTranslation()
   const {bundles} = useAgentBundles()
   const label = isPublishedPerspective(selectedPerspective)
@@ -48,7 +48,7 @@ export function SingleStateControl(
       iconRight={ChevronDownIcon}
       mode="bleed"
       radius="full"
-      style={{maxWidth: 220}}
+      style={{maxWidth: 220, ...style}}
       text={label}
       tooltipProps={null}
     />
