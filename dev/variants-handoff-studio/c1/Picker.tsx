@@ -1,7 +1,14 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type FocusEvent, type KeyboardEvent, useEffect, useRef, useState} from 'react'
+import {
+  type FocusEvent,
+  type KeyboardEvent,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit 6acf5bfa24, lib/explorations/variants-2-0/perspective/Picker.tsx).
@@ -107,6 +114,8 @@ export function PickerContent(props: {
   onClear: () => void
   /** The ID of the definition behind a value, so search can match it (whole or from its start). */
   idOf?: (dimension: string, key: string) => string | undefined
+  /** Rows under the list form, like the Releases menu's View all and New release: menu items, hidden while searching. */
+  footer?: ReactNode
 }) {
   const {dimensions, chosen, onPick, idOf} = props
   const form = panelForm(dimensions.length)
@@ -276,7 +285,17 @@ export function PickerContent(props: {
             value={query}
           />
           {form === 'list' && spec ? (
-            list(spec, true)
+            <>
+              {list(spec, true)}
+              {/* While searching, only the entries show: the footer rows are not results (as in the Releases menu). */}
+              {props.footer && !searching ? (
+                <Card borderTop data-testid="picker-footer-rows" paddingTop={2}>
+                  <Menu shouldFocus={null} padding={0}>
+                    <Stack gap={1}>{props.footer}</Stack>
+                  </Menu>
+                </Card>
+              ) : null}
+            </>
           ) : form === 'columns' ? (
             <Flex gap={4}>
               {dimensions.map((d) => (
@@ -391,6 +410,7 @@ export function Picker(props: {
   placement?: 'bottom-start' | 'bottom-end'
   testId?: string
   idOf?: (dimension: string, key: string) => string | undefined
+  footer?: ReactNode
 }) {
   return (
     <MenuPopover
@@ -405,6 +425,7 @@ export function Picker(props: {
       <PickerContent
         chosen={props.chosen}
         dimensions={props.dimensions}
+        footer={props.footer}
         idOf={props.idOf}
         onClear={props.onClear}
         onPick={props.onPick}

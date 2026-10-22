@@ -1,9 +1,15 @@
+import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Card} from '@sanity/ui'
-import {useState} from 'react'
+import {type MouseEvent, useState} from 'react'
 import {useSetVariant} from 'sanity'
+import {useStateLink} from 'sanity/router'
 
+import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
+import {CreateVariantDialog} from '../../../packages/sanity/src/core/variants/components/dialog/CreateVariantDialog'
+import {type SystemVariant} from '../../../packages/sanity/src/core/variants/types'
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
+import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {AddressChip} from './AddressRow'
 import {DimensionIcon} from './dimensionIcons'
 import {valueTitle} from './model'
@@ -21,6 +27,8 @@ const CHEVRON_INSET = 4
 /** The icon's own margin is -6px each side; a little less on the right gives the label more room. */
 const ICON_STYLE = {marginRight: -2} as const
 
+const isVariantId = (id: string): id is SystemVariant['_id'] => id.startsWith('_.variants.')
+
 /**
  * The open beta navbar's second control (C1 option B, Figma 192:3139): the Variants control, next to the stock state control. Nothing else.
  * It owns no state. The router's `variant` param is the only copy of the choice: this reads it (through `chosen`, derived from it in the locked
@@ -34,6 +42,9 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
   const setVariant = useSetVariant()
   const [open, setOpen] = useState(false)
   const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+  const [creating, setCreating] = useState(false)
+  // The Releases menu's two footer rows, for variants: the tool, and the tool's own create dialog.
+  const viewAll = useStateLink({state: {tool: 'variants'}})
   const dimension = dimensions[0]
   if (!dimension) return null
 
@@ -47,7 +58,7 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
             const entries = Object.entries(d.conditions)
             return entries.length === 1 && d.conditions[dimension.name] === key
           })
-    setVariant({variantId: definition?._id as never})
+    setVariant({variantId: definition && isVariantId(definition._id) ? definition._id : undefined})
     setOpen(false)
   }
 
@@ -98,10 +109,44 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
             ?._id.replace(/^_\.variants\./, '')
         }
         onClear={() => choose(null)}
+        footer={
+          <>
+            <MenuItem
+              as="a"
+              data-testid="variants-view-all"
+              href={viewAll.href}
+              icon={RhombusIcon}
+              onClick={(event: MouseEvent<HTMLElement>) => {
+                setOpen(false)
+                viewAll.onClick(event)
+              }}
+              text="View all"
+            />
+            <MenuItem
+              data-testid="variants-create-new"
+              icon={AddIcon}
+              onClick={() => {
+                setOpen(false)
+                setCreating(true)
+              }}
+              text={`New ${dimension.title.toLowerCase()}`}
+            />
+          </>
+        }
         onClose={() => setOpen(false)}
         onPick={(_dimension, key) => choose(key)}
         open={open}
       />
+      {creating ? (
+        // As New release selects the release it made, New audience selects the variant it made.
+        <CreateVariantDialog
+          onCancel={() => setCreating(false)}
+          onSubmit={(id) => {
+            setCreating(false)
+            if (isVariantId(id)) setVariant({variantId: id})
+          }}
+        />
+      ) : null}
     </div>
   )
 }
