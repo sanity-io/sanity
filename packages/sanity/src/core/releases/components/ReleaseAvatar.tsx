@@ -9,9 +9,10 @@ import {Box, type Space} from 'ui5'
 import {BoltSmallIcon} from '../../components/temporary-icons/BoltSmall'
 import {CircleSmallIcon} from '../../components/temporary-icons/CircleSmall'
 import {CircleXsIcon} from '../../components/temporary-icons/CircleXs'
+import {ClockDashedIcon} from '../../components/temporary-icons/ClockDashed'
+import {ClockDashedSmallIcon} from '../../components/temporary-icons/ClockDashedSmall'
 import {ClockSmallIcon} from '../../components/temporary-icons/ClockSmall'
 import {RingIcon} from '../../components/temporary-icons/Ring'
-import {UnknownSmallIcon} from '../../components/temporary-icons/UnknownSmall'
 import {type TargetPerspective} from '../../perspective/types'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
@@ -35,8 +36,13 @@ function renderReleaseTypeIcon(
       return size === 'default' ? <BoltIcon {...iconProps} /> : <BoltSmallIcon {...iconProps} />
     case 'scheduled':
       return size === 'default' ? <ClockIcon {...iconProps} /> : <ClockSmallIcon {...iconProps} />
+    // PROPOSED: an undecided release is a dashed clock at both sizes (a clock with no time set yet).
     case 'undecided':
-      return size === 'default' ? <DotIcon {...iconProps} /> : <UnknownSmallIcon {...iconProps} />
+      return size === 'default' ? (
+        <ClockDashedIcon {...iconProps} />
+      ) : (
+        <ClockDashedSmallIcon {...iconProps} />
+      )
     default:
       return size === 'default' ? <DotIcon {...iconProps} /> : <CircleXsIcon {...iconProps} />
   }
