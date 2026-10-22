@@ -2,6 +2,7 @@ import {type ReleaseType} from '@sanity/client'
 import {type BadgeTone, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
+import {useRelativeTime} from '../../hooks/useRelativeTime'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
@@ -45,7 +46,7 @@ function stateOf(item: DocumentVersionStatusItem): VersionState {
   return releaseType === 'scheduled' ? 'scheduled' : releaseType === 'asap' ? 'asap' : 'undecided'
 }
 
-/** The newest edit on a line, for ordering the audiences. */
+/** The newest edit on a line, for ordering the audiences and for the line's time. */
 const newestEdit = (group: DocumentVersionStatusGroup) =>
   Math.max(...group.items.map((item) => Date.parse(item.version._updatedAt ?? '') || 0))
 
@@ -53,7 +54,7 @@ const newestEdit = (group: DocumentVersionStatusGroup) =>
  * PROPOSED (the v1 versions popover, Variants open beta): what a document's status icons show on hover. One line per audience: the base
  * document first ("All users (Default)"), then the audiences by their most recent edit, newest first. Each line names the audience and its
  * states as flat labels (the state's glyph and word in its tone), at most two and then a "+N" that names the others. After five lines a muted
- * last line counts the versions not shown. Information only: nothing in it is clickable, and it shows no dates.
+ * last line counts the versions not shown. Each line ends with its most recent edit as a short relative time. Information only: nothing in it is clickable.
  *
  * @internal
  */
@@ -118,16 +119,19 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
               padding: '9px 12px',
             }}
           >
+            {/* The audience's name keeps its width (down to 96px), the labels give way first, and the time never does. */}
             {variantsEnabled || group.variantId ? (
-              <Box flex={1} style={{minWidth: 0}}>
+              <Box style={{flex: '0 1 auto', minWidth: 96}}>
                 <Text size={1} textOverflow="ellipsis">
                   {audienceTitle(group.variantId)}
                 </Text>
               </Box>
-            ) : (
-              <Box flex={1} />
-            )}
-            <Flex gap={1} justify="flex-end" style={{flexShrink: 0, minWidth: 0}}>
+            ) : null}
+            <Flex
+              gap={1}
+              justify="flex-end"
+              style={{flex: '1 1 0%', minWidth: 0, overflow: 'hidden'}}
+            >
               {states.slice(0, SHOWN_STATES).map(({item, state}) => (
                 <StateLabel key={item.version._id} state={state} text={stateWord(item, state)} />
               ))}
@@ -148,6 +152,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
                 </Card>
               ) : null}
             </Flex>
+            <LineTime time={newestEdit(group)} />
           </Flex>
         )
       })}
@@ -159,6 +164,22 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
         </Card>
       ) : null}
     </Stack>
+  )
+}
+
+/**
+ * PROPOSED (Faheem, 22 Oct, option B): the line's most recent edit, as core's minimal relative time ("5 min", "3 hr", "2 wk"; a date past
+ * a month), muted, in a right column so the lines' times align. Stock Studio's status says "Edited 2 wk. ago" the same way.
+ */
+function LineTime({time}: {time: number}) {
+  const label = useRelativeTime(new Date(time), {minimal: true})
+  if (!time) return null
+  return (
+    <Box data-testid="audience-line-time" flex="none" style={{minWidth: 48, textAlign: 'right'}}>
+      <Text muted size={1} style={{fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap'}}>
+        {label}
+      </Text>
+    </Box>
   )
 }
 
