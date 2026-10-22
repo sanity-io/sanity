@@ -29,7 +29,7 @@ import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isString} from '../../util/isString'
 import {_previewComponents} from './_previewComponents'
-import {PreviewTooltip} from './PreviewTooltip'
+import {PreviewTooltip, type PreviewTooltipPlacement} from './PreviewTooltip'
 
 function FallbackIcon() {
   return <DocumentIcon className="sanity-studio__preview-fallback-icon" />
@@ -40,6 +40,12 @@ export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDef
   error?: Error | null
   icon?: ElementType | false
   tooltip?: ReactNode
+  /**
+   * PROPOSED: where the tooltip opens: below the status icons (the default; in forms, search results and dialogs, where a side would cover
+   * the form or be cut off), or beside them (the structure list pane, whose rows have room to their right).
+   * @internal
+   */
+  tooltipPlacement?: PreviewTooltipPlacement
 }
 
 type SanityDefaultMediaProps = {
@@ -113,7 +119,16 @@ function SanityDefaultMedia({
 export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   props: SanityDefaultPreviewProps,
 ): React.JSX.Element {
-  const {icon: Icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
+  const {
+    icon: Icon,
+    layout,
+    media: mediaProp,
+    imageUrl,
+    title,
+    tooltip,
+    tooltipPlacement,
+    ...restProps
+  } = props
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => createImageUrlBuilder(client), [client])
@@ -233,7 +248,11 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   const children = <LayoutComponent {...previewProps} />
 
   if (tooltip) {
-    return <PreviewTooltip content={tooltip}>{children}</PreviewTooltip>
+    return (
+      <PreviewTooltip content={tooltip} placement={tooltipPlacement}>
+        {children}
+      </PreviewTooltip>
+    )
   }
 
   return children

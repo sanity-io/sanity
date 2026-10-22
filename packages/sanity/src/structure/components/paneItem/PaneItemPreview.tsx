@@ -123,6 +123,8 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       layout={layout}
       status={status}
       tooltip={tooltip}
+      // PROPOSED: list rows have room to their right, so the versions popover opens beside the status icons.
+      tooltipPlacement="beside"
     />
   )
 }
