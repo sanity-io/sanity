@@ -1,7 +1,13 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals, @sanity/i18n/no-attribute-template-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
 import {Card, Heading} from '@sanity/ui'
-import {memo, type PointerEvent as ReactPointerEvent, useCallback, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
+import {
+  type CSSProperties,
+  memo,
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -9,6 +15,16 @@ import {
   type RequestPerformanceEntry,
   type RequestPerformanceSnapshot,
 } from '../../../diagnostics/requestPerformance'
+import {
+  chartContainer,
+  pointTooltipPositioner,
+  seriesButton,
+  seriesMarker,
+  summaryTable,
+  tooltipLeftVar,
+  tooltipTopVar,
+  tooltipTransformVar,
+} from './RequestPerformanceReport.css'
 
 const CHART_WIDTH = 800
 const CHART_HEIGHT = 240
@@ -39,86 +55,6 @@ const FALLBACK_STYLES: SeriesStyle[] = [
   {color: 'var(--card-badge-suggest-dot-color)', marker: 'cross'},
   {color: 'var(--card-badge-primary-dot-color)', marker: 'diamond'},
 ]
-
-const ChartContainer = styled.div`
-  position: relative;
-`
-
-const PointTooltipPositioner = styled.div<{$x: number; $y: number}>`
-  left: ${({$x}) => `${($x / CHART_WIDTH) * 100}%`};
-  pointer-events: none;
-  position: absolute;
-  top: ${({$y}) => `${($y / CHART_HEIGHT) * 100}%`};
-  transform: ${({$x, $y}) => {
-    const translateX = $x < 170 ? '0' : $x > CHART_WIDTH - 170 ? '-100%' : '-50%'
-    const translateY = $y < 92 ? '12px' : 'calc(-100% - 10px)'
-    return `translate(${translateX}, ${translateY})`
-  }};
-  width: 220px;
-  z-index: 1;
-`
-
-const SummaryTable = styled.table`
-  border-collapse: collapse;
-  table-layout: fixed;
-  width: 100%;
-
-  th,
-  td {
-    padding: 4px 8px;
-  }
-
-  th:first-child,
-  td:first-child {
-    padding-left: 0;
-    text-align: left;
-    width: 36%;
-  }
-
-  th:not(:first-child),
-  td:not(:first-child) {
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-  }
-
-  th:last-child,
-  td:last-child {
-    padding-right: 0;
-  }
-
-  tbody tr {
-    transition: opacity 120ms ease-out;
-  }
-
-  tbody tr[data-muted='true'] {
-    opacity: 0.4;
-  }
-`
-
-const SeriesButton = styled.button`
-  align-items: center;
-  background: none;
-  border: 0;
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  font: inherit;
-  gap: 8px;
-  margin: -4px;
-  padding: 4px;
-
-  &:focus-visible {
-    border-radius: 3px;
-    outline: 2px solid var(--card-focus-ring-color);
-    outline-offset: 1px;
-  }
-`
-
-const SeriesMarker = styled.svg`
-  flex: none;
-  height: 12px;
-  width: 12px;
-`
 
 interface BucketSummary {
   bucket: string
@@ -283,7 +219,7 @@ export function RequestPerformanceReport({
                   ? 'Selected range summary'
                   : 'Full session summary (estimated percentiles)'}
               </Text>
-              <SummaryTable>
+              <table className={summaryTable}>
                 <thead>
                   <tr>
                     <th scope="col">
@@ -319,20 +255,21 @@ export function RequestPerformanceReport({
                     return (
                       <tr data-muted={muted} key={summary.bucket}>
                         <td>
-                          <SeriesButton
+                          <button
                             aria-pressed={selectedBucket === summary.bucket}
+                            className={seriesButton}
                             onClick={() => handleBucketClick(summary.bucket)}
                             type="button"
                           >
-                            <SeriesMarker aria-hidden="true" viewBox="-6 -6 12 12">
+                            <svg aria-hidden="true" className={seriesMarker} viewBox="-6 -6 12 12">
                               <g fill={summary.style.color} stroke="none">
                                 <PointMarker shape={summary.style.marker} />
                               </g>
-                            </SeriesMarker>
+                            </svg>
                             <Text as="span" size={1} weight="semibold" trim={true}>
                               {summary.bucket}
                             </Text>
-                          </SeriesButton>
+                          </button>
                         </td>
                         <td>
                           <Text size={1} as="div" trim={true}>
@@ -358,7 +295,7 @@ export function RequestPerformanceReport({
                     )
                   })}
                 </tbody>
-              </SummaryTable>
+              </table>
             </VStack>
 
             {abortedCount > 0 ? (
@@ -487,7 +424,7 @@ function InteractiveChart({
   const handlePointerCancel = useCallback(() => setDragSelection(undefined), [])
 
   return (
-    <ChartContainer>
+    <div className={chartContainer}>
       <svg
         aria-label={ariaLabel}
         data-duration-scale="linear"
@@ -536,7 +473,7 @@ function InteractiveChart({
       </svg>
 
       {visibleHoveredPoint ? <PointTooltip point={visibleHoveredPoint} useUtc={useUtc} /> : null}
-    </ChartContainer>
+    </div>
   )
 }
 
@@ -544,17 +481,29 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
   const {entry, style, x, y} = point
   const status =
     entry.status === 'success' ? 'Success' : entry.status === 'error' ? 'Error' : 'Aborted'
+  const translateX = x < 170 ? '0' : x > CHART_WIDTH - 170 ? '-100%' : '-50%'
+  const translateY = y < 92 ? '12px' : 'calc(-100% - 10px)'
 
   return (
-    <PointTooltipPositioner $x={x} $y={y} role="tooltip">
+    <div
+      className={pointTooltipPositioner}
+      role="tooltip"
+      style={
+        {
+          [tooltipLeftVar]: `${(x / CHART_WIDTH) * 100}%`,
+          [tooltipTopVar]: `${(y / CHART_HEIGHT) * 100}%`,
+          [tooltipTransformVar]: `translate(${translateX}, ${translateY})`,
+        } as CSSProperties
+      }
+    >
       <Card border padding={3} radius={2} shadow={2}>
         <VStack gap={3}>
           <Flex alignItems="center" gap={2}>
-            <SeriesMarker aria-hidden="true" viewBox="-6 -6 12 12">
+            <svg aria-hidden="true" className={seriesMarker} viewBox="-6 -6 12 12">
               <g fill={style.color} stroke="none">
                 <PointMarker shape={style.marker} />
               </g>
-            </SeriesMarker>
+            </svg>
             <Text size={1} weight="semibold" as="div" trim={true}>
               {entry.bucket}
             </Text>
@@ -565,7 +514,7 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
           <TooltipDetail label="Status" value={status} />
         </VStack>
       </Card>
-    </PointTooltipPositioner>
+    </div>
   )
 }
 
