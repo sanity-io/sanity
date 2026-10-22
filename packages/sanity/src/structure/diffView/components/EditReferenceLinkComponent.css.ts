@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const link = style({
+export const link = css({
   flex: 1,
   textDecoration: 'none',
   color: 'inherit',

@@ -6,9 +6,10 @@ import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {ElementWithChangeBar} from '../ElementWithChangeBar'
 
 /**
- * Vanilla-extract migration sentinel: the change indicator bar was one of the
- * first components migrated from styled-components to vanilla-extract
- * (`ElementWithChangeBar.css.ts`), so this story guards that styling path.
+ * Static-styles migration sentinel: the change indicator bar was one of the
+ * first components migrated from styled-components to `.css.ts` static styles
+ * (`ElementWithChangeBar.css.ts`, now Panda CSS), so this story guards that
+ * styling path.
  * Rendered inside `TestWrapper` because the component needs the review
  * changes context, layers and studio i18n.
  */

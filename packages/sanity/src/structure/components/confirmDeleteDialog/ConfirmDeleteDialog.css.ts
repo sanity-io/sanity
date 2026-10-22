@@ -1,9 +1,9 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const dialogBody = style({
+export const dialogBody = css({
   boxSizing: 'border-box',
 })
 
-export const loadingContainer = style({
+export const loadingContainer = css({
   height: '110px',
 })

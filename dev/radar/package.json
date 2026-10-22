@@ -36,8 +36,8 @@
     "vite": "catalog:"
   },
   "devDependencies": {
+    "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/react": "catalog:",
     "rimraf": "catalog:",
     "tsx": "^4.23.15",
