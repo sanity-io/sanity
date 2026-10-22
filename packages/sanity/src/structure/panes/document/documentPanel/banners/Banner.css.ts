@@ -15,7 +15,8 @@ export const root = style({
 export const row = style({
   'display': 'flex',
   'alignItems': 'center',
-  'gap': 12,
+  // A fixed 16px between the text and the action (Faheem, 23 Oct).
+  'gap': 16,
   'paddingLeft': 8,
   'paddingRight': 8,
   '@container': {
@@ -51,45 +52,27 @@ export const content = style({
   minWidth: 0,
   paddingTop: 8,
   paddingBottom: 8,
-  // No line ends with a lone word (a progressive enhancement: browsers without it wrap as before). Inherited by the text.
-  textWrap: 'pretty',
-})
-
-/** The space between the text and the action slot. */
-export const spacer = style({
-  'flex': '1 1 0%',
-  '@container': {
-    [`${banner} (max-width: ${NARROW}px)`]: {
-      display: 'none',
-    },
-  },
+  // Two lines split into roughly equal lines, not a full line and a short tail (a progressive enhancement: browsers without it wrap as
+  // before). Inherited by the text.
+  textWrap: 'balance',
 })
 
 /**
- * The action slot: a fixed column on the right, as wide as the widest action ("Back to All users"), the button right aligned and centred.
- * It is kept when a banner has no action, so the text and the right edge line up from one banner to the next. On a narrow banner it goes
- * under the text, left aligned.
+ * The action column hugs its button, 16px after the text (the row's gap); it is pushed to the right edge when the banner is wider than
+ * the text's cap, the gap and the button. A banner with no action has no column, and its text takes the whole width up to its cap. On a
+ * narrow banner the action goes under the text, left aligned.
  */
 export const action = style({
   'display': 'flex',
   'alignItems': 'center',
-  'justifyContent': 'flex-end',
-  'flex': '0 0 auto',
-  'minWidth': 150,
+  'flex': 'none',
+  'marginLeft': 'auto',
   '@container': {
     [`${banner} (max-width: ${NARROW}px)`]: {
       flexBasis: '100%',
       justifyContent: 'flex-start',
-      minWidth: 0,
+      marginLeft: 0,
       paddingBottom: 8,
-    },
-  },
-  'selectors': {
-    // A banner with no action keeps its slot only while it is a column.
-    '&:empty': {
-      '@container': {
-        [`${banner} (max-width: ${NARROW}px)`]: {display: 'none'},
-      },
     },
   },
 })

@@ -1,5 +1,6 @@
 import {LockIcon} from '@sanity/icons/Lock'
 import {Text} from '@sanity/ui'
+import {type ReactNode} from 'react'
 import {
   getReleaseTone,
   isCardinalityOneRelease,
@@ -9,10 +10,32 @@ import {
   useFormatRelativeLocalePublishDate,
   usePauseToEditScheduledDraft,
   useTranslation,
+  VersionInlineBadge,
 } from 'sanity'
 
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {Banner} from './Banner'
+
+/** A chip and the word before it ("release", "on"), on one line: a line never breaks between them (Chrome breaks before an inline chip even after a non-breaking space). */
+function WithLead({lead, children}: {lead?: string; children: ReactNode}) {
+  if (!lead) return <>{children}</>
+  return (
+    <span style={{whiteSpace: 'nowrap'}}>
+      {lead}
+      {'\u00a0'}
+      {children}
+    </span>
+  )
+}
+
+/** A date in the banner's sentence: a neutral display chip, set elsewhere (the schedule). */
+function DateBadge({children, dateLead}: {children?: ReactNode; dateLead?: string}) {
+  return (
+    <WithLead lead={dateLead}>
+      <VersionInlineBadge $tone="default">{children}</VersionInlineBadge>
+    </WithLead>
+  )
+}
 
 export function ScheduledReleaseBanner({
   currentRelease,
@@ -39,10 +62,17 @@ export function ScheduledReleaseBanner({
         <Text size={1}>
           <Translate
             t={tCore}
-            i18nKey="release.banner.scheduled-for-publishing-on"
+            // PROPOSED: a scheduled draft says when it publishes, as a chip, and how to edit it (its action pauses the schedule).
+            i18nKey={
+              isCardinalityOne
+                ? 'release.banner.scheduled-draft'
+                : 'release.banner.scheduled-for-publishing-on'
+            }
             values={{
               date: formatPublishDate(currentRelease),
             }}
+            components={{DateBadge}}
+            componentProps={{dateLead: tCore('release.banner.lead.on')}}
           />
         </Text>
       }

@@ -1634,6 +1634,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.view-scheduled-drafts': 'View scheduled drafts',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
+  /** PROPOSED: the word before the date's chip on a scheduled draft's banner ("publish on [Nov 20, 9:00 AM]"), kept on one line with it */
+  'release.banner.lead.on': 'on',
+  /** PROPOSED: the banner on a scheduled draft: when it publishes, as a chip, and how to edit it (its action is Pause to edit) */
+  'release.banner.scheduled-draft':
+    'This draft is scheduled to publish <DateBadge>{{date}}</DateBadge>. Pause the schedule to edit it.',
 
   /** Label for button to show other variants in the document perspective list */
   'release.chip.button.other-variants_one': '+{{count}} variant',

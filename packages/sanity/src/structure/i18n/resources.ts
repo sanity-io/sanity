@@ -244,16 +244,24 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.release.navigate-to-edit-description-single':
     'This document is part of the <VersionBadge/> release',
   /** The text for the banner that appears when a document is not in the current global release */
-  'banners.release.not-in-release': 'Not in the release <VersionBadge>{{title}}</VersionBadge>.',
+  'banners.release.not-in-release':
+    "This document isn't in the <VersionBadge>{{title}}</VersionBadge> yet.",
   /** PROPOSED: the not-in-release banner for an ASAP release: the kind is a word in the sentence, the chip is the release's identity */
   'banners.release.not-in-release-asap':
-    'Not in the ASAP release <VersionBadge>{{title}}</VersionBadge>.',
+    "This document isn't in the ASAP <VersionBadge>{{title}}</VersionBadge> yet.",
   /** PROPOSED: the not-in-release banner for an undecided release */
   'banners.release.not-in-release-undecided':
-    'Not in the undecided release <VersionBadge>{{title}}</VersionBadge>.',
+    "This document isn't in the undecided <VersionBadge>{{title}}</VersionBadge> yet.",
   /** The not-in-release banner's text when the release is scheduled: why nothing can be added, and where to go */
   'banners.release.scheduled-locked':
-    'The scheduled release <VersionBadge>{{title}}</VersionBadge> is locked. Unschedule it to add this version.',
+    'The scheduled <VersionBadge>{{title}}</VersionBadge> publishes <DateBadge>{{date}}</DateBadge> and is locked. Unschedule it to add this version.',
+  /**
+   * PROPOSED: the word before a release's chip in the release banners ("the release [Winter sale]"). The chip renders it, on one line with
+   * the name (a line never breaks between them), so the sentences above leave it out.
+   */
+  'banners.release.lead.release': 'release',
+  /** PROPOSED: the word before a date's chip in the release banners ("publishes on [Nov 20, 9:00 AM]"), kept on one line with it */
+  'banners.release.lead.on': 'on',
   /** Description of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
   'banners.release.waiting.description':
     'Please hold tight while the document is added to the release. It should not take longer than a few seconds.',
