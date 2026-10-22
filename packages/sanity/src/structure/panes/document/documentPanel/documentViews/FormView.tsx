@@ -28,6 +28,26 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {FormHeader} from './FormHeader'
 
+const FOCUSABLE =
+  'input, textarea, select, button, a[href], [contenteditable="true"], [tabindex]:not([tabindex="-1"])'
+
+/**
+ * Studio-wide bug fix (also reproduces in stock Studio): opening a document focuses its first FIELD, not the first focusable element.
+ * A field's header actions (its comment button and its "⋯" menu) come before its input, so the first focusable element was the first
+ * field's action button: the focus revealed the actions (focus-within) and opened its tooltip ("Add comment") with the pointer elsewhere.
+ * The header actions are skipped; tabbing still reaches them.
+ */
+function focusFirstField(form: HTMLElement) {
+  const target = Array.from(form.querySelectorAll<HTMLElement>(FOCUSABLE)).find(
+    (element) =>
+      element.tabIndex >= 0 &&
+      !element.hasAttribute('disabled') &&
+      !element.closest('[data-actions-visible]'),
+  )
+  if (target) target.focus()
+  else focusFirstDescendant(form)
+}
+
 interface FormViewProps {
   hidden: boolean
   margins: [number, number, number, number]
@@ -187,7 +207,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     // for any reason (e.g. by this auto-focus mechanism itself, or by
     // navigating to a deep-link).
     if (!hasFocusedAnyPath && ready && !formState?.focusPath.length && formRef) {
-      focusFirstDescendant(formRef)
+      focusFirstField(formRef)
     }
   }, [hasFocusedAnyPath, formRef, formState?.focusPath.length, ready])
 
