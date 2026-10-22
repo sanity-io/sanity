@@ -1,6 +1,6 @@
 import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
@@ -31,42 +31,61 @@ type VersionCreateState = {
   lastUpdate: Date
 }
 
+/** A chip and the word before it ("release", "on"), on one line: a line never breaks between them (Chrome breaks before an inline chip even after a non-breaking space). */
+function WithLead({lead, children}: {lead?: string; children: ReactNode}) {
+  if (!lead) return <>{children}</>
+  return (
+    <span style={{whiteSpace: 'nowrap'}}>
+      {lead}
+      {'\u00a0'}
+      {children}
+    </span>
+  )
+}
+
 function VersionBadge({
   children,
   currentRelease,
   fallbackTitle,
+  releaseLead,
 }: {
+  releaseLead?: string
   children?: React.ReactNode
   currentRelease?: Exclude<TargetPerspective, SystemBundle>
   fallbackTitle?: string
 }) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
-  // PROPOSED: the chip carries the release's glyph (its bolt, clock or dot), as the release menus do, and a scheduled release its date
-  // ("Black Friday · 20 Nov"), as the release pills name it.
+  // PROPOSED: the chip carries the release's glyph (its bolt, clock or dot), as the release menus do. It is the release's name only:
+  // a date is its own chip in the sentence (it is set elsewhere).
   const icon = <ReleaseAvatarIcon release={currentRelease ?? LATEST} />
-  const locale = useCurrentLocale().id
-  const at =
-    typeof currentRelease === 'object' && currentRelease?.metadata.releaseType === 'scheduled'
-      ? currentRelease.metadata.intendedPublishAt
-      : undefined
-  const suffix = at
-    ? `· ${new Intl.DateTimeFormat(locale, {day: 'numeric', month: 'short'}).format(new Date(at))}`
-    : undefined
   if (typeof currentRelease === 'string' || !currentRelease) {
     return (
-      <VersionInlineBadge $tone={tone} icon={icon} suffix={suffix}>
-        {children}
-      </VersionInlineBadge>
+      <WithLead lead={releaseLead}>
+        <VersionInlineBadge $tone={tone} icon={icon}>
+          {children}
+        </VersionInlineBadge>
+      </WithLead>
     )
   }
   return (
     <ReleaseTitle title={currentRelease.metadata?.title} fallback={fallbackTitle ?? ''}>
       {() => (
-        <VersionInlineBadge $tone={tone} icon={icon} suffix={suffix}>
-          {children}
-        </VersionInlineBadge>
+        <WithLead lead={releaseLead}>
+          <VersionInlineBadge $tone={tone} icon={icon}>
+            {children}
+          </VersionInlineBadge>
+        </WithLead>
       )}
     </ReleaseTitle>
+  )
+}
+
+/** A date in the banner's sentence: a neutral display chip, set elsewhere (the release's schedule). */
+function DateBadge({children, dateLead}: {children?: ReactNode; dateLead?: string}) {
+  return (
+    <WithLead lead={dateLead}>
+      <VersionInlineBadge $tone="default">{children}</VersionInlineBadge>
+    </WithLead>
   )
 }
 
@@ -136,6 +155,20 @@ export function DocumentNotInReleaseBanner({
 
   const releaseKind =
     typeof currentRelease === 'object' ? currentRelease?.metadata.releaseType : undefined
+  // The locked release's publish date and time, in the Studio's locale, for its own chip in the sentence.
+  const locale = useCurrentLocale().id
+  const publishAtIso =
+    typeof currentRelease === 'object'
+      ? (currentRelease?.publishAt ?? currentRelease?.metadata.intendedPublishAt)
+      : undefined
+  const publishAt = publishAtIso
+    ? new Intl.DateTimeFormat(locale, {
+        day: 'numeric',
+        month: 'short',
+        hour: 'numeric',
+        minute: '2-digit',
+      }).format(new Date(publishAtIso))
+    : ''
 
   return (
     <Banner
@@ -157,11 +190,14 @@ export function DocumentNotInReleaseBanner({
             t={t}
             values={{
               title: releaseTitle,
+              date: publishAt,
             }}
-            components={{VersionBadge}}
+            components={{VersionBadge, DateBadge}}
             componentProps={{
               currentRelease,
               fallbackTitle: tCore('release.placeholder-untitled-release'),
+              releaseLead: t('banners.release.lead.release'),
+              dateLead: t('banners.release.lead.on'),
             }}
           />
         </Text>

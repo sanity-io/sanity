@@ -9,7 +9,6 @@ import {
   icon as iconCell,
   root,
   row,
-  spacer,
   text,
 } from './Banner.css'
 
@@ -35,8 +34,8 @@ export function Banner(props: BannerProps) {
   return (
     <Box padding={1}>
       <Card radius={3} paddingX={2} paddingY={paddingY} tone={tone} {...rest}>
-        {/* PROPOSED (Studio-wide): the text is at most 560px and wraps, and the action has a fixed column on the right, kept when there is
-            no action, so every banner's text and button line up. On a narrow banner the action goes under the text. */}
+        {/* PROPOSED (Studio-wide): the text is at most 720px and wraps, and the action's column hugs its button, 16px after the text and at the
+            right edge; a banner with no action has no column. On a narrow banner the action goes under the text. */}
         <div className={root}>
           <div className={row}>
             <div className={text}>
@@ -49,12 +48,12 @@ export function Banner(props: BannerProps) {
               )}
               <div className={contentColumn}>{content}</div>
             </div>
-            <div className={spacer} />
-            <div className={actionSlot}>
-              {action && (
+            {/* With an action, the text and the action's column; without one, the text takes the whole banner (still capped). */}
+            {action ? (
+              <div className={actionSlot}>
                 <Button {...action} mode={action.mode || 'ghost'} tone={action.tone || 'default'} />
-              )}
-            </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </Card>
