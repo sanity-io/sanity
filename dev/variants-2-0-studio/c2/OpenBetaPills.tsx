@@ -126,6 +126,8 @@ function DropdownPill(props: {
     trailing?: ReactElement
     /** The row is what is in view (the Variants menu's "All users (Default)" with no variant chosen). */
     selected?: boolean
+    /** Greyed but clickable: a variant this document has no version of yet (picking it shows the banner's Create version). */
+    muted?: boolean
     /** A variant listed under its release: it is found, and shown, with the release above it. */
     indent?: boolean
     /** What search matches an option by (the title is its text when this is left out). */
@@ -201,7 +203,10 @@ function DropdownPill(props: {
                 selected={item.selected}
                 key={item.key}
                 onClick={item.onClick}
-                style={item.indent ? {marginLeft: 24} : undefined}
+                style={{
+                  ...(item.indent ? {marginLeft: 24} : {}),
+                  ...(item.muted ? {opacity: 0.55} : {}),
+                }}
                 text={item.text}
               />
             )),
@@ -282,6 +287,13 @@ export function OpenBetaPills({
   // One row per VARIANT this document has (not per version): picking it sets only the variant and keeps the Published, Draft or release in
   // view, which the other pills change. A variant with no version there still opens; the T6 banner says so.
   const viewedVariant = variants.find((v) => v.variantId === currentVariant)
+  // The chosen variant when this document has no version of it: the pill still names it, so the global and local pills agree (Faheem, 22 Oct).
+  const viewedMissing = viewedVariant
+    ? undefined
+    : definitions.find((d) => d._id.replace(/^_\.variants\./, '') === currentVariant)
+  const viewedTitle =
+    viewedVariant?.audience ??
+    (viewedMissing ? (viewedMissing.metadata?.title ?? currentVariant) : undefined)
   const variantGroups = [...new Set(variants.map((v) => v.variantId ?? v.audience))].map((key) =>
     variants.filter((v) => (v.variantId ?? v.audience) === key),
   )
@@ -315,6 +327,24 @@ export function OpenBetaPills({
     trailing: SHOW_VERSION_COUNT ? <VersionCount versions={baseVersions} /> : undefined,
     selected: !currentVariant,
   }
+  // Then every other variant, greyed but clickable: picking one moves the global perspective to it (the version in view kept), where the banner
+  // offers Create version (Faheem, 22 Oct). No count: there is no version yet. The open beta stage lists Audience ones only.
+  const missingItems = definitions
+    .filter((d) => stage !== 'open-beta' || inOpenBeta(d.conditions))
+    .filter((d) => !variants.some((v) => v.variantId === d._id.replace(/^_\.variants\./, '')))
+    .map((definition) => {
+      const id = definition._id.replace(/^_\.variants\./, '')
+      const [name] = Object.keys(definition.conditions)
+      return {
+        key: `variant-missing-${id}`,
+        text: definition.metadata?.title ?? id,
+        icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
+        onClick: () => goTo(current, definition),
+        muted: true,
+        selected: id === currentVariant,
+        search: {id},
+      }
+    })
   // One entry per RELEASE (the pill counts releases, not versions); the versions it holds are listed under it: the document, then its variants.
   const releaseGroups = [...new Set(releases.map((v) => v.bundleId))].flatMap((bundleId) => {
     const inRelease = releases.filter((v) => v.bundleId === bundleId)
@@ -351,12 +381,12 @@ export function OpenBetaPills({
       {variants.length ? (
         <DropdownPill
           icon={<RhombusIcon />}
-          items={[baseItem, ...variantItems]}
+          items={[baseItem, ...variantItems, ...missingItems]}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
-          selected={Boolean(viewedVariant)}
+          selected={Boolean(viewedTitle)}
           testId="pills-variants"
           // With a variant of this document in view the pill names it, in purple (Faheem, 22 Oct); otherwise it counts the variants.
-          text={viewedVariant?.audience ?? `Variants · ${variantGroups.length}`}
+          text={viewedTitle ?? `Variants · ${variantGroups.length}`}
           tone="suggest"
         />
       ) : null}
