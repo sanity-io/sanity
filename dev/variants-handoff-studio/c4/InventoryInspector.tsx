@@ -37,5 +37,11 @@ function Inventory({documentId}: DocumentInspectorProps) {
 export const inventoryInspector: DocumentInspector = {
   name: 'variants-inventory',
   component: Inventory,
-  useMenuItem: () => ({icon: DocumentsIcon, title: 'Versions', showAsAction: true}),
+  // The header button, and an entry in the document's menu too (22 Oct call).
+  useMenuItem: () => ({
+    icon: DocumentsIcon,
+    title: 'Versions',
+    showAsAction: true,
+    showInMenu: true,
+  }),
 }
