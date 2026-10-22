@@ -1,22 +1,16 @@
 import {Card, type CardProps} from '@sanity/ui'
-import {type ElementType, type HTMLProps, useContext, useMemo, type RefAttributes} from 'react'
+import {clsx} from 'clsx'
+import {
+  type ComponentProps,
+  type ElementType,
+  type HTMLProps,
+  type RefAttributes,
+  useContext,
+  useMemo,
+} from 'react'
 import {PreviewCardContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
 
-/** @internal */
-const StyledCard = styled(Card)(() => {
-  return css`
-    /* TextWithTone uses its own logic to set color, and we therefore need */
-    /* to override this logic in order to set the correct color in different states */
-    &[data-selected],
-    &[data-pressed],
-    &:active {
-      [data-ui='TextWithTone'] {
-        color: inherit;
-      }
-    }
-  `
-})
+import {previewCard, referenceInputPreviewCard} from './PreviewCard.css'
 
 /** @internal */
 export interface PreviewCardContextValue {
@@ -40,14 +34,21 @@ export function PreviewCard(
     Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'> &
     RefAttributes<HTMLDivElement>,
 ) {
-  const {ref, children, selected, as, ...restProps} = props
+  const {ref, children, className, selected, as, ...restProps} = props
 
   const value = useMemo(() => ({selected}), [selected])
 
   return (
-    <StyledCard data-ui="PreviewCard" {...restProps} forwardedAs={as} ref={ref} selected={selected}>
+    <Card
+      data-ui="PreviewCard"
+      {...restProps}
+      as={as}
+      className={clsx(previewCard, className)}
+      ref={ref}
+      selected={selected}
+    >
       <PreviewCardContext.Provider value={value}>{children}</PreviewCardContext.Provider>
-    </StyledCard>
+    </Card>
   )
 }
 
@@ -58,8 +59,16 @@ export function PreviewCard(
  * The workaround is to colocate the styled component with the component itself.
  * @internal
  */
-export const ReferenceInputPreviewCard = styled(PreviewCard)`
-  /* this is a hack to avoid layout jumps while previews are loading
-    there's probably better ways of solving this */
-  min-height: 36px;
-`
+export function ReferenceInputPreviewCard(
+  props: ComponentProps<typeof PreviewCard> & {forwardedAs?: ElementType},
+) {
+  const {as, className, forwardedAs, ...restProps} = props
+
+  return (
+    <PreviewCard
+      {...restProps}
+      as={forwardedAs ?? as}
+      className={clsx(referenceInputPreviewCard, className)}
+    />
+  )
+}
