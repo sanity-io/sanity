@@ -466,8 +466,6 @@ export function CreateVersion(props: {
   const [menuOpen, setMenuOpen] = useState(false)
   const [counts, setCounts] = useState<Record<string, number>>({})
   const collapsedByMode = useRef<string[]>([])
-  // Set when the block opens: if the default address already exists, the first step (the variant, or else the bundle) opens its menu.
-  const autoOpen = useRef(false)
   // The preview row's host: one element, moved under the target group's header while the mode is on.
   const [previewHost] = useState(() => document.createElement('div'))
   const pendingGroup = useRef<string | undefined>(props.received)
@@ -690,25 +688,9 @@ export function CreateVersion(props: {
         picked: false,
       },
     })
-    autoOpen.current = true
+    // No menu opens by itself (Faheem, 22 Oct): the steps show, and the editor chooses. When the default address already exists, the disabled
+    // Create version says why in its tooltip.
   }
-
-  // The default address exists: open the first step's menu, so the first thing to do is to choose.
-  useEffect(() => {
-    if (!autoOpen.current || !mode || !slot) return
-    autoOpen.current = false
-    const {draft} = mode
-    if (
-      !world.entries.some(
-        (e) => e.group === destGroup(draft.dest) && e.variantId === draft.variantId,
-      )
-    )
-      return
-    const pill =
-      slot.querySelector<HTMLElement>('[data-testid="add-pill-variant"]') ??
-      slot.querySelector<HTMLElement>('[data-testid="add-pill-bundle"]')
-    pill?.click()
-  }, [mode, slot, world.entries])
 
   // ---- the block
   const block = (current: {fixed: Fixed; draft: Draft}) => {
@@ -945,16 +927,37 @@ export function CreateVersion(props: {
                 >
                   {text}
                 </span>
-                <Button
-                  aria-describedby="add-commit-description"
-                  data-testid="add-commit"
-                  disabled={waiting || busy}
-                  mode="default"
-                  onClick={() => void commit()}
-                  text={busy ? 'Creating…' : 'Create version'}
-                  tone="primary"
-                  tooltipProps={waiting || busy ? null : {content: text}}
-                />
+                {waiting ? (
+                  // Disabled from the start because the default address exists: the tooltip says why. A disabled button takes no hover, so
+                  // the tooltip is on a wrapper.
+                  <Tooltip
+                    content={`${variantLabel(draft.variantId)} already has a version in ${destTitle(draft.dest)}. Choose another variant or Add to.`}
+                    placement="top"
+                  >
+                    <span data-testid="add-commit-why" style={{display: 'inline-flex'}}>
+                      <Button
+                        aria-describedby="add-commit-description"
+                        data-testid="add-commit"
+                        disabled
+                        mode="default"
+                        text="Create version"
+                        tone="primary"
+                        tooltipProps={null}
+                      />
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <Button
+                    aria-describedby="add-commit-description"
+                    data-testid="add-commit"
+                    disabled={busy}
+                    mode="default"
+                    onClick={() => void commit()}
+                    text={busy ? 'Creating…' : 'Create version'}
+                    tone="primary"
+                    tooltipProps={busy ? null : {content: text}}
+                  />
+                )}
               </>
             )}
           </Flex>
