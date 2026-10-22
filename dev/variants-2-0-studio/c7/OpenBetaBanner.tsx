@@ -1,17 +1,13 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Text} from '@sanity/ui'
-import {useEffect} from 'react'
-import {isReleaseDocument, usePerspective, useSetVariant} from 'sanity'
+import {useSetVariant} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 
-import {isReleaseScheduledOrScheduling} from '../../../packages/sanity/src/core/releases/util/util'
 import {Banner} from '../../../packages/sanity/src/structure/panes/document/documentPanel/banners/Banner'
 import {usePerspectiveState} from '../c1/state'
-import {useVariantDefinitions} from '../c1/world'
 import {useCreateVariantVersion} from '../data/useCreateVariantVersion'
-import {useVersionList} from '../data/useVersionList'
-import {type AudienceVersion} from '../data/versions'
+import {useBannerCase} from './useBannerCase'
 
 /**
  * T6, the open beta banner (docs/initiatives/curation-perspective-selector/BANNERS-DECISION-2026-10-22.md, with its revision; Figma C7
@@ -24,53 +20,28 @@ import {type AudienceVersion} from '../data/versions'
  *   place without the version.
  * - A scheduled release, Published: the text says why there is no action.
  * - The chosen variant no longer exists: caution with the warning icon, as core's not-found banner, and "Back to All users".
- * - Create version shows with the inventory open too (it is one click; the inventory's block starts on the same address). Back to All users
- *   is left out while the inventory is open.
+ * - Create version shows with the inventory open too (it is one click), and the inventory's toolbar Create version then steps aside (22 Oct
+ *   call: one on screen). Back to All users is left out while the inventory is open. The decision is c7/useBannerCase.ts.
  */
 
 /** The inspector the inventory opens in (c4/InventoryInspector.tsx). */
 const INVENTORY = 'variants-inventory'
 
-const shortId = (id: string) => id.replace(/^_\.variants\./, '')
-/** The titles of the variant definitions seen this session, so a variant deleted later is still named by its title (never by its id). */
-const seenTitles = new Map<string, string>()
-
-/** Does the document already have a version for this variant in the version the studio shows? (Ported from the Design Studio's C7.) */
-function hasVariantHere(versions: readonly AudienceVersion[], variantId: string, version: string) {
-  return versions.some((v) => {
-    if (v.variantId !== variantId) return false
-    if (version === 'drafts') return v.state === 'draft' || v.state === 'published'
-    if (version === 'published') return v.state === 'published'
-    return v.bundleId === version
-  })
-}
-
 export function OpenBetaBanner({documentId}: {documentId: string}) {
-  const {selectedPerspective, selectedPerspectiveName, selectedVariantName} = usePerspective()
-  const {chosen, setChosen} = usePerspectiveState()
-  const definitions = useVariantDefinitions()
-  const versions = useVersionList(documentId)
+  const {setChosen} = usePerspectiveState()
   const setVariant = useSetVariant()
   const pane = useDocumentPane()
   const {create, status} = useCreateVariantVersion(documentId)
+  const banner = useBannerCase(documentId)
   const inventoryOpen = pane.inspector?.name === INVENTORY
   // A document's own name: its title, or its name (an author has no title field).
   const own = [pane.value?.title, pane.value?.name].find((t) => typeof t === 'string' && t)
   const documentTitle = typeof own === 'string' ? own : 'This document'
 
-  useEffect(() => {
-    for (const d of definitions)
-      if (d.metadata?.title) seenTitles.set(shortId(d._id), d.metadata.title)
-  }, [definitions])
+  if (!banner) return null
 
-  // The chosen variant no longer exists: the router names one that no definition carries (once the definitions have loaded). It is named by
-  // the title seen this session; without one the banner says "the chosen variant".
-  const goneTitle = selectedVariantName ? seenTitles.get(shortId(selectedVariantName)) : undefined
-  if (
-    selectedVariantName &&
-    definitions.length &&
-    !definitions.some((d) => shortId(d._id) === shortId(selectedVariantName))
-  ) {
+  // The chosen variant no longer exists: named by the title seen this session; without one the banner says "the chosen variant".
+  if (banner.kind === 'deleted') {
     return (
       <Banner
         action={
@@ -87,8 +58,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
         }
         content={
           <Text data-testid="open-beta-banner" data-case="deleted" size={1}>
-            {goneTitle ? (
-              <>The {goneTitle} variant no longer exists.</>
+            {banner.goneTitle ? (
+              <>The {banner.goneTitle} variant no longer exists.</>
             ) : (
               'The chosen variant no longer exists.'
             )}
@@ -100,27 +71,16 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
     )
   }
 
-  const entries = Object.entries(chosen)
-  if (!entries.length || !versions) return null
-  const definition = definitions.find((d) => {
-    const own = Object.entries(d.conditions)
-    return own.length === entries.length && own.every(([name, key]) => chosen[name] === key)
-  })
-  if (!definition) return null
-  const variantId = shortId(definition._id)
-  const audience = definition.metadata?.title ?? variantId
-  const version = selectedPerspectiveName ?? 'drafts'
-  if (hasVariantHere(versions, variantId, version)) return null
-
+  const {audience, releaseTitle} = banner
   // The button of the Drafts and open-release cases. It stays disabled from the click until the version is listed and the banner goes away.
   const busy = status === 'creating' || status === 'created'
-  // Shown with the inventory open too: the banner creates in one click, where the inventory's block takes more (Faheem, 22 Oct).
+  // Shown with the inventory open too, and then the inventory's toolbar Create version steps aside (bannerOffersCreate): one on screen.
   const createAction = {
     disabled: busy,
     mode: 'default' as const,
     onClick: () => void create(),
     text: busy ? 'Creating…' : 'Create version',
-    tone: version === 'drafts' ? ('primary' as const) : ('suggest' as const),
+    tone: banner.kind === 'drafts' ? ('primary' as const) : ('suggest' as const),
   }
 
   const say = (body: React.ReactNode, state: string) => (
@@ -129,7 +89,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
     </Text>
   )
 
-  if (version === 'drafts') {
+  if (banner.kind === 'drafts') {
     // Ported from the Design Studio's C7 option A (Figma C7 225:437): caution, with the create button.
     return (
       <Banner
@@ -146,7 +106,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
     )
   }
 
-  if (version === 'published') {
+  if (banner.kind === 'published') {
     return (
       <Banner
         content={say(
@@ -162,9 +122,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
     )
   }
 
-  const release = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
-  const releaseTitle = release?.metadata?.title || version
-  if (release && isReleaseScheduledOrScheduling(release)) {
+  if (banner.kind === 'scheduled') {
     return (
       <Banner
         content={say(

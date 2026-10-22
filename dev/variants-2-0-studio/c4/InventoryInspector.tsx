@@ -125,6 +125,8 @@ export const inventoryInspector: DocumentInspector = {
       icon: DocumentsIcon,
       title: 'Versions',
       showAsAction: true,
+      // The header button, and an entry in the document's menu too (22 Oct call).
+      showInMenu: true,
     }
   },
 }
