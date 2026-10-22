@@ -12,6 +12,7 @@ import {RELEASE_TYPES_TONES} from '../../../packages/sanity/src/core/releases/ut
 import {type SystemVariant} from '../../../packages/sanity/src/core/variants/types'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {DimensionIcon} from '../c1/dimensionIcons'
 import {valueTitle} from '../c1/model'
 import {rankSearch, SEARCH_FROM, type SearchFields} from '../c1/search'
 import {usePerspectiveState} from '../c1/state'
@@ -60,6 +61,9 @@ function releaseDot(v: AudienceVersion) {
   return <DotIcon style={style} />
 }
 
+/** A quiet count on each Variants row: how many versions that variant has on this document. Faheem may drop it: set false. */
+const SHOW_VERSION_COUNT = true
+
 const isVariantId = (id: string): id is SystemVariant['_id'] => id.startsWith('_.variants.')
 
 /** The version a row of the list lives in: its release, else Published or Drafts. */
@@ -73,6 +77,8 @@ function DropdownPill(props: {
     text: string
     icon: ReactElement
     onClick?: () => void
+    /** Quiet text at the row's right end (the Variants rows' version count). */
+    trailing?: string
     /** A variant listed under its release: it is found, and shown, with the release above it. */
     indent?: boolean
     /** What search matches an option by (the title is its text when this is left out). */
@@ -140,6 +146,7 @@ function DropdownPill(props: {
                 __unstable_subtitle={item === g.head ? reason : undefined}
                 disabled={!item.onClick}
                 icon={item.icon}
+                iconRight={item.trailing ? <span>{item.trailing}</span> : undefined}
                 key={item.key}
                 onClick={item.onClick}
                 style={item.indent ? {marginLeft: 24} : undefined}
@@ -202,24 +209,28 @@ export function DocumentPillsV1({
     if (v.variantId && !definition) return undefined
     return () => goTo(versionOf(v), definition)
   }
-  // One selected pill: the one whose document is in view. The base pills only while no variant is chosen.
-  const isCurrent = (v: AudienceVersion) =>
-    (v.variantId ?? undefined) === currentVariant && versionOf(v) === current
+  // One selected pill: Variants while a variant is chosen, else the base pill whose version is in view.
   const baseInView = !currentVariant
-  const variantItems = variants.map((v, i) => {
+  // One row per VARIANT this document has (not per version): picking it sets only the variant and keeps the Published, Draft or release in
+  // view, which the other pills change. A variant with no version there still opens; the T6 banner says so.
+  const variantGroups = [...new Set(variants.map((v) => v.variantId ?? v.audience))].map((key) =>
+    variants.filter((v) => (v.variantId ?? v.audience) === key),
+  )
+  const variantItems = variantGroups.map((group) => {
+    const v = group[0]
     const definition = definitionOf(v)
+    const [name, value] = Object.entries(definition?.conditions ?? {})[0] ?? []
+    const spec = address.dimensions.find((d) => d.name === name)
     return {
-      key: `${v.audience}-${i}`,
-      text: `${v.audience} · ${stateWord(v)}`,
-      icon: glyph(v),
-      onClick: selectVariant(v),
+      key: `variant-${v.variantId ?? v.audience}`,
+      text: v.audience ?? '',
+      icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
+      onClick: v.variantId && !definition ? undefined : () => goTo(current, definition),
+      trailing: SHOW_VERSION_COUNT ? String(group.length) : undefined,
       search: {
-        condition: (() => {
-          const [name, value] = Object.entries(definition?.conditions ?? {})[0] ?? []
-          if (!name) return undefined
-          const spec = address.dimensions.find((d) => d.name === name)
-          return {dimension: name, value: spec ? valueTitle(spec, String(value)) : String(value)}
-        })(),
+        condition: name
+          ? {dimension: name, value: spec ? valueTitle(spec, String(value)) : String(value)}
+          : undefined,
         id: v.variantId ?? undefined,
       },
     }
@@ -261,10 +272,10 @@ export function DocumentPillsV1({
         <DropdownPill
           icon={<RhombusIcon />}
           items={variantItems}
-          // A variant of this document is in view: marked like the Releases pill marks a release.
-          selected={variants.some(isCurrent)}
+          // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
+          selected={variants.some((v) => v.variantId === currentVariant)}
           testId="pills-variants"
-          text={`Variants · ${variants.length}`}
+          text={`Variants · ${variantGroups.length}`}
         />
       ) : null}
       {hasEarlierGroup ? (
