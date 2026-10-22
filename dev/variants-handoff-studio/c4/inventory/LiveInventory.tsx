@@ -32,6 +32,11 @@ const HIDDEN = [
   .map((id) => `[data-testid="${id}"]`)
   .join(', ')
   .concat(' {display: none !important}')
+  // Every other toolbar control is hidden above, so with the toolbar's Create version stepped aside (the T6 banner offers its own) the row
+  // would be an empty band: it collapses, and comes back with the button (the bulk bar is its own row).
+  .concat(
+    ' [data-testid="inventory-toolbar"]:not(:has([data-testid="add-toolbar-button"])) {display: none !important}',
+  )
 
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 
