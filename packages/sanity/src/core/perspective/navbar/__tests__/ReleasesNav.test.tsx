@@ -182,7 +182,7 @@ describe('ReleasesNav', () => {
           .closest('button')!
 
         within(scheduledMenuItem).getByText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/)
-        within(scheduledMenuItem).getByTestId('release-avatar-suggest')
+        within(scheduledMenuItem).getByTestId('release-avatar-neutral')
       })
 
       it('should show the actual release date for a scheduled release', async () => {
@@ -192,7 +192,7 @@ describe('ReleasesNav', () => {
 
         within(scheduledMenuItem).getByText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/)
         within(scheduledMenuItem).getByTestId('release-lock-icon')
-        within(scheduledMenuItem).getByTestId('release-avatar-suggest')
+        within(scheduledMenuItem).getByTestId('release-avatar-neutral')
       })
 
       it('should show the error icon if the release is active and has an error', () => {

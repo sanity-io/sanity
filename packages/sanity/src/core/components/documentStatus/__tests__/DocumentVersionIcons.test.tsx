@@ -150,6 +150,6 @@ describe('DocumentVersionIcons', () => {
       }),
     })
 
-    expect(document.querySelector('[data-testid="release-avatar-suggest"]')).toBeInTheDocument()
+    expect(document.querySelector('[data-testid="release-avatar-neutral"]')).toBeInTheDocument()
   })
 })
