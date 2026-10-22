@@ -15,9 +15,23 @@ import {css} from '#styled-system/css'
  */
 const navbarContainer = 'sanity-studio-navbar'
 
+export const rootLayer = css({
+  'minHeight': 'auto',
+  'position': 'relative',
+  // (0,2,0) already beats Layer's own `position: relative`
+  "&[data-search-open='true']": {
+    top: 0,
+    position: 'sticky',
+  },
+})
+
 export const navbar = css({
-  containerName: navbarContainer,
-  containerType: 'inline-size',
+  'containerName': navbarContainer,
+  'containerType': 'inline-size',
+  // `&&` beats ui5 Card's own line-height regardless of stylesheet order
+  '&&': {
+    lineHeight: 0,
+  },
 })
 
 /**
