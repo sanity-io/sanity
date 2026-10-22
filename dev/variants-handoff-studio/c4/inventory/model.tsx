@@ -572,6 +572,8 @@ function timelineSlots(world: InventoryWorld): TimelineSlot[] {
   )
   return [
     {id: 'published', title: 'Published', icon: 'published', bundles: ['published']},
+    // Open beta (approved by Faheem, 22 Oct): By publish date is the only view, so the drafts are a group, under Published.
+    {id: 'drafts', title: 'Drafts', icon: 'drafts', bundles: ['drafts']},
     ...asap.map((r) => slot('As soon as possible', r)),
     ...scheduled.map((r) => slot(capitalise(publishDateLabel(at(r)!)), r)),
     ...undated.map((r) => slot('Undecided', r)),
@@ -918,10 +920,10 @@ function visibleEntries(options: {
   const passes = (entry: InventoryEntry) =>
     filters.every((f) => filterMatches(world, visitor, f, entry)) &&
     matchesSearch(world, entry, search)
-  return world.entries.filter(
-    (entry) =>
-      // The timeline holds what is live or will go live; By stage holds every version.
-      (view === 'publishDate' ? entry.group !== 'drafts' : true) && passes(entry),
+  return world.entries.filter((entry) =>
+    // The timeline holds what is live or will go live; By stage holds every version.
+    // Open beta (approved by Faheem, 22 Oct): By publish date lists the drafts too (was: drafts only in By stage).
+    passes(entry),
   )
 }
 
@@ -1270,7 +1272,8 @@ export function InventoryConceptsProvider(props: {
     if (defaultViewGroup.current === releaseGroup) return
     defaultViewGroup.current = releaseGroup
     if (savedViewId) return
-    setView(releaseGroup === 'base' ? 'stage' : 'publishDate')
+    // Open beta (approved by Faheem, 22 Oct): By publish date in every perspective (was: By stage on Drafts and Published).
+    setView('publishDate')
   }, [releaseGroup, savedViewId, setView])
   const resetDefaultView = useCallback(() => {
     defaultViewGroup.current = undefined
