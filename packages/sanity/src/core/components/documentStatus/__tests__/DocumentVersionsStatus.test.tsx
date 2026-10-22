@@ -173,7 +173,7 @@ describe('DocumentVersionsStatus', () => {
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
 
-  it('heads a variant group with the variant title and shows the rhombus when variants are enabled', async () => {
+  it('gives a variant its own line, named by the variant title, with its states as labels', async () => {
     await renderStatus({
       versions: [publishedVariant, draftVariant],
       variantsEnabled: true,
@@ -184,7 +184,9 @@ describe('DocumentVersionsStatus', () => {
     expect(screen.getByText('Published', {exact: true})).toBeInTheDocument()
     expect(screen.getByText('Draft', {exact: true})).toBeInTheDocument()
     expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
-    expect(document.querySelector('[data-sanity-icon="rhombus"]')).toBeInTheDocument()
+    // The v1 popover: one line per audience, flat state labels, no rhombus and no dates.
+    expect(screen.getAllByTestId('audience-line')).toHaveLength(1)
+    expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
 
   it('does not render variant documents when variants are disabled', async () => {

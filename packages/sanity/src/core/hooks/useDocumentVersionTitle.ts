@@ -122,8 +122,6 @@ export function useDocumentVersionTitle({version}: {version: VersionInfoDocument
       title: loadingCopy,
       isTruncated: false,
       fullTitle: loadingCopy,
-      stateTitle: loadingCopy,
-      stateFullTitle: loadingCopy,
     }
   }
   if (variantsError || releasesError) {
@@ -132,8 +130,6 @@ export function useDocumentVersionTitle({version}: {version: VersionInfoDocument
       title: errorCopy,
       isTruncated: false,
       fullTitle: errorCopy,
-      stateTitle: errorCopy,
-      stateFullTitle: errorCopy,
     }
   }
 
@@ -150,16 +146,11 @@ export function useDocumentVersionTitle({version}: {version: VersionInfoDocument
     isTruncated,
   } = getVersionFilterLabel(releasePerspective, t, bundles)
 
-  return {
-    ...buildVersionTitleResult({
-      variantsEnabled,
-      variantTitle,
-      displayTitle,
-      releaseFullTitle,
-      isTruncated,
-    }),
-    // PROPOSED: the two halves on their own, for a list grouped by variant (the status tooltip): the state alone under a variant heading.
-    stateTitle: displayTitle,
-    stateFullTitle: releaseFullTitle,
-  }
+  return buildVersionTitleResult({
+    variantsEnabled,
+    variantTitle,
+    displayTitle,
+    releaseFullTitle,
+    isTruncated,
+  })
 }
