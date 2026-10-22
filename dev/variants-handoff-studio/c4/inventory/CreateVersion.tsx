@@ -39,6 +39,13 @@ import {type InventoryEntry, type InventoryWorld} from './fixtures'
 // is on the groups collapse to their headers with counts and a dimmed preview row sits under the target group. A + on a group header opens the same
 // block with the step that group fixes shown as a fact.
 
+/**
+ * Create version and the group "+" are the second step, their own ticket after the open beta's (Faheem, 22 Oct): a muted "Step 2" badge
+ * beside the toolbar's button and "Step 2: Create version" on each group "+". The T6 banner's Create version is not labelled. Set false to drop it.
+ */
+const SHOW_STEP_2 = true
+const STEP_2 = 'Step 2'
+
 /** The version a copy starts from by default: the variant's own, else the base's; a draft first. */
 function nearestOf(world: InventoryWorld, variantId: string | undefined) {
   const own = variantId ? world.entries.filter((e) => e.variantId === variantId) : []
@@ -965,7 +972,12 @@ export function CreateVersion(props: {
   const toolbarButton =
     toolbar &&
     createPortal(
-      <Box data-add-anchor="" style={{flex: 'none'}}>
+      <Flex align="center" data-add-anchor="" gap={2} style={{flex: 'none'}}>
+        {SHOW_STEP_2 ? (
+          <Badge data-testid="add-step-2" fontSize={0} tone="default">
+            {STEP_2}
+          </Badge>
+        ) : null}
         <Button
           data-testid="add-toolbar-button"
           mode="default"
@@ -974,7 +986,7 @@ export function CreateVersion(props: {
           tone="primary"
           tooltipProps={null}
         />
-      </Box>,
+      </Flex>,
       toolbar,
     )
 
@@ -1020,7 +1032,9 @@ export function CreateVersion(props: {
               }}
               tooltipProps={{
                 content: askable
-                  ? 'Create version here'
+                  ? SHOW_STEP_2
+                    ? `${STEP_2}: Create version`
+                    : 'Create version here'
                   : locked
                     ? 'Scheduled releases are locked'
                     : 'Takes no new version',
