@@ -1,8 +1,10 @@
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const Container = styled.div`
-  display: grid;
-  grid-template-rows: min-content minmax(0, 1fr) min-content;
-  block-size: 100%;
-  min-block-size: 0;
-`
+import {container} from './Container.css'
+
+export function Container(props: ComponentProps<'div'>) {
+  const {className, ref, ...rest} = props
+
+  return <div {...rest} className={clsx(container, className)} ref={ref} />
+}
