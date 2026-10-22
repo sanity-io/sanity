@@ -411,12 +411,9 @@ importers:
         specifier: 'catalog:'
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
     devDependencies:
-      '@pandacss/vite':
-        specifier: 'catalog:'
-        version: 2.3.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(vite@8.3.4)
-      '@sanity/pandacss-tsdown-plugin':
-        specifier: 'catalog:'
-        version: 0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@pandacss/dev@2.3.0)(tsdown@0.23.1)(vite@8.3.4)
+      '@repo/pandacss':
+        specifier: workspace:*
+        version: link:../../packages/@repo/pandacss
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -469,12 +466,9 @@ importers:
         specifier: 'catalog:'
         version: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
     devDependencies:
-      '@pandacss/vite':
-        specifier: 'catalog:'
-        version: 2.3.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(vite@8.3.4)
-      '@sanity/pandacss-tsdown-plugin':
-        specifier: 'catalog:'
-        version: 0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@pandacss/dev@2.3.0)(tsdown@0.23.1)(vite@8.3.4)
+      '@repo/pandacss':
+        specifier: workspace:*
+        version: link:../../packages/@repo/pandacss
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0
@@ -705,15 +699,12 @@ importers:
         specifier: 'catalog:'
         version: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
     devDependencies:
-      '@pandacss/vite':
-        specifier: 'catalog:'
-        version: 2.3.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(vite@8.3.4)
+      '@repo/pandacss':
+        specifier: workspace:*
+        version: link:../../packages/@repo/pandacss
       '@repo/test-config':
         specifier: workspace:*
         version: link:../../packages/@repo/test-config
-      '@sanity/pandacss-tsdown-plugin':
-        specifier: 'catalog:'
-        version: 0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@pandacss/dev@2.3.0)(tsdown@0.23.1)(vite@8.3.4)
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0
@@ -804,12 +795,9 @@ importers:
       '@chromatic-com/storybook':
         specifier: ^5.5.1
         version: 5.5.1(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.1)(storybook@10.6.2)
-      '@pandacss/vite':
-        specifier: 'catalog:'
-        version: 2.3.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(vite@8.3.4)
-      '@sanity/pandacss-tsdown-plugin':
-        specifier: 'catalog:'
-        version: 0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@pandacss/dev@2.3.0)(tsdown@0.23.1)(vite@8.3.4)
+      '@repo/pandacss':
+        specifier: workspace:*
+        version: link:../../packages/@repo/pandacss
       '@storybook/addon-vitest':
         specifier: ^10.6.2
         version: 10.6.2(@vitest/browser-playwright@5.0.4)(@vitest/browser@5.0.4)(react@19.3.1)(storybook@10.6.2)(vitest@5.0.4)
@@ -871,12 +859,9 @@ importers:
         specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.17(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
-      '@pandacss/vite':
-        specifier: 'catalog:'
-        version: 2.3.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(vite@8.3.4)
-      '@sanity/pandacss-tsdown-plugin':
-        specifier: 'catalog:'
-        version: 0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@pandacss/dev@2.3.0)(tsdown@0.23.1)(vite@8.3.4)
+      '@repo/pandacss':
+        specifier: workspace:*
+        version: link:../../packages/@repo/pandacss
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0
@@ -1105,15 +1090,12 @@ importers:
         specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.17(react-dom@19.3.1)(react@19.3.1)'
     devDependencies:
-      '@pandacss/vite':
-        specifier: 'catalog:'
-        version: 2.3.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(vite@8.3.4)
+      '@repo/pandacss':
+        specifier: workspace:*
+        version: link:../../packages/@repo/pandacss
       '@repo/test-config':
         specifier: workspace:*
         version: link:../../packages/@repo/test-config
-      '@sanity/pandacss-tsdown-plugin':
-        specifier: 'catalog:'
-        version: 0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@pandacss/dev@2.3.0)(tsdown@0.23.1)(vite@8.3.4)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
         version: 0.3.1(babel-plugin-macros@3.1.0)(vite@8.3.4)
@@ -1385,6 +1367,25 @@ importers:
       vitest:
         specifier: ^5.0.4
         version: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.4)
+
+  packages/@repo/pandacss:
+    dependencies:
+      '@pandacss/vite':
+        specifier: 'catalog:'
+        version: 2.3.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(vite@8.3.4)
+      '@sanity/pandacss-tsdown-plugin':
+        specifier: 'catalog:'
+        version: 0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@pandacss/dev@2.3.0)(tsdown@0.23.1)(vite@8.3.4)
+      vite:
+        specifier: 'catalog:'
+        version: 8.3.4(@types/node@24.19.2)(@vitejs/devtools@0.7.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+    devDependencies:
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.19.2
 
   packages/@repo/release-notes:
     dependencies:
@@ -2512,6 +2513,9 @@ importers:
       '@repo/package.bundle':
         specifier: workspace:*
         version: link:../@repo/package.bundle
+      '@repo/pandacss':
+        specifier: workspace:*
+        version: link:../@repo/pandacss
       '@repo/test-config':
         specifier: workspace:*
         version: link:../@repo/test-config
@@ -30514,34 +30518,6 @@ snapshots:
       verkit: 0.5.0
     optionalDependencies:
       '@vitejs/devtools': 0.7.6(@devframes/json-render@1.2.5)(@vitejs/devtools-oxc@0.7.6)(@vitejs/devtools-rolldown@0.7.6)(@vitejs/devtools-vite@0.7.6)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
-      publint: 0.3.25
-      tsx: 4.23.15
-      typescript: 7.0.2
-    transitivePeerDependencies:
-      - '@typescript/native-preview'
-      - '@volar/typescript'
-      - '@vue/language-core'
-      - oxc-resolver
-      - vue-tsc
-
-  tsdown@0.23.1(@vitejs/devtools@0.8.0)(oxc-resolver@11.24.2)(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2):
-    dependencies:
-      cac: 7.1.0
-      defu: 6.1.7
-      empathic: 2.1.0
-      hookable: 6.1.2
-      import-without-cache: 0.4.1
-      obug: 3.0.0
-      picomatch: 4.0.7
-      rolldown: 1.2.14
-      rolldown-plugin-dts: 0.28.8(oxc-resolver@11.24.2)(rolldown@1.2.14)(typescript@7.0.2)
-      tinyexec: 1.3.1
-      tinyglobby: 0.2.17
-      tree-kill: 1.2.2
-      unconfig-core: 7.5.0
-      verkit: 0.5.0
-    optionalDependencies:
-      '@vitejs/devtools': 0.8.0(@vitejs/devtools-oxc@0.8.0)(@vitejs/devtools-rolldown@0.8.0)(@vitejs/devtools-vite@0.8.0)(crossws@0.4.15)(srvx@1.0.5)(vite@8.3.4)
       publint: 0.3.25
       tsx: 4.23.15
       typescript: 7.0.2

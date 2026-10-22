@@ -62,9 +62,8 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
-    "@pandacss/vite": "catalog:",
+    "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/pandacss-tsdown-plugin": "catalog:",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",

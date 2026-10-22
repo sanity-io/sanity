@@ -256,6 +256,7 @@
     "@pandacss/dev": "catalog:",
     "@pandacss/vite": "catalog:",
     "@repo/package.bundle": "workspace:*",
+    "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",

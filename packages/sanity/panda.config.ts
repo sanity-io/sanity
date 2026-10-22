@@ -4,10 +4,11 @@ import {defineConfig, type Config} from '@pandacss/dev'
 // components, extracted at build time (`panda` in tsdown.config.ts) and shipped as
 // `sanity/bundle.css`. This is the only Panda project in the repository: the dev studios, Storybook
 // and the test runners that build the package from source point their `@pandacss/vite` instance at
-// this directory (`cwd`). The stylesheet ships without Panda's cascade layers (`cascadeLayers:
-// false` in tsdown.config.ts, `removeCascadeLayers()` next to each `@pandacss/vite` instance), so
-// the default layer names here never reach a page. `satisfies Config` makes the type checker
-// reject options that do not exist, which `defineConfig` alone lets through.
+// this directory (`cwd`), through `@repo/pandacss`. The stylesheet ships without Panda's cascade
+// layers (`cascadeLayers: false` in tsdown.config.ts, `removeCascadeLayers()` next to each
+// `@pandacss/vite` instance), so the default layer names here never reach a page. `satisfies
+// Config` makes the type checker reject options that do not exist, which `defineConfig` alone lets
+// through.
 export default defineConfig({
   include: ['./src/**/*.css.ts', './src/**/*.css.tsx'],
   importMap: '#styled-system',

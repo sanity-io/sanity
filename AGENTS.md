@@ -266,8 +266,9 @@ studio's `plugins/style-outline/styleOutline.module.css`, for one), except `@san
 ([#15406](https://github.com/sanity-io/sanity/pull/15406)): the `vanillaExtract` tsdown option,
 and `@sanity/vanilla-extract-vite-plugin` in the apps that build it from source. Shared tooling
 versions live in the pnpm catalog (`@pandacss/dev`, `@pandacss/vite`,
-`@sanity/pandacss-tsdown-plugin`): every app that runs Panda declares them itself, there is no
-shared `@repo/*` package for it.
+`@sanity/pandacss-tsdown-plugin`); the Vite apps that build the package from source get their
+Panda wiring from `@repo/pandacss` (`packages/@repo/pandacss`, its README says when an app needs
+it) instead of declaring those themselves.
 
 How the CSS reaches a page:
 
@@ -281,26 +282,33 @@ How the CSS reaches a page:
   under `publishConfig`. A `css()` call the build cannot resolve statically (computed values,
   loops) makes it warn and bundle the runtime — keep the style objects literal.
 - **Vite apps that build the package from source** (the dev studios through `sanity.cli.ts`,
-  Storybook, the vitest browser suite, `dev/studio-diagnostics-viewer`, the CDN bundle in
-  `@repo/package.bundle`) each register `pandacss({cwd: <packages/sanity>, transform: true})`
-  from `@pandacss/vite`, pointed at the package's Panda project (`cwd` resolves the config, its
+  Storybook, the vitest browser suite, `dev/studio-diagnostics-viewer`) resolve the workspace
+  packages to their sources (the `monorepo` export condition), so they bundle the package's
+  `.css.ts` modules themselves and register `sanityPandaCss()` from `@repo/pandacss/vite`
+  (`packages/@repo/pandacss`): `pandacss({cwd: <packages/sanity>, transform: true})` from
+  `@pandacss/vite`, pointed at the package's Panda project (`cwd` resolves the config, its
   `include` globs and the codegen `outdir` there), and
   `removeCascadeLayers(['reset', 'base', 'tokens', 'recipes', 'utilities'])` from
   `@sanity/pandacss-tsdown-plugin/vite`, which gives the generated CSS the shape of `bundle.css`
   (below). `@pandacss/vite` appends the generated CSS to the CSS module of the build that declares
-  Panda's layers, so each app owns a one-line `panda.css` with the
-  `@layer reset, base, tokens, recipes, utilities;` statement: Storybook's `.storybook/preview.tsx`
-  and `packages/sanity/test/setup/browser.ts` import theirs directly, while a studio's
-  `sanity.cli.ts` and the viewer's `vite.config.ts` inject the import into their entry
-  (`.sanity/runtime/app.js`, `src/main.tsx`) with a tiny transform plugin registered for dev only,
-  and the CDN bundle config imports its own from every library entry. A `sanity build` (and the
-  viewer's build) resolves the built package and its `bundle.css`, so nothing Panda runs there.
-  Where vision's vanilla-extract `.css.ts` modules are built in the same graph (`sanity dev` of the
-  test studio, vision's vitest suite), `@sanity/vanilla-extract-vite-plugin` is wrapped so that
-  its transform's hook filter excludes `packages/sanity/src/` — it would otherwise compile the
-  Panda modules as vanilla-extract and fail on the missing `@vanilla-extract/css` import; the
-  wrapper throws if the plugin's name or hook shape changes. The jsdom suites of `sanity` and
-  `@sanity/vision` register `@pandacss/vite` the same way but load no stylesheet: no jsdom test
+  Panda's layers, which is the one-line `@repo/pandacss/panda.css` with the
+  `@layer reset, base, tokens, recipes, utilities;` statement — the dev counterpart of the
+  `sanity/bundle.css` import the built package carries. Storybook's `.storybook/preview.tsx` and
+  `packages/sanity/test/setup/browser.ts` import it directly; a studio's `sanity.cli.ts`
+  (`studioPandaCss()`) and the viewer's `vite.config.ts` (the `entry` option) have the import
+  injected into their entry (`.sanity/runtime/app.js`, `src/main.tsx`) by a tiny transform plugin,
+  registered for dev only. A `sanity build` (and the viewer's build) resolves the built package
+  and its `bundle.css`, so nothing Panda runs there — which is also why a studio that installs
+  `sanity` from npm needs none of this: `bundle.css` is a plain stylesheet that Vite's built-in CSS
+  support loads. The CDN bundle in `@repo/package.bundle` builds the package for publishing and
+  keeps its own `pandacss()` call, `panda.css` and import plugin (it imports the stylesheet from
+  every library entry). Where vision's vanilla-extract `.css.ts` modules are built in the same
+  graph (`sanity dev` of the test studio, vision's vitest suite),
+  `@sanity/vanilla-extract-vite-plugin` is wrapped so that its transform's hook filter excludes
+  `packages/sanity/src/` — it would otherwise compile the Panda modules as vanilla-extract and
+  fail on the missing `@vanilla-extract/css` import; the wrapper throws if the plugin's name or
+  hook shape changes. The jsdom suites of `sanity` and `@sanity/vision` register `@pandacss/vite`
+  directly, with the same `cwd` and `transform: true`, but load no stylesheet: no jsdom test
   asserts on styles.
 - **No cascade layers.** Panda writes its rules into `@layer` blocks (`reset`, `base`, `tokens`,
   `recipes`, `utilities`), and the studio's CSS ships without them: CSS outside any layer beats
@@ -313,9 +321,10 @@ How the CSS reaches a page:
   the studio's rules cascade like the vanilla-extract output did: by specificity, then source
   order. The same pass runs on the dev stylesheets and the CDN bundle through
   `removeCascadeLayers()`, which removes the named layers (and their sublayers) from every CSS
-  module after `@pandacss/vite` has filled the app's `panda.css`, and leaves other layers alone —
-  which is why that file declares Panda's default layer names (how `@pandacss/vite` recognizes
-  its root stylesheet) and still ends up without a single `@layer`. Panda's `polyfill` option is
+  module after `@pandacss/vite` has filled `@repo/pandacss/panda.css` (the CDN bundle's own
+  `panda.css`), and leaves other layers alone — which is why that file declares Panda's default
+  layer names (how `@pandacss/vite` recognizes its root stylesheet) and still ends up without a
+  single `@layer`. Panda's `polyfill` option is
   not an alternative: it emulates the layer order with `:not(#\#…)` selector chains that inflate
   every rule's specificity. The studio declares no `@layer` statement of its own either: with
   `bundle.css` unlayered and `@sanity/ui` ≥ 4.4.8 (the catalog version) shipping its static styles
@@ -1021,9 +1030,10 @@ and imports
 as a `setupFiles` entry (`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips
 injecting real stylesheets into jsdom — the same end state. Its tests also resolve `sanity` to
 source, whose `.css.ts` modules are Panda, so the config registers both compilers the way the
-test studio's `sanity.cli.ts` does: `@pandacss/vite` pointed at `packages/sanity` for those, and
-the vanilla-extract plugin wrapped so its transform skips `packages/sanity/src/` (unscoped, it
-compiles `sanity`'s Panda modules as vanilla-extract and fails).
+test studio's `sanity.cli.ts` does (there through `@repo/pandacss`): `@pandacss/vite` pointed at
+`packages/sanity` for those, and the vanilla-extract plugin wrapped so its transform skips
+`packages/sanity/src/` (unscoped, it compiles `sanity`'s Panda modules as vanilla-extract and
+fails).
 
 Conventions that follow from this:
 
