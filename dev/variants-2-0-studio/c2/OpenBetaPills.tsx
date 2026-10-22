@@ -16,6 +16,7 @@ import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/Menu
 import {Tooltip} from '../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 import {DimensionIcon} from '../c1/dimensionIcons'
 import {valueTitle} from '../c1/model'
+import {DEFAULT_LABEL} from '../c1/Picker'
 import {rankSearch, SEARCH_FROM, type SearchFields} from '../c1/search'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
@@ -123,6 +124,8 @@ function DropdownPill(props: {
     onClick?: () => void
     /** Quiet text at the row's right end (the Variants rows' version count). */
     trailing?: ReactElement
+    /** The row is what is in view (the Variants menu's "All users (Default)" with no variant chosen). */
+    selected?: boolean
     /** A variant listed under its release: it is found, and shown, with the release above it. */
     indent?: boolean
     /** What search matches an option by (the title is its text when this is left out). */
@@ -194,6 +197,8 @@ function DropdownPill(props: {
                 disabled={!item.onClick}
                 icon={item.icon}
                 iconRight={item.trailing}
+                pressed={item.selected}
+                selected={item.selected}
                 key={item.key}
                 onClick={item.onClick}
                 style={item.indent ? {marginLeft: 24} : undefined}
@@ -299,6 +304,17 @@ export function OpenBetaPills({
       },
     }
   })
+  // The Variants menu starts with the base document, "All users (Default)", as the navbar's Audience menu does (Faheem, 22 Oct): picking it
+  // clears the variant and keeps the Published, Draft or release in view. Its count is the base versions; it is marked while no variant is chosen.
+  const baseVersions = versions.filter((v) => v.audience === null)
+  const baseItem = {
+    key: 'variant-base',
+    text: DEFAULT_LABEL,
+    icon: <DimensionIcon name={address.dimensions[0]?.name ?? ''} />,
+    onClick: () => goTo(current),
+    trailing: SHOW_VERSION_COUNT ? <VersionCount versions={baseVersions} /> : undefined,
+    selected: !currentVariant,
+  }
   // One entry per RELEASE (the pill counts releases, not versions); the versions it holds are listed under it: the document, then its variants.
   const releaseGroups = [...new Set(releases.map((v) => v.bundleId))].flatMap((bundleId) => {
     const inRelease = releases.filter((v) => v.bundleId === bundleId)
@@ -335,7 +351,7 @@ export function OpenBetaPills({
       {variants.length ? (
         <DropdownPill
           icon={<RhombusIcon />}
-          items={variantItems}
+          items={[baseItem, ...variantItems]}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
           selected={Boolean(viewedVariant)}
           testId="pills-variants"
