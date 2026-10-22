@@ -10,6 +10,7 @@ import {type UserStore} from '../../../store/user/userStore'
 import {ColorSchemeProvider} from '../../../studio/colorScheme'
 import {UserColorManagerProvider} from '../../../user-color/provider'
 import {UserAvatar} from '../UserAvatar'
+import {avatarSizeVar} from '../UserAvatar.css'
 
 vi.mock('../../../store/datastores', () => ({useUserStore: vi.fn()}))
 vi.mock('../../../store/user/hooks', () => ({useCurrentUser: vi.fn()}))
@@ -245,8 +246,9 @@ describe('UserAvatar', () => {
         </>,
       )
 
-      const [legacy, small, medium] = [...container.querySelectorAll(SKELETON)].map(
-        (skeleton) => getComputedStyle(skeleton).width,
+      // jsdom loads no stylesheet, so read the size the skeleton is given
+      const [legacy, small, medium] = [...container.querySelectorAll<HTMLElement>(SKELETON)].map(
+        (skeleton) => skeleton.style.getPropertyValue(avatarSizeVar),
       )
       expect(legacy).toBe(small)
       expect(legacy).not.toBe(medium)

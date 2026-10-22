@@ -19,6 +19,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
+import {clsx} from 'clsx'
 import {
   type ComponentProps,
   memo,
@@ -29,22 +30,25 @@ import {
   type RefAttributes,
 } from 'react'
 import {ArrayItemRootElementContext, SortableItemIdContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
 import {Grid, Box, type BoxProps} from 'ui5'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
+import {listItemMoving} from './list.css'
 
-export const MOVING_ITEM_CLASS_NAME = 'moving'
-
-const ListItem = styled(Box)<ComponentProps<typeof Box> & {$moving?: boolean}>`
-  ${(props) =>
-    props.$moving &&
-    css`
-      z-index: 10000;
-      /* prevents hover-effects etc on the dragged element  */
-      pointer-events: none;
-    `}
-`
+/**
+ * `data-array-item-moving` marks the item being dragged; the array item layouts (`CellLayout`,
+ * `RowLayout`) style themselves through it.
+ */
+function ListItem(props: ComponentProps<typeof Box> & {$moving?: boolean}) {
+  const {$moving, className, ...rest} = props
+  return (
+    <Box
+      {...rest}
+      className={clsx($moving && listItemMoving, className)}
+      data-array-item-moving={$moving ? '' : undefined}
+    />
+  )
+}
 
 const AUTO_SCROLL_OPTIONS: AutoScrollOptions = {
   threshold: {
@@ -144,13 +148,7 @@ function SortableListItem(props: ItemProps & RefAttributes<HTMLDivElement>) {
   )
 
   return (
-    <ListItem
-      ref={setRef}
-      style={style}
-      $moving={isActive}
-      className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
-      data-index={props['data-index']}
-    >
+    <ListItem ref={setRef} style={style} $moving={isActive} data-index={props['data-index']}>
       {children}
     </ListItem>
   )
