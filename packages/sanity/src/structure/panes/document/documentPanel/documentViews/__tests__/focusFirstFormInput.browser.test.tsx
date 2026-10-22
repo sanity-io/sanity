@@ -255,4 +255,35 @@ describe('focusFirstFormInput', () => {
     expect(focusFirstFormInput(form)).toBe(false)
     form.remove()
   })
+
+  test('passes over an inactive Portable Text activate overlay to the editable', () => {
+    const form = document.createElement('form')
+    form.innerHTML = `
+      <div data-testid="activate-overlay" data-skip-initial-focus tabindex="0">Click to activate</div>
+      <div contenteditable="true" role="textbox" data-testid="pt-editable"></div>
+    `
+    document.body.append(form)
+
+    expect(focusFirstFormInput(form)).toBe(true)
+    expect(form.ownerDocument.activeElement).toBe(form.querySelector('[data-testid="pt-editable"]'))
+    form.remove()
+  })
+
+  test('focuses a wrapper whose only descendants are skip-marked chrome', () => {
+    const form = document.createElement('form')
+    form.innerHTML = `
+      <div tabindex="0" data-testid="object-wrapper">
+        <div data-skip-initial-focus>
+          <button type="button">Field actions</button>
+        </div>
+      </div>
+    `
+    document.body.append(form)
+
+    expect(focusFirstFormInput(form)).toBe(true)
+    expect(form.ownerDocument.activeElement).toBe(
+      form.querySelector('[data-testid="object-wrapper"]'),
+    )
+    form.remove()
+  })
 })

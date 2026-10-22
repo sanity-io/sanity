@@ -1,9 +1,10 @@
 /**
  * Marks a subtree whose controls are form chrome, not field input: the form header (title,
- * schema description), field headers (field actions, comments, fieldset toggles) and field group
- * tabs. Initial focus passes over them, keyboard users still reach them with Tab and Shift+Tab.
- * The attribute is set by `FormHeader`, `FormFieldBaseHeader`, `FieldGroupTabs` and the Portable
- * Text toolbar.
+ * schema description), field headers (field actions, comments, fieldset toggles), field group
+ * tabs, the Portable Text toolbar and its activate-on-focus overlay. Initial focus passes over
+ * them, keyboard users still reach them with Tab and Shift+Tab.
+ * The attribute is set by `FormHeader`, `FormFieldBaseHeader`, `FieldGroupTabs`, the Portable
+ * Text toolbar and `ActivateOnFocus`.
  */
 const SKIP_SELECTOR = '[data-skip-initial-focus]'
 
@@ -21,6 +22,14 @@ const NATIVE_CONTROL_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A
 
 function isControl(element: HTMLElement): boolean {
   return NATIVE_CONTROL_TAGS.has(element.tagName) || element.isContentEditable
+}
+
+/** True when `element` has a descendant that would itself be an initial-focus candidate. */
+function hasCandidateDescendant(element: HTMLElement): boolean {
+  for (const descendant of element.querySelectorAll<HTMLElement>(CANDIDATE_SELECTOR)) {
+    if (!descendant.closest(SKIP_SELECTOR)) return true
+  }
+  return false
 }
 
 function isEditable(element: HTMLElement): boolean {
@@ -68,8 +77,8 @@ export function focusFirstFormInput(form: HTMLElement): boolean {
     (element) =>
       !element.closest(SKIP_SELECTOR) &&
       // A focusable wrapper (a nested object input's root) is not an input itself, its first
-      // control is.
-      (isControl(element) || !element.querySelector(CANDIDATE_SELECTOR)),
+      // control is. Skip-marked chrome (field actions, etc.) does not count as that control.
+      (isControl(element) || !hasCandidateDescendant(element)),
   )
 
   for (const element of candidates) {

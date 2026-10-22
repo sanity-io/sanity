@@ -100,6 +100,8 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       {isOverlayActive && (
         <FlexContainer
           data-testid="activate-overlay"
+          // Initial focus on open lands in the editable, not on this chrome overlay.
+          data-skip-initial-focus=""
           tabIndex={0}
           alignItems="center"
           justifyContent="center"
