@@ -143,12 +143,17 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
   )
 
   if (!world) {
+    // The panel's frame stays while a document's versions load (a document switch keeps the inspector open): the toolbar row keeps its
+    // height, empty, and the list's place says it is loading (from the Handoff Studio's 6c0648d75f).
     return (
-      <Card padding={3}>
-        <Text muted size={1}>
-          Loading versions…
-        </Text>
-      </Card>
+      <Flex data-testid="inventory-loading" direction="column" height="fill">
+        <Box data-testid="inventory-toolbar-placeholder" style={{flex: 'none', height: 41}} />
+        <Card padding={3}>
+          <Text muted size={1}>
+            Loading versions…
+          </Text>
+        </Card>
+      </Flex>
     )
   }
   return (
