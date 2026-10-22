@@ -10,6 +10,7 @@ import {type ResolvedAction} from '../../../components/RenderActionCollectionSta
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentPaneContextValue} from '../DocumentPaneContext'
+import {useDocumentGroupInventoryTarget} from '../useDocumentGroupInventoryTarget'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusBarActions} from './DocumentStatusBarActions'
 
@@ -26,6 +27,10 @@ vi.mock('sanity', async (importOriginal) => ({
 
 vi.mock('../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),
+}))
+
+vi.mock('../useDocumentGroupInventoryTarget', () => ({
+  useDocumentGroupInventoryTarget: vi.fn(),
 }))
 
 vi.mock('../../../components/paneRouter/usePaneRouter', () => ({
@@ -55,6 +60,9 @@ vi.mock('../../../../core/tasks/plugin/TasksFooterOpenTasks', () => {
 })
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
+const mockUseDocumentGroupInventoryTarget = useDocumentGroupInventoryTarget as MockedFunction<
+  typeof useDocumentGroupInventoryTarget
+>
 const mockUsePaneRouter = usePaneRouter as MockedFunction<typeof usePaneRouter>
 const mockUseDocumentPerspectiveList = useDocumentPerspectiveList as MockedFunction<
   typeof useDocumentPerspectiveList
@@ -135,6 +143,10 @@ describe('DocumentStatusBarActions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUseDocumentPane.mockReturnValue(buildDocumentPaneValue())
+    mockUseDocumentGroupInventoryTarget.mockReturnValue({
+      isAvailable: true,
+      documentId: 'doc-123',
+    })
     mockUsePaneRouter.mockReturnValue({params: {}, setParams: vi.fn()} as never)
     mockUseDocumentPerspectiveList.mockReturnValue({} as never)
   })
@@ -205,5 +217,14 @@ describe('DocumentStatusBarActions', () => {
       expect(screen.getByTestId('action-publish')).toBeInTheDocument()
       expect(screen.queryByTestId('tasks-footer-open-tasks')).not.toBeInTheDocument()
     })
+  })
+
+  it('does not render Manage versions when the document group inventory is unavailable', () => {
+    mockUseDocumentGroupInventoryTarget.mockReturnValue({isAvailable: false})
+
+    renderActions([PUBLISH_ACTION])
+
+    expect(screen.queryByTestId('action-document-group-inventory')).not.toBeInTheDocument()
+    expect(screen.getByTestId('action-publish')).toBeInTheDocument()
   })
 })

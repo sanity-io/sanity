@@ -773,6 +773,7 @@ import type {
   useInitialValueResolverContext,
   useInStudioFeedback,
   UseInStudioFeedbackReturn,
+  useIsDocumentGroupInventoryAvailable,
   useIsReleaseActive,
   useKeyValueStore,
   useLoadable,
@@ -3206,6 +3207,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('UseInStudioFeedbackReturn', () => {
     expectTypeOf<UseInStudioFeedbackReturn>().toBeObject()
+  })
+  test('useIsDocumentGroupInventoryAvailable', () => {
+    expectTypeOf<typeof useIsDocumentGroupInventoryAvailable>().toBeFunction()
   })
   test('useIsReleaseActive', () => {
     expectTypeOf<typeof useIsReleaseActive>().not.toBeNever()
