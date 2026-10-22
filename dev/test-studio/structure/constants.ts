@@ -76,7 +76,7 @@ export const DEBUG_INPUT_TYPES = [
   'languageFilterDebug',
   'lazyComponents',
   'sdkProjectionGuardOnly',
-  'sdkProjectionUnwrapped',
+  'sdkProjectionNoSuspense',
   'sdkProjectionWrapped',
   'suspendingInputCached',
   'suspendingInputLazy',

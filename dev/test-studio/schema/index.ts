@@ -104,11 +104,8 @@ import reservedFieldNames from './debug/reservedFieldNames'
 import restrictedVersionActions from './debug/restrictedVersionActions'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
-import {
-  sdkProjectionGuardOnly,
-  sdkProjectionUnwrapped,
-  sdkProjectionWrapped,
-} from './debug/sdkProjectionInput'
+import {sdkProjectionGuardOnly, sdkProjectionWrapped} from './debug/sdkProjectionInput'
+import {sdkProjectionNoSuspense} from './debug/sdkProjectionNoSuspense'
 import select from './debug/select'
 import {navbarSettingsDialogRepro} from './debug/settingsV2DialogRepro'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
@@ -301,7 +298,7 @@ export function createSchemaTypes(projectId: string) {
     suspendingInputPerInstance,
     suspendingInputPerInstanceWrapped,
     sdkProjectionGuardOnly,
-    sdkProjectionUnwrapped,
+    sdkProjectionNoSuspense,
     sdkProjectionWrapped,
     locationResolverTest,
     liveEdit,

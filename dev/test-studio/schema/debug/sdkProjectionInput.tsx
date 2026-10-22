@@ -71,17 +71,6 @@ function defineSdkProjectionType(options: {
   })
 }
 
-/**
- * The input as originally written: `useDocumentProjection` suspends until the projected document
- * exists, and nothing inside the input catches it.
- */
-export const sdkProjectionUnwrapped = defineSdkProjectionType({
-  name: 'sdkProjectionUnwrapped',
-  title: 'SDK projection input: no Suspense',
-  description: 'Calls useDocumentProjection for the current document with no Suspense boundary.',
-  createInput: sdkProjectionWarnings,
-})
-
 export const sdkProjectionGuardOnly = defineSdkProjectionType({
   name: 'sdkProjectionGuardOnly',
   title: 'SDK projection input: empty-value guard, no Suspense',
