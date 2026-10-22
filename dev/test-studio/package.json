@@ -47,7 +47,7 @@
     "chokidar": "^5.0.0",
     "history": "^5.3.0",
     "lodash-es": "^4.18.1",
-    "motion": "^14.3.0",
+    "motion": "^14.5.0",
     "qs": "^6.16.1",
     "react": "catalog:",
     "react-dom": "catalog:",
@@ -58,7 +58,7 @@
     "sanity": "workspace:*",
     "sanity-plugin-asset-source-unsplash": "^7.0.29",
     "sanity-plugin-internationalized-array": "^5.3.6",
-    "sanity-plugin-media": "^6.3.5",
+    "sanity-plugin-media": "^6.4.0",
     "styled-components": "catalog:",
     "ui5": "catalog:"
   },
