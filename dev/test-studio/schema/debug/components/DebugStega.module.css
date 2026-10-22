@@ -1,0 +1,11 @@
+.hoverCard {
+  transition: opacity 100ms ease;
+}
+
+.hoverCard:hover {
+  opacity: 0.1;
+}
+
+.hoverCard:active {
+  pointer-events: none;
+}
