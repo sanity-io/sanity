@@ -42,6 +42,7 @@ vi.mock('../../../variants/store/useAllVariants', () => ({
 vi.mock('../../../hooks/useRelativeTime', () => ({
   useRelativeTime: vi.fn(() => '2d ago'),
   useCompactRelativeTime: vi.fn(() => '2 days'),
+  useCompactTimeAgo: vi.fn(() => '2 days ago'),
 }))
 
 vi.mock('../../../store/agent/useAgentBundles', () => ({
@@ -154,8 +155,12 @@ describe('DocumentVersionsStatus', () => {
   it('shows only perspective titles when variants are disabled', async () => {
     await renderStatus({versions: [publishedDefault, draftDefault]})
 
-    expect(screen.getByText('Published')).toBeInTheDocument()
-    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(screen.getAllByTestId('state-published')).toHaveLength(1)
+    expect(screen.getAllByTestId('state-draft')).toHaveLength(1)
+    // One phrase for the line's most recent activity.
+    expect(screen.getByTestId('audience-line-activity')).toHaveTextContent(
+      /^(Published|Edited) 2 days ago$/,
+    )
     expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
@@ -166,15 +171,19 @@ describe('DocumentVersionsStatus', () => {
       variantsEnabled: true,
     })
 
-    // One heading for the variant, then each row names only its state (no dates).
+    // One line for the variant: its glyphs and one phrase for its latest activity.
     expect(screen.getAllByText('All users (Default)')).toHaveLength(1)
-    expect(screen.getByText('Published', {exact: true})).toBeInTheDocument()
-    expect(screen.getByText('Draft', {exact: true})).toBeInTheDocument()
+    expect(screen.getAllByTestId('state-published')).toHaveLength(1)
+    expect(screen.getAllByTestId('state-draft')).toHaveLength(1)
+    // One phrase for the line's most recent activity.
+    expect(screen.getByTestId('audience-line-activity')).toHaveTextContent(
+      /^(Published|Edited) 2 days ago$/,
+    )
     expect(screen.queryByText(/ · /)).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
 
-  it('gives a variant its own line, named by the variant title, with its states as labels', async () => {
+  it('gives a variant its own line, named by the variant title, with a glyph per version', async () => {
     await renderStatus({
       versions: [publishedVariant, draftVariant],
       variantsEnabled: true,
@@ -182,10 +191,14 @@ describe('DocumentVersionsStatus', () => {
     })
 
     expect(screen.getAllByText('Alpha audience')).toHaveLength(1)
-    expect(screen.getByText('Published', {exact: true})).toBeInTheDocument()
-    expect(screen.getByText('Draft', {exact: true})).toBeInTheDocument()
+    expect(screen.getAllByTestId('state-published')).toHaveLength(1)
+    expect(screen.getAllByTestId('state-draft')).toHaveLength(1)
+    // One phrase for the line's most recent activity.
+    expect(screen.getByTestId('audience-line-activity')).toHaveTextContent(
+      /^(Published|Edited) 2 days ago$/,
+    )
     expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
-    // The v1 popover: one line per audience, flat state labels, no rhombus and no dates.
+    // The v1 popover: one line per audience, a glyph per version, no rhombus.
     expect(screen.getAllByTestId('audience-line')).toHaveLength(1)
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
@@ -196,8 +209,12 @@ describe('DocumentVersionsStatus', () => {
       variantsById: new Map([[variantAlphaAudience._id, variantAlphaAudience]]),
     })
 
-    expect(screen.getByText('Published')).toBeInTheDocument()
-    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(screen.getAllByTestId('state-published')).toHaveLength(1)
+    expect(screen.getAllByTestId('state-draft')).toHaveLength(1)
+    // One phrase for the line's most recent activity.
+    expect(screen.getByTestId('audience-line-activity')).toHaveTextContent(
+      /^(Published|Edited) 2 days ago$/,
+    )
     expect(screen.queryByText(/Alpha audience/)).not.toBeInTheDocument()
     expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
@@ -224,8 +241,12 @@ describe('DocumentVersionsStatus', () => {
       versions: [publishedDefault, draftDefault, ownAgentVersion, otherAgentVersion],
     })
 
-    expect(screen.getByText('Published')).toBeInTheDocument()
-    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(screen.getAllByTestId('state-published')).toHaveLength(1)
+    expect(screen.getAllByTestId('state-draft')).toHaveLength(1)
+    // One phrase for the line's most recent activity.
+    expect(screen.getByTestId('audience-line-activity')).toHaveTextContent(
+      /^(Published|Edited) 2 days ago$/,
+    )
     expect(screen.queryByText('Proposed changes')).not.toBeInTheDocument()
     expect(screen.queryByText('Agent changes')).not.toBeInTheDocument()
   })

@@ -207,6 +207,23 @@ function useFormatRelativeTime(
  * @internal
  */
 export function useCompactRelativeTime(time: Date | string): string {
+  return useCompactTime(time).label
+}
+
+/**
+ * PROPOSED: a compact relative time as a phrase about the past: "2 days ago", "3 hr ago", or "just now" (never "now ago"). The phrases are
+ * i18n keys around the compact time.
+ *
+ * @internal
+ */
+export function useCompactTimeAgo(time: Date | string): string {
+  const {t} = useTranslation()
+  const {label, isNow} = useCompactTime(time)
+  if (!label) return ''
+  return isNow ? t('relative-time.compact.just-now') : t('relative-time.compact.ago', {time: label})
+}
+
+function useCompactTime(time: Date | string): {label: string; isNow: boolean} {
   const {t} = useTranslation()
   const [now, updateNow] = useReducer(
     () => Date.now(),
@@ -214,7 +231,7 @@ export function useCompactRelativeTime(time: Date | string): string {
     () => Date.now(),
   )
   const date = time instanceof Date ? time : new Date(time)
-  const {label, refreshInterval} = compactRelativeTime(date, now, t)
+  const {label, refreshInterval, isNow = false} = compactRelativeTime(date, now, t)
 
   useEffect(() => {
     if (refreshInterval === null) return undefined
@@ -232,17 +249,18 @@ export function useCompactRelativeTime(time: Date | string): string {
     }
   }, [refreshInterval])
 
-  return label
+  return {label, isNow}
 }
 
 function compactRelativeTime(
   date: Date,
   now: number,
   t: ReturnType<typeof useTranslation>['t'],
-): {label: string; refreshInterval: number | null} {
+): {label: string; refreshInterval: number | null; isNow?: boolean} {
   if (!date.getTime()) return {label: '', refreshInterval: null}
   const minutes = differenceInMinutes(now, date)
-  if (minutes < 1) return {label: t('relative-time.compact.now'), refreshInterval: TWENTY_SECONDS}
+  if (minutes < 1)
+    return {label: t('relative-time.compact.now'), refreshInterval: TWENTY_SECONDS, isNow: true}
   if (minutes < 60)
     return {label: t('relative-time.compact.minute', {count: minutes}), refreshInterval: ONE_MINUTE}
   const hours = differenceInHours(now, date)
