@@ -4,9 +4,11 @@ import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card} from '@sanity/ui'
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
+import {Card, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {rgba} from '@sanity/ui/theme'
+import {clsx} from 'clsx'
 import {
+  type ComponentProps,
   memo,
   useCallback,
   useDeferredValue,
@@ -14,6 +16,7 @@ import {
   useRef,
   useState,
   type RefAttributes,
+  type CSSProperties,
 } from 'react'
 import {
   FieldPresenceInner,
@@ -24,7 +27,6 @@ import {
   useZIndex,
   useWorkspace,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -52,6 +54,11 @@ import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryButton} from './DocumentGroupInventoryButton'
 import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
+import {
+  gradientFromColorVar,
+  horizontalScroller,
+  horizontalScrollerGradient,
+} from './DocumentPanelHeader.css'
 import {DocumentTargetBadges} from './DocumentTargetBadges'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
@@ -60,40 +67,18 @@ export interface DocumentPanelHeaderProps {
   menuItems: PaneMenuItem[]
 }
 
-const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
-  const theme = getTheme_v2(props.theme)
+function HorizontalScroller(props: ComponentProps<typeof Card> & {$showGradient: boolean}) {
+  const {$showGradient, className, style, ...rest} = props
+  const {color} = useThemeV2()
 
-  return css`
-    scrollbar-width: none;
-    z-index: 1;
-    flex: 1;
-    position: relative;
-    > div {
-      &::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-      }
-    }
-
-    ${
-      props.$showGradient &&
-      css`
-        &::after {
-          content: '';
-          display: block;
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          width: 150px;
-          background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
-          transition: 'opacity 300ms ease-out';
-          pointer-events: none;
-        }
-      `
-    }
-  `
-})
+  return (
+    <Card
+      {...rest}
+      className={clsx(horizontalScroller, $showGradient && horizontalScrollerGradient, className)}
+      style={{[gradientFromColorVar]: rgba(color.bg, 0), ...style} as CSSProperties}
+    />
+  )
+}
 
 export const DocumentPanelHeader = memo(function DocumentPanelHeader(
   _props: DocumentPanelHeaderProps & RefAttributes<HTMLDivElement>,
