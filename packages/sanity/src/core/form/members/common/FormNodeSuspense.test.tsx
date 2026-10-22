@@ -81,7 +81,7 @@ describe('warnFormNodeSuspended', () => {
     expect(message).toMatch(/fallback that reserves the space the loaded UI needs/)
     expect(message).toMatch(/skip that part until the document exists/)
     expect(message).toMatch(
-      /npx skills add sanity-io\/sanity --skill sanity-form-component-suspense/,
+      /npx skills add sanity-io\/agent-toolkit --skill sanity-form-component-suspense/,
     )
     expect(message).toMatch(/The component:$/)
     expect(component).toBe(CheckModelHasSize)
