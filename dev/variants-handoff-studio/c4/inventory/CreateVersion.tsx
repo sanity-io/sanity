@@ -136,7 +136,8 @@ function collapseGroups(frame: HTMLElement | null) {
   return {counts, closed}
 }
 const BASE_LABEL = 'Base · all visitors'
-const HAS_VERSION = 'Has a version · Open it'
+/** A definition's hint when it already has a version where Add to points: what exists, not an action (choosing it only selects it). */
+const alreadyIn = (d: Dest) => `In ${destTitle(d)} already`
 
 const matches = (query: string, text: string) =>
   !query.trim() || text.toLowerCase().includes(query.trim().toLowerCase())
@@ -274,13 +275,13 @@ function Item(props: {
   icon?: ReactNode
   disabled?: boolean
   selected?: boolean
-  /** The option already has a version in the chosen bundle: dimmed, and choosing it opens that version. */
+  /** The option already has a version in the chosen bundle: dimmed. Choosing it selects it, and the commit becomes Open existing version. */
   had?: unknown
   onClick?: () => void
 }) {
   return (
     <MenuItem
-      __unstable_subtitle={props.had && !props.sub ? HAS_VERSION : props.sub}
+      __unstable_subtitle={props.sub}
       style={props.had ? {opacity: 0.55} : undefined}
       data-testid={props.id}
       disabled={props.disabled}
@@ -738,6 +739,7 @@ export function CreateVersion(props: {
                 had={hasIn(undefined)}
                 icon={<VariantDiamond />}
                 id="add-value-base"
+                sub={hasIn(undefined) ? alreadyIn(draft.dest) : undefined}
                 onClick={() => choose(undefined)}
                 selected={!draft.variantId}
                 text={BASE_LABEL}
@@ -755,7 +757,7 @@ export function CreateVersion(props: {
                 had={hasIn(v.id)}
                 onClick={() => choose(v.id)}
                 selected={draft.variantId === v.id}
-                sub={reason ?? (hasIn(v.id) ? HAS_VERSION : undefined)}
+                sub={reason ?? (hasIn(v.id) ? alreadyIn(draft.dest) : undefined)}
                 text={v.title}
               />
             ))}
