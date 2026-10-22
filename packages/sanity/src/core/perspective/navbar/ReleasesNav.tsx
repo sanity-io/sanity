@@ -177,13 +177,8 @@ export const ReleasesNav: ComponentType<Props> = ({
             }}
           >
             {section.singleControl ? (
-              // PROPOSED: one button, the trigger of the menu (no link to the Releases tool inside it).
-              <GlobalPerspectiveMenu
-                areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
-                menuItemProps={menuItemProps}
-                selectedPerspectiveName={selectedPerspectiveName}
-                trigger={<SingleStateControl selectedPerspective={selectedPerspective} />}
-              />
+              // PROPOSED: one button, the trigger of the menu (no link to the Releases tool inside it), with the cross like the stock chip.
+              chip
             ) : (
               <>
                 {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
