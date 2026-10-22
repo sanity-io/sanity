@@ -1,13 +1,3 @@
-// Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
-// explorations/inventory-sidepanel (PR #47), commit 9f990e031b, previously 40041dec04, 310271b6e2 and db53306896, lib/explorations/variants/inventory-concepts/model.tsx).
-// Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
-import {PerspectiveProvider} from '../../../../packages/sanity/src/core/perspective/PerspectiveProvider'
-import {type ReleaseId} from '../../../../packages/sanity/src/core/perspective/types'
-import {useSetPerspective} from '../../../../packages/sanity/src/core/perspective/useSetPerspective'
-import {formatRelativeLocale} from '../../../../packages/sanity/src/core/util/formatRelativeLocale'
-import {VARIANT_DOCUMENTS_PATH} from '../../../../packages/sanity/src/core/variants/store/constants'
-import {type SystemVariant} from '../../../../packages/sanity/src/core/variants/types'
-
 import {type ReleaseDocument} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {Progress50Icon} from '@sanity/icons/Progress50'
@@ -17,13 +7,21 @@ import {
   type ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
 import {useRouter} from 'sanity/router'
 
+// Ported from Andrej's version inventory side panel in the Storybook Variants 2.0 branch (sanity-labs/sanity-studio-storybook,
+// explorations/inventory-sidepanel (PR #47), commit 9f990e031b, previously 40041dec04, 310271b6e2 and db53306896, lib/explorations/variants/inventory-concepts/model.tsx).
+// Changes: imports point at this monorepo and ./fixtures (a LIVE replacement of his fixtures); LIVE: marks other changes.
+import {PerspectiveProvider} from '../../../../packages/sanity/src/core/perspective/PerspectiveProvider'
+import {type ReleaseId} from '../../../../packages/sanity/src/core/perspective/types'
+import {useSetPerspective} from '../../../../packages/sanity/src/core/perspective/useSetPerspective'
+import {formatRelativeLocale} from '../../../../packages/sanity/src/core/util/formatRelativeLocale'
+import {VARIANT_DOCUMENTS_PATH} from '../../../../packages/sanity/src/core/variants/store/constants'
+import {type SystemVariant} from '../../../../packages/sanity/src/core/variants/types'
 import {
   baseWorld,
   defaultVisitor,
@@ -597,6 +595,10 @@ function timelineSlots(world: InventoryWorld): TimelineSlot[] {
   )
   return [
     {id: 'published', title: 'Published', icon: 'published', bundles: ['published']},
+    // Design Studio copy, approved by Faheem 22 Oct (C4 E only, via world.draftsInTimeline): the drafts are a group, under Published.
+    ...(world.draftsInTimeline
+      ? [{id: 'drafts', title: 'Drafts', icon: 'drafts' as const, bundles: ['drafts']}]
+      : []),
     ...asap.map((r) => slot('As soon as possible', r)),
     ...scheduled.map((r) => slot(capitalise(publishDateLabel(at(r)!)), r)),
     ...undated.map((r) => slot('Undecided', r)),
@@ -767,7 +769,8 @@ function visibleEntries(options: {
     (entry) =>
       // The timeline holds what is live or will go live; By stage holds the unscheduled drafts, then
       // what is published as the last stage.
-      (view === 'publishDate' ? entry.group !== 'drafts' : true) &&
+      // Design Studio copy, approved by Faheem 22 Oct (C4 E only): with world.draftsInTimeline, By publish date lists the drafts too.
+      (view === 'publishDate' && !world.draftsInTimeline ? entry.group !== 'drafts' : true) &&
       (view === 'stage' ? entry.group === 'drafts' || entry.group === 'published' : true) &&
       filters.every((f) => filterMatches(world, visitor, f, entry)),
   )
@@ -1204,7 +1207,13 @@ export function InventoryConceptsProvider(props: {
   const clearSelection = useCallback(() => setSelectedKeys(new Set()), [])
   // Another document's rows share keys with this one's ("published.base"): a new document starts
   // with nothing selected.
-  useEffect(() => setSelectedKeys(new Set()), [world])
+  // Design Studio copy, approved by Faheem 22 Oct: reset during render when the world changes (was a
+  // useEffect, which the repo's lint rejects: set-state-in-effect, exhaustive-effect-dependencies).
+  const [selectionWorld, setSelectionWorld] = useState(world)
+  if (selectionWorld !== world) {
+    setSelectionWorld(world)
+    setSelectedKeys(new Set())
+  }
 
   const setDimension = useCallback((dimension: DimensionName, value: string | undefined) => {
     setVisitor((current) => ({...current, [dimension]: value}))
@@ -1216,14 +1225,18 @@ export function InventoryConceptsProvider(props: {
   )
 
   const [entrySelections, setEntrySelections] = useState(0)
-  const [barShown, setBarShown] = useState(false)
   // By priority ranks for the bar's perspective, so opening it brings the bar in, from A's closed
   // start or after the eye hid it (Andrej, 2026-10-15: "when somebody opens this view, we
   // immediately need to show the perspective selector bar if it's hidden"). Hiding it again stays
   // allowed, and leaving the view leaves the bar as it is.
-  useEffect(() => {
+  // Design Studio copy, approved by Faheem 22 Oct: set during render when the view changes (was a
+  // useEffect, which the repo's lint rejects: set-state-in-effect).
+  const [barShown, setBarShown] = useState(view === 'priority')
+  const [barView, setBarView] = useState(view)
+  if (barView !== view) {
+    setBarView(view)
     if (view === 'priority') setBarShown(true)
-  }, [view])
+  }
   const selectEntry = useCallback(
     (entry: InventoryEntry) => {
       setEntrySelections((n) => n + 1)

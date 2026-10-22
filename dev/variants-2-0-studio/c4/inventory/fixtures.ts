@@ -53,14 +53,23 @@ export interface InventoryWorld {
   content?: Record<string, Record<string, unknown>>
   fields?: Record<string, unknown>
   related?: InventoryWorld[]
+  /** C4 E (approved by Faheem, 22 Oct): By publish date lists the drafts, as a group under Published. Unset, his views as built. */
+  draftsInTimeline?: boolean
 }
 
-export const baseWorld: InventoryWorld = {releases: [], entries: [], variants: [], dimensions: [], document: {id: '', title: ''}}
+export const baseWorld: InventoryWorld = {
+  releases: [],
+  entries: [],
+  variants: [],
+  dimensions: [],
+  document: {id: '', title: ''},
+}
 
 export const releasesOn = (world: InventoryWorld) => world.features?.releases !== false
 export const variantsOn = (world: InventoryWorld) => world.features?.variants !== false
 export const worldVariants = (world: InventoryWorld) => world.variants ?? []
-export const worldDimensions = (world: InventoryWorld): readonly InventoryDimension[] => world.dimensions ?? []
+export const worldDimensions = (world: InventoryWorld): readonly InventoryDimension[] =>
+  world.dimensions ?? []
 export const worldDocument = (world: InventoryWorld) => world.document ?? {id: '', title: ''}
 
 /** The document id a row's version is stored under. */
@@ -89,7 +98,10 @@ function documentFor(entry: InventoryEntry, world: InventoryWorld): SanityDocume
       ...(entry.group === 'published' ? {} : {bundleId: entry.group}),
       ...(isRelease ? {release: {_ref: `_.releases.${entry.group}`, _weak: true}} : {}),
       ...(entry.variantId
-        ? {variant: {_ref: `${VARIANT_DOCUMENTS_PATH}.${entry.variantId}`, _weak: true}, scopeId: scopeIdFor(entry)}
+        ? {
+            variant: {_ref: `${VARIANT_DOCUMENTS_PATH}.${entry.variantId}`, _weak: true},
+            scopeId: scopeIdFor(entry),
+          }
         : {}),
     },
     ...content,
@@ -98,6 +110,9 @@ function documentFor(entry: InventoryEntry, world: InventoryWorld): SanityDocume
 }
 
 /** One document per inventory row, carrying the `_system` fields Studio resolves a target from. */
-export function documentsFor(entries: InventoryEntry[], world: InventoryWorld = baseWorld): SanityDocument[] {
+export function documentsFor(
+  entries: InventoryEntry[],
+  world: InventoryWorld = baseWorld,
+): SanityDocument[] {
   return entries.map((entry) => documentFor(entry, world))
 }
