@@ -170,28 +170,37 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     setDrawerOpen(true)
   }, [])
 
-  const actionNodes = useMemo(() => {
-    if (!shouldRender.tools) return null
+  const renderActions = useCallback(
+    (location: 'topbar' | 'topbar-before-perspective') => {
+      if (!shouldRender.tools) return null
 
-    return actions
-      ?.filter((v) => v.location === 'topbar')
-      ?.map((action) => {
-        const {render: ActionComponent} = action
+      return actions
+        ?.filter((v) => v.location === location)
+        ?.map((action) => {
+          const {render: ActionComponent} = action
 
-        if (ActionComponent) return <ActionComponent key={action.name} />
+          if (ActionComponent) return <ActionComponent key={action.name} />
 
-        return (
-          <Button
-            key={action.name}
-            iconRight={action?.icon}
-            mode="bleed"
-            onClick={action?.onAction}
-            selected={action.selected}
-            text={action.title}
-          />
-        )
-      })
-  }, [actions, shouldRender.tools])
+          return (
+            <Button
+              key={action.name}
+              iconRight={action?.icon}
+              mode="bleed"
+              onClick={action?.onAction}
+              selected={action.selected}
+              text={action.title}
+            />
+          )
+        })
+    },
+    [actions, shouldRender.tools],
+  )
+  const actionNodes = useMemo(() => renderActions('topbar'), [renderActions])
+  // PROPOSED: actions that read before the perspective chip (an audience chip: "who, then where").
+  const beforePerspectiveNodes = useMemo(
+    () => renderActions('topbar-before-perspective'),
+    [renderActions],
+  )
 
   return (
     <FreeTrialProvider>
@@ -282,6 +291,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
+                {beforePerspectiveNodes}
                 {(!beta?.variants?.enabled || !showShippedPerspectiveBar) && (
                   <ReleasesNav withReleasesToolButton />
                 )}

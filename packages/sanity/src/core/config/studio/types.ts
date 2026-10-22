@@ -20,7 +20,11 @@ export interface LogoProps {
 
 interface NavbarActionBase {
   icon?: React.ComponentType
-  location: 'topbar' | 'sidebar'
+  /**
+   * PROPOSED: `topbar-before-perspective` renders the action in the top bar just before the perspective chip, so a chip that picks who the
+   * content is for (an audience) reads before the one that picks which version ("who, then where").
+   */
+  location: 'topbar' | 'topbar-before-perspective' | 'sidebar'
   name: string
 }
 
