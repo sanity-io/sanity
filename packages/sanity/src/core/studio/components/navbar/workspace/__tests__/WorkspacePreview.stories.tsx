@@ -1,8 +1,8 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {WorkspacePreview} from '../WorkspacePreview'
 
@@ -30,13 +30,13 @@ export const States: Story = {
     <Card padding={4} style={{maxWidth: 360}}>
       <VStack gap={5}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             login header (icon, title, subtitle)
           </Text>
           <WorkspacePreview icon={EarthGlobeIcon} title="Production" subtitle="blog" />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             auth card, logged in (chevron)
           </Text>
           <WorkspacePreview
@@ -48,7 +48,7 @@ export const States: Story = {
           />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             auth card, signed out (label + chevron)
           </Text>
           <WorkspacePreview

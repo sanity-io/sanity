@@ -224,9 +224,17 @@ export interface ValidationClient {
 
 /** The result of validating a complete document. @beta */
 export interface DocumentValidationResult {
-  /** Whether validation passed, failed, or could not be fully evaluated. */
+  /**
+   * Compatibility summary: any marker produces `failed`, including execution errors.
+   * @deprecated Will be removed in v7. Use `complete` and inspect marker levels and codes instead.
+   */
   status: 'passed' | 'failed' | 'notEvaluated'
-  /** Validation rules that failed. */
+  /**
+   * Whether every applicable check could be evaluated. When false, validation is inconclusive.
+   * Custom validators must throw when they cannot evaluate; returned messages are treated as findings.
+   */
+  complete: boolean
+  /** Validation markers. */
   markers: DocumentValidationMarker[]
 }
 
@@ -377,9 +385,30 @@ function createDocumentValidationResult(
   markers: ValidationMarker[],
   complete: boolean,
 ): DocumentValidationResult {
+  // Compiled rules from another version may return execution failures without calling markIncomplete.
+  const isComplete = complete && !markers.some(hasEvaluationFailure)
   return {
-    status: getDocumentValidationStatus(markers, complete),
+    status: getDocumentValidationStatus(markers, isComplete),
+    complete: isComplete,
     markers: markers.map(toDocumentValidationMarker),
+  }
+}
+
+function hasEvaluationFailure(value: unknown): boolean {
+  if (!isRecord(value)) return false
+  switch (value.code) {
+    case validationMarkerCodes.validationException:
+    case validationMarkerCodes.documentUnknownType:
+      return true
+    case validationMarkerCodes.ruleAllFailed:
+    case validationMarkerCodes.ruleEitherFailed:
+      return (
+        isRecord(value.details) &&
+        Array.isArray(value.details.causes) &&
+        value.details.causes.some(hasEvaluationFailure)
+      )
+    default:
+      return false
   }
 }
 
@@ -530,7 +559,7 @@ function evaluateDocumentObservableWithoutCancellation({
         'Schema type for object type "%s" not found, skipping validation',
         document._type,
       )
-      return of(createDocumentValidationResult([], true))
+      return of(createDocumentValidationResult([], false))
     }
 
     return of(
@@ -544,7 +573,7 @@ function evaluateDocumentObservableWithoutCancellation({
             path: [],
           },
         ],
-        true,
+        false,
       ),
     )
   }
@@ -601,7 +630,7 @@ function evaluateDocumentObservableWithoutCancellation({
           path: [],
         }
 
-        return of(createDocumentValidationResult([errorMarker], complete))
+        return of(createDocumentValidationResult([errorMarker], false))
       }),
     )
   })

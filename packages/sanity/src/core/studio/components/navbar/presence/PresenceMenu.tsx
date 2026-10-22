@@ -1,9 +1,8 @@
 import {AddUserIcon} from '@sanity/icons/AddUser'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
-import {Box, VStack} from 'ui5'
+import {Text, Box, VStack} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -99,11 +98,11 @@ export function PresenceMenu() {
           {!hasPresence && (
             <Box padding={3}>
               <VStack gap={3}>
-                <Text weight="medium" size={1}>
+                <Text weight="medium" size={1} as="div" trim={true}>
                   {t('presence.no-one-else-title')}
                 </Text>
 
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {t('presence.no-one-else-description')}
                 </Text>
               </VStack>
