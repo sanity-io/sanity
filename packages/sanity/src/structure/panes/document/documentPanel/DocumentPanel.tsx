@@ -1,6 +1,6 @@
 import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
 import {clsx} from 'clsx'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
@@ -18,6 +18,7 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
+  useElementState,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
@@ -96,8 +97,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {collapsed} = usePane()
   const parentPortal = usePortal()
   const {features} = useStructureTool()
-  const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
-  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const [_portalElement, setPortalElement] = useElementState<HTMLDivElement>()
+  const [documentScrollElement, setDocumentScrollElement] = useElementState<HTMLDivElement>()
   const formContainerElement = useRef<HTMLFormElement | null>(null)
   const workspace = useWorkspace()
 

@@ -1,5 +1,6 @@
-import {render, screen} from '@testing-library/react'
+import {act, render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {Activity} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -165,6 +166,39 @@ describe('DocumentPanel form persistence', () => {
     expect(screen.getByTestId('document-panel-form-view')).toBeVisible()
     expect(screen.getByTestId('form-state')).toHaveTextContent('1')
     expect(screen.getByTestId('fullscreen-pte')).toBeVisible()
+  })
+})
+
+describe('DocumentPanel under an Activity boundary', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseStructureTool.mockReturnValue({
+      features: splitPanesFeatures,
+    } as ReturnType<typeof useStructureTool>)
+  })
+
+  it('keeps content portaled into the pane in place across a hide and show', async () => {
+    mockUseDocumentPane.mockReturnValue(documentPaneValue())
+    const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+    const panel = (mode: 'visible' | 'hidden') => (
+      <Activity mode={mode}>{renderDocumentPanel()}</Activity>
+    )
+    const {rerender} = render(panel('visible'), {wrapper})
+
+    const portalTarget = screen.getByTestId('document-panel-portal')
+    const fullscreenPte = screen.getByTestId('fullscreen-pte')
+    expect(portalTarget).toContainElement(fullscreenPte)
+
+    // Hiding detaches the pane's refs. The hidden render that a reset portal element would cause
+    // is deferred, so give it a tick to happen if it is going to.
+    rerender(panel('hidden'))
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+    rerender(panel('visible'))
+
+    expect(screen.getByTestId('fullscreen-pte')).toBe(fullscreenPte)
+    expect(portalTarget).toContainElement(fullscreenPte)
   })
 })
 
