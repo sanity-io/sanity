@@ -12,11 +12,9 @@ import {
 } from '@portabletext/plugin-table/ui'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Switch, usePortal} from '@sanity/ui'
+import {Switch, usePortal, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {getTheme_v2} from '@sanity/ui/theme'
 import {useId, useMemo} from 'react'
-import {createGlobalStyle, useTheme} from 'styled-components'
 import {Text, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
@@ -94,7 +92,6 @@ export function PortableTextTablePlugin(props: {containers?: TableContainers}): 
 
   return (
     <>
-      <HeaderCellWeight />
       <table.Plugin />
       <BehaviorPlugin behaviors={scaffoldBehaviors} />
     </>
@@ -135,11 +132,11 @@ function StudioTable(props: ContainerRenderProps): React.JSX.Element {
 // plugin's own elements including the portal layers, so each table
 // instance carries its own set.
 function useTableTokens(): TableTokens {
-  const theme = useTheme()
+  const theme = useThemeV2()
   const scheme = useColorSchemeValue()
 
   return useMemo(() => {
-    const {color, font, radius, space} = getTheme_v2(theme)
+    const {color, font, radius, space} = theme
     return {
       '--pt-plugin-table-accent': color.focusRing,
       '--pt-plugin-table-bg': color.bg,
@@ -175,14 +172,6 @@ function useTableTokens(): TableTokens {
     }
   }, [theme, scheme])
 }
-
-// The plugin sets `font-weight` on the `<td>`, but Sanity UI's `Text` sets
-// its own weight and breaks the inheritance, so header text needs this rule.
-const HeaderCellWeight = createGlobalStyle`
-  .pt-plugin-table td[data-pt-plugin-table-header] [data-ui='Text'] {
-    font-weight: var(--pt-plugin-table-header-weight, 600);
-  }
-`
 
 const tableIcons = {trash: <TrashIcon />}
 
