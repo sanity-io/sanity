@@ -315,7 +315,7 @@ export const COMPONENTS: ComponentDef[] = [
         id: 'b',
         label: 'Always live in Drafts',
         summary:
-          'In Drafts no banner, a header hint says the first edit creates the variant; banners for Published and releases.',
+          'In Drafts no banner, a header hint names the missing variant; banners for Published and releases.',
         status: 'candidate',
         refs: 'Figma C7 225:441',
       },

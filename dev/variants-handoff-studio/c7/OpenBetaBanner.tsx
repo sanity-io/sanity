@@ -19,7 +19,8 @@ import {type AudienceVersion} from '../data/versions'
  * 678:768, B1 to B6: the info icon and plain text; tones per state, since the library banner has no tone property): an audience is
  * chosen and the open document has no version for it in the version the studio shows. Drawn with the Studio's own document banner; the stock
  * variant banners are replaced (VariantBannerReplacedProvider), so there is one.
- * - Drafts: a quiet notice (transparent), no button. Core keeps the form editable and the first edit creates the version.
+ * - Drafts: caution, with "Create variant" (Design Studio C7 option A): it opens the inventory's Create version, prefilled (this audience, Drafts,
+ *   Nearest version). The document cannot be edited in place without the version: it is created first (Faheem, 22 Oct).
  * - An open release: "Create version" opens the inventory in Create version mode, prefilled (this audience, this release, Nearest version). It
  *   never creates on its own.
  * - A scheduled release, Published: the text says why there is no action.
@@ -53,7 +54,9 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const setVariant = useSetVariant()
   const pane = useDocumentPane()
   const inventoryOpen = pane.inspector?.name === INVENTORY
-  const documentTitle = String(pane.value?.title ?? pane.title ?? 'This document')
+  // A document's own name: its title, or its name (an author has no title field).
+  const own = [pane.value?.title, pane.value?.name].find((t) => typeof t === 'string' && t)
+  const documentTitle = typeof own === 'string' ? own : 'This document'
 
   useEffect(() => {
     for (const d of definitions)
@@ -117,18 +120,32 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   )
 
   if (version === 'drafts') {
-    // Quiet: core keeps the form editable; the first edit creates the version from the base content.
+    // Ported from the Design Studio's C7 option A (Figma C7 225:437): caution, with "Create variant" (Faheem, 22 Oct). One create path: it
+    // opens the inventory's Create version, prefilled (this audience, Drafts, Nearest version, which is the base here); it never creates on
+    // its own. The version is created first; the document is not edited in place without it (Faheem, 22 Oct).
     return (
       <Banner
+        action={
+          inventoryOpen
+            ? undefined
+            : {
+                text: 'Create variant',
+                tone: 'primary',
+                mode: 'default',
+                onClick: () => {
+                  requestCreateVersion(documentId, {variantId, bundle: 'drafts'})
+                  pane.openInspector(INVENTORY)
+                },
+              }
+        }
         content={say(
           <>
-            {documentTitle} has no {audience} version yet. Your first edit creates one from the base
-            content.
+            {documentTitle} has no {audience} version yet. Create it to start editing.
           </>,
           'drafts',
         )}
         icon={InfoOutlineIcon}
-        tone="transparent"
+        tone="caution"
       />
     )
   }
