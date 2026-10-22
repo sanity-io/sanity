@@ -9,8 +9,11 @@ export const textGroup = css({
 })
 
 export const inlineText = css({
-  display: 'inline-block',
-  whiteSpace: 'break-spaces',
+  // `&&` beats ui5 Text's own display (`.sui-Text`, same specificity as a single class)
+  '&&': {
+    display: 'inline-block',
+    whiteSpace: 'break-spaces',
+  },
 })
 
 export const textBox = css({

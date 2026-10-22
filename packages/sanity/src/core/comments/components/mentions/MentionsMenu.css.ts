@@ -10,5 +10,5 @@ const LIST_PADDING = 4
 const MAX_ITEMS = 7
 
 export const flexWrap = css({
-  maxHeight: ITEM_HEIGHT * MAX_ITEMS + LIST_PADDING * 2 + ITEM_HEIGHT / 2,
+  maxHeight: `${ITEM_HEIGHT * MAX_ITEMS + LIST_PADDING * 2 + ITEM_HEIGHT / 2}px`,
 })
