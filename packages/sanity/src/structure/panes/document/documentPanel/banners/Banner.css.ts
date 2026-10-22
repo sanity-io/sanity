@@ -25,14 +25,14 @@ export const row = style({
   },
 })
 
-/** The icon and the text: at most 560px (about 60 characters at size 1), and it shrinks first when the pane is narrow. */
+/** The icon and the text: at most 720px (Faheem, 23 Oct: 560 wrapped too eagerly in wide panes), and it shrinks first when the pane is narrow. */
 export const text = style({
   display: 'flex',
   alignItems: 'flex-start',
   gap: 12,
-  flex: '0 1 560px',
+  flex: '0 1 720px',
   minWidth: 0,
-  maxWidth: 560,
+  maxWidth: 720,
 })
 
 /** The icon, top aligned with the text's first line. */
@@ -51,6 +51,8 @@ export const content = style({
   minWidth: 0,
   paddingTop: 8,
   paddingBottom: 8,
+  // No line ends with a lone word (a progressive enhancement: browsers without it wrap as before). Inherited by the text.
+  textWrap: 'pretty',
 })
 
 /** The space between the text and the action slot. */
