@@ -5,7 +5,8 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Text, type Theme} from '@sanity/ui'
+import {Badge, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -15,9 +16,9 @@ import {
   useMemo,
   useRef,
   type RefAttributes,
+  type CSSProperties,
 } from 'react'
-import {css, styled} from 'styled-components'
-import {VStack, Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -32,6 +33,15 @@ import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
 import {getGridTemplateColumns} from '../layout/getGridTemplateColumns'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
+import {
+  content as contentClass,
+  contentBorderLeft,
+  contentBorderLeftFocused,
+  contentFocusRingVar,
+  headerRow,
+  headerRowItem,
+  root,
+} from './FormFieldSet.css'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {ColumnarGrid, focusRingStyle} from './styles'
@@ -87,74 +97,6 @@ function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
 
-const Root = styled(VStack).attrs({forwardedAs: 'fieldset'})`
-  border: none;
-
-  /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
-  body:not(:-moz-handler-blocked) & {
-    display: table-cell;
-  }
-`
-
-const Content = styled(Box)<{
-  /*
-   * @note: The dollar sign ($) prefix is a `styled-components` convention for
-   * denoting transient props. See:
-   * https://styled-components.com/docs/api#transient-props
-   */
-  $borderLeft: boolean
-  $focused?: boolean
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  theme: Theme
-}>((props) => {
-  const {$borderLeft, $focused, theme} = props
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {focusRing} = theme.sanity
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {base} = theme.sanity.color
-
-  return css`
-    outline: none;
-    border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
-    transition:
-      border-color 0.2s ease-in-out,
-      box-shadow 0.2s ease-in-out;
-
-    ${
-      $borderLeft &&
-      $focused &&
-      `border-left: 1px solid var(--card-focus-ring-color);
-    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`
-    }
-
-    ${
-      $borderLeft &&
-      !$focused &&
-      `
-      box-shadow: inset 0 0 0 transparent;
-    `
-    }
-
-    &:focus {
-      box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
-    }
-
-    &:focus:not(:focus-visible) {
-      box-shadow: none;
-    }
-  `
-})
-
-/* Anchors the collapsible legend's hit area (see FormFieldSetLegend) to the whole row */
-const HeaderRow = styled(Flex)`
-  position: relative;
-`
-
-/* Keeps interactive header items above the legend's hit area */
-const HeaderRowItem = styled(Box)`
-  position: relative;
-`
-
 const EMPTY_ARRAY: never[] = []
 
 /** @internal */
@@ -173,6 +115,7 @@ export function FormFieldSet(
     __unstable_presence: presence = EMPTY_ARRAY,
     changedFromBaseVariant = false,
     children,
+    className,
     collapsed,
     collapsible,
     columns,
@@ -193,6 +136,11 @@ export function FormFieldSet(
   } = props
 
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
+  const {color, input} = useThemeV2()
+
+  // The rest props are typed for a `div` (public API) but rendered on a `fieldset`; widening to the
+  // shared `HTMLElement` base type is what `forwardedAs="fieldset"` used to paper over.
+  const rootProps: Omit<HTMLProps<HTMLElement>, 'as' | 'height' | 'ref'> = restProps
 
   const hasValidationMarkers = validation.length > 0
   const ref = useRef<HTMLDivElement | null>(null)
@@ -238,9 +186,11 @@ export function FormFieldSet(
       }
     >
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
-        <Root
+        <VStack
+          as="fieldset"
+          className={clsx(root, className)}
           data-level={level}
-          {...restProps}
+          {...rootProps}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           gap={2}
@@ -255,7 +205,7 @@ export function FormFieldSet(
             inputId={inputId}
             content={
               <VStack gap={3}>
-                <HeaderRow alignItems="center">
+                <Flex alignItems="center" className={headerRow}>
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}
@@ -272,20 +222,20 @@ export function FormFieldSet(
                     </Box>
                   )}
                   {isArraySchemaType(schemaType) && Array.isArray(path) && (
-                    <HeaderRowItem marginLeft={2}>
+                    <Box className={headerRowItem} marginLeft={2}>
                       <FormNodeDivergenceCollectionIndicator path={path} />
-                    </HeaderRowItem>
+                    </Box>
                   )}
                   {hasValidationMarkers && (
-                    <HeaderRowItem marginLeft={2}>
+                    <Box className={headerRowItem} marginLeft={2}>
                       <FormFieldValidationStatus
                         fontSize={1}
                         placement="top"
                         validation={validation}
                       />
-                    </HeaderRowItem>
+                    </Box>
                   )}
-                </HeaderRow>
+                </Flex>
 
                 {deprecated && (
                   <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
@@ -301,18 +251,28 @@ export function FormFieldSet(
               </VStack>
             }
           />
-          <Content
-            $borderLeft={level > 0}
-            $focused={Boolean(focused)}
+          <Box
+            className={clsx(
+              contentClass,
+              level > 0 && (focused ? contentBorderLeftFocused : contentBorderLeft),
+            )}
             hidden={collapsed}
             paddingLeft={level === 0 ? 0 : 3}
             onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
             ref={ref}
+            style={
+              {
+                [contentFocusRingVar]: focusRingStyle({
+                  base: color,
+                  focusRing: {...input.text.focusRing, offset: 2},
+                }),
+              } as CSSProperties
+            }
             tabIndex={tabIndex}
           >
             {!collapsed && content}
-          </Content>
-        </Root>
+          </Box>
+        </VStack>
       </FormNodeDivergenceDetail>
     </FormRow>
   )
