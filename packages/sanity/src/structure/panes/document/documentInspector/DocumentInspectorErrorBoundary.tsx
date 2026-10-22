@@ -51,6 +51,7 @@ export function DocumentInspectorErrorBoundary(props: DocumentInspectorErrorBoun
               <Flex gap={3}>
                 <Icon
                   size={1}
+                  muted
                   tone="critical"
                   icon={ErrorOutlineIcon}
                   style={{margin: '-0.375rem'}}

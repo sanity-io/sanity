@@ -47,10 +47,10 @@ export function RevisionStatusLine(): React.JSX.Element {
     <>
       <Flex flexBasis="0%" flexGrow={1} gap={3} padding={2}>
         <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-          <Icon size={1} icon={RestoreIcon} style={{margin: '-0.375rem'}} />
+          <Icon muted size={1} icon={RestoreIcon} style={{margin: '-0.375rem'}} />
         </Box>
         <Box flexBasis="0%" flexGrow={1}>
-          <StatusText size={1} truncate={1} as="div" trim={true}>
+          <StatusText size={1} truncate={1} forwardedAs="div" trim={true}>
             {revisionNotFound ? (
               <Translate t={t} i18nKey="document-status.revision-not-found" />
             ) : (

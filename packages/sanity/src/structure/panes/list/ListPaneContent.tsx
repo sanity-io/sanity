@@ -54,7 +54,7 @@ function DividerItem({item}: DividerItemProps) {
   const {title: dividerTitle} = useI18nText(item)
   return (
     <DividerContainer>
-      <DividerTitle weight="semibold" muted size={1} as="div" trim={true}>
+      <DividerTitle weight="semibold" muted size={1} forwardedAs="div" trim={true}>
         {dividerTitle}
       </DividerTitle>
 

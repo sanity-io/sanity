@@ -203,7 +203,7 @@ function DocumentNodePathBreadcrumbs(props: {
   if (!pathTitles?.length) return null
 
   return (
-    <Text size={1} as="div" trim={true}>
+    <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
       {pathTitles.map((t, i) => (
         // oxlint-disable-next-line no-array-index-key
         <Fragment key={i}>

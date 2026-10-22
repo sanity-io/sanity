@@ -25,7 +25,7 @@ const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
   const color = props.$color
 
   return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
+    color: ${theme.color.avatar[color].fg};
     background-color: ${theme.color.avatar[color].bg};
     box-shadow: 0 0 0 1px var(--card-bg-color);
 
