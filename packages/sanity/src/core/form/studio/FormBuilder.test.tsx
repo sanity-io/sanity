@@ -2,21 +2,34 @@ import {type SanityClient} from '@sanity/client'
 import {defineType, type ObjectSchemaType} from '@sanity/types'
 import {act, render, type RenderResult, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type ComponentType, lazy, type ReactNode, Suspense, useMemo, useState} from 'react'
+import {
+  type ComponentType,
+  lazy,
+  type ReactNode,
+  Suspense,
+  use,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
+import {setupVirtualListEnv} from '../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {defineDocumentFieldAction} from '../../config/document/fieldActions/define'
 import {type SingleWorkspace} from '../../config/types'
 import {useWorkspace} from '../../studio/workspace'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {usePublishedId} from '../contexts/DocumentIdProvider'
+import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {createPatchChannel} from '../patch/PatchChannel'
+import {type PatchEvent} from '../patch/PatchEvent'
 import {useFormState} from '../store/useFormState'
 import {type FieldProps} from '../types/fieldProps'
 import {type FormDocumentValue} from '../types/formDocumentValue'
 import {type InputProps} from '../types/inputProps'
+import {type ItemProps} from '../types/itemProps'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
 import {FormProvider} from './FormProvider'
 import {useEnhancedObjectDialog} from './tree-editing/context/enabled/useEnhancedObjectDialog'
@@ -44,6 +57,7 @@ function noop() {
 
 interface RenderFormBuilderOptions {
   fieldActions?: FormBuilderProps['__internal_fieldActions']
+  onChange?: FormBuilderProps['onChange']
   documentValue?: FormDocumentValue | undefined
   formNodeId?: string
   config?: Partial<SingleWorkspace>
@@ -91,17 +105,20 @@ function PassThroughInput(props: InputProps) {
  */
 function PaneStandIn(props: {children: ReactNode}) {
   const [element, setElement] = useState<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   return (
     <Suspense fallback={<div data-testid="pane-fallback" />}>
       <div ref={setElement} data-testid="pane">
-        {element ? props.children : null}
+        <VirtualizerScrollInstanceProvider scrollElement={element} containerElement={containerRef}>
+          <div ref={containerRef}>{element ? props.children : null}</div>
+        </VirtualizerScrollInstanceProvider>
       </div>
     </Suspense>
   )
 }
 
 function FormBuilderHarness(props: RenderFormBuilderOptions) {
-  const {fieldActions, documentValue, formNodeId} = props
+  const {fieldActions, documentValue, formNodeId, onChange = noop} = props
   const {schema} = useWorkspace()
   const schemaType = schema.get('test')
 
@@ -144,7 +161,7 @@ function FormBuilderHarness(props: RenderFormBuilderOptions) {
       id: formNodeId ?? formState?.id ?? '',
       level: formState?.level || 0,
       members: formState?.members || EMPTY_ARRAY,
-      onChange: noop,
+      onChange,
       onFieldGroupSelect: noop,
       onPathBlur: noop,
       onPathFocus: noop,
@@ -158,7 +175,7 @@ function FormBuilderHarness(props: RenderFormBuilderOptions) {
       validation: EMPTY_ARRAY,
       value: formState?.value as FormDocumentValue,
     }),
-    [fieldActions, formNodeId, formState, patchChannel, schemaType],
+    [fieldActions, formNodeId, formState, onChange, patchChannel, schemaType],
   )
 
   return <FormBuilder {...formBuilderProps} />
@@ -352,8 +369,8 @@ describe('FormBuilder', () => {
       pane: true,
     })
 
-    // The form's own boundary shows its loading block; the pane above it stays committed, and
-    // the generic per-node middleware skeleton is gone.
+    // The middleware wraps the root input too, so the form's own boundary shows its loading block
+    // and no member renders a skeleton; the pane above it stays committed.
     expect(screen.getByTestId('loading-block')).toBeInTheDocument()
     expect(screen.getByTestId('pane')).toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
@@ -368,8 +385,9 @@ describe('FormBuilder', () => {
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
   })
 
-  it('suspends the form, not the pane, while a lazy field component loads', async () => {
+  it('suspends each field, not the form, while a lazy field component loads', async () => {
     mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
     const field = deferredComponent<FieldProps>()
 
     await renderFormBuilder({
@@ -378,11 +396,16 @@ describe('FormBuilder', () => {
       pane: true,
     })
 
-    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.getByTestId('custom-field-fallback')).toBeInTheDocument()
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
     expect(screen.getByTestId('pane')).toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
-    expect(document.querySelector('[data-ui="Skeleton"]')).toBeNull()
     expect(screen.queryByTestId('field-title')).not.toBeInTheDocument()
+    const warnings = suspenseWarnings(warn)
+    expect(warnings).toHaveLength(1)
+    expect(warnings[0][0]).toMatch(
+      /^A form component at "title" of a "test" document .*declares no custom field or input component, so it likely comes from a plugin's form\.components/,
+    )
 
     await act(async () => {
       field.resolve(PassThroughField)
@@ -391,9 +414,371 @@ describe('FormBuilder', () => {
     expect(await screen.findByTestId('field-title', {}, {timeout: 10_000})).toHaveTextContent(
       'Title',
     )
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
+    warn.mockRestore()
+  })
+
+  it("keeps the rest of the form editable while a schema type's custom input never settles", async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const pending = new Promise<never>(noop)
+    function NeverSettlingInput(props: InputProps) {
+      use(pending)
+      return props.renderDefault(props)
+    }
+
+    const onChange = vi.fn<(event: PatchEvent) => void>()
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {schema: {types: [customComponentTestType({input: NeverSettlingInput})]}},
+      onChange,
+      pane: true,
+    })
+
+    expect(
+      await screen.findByTestId('custom-field-fallback', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('field-custom')).not.toBeInTheDocument()
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+
+    await expectTitleEditable(onChange)
+
+    expectOneSuspenseWarning(
+      warn,
+      'The custom input component <NeverSettlingInput> at "custom" of a "test" document',
+      NeverSettlingInput,
+    )
+    warn.mockRestore()
+  })
+
+  it("keeps the form's loading block while the document type's own custom input suspends", async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const pending = new Promise<never>(noop)
+    function NeverSettlingDocumentInput(props: InputProps) {
+      use(pending)
+      return props.renderDefault(props)
+    }
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {
+        schema: {
+          types: [
+            defineType({
+              type: 'document',
+              name: 'test',
+              title: 'Test',
+              fields: [{type: 'string', name: 'title', title: 'Title'}],
+              components: {input: NeverSettlingDocumentInput},
+            }),
+          ],
+        },
+      },
+      pane: true,
+    })
+
+    expect(await screen.findByTestId('loading-block', {}, {timeout: 10_000})).toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+    expect(suspenseWarnings(warn)).toHaveLength(0)
+    warn.mockRestore()
+  })
+
+  it('does not warn about a custom input that declares its own Suspense', async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const pending = new Promise<never>(noop)
+    function SuspendingPart(): null {
+      use(pending)
+      return null
+    }
+    function SelfContainedInput(props: InputProps) {
+      return (
+        <>
+          <Suspense fallback={<div data-testid="own-fallback" />}>
+            <SuspendingPart />
+          </Suspense>
+          {props.renderDefault(props)}
+        </>
+      )
+    }
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {schema: {types: [customComponentTestType({input: SelfContainedInput})]}},
+      pane: true,
+    })
+
+    const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
+    expect(within(customField).getByTestId('own-fallback')).toBeInTheDocument()
+    expect(within(customField).getByTestId('string-input')).toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
+    expect(suspenseWarnings(warn)).toHaveLength(0)
+    warn.mockRestore()
+  })
+
+  it("lets a custom field's own Suspense catch its custom input suspending", async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const pending = new Promise<never>(noop)
+    function NeverSettlingInput(props: InputProps) {
+      use(pending)
+      return props.renderDefault(props)
+    }
+    function FieldWithOwnBoundary(props: FieldProps) {
+      return (
+        <Suspense fallback={<div data-testid="field-own-fallback" />}>
+          {props.renderDefault(props)}
+        </Suspense>
+      )
+    }
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {
+        schema: {
+          types: [
+            customComponentTestType({input: NeverSettlingInput, field: FieldWithOwnBoundary}),
+          ],
+        },
+      },
+      pane: true,
+    })
+
+    expect(
+      await screen.findByTestId('field-own-fallback', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
+    expect(suspenseWarnings(warn)).toHaveLength(0)
+    warn.mockRestore()
+  })
+
+  it("keeps the rest of the form editable while a schema type's custom field never settles", async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const pending = new Promise<never>(noop)
+    function NeverSettlingField(props: FieldProps) {
+      use(pending)
+      return props.renderDefault(props)
+    }
+
+    const onChange = vi.fn<(event: PatchEvent) => void>()
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {schema: {types: [customComponentTestType({field: NeverSettlingField})]}},
+      onChange,
+      pane: true,
+    })
+
+    expect(
+      await screen.findByTestId('custom-field-fallback', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('field-custom')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+    await expectTitleEditable(onChange)
+    expectOneSuspenseWarning(
+      warn,
+      'The custom field component <NeverSettlingField> at "custom" of a "test" document',
+      NeverSettlingField,
+    )
+    warn.mockRestore()
+  })
+
+  it('does not warn about a custom field that declares its own Suspense', async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const pending = new Promise<never>(noop)
+    function SuspendingPart(): null {
+      use(pending)
+      return null
+    }
+    function SelfContainedField(props: FieldProps) {
+      return (
+        <>
+          <Suspense fallback={<div data-testid="own-fallback" />}>
+            <SuspendingPart />
+          </Suspense>
+          {props.renderDefault(props)}
+        </>
+      )
+    }
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {schema: {types: [customComponentTestType({field: SelfContainedField})]}},
+      pane: true,
+    })
+
+    const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
+    expect(screen.getByTestId('own-fallback')).toBeInTheDocument()
+    expect(within(customField).getByTestId('string-input')).toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
+    expect(suspenseWarnings(warn)).toHaveLength(0)
+    warn.mockRestore()
+  })
+
+  describe('array items', () => {
+    setupVirtualListEnv()
+
+    const documentValue = {
+      _id: 'test',
+      _type: 'test',
+      reviews: [{_type: 'review', _key: 'first', title: 'First review'}],
+    }
+
+    it("keeps the rest of the form editable while a schema type's custom item never settles", async () => {
+      mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+      const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+      const pending = new Promise<never>(noop)
+      function NeverSettlingItem(props: ItemProps) {
+        use(pending)
+        return props.renderDefault(props)
+      }
+
+      const onChange = vi.fn<(event: PatchEvent) => void>()
+
+      await renderFormBuilder({
+        documentValue,
+        config: {schema: {types: [customComponentTestType({item: NeverSettlingItem})]}},
+        onChange,
+        pane: true,
+      })
+
+      const reviews = await screen.findByTestId('field-reviews', {}, {timeout: 10_000})
+      expect(
+        await within(reviews).findByTestId('custom-item-fallback', {}, {timeout: 10_000}),
+      ).toBeInTheDocument()
+      expect(within(reviews).queryByTestId('array-item-menu-button')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+      await expectTitleEditable(onChange)
+      expectOneSuspenseWarning(
+        warn,
+        'The custom item component <NeverSettlingItem> at "reviews[_key=="first"]" of a "test" document',
+        NeverSettlingItem,
+      )
+      warn.mockRestore()
+    })
+
+    it('does not warn about a custom item that declares its own Suspense', async () => {
+      mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+      const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+      const pending = new Promise<never>(noop)
+      function SuspendingPart(): null {
+        use(pending)
+        return null
+      }
+      function SelfContainedItem(props: ItemProps) {
+        return (
+          <>
+            <Suspense fallback={<div data-testid="own-fallback" />}>
+              <SuspendingPart />
+            </Suspense>
+            {props.renderDefault(props)}
+          </>
+        )
+      }
+
+      await renderFormBuilder({
+        documentValue,
+        config: {schema: {types: [customComponentTestType({item: SelfContainedItem})]}},
+        pane: true,
+      })
+
+      const reviews = await screen.findByTestId('field-reviews', {}, {timeout: 10_000})
+      expect(
+        await within(reviews).findByTestId('array-item-menu-button', {}, {timeout: 10_000}),
+      ).toBeInTheDocument()
+      expect(within(reviews).getByTestId('own-fallback')).toBeInTheDocument()
+      expect(screen.queryByTestId('custom-item-fallback')).not.toBeInTheDocument()
+      expect(suspenseWarnings(warn)).toHaveLength(0)
+      warn.mockRestore()
+    })
+  })
+
+  it("replaces a schema type's custom input fallback once the input loads", async () => {
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    const input = deferredComponent<InputProps>()
+
+    await renderFormBuilder({
+      documentValue: {_id: 'test', _type: 'test'},
+      config: {schema: {types: [customComponentTestType({input: input.Lazy})]}},
+      pane: true,
+    })
+
+    expect(
+      await screen.findByTestId('custom-field-fallback', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
+
+    await act(async () => {
+      input.resolve(PassThroughInput)
+    })
+
+    const customField = await screen.findByTestId('field-custom', {}, {timeout: 10_000})
+    expect(within(customField).getByTestId('string-input')).toBeInTheDocument()
+    expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
+    warn.mockRestore()
   })
 })
+
+function customComponentTestType(components: {
+  input?: ComponentType<InputProps>
+  field?: ComponentType<FieldProps>
+  item?: ComponentType<ItemProps>
+}) {
+  return defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      {type: 'string', name: 'title', title: 'Title'},
+      {
+        type: 'string',
+        name: 'custom',
+        title: 'Custom',
+        components: {input: components.input, field: components.field},
+      },
+      {
+        type: 'array',
+        name: 'reviews',
+        title: 'Reviews',
+        of: [
+          {
+            type: 'object',
+            name: 'review',
+            fields: [{type: 'string', name: 'title', title: 'Title'}],
+            components: {item: components.item},
+          },
+        ],
+      },
+    ],
+  })
+}
+
+function expectOneSuspenseWarning(warn: Mock, prefix: string, component: unknown) {
+  const warnings = warn.mock.calls.filter(([message]) => String(message).startsWith(prefix))
+  expect(warnings).toHaveLength(1)
+  expect(warnings[0][1]).toBe(component)
+}
+
+/** Editing a sibling field is what creates a new document, so it must reach the form. */
+async function expectTitleEditable(onChange: Mock<(event: PatchEvent) => void>) {
+  await userEvent.type(within(screen.getByTestId('field-title')).getByRole('textbox'), 'x')
+  const patchedPaths = onChange.mock.calls.flatMap(([event]) =>
+    event.patches.map((patch) => patch.path),
+  )
+  expect(patchedPaths).toContainEqual(['title'])
+}
+
+function suspenseWarnings(warn: Mock) {
+  return warn.mock.calls.filter(([message]) =>
+    /^(The custom |A form component )/.test(String(message)),
+  )
+}
 
 function removeClasses(html: string) {
   return html.replace(/\s+class=".*?"|\s+data-testid="string-input"/g, '')

@@ -76,8 +76,8 @@ function countFallbackMounts(durationMs: number): Promise<number> {
       for (const node of record.addedNodes) {
         if (
           node instanceof HTMLElement &&
-          (node.matches('[data-testid="loading-block"]') ||
-            node.querySelector('[data-testid="loading-block"]'))
+          (node.matches('[data-testid="custom-item-fallback"]') ||
+            node.querySelector('[data-testid="custom-item-fallback"]'))
         ) {
           mounts++
         }
@@ -94,25 +94,25 @@ function countFallbackMounts(durationMs: number): Promise<number> {
 }
 
 describe('lazy item component', () => {
-  it('suspends the form once until the item loads, without hiding and re-showing it in a loop', async () => {
+  it('suspends each item once until it loads, without remounting the fallbacks in a loop', async () => {
     void render(<LazyItemHarness />)
 
-    // Array items mount only after the virtualizer has measured its scroll element, so the lazy
-    // item suspends a form that has already committed. The form's boundary hides it and shows
-    // its loading block.
-    const fallback = page.getByTestId('loading-block')
-    await expect.element(fallback).toBeVisible()
-    await expect.element(page.getByTestId('field-reviews')).not.toBeVisible()
+    // Each item has a boundary of its own, so the lazy item suspends only its row: the array field
+    // stays visible and the form never shows its loading block.
+    const fallbacks = page.getByTestId('custom-item-fallback')
+    await expect.element(fallbacks.first()).toBeVisible()
+    await expect.element(page.getByTestId('field-reviews')).toBeVisible()
+    await expect.element(page.getByTestId('loading-block')).not.toBeInTheDocument()
 
-    // The hidden array container reports zero width. Unmounting the list on that reading would
-    // drop the pending item, re-show the form, remount the list and suspend again every frame.
+    // The virtualizer measures each row. A fallback that unmounted the list on a measurement would
+    // drop the pending items, remount them and suspend again every frame.
     expect(await countFallbackMounts(500)).toBe(0)
-    await expect.element(fallback).toBeVisible()
+    expect(fallbacks.elements()).toHaveLength(2)
 
     resolveItem({default: PassThroughItem})
 
     await expect.element(page.getByText('First review')).toBeVisible()
     await expect.element(page.getByText('Second review')).toBeVisible()
-    await expect.element(fallback).not.toBeInTheDocument()
+    await expect.element(fallbacks.first()).not.toBeInTheDocument()
   })
 })

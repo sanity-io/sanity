@@ -133,8 +133,8 @@
     "lefthook": "^2.2.1",
     "npm-run-all2": "^9.0.3",
     "only-allow": "^1.2.2",
-    "oxfmt": "^0.73.0",
-    "oxlint": "^1.88.0",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
     "oxlint-tsgolint": "^7.0.2004",
     "pkg-pr-new": "^0.0.88",
     "playwright": "catalog:",
@@ -146,6 +146,6 @@
     "vite": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@12.11.2",
+  "packageManager": "pnpm@12.14.0",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }
