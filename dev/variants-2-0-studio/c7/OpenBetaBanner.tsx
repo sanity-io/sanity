@@ -38,7 +38,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const own = [pane.value?.title, pane.value?.name].find((t) => typeof t === 'string' && t)
   const documentTitle = typeof own === 'string' ? own : 'This document'
 
-  if (!banner) return null
+  // No banner of ours, or core's own not-in-release banner (with Add to release) for the base document.
+  if (!banner || banner.kind === 'base-release') return null
 
   // The chosen variant no longer exists: named by the title seen this session; without one the banner says "the chosen variant".
   if (banner.kind === 'deleted') {
