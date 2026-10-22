@@ -41,6 +41,7 @@ vi.mock('../../../variants/store/useAllVariants', () => ({
 
 vi.mock('../../../hooks/useRelativeTime', () => ({
   useRelativeTime: vi.fn(() => '2d ago'),
+  useCompactRelativeTime: vi.fn(() => '2 days'),
 }))
 
 vi.mock('../../../store/agent/useAgentBundles', () => ({

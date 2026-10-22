@@ -1546,6 +1546,22 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'preview.image.file-is-being-uploaded.alt-text': 'The image currently being uploaded',
 
   /* Relative time, just now */
+  /** PROPOSED: a compact relative time, a few characters at most (the versions popover's column): days */
+  'relative-time.compact.day_one': '{{count}} day',
+  /** PROPOSED: a compact relative time: days */
+  'relative-time.compact.day_other': '{{count}} days',
+  /** PROPOSED: a compact relative time: hours */
+  'relative-time.compact.hour': '{{count}} hr',
+  /** PROPOSED: a compact relative time: minutes */
+  'relative-time.compact.minute': '{{count}} min',
+  /** PROPOSED: a compact relative time: months */
+  'relative-time.compact.month': '{{count}} mo',
+  /** PROPOSED: a compact relative time: under a minute */
+  'relative-time.compact.now': 'now',
+  /** PROPOSED: a compact relative time: weeks */
+  'relative-time.compact.week': '{{count}} wk',
+  /** PROPOSED: a compact relative time: years */
+  'relative-time.compact.year': '{{count}} yr',
   'relative-time.just-now': 'just now',
 
   /** Action message to add document to new release */
