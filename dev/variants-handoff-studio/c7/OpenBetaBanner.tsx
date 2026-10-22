@@ -1,6 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Text} from '@sanity/ui'
+import {type ReactNode} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
@@ -8,6 +9,7 @@ import {
   ReleaseAvatarIcon,
   type ReleaseDocument,
   RELEASES_INTENT,
+  useCurrentLocale,
   usePerspective,
   useSetVariant,
   VersionInlineBadge,
@@ -19,7 +21,6 @@ import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporar
 import {Banner} from '../../../packages/sanity/src/structure/panes/document/documentPanel/banners/Banner'
 import {usePerspectiveState} from '../c1/state'
 import {useCreateVariantVersion} from '../data/useCreateVariantVersion'
-import {dateLabel} from '../data/versions'
 import {useBannerCase} from './useBannerCase'
 
 /**
@@ -54,36 +55,49 @@ function VariantChip({title}: {title: string}) {
   )
 }
 
-function PublishedChip() {
+/** "Drafts", where the Published banner points: a display chip, not a control. */
+function DraftsChip() {
   return (
-    <VersionInlineBadge $tone="positive" icon={<ReleaseAvatarIcon release="published" />}>
-      Published
+    <VersionInlineBadge $tone="caution" icon={<ReleaseAvatarIcon release="drafts" />}>
+      Drafts
     </VersionInlineBadge>
   )
+}
+
+/**
+ * A date in the sentence: its own neutral chip (it is set elsewhere), in the Studio's locale; with the time where the schedule has one
+ * (Faheem, 23 Oct). The release chip is then the release's name only.
+ */
+function DateChip({iso, withTime}: {iso: string; withTime?: boolean}) {
+  const locale = useCurrentLocale().id
+  const text = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    ...(withTime ? {hour: 'numeric', minute: '2-digit'} : {}),
+  }).format(new Date(iso))
+  return <VersionInlineBadge $tone="default">{text}</VersionInlineBadge>
 }
 
 /**
  * Faheem, 23 Oct: the release's kind is a word in the sentence, the chip is its identity. "the ASAP release", "the undecided release", and
  * an at-time release not yet scheduled is "the release" (it is not called scheduled until it is).
  */
-function releaseKindWord(release: ReleaseDocument | undefined) {
+function releaseKindPrefix(release: ReleaseDocument | undefined) {
   const type = release?.metadata.releaseType
-  return type === 'asap'
-    ? 'ASAP release '
-    : type === 'undecided'
-      ? 'undecided release '
-      : 'release '
+  return type === 'asap' ? 'ASAP ' : type === 'undecided' ? 'undecided ' : ''
 }
 
-/** A release as the Releases pill names it: a scheduled one with its date ("Black Friday · 20 Nov"), others by title alone. */
+/** A type word and its chip (or "on" / "for" and a date), kept on one line: a line never breaks between them (Faheem, 23 Oct). */
+function Keep({children}: {children?: ReactNode}) {
+  return <span style={{whiteSpace: 'nowrap'}}>{children}</span>
+}
+
+/** A release by its name, glyph and tone (its date, if any, is its own chip in the sentence). */
 function ReleaseChip({release, title}: {release: ReleaseDocument | undefined; title: string}) {
-  const at =
-    release?.metadata.releaseType === 'scheduled' ? release.metadata.intendedPublishAt : undefined
   return (
     <VersionInlineBadge
       $tone={getReleaseTone(release ?? 'drafts')}
       icon={release ? <ReleaseAvatarIcon release={release} /> : undefined}
-      suffix={at ? `· ${dateLabel(at, undefined)}` : undefined}
     >
       {title}
     </VersionInlineBadge>
@@ -100,6 +114,10 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const {selectedPerspective} = usePerspective()
   const {navigateIntent} = useRouter()
   const release = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
+  // A locked release publishes on its schedule (date and time); an at-time release not yet scheduled is planned for its date.
+  const lockedAt = release?.publishAt ?? release?.metadata.intendedPublishAt
+  const plannedAt =
+    release?.metadata.releaseType === 'scheduled' ? release.metadata.intendedPublishAt : undefined
 
   // No banner of ours, or core's own not-in-release banner (with Add to release) for the base document.
   if (!banner || banner.kind === 'base-release') return null
@@ -124,7 +142,11 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
           <Text data-testid="open-beta-banner" data-case="deleted" size={1}>
             {banner.goneTitle ? (
               <>
-                The <VariantChip title={banner.goneTitle} /> variant no longer exists.
+                The{' '}
+                <Keep>
+                  variant <VariantChip title={banner.goneTitle} />
+                </Keep>{' '}
+                no longer exists.
               </>
             ) : (
               'The chosen variant no longer exists.'
@@ -162,8 +184,11 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
         action={createAction}
         content={say(
           <>
-            This document has no <VariantChip title={audience} /> version yet. Create it to start
-            editing.
+            This document has no draft for the{' '}
+            <Keep>
+              variant <VariantChip title={audience} />
+            </Keep>{' '}
+            yet. Create one to start editing.
           </>,
           'drafts',
         )}
@@ -178,8 +203,15 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
       <Banner
         content={say(
           <>
-            This document has no <VariantChip title={audience} /> version in <PublishedChip />.
-            Switch to Drafts or an open release to create one.
+            This document has no published version for the{' '}
+            <Keep>
+              variant <VariantChip title={audience} />.
+            </Keep>{' '}
+            Switch{' '}
+            <Keep>
+              to <DraftsChip />
+            </Keep>{' '}
+            or an open release to create one.
           </>,
           'published',
         )}
@@ -206,8 +238,23 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
         }
         content={say(
           <>
-            The scheduled release <ReleaseChip release={release} title={releaseTitle} /> is locked.
-            Unschedule it to add this version.
+            The scheduled{' '}
+            <Keep>
+              release <ReleaseChip release={release} title={releaseTitle} />
+            </Keep>
+            {lockedAt ? (
+              <>
+                {' '}
+                publishes{' '}
+                <Keep>
+                  on <DateChip iso={lockedAt} withTime />
+                </Keep>
+              </>
+            ) : null}{' '}
+            and is locked. Unschedule it to add a version for the{' '}
+            <Keep>
+              variant <VariantChip title={audience} />.
+            </Keep>
           </>,
           'scheduled',
         )}
@@ -223,9 +270,25 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
       action={createAction}
       content={say(
         <>
-          This document has no <VariantChip title={audience} /> version in the{' '}
-          {releaseKindWord(release)}
-          <ReleaseChip release={release} title={releaseTitle} />. It shows the base content.
+          This document has no version for the{' '}
+          <Keep>
+            variant <VariantChip title={audience} />
+          </Keep>{' '}
+          in the {releaseKindPrefix(release)}
+          <Keep>
+            release <ReleaseChip release={release} title={releaseTitle} />
+            {plannedAt ? ',' : '.'}
+          </Keep>
+          {plannedAt ? (
+            <>
+              {' '}
+              planned{' '}
+              <Keep>
+                for <DateChip iso={plannedAt} />.
+              </Keep>
+            </>
+          ) : null}{' '}
+          It shows the base content until you create one.
         </>,
         'release',
       )}
