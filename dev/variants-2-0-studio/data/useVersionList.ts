@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {useEffect, useState} from 'react'
 import {useClient} from 'sanity'
 
@@ -23,12 +24,14 @@ interface Loader {
 }
 
 const loaders = new Map<string, Loader>()
+/** Each document's last version list, by project, dataset and document. */
+const latest = new Map<string, AudienceVersion[]>()
 
 const ROWS_BY_IDS_GROQ = `*[string::split(_id, ".")[-1] in $ids]{
   _id, "variant": _system.variant._ref, "bundle": _system.bundleId, _createdAt, _updatedAt
 }`
 
-function createLoader(client: ReturnType<typeof useClient>): Loader {
+function createLoader(client: SanityClient): Loader {
   let lookup: Promise<Lookup> | undefined
   let lookupAt = 0
   const waiting = new Map<string, Waiter[]>()
@@ -60,7 +63,8 @@ function createLoader(client: ReturnType<typeof useClient>): Loader {
         for (const w of waiters) w(mine)
       }
     } catch (error) {
-      for (const waiters of batch.values()) for (const w of waiters) w(Promise.reject(error) as never)
+      for (const waiters of batch.values())
+        for (const w of waiters) w(Promise.reject(error) as never)
     }
   }
 
@@ -82,7 +86,13 @@ function createLoader(client: ReturnType<typeof useClient>): Loader {
  */
 export function useVersionList(documentId: string, enabled = true): AudienceVersion[] | null {
   const studioClient = useClient({apiVersion: 'X'})
-  const [versions, setVersions] = useState<AudienceVersion[] | null>(null)
+  const {projectId, dataset} = studioClient.config()
+  const cacheKey = `${projectId}/${dataset}/${documentId}`
+  // A document's last list seeds a new reader, so a panel opened after the pills have loaded (the inventory) has it in its first render,
+  // and decisions made from it (the T6 banner case) are known before first paint. It is refreshed as before.
+  const [versions, setVersions] = useState<AudienceVersion[] | null>(
+    () => latest.get(cacheKey) ?? null,
+  )
 
   useEffect(() => {
     if (!enabled) return undefined
@@ -90,16 +100,21 @@ export function useVersionList(documentId: string, enabled = true): AudienceVers
     const key = `${projectId}/${dataset}`
     let loader = loaders.get(key)
     if (!loader) {
-      loader = createLoader(studioClient.withConfig({apiVersion: 'X', perspective: 'raw', useCdn: false}))
+      loader = createLoader(
+        studioClient.withConfig({apiVersion: 'X', perspective: 'raw', useCdn: false}),
+      )
       loaders.set(key, loader)
     }
     let cancelled = false
     const run = () =>
       loader!
         .load(documentId)
-        .then((next) => !cancelled && setVersions(next))
+        .then((next) => {
+          latest.set(`${key}/${documentId}`, next)
+          return !cancelled && setVersions(next)
+        })
         .catch(() => !cancelled && setVersions([]))
-    run()
+    void run()
     window.addEventListener('focus', run)
     return () => {
       cancelled = true

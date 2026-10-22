@@ -40,6 +40,28 @@ export type BannerCase =
   | {kind: 'base-release'}
   | null
 
+/**
+ * The banner case and whether it is known yet. It is pending while what it is decided from is still loading: the document's versions,
+ * the variant definitions (with a variant chosen), or the release in view. While pending, the inventory's toolbar shows neither its Create
+ * version nor its count, so the wrong one is never on screen (Faheem, 22 Oct).
+ */
+export function useBannerDecision(documentId: string): {pending: boolean; banner: BannerCase} {
+  const {selectedPerspective, selectedPerspectiveName, selectedVariantName} = usePerspective()
+  const {chosen} = usePerspectiveState()
+  const definitions = useVariantDefinitions()
+  const versions = useVersionList(documentId)
+  const banner = useBannerCase(documentId)
+  const releaseInView =
+    selectedPerspectiveName !== undefined &&
+    selectedPerspectiveName !== 'drafts' &&
+    selectedPerspectiveName !== 'published'
+  const pending =
+    !versions ||
+    (Boolean(selectedVariantName || Object.keys(chosen).length) && !definitions.length) ||
+    (releaseInView && !isReleaseDocument(selectedPerspective))
+  return {pending, banner: pending ? null : banner}
+}
+
 export function useBannerCase(documentId: string): BannerCase {
   const {selectedPerspective, selectedPerspectiveName, selectedVariantName} = usePerspective()
   const {chosen} = usePerspectiveState()
