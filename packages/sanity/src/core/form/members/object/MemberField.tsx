@@ -2,6 +2,7 @@ import {rem, Skeleton} from '@sanity/ui'
 import {memo} from 'react'
 
 import {type FIXME} from '../../../FIXME'
+import {FormRow} from '../../components/layout/FormRow'
 import {type FieldMember} from '../../store/types/members'
 import {
   type RenderAnnotationCallback,
@@ -37,9 +38,12 @@ export interface MemberFieldProps {
 
 const FIELD_COMPONENTS: readonly FormNodeComponentKey[] = ['field', 'input']
 
+// In a `FormRow`, so it lines up with the field it stands in for
 function FieldBestEffortFallback() {
   return (
-    <Skeleton data-testid="custom-field-fallback" radius={1} animated style={{height: rem(35)}} />
+    <FormRow>
+      <Skeleton data-testid="custom-field-fallback" radius={1} animated style={{height: rem(35)}} />
+    </FormRow>
   )
 }
 
