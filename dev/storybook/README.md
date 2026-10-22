@@ -50,11 +50,12 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
 
 The Vite config in [.storybook/main.ts](.storybook/main.ts) mirrors
 `packages/sanity/vitest.browser.config.mts`: the `monorepo` exports condition resolves workspace
-packages to TypeScript source, plus the Panda CSS plugins (`@pandacss/vite` pointed at the `sanity`
-package's Panda project, whose generated stylesheet
-[.storybook/panda.css](.storybook/panda.css) the [preview](.storybook/preview.tsx) imports, and
-`removeCascadeLayers()` from `@sanity/pandacss-tsdown-plugin/vite`) and the React Compiler
-transform, so stories render exactly like the studio and the browser tests.
+packages to TypeScript source, plus `sanityPandaCss()` from
+[`@repo/pandacss`](../../packages/@repo/pandacss/README.md) (`@pandacss/vite` pointed at the
+`sanity` package's Panda project, whose generated stylesheet `@repo/pandacss/panda.css` the
+[preview](.storybook/preview.tsx) imports, and `removeCascadeLayers()` from
+`@sanity/pandacss-tsdown-plugin/vite`) and the React Compiler transform, so stories render exactly
+like the studio and the browser tests.
 
 ## Chromatic
 

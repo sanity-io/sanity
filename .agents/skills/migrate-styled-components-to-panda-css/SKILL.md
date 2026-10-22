@@ -129,11 +129,11 @@ Where styled-components silently won specificity battles via CSSOM insertion ord
 
 Three stylesheets meet on a migrated element:
 
-| Sheet                                     | `sanity build`                                      | `sanity dev`                                                                                              |
-| ----------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Panda (`bundle.css`)                      | one static file, imported first by the entry chunks | one stylesheet (the studio's `panda.css`) filled by `@pandacss/vite`, imported first by the runtime entry |
-| `@sanity/ui` (styled-components, runtime) | `<style data-styled>` appended on first render      | same                                                                                                      |
-| `ui5` (`styles.css`)                      | static file                                         | static file                                                                                               |
+| Sheet                                     | `sanity build`                                      | `sanity dev`                                                                                                |
+| ----------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Panda (`bundle.css`)                      | one static file, imported first by the entry chunks | one stylesheet (`@repo/pandacss/panda.css`) filled by `@pandacss/vite`, imported first by the runtime entry |
+| `@sanity/ui` (styled-components, runtime) | `<style data-styled>` appended on first render      | same                                                                                                        |
+| `ui5` (`styles.css`)                      | static file                                         | static file                                                                                                 |
 
 Panda writes its rules into cascade layers; the studio ships them without any (`cascadeLayers:
 false` for `bundle.css`, the same pass for the dev stylesheet — see the "Panda CSS" section of

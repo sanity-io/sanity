@@ -22,8 +22,7 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
-    "@pandacss/vite": "catalog:",
-    "@sanity/pandacss-tsdown-plugin": "catalog:",
+    "@repo/pandacss": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
