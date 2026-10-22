@@ -619,10 +619,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
   /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
+  /** The versions popover: a line's most recent activity when it is an edit (a draft or a release version), "Edited 3 days ago" */
+  'document-group.status.edited-when': 'Edited {{when}}',
   /** The versions popover's last line, when not every audience fits */
   'document-group.status.more_one': 'and {{count}} more version',
   /** The versions popover's last line, when not every audience fits */
   'document-group.status.more_other': 'and {{count}} more versions',
+  /** The versions popover: a line's most recent activity when it is the published version, "Published 1 day ago" */
+  'document-group.status.published-when': 'Published {{when}}',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (singular) */
   'document-group.subject.variant_one': 'variant',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
@@ -1546,7 +1550,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'preview.image.file-is-being-uploaded.alt-text': 'The image currently being uploaded',
 
   /* Relative time, just now */
-  /** PROPOSED: a compact relative time, a few characters at most (the versions popover's column): days */
+  /** PROPOSED: a compact relative time in the past, as a phrase: "2 days ago" */
+  'relative-time.compact.ago': '{{time}} ago',
+  /** PROPOSED: a compact relative time, a few characters at most (the versions popover's lines): days */
   'relative-time.compact.day_one': '{{count}} day',
   /** PROPOSED: a compact relative time: days */
   'relative-time.compact.day_other': '{{count}} days',
@@ -1558,6 +1564,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'relative-time.compact.month': '{{count}} mo',
   /** PROPOSED: a compact relative time: under a minute */
   'relative-time.compact.now': 'now',
+  /** PROPOSED: a compact relative time in the past, as a phrase: under a minute ("Edited just now") */
+  'relative-time.compact.just-now': 'just now',
   /** PROPOSED: a compact relative time: weeks */
   'relative-time.compact.week': '{{count}} wk',
   /** PROPOSED: a compact relative time: years */

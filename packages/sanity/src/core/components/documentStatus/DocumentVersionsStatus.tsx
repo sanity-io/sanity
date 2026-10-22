@@ -1,13 +1,13 @@
 import {type ReleaseType} from '@sanity/client'
-import {type BadgeTone, Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {useCompactRelativeTime} from '../../hooks/useRelativeTime'
+import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
-import {LATEST, PUBLISHED, RELEASE_TYPES_TONES} from '../../releases/util/const'
+import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {useWorkspace} from '../../studio/workspace'
 import {readVersionType} from '../../util/versionsUtils'
 import {useAllVariants} from '../../variants/store/useAllVariants'
@@ -21,22 +21,13 @@ import {
 
 /** Lines (the base document, then the audiences) the popover shows before its last line counts the rest. */
 const MAX_LINES = 5
-/** States a line shows before a "+N" stands for the others. */
-const SHOWN_STATES = 2
-/** The popover's width, as the v1 design draws it. */
-const WIDTH = 400
-/** A state label's widest: a long release name ends in an ellipsis, so the audience's name keeps its room. */
-const LABEL_MAX = 132
+/** Glyphs a line shows before a "+N" stands for the others. */
+const SHOWN_GLYPHS = 4
+/** The popover's width: 400px as the v1 design draws it, up to 440px when a line needs it. */
+const MIN_WIDTH = 400
+const MAX_WIDTH = 440
 
 type VersionState = 'published' | 'draft' | 'scheduled' | 'asap' | 'undecided'
-
-const STATE_TONE: Record<VersionState, BadgeTone> = {
-  published: 'positive',
-  draft: 'caution',
-  scheduled: RELEASE_TYPES_TONES.scheduled.tone,
-  asap: 'caution',
-  undecided: 'default',
-}
 
 function stateOf(item: DocumentVersionStatusItem): VersionState {
   const type = readVersionType(item.version)
@@ -46,15 +37,30 @@ function stateOf(item: DocumentVersionStatusItem): VersionState {
   return releaseType === 'scheduled' ? 'scheduled' : releaseType === 'asap' ? 'asap' : 'undecided'
 }
 
-/** The newest edit on a line, for ordering the audiences and for the line's time. */
-const newestEdit = (group: DocumentVersionStatusGroup) =>
-  Math.max(...group.items.map((item) => Date.parse(item.version._updatedAt ?? '') || 0))
+const editedAt = (item: DocumentVersionStatusItem) => Date.parse(item.version._updatedAt ?? '') || 0
+
+/** The newest edit on a line, for ordering the audiences. */
+const newestEdit = (group: DocumentVersionStatusGroup) => Math.max(...group.items.map(editedAt))
+
+/** A line's glyphs in a fixed order: published, draft, then the releases by date (as soon as possible, then by date, then undecided). */
+const GLYPH_ORDER: Record<VersionState, number> = {
+  published: 0,
+  draft: 1,
+  asap: 2,
+  scheduled: 3,
+  undecided: 4,
+}
+const releaseDate = (item: DocumentVersionStatusItem) =>
+  Date.parse(item.release?.metadata.intendedPublishAt ?? '') || Number.MAX_SAFE_INTEGER
+const byGlyphOrder = (left: DocumentVersionStatusItem, right: DocumentVersionStatusItem) =>
+  GLYPH_ORDER[stateOf(left)] - GLYPH_ORDER[stateOf(right)] || releaseDate(left) - releaseDate(right)
 
 /**
  * PROPOSED (the v1 versions popover, Variants open beta): what a document's status icons show on hover. One line per audience: the base
- * document first ("All users (Default)"), then the audiences by their most recent edit, newest first. Each line names the audience and its
- * states as flat labels (the state's glyph and word in its tone), at most two and then a "+N" that names the others. After five lines a muted
- * last line counts the versions not shown. Each line ends with its most recent edit as a short relative time. Information only: nothing in it is clickable.
+ * document first ("All users (Default)"), then the audiences by their most recent edit, newest first. Faheem, 22 Oct: each line is the
+ * audience's name, a glyph per version (published, draft, then its releases by date; four at most, then "+N"), and ONE muted phrase for
+ * the line's most recent activity, "Published 1 day ago" or "Edited 3 days ago". Release names are not shown (the inventory has them).
+ * After five lines a muted last line counts the versions not shown. Information only: nothing in it is clickable.
  *
  * @internal
  */
@@ -94,65 +100,49 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
     const variant = variantsById.get(variantId)
     return variant ? getVariantTitle(variant) : variantId
   }
-  const stateWord = (item: DocumentVersionStatusItem, state: VersionState) => {
-    if (state === 'published') return t('release.chip.published')
-    if (state === 'draft') return t('release.chip.draft')
-    // Faheem, 22 Oct: every release is named (no date), ASAP and undecided too; its glyph tells its kind.
-    return item.release?.metadata.title || t('release.placeholder-untitled-release')
-  }
 
   return (
     // The tooltip's own card is the popover's shell: the lines run edge to edge inside it (the margin takes back its 8px padding), 400px
-    // wide as in the v1 design (the tooltip's boundary is the page, see PreviewTooltip).
-    <Stack data-testid="document-versions-status" style={{margin: -8, width: WIDTH}}>
+    // wide as in the v1 design, up to 440px when a line needs it (the tooltip's boundary is the page, see PreviewTooltip).
+    <Stack
+      data-testid="document-versions-status"
+      style={{margin: -8, maxWidth: MAX_WIDTH, minWidth: MIN_WIDTH, width: 'max-content'}}
+    >
       {shown.map((group, index) => {
-        const states = group.items.map((item) => ({item, state: stateOf(item)}))
-        const hidden = states.slice(SHOWN_STATES)
+        const items = group.items.toSorted(byGlyphOrder)
+        const hidden = items.length - SHOWN_GLYPHS
+        const latest = group.items.reduce((newest, item) =>
+          editedAt(item) > editedAt(newest) ? item : newest,
+        )
         return (
           <Flex
             align="center"
             data-testid="audience-line"
-            gap={4}
+            gap={3}
             key={group.variantId ?? 'default'}
             style={{
               boxShadow: index ? 'inset 0 1px 0 var(--card-hairline-soft-color)' : undefined,
               padding: '9px 12px',
+              minHeight: 43,
             }}
           >
-            {/* The audience's name keeps its width (down to 96px), the labels give way first, and the time never does. */}
-            {variantsEnabled || group.variantId ? (
-              <Box style={{flex: '0 1 auto', minWidth: 96}}>
+            {/* The audience's name takes the room left; it ends in an ellipsis before anything else gives way (down to 96px). */}
+            <Box style={{flex: '1 1 auto', minWidth: 96}}>
+              {variantsEnabled || group.variantId ? (
                 <Text size={1} textOverflow="ellipsis">
                   {audienceTitle(group.variantId)}
                 </Text>
-              </Box>
-            ) : null}
-            <Flex
-              gap={1}
-              justify="flex-end"
-              style={{flex: '1 1 0%', minWidth: 0, overflow: 'hidden'}}
-            >
-              {states.slice(0, SHOWN_STATES).map(({item, state}) => (
-                <StateLabel key={item.version._id} state={state} text={stateWord(item, state)} />
+              ) : null}
+            </Box>
+            <Flex align="center" data-testid="audience-line-glyphs" flex="none" gap={1}>
+              {items.slice(0, SHOWN_GLYPHS).map((item) => (
+                <Glyph item={item} key={item.version._id} />
               ))}
-              {hidden.length ? (
-                <Card
-                  aria-label={hidden.map(({item, state}) => stateWord(item, state)).join(', ')}
-                  data-testid="state-more"
-                  style={{
-                    alignItems: 'center',
-                    display: 'inline-flex',
-                    height: 25,
-                    padding: '0 4px',
-                  }}
-                  title={hidden.map(({item, state}) => stateWord(item, state)).join(', ')}
-                  tone="inherit"
-                >
-                  <Text muted size={1}>{`+${hidden.length}`}</Text>
-                </Card>
+              {hidden > 0 ? (
+                <Text data-testid="state-more" muted size={1}>{`+${hidden}`}</Text>
               ) : null}
             </Flex>
-            <LineTime time={newestEdit(group)} />
+            <LatestActivity item={latest} />
           </Flex>
         )
       })}
@@ -167,56 +157,36 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   )
 }
 
-/**
- * PROPOSED (Faheem, 22 Oct, option B): the line's most recent edit, as core's compact relative time ("now", "5 min", "3 days", "2 wk",
- * "1 mo"; a few characters at most, never a date), muted, in a right column so the lines' times align. Stock Studio's status says "Edited 2 wk. ago" the same way.
- */
-function LineTime({time}: {time: number}) {
-  const label = useCompactRelativeTime(new Date(time))
-  if (!time) return null
+/** A version as its glyph, in its tone, at the list's small size: the published dot, the draft ring, the release's bolt, clock or dot. */
+function Glyph({item}: {item: DocumentVersionStatusItem}) {
+  const state = stateOf(item)
   return (
-    <Box data-testid="audience-line-time" flex="none" style={{minWidth: 48, textAlign: 'right'}}>
-      <Text muted size={1} style={{fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap'}}>
-        {label}
-      </Text>
-    </Box>
+    <Text data-state={state} data-testid={`state-${state}`} size={1}>
+      {state === 'published' ? (
+        <ReleaseAvatarIcon release={PUBLISHED} size="small" />
+      ) : state === 'draft' ? (
+        <ReleaseAvatarIcon release={LATEST} size="small" />
+      ) : (
+        <ReleaseAvatarIcon releaseType={state} size="small" />
+      )}
+    </Text>
   )
 }
 
-/** A state as a flat label: its glyph and word in the state's tone, on no fill and with no border. Not a control. */
-function StateLabel({state, text}: {state: VersionState; text: string}) {
+/** The line's most recent activity as one muted phrase: "Published 1 day ago" if it is the published version, else "Edited 3 days ago". */
+function LatestActivity({item}: {item: DocumentVersionStatusItem}) {
+  const {t} = useTranslation()
+  const ago = useCompactTimeAgo(item.version._updatedAt ?? '')
+  if (!ago) return null
+  const phrase =
+    stateOf(item) === 'published'
+      ? t('document-group.status.published-when', {when: ago})
+      : t('document-group.status.edited-when', {when: ago})
   return (
-    <Card
-      data-state={state}
-      data-testid={`state-${state}`}
-      style={{
-        alignItems: 'center',
-        background: 'transparent',
-        display: 'inline-flex',
-        gap: 8,
-        height: 25,
-        padding: '0 4px',
-        maxWidth: LABEL_MAX,
-        minWidth: 0,
-        whiteSpace: 'nowrap',
-      }}
-      title={text}
-      tone={STATE_TONE[state]}
-    >
-      <Text size={1}>
-        {state === 'published' ? (
-          <ReleaseAvatarIcon release={PUBLISHED} />
-        ) : state === 'draft' ? (
-          <ReleaseAvatarIcon release={LATEST} />
-        ) : (
-          <ReleaseAvatarIcon releaseType={state} />
-        )}
+    <Box data-testid="audience-line-activity" flex="none">
+      <Text muted size={1} style={{whiteSpace: 'nowrap'}}>
+        {phrase}
       </Text>
-      <Box style={{minWidth: 0}}>
-        <Text size={1} textOverflow="ellipsis">
-          {text}
-        </Text>
-      </Box>
-    </Card>
+    </Box>
   )
 }
