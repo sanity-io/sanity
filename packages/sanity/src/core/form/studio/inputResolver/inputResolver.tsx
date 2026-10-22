@@ -15,6 +15,7 @@ import {getTypeChain} from './helpers'
 import {resolveArrayInput} from './resolveArrayInput'
 import {resolveNumberInput} from './resolveNumberInput'
 import {resolveStringInput} from './resolveStringInput'
+import {withCustomComponentSuspense} from './withCustomComponentSuspense'
 
 function resolveComponentFromTypeVariants(type: SchemaType): ComponentType<FIXME> | undefined {
   if (is.type('array', type)) {
@@ -40,7 +41,9 @@ function resolveComponentFromTypeVariants(type: SchemaType): ComponentType<FIXME
 export function defaultResolveInputComponent(
   schemaType: SchemaType,
 ): ComponentType<Omit<InputProps, 'renderDefault'>> {
-  if (schemaType.components?.input) return schemaType.components.input
+  if (schemaType.components?.input) {
+    return withCustomComponentSuspense('input', schemaType.components.input)
+  }
 
   const componentFromTypeVariants = resolveComponentFromTypeVariants(schemaType)
   if (componentFromTypeVariants) {

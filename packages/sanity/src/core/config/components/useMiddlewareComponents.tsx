@@ -47,9 +47,9 @@ function _createMiddlewareComponent<T extends {}>(
  * The returned component has no Suspense boundary of its own. Middleware is often `lazy()`, so
  * the render site wraps it in `<Suspense>` with a fallback shaped like the component it stands in
  * for. Form nodes are the exception: no fallback knows their size, so they suspend up to the
- * nearest boundary that does: the one around a schema type's custom input (`DefaultInput` in
- * `useInputComponent`), the Portable Text editor's per-block boundary, or the one `FormBuilder`
- * keeps around the whole form.
+ * nearest boundary that does: the one the resolvers put around a schema type's custom input,
+ * field or item component (`withCustomComponentSuspense`), the Portable Text editor's per-block
+ * boundary, or the one `FormBuilder` keeps around the whole form.
  *
  * @example
  * Example usage of:
