@@ -76,7 +76,8 @@ const useBaseRowOverride: UseDocumentListItemOverride = ({
   defaultStatus,
 }) => {
   const option = useOption('c3')
-  const stock = option === STOCK_OPTION
+  // Option G (the open beta, 22 Oct call): no override at all, so the list shows core's own dots and core's hover.
+  const stock = option === STOCK_OPTION || option === 'g'
   const versions = useVersionList(documentId, !stock)
   const router = useRouter()
   const audience = usePresentationAudience('presentation')

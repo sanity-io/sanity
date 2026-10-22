@@ -173,6 +173,13 @@ export const COMPONENTS: ComponentDef[] = [
         status: 'candidate',
         refs: 'Figma C3 "Option B · contained tile, only where there is more (spec, 22 Oct)" 674:3362',
       },
+      {
+        id: 'g',
+        label: "Core's dots (open beta)",
+        summary:
+          "No control on the rows: core's status dots exactly as shipped. Only their hover changed, in core: it opens from the dots (not the row) and lists the document's versions grouped by audience, with no dates and nothing clickable. Open beta pick (22 Oct call with Pedro, Ash and Jordan), reversing option A.",
+        status: 'candidate',
+      },
     ],
   },
   {
