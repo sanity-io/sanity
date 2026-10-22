@@ -415,7 +415,10 @@ const MODE_CSS = `
 /* The title truncates on one line and the counts ("· 2 · 1 new") and the current mark always stay whole after it (Faheem, 22 Oct). */
 [data-create-frame] .inventory-group > div:nth-child(2) > :first-child { flex: 0 1 auto; min-width: 0; }
 [data-create-frame] .inventory-group [data-testid^="add-count-"],
-[data-create-frame] .inventory-group [data-testid="add-current"] { flex: none; white-space: nowrap; }`
+[data-create-frame] .inventory-group [data-testid="add-current"] { flex: none; white-space: nowrap; }
+/* A row with no subtitle renders an empty one (and the stack's gap above it), which pushed its title 5px above the checkbox, badge and
+   markers: an empty subtitle takes no room, so a one-line title is centred with them (Faheem, 23 Oct). */
+[data-create-frame] [data-testid^="inventory-row-"] [data-ui="Stack"] > [data-ui="Text"]:has(> span > span:empty:only-child) { display: none; }`
 
 const sameElements = (a: readonly HTMLElement[], b: readonly HTMLElement[]) =>
   a.length === b.length && a.every((el, i) => el === b[i])
