@@ -14,6 +14,7 @@ import {
   useConditionalToast,
   useTranslation,
   useVersionOperations,
+  ReleaseAvatarIcon,
   VersionInlineBadge,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -39,12 +40,22 @@ function VersionBadge({
   fallbackTitle?: string
 }) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
+  // PROPOSED: the chip carries the release's glyph (its bolt, clock or dot), as the release menus do.
+  const icon = <ReleaseAvatarIcon release={currentRelease ?? LATEST} />
   if (typeof currentRelease === 'string' || !currentRelease) {
-    return <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>
+    return (
+      <VersionInlineBadge $tone={tone} icon={icon}>
+        {children}
+      </VersionInlineBadge>
+    )
   }
   return (
     <ReleaseTitle title={currentRelease.metadata?.title} fallback={fallbackTitle ?? ''}>
-      {() => <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>}
+      {() => (
+        <VersionInlineBadge $tone={tone} icon={icon}>
+          {children}
+        </VersionInlineBadge>
+      )}
     </ReleaseTitle>
   )
 }
