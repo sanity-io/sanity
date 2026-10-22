@@ -186,7 +186,13 @@ export function GlobalPerspectiveMenuItem(
                   textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
                 />
               ) : (
-                <Text size={1} weight="medium" style={{minWidth: 0}} as="div" trim={true}>
+                <Text
+                  size={1}
+                  weight="medium"
+                  style={{minWidth: 0, color: 'inherit'}}
+                  as="div"
+                  trim={true}
+                >
                   {isDraftPerspective(release)
                     ? t('release.navbar.drafts')
                     : t('release.navbar.published')}
