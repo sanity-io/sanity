@@ -6,11 +6,7 @@ import {
   ShippedPerspectiveBarProvider,
   VariantFilterAddControlProvider,
 } from 'sanity'
-import {
-  DocumentListItemOverrideProvider,
-  DocumentPaneExtensionProvider,
-  VariantBannerReplacedProvider,
-} from 'sanity/structure'
+import {DocumentPaneExtensionProvider, VariantBannerReplacedProvider} from 'sanity/structure'
 
 import {useOptionAExtension} from '../c1/Controls'
 import {isLockedNav} from '../c1/lockedNav'
@@ -20,7 +16,6 @@ import {
   resolveDocumentPaneOverride,
   useDocumentPaneOverrideState,
 } from '../c2/useDocumentPaneOverride'
-import {useRowOverride} from '../c3/RowOverride'
 import {STOCK_OPTION, useOption} from './store'
 
 /** C1 option C, and Stock, keep the shipped perspective bar; the Handoff Studio is fixed on C1 B, so it never shows. */
@@ -35,7 +30,6 @@ const useShowShippedBar = () => {
  * keeps the layout a plain component: it passes values, it never uses a hook as a value inside a render.
  */
 const EXTENSIONS = {
-  rowOverride: useRowOverride,
   showShippedBar: useShowShippedBar,
 }
 
@@ -70,7 +64,8 @@ function DocumentPaneHost({children}: {children: ReactNode}) {
 /** The Handoff Studio's layout: the open beta seams only. There is no Design options window and no remote. */
 export function LayoutWithFloatingOptions(props: LayoutProps) {
   return (
-    <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
+    // T3: the list rows keep core's status dots as shipped; only what the dots' hover shows changed, in core (22 Oct call).
+    <>
       {/* The Versions pill is the way into the inventory (T2), so the footer's stock "Manage versions" button (core, no seam) is hidden. */}
       <style>{`[data-testid="action-document-group-inventory"] {display: none !important}`}</style>
       <PerspectiveProvider>
@@ -86,6 +81,6 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
           </NeutralNavbarHost>
         </PerspectiveMenuHost>
       </PerspectiveProvider>
-    </DocumentListItemOverrideProvider>
+    </>
   )
 }

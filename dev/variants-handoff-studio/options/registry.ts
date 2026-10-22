@@ -605,7 +605,7 @@ defineDesignOptions({
   title: 'Design options',
   storageKey: 'variants-handoff-studio',
   // The Handoff Studio is one fixed design: the open beta (docs/initiatives/curation-perspective-selector/OPEN-BETA-HANDOFF-SCOPE.md).
-  // T3 is A (v1), decided 22 Oct (SAPP-4723).
+  // T3 is core's own status dots; the hover tooltip changed in core (22 Oct call, reversing option A). The c3 option has no effect here.
   fixed: 'show.a,stage.open-beta,navLayout.a,c1.b,c2.a,c3.a,c4.d',
   components: COMPONENTS,
   groups: [
