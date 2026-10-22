@@ -244,10 +244,16 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.release.navigate-to-edit-description-single':
     'This document is part of the <VersionBadge/> release',
   /** The text for the banner that appears when a document is not in the current global release */
-  'banners.release.not-in-release': 'Not in the <VersionBadge>{{title}}</VersionBadge> release.',
+  'banners.release.not-in-release': 'Not in the release <VersionBadge>{{title}}</VersionBadge>.',
+  /** PROPOSED: the not-in-release banner for an ASAP release: the kind is a word in the sentence, the chip is the release's identity */
+  'banners.release.not-in-release-asap':
+    'Not in the ASAP release <VersionBadge>{{title}}</VersionBadge>.',
+  /** PROPOSED: the not-in-release banner for an undecided release */
+  'banners.release.not-in-release-undecided':
+    'Not in the undecided release <VersionBadge>{{title}}</VersionBadge>.',
   /** The not-in-release banner's text when the release is scheduled: why nothing can be added, and where to go */
   'banners.release.scheduled-locked':
-    '<VersionBadge>{{title}}</VersionBadge> is scheduled, so its contents are locked. Unschedule it to add this version.',
+    'The scheduled release <VersionBadge>{{title}}</VersionBadge> is locked. Unschedule it to add this version.',
   /** Description of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
   'banners.release.waiting.description':
     'Please hold tight while the document is added to the release. It should not take longer than a few seconds.',

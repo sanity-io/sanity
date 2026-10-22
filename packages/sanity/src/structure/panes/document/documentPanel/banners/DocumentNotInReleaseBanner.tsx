@@ -15,6 +15,7 @@ import {
   useTranslation,
   useVersionOperations,
   ReleaseAvatarIcon,
+  useCurrentLocale,
   VersionInlineBadge,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -40,11 +41,20 @@ function VersionBadge({
   fallbackTitle?: string
 }) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
-  // PROPOSED: the chip carries the release's glyph (its bolt, clock or dot), as the release menus do.
+  // PROPOSED: the chip carries the release's glyph (its bolt, clock or dot), as the release menus do, and a scheduled release its date
+  // ("Black Friday · 20 Nov"), as the release pills name it.
   const icon = <ReleaseAvatarIcon release={currentRelease ?? LATEST} />
+  const locale = useCurrentLocale().id
+  const at =
+    typeof currentRelease === 'object' && currentRelease?.metadata.releaseType === 'scheduled'
+      ? currentRelease.metadata.intendedPublishAt
+      : undefined
+  const suffix = at
+    ? `· ${new Intl.DateTimeFormat(locale, {day: 'numeric', month: 'short'}).format(new Date(at))}`
+    : undefined
   if (typeof currentRelease === 'string' || !currentRelease) {
     return (
-      <VersionInlineBadge $tone={tone} icon={icon}>
+      <VersionInlineBadge $tone={tone} icon={icon} suffix={suffix}>
         {children}
       </VersionInlineBadge>
     )
@@ -52,7 +62,7 @@ function VersionBadge({
   return (
     <ReleaseTitle title={currentRelease.metadata?.title} fallback={fallbackTitle ?? ''}>
       {() => (
-        <VersionInlineBadge $tone={tone} icon={icon}>
+        <VersionInlineBadge $tone={tone} icon={icon} suffix={suffix}>
           {children}
         </VersionInlineBadge>
       )}
@@ -124,6 +134,9 @@ export function DocumentNotInReleaseBanner({
     description: t('banners.release.waiting.description'),
   })
 
+  const releaseKind =
+    typeof currentRelease === 'object' ? currentRelease?.metadata.releaseType : undefined
+
   return (
     <Banner
       tone={tone}
@@ -131,10 +144,15 @@ export function DocumentNotInReleaseBanner({
         <Text size={1}>
           <Translate
             // PROPOSED: a scheduled release says why nothing can be added, and where to go (Unschedule is in the Releases tool).
+            // PROPOSED: the release's kind is a word in the sentence ("the ASAP release", "the undecided release"); the chip is its identity.
             i18nKey={
               isScheduledRelease
                 ? 'banners.release.scheduled-locked'
-                : 'banners.release.not-in-release'
+                : releaseKind === 'asap'
+                  ? 'banners.release.not-in-release-asap'
+                  : releaseKind === 'undecided'
+                    ? 'banners.release.not-in-release-undecided'
+                    : 'banners.release.not-in-release'
             }
             t={t}
             values={{
