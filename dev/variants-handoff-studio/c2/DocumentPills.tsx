@@ -1,4 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {DotIcon} from '@sanity/icons/Dot'
 import {Box, Flex, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
@@ -12,6 +13,7 @@ import {RELEASE_TYPES_TONES} from '../../../packages/sanity/src/core/releases/ut
 import {type SystemVariant} from '../../../packages/sanity/src/core/variants/types'
 import {MenuButton} from '../../../packages/sanity/src/ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 import {DimensionIcon} from '../c1/dimensionIcons'
 import {valueTitle} from '../c1/model'
 import {rankSearch, SEARCH_FROM, type SearchFields} from '../c1/search'
@@ -64,6 +66,46 @@ function releaseDot(v: AudienceVersion) {
 /** A quiet count on each Variants row: how many versions that variant has on this document. Faheem may drop it: set false. */
 const SHOW_VERSION_COUNT = true
 
+/** Where a version sits, by name: Published, Draft, or its release's title. */
+const placeWord = (v: AudienceVersion) =>
+  v.state === 'published' ? 'Published' : v.state === 'draft' ? 'Draft' : (v.release ?? v.state)
+
+/**
+ * The count at a Variants row's right end: the stacked-pages icon, a little smaller than the row's leading icon, then the number, both in the
+ * row's muted text. Its tooltip names the versions ("3 versions: Published, Draft, Black Friday").
+ */
+function VersionCount({versions}: {versions: readonly AudienceVersion[]}) {
+  const n = versions.length
+  return (
+    <Tooltip
+      content={`${n} ${n === 1 ? 'version' : 'versions'}: ${versions.map(placeWord).join(', ')}`}
+      placement="top"
+    >
+      <span
+        data-testid="variant-version-count"
+        // Middle-aligned with a line height of 1, so the count adds no height to the row (the rows stay the menu's 33px). The offsets are
+        // measured on what paints: the number, and the icon's glyph, centre on the label's line.
+        style={{
+          alignItems: 'center',
+          color: 'var(--card-muted-fg-color)',
+          display: 'inline-flex',
+          gap: 2,
+          lineHeight: 1,
+          position: 'relative',
+          top: -1,
+          verticalAlign: 'middle',
+        }}
+      >
+        {/* Text gives an icon negative margins to sit in its line box; here they would cover the number. */}
+        <DocumentsIcon
+          style={{fontSize: '1.15em', margin: '-3.5px 0', position: 'relative', top: 1.5}}
+        />
+        {n}
+      </span>
+    </Tooltip>
+  )
+}
+
 const isVariantId = (id: string): id is SystemVariant['_id'] => id.startsWith('_.variants.')
 
 /** The version a row of the list lives in: its release, else Published or Drafts. */
@@ -78,7 +120,7 @@ function DropdownPill(props: {
     icon: ReactElement
     onClick?: () => void
     /** Quiet text at the row's right end (the Variants rows' version count). */
-    trailing?: string
+    trailing?: ReactElement
     /** A variant listed under its release: it is found, and shown, with the release above it. */
     indent?: boolean
     /** What search matches an option by (the title is its text when this is left out). */
@@ -146,7 +188,7 @@ function DropdownPill(props: {
                 __unstable_subtitle={item === g.head ? reason : undefined}
                 disabled={!item.onClick}
                 icon={item.icon}
-                iconRight={item.trailing ? <span>{item.trailing}</span> : undefined}
+                iconRight={item.trailing}
                 key={item.key}
                 onClick={item.onClick}
                 style={item.indent ? {marginLeft: 24} : undefined}
@@ -226,7 +268,7 @@ export function DocumentPillsV1({
       text: v.audience ?? '',
       icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
       onClick: v.variantId && !definition ? undefined : () => goTo(current, definition),
-      trailing: SHOW_VERSION_COUNT ? String(group.length) : undefined,
+      trailing: SHOW_VERSION_COUNT ? <VersionCount versions={group} /> : undefined,
       search: {
         condition: name
           ? {dimension: name, value: spec ? valueTitle(spec, String(value)) : String(value)}
