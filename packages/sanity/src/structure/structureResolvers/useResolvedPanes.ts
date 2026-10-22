@@ -125,7 +125,15 @@ export function useResolvedPanes(): Panes {
   // Deferring it lets continuous urgent updates (presence, sync, validation)
   // starve the catch-up render indefinitely, leaving a stale pane tree on
   // screen (seen as a livelock on slower browsers).
-  const data = useSyncObservable(data$, INITIAL_DATA)
+  const resolved = useSyncObservable(data$, INITIAL_DATA)
+  // PROPOSED (Studio-wide): a perspective or variant change builds a new structure, so `data$` is a new stream, and react-rx renders the
+  // initial value (no panes) for a pass before it emits. Every pane unmounted and mounted again: the list pane blanked, its search and
+  // header with it, and the document pane too. A structure always has its root pane, so an empty result is that pass: until the new
+  // stream emits, the panes last resolved stay on screen.
+  const settled = resolved.paneDataItems.length > 0
+  const [lastResolved, setLastResolved] = useState(INITIAL_DATA)
+  if (settled && resolved !== lastResolved) setLastResolved(resolved)
+  const data = settled ? resolved : lastResolved
 
   useEffect(
     function maybeOpenDefaultPanes() {
