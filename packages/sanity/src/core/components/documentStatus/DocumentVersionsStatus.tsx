@@ -94,10 +94,8 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   const stateWord = (item: DocumentVersionStatusItem, state: VersionState) => {
     if (state === 'published') return t('release.chip.published')
     if (state === 'draft') return t('release.chip.draft')
-    // A scheduled release is named (no date); ASAP and undecided releases by their kind, as the v1 design does.
-    if (state === 'scheduled')
-      return item.release?.metadata.title || t('release.placeholder-untitled-release')
-    return state === 'asap' ? t('document-group.status.asap') : t('release.type.undecided')
+    // Faheem, 22 Oct: every release is named (no date), ASAP and undecided too; its glyph tells its kind.
+    return item.release?.metadata.title || t('release.placeholder-untitled-release')
   }
 
   return (
