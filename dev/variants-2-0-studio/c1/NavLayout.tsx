@@ -1,7 +1,7 @@
 import {useOption} from '../options/store'
 
 // navLayout B and C: the navbar's three groups are flattened (display: contents) so each item can be ordered on one row, without touching core.
-//   [workspace] [tools ........ ] [global perspective (C)] [search] [Create] [version pill] [tasks, help, resources, account]
+//   [workspace] [tools ........ ] [global perspective (C)] [search] [Create] [Variants (C1 B)] [version pill] [tasks, help, resources, account]
 // The navbar is `[data-testid="studio-navbar"] > Grid > (left Flex, tools Flex, right Flex)`; the selectors are positional, which is why this
 // lives in the design studio and not in core. Below about 1440 the tools fold into the stock More menu by themselves as the tools Flex shrinks.
 const RULES = `
@@ -16,9 +16,9 @@ const RULES = `
 [data-testid="studio-navbar"] > div > div:nth-child(1) > span:has([data-testid="studio-search"]) { order: 10; }
 [data-testid="studio-navbar"] > div > div:nth-child(1) > div:nth-child(2) { order: 11; }
 [data-testid="studio-navbar"] > div > div:nth-child(3) > * { order: 20; }
-[data-testid="studio-navbar"] > div > div:nth-child(3) > [data-ui="ReleasesNav"] { order: 12; }
-/* C1 B: the Variants control sits right after the state control */
-[data-testid="studio-navbar"] > div > div > [data-testid="open-beta-variants"] { order: 13; }
+/* C1 B: the Variants control sits right before the state control ("who, then where") */
+[data-testid="studio-navbar"] > div > div > [data-testid="open-beta-variants"] { order: 12; }
+[data-testid="studio-navbar"] > div > div:nth-child(3) > [data-ui="ReleasesNav"] { order: 13; }
 /* the locale pill (localization C and D) sits after it */
 [data-testid="studio-navbar"] > div > div > [data-testid="locale-pill"] { order: 14; }
 `

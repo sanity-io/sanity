@@ -39,7 +39,12 @@ export function NavbarWithVariants(props: NavbarProps) {
     if (option === 'b')
       return [
         ...base,
-        {location: 'topbar' as const, name: 'open-beta-variants', render: renderVariants},
+        // Before the state control: "who, then where" (Faheem, 22 Oct).
+        {
+          location: 'topbar-before-perspective' as const,
+          name: 'open-beta-variants',
+          render: renderVariants,
+        },
         ...locale,
       ]
     if (hasNavSection(option)) return [...base, ...locale]
