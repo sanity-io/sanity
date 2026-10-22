@@ -410,7 +410,11 @@ const MODE_CSS = `
 [data-create-frame] [data-pill-row] { height: 29px; padding: 0 10px 0 11px; gap: 8px; min-width: 0; }
 [data-create-frame] [data-pill-text] { min-width: 0; }
 [data-pill-glyph] { display: inline-flex; justify-content: center; flex: none; overflow: visible; }
-[data-create-frame] .inventory-group > div:nth-child(2) { display: flex; align-items: center; gap: 6px; }`
+[data-create-frame] .inventory-group > div:nth-child(2) { display: flex; align-items: center; gap: 6px; }
+/* The title truncates on one line and the counts ("· 2 · 1 new") and the current mark always stay whole after it (Faheem, 22 Oct). */
+[data-create-frame] .inventory-group > div:nth-child(2) > :first-child { flex: 0 1 auto; min-width: 0; }
+[data-create-frame] .inventory-group [data-testid^="add-count-"],
+[data-create-frame] .inventory-group [data-testid="add-current"] { flex: none; white-space: nowrap; }`
 
 const sameElements = (a: readonly HTMLElement[], b: readonly HTMLElement[]) =>
   a.length === b.length && a.every((el, i) => el === b[i])
@@ -512,6 +516,13 @@ export function CreateVersion(props: {
       }
       setSlot((current) => (current === container ? current : container))
       const groups = [...frame.querySelectorAll<HTMLElement>('.inventory-group')]
+      // A header's title truncates beside its counts (MODE_CSS): its full text is its tooltip. The observer watches children only, so
+      // setting the attribute does not scan again.
+      for (const header of groups) {
+        const title = header.children[1]?.firstElementChild as HTMLElement | null | undefined
+        const full = title?.textContent ?? ''
+        if (title && title.title !== full) title.title = full
+      }
       setHeaders((current) => (sameElements(current, groups) ? current : groups))
       if (collapseOnScan.current && groups.length) {
         collapseOnScan.current = false
