@@ -31,29 +31,19 @@ const HIDDEN = [
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 
 /**
- * The versions made with Create version, per document. Choosing the new version moves the perspective, which remounts the document pane and this
- * panel with it, so they are held here, outside the component, until the dataset lists them (a version is stored on its first edit).
- * `received` is the group that took the new version: the remounted panel opens only that one, once.
+ * The group that took a version made with Create version, per document. Moving to the new version remounts the document pane and this panel with
+ * it, so it is held here, outside the component: the remounted panel opens only that group, once.
  */
-interface Made {
-  entries: InventoryEntry[]
-  received?: string
-}
-const NONE: Made = {entries: []}
-const made = new Map<string, Made>()
+const receivedBy = new Map<string, string>()
 const listeners = new Set<() => void>()
-const setMade = (documentId: string, next: Made) => {
-  made.set(documentId, next)
+const setReceived = (documentId: string, group: string | undefined) => {
+  if (group) receivedBy.set(documentId, group)
+  else receivedBy.delete(documentId)
   for (const listener of listeners) listener()
 }
 const subscribe = (listener: () => void) => {
   listeners.add(listener)
   return () => listeners.delete(listener)
-}
-
-/** The versions made in this session for a document (in memory): the open beta banner (C7 D) counts them as existing. */
-export function useMadeEntries(documentId: string): readonly InventoryEntry[] {
-  return useSyncExternalStore(subscribe, () => made.get(documentId) ?? NONE).entries
 }
 
 /**
@@ -68,20 +58,10 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
   const state = usePerspectiveState()
   const setVariant = useSetVariant()
   const variants = useVariantDefinitions()
-  const mine = useSyncExternalStore(subscribe, () => made.get(documentId) ?? NONE)
+  const received = useSyncExternalStore(subscribe, () => receivedBy.get(documentId))
   const [frame, setFrame] = useState<HTMLElement | null>(null)
 
-  const world = useMemo(
-    () =>
-      live && {
-        ...live,
-        entries: [
-          ...live.entries,
-          ...mine.entries.filter((m) => !live.entries.some((e) => e.key === m.key)),
-        ],
-      },
-    [live, mine.entries],
-  )
+  const world = live
 
   const choices = useMemo(
     (): VariantChoice[] =>
@@ -138,9 +118,9 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
   )
 
   const onCreate = useCallback(
-    (entry: InventoryEntry, received: string) => {
-      setMade(documentId, {entries: [...(made.get(documentId)?.entries ?? []), entry], received})
-      // The form switches to the new version, so the global perspective moves to it (the open beta limit).
+    (entry: InventoryEntry, group: string) => {
+      setReceived(documentId, group)
+      // The version is created: the global perspective moves to it (the open beta limit), in one navigation.
       onSelect(entry)
     },
     [documentId, onSelect],
@@ -175,8 +155,8 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
         draftsEnabled={workspace.document.drafts.enabled}
         frame={frame}
         onCreate={onCreate}
-        onReceived={() => setMade(documentId, {entries: mine.entries})}
-        received={mine.received}
+        onReceived={() => setReceived(documentId, undefined)}
+        received={received}
         onOpen={onSelect}
         variants={choices}
         world={world}

@@ -18,7 +18,7 @@ import {
   useState,
 } from 'react'
 import {createPortal} from 'react-dom'
-import {ReleaseAvatarIcon} from 'sanity'
+import {getTargetDocument, ReleaseAvatarIcon, useDocumentVersions, usePerspective} from 'sanity'
 
 import {isReleaseScheduledOrScheduling} from '../../../../packages/sanity/src/core/releases/util/util'
 import {isCardinalityOneRelease} from '../../../../packages/sanity/src/core/util/releaseUtils'
@@ -27,6 +27,7 @@ import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/M
 import {Tooltip} from '../../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 import {DimensionIcon} from '../../c1/dimensionIcons'
 import {rankSearch, SEARCH_FROM} from '../../c1/search'
+import {useCreateVariantVersion} from '../../data/useCreateVariantVersion'
 import {type InventoryEntry, type InventoryWorld} from './fixtures'
 
 // T4 "Create version" (OPEN-BETA-HANDOFF-SCOPE, T4; Figma C4 "Create version: the chosen pattern"), live. Mirrors the Storybook reference
@@ -57,7 +58,31 @@ export interface VariantChoice {
   valueTitle?: string
 }
 
-type Dest = {kind: 'drafts'} | {kind: 'release'; name: string; title: string; type: string}
+type Dest =
+  | {kind: 'drafts'}
+  | {kind: 'release'; name: string; title: string; type: string; when: string}
+
+/** A release choice's quiet second line: when it publishes ("Nov 28, 10:00"), "ASAP", or "No date" for an undecided release. */
+const DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+})
+const publishWhen = (type: string, at: string | undefined) =>
+  type === 'asap' ? 'ASAP' : at ? DATE_FORMAT.format(new Date(at)) : 'No date'
+
+const releaseDest = (r: InventoryWorld['releases'][number]): Dest => {
+  const type = r.metadata?.releaseType ?? 'undecided'
+  return {
+    kind: 'release',
+    name: r.name,
+    title: r.metadata?.title || r.name,
+    type,
+    when: publishWhen(type, r.metadata?.intendedPublishAt),
+  }
+}
 
 const destGroup = (d: Dest) => (d.kind === 'drafts' ? 'drafts' : d.name)
 const destTitle = (d: Dest) => (d.kind === 'drafts' ? 'Drafts' : d.title)
@@ -401,7 +426,7 @@ export function CreateVersion(props: {
   variants: readonly VariantChoice[]
   /** Whether the document has drafts: without them the bundle starts on the first open release. */
   draftsEnabled: boolean
-  /** The new version and the group that took it: the panel selects it and the global perspective moves to it. */
+  /** The version was created, and the group that took it: the panel selects it and the global perspective moves to it. */
   onCreate: (entry: InventoryEntry, received: string) => void
   /** The group that took a new version, when the panel was remounted by the move to it: it opens alone and is marked current. */
   received?: string
@@ -411,6 +436,14 @@ export function CreateVersion(props: {
   onOpen: (entry: InventoryEntry) => void
 }) {
   const {frame, world, variants, draftsEnabled, onCreate, onOpen, onReceived} = props
+  // The one create implementation, shared with the T6 banner.
+  const {create, createBaseVersion, status} = useCreateVariantVersion(props.documentId)
+  const busy = status === 'creating'
+  const {versions: documentVersions} = useDocumentVersions({documentId: props.documentId})
+  // What the studio shows: the navbar's variant (short id) and the Drafts or release in view. The toolbar's Create version starts there.
+  const {selectedPerspectiveName, selectedVariantName} = usePerspective()
+  const viewedVariant = selectedVariantName?.replace(/^_\.variants\./, '')
+  const viewedGroup = selectedPerspectiveName ?? 'drafts'
   const variantsOn = variants.length > 0
   const [toolbar, setToolbar] = useState<HTMLElement | null>(null)
   const [slot, setSlot] = useState<HTMLElement | null>(null)
@@ -420,14 +453,7 @@ export function CreateVersion(props: {
     const preset = requests.get(props.documentId)
     if (!preset) return null
     const release = world.releases.find((r) => r.name === preset.bundle)
-    const dest: Dest = release
-      ? {
-          kind: 'release',
-          name: release.name,
-          title: release.metadata?.title || release.name,
-          type: release.metadata?.releaseType ?? 'undecided',
-        }
-      : DRAFTS
+    const dest: Dest = release ? releaseDest(release) : DRAFTS
     return {fixed: {}, draft: {variantId: preset.variantId, dest, source: 'nearest', picked: false}}
   })
   // The groups collapse once they are on screen (the block opened before the list did).
@@ -447,12 +473,7 @@ export function CreateVersion(props: {
 
   // Bundles a new version can go in: open releases. Archived and published releases are left out, and so are scheduled drafts (single-document
   // bundles). A scheduled release is locked, as the Studio locks it: listed in the menu, not a target.
-  const toDest = (r: (typeof world.releases)[number]): Dest => ({
-    kind: 'release',
-    name: r.name,
-    title: r.metadata?.title || r.name,
-    type: r.metadata?.releaseType ?? 'undecided',
-  })
+  const toDest = releaseDest
   const listed = world.releases.filter(
     (r) =>
       !['archived', 'archiving', 'published', 'publishing'].includes(r.state ?? '') &&
@@ -541,7 +562,7 @@ export function CreateVersion(props: {
       }
       collapsedByMode.current = []
     },
-    [frame],
+    [frame, setMenuOpen],
   )
   const cancel = useCallback(() => leave(), [leave])
 
@@ -601,17 +622,41 @@ export function CreateVersion(props: {
     return `${variantLabel(draft.variantId)} in ${destTitle(draft.dest)}, from ${from ? entryLabel(from) : 'the nearest version'}`
   }
 
-  const commit = () => {
-    if (!mode || existingOf(mode.draft)) return
+  /** The stored version a row of the list stands for (its id and revision), found among the document's versions as core finds them. */
+  const documentOf = (entry: InventoryEntry | undefined) => {
+    if (!entry) return undefined
+    const stub = getTargetDocument({
+      bundle: entry.group,
+      variant: entry.variantId ? `_.variants.${entry.variantId}` : undefined,
+      documentVersions,
+    })
+    return stub ? {_id: stub._id, _rev: stub._rev} : undefined
+  }
+
+  // Creates the version, then moves to it (one navigation) and closes the block. While it runs the block is inert and the commit says
+  // Creating…; a failure is a toast and the block stays open with its values.
+  const commit = async () => {
+    if (!mode || busy || existingOf(mode.draft)) return
     const {draft} = mode
     const group = destGroup(draft.dest)
+    const picked = draft.source === 'nearest' ? undefined : documentOf(sourceEntry(draft))
+    let created = true
+    if (draft.variantId) {
+      // A variant version: Nearest version is core's base rule; a picked version is sent as the base.
+      created = await create({variantId: draft.variantId, perspective: group, base: picked})
+    } else if (draft.dest.kind === 'release') {
+      // The base document into a release: core's version create, copying the picked version or the nearest base version.
+      const base = picked ?? documentOf(nearestOf(world, undefined))
+      created = base ? await createBaseVersion(draft.dest.name, base) : false
+    }
+    // The base document in Drafts needs no create: Drafts is where the base is edited.
+    if (!created) return
     const entry: InventoryEntry = {
       key: `${group}:${draft.variantId ?? 'base'}`,
       group,
       variantId: draft.variantId,
       changedFields: fromOf(draft)?.changedFields ?? [],
       updated: '0h ago',
-      ...(draft.dest.kind === 'drafts' ? {stage: mode.fixed.stage ?? ('draft' as const)} : {}),
     }
     const received = targetHeader ? groupId(targetHeader) : group
     onCreate(entry, received)
@@ -624,11 +669,21 @@ export function CreateVersion(props: {
     collapsedByMode.current = closed
     setCounts(next)
     setCurrentGroup(undefined)
+    // From the toolbar (nothing fixed), with a variant chosen that this document has no version of in the Drafts or open release in view:
+    // the block starts on that address, so Create version is one click (Faheem, 22 Oct). Otherwise Base in the first destination, as before.
+    const viewedDest = destinations.find((d) => destGroup(d) === viewedGroup)
+    const startsOnView =
+      !fixed.variantId &&
+      !fixed.dest &&
+      viewedVariant !== undefined &&
+      viewedDest !== undefined &&
+      variants.some((v) => v.id === viewedVariant) &&
+      !world.entries.some((e) => e.group === viewedGroup && e.variantId === viewedVariant)
     setMode({
       fixed,
       draft: {
-        variantId: fixed.variantId,
-        dest: fixed.dest ?? startDest,
+        variantId: startsOnView ? viewedVariant : fixed.variantId,
+        dest: startsOnView ? viewedDest : (fixed.dest ?? startDest),
         source: 'nearest',
         picked: false,
       },
@@ -716,8 +771,8 @@ export function CreateVersion(props: {
       <PillMenu
         boundary={frame}
         icon={destIcon(draft.dest)}
-        searchable={destinations.length + lockedReleases.length + 1 >= SEARCH_FROM}
-        searchLabel="Find a bundle"
+        searchable={destinations.length + lockedReleases.length >= SEARCH_FROM}
+        searchLabel="Find where to add it"
         testId="add-pill-bundle"
         text={destTitle(draft.dest)}
       >
@@ -737,20 +792,14 @@ export function CreateVersion(props: {
                   key={destGroup(d)}
                   onClick={locked ? undefined : () => patch({dest: d})}
                   selected={destGroup(d) === destGroup(draft.dest)}
-                  sub={reason ?? (locked ? 'Scheduled · locked' : undefined)}
+                  sub={
+                    reason ??
+                    (d.kind === 'release' ? (locked ? `${d.when} · Locked` : d.when) : undefined)
+                  }
                   text={destTitle(d)}
                 />
               )
             })}
-            {matches(q, 'Published') ? (
-              <Item
-                disabled
-                icon={<ReleaseAvatarIcon release="published" />}
-                id="add-bundle-published"
-                sub="Takes no new version"
-                text="Published"
-              />
-            ) : null}
           </>
         )}
       </PillMenu>
@@ -795,7 +844,14 @@ export function CreateVersion(props: {
 
     const text = readBack(draft)
     return (
-      <Card borderBottom borderTop data-testid="add-block" tone="default">
+      <Card
+        aria-busy={busy}
+        borderBottom
+        borderTop
+        data-testid="add-block"
+        inert={busy}
+        tone="default"
+      >
         {/* The header starts on the rows' 16px edge. The subtitle keeps to one line: a long title ends with an ellipsis, and shows whole on hover. */}
         <div data-create-head="">
           <div data-create-head-title="">Create version</div>
@@ -829,7 +885,7 @@ export function CreateVersion(props: {
             icon={<PackageIcon />}
             meaning="Where it lives"
             testId="add-step-bundle"
-            title="Bundle"
+            title="Add to"
           >
             <Flex align="center" gap={2}>
               {bundleControl}
@@ -890,12 +946,12 @@ export function CreateVersion(props: {
                 <Button
                   aria-describedby="add-commit-description"
                   data-testid="add-commit"
-                  disabled={waiting}
+                  disabled={waiting || busy}
                   mode="default"
-                  onClick={commit}
-                  text="Create version"
+                  onClick={() => void commit()}
+                  text={busy ? 'Creating…' : 'Create version'}
                   tone="primary"
-                  tooltipProps={waiting ? null : {content: text}}
+                  tooltipProps={waiting || busy ? null : {content: text}}
                 />
               </>
             )}
