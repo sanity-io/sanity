@@ -205,24 +205,25 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
     return resolveBlockImageDimensions(mediaProp)
   }, [layout, mediaProp, props.mediaDimensions])
 
-  // PROPOSED: the tooltip (the document's versions) opens from the status icons only, not from anywhere on the row. A row with no status
-  // keeps it on the row.
-  // A status given as a component (not a node) keeps the tooltip on the row.
-  const statusNode = typeof restProps.status === 'function' ? undefined : restProps.status
-  const tooltipOnStatus = Boolean(tooltip) && Boolean(statusNode)
+  // PROPOSED: the row opens the tooltip (as shipped), but it is placed beside the status icons, which it is about, so it does not cover the
+  // row's text. A status given as a component (not a node) is not marked, and the tooltip is placed beside the row.
+  const hasTooltip = Boolean(tooltip)
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
       ...restProps,
       media,
       mediaDimensions: resolvedMediaDimensions,
-      status: tooltipOnStatus ? (
-        <PreviewTooltip content={tooltip}>{statusNode}</PreviewTooltip>
-      ) : (
-        restProps.status
-      ),
+      status:
+        hasTooltip && restProps.status && typeof restProps.status !== 'function' ? (
+          <span data-preview-tooltip-anchor="" style={{display: 'inline-flex'}}>
+            {restProps.status}
+          </span>
+        ) : (
+          restProps.status
+        ),
       title,
     }),
-    [media, resolvedMediaDimensions, restProps, statusNode, title, tooltip, tooltipOnStatus],
+    [hasTooltip, media, resolvedMediaDimensions, restProps, title],
   )
 
   const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<
@@ -231,7 +232,7 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
 
   const children = <LayoutComponent {...previewProps} />
 
-  if (tooltip && !tooltipOnStatus) {
+  if (tooltip) {
     return <PreviewTooltip content={tooltip}>{children}</PreviewTooltip>
   }
 
