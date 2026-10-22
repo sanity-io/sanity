@@ -15,7 +15,7 @@ import {DimensionIcon} from './dimensionIcons'
 import {valueTitle} from './model'
 import {Picker} from './Picker'
 import {usePerspectiveState} from './state'
-import {useVariantDefinitions} from './world'
+import {reloadVariantDefinitions, useVariantDefinitions} from './world'
 
 /** The stock state pill's height (33px with its border): the two controls are the same size. */
 const NAVBAR_HEIGHT = 33
@@ -143,6 +143,8 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
           onCancel={() => setCreating(false)}
           onSubmit={(id) => {
             setCreating(false)
+            // The new definition is not in the loaded list yet: reload it, so the navbar names the new variant at once (no page reload).
+            reloadVariantDefinitions()
             if (isVariantId(id)) setVariant({variantId: id})
           }}
         />

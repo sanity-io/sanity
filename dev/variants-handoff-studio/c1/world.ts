@@ -7,10 +7,20 @@ import {deriveDimensions, type DimensionSpec, type SystemVariant} from './model'
 
 const DEFINITIONS_GROQ = `*[_type == "system.variant"]{_id, conditions, priority, metadata}`
 const cache = new Map<string, Promise<SystemVariant[]>>()
+const RELOAD = 'variant-definitions-reload'
+
+/**
+ * Reloads the definitions everywhere they are read, now and once more when a new definition has had time to be listed. Called after a
+ * definition is created, so the navbar names it (and its list shows it) without a page reload.
+ */
+export function reloadVariantDefinitions() {
+  window.dispatchEvent(new Event(RELOAD))
+  setTimeout(() => window.dispatchEvent(new Event(RELOAD)), 1500)
+}
 
 /**
  * LIVE: the variant definitions of the dataset (raw perspective, apiVersion X), which replace the Storybook
- * fixtures' `V2World`. Reloaded on window focus so a newly created definition shows up.
+ * fixtures' `V2World`. Reloaded on window focus, and on `reloadVariantDefinitions`, so a newly created definition shows up.
  */
 export function useVariantDefinitions(): SystemVariant[] {
   const studioClient = useClient({apiVersion: 'X'})
@@ -36,9 +46,11 @@ export function useVariantDefinitions(): SystemVariant[] {
     load(false)
     const onFocus = () => load(true)
     window.addEventListener('focus', onFocus)
+    window.addEventListener(RELOAD, onFocus)
     return () => {
       cancelled = true
       window.removeEventListener('focus', onFocus)
+      window.removeEventListener(RELOAD, onFocus)
     }
   }, [studioClient])
 
