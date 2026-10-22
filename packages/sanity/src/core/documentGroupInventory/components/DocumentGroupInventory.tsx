@@ -1,7 +1,13 @@
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useActorRef, useSelector} from '@xstate/react'
-import {type ChangeEvent, type ComponentType, useMemo} from 'react'
+import {
+  type ChangeEvent,
+  type ComponentType,
+  type RefAttributes,
+  useImperativeHandle,
+  useMemo,
+} from 'react'
 import {
   combineLatest,
   debounceTime,
@@ -129,8 +135,17 @@ export type DocumentGroupInventoryProps =
 /**
  * @internal
  */
-export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> = (props) => {
-  const {documentId, documentType, selectedId = documentId, onSelect} = props
+export interface DocumentGroupInventoryHandle {
+  inventory: ActorRefFromLogic<typeof documentGroupInventoryMachine>
+}
+
+/**
+ * @internal
+ */
+export function DocumentGroupInventory(
+  props: DocumentGroupInventoryProps & RefAttributes<DocumentGroupInventoryHandle | null>,
+) {
+  const {ref, documentId, documentType, selectedId = documentId, onSelect} = props
   const readOnly = props.mode === 'readOnly'
 
   // Read the manage-only props into locals
@@ -340,6 +355,8 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const selectionRef = useSelector(inventoryRef, ({context}) => context.selectionRef)
   const deletionRef = useSelector(inventoryRef, ({context}) => context.deletionRef)
   const variantCreationRef = useSelector(inventoryRef, ({context}) => context.variantCreationRef)
+
+  useImperativeHandle(ref, () => ({inventory: inventoryRef}), [inventoryRef])
 
   const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
   const isLocked = useSelector(selectionRef, (snapshot) => snapshot.matches('locked'))
