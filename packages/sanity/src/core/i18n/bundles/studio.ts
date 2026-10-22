@@ -1708,6 +1708,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.menu.label': 'Release menu',
   /** Menu item label for scheduled drafts */
   'release.menu.scheduled-drafts': 'View Scheduled Drafts',
+  /** Shown in the release menu when the search matches no version or release */
+  'release.menu.search.empty': 'Nothing matches “{{query}}”.',
+  /** Placeholder of the search field at the top of the release menu */
+  'release.menu.search.placeholder': 'Find a version or release',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
