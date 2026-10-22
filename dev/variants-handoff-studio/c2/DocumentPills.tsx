@@ -185,7 +185,13 @@ function DropdownPill(props: {
       }
       id={props.testId}
       menu={
-        <Menu data-testid={`${props.testId}-menu`} padding={1} style={{minWidth: 240}}>
+        // The navbar menus' width rule (core's GlobalPerspectiveMenu, c1/primitives): as wide as the widest row, 280 to 360px, so the two pill
+        // menus match each other and the navbar's.
+        <Menu
+          data-testid={`${props.testId}-menu`}
+          padding={1}
+          style={{maxWidth: 360, minWidth: 280, width: 'max-content'}}
+        >
           <Box padding={1}>
             <TextInput
               aria-label="Find"
