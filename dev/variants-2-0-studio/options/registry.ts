@@ -168,7 +168,7 @@ export const COMPONENTS: ComponentDef[] = [
         id: 'f',
         label: 'Contained tile (open beta B)',
         summary:
-          "The Handoff Studio's T3 option B: a tile (own fill, 1px hairline) only on documents with more than a base version, the icon at its right edge and the state or release dot and the variant diamond in a column to its left. A base-only document shows its state dot alone. Option A is the open beta's v1; the pick between A and F is Faheem's.",
+          "The Handoff Studio's T3 option B: a tile (own fill, 1px hairline) only on documents with more than a base version, the icon at its right edge and the state or release dot and the variant diamond in a column to its left. A base-only document shows its state dot alone. Open beta pick (22 Oct). The control opens the version inventory; the hover flyout is parked for the open beta.",
         status: 'candidate',
         refs: 'Figma C3 "Option B · contained tile, only where there is more (spec, 22 Oct)" 674:3362',
       },
@@ -323,7 +323,7 @@ export const COMPONENTS: ComponentDef[] = [
         id: 'b',
         label: 'Always live in Drafts',
         summary:
-          'In Drafts no banner, a header hint says the first edit creates the variant; banners for Published and releases.',
+          'In Drafts no banner, a header hint names the variant that is not created yet; banners for Published and releases.',
         status: 'candidate',
         refs: 'Figma C7 225:441',
       },
@@ -337,7 +337,7 @@ export const COMPONENTS: ComponentDef[] = [
         id: 'd',
         label: 'Open beta pick',
         summary:
-          "The Handoff Studio's T6 (BANNERS-DECISION-2026-10-22): one way to create, a button only where it can act. Drafts: a quiet notice, the first edit creates the version (core). An open release: Create version opens C4 E's Create version, prefilled. A scheduled release and Published: text only. A deleted variant: Back to All users. No button with the inventory open. In memory only. Use with C4 E.",
+          "The Handoff Studio's T6 as handed off. Drafts and an open release: a caution banner, '<doc> has no <variant> version yet', with Create version, which creates the version in place (the same create as C4 E), also with the inventory open. The form is read-only until the version exists. A scheduled release and Published: text only. A deleted variant: Back to All users. Writes to the dataset. Use with C4 E.",
         status: 'final',
         refs: 'Figma C7 678:768 (B1 to B6)',
       },
