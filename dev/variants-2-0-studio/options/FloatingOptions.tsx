@@ -61,7 +61,8 @@ function PerspectiveMenuHost({children}: {children: ReactNode}) {
   const section = useNavbarSection(c1 === 'd')
   // C1 B (the open beta navbar): the global perspective is one grey section.
   const extension = useMemo(
-    () => (hasNavSection(c1) && base ? {...base, section} : base),
+    // The base is empty for the open beta navbar now (core owns the menu's search), so the section stands on its own.
+    () => (hasNavSection(c1) ? {...base, section} : base),
     [base, section, c1],
   )
   return (

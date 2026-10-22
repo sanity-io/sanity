@@ -49,6 +49,8 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
   if (!dimension) return null
 
   const value = chosen[dimension.name]
+  // A click on the control opens the menu, and a second click closes it (a press outside closes it too; the anchor is not outside).
+  const toggle = () => setOpen((wasOpen) => !wasOpen)
   // `null` is the Default row and the cross: no variant. A value is the one definition that names only that value.
   const choose = (key: string | null) => {
     const definition =
@@ -71,7 +73,7 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
           height={height}
           icon={<DimensionIcon name={dimension.name} style={ICON_STYLE} />}
           paddingX={PADDING_X}
-          onOpen={() => setOpen(true)}
+          onOpen={toggle}
           onRemove={() => choose(null)}
           removeLabel={`Remove ${dimension.title}`}
           removeTestId="variants-chip-remove"
@@ -88,7 +90,7 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
             icon={<DimensionIcon name={dimension.name} style={ICON_STYLE} />}
             iconRight={ChevronDownIcon}
             mode="bleed"
-            onClick={() => setOpen(true)}
+            onClick={toggle}
             style={{
               borderRadius: 0,
               height: inSection ? height : height - 2,
