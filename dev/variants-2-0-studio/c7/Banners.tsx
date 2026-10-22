@@ -13,8 +13,8 @@ import {useResultToast} from '../toasts/ResultToast'
  * for the variant the studio shows (the variant chosen in the C1 row), in Drafts, Published and a release.
  *  - Option A (Figma C7 225:437): an explicit banner with "Create variant", always (in Drafts and releases); in
  *    Published a reason line, since variants are created in Drafts or in a release.
- *  - Option B (225:441): always live in Drafts, with a header hint "<variant> · not created yet. Your first edit
- *    creates it."; a banner only for Published and releases.
+ *  - Option B (225:441): always live in Drafts, with a header hint "<variant> · not created yet."; a banner only for Published
+ *    and releases. (The hint no longer says a first edit creates it, 22 Oct: the form is read-only until the version exists.)
  * "Create variant" is a real `sanity.action.document.variant.create`, run only when clicked. With no variant chosen
  * there is nothing to say: no banner. Not built: the "no longer exists" banner ("Back to All users").
  */
@@ -123,7 +123,7 @@ export function DocumentBannerV1({
         tone="transparent"
       >
         <Text muted size={0}>
-          {shown.title} · not created yet. Your first edit creates it.
+          {shown.title} · not created yet.
         </Text>
       </Card>
     )

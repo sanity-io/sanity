@@ -9,7 +9,7 @@ import {isReleaseScheduledOrScheduling} from '../../../packages/sanity/src/core/
 import {Banner} from '../../../packages/sanity/src/structure/panes/document/documentPanel/banners/Banner'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
-import {requestCreateVersion} from '../c4/inventory/CreateVersion'
+import {useCreateVariantVersion} from '../data/useCreateVariantVersion'
 import {useVersionList} from '../data/useVersionList'
 import {type AudienceVersion} from '../data/versions'
 
@@ -18,12 +18,14 @@ import {type AudienceVersion} from '../data/versions'
  * 678:768, B1 to B6: the info icon and plain text; tones per state, since the library banner has no tone property): an audience is
  * chosen and the open document has no version for it in the version the studio shows. Drawn with the Studio's own document banner; the stock
  * variant banners are replaced (VariantBannerReplacedProvider), so there is one.
- * - Drafts: a quiet notice (transparent), no button. Core keeps the form editable and the first edit creates the version.
- * - An open release: "Create version" opens the inventory in Create version mode, prefilled (this audience, this release, Nearest version). It
- *   never creates on its own.
+ * - Drafts and an open release: "Create version" creates the version, from the base, in the version the studio shows, and stays there (Faheem,
+ *   22 Oct: "Create version should actually just create a version, keeping the current perspective"). It is core's create, as core's own
+ *   banner sends it (data/useCreateVariantVersion). Drafts is caution, as the Design Studio's C7 option A: the document cannot be edited in
+ *   place without the version.
  * - A scheduled release, Published: the text says why there is no action.
  * - The chosen variant no longer exists: caution with the warning icon, as core's not-found banner, and "Back to All users".
- * - With the inventory open there is no button: its own Create version is there.
+ * - Create version shows with the inventory open too (it is one click; the inventory's block starts on the same address). Back to All users
+ *   is left out while the inventory is open.
  */
 
 /** The inspector the inventory opens in (c4/InventoryInspector.tsx). */
@@ -50,8 +52,11 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const versions = useVersionList(documentId)
   const setVariant = useSetVariant()
   const pane = useDocumentPane()
+  const {create, status} = useCreateVariantVersion(documentId)
   const inventoryOpen = pane.inspector?.name === INVENTORY
-  const documentTitle = String(pane.value?.title ?? pane.title ?? 'This document')
+  // A document's own name: its title, or its name (an author has no title field).
+  const own = [pane.value?.title, pane.value?.name].find((t) => typeof t === 'string' && t)
+  const documentTitle = typeof own === 'string' ? own : 'This document'
 
   useEffect(() => {
     for (const d of definitions)
@@ -107,6 +112,17 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const version = selectedPerspectiveName ?? 'drafts'
   if (hasVariantHere(versions, variantId, version)) return null
 
+  // The button of the Drafts and open-release cases. It stays disabled from the click until the version is listed and the banner goes away.
+  const busy = status === 'creating' || status === 'created'
+  // Shown with the inventory open too: the banner creates in one click, where the inventory's block takes more (Faheem, 22 Oct).
+  const createAction = {
+    disabled: busy,
+    mode: 'default' as const,
+    onClick: () => void create(),
+    text: busy ? 'Creating…' : 'Create version',
+    tone: version === 'drafts' ? ('primary' as const) : ('suggest' as const),
+  }
+
   const say = (body: React.ReactNode, state: string) => (
     <Text data-case={state} data-testid="open-beta-banner" size={1}>
       {body}
@@ -114,18 +130,18 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   )
 
   if (version === 'drafts') {
-    // Quiet: core keeps the form editable; the first edit creates the version from the base content.
+    // Ported from the Design Studio's C7 option A (Figma C7 225:437): caution, with the create button.
     return (
       <Banner
+        action={createAction}
         content={say(
           <>
-            {documentTitle} has no {audience} version yet. Your first edit creates one from the base
-            content.
+            {documentTitle} has no {audience} version yet. Create it to start editing.
           </>,
           'drafts',
         )}
         icon={InfoOutlineIcon}
-        tone="transparent"
+        tone="caution"
       />
     )
   }
@@ -166,19 +182,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
 
   return (
     <Banner
-      action={
-        inventoryOpen
-          ? undefined
-          : {
-              text: 'Create version',
-              tone: 'suggest',
-              mode: 'default',
-              onClick: () => {
-                requestCreateVersion(documentId, {variantId, bundle: version})
-                pane.openInspector(INVENTORY)
-              },
-            }
-      }
+      action={createAction}
       content={say(
         <>
           {documentTitle} has no {audience} version in {releaseTitle}. It shows the base content.
