@@ -1,7 +1,7 @@
-import {Card, Heading, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {ChangeIndicatorsTracker, createPatchChannel, FormBuilder, useDocumentForm} from 'sanity'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 export const FORM_BUILDER_REPRO_TYPE = 'formBuilderReproDoc'
 
@@ -61,7 +61,9 @@ export function FormBuilderRepro() {
   if (formState === null || !ready) {
     return (
       <Card padding={5}>
-        <Text muted>Loading form...</Text>
+        <Text muted as="div" trim={true}>
+          Loading form...
+        </Text>
       </Card>
     )
   }
@@ -70,7 +72,7 @@ export function FormBuilderRepro() {
     <Card padding={5}>
       <VStack gap={4}>
         <Heading>FormBuilder repro</Heading>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           Renders `&lt;FormBuilder&gt;` outside `DocumentPaneProvider`. Without the FormBuilder
           DivergencesProvider fix, this throws `useDocumentDivergences must be used within a
           DocumentDivergencesContext`.

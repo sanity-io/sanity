@@ -1,20 +1,22 @@
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Box, VStack} from 'ui5'
+import {Text, Box, VStack} from 'ui5'
 
 import {WorkspacePreview} from '../../WorkspacePreview'
 import {Layout} from '../Layout'
 
 const BODY = (
   <Card padding={4}>
-    <Text size={1}>Sign in to continue</Text>
+    <Text size={1} as="div" trim={true}>
+      Sign in to continue
+    </Text>
   </Card>
 )
 
 const FOOTER = (
   <Card padding={3} tone="transparent">
-    <Text muted size={1}>
+    <Text muted size={1} as="div" trim={true}>
       Choose another workspace
     </Text>
   </Card>
@@ -50,13 +52,13 @@ export const States: Story = {
     <Card padding={4} style={{maxWidth: 420}}>
       <VStack gap={5}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             string header
           </Text>
           <Layout header="Production">{BODY}</Layout>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             string header and footer (workspace chooser)
           </Text>
           <Layout footer={FOOTER} header="Staging">
@@ -64,7 +66,7 @@ export const States: Story = {
           </Layout>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             node header (login screen)
           </Text>
           <Layout header={NODE_HEADER}>{BODY}</Layout>

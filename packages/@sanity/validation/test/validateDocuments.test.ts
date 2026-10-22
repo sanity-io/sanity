@@ -65,7 +65,8 @@ describe('validateDocuments', () => {
     expect(request.mock.calls[0][0]).toMatchObject({
       url: expect.stringContaining('/data/doc/production/shared,missing,restricted'),
     })
-    expect(results.map(({status}) => status)).toEqual(['passed', 'failed', 'passed', 'passed'])
+    expect(results.map(({markers}) => markers.length)).toEqual([0, 1, 0, 0])
+    expect(results.every(({complete}) => complete)).toBe(true)
     expect(results[1].markers).toEqual([
       expect.objectContaining({
         code: validationMarkerCodes.referenceNotPublished,
@@ -93,7 +94,7 @@ describe('validateDocuments', () => {
     firstResponse.complete()
     const results = await validation
 
-    expect(results.every(({status}) => status === 'passed')).toBe(true)
+    expect(results.every(({complete, markers}) => complete && markers.length === 0)).toBe(true)
     expect(request.mock.calls.map(([options]) => new URL(options.url || '').pathname)).toEqual([
       `/v2025-02-19/data/doc/production/${refs.slice(0, 100).join(',')}`,
       `/v2025-02-19/data/doc/production/${refs.slice(100, 200).join(',')}`,
@@ -124,7 +125,7 @@ describe('validateDocuments', () => {
 
     expect(fetch).toHaveBeenCalledTimes(8)
     expect(peak).toBe(2)
-    expect(results.every(({status}) => status === 'passed')).toBe(true)
+    expect(results.every(({complete, markers}) => complete && markers.length === 0)).toBe(true)
   })
 
   it('reports a failed reference request for every affected document', async () => {
@@ -140,12 +141,15 @@ describe('validateDocuments', () => {
 
     expect(request).toHaveBeenCalledOnce()
     for (const result of results) {
-      expect(result.markers).toEqual([
-        expect.objectContaining({
-          code: validationMarkerCodes.validationException,
-          path: ['author'],
-        }),
-      ])
+      expect(result).toMatchObject({
+        complete: false,
+        markers: [
+          expect.objectContaining({
+            code: validationMarkerCodes.validationException,
+            path: ['author'],
+          }),
+        ],
+      })
     }
   })
 
@@ -157,13 +161,26 @@ describe('validateDocuments', () => {
       documents: [document('valid', {title: 'Hello'}), document('invalid', {})],
     })
 
-    expect(results[0]).toEqual({status: 'passed', markers: []})
+    expect(results[0]).toEqual({status: 'passed', complete: true, markers: []})
     expect(results[1]).toMatchObject({
-      status: 'failed',
       markers: [
         expect.objectContaining({code: validationMarkerCodes.valueRequired, path: ['title']}),
       ],
     })
+  })
+
+  it('keeps completeness isolated to each document', async () => {
+    const results = await validateDocuments({
+      schema: createSchema(referenceFields),
+      documents: [
+        document('skipped', {author: {_type: 'reference', _ref: 'author'}}),
+        document('complete', {}),
+        document('invalid', {author: 'invalid'}),
+      ],
+    })
+
+    expect(results.map(({complete}) => complete)).toEqual([false, true, true])
+    expect(results.map(({markers}) => markers.length > 0)).toEqual([false, false, true])
   })
 
   it('uses a supplied reference checker instead of requesting availability', async () => {

@@ -1,9 +1,9 @@
 import {createPreviewSecret} from '@sanity/preview-url-secret/create-secret'
-import {Button, Card, Text} from '@sanity/ui'
+import {Button, Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useClient} from 'sanity'
 import {IntentLink, RouteScope, StateLink, useRouter, useStateLink} from 'sanity/router'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 export function RouterDebug() {
   const {navigate} = useRouter()
@@ -74,7 +74,9 @@ export function RouterDebug() {
           <Card shadow={1} padding={3} radius={2}>
             <RouteScope scope="some-plugin">
               <VStack gap={3}>
-                <Text weight="semibold">A (scoped) plugin</Text>
+                <Text weight="semibold" as="div" trim={true}>
+                  A (scoped) plugin
+                </Text>
 
                 <StateLink
                   state={{
@@ -101,7 +103,9 @@ function InspectRouterState() {
   const {state} = useRouter()
   return (
     <VStack gap={3}>
-      <Text weight="semibold">Decoded router state</Text>
+      <Text weight="semibold" as="div" trim={true}>
+        Decoded router state
+      </Text>
       <Code language="json" size={1}>
         {JSON.stringify(state, null, 2)}
       </Code>

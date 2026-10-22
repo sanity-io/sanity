@@ -1,0 +1,247 @@
+name: Engine confidence
+permissions: {}
+
+# Weekly Engine confidence score: how well the tests guard the document
+# engine (mutator, document store, form patching, Portable Text sync). The
+# score is Stryker's mutation score alone, from two mutation runs. The
+# known-bug catalogue is stored in the same engineConfidenceRun document as
+# supporting detail and never feeds the score, so a catalogue failure still
+# stores the score. The document lands in the Studio Radar dataset and shows on
+# the Radar "Engine confidence" tab.
+#
+# Thursdays on main only, never pull_request: the store job holds the dataset
+# write token, which must never run PR-authored code (same stance as
+# sync-git-metrics.yml and bench.yml). The measuring jobs hold no write token.
+# A failed run is safe to re-run: the stored document id is the ISO week, so a
+# re-run replaces that week's document.
+#
+# Stryker results are incremental: each run reuses the previous successful
+# run's results, and every fourth ISO week (or when dispatched with `full`)
+# runs from scratch so a stale verdict cannot persist.
+on:
+  schedule:
+    # Thursday 03:00 UTC
+    - cron: "0 3 * * 4"
+  workflow_dispatch:
+    inputs:
+      full:
+        description: "Ignore the previous incremental Stryker results and mutate everything"
+        required: false
+        type: boolean
+        default: false
+      store:
+        description: "Write the result to the Radar dataset"
+        required: false
+        type: boolean
+        default: true
+
+concurrency:
+  group: engine-confidence
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    # A dispatch from another branch does nothing: the series is main's
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      started-at: ${{ steps.plan.outputs.started-at }}
+      previous-run-id: ${{ steps.plan.outputs.previous-run-id }}
+      full: ${{ steps.plan.outputs.full }}
+    steps:
+      - id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          INPUT_FULL: ${{ inputs.full }}
+        run: |
+          STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          PREVIOUS_RUN_ID=$(gh run list --workflow engine-confidence.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId // ""')
+          # Base 10 so a week like 08 does not parse as octal
+          WEEK=$((10#$(date -u +%V)))
+          FULL=false
+          if [ "$INPUT_FULL" = "true" ] || [ -z "$PREVIOUS_RUN_ID" ] || [ $((WEEK % 4)) -eq 0 ]; then
+            FULL=true
+          fi
+          {
+            echo "started-at=$STARTED_AT"
+            echo "previous-run-id=$PREVIOUS_RUN_ID"
+            echo "full=$FULL"
+          } >> "$GITHUB_OUTPUT"
+
+  stryker:
+    name: Stryker (${{ matrix.target }})
+    needs: [plan]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [sanity, mutator]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: 24
+
+      - name: Build packages
+        run: pnpm build --output-logs=errors-only
+
+      # Without run-id and github-token this would look in the current run
+      - uses: actions/download-artifact@v8
+        if: needs.plan.outputs.full != 'true' && needs.plan.outputs.previous-run-id != ''
+        continue-on-error: true
+        with:
+          name: engine-confidence-stryker-${{ matrix.target }}
+          run-id: ${{ needs.plan.outputs.previous-run-id }}
+          github-token: ${{ github.token }}
+          path: engine-confidence/reports/previous/${{ matrix.target }}
+
+      - name: Run Stryker
+        env:
+          TARGET: ${{ matrix.target }}
+          FULL: ${{ needs.plan.outputs.full }}
+        run: |
+          ARGS=()
+          if [ "$FULL" = "true" ]; then ARGS+=(--full); fi
+          pnpm engine-confidence stryker --target "$TARGET" --previous-dir "reports/previous/$TARGET" "${ARGS[@]}"
+
+      # Success only: a failed run must not become the next incremental base
+      - uses: actions/upload-artifact@v7
+        with:
+          name: engine-confidence-stryker-${{ matrix.target }}
+          path: engine-confidence/reports/stryker/${{ matrix.target }}.*
+          retention-days: 90
+
+  catalogue:
+    needs: [plan]
+    runs-on: ubuntu-8core
+    timeout-minutes: 75
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      # The catalogue runs the fuzz suites, which need more heap than Node's default
+      NODE_OPTIONS: --max-old-space-size=8192
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: 24
+
+      - name: Build packages
+        run: pnpm build --output-logs=errors-only
+
+      - name: Run the bug catalogue
+        run: pnpm engine-confidence catalogue
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: engine-confidence-catalogue
+          path: engine-confidence/reports/catalogue/
+          retention-days: 30
+
+  score:
+    needs: [plan, stryker, catalogue]
+    # The catalogue is supporting detail, so its failure must not block the score
+    if: ${{ !cancelled() && needs.stryker.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: 24
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: engine-confidence-stryker-*
+          merge-multiple: true
+          path: engine-confidence/reports/stryker
+
+      - uses: actions/download-artifact@v8
+        if: needs.catalogue.result == 'success'
+        with:
+          name: engine-confidence-catalogue
+          path: engine-confidence/reports/catalogue
+
+      - name: Score
+        env:
+          STARTED_AT: ${{ needs.plan.outputs.started-at }}
+        run: pnpm engine-confidence score --started-at "$STARTED_AT"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: engine-confidence-run
+          path: engine-confidence/reports/engine-confidence-run.json
+          retention-days: 90
+
+  store:
+    needs: [score]
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.store)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: 24
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: engine-confidence-run
+          path: engine-confidence/reports
+
+      - name: Store the run in the Radar dataset
+        env:
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
+        run: pnpm engine-confidence store reports/engine-confidence-run.json
+
+  # Nobody watches this workflow's runs, so alert the CI channel instead (same
+  # pattern as sync-git-metrics.yml). `cancelled` included because job
+  # timeouts conclude as cancelled, not failure.
+  alert-failure:
+    needs: [plan, stryker, catalogue, score, store]
+    if: >-
+      always() && github.event_name == 'schedule' &&
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":alert-dot: \"${{ github.workflow }}\" (${{ github.event_name }}) failed - check which job failed (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
+            }

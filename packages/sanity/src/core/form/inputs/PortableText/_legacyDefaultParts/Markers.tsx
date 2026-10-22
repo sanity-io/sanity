@@ -2,9 +2,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type FormNodeValidation} from '@sanity/types'
-import {Text, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
 import {type PortableTextMarker, type RenderCustomMarkers} from '../../../types/_transitional'
 import {useFormBuilder} from '../../../useFormBuilder'
@@ -17,34 +15,11 @@ export interface MarkersProps {
   renderCustomMarkers?: RenderCustomMarkers
 }
 
-const getIcon = (level: 'error' | 'warning' | 'info') => {
-  if (level === 'error') {
-    return <ErrorOutlineIcon />
-  }
-
-  if (level === 'warning') {
-    return <WarningOutlineIcon />
-  }
-
-  return <InfoOutlineIcon />
-}
-
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const IconText = styled(Text)(({theme}: {theme: Theme}) => {
-  return css`
-    &[data-info] {
-      color: ${theme.sanity.color.muted.primary.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    }
-
-    &[data-warning] {
-      color: ${theme.sanity.color.muted.caution.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    }
-
-    &[data-error] {
-      color: ${theme.sanity.color.muted.critical.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    }
-  `
-})
+const VALIDATION_ICON = {
+  error: ErrorOutlineIcon,
+  warning: WarningOutlineIcon,
+  info: InfoOutlineIcon,
+} as const
 
 export function DefaultMarkers(props: MarkersProps) {
   const {markers, validation, renderCustomMarkers} = props
@@ -61,17 +36,23 @@ export function DefaultMarkers(props: MarkersProps) {
         validation.map(({message, level}, index) => (
           <Flex key={`validationItem-${index}`}>
             <Box marginRight={2} marginBottom={index + 1 === validation.length ? 0 : 2}>
-              <IconText
+              <Icon
                 size={1}
-                data-error={level === 'error' ? '' : undefined}
-                data-warning={level === 'warning' ? '' : undefined}
-                data-info={level === 'info' ? '' : undefined}
-              >
-                {getIcon(level)}
-              </IconText>
+                icon={VALIDATION_ICON[level]}
+                muted
+                tone={level === 'error' ? 'critical' : level === 'warning' ? 'caution' : undefined}
+                style={{margin: '-0.375rem'}}
+              />
             </Box>
             <Box>
-              <Text size={1}>{message || 'Error'}</Text>
+              <Text
+                size={1}
+                as="div"
+                trim={true}
+                tone={level === 'error' ? 'critical' : level === 'warning' ? 'caution' : undefined}
+              >
+                {message || 'Error'}
+              </Text>
             </Box>
           </Flex>
         ))}

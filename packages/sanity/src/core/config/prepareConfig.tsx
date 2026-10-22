@@ -104,6 +104,7 @@ import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugi
 import {resolveSchemaTypes} from './resolveSchemaTypes'
 import {SchemaError} from './SchemaError'
 import {
+  type BetaFeatures,
   type Config,
   type ConfigContext,
   type MissingConfigFile,
@@ -911,6 +912,30 @@ function resolveSource({
   const commentsV2Enabled = commentsV2EnabledReducer({config, initialValue: false})
   const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
 
+  const beta: BetaFeatures = {
+    comments: {
+      v2: commentsV2Enabled,
+    },
+    eventsAPI: {
+      // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
+      documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
+      releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
+    },
+    variants: {
+      enabled: variantsEnabled,
+      types: variantsTypesReducer({config, initialValue: undefined}),
+    },
+    documentGroupInventory: {
+      // The document group inventory is an inherent part of the variants experience.
+      // It cannot be switched off while variants are switched on.
+      enabled:
+        documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
+    },
+    reactActivityMode: {
+      enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
+    },
+  }
+
   // Upload the schema descriptor to Content Lake, but only when the user is
   // authenticated and actually holds the `deployStudio` grant. Checking the
   // grant first avoids firing a POST that would 403 for users without it.
@@ -1001,6 +1026,7 @@ function resolveSource({
             ...context,
             ...partialContext,
             singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+            beta,
           },
           initialValue: EMPTY_ARRAY,
           propertyName: 'document.inspectors',
@@ -1152,29 +1178,7 @@ function resolveSource({
       })
     },
 
-    beta: {
-      comments: {
-        v2: commentsV2Enabled,
-      },
-      eventsAPI: {
-        // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
-        documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
-        releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
-      },
-      variants: {
-        enabled: variantsEnabled,
-        types: variantsTypesReducer({config, initialValue: undefined}),
-      },
-      documentGroupInventory: {
-        // The document group inventory is an inherent part of the variants experience.
-        // It cannot be switched off while variants are switched on.
-        enabled:
-          documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
-      },
-      reactActivityMode: {
-        enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
-      },
-    },
+    beta,
 
     announcements: {
       enabled: announcementsEnabledReducer({config, initialValue: true}),
