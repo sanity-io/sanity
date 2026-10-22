@@ -26,6 +26,7 @@ import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types/fieldProps'
+import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
@@ -224,7 +225,11 @@ export function FormFieldSet(
   return (
     <FormRow
       gutterStartCell={
-        <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+        <FormFieldGutter
+          anchor="field"
+          path={path}
+          changedFromBaseVariant={changedFromBaseVariant}
+        />
       }
     >
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
@@ -245,7 +250,13 @@ export function FormFieldSet(
             inputId={inputId}
             content={
               <Stack gap={3}>
-                <Flex alignItems="center">
+                {/* PROPOSED: the label line is the group's anchor, so its gutter marks centre on it. */}
+                <Flex
+                  alignItems="center"
+                  style={
+                    Array.isArray(path) ? {anchorName: pathToAnchorIdent('field', path)} : undefined
+                  }
+                >
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}
