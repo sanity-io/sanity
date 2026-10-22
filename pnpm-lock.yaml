@@ -226,8 +226,8 @@ catalogs:
       specifier: ^2.0.3
       version: 2.0.3
     get-it:
-      specifier: ^9.6.1
-      version: 9.6.1
+      specifier: ^9.6.2
+      version: 9.6.2
     jsdom:
       specifier: ^29.1.1
       version: 29.1.1
@@ -1764,8 +1764,8 @@ importers:
         specifier: 'catalog:'
         version: 2.0.3
       get-it:
-        specifier: ^9.6.1
-        version: 9.6.1(vitest@5.0.4)
+        specifier: ^9.6.2
+        version: 9.6.2(vitest@5.0.4)
       groq-js:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1869,7 +1869,7 @@ importers:
         version: 4.4.0
       get-it:
         specifier: 'catalog:'
-        version: 9.6.1(vitest@5.0.4)
+        version: 9.6.2(vitest@5.0.4)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -11792,8 +11792,8 @@ packages:
     resolution: {integrity: sha512-IfkbWqOGO2kd2Ccgiz/NIzk3bcwjtVqBm3RNa3j/veHg2q7c1DgS3EXrCrvIWH0jbNTbhkdblnxBP7Dm8CiH+A==}
     engines: {node: '>=14.0.0'}
 
-  get-it@9.6.1:
-    resolution: {integrity: sha512-uxMgcolbhJTz8f/cOHLcgde3A0gwqv5p6m8OJ2WJqn7NBi79krofZdp95FD0+7N9UUpmAe76vIEX3kDFijRahg==}
+  get-it@9.6.2:
+    resolution: {integrity: sha512-eAg+xPVjPXbmFL/ahF08LKmuVVC+ixXCSrb0gtaWOZ9aIsMoa0QATttbtoSoqnVSBV6nh9jCdsOk5pLhN2qUOA==}
     engines: {node: '>=22.12.0'}
     peerDependencies:
       vitest: ^5.0.4
@@ -15413,8 +15413,8 @@ packages:
     resolution: {integrity: sha512-RYONW2MeafgYlkVOKYKkA/Ag7BmXqgIWCa8t1m0JcxrQg9pI9lEqRhAOruOBCbAohOa/gkCF+iPi9hrgvTzu6Q==}
     engines: {node: '>=20.18.1'}
 
-  undici@7.30.0:
-    resolution: {integrity: sha512-dkrQXeHSaoamnItlYbmzG0wFYrM0ZwDxCIg0A7aKjTyyhh9svRzCNFEzV+Vm05/yehjCzjDZ31KXfGEjYSztDQ==}
+  undici@7.30.1:
+    resolution: {integrity: sha512-03KrMbjIFDWQR5RNPrSw3bd1r12JpyFQl9/yxjUbJtqkjmllqC5lFjZh6ujeuJCKr8EOQvRW872Oy/az+nLYxg==}
     engines: {node: '>=20.18.1'}
 
   unicode-canonical-property-names-ecmascript@2.0.1:
@@ -21047,7 +21047,7 @@ snapshots:
       '@sanity/client': 8.9.0(vitest@5.0.4)
       boxen: 8.0.1
       empathic: 2.1.0
-      get-it: 9.6.1(vitest@5.0.4)
+      get-it: 9.6.2(vitest@5.0.4)
       get-tsconfig: 4.14.3
       import-meta-resolve: 4.2.0
       jiti: 2.7.0
@@ -21193,7 +21193,7 @@ snapshots:
   '@sanity/client@8.9.0(vitest@5.0.4)':
     dependencies:
       eventsource: 5.1.2
-      get-it: 9.6.1(vitest@5.0.4)
+      get-it: 9.6.2(vitest@5.0.4)
       obug: 3.0.0
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -21380,7 +21380,7 @@ snapshots:
       '@sanity/client': 8.9.0(vitest@5.0.4)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/mutator': link:packages/@sanity/mutator
-      get-it: 9.6.1(vitest@5.0.4)
+      get-it: 9.6.2(vitest@5.0.4)
       modern-tar: 0.8.5
       obug: 3.0.0
       p-map: 7.1.1
@@ -21432,7 +21432,7 @@ snapshots:
       '@sanity/types': link:packages/@sanity/types
       '@sanity/util': link:packages/@sanity/util
       arrify: 3.0.0
-      get-it: 9.6.1(vitest@5.0.4)
+      get-it: 9.6.2(vitest@5.0.4)
       groq-js: 2.0.0
       modern-tar: 0.8.5
       obug: 3.0.0
@@ -23255,7 +23255,7 @@ snapshots:
       ms: 2.1.3
       picocolors: 1.1.1
       tar-stream: 3.1.7
-      undici: 7.30.0
+      undici: 7.30.1
       xdg-app-paths: 5.1.0
       zod: 4.6.7
     transitivePeerDependencies:
@@ -25790,9 +25790,9 @@ snapshots:
       through2: 4.0.2
       tunnel-agent: 0.6.0
 
-  get-it@9.6.1(vitest@5.0.4):
+  get-it@9.6.2(vitest@5.0.4):
     dependencies:
-      undici: 7.30.0
+      undici: 7.30.1
     optionalDependencies:
       vitest: 5.0.4(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@29.1.1)(vite@8.3.4)
 
@@ -26485,7 +26485,7 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.2
-      undici: 7.30.0
+      undici: 7.30.1
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -26512,7 +26512,7 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.2
-      undici: 7.30.0
+      undici: 7.30.1
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -28171,7 +28171,7 @@ snapshots:
       socket.io-client: 4.8.4(supports-color@8.1.1)
       text-extensions: 3.1.0
       tsx: 4.23.15
-      undici: 7.30.0
+      undici: 7.30.1
       winston: 3.19.0
       ws: 8.22.0
       zod: 4.6.7
@@ -29992,7 +29992,7 @@ snapshots:
 
   undici@7.29.1: {}
 
-  undici@7.30.0: {}
+  undici@7.30.1: {}
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
