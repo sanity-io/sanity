@@ -9,8 +9,6 @@ import {Box, type Space} from 'ui5'
 import {BoltSmallIcon} from '../../components/temporary-icons/BoltSmall'
 import {CircleSmallIcon} from '../../components/temporary-icons/CircleSmall'
 import {CircleXsIcon} from '../../components/temporary-icons/CircleXs'
-import {ClockDashedIcon} from '../../components/temporary-icons/ClockDashed'
-import {ClockDashedSmallIcon} from '../../components/temporary-icons/ClockDashedSmall'
 import {ClockSmallIcon} from '../../components/temporary-icons/ClockSmall'
 import {RingIcon} from '../../components/temporary-icons/Ring'
 import {type TargetPerspective} from '../../perspective/types'
@@ -36,13 +34,9 @@ function renderReleaseTypeIcon(
       return size === 'default' ? <BoltIcon {...iconProps} /> : <BoltSmallIcon {...iconProps} />
     case 'scheduled':
       return size === 'default' ? <ClockIcon {...iconProps} /> : <ClockSmallIcon {...iconProps} />
-    // PROPOSED: an undecided release is a dashed clock at both sizes (a clock with no time set yet).
+    // PROPOSED: an undecided release is a plain dot at both sizes (in the neutral tone), in place of the question mark at the small size.
     case 'undecided':
-      return size === 'default' ? (
-        <ClockDashedIcon {...iconProps} />
-      ) : (
-        <ClockDashedSmallIcon {...iconProps} />
-      )
+      return size === 'default' ? <DotIcon {...iconProps} /> : <CircleSmallIcon {...iconProps} />
     default:
       return size === 'default' ? <DotIcon {...iconProps} /> : <CircleXsIcon {...iconProps} />
   }
