@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ReactElement, useState} from 'react'
 import {ReleaseAvatarIcon, usePerspective, useSetPerspective} from 'sanity'
@@ -28,15 +28,6 @@ import {MenuHeading, ShippedRow} from './menuRows'
  * route), release rows switch the studio perspective.
  */
 
-const stateWord = (v: AudienceVersion) =>
-  v.state === 'published'
-    ? 'Published'
-    : v.state === 'draft'
-      ? 'Draft'
-      : v.release
-        ? `${v.release}${v.when ? ` · ${v.when}` : ''}`
-        : v.state
-
 function glyph(v: AudienceVersion) {
   if (v.state === 'published') return <ReleaseAvatarIcon release="published" />
   if (v.state === 'draft') return <ReleaseAvatarIcon release="drafts" />
@@ -45,44 +36,6 @@ function glyph(v: AudienceVersion) {
       releaseType={
         v.state === 'scheduled' ? 'scheduled' : v.state === 'asap' ? 'asap' : 'undecided'
       }
-    />
-  )
-}
-
-function DropdownPill(props: {
-  text: string
-  items: {key: string; text: string; icon: ReactElement; onClick?: () => void}[]
-  testId: string
-}) {
-  return (
-    <MenuButton
-      button={
-        <Chip
-          data-testid={props.testId}
-          iconRight={ChevronDownIcon}
-          mode="ghost"
-          text={props.text}
-        />
-      }
-      id={props.testId}
-      menu={
-        <Menu padding={1}>
-          {props.items.length ? (
-            props.items.map((item) => (
-              <MenuItem
-                disabled={!item.onClick}
-                icon={item.icon}
-                key={item.key}
-                onClick={item.onClick}
-                text={item.text}
-              />
-            ))
-          ) : (
-            <MenuItem disabled text="None" />
-          )}
-        </Menu>
-      }
-      popover={{placement: 'bottom-start', portal: true}}
     />
   )
 }
@@ -238,15 +191,9 @@ function VariantChip(props: {text: string; onRemove: () => void}) {
   )
 }
 
-export function DocumentPillsV1({
-  documentId,
-  option,
-  manage,
-}: {
-  documentId: string
-  option: 'a' | 'b'
-  manage?: ReactElement
-}) {
+/** C2 option B. Option A, the open beta pick, is ./OpenBetaPills (as handed off). */
+export function DocumentPillsV1({documentId, manage}: {documentId: string; manage?: ReactElement}) {
+  const option = 'b'
   const versions = useVersionList(documentId)
   const {selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
@@ -261,7 +208,6 @@ export function DocumentPillsV1({
 
   const base = versions.filter((v) => v.audience === null)
   const published = base.find((v) => v.state === 'published')
-  const draft = base.find((v) => v.state === 'draft')
   // Every version that sits in a release counts, base or variant.
   const releases = versions.filter((v) => v.release)
   const variants = versions.filter((v) => v.audience !== null)
@@ -297,20 +243,6 @@ export function DocumentPillsV1({
     address.setChosen(definition ? definition.conditions : {})
     if (definition) address.setRowShown(true)
   }
-  const variantItem = (v: AudienceVersion, i: number) => ({
-    key: `${v.audience}-${i}`,
-    text: `${v.audience} · ${stateWord(v)}`,
-    icon: glyph(v),
-    onClick: selectVariant(v),
-  })
-
-  const releaseItems = releases.map((v) => ({
-    key: `${v.bundleId}-${v.audience ?? 'base'}`,
-    text: `${v.audience ? `${v.audience} · ` : ''}${stateWord(v)}`,
-    icon: glyph(v),
-    onClick: () => v.bundleId && setPerspective(v.bundleId),
-  }))
-
   return (
     // It replaces the stock pills in the pane header (PROPOSED slot), so it takes the header's own row, no border.
     <Flex
@@ -320,158 +252,115 @@ export function DocumentPillsV1({
       style={{flex: '1 1 0%', minWidth: 0}}
       wrap="wrap"
     >
-      {option === 'a' ? (
-        <>
-          {/* Follows PR #39: Variants first, a divider, then Published, Draft and Releases. */}
-          <DropdownPill
-            items={variants.map(variantItem)}
-            testId="pills-variants"
-            text={`Variants · ${variants.length}`}
+      <>
+        {/* Option B: only the toggle and one "Other versions · N" button; a variant that is the current view is a chip beside the toggle. */}
+        <PublishedToggle
+          chosen={current === 'published' ? 'published' : current === 'drafts' ? 'drafts' : null}
+          hasPublished={!!published}
+          onPick={(version) => setPerspective(version)}
+        />
+        {narrowed ? (
+          <VariantChip
+            onRemove={() => address.setChosen({})}
+            text={address.valueTitles.join(', ')}
           />
-          <div
-            aria-hidden
-            data-testid="pills-divider"
-            style={{
-              alignSelf: 'stretch',
-              width: 1,
-              margin: '4px',
-              background: 'var(--card-border-color)',
-            }}
-          />
-          {published && (
-            <Chip
-              icon={<ReleaseAvatarIcon release="published" />}
-              mode="ghost"
-              onClick={() => setPerspective('published')}
-              selected={current === 'published'}
-              text="Published"
-            />
-          )}
-          {/* The stock row always offers Draft (it can be created), so this does too. */}
-          <Chip
-            icon={<ReleaseAvatarIcon release="drafts" />}
-            mode="ghost"
-            onClick={() => setPerspective('drafts')}
-            selected={current === 'drafts'}
-            text="Draft"
-          />
-          <DropdownPill
-            items={releaseItems}
-            testId="pills-releases"
-            text={`Releases · ${releases.length}`}
-          />
-        </>
-      ) : (
-        <>
-          {/* Option B: only the toggle and one "Other versions · N" button; a variant that is the current view is a chip beside the toggle. */}
-          <PublishedToggle
-            chosen={current === 'published' ? 'published' : current === 'drafts' ? 'drafts' : null}
-            hasPublished={!!published}
-            onPick={(version) => setPerspective(version)}
-          />
-          {narrowed ? (
-            <VariantChip
-              onRemove={() => address.setChosen({})}
-              text={address.valueTitles.join(', ')}
-            />
-          ) : null}
-          <span ref={setOtherAnchor} style={{display: 'inline-flex'}}>
-            <MenuButton
-              button={
-                <Chip
-                  data-testid="other-versions"
-                  iconRight={ChevronDownIcon}
-                  mode="ghost"
-                  style={{height: 25}}
-                  text={`Other versions · ${others.length}`}
-                />
-              }
-              id="other-versions"
-              menu={
-                <Menu padding={1}>
-                  <Stack gap={1}>
-                    {shownVariants.length ? <MenuHeading>Variants</MenuHeading> : null}
-                    {shownVariants.map(([audience, list]) => (
-                      <ShippedRow
-                        icon={<RhombusIcon />}
-                        key={audience}
-                        onClick={selectVariant(list[0])}
-                        subtitle={list.map(hasWord).join(', ')}
-                        testId={`variant-${audience}`}
-                        title={audience}
-                      />
-                    ))}
-                    {shownReleases.length ? <MenuHeading>Releases</MenuHeading> : null}
-                    {shownReleases.map((v) => (
-                      <ShippedRow
-                        icon={glyph(v)}
-                        key={v.bundleId ?? v.release}
-                        onClick={() => v.bundleId && setPerspective(v.bundleId)}
-                        subtitle={releaseSubtitle(v)}
-                        testId={`release-${v.bundleId ?? v.release}`}
-                        title={v.release ?? ''}
-                      />
-                    ))}
-                    <Card borderTop marginTop={1} paddingTop={1}>
-                      <MenuItem
-                        data-testid="open-inventory"
-                        icon={LaunchIcon}
-                        onClick={() => setInventoryOpen(true)}
-                        text={
-                          hidden > 0
-                            ? `Open the version inventory… · ${hidden} more`
-                            : 'Open the version inventory…'
-                        }
-                      />
-                    </Card>
-                  </Stack>
-                </Menu>
-              }
-              popover={{placement: 'bottom-start', portal: true}}
-            />
-          </span>
-          <Popover
-            content={
-              <Box style={{height: 520, overflow: 'hidden', width: 360}}>
-                <InventoryExpandContext.Provider
-                  value={
-                    corpus
-                      ? () => {
-                          setInventoryOpen(false)
-                          setExpanded(true)
-                        }
-                      : null
-                  }
-                >
-                  <LiveInventory
-                    documentId={documentId}
-                    title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId}
-                  />
-                </InventoryExpandContext.Provider>
-              </Box>
-            }
-            floatingBoundary={document.body}
-            open={inventoryOpen}
-            padding={0}
-            placement="bottom-start"
-            portal
-            radius={3}
-            referenceBoundary={document.body}
-            referenceElement={otherAnchor}
-            shadow={3}
-          />
-          {expanded && corpus ? (
-            <WideOverlay onClose={() => setExpanded(false)} title="Version inventory">
-              <DocumentVersionsLens
-                corpus={corpus}
-                definitions={definitions}
-                docId={documentId}
-                onPin={() => undefined}
+        ) : null}
+        <span ref={setOtherAnchor} style={{display: 'inline-flex'}}>
+          <MenuButton
+            button={
+              <Chip
+                data-testid="other-versions"
+                iconRight={ChevronDownIcon}
+                mode="ghost"
+                style={{height: 25}}
+                text={`Other versions · ${others.length}`}
               />
-            </WideOverlay>
-          ) : null}
-        </>
-      )}
+            }
+            id="other-versions"
+            menu={
+              <Menu padding={1}>
+                <Stack gap={1}>
+                  {shownVariants.length ? <MenuHeading>Variants</MenuHeading> : null}
+                  {shownVariants.map(([audience, list]) => (
+                    <ShippedRow
+                      icon={<RhombusIcon />}
+                      key={audience}
+                      onClick={selectVariant(list[0])}
+                      subtitle={list.map(hasWord).join(', ')}
+                      testId={`variant-${audience}`}
+                      title={audience}
+                    />
+                  ))}
+                  {shownReleases.length ? <MenuHeading>Releases</MenuHeading> : null}
+                  {shownReleases.map((v) => (
+                    <ShippedRow
+                      icon={glyph(v)}
+                      key={v.bundleId ?? v.release}
+                      onClick={() => v.bundleId && setPerspective(v.bundleId)}
+                      subtitle={releaseSubtitle(v)}
+                      testId={`release-${v.bundleId ?? v.release}`}
+                      title={v.release ?? ''}
+                    />
+                  ))}
+                  <Card borderTop marginTop={1} paddingTop={1}>
+                    <MenuItem
+                      data-testid="open-inventory"
+                      icon={LaunchIcon}
+                      onClick={() => setInventoryOpen(true)}
+                      text={
+                        hidden > 0
+                          ? `Open the version inventory… · ${hidden} more`
+                          : 'Open the version inventory…'
+                      }
+                    />
+                  </Card>
+                </Stack>
+              </Menu>
+            }
+            popover={{placement: 'bottom-start', portal: true}}
+          />
+        </span>
+        <Popover
+          content={
+            <Box style={{height: 520, overflow: 'hidden', width: 360}}>
+              <InventoryExpandContext.Provider
+                value={
+                  corpus
+                    ? () => {
+                        setInventoryOpen(false)
+                        setExpanded(true)
+                      }
+                    : null
+                }
+              >
+                <LiveInventory
+                  documentId={documentId}
+                  title={corpus?.docs.find((d) => d.id === documentId)?.title ?? documentId}
+                />
+              </InventoryExpandContext.Provider>
+            </Box>
+          }
+          floatingBoundary={document.body}
+          open={inventoryOpen}
+          padding={0}
+          placement="bottom-start"
+          portal
+          radius={3}
+          referenceBoundary={document.body}
+          referenceElement={otherAnchor}
+          shadow={3}
+        />
+        {expanded && corpus ? (
+          <WideOverlay onClose={() => setExpanded(false)} title="Version inventory">
+            <DocumentVersionsLens
+              corpus={corpus}
+              definitions={definitions}
+              docId={documentId}
+              onPin={() => undefined}
+            />
+          </WideOverlay>
+        ) : null}
+      </>
       {manage}
     </Flex>
   )

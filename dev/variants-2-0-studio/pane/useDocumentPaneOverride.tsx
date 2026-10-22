@@ -4,6 +4,7 @@ import {type ResolveDocumentPaneExtension} from 'sanity/structure'
 
 import {isLockedNav} from '../c1/lockedNav'
 import {DocumentPillsV1} from '../c2/DocumentPills'
+import {OpenBetaPills} from '../c2/OpenBetaPills'
 import {ManageVersions} from '../c4/ManageVersions'
 import {DocumentBannerV1} from '../c7/Banners'
 import {OpenBetaBanner} from '../c7/OpenBetaBanner'
@@ -60,8 +61,11 @@ export function resolveDocumentPaneOverride(
     const pills =
       paneAddress !== 'a' ? (
         <DocumentsCount documentId={documentId} manage={manageIcon} />
-      ) : c2 === 'a' || c2 === 'b' ? (
-        <DocumentPillsV1 documentId={documentId} manage={manageIcon} option={c2} />
+      ) : c2 === 'a' ? (
+        // C2 A is the open beta pick (T2), as handed off.
+        <OpenBetaPills documentId={documentId} documentType={documentType} manage={manageIcon} />
+      ) : c2 === 'b' ? (
+        <DocumentPillsV1 documentId={documentId} manage={manageIcon} />
       ) : c2 === 'c' ? (
         <LocalPerspectiveHeader documentId={documentId} />
       ) : undefined
