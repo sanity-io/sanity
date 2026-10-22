@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import {memo} from 'react'
 import {
   getDraftId,
@@ -20,7 +19,7 @@ import {
   useTranslation,
   VersionChip,
 } from 'sanity'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
 import {useDocumentPane} from '../../../useDocumentPane'
@@ -32,17 +31,25 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
   const formatPublishDate = useFormatRelativeLocalePublishDate()
 
   if (release.state === 'archived') {
-    return <Text size={1}>{t('release.chip.tooltip.archived')}</Text>
+    return (
+      <Text size={1} as="div" trim={true}>
+        {t('release.chip.tooltip.archived')}
+      </Text>
+    )
   }
   if (release.metadata.releaseType === 'asap') {
-    return <Text size={1}>{t('release.type.asap')}</Text>
+    return (
+      <Text size={1} as="div" trim={true}>
+        {t('release.type.asap')}
+      </Text>
+    )
   }
   if (release.metadata.releaseType === 'scheduled') {
     const isActive = release.state === 'active'
 
     return (
       release.metadata.intendedPublishAt && (
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           {isActive ? (
             <Translate
               t={t}
@@ -66,7 +73,11 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
   }
 
   if (release.metadata.releaseType === 'undecided') {
-    return <Text size={1}>{t('release.type.undecided')}</Text>
+    return (
+      <Text size={1} as="div" trim={true}>
+        {t('release.type.undecided')}
+      </Text>
+    )
   }
   return null
 }
@@ -105,7 +116,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     <>
       <VersionChip
         tooltipContent={
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             {editState?.published && editState?.published?._updatedAt ? (
               <Translate
                 t={t}
@@ -137,7 +148,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       {isDraftModelEnabled && (
         <VersionChip
           tooltipContent={
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               {editState?.draft ? (
                 <>
                   {editState?.draft._updatedAt ? (
@@ -194,7 +205,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               tooltipContent={
                 isTruncated ? (
                   <VStack gap={2} style={{maxWidth: '300px'}}>
-                    <Text size={1} weight="medium">
+                    <Text size={1} weight="medium" as="div" trim={true}>
                       {fullTitle}
                     </Text>
                     <TooltipContent release={filteredReleases.inCreation!} />
@@ -241,7 +252,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                 tooltipContent={
                   isTruncated ? (
                     <VStack gap={2} style={{maxWidth: '300px'}}>
-                      <Text size={1} weight="medium">
+                      <Text size={1} weight="medium" as="div" trim={true}>
                         {fullTitle}
                       </Text>
                       <TooltipContent release={release} />

@@ -37,7 +37,7 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
     ])
     await expect(
       validateDocument({schema, document: {...document, date: '2027-01-01'}}),
-    ).resolves.toMatchObject({status: 'passed', markers: []})
+    ).resolves.toMatchObject({complete: true, markers: []})
   })
 
   it('preserves URL scheme overrides across inherited validation arrays', async () => {
@@ -54,12 +54,14 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
     )
     await expect(
       validateDocument({schema, document: {...document, contact: 'mailto:test@example.com'}}),
-    ).resolves.toMatchObject({status: 'passed', markers: []})
+    ).resolves.toMatchObject({complete: true, markers: []})
     const invalid = await validateDocument({
       schema,
       document: {...document, contact: 'https://example.com'},
     })
-    expect(invalid.status).toBe('failed')
+    expect(invalid.markers).toEqual([
+      expect.objectContaining({code: validationMarkerCodes.stringUrlSchemeNotAllowed}),
+    ])
   })
 
   it('keeps inherited weak references', async () => {
@@ -81,7 +83,7 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
         getDocumentExists,
         document: {...document, related: {_type: 'reference', _ref: 'missing'}},
       }),
-    ).resolves.toMatchObject({status: 'passed', markers: []})
+    ).resolves.toMatchObject({complete: true, markers: []})
     expect(getDocumentExists).not.toHaveBeenCalled()
   })
 
@@ -131,7 +133,7 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
     ])
     await expect(
       validateDocument({schema, document: {...document, date: '2027-01-01'}}),
-    ).resolves.toMatchObject({status: 'passed', markers: []})
+    ).resolves.toMatchObject({complete: true, markers: []})
   })
 
   it('passes child context to Rule.fields builders', async () => {
@@ -252,7 +254,8 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
       await Promise.all(
         ['red', 'green', 'blue'].map(async (color) => {
           const result = await validateDocument({schema, document: {...document, color}})
-          expect(result.status).toBe(color === 'blue' ? 'passed' : 'failed')
+          expect(result.complete).toBe(true)
+          expect(result.markers).toHaveLength(color === 'blue' ? 0 : 1)
         }),
       )
     },
@@ -273,7 +276,7 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
     )
     await expect(
       validateDocument({schema, document: {...document, color: 'green'}}),
-    ).resolves.toMatchObject({status: 'passed', markers: []})
+    ).resolves.toMatchObject({complete: true, markers: []})
   })
 
   it('keeps inherited explicit validation when rebuilding the field list', async () => {
@@ -301,10 +304,12 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
       ]),
     )
     const short = await validateDocument({schema, document: {...document, color: 'a'}})
-    expect(short.status).toBe('failed')
+    expect(short.markers).toEqual([
+      expect.objectContaining({code: validationMarkerCodes.stringMinimumLength}),
+    ])
     await expect(
       validateDocument({schema, document: {...document, color: 'blue'}}),
-    ).resolves.toMatchObject({status: 'passed', markers: []})
+    ).resolves.toMatchObject({complete: true, markers: []})
   })
 
   it('allows a field validation function to replace inherited validation', async () => {
@@ -321,7 +326,7 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
     )
     await expect(
       validateDocument({schema, document: {...document, name: 'abc'}}),
-    ).resolves.toMatchObject({status: 'passed', markers: []})
+    ).resolves.toMatchObject({complete: true, markers: []})
   })
 
   it('preserves explicit valid constraints alongside inferred list constraints', async () => {
@@ -344,7 +349,8 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
     await Promise.all(
       ['red', 'green', 'blue'].map(async (color) => {
         const result = await validateDocument({schema, document: {...document, color}})
-        expect(result.status).toBe(color === 'blue' ? 'passed' : 'failed')
+        expect(result.complete).toBe(true)
+        expect(result.markers).toHaveLength(color === 'blue' ? 0 : 1)
       }),
     )
   })

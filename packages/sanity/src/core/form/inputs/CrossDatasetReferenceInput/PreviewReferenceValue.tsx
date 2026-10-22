@@ -1,6 +1,6 @@
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Text, TextSkeleton} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {TextSkeleton} from '@sanity/ui'
+import {Text, Flex, type TextProps} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -19,8 +19,9 @@ export function PreviewReferenceValue(props: {
   hasStudioUrl?: boolean
   type: CrossDatasetReferenceSchemaType
   referenceInfo: Loadable<CrossDatasetReferenceInfo>
+  tone?: TextProps['tone']
 }) {
-  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
+  const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo, tone} = props
   const {t} = useTranslation()
   const projectId = useProjectId()
 
@@ -40,7 +41,7 @@ export function PreviewReferenceValue(props: {
   if (referenceInfo.result.availability?.available && !refType) {
     return (
       <Flex gap={2} padding={2} flexDirection="column">
-        <Text as="p">
+        <Text as="p" trim={true} tone={tone}>
           <Translate
             t={t}
             i18nKey="inputs.reference.cross-dataset.invalid-type"
@@ -64,6 +65,7 @@ export function PreviewReferenceValue(props: {
       dataset={type.dataset}
       id={value._ref}
       showTypeLabel={showTypeLabel}
+      tone={tone}
     />
   )
 }

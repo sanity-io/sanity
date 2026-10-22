@@ -1,90 +1,57 @@
 # @sanity/validation
 
-Validates complete Sanity documents against a compiled Sanity schema.
+Validate Sanity documents against a compiled schema.
 
 ```ts
-import {validateDocument, validationMarkerCodes} from '@sanity/validation'
+import {validateDocument} from '@sanity/validation'
 
-const result = await validateDocument({document, schema, client})
+const {complete, markers} = await validateDocument({document, schema, client})
 
-for (const marker of result.markers) {
-  if (marker.code === validationMarkerCodes.stringMinimumLength) {
-    const {actualLength, minimumLength} = marker.details || {}
-    if (typeof actualLength === 'number' && typeof minimumLength === 'number') {
-      console.log(`Expected at least ${minimumLength} characters, got ${actualLength}`)
-    }
-  }
-}
-
-const summary = result.markers
-  .map((marker) => {
-    const path = marker.path
-      .map((segment) => (typeof segment === 'object' ? segment._key : segment))
-      .join('.')
-
-    return `[${marker.level}] ${path || '<document>'}: ${marker.message} (${marker.code})`
-  })
-  .join('\n')
-```
-
-Every failed marker includes a stable machine-readable `code` alongside its localized `message`,
-`level`, and `path`. Built-in failures may also include structured `details`. Custom validators can
-return their own `code` and `details`; custom codes should be namespaced, for example
-`custom.seo-title`.
-
-When a check cannot run, `result.status` is `notEvaluated`. Omitting `client` disables custom
-callbacks and skips network checks. Pass `customValidation: false` to disable custom callbacks while
-still providing a client.
-
-Pass one `AbortSignal` to cancel validation and its pending network work. Built-in checks and client
-requests made through a custom validator's `context.getClient()` inherit this signal. A custom
-`getDocumentExists` callback receives it as an argument; custom work using another API should pass
-`context.signal` to that API. Cancellation rejects with the signal's reason (an `AbortError` when
-no custom reason was supplied). Work that does not accept an abort signal cannot be stopped, even
-though validation itself rejects immediately.
-
-```ts
-const controller = new AbortController()
-const validation = validateDocument({document, schema, client, signal: controller.signal})
-const reason = new Error('Validation cancelled')
-
-controller.abort(reason)
-try {
-  await validation
-} catch (error) {
-  if (error !== reason) throw error
+if (!complete) {
+  console.log('Validation is inconclusive', markers)
+} else {
+  console.log(
+    'Fully evaluated',
+    markers.filter(({level}) => level === 'error'),
+  )
 }
 ```
 
-The package does not apply mutations or decide whether a document may be edited or published.
+- `markers`: document findings with a stable `code`, localized `message`, `level`, `path`, and optional `details`.
+- `complete`: whether every applicable check could be evaluated. When `false`, treat validation as inconclusive even if markers exist.
+- Markers retain Studio behavior. When incomplete, top-level codes alone cannot classify findings: composite rules can wrap execution failures in `details.causes`.
+- Custom validators should return messages for findings and throw when they cannot evaluate.
+- `status` is deprecated; use `complete` and inspect marker levels and codes. It treats any marker as `failed`.
+- Built-in codes: `validationMarkerCodes`. Custom validators can return namespaced codes such as `custom.seo-title`.
+- Omit `client` for local checks without custom callbacks or network checks. Skipped checks make `complete` false. Use `customValidation: false` to skip custom callbacks while keeping network checks.
+- Precompiled rules retain their original package version's behavior; recompile with the current version for current callback-skipping and concurrency semantics.
 
-## Validating multiple documents
-
-Use `validateDocuments` to validate documents in parallel with shared reference-check batching and
-one fetch concurrency limit for the entire batch. `maxFetchConcurrency` defaults to 25.
+## Batch validation
 
 ```ts
 import {validateDocuments} from '@sanity/validation'
 
-const results = await validateDocuments({
-  documents,
-  schema,
-  client,
-  maxFetchConcurrency: 10,
-})
-
-for (const [index, result] of results.entries()) {
-  console.log(documents[index]._id, result.status, result.markers)
-}
+const results = await validateDocuments({documents, schema, client, maxFetchConcurrency: 10})
+// Results follow input order; reference batching and fetch concurrency are shared.
 ```
 
-Passing a `signal` cancels the entire batch and its pending network work.
+`maxFetchConcurrency` defaults to 25. One `signal` cancels the entire batch.
+
+## Cancellation
+
+```ts
+const controller = new AbortController()
+const pending = validateDocument({document, schema, client, signal: controller.signal})
+controller.abort() // `pending` rejects with the abort reason.
+```
+
+Custom validators receive `context.signal`; pass it to external work. Requests through
+`context.getClient()` inherit it automatically. `getDocumentExists` also receives the signal;
+work that does not support cancellation may keep running after validation rejects.
 
 ## Migrating from `sanity`
 
-Add `@sanity/validation` as a direct dependency. The workspace-based API is available as a
-deprecated compatibility helper, so call sites that only import the validation function can
-migrate by changing the imported symbol:
+Add `@sanity/validation` as a direct dependency. For existing workspace-based calls:
 
 ```ts
 import {validateDocumentWithWorkspace} from '@sanity/validation'
@@ -92,13 +59,9 @@ import {validateDocumentWithWorkspace} from '@sanity/validation'
 const markers = await validateDocumentWithWorkspace({document, workspace})
 ```
 
-Call sites that also import `ValidateDocumentOptions` from `sanity` should use
-`ValidateDocumentWorkspaceOptions` for the workspace-shaped options.
-
-Prefer `validateDocument({document, schema, client})` for new code.
+This deprecated helper returns only markers and cannot report completeness. Its options type is
+`ValidateDocumentWorkspaceOptions`. Prefer `validateDocument({document, schema, client})` for new code.
 
 ## Benchmarks
 
-After building the package, run `pnpm --filter @sanity/validation bench`. These local-only
-benchmarks reuse the article and synthetic fixtures in `perf/bench`, print timings, and write
-JSON results to `.vitest/benchmarks/` in the package. Client-dependent checks are skipped.
+After building, run `pnpm --filter @sanity/validation bench`. Results: `.vitest/benchmarks/`.

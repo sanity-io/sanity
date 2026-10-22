@@ -526,6 +526,7 @@ import type {
   parseRetryAfter,
   parseStudioDiagnostics,
   PartialExcept,
+  PartialIndexFieldPaths,
   PartialIndexSettings,
   passthroughErrorHandler,
   pathsAreEqual,
@@ -620,6 +621,7 @@ import type {
   SearchMachineInput,
   SearchMachineState,
   SearchOptions,
+  SearchPartialIndexSettings,
   SearchPopover,
   SearchPopoverProps,
   SearchProvider,
@@ -2463,6 +2465,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('PartialExcept', () => {
     expectTypeOf<PartialExcept<any, any>>().not.toBeNever()
   })
+  test('PartialIndexFieldPaths', () => {
+    expectTypeOf<PartialIndexFieldPaths>().toBeObject()
+  })
   test('PartialIndexSettings', () => {
     expectTypeOf<PartialIndexSettings>().toBeObject()
   })
@@ -2745,6 +2750,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('SearchOptions', () => {
     expectTypeOf<SearchOptions>().not.toBeNever()
+  })
+  test('SearchPartialIndexSettings', () => {
+    expectTypeOf<SearchPartialIndexSettings>().toBeObject()
   })
   test('SearchPopover', () => {
     expectTypeOf<typeof SearchPopover>().toBeFunction()
@@ -3327,6 +3335,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<UseSearchMachineOptions<any>>().toBeObject()
   })
   test('useSearchMaxFieldDepth', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useSearchMaxFieldDepth>().toBeFunction()
   })
   test('useSearchState', () => {

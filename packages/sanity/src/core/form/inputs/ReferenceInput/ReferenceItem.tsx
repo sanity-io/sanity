@@ -383,6 +383,13 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               referenceInfo={loadableReferenceInfo}
               renderPreview={renderPreview}
               type={schemaType}
+              tone={
+                !readOnly && tone === 'critical'
+                  ? 'critical'
+                  : !readOnly && tone === 'caution'
+                    ? 'caution'
+                    : undefined
+              }
             />
             {resolvingInitialValue && <LoadingBlock fill />}
           </ReferenceLinkCard>

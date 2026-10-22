@@ -8,10 +8,10 @@ import {
   type Reference,
   type ReferenceSchemaType,
 } from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode} from 'react'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
@@ -104,7 +104,7 @@ const renderPreview: RenderPreviewCallback = (props) => (
 function Labelled({label, children}: {label: string; children: ReactNode}) {
   return (
     <VStack gap={2}>
-      <Text muted size={1} weight="medium">
+      <Text muted size={1} weight="medium" as="div" trim={true}>
         {label}
       </Text>
       {children}

@@ -73,7 +73,10 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const {perspectiveStack, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const schema = useSchema()
-  const maxFieldDepth = useSearchMaxFieldDepth()
+  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchMaxFieldDepth(
+    undefined,
+    true,
+  )
   const documentPreviewStore = useDocumentPreviewStore()
   const {path, schemaType} = props
   const {onEditReference, activePath, initialValueTemplateItems, ...inheritedOptions} =
@@ -127,6 +130,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         const search = createSearch(schemaType.to, searchClient, {
           ...options,
           maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
+          partialIndexFieldPaths,
         })
 
         return search(searchString, {
