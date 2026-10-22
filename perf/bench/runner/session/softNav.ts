@@ -17,6 +17,7 @@ import {
   type ReadOnlyInterruptions,
   type SessionConfig,
   UNEXPECTED_ENDPOINT_HINT,
+  waitUntilEditable,
 } from './interaction'
 import {awaitReadiness, gotoScenario} from './navigation'
 import {navigationsWithoutSoftNavigation, runStep} from './steps'
@@ -64,6 +65,10 @@ export async function runSoftNavSession(options: {
     for (const step of steps) {
       throwOnPageErrors(session)
       await runStep({page, running, timeoutMs: STEP_TIMEOUT_MS, interruptions, diagnostics}, step)
+      // Ready passes once the data shows; let the form turn editable before the next click
+      if (step.kind === 'navigate' && plan.documentOpens.includes(step.label)) {
+        await waitUntilEditable(page, interruptions)
+      }
       drains.push(await drainEntries(page))
     }
 

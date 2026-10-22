@@ -373,7 +373,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
           `\n${chalk.cyan(scenario.name)} — soft navigations, ${argv.sessions} session(s)`,
         )
         const sessions: SoftNavigationMeasurement[][] = []
-        for (let i = 0; i < argv.sessions; i++) {
+        for (let sessionIndex = 0; sessionIndex < argv.sessions; sessionIndex++) {
           const navigations = await withSessionRetries(scenario.name, () =>
             runSoftNavSession({
               browser,
@@ -384,7 +384,9 @@ export async function runBench(argv: RunArgs): Promise<void> {
             }),
           )
           sessions.push(navigations)
-          console.log(`  session ${i + 1}/${argv.sessions}: ${navigations.length} soft navigations`)
+          console.log(
+            `  session ${sessionIndex + 1}/${argv.sessions}: ${navigations.length} soft navigations`,
+          )
         }
         const report = collectSoftNav(scenario.name, sessions, scenario.sourceFile)
         for (const metric of report.metrics) {
