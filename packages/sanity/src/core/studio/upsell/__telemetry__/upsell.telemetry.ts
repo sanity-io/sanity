@@ -7,7 +7,17 @@ interface UpsellDialogActionsInfo {
 
 /** @internal */
 export interface UpsellDialogViewedInfo extends UpsellDialogActionsInfo {
-  source: 'field_action' | 'document_toolbar' | 'document_action' | 'navbar' | 'link' | 'pte'
+  source:
+    | 'field_action'
+    | 'document_toolbar'
+    | 'document_action'
+    | 'navbar'
+    | 'link'
+    | 'pte'
+    /** An Agent Actions request was turned down for the organization's AI credits */
+    | 'agent_action'
+    /** The Upgrade button of the out-of-AI-credits card under an Agent Actions control */
+    | 'ai_credits_card'
 }
 
 /**
