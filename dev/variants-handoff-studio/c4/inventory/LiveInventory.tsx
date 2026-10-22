@@ -1,5 +1,6 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState, useSyncExternalStore} from 'react'
+import {useCallback, useEffect, useMemo, useState, useSyncExternalStore} from 'react'
+import {createPortal} from 'react-dom'
 import {useSetVariant, useWorkspace} from 'sanity'
 
 import {valueTitle} from '../../c1/model'
@@ -32,11 +33,22 @@ const HIDDEN = [
   .map((id) => `[data-testid="${id}"]`)
   .join(', ')
   .concat(' {display: none !important}')
-  // Every other toolbar control is hidden above, so with the toolbar's Create version stepped aside (the T6 banner offers its own) the row
-  // would be an empty band: it collapses, and comes back with the button (the bulk bar is its own row).
+  // The list does not move under the pointer (SAPP-4724, Faheem 22 Oct): the toolbar row keeps its height with or without its Create version
+  // (the T6 banner may offer it instead), and the bulk bar takes the row's place at the same height when a row is selected.
   .concat(
-    ' [data-testid="inventory-toolbar"]:not(:has([data-testid="add-toolbar-button"])) {display: none !important}',
+    ' [data-testid="inventory-toolbar"], [data-testid="inventory-bulk-bar"] {box-sizing: border-box; height: 41px; min-height: 41px; flex: none}',
+    ' [data-testid="inventory-bulk-bar"] > [data-ui="Flex"] {flex-wrap: nowrap !important; height: 100%}',
+    // A toolbar with no control says how many versions the list holds, quietly, on its left.
+    ' [data-testid="inventory-summary"] {order: -1}',
+    ' [data-testid="inventory-toolbar"]:has([data-testid="add-toolbar-button"]) [data-testid="inventory-summary"] {display: none}',
+    // The checkbox column is kept on every row at all times: the panel's wide layout (the one used here) hides a checkbox at rest without
+    // taking its width, so a row's text never moves when selecting starts.
   )
+
+const PLURAL = new Intl.PluralRules('en-US')
+/** "1 version", "9 versions". */
+const versionCount = (count: number) =>
+  `${count} ${PLURAL.select(count) === 'one' ? 'version' : 'versions'}`
 
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 
@@ -72,6 +84,20 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const [frame, setFrame] = useState<HTMLElement | null>(null)
 
   const world = live
+
+  // The toolbar row, for its version count (the panel renders it; it is swapped for the bulk bar while selecting).
+  const [toolbar, setToolbar] = useState<HTMLElement | null>(null)
+  useEffect(() => {
+    if (!frame) return undefined
+    const scan = () => {
+      const found = frame.querySelector<HTMLElement>('[data-testid="inventory-toolbar"]')
+      setToolbar((current) => (current === found ? current : found))
+    }
+    scan()
+    const observer = new MutationObserver(scan)
+    observer.observe(frame, {childList: true, subtree: true})
+    return () => observer.disconnect()
+  }, [frame])
 
   const choices = useMemo(
     (): VariantChoice[] =>
@@ -163,6 +189,14 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
           <VersionInventoryPanel />
         </InventoryConceptsProvider>
       </Box>
+      {toolbar
+        ? createPortal(
+            <Text data-testid="inventory-summary" muted size={1}>
+              {versionCount(world.entries.length)}
+            </Text>,
+            toolbar,
+          )
+        : null}
       <CreateVersion
         documentId={documentId}
         documentTitle={title}
