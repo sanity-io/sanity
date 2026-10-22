@@ -21,6 +21,7 @@ import {
 } from '../store/VisionActorContext'
 import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
+import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
 import * as styles from './redesign.module.css'
 import {RequestBottomPanelProvider} from './requestBottomPanel'
 import {VisionSidebar} from './sidebar/VisionSidebar'
@@ -108,35 +109,37 @@ export function VisionRedesign(props: VisionRedesignProps) {
         <SavedQueriesContext.Provider value={savedQueries}>
           <PendingEditsContext.Provider value={pendingEdits}>
             <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
-              <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
-                <Flex
-                  className={styles.root}
-                  data-testid="vision-root"
-                  data-vision-layout={layout}
-                  height="100%"
-                  overflow="hidden"
-                  ref={setRootElement}
-                >
-                  <VisionSidebar />
+              <AiCreditsUpsellProvider projectId={projectId}>
+                <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
                   <Flex
-                    flexBasis="0%"
-                    flexDirection="column"
-                    flexGrow={1}
-                    // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                    inert={layout === 'mobile' && openDrawer !== null}
-                    minWidth="0"
+                    className={styles.root}
+                    data-testid="vision-root"
+                    data-vision-layout={layout}
+                    height="100%"
                     overflow="hidden"
+                    ref={setRootElement}
                   >
-                    <QueryTabBar />
-                    <RequestBottomPanelProvider>
-                      <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
-                    </RequestBottomPanelProvider>
+                    <VisionSidebar />
+                    <Flex
+                      flexBasis="0%"
+                      flexDirection="column"
+                      flexGrow={1}
+                      // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                      inert={layout === 'mobile' && openDrawer !== null}
+                      minWidth="0"
+                      overflow="hidden"
+                    >
+                      <QueryTabBar />
+                      <RequestBottomPanelProvider>
+                        <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                      </RequestBottomPanelProvider>
+                    </Flex>
                   </Flex>
-                </Flex>
-                <VisionDialogs />
-                <VisionUrlState tab={activeTab} />
-                <VisionWebMcp tab={activeTab} />
-              </TooltipDelayGroupProvider>
+                  <VisionDialogs />
+                  <VisionUrlState tab={activeTab} />
+                  <VisionWebMcp tab={activeTab} />
+                </TooltipDelayGroupProvider>
+              </AiCreditsUpsellProvider>
             </TabDrawerSlotContext.Provider>
           </PendingEditsContext.Provider>
         </SavedQueriesContext.Provider>
