@@ -7,6 +7,7 @@ import {useWorkspaces} from '../studio/workspaces/useWorkspaces'
 import {useHostWebAppManifest} from './useHostWebAppManifest'
 import {
   createWebAppManifest,
+  isInstallableWebAppDisplay,
   isInstallableWebAppManifest,
   mergeWebAppManifest,
   resolveWebAppName,
@@ -75,7 +76,7 @@ export function StudioWebAppMetadata(): React.JSX.Element | null {
     [workspaces],
   )
 
-  const manifestHref = useMemo(() => {
+  const metadata = useMemo(() => {
     if (host.status !== 'resolved') return undefined
     if (isInstallableWebAppManifest(host.manifest)) return undefined
 
@@ -87,21 +88,31 @@ export function StudioWebAppMetadata(): React.JSX.Element | null {
       startPath: resolveWebAppStartPath(workspaceBasePath),
       themeColor,
     })
+    const merged = mergeWebAppManifest(studioManifest, host.manifest)
 
-    return toWebAppManifestDataUrl(mergeWebAppManifest(studioManifest, host.manifest))
+    return {
+      href: toWebAppManifestDataUrl(merged),
+      // Host `display: "browser"` wins in the merge and opts Chromium out of install; older iOS
+      // ignores that and opens standalone whenever the capable tags below are present.
+      standalone: isInstallableWebAppDisplay(merged),
+    }
   }, [host, name, scopePath, themeColor, workspaceBasePath])
 
-  useManifestLinkOwnership(manifestHref)
+  useManifestLinkOwnership(metadata?.href)
 
-  if (!manifestHref) return null
+  if (!metadata) return null
 
   return (
     <>
-      <link rel="manifest" href={manifestHref} />
+      <link rel="manifest" href={metadata.href} />
       <meta name="theme-color" content={themeColor} />
-      {/* Standardised replacement for the Apple tag below; Chromium warns when only the latter is present. */}
-      <meta name="mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
+      {metadata.standalone ? (
+        <>
+          {/* Standardised replacement for the Apple tag below; Chromium warns when only the latter is present. */}
+          <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+        </>
+      ) : null}
       <meta name="apple-mobile-web-app-title" content={name} />
       {/* `black-translucent` draws behind the status bar, and the studio shell has no
           `safe-area-inset-top` padding to keep the navbar clear of it. */}

@@ -144,6 +144,25 @@ function parseIconSizes(sizes: string | undefined): {any: boolean; pixels: numbe
 }
 
 /**
+ * Whether a manifest asks for a display mode Chromium treats as installable.
+ *
+ * A host that sets `display: "browser"` (and no installable `display_override`) is opting out of
+ * standalone installation. Chromium honours that on the merged manifest; older iOS ignores the
+ * manifest display and uses `*-web-app-capable` meta tags instead, so those must be skipped too.
+ *
+ * @internal
+ */
+export function isInstallableWebAppDisplay(manifest: WebAppManifest): boolean {
+  return (
+    (typeof manifest.display === 'string' && INSTALLABLE_DISPLAY_MODES.has(manifest.display)) ||
+    (Array.isArray(manifest.display_override) &&
+      manifest.display_override.some(
+        (mode) => typeof mode === 'string' && INSTALLABLE_DISPLAY_MODES.has(mode),
+      ))
+  )
+}
+
+/**
  * Whether a manifest already satisfies the members Chromium requires to offer an install. Used to
  * decide whether the studio should take the document's manifest over: a host document that already
  * declares an installable manifest is left alone.
@@ -153,12 +172,6 @@ function parseIconSizes(sizes: string | undefined): {any: boolean; pixels: numbe
 export function isInstallableWebAppManifest(manifest: WebAppManifest): boolean {
   const hasName = typeof manifest.name === 'string' || typeof manifest.short_name === 'string'
   const hasStartUrl = typeof manifest.start_url === 'string' && manifest.start_url !== ''
-  const hasDisplay =
-    (typeof manifest.display === 'string' && INSTALLABLE_DISPLAY_MODES.has(manifest.display)) ||
-    (Array.isArray(manifest.display_override) &&
-      manifest.display_override.some(
-        (mode) => typeof mode === 'string' && INSTALLABLE_DISPLAY_MODES.has(mode),
-      ))
 
   const icons = Array.isArray(manifest.icons) ? manifest.icons : []
   const hasIcons = REQUIRED_ICON_SIZES.every((required) =>
@@ -172,7 +185,7 @@ export function isInstallableWebAppManifest(manifest: WebAppManifest): boolean {
   return (
     hasName &&
     hasStartUrl &&
-    hasDisplay &&
+    isInstallableWebAppDisplay(manifest) &&
     hasIcons &&
     manifest.prefer_related_applications !== true
   )

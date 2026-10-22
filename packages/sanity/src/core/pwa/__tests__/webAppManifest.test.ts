@@ -5,6 +5,7 @@ import {
   absolutizeWebAppManifestUrls,
   createWebAppManifest,
   DEFAULT_WEB_APP_NAME,
+  isInstallableWebAppDisplay,
   isInstallableWebAppManifest,
   mergeWebAppManifest,
   resolveWebAppName,
@@ -103,16 +104,17 @@ describe('isInstallableWebAppManifest', () => {
 
   test('rejects a manifest that asks to stay in a browser tab', () => {
     expect(isInstallableWebAppManifest({...installable, display: 'browser'})).toBe(false)
+    expect(isInstallableWebAppDisplay({...installable, display: 'browser'})).toBe(false)
   })
 
   test('accepts an installable display mode declared through display_override', () => {
-    expect(
-      isInstallableWebAppManifest({
-        ...installable,
-        display: 'browser',
-        display_override: ['window-controls-overlay'],
-      }),
-    ).toBe(true)
+    const withOverride = {
+      ...installable,
+      display: 'browser',
+      display_override: ['window-controls-overlay'],
+    }
+    expect(isInstallableWebAppManifest(withOverride)).toBe(true)
+    expect(isInstallableWebAppDisplay(withOverride)).toBe(true)
   })
 
   test('accepts a scalable icon as satisfying every required size', () => {

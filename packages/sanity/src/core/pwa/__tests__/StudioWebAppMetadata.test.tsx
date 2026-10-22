@@ -182,6 +182,27 @@ describe('StudioWebAppMetadata', () => {
     expect(document.head.querySelector('meta[name="apple-mobile-web-app-capable"]')).toBeNull()
   })
 
+  test('keeps display browser from the host without declaring capable tags for older ios', async () => {
+    mockManifestResponse({
+      ...GENERATED_MANIFEST,
+      display: 'browser',
+      name: 'Acme',
+      start_url: '/',
+    })
+    renderMetadata([workspace({title: 'Acme CMS'})])
+
+    const manifest = await readStudioManifest()
+
+    expect(manifest.display).toBe('browser')
+    expect(document.head.querySelector('meta[name="apple-mobile-web-app-capable"]')).toBeNull()
+    expect(document.head.querySelector('meta[name="mobile-web-app-capable"]')).toBeNull()
+    expect(
+      document.head
+        .querySelector('meta[name="apple-mobile-web-app-title"]')
+        ?.getAttribute('content'),
+    ).toBe('Acme CMS')
+  })
+
   test('leaves the document alone when the declared manifest cannot be read', async () => {
     mockManifestResponse(undefined)
     renderMetadata([workspace({})])
