@@ -1,0 +1,25 @@
+import {css} from '#styled-system/css'
+
+export const textButton = css({
+  'all': 'unset',
+  'display': 'inline-block',
+  'verticalAlign': 'middle',
+  'appearance': 'none',
+  'border': 0,
+  'margin': 0,
+  'padding': 0,
+  'outline': 'none',
+  'flex': 'none',
+  'whiteSpace': 'nowrap',
+  'color': 'var(--card-badge-suggest-fg-color)',
+  'cursor': 'pointer',
+  // `&&`: the descendant `Text` sets `color: var(--card-fg-color)` on itself with (0,1,0);
+  // the original rule won on styled-components injection order, so double the class to win by
+  // specificity regardless of stylesheet order.
+  '&& *': {
+    color: 'inherit',
+  },
+  '& svg[data-sanity-icon]': {
+    color: 'currentColor',
+  },
+})
