@@ -166,12 +166,17 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   )
 
   if (!world) {
+    // The panel's frame stays while a document's versions load (a document switch keeps the inspector open): the toolbar row keeps its
+    // height, empty, and the list's place says it is loading. Nothing moves when the versions arrive.
     return (
-      <Card padding={3}>
-        <Text muted size={1}>
-          Loading versions…
-        </Text>
-      </Card>
+      <Flex data-testid="inventory-loading" direction="column" height="fill">
+        <Box data-testid="inventory-toolbar-placeholder" style={{flex: 'none', height: 41}} />
+        <Card padding={3}>
+          <Text muted size={1}>
+            Loading versions…
+          </Text>
+        </Card>
+      </Flex>
     )
   }
   return (
