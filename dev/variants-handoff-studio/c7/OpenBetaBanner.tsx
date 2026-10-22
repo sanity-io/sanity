@@ -9,7 +9,6 @@ import {isReleaseScheduledOrScheduling} from '../../../packages/sanity/src/core/
 import {Banner} from '../../../packages/sanity/src/structure/panes/document/documentPanel/banners/Banner'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
-import {useMadeEntries} from '../c4/inventory/LiveInventory'
 import {useCreateVariantVersion} from '../data/useCreateVariantVersion'
 import {useVersionList} from '../data/useVersionList'
 import {type AudienceVersion} from '../data/versions'
@@ -50,7 +49,6 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const {chosen, setChosen} = usePerspectiveState()
   const definitions = useVariantDefinitions()
   const versions = useVersionList(documentId)
-  const made = useMadeEntries(documentId)
   const setVariant = useSetVariant()
   const pane = useDocumentPane()
   const {create, status} = useCreateVariantVersion(documentId)
@@ -111,8 +109,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const variantId = shortId(definition._id)
   const audience = definition.metadata?.title ?? variantId
   const version = selectedPerspectiveName ?? 'drafts'
-  const madeHere = made.some((e) => e.variantId === variantId && e.group === version)
-  if (madeHere || hasVariantHere(versions, variantId, version)) return null
+  if (hasVariantHere(versions, variantId, version)) return null
 
   // The button of the Drafts and open-release cases. It stays disabled from the click until the version is listed and the banner goes away.
   const busy = status === 'creating' || status === 'created'

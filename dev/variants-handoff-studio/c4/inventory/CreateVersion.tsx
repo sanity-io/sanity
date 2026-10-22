@@ -18,7 +18,7 @@ import {
   useState,
 } from 'react'
 import {createPortal} from 'react-dom'
-import {ReleaseAvatarIcon} from 'sanity'
+import {getTargetDocument, ReleaseAvatarIcon, useDocumentVersions} from 'sanity'
 
 import {isReleaseScheduledOrScheduling} from '../../../../packages/sanity/src/core/releases/util/util'
 import {isCardinalityOneRelease} from '../../../../packages/sanity/src/core/util/releaseUtils'
@@ -27,6 +27,7 @@ import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/M
 import {Tooltip} from '../../../../packages/sanity/src/ui-components/tooltip/Tooltip'
 import {DimensionIcon} from '../../c1/dimensionIcons'
 import {rankSearch, SEARCH_FROM} from '../../c1/search'
+import {useCreateVariantVersion} from '../../data/useCreateVariantVersion'
 import {type InventoryEntry, type InventoryWorld} from './fixtures'
 
 // T4 "Create version" (OPEN-BETA-HANDOFF-SCOPE, T4; Figma C4 "Create version: the chosen pattern"), live. Mirrors the Storybook reference
@@ -425,7 +426,7 @@ export function CreateVersion(props: {
   variants: readonly VariantChoice[]
   /** Whether the document has drafts: without them the bundle starts on the first open release. */
   draftsEnabled: boolean
-  /** The new version and the group that took it: the panel selects it and the global perspective moves to it. */
+  /** The version was created, and the group that took it: the panel selects it and the global perspective moves to it. */
   onCreate: (entry: InventoryEntry, received: string) => void
   /** The group that took a new version, when the panel was remounted by the move to it: it opens alone and is marked current. */
   received?: string
@@ -435,6 +436,10 @@ export function CreateVersion(props: {
   onOpen: (entry: InventoryEntry) => void
 }) {
   const {frame, world, variants, draftsEnabled, onCreate, onOpen, onReceived} = props
+  // The one create implementation, shared with the T6 banner.
+  const {create, createBaseVersion, status} = useCreateVariantVersion(props.documentId)
+  const busy = status === 'creating'
+  const {versions: documentVersions} = useDocumentVersions({documentId: props.documentId})
   const variantsOn = variants.length > 0
   const [toolbar, setToolbar] = useState<HTMLElement | null>(null)
   const [slot, setSlot] = useState<HTMLElement | null>(null)
@@ -613,17 +618,41 @@ export function CreateVersion(props: {
     return `${variantLabel(draft.variantId)} in ${destTitle(draft.dest)}, from ${from ? entryLabel(from) : 'the nearest version'}`
   }
 
-  const commit = () => {
-    if (!mode || existingOf(mode.draft)) return
+  /** The stored version a row of the list stands for (its id and revision), found among the document's versions as core finds them. */
+  const documentOf = (entry: InventoryEntry | undefined) => {
+    if (!entry) return undefined
+    const stub = getTargetDocument({
+      bundle: entry.group,
+      variant: entry.variantId ? `_.variants.${entry.variantId}` : undefined,
+      documentVersions,
+    })
+    return stub ? {_id: stub._id, _rev: stub._rev} : undefined
+  }
+
+  // Creates the version, then moves to it (one navigation) and closes the block. While it runs the block is inert and the commit says
+  // Creating…; a failure is a toast and the block stays open with its values.
+  const commit = async () => {
+    if (!mode || busy || existingOf(mode.draft)) return
     const {draft} = mode
     const group = destGroup(draft.dest)
+    const picked = draft.source === 'nearest' ? undefined : documentOf(sourceEntry(draft))
+    let created = true
+    if (draft.variantId) {
+      // A variant version: Nearest version is core's base rule; a picked version is sent as the base.
+      created = await create({variantId: draft.variantId, perspective: group, base: picked})
+    } else if (draft.dest.kind === 'release') {
+      // The base document into a release: core's version create, copying the picked version or the nearest base version.
+      const base = picked ?? documentOf(nearestOf(world, undefined))
+      created = base ? await createBaseVersion(draft.dest.name, base) : false
+    }
+    // The base document in Drafts needs no create: Drafts is where the base is edited.
+    if (!created) return
     const entry: InventoryEntry = {
       key: `${group}:${draft.variantId ?? 'base'}`,
       group,
       variantId: draft.variantId,
       changedFields: fromOf(draft)?.changedFields ?? [],
       updated: '0h ago',
-      ...(draft.dest.kind === 'drafts' ? {stage: mode.fixed.stage ?? ('draft' as const)} : {}),
     }
     const received = targetHeader ? groupId(targetHeader) : group
     onCreate(entry, received)
@@ -801,7 +830,14 @@ export function CreateVersion(props: {
 
     const text = readBack(draft)
     return (
-      <Card borderBottom borderTop data-testid="add-block" tone="default">
+      <Card
+        aria-busy={busy}
+        borderBottom
+        borderTop
+        data-testid="add-block"
+        inert={busy}
+        tone="default"
+      >
         {/* The header starts on the rows' 16px edge. The subtitle keeps to one line: a long title ends with an ellipsis, and shows whole on hover. */}
         <div data-create-head="">
           <div data-create-head-title="">Create version</div>
@@ -896,12 +932,12 @@ export function CreateVersion(props: {
                 <Button
                   aria-describedby="add-commit-description"
                   data-testid="add-commit"
-                  disabled={waiting}
+                  disabled={waiting || busy}
                   mode="default"
-                  onClick={commit}
-                  text="Create version"
+                  onClick={() => void commit()}
+                  text={busy ? 'Creating…' : 'Create version'}
                   tone="primary"
-                  tooltipProps={waiting ? null : {content: text}}
+                  tooltipProps={waiting || busy ? null : {content: text}}
                 />
               </>
             )}
