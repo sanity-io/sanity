@@ -1,7 +1,11 @@
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState, useSyncExternalStore} from 'react'
+import {useCallback, useEffect, useMemo, useState, useSyncExternalStore} from 'react'
+import {createPortal} from 'react-dom'
 import {useSetVariant, useWorkspace} from 'sanity'
+import {useDocumentPane} from 'sanity/structure'
 
+import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {valueTitle} from '../c1/model'
 import {usePerspectiveState} from '../c1/state'
 import {useVariantDefinitions} from '../c1/world'
@@ -26,6 +30,26 @@ const HIDDEN = [
   .map((id) => `[data-testid="${id}"]`)
   .join(', ')
   .concat(' {display: none !important}')
+  // Compare versions sits just before Create version (from the Handoff Studio's a1f6fcf45f, A, Faheem 23 Oct), after Andrej's controls.
+  .concat(' [data-testid="inventory-compare"] {order: 1}')
+  .concat(' [data-add-anchor] {order: 2}')
+
+/** The toolbar's Compare versions: an icon button, as the Studio's pane header draws its actions, with the menu item's name as its tooltip. */
+function CompareButton({disabled, onClick}: {disabled: boolean; onClick: () => void}) {
+  const label = disabled
+    ? 'There are no other versions of this document to compare.'
+    : 'Compare versions'
+  return (
+    <Button
+      aria-label="Compare versions"
+      disabled={disabled}
+      icon={TransferIcon}
+      mode="bleed"
+      onClick={onClick}
+      tooltipProps={{content: label}}
+    />
+  )
+}
 
 const shortId = (id: string) => id.replace(/^_\.variants\./, '')
 
@@ -59,6 +83,23 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
   const variants = useVariantDefinitions()
   const received = useSyncExternalStore(subscribe, () => receivedBy.get(documentId))
   const [frame, setFrame] = useState<HTMLElement | null>(null)
+  // A, Faheem 23 Oct: Compare versions, one click from the inventory. It is the "..." menu's item (same target: the earlier layer, else
+  // Published, else Draft), so the two never disagree. Disabled while the document has a single version.
+  const {onMenuAction} = useDocumentPane()
+
+  // The toolbar row, for Compare versions (the panel renders it; it is swapped for the bulk bar while selecting).
+  const [toolbar, setToolbar] = useState<HTMLElement | null>(null)
+  useEffect(() => {
+    if (!frame) return undefined
+    const scan = () => {
+      const found = frame.querySelector<HTMLElement>('[data-testid="inventory-toolbar"]')
+      setToolbar((current) => (current === found ? current : found))
+    }
+    scan()
+    const observer = new MutationObserver(scan)
+    observer.observe(frame, {childList: true, subtree: true})
+    return () => observer.disconnect()
+  }, [frame])
 
   // The open beta stage has one dimension (Audience), as the Handoff Studio: versions of a variant on another dimension are not listed. GA lists all.
   const {stage} = useOptionState()
@@ -170,6 +211,17 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
           <VersionInventoryPanel />
         </InventoryConceptsProvider>
       </Box>
+      {toolbar
+        ? createPortal(
+            <Box data-testid="inventory-compare" style={{flex: 'none'}}>
+              <CompareButton
+                disabled={world.entries.length < 2}
+                onClick={() => onMenuAction({action: 'compareVersions', title: 'Compare versions'})}
+              />
+            </Box>,
+            toolbar,
+          )
+        : null}
       <CreateVersion
         documentId={documentId}
         documentTitle={title}
