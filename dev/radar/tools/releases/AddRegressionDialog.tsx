@@ -1,6 +1,6 @@
-import {Box, Button, Card, Dialog, Select, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Select, TextArea, TextInput} from '@sanity/ui'
 import {useMemo, useState} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {type BisectCommit, buildChain} from '../bisect/bisect'
 import {type TagSlice} from '../bisect/data'
@@ -82,14 +82,14 @@ export function AddRegressionDialog(props: {
     <Dialog id="releases-add-regression" header="Add regression" width={1} onClose={onClose}>
       <Box padding={4}>
         <VStack gap={4}>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             Pin a regression on the release that introduced it — for issues found outside a bisect
             (user reports, support tickets). It is recorded as a concluded bisect session, so it
             counts in the regression badge and can be drilled into later.
           </Text>
 
           <VStack gap={2}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               Introduced in
             </Text>
             <Select
@@ -109,7 +109,7 @@ export function AddRegressionDialog(props: {
 
           {selected && encoded && !encoded.ok && (
             <Card padding={3} radius={2} tone="caution">
-              <Text size={1}>
+              <Text size={1} as="div" trim={true} tone="caution">
                 {selected.tag} has no resolvable previous release on the synced mainline
                 (off-mainline cut, or before the sync cutoff) — its regressions can't be recorded
                 here.
@@ -117,7 +117,7 @@ export function AddRegressionDialog(props: {
             </Card>
           )}
           {selected && encoded?.ok && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               Recorded as {encoded.baseTag.tag} → {selected.tag}
               {encoded.suspectShas.length > 0
                 ? `, with the ${pluralize(encoded.suspectShas.length, 'commit')} between them as suspects.`
@@ -126,7 +126,7 @@ export function AddRegressionDialog(props: {
           )}
 
           <VStack gap={2}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               What broke
             </Text>
             <TextArea
@@ -139,7 +139,7 @@ export function AddRegressionDialog(props: {
           </VStack>
 
           <VStack gap={2}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               Severity (optional)
             </Text>
             <Select
@@ -158,7 +158,7 @@ export function AddRegressionDialog(props: {
           </VStack>
 
           <VStack gap={2}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               Linear issue (optional)
             </Text>
             <TextInput
@@ -170,7 +170,7 @@ export function AddRegressionDialog(props: {
           </VStack>
 
           <VStack gap={2}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               Fixed in (optional)
             </Text>
             <Select

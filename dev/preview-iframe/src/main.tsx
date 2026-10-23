@@ -2,11 +2,11 @@ import 'ui5/styles.css'
 import './preview.css'
 
 import {type ClientPerspective} from '@sanity/client'
-import {Card, studioTheme, Tab, TabList, TabPanel, Text, ThemeProvider} from '@sanity/ui'
+import {Card, studioTheme, Tab, TabList, TabPanel, ThemeProvider} from '@sanity/ui'
 import {enableVisualEditing} from '@sanity/visual-editing'
 import {Suspense, useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {FieldGroups} from './FieldGroups'
 import {InitialValues} from './InitialValues'
@@ -134,10 +134,10 @@ function VisualEditing() {
       tone="transparent"
     >
       <VStack gap={2}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           perspective: {JSON.stringify(perspective)}
         </Text>
-        <Text muted size={1} data-testid="preview-variant">
+        <Text muted size={1} data-testid="preview-variant" as="div" trim={true}>
           variant: {variant ? JSON.stringify(variant) : 'none'}
         </Text>
       </VStack>

@@ -3,11 +3,11 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RobotIcon} from '@sanity/icons/Robot'
-import {Badge, Button, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Badge, Button, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
@@ -164,7 +164,7 @@ export function RunDetailPopover(props: {
             {/* Header: series title as a quiet eyebrow, close button aligned */}
             <Flex alignItems="flex-start" gap={3}>
               <Box flexBasis="0%" flexGrow={1} paddingTop={1}>
-                <Text size={1} weight="medium" muted textOverflow="ellipsis">
+                <Text size={1} weight="medium" muted truncate={1} as="div" trim={true}>
                   {series.title}
                 </Text>
               </Box>
@@ -183,33 +183,39 @@ export function RunDetailPopover(props: {
                 the percentiles read as a labelled stat row rather than a run-on */}
             <VStack gap={3}>
               <VStack gap={2}>
-                <Text size={4} weight="semibold">
+                <Text size={4} weight="semibold" as="div" trim={true}>
                   {formatValue(point.value, series.unit)}
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {when}
                 </Text>
               </VStack>
               {(point.p75 !== undefined || point.p90 !== undefined) && (
                 <Flex gap={4}>
                   <VStack gap={2}>
-                    <Text size={0} muted>
+                    <Text size={0} muted as="div" trim={true}>
                       p75
                     </Text>
-                    <Text size={1}>{formatValue(point.p75 ?? point.value, series.unit)}</Text>
+                    <Text size={1} as="div" trim={true}>
+                      {formatValue(point.p75 ?? point.value, series.unit)}
+                    </Text>
                   </VStack>
                   <VStack gap={2}>
-                    <Text size={0} muted>
+                    <Text size={0} muted as="div" trim={true}>
                       p90
                     </Text>
-                    <Text size={1}>{formatValue(point.p90 ?? point.value, series.unit)}</Text>
+                    <Text size={1} as="div" trim={true}>
+                      {formatValue(point.p90 ?? point.value, series.unit)}
+                    </Text>
                   </VStack>
                   {point.interactions !== undefined && (
                     <VStack gap={2}>
-                      <Text size={0} muted>
+                      <Text size={0} muted as="div" trim={true}>
                         interactions
                       </Text>
-                      <Text size={1}>{point.interactions}</Text>
+                      <Text size={1} as="div" trim={true}>
+                        {point.interactions}
+                      </Text>
                     </VStack>
                   )}
                 </Flex>
@@ -226,7 +232,7 @@ export function RunDetailPopover(props: {
                   page ran: a step that coincides with a version bump is the
                   library's output changing, not a migration */}
               {point.styledComponentsVersion && (
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   styled-components {point.styledComponentsVersion} on this page
                 </Text>
               )}
@@ -246,18 +252,18 @@ export function RunDetailPopover(props: {
                 deliberately distinct from the after/before bracket below. */}
             {measuredTag && (
               <VStack gap={2}>
-                <Text size={0} muted weight="medium">
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Release
                 </Text>
                 <Flex alignItems="center" gap={2}>
-                  <Text size={1} muted>
+                  <Text size={1} muted as="div" trim={true}>
                     released as
                   </Text>
-                  <Text size={1} weight="semibold">
+                  <Text size={1} weight="semibold" as="div" trim={true}>
                     {measuredTag}
                   </Text>
                 </Flex>
-                <Text size={0} muted>
+                <Text size={0} muted as="div" trim={true}>
                   This run measured the release commit.
                 </Text>
               </VStack>
@@ -265,16 +271,18 @@ export function RunDetailPopover(props: {
 
             {(releaseContext.previous || releaseContext.next) && (
               <VStack gap={2}>
-                <Text size={0} muted weight="medium">
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Release
                 </Text>
                 <VStack gap={2}>
                   {releaseContext.previous && (
                     <Flex alignItems="center" gap={2}>
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         after
                       </Text>
-                      <Text size={1}>{releaseContext.previous.tag}</Text>
+                      <Text size={1} as="div" trim={true}>
+                        {releaseContext.previous.tag}
+                      </Text>
                       {releaseContext.previous.distTags?.includes('latest') && (
                         <Badge tone="primary" fontSize={0}>
                           latest
@@ -284,15 +292,17 @@ export function RunDetailPopover(props: {
                   )}
                   {releaseContext.next ? (
                     <Flex alignItems="center" gap={2}>
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         before
                       </Text>
-                      <Text size={1}>{releaseContext.next.tag}</Text>
+                      <Text size={1} as="div" trim={true}>
+                        {releaseContext.next.tag}
+                      </Text>
                     </Flex>
                   ) : (
                     // The common case for recent runs, and worth saying out
                     // loud: silence here would read as missing data
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       not yet released
                     </Text>
                   )}
@@ -305,17 +315,17 @@ export function RunDetailPopover(props: {
                 from Aug 2026 on; older runs show what they recorded. */}
             {(host || point.calibrationMs !== undefined) && (
               <VStack gap={2}>
-                <Text size={0} muted weight="medium">
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Host
                 </Text>
                 <VStack gap={2}>
                   {host?.cpuModel && (
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {host.cpuModel}
                     </Text>
                   )}
                   {host && (host.os || host.cpus !== undefined || host.memGb !== undefined) && (
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {[
                         host.os && (host.arch ? `${host.os}/${host.arch}` : host.os),
                         host.cpus !== undefined ? `${host.cpus} cores` : undefined,
@@ -326,7 +336,7 @@ export function RunDetailPopover(props: {
                     </Text>
                   )}
                   {(host?.browserVersion || host?.nodeVersion) && (
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {[
                         host.browserVersion ? `Chromium ${host.browserVersion}` : undefined,
                         host.nodeVersion ? `Node ${host.nodeVersion}` : undefined,
@@ -336,16 +346,18 @@ export function RunDetailPopover(props: {
                     </Text>
                   )}
                   {(host?.imageOs || host?.imageVersion) && (
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       image {[host.imageOs, host.imageVersion].filter(Boolean).join(' ')}
                     </Text>
                   )}
                   {point.calibrationMs !== undefined && (
                     <Flex alignItems="center" gap={2} title={CALIBRATION_EXPLAINER}>
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         calibration
                       </Text>
-                      <Text size={1}>{formatValue(point.calibrationMs, 'ms')}</Text>
+                      <Text size={1} as="div" trim={true}>
+                        {formatValue(point.calibrationMs, 'ms')}
+                      </Text>
                     </Flex>
                   )}
                 </VStack>
@@ -354,7 +366,7 @@ export function RunDetailPopover(props: {
 
             {(backlinks.length > 0 || scenarioHref) && (
               <VStack gap={2}>
-                <Text size={0} muted weight="medium">
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Links
                 </Text>
                 <Flex gap={2} flexWrap="wrap">
@@ -391,7 +403,7 @@ export function RunDetailPopover(props: {
 
             {compareHref && (
               <VStack gap={2}>
-                <Text size={0} muted weight="medium">
+                <Text size={0} muted weight="medium" as="div" trim={true}>
                   Suspect a regression?
                 </Text>
                 <Button

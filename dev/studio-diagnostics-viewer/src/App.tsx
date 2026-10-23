@@ -1,7 +1,7 @@
-import {Box, Button, Card, Heading, Text, TextArea} from '@sanity/ui'
+import {Box, Button, Card, Heading, TextArea} from '@sanity/ui'
 import {lazy, Suspense, type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
 import {type StudioDiagnostics} from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 // Loaded on demand so the initial paste screen doesn't carry the sanity
 // package; the report and the parser share the same lazy chunk. Module-scope
@@ -73,14 +73,14 @@ export function App() {
                   <Heading as="h2" size={2}>
                     Paste diagnostics output
                   </Heading>
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     Copy the JSON from Studio diagnostics and paste it below. The data stays in this
                     browser and is not uploaded anywhere.
                   </Text>
                 </VStack>
 
                 <VStack gap={3}>
-                  <Text as="label" htmlFor={inputId} size={1} weight="medium">
+                  <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
                     Diagnostics JSON
                   </Text>
                   <TextArea
@@ -96,7 +96,9 @@ export function App() {
 
                 {error ? (
                   <Card padding={3} radius={2} tone="critical">
-                    <Text size={1}>{error}</Text>
+                    <Text size={1} as="div" trim={true} tone="critical">
+                      {error}
+                    </Text>
                   </Card>
                 ) : null}
 
@@ -121,7 +123,7 @@ export function App() {
 function ReportLoadingState() {
   return (
     <Card padding={4} radius={2}>
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         Loading report…
       </Text>
     </Card>
@@ -134,7 +136,7 @@ function ViewerHeader() {
       <Heading as="h1" size={3}>
         Studio diagnostics viewer
       </Heading>
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         Inspect diagnostics gathered from a Sanity Studio session.
       </Text>
     </VStack>
