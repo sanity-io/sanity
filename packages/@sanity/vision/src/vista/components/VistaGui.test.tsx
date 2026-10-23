@@ -2196,6 +2196,55 @@ describe('VistaGui', () => {
     )
   })
 
+  it('confirms a copied export snippet on the copy button for a moment, and only once it copied', async () => {
+    renderVista()
+    typeQuery('*[_type == "post"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+    const writeText = vi.fn(() => Promise.resolve())
+    const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+    Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
+
+    try {
+      fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+      fireEvent.click(screen.getByTestId('vista-export-query'))
+      const copy = await screen.findByTestId('vista-export-query-copy')
+      expect(copy.hasAttribute('data-copied')).toBe(false)
+
+      writeText.mockImplementationOnce(() => Promise.reject(new Error('Denied')))
+      fireEvent.click(copy)
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1))
+      expect(copy.hasAttribute('data-copied')).toBe(false)
+
+      fireEvent.click(copy)
+      await waitFor(() => expect(copy.getAttribute('data-copied')).toBe('true'))
+
+      // Another snippet has not been copied yet
+      const tabs = within(screen.getByTestId('vista-export-query-dialog')).getAllByRole('tab', {
+        hidden: true,
+      })
+      const otherTab = tabs.find((tab) => tab.getAttribute('aria-selected') !== 'true')
+      fireEvent.click(otherTab as HTMLElement)
+      expect(screen.getByTestId('vista-export-query-copy').hasAttribute('data-copied')).toBe(false)
+
+      fireEvent.click(screen.getByTestId('vista-export-query-copy'))
+      await waitFor(() =>
+        expect(screen.getByTestId('vista-export-query-copy').getAttribute('data-copied')).toBe(
+          'true',
+        ),
+      )
+      await waitFor(
+        () =>
+          expect(screen.getByTestId('vista-export-query-copy').hasAttribute('data-copied')).toBe(
+            false,
+          ),
+        {timeout: 3000},
+      )
+    } finally {
+      if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
+      else Reflect.deleteProperty(navigator, 'clipboard')
+    }
+  })
+
   it('locks the API version to vX and sends the navbar variant with the global perspective', async () => {
     const initial = createInitialState(DEFAULTS)
     const tab = createTab(initial.settings, {id: 'pinned', query: '*[_id == "a"]'})

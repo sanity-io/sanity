@@ -6,6 +6,7 @@ import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
+import * as overlays from './overlays.module.css'
 
 export interface PromptRowProps {
   label: string
@@ -57,6 +58,7 @@ export function PromptRow(props: PromptRowProps) {
         />
       </Box>
       <Button
+        className={overlays.pressable}
         data-testid={`${testIdPrefix}-submit`}
         disabled={!value.trim() || pending}
         fontSize={1}
