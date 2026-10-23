@@ -1226,6 +1226,7 @@ exports[`exports snapshot 1`] = `
     "RouterContext": "object",
     "RouterProvider": "function",
     "StateLink": "function",
+    "WithRouter": "function",
     "route": "object",
     "useIntentLink": "function",
     "useLink": "function",

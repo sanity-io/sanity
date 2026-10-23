@@ -33,4 +33,6 @@ export {useStateLink, type UseStateLinkOptions} from '../router/useStateLink'
 // oxlint-disable-next-line no-deprecated -- deprecated before this PR; its removal is governed by its own deprecation
 export {withRouter} from '../router/withRouter'
 // oxlint-disable-next-line no-deprecated -- deprecated before this PR; its removal is governed by its own deprecation
+export {WithRouter} from '../router/withRouter'
+// oxlint-disable-next-line no-deprecated -- deprecated before this PR; its removal is governed by its own deprecation
 export {type WithRouterProps} from '../router/withRouter'

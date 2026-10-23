@@ -151,6 +151,7 @@ const KEPT_FOR_COMPATIBILITY: Record<string, Readonly<Record<string, string>>> =
   'sanity/router': {
     // Deprecated before this PR; see the note above.
     withRouter: 'deprecated; removal governed by its deprecation',
+    WithRouter: 'deprecated; removal governed by its deprecation',
     WithRouterProps: 'deprecated; removal governed by its deprecation',
   },
   'sanity/structure': {

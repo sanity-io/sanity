@@ -41,6 +41,7 @@ import type {
   useStateLink,
   UseStateLinkOptions,
   withRouter,
+  WithRouter,
   WithRouterProps,
 } from 'sanity/router'
 import {describe, expectTypeOf, test} from 'vitest'
@@ -160,6 +161,9 @@ describe('sanity/router', () => {
   })
   test('withRouter', () => {
     expectTypeOf<typeof withRouter>().toBeFunction()
+  })
+  test('WithRouter', () => {
+    expectTypeOf<typeof WithRouter>().not.toBeNever()
   })
   test('WithRouterProps', () => {
     expectTypeOf<WithRouterProps>().toBeObject()
