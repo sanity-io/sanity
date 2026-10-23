@@ -1,5 +1,5 @@
 import {type SanityDocument, type ValidationMarker} from '@sanity/types'
-import {act, renderHook, waitFor} from '@testing-library/react'
+import {act, renderHook, screen, waitFor} from '@testing-library/react'
 import deepCompare from 'react-fast-compare'
 import {
   type DocumentActionProps,
@@ -16,6 +16,10 @@ import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
+import {
+  VALIDATION_INSPECTOR_NAME,
+  VALIDATION_PUBLISH_NOTICE_PARAM,
+} from '../../panes/document/constants'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {usePublishAction} from '../PublishAction'
 
@@ -101,18 +105,27 @@ function keystroke(rev: string) {
   return {draft, editState, targetDocumentState, props}
 }
 
+const openInspectorMock = vi.fn()
+
 function applyKeystroke(
   state: ReturnType<typeof keystroke>,
   {
     syncing = false,
     validation = [],
     isValidating = false,
-  }: {syncing?: boolean; validation?: ValidationMarker[]; isValidating?: boolean} = {},
+    openInspector = openInspectorMock,
+  }: {
+    syncing?: boolean
+    validation?: ValidationMarker[]
+    isValidating?: boolean
+    openInspector?: ReturnType<typeof vi.fn>
+  } = {},
 ) {
   mockUseDocumentPane.mockReturnValue({
     changesOpen: false,
     documentId: ID,
     documentType: 'author',
+    openInspector,
     value: state.draft,
     targetDocumentState: state.targetDocumentState,
   } as unknown as ReturnType<typeof useDocumentPane>)
@@ -141,6 +154,7 @@ async function renderPublishAction(props: DocumentActionProps) {
 describe('usePublishAction', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    openInspectorMock.mockReset()
     operations = {publish: {disabled: false, execute: vi.fn()}}
     mockUseDocumentOperation.mockReturnValue(
       operations as unknown as ReturnType<typeof useDocumentOperation>,
@@ -174,8 +188,53 @@ describe('usePublishAction', () => {
     applyKeystroke(second, {validation: [REQUIRED_NAME]})
     rerender(second.props)
 
-    expect(result.current?.disabled).toBe(true)
+    expect(result.current?.disabled).toBe(false)
+    expect(result.current?.title).toBe(
+      'There are validation errors that need to be fixed before this document can be published',
+    )
     expect(deepCompare(before, result.current)).toBe(false)
+  })
+
+  it('opens the validation inspector instead of publishing when there are errors', async () => {
+    const openInspector = vi.fn()
+    const state = keystroke('1')
+    applyKeystroke(state, {validation: [REQUIRED_NAME], openInspector})
+    const {result} = await renderPublishAction(state.props)
+
+    act(() => result.current?.onHandle?.())
+
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+    expect(openInspector).toHaveBeenCalledWith(
+      VALIDATION_INSPECTOR_NAME,
+      expect.objectContaining({
+        [VALIDATION_PUBLISH_NOTICE_PARAM]: expect.stringMatching(/^\d+$/),
+      }),
+    )
+  })
+
+  it('opens the validation inspector when a waiting publish finds errors', async () => {
+    const openInspector = vi.fn()
+    const state = keystroke('1')
+    applyKeystroke(state, {isValidating: true, openInspector})
+    const {result, rerender} = await renderPublishAction(state.props)
+
+    act(() => result.current?.onHandle?.())
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+    expect(openInspector).not.toHaveBeenCalled()
+
+    applyKeystroke(state, {validation: [REQUIRED_NAME], openInspector})
+    rerender(state.props)
+
+    await waitFor(() =>
+      expect(openInspector).toHaveBeenCalledWith(
+        VALIDATION_INSPECTOR_NAME,
+        expect.objectContaining({
+          [VALIDATION_PUBLISH_NOTICE_PARAM]: expect.stringMatching(/^\d+$/),
+        }),
+      ),
+    )
+    expect(operations.publish.execute).not.toHaveBeenCalled()
+    expect(await screen.findByText('Validation errors')).toBeInTheDocument()
   })
 
   it('reads the latest sync state when handled', async () => {
