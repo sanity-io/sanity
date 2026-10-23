@@ -13,7 +13,7 @@ import {
 } from 'sanity'
 import {Box, Flex, VisuallyHidden} from 'ui5'
 
-import {API_VERSIONS} from '../../../apiVersions'
+import {API_VERSIONS, VARIANTS_API_VERSION} from '../../../apiVersions'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
@@ -119,7 +119,7 @@ interface ApiVersionFieldProps {
   id: string
   /** Any version; one not in `API_VERSIONS` shows up in the "Other" input */
   value: string
-  /** Locked to `vX` while a variant is selected in the navbar */
+  /** Locked to `VARIANTS_API_VERSION` while a variant is selected in the navbar */
   locked: boolean
   onChange: (apiVersion: string) => void
 }
@@ -144,7 +144,11 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
       <FieldLabel htmlFor={id}>{t('settings.api-version-label')}</FieldLabel>
       <Tooltip
         animate
-        content={<Text size={1}>{t('settings.api-version-locked-for-variant')}</Text>}
+        content={
+          <Text size={1}>
+            {t('settings.api-version-locked-for-variant', {apiVersion: VARIANTS_API_VERSION})}
+          </Text>
+        }
         disabled={!locked}
         placement="bottom"
         portal
@@ -164,7 +168,7 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
         >
           {locked && (
             <VisuallyHidden id={lockedHintId}>
-              {t('settings.api-version-locked-for-variant')}
+              {t('settings.api-version-locked-for-variant', {apiVersion: VARIANTS_API_VERSION})}
             </VisuallyHidden>
           )}
           <Select
@@ -174,7 +178,7 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
             id={id}
             onChange={handleSelect}
             padding={2}
-            value={locked ? 'vX' : isCustom ? 'other' : value}
+            value={locked ? VARIANTS_API_VERSION : isCustom ? 'other' : value}
           >
             {API_VERSIONS.map((version) => (
               <option key={version} value={version}>

@@ -123,7 +123,7 @@ vi.mock('sanity', async () => {
     }),
     defineLocaleResourceBundle: (bundle: unknown) => bundle,
     defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-    VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
+    VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
     RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: '2025-02-19'},
     getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
     isCardinalityOneRelease: () => false,
@@ -1876,7 +1876,7 @@ describe('VistaGui', () => {
     )
   })
 
-  it('locks the API version to vX and sends the navbar variant with the global perspective', async () => {
+  it('locks the API version to the variants version and sends the navbar variant with the global perspective', async () => {
     const initial = createInitialState(DEFAULTS)
     const tab = createTab(initial.settings, {id: 'pinned', query: '*[_id == "a"]'})
     saveVistaState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pinned'})
@@ -1888,7 +1888,7 @@ describe('VistaGui', () => {
     const apiVersionSelect = screen.getByTestId(
       'vista-option-api-version-select',
     ) as HTMLSelectElement
-    expect(apiVersionSelect.value).toBe('vX')
+    expect(apiVersionSelect.value).toBe('v2025-08-18')
     expect(apiVersionSelect.disabled).toBe(true)
     // The disabled select is out of the tab order, so its wrapper takes its place there, as a
     // group described by the reason for the lock, for a keyboard user to reach the explanation
@@ -1898,19 +1898,21 @@ describe('VistaGui', () => {
     expect(apiVersionWrap.getAttribute('aria-label')).toBe('settings.api-version-label')
     expect(describedBy(apiVersionWrap)).toBe('settings.api-version-locked-for-variant')
     // The action bar names the version requests actually use, and its button shows the lock
-    expect(text(screen.getByTestId('vista-api-version-button'))).toBe('vista.api-version.button:vX')
+    expect(text(screen.getByTestId('vista-api-version-button'))).toBe(
+      'vista.api-version.button:v2025-08-18',
+    )
     fireEvent.click(screen.getByTestId('vista-api-version-button'))
     await waitFor(() => expect(document.activeElement).toBe(apiVersionWrap))
 
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].config).toMatchObject({
-      apiVersion: 'vX',
+      apiVersion: 'v2025-08-18',
       perspective: 'published',
       variant: 'french',
     })
     const url = new URL((screen.getByTestId('vista-query-url') as HTMLInputElement).value)
-    expect(url.pathname).toContain('/vX/')
+    expect(url.pathname).toContain('/v2025-08-18/')
     expect(url.searchParams.get('variant')).toBe('french')
     expect(url.searchParams.get('perspective')).toBe('published')
   })
@@ -1949,7 +1951,7 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].config).toMatchObject({
-      apiVersion: 'vX',
+      apiVersion: 'v2025-08-18',
       perspective: 'raw',
       variant: 'french',
     })
@@ -1969,7 +1971,7 @@ describe('VistaGui', () => {
     const {fetchCalls} = renderVista({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
     expect(screen.queryByTestId('vista-option-variant-select')).toBeNull()
     expect(selectValue('vista-option-perspective-select')).toBe('global')
-    // Nothing locks the API version to vX
+    // Nothing locks the API version to the variants version
     const apiVersionSelect = screen.getByTestId(
       'vista-option-api-version-select',
     ) as HTMLSelectElement
@@ -2001,7 +2003,7 @@ describe('VistaGui', () => {
       document: {drafts: {enabled: true}},
       beta: {variants: {enabled: false}},
     }
-    const url = `https://${PROJECT_ID}.api.sanity.io/vX/data/query/test?query=*&variant=french`
+    const url = `https://${PROJECT_ID}.api.sanity.io/v2025-08-18/data/query/test?query=*&variant=french`
     sanityMocks.savedQueries = {
       queries: [
         {
@@ -2161,7 +2163,7 @@ describe('VistaGui', () => {
   })
 
   it('says so when a pasted URL used a variant the navbar does not have selected', async () => {
-    const url = `https://${PROJECT_ID}.api.sanity.io/vX/data/query/test?query=*&variant=french`
+    const url = `https://${PROJECT_ID}.api.sanity.io/v2025-08-18/data/query/test?query=*&variant=french`
     renderVista()
     fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
     await waitFor(() => expect(getQueryEditor().value).toBe('*'))
@@ -2187,7 +2189,7 @@ describe('VistaGui', () => {
             _key: 'saved-french',
             shared: false,
             title: 'French',
-            url: `https://${PROJECT_ID}.api.sanity.io/vX/data/query/test?query=*&variant=french`,
+            url: `https://${PROJECT_ID}.api.sanity.io/v2025-08-18/data/query/test?query=*&variant=french`,
             savedAt: '2026-01-01T00:00:00Z',
           },
         ],

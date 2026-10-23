@@ -78,13 +78,13 @@ describe('savedQueryTab', () => {
     expect(matches(global, url('*', {perspective: 'drafts'}), pinnedRelease)).toBe(false)
     expect(matches(global, url('*', {perspective: 'rXYZ,drafts'}))).toBe(false)
 
-    // A selected navbar variant sends `vX` and the variant, whatever the tab's own API version says
+    // A selected navbar variant sends the variants API version and the variant, whatever the tab's own API version says
     const withVariant = {...environment, selectedVariantNames: ['french']}
     expect(global.options.apiVersion).toBe('v2025-02-19')
     expect(
       matches(
         global,
-        url('*', {perspective: 'drafts', variant: 'french'}, 'vX/data/query/production'),
+        url('*', {perspective: 'drafts', variant: 'french'}, 'v2025-08-18/data/query/production'),
         withVariant,
       ),
     ).toBe(true)
@@ -161,7 +161,7 @@ describe('savedQueryTab', () => {
     const variantUrl = url(
       '*',
       {perspective: 'drafts', variant: 'french'},
-      'vX/data/query/production',
+      'v2025-08-18/data/query/production',
     )
     // The tab sends the navbar's variant, so the saved request carries it too
     expect(matches(tab, variantUrl, withVariant)).toBe(true)
@@ -169,7 +169,11 @@ describe('savedQueryTab', () => {
     expect(matches(tab, variantUrl)).toBe(false)
     // ...and a saved request without a variant is not what a tab with one sends
     expect(
-      matches(tab, url('*', {perspective: 'drafts'}, 'vX/data/query/production'), withVariant),
+      matches(
+        tab,
+        url('*', {perspective: 'drafts'}, 'v2025-08-18/data/query/production'),
+        withVariant,
+      ),
     ).toBe(false)
     // Where the workspace has variants switched off, the tab sends none, whatever the navbar's
     // URL still carries, so it sends the request without the variant and not the one with it
@@ -221,7 +225,7 @@ describe('savedQueryTab', () => {
     const variantUrl = url(
       '*',
       {perspective: 'drafts', variant: 'french'},
-      'vX/data/query/production',
+      'v2025-08-18/data/query/production',
     )
     const following = createTab(settings, parsedQueryToTabInit(parse(variantUrl)))
     expect(following.options.variant).toBe('global')
