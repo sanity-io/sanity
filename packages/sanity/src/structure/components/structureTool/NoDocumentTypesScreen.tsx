@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Container} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Text, Flex, Box, Icon} from 'ui5'
+import {Text, Flex, Box, Icon, Link} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 
@@ -31,13 +31,14 @@ export function NoDocumentTypesScreen() {
                   {t('no-document-types-screen.subtitle')}
                 </Text>
                 <Text as="p" muted size={1} trim={true} tone="caution">
-                  <a
+                  <Link
                     href="https://www.sanity.io/docs/create-a-schema-and-configure-sanity-studio"
-                    target="_blank"
-                    rel="noreferrer"
+                    openInNewTab
+                    underlined={false}
+                    style={{color: 'var(--card-link-fg-color)'}}
                   >
                     {t('no-document-types-screen.link-text')}
-                  </a>
+                  </Link>
                 </Text>
               </Flex>
             </Flex>

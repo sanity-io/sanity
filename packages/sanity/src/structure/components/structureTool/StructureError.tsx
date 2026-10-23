@@ -4,7 +4,7 @@ import {Card, Container, Heading} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
-import {Text, Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, Link} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -85,9 +85,14 @@ export function StructureError({error, onReload}: StructureErrorProps) {
           {helpId && (
             <Box marginTop={4}>
               <Text as="div" trim={true} tone="critical">
-                <a href={generateHelpUrl(helpId)} rel="noopener noreferrer" target="_blank">
+                <Link
+                  href={generateHelpUrl(helpId)}
+                  openInNewTab
+                  underlined={false}
+                  style={{color: 'var(--card-link-fg-color)'}}
+                >
                   {t('structure-error.docs-link.text')}
-                </a>
+                </Link>
               </Text>
             </Box>
           )}
