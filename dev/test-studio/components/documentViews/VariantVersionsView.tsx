@@ -18,10 +18,10 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Text, Box, Grid, VStack, Icon, Link} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'
-const RAW_PERSPECTIVE_CLIENT_OPTIONS = {apiVersion: 'X' as const}
 
 type VersionSnapshot = {
   _id?: string
@@ -250,7 +250,7 @@ function observeFullDocument(
   id: string,
 ): Observable<unknown> {
   return documentPreviewStore.unstable_observeDocument(id, {
-    apiVersion: RAW_PERSPECTIVE_CLIENT_OPTIONS.apiVersion,
+    apiVersion: VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
 }
 
@@ -308,7 +308,7 @@ function DocumentJsonDialog(props: {documentId: string; label: string; onClose: 
 }
 
 function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
-  const client = useClient(RAW_PERSPECTIVE_CLIENT_OPTIONS)
+  const client = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
   const dateFormatter = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
   const formattedUpdatedAt = formatUpdatedAt(dateFormatter, snapshot?._updatedAt)
   const [dialogOpen, setDialogOpen] = useState(false)

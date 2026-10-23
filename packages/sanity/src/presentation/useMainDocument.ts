@@ -158,7 +158,7 @@ export function useMainDocument(props: {
   }
 
   const {state: routerState} = useRouter()
-  // Fetching with a variant requires the `vX` API version for now
+  // Fetching with a variant requires the variants API version
   const client = useClient(variant ? VARIANTS_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION})
   const relativeUrl =
     path || routerState._searchParams?.find(([key]) => key === 'preview')?.[1] || ''
