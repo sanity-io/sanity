@@ -32,6 +32,6 @@
     "pnpm-workspace.yaml",
     "**/CHANGELOG.md",
     "**/turbo.json",
-    "**/generated/**/*.module.css.d.ts"
+    "**/generated/**/*.css.d.ts"
   ]
 }

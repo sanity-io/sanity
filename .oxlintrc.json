@@ -93,9 +93,9 @@
     "examples/**",
     // Intentional .test-d.ts / expectTypeOf fixtures — vitest typechecks these separately
     "packages/@repo/test-dts-exports/**",
-    // The CSS module typings css-modules-kit writes (`pnpm css:types`): gitignored, `@ts-nocheck`ed
-    // declarations the type checker still reads through `rootDirs`
-    "**/generated/**/*.module.css.d.ts"
+    // The CSS typings `pnpm css:types` writes (css-modules-kit's `@ts-nocheck`ed module typings and the
+    // plain stylesheets' `export {}` typings): gitignored declarations the type checker still reads
+    "**/generated/**/*.css.d.ts"
   ],
   "categories": {
     "correctness": "error",

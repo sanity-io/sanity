@@ -7,7 +7,7 @@
   "exports": {
     "./vite": "./src/vite.ts",
     "./panda.css": {
-      "types": "./src/panda.css.d.ts",
+      "types": "./generated/src/panda.css.d.ts",
       "default": "./src/panda.css"
     }
   },

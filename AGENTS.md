@@ -345,7 +345,8 @@ Vite.
   codegen (`cmk`), and the typings are never committed. `pnpm css:types` regenerates them all: it
   runs the `generate` script of `packages/@repo/css-modules-kit`, which chains one
   `cmk --clean --project <workspace>` script per workspace with CSS modules (`generate:vision`,
-  `generate:test-studio`). `pnpm install` generates them (the package's `prepare` script),
+  `generate:test-studio`), plus the typings of the plain stylesheets (see the global styles bullet below).
+  `pnpm install` generates them (the package's `prepare` script),
   `pnpm lint` and `pnpm lint:fix` regenerate them before oxlint type-checks, and vision's `build`
   regenerates its own first (`prebuild: pnpm --filter @repo/css-modules-kit run generate:vision`,
   before tsdown emits declarations), so a fresh clone, the editor and CI see them without a
@@ -364,7 +365,7 @@ Vite.
   never as a default import.** The typings have no default export (`namedExports: true`), so a
   default import is a type error; Lightning CSS can only see which classes a module reads through
   a namespace or named import, which keeps the door open to dropping unused ones.
-- **Keep the type checker on the generated typings.** Neither workspace declares an ambient
+- **Keep the type checker on the generated typings.** No workspace declares an ambient
   `declare module '*.module.css'`, and nothing may add one: `/// <reference types="vite/client" />`
   does (a default export that accepts any class name), and it hides typos. Without its typings, a
   vision import fails with TS2307. The test studio's tsconfig includes all of `dev/` like the
@@ -375,8 +376,9 @@ Vite.
   commands just means the typings have not been generated yet: run `pnpm css:types`. cmk's
   TypeScript plugin and VS Code extension do nothing here, since the editor runs the TypeScript 7
   language server (`typescript.experimental.useTsgo`), which does not load plugins; the generated
-  typings are what the editor sees too. oxfmt and oxlint skip the generated files, which carry
-  cmk's own `// @ts-nocheck` and formatting.
+  typings are what the editor sees too. oxfmt and oxlint skip the generated files
+  (`**/generated/**/*.css.d.ts`, also the `.gitignore` pattern), which carry cmk's own
+  `// @ts-nocheck` and formatting.
 - **Lightning CSS scopes more than classes, per file.** `@keyframes` and container names are
   hashed and exported alongside the classes (the `cmkOptions` mirror that, and
   `cssModules.test.ts` checks that the typings declare exactly what Lightning CSS exports), so keep
@@ -389,10 +391,19 @@ Vite.
 - **Do not list selectors that contain `:global()`.** With browser targets, Lightning CSS wraps
   such a selector list in `:is()`, which gives every selector the specificity of the most
   specific one. Repeat the rule instead.
-- **Global styles go in a plain `.css` file, with an `export {}` declaration next to it**
-  (`src/styles.css` and `styles.css.d.ts`). `@tsdown/css` drops a CSS module that is only
-  imported for its side effects, styles and all, and TypeScript 7 rejects a side-effect import it
-  cannot resolve (TS2882).
+- **Global styles go in a plain `.css` file whose `export {}` typings are generated, never
+  committed** (vision's `src/styles.css`, and `@repo/pandacss`'s `src/panda.css`). `@tsdown/css`
+  drops a CSS module that is only imported for its side effects, styles and all, and TypeScript 7
+  rejects a side-effect import it cannot resolve (TS2882). cmk only types `*.module.css`, so
+  `src/generateStylesheetTypings.mjs` in `@repo/css-modules-kit` writes
+  `generated/<stylesheet>.d.ts` for the stylesheets its scripts list, after `cmk --clean` in the
+  same `generate:<workspace>` script (`generate:vision`, and `generate:pandacss` for a workspace
+  without CSS modules). Vision resolves `./styles.css` to it through `rootDirs`;
+  `@repo/pandacss` points the `types` condition of its `./panda.css` export at it. Do not check a
+  hand-written `export {}` declaration in instead: oxlint's
+  `unicorn/require-module-specifiers` fix strips the `export {}`, which is what the lint-fix bot
+  kept proposing. A new plain stylesheet imported for its side effects is added to its
+  workspace's script.
 - **Class names are `[content-hash]_[local]`** (`cssModulesPattern` from `@repo/css-modules-kit`),
   so a release that changes a file's styles gets new names for them. Every Vite build that
   compiles vision's sources uses Lightning CSS with the same pattern (`viteCssModules`): the test
