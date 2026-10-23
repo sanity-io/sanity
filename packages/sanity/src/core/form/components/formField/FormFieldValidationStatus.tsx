@@ -1,6 +1,6 @@
 import {type FormNodeValidation} from '@sanity/types'
-import {type Placement, Text} from '@sanity/ui'
-import {Box, Flex, VStack} from 'ui5'
+import {type Placement} from '@sanity/ui'
+import {Text, Box, Flex, VStack, type TextProps} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
@@ -22,7 +22,7 @@ export interface FormFieldValidationStatusProps {
    * @beta
    */
   __unstable_showSummary?: boolean
-  fontSize?: number
+  fontSize?: TextProps['size']
   placement?: Placement
 }
 
@@ -58,7 +58,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       fallbackPlacements={['bottom', 'right', 'left']}
     >
       <div className={statusIconWrapper}>
-        <Text size={fontSize} weight="medium">
+        <Text size={fontSize} weight="medium" as="div" trim={true}>
           <StatusIcon status={status} />
         </Text>
       </div>
@@ -72,12 +72,14 @@ function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) 
   return (
     <Flex>
       <Box marginRight={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           <StatusIcon status={validation.level} />
         </Text>
       </Box>
       <Box flexBasis="0%" flexGrow={1}>
-        <Text size={1}>{validation.message}</Text>
+        <Text size={1} as="div" trim={true}>
+          {validation.message}
+        </Text>
       </Box>
     </Flex>
   )
@@ -108,8 +110,12 @@ function FormFieldValidationSummary({validation}: {validation: FormNodeValidatio
     hasWarnings && t('form.validation.summary.warnings-count', {count: warningCount})
 
   return errorText && warningText ? (
-    <Text size={1}>{listFormatter.format([errorText, warningText])}</Text>
+    <Text size={1} as="div" trim={true}>
+      {listFormatter.format([errorText, warningText])}
+    </Text>
   ) : (
-    <Text size={1}>{errorText || warningText}</Text>
+    <Text size={1} as="div" trim={true}>
+      {errorText || warningText}
+    </Text>
   )
 }

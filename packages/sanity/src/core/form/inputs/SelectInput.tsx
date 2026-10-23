@@ -1,6 +1,6 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
-import {Card, type CardTone, Radio, Select, Text} from '@sanity/ui'
+import {Card, type CardTone, Radio, Select} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'
 import {
   type ChangeEvent,
@@ -10,7 +10,7 @@ import {
   useMemo,
   type RefAttributes,
 } from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
@@ -228,7 +228,7 @@ function RadioSelectItem(
       />
 
       <Box marginLeft={2}>
-        <Text size={1} weight={checked ? 'medium' : 'regular'}>
+        <Text size={1} weight={checked ? 'medium' : 'regular'} as="div" trim={true}>
           {item.title}
         </Text>
       </Box>

@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {Text} from '@sanity/ui'
+import {Text} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -21,7 +21,7 @@ function PrimitiveUploadTargetInput(props: ArrayOfPrimitivesInputProps) {
       radius={2}
       padding={5}
     >
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         Drop text files to add them as items
       </Text>
     </UploadTargetCard>

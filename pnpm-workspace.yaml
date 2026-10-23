@@ -118,9 +118,6 @@ minimumReleaseAgeExclude:
   - 'framer-motion'
   - 'motion'
   - 'motion-dom'
-  # motion-utils does not ship a release for every motion version; 14.1.1 is the one the current
-  # motion releases depend on, and it is still younger than the age gate
-  - 'motion-utils@14.1.1'
   # oxc-transform-react and its per-platform native bindings (@oxc-transform-react/binding-*)
   # release in lockstep with the oxc toolchain; @vitejs/plugin-react and
   # @sanity/cli/@sanity/tsdown-config pin fresh versions as peers for the React Compiler oxc transform

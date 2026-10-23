@@ -1,8 +1,7 @@
 import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
-import {Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box, type MarginProps} from 'ui5'
+import {Text, Flex, Box, type MarginProps} from 'ui5'
 
 interface DetailsProps extends MarginProps {
   children?: ReactNode
@@ -60,13 +59,13 @@ export function Details(props: DetailsProps) {
         <Header>
           <Flex alignItems="center">
             <IconBox data-open={open ? '' : undefined}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <ToggleArrow $open={open} />
               </Text>
             </IconBox>
             {icon && <Box marginLeft={1}>{icon}</Box>}
             <Box flexBasis="0%" flexGrow={1} marginLeft={1}>
-              <Text textOverflow="ellipsis" size={1} weight="medium">
+              <Text truncate={1} size={1} weight="medium" as="div" trim={true}>
                 {title}
               </Text>
             </Box>

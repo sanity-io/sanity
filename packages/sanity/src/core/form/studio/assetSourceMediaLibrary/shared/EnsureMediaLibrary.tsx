@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useEffect} from 'react'
-import {VStack, Flex} from 'ui5'
+import {Text, VStack, Flex} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {
@@ -28,10 +28,10 @@ export function EnsureMediaLibrary(props: {
     return (
       <Card padding={4} radius={4} tone="caution" data-testid="media-library-absent-warning">
         <Flex gap={3}>
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <ErrorOutlineIcon />
           </Text>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="semibold" as="div" trim={true}>
             {t('asset-sources.media-library.error.no-media-library-provisioned')}
           </Text>
         </Flex>
@@ -44,11 +44,11 @@ export function EnsureMediaLibrary(props: {
     return (
       <Card padding={4} radius={4} tone="critical" data-testid="media-library-provision-error">
         <Flex gap={3}>
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <ErrorOutlineIcon />
           </Text>
           <VStack gap={4} data-testid={errorCodeTestId}>
-            <Text size={1} weight="semibold">
+            <Text size={1} weight="semibold" as="div" trim={true}>
               {error.message ||
                 t('asset-sources.media-library.error.library-could-not-be-resolved')}
             </Text>

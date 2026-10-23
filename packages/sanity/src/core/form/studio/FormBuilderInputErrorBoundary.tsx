@@ -1,7 +1,7 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useState} from 'react'
-import {VStack, Box} from 'ui5'
+import {Text, VStack, Box} from 'ui5'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
@@ -62,13 +62,13 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
   return (
     <Alert status="error" title={<>{t('form.error.unhandled-runtime-error.title')}</>}>
       <VStack gap={4}>
-        <Text as="p" muted size={1}>
+        <Text as="p" muted size={1} trim={true}>
           <>{t('form.error.unhandled-runtime-error.error-message', {message})}</>
         </Text>
         {callStack && (
           <Box key="call-stack">
             <VStack gap={2}>
-              <Text as="p" size={1}>
+              <Text as="p" size={1} trim={true}>
                 <>{t('form.error.unhandled-runtime-error.call-stack.title')}</>
               </Text>
               <Card border radius={2} overflow="auto" padding={4} tone="inherit">
@@ -84,7 +84,7 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
         {isDev && componentStack && (
           <Box key="component-stack">
             <VStack gap={2}>
-              <Text as="p" size={1}>
+              <Text as="p" size={1} trim={true}>
                 <>{t('form.error.unhandled-runtime-error.component-stack.title')}</>
               </Text>
               <Card border radius={2} overflow="auto" padding={4} tone="inherit">

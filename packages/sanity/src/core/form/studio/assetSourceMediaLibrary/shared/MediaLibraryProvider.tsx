@@ -1,8 +1,8 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {MediaLibraryIdsContext} from 'sanity/_singletons'
-import {VStack, Flex} from 'ui5'
+import {Text, VStack, Flex} from 'ui5'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -61,11 +61,11 @@ export function MediaLibraryProvider({
     return (
       <Card padding={4} radius={4} tone="critical" data-testid="media-library-provision-error">
         <Flex gap={3}>
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <ErrorOutlineIcon />
           </Text>
           <VStack gap={4} data-testid="MEDIA_LIBRARY_ERROR_UNEXPECTED">
-            <Text size={1} weight="semibold">
+            <Text size={1} weight="semibold" as="div" trim={true}>
               {unexpectedError.message ||
                 t('asset-sources.media-library.error.library-could-not-be-resolved')}
             </Text>

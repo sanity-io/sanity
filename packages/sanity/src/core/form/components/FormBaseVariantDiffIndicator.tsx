@@ -1,6 +1,6 @@
-import {Text} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {type ComponentType, type CSSProperties} from 'react'
+import {Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
@@ -29,6 +29,8 @@ export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromB
                   '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
                 } as CSSProperties
               }
+              as="div"
+              trim={true}
             >
               <RhombusIcon />
             </Text>

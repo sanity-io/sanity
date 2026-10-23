@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type CSSProperties} from 'react'
-import {Flex, Grid} from 'ui5'
+import {Text, Flex, Grid} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
@@ -39,10 +39,10 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
             alignItems="center"
             style={{gridColumn: isImage ? 'span 2' : 'span 3'}}
           >
-            <Text>
+            <Text as="div" trim={true}>
               <WarningOutlineIcon />
             </Text>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               {t(`asset-source.delete-dialog.usage-list.warning-${assetType}-is-in-use`, {
                 context: asset.originalFilename ? 'named' : 'unnamed',
                 filename: asset.originalFilename,
@@ -70,7 +70,7 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
     <Card paddingX={[2, 3, 4]} paddingY={[3, 3, 3, 4]}>
       <Grid gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={3}>
         <Flex style={{gridColumn: isImage ? 'span 2' : 'span 3'}} alignItems="center">
-          <Text>
+          <Text as="div" trim={true}>
             <Translate
               t={t}
               i18nKey={`asset-source.delete-dialog.usage-list.confirm-delete-${assetType}`}
