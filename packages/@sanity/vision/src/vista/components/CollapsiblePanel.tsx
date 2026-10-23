@@ -1,11 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {Button, Tab, TabList, TabPanel} from '@sanity/ui'
 import {type ReactNode, useEffect, useRef} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
+import {cx} from '../util/cx'
+import * as motion from './CollapsiblePanel.module.css'
 import * as styles from './vista.module.css'
 
 /** Height of the tab header, which is all that remains of a collapsed panel */
@@ -81,6 +82,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
             {tabs.map((tab) => (
               <Tab
                 aria-controls={`${idPrefix}-${tab.id}-panel`}
+                className={motion.pressable}
                 fontSize={1}
                 icon={tab.icon}
                 id={`${idPrefix}-${tab.id}-tab`}
@@ -98,10 +100,17 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
           </TabList>
         </Box>
         <Button
+          aria-controls={collapsed ? undefined : `${idPrefix}-${activeTab.id}-panel`}
+          aria-expanded={!collapsed}
           aria-label={collapsed ? t('vista.panel.expand') : t('vista.panel.collapse')}
+          className={cx(motion.pressable, motion.toggle)}
           data-testid={`${idPrefix}-panel-toggle`}
           fontSize={1}
-          icon={collapsed ? ChevronUpIcon : ChevronDownIcon}
+          icon={
+            <span className={motion.toggleChevron}>
+              <ChevronDownIcon />
+            </span>
+          }
           mode="bleed"
           onClick={onToggle}
           padding={2}
@@ -110,6 +119,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
       {!collapsed && (
         <TabPanel
           aria-labelledby={`${idPrefix}-${activeTab.id}-tab`}
+          className={motion.body}
           flex={1}
           id={`${idPrefix}-${activeTab.id}-panel`}
           overflow="auto"
