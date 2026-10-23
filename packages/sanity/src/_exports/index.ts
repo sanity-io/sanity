@@ -252,16 +252,27 @@ export {
 } from '../core/field/types'
 export {EditPortal} from '../core/form/components/EditPortal'
 export {EnhancedObjectDialog} from '../core/form/components/EnhancedObjectDialog'
-export {FormField} from '../core/form/components/formField/FormField'
 export {FormFieldHeaderText} from '../core/form/components/formField/FormFieldHeaderText'
 export {FormFieldValidationStatus} from '../core/form/components/formField/FormFieldValidationStatus'
-export {FormInput} from '../core/form/components/FormInput'
 export {useFormValue} from '../core/form/contexts/FormValue'
 export {useGetFormValue} from '../core/form/contexts/GetFormValue'
 export {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
 export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
 export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 export {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
+// Code-split facades. Same names and props; the implementation loads on first render so the
+// form runtime and the Portable Text editor are not in the login screen's import graph.
+export {
+  ArrayOfObjectsItem,
+  FormBuilder,
+  FormField,
+  FormInput,
+  MemberField,
+  MemberFieldError,
+  ObjectInputMember,
+  PortableTextInput as BlockEditor,
+  PortableTextInput,
+} from '../core/form/lazy'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {ArrayOfObjectOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
 export {ArrayOfOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
@@ -276,10 +287,6 @@ export {EmailInput, type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
 export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
 export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
-export {
-  PortableTextInput as BlockEditor,
-  PortableTextInput,
-} from '../core/form/inputs/PortableText/PortableTextInput'
 export {SelectInput} from '../core/form/inputs/SelectInput'
 export {SlugInput, type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
 export {StringInput} from '../core/form/inputs/StringInput/StringInput'
@@ -287,18 +294,12 @@ export {TagsArrayInput, type TagsArrayInputProps} from '../core/form/inputs/Tags
 export {TelephoneInput, type TelephoneInputProps} from '../core/form/inputs/TelephoneInput'
 export {TextInput, type TextInputProps} from '../core/form/inputs/TextInput'
 export {UrlInput, type UrlInputProps} from '../core/form/inputs/UrlInput'
-export {
-  ArrayOfObjectsItem,
-  type MemberItemProps,
-} from '../core/form/members/array/items/ArrayOfObjectsItem'
+export {type MemberItemProps} from '../core/form/members/array/items/ArrayOfObjectsItem'
 export {
   ArrayOfPrimitivesItem,
   type PrimitiveMemberItemProps,
 } from '../core/form/members/array/items/ArrayOfPrimitivesItem'
 export {MemberItemError} from '../core/form/members/array/MemberItemError'
-export {MemberField} from '../core/form/members/object/MemberField'
-export {MemberFieldError} from '../core/form/members/object/MemberFieldError'
-export {ObjectInputMember} from '../core/form/members/object/ObjectInputMember'
 export {dec, diffMatchPatch, inc, insert, set, setIfMissing, unset} from '../core/form/patch/patch'
 export {
   createPatchChannel,
@@ -371,7 +372,7 @@ export {
   createSanityMediaLibraryImageSource,
 } from '../core/form/studio/assetSourceMediaLibrary/createAssetSource'
 export {FormCallbacksProvider, useFormCallbacks} from '../core/form/studio/contexts/FormCallbacks'
-export {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilder'
+export {type FormBuilderProps} from '../core/form/studio/FormBuilder'
 export {FormProvider, type FormProviderProps} from '../core/form/studio/FormProvider'
 export {
   StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput,
