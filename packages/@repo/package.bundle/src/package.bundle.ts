@@ -3,6 +3,7 @@ import {fileURLToPath} from 'node:url'
 
 import {pandacss} from '@pandacss/vite'
 import {viteCssModules} from '@repo/css-modules-kit'
+import {MADE_WITH_PANDA_SYMBOL} from '@sanity/pandacss-tsdown-plugin'
 import {removeCascadeLayers} from '@sanity/pandacss-tsdown-plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import {Features} from 'lightningcss'
@@ -52,11 +53,17 @@ export function createDefaultConfig({version, styles}: DefaultConfigOptions): Us
     // `color-scheme` when the two disagree. Disable the polyfill — same as
     // Tailwind — rather than raising `build.cssTarget` (that would change other
     // CSS lowering). See https://github.com/parcel-bundler/lightningcss/issues/873
+    //
+    // Panda puts a `:root {--made-with-panda: '🐼'}` marker in every stylesheet it generates, and
+    // has no option to leave it out. The package build drops it by listing it in Lightning CSS's
+    // `unusedSymbols` (`@sanity/pandacss-tsdown-plugin`); Vite's CSS minifier passes these options
+    // to Lightning CSS, so the CDN bundle drops it the same way.
     css: {
       transformer: cssModules?.transformer,
       lightningcss: {
         ...cssModules?.lightningcss,
         exclude: Features.LightDark,
+        ...(styles === 'panda' ? {unusedSymbols: [MADE_WITH_PANDA_SYMBOL]} : {}),
       },
     },
     define: {
