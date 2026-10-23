@@ -1,6 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
-import {Suspense, use, useCallback, useMemo} from 'react'
+import {Suspense, use, useCallback, useMemo, useState} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {
   CommandList,
@@ -34,16 +34,23 @@ export function CrossDatasetIncomingReferenceType({
 }) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
+  /**
+   * `type` comes from the schema's `renderMembers`, which builds a new object on every form
+   * render. Pinning the first one keeps `references$` stable, so the list is not re-fetched (and
+   * does not suspend into its loading state) whenever the form re-renders. The parent keys this
+   * component on the type name and dataset, so a different type still gets a fresh mount.
+   */
+  const [memoizedType] = useState(() => type)
 
   const references$ = useMemo(
     () =>
       getCrossDatasetIncomingReferences({
         documentId: referenced.id,
         client,
-        type: type,
+        type: memoizedType,
         documentPreviewStore,
       }),
-    [client, type, referenced.id, documentPreviewStore],
+    [client, memoizedType, referenced.id, documentPreviewStore],
   )
 
   const referencesPromise = useObservablePromise(references$)
