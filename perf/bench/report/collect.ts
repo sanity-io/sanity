@@ -790,14 +790,14 @@ export function collectSoftNav(
       const samples = sessions.map((navigations) =>
         softNavigationSamples(navigations, label, metric),
       )
-      const summary = summarize(samples.flat())
-      if (summary.n === 0) return []
+      const values = samples.flat()
+      if (values.length === 0) return []
       return [
         {
           label: softNavigationMetricLabel(label, metric),
           unit: SOFT_NAVIGATION_UNITS[metric],
           presentAsEfps: false,
-          experiment: {sessions: samples, summary},
+          experiment: {sessions: samples, summary: summarize(values)},
         },
       ]
     }),

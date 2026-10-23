@@ -777,4 +777,13 @@ describe('collectSoftNav', () => {
       report.metrics.find((metric) => metric.label === 'nav:document-open / soft CLS score')?.unit,
     ).toBe('cls')
   })
+
+  it('drops a metric no navigation of a label has a value for', () => {
+    const withoutInp = (navigations: SoftNavigationMeasurement[]) =>
+      navigations.map((navigation) => ({...navigation, softInpMs: null}))
+    const report = collectSoftNav('softNav', [withoutInp(session(300)), withoutInp(session(320))])
+    const labels = report.metrics.map((metric) => metric.label)
+    expect(labels).not.toContain('nav:document-open / soft INP latency')
+    expect(labels).toContain('nav:document-open / soft LCP time')
+  })
 })
