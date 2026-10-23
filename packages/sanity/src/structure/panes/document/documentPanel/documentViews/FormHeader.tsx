@@ -1,13 +1,21 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Heading, Inline} from '@sanity/ui'
-import {type MouseEvent} from 'react'
+import {Heading, Inline, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {type CSSProperties, type MouseEvent} from 'react'
 import {useTranslation} from 'sanity'
-import {css, styled} from 'styled-components'
-import {Text, Box, PressArea, VStack} from 'ui5'
+import {Text, Box, Flex, PressArea} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {
+  headingSize2FontSizeVar,
+  headingSize2LineHeightVar,
+  headingSize3FontSizeVar,
+  headingSize3LineHeightVar,
+  headingSize4FontSizeVar,
+  headingSize4LineHeightVar,
+  titleContainer,
+} from './FormHeader.css'
 
 interface DocumentHeaderProps {
   documentId: string
@@ -24,49 +32,6 @@ interface DocumentHeaderProps {
 const preventDefault = (event: MouseEvent<HTMLButtonElement>) => event.preventDefault()
 
 /**
- * Use CSS container queries to conditionally render headings at different sizes.
- * We hide this entire container (including the document type) if container queries
- * not supported in the current browser.
- *
- * Note that usage of container queries in `styled-components` is only supported in `6.x`.
- * As such, studios that include `"styled-components": "<6"` as a dependency will only see
- * the largest heading size here, even if their browser supports it!
- */
-
-const TitleContainer = styled(VStack)`
-  ${({theme}) => {
-    return css`
-      @supports not (container-type: inline-size) {
-        display: none !important;
-      }
-
-      container-type: inline-size;
-
-      [data-heading] {
-        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-        overflow-wrap: break-word;
-        text-wrap: pretty;
-      }
-
-      @container (max-width: 560px) {
-        [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-        }
-      }
-
-      @container (max-width: 420px) {
-        [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-        }
-      }
-    `
-  }}
-`
-
-/**
  * Header containing current document title and type.
  * Document type is hidden if the document `_id` matches the current document `_type`.
  * The entire header is hidden if container queries are not supported.
@@ -75,15 +40,32 @@ export const FormHeader = ({documentId, schemaType, title, onTitleClick}: Docume
   const isSingleton = documentId === schemaType.name
   const description = schemaType.description
   const {t} = useTranslation(structureLocaleNamespace)
+  const {font} = useThemeV2()
 
   if (schemaType.__experimental_formPreviewTitle === false) {
     return null
   }
 
+  const headingSizes = font.heading.sizes
   const titleText = title ?? t('document-view.form-view.form-title-fallback')
 
   return (
-    <TitleContainer marginBottom={6} gap={4}>
+    <Flex
+      className={titleContainer}
+      style={
+        {
+          [headingSize4FontSizeVar]: `${headingSizes[4].fontSize}px`,
+          [headingSize4LineHeightVar]: `${headingSizes[4].lineHeight}px`,
+          [headingSize3FontSizeVar]: `${headingSizes[3].fontSize}px`,
+          [headingSize3LineHeightVar]: `${headingSizes[3].lineHeight}px`,
+          [headingSize2FontSizeVar]: `${headingSizes[2].fontSize}px`,
+          [headingSize2LineHeightVar]: `${headingSizes[2].lineHeight}px`,
+        } as CSSProperties
+      }
+      flexDirection="column"
+      marginBottom={6}
+      gap={4}
+    >
       {!isSingleton && (
         <Inline gap={1}>
           <Text muted size={1} as="div" trim={true}>
@@ -115,6 +97,6 @@ export const FormHeader = ({documentId, schemaType, title, onTitleClick}: Docume
           titleText
         )}
       </Heading>
-    </TitleContainer>
+    </Flex>
   )
 }

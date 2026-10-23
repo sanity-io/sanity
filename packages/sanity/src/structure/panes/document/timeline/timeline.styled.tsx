@@ -1,27 +1,26 @@
-import {css, styled} from 'styled-components'
-import {VStack, Flex, Box} from 'ui5'
+import {clsx} from 'clsx'
+import {type ComponentProps, type CSSProperties} from 'react'
+import {Flex, Box, VStack} from 'ui5'
 
-export const StackWrapper = styled(VStack)`
-  max-width: 200px;
-`
+import {listWrapper, listWrapperMaxHeightVar, root, rootVisible, stackWrapper} from './timeline.css'
 
-export const ListWrapper = styled(Flex)<{$maxHeight: string}>`
-  max-height: ${(props) => props.$maxHeight};
-  min-width: 244px;
-`
+export function StackWrapper(props: ComponentProps<typeof VStack>) {
+  const {className, ...rest} = props
+  return <VStack {...rest} className={clsx(stackWrapper, className)} />
+}
 
-export const Root = styled(Box)<{$visible?: boolean}>(({$visible}) => {
-  return css`
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
+export function ListWrapper(props: ComponentProps<typeof Flex> & {$maxHeight: string}) {
+  const {$maxHeight, className, style, ...rest} = props
+  return (
+    <Flex
+      {...rest}
+      className={clsx(listWrapper, className)}
+      style={{[listWrapperMaxHeightVar]: $maxHeight, ...style} as CSSProperties}
+    />
+  )
+}
 
-    ${
-      $visible &&
-      css`
-        opacity: 1;
-        pointer-events: auto;
-      `
-    }
-  `
-})
+export function Root(props: ComponentProps<typeof Box> & {$visible?: boolean}) {
+  const {$visible, className, ...rest} = props
+  return <Box {...rest} className={clsx(root, $visible && rootVisible, className)} />
+}
