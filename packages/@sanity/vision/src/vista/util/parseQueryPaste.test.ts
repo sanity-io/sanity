@@ -88,6 +88,8 @@ describe('parseCurlQuery', () => {
     expect(parseCurlQuery(`curl --json '${body}' --url '${url}'`, datasets)).toMatchObject(expected)
     expect(parseCurlQuery(`curl '${url}' --data-raw='${body}'`, datasets)).toMatchObject(expected)
     expect(parseCurlQuery(`curl '${url}' -d'${body}'`, datasets)).toMatchObject(expected)
+    // Hand-written and docs often bundle `-d` with silent/follow flags
+    expect(parseCurlQuery(`curl -sSLd '${body}' '${url}'`, datasets)).toMatchObject(expected)
     // Chrome quotes a body with quotes or backslashes in it (a JSON newline is `\n`) in ANSI-C
     expect(
       parseCurlQuery(
@@ -100,6 +102,9 @@ describe('parseCurlQuery', () => {
     // The body wins over a query in the URL, as it does at the API
     expect(
       parseCurlQuery(`curl '${base}?query=count(*)&%24id=1' -d '${body}'`, datasets),
+    ).toMatchObject(expected)
+    expect(
+      parseCurlQuery(`curl -sSLd '${body}' '${base}?query=count(*)&%24id=1'`, datasets),
     ).toMatchObject(expected)
   })
 

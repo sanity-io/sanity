@@ -147,18 +147,21 @@ function parseCurlCommand(text: string): CurlRequest | null {
     }
 
     if (word.startsWith('-') && word.length > 1) {
-      const option = word.slice(0, 2)
-      // Bundled flags, `-sSL`
-      if (!VALUED_OPTIONS.has(option)) continue
-      let value: string | undefined
-      if (word.length > 2) {
-        // The value attached, `-dBODY`
-        value = word.slice(2)
-      } else {
-        i++
-        value = words[i]
+      // Bundled short options, e.g. `-sSLd` or `-dBODY`
+      for (let j = 1; j < word.length; j++) {
+        const option = `-${word[j]}`
+        if (!VALUED_OPTIONS.has(option)) continue
+        let value: string | undefined
+        if (j + 1 < word.length) {
+          // The value attached, `-dBODY`
+          value = word.slice(j + 1)
+        } else {
+          i++
+          value = words[i]
+        }
+        if (value !== undefined && DATA_OPTIONS.has(option)) data.push(value)
+        break
       }
-      if (value !== undefined && DATA_OPTIONS.has(option)) data.push(value)
       continue
     }
 
