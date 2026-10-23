@@ -2891,6 +2891,27 @@ describe('VisionRedesign', () => {
     expect(isDisabled(remove)).toBe(true)
   })
 
+  it('waits before the first rail tooltip opens and then opens its neighbours at once', async () => {
+    renderRedesign()
+    // A closed tooltip can stay mounted under a hidden `<Activity>`, so only a shown one counts
+    const tooltip = (label: string) =>
+      Array.from(document.querySelectorAll<HTMLElement>('[data-ui="Tooltip"]')).find(
+        (element) => text(element) === label && !element.closest('[style*="display: none"]'),
+      )
+
+    const shared = screen.getByTestId('vision-sidebar-shared')
+    fireEvent.mouseEnter(shared)
+    // A pointer passing over the rail on its way elsewhere opens nothing
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)))
+    expect(tooltip('vision.sidebar.shared-queries')).toBeUndefined()
+    await waitFor(() => expect(tooltip('vision.sidebar.shared-queries')).toBeDefined())
+
+    fireEvent.mouseLeave(shared)
+    fireEvent.mouseEnter(screen.getByTestId('vision-sidebar-saved'))
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
+    expect(tooltip('vision.sidebar.saved-queries')).toBeDefined()
+  })
+
   it('switches back to the classic tool from the sidebar and from the settings dialog', async () => {
     const {onSwitchToClassic} = renderRedesign()
 
