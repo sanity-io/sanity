@@ -145,6 +145,16 @@ const Content = styled(Box)<{
   `
 })
 
+/* Anchors the collapsible legend's hit area (see FormFieldSetLegend) to the whole row */
+const HeaderRow = styled(Flex)`
+  position: relative;
+`
+
+/* Keeps interactive header items above the legend's hit area */
+const HeaderRowItem = styled(Box)`
+  position: relative;
+`
+
 const EMPTY_ARRAY: never[] = []
 
 /** @internal */
@@ -245,7 +255,7 @@ export function FormFieldSet(
             inputId={inputId}
             content={
               <VStack gap={3}>
-                <Flex alignItems="center">
+                <HeaderRow alignItems="center">
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}
@@ -262,20 +272,20 @@ export function FormFieldSet(
                     </Box>
                   )}
                   {isArraySchemaType(schemaType) && Array.isArray(path) && (
-                    <Box marginLeft={2}>
+                    <HeaderRowItem marginLeft={2}>
                       <FormNodeDivergenceCollectionIndicator path={path} />
-                    </Box>
+                    </HeaderRowItem>
                   )}
                   {hasValidationMarkers && (
-                    <Box marginLeft={2}>
+                    <HeaderRowItem marginLeft={2}>
                       <FormFieldValidationStatus
                         fontSize={1}
                         placement="top"
                         validation={validation}
                       />
-                    </Box>
+                    </HeaderRowItem>
                   )}
-                </Flex>
+                </HeaderRow>
 
                 {deprecated && (
                   <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
