@@ -91,12 +91,12 @@ export function VisionGuiControls({
               <Box flexShrink={0} marginLeft={3}>
                 <Tooltip
                   animate
-                  content={<Text size={1}>{t('vista.redesign.try.description')}</Text>}
+                  content={<Text size={1}>{t('vision.redesign.try.description')}</Text>}
                   placement="top"
                   portal
                 >
                   <Button
-                    aria-label={t('vista.redesign.try')}
+                    aria-label={t('vision.redesign.try')}
                     data-testid="vision-try-redesign"
                     icon={RocketIcon}
                     mode="bleed"
