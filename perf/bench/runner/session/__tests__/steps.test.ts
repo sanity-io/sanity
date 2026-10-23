@@ -1,7 +1,14 @@
 import {describe, expect, it} from 'vitest'
 
 import {type ScenarioStep, type StepContext} from '../../../scenarios/types'
-import {milestoneMeasureName, resolveLocator, runStep, toTypeStep} from '../steps'
+import {
+  milestoneMeasureName,
+  navigateMeasureName,
+  navigationsWithoutSoftNavigation,
+  resolveLocator,
+  runStep,
+  toTypeStep,
+} from '../steps'
 
 interface FakeLocator {
   selector: string
@@ -69,6 +76,7 @@ function createFakePage(pageOptions: {readOnly?: boolean; probeLands?: boolean} 
   }
   const page = {
     log,
+    url: () => 'https://localhost:4311/test/structure/author',
     locator: (selector: string) => makeLocator(log, selector),
     getByLabel: (label: string, options?: {exact?: boolean}) =>
       makeLocator(log, label, undefined, options),
@@ -337,6 +345,80 @@ describe('runStep load steps', () => {
       message: '[probe-timeout] probe keystroke never landed (boot-cold)',
       diagnostics: ['console: boom'],
     })
+  })
+})
+
+describe('runStep navigate', () => {
+  const step: ScenarioStep = {
+    kind: 'navigate',
+    label: 'open author',
+    selector: {testId: 'pane-item-author-1'},
+    url: /\/author;author-1$/,
+    ready: '[data-testid="document-panel"] [data-testid="field-name"]',
+  }
+
+  it('clicks the target and waits in-page for the URL change and readiness', async () => {
+    const context = fakeContext()
+    expect(await runStep(context, step)).toEqual({interactions: 1})
+    expect(context.page.log.clicks).toEqual(['[data-testid="pane-item-author-1"]'])
+    expect(context.page.log.waitedFor).toEqual([
+      {
+        measureName: navigateMeasureName('open author'),
+        previousUrl: 'https://localhost:4311/test/structure/author',
+        urlSource: '\\/author;author-1$',
+        urlFlags: '',
+        ready: '[data-testid="document-panel"] [data-testid="field-name"]',
+        readyWhen: 'visible',
+      },
+    ])
+  })
+
+  it('passes readyWhen filled through to the in-page wait', async () => {
+    const context = fakeContext()
+    await runStep(context, {...step, readyWhen: 'filled'} as ScenarioStep)
+    expect(context.page.log.waitedFor).toMatchObject([{readyWhen: 'filled'}])
+  })
+
+  it('throws a readiness-timeout naming the navigation when it never becomes ready', async () => {
+    const context = {
+      ...fakeContext(createFakePage({probeLands: false})),
+      diagnostics: () => ['console: boom'],
+    }
+    await expect(runStep(context, step)).rejects.toMatchObject({
+      reason: 'readiness-timeout',
+      message: '[readiness-timeout] navigation "open author" never reached /\\/author;author-1$/',
+      diagnostics: ['console: boom'],
+    })
+  })
+})
+
+describe('navigationsWithoutSoftNavigation', () => {
+  const softNavigation = (startTime: number) => ({
+    url: 'https://localhost:3411/test/structure/author;author-1',
+    navigationType: 'push',
+    navigationId: 2,
+    interactionId: 100,
+    startTime,
+    duration: 120,
+  })
+  const measure = (label: string, startTime: number) => ({
+    name: navigateMeasureName(label),
+    startTime,
+    duration: 400,
+  })
+
+  it('names the navigate labels Chrome recorded no soft navigation for', () => {
+    expect(
+      navigationsWithoutSoftNavigation(
+        [
+          measure('open author', 1000.4),
+          measure('open book', 3000.2),
+          measure('open author', 5000.7),
+          {name: 'bench:milestone:tool visible', startTime: 0, duration: 200},
+        ],
+        [softNavigation(1000), softNavigation(5001)],
+      ),
+    ).toEqual(['open book'])
   })
 })
 

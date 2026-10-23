@@ -39,6 +39,8 @@ const sanityMocks = vi.hoisted(() => {
     saveQuery: vi.fn((_query: {url: string}) => Promise.resolve('saved-key')),
     // What the mocked saved queries hook lists and reports as being moved
     savedQueries: {queries: [] as unknown[], moving: [] as string[]},
+    // The workspace the tool runs in: variants on, as the tests of the variant option need
+    workspace: {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}},
     // The tool's router: its state as the URL gives it, and the navigations made
     router: {
       state: {} as {_searchParams?: [string, string][]},
@@ -112,7 +114,7 @@ vi.mock('sanity', async () => {
     useClient: sanityMocks.useClient,
     useActiveReleases: vi.fn(() => ({data: [], loading: false})),
     useScheduledDraftsEnabled: vi.fn(() => false),
-    useWorkspace: vi.fn(() => ({document: {drafts: {enabled: true}}})),
+    useWorkspace: () => sanityMocks.workspace,
     useTranslation: () => ({
       t: (key: string, options?: {message?: string; version?: string}) => {
         if (options?.message) return `${key}:${options.message}`
@@ -438,6 +440,7 @@ describe('VistaGui', () => {
     sanityMocks.setPerspective(BASE_PERSPECTIVE)
     sanityMocks.savedQueries = {queries: [], moving: []}
     sanityMocks.router.state = {}
+    sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
     editorMocks.visibleColumns = undefined
   })
 
@@ -907,6 +910,12 @@ describe('VistaGui', () => {
           ?.content[0].text ?? '[]',
       )
       expect(findings).toEqual([
+        expect.objectContaining({
+          line: 1,
+          rule: 'groq-lint/unlimited-query',
+          severity: 'warning',
+          text: '[_type == "post" && author->name == "x"]',
+        }),
         expect.objectContaining({line: 1, rule: 'groq-lint/join-in-filter', text: 'author->'}),
       ])
 
@@ -1944,6 +1953,81 @@ describe('VistaGui', () => {
       perspective: 'raw',
       variant: 'french',
     })
+  })
+
+  it('offers no Variant option and sends no variant where the workspace has variants switched off', async () => {
+    // The same flag the studio hides its own variant UI behind, the navbar's selector included
+    sanityMocks.workspace = {
+      document: {drafts: {enabled: true}},
+      beta: {variants: {enabled: false}},
+    }
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {id: 'pinned', query: '*[_id == "a"]'})
+    saveVistaState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pinned'})
+
+    // A variant the URL still carries for the navbar is not one the studio shows
+    const {fetchCalls} = renderVista({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
+    expect(screen.queryByTestId('vista-option-variant-select')).toBeNull()
+    expect(selectValue('vista-option-perspective-select')).toBe('global')
+    // Nothing locks the API version to vX
+    const apiVersionSelect = screen.getByTestId(
+      'vista-option-api-version-select',
+    ) as HTMLSelectElement
+    expect(apiVersionSelect.value).toBe('v2025-02-19')
+    expect(apiVersionSelect.disabled).toBe(false)
+    expect(text(screen.getByTestId('vista-api-version-button'))).toBe(
+      'vista.api-version.button:v2025-02-19',
+    )
+
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].config).toMatchObject({
+      apiVersion: 'v2025-02-19',
+      perspective: 'published',
+    })
+    expect(fetchCalls[0].config.variant).toBeUndefined()
+    const url = new URL((screen.getByTestId('vista-query-url') as HTMLInputElement).value)
+    expect(url.pathname).toContain('/v2025-02-19/')
+    expect(url.searchParams.get('variant')).toBeNull()
+
+    // The settings for new tabs have no Variant option either
+    fireEvent.click(screen.getByTestId('vista-sidebar-settings'))
+    await screen.findByTestId('vista-settings-perspective-select')
+    expect(screen.queryByTestId('vista-settings-variant-select')).toBeNull()
+  })
+
+  it('says a pasted or saved variant is not sent where the workspace has variants switched off', async () => {
+    sanityMocks.workspace = {
+      document: {drafts: {enabled: true}},
+      beta: {variants: {enabled: false}},
+    }
+    const url = `https://${PROJECT_ID}.api.sanity.io/vX/data/query/test?query=*&variant=french`
+    sanityMocks.savedQueries = {
+      queries: [
+        {
+          _key: 'saved-french',
+          shared: false,
+          title: 'French',
+          url,
+          savedAt: '2026-01-01T00:00:00Z',
+        },
+      ],
+      moving: [],
+    }
+    renderVista({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
+    fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
+    await waitFor(() => expect(getQueryEditor().value).toBe('*'))
+    // There is no navbar selector to select the variant with, so the toast does not point to it
+    await screen.findByText('vista.paste.variants-disabled')
+    expect(screen.queryByText('vista.paste.unavailable-variant')).toBeNull()
+
+    fireEvent.click(screen.getByTestId('vista-sidebar-saved'))
+    const open = await screen.findByTestId('vista-saved-query-open')
+    // The pasted tab sends no variant, so it does not show this saved query
+    expect(open.hasAttribute('data-selected')).toBe(false)
+    fireEvent.click(open)
+    await screen.findByText('vista.saved.variants-disabled')
+    expect(screen.queryByText('vista.saved.unavailable-variant')).toBeNull()
   })
 
   it('follows the workspace dataset until one is pinned, and back', async () => {

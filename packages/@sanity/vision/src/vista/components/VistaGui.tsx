@@ -24,7 +24,7 @@ import {loadVistaState, type VistaStorageDefaults} from '../store/vistaStorage'
 import {VistaSidebar} from './sidebar/VistaSidebar'
 import {QueryTab} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
-import {root} from './vista.css'
+import * as styles from './vista.module.css'
 import {VistaDialogs} from './VistaDialogs'
 import {VistaUrlState} from './VistaUrlState'
 import {VistaWebMcp} from './VistaWebMcp'
@@ -94,7 +94,7 @@ export function VistaGui(props: VistaGuiProps) {
             <SidebarBadgesContext.Provider value={sidebarBadges}>
               <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
                 <Flex
-                  className={root}
+                  className={styles.root}
                   data-testid="vista-root"
                   data-vista-layout={layout}
                   height="100%"

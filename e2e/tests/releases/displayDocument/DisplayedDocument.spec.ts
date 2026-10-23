@@ -1,6 +1,10 @@
 import {expect, type Page} from '@playwright/test'
 import {type SanityDocument} from '@sanity/client'
 
+import {
+  getDocumentGroupInventory,
+  openDocumentGroupInventory,
+} from '../../../helpers/documentGroupInventory'
 import {test} from '../../../studio-test'
 import {
   speciesDocumentNameASAP,
@@ -28,27 +32,18 @@ test.describe.configure({mode: 'serial'})
 
 /**
  * The document group inventory replaces the previous document perspective list/version chips.
- * It lists the document's existing variants (Published, Draft, releases) in a popover, with the
- * currently selected perspective marked via a `data-selected` attribute on the variant row.
+ * It lists the document's existing variants (Published, Draft, releases) in the document group
+ * inspector, with the currently selected perspective marked via a `data-selected` attribute on the
+ * variant row.
  */
 function getInventoryVariant(
   page: Page,
   variantSet: string = 'Published',
   variantName: string = 'All users (Default)',
 ) {
-  const inventory = page.getByTestId('document-group-inventory')
-
-  return inventory.locator(
+  return getDocumentGroupInventory(page).locator(
     `[data-variant-set="${variantSet}"] [data-variant-name="${variantName}"]`,
   )
-}
-
-async function openDocumentGroupInventory(page: Page) {
-  const inventoryButton = page.getByTestId('action-document-group-inventory')
-  await expect(inventoryButton).toBeVisible()
-  await expect(inventoryButton).toContainText('Manage versions')
-  await inventoryButton.click()
-  await expect(page.getByTestId('document-group-inventory')).toBeVisible()
 }
 
 test.describe('displayedDocument', () => {

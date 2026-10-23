@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Container, Heading, Text} from '@sanity/ui'
+import {Container, Heading} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -16,7 +16,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
@@ -149,7 +149,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
           {showMaxItemsMessage && (
             <Box marginY={1} paddingX={3} paddingY={4}>
-              <Text align="center" muted size={1}>
+              <Text align="center" muted size={1} as="div" trim={true}>
                 {t('panes.document-list-pane.max-items.text', {limit: FULL_LIST_LIMIT})}
               </Text>
             </Box>
@@ -177,7 +177,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
             <Box paddingX={4} paddingY={5}>
-              <Text align="center" muted>
+              <Text align="center" muted as="div" trim={true}>
                 {t('panes.document-list-pane.no-documents.text')}
               </Text>
             </Box>
@@ -190,7 +190,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
         <Container width={1}>
           <Box paddingX={4} paddingY={5}>
-            <Text align="center" muted>
+            <Text align="center" muted as="div" trim={true}>
               {filterIsSimpleTypeConstraint
                 ? t('panes.document-list-pane.no-documents-of-type.text')
                 : t('panes.document-list-pane.no-matching-documents.text')}
@@ -213,7 +213,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
           <Container width={1}>
             <Flex paddingX={4} paddingY={5} gap={4} flexDirection="column">
               <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
-              <Text as="p">
+              <Text as="p" trim={true}>
                 {isDev ? (
                   <Translate
                     t={t}
@@ -234,7 +234,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
                 isRetrying={isRetrying}
               />
               {canRetry ? (
-                <Text as="p" muted size={1}>
+                <Text as="p" muted size={1} trim={true}>
                   {isRetrying
                     ? t('panes.document-list-pane.error.retrying', {count: retryCount})
                     : autoRetry

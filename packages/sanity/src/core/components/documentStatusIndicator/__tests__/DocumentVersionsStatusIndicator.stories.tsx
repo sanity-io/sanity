@@ -3,7 +3,8 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {DocumentVersionsStatusIndicatorStory} from './DocumentVersionsStatusIndicatorStory'
 
 /**
- * List-row status icons: draft-only ring, published disc, and both together.
+ * Status icons on document list rows, grouped the way Studio shows them: one
+ * perspective at a time, with and without a variant selected.
  */
 const meta = {
   title: 'Studio/Document Status Indicator',

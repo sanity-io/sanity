@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const searchResultsInnerFlex = style({
+export const searchResultsInnerFlex = css({
   opacity: 1,
   overflowX: 'hidden',
   overflowY: 'auto',
@@ -9,7 +9,11 @@ export const searchResultsInnerFlex = style({
   width: '100%',
 })
 
-// Defined after the base so it wins the equal-specificity tie
-export const loadingFirstPage = style({
-  opacity: 0.5,
+// Doubled class so it beats the `opacity` of `searchResultsInnerFlex` when both are set: Panda
+// orders the rules of a property by value (`0.5` before `1`), so the order the classes are
+// declared in does not decide the tie the way it did with vanilla-extract.
+export const loadingFirstPage = css({
+  '&&': {
+    opacity: 0.5,
+  },
 })

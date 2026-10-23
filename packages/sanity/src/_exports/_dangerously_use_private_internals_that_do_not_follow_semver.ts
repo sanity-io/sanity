@@ -188,8 +188,13 @@ export {
 export {useDivergenceNavigator} from '../core/divergence/divergenceNavigator'
 export {
   DocumentGroupInventory,
+  type DocumentGroupInventoryHandle,
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
+export {
+  DocumentGroupInventoryFeedbackAction,
+  type DocumentGroupInventoryFeedbackActionProps,
+} from '../core/documentGroupInventory/components/DocumentGroupInventoryFeedbackAction'
 export {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,

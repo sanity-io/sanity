@@ -6,8 +6,8 @@ import {ExpandIcon} from '@sanity/icons/Expand'
 import {RemoveIcon} from '@sanity/icons/Remove'
 import {Button, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
+  type CSSProperties,
   type KeyboardEvent,
   memo,
   type PointerEvent,
@@ -26,6 +26,7 @@ import {describeKeypath, getAtKeypath} from '../../../util/getAtKeypath'
 import {useContentSize} from '../../hooks/useContentSize'
 import {
   buildResultGraph,
+  GRAPH_METRICS,
   type GraphLayout,
   type GraphRow,
   layoutResultGraph,
@@ -33,29 +34,21 @@ import {
   MAX_GRAPH_ROWS,
   type ResultGraph as ResultGraphModel,
 } from '../../util/resultGraph'
-import {
-  graphBooleanVar,
-  graphCanvas,
-  graphCodeFamilyVar,
-  graphCodeSizeVar,
-  graphConstantVar,
-  graphControls,
-  graphEdges,
-  graphNode,
-  graphNodeButton,
-  graphNodeHeader,
-  graphNodeSummary,
-  graphNodeTitle,
-  graphNotice,
-  graphNumberVar,
-  graphPropertyVar,
-  graphRow,
-  graphRowKey,
-  graphRowPort,
-  graphRowValue,
-  graphStringVar,
-  graphViewport,
-} from './ResultGraph.css'
+import * as styles from './ResultGraph.module.css'
+
+/** The theme values and `GRAPH_METRICS` that ResultGraph.module.css reads */
+interface GraphViewportStyle extends CSSProperties {
+  '--vision-graph-code-family': string
+  '--vision-graph-code-size': string
+  '--vision-graph-property': string
+  '--vision-graph-string': string
+  '--vision-graph-number': string
+  '--vision-graph-boolean': string
+  '--vision-graph-constant': string
+  '--vision-graph-header-height': string
+  '--vision-graph-row-height': string
+  '--vision-graph-padding-x': string
+}
 
 interface View {
   x: number
@@ -149,8 +142,8 @@ function RowContent({row}: {row: GraphRow}) {
     case 'value':
       return (
         <>
-          {row.key && <span className={graphRowKey}>{row.key}</span>}
-          <span className={graphRowValue} data-type={row.type}>
+          {row.key && <span className={styles.graphRowKey}>{row.key}</span>}
+          <span className={styles.graphRowValue} data-type={row.type}>
             {row.text}
           </span>
         </>
@@ -158,16 +151,16 @@ function RowContent({row}: {row: GraphRow}) {
     case 'child':
       return (
         <>
-          <span className={graphRowKey}>{row.key}</span>
-          <span className={graphRowValue} data-type="child">
+          <span className={styles.graphRowKey}>{row.key}</span>
+          <span className={styles.graphRowValue} data-type="child">
             {row.summary}
           </span>
-          {row.child !== undefined && <span className={graphRowPort} />}
+          {row.child !== undefined && <span className={styles.graphRowPort} />}
         </>
       )
     case 'more':
       return (
-        <span className={graphRowValue} data-type="more">
+        <span className={styles.graphRowValue} data-type="more">
           {t('vista.result.graph.more', {count: row.count})}
         </span>
       )
@@ -190,7 +183,7 @@ function GraphNodes({layout, copyLabel, onToggle, onCopy}: GraphNodesProps) {
   return (
     <>
       <svg
-        className={graphEdges}
+        className={styles.graphEdges}
         data-testid="vista-graph-edges"
         height={layout.height}
         width={layout.width}
@@ -204,17 +197,17 @@ function GraphNodes({layout, copyLabel, onToggle, onCopy}: GraphNodesProps) {
         return (
           <div
             aria-label={`${title} ${node.summary}`}
-            className={graphNode}
+            className={styles.graphNode}
             data-testid="vista-graph-node"
             data-keypath={node.id}
             key={node.id}
             role="group"
             style={{left: x, top: y, width, height}}
           >
-            <div className={graphNodeHeader}>
-              <span className={graphNodeTitle}>
+            <div className={styles.graphNodeHeader}>
+              <span className={styles.graphNodeTitle}>
                 {title}
-                {node.summary && <span className={graphNodeSummary}>{node.summary}</span>}
+                {node.summary && <span className={styles.graphNodeSummary}>{node.summary}</span>}
               </span>
               {childCount > 0 && (
                 <button
@@ -224,7 +217,7 @@ function GraphNodes({layout, copyLabel, onToggle, onCopy}: GraphNodesProps) {
                       ? t('vista.result.graph.expand', {count: childCount})
                       : t('vista.result.graph.collapse')
                   }
-                  className={graphNodeButton}
+                  className={styles.graphNodeButton}
                   data-testid="vista-graph-toggle"
                   onClick={() => onToggle(node.id)}
                   type="button"
@@ -235,7 +228,7 @@ function GraphNodes({layout, copyLabel, onToggle, onCopy}: GraphNodesProps) {
               )}
               <button
                 aria-label={copyLabel}
-                className={graphNodeButton}
+                className={styles.graphNodeButton}
                 data-testid="vista-graph-copy"
                 onClick={() => onCopy(node.id)}
                 type="button"
@@ -246,7 +239,7 @@ function GraphNodes({layout, copyLabel, onToggle, onCopy}: GraphNodesProps) {
             {node.rows.map((row, index) => (
               // Rows are positional: the edges leave from their index
               // oxlint-disable-next-line react/no-array-index-key -- a row is its place in the node
-              <div className={graphRow} key={index}>
+              <div className={styles.graphRow} key={index}>
                 <RowContent row={row} />
               </div>
             ))}
@@ -395,11 +388,24 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
     {action: 'fit', label: t('vista.result.graph.fit'), icon: ExpandIcon, onClick: fit},
   ]
 
+  const viewportStyle: GraphViewportStyle = {
+    '--vision-graph-code-family': font.code.family,
+    '--vision-graph-code-size': `${codeSize.fontSize}px`,
+    '--vision-graph-property': color.syntax.property,
+    '--vision-graph-string': color.syntax.string,
+    '--vision-graph-number': color.syntax.number,
+    '--vision-graph-boolean': color.syntax.boolean,
+    '--vision-graph-constant': color.syntax.constant,
+    '--vision-graph-header-height': `${GRAPH_METRICS.headerHeight}px`,
+    '--vision-graph-row-height': `${GRAPH_METRICS.rowHeight}px`,
+    '--vision-graph-padding-x': `${GRAPH_METRICS.paddingX}px`,
+  }
+
   return (
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- role="application" is for a widget that handles its own pointer and keys (pan, zoom, fit)
     <div
       aria-label={t('vista.result.graph.label')}
-      className={graphViewport}
+      className={styles.graphViewport}
       data-dragging={dragging}
       data-testid="vista-result-graph"
       id={id}
@@ -411,20 +417,12 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
       onPointerUp={endDrag}
       ref={setViewport}
       role="application"
-      style={assignInlineVars({
-        [graphCodeFamilyVar]: font.code.family,
-        [graphCodeSizeVar]: `${codeSize.fontSize}px`,
-        [graphPropertyVar]: color.syntax.property,
-        [graphStringVar]: color.syntax.string,
-        [graphNumberVar]: color.syntax.number,
-        [graphBooleanVar]: color.syntax.boolean,
-        [graphConstantVar]: color.syntax.constant,
-      })}
+      style={viewportStyle}
       tabIndex={0}
     >
       {view && (
         <div
-          className={graphCanvas}
+          className={styles.graphCanvas}
           data-testid="vista-graph-canvas"
           style={{
             width: layout.width,
@@ -441,13 +439,13 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
         </div>
       )}
       {leftOut && (
-        <div className={graphNotice} data-testid="vista-graph-left-out">
+        <div className={styles.graphNotice} data-testid="vista-graph-left-out">
           <Text muted size={1}>
             {leftOut}
           </Text>
         </div>
       )}
-      <div className={graphControls}>
+      <div className={styles.graphControls}>
         {controls.map(({action, label, icon, onClick}) => (
           <Tooltip
             animate

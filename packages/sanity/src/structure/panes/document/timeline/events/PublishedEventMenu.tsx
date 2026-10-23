@@ -1,4 +1,4 @@
-import {type BadgeTone, Text, usePortal} from '@sanity/ui'
+import {type BadgeTone, usePortal} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -23,7 +23,7 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
@@ -119,7 +119,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
               >
                 <MenuItem padding={3}>
                   <Flex alignItems={'center'} justifyContent="flex-start">
-                    <Text size={1} style={{textDecoration: 'none'}}>
+                    <Text size={1} style={{textDecoration: 'none'}} as="div" trim={true}>
                       <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                         {({displayTitle}) => (
                           <Translate
@@ -139,7 +139,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
               </IntentLink>
               <MenuItem onClick={handleOpenReleaseDocument}>
                 <Flex alignItems={'center'} justifyContent="flex-start">
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true}>
                     <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                       {({displayTitle}) => (
                         <Translate
@@ -160,7 +160,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
           ) : (
             <MenuItem onClick={handleOpenDraftDocument} disabled={!event.versionRevisionId}>
               <Flex alignItems={'center'}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <Translate
                     components={{VersionBadge}}
                     componentProps={{tone: 'caution' as const}}

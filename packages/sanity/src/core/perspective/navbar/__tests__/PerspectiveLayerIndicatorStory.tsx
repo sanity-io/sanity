@@ -1,7 +1,7 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type RefObject} from 'react'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {
@@ -76,13 +76,13 @@ export function PerspectiveLayerIndicatorStory() {
       <Card padding={4} style={{maxWidth: 320}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               drafts perspective (labels outside range)
             </Text>
             <ReleasesMenu range={RANGE_TO_DRAFTS} />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               range down to undecided (first / within / last)
             </Text>
             <ReleasesMenu range={RANGE_TO_UNDECIDED} />

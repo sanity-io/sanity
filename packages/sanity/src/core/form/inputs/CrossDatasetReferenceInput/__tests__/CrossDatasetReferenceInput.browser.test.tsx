@@ -7,12 +7,12 @@ import {
 } from '@sanity/types'
 import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
-import {type ComponentProps} from 'react'
+import {type ComponentProps, useCallback, useState} from 'react'
 import {of} from 'rxjs'
 import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
@@ -22,6 +22,7 @@ import {type StudioCrossDatasetReferenceInputProps} from '../../../studio/inputs
 import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput'
 import {OptionPreview} from '../OptionPreview'
 import {PreviewReferenceValue} from '../PreviewReferenceValue'
+import {ReferenceAutocomplete} from '../ReferenceAutocomplete'
 import {type CrossDatasetReferenceInfo} from '../types'
 
 const BOOK_TARGET = {
@@ -132,6 +133,39 @@ function CrossDatasetReferencePreviewsHarness() {
   )
 }
 
+const NO_OPTIONS: never[] = []
+
+function ReferenceAutocompleteNoResults() {
+  const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
+  const [searchString, setSearchString] = useState('')
+  const handleQueryChange = useCallback((query: string | null) => setSearchString(query ?? ''), [])
+
+  return (
+    <Card padding={4} style={{maxWidth: 480}}>
+      <div ref={setReferenceElement}>
+        <ReferenceAutocomplete
+          data-testid="autocomplete"
+          id="cross-dataset-reference-autocomplete"
+          onQueryChange={handleQueryChange}
+          options={NO_OPTIONS}
+          placeholder="Type to search"
+          radius={2}
+          referenceElement={referenceElement}
+          searchString={searchString}
+        />
+      </div>
+    </Card>
+  )
+}
+
+function ReferenceAutocompleteHarness() {
+  return (
+    <TestWrapper schemaTypes={SCHEMA}>
+      <ReferenceAutocompleteNoResults />
+    </TestWrapper>
+  )
+}
+
 describe('cross-dataset reference input', () => {
   test('renders an empty cross-dataset reference', async () => {
     const {settleChromaticEndState} = testHelpers()
@@ -148,5 +182,20 @@ describe('cross-dataset reference input', () => {
     await expect.element(page.getByText('Search result fixture')).toBeVisible()
     await expect.element(page.getByText('The Left Hand of Darkness')).toBeVisible()
     await settleChromaticEndState()
+  })
+
+  test('renders the autocomplete "no results" popover for a search without hits', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(<ReferenceAutocompleteHarness />)
+
+    await page.getByTestId('autocomplete').click()
+    await userEvent.keyboard('Ursula')
+
+    const $popover = page.getByTestId('autocomplete-popover')
+    await expect.element($popover).toBeVisible()
+    await expect.element($popover).toMatchTextContent('No results for “Ursula”')
+    // Parking the pointer leaves the input focused, so the popover stays open.
+    await settleChromaticEndState()
+    await expect.element($popover).toBeVisible()
   })
 })

@@ -1,9 +1,7 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const customGrid = style({
-  selectors: {
-    '&&': {
-      gridTemplateColumns: 'repeat(7, minmax(44px, auto))',
-    },
+export const customGrid = css({
+  '&&': {
+    gridTemplateColumns: 'repeat(7, minmax(44px, auto))',
   },
 })

@@ -8,7 +8,7 @@ import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 import {PackageIcon} from '@sanity/icons/Package'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Badge, Box, Button, Card, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
@@ -23,7 +23,7 @@ import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
 import {useIntentLink} from 'sanity/router'
-import {Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack, Icon, Link} from 'ui5'
 
 import {
   BISECT_COMMITS_QUERY,
@@ -76,6 +76,11 @@ interface LiveState<T> {
  * icon and label; keep the vertical part, drop the horizontal.
  */
 const ICON_IN_FLEX: CSSProperties = {marginLeft: 0, marginRight: 0}
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /**
  * Every release, newest first: when it shipped (npm publish time when known),
@@ -366,10 +371,10 @@ export function ReleasesTool() {
           <Flex alignItems="center" gap={3}>
             <Box flex={1}>
               <VStack gap={3}>
-                <Text size={3} weight="semibold">
+                <Text size={3} weight="semibold" as="div" trim={true}>
                   Studio releases
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   Every synced release tag with its npm state and the regressions bisect sessions
                   have pinned on it: introduced (blamed on the release that first shipped the
                   offending commit), inherited from an earlier release and not fixed yet, or fixed.
@@ -390,7 +395,7 @@ export function ReleasesTool() {
               <Flex alignItems="center" gap={3}>
                 <Box style={{flexShrink: 0}}>
                   <Flex as={Text} size={1} weight="medium" alignItems="center" gap={2}>
-                    <SanityMonogram style={ICON_IN_FLEX} />
+                    <Icon size={1} icon={SanityMonogram} style={{marginRight: '-0.375rem'}} />
                     <span>Test Studio Path</span>
                   </Flex>
                 </Box>
@@ -410,7 +415,7 @@ export function ReleasesTool() {
                   />
                 )}
               </Flex>
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 Every release's Test Studio link opens its preview build at this path — paste a
                 test-studio URL and only its path is kept.
               </Text>
@@ -419,17 +424,19 @@ export function ReleasesTool() {
 
           {error && (
             <Card padding={4} radius={3} tone="critical">
-              <Text size={1}>Failed to load: {error}</Text>
+              <Text size={1} as="div" trim={true} tone="critical">
+                Failed to load: {error}
+              </Text>
             </Card>
           )}
           {!error && tagsLive.data === null && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               Loading…
             </Text>
           )}
           {tagsLive.data?.length === 0 && (
             <Card padding={4} radius={3} tone="transparent" border>
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 No releases synced yet — the sync-git-metrics workflow populates these.
               </Text>
             </Card>
@@ -573,14 +580,14 @@ function ReleaseLineHeader(props: {
       <Card padding={3} radius={2} border tone="transparent">
         <Flex alignItems="center" gap={3} flexWrap="wrap">
           <Box style={{width: 110, flexShrink: 0}}>
-            <Text size={2} weight="medium" muted>
+            <Text size={2} weight="medium" muted as="div" trim={true}>
               {title}
             </Text>
           </Box>
           <Badge tone="default" fontSize={0}>
             end of life
           </Badge>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {summary}
           </Text>
           {eol.eolMarkedAt && (
@@ -616,10 +623,10 @@ function ReleaseLineHeader(props: {
 
   return (
     <Flex alignItems="center" gap={3} paddingTop={2} paddingX={1}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="semibold" as="div" trim={true}>
         {title}
       </Text>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         {summary}
       </Text>
       <Box flex={1} />
@@ -627,7 +634,7 @@ function ReleaseLineHeader(props: {
         <Tooltip
           content={
             <Box padding={2}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 {isLatestLine
                   ? `${title} holds the latest dist-tag and cannot be end of life`
                   : `Fold every ${title} release into this heading — reversible`}
@@ -674,16 +681,18 @@ function DeprecatedRunRow(props: {
       <VStack gap={2}>
         <Flex alignItems="center" gap={3} flexWrap="wrap">
           <Flex alignItems="center" gap={2}>
-            <Text size={2} weight="medium" muted>
+            <Text size={2} weight="medium" muted as="div" trim={true}>
               {range}
             </Text>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {pluralize(tags.length, 'release')}
             </Text>
             <Tooltip
               content={
                 <Box padding={2}>
-                  <Text size={1}>{message}</Text>
+                  <Text size={1} as="div" trim={true}>
+                    {message}
+                  </Text>
                 </Box>
               }
             >
@@ -720,11 +729,19 @@ function IconLink(props: {
   icon: ComponentType<SVGProps<SVGSVGElement>>
   children: ReactNode
 }) {
-  const {href, icon: Icon, children} = props
+  const {href, icon: IconComponent, children} = props
   return (
-    <Text size={1}>
-      <Flex as="a" href={href} target="_blank" rel="noreferrer" alignItems="center" gap={1}>
-        <Icon style={ICON_IN_FLEX} />
+    <Text size={1} as="div" trim={true}>
+      <Flex
+        as={Link}
+        href={href}
+        openInNewTab
+        underlined={false}
+        alignItems="center"
+        gap={1}
+        style={LINK_IN_TEXT}
+      >
+        <Icon size={1} icon={IconComponent} style={ICON_IN_FLEX} />
         <span>{children}</span>
       </Flex>
     </Text>
@@ -842,10 +859,15 @@ function ReleaseRow(props: {
         <Flex alignItems="center" gap={3} flexWrap="wrap">
           {/* The version and what npm calls it read as one label */}
           <Flex alignItems="center" gap={2}>
-            <Text size={2} weight="medium">
-              <a href={documentLink.href} onClick={documentLink.onClick}>
+            <Text size={2} weight="medium" as="div" trim={true}>
+              <Link
+                href={documentLink.href}
+                onClick={documentLink.onClick}
+                underlined={false}
+                style={LINK_IN_TEXT}
+              >
                 {tag.tag}
-              </a>
+              </Link>
             </Text>
             {tag.npm?.distTags?.map((distTag) => (
               <Badge key={distTag} tone="primary" fontSize={0}>
@@ -858,7 +880,9 @@ function ReleaseRow(props: {
               <Tooltip
                 content={
                   <Box padding={2}>
-                    <Text size={1}>{tag.npm.deprecated}</Text>
+                    <Text size={1} as="div" trim={true}>
+                      {tag.npm.deprecated}
+                    </Text>
                   </Box>
                 }
               >
@@ -881,7 +905,7 @@ function ReleaseRow(props: {
                     key={label}
                     content={
                       <Box padding={2}>
-                        <Text size={1}>
+                        <Text size={1} as="div" trim={true}>
                           {pluralize(count, `${label} regression`)} in {tag.tag} (introduced here or
                           inherited)
                         </Text>
@@ -897,7 +921,7 @@ function ReleaseRow(props: {
           </Flex>
           <Box flex={1} />
           {typeof tag.npm?.weeklyDownloads === 'number' && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {tag.npm.weeklyDownloads.toLocaleString('en-US')}/wk
             </Text>
           )}
@@ -919,8 +943,8 @@ function ReleaseRow(props: {
             first line only says that it is, this says why — what npm prints */}
         {!collapsed && showDeprecation && tag.npm?.deprecated && (
           <Card padding={3} radius={2} tone="caution">
-            <Flex as={Text} size={1} alignItems="flex-start" gap={2}>
-              <WarningOutlineIcon style={ICON_IN_FLEX} />
+            <Flex as={Text} size={1} alignItems="flex-start" gap={2} tone="caution">
+              <Icon size={1} icon={WarningOutlineIcon} style={ICON_IN_FLEX} />
               <span style={{overflowWrap: 'anywhere'}}>Deprecated: {tag.npm.deprecated}</span>
             </Flex>
           </Card>
@@ -957,14 +981,14 @@ function ReleaseRow(props: {
               opens the list behind it, which is also where a regression is
               removed again */}
             <Flex alignItems="center" gap={2} flexWrap="wrap">
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 {hasRegressions ? 'Regressions' : 'No known regressions'}
               </Text>
               {regressions && regressions.introduced.length > 0 && (
                 <Tooltip
                   content={
                     <Box padding={2}>
-                      <Text size={1}>
+                      <Text size={1} as="div" trim={true}>
                         {pluralize(regressions.introduced.length, 'regression')} first shipped in{' '}
                         {tag.tag}
                         {worstIntroduced
@@ -990,7 +1014,7 @@ function ReleaseRow(props: {
                 <Tooltip
                   content={
                     <Box padding={2}>
-                      <Text size={1}>
+                      <Text size={1} as="div" trim={true}>
                         {pluralize(regressions.inherited.length, 'regression')} introduced in an
                         earlier release and not fixed yet when {tag.tag} shipped
                         {worstInherited
@@ -1027,7 +1051,9 @@ function ReleaseRow(props: {
               <Tooltip
                 content={
                   <Box padding={2}>
-                    <Text size={1}>Report a regression introduced in {tag.tag}</Text>
+                    <Text size={1} as="div" trim={true}>
+                      Report a regression introduced in {tag.tag}
+                    </Text>
                   </Box>
                 }
               >

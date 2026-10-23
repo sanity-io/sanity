@@ -1,6 +1,6 @@
-import {keyframes, style} from '@vanilla-extract/css'
+import {css, keyframes} from '#styled-system/css'
 
-export const root = style({
+export const root = css({
   maxWidth: '268px',
   margin: '0 auto',
   height: '100%',
@@ -12,6 +12,6 @@ const fadeIn = keyframes({
   to: {opacity: 1},
 })
 
-export const animatedText = style({
+export const animatedText = css({
   animation: `${fadeIn} 0.2s ease-in-out`,
 })

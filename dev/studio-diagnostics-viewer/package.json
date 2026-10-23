@@ -22,7 +22,7 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@repo/pandacss": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",

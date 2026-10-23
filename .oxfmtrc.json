@@ -28,5 +28,10 @@
       }
     }
   ],
-  "ignorePatterns": ["pnpm-workspace.yaml", "**/CHANGELOG.md", "**/turbo.json"]
+  "ignorePatterns": [
+    "pnpm-workspace.yaml",
+    "**/CHANGELOG.md",
+    "**/turbo.json",
+    "**/generated/**/*.module.css.d.ts"
+  ]
 }

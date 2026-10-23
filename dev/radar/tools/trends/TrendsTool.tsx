@@ -27,7 +27,6 @@ import {
   Tab,
   TabList,
   TabPanel,
-  Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
@@ -37,7 +36,7 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Container, Box, Flex, Grid, VStack} from 'ui5'
+import {Text, Container, Box, Flex, Grid, VStack} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
@@ -239,11 +238,11 @@ function InfoButton(props: {
       content={
         <Box ref={setContentEl} padding={3} style={{maxWidth: 260}}>
           <VStack gap={3}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {props.text}
             </Text>
             {props.calibrationNote && (
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 {props.calibrationNote}
               </Text>
             )}
@@ -260,7 +259,9 @@ function InfoButton(props: {
                   >
                     <Flex alignItems="center" gap={1}>
                       <LaunchIcon />
-                      <Text size={1}>About this metric (web.dev)</Text>
+                      <Text size={1} as="div" trim={true}>
+                        About this metric (web.dev)
+                      </Text>
                     </Flex>
                   </Box>
                 )}
@@ -274,7 +275,9 @@ function InfoButton(props: {
                   >
                     <Flex alignItems="center" gap={1}>
                       <LaunchIcon />
-                      <Text size={1}>View scenario source</Text>
+                      <Text size={1} as="div" trim={true}>
+                        View scenario source
+                      </Text>
                     </Flex>
                   </Box>
                 )}
@@ -332,7 +335,7 @@ function BranchPicker(props: {
         <Box ref={setContentEl} padding={2} style={{maxWidth: 280}}>
           <VStack gap={1}>
             <Box paddingX={2} paddingY={1}>
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 Compare up to {MAX_COMPARE_BRANCHES} branches
               </Text>
             </Box>
@@ -526,12 +529,24 @@ function SeriesCard(props: {
                   textAlign: 'left',
                 }}
               >
-                <Text size={1} weight="medium">
+                <Text
+                  size={1}
+                  weight="medium"
+                  as="div"
+                  trim={true}
+                  tone={badge ? badge.tone : undefined}
+                >
                   {series.title}
                 </Text>
               </Box>
             ) : (
-              <Text size={1} weight="medium">
+              <Text
+                size={1}
+                weight="medium"
+                as="div"
+                trim={true}
+                tone={badge ? badge.tone : undefined}
+              >
                 {series.title}
               </Text>
             )}
@@ -578,7 +593,7 @@ function SeriesCard(props: {
             whole point of maximizing is more context per chart, not just a
             bigger plot. */}
         {expanded && (
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true} tone={badge ? badge.tone : undefined}>
             {series.description}
             {seriesHasCalibration(series) ? ` ${CALIBRATION_EXPLAINER}` : ''}
           </Text>
@@ -592,6 +607,9 @@ function SeriesCard(props: {
                 size={1}
                 muted
                 aria-label={`Latest run: ${formatValue(latest.value, series.unit)}`}
+                as="div"
+                trim={true}
+                tone={badge ? badge.tone : undefined}
               >
                 {formatValue(latest.value, series.unit)}
               </Text>
@@ -638,7 +656,7 @@ function SeriesCard(props: {
 function EmptyGroup(props: {children: ReactNode}) {
   return (
     <Card tone="transparent" border padding={4} radius={2}>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         {props.children}
       </Text>
     </Card>
@@ -768,7 +786,7 @@ function SoakPanel(props: {
       </TabList>
       <TabPanel id={`soak-panel-${active.id}`} aria-labelledby={`soak-tab-${active.id}`}>
         <VStack gap={3}>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {active.hint}
           </Text>
           <ChartGrid
@@ -852,7 +870,7 @@ function SettlePanel(props: {
       </TabList>
       <TabPanel id={`settle-panel-${active.id}`} aria-labelledby={`settle-tab-${active.id}`}>
         <VStack gap={3}>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {active.hint}
           </Text>
           <ChartGrid
@@ -1001,7 +1019,7 @@ function StylesPanel(props: {
       <TabPanel id={`styles-panel-${activeId}`} aria-labelledby={`styles-tab-${activeId}`}>
         {activeView ? (
           <VStack gap={3}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {activeView.hint}
             </Text>
             <Flex gap={6} paddingTop={3} flexDirection="column">
@@ -1014,10 +1032,10 @@ function StylesPanel(props: {
               {activeView.id === 'ui5' && overview && (
                 <VStack gap={4}>
                   <Flex alignItems="baseline" gap={2}>
-                    <Text size={1} weight="semibold">
+                    <Text size={1} weight="semibold" as="div" trim={true}>
                       Overall adoption
                     </Text>
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       every scenario summed per commit, Σ v5 ÷ Σ (v5 + v4) · higher is better
                     </Text>
                   </Flex>
@@ -1050,10 +1068,10 @@ function StylesPanel(props: {
               {activeView.id !== 'ui5' && viewTotals(activeView).length > 0 && (
                 <VStack gap={4}>
                   <Flex alignItems="baseline" gap={2}>
-                    <Text size={1} weight="semibold">
+                    <Text size={1} weight="semibold" as="div" trim={true}>
                       All scenarios
                     </Text>
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {activeView.id === 'styled'
                         ? 'summed over every scenario page per commit; the rule share weighted by rules · lower is better'
                         : 'summed over every scenario page per commit · lower is better'}
@@ -1076,10 +1094,10 @@ function StylesPanel(props: {
               {activeView.sections.map((section) => (
                 <VStack key={section.id} gap={4}>
                   <Flex alignItems="baseline" gap={2}>
-                    <Text size={1} weight="semibold">
+                    <Text size={1} weight="semibold" as="div" trim={true}>
                       {section.label}
                     </Text>
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {section.goal} is better
                     </Text>
                   </Flex>
@@ -1101,7 +1119,7 @@ function StylesPanel(props: {
           </VStack>
         ) : (
           <VStack gap={3}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               The migration week by week: each bar is the median of that week&apos;s runs, an empty
               week had no run. Every scenario summed first, then each scenario on its own. Click a
               bar to open the week&apos;s newest run.
@@ -1110,11 +1128,11 @@ function StylesPanel(props: {
               {weeklySections.map((section) => (
                 <VStack key={section.id} gap={4}>
                   <Flex alignItems="baseline" gap={2}>
-                    <Text size={1} weight="semibold">
+                    <Text size={1} weight="semibold" as="div" trim={true}>
                       {section.title}
                     </Text>
                     {section.note && (
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         {section.note}
                       </Text>
                     )}
@@ -1568,7 +1586,7 @@ export function TrendsTool() {
           <VStack gap={4}>
             <Flex alignItems="flex-start" justifyContent="space-between" gap={3}>
               <Flex alignItems="center" gap={2}>
-                <Text size={2} weight="semibold">
+                <Text size={2} weight="semibold" as="div" trim={true}>
                   Studio performance trends
                 </Text>
                 <Button
@@ -1630,19 +1648,37 @@ export function TrendsTool() {
             {showHelp && (
               <Card tone="primary" border padding={3} radius={2}>
                 <VStack gap={3}>
-                  <Text size={1} muted>
+                  <Text
+                    size={1}
+                    muted
+                    as="div"
+                    trim={true}
+                    style={{color: 'var(--card-muted-fg-color)'}}
+                  >
                     One benchmark run per day of the studio built from <code>main</code>, measured
                     against a local API mock (no network, no real project); see{' '}
                     <code>perf/bench</code>. Each chart tracks one metric over time. Click anywhere
                     in a chart to open the nearest run, with links to the PR, commit, and CI run.
                   </Text>
-                  <Text size={1} muted>
+                  <Text
+                    size={1}
+                    muted
+                    as="div"
+                    trim={true}
+                    style={{color: 'var(--card-muted-fg-color)'}}
+                  >
                     Because the CI machine varies day to day, absolute numbers depend on the host:
                     before trusting a spike, check the host calibration in the Calibration tab. If
                     it spikes on the same day, suspect the runner, not the studio. Flat lines are
                     the goal; the ⓘ on each chart explains what it measures.
                   </Text>
-                  <Text size={1} muted>
+                  <Text
+                    size={1}
+                    muted
+                    as="div"
+                    trim={true}
+                    style={{color: 'var(--card-muted-fg-color)'}}
+                  >
                     The SQRL banner at the top is one score across the metrics below, where higher
                     is better and 100 is late June 2026. Each input counts as its late-June value
                     divided by today's, so any metric getting faster or lighter raises it. A
@@ -1655,7 +1691,7 @@ export function TrendsTool() {
 
             {error && (
               <Card tone="critical" border padding={3} radius={2}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true} tone="critical">
                   Couldn't load benchmark runs: {error}. Reload the page to try again.
                 </Text>
               </Card>
@@ -1667,7 +1703,7 @@ export function TrendsTool() {
             )}
             {!error && !loading && series.length === 0 && (
               <Card tone="transparent" border padding={4} radius={2}>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   No benchmark runs in this range. Try a longer range, or wait for the daily
                   benchmark (one run per day from main).
                 </Text>
@@ -1722,7 +1758,7 @@ export function TrendsTool() {
                   aria-labelledby={`group-tab-${activeTab.id}`}
                 >
                   <VStack gap={3}>
-                    <Text size={1} muted>
+                    <Text size={1} muted as="div" trim={true}>
                       {activeTab.description}
                     </Text>
                     {activeTab.id === 'engine' ? (
@@ -1794,11 +1830,11 @@ export function TrendsTool() {
                           {vitalGroups.map((section) => (
                             <VStack key={section.vital} gap={4}>
                               <Flex alignItems="baseline" gap={2}>
-                                <Text size={1} weight="semibold">
+                                <Text size={1} weight="semibold" as="div" trim={true}>
                                   {section.vital}
                                 </Text>
                                 {section.name && (
-                                  <Text size={1} muted>
+                                  <Text size={1} muted as="div" trim={true}>
                                     {section.name}
                                   </Text>
                                 )}

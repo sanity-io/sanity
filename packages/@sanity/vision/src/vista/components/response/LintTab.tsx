@@ -4,7 +4,7 @@ import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type LintSeverity, type QueryLintFinding, splitMessage} from '../../util/groqLint'
-import {lintFindingButton} from '../vista.css'
+import * as styles from '../vista.module.css'
 
 function severityLabel(severity: LintSeverity, t: TFunction<'vision'>): string {
   switch (severity) {
@@ -66,7 +66,7 @@ export function LintTab({findings, onReveal}: LintTabProps) {
         <Card
           as="button"
           borderBottom
-          className={lintFindingButton}
+          className={styles.lintFindingButton}
           data-testid="vista-lint-finding"
           key={`${finding.from}:${finding.to}:${finding.source ?? ''}:${finding.message}`}
           onClick={() => onReveal(finding)}

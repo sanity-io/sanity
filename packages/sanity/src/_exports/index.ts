@@ -394,9 +394,13 @@ export {
 export {useDivergenceNavigator} from '../core/divergence/divergenceNavigator'
 export {
   DocumentGroupInventory,
+  type DocumentGroupInventoryHandle,
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
-export {DocumentGroupInventoryAction} from '../core/documentGroupInventory/components/DocumentGroupInventoryAction'
+export {
+  DocumentGroupInventoryFeedbackAction,
+  type DocumentGroupInventoryFeedbackActionProps,
+} from '../core/documentGroupInventory/components/DocumentGroupInventoryFeedbackAction'
 export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {
   type DocumentGroupInventoryComponents,

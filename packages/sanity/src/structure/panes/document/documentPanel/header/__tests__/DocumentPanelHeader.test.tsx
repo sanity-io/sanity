@@ -24,7 +24,19 @@ vi.mock('../perspective/DocumentPerspectiveList', () => ({
 }))
 
 vi.mock('../CopyDocumentActions', () => ({
-  CopyDocumentActions: () => null,
+  CopyDocumentActions: () => <span data-testid="copy-document-actions" />,
+}))
+
+vi.mock('../DocumentGroupInventoryButton', () => ({
+  DocumentGroupInventoryButton: () => <span data-testid="document-group-inventory-button" />,
+}))
+
+vi.mock('../DocumentTargetBadges', () => ({
+  DocumentTargetBadges: () => null,
+}))
+
+vi.mock('../documentGroupInventoryHint/DocumentGroupInventoryHint', () => ({
+  DocumentGroupInventoryHint: () => null,
 }))
 
 // Typed as a partial so every field below is checked against the real context, without
@@ -93,6 +105,26 @@ describe('DocumentPanelHeader', () => {
 
     expect(toolbar).toContainElement(screen.getByTestId('document-perspective-list'))
     expect(toolbar).toContainElement(screen.getByTestId('focus-pane-button-focus'))
+  })
+
+  it('leaves out the manage versions button when the document group inventory is disabled', async () => {
+    await mountHeader()
+
+    expect(screen.queryByTestId('document-group-inventory-button')).toBeNull()
+  })
+
+  it('renders the manage versions button before the copy actions', async () => {
+    const inventoryWrapper = await createTestProvider({
+      resources: [structureUsEnglishLocaleBundle],
+      config: {beta: {documentGroupInventory: {enabled: true}}},
+    })
+
+    render(<DocumentPanelHeader menuItems={[]} />, {wrapper: inventoryWrapper})
+
+    const button = await screen.findByTestId('document-group-inventory-button')
+    const copyActions = screen.getByTestId('copy-document-actions')
+
+    expect(button.compareDocumentPosition(copyActions)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
   })
 
   it('leaves the attribute off the collapsed pane header', async () => {

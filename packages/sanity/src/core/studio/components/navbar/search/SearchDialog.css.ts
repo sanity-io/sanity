@@ -1,16 +1,16 @@
-import {style} from '@vanilla-extract/css'
+import {css, firstThatWorks} from '#styled-system/css'
 
-export const innerCard = style({
+export const innerCard = css({
   flexDirection: 'column',
-  overflow: ['hidden', 'clip'],
+  overflow: firstThatWorks('clip', 'hidden'),
   pointerEvents: 'all',
   position: 'relative',
 })
 
-export const searchDialogBox = style({
+export const searchDialogBox = css({
   height: '100%',
   left: 0,
-  overflow: ['hidden', 'clip'],
+  overflow: firstThatWorks('clip', 'hidden'),
   pointerEvents: 'none',
   position: 'fixed',
   top: 0,

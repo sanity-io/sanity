@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Card, TabList, TabPanel, Text} from '@sanity/ui'
+import {Card, TabList, TabPanel} from '@sanity/ui'
 import {useState} from 'react'
 import {
   type DocumentInspectorProps,
@@ -12,7 +12,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tab} from '../../../../../ui-components/tab/Tab'
@@ -97,17 +97,15 @@ export function ChangesTabs(props: DocumentInspectorProps) {
             boundaryElement={parentRef}
             content={
               <Box flexBasis="0%" flexGrow={1} padding={1}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <Translate t={t} i18nKey="changes.banner.tooltip" />
                 </Text>
               </Box>
             }
           >
-            <Text size={0} muted>
-              <InfoOutlineIcon fontSize={1} />
-            </Text>
+            <Icon size={0} muted icon={InfoOutlineIcon} style={{margin: '-0.3125rem'}} />
           </Tooltip>
-          <Text size={0} muted>
+          <Text size={0} muted as="div" trim={true}>
             <Translate
               t={t}
               values={{

@@ -1,10 +1,10 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {AxisBottom, AxisLeft} from '@visx/axis'
 import {Group} from '@visx/group'
 import {scaleLinear, scaleTime} from '@visx/scale'
 import {Area, LinePath} from '@visx/shape'
 import {useRef, useState} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
@@ -1101,7 +1101,7 @@ export function TrendChart(props: {
                       }}
                     />
                   )}
-                  <Text size={0} weight="semibold">
+                  <Text size={0} weight="semibold" as="div" trim={true}>
                     {formatValue(entry.point.value, unit)}
                   </Text>
                   {/* INP confidence: the count qualifies the value, so it sits
@@ -1116,6 +1116,8 @@ export function TrendChart(props: {
                           ? {color: 'var(--card-badge-caution-fg-color)'}
                           : undefined
                       }
+                      as="div"
+                      trim={true}
                     >
                       n={entry.point.interactions}
                       {entry.point.interactions < INP_MIN_INTERACTIONS
@@ -1123,7 +1125,7 @@ export function TrendChart(props: {
                         : ''}
                     </Text>
                   )}
-                  <Text size={0} muted>
+                  <Text size={0} muted as="div" trim={true}>
                     {lines.length > 1
                       ? entry.name
                       : series.xKind === 'minute'
@@ -1141,7 +1143,7 @@ export function TrendChart(props: {
               {/* With several lines the rows above are spent naming them, so
                   the run's date gets its own row — once, it is one run */}
               {lines.length > 1 && series.xKind !== 'minute' && (
-                <Text size={0} muted>
+                <Text size={0} muted as="div" trim={true}>
                   {new Date(snappedMs!).toISOString().slice(0, 10)}
                   {!comparingBranches && hovered[0]?.point.prNumber
                     ? ` · PR #${hovered[0].point.prNumber}`
@@ -1154,7 +1156,7 @@ export function TrendChart(props: {
               {perBranch
                 .filter((entry) => entry.point.styledComponentsVersion)
                 .map((entry) => (
-                  <Text key={`styled-${entry.branch}`} size={0} muted>
+                  <Text key={`styled-${entry.branch}`} size={0} muted as="div" trim={true}>
                     {comparingBranches ? `${entry.branch}: ` : ''}styled-components{' '}
                     {entry.point.styledComponentsVersion}
                   </Text>
@@ -1186,10 +1188,10 @@ export function TrendChart(props: {
                         gap={2}
                         title={CALIBRATION_EXPLAINER}
                       >
-                        <Text size={0} muted>
+                        <Text size={0} muted as="div" trim={true}>
                           host calibration{comparingBranches ? ` · ${entry.branch}` : ''}
                         </Text>
-                        <Text size={0} weight="semibold">
+                        <Text size={0} weight="semibold" as="div" trim={true}>
                           {formatValue(entry.point.calibrationMs!, 'ms')}
                         </Text>
                       </Flex>
@@ -1203,7 +1205,7 @@ export function TrendChart(props: {
                   {perBranch
                     .filter((entry) => hostSummary(entry.point.host))
                     .map((entry) => (
-                      <Text key={`host-${entry.branch}`} size={0} muted>
+                      <Text key={`host-${entry.branch}`} size={0} muted as="div" trim={true}>
                         {comparingBranches ? `${entry.branch}: ` : ''}
                         {hostSummary(entry.point.host)}
                       </Text>
@@ -1211,7 +1213,7 @@ export function TrendChart(props: {
                   {perBranch
                     .filter((entry) => hostVersions(entry.point.host))
                     .map((entry) => (
-                      <Text key={`versions-${entry.branch}`} size={0} muted>
+                      <Text key={`versions-${entry.branch}`} size={0} muted as="div" trim={true}>
                         {comparingBranches ? `${entry.branch}: ` : ''}
                         {hostVersions(entry.point.host)}
                       </Text>
@@ -1227,14 +1229,14 @@ export function TrendChart(props: {
                   gap={2}
                   title="This run measured the release commit, so the value is that release."
                 >
-                  <Text size={0} muted>
+                  <Text size={0} muted as="div" trim={true}>
                     measured release
                   </Text>
-                  <Text size={0} weight="semibold">
+                  <Text size={0} weight="semibold" as="div" trim={true}>
                     {measuredRelease}
                   </Text>
                   {measuredIsLatest && (
-                    <Text size={0} muted>
+                    <Text size={0} muted as="div" trim={true}>
                       latest
                     </Text>
                   )}
@@ -1251,18 +1253,18 @@ export function TrendChart(props: {
                   gap={2}
                   title="Release tags near this run. Unmeasured releases are placed by tag date, so a release near a run does not mean that run measured it."
                 >
-                  <Text size={0} muted>
+                  <Text size={0} muted as="div" trim={true}>
                     {measuredRelease
                       ? 'also near'
                       : hoveredReleases.length > 1
                         ? 'releases'
                         : 'release'}
                   </Text>
-                  <Text size={0} weight="semibold">
+                  <Text size={0} weight="semibold" as="div" trim={true}>
                     {hoveredReleases.map((entry) => entry.tag).join(', ')}
                   </Text>
                   {hoveredReleases.some((entry) => entry.distTags?.includes('latest')) && (
-                    <Text size={0} muted>
+                    <Text size={0} muted as="div" trim={true}>
                       latest
                     </Text>
                   )}

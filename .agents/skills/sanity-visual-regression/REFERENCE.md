@@ -16,8 +16,8 @@
   harnesses lived in shared `*Story.tsx` files with thin stories on top; both were removed once
   it went GA, so today every `*Story.tsx` is a Storybook harness owned by a `*.stories.tsx`.
 - **Why the storybook Vite config mirrors `vitest.browser.config.mts`:** the `monorepo` exports
-  condition resolves `sanity` (and other workspace packages) to TypeScript source; the
-  vanilla-extract plugin compiles `.css.ts`; the React Compiler babel preset matches what the
+  condition resolves `sanity` (and other workspace packages) to TypeScript source; `@pandacss/vite`
+  compiles the package's Panda CSS `.css.ts` modules; the React Compiler babel preset matches what the
   studio ships. Divergence here would make snapshots render differently from production.
 - **Why preview imports both `ui5/styles.css` and `@sanity/ui/styles.css`:** the studio entry
   side-effect-imports both. Storybook must too — colocated sentinel stories import source files

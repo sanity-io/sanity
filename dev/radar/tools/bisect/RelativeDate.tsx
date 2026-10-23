@@ -1,6 +1,7 @@
-import {Box, Text} from '@sanity/ui'
+import {Box} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useState} from 'react'
+import {Text} from 'ui5'
 
 import {relativeDate} from './dates'
 
@@ -17,11 +18,13 @@ export function RelativeDate(props: {dateTime: string; size?: 0 | 1; muted?: boo
     <Tooltip
       content={
         <Box padding={2}>
-          <Text size={1}>{new Date(dateTime).toLocaleString()}</Text>
+          <Text size={1} as="div" trim={true}>
+            {new Date(dateTime).toLocaleString()}
+          </Text>
         </Box>
       }
     >
-      <Text size={size} muted={muted}>
+      <Text size={size} muted={muted} as="div" trim={true}>
         {relativeDate(dateTime, now)}
       </Text>
     </Tooltip>

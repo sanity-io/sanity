@@ -1,9 +1,11 @@
 import {act, render, screen} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import {useTranslation} from 'sanity'
 import {beforeEach, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureLocaleNamespace, structureUsEnglishLocaleBundle} from '../../../../../i18n'
+import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../../constants'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DocumentGroupInventoryHint} from './DocumentGroupInventoryHint'
 
@@ -13,11 +15,13 @@ vi.mock('../../../useDocumentPane', () => ({
 
 const SESSION_COUNT_KEY = 'studio.document-group-inventory.hint.session-count'
 
+const openInspector = vi.fn()
+
 beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
   vi.mocked(useDocumentPane).mockReturnValue({
-    setIsDocumentGroupInventoryActive: vi.fn(),
+    openInspector,
   } as unknown as ReturnType<typeof useDocumentPane>)
 })
 
@@ -63,4 +67,16 @@ it('shows the hint once its status resolves as active', async () => {
 
   await letStatusResolve()
   expect(screen.getByRole('button')).toBeTruthy()
+})
+
+it('opens the document group inspector when pressed', async () => {
+  const wrapper = await createWrapper()
+
+  render(<DocumentGroupInventoryHint />, {wrapper})
+  await letStatusResolve()
+
+  await userEvent.click(screen.getByRole('button'))
+
+  expect(openInspector).toHaveBeenCalledTimes(1)
+  expect(openInspector).toHaveBeenCalledWith(DOCUMENT_GROUP_INSPECTOR_NAME)
 })

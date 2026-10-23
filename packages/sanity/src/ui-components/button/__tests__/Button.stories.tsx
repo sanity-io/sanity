@@ -7,7 +7,7 @@ import {Flex, Grid} from 'ui5'
 import {Button} from '../Button'
 
 // Card and tone-related coverage is prioritized while migrating from
-// styled-components to vanilla-extract and from @sanity/ui to ui5, since tone
+// styled-components to Panda CSS and from @sanity/ui to ui5, since tone
 // changes cascade through every component.
 const TONES: ButtonTone[] = ['default', 'primary', 'positive', 'caution', 'critical']
 const MODES = ['default', 'ghost', 'bleed'] as const

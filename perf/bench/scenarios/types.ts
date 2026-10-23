@@ -301,6 +301,27 @@ export type ScenarioStep =
       awaitField: string
     }
   | {
+      /**
+       * A soft navigation: a trusted click on `selector`, then wait until the
+       * URL has changed and matches `url` (tested against pathname + search)
+       * and `ready` is visible. Records `bench:navigate:<label>` from the
+       * click's event timestamp to readiness. `ready` must not already be
+       * visible before the click.
+       */
+      kind: 'navigate'
+      label: string
+      selector: StepSelector
+      url: RegExp
+      /** CSS selector of the element that marks the destination as ready. */
+      ready: string
+      /**
+       * `visible` (default) waits for `ready` to be visible; `filled` also
+       * waits for its value (inputs) or text to be non-empty, e.g. a title
+       * input that mounts before the document data arrives.
+       */
+      readyWhen?: 'visible' | 'filled'
+    }
+  | {
       kind: 'raw'
       label: string
       drive: (context: StepContext) => Promise<{interactions: number}>
