@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const optionObserveElement = style({
+export const optionObserveElement = css({
   listStyle: 'none',
   whiteSpace: 'nowrap',
   flexShrink: 0,
@@ -8,13 +8,13 @@ export const optionObserveElement = style({
   visibility: 'hidden',
 })
 
-export const hiddenRow = style({
+export const hiddenRow = css({
   opacity: 0,
   height: '0.1px',
   overflow: 'hidden',
 })
 
-export const menuButtonPlaceholder = style({
+export const menuButtonPlaceholder = css({
   display: 'flex',
   visibility: 'hidden',
 })

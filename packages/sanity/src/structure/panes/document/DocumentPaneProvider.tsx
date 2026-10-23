@@ -200,7 +200,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
-  const [isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive] = useState(false)
   const {lastRevisionDocument} = useDeletedDocumentLastRevision()
 
   /**
@@ -603,8 +602,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         setIsDeleting,
         targetDocumentState,
         isDeleting,
-        isDocumentGroupInventoryActive,
-        setIsDocumentGroupInventoryActive,
         isDeleted,
         timelineError,
         // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
@@ -673,7 +670,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       setTimelineRange,
       targetDocumentState,
       isDeleting,
-      isDocumentGroupInventoryActive,
       isDeleted,
       timelineError,
       timelineStore,

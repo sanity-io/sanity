@@ -48,7 +48,7 @@ describe('updateCommentRange', () => {
     // User then types "XXX " at the very start of the block.
     const editorValue = makeValue('XXX Hello World')
 
-    const {range} = buildCommentRangeUpdate({
+    const {anchor} = buildCommentRangeUpdate({
       comment,
       value: editorValue,
       documentValue: {body: editorValue},
@@ -57,7 +57,8 @@ describe('updateCommentRange', () => {
 
     // "World" now sits at offsets 10-15. If this yields 6-11 the client is
     // persisting the creation-time offsets against the new fieldValue.
-    expect(range).toEqual({
+    expect(anchor).toEqual({
+      type: 'portable-text',
       start: {_key: 'block-1', offset: 10},
       end: {_key: 'block-1', offset: 15},
     })
@@ -73,14 +74,15 @@ describe('updateCommentRange', () => {
     const editorValue = makeValue('XXX Hello World')
     const staleDocumentValue = {_id: 'doc-1', _type: 'article', body: makeValue('Hello World')}
 
-    const {range} = buildCommentRangeUpdate({
+    const {anchor} = buildCommentRangeUpdate({
       comment,
       value: editorValue,
       documentValue: staleDocumentValue,
       basePath: ['body'],
     })
 
-    expect(range).toEqual({
+    expect(anchor).toEqual({
+      type: 'portable-text',
       start: {_key: 'block-1', offset: 10},
       end: {_key: 'block-1', offset: 15},
     })
@@ -98,7 +100,7 @@ describe('updateCommentRange', () => {
     })
 
     expect(update).toEqual({
-      range: null,
+      anchor: null,
       selection: {type: 'text', value: []},
     })
   })
@@ -132,7 +134,8 @@ describe('updateCommentRange', () => {
 
     // Keeping `block-2` here would re-send a selection the API cannot resolve.
     expect(update.selection.value.map((item) => item._key)).toEqual(['block-1'])
-    expect(update.range).toEqual({
+    expect(update.anchor).toEqual({
+      type: 'portable-text',
       start: {_key: 'block-1', offset: 6},
       end: {_key: 'block-1', offset: 11},
     })

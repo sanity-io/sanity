@@ -10,6 +10,10 @@ import {structureLocaleNamespace} from '../../../i18n'
 import {root} from './DocumentInspectorHeader.css'
 
 export interface DocumentInspectorHeaderProps {
+  /**
+   * Actions rendered before the close button.
+   */
+  actions?: ReactNode
   as?: ElementType
   closeButtonLabel: string
   flex?: CardProps['flex']
@@ -22,6 +26,7 @@ export function DocumentInspectorHeader(
   props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {
   const {
+    actions,
     as: forwardedAs,
     children,
     className,
@@ -41,13 +46,16 @@ export function DocumentInspectorHeader(
           </Text>
         </Box>
         <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
-          <Button
-            aria-label={closeButtonLabel}
-            icon={CloseIcon}
-            mode="bleed"
-            onClick={onClose}
-            tooltipProps={{content: t('document-inspector.close-button.tooltip')}}
-          />
+          <Flex alignItems="center" gap={1}>
+            {actions}
+            <Button
+              aria-label={closeButtonLabel}
+              icon={CloseIcon}
+              mode="bleed"
+              onClick={onClose}
+              tooltipProps={{content: t('document-inspector.close-button.tooltip')}}
+            />
+          </Flex>
         </Box>
       </Flex>
       {children}

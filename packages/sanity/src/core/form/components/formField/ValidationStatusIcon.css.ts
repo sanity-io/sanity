@@ -1,19 +1,13 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const errorIcon = style({
-  vars: {
-    '--card-icon-color': 'var(--card-badge-critical-icon-color)',
-  },
+export const errorIcon = css({
+  '--card-icon-color': 'var(--card-badge-critical-icon-color)',
 })
 
-export const warningIcon = style({
-  vars: {
-    '--card-icon-color': 'var(--card-badge-caution-icon-color)',
-  },
+export const warningIcon = css({
+  '--card-icon-color': 'var(--card-badge-caution-icon-color)',
 })
 
-export const infoIcon = style({
-  vars: {
-    '--card-icon-color': 'var(--card-badge-primary-icon-color)',
-  },
+export const infoIcon = css({
+  '--card-icon-color': 'var(--card-badge-primary-icon-color)',
 })

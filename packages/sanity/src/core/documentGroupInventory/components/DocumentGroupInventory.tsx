@@ -1,16 +1,11 @@
-import CloseIcon from '@sanity/icons/Close'
-import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {PortalProvider} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
   type ComponentType,
-  useEffect,
-  useLayoutEffect,
+  type RefAttributes,
+  useImperativeHandle,
   useMemo,
-  useRef,
-  useState,
 } from 'react'
 import {
   combineLatest,
@@ -23,7 +18,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {Text, VStack, Flex, Icon} from 'ui5'
+import {Text, VStack} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -33,7 +28,7 @@ import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
@@ -113,10 +108,6 @@ export interface DocumentGroupInventoryManageProps extends DocumentGroupInventor
    */
   referringDocuments$: Observable<ReferringDocuments>
   /**
-   * Request the parent to close the document group inventory.
-   */
-  requestClose?: () => void
-  /**
    * Pane-coupled presentational components injected by the consumer.
    */
   components: DocumentGroupInventoryComponents
@@ -143,30 +134,36 @@ export type DocumentGroupInventoryProps =
 /**
  * @internal
  */
-export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> = (props) => {
-  const {documentId, documentType, selectedId = documentId, onSelect} = props
+export interface DocumentGroupInventoryHandle {
+  inventory: ActorRefFromLogic<typeof documentGroupInventoryMachine>
+}
+
+/**
+ * @internal
+ */
+export function DocumentGroupInventory(
+  props: DocumentGroupInventoryProps & RefAttributes<DocumentGroupInventoryHandle | null>,
+) {
+  const {ref, documentId, documentType, selectedId = documentId, onSelect} = props
   const readOnly = props.mode === 'readOnly'
 
   // Read the manage-only props into locals
   const portalElementName = props.mode === 'readOnly' ? undefined : props.portalElementName
   const perspectiveList = props.mode === 'readOnly' ? undefined : props.perspectiveList
   const referringDocuments$ = props.mode === 'readOnly' ? undefined : props.referringDocuments$
-  const requestClose = props.mode === 'readOnly' ? undefined : props.requestClose
   const components = props.mode === 'readOnly' ? undefined : props.components
 
   const {beta} = useWorkspace()
   const variantsEnabled = beta?.variants?.enabled
   const {t} = useTranslation(studioLocaleNamespace)
-  const {t: feedbackT} = useTranslation(feedbackLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
   const {state$: releases} = useReleasesStore()
   const {state$: agentBundles} = useAgentBundlesStore()
   const {state$: variants} = useVariantsStore()
-  const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
+
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
-  const [menuPortalElement, setMenuPortalElement] = useState<HTMLDivElement | null>(null)
   const {feedbackDialogOpened} = useFeedbackTelemetry()
   const setVariant = useSetVariant()
   const {createVariantDocument} = useVariantDocumentOperations()
@@ -356,7 +353,8 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const selectionRef = useSelector(inventoryRef, ({context}) => context.selectionRef)
   const deletionRef = useSelector(inventoryRef, ({context}) => context.deletionRef)
   const variantCreationRef = useSelector(inventoryRef, ({context}) => context.variantCreationRef)
-  const metaState = useSelector(inventoryRef, ({context}) => context.metaState)
+
+  useImperativeHandle(ref, () => ({inventory: inventoryRef}), [inventoryRef])
 
   const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
   const isLocked = useSelector(selectionRef, (snapshot) => snapshot.matches('locked'))
@@ -379,54 +377,19 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
     machine.can({type: 'createVariant.request'}),
   )
 
-  const [isActive, setIsActive] = useState<boolean>(false)
-
-  useLayoutEffect(() => {
-    const frame = requestAnimationFrame(() => setIsActive(metaState === 'ready'))
-    return () => cancelAnimationFrame(frame)
-  }, [metaState])
-
-  usePreserveIntrinsicBlockSize({
-    element: containerElement,
-    isActive,
-  })
-
   return (
     <>
-      <Container
-        ref={setContainerElement}
-        data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}
-      >
+      <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
         {(isVariantCreationActive || isVariantCreationPending) && (
           <CreateVariant variantCreationRef={variantCreationRef} selectionRef={selectionRef} />
         )}
         {!isVariantCreationActive && (
           <>
             <Header>
-              <VStack gap={4}>
-                {!readOnly && (
-                  <Flex gap={4} alignItems="center" justifyContent="flex-end">
-                    <TextButton
-                      onClick={() => inventoryRef.send({type: 'feedback.begin'})}
-                      title={feedbackT('feedback.menu-item')}
-                      aria-label={feedbackT('feedback.menu-item')}
-                    >
-                      <Icon icon={FeedbackIcon} size={1} />
-                    </TextButton>
-                    <TextButton
-                      onClick={requestClose}
-                      title={t('document-group-inventory.action.cancel')}
-                      aria-label={t('document-group-inventory.action.cancel')}
-                    >
-                      <Icon icon={CloseIcon} size={1} />
-                    </TextButton>
-                  </Flex>
-                )}
-                <DocumentGroupFilter
-                  readOnly={isLocked}
-                  onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
-                />
-              </VStack>
+              <DocumentGroupFilter
+                readOnly={isLocked}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
+              />
             </Header>
             <Body>
               {schema && (
@@ -436,7 +399,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                   selectedId={selectedId}
                   documentType={documentType}
                   readOnly={readOnly}
-                  menuPortalElement={menuPortalElement}
                   perspectiveList={perspectiveList}
                   onSelect={onSelect}
                 />
@@ -444,17 +406,10 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
             </Body>
             {!readOnly && (
               <Footer>
-                <Button
-                  text={t('document-group-inventory.action.cancel')}
-                  size="large"
-                  mode="bleed"
-                  onClick={requestClose}
-                />
                 {canCreateVariant && (
                   <Button
                     text={t('document-group.create-variant')}
                     tone="suggest"
-                    size="large"
                     icon={CreateVariantIcon}
                     onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
                   />
@@ -464,7 +419,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                     text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
                     onClick={() => deletionRef.send({type: 'delete.request'})}
                     tone="critical"
-                    size="large"
                     icon={TrashIcon}
                   />
                 )}
@@ -473,7 +427,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           </>
         )}
       </Container>
-      <div ref={setMenuPortalElement} />
       {isDeletionActive &&
         typeof portalElementName !== 'undefined' &&
         typeof components !== 'undefined' && (
@@ -506,19 +459,9 @@ const Select: ComponentType<{
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   readOnly: boolean
-  menuPortalElement: HTMLElement | null
   /** Absent in read-only mode, where the version context menu is not rendered. */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
-}> = ({
-  machine,
-  inventoryRef,
-  selectedId,
-  documentType,
-  onSelect,
-  readOnly,
-  menuPortalElement,
-  perspectiveList,
-}) => {
+}> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
 
   const hasFilterString = useSelector(
@@ -578,7 +521,6 @@ const Select: ComponentType<{
                   documentType={documentType}
                   onSelect={onSelect}
                   isSelected={selectedId === variant.id}
-                  menuPortalElement={menuPortalElement}
                   perspectiveList={perspectiveList}
                 />
               ),
@@ -618,22 +560,12 @@ const ManagedVariantRow: ComponentType<{
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   isSelected: boolean
-  menuPortalElement: HTMLElement | null
   /**
    * Always supplied by manage mode, where this row is rendered. Optional only
    * so the caller can pick the row by mode rather than by prop presence.
    */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
-}> = ({
-  variant,
-  machine,
-  inventoryRef,
-  documentType,
-  onSelect,
-  isSelected,
-  menuPortalElement,
-  perspectiveList,
-}) => {
+}> = ({variant, machine, inventoryRef, documentType, onSelect, isSelected, perspectiveList}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
   // Derived from `_system` rather than the id, because `_system` is authoritative: it
@@ -710,29 +642,26 @@ const ManagedVariantRow: ComponentType<{
           />
         }
       />
-      <PortalProvider element={menuPortalElement}>
-        <VersionContextMenuPopover
-          contextMenu={contextMenu}
-          popoverRef={popoverRef}
-          referenceElement={referenceElement}
-          documentGroupId={documentGroupId}
-          documentType={documentType}
-          bundleId={bundleId}
-          releases={pendingReleases}
-          releasesLoading={releasesLoading}
-          versionId={versionId}
-          onDiscard={openDiscardDialog}
-          onCreateRelease={openCreateReleaseDialog}
-          onCopyToDrafts={handleCopyToDrafts}
-          onCreateVersion={handleAddVersion}
-          disabled={isLocked}
-          release={release}
-          isScheduledDraft={isScheduledDraft}
-          scheduledDraftMenuActions={scheduledDraftMenuActions}
-          portal={Boolean(menuPortalElement)}
-          isDiscardable={false}
-        />
-      </PortalProvider>
+      <VersionContextMenuPopover
+        contextMenu={contextMenu}
+        popoverRef={popoverRef}
+        referenceElement={referenceElement}
+        documentGroupId={documentGroupId}
+        documentType={documentType}
+        bundleId={bundleId}
+        releases={pendingReleases}
+        releasesLoading={releasesLoading}
+        versionId={versionId}
+        onDiscard={openDiscardDialog}
+        onCreateRelease={openCreateReleaseDialog}
+        onCopyToDrafts={handleCopyToDrafts}
+        onCreateVersion={handleAddVersion}
+        disabled={isLocked}
+        release={release}
+        isScheduledDraft={isScheduledDraft}
+        scheduledDraftMenuActions={scheduledDraftMenuActions}
+        isDiscardable={false}
+      />
       <VersionContextMenuDialogs
         dialogState={dialogState}
         onClose={closeDialog}
@@ -746,45 +675,4 @@ const ManagedVariantRow: ComponentType<{
       />
     </>
   )
-}
-
-const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
-
-/**
- * Preserve the intrinsic block size of an element by maintaining an `--intrinsic-block-size`
- * custom property. This custom property must be used by styles to control the element's size.
- */
-function usePreserveIntrinsicBlockSize({
-  isActive,
-  element,
-}: {
-  isActive: boolean
-  element: HTMLElement | null
-}): void {
-  const heightRef = useRef(0)
-
-  useEffect(() => {
-    if (!isActive || !element) {
-      return undefined
-    }
-
-    const setHeight = (height: number) => {
-      heightRef.current = height
-      element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${height}px`)
-    }
-
-    const resizeObserver = new ResizeObserver(([entry]) => {
-      setHeight(entry.contentRect.height)
-    })
-
-    if (heightRef.current) {
-      setHeight(heightRef.current)
-    }
-    resizeObserver.observe(element)
-
-    return () => {
-      element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
-      resizeObserver.disconnect()
-    }
-  }, [isActive, element])
 }

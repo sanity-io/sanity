@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const customIconDiv = style({
+export const customIconDiv = css({
   width: '1em',
   height: '1em',
   borderRadius: 'inherit',

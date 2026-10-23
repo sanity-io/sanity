@@ -1,4 +1,5 @@
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
+import {viteCssModules} from '@repo/css-modules-kit'
+import {studioPandaCss} from '@repo/pandacss/vite'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
@@ -48,7 +49,11 @@ export default defineCliConfig({
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     let nextConfig = mergeConfig(viteConfig, {
-      plugins: [vanillaExtractPlugin()],
+      // `sanity dev` resolves the workspace packages to their sources (the `monorepo` condition
+      // below), so the Panda CSS `.css.ts` modules of `sanity` are built here, and the CSS modules
+      // of `@sanity/vision` with the `css` options below; `sanity build` uses the built packages
+      // and their `bundle.css`
+      plugins: command === 'serve' ? studioPandaCss() : [],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
     })
@@ -93,6 +98,9 @@ export default defineCliConfig({
     if (mode !== 'production' && command === 'serve') {
       return mergeConfig(nextConfig, {
         resolve: {conditions: ['monorepo', ...defaultClientConditions]},
+        // `@sanity/vision` resolves to its sources here, so its `*.module.css` files compile with
+        // the Lightning CSS scoping and class names of its package build
+        css: viteCssModules,
       })
     }
 

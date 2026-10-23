@@ -1,17 +1,83 @@
+import {fileURLToPath} from 'node:url'
+
+import {cssModulesPattern} from '@repo/css-modules-kit'
 import {Features, transform} from 'lightningcss'
+import {type PluginOption} from 'vite'
 import {describe, expect, it} from 'vitest'
 
-import {cleanupCssOutputPlugin, createDefaultConfig} from '../package.bundle'
+import {
+  cleanupCssOutputPlugin,
+  createDefaultConfig,
+  libraryEntryIds,
+  withPandaCssImport,
+} from '../package.bundle'
+
+function pluginNames(plugins: PluginOption): string[] {
+  if (Array.isArray(plugins)) return plugins.flatMap(pluginNames)
+  return plugins && typeof plugins === 'object' && 'name' in plugins ? [plugins.name] : []
+}
 
 describe('createDefaultConfig()', () => {
   it('injects the provided version as the __PKG_VERSION__ define', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1'})
+    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
     expect(config.define?.['__PKG_VERSION__']).toBe('"9.9.9-test.1"')
   })
 
   it('excludes the Lightning CSS light-dark polyfill', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1'})
+    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
     expect(config.css?.lightningcss?.exclude).toBe(Features.LightDark)
+  })
+
+  it('compiles the .css.ts modules of a Panda package with Panda only', () => {
+    const names = pluginNames(
+      createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'}).plugins,
+    )
+    expect(names).toEqual(
+      expect.arrayContaining([
+        'pandacss',
+        'sanity:remove-cascade-layers',
+        'sanity/panda-css-import',
+        'sanity/cleanup-css-output',
+      ]),
+    )
+  })
+
+  it('compiles the CSS modules of a CSS modules package with Lightning CSS and no Panda', () => {
+    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'css-modules'})
+    expect(config.css).toEqual({
+      transformer: 'lightningcss',
+      lightningcss: {cssModules: {pattern: cssModulesPattern}, exclude: Features.LightDark},
+    })
+    const names = pluginNames(config.plugins)
+    expect(names).toContain('sanity/cleanup-css-output')
+    expect(names).not.toContain('pandacss')
+    expect(names).not.toContain('sanity:remove-cascade-layers')
+    expect(names).not.toContain('sanity/panda-css-import')
+  })
+})
+
+describe('pandaCssImportPlugin()', () => {
+  it('resolves the library entries to module ids', () => {
+    expect(
+      libraryEntryIds('/repo/packages/sanity', {
+        index: './src/_exports/index.ts',
+        desk: './src/_exports/desk.ts',
+      }),
+    ).toEqual(
+      new Set([
+        '/repo/packages/sanity/src/_exports/index.ts',
+        '/repo/packages/sanity/src/_exports/desk.ts',
+      ]),
+    )
+    expect(libraryEntryIds('/repo/packages/sanity', './src/index.ts')).toEqual(
+      new Set(['/repo/packages/sanity/src/index.ts']),
+    )
+    expect(libraryEntryIds('/repo/packages/sanity', undefined)).toEqual(new Set())
+  })
+
+  it('imports the Panda stylesheet ahead of an entry module', () => {
+    const pandaCss = fileURLToPath(new URL('../panda.css', import.meta.url))
+    expect(withPandaCssImport('export {}')).toBe(`import ${JSON.stringify(pandaCss)}\nexport {}`)
   })
 })
 
@@ -45,7 +111,7 @@ describe('Lightning CSS light-dark minify', () => {
   })
 
   it('preserves light-dark() when the bundle config exclude is applied', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1'})
+    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
     const {code} = transform({
       filename: 'theme.css',
       code: Buffer.from(LIGHT_DARK_CSS),
@@ -70,7 +136,7 @@ function runPlugin(bundle: Record<string, any>) {
 describe('cleanupCssOutputPlugin() — CSS import stripping', () => {
   it('removes imports for CSS assets produced by the build', () => {
     const bundle = {
-      // CSS asset produced by vanilla-extract
+      // CSS asset produced by Panda CSS
       'index.css': {
         type: 'asset',
         source: ':root { --color: red; }',

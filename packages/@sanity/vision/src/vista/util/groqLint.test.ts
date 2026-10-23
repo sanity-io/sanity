@@ -71,20 +71,26 @@ describe('schema findings', () => {
         diagnostic.severity,
         diagnostic.actions?.map((action) => action.name),
       ]),
-    ).toEqual([['"athor"', 'vision/unknown-type', 'warning', ['Use "author"']]])
+    ).toEqual([
+      ['[_type == "athor"]', 'groq-lint/unlimited-query', 'warning', undefined],
+      ['"athor"', 'vision/unknown-type', 'warning', ['Use "author"']],
+    ])
 
     // With the type fixed, its fields are checked
-    const fixed = diagnostics[0]
-    fixed.actions?.[0].apply(view, fixed.from, fixed.to)
+    const fixed = diagnostics.find((diagnostic) => diagnostic.source === 'vision/unknown-type')
+    if (!fixed?.actions) throw new Error('expected a type suggestion')
+    fixed.actions[0].apply(view, fixed.from, fixed.to)
     expect(view.state.doc.toString()).toBe('*[_type == "author"]{nmae, "f": bestFriend.name}')
     const next = await groqLintSource(view)
     expect(next.map((diagnostic) => [diagnostic.source, diagnostic.actions?.[0].name])).toEqual([
+      ['groq-lint/unlimited-query', undefined],
       ['vision/unknown-field', 'Use name'],
       ['vision/not-a-reference', 'Use ->'],
     ])
     // The dot becomes an arrow, though the diagnostic is on the name after it
-    const reference = next[1]
-    reference.actions?.[0].apply(view, reference.from, reference.to)
+    const reference = next.find((diagnostic) => diagnostic.source === 'vision/not-a-reference')
+    if (!reference?.actions) throw new Error('expected a reference suggestion')
+    reference.actions[0].apply(view, reference.from, reference.to)
     expect(view.state.doc.toString()).toBe('*[_type == "author"]{nmae, "f": bestFriend->name}')
     view.destroy()
   })
@@ -104,12 +110,16 @@ describe('groqLintSource', () => {
     const query = '*[_type == "post" && author->name == "x"]{title}'
     const diagnostics = await groqLintSource(viewOf(query))
 
-    expect(diagnostics).toHaveLength(1)
-    expect(diagnostics[0]).toMatchObject({
-      severity: 'error',
-      source: 'groq-lint/join-in-filter',
-    })
-    expect(query.slice(diagnostics[0].from, diagnostics[0].to)).toBe('author->')
+    expect(
+      diagnostics.map((diagnostic) => [
+        diagnostic.source,
+        diagnostic.severity,
+        query.slice(diagnostic.from, diagnostic.to),
+      ]),
+    ).toEqual([
+      ['groq-lint/unlimited-query', 'warning', '[_type == "post" && author->name == "x"]'],
+      ['groq-lint/join-in-filter', 'error', 'author->'],
+    ])
   })
 
   it('reports a query that does not parse as a single error', async () => {
@@ -127,8 +137,16 @@ describe('groqLintSource', () => {
     ])
   })
 
-  it('has nothing to say about clean queries', async () => {
-    expect(await groqLintSource(viewOf('*[_type == "post"]{title}'))).toEqual([])
+  it('warns about an unsliced query that is otherwise clean', async () => {
+    const query = '*[_type == "post"]{title}'
+    const diagnostics = await groqLintSource(viewOf(query))
+    expect(
+      diagnostics.map((diagnostic) => [
+        diagnostic.source,
+        query.slice(diagnostic.from, diagnostic.to),
+      ]),
+    ).toEqual([['groq-lint/unlimited-query', '[_type == "post"]']])
+    expect(await groqLintSource(viewOf('*[_type == "post"][0...10]{title}'))).toEqual([])
   })
 
   it('leaves the wasm alone for a blank document, which every new tab starts as', async () => {
@@ -150,9 +168,12 @@ describe('groqLintSource', () => {
       ]),
     ).toEqual([
       ['vision/parameter-reuse', '$p'],
+      ['groq-lint/unlimited-query', '*'],
       ['vision/arity', 'count'],
     ])
-    const rendered = diagnostics[1].renderMessage?.(new EditorView())
+    const rendered = diagnostics
+      .find((diagnostic) => diagnostic.source === 'vision/arity')
+      ?.renderMessage?.(new EditorView())
     expect(rendered).toBeDefined()
     const container = document.createElement('div')
     container.append(rendered ?? '')
@@ -176,7 +197,12 @@ describe('groqLintSource', () => {
         extensions: [functionLibrary.of(library), groqEditorLabels.of(EDITOR_LABELS)],
       }),
     })
-    const [diagnostic] = await groqLintSource(view)
+    const diagnostics = await groqLintSource(view)
+    expect(diagnostics.map((diagnostic) => diagnostic.source)).toEqual([
+      'groq-lint/unlimited-query',
+      'vision/unknown-function',
+    ])
+    const diagnostic = diagnostics[1]
 
     expect(diagnostic.source).toBe('vision/unknown-function')
     expect(diagnostic.actions?.map((action) => action.name)).toEqual(['Declare it'])

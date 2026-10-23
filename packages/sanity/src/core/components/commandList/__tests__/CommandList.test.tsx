@@ -2,8 +2,9 @@ import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useCallback} from 'react'
-import {beforeEach, describe, expect, it} from 'vitest'
+import {describe, expect, it} from 'vitest'
 
+import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {CommandList} from '../CommandList'
 
 const COMMAND_LIST_TEST_ID = 'command-list'
@@ -62,41 +63,7 @@ function TestComponent(props: TestComponentProps) {
 }
 
 describe('core/components: CommandList', () => {
-  beforeEach(() => {
-    const originalOffsetHeight = Object.getOwnPropertyDescriptor(
-      HTMLElement.prototype,
-      'offsetHeight',
-    )
-    const originalOffsetWidth = Object.getOwnPropertyDescriptor(
-      HTMLElement.prototype,
-      'offsetWidth',
-    )
-    // Virtual list will return an empty list of items unless we have some size,
-    // so we need to mock offsetHeight and offsetWidth to return a size for the list.
-    // Not pretty, but it's what they recommend for testing outside of browsers:
-    // https://github.com/TanStack/virtual/issues/641
-    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
-      configurable: true,
-      get() {
-        return 800
-      },
-    })
-    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
-      configurable: true,
-      get() {
-        return 800
-      },
-    })
-
-    return () => {
-      if (originalOffsetHeight) {
-        Object.defineProperty(HTMLElement.prototype, 'offsetHeight', originalOffsetHeight)
-      }
-      if (originalOffsetWidth) {
-        Object.defineProperty(HTMLElement.prototype, 'offsetWidth', originalOffsetWidth)
-      }
-    }
-  })
+  setupVirtualListEnv(undefined, 800, 800)
 
   it('should change active item on pressing arrow keys', async () => {
     render(<TestComponent items={[0, 1, 2, 3]} />)

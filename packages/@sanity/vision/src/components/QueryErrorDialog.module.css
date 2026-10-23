@@ -1,0 +1,8 @@
+/*
+ * `ErrorCode` always renders inside a critical-tone `Card`, so the card sets
+ * `--card-muted-fg-color` to the muted critical foreground color we want here.
+ * The doubled class overrides the color @sanity/ui's Code sets on itself.
+ */
+.errorCode.errorCode {
+  color: var(--card-muted-fg-color);
+}

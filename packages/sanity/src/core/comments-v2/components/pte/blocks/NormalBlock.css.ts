@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const normalText = style({
+export const normalText = css({
   wordBreak: 'break-word',
 })

@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const svgWrapper = style({
+export const svgWrapper = css({
   pointerEvents: 'none',
   position: 'absolute',
   left: 0,

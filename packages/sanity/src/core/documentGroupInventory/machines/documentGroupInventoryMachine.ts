@@ -84,6 +84,7 @@ export const documentGroupInventoryMachine = setup({
   },
   guards: {
     isCreatingVariant: stateIn('creatingVariant'),
+    isMutable: ({context}) => !context.readOnly,
   },
 }).createMachine({
   id: 'documentGroupInventory',
@@ -165,15 +166,25 @@ export const documentGroupInventoryMachine = setup({
       guard: 'isCreatingVariant',
       target: '.idle',
     },
-    'feedback.begin': '.feedback',
-    'feedback.end': '.idle',
   },
   initial: 'idle',
   states: {
-    idle: {},
+    idle: {
+      on: {
+        // Feedback can only begin from `idle`: ending it returns to `idle`, which would abandon
+        // any other flow (such as variant creation) that was active when it began.
+        'feedback.begin': {
+          guard: 'isMutable',
+          target: 'feedback',
+        },
+      },
+    },
     creatingVariant: {},
     feedback: {
       entry: 'onFeedbackBegin',
+      on: {
+        'feedback.end': 'idle',
+      },
     },
   },
 })

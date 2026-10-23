@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const styledSanityMonogram = style({
+export const styledSanityMonogram = css({
   position: 'absolute',
   top: '50%',
   left: '50%',

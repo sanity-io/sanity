@@ -26,7 +26,7 @@ import {type VistaDrawer, type VistaTab} from '../../store/types'
 import {useSavedQueriesApi, useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {selectActiveTab, selectDatasets} from '../../store/vistaMachine'
 import {savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
-import {listItemButton, previewCode, scrollArea} from '../vista.css'
+import * as styles from '../vista.module.css'
 
 interface QueryListPanelProps {
   mode: VistaDrawer
@@ -113,7 +113,8 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   // What the tab a saved query was loaded into cannot reproduce is worth saying: a dataset the
   // tool does not know (another project's URL, or a dataset the user cannot see) leaves the tab
   // on its own dataset, and a variant the navbar does not have selected is not sent, since a tab
-  // cannot pin one (its option follows the navbar or sends none)
+  // cannot pin one (its option follows the navbar or sends none); where the workspace has
+  // variants switched off there is no navbar selector to select it with
   const warnAboutUnrepresentable = useCallback(
     (parsed: ParsedQueryUrl) => {
       if (!parsed.isKnownDataset) {
@@ -132,7 +133,12 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           closable: true,
           id: 'vista-saved-query-variant',
           status: 'warning',
-          title: t('vista.saved.unavailable-variant', {variant: parsed.variant}),
+          title: t(
+            environment.isVariantsEnabled
+              ? 'vista.saved.unavailable-variant'
+              : 'vista.saved.variants-disabled',
+            {variant: parsed.variant},
+          ),
         })
       }
     },
@@ -252,7 +258,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
         )}
       </Flex>
 
-      <Box className={scrollArea} flexBasis="0%" flexGrow={1}>
+      <Box className={styles.scrollArea} flexBasis="0%" flexGrow={1}>
         {visibleItems.length === 0 ? (
           <Box padding={4}>
             <Text muted size={1}>
@@ -296,7 +302,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         </Box>
                       ) : (
                         <Button
-                          className={listItemButton}
+                          className={styles.listItemButton}
                           data-testid="vista-saved-query-open"
                           justify="flex-start"
                           mode="bleed"
@@ -310,7 +316,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                               {query.title || t('label.untitled-query')}
                             </Text>
                             {preview && (
-                              <Box className={previewCode}>
+                              <Box className={styles.previewCode}>
                                 <Code size={0}>{preview}</Code>
                               </Box>
                             )}

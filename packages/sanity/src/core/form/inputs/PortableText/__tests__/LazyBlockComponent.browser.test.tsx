@@ -188,17 +188,19 @@ describe('lazy Portable Text components', () => {
     await getFocusedPortableTextInput('field-body')
     await page.getByRole('button', {name: 'Insert Callout (block)'}).first().click()
 
-    // The modal owns the boundary: it stays open with its own loading block, and the block that
-    // opened it is not swapped for the block fallback.
+    // The object's fields suspend to their own boundaries inside the modal: it stays open with a
+    // skeleton per field, and the block that opened it is not swapped for the block fallback.
     const dialog = page.getByTestId('nested-object-dialog')
     await expect.element(dialog).toBeVisible()
-    await expect.element(dialog.getByTestId('loading-block')).toBeVisible()
+    await expect.element(dialog.getByTestId('custom-field-fallback').first()).toBeVisible()
     expect(countTestIds('block-object-fallback')()).toBe(0)
     await expect.poll(countTestIds('pte-block-object')).toBe(2)
 
     input.resolve()
 
     await expect.element(dialog.getByTestId('string-input')).toBeVisible()
-    await expect.element(dialog.getByTestId('loading-block')).not.toBeInTheDocument()
+    await expect
+      .element(dialog.getByTestId('custom-field-fallback').first())
+      .not.toBeInTheDocument()
   })
 })
