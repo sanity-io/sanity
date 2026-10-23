@@ -3,6 +3,7 @@ import {useCallback, useMemo} from 'react'
 import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useItemComponent} from '../../../../form-components-hooks/useItemComponent'
 import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
@@ -45,6 +46,14 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     value = EMPTY,
   } = props
   const {t} = useTranslation()
+
+  // Resolves locally so the grid card is not the renderItem nested inputs inherit.
+  // Passing it down accumulates callback wrapping through ancestor components (#4780, #15484).
+  const ItemComponent = useItemComponent()
+  const renderInputItem = useCallback(
+    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => <ItemComponent {...itemProps} />,
+    [ItemComponent],
+  )
 
   const hasErrors = validation?.some((v) => v.level === 'error')
   const errorTone: CardTone | undefined = hasErrors ? 'critical' : undefined
@@ -117,6 +126,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                           renderBlock={renderBlock}
                           renderInlineBlock={renderInlineBlock}
                           renderItem={renderItem}
+                          renderInputItem={renderInputItem}
                           renderField={renderField}
                           renderInput={renderInput}
                           renderPreview={renderPreview}

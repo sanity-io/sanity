@@ -28,6 +28,7 @@ const MIDDLEWARE_HOOK = 'useMiddlewareComponents'
  */
 const DEFERS_TO_ANCESTOR = [
   'core/form/inputs/PortableText/object/Plugins.tsx <RenderPlugins>',
+  'core/form/inputs/arrays/ArrayOfObjectsInput/Grid/GridArrayInput.tsx <ItemComponent>',
   'core/form/inputs/arrays/ArrayOfObjectsInput/List/ListArrayInput.tsx <ItemComponent>',
   'core/form/studio/FormBuilder.tsx <Annotation>',
   'core/form/studio/FormBuilder.tsx <Block>',
