@@ -1,0 +1,252 @@
+import {RestoreIcon} from '@sanity/icons/Restore'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {Button, Card, Stack, Text, TextArea} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
+import {dequal} from 'dequal/lite'
+import {useCallback, useState} from 'react'
+import {useTranslation} from 'sanity'
+import {Box, Flex} from 'ui5'
+
+import {visionLocaleNamespace} from '../../../i18n'
+import {validateApiVersion} from '../../../util/validateApiVersion'
+import {
+  useSavedQueriesApi,
+  useVisionActor,
+  useVisionExperience,
+  useVisionSelector,
+} from '../../store/VisionActorContext'
+import {selectDatasets, selectWorkspaceDataset} from '../../store/visionMachine'
+import {DEFAULT_HIDDEN_DIFF_FIELDS} from '../../store/visionStorage'
+import {
+  ApiVersionField,
+  DatasetField,
+  PerspectiveSelect,
+  UseCdnField,
+  VariantSelect,
+} from '../request/OptionFields'
+import {SwitchField} from '../SwitchField'
+
+/** One field path per line (commas work too), each once */
+function parseFieldList(text: string): string[] {
+  return [
+    ...new Set(
+      text
+        .split(/[\n,]/)
+        .map((field) => field.trim())
+        .filter(Boolean),
+    ),
+  ]
+}
+
+function HiddenDiffFieldsSetting() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const actorRef = useVisionActor()
+  const hiddenFields = useVisionSelector((snapshot) => snapshot.context.historyDiff.hiddenFields)
+  // The text as typed, for as long as it lists the stored fields: a new line being started or a
+  // path being typed would otherwise be tidied away under the caret
+  const [draft, setDraft] = useState<{text: string; fields: string[]}>()
+  const text = draft && dequal(draft.fields, hiddenFields) ? draft.text : hiddenFields.join('\n')
+  const update = (fields: string[]) =>
+    actorRef.send({type: 'historyDiff.update', settings: {hiddenFields: fields}})
+
+  return (
+    <Stack gap={3}>
+      <Stack gap={2}>
+        <Text as="label" htmlFor="vision-settings-hidden-diff-fields" size={1} weight="medium">
+          {t('vision.settings.history-diff.title')}
+        </Text>
+        <Text muted size={1}>
+          {t('vision.settings.history-diff.description')}
+        </Text>
+      </Stack>
+      <TextArea
+        data-testid="vision-settings-hidden-diff-fields"
+        fontSize={1}
+        id="vision-settings-hidden-diff-fields"
+        onChange={(event) => {
+          const next = event.currentTarget.value
+          const fields = parseFieldList(next)
+          setDraft({text: next, fields})
+          update(fields)
+        }}
+        rows={4}
+        value={text}
+      />
+      <Flex>
+        <Button
+          data-testid="vision-settings-hidden-diff-fields-reset"
+          disabled={dequal(hiddenFields, DEFAULT_HIDDEN_DIFF_FIELDS)}
+          fontSize={1}
+          icon={RestoreIcon}
+          mode="ghost"
+          onClick={() => update([...DEFAULT_HIDDEN_DIFF_FIELDS])}
+          padding={2}
+          text={t('vision.settings.history-diff.reset')}
+        />
+      </Flex>
+    </Stack>
+  )
+}
+
+/** The settings, in the sidebar's drawer */
+export function SettingsPanel() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const toast = useToast()
+  const actorRef = useVisionActor()
+  const {switchToClassic} = useVisionExperience()
+  const {clearQueries} = useSavedQueriesApi()
+  const datasets = useVisionSelector(selectDatasets)
+  const workspaceDataset = useVisionSelector(selectWorkspaceDataset)
+  const settings = useVisionSelector((snapshot) => snapshot.context.settings)
+  const [confirmClear, setConfirmClear] = useState(false)
+  // The "Other" input may hold an unfinished version; only usable ones become the default
+  const [apiVersionDraft, setApiVersionDraft] = useState(settings.apiVersion)
+
+  const handleApiVersionChange = useCallback(
+    (apiVersion: string) => {
+      setApiVersionDraft(apiVersion)
+      if (validateApiVersion(apiVersion)) {
+        actorRef.send({type: 'settings.update', settings: {apiVersion}})
+      }
+    },
+    [actorRef],
+  )
+
+  const handleClearStorage = useCallback(async () => {
+    setConfirmClear(false)
+    // The saved queries live on the server; nothing local is dropped until they are gone
+    try {
+      await clearQueries()
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('vision.settings.clear-storage.error'),
+        description: err instanceof Error ? err.message : String(err),
+      })
+      return
+    }
+    actorRef.send({type: 'storage.clear'})
+    toast.push({
+      closable: true,
+      status: 'success',
+      title: t('vision.settings.clear-storage.success'),
+    })
+    // Clearing storage also ends the redesigned experience, which unmounts this panel
+    switchToClassic()
+  }, [actorRef, clearQueries, switchToClassic, t, toast])
+
+  return (
+    <Box data-testid="vision-settings" padding={4}>
+      <Stack gap={5}>
+        <Text muted size={1}>
+          {t('vision.settings.description')}
+        </Text>
+
+        <DatasetField
+          dataset={settings.dataset}
+          datasets={datasets}
+          id="vision-settings-dataset"
+          mode={settings.datasetMode}
+          onChange={(dataset) => actorRef.send({type: 'settings.update', settings: dataset})}
+          workspaceDataset={workspaceDataset}
+        />
+
+        <ApiVersionField
+          id="vision-settings-api-version"
+          locked={false}
+          onChange={handleApiVersionChange}
+          value={apiVersionDraft}
+        />
+
+        <PerspectiveSelect
+          id="vision-settings-perspective"
+          onChange={(perspective) =>
+            actorRef.send({type: 'settings.update', settings: {perspective}})
+          }
+          value={settings.perspective}
+        />
+
+        <VariantSelect
+          id="vision-settings-variant"
+          onChange={(variant) => actorRef.send({type: 'settings.update', settings: {variant}})}
+          value={settings.variant}
+        />
+
+        <SwitchField
+          checked={settings.includeSourceMap}
+          description={t('vision.options.include-source-map.description')}
+          onChange={(includeSourceMap) =>
+            actorRef.send({type: 'settings.update', settings: {includeSourceMap}})
+          }
+          title={t('vision.options.include-source-map')}
+        />
+
+        <UseCdnField
+          checked={settings.useCdn}
+          onChange={(useCdn) => actorRef.send({type: 'settings.update', settings: {useCdn}})}
+          testId="vision-settings-use-cdn"
+        />
+
+        <Card border padding={3} radius={2}>
+          <HiddenDiffFieldsSetting />
+        </Card>
+
+        <Card border padding={3} radius={2}>
+          <Stack gap={3}>
+            <Text size={1} weight="medium">
+              {t('vision.redesign.settings.title')}
+            </Text>
+            <Text muted size={1}>
+              {t('vision.redesign.settings.description')}
+            </Text>
+            <Flex>
+              <Button
+                data-testid="vision-settings-classic"
+                icon={RestoreIcon}
+                mode="ghost"
+                onClick={switchToClassic}
+                text={t('vision.redesign.switch-to-classic')}
+              />
+            </Flex>
+          </Stack>
+        </Card>
+
+        <Card border padding={3} radius={2} tone={confirmClear ? 'critical' : 'default'}>
+          <Stack gap={3}>
+            <Text muted size={1}>
+              {t('vision.settings.clear-storage.description')}
+            </Text>
+            <Flex gap={2}>
+              {confirmClear ? (
+                <>
+                  <Button
+                    data-testid="vision-clear-storage-confirm"
+                    icon={TrashIcon}
+                    onClick={() => void handleClearStorage()}
+                    text={t('vision.settings.clear-storage.confirm')}
+                    tone="critical"
+                  />
+                  <Button
+                    mode="bleed"
+                    onClick={() => setConfirmClear(false)}
+                    text={t('action.query-cancel')}
+                  />
+                </>
+              ) : (
+                <Button
+                  data-testid="vision-clear-storage"
+                  icon={TrashIcon}
+                  mode="ghost"
+                  onClick={() => setConfirmClear(true)}
+                  text={t('vision.settings.clear-storage')}
+                  tone="critical"
+                />
+              )}
+            </Flex>
+          </Stack>
+        </Card>
+      </Stack>
+    </Box>
+  )
+}

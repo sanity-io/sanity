@@ -7,9 +7,9 @@ import {type ReactNode} from 'react'
 import {type Tool} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {writeRedesignPreference} from './redesign/redesignPreference'
 import SanityVision from './SanityVision'
 import {type VisionConfig} from './types'
-import {writeRedesignPreference} from './vista/redesignPreference'
 
 const theme = buildTheme()
 
@@ -54,10 +54,10 @@ vi.mock('./components/VisionGui', () => ({
   ),
 }))
 
-vi.mock('./vista/components/VistaGui', () => ({
-  VistaGui: ({onSwitchToClassic}: {onSwitchToClassic: () => void}) => (
-    <button data-testid="vista" onClick={onSwitchToClassic} type="button">
-      vista
+vi.mock('./redesign/components/VisionRedesign', () => ({
+  VisionRedesign: ({onSwitchToClassic}: {onSwitchToClassic: () => void}) => (
+    <button data-testid="vision" onClick={onSwitchToClassic} type="button">
+      vision
     </button>
   ),
 }))
@@ -89,7 +89,7 @@ describe('SanityVision experience switch', () => {
   it('renders the classic tool without an invitation when the beta flag is off', () => {
     renderTool({})
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
-    expect(screen.queryByText('vista.redesign.toast.title')).toBeNull()
+    expect(screen.queryByText('vision.redesign.toast.title')).toBeNull()
     expect(screen.queryByTestId('classic-try-redesign')).toBeNull()
   })
 
@@ -97,7 +97,7 @@ describe('SanityVision experience switch', () => {
     writeRedesignPreference('switch-project', {optedIn: true})
     renderTool({beta: {redesign: {enabled: false}}})
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
-    expect(screen.queryByTestId('vista')).toBeNull()
+    expect(screen.queryByTestId('vision')).toBeNull()
   })
 
   it('invites through a toast and switches to the redesign when accepted', async () => {
@@ -109,10 +109,10 @@ describe('SanityVision experience switch', () => {
       fireEvent.click(accept)
     })
 
-    await waitFor(() => expect(screen.getByTestId('vista')).toBeTruthy())
+    await waitFor(() => expect(screen.getByTestId('vision')).toBeTruthy())
     expect(screen.queryByTestId('classic-vision')).toBeNull()
     // The toast animates out, so it leaves the DOM a moment later
-    await waitFor(() => expect(screen.queryByText('vista.redesign.toast.title')).toBeNull())
+    await waitFor(() => expect(screen.queryByText('vision.redesign.toast.title')).toBeNull())
     expect(
       JSON.parse(localStorage.getItem('sanityVision:redesign:switch-project') || '{}'),
     ).toEqual({
@@ -128,7 +128,7 @@ describe('SanityVision experience switch', () => {
       fireEvent.click(dismiss)
     })
 
-    await waitFor(() => expect(screen.queryByText('vista.redesign.toast.title')).toBeNull())
+    await waitFor(() => expect(screen.queryByText('vision.redesign.toast.title')).toBeNull())
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
 
     cleanup()
@@ -145,14 +145,14 @@ describe('SanityVision experience switch', () => {
     await act(async () => {
       fireEvent.click(screen.getByTestId('classic-try-redesign'))
     })
-    await waitFor(() => expect(screen.getByTestId('vista')).toBeTruthy())
+    await waitFor(() => expect(screen.getByTestId('vision')).toBeTruthy())
     expect(
       JSON.parse(localStorage.getItem('sanityVision:redesign:switch-project') || '{}'),
     ).toEqual({optedIn: true, dismissed: false})
 
     // Back in the classic tool, the invitation shows again
     await act(async () => {
-      fireEvent.click(screen.getByTestId('vista'))
+      fireEvent.click(screen.getByTestId('vision'))
     })
     expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
     expect(screen.getByTestId('classic-try-redesign')).toBeTruthy()
@@ -161,10 +161,10 @@ describe('SanityVision experience switch', () => {
   it('opens the redesign directly for an opted-in project and can switch back', async () => {
     writeRedesignPreference('switch-project', {optedIn: true})
     renderTool({beta: {redesign: {enabled: true}}})
-    const vista = await screen.findByTestId('vista')
+    const vision = await screen.findByTestId('vision')
 
     await act(async () => {
-      fireEvent.click(vista)
+      fireEvent.click(vision)
     })
 
     await waitFor(() => expect(screen.getByTestId('classic-vision')).toBeTruthy())
