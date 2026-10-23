@@ -35,6 +35,7 @@ import {DocumentPanel} from '../documentPanel/DocumentPanel'
 import {DocumentPanelHeader} from '../documentPanel/header/DocumentPanelHeader'
 import {DocumentActionShortcuts} from '../keyboardShortcuts/DocumentActionShortcuts'
 import {getMenuItems} from '../menuItems'
+import {useCompareWithId} from '../useCompareWithId'
 import {useDocumentPane} from '../useDocumentPane'
 import {changeConnectorRoot} from './DocumentLayout.css'
 import {DocumentLayoutError} from './DocumentLayoutError'
@@ -119,6 +120,12 @@ export function DocumentLayout() {
   )
 
   const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
+  // PROPOSED (open beta): Compare versions is offered whenever the document has another version, not only when the stack has an earlier layer.
+  const compareWithId = useCompareWithId({
+    documentId,
+    displayedId: displayed?._id,
+    previousId: documentIdStack.previousId,
+  })
 
   const hasValue = Boolean(value)
 
@@ -132,11 +139,13 @@ export function DocumentLayout() {
         inspectors,
         previewUrl,
         documentIdStack,
+        compareWithId,
         t,
         displayInlineChanges: stickyParams.displayInlineChanges === 'true',
       }),
     [
       currentInspector,
+      compareWithId,
       documentIdStack,
       features,
       hasValue,

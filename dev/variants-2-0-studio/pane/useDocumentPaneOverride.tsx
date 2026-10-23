@@ -5,6 +5,7 @@ import {type ResolveDocumentPaneExtension} from 'sanity/structure'
 import {isLockedNav} from '../c1/lockedNav'
 import {DocumentPillsV1} from '../c2/DocumentPills'
 import {OpenBetaPills} from '../c2/OpenBetaPills'
+import {PickerInventory} from '../c4/inventory/PickerInventory'
 import {ManageVersions} from '../c4/ManageVersions'
 import {DocumentBannerV1} from '../c7/Banners'
 import {OpenBetaBanner} from '../c7/OpenBetaBanner'
@@ -134,6 +135,8 @@ export function resolveDocumentPaneOverride(
         c4 === 'e'
           ? (name: string) => (name === 'variants-inventory' ? 430 : undefined)
           : undefined,
+      // C4 E (the Handoff Studio's T4): Compare versions' pickers list the versions with the same inventory as the Versions inspector.
+      versionPicker: c4 === 'e' ? PickerInventory : undefined,
     }
   }
 }

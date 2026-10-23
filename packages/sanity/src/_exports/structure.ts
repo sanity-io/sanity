@@ -10,6 +10,7 @@ export {
 export {
   type DocumentPaneExtension,
   type DocumentPaneExtensionArgs,
+  type DocumentVersionPickerProps,
   DocumentPaneExtensionProvider,
   type ResolveDocumentPaneExtension,
 } from '../structure/panes/document/documentPanel/DocumentPaneExtension'
