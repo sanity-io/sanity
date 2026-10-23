@@ -69,6 +69,7 @@ import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {useCompareWithId} from './useCompareWithId'
 import {useDocumentInitialLoadTelemetry} from './useDocumentInitialLoadTelemetry'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
 import {useDocumentPaneInspector} from './useDocumentPaneInspector'
@@ -439,11 +440,17 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [getDisplayed, value],
   )
 
-  const {previousId} = useDocumentIdStack({
+  const {previousId: stackPreviousId} = useDocumentIdStack({
     strict: true,
     displayed,
     documentId,
     editState,
+  })
+  // PROPOSED (open beta): Compare versions opens against the earlier layer when there is one, otherwise another version of the document.
+  const previousId = useCompareWithId({
+    documentId,
+    displayedId: value._id,
+    previousId: stackPreviousId,
   })
 
   const setTimelineRange = useCallback(

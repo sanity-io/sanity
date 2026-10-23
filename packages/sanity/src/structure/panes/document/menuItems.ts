@@ -20,6 +20,8 @@ interface GetMenuItemsParams {
   inspectors: DocumentInspector[]
   previewUrl?: string | null
   documentIdStack?: DocumentIdStack
+  /** PROPOSED (open beta): the version Compare versions opens against (see useCompareWithId); it enables the item whenever another version exists. */
+  compareWithId?: string
   inspectorMenuItems: DocumentInspectorMenuItem[]
   t: TFunction
   displayInlineChanges: boolean
@@ -66,8 +68,12 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
   }
 }
 
-function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneMenuItem | null {
-  const disabled = typeof documentIdStack?.previousId === 'undefined' && {
+function getCompareVersionsItem({
+  compareWithId,
+  documentIdStack,
+  t,
+}: GetMenuItemsParams): PaneMenuItem | null {
+  const disabled = typeof (compareWithId ?? documentIdStack?.previousId) === 'undefined' && {
     reason: t('compare-versions.menu-item.disabled-reason'),
   }
 

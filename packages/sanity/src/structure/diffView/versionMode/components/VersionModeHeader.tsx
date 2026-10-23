@@ -131,6 +131,7 @@ export const VersionModeHeader: ComponentType<
             <DocumentGroupPickerMenu
               role="previous"
               document={documents.previous}
+              otherDocumentId={documents.next?.id}
               onSelectDocument={onSelectPreviousRelease}
             />
           ) : (
@@ -157,6 +158,7 @@ export const VersionModeHeader: ComponentType<
             <DocumentGroupPickerMenu
               role="next"
               document={documents.next}
+              otherDocumentId={documents.previous?.id}
               onSelectDocument={onSelectNextRelease}
             />
           ) : (

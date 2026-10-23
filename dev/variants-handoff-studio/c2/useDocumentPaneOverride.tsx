@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
 import {type ResolveDocumentPaneExtension} from 'sanity/structure'
 
+import {PickerInventory} from '../c4/inventory/PickerInventory'
 import {OpenBetaBanner} from '../c7/OpenBetaBanner'
 import {useOption} from '../options/store'
 import {DocumentPillsV1} from './DocumentPills'
@@ -24,6 +25,8 @@ export function resolveDocumentPaneOverride(
     inspectorInitialWidth: (name) => (name === 'variants-inventory' ? 430 : undefined),
     // T6: the open beta banner (it replaces the stock variant banners, see VariantBannerReplacedProvider in options/FloatingOptions.tsx).
     banners: <OpenBetaBanner documentId={documentId} />,
+    // T4: Compare versions' pickers list the versions with the same inventory as the Versions inspector.
+    versionPicker: PickerInventory,
     ...(state.c2 === 'a'
       ? {pills: <DocumentPillsV1 documentId={documentId} documentType={documentType} />}
       : {}),

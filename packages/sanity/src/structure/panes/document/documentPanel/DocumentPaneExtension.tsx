@@ -1,4 +1,4 @@
-import {type ReactNode, useContext} from 'react'
+import {type ComponentType, type ReactNode, useContext} from 'react'
 import {DocumentInspectorTabsContext, DocumentPaneExtensionContext} from 'sanity/_singletons'
 
 /**
@@ -44,6 +44,25 @@ export interface DocumentPaneExtension {
    * 320 to 540 px limits are unchanged; the value is clamped to them.
    */
   inspectorInitialWidth?: (inspectorName: string) => number | undefined
+  /**
+   * PROPOSED (open beta, T4): the list inside Compare versions' two pickers. Unset, the picker shows core's `DocumentGroupInventory`. The open beta
+   * sets it to the same inventory the Versions inspector shows, so one document's versions read the same in both places. When the inventory
+   * lands in core it replaces `DocumentGroupInventory`, and this slot goes away.
+   */
+  versionPicker?: ComponentType<DocumentVersionPickerProps>
+}
+
+/** @internal The props of a Compare versions picker's list. */
+export interface DocumentVersionPickerProps {
+  /** The published id of the document group. */
+  documentId: string
+  documentType: string
+  /** The version this side shows. */
+  selectedId: string
+  /** The version the other side shows, which this side cannot also pick. */
+  otherId: string | undefined
+  /** Called with the picked version's document id. */
+  onSelect: (documentId: string) => void
 }
 
 /** @internal */
