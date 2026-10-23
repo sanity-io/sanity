@@ -4,8 +4,9 @@ import {IncompatibleItemTypeStory} from './IncompatibleItemTypeStory'
 
 /**
  * Chromatic sentinel: incompatible array-item prompt after the ui5 Box
- * migration, including a narrowed state where the prompt truncates. Fixture
- * values; popover stays closed.
+ * migration, including a narrowed state where the prompt truncates, plus
+ * ErrorItem caution rows that wrap that prompt. Fixture values; menus stay
+ * closed.
  */
 const meta = {
   title: 'Inputs/Incompatible Item Type',
