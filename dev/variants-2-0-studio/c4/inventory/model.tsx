@@ -497,10 +497,27 @@ function releaseDateLabel(world: InventoryWorld, id: InventoryGroupId): string |
  * When a row goes out, at the head of its subtitle in By publish date, so the date reads in every
  * grouping, None included (Andrej, 2026-10-15: "When we group by none, currently there is no way
  * to see the actual date of publishing"): "Published Oct 12, 2026", "Scheduled for Oct 15, 2026,
- * 10:00 AM", "As soon as possible" or "Undecided"; an unscheduled draft has none.
+ * 10:00 AM", "As soon as possible" or "Undecided"; a draft says when it was last edited (see editedAgo).
  */
+/**
+ * PROPOSED (open beta, Faheem 23 Oct): a draft has no publish date, so its line says when it was last edited, in the compact words of the
+ * document list's versions popover: "Edited just now", "Edited 3 hr ago", "Edited 2 days ago", "Edited 2 wk ago", "Edited 1 mo ago".
+ */
+function editedAgo(entry: InventoryEntry): string {
+  const hours = ageInHours(entry)
+  if (!Number.isFinite(hours)) return 'Not scheduled'
+  if (hours < 1) return 'Edited just now'
+  if (hours < 24) return `Edited ${Math.floor(hours)} hr ago`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `Edited ${days} ${days === 1 ? 'day' : 'days'} ago`
+  if (days < 30) return `Edited ${Math.floor(days / 7)} wk ago`
+  if (days < 365) return `Edited ${Math.floor(days / 30)} mo ago`
+  return `Edited ${Math.floor(days / 365)} yr ago`
+}
+
 function publishMoment(world: InventoryWorld, entry: InventoryEntry): string | undefined {
-  if (entry.group === 'drafts') return undefined
+  // PROPOSED (Faheem, 23 Oct): an empty line read as an error; a draft says when it was last edited instead.
+  if (entry.group === 'drafts') return editedAgo(entry)
   // Each row repeats its group's date with what it means, so the date stays readable when the
   // header has scrolled away (Andrej, 2026-10-20: "repeat the publishing date. Add
   // published/scheduled on... so it's clear what this date is"). A published version's last edit
