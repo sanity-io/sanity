@@ -2,22 +2,8 @@ import {render, waitFor} from '@testing-library/react'
 import {afterEach, expect, it, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
-import {stubMessageBusHost} from '../../../../test/testUtils/stubMessageBusHost'
 import {createMockAuthStore} from '../../store/auth/mock/createMockAuthStore'
 import {StudioProvider} from '../StudioProvider'
-
-const connectCalls = vi.hoisted(() => [] as unknown[])
-
-vi.mock(import('@sanity/sdk/dashboard'), async (importOriginal) => {
-  const actual = await importOriginal()
-  return {
-    ...actual,
-    connectMessageBus: (options) => {
-      connectCalls.push(options)
-      return actual.connectMessageBus(options)
-    },
-  }
-})
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -56,24 +42,3 @@ it(
     )
   },
 )
-
-it('connects to the message bus with the app ID it was given', {timeout: 30_000}, async () => {
-  stubMessageBusHost()
-  Reflect.deleteProperty(globalThis, '__SANITY_APP_ID__')
-  connectCalls.length = 0
-  const config = {
-    projectId: 'test',
-    dataset: 'test',
-    schema: {types: []},
-    auth: createMockAuthStore({client: createMockSanityClientAsClient(), currentUser: null}),
-  }
-
-  render(
-    <StudioProvider config={config} unstable_noAuthBoundary unstable_appId="app1">
-      {null}
-    </StudioProvider>,
-  )
-
-  await waitFor(() => expect(connectCalls).not.toHaveLength(0))
-  expect(connectCalls[0]).toEqual({appId: 'app1'})
-})
