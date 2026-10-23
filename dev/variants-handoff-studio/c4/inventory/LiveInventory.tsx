@@ -46,6 +46,12 @@ const HIDDEN = [
     ' [data-testid="inventory-summary"] {order: -1}',
     // Compare versions sits just before Create version (A, Faheem 23 Oct).
     ' [data-testid="inventory-compare"] {order: 1}',
+    // Narrow (Faheem, 23 Oct): a row's name comes first. Under 380 px the Served and Editing labels give way, so names are not cut short;
+    // the row's highlight and tint still mark what is in view and what is served.
+    // Without drafts (live edit) the Published row in view is the one served, never a fallback: its "Served instead" would mislead.
+    ' [data-no-drafts] [data-testid="inventory-served-label-target"] {display: none !important}',
+    ' [data-create-frame] {container-type: inline-size}',
+    ' @container (max-width: 380px) {[data-testid="inventory-served-label-target"], [data-testid="inventory-editing-label"] {display: none !important}}',
     ' [data-add-anchor] {order: 2}',
     ' [data-testid="inventory-toolbar"]:has([data-testid="add-toolbar-button"]) [data-testid="inventory-summary"] {display: none}',
     // The checkbox column is kept on every row at all times: the panel's wide layout (the one used here) hides a checkbox at rest without
@@ -110,7 +116,9 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const world = live
   // A, Faheem 23 Oct: Compare versions, one click from the inventory. It is the "..." menu's item (same target: the earlier layer, else
   // Published, else Draft), so the two never disagree. Disabled while the document has a single version.
-  const {onMenuAction} = useDocumentPane()
+  const {onMenuAction, schemaType} = useDocumentPane()
+  // Without drafts (live edit, or the draft model off) the pane shows the published version under the Drafts perspective.
+  const hasDrafts = workspace.document.drafts.enabled && !schemaType?.liveEdit
   // The count shows only once the banner case is known (with the toolbar's Create version it is hidden; see HIDDEN).
   const bannerPending = useBannerDecision(documentId).pending
 
@@ -169,8 +177,9 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
           )
         })
       : undefined
-    return `${state.version}:${exact ? shortId(exact._id) : 'base'}`
-  }, [state.chosen, state.version, variants])
+    const version = !hasDrafts && state.version === 'drafts' ? 'published' : state.version
+    return `${version}:${exact ? shortId(exact._id) : 'base'}`
+  }, [state.chosen, state.version, variants, hasDrafts])
 
   const onSelect = useCallback(
     (entry: InventoryEntry) => {
@@ -208,6 +217,7 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   return (
     <Flex
       data-create-frame=""
+      data-no-drafts={hasDrafts ? undefined : ''}
       direction="column"
       height="fill"
       ref={setFrame}
@@ -216,6 +226,9 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
       <style>{HIDDEN}</style>
       <Box flex={1} style={{minHeight: 0}}>
         <InventoryConceptsProvider
+          // The panel's audience is the navbar's, so its Served label names what the chosen audience gets; a new audience starts it afresh.
+          initialVisitor={state.chosen as never}
+          key={JSON.stringify(state.chosen)}
           initialView="publishDate"
           selection={{currentEntryKey, onSelect}}
           world={world}

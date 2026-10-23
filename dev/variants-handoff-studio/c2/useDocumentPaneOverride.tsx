@@ -21,8 +21,12 @@ export function resolveDocumentPaneOverride(
   state: DocumentPaneOverrideState,
 ): ResolveDocumentPaneExtension {
   return ({documentId, documentType}) => ({
-    // The version inventory opens at the midpoint of the inspector's 320 to 540 px limits; the resize handle keeps both.
-    inspectorInitialWidth: (name) => (name === 'variants-inventory' ? 430 : undefined),
+    // The version inventory opens at the midpoint of the inspector's 320 to 540 px limits; the resize handle keeps both. In a narrow pane
+    // (Presentation, a split pane) it opens at 45% of the pane instead, so the form keeps room (Faheem, 23 Oct); Studio's 320 px minimum holds.
+    inspectorInitialWidth: (name, paneWidth) =>
+      name === 'variants-inventory'
+        ? Math.min(430, paneWidth ? Math.round(paneWidth * 0.45) : 430)
+        : undefined,
     // T6: the open beta banner (it replaces the stock variant banners, see VariantBannerReplacedProvider in options/FloatingOptions.tsx).
     banners: <OpenBetaBanner documentId={documentId} />,
     // T4: Compare versions' pickers list the versions with the same inventory as the Versions inspector.

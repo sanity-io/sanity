@@ -557,7 +557,9 @@ export default function PresentationTool(props: {
                       id="preview"
                       htmlId={getPresentationPanelHtmlId('preview')}
                       minWidth={325}
-                      defaultSize={navigatorEnabled ? 50 : 75}
+                      // PROPOSED (open beta, Faheem 23 Oct): the document pane opens wider (45% instead of 25% without the navigator), so the form
+                      // and an open inspector such as Versions sit side by side with room. A width the editor dragged is kept, as before.
+                      defaultSize={navigatorEnabled ? 50 : 55}
                       order={3}
                       hidden={isNarrow && resolvedTab !== 'preview'}
                     >
