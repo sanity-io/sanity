@@ -28,8 +28,8 @@ allowBuilds:
 catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
-  '@pandacss/dev': ^2.2.0
-  '@pandacss/vite': ^2.2.0
+  '@pandacss/dev': ^2.4.0
+  '@pandacss/vite': ^2.4.0
   '@playwright/test': 1.64.0
   '@sanity/client': ^8.11.0
   '@sanity/migrate': ^8.0.5
