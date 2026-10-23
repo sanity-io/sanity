@@ -1,10 +1,10 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useCallback, useId, useMemo} from 'react'
+import {useCallback, useEffect, useId, useMemo} from 'react'
 import {getPublishedId, useDocumentVersions, type VersionInfoDocumentStub} from 'sanity'
 import {type DocumentVersionPickerProps} from 'sanity/structure'
 
 import {type InventoryEntry} from './fixtures'
-import {InventoryConceptsProvider} from './model'
+import {InventoryConceptsProvider, useInventoryConcepts} from './model'
 import {useLiveWorld} from './useLiveWorld'
 import {VersionInventoryPanel} from './VersionInventoryPanel'
 
@@ -24,6 +24,9 @@ const pickerStyle = (scope: string) =>
     'inventory-footer',
     'inventory-create-action',
     'inventory-bulk-bar',
+    // The toolbar row holds the inspector's count and Create version; a picker has neither, so the row goes and the search field
+    // (always open, see KeepSearchOpen) takes its place.
+    'inventory-toolbar',
     // "Editing" and "Served" speak of the navbar's perspective; in Compare versions the highlighted row is simply what this side shows.
     'inventory-editing-label',
     'inventory-served-label-target',
@@ -32,6 +35,18 @@ const pickerStyle = (scope: string) =>
     .join(', ')
     .concat(' {display: none !important}')
     .concat(` ${scope} .inventory-checkbox {display: none !important}`)
+    // As Studio's menus: the rows sit 4 px in from the popover's edge, with rounded highlights, so their text is 16 px in.
+    .concat(` ${scope} [data-ui="VariantSetEntry"] {border-radius: 3px}`)
+    .concat(` ${scope} [data-testid="inventory-search"] {padding: 4px 0 8px !important}`)
+
+/** A picker opens with its search field ready: the first thing to do in a picker is to narrow it. Clearing it keeps the field. */
+function KeepSearchOpen() {
+  const {search, setSearch} = useInventoryConcepts()
+  useEffect(() => {
+    if (search === undefined) setSearch('')
+  }, [search, setSearch])
+  return null
+}
 
 /** A version stub's row key in the inventory (`<bundle>:<variant>`), the same rule `toVersions` uses for the live world. */
 function entryKey(publishedId: string, stub: VersionInfoDocumentStub) {
@@ -94,7 +109,8 @@ export function PickerInventory({
       data-testid="compare-version-picker"
       data-version-picker={pickerId}
       direction="column"
-      style={{width: 'min(440px, calc(100vw - 32px))', height: 'min(520px, 70vh)'}}
+      padding={1}
+      style={{width: 'min(440px, calc(100vw - 32px))', maxHeight: 'min(520px, 70vh)'}}
     >
       <style>
         {pickerStyle(scope)}
@@ -103,8 +119,10 @@ export function PickerInventory({
           : ''}
       </style>
       {world ? (
-        <Box flex={1} style={{minHeight: 0}}>
+        // Fits its rows (no fixed height), and scrolls inside once it reaches the maximum.
+        <Box flex={1} style={{minHeight: 0, display: 'flex', flexDirection: 'column'}}>
           <InventoryConceptsProvider initialView="publishDate" selection={selection} world={world}>
+            <KeepSearchOpen />
             <VersionInventoryPanel />
           </InventoryConceptsProvider>
         </Box>
