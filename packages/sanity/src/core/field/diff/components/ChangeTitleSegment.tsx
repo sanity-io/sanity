@@ -1,22 +1,38 @@
-import {rem} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {clsx} from 'clsx'
+import {type ComponentProps, type CSSProperties} from 'react'
 import {Text, Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type Annotation, type FieldChangeNode, type FromToIndex} from '../../types'
 import {getAnnotationAtPath} from '../annotations/helpers'
+import {annotationText, radius2Var, roundedCard, space1Var} from './ChangeTitleSegment.css'
 import {DiffCard} from './DiffCard'
 
-const RoundedCard = styled.div`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  padding: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-`
+function RoundedCard(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {radius, space} = useThemeV2()
 
-const AnnotationText = styled(Text)`
-  &:not([hidden]) {
-    color: inherit;
-  }
-`
+  return (
+    <div
+      {...rest}
+      className={clsx(roundedCard, className)}
+      style={
+        {
+          [radius2Var]: `${rem(radius[2])}`,
+          [space1Var]: `${rem(space[1])}`,
+          ...style,
+        } as CSSProperties
+      }
+    />
+  )
+}
+
+function AnnotationText(props: ComponentProps<typeof Text>) {
+  const {className, ...rest} = props
+
+  return <Text {...rest} className={clsx(annotationText, className)} />
+}
 
 /** @internal */
 export function ChangeTitleSegment(props: {
@@ -83,7 +99,7 @@ function CreatedTitleSegment(props: {
         <AnnotationText
           size={1}
           weight="medium"
-          forwardedAs="ins"
+          as="ins"
           style={{textDecoration: 'none'}}
           trim={true}
         >
@@ -107,7 +123,7 @@ function DeletedTitleSegment(props: {annotation: Annotation | undefined; fromInd
   const description = t('changes.array.item-removed-from-position', {position: readableIndex})
   return (
     <DiffCard annotation={annotation || null} as={RoundedCard} tooltip={{description}}>
-      <AnnotationText size={1} weight="medium" forwardedAs="del" trim={true}>
+      <AnnotationText size={1} weight="medium" as="del" trim={true}>
         #{readableIndex}
       </AnnotationText>
     </DiffCard>
@@ -133,12 +149,12 @@ function MovedTitleSegment(props: {
   return (
     <>
       <Box padding={1}>
-        <AnnotationText size={1} weight="medium" forwardedAs="div" trim={true}>
+        <AnnotationText size={1} weight="medium" as="div" trim={true}>
           #{toIndex + 1}
         </AnnotationText>
       </Box>
       <DiffCard annotation={annotation} as={RoundedCard} tooltip={{description}}>
-        <AnnotationText size={1} weight="medium" forwardedAs="div" trim={true}>
+        <AnnotationText size={1} weight="medium" as="div" trim={true}>
           {indexSymbol}
           {Math.abs(indexDiff)}
         </AnnotationText>

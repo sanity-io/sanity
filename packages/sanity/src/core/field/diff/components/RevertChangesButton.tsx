@@ -1,30 +1,11 @@
 import {RevertIcon} from '@sanity/icons/Revert'
-import {type HTMLProps, type RefAttributes} from 'react'
-import {styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {clsx} from 'clsx'
+import {type CSSProperties, type HTMLProps, type RefAttributes} from 'react'
 
 import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-
-const Root = styled(Button)`
-  [data-ui='Text'] {
-    font-weight: normal;
-  }
-
-  div[data-ui='Box'] {
-    display: none;
-  }
-
-  &:not([data-disabled='true']):hover,
-  &:not([data-disabled='true']):focus {
-    --card-fg-color: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    --card-bg-color: transparent;
-    --card-border-color: transparent;
-
-    div[data-ui='Box'] {
-      display: block;
-    }
-  }
-`
+import {revertChangesButton, revertChangesFgColorVar} from './RevertChangesButton.css'
 
 /** @internal */
 export function RevertChangesButton(
@@ -33,11 +14,12 @@ export function RevertChangesButton(
       changeCount: number
     } & RefAttributes<HTMLButtonElement>,
 ) {
-  const {ref, selected, changeCount, ...restProps} = props
+  const {ref, selected, changeCount, className, style, ...restProps} = props
   const {t} = useTranslation()
+  const {color} = useThemeV2()
 
   return (
-    <Root
+    <Button
       icon={RevertIcon}
       selected={selected}
       text={t('changes.action.revert-changes-confirm-change', {count: changeCount})}
@@ -45,6 +27,13 @@ export function RevertChangesButton(
       ref={ref}
       tooltipProps={null}
       {...restProps}
+      className={clsx(revertChangesButton, className)}
+      style={
+        {
+          [revertChangesFgColorVar]: color.button.default.critical.enabled.bg,
+          ...style,
+        } as CSSProperties
+      }
     />
   )
 }
