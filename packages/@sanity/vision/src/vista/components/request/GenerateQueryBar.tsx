@@ -6,8 +6,10 @@ import {type Schema, useSchema, useTranslation} from 'sanity'
 import {Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
 import {type VistaTab} from '../../store/types'
 import {useVistaActor} from '../../store/VistaActorContext'
+import {type AiCredits, readAiCreditsLimit} from '../../util/aiCredits'
 import {
   type GeneratedQuery,
   generateQuery,
@@ -15,12 +17,19 @@ import {
   MAX_GENERATE_ATTEMPTS,
 } from '../../util/generateQuery'
 import {summarizeSchema} from '../../util/schemaSummary'
+import {AiCreditsStatus} from '../AiCreditsStatus'
 import {PromptRow} from '../PromptRow'
 
 type GenerateStatus =
   | {type: 'idle'}
   | {type: 'generating'; attempt: number}
-  | {type: 'failed'; message: string; lastAttempt: GeneratedQuery | undefined}
+  | {
+      type: 'failed'
+      message: string
+      lastAttempt: GeneratedQuery | undefined
+      /** The credits the request was turned down for, when that is what failed */
+      limit: AiCredits | undefined
+    }
 
 export interface GenerateQueryBarProps {
   tab: VistaTab
@@ -42,6 +51,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
   const [request, setRequest] = useState('')
   const [status, setStatus] = useState<GenerateStatus>({type: 'idle'})
   const controllerRef = useRef<AbortController | null>(null)
+  const credits = useAiCredits(client)
 
   useEffect(() => () => controllerRef.current?.abort(), [])
 
@@ -62,7 +72,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
           rawParams: JSON.stringify(generated.params, null, 2),
           ...(named ? {title: generated.title} : {}),
         },
-        fetch,
+        fetch: fetch ? 'generated' : undefined,
       })
       onClose()
     },
@@ -84,19 +94,27 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
         signal: controller.signal,
         onAttempt: (attempt) => setStatus({type: 'generating', attempt}),
       })
+      reportAiCreditsGranted(client)
       await open(generated, true, controller.signal)
     } catch (error) {
       if (controller.signal.aborted) return
+      const limit = readAiCreditsLimit(error)
+      if (limit) reportAiCreditsLimit(client, limit)
       setStatus({
         type: 'failed',
         message: error instanceof Error ? error.message : String(error),
         lastAttempt: error instanceof GenerateQueryError ? error.lastAttempt : undefined,
+        limit,
       })
     }
   }, [client, open, request, schema])
 
   const generating = status.type === 'generating'
   const lastAttempt = status.type === 'failed' ? status.lastAttempt : undefined
+  // The credits as the failed request reported them, or as last read while nothing is going on
+  const shownCredits =
+    status.type === 'failed' ? status.limit : status.type === 'idle' ? credits : undefined
+  const atLimit = shownCredits?.granted === false
 
   return (
     <Card borderBottom data-testid="vista-generate-bar" padding={2}>
@@ -111,7 +129,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
           testIdPrefix="vista-generate"
           value={request}
         />
-        {status.type === 'idle' && (
+        {status.type === 'idle' && !atLimit && (
           <Text muted size={0}>
             {t('vista.generate.description')}
           </Text>
@@ -126,7 +144,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
               : t('vista.generate.progress')}
           </Text>
         )}
-        {status.type === 'failed' && (
+        {status.type === 'failed' && !atLimit && (
           <Card data-testid="vista-generate-error" padding={3} radius={2} tone="critical">
             <Stack gap={3}>
               <Text size={1} weight="medium">
@@ -151,6 +169,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
             </Stack>
           </Card>
         )}
+        <AiCreditsStatus apiHost={client.config().apiHost} credits={shownCredits} size={0} />
       </Stack>
     </Card>
   )

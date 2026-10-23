@@ -4,6 +4,8 @@ import {type Schema, useSchema, useTranslation} from 'sanity'
 import {Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
+import {type AiCredits, type AiCreditsClient, readAiCreditsLimit} from '../../util/aiCredits'
 import {
   type GenerateMutationsClient,
   generateMutations,
@@ -18,16 +20,23 @@ import {
   mutationRunKey,
 } from '../../util/mutations'
 import {summarizeSchema} from '../../util/schemaSummary'
+import {AiCreditsStatus} from '../AiCreditsStatus'
 import {PromptRow} from '../PromptRow'
 
 type GenerateStatus =
   | {type: 'idle'}
   | {type: 'generating'; attempt: number}
-  | {type: 'failed'; message: string; lastAttempt: MutationBody[] | undefined}
+  | {
+      type: 'failed'
+      message: string
+      lastAttempt: MutationBody[] | undefined
+      /** The credits the request was turned down for, when that is what failed */
+      limit: AiCredits | undefined
+    }
 
 export interface GenerateMutationsBarProps {
   /** The client of the dataset the mutations go to; it dry-runs each attempt */
-  client: GenerateMutationsClient
+  client: GenerateMutationsClient & AiCreditsClient
   dataset: string
   /** The result shown, whose documents the description can call "these documents" */
   result: unknown
@@ -56,6 +65,7 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
   const [request, setRequest] = useState('')
   const [status, setStatus] = useState<GenerateStatus>({type: 'idle'})
   const controllerRef = useRef<AbortController | null>(null)
+  const credits = useAiCredits(client)
 
   useEffect(() => () => controllerRef.current?.abort(), [])
 
@@ -79,22 +89,30 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
         onAttempt: (attempt) => setStatus({type: 'generating', attempt}),
       })
       if (controller.signal.aborted) return
+      reportAiCreditsGranted(client)
       onGenerated(toText(generated.mutations), {
         key: mutationRunKey(dataset, generated.mutations, mutationOptions),
         result: generated.preview,
       })
     } catch (error) {
       if (controller.signal.aborted) return
+      const limit = readAiCreditsLimit(error)
+      if (limit) reportAiCreditsLimit(client, limit)
       setStatus({
         type: 'failed',
         message: error instanceof Error ? error.message : String(error),
         lastAttempt: error instanceof GenerateMutationsError ? error.lastAttempt : undefined,
+        limit,
       })
     }
   }, [client, dataset, mutationOptions, onGenerated, request, result, schema])
 
   const generating = status.type === 'generating'
   const lastAttempt = status.type === 'failed' ? status.lastAttempt : undefined
+  // The credits as the failed request reported them, or as last read while nothing is going on
+  const shownCredits =
+    status.type === 'failed' ? status.limit : status.type === 'idle' ? credits : undefined
+  const atLimit = shownCredits?.granted === false
 
   return (
     <Card border data-testid="vista-mutate-generate-bar" padding={2} radius={2}>
@@ -109,7 +127,7 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
           testIdPrefix="vista-mutate-generate"
           value={request}
         />
-        {status.type === 'idle' && (
+        {status.type === 'idle' && !atLimit && (
           <Text muted size={0}>
             {t('vista.mutate.generate.description')}
           </Text>
@@ -124,7 +142,7 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
               : t('vista.mutate.generate.progress')}
           </Text>
         )}
-        {status.type === 'failed' && (
+        {status.type === 'failed' && !atLimit && (
           <Card data-testid="vista-mutate-generate-error" padding={3} radius={2} tone="critical">
             <Stack gap={3}>
               <Text size={1} weight="medium">
@@ -146,6 +164,7 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
             </Stack>
           </Card>
         )}
+        <AiCreditsStatus apiHost={client.config().apiHost} credits={shownCredits} size={0} />
       </Stack>
     </Card>
   )

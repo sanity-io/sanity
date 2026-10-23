@@ -1,13 +1,21 @@
 import {useCallback, useState} from 'react'
 
 import {type QueryRequest} from '../store/types'
+import {type AiCredits, readAiCreditsLimit} from '../util/aiCredits'
 import {explainQuery, fetchQueryPlan} from '../util/explainQuery'
+import {reportAiCreditsGranted, reportAiCreditsLimit} from './useAiCredits'
 
 export type ExplainStep =
   | {status: 'idle'}
   | {status: 'loading'; url: string}
   | {status: 'done'; url: string; text: string}
-  | {status: 'failed'; url: string; message: string}
+  | {
+      status: 'failed'
+      url: string
+      message: string
+      /** The AI credits the request was turned down for, when that is what failed */
+      limit: AiCredits | undefined
+    }
 
 const IDLE: ExplainStep = {status: 'idle'}
 
@@ -35,7 +43,7 @@ export function useQueryExplain(request: QueryRequest | null) {
       setPlan({status: 'done', url: current.url, text})
       return text
     } catch (error) {
-      setPlan({status: 'failed', url: current.url, message: toMessage(error)})
+      setPlan({status: 'failed', url: current.url, message: toMessage(error), limit: undefined})
       return undefined
     }
   }, [])
@@ -54,9 +62,12 @@ export function useQueryExplain(request: QueryRequest | null) {
     }
     try {
       const text = await explainQuery(request.client, request, planText)
+      reportAiCreditsGranted(request.client)
       setExplanation({status: 'done', url: request.url, text})
     } catch (error) {
-      setExplanation({status: 'failed', url: request.url, message: toMessage(error)})
+      const limit = readAiCreditsLimit(error)
+      if (limit) reportAiCreditsLimit(request.client, limit)
+      setExplanation({status: 'failed', url: request.url, message: toMessage(error), limit})
     }
   }, [currentPlan, loadPlan, request])
 

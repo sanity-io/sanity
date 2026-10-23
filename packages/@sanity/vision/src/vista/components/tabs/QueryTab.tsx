@@ -297,38 +297,40 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
     }
   })
-  // A generated query, in a tab opened for it or loaded into this one, is laid out for the
-  // editor, as Prettify does, and its result shown straight away; a query the formatter cannot
-  // read runs as it was written. The editor creates its view a render after it mounts and the
-  // tab's panes settle over the frames after that, so the query is formatted once the editor's
-  // width has stopped changing (half a second at most; without a width it is formatted at the
-  // default one)
-  const generatedQueryPending = useVistaSelector((snapshot) =>
-    snapshot.context.fetchOnOpen.includes(tab.id),
-  )
-  const fetchGeneratedQuery = useEffectEvent(async () => {
-    if (!actorRef.getSnapshot().context.fetchOnOpen.includes(tab.id)) return
+  // A query the tab fetches as soon as it is shown, or right away when it already is. A generated
+  // query, in a tab opened for it or loaded into this one, is laid out for the editor, as Prettify
+  // does, and its result shown straight away; a query the formatter cannot read runs as it was
+  // written. The editor creates its view a render after it mounts and the tab's panes settle over
+  // the frames after that, so the query is formatted once the editor's width has stopped changing
+  // (half a second at most; without a width it is formatted at the default one). A pasted query
+  // URL runs as it was pasted, as the classic tool does, and so does one a link to the tool named
+  const fetchOnOpen = useVistaSelector((snapshot) => snapshot.context.fetchOnOpen[tab.id])
+  const fetchOpenedQuery = useEffectEvent(async () => {
+    const source = actorRef.getSnapshot().context.fetchOnOpen[tab.id]
+    if (!source) return
     actorRef.send({type: 'tab.fetchedOnOpen', id: tab.id})
-    let previousColumns: number | undefined
-    let settledFrames = 0
-    for (let frame = 0; frame < MAX_LAYOUT_FRAMES; frame++) {
-      const columns = queryEditorRef.current?.getVisibleColumns()
-      settledFrames = columns !== undefined && columns === previousColumns ? settledFrames + 1 : 0
-      if (settledFrames >= SETTLED_LAYOUT_FRAMES) break
-      previousColumns = columns
-      await new Promise((resolve) => requestAnimationFrame(resolve))
+    if (source === 'generated') {
+      let previousColumns: number | undefined
+      let settledFrames = 0
+      for (let frame = 0; frame < MAX_LAYOUT_FRAMES; frame++) {
+        const columns = queryEditorRef.current?.getVisibleColumns()
+        settledFrames = columns !== undefined && columns === previousColumns ? settledFrames + 1 : 0
+        if (settledFrames >= SETTLED_LAYOUT_FRAMES) break
+        previousColumns = columns
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+      }
+      await formatQuery().catch(() => undefined)
     }
-    await formatQuery().catch(() => undefined)
-    run({type: 'generated'})
+    run({type: source})
   })
   useEffect(() => {
     resumeAutoRefetch()
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- once per tab mount; useEffectEvent callbacks must not be listed
   }, [])
   useEffect(() => {
-    if (generatedQueryPending) void fetchGeneratedQuery()
+    if (fetchOnOpen) void fetchOpenedQuery()
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
-  }, [generatedQueryPending])
+  }, [fetchOnOpen])
 
   // While refetching automatically, a request that changed outside the editors is fetched right
   // away: changed options, or a loaded query (live refetches replay the runner's last request,
@@ -344,6 +346,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   useOnValueChange(refetchKey, (key, previous) => {
     if (!tab.autoRefetch) return
     const loaded = key.split('|', 1)[0] !== previous.split('|', 1)[0]
+    // A load that fetches on its own (a generated query, a pasted URL) is not fetched twice
+    if (loaded && fetchOnOpen) return
     // Built like a manual run, so params typed just before an option changed come along (after
     // a load there is nothing waiting: the edit that belonged to the replaced params was cancelled)
     const current = buildCurrentRequest()
@@ -380,7 +384,12 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       if (!parsed) {
         return false
       }
-      actorRef.send({type: 'tab.load', id: tab.id, tab: parsedQueryToTabInit(parsed)})
+      actorRef.send({
+        type: 'tab.load',
+        id: tab.id,
+        tab: parsedQueryToTabInit(parsed),
+        fetch: 'paste',
+      })
       toast.push({
         closable: true,
         id: 'vista-paste',
