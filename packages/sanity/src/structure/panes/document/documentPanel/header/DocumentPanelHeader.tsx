@@ -56,6 +56,7 @@ import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentG
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {DocumentTargetBadges} from './DocumentTargetBadges'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
+import {usePillsRowBelow} from './hook/usePillsRowBelow'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
 export interface DocumentPanelHeaderProps {
@@ -130,6 +131,18 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     : zIndex.paneHeader
 
   const compact = paneExtension?.compactHeader === true
+  // PROPOSED (open beta, T2): in a narrow pane a host's pills take their own row below the actions instead of wrapping beside them.
+  const headerRowRef = useRef<HTMLDivElement | null>(null)
+  const pillsScrollerRef = useRef<HTMLDivElement | null>(null)
+  const headerActionsRef = useRef<HTMLDivElement | null>(null)
+  const pillsBelow = usePillsRowBelow({
+    enabled: Boolean(paneExtension?.pills),
+    headerRef: headerRowRef,
+    pillsRef: pillsScrollerRef,
+    actionsRef: headerActionsRef,
+    inset: 24,
+    gap: 12,
+  })
 
   // Compact: only commands stay in the "..." menu. The inspector entries are tabs (the validation one stays a button, it only shows with problems),
   // Inline changes is a switch in Review changes, Share is a menu command.
@@ -267,10 +280,18 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
             justifyContent="space-between"
             alignItems="center"
             data-compact-header={compact ? '' : undefined}
+            data-pills-below={pillsBelow ? '' : undefined}
+            ref={headerRowRef}
+            flexWrap={pillsBelow ? 'wrap' : undefined}
           >
             {/* PROPOSED: a host's pills (C2) are drawn in both layouts and then replace the document group inventory row. */}
             {(!hasDocumentGroupInventory || paneExtension?.pills) && (
-              <HorizontalScroller $showGradient={showGradient}>
+              <HorizontalScroller
+                $showGradient={showGradient}
+                ref={pillsScrollerRef}
+                // Below the actions, the pills' row spans the header (order 1: after the actions, which keep their place on the right).
+                style={pillsBelow ? {order: 1, flexBasis: '100%'} : undefined}
+              >
                 <Flex
                   flexBasis="0%"
                   flexGrow={1}
@@ -307,7 +328,14 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
               </HorizontalScroller>
             )}
 
-            <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingRight={3}>
+            <Box
+              flexBasis="auto"
+              flexGrow={0}
+              flexShrink={0}
+              paddingRight={3}
+              ref={headerActionsRef}
+              style={pillsBelow ? {marginLeft: 'auto'} : undefined}
+            >
               <Flex alignItems="center" gap={1}>
                 {documentLevelPresence.length > 0 && (
                   <Box data-testid="document-level-presence" marginRight={2}>
