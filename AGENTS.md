@@ -624,6 +624,81 @@ each dropped name before regenerating:
 Regenerating needs a full `pnpm build` first: the generator reads each package's built
 `lib/**/*.d.ts`.
 
+### The `sanity` entry's static import graph is the login page
+
+With `autoUpdates: true` the studio's import map points `sanity` and `sanity/*` at the module
+host, so the browser downloads `index.mjs` plus every chunk it statically imports before the
+login screen renders, and nothing in that graph is tree-shaken. Only dynamic `import()` keeps
+code off that path. Measure it on the CDN build, not on `sanity build` output:
+
+```bash
+pnpm --filter sanity build:bundle
+pnpm --filter sanity measure:entry-closure                   # `sanity` alone (the login page)
+pnpm --filter sanity measure:entry-closure index structure   # what a studio with the structure tool loads
+pnpm --filter sanity measure:entry-closure --top=20 index    # largest files in the closure
+```
+
+`packages/sanity/scripts/measure-entry-closure.mjs` follows the static imports of the given
+`dist/*.mjs` entries (relative specifiers and `sanity/<x>`) and sums raw and gzip bytes; the
+`.map` files next to the chunks attribute bytes back to source modules when you need to know what
+a chunk contains. Rules that keep the graph small:
+
+- UI that only renders after a click or after login (dialogs, menu contents, the default layout
+  and navbar, filter inputs referenced from search operator definitions) is a `lazy()` component
+  with a `Suspense` at its render site. `prepareConfig` runs before login and statically reaches
+  every default plugin module, so a plugin's document actions, asset sources and schema
+  `components` must reference lazy components for anything heavier than the hook itself
+  (`createLazyComponent` in `packages/sanity/src/core/components/lazy/createLazyComponent.tsx`
+  wraps a component together with its own `Suspense` for config slots like these).
+- A heavy component that is exported from `sanity` is exported as a facade: the same name and
+  props, a `Suspense` of its own, and the implementation loaded on first render. The existing
+  groups are `src/core/studio/lazy.tsx` (`StudioLayoutComponent`, `StudioNavbar`),
+  `src/core/form/lazy.tsx` (`FormBuilder`, `FormProvider`, `PortableTextInput`/`BlockEditor`,
+  `UpdateReadOnlyPlugin`) and `src/core/comments/lazy.tsx` (`CommentsList`, `CommentInput`);
+  the exported `defaultRender*` callbacks in `src/core/form/studio/defaults.tsx` import the
+  input, field, block and annotation resolvers on first use the same way (nothing in the studio
+  calls them; a test that needs synchronous rendering builds its own callback from the resolver,
+  see `PrimitiveField.test.tsx`). Only the barrels (`index.ts` and the internals entry, which must
+  point at the same declaration) import the facades; internal code keeps importing the
+  implementations directly, so the default rendering path is unchanged. A facade group only pays
+  off when every export reaching the same modules is covered; check with the closure, not with a
+  single export. knip runs in full mode in CI: an implementation that only the barrel used to
+  export becomes an unused export once the barrel points at the facade.
+- Code that must be fetched right after login (layout, navbar) is preloaded from
+  `PreloadStudioShell` (same file as the shell facades), mounted inside `AuthBoundary`, so the
+  fetch overlaps with workspace loading.
+- Locale bundles for the studio's own namespaces use `resources: () => import('./resources')`
+  (`src/core/i18n/bundles/studio/`, like structure, presentation and releases). The fetch starts
+  with `prepareI18n`, before login, but the login screen (`WorkspaceAuth`, `LoggedOutToast`) and
+  the config, CORS and schema error screens translate before `LocaleProvider` and its `Suspense`
+  mount, so `StudioProvider` wraps the whole tree in a `Suspense` with the loading block as
+  fallback: a `useTranslation` that suspends before login shows that instead of suspending the
+  root (`StudioProvider.test.tsx` covers the logged-out case). Tests that build an i18n instance
+  themselves and assert synchronously must wait for the namespaces (`createTestProvider` does
+  `await i18next.loadNamespaces(…)` after `init()`: `prepareI18n` already started an `init()`,
+  and a second `init()` resolves as soon as the first is in flight, before lazy bundles have
+  arrived).
+- Never `import()` a module the `sanity` entry already reaches statically: it saves nothing,
+  and rolldown then emits a namespace object for the dynamic import whose `__exportAll` runtime
+  helper can land in a chunk together with structure or presentation code — code that imports
+  the public API from `"sanity"` — so the entry's static closure gains a chunk that imports the
+  entry back (`index.js -> shared chunk -> structure chunk -> "sanity"`). Node evaluates that
+  cycle (function declarations hoist); vite's SSR module runner, which the CLI uses for
+  `sanity schema deploy`, `sanity schema extract` and the manifest step of `sanity build`, does
+  not, and the structure chunk's top-level `defineLocaleResourceBundle(...)` fails with
+  `… is not a function`. Check reachability before adding a lazy boundary (the item resolver,
+  `StudioFeedbackDialog` and the media library iframe picker are static for this reason), and
+  `packages/@repo/test-exports/test/self-import-cycles.test.mjs` (`pnpm test:exports`, on the
+  built package) fails with the import chain when any entry's static closure imports that entry.
+- Exporting a `memo()`-wrapped component through a facade changes `typeof` from `object` to
+  `function` in `test/__snapshots__/exports.test.ts.snap`, and the generated d.ts fixtures in
+  `@repo/test-dts-exports` switch from `not.toBeNever()` to `toBeFunction()`; regenerate both.
+  Tests that open a code-split dialog await it (`await screen.findByRole('dialog')`). A new
+  `lazy()` component on the form's render path suspends the first form render of a jsdom test
+  file the way the comments plugin's middlewares already do; a test file that counts
+  `FormNodeSuspense` warnings warms those chunks up in a `beforeAll` and calls
+  `resetFormNodeSuspendedWarningCache()` before each case, as `FormBuilder.test.tsx` does.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
@@ -1578,7 +1653,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files. Read the churn before reverting it, though. After a rebase onto a base that moved a dependency's version elsewhere in the workspace (e.g. `motion` `^13.4.2` → `^13.4.4`), your package's importer entry can point at a `version:` that no longer has a `packages:`/`snapshots:` entry; `pnpm install --frozen-lockfile` accepts that, CI installs nothing for it, and only that package fails (`Cannot find module 'motion/react'` from oxlint and vitest, `Rolldown failed to resolve import` from `sanity build`). In that case the rewrite of the importer entry is the fix: align your `package.json` range with the rest of the workspace and commit the two lockfile lines, leaving the rest of the churn out.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
   - This has bitten agents more than once. The freeze is unrecoverable in practice: the shell stops spawning processes and even file reads time out, and the VM is eventually rebuilt, **losing every uncommitted change**. Sequence the work so linting happens before the studio starts, and commit and push before starting any manual verification.
-  - The repo-wide check can outgrow the VM's free memory even on its own: its type-aware pass (`tsgolint`) has peaked above 3.5 GB in a VM with about 4.5 GB available. Run it inside a memory-capped cgroup so that only the lint gets killed if it runs out: `sudo mkdir -p /sys/fs/cgroup/lint && echo 3500M | sudo tee /sys/fs/cgroup/lint/memory.max`, then `bash -c 'echo $$ | sudo tee /sys/fs/cgroup/lint/cgroup.procs >/dev/null; exec pnpm check:oxlint'`; `grep oom_kill /sys/fs/cgroup/lint/memory.events` shows whether it was killed. For a change confined to one package, `pnpm exec oxlint --disable-nested-config --quiet packages/<package>` lints and type-checks just that package's files in a few seconds, and CI still runs the full check.
+  - The repo-wide check can outgrow the VM's free memory even on its own: its type-aware pass (`tsgolint`) peaked at 8.8 GB on a 16 GB VM (October 2026; a 3.5 GB cap, enough earlier in the year, now gets it OOM-killed). Run it inside a memory-capped cgroup so that only the lint gets killed if it runs out: `sudo mkdir -p /sys/fs/cgroup/lint && echo 9G | sudo tee /sys/fs/cgroup/lint/memory.max`, then `bash -c 'echo $$ | sudo tee /sys/fs/cgroup/lint/cgroup.procs >/dev/null; exec pnpm check:oxlint'`; `grep oom_kill /sys/fs/cgroup/lint/memory.events` shows whether it was killed. For a change confined to one package, `pnpm exec oxlint --disable-nested-config --quiet packages/<package>` lints and type-checks just that package's files in a few seconds, and CI still runs the full check.
 - **bundledDev serves a lazily imported module's top-level `await` inside a non-async factory the first time it compiles that chunk.** Symptom: the first use of a feature behind an `import()` of a dependency whose browser entry uses top-level await (Vision's Prettify and lint, which lazy-load `@sanity-labs/groq-wasm`) fails with `SyntaxError: Unexpected reserved word`, and every retry on that page fails the same way because the browser caches the errored module. The served `/@vite/lazy?id=…&rolldown-lazy=1` chunk shows the cause: `registerFactory(id, "esm", (function () { … await fetch(wasmUrl) … }))`. Once the chunk has been requested, the dev bundler folds the module into the initial bundle and a page reload works (the `.wasm` is then fetched on load). Classic `sanity dev` (native ESM) and `sanity build` are unaffected. This is upstream vite/rolldown behavior; reload before concluding the feature is broken.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.

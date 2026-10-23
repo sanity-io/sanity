@@ -2,10 +2,11 @@
 import {createInstance, type Resource} from 'i18next'
 import memoize from 'lodash-es/memoize.js'
 
+import {createSanityI18nBackend} from './backend'
 import {isStaticResourceBundle} from './helpers'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {defaultLocale, usEnglishLocale} from './locales'
-import {type LocaleSource} from './types'
+import {type LocaleResourceBundle, type LocaleSource} from './types'
 
 const shouldEscape = typeof window === 'undefined' || typeof document === 'undefined'
 const fallbackLocales: LocaleSource['locales'] = [defaultLocale]
@@ -17,6 +18,9 @@ const fallbackLocales: LocaleSource['locales'] = [defaultLocale]
  * Memoized - only initializes the i18n instance once, and maintains the identity of the source.
  *
  * ⚠️ NOTE: This will only have the base studio strings defined - no custom bundles or plugins.
+ * The core bundles that are loaded on demand (the `studio` namespace) arrive asynchronously:
+ * they are requested on init, and `loadNamespaces` resolves once they are there. Until then `t`
+ * returns the keys of that namespace. The statically bundled namespaces are available at once.
  *
  * @returns The fallback source
  * @internal
@@ -36,12 +40,18 @@ export const getFallbackLocaleSource: () => LocaleSource = memoize(
 )
 
 function getFallbackI18nInstance() {
-  // Find all core locale resource bundles we can load synchronously
+  // Core locale resource bundles we can load synchronously go in as resources; the ones that load
+  // on demand go through the same backend the studio uses, and are requested on init.
+  const bundles = usEnglishLocale.bundles || []
   const staticResources: Resource = {[defaultLocale.id]: {}}
-  const staticBundles = usEnglishLocale.bundles?.filter(isStaticResourceBundle) || []
+  const lazyBundles: LocaleResourceBundle[] = []
   const namespaces = new Set<string>()
-  for (const bundle of staticBundles) {
-    staticResources[defaultLocale.id][bundle.namespace] = bundle.resources
+  for (const bundle of bundles) {
+    if (isStaticResourceBundle(bundle)) {
+      staticResources[defaultLocale.id][bundle.namespace] = bundle.resources
+    } else {
+      lazyBundles.push({...bundle, locale: defaultLocale.id})
+    }
     namespaces.add(bundle.namespace)
   }
 
@@ -61,5 +71,5 @@ function getFallbackI18nInstance() {
       // and that values returned will be escaped by the framework (eg React) automatically.
       escapeValue: shouldEscape,
     },
-  })
+  }).use(createSanityI18nBackend({bundles: lazyBundles}))
 }

@@ -7,10 +7,22 @@ import {
   type AssetSourceOpenInSourceResult,
 } from '@sanity/types'
 
+import {createLazyComponent} from '../../../components/lazy/createLazyComponent'
 import {type FederatedAssetSourceView} from '../federatedAssetSource/types'
-import {FederatedMediaLibraryAssetSource} from './federated/FederatedMediaLibraryAssetSource'
 import {MediaLibraryAssetSource} from './shared/MediaLibraryAssetSource'
 import {MediaLibraryUploader} from './uploader'
+
+// The federated picker loads when opened. The iframe picker is imported statically on purpose:
+// `createFederatedAssetSource` (reached from `prepareConfig`) imports it as the federated
+// dialog's fallback, so it is in the `sanity` entry's static graph either way, and a dynamic
+// import of a module the entry also reaches statically makes the bundler emit a namespace object
+// for it, whose runtime helper can land in a chunk that imports `sanity` itself — a cycle the
+// CLI's vite SSR worker (`sanity schema deploy`) cannot evaluate.
+const FederatedMediaLibraryAssetSource = createLazyComponent(() =>
+  import('./federated/FederatedMediaLibraryAssetSource').then(
+    (module) => module.FederatedMediaLibraryAssetSource,
+  ),
+)
 
 // Default name for the Media Library asset source
 // This is used to identify assets created from the Media Library in the openInSource function,
