@@ -27,9 +27,9 @@ function getCreateReleaseStatus(
 }
 
 /**
- * The workspace limit counts every active release in the dataset, scheduled drafts included.
- * Plan limits are deliberately absent: `guardWithReleaseLimitUpsell` checks them on click so the
- * control stays enabled and opens the upsell dialog.
+ * The workspace limit counts every active release in the dataset, scheduled drafts included,
+ * though scheduling a draft is not gated by it.
+ * Plan limits are left to `guardWithReleaseLimitUpsell`, which checks them on click.
  * @internal
  */
 export function useCreateReleaseAvailability(): CreateReleaseAvailability {
