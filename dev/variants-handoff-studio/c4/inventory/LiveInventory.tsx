@@ -1,8 +1,11 @@
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState, useSyncExternalStore} from 'react'
 import {createPortal} from 'react-dom'
 import {useSetVariant, useWorkspace} from 'sanity'
+import {useDocumentPane} from 'sanity/structure'
 
+import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
 import {valueTitle} from '../../c1/model'
 import {usePerspectiveState} from '../../c1/state'
 import {useVariantDefinitions} from '../../c1/world'
@@ -41,10 +44,30 @@ const HIDDEN = [
     ' [data-testid="inventory-bulk-bar"] > [data-ui="Flex"] {flex-wrap: nowrap !important; height: 100%}',
     // A toolbar with no control says how many versions the list holds, quietly, on its left.
     ' [data-testid="inventory-summary"] {order: -1}',
+    // Compare versions sits just before Create version (A, Faheem 23 Oct).
+    ' [data-testid="inventory-compare"] {order: 1}',
+    ' [data-add-anchor] {order: 2}',
     ' [data-testid="inventory-toolbar"]:has([data-testid="add-toolbar-button"]) [data-testid="inventory-summary"] {display: none}',
     // The checkbox column is kept on every row at all times: the panel's wide layout (the one used here) hides a checkbox at rest without
     // taking its width, so a row's text never moves when selecting starts.
   )
+
+/** The toolbar's Compare versions: an icon button, as the Studio's pane header draws its actions, with the menu item's name as its tooltip. */
+function CompareButton({disabled, onClick}: {disabled: boolean; onClick: () => void}) {
+  const label = disabled
+    ? 'There are no other versions of this document to compare.'
+    : 'Compare versions'
+  return (
+    <Button
+      aria-label="Compare versions"
+      disabled={disabled}
+      icon={TransferIcon}
+      mode="bleed"
+      onClick={onClick}
+      tooltipProps={{content: label}}
+    />
+  )
+}
 
 const PLURAL = new Intl.PluralRules('en-US')
 /** "1 version", "9 versions". */
@@ -85,6 +108,9 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const [frame, setFrame] = useState<HTMLElement | null>(null)
 
   const world = live
+  // A, Faheem 23 Oct: Compare versions, one click from the inventory. It is the "..." menu's item (same target: the earlier layer, else
+  // Published, else Draft), so the two never disagree. Disabled while the document has a single version.
+  const {onMenuAction} = useDocumentPane()
   // The count shows only once the banner case is known (with the toolbar's Create version it is hidden; see HIDDEN).
   const bannerPending = useBannerDecision(documentId).pending
 
@@ -197,6 +223,17 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
           <VersionInventoryPanel />
         </InventoryConceptsProvider>
       </Box>
+      {toolbar
+        ? createPortal(
+            <Box data-testid="inventory-compare" style={{flex: 'none'}}>
+              <CompareButton
+                disabled={world.entries.length < 2}
+                onClick={() => onMenuAction({action: 'compareVersions', title: 'Compare versions'})}
+              />
+            </Box>,
+            toolbar,
+          )
+        : null}
       {toolbar && !bannerPending
         ? createPortal(
             <Text data-testid="inventory-summary" muted size={1}>
