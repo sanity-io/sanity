@@ -2,12 +2,13 @@ import {type InitialValueResolverContext, type SanityDocumentLike} from '@sanity
 import {useToast} from '@sanity/ui/toast'
 import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
-import {map, startWith, tap} from 'rxjs/operators'
+import {map, shareReplay, startWith, tap} from 'rxjs/operators'
 
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {useKeepAliveWhileHidden} from '../../studio/mountedTools/useKeepAliveWhileHidden'
 import {classifyRequestError} from '../../studio/requestErrors/classify'
 import {useStudioErrorHandler} from '../../studio/requestErrors/useStudioErrorHandler'
 import {useSource} from '../../studio/source'
@@ -108,6 +109,9 @@ export function useInitialValue(props: {
         return idleState
       }),
       startWith(loadingState),
+      // Replays the current state to a subscription that arrives while another is live, so the
+      // keep-alive below can carry the stream over a hidden period without a `loading` restart
+      shareReplay({bufferSize: 1, refCount: true}),
     )
   }, [
     defaultValue,
@@ -124,6 +128,9 @@ export function useInitialValue(props: {
     idleState,
   ])
 
+  // The stream starts over with `loadingState` on every subscription, which would make the
+  // form read-only every time a hidden tool is shown again.
+  useKeepAliveWhileHidden(state$)
   // Seeded with loadingState to match the stream's synchronous
   // startWith(loadingState) first emission.
   return useSyncObservable(state$, loadingState)

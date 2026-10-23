@@ -1758,7 +1758,10 @@ export interface BetaFeatures {
    * and the document you were editing open.
    *
    * Opening a fourth tool unmounts the one you have not used for the longest time. Hidden tools
-   * have their effects paused, as with any hidden `<Activity>` boundary.
+   * have their effects paused, as with any hidden `<Activity>` boundary, except that the document
+   * data their components had subscribed to stays subscribed for as long as the tool is mounted:
+   * open documents keep their listeners and listed documents their version lookups, so the tool
+   * can show them again without loading them again.
    *
    * This feature is not ready for production yet. Only enable it to test in development and
    * staging environments.
