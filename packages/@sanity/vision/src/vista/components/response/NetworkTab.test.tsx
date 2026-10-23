@@ -3,6 +3,8 @@ import {buildTheme} from '@sanity/ui/theme'
 import {act, cleanup, render, screen} from '@testing-library/react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
+import {encodeQueryString} from '../../../util/encodeQueryString'
+import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {type VistaResponseMeta} from '../../store/types'
 import {type QueryNetwork} from '../../util/queryNetwork'
 import {NetworkTab} from './NetworkTab'
@@ -49,6 +51,7 @@ function meta(
 ): VistaResponseMeta {
   return {
     url,
+    method: network?.method ?? 'GET',
     ms: 4,
     e2eMs: 90,
     payloadBytes: 10,
@@ -59,6 +62,7 @@ function meta(
 }
 
 const cdnMiss: QueryNetwork = {
+  method: 'GET',
   viaCdn: true,
   cacheHit: false,
   shard: 'gcp-eu-w1-01-prod-1028',
@@ -120,6 +124,7 @@ describe('NetworkTab', () => {
   it('points at the option while queries go to the API, and says why when the perspective keeps them there', async () => {
     const api = meta(
       {
+        method: 'GET',
         viaCdn: false,
         cacheHit: false,
         shard: undefined,
@@ -154,6 +159,25 @@ describe('NetworkTab', () => {
     await renderTab({meta: meta(undefined)})
     expect(screen.getByTestId('vista-network-endpoint').textContent).toBe(
       'vista.network.endpoint.cdn',
+    )
+  })
+
+  it('shows the method, and explains a POST with the size the query and params came to', async () => {
+    await renderTab({meta: meta(cdnMiss)})
+    expect(screen.getByTestId('vista-network-method').textContent).toBe('vista.network.method.get')
+    expect(screen.queryByTestId('vista-network-method-explained')).toBeNull()
+
+    cleanup()
+    // The URL Vision shows carries the query and params even when the client posted them
+    const query = `*[_type == "author"] // ${'x'.repeat(QUERY_URL_SIZE_LIMIT)}`
+    const url = `https://abc.apicdn.sanity.io/v1/data/query/p${encodeQueryString(query, {limit: 1})}&perspective=published`
+    await renderTab({meta: meta({...cdnMiss, method: 'POST'}, url)})
+    expect(screen.getByTestId('vista-network-method').textContent).toBe('vista.network.method.post')
+    expect(screen.getByTestId('vista-network-method-explained').textContent).toBe(
+      `vista.network.method.post-explained:${JSON.stringify({
+        size: encodedQuerySize(query, {limit: 1}),
+        limit: QUERY_URL_SIZE_LIMIT,
+      })}`,
     )
   })
 })

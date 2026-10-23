@@ -3,6 +3,7 @@ import {Subject} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 import {createActor, fromObservable, fromPromise, waitFor} from 'xstate'
 
+import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
 import {type QueryNetwork} from '../util/queryNetwork'
 import {
   MAX_COMPARED_RESULT_BYTES,
@@ -93,7 +94,8 @@ describe('queryRunnerMachine', () => {
     expect(harness.snapshot().context.url).toBe(request.url)
     expect(harness.fetches).toHaveLength(1)
 
-    const network = {
+    const network: QueryNetwork = {
+      method: 'GET',
       viaCdn: true,
       cacheHit: false,
       shard: 'gcp-eu-w1-01-prod-1028',
@@ -119,6 +121,7 @@ describe('queryRunnerMachine', () => {
       syncTags: ['s1:abc'],
       payloadBytes: JSON.stringify([{_id: 'a'}]).length,
       network,
+      method: 'GET',
     })
     expect(context.meta?.resultSourceMap).toEqual({documents: [], paths: [], mappings: {}})
     expect(context.history).toHaveLength(1)
@@ -131,6 +134,25 @@ describe('queryRunnerMachine', () => {
       ms: 12,
       network,
     })
+  })
+
+  it('falls back to the client’s rule for the method when the transport reported nothing', async () => {
+    const harness = createHarness()
+    const over = `*[_type == "author"] // ${'x'.repeat(QUERY_URL_SIZE_LIMIT)}`
+
+    harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
+    harness.fetches[0].resolve({result: 1})
+    await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
+    expect(harness.snapshot().context.meta?.method).toBe('GET')
+
+    harness.actor.send({
+      type: 'fetch',
+      request: harness.request({query: over}),
+      reason: {type: 'manual'},
+    })
+    harness.fetches[1].resolve({result: 1})
+    await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
+    expect(harness.snapshot().context.meta?.method).toBe('POST')
   })
 
   it('records failures and clears the previous result', async () => {
