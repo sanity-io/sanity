@@ -226,6 +226,7 @@ export function RequestPanel(props: RequestPanelProps) {
                     >
                       <Button
                         aria-label={t('vista.generate.button')}
+                        className={styles.pressableIcon}
                         data-testid="vista-generate-query"
                         fontSize={1}
                         icon={SparklesIcon}
