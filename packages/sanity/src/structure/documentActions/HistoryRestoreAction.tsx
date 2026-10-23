@@ -1,15 +1,11 @@
 import {RevertIcon} from '@sanity/icons/Revert'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {
-  type DocumentActionComponent,
-  type DocumentActionDialogProps,
-  getPairTarget,
-  useDocumentOperation,
-  useDocumentOperationEvent,
-  useTranslation,
-} from 'sanity'
+import {type DocumentActionComponent, type DocumentActionDialogProps, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
+import {useDocumentOperationEvent} from '../../core/hooks/useDocumentOperationEvent'
+import {getPairTarget} from '../../core/hooks/useTargetDocumentState'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 

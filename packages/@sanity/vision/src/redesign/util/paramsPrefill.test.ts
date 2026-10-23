@@ -10,8 +10,11 @@ import {addMissingParams, missingParamNames} from './paramsPrefill'
 // never calls useTranslation itself. `missingParamNames` is only ever handed a `t` it was given.
 vi.mock('sanity', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   useTranslation: () => ({t: (key: string) => key}),
+}))
+// The @internal names vision imports from the internals entry rather than from `sanity`.
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
 }))
 
 // parseParams only calls `t` to build the message for invalid JSON5, which none of these

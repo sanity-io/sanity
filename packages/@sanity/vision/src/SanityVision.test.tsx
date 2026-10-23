@@ -37,6 +37,9 @@ vi.mock('sanity', () => ({
     }) as unknown as SanityClient,
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
+}))
+// The @internal names vision imports from the internals entry rather than from `sanity`.
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
 }))

@@ -1,6 +1,7 @@
 import {useCallback} from 'react'
-import {PUBLISHED, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
 
+import {PUBLISHED} from '../../../../../../../core/releases/util/const'
 import {NavigationBadge} from './NavigationBadge'
 import {type NavigationBadges, type NavigationBadgeState} from './useNavigationBadges'
 

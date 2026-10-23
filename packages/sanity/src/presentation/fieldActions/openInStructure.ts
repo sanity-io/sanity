@@ -1,18 +1,18 @@
 import {MasterDetailIcon} from '@sanity/icons/MasterDetail'
 import {useContext, useMemo} from 'react'
 import {
-  defineDocumentFieldAction,
   type DocumentFieldActionGroup,
   type DocumentFieldActionItem,
   type DocumentFieldActionProps,
-  isRecord,
-  pathToString,
   type Tool,
   useWorkspace,
 } from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
+import {defineDocumentFieldAction} from '../../core/config/document/fieldActions/define'
+import {pathToString} from '../../core/field/paths/helpers'
+import {isRecord} from '../../core/util/isRecord'
 import {DEFAULT_TOOL_NAME} from '../constants'
 
 function useOpenInStructureAction(

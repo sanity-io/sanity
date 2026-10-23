@@ -1,15 +1,10 @@
 import {renderHook} from '@testing-library/react'
-import {
-  getVersionFromId,
-  type ObjectSchemaType,
-  useAgentVersionDisplay,
-  useDocumentVersions,
-  usePerspective,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {getVersionFromId, type ObjectSchemaType, useDocumentVersions, usePerspective} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {type VersionInfoDocumentStub} from '../../../../../../../../core/releases/store/types'
+import {useAgentVersionDisplay} from '../../../../../../../../core/store/agent/useAgentVersionDisplay'
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
@@ -18,10 +13,19 @@ import {useNavigationBadges} from '../useNavigationBadges'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useAgentVersionDisplay: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
 }))
+
+// The badges import the @internal hooks from their declaring modules, so that is where the
+// mocks go; a mock of the `sanity` barrel would not reach them.
+vi.mock(
+  '../../../../../../../../core/store/agent/useAgentVersionDisplay',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useAgentVersionDisplay: vi.fn(),
+  }),
+)
 
 vi.mock('../../../../../useDocumentPane')
 vi.mock('../../../../../../../hooks/usePerspectiveNavigator')

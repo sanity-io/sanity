@@ -7,7 +7,11 @@ import {Button, Stack, TextInput} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ChangeEvent, Fragment, useMemo, useState} from 'react'
-import {useTranslation, useWorkspace, useWorkspaces, type WorkspaceSummary} from 'sanity'
+import {useTranslation, useWorkspace} from 'sanity'
+import {
+  useWorkspaces,
+  type WorkspaceSummary,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box, Flex, Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

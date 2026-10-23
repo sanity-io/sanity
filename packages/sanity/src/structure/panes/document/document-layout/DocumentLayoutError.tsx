@@ -1,8 +1,9 @@
 import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {isDev, Translate, useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity'
 import {Text, VStack} from 'ui5'
 
+import {isDev} from '../../../../core/environment'
 import {structureLocaleNamespace} from '../../../i18n'
 import {ErrorPane} from '../../error'
 

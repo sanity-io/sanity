@@ -10,9 +10,9 @@ const portalBoundaryCapture = vi.hoisted(() => ({current: null as HTMLElement | 
 
 // Replace the document layout (and with it the whole form) with a probe that reads the boundary
 // the pane declares for popovers rendered through its portal.
-vi.mock('sanity', async (importOriginal) => {
-  const original = (await importOriginal()) as Record<string, unknown>
-  const usePortalBoundary = original.usePortalBoundary as () => HTMLElement | null
+vi.mock('../../../../core/config/components/useMiddlewareComponents', async () => {
+  const {usePortalBoundary} =
+    await import('../../../../core/components/portalBoundary/usePortalBoundary')
   function Probe() {
     const boundary = usePortalBoundary()
     useLayoutEffect(() => {
@@ -20,7 +20,7 @@ vi.mock('sanity', async (importOriginal) => {
     }, [boundary])
     return <div data-testid="diff-view-form" />
   }
-  return {...original, useMiddlewareComponents: () => Probe}
+  return {useMiddlewareComponents: () => Probe}
 })
 
 describe('DiffViewPane portal boundary', () => {

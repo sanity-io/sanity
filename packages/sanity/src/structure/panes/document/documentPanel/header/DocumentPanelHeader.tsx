@@ -15,18 +15,14 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {
-  FieldPresenceInner,
-  type DocumentActionDescription,
-  useDocumentPresence,
-  useFieldActions,
-  useTranslation,
-  useZIndex,
-  useWorkspace,
-} from 'sanity'
+import {type DocumentActionDescription, useTranslation, useWorkspace} from 'sanity'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {useZIndex} from '../../../../../core/components/zOffsets/useZIndex'
+import {useFieldActions} from '../../../../../core/form/field/actions/useFieldActions'
+import {FieldPresenceInner} from '../../../../../core/presence/FieldPresence'
+import {useDocumentPresence} from '../../../../../core/store/presence/useDocumentPresence'
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {PaneContextMenuButton} from '../../../../components/pane/PaneContextMenuButton'

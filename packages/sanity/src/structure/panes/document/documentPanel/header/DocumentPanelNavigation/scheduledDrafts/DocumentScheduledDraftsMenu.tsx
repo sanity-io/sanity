@@ -3,21 +3,23 @@ import {ClockIcon} from '@sanity/icons/Clock'
 import {UnlockIcon} from '@sanity/icons/Unlock'
 import {useCallback, useMemo, useState} from 'react'
 import {
-  DEFAULT_VARIANT_TYPE_KEY,
   getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
-  isCardinalityOneRelease,
-  isPausedCardinalityOneRelease,
-  isReleaseDocument,
   ReleaseAvatar,
-  useActiveReleases,
   useDocumentVersions,
   usePerspective,
-  useScheduledDraftsEnabled,
   useTranslation,
 } from 'sanity'
 
+import {isReleaseDocument} from '../../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'
+import {useScheduledDraftsEnabled} from '../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {
+  isCardinalityOneRelease,
+  isPausedCardinalityOneRelease,
+} from '../../../../../../../core/util/releaseUtils'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../../../../core/variants/util/variantType'
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {usePaneRouter} from '../../../../../../components/paneRouter/usePaneRouter'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'

@@ -1,7 +1,7 @@
 import {type ComponentType, useContext, useMemo, useState} from 'react'
-import {type DocumentLayoutProps} from 'sanity'
 import {ReferenceInputOptionsContext} from 'sanity/_singletons'
 
+import {type DocumentLayoutProps} from '../../../core/config/types'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {useCreatePathSyncChannel} from '../hooks/useCreatePathSyncChannel'
 import {useDiffViewRouter} from '../hooks/useDiffViewRouter'

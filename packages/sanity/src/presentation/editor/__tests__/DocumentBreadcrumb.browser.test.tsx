@@ -1,8 +1,6 @@
 import {defineField, defineType} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {type ComponentProps} from 'react'
-import type * as SanityExports from 'sanity'
-import {useDocumentPreviewValues} from 'sanity'
 import {type StateLink} from 'sanity/router'
 import {describe, expect, test, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -10,17 +8,18 @@ import {page} from 'vitest/browser'
 
 import {testHelpers} from '../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
+import type * as UseDocumentPreviewValuesModule from '../../../core/tasks/hooks/useDocumentPreviewValues'
+import {useDocumentPreviewValues} from '../../../core/tasks/hooks/useDocumentPreviewValues'
 import {RouterProvider} from '../../../router/RouterProvider'
 import {presentationUsEnglishLocaleBundle} from '../../i18n'
 import {router} from '../../router'
 import {DocumentBreadcrumb} from '../DocumentBreadcrumb'
 
-vi.mock('sanity', async (importOriginal) => {
-  const actual = await importOriginal<typeof SanityExports>()
-  return {
-    ...actual,
-    useDocumentPreviewValues: vi.fn(actual.useDocumentPreviewValues),
-  }
+// The editor imports this @internal hook from its declaring module, so that is where the mock
+// goes; a mock of the `sanity` barrel would not reach it.
+vi.mock('../../../core/tasks/hooks/useDocumentPreviewValues', async (importOriginal) => {
+  const actual = await importOriginal<typeof UseDocumentPreviewValuesModule>()
+  return {...actual, useDocumentPreviewValues: vi.fn(actual.useDocumentPreviewValues)}
 })
 
 const {settleChromaticEndState} = testHelpers()

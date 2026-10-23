@@ -1,5 +1,8 @@
 import {type SanityDocumentLike} from '@sanity/types'
-import {getTargetDocument, type SystemVariant, type VersionInfoDocumentStub} from 'sanity'
+import {type SystemVariant} from 'sanity'
+
+import {type VersionInfoDocumentStub} from '../../../../../core/releases/store/types'
+import {getTargetDocument} from '../../../../../core/util/getTargetDocument'
 
 export type VariantCreateBaseDocument = {
   _id: string
