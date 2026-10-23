@@ -112,7 +112,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const banner = useBannerCase(documentId)
   const inventoryOpen = pane.inspector?.name === INVENTORY
   const {selectedPerspective} = usePerspective()
-  const {navigateIntent} = useRouter()
+  const {navigateIntent, stickyParams} = useRouter()
   const release = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
   // A locked release publishes on its schedule (date and time); an at-time release not yet scheduled is planned for its date.
   const lockedAt = release?.publishAt ?? release?.metadata.intendedPublishAt
@@ -199,8 +199,16 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   }
 
   if (banner.kind === 'published') {
+    // Faheem, 23 Oct: one click to where a version can be made. Switch to Drafts keeps the variant in view (the pills' rule: a version choice
+    // keeps the variant); "an open release" stays text, since there can be several.
+    const variant = typeof stickyParams.variant === 'string' ? stickyParams.variant : undefined
     return (
       <Banner
+        action={{
+          mode: 'ghost',
+          onClick: () => setVariant({variantId: variant as never, perspective: 'drafts' as never}),
+          text: 'Switch to Drafts',
+        }}
         content={say(
           <>
             This document has no published version for the{' '}
