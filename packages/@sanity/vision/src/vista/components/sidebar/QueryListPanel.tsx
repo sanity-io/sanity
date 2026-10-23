@@ -113,7 +113,8 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   // What the tab a saved query was loaded into cannot reproduce is worth saying: a dataset the
   // tool does not know (another project's URL, or a dataset the user cannot see) leaves the tab
   // on its own dataset, and a variant the navbar does not have selected is not sent, since a tab
-  // cannot pin one (its option follows the navbar or sends none)
+  // cannot pin one (its option follows the navbar or sends none); where the workspace has
+  // variants switched off there is no navbar selector to select it with
   const warnAboutUnrepresentable = useCallback(
     (parsed: ParsedQueryUrl) => {
       if (!parsed.isKnownDataset) {
@@ -132,7 +133,12 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           closable: true,
           id: 'vista-saved-query-variant',
           status: 'warning',
-          title: t('vista.saved.unavailable-variant', {variant: parsed.variant}),
+          title: t(
+            environment.isVariantsEnabled
+              ? 'vista.saved.unavailable-variant'
+              : 'vista.saved.variants-disabled',
+            {variant: parsed.variant},
+          ),
         })
       }
     },

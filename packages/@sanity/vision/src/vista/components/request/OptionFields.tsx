@@ -14,6 +14,7 @@ import {
 import {Box, Flex, VisuallyHidden} from 'ui5'
 
 import {API_VERSIONS} from '../../../apiVersions'
+import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
 import {
@@ -312,14 +313,21 @@ interface VariantSelectProps {
   onChange: (variant: VistaVariantMode) => void
 }
 
-/** Sends the navbar's variant with the query, or none; picking another variant is not offered here */
+/**
+ * Sends the navbar's variant with the query, or none; picking another variant is not offered
+ * here. Shown only where the navbar has a variant selector of its own: a workspace with variants
+ * switched off has no variant to send, so there is nothing to choose.
+ */
 export function VariantSelect({id, value, onChange}: VariantSelectProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const isVariantsEnabled = useVariantsEnabled()
   const {selectedVariants, selectedVariantNames} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
   const globalVariantName = selectedVariant
     ? getVariantTitle(selectedVariant)
     : getDefaultVariant(selectedVariantNames)
+
+  if (!isVariantsEnabled) return null
 
   return (
     <Stack gap={2}>

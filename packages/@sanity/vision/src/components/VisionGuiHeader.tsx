@@ -21,6 +21,7 @@ import {
 import {Box, Flex, Grid, VStack} from 'ui5'
 
 import {API_VERSIONS} from '../apiVersions'
+import {useVariantsEnabled} from '../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActiveVariant,
@@ -33,16 +34,14 @@ import {Header, QueryCopyLink, StyledLabel} from './VisionGui.styled'
 
 const PinnedReleasePerspectiveOption: ComponentType<{
   pinnedPerspective: PerspectiveContextValue
+  /** The navbar's variant, where the workspace has variants switched on */
+  variantTitle: string | undefined
   t: TFunction
-}> = ({pinnedPerspective, t}) => {
+}> = ({pinnedPerspective, variantTitle, t}) => {
   const name =
     typeof pinnedPerspective.selectedPerspective === 'object'
       ? pinnedPerspective.selectedPerspective.metadata.title
       : pinnedPerspective.selectedPerspectiveName
-
-  const variant = getDefaultVariant(pinnedPerspective.selectedVariants)
-  const variantName = getDefaultVariant(pinnedPerspective.selectedVariantNames)
-  const variantTitle = variant ? getVariantTitle(variant) : variantName
 
   const label = hasPinnedPerspective(pinnedPerspective)
     ? `(${t('settings.perspectives.pinned-release-label')})`
@@ -95,9 +94,17 @@ export function VisionGuiHeader({
   isScheduledDraftsEnabled,
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
-  const isApiVersionLocked = Boolean(
-    getActiveVariant(perspective, getDefaultVariant(pinnedPerspective.selectedVariantNames)),
-  )
+  const isVariantsEnabled = useVariantsEnabled()
+  // The navbar has no variant selector where the workspace has variants switched off, so a
+  // variant its URL still carries is not one the studio shows
+  const navbarVariantName = isVariantsEnabled
+    ? getDefaultVariant(pinnedPerspective.selectedVariantNames)
+    : undefined
+  const navbarVariant = isVariantsEnabled
+    ? getDefaultVariant(pinnedPerspective.selectedVariants)
+    : undefined
+  const navbarVariantTitle = navbarVariant ? getVariantTitle(navbarVariant) : navbarVariantName
+  const isApiVersionLocked = Boolean(getActiveVariant(perspective, navbarVariantName))
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)
   const handleCopyUrl = useCallback(() => {
@@ -215,7 +222,11 @@ export function VisionGuiHeader({
                 if (perspectiveName === 'pinnedRelease') {
                   return (
                     <Fragment key="pinnedRelease">
-                      <PinnedReleasePerspectiveOption pinnedPerspective={pinnedPerspective} t={t} />
+                      <PinnedReleasePerspectiveOption
+                        pinnedPerspective={pinnedPerspective}
+                        t={t}
+                        variantTitle={navbarVariantTitle}
+                      />
                       <option key="default" value="default">
                         {t('settings.perspectives.default')}
                       </option>

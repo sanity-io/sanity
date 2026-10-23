@@ -748,6 +748,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Toast shown when the perspective of a pasted URL cannot be used */
   'vista.paste.unsupported-perspective':
     'The perspective in the pasted URL is not supported here, keeping the current one.',
+  /** Toast shown when a pasted URL used a content variant, but this workspace has variants switched off */
+  'vista.paste.variants-disabled':
+    'The pasted URL used the "{{variant}}" variant; this workspace has variants switched off, so the query runs without it.',
   /** Accessible label for the query actions menu */
   'vista.query.actions': 'Query actions',
   /** Tooltip when automatic refetching is not available for the API version */
@@ -874,6 +877,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Toast shown when an opened saved query names a dataset that is not available here */
   'vista.saved.unknown-dataset':
     'The dataset "{{dataset}}" of this saved query is not available here, keeping the current one.',
+  /** Toast shown when an opened saved query used a content variant, but this workspace has variants switched off */
+  'vista.saved.variants-disabled':
+    'This saved query used the "{{variant}}" variant; this workspace has variants switched off, so the query runs without it.',
   /** Button in the settings dialog that clears the stored state */
   'vista.settings.clear-storage': 'Clear storage',
   /** Confirmation button for clearing the storage */
