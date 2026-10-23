@@ -395,7 +395,6 @@ export {
   type SetActiveGroupOperation,
 } from '../core/form/store/utils/getExpandOperations'
 export {mergeParseErrors, type ParseError} from '../core/form/store/utils/mergeParseErrors'
-export {} from '../core/form/studio/assetSourceMediaLibrary/createAssetSource'
 export {type FormCallbacksValue} from '../core/form/studio/contexts/FormCallbacks'
 export {
   ParseErrorsProvider,
@@ -426,7 +425,6 @@ export {
 } from '../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 export {type UploaderDef} from '../core/form/studio/uploads/types'
 export {type FormBuilderFilterFieldFn} from '../core/form/types/_transitional'
-export {} from '../core/form/types/asserters'
 export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FieldCommentsProps,
@@ -797,7 +795,6 @@ export {SearchResultItemPreview} from '../core/studio/components/navbar/search/c
 export {type SearchContextValue} from '../core/studio/components/navbar/search/contexts/search/SearchContext'
 export {SearchProvider} from '../core/studio/components/navbar/search/contexts/search/SearchProvider'
 export {useSearchState} from '../core/studio/components/navbar/search/contexts/search/useSearchState'
-export {} from '../core/studio/components/navbar/search/definitions/filters'
 export {operatorDefinitions} from '../core/studio/components/navbar/search/definitions/operators/defaultOperators'
 export {
   type PartialIndexSettings,
@@ -989,7 +986,6 @@ export {
   type StructureNodeIdValidationResult,
   validateStructureNodeId,
 } from '../core/util/validateStructureNodeId'
-export {} from '../core/util/versionsUtils'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
