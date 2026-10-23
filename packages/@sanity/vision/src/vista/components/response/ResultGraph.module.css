@@ -138,6 +138,18 @@
   transform: scale(0.95);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .graphNodeButton,
+  .graphControl {
+    transition-property: color, background-color;
+  }
+
+  .graphNodeButton:active,
+  .graphControl:active:not(:disabled) {
+    transform: none;
+  }
+}
+
 .graphNodeButton:focus-visible {
   outline: 1px solid var(--card-focus-ring-color);
 }

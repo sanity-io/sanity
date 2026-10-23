@@ -458,11 +458,19 @@
 /*
  * While a newer fetch is in flight the shown result stays; once the fetch has taken long enough
  * to notice it dims, so a quick fetch never flickers. It brightens quickly when the response
- * arrives.
+ * arrives. A view remounted during that fetch (Tree / JSON / Graph switch) must not inherit the
+ * enter starting opacity of 0 under the delayed transition, or it stays blank for the delay —
+ * match the dimmed target in @starting-style so it appears immediately at 0.5.
  */
 .resultContainer[data-refreshing='true'] .resultView {
   opacity: 0.5;
   transition: opacity 200ms ease 400ms;
+}
+
+@starting-style {
+  .resultContainer[data-refreshing='true'] .resultView {
+    opacity: 0.5;
+  }
 }
 
 /* The delayed spinner fades in rather than popping up */
@@ -526,6 +534,13 @@
   .resultEnter,
   .copyGlyphs > svg {
     transition-property: opacity;
+  }
+
+  @starting-style {
+    .resultView,
+    .resultEnter {
+      transform: none;
+    }
   }
 
   .pressable:active:not(:disabled),
