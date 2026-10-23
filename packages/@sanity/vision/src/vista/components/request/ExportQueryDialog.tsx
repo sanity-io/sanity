@@ -12,7 +12,7 @@ import {type QueryRequest, type VistaTab} from '../../store/types'
 import {useVistaSelector} from '../../store/VistaActorContext'
 import {selectProjectId} from '../../store/vistaMachine'
 import {buildExportSnippets, type ExportSnippetId} from '../../util/exportSnippets'
-import {codeBlock} from '../vista.css'
+import * as styles from '../vista.module.css'
 
 export interface ExportQueryDialogProps {
   tab: VistaTab
@@ -79,7 +79,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
           >
             <Card
               border
-              className={codeBlock}
+              className={styles.codeBlock}
               overflow="auto"
               padding={3}
               radius={2}

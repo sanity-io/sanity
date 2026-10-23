@@ -1,0 +1,37 @@
+.editorRoot {
+  width: 100%;
+  box-sizing: border-box;
+  height: 100%;
+  overflow: hidden;
+  overflow: clip;
+  position: relative;
+  display: flex;
+}
+
+.editorRoot :global(.cm-theme) {
+  width: 100%;
+}
+
+.editorRoot :global(.cm-editor) {
+  height: 100%;
+  font-size: 16px;
+  line-height: 21px;
+}
+
+.editorRoot :global(.cm-line) {
+  padding-left: var(--vision-editor-line-padding-left);
+}
+
+.editorRoot :global(.cm-content) {
+  border-right-width: var(--vision-editor-content-border-right-width) !important;
+  padding-top: var(--vision-editor-content-padding-top);
+}
+
+/* An editor that is as tall as its document, for use under a header rather than in a fixed pane */
+.editorRootAutoHeight {
+  height: auto;
+}
+
+.editorRootAutoHeight :global(.cm-editor) {
+  height: auto;
+}

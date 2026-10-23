@@ -19,7 +19,7 @@ import {
   type TextRange,
 } from '../../util/groqFunctions'
 import {EXTRACT_FUNCTION_SHORTCUT} from '../../util/shortcuts'
-import {lintFindingButton, previewCode, shrinkable} from '../vista.css'
+import * as styles from '../vista.module.css'
 
 const DECLARATION_EXAMPLE = 'fn my::author($ref) = $ref->{name, "slug": slug.current};'
 
@@ -46,10 +46,10 @@ export interface FunctionsTabProps {
 function FunctionPreview({signature, body}: {signature: string; body: string}) {
   return (
     <Stack gap={2}>
-      <Box className={previewCode}>
+      <Box className={styles.previewCode}>
         <Code size={1}>{signature}</Code>
       </Box>
-      <Box className={previewCode}>
+      <Box className={styles.previewCode}>
         <Code size={0}>{body}</Code>
       </Box>
     </Stack>
@@ -71,7 +71,7 @@ function DeclaredFunction(props: {
       <Card
         aria-label={t('vista.functions.reveal', {name: declaration.id})}
         as="button"
-        className={cx(lintFindingButton, shrinkable)}
+        className={cx(styles.lintFindingButton, styles.shrinkable)}
         flex={1}
         onClick={() => onReveal(declaration.range)}
         paddingX={3}

@@ -1,0 +1,16 @@
+.perspectivePopoverContent {
+  /* This limits the width of the popover content */
+  max-width: 240px;
+}
+
+.perspectivePopoverLink {
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px var(--card-bg-color);
+}

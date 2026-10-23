@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const documentGroupInventoryContainer = style({
+export const documentGroupInventoryContainer = css({
   minBlockSize: 0,
 })

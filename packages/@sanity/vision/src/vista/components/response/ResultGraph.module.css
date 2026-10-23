@@ -1,0 +1,196 @@
+/*
+ * `ResultGraph` sets the custom properties on the viewport: the theme's code font and syntax
+ * colors, and the `GRAPH_METRICS` the layout positions the nodes and edges with
+ * (`--vision-graph-header-height`, `--vision-graph-row-height`, `--vision-graph-padding-x`), so
+ * the boxes are the sizes the layout expects.
+ */
+
+/* The area the graph is moved and zoomed in; dragging its background pans */
+.graphViewport {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  outline: none;
+}
+
+.graphViewport[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+.graphViewport:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--card-focus-ring-color);
+}
+
+/* Positioned and scaled as one, so the nodes and the edges move together */
+.graphCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
+.graphEdges {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.graphEdges path {
+  fill: none;
+  stroke: var(--card-muted-fg-color);
+  stroke-opacity: 0.55;
+  stroke-width: 1.5;
+}
+
+.graphNode {
+  position: absolute;
+  box-sizing: border-box;
+  background: var(--card-bg-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px var(--card-shadow-umbra-color);
+  overflow: hidden;
+  font-family: var(--vision-graph-code-family);
+  font-size: var(--vision-graph-code-size);
+  cursor: default;
+}
+
+.graphNodeHeader {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: var(--vision-graph-header-height);
+  box-sizing: border-box;
+  padding-left: var(--vision-graph-padding-x);
+  padding-right: 4px;
+  border-bottom: 1px solid var(--card-border-color);
+  background: var(--card-muted-bg-color);
+}
+
+.graphNodeTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--vision-graph-property);
+  font-weight: 600;
+}
+
+.graphNodeSummary {
+  color: var(--card-muted-fg-color);
+  font-weight: 400;
+  margin-left: 0.5ch;
+}
+
+.graphNodeButton {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 2px;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  color: var(--card-muted-fg-color);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.15em;
+  line-height: 1;
+}
+
+.graphNodeButton:hover {
+  color: var(--card-fg-color);
+  background: var(--card-code-bg-color);
+}
+
+.graphNodeButton:focus-visible {
+  outline: 1px solid var(--card-focus-ring-color);
+}
+
+.graphRow {
+  display: flex;
+  align-items: center;
+  height: var(--vision-graph-row-height);
+  padding-left: var(--vision-graph-padding-x);
+  padding-right: var(--vision-graph-padding-x);
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+}
+
+.graphRowKey {
+  color: var(--vision-graph-property);
+  flex-shrink: 0;
+}
+
+.graphRowValue {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 1ch;
+}
+
+.graphRowValue[data-type='string'] {
+  color: var(--vision-graph-string);
+}
+
+.graphRowValue[data-type='number'] {
+  color: var(--vision-graph-number);
+}
+
+.graphRowValue[data-type='boolean'] {
+  color: var(--vision-graph-boolean);
+}
+
+.graphRowValue[data-type='null'] {
+  color: var(--vision-graph-constant);
+}
+
+.graphRowValue[data-type='child'],
+.graphRowValue[data-type='more'] {
+  color: var(--card-muted-fg-color);
+}
+
+/* Where the edge to a nested object or array leaves its row */
+.graphRowPort {
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--card-muted-fg-color);
+}
+
+.graphControls {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 4px;
+  background: var(--card-bg-color);
+  box-shadow: 0 0 0 1px var(--card-border-color);
+  z-index: 1;
+}
+
+.graphNotice {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  max-width: calc(100% - 140px);
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--card-bg-color);
+  box-shadow: 0 0 0 1px var(--card-border-color);
+  z-index: 1;
+}
