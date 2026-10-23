@@ -130,6 +130,10 @@ export type FetchReason =
   | {type: 'live-start'}
   /** A tab opened with a generated query, fetched as it is shown */
   | {type: 'generated'}
+  /** A query URL pasted into the tab, run as pasted, as the classic tool does */
+  | {type: 'paste'}
+  /** A query URL a link to the tool named, opened in a tab of its own and run as written */
+  | {type: 'link'}
   /** Mutations applied from the Mutate panel, after which the result may have changed */
   | {type: 'mutation'}
   /** `eventId` is the live event's, which makes the API CDN answer with content at least as new */

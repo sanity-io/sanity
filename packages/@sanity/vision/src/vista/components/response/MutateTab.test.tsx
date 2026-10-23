@@ -6,9 +6,12 @@ import {type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
+import {type AiCreditsClient} from '../../util/aiCredits'
 import {type GenerateMutationsClient} from '../../util/generateMutations'
 import {type MutateClient} from '../../util/mutations'
 import {MutateTab, useMutatePanel} from './MutateTab'
+
+type MutateTabClient = GenerateMutationsClient & AiCreditsClient
 
 vi.mock('./CodeDiff', () => ({
   default: (props: {previous: string; next: string}) => (
@@ -94,18 +97,20 @@ function createClient(respond: (options: RequestOptions) => unknown, replies: un
     }
   })
   const prompt = vi.fn((_request: PromptRequest) => Promise.resolve(replies.shift()))
-  const client: GenerateMutationsClient = {
+  const client: MutateTabClient = {
+    // Without a project, the AI credits are not read
+    config: () => ({}),
     getDataUrl: (operation) => `/v2025-02-19/data/${operation}/test`,
     request,
     getDocuments: (ids) =>
       Promise.resolve(ids.map((id) => CURRENT.find((document) => document._id === id) ?? null)),
-    withConfig: () => ({agent: {action: {prompt}}}),
+    withConfig: () => ({agent: {action: {prompt}}, request: () => Promise.resolve(undefined)}),
   }
   return {client, request, prompt}
 }
 
 function Harness(props: {
-  client: GenerateMutationsClient
+  client: MutateTabClient
   dataset?: string
   result?: unknown
   onApplied?: () => void

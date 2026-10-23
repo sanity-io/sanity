@@ -6,13 +6,17 @@ import {type TFunction, useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {useAiCredits} from '../../hooks/useAiCredits'
 import {type ExplainStep} from '../../hooks/useQueryExplain'
+import {type AiCreditsClient} from '../../util/aiCredits'
 import {splitMessage} from '../../util/groqLint'
 import {
   HIGH_PERFORMANCE_GROQ_URL,
   type PlanInsight,
   readPlanInsights,
 } from '../../util/planInsights'
+import {AgentActionsTooltip} from '../AgentActionsTooltip'
+import {AiCreditsStatus} from '../AiCreditsStatus'
 
 /** What a plan insight means, as the Explain panel and the WebMCP explain tool say it */
 export function describeInsight(insight: PlanInsight, t: TFunction<'vision'>): string {
@@ -37,6 +41,8 @@ export function describeInsight(insight: PlanInsight, t: TFunction<'vision'>): s
 }
 
 export interface ExplainTabProps {
+  /** The tab's client, whose project the AI credits are read through */
+  client: AiCreditsClient
   plan: ExplainStep
   explanation: ExplainStep
   /** There is a valid request to explain */
@@ -50,11 +56,14 @@ export interface ExplainTabProps {
  * and on request an explanation of the query and the plan written by Agent Actions
  */
 export function ExplainTab(props: ExplainTabProps) {
-  const {plan, explanation, canExplain, onShowPlan, onExplain} = props
+  const {client, plan, explanation, canExplain, onShowPlan, onExplain} = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const credits = useAiCredits(client)
   const explaining = explanation.status === 'loading'
   const planText = plan.status === 'done' ? plan.text : undefined
   const insights = useMemo(() => (planText ? readPlanInsights(planText) : []), [planText])
+  // The credits as the failed request reported them, or as last read
+  const limit = explanation.status === 'failed' ? explanation.limit : undefined
 
   return (
     <Box data-testid="vista-explain" padding={3}>
@@ -63,17 +72,19 @@ export function ExplainTab(props: ExplainTabProps) {
           {t('vista.explain.description')}
         </Text>
         <Flex flexWrap="wrap" gap={2}>
-          <Button
-            data-testid="vista-explain-button"
-            disabled={!canExplain || explaining}
-            fontSize={1}
-            icon={SparklesIcon}
-            loading={explaining}
-            onClick={onExplain}
-            padding={2}
-            text={t('vista.explain.explain')}
-            tone="primary"
-          />
+          <AgentActionsTooltip>
+            <Button
+              data-testid="vista-explain-button"
+              disabled={!canExplain || explaining}
+              fontSize={1}
+              icon={SparklesIcon}
+              loading={explaining}
+              onClick={onExplain}
+              padding={2}
+              text={t('vista.explain.explain')}
+              tone="primary"
+            />
+          </AgentActionsTooltip>
           <Button
             data-testid="vista-explain-plan-button"
             disabled={!canExplain || plan.status === 'loading'}
@@ -85,6 +96,7 @@ export function ExplainTab(props: ExplainTabProps) {
             text={t('vista.explain.plan')}
           />
         </Flex>
+        <AiCreditsStatus apiHost={client.config().apiHost} credits={limit ?? credits} />
         {!canExplain && (
           <Text muted size={1}>
             {t('vista.explain.empty')}
@@ -106,7 +118,7 @@ export function ExplainTab(props: ExplainTabProps) {
             </Stack>
           </Card>
         )}
-        {explanation.status === 'failed' && (
+        {explanation.status === 'failed' && !limit && (
           <Text data-testid="vista-explain-error" size={1}>
             {t('vista.explain.failed', {message: explanation.message})}
           </Text>
