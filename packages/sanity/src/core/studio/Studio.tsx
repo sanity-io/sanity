@@ -91,7 +91,7 @@ export interface StudioProps {
    * @beta */
   unstable_noAuthBoundary?: boolean
   /**
-   * The `sanity` import map entry, for a studio whose `sanity` doesn't load through the document's import map.
+   * Overrides the document's `sanity` import map entry, for a studio loaded from the module CDN another way.
    * @hidden
    * @beta */
   unstable_importMapUrl?: string
