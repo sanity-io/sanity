@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/dev/test-studio/node_modules/chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js",
+        "--categoryExperimentalThirdParty=true",
+        "--browserUrl=http://127.0.0.1:9222"
+      ]
+    }
+  }
+}
