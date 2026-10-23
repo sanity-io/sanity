@@ -1,7 +1,6 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Button} from '@sanity/ui'
-import {type CSSProperties, type ReactNode, type RefObject} from 'react'
+import {type CSSProperties, type ReactNode, type RefObject, useState} from 'react'
 import {Box, Flex} from 'ui5'
 
 import {cx} from '../util/cx'
@@ -34,6 +33,14 @@ export interface CollapsibleSectionProps {
 export function CollapsibleSection(props: CollapsibleSectionProps) {
   const {id, title, icon, actions, expanded, onToggle, className, style, ref, handle, children} =
     props
+  // The body eases in only when it is opened while the section is on screen. Switching query
+  // tabs remounts the section, and an already open body should then simply be there
+  const [prevExpanded, setPrevExpanded] = useState(expanded)
+  const [revealing, setRevealing] = useState(false)
+  if (prevExpanded !== expanded) {
+    setPrevExpanded(expanded)
+    setRevealing(expanded)
+  }
 
   return (
     <Flex
@@ -56,9 +63,15 @@ export function CollapsibleSection(props: CollapsibleSectionProps) {
         <Button
           aria-controls={`${id}-content`}
           aria-expanded={expanded}
+          className={styles.pressable}
           data-testid={`${id}-toggle`}
           fontSize={1}
-          icon={expanded ? ChevronDownIcon : ChevronRightIcon}
+          icon={
+            <ChevronRightIcon
+              className={styles.sectionChevron}
+              data-expanded={expanded ? 'true' : undefined}
+            />
+          }
           id={`${id}-toggle`}
           mode="bleed"
           onClick={onToggle}
@@ -77,6 +90,8 @@ export function CollapsibleSection(props: CollapsibleSectionProps) {
         <Box
           aria-labelledby={`${id}-toggle`}
           className={styles.sectionBody}
+          data-revealing={revealing ? 'true' : undefined}
+          data-testid={`${id}-content`}
           id={`${id}-content`}
           role="region"
         >

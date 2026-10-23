@@ -1411,6 +1411,50 @@ describe('VistaGui', () => {
     )
   })
 
+  it('animates in only the tabs a click adds', () => {
+    renderVista()
+    const entering = () =>
+      screen.getAllByTestId('vista-tab').map((tab) => tab.getAttribute('data-entering'))
+    // The tabs the strip mounts with are already in place
+    expect(entering()).toEqual([null])
+
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    expect(entering()).toEqual([null, 'true'])
+
+    // Closing from the keyboard, including the last tab's replacement, settles at once
+    fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[1]).getByRole('tab'), {
+      key: 'Delete',
+    })
+    expect(entering()).toEqual([null])
+    const replaced = screen.getByTestId('vista-tab-button').id
+    fireEvent.keyDown(screen.getByTestId('vista-tab-button'), {key: 'Delete'})
+    expect(screen.getByTestId('vista-tab-button').id).not.toBe(replaced)
+    expect(entering()).toEqual([null])
+
+    // The pointer is back in charge
+    fireEvent.pointerDown(screen.getByTestId('vista-new-tab'))
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    expect(entering()).toEqual([null, 'true'])
+  })
+
+  it('eases a panel body in only when it is opened in place', () => {
+    renderVista()
+    const toggle = () => screen.getByTestId('vista-request-options-toggle')
+    const content = () => screen.queryByTestId('vista-request-options-content')
+    if (toggle().getAttribute('aria-expanded') === 'true') fireEvent.click(toggle())
+    expect(content()).toBeNull()
+
+    fireEvent.click(toggle())
+    expect(content()?.getAttribute('data-revealing')).toBe('true')
+
+    // Another tab remounts the panels; a body that is already open is simply there
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    if (toggle().getAttribute('aria-expanded') !== 'true') fireEvent.click(toggle())
+    fireEvent.click(screen.getAllByTestId('vista-tab-button')[0])
+    expect(toggle().getAttribute('aria-expanded')).toBe('true')
+    expect(content()?.getAttribute('data-revealing')).toBeNull()
+  })
+
   it('opens, switches, renames and closes tabs, and persists them', async () => {
     renderVista()
     typeQuery('*[_type == "author"]')
