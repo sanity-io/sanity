@@ -310,7 +310,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('allows for creating a new release', () => {
-      expect(screen.getByText('New release')).not.toBeDisabled()
+      expect(screen.getByRole('button', {name: 'New release'})).toBeEnabled()
     })
   })
 
@@ -341,7 +341,26 @@ describe('ReleasesOverview', () => {
     })
 
     it('shows create new releases button', () => {
-      expect(screen.getByText('New release')).not.toBeDisabled()
+      expect(screen.getByRole('button', {name: 'New release'})).toBeEnabled()
+    })
+  })
+
+  describe('when the workspace release limit is reached', () => {
+    beforeEach(async () => {
+      const wrapper = await createTestProvider({
+        config: {releases: {limit: 0}},
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      return mountAndFlush(<TestComponent />, {wrapper})
+    })
+
+    it('disables the create new release button and explains the limit', async () => {
+      const createReleaseButton = screen.getByRole('button', {name: 'New release'})
+      expect(createReleaseButton).toBeDisabled()
+
+      await userEvent.hover(createReleaseButton)
+      expect(await screen.findByText('This workspace is limited to 0 releases')).toBeInTheDocument()
     })
   })
 

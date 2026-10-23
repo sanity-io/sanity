@@ -550,6 +550,26 @@ describe('ReleaseMenuButton', () => {
         expect(screen.queryByTestId('duplicate-release-menu-item')).not.toBeInTheDocument()
       })
 
+      test('does not allow duplicating once the workspace release limit is reached', async () => {
+        const wrapper = await createTestProvider({
+          config: {releases: {limit: 0}},
+          resources: [releasesUsEnglishLocaleBundle],
+        })
+        render(
+          <ReleaseMenuButton release={activeScheduledRelease} documentsCount={1} documents={[]} />,
+          {wrapper},
+        )
+
+        await userEvent.click(await screen.findByTestId('release-menu-button'))
+        const duplicateMenuItem = screen.getByTestId('duplicate-release-menu-item')
+        expect(duplicateMenuItem).toBeDisabled()
+
+        await userEvent.hover(duplicateMenuItem)
+        expect(
+          await screen.findByText('This workspace is limited to 0 releases'),
+        ).toBeInTheDocument()
+      })
+
       describe('when duplication fails', () => {
         beforeEach(() => {
           vi.spyOn(console, 'error').mockImplementation(() => {})

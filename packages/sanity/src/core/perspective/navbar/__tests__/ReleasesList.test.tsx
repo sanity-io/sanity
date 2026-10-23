@@ -237,4 +237,38 @@ describe('ReleasesList', () => {
       await waitFor(() => expect(screen.getByTestId('create-new-release-button')).toBeDisabled())
     })
   })
+
+  describe('when the workspace release limit is reached', () => {
+    beforeEach(() => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease, activeScheduledRelease],
+      })
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    })
+
+    it('disables creating a release and explains the limit', async () => {
+      const wrapper = await createTestProvider({config: {releases: {limit: 2}}})
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            isRangeVisible={false}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+          />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      const createReleaseButton = screen.getByTestId('create-new-release-button')
+      expect(createReleaseButton).toBeDisabled()
+
+      await userEvent.hover(createReleaseButton)
+      expect(await screen.findByText('This workspace is limited to 2 releases')).toBeInTheDocument()
+    })
+  })
 })
