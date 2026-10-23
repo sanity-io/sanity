@@ -132,12 +132,13 @@ export function resolveDocumentPaneOverride(
       headerPanels: c2 === 'c' && inspectorSwitcher === 'b' ? <HeaderPanelButtons /> : undefined,
       // C4 E: the inventory opens at the midpoint of its 320–540px range (core seam `inspectorInitialWidth`); the limits stay. In a narrow pane
       // (Presentation, a split pane) it opens at 45% of the pane instead, so the form keeps room (from the Handoff Studio's 0bb7bad0cf, Faheem
-      // 23 Oct); Studio's 320 px minimum holds.
+      // 23 Oct). Never under 404 px here: the Design Studio's inventory keeps Andrej's full toolbar (view menu, his four controls, Compare
+      // versions, Create version), which needs 400 px inside the panel's border; the Handoff Studio's trimmed toolbar fits at 45%.
       inspectorInitialWidth:
         c4 === 'e'
           ? (name: string, paneWidth?: number) =>
               name === 'variants-inventory'
-                ? Math.min(430, paneWidth ? Math.round(paneWidth * 0.45) : 430)
+                ? Math.min(430, Math.max(404, paneWidth ? Math.round(paneWidth * 0.45) : 430))
                 : undefined
           : undefined,
       // C4 E (the Handoff Studio's T4): Compare versions' pickers list the versions with the same inventory as the Versions inspector.
