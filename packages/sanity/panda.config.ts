@@ -29,5 +29,25 @@ export default defineConfig({
   // Lets a studio verify that the static stylesheet loaded, e.g. with auto-updates
   globalCss: {
     '#sanity': {'--static-css-file-loaded-studio': 'true'},
+    // The presentation tool's iframe viewport transitions (`src/presentation/preview/IFrame.tsx`)
+    'html:active-view-transition-type(sanity-iframe-viewport)': {
+      'viewTransitionName': 'none',
+      '&::view-transition': {
+        pointerEvents: 'none',
+      },
+    },
+    // The presentation tool's document list (`src/presentation/editor/DocumentListPane.tsx`): the
+    // structure `Pane` inside it sets `max-width` inline, which takes `!important` to override. It
+    // cannot come from a `css()` call: there an `!important` value compiles to a class name that
+    // the generated stylesheet has no rule for.
+    '[data-presentation-document-list-pane] > div': {
+      maxWidth: 'none !important',
+    },
+  },
+  // Custom properties the document group inventory's scroll mask animates
+  // (`src/core/documentGroupInventory/components/Body.css.ts`), which needs them registered
+  globalVars: {
+    '--start-mask-color': {syntax: '<color>', inherits: false, initialValue: '#000'},
+    '--end-mask-color': {syntax: '<color>', inherits: false, initialValue: '#000'},
   },
 } satisfies Config)
