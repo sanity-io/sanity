@@ -2,26 +2,32 @@ import {act, render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type ComponentType, type RefAttributes, useImperativeHandle} from 'react'
 import {EMPTY} from 'rxjs'
-import {
-  DocumentGroupInventory,
-  type DocumentGroupInventoryHandle,
-  type DocumentGroupInventoryProps,
-  type SanityDocument,
-} from 'sanity'
+import {type SanityDocument} from 'sanity'
 import {test as baseTest, describe, expect, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {useTestDocumentGroupInventoryHandle} from '../../../../../../../test/testUtils/useTestDocumentGroupInventoryHandle'
+import type * as DocumentGroupInventoryModule from '../../../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {
+  DocumentGroupInventory,
+  type DocumentGroupInventoryHandle,
+  type DocumentGroupInventoryProps,
+} from '../../../../../../core/documentGroupInventory/components/DocumentGroupInventory'
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DocumentGroupInspector} from '../DocumentGroupInspector'
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
-  DocumentGroupInventory: vi.fn(() => <div data-testid="document-group-inventory" />),
-}))
+// The inspector imports the @internal inventory from its declaring module, so that is where the
+// mock goes; a mock of the `sanity` barrel would not reach it.
+vi.mock(
+  '../../../../../../core/documentGroupInventory/components/DocumentGroupInventory',
+  async (importOriginal) => ({
+    ...(await importOriginal<typeof DocumentGroupInventoryModule>()),
+    DocumentGroupInventory: vi.fn(() => <div data-testid="document-group-inventory" />),
+  }),
+)
 
 vi.mock('../../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),

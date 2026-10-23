@@ -1,10 +1,11 @@
 import {useToast} from '@sanity/ui/toast'
 import {useActorRef, useSelector} from '@xstate/react'
 import {useEffect} from 'react'
-import {useActiveWorkspace, useClient, useCurrentUser, useGrantsStore, useTranslation} from 'sanity'
+import {useClient, useCurrentUser, useGrantsStore, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {fromObservable} from 'xstate'
 
+import {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {defineCreatePreviewSecretActor} from './actors/create-preview-secret'
 import {defineReadSharedSecretActor} from './actors/read-shared-secret'
 import {defineResolveAllowPatternsActor} from './actors/resolve-allow-patterns'

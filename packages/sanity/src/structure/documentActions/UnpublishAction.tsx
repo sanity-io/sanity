@@ -3,17 +3,19 @@ import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionModalDialogProps,
-  getPairTarget,
-  getTargetScopeId,
-  getTargetSiblings,
-  InsufficientPermissionsMessage,
   useCurrentUser,
-  useDocumentOperation,
-  useDocumentPairPermissions,
   usePerspective,
   useTranslation,
 } from 'sanity'
 
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  getTargetSiblings,
+} from '../../core/hooks/useTargetDocumentState'
+import {useDocumentPairPermissions} from '../../core/store/grants/documentPairPermissions'
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'

@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
-import {SourceProvider, type Tool, useWorkspace} from 'sanity'
+import {type Tool, useWorkspace} from 'sanity'
 
+import {SourceProvider} from '../../../core/studio/source'
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {setActivePanes} from '../../getIntentState'
 import {StructureToolProvider} from '../../StructureToolProvider'

@@ -1,7 +1,8 @@
 import {type ButtonTone} from '@sanity/ui'
-import {TextWithTone, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
 import {Text, Flex} from 'ui5'
 
+import {TextWithTone} from '../../../../../core/components/textWithTone/TextWithTone'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 

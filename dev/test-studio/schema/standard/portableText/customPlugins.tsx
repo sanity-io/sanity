@@ -11,8 +11,8 @@ import {
   defineType,
   type PortableTextPluginsProps,
   useFormValue,
-  useZIndex,
 } from 'sanity'
+import {useZIndex} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 const CONTAINER_NODES = [
   defineContainer({

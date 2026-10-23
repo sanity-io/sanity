@@ -1,7 +1,8 @@
 import {type ReactNode} from 'react'
-import {PerspectiveProvider, usePerspective} from 'sanity'
+import {usePerspective} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {PerspectiveProvider} from '../../../core/perspective/PerspectiveProvider'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 
 /**

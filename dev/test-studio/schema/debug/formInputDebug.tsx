@@ -1,4 +1,5 @@
-import {FormInput, type ObjectInputProps} from 'sanity'
+import {type ObjectInputProps} from 'sanity'
+import {FormInput} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Grid} from 'ui5'
 
 export const formInputDebug = {

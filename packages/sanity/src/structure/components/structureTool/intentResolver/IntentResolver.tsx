@@ -1,7 +1,8 @@
 import {memo, useCallback, useEffect, useState} from 'react'
-import {isRecord, useDocumentStore, useStudioErrorHandler} from 'sanity'
+import {useDocumentStore, useStudioErrorHandler} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
+import {isRecord} from '../../../../core/util/isRecord'
 import {resolveIntent} from '../../../structureResolvers/resolveIntent'
 import {useStructureTool} from '../../../useStructureTool'
 import {ensureDocumentIdAndType} from './utils'
