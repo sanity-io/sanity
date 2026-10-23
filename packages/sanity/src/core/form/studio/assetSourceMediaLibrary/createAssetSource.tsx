@@ -13,11 +13,15 @@ import {MediaLibraryUploader} from './uploader'
 
 // Same as the dataset asset source: the picker dialogs (iframe, comlink, the federated view)
 // load when opened. The federated source imports the shared dialog itself, so both are split.
+// Own Suspense boundary so the first Browse does not suspend through FormNodeSuspense (which
+// would unmount the input and clear selectedAssetSource before the picker can open).
 const MediaLibraryAssetSource = createLazyComponent(
   () => import('./shared/MediaLibraryAssetSource.lazy'),
+  {fallback: null},
 )
 const FederatedMediaLibraryAssetSource = createLazyComponent(
   () => import('./federated/FederatedMediaLibraryAssetSource.lazy'),
+  {fallback: null},
 )
 
 // Default name for the Media Library asset source

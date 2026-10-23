@@ -7,8 +7,12 @@ import {createLazyComponent} from '../../../components/lazy/createLazyComponent'
 import {createDatasetUploader} from './uploader'
 
 // The asset sources are created while the workspace config is prepared; the browse dialog they
-// render only loads once a user opens it from a file or image input.
-const DatasetAssetSource = createLazyComponent(() => import('./shared/DatasetAssetSource.lazy'))
+// render only loads once a user opens it from a file or image input. Own Suspense boundary so
+// the first Browse does not suspend through FormNodeSuspense (which would unmount the input and
+// clear selectedAssetSource before the picker can open).
+const DatasetAssetSource = createLazyComponent(() => import('./shared/DatasetAssetSource.lazy'), {
+  fallback: null,
+})
 
 // Note: Ideally this should be changed to 'sanity-dataset,
 // but of legacy reasons (studio configs) we are probably stuck with it.

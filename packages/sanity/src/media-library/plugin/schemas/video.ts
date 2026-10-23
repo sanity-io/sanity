@@ -7,7 +7,9 @@ import {VideoField} from '../VideoInput/VideoField'
 // so the video input (player, upload handling) loads when a video field first renders instead.
 // The wrapper carries its own Suspense boundary, so the schema component works wherever an
 // input is rendered, not only under the form middleware's boundary.
-const StudioVideoInput = createLazyComponent(() => import('../VideoInput/StudioVideoInput.lazy'))
+const StudioVideoInput = createLazyComponent(() => import('../VideoInput/StudioVideoInput.lazy'), {
+  fallback: null,
+})
 
 export const video = defineType({
   name: 'sanity.video',
