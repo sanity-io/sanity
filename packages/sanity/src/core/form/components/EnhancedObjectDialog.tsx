@@ -1,15 +1,18 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
+import {isEqual} from '@sanity/util/paths'
 import {
   type DragEvent,
   type ReactNode,
   Suspense,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
 } from 'react'
+import {EnhancedObjectDialogScrollContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
@@ -107,6 +110,18 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const {dialogId, isTop, stack, close, navigateTo} = useDialogStack({
     path: currentPath,
   })
+
+  const parentScrollToTop = useContext(EnhancedObjectDialogScrollContext)
+  const scrollToTop = useCallback(
+    (targetPath: Path) => {
+      if (currentPath && isEqual(targetPath, currentPath)) {
+        documentScrollElement?.scrollTo({top: 0})
+        return
+      }
+      parentScrollToTop?.(targetPath)
+    },
+    [currentPath, documentScrollElement, parentScrollToTop],
+  )
 
   // Reserve space for the scrollbar in the dialog's scrollable content element,
   // so that switching to a tab with overflowing (scrollable) content doesn't
@@ -207,54 +222,58 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
   if (type === 'dialog') {
     return (
-      <VirtualizerScrollInstanceProvider
-        scrollElement={documentScrollElement}
-        containerElement={containerElement}
-      >
-        <StyledDialog
-          $isHidden={!isTop}
-          __unstable_autoFocus={isTop ? props.autofocus : false}
-          contentRef={handleContentRef}
-          data-testid="nested-object-dialog"
-          header={
-            <DialogBreadcrumbs
-              currentPath={currentPath}
-              onNavigate={navigateTo}
-              onClose={handleStackedDialogClose}
-            />
-          }
-          id={dialogId}
-          onClose={handleStackedDialogClose}
-          onDragEnter={onDragEnter}
-          onDrop={onDrop}
-          width={width}
-          animate={!shouldDisableAnimation}
-          onClickOutside={handleCompleteDialogClose}
+      <EnhancedObjectDialogScrollContext value={scrollToTop}>
+        <VirtualizerScrollInstanceProvider
+          scrollElement={documentScrollElement}
+          containerElement={containerElement}
         >
-          <BoundaryElementProvider element={documentScrollElement}>
-            {contents}
-          </BoundaryElementProvider>
-        </StyledDialog>
-      </VirtualizerScrollInstanceProvider>
+          <StyledDialog
+            $isHidden={!isTop}
+            __unstable_autoFocus={isTop ? props.autofocus : false}
+            contentRef={handleContentRef}
+            data-testid="nested-object-dialog"
+            header={
+              <DialogBreadcrumbs
+                currentPath={currentPath}
+                onNavigate={navigateTo}
+                onClose={handleStackedDialogClose}
+              />
+            }
+            id={dialogId}
+            onClose={handleStackedDialogClose}
+            onDragEnter={onDragEnter}
+            onDrop={onDrop}
+            width={width}
+            animate={!shouldDisableAnimation}
+            onClickOutside={handleCompleteDialogClose}
+          >
+            <BoundaryElementProvider element={documentScrollElement}>
+              {contents}
+            </BoundaryElementProvider>
+          </StyledDialog>
+        </VirtualizerScrollInstanceProvider>
+      </EnhancedObjectDialogScrollContext>
     )
   }
 
   return (
-    <VirtualizerScrollInstanceProvider
-      scrollElement={documentScrollElement}
-      containerElement={containerElement}
-    >
-      <PopoverDialog
-        header={header}
-        onClose={handleStackedDialogClose}
-        width={width}
-        containerRef={setDocumentScrollElement}
-        referenceElement={props.legacy_referenceElement}
+    <EnhancedObjectDialogScrollContext value={scrollToTop}>
+      <VirtualizerScrollInstanceProvider
+        scrollElement={documentScrollElement}
+        containerElement={containerElement}
       >
-        <BoundaryElementProvider element={documentScrollElement}>
-          {contents}
-        </BoundaryElementProvider>
-      </PopoverDialog>
-    </VirtualizerScrollInstanceProvider>
+        <PopoverDialog
+          header={header}
+          onClose={handleStackedDialogClose}
+          width={width}
+          containerRef={setDocumentScrollElement}
+          referenceElement={props.legacy_referenceElement}
+        >
+          <BoundaryElementProvider element={documentScrollElement}>
+            {contents}
+          </BoundaryElementProvider>
+        </PopoverDialog>
+      </VirtualizerScrollInstanceProvider>
+    </EnhancedObjectDialogScrollContext>
   )
 }
