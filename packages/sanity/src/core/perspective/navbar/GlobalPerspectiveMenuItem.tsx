@@ -4,12 +4,12 @@ import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LockIcon} from '@sanity/icons/Lock'
 // oxlint-disable-next-line no-restricted-imports -- custom use for Button not supported by ui-components
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -186,7 +186,13 @@ export function GlobalPerspectiveMenuItem(
                   textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
                 />
               ) : (
-                <Text size={1} weight="medium" style={{minWidth: 0}}>
+                <Text
+                  size={1}
+                  weight="medium"
+                  style={{minWidth: 0, color: 'inherit'}}
+                  as="div"
+                  trim={true}
+                >
                   {isDraftPerspective(release)
                     ? t('release.navbar.drafts')
                     : t('release.navbar.published')}
@@ -195,15 +201,19 @@ export function GlobalPerspectiveMenuItem(
               {isReleaseDocument(release) &&
                 typeof release.error !== 'undefined' &&
                 release.state === 'active' && (
-                  <Text size={1} data-testid="release-error-icon">
-                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                  </Text>
+                  <Box style={{margin: '-0.375rem'}}>
+                    <Icon
+                      size={1}
+                      data-testid="release-error-icon"
+                      icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                    />
+                  </Box>
                 )}
             </Flex>
             {isReleaseDocument(release) &&
               release.metadata.releaseType === 'scheduled' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {formatPublishDate(release)}
                 </Text>
               )}
@@ -224,9 +234,13 @@ export function GlobalPerspectiveMenuItem(
             )}
             {isReleaseDocument(release) && isReleaseScheduledOrScheduling(release) && (
               <Box padding={2}>
-                <Text size={1} data-testid="release-lock-icon">
-                  <LockIcon />
-                </Text>
+                <Icon
+                  size={1}
+                  muted
+                  data-testid="release-lock-icon"
+                  icon={LockIcon}
+                  style={{margin: '-0.375rem'}}
+                />
               </Box>
             )}
           </Box>
