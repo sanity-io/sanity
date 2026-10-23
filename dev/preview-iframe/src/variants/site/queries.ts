@@ -18,8 +18,9 @@ const BOOK = `*[_type in ${TYPES} && _id == $id][0] {${CARD},
   notes[]{..., children[]{..., _type == "authorMention" => {"author": @->{_id, _type, name}}}}}`
 const AUTHORS = `*[_type == "author"] | order(name asc) {_id, _type, name, bio, born, "town": homeTown->{_id, _type, name, country}, "bookCount": count(*[_type in ${TYPES} && author._ref == ^._id])}`
 const AUTHOR = `*[_type == "author" && _id == $id][0] {_id, _type, name, bio, born, "town": homeTown->{_id, _type, name, country}, "books": *[_type in ${TYPES} && author._ref == $id] | order(title asc) {${CARD}}}`
-const SERIES_LIST = `*[_type == "series"] | order(title asc) {_id, _type, title, blurb, "bookCount": count(*[_type in ${TYPES} && inSeries._ref == ^._id])}`
-const SERIES = `*[_type == "series" && _id == $id][0] {_id, _type, title, blurb, "books": *[_type in ${TYPES} && inSeries._ref == $id] | order(title asc) {${CARD}}}`
+// One card per series: the English series stands for its Danish, Norwegian and Swedish translations (`<id>-da` and so on), and counts their books too.
+const SERIES_LIST = `*[_type == "series" && (!defined(language) || language == "en")] | order(title asc) {_id, _type, title, blurb, "bookCount": count(*[_type in ${TYPES} && string::startsWith(inSeries._ref, ^._id)])}`
+const SERIES = `*[_type == "series" && _id == $id][0] {_id, _type, title, blurb, "books": *[_type in ${TYPES} && string::startsWith(inSeries._ref, $id)] | order(title asc) {${CARD}}}`
 const PUBLISHER = `*[_type == "publisher" && _id == $id][0] {_id, _type, name, about, "hq": headquarters->{_id, _type, name, country}, "books": *[_type in ${TYPES} && publisher._ref == $id] | order(title asc) {${CARD}}}`
 
 /** `?route=` value to the query that feeds it. `fm:` is handled by the page itself. */
