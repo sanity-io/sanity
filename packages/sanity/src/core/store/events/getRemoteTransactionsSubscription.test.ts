@@ -11,6 +11,7 @@ import {effectPair, remoteMutationEvent} from './__fixtures__/transactions.fixtu
 import {
   classifyRemoteMutation,
   getRemoteTransactionsSubscription,
+  REMOTE_TRANSACTIONS_BUFFER_LIMIT,
   type RemoteMutationVerdict,
 } from './getRemoteTransactionsSubscription'
 
@@ -141,7 +142,6 @@ describe('getRemoteTransactionsSubscription', () => {
     ])
     expect(onRefetch).not.toHaveBeenCalled()
 
-    // Known quirk: transactions accumulate without bound during an editing session.
     snapshots$.next(
       remoteMutationEvent({
         transactionId: 'tx-remote-2',
@@ -151,6 +151,27 @@ describe('getRemoteTransactionsSubscription', () => {
     expect(remoteTransactions$.value.map((tx) => tx.id)).toEqual(['tx-remote-1', 'tx-remote-2'])
 
     editsSubscription.unsubscribe()
+    subscription.unsubscribe()
+  })
+
+  it('clears the buffer and refetches when the accumulation cap is reached', () => {
+    const {remoteTransactions$, subscription} = setup(DRAFT_ID)
+
+    for (let i = 0; i < REMOTE_TRANSACTIONS_BUFFER_LIMIT; i++) {
+      snapshots$.next(remoteMutationEvent({transactionId: `tx-${i}`}))
+    }
+    expect(remoteTransactions$.value).toHaveLength(REMOTE_TRANSACTIONS_BUFFER_LIMIT)
+    expect(onRefetch).not.toHaveBeenCalled()
+
+    // The mutation that exceeds the cap triggers a refetch and resets the buffer.
+    snapshots$.next(remoteMutationEvent({transactionId: 'tx-overflow'}))
+    expect(onRefetch).toHaveBeenCalledTimes(1)
+    expect(remoteTransactions$.value).toEqual([])
+
+    // Accumulation starts over afterwards.
+    snapshots$.next(remoteMutationEvent({transactionId: 'tx-after-overflow'}))
+    expect(remoteTransactions$.value.map((tx) => tx.id)).toEqual(['tx-after-overflow'])
+
     subscription.unsubscribe()
   })
 

@@ -44,8 +44,8 @@ export function isExpandableEvent(event: DocumentGroupEvent): event is (
  *   maps them to edit events (`getEditEvents`) and stamps each with `parentId: event.id` so the UI
  *   can nest them under the expanded event.
  * - Expanding the same event twice is a no-op (results are kept in a map keyed by event id).
- * - Known quirk: the returned promise is not error-handled by callers and `getDocumentTransactions`
- *   failures surface as unhandled rejections (tracked as a known issue).
+ * - `getDocumentTransactions` failures are caught and logged; the event stays unexpanded and can
+ *   be retried (it is only marked as expanded on success).
  *
  * `expandedEvents$` emits the flattened list of all expanded edit events, consumed by
  * `createEventsObservable` to merge them into the main list.
@@ -64,20 +64,25 @@ export function getExpandEvents({documentId, client}: {client: SanityClient; doc
       // This are the only events we can expand.
       // We need to get that creation event and use versionRevisionId and fetch the transactions that occurred
       // Since since the creation to the publish.
-      const transactions = await getDocumentTransactions({
-        client,
-        documentId,
-        fromTransaction: event.creationEvent.versionRevisionId,
-        toTransaction: event.versionRevisionId,
-      })
-      const editEvents = getEditEvents(transactions, documentId, false).map((editEvent) => ({
-        ...editEvent,
-        parentId: event.id,
-      }))
+      try {
+        const transactions = await getDocumentTransactions({
+          client,
+          documentId,
+          fromTransaction: event.creationEvent.versionRevisionId,
+          toTransaction: event.versionRevisionId,
+        })
+        const editEvents = getEditEvents(transactions, documentId, false).map((editEvent) => ({
+          ...editEvent,
+          parentId: event.id,
+        }))
 
-      const value = expandedEventsMap$.getValue()
-      value.set(event.id, editEvents)
-      expandedEventsMap$.next(value)
+        const value = expandedEventsMap$.getValue()
+        value.set(event.id, editEvents)
+        expandedEventsMap$.next(value)
+      } catch (error) {
+        // The event stays unexpanded (and not marked as expanded, so it can be retried).
+        console.error('Failed to expand event', error)
+      }
     } else {
       console.error("This event can't be expanded", event)
     }
