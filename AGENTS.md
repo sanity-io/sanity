@@ -1283,7 +1283,7 @@ pnpm add -w -D <package>
 
 Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifier, run `pnpm install` to refresh `pnpm-lock.yaml`.
 
-The workspace sets `minimumReleaseAge: 1440` (1 day) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally.
+The workspace sets `minimumReleaseAge: 1440` (1 day) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` (pnpm 12: `ERR_PNPM_NO_MATURE_MATCHING_VERSION`) for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally. `@tsdown/css` ships in lockstep with `tsdown` and is excluded beside it. `tsdown` 0.23.2 depends on `rolldown-plugin-dts@^0.29.0-beta.2`, whose `tsgo` generator needs `typescript@7.1.0-beta`; the workspace override pins `rolldown-plugin-dts` to `0.28.8` so declaration emit keeps using the TypeScript 7.0 `tsgo` CLI (`dts.generator: 'tsgo'` in `@repo/tsdown.config`).
 
 ### Testing an Unreleased Dependency Fix (pnpm patch)
 
