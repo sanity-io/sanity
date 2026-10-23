@@ -1,5 +1,3 @@
-import './styles.css'
-
 /* disabling for now because the imports trigger side effects causing test snapshots to update */
 import {type Config} from '../config/types'
 import {type StudioThemeColorSchemeKey} from '../theme/types'

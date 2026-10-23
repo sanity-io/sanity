@@ -810,22 +810,33 @@ describe('documentGroupInventoryMachine', () => {
     expect(createVariant).toHaveBeenCalledTimes(1)
   })
 
-  it('does not leave the feedback state when variant creation deactivates', () => {
+  it('begins and ends feedback from idle', () => {
+    const {inventoryRef} = createTestActor(loading)
+
+    expect(inventoryRef.getSnapshot().can({type: 'feedback.begin'})).toBe(true)
+
+    inventoryRef.send({type: 'feedback.begin'})
+    expect(inventoryRef.getSnapshot().matches('feedback')).toBe(true)
+    expect(inventoryRef.getSnapshot().can({type: 'feedback.begin'})).toBe(false)
+
+    inventoryRef.send({type: 'feedback.end'})
+    expect(inventoryRef.getSnapshot().matches('idle')).toBe(true)
+  })
+
+  it('refuses to begin feedback while a variant is being created', () => {
     const {inventoryRef, variantCreationRef} = createTestActor(loading, {variantsEnabled: true})
 
     variantCreationRef.send({type: 'createVariant.request'})
     expect(inventoryRef.getSnapshot().matches('creatingVariant')).toBe(true)
+    expect(inventoryRef.getSnapshot().can({type: 'feedback.begin'})).toBe(false)
 
-    // Feedback takes over the parent state while the creation flow is active.
     inventoryRef.send({type: 'feedback.begin'})
-    expect(inventoryRef.getSnapshot().matches('feedback')).toBe(true)
+    expect(inventoryRef.getSnapshot().matches('creatingVariant')).toBe(true)
 
-    // Deactivation must not yank the machine out of the feedback state.
-    variantCreationRef.send({type: 'createVariant.cancel'})
-    expect(inventoryRef.getSnapshot().matches('feedback')).toBe(true)
-
+    // Ending feedback that never began must not abandon the creation flow.
     inventoryRef.send({type: 'feedback.end'})
-    expect(inventoryRef.getSnapshot().matches('idle')).toBe(true)
+    expect(inventoryRef.getSnapshot().matches('creatingVariant')).toBe(true)
+    expect(variantCreationRef.getSnapshot().matches('active')).toBe(true)
   })
 
   it('aborts the in-flight creation when cancelled mid-creation', () => {
@@ -951,6 +962,15 @@ describe('documentGroupInventoryMachine', () => {
 
       variantCreationRef.send({type: 'createVariant.request'})
       expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
+      expect(inventoryRef.getSnapshot().matches('idle')).toBe(true)
+    })
+
+    it('refuses to begin feedback', () => {
+      const {inventoryRef} = createTestActor(loading, {readOnly: true})
+
+      expect(inventoryRef.getSnapshot().can({type: 'feedback.begin'})).toBe(false)
+
+      inventoryRef.send({type: 'feedback.begin'})
       expect(inventoryRef.getSnapshot().matches('idle')).toBe(true)
     })
 

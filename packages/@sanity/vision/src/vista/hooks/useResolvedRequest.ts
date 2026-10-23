@@ -15,6 +15,7 @@ import {
 } from 'sanity'
 
 import {DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../../apiVersions'
+import {useVariantsEnabled} from '../../hooks/useVariantsEnabled'
 import {getActivePerspective} from '../../perspectives'
 import {isApiVersionBelow} from '../../util/compareApiVersion'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
@@ -62,6 +63,11 @@ export interface RequestEnvironment {
   workspaceDataset: string
   perspectiveStack: PerspectiveContextValue['perspectiveStack']
   selectedVariantNames: PerspectiveContextValue['selectedVariantNames']
+  /**
+   * The workspace has variants switched on, so the navbar offers a variant selector; where it is
+   * off, a variant its URL still carries is not one the studio shows, and queries send none
+   */
+  isVariantsEnabled: boolean
   /** The stack the `scheduledDrafts` perspective stands for, where the workspace offers it */
   scheduledDraftsStack: PerspectiveStack | undefined
   isScheduledDraftsEnabled: boolean
@@ -102,6 +108,7 @@ export function useRequestEnvironment(): RequestEnvironment {
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()
   const isDraftModelEnabled = workspace.document.drafts.enabled
+  const isVariantsEnabled = useVariantsEnabled()
 
   const scheduledDraftsStack = useMemo((): PerspectiveStack | undefined => {
     if (!isScheduledDraftsEnabled) return undefined
@@ -122,11 +129,13 @@ export function useRequestEnvironment(): RequestEnvironment {
       workspaceDataset,
       perspectiveStack,
       selectedVariantNames,
+      isVariantsEnabled,
       scheduledDraftsStack,
       isScheduledDraftsEnabled,
     }),
     [
       isScheduledDraftsEnabled,
+      isVariantsEnabled,
       perspectiveStack,
       scheduledDraftsStack,
       selectedVariantNames,
@@ -138,18 +147,26 @@ export function useRequestEnvironment(): RequestEnvironment {
 /**
  * Resolves a tab's options against the studio state: a followed workspace dataset, the `global`
  * and `scheduledDrafts` perspectives becoming real perspective stacks, and the navbar variant,
- * which locks the API version to the experimental one.
+ * which locks the API version to the experimental one (where the workspace has variants at all).
  */
 export function resolveRequestOptions(
   options: VistaTabOptions,
   environment: RequestEnvironment,
 ): ResolvedRequestOptions {
-  const {workspaceDataset, perspectiveStack, selectedVariantNames, scheduledDraftsStack} =
-    environment
+  const {
+    workspaceDataset,
+    perspectiveStack,
+    selectedVariantNames,
+    isVariantsEnabled,
+    scheduledDraftsStack,
+  } = environment
   const dataset = getTabDataset(options, workspaceDataset)
 
   // Queries take one variant until the studio supports editing several at once
-  const variant = options.variant === 'global' ? getDefaultVariant(selectedVariantNames) : undefined
+  const variant =
+    isVariantsEnabled && options.variant === 'global'
+      ? getDefaultVariant(selectedVariantNames)
+      : undefined
   const isValidApiVersion = validateApiVersion(options.apiVersion)
   // An unfinished "Other" version still needs a client to exist; requests are refused meanwhile
   const userApiVersion = isValidApiVersion

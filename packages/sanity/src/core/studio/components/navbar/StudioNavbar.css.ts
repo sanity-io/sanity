@@ -1,4 +1,4 @@
-import {createContainer, style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
 /**
  * The navbar root is a size query container, so the grid below adapts to the navbar's own inline
@@ -13,9 +13,9 @@ import {createContainer, style} from '@vanilla-extract/css'
  * containing block for fixed or absolutely positioned descendants (only `contain: layout` does).
  * The overlays the navbar opens (search, menus, popovers) are portaled anyway.
  */
-const navbarContainer = createContainer()
+const navbarContainer = 'sanity-studio-navbar'
 
-export const navbar = style({
+export const navbar = css({
   containerName: navbarContainer,
   containerType: 'inline-size',
 })
@@ -28,20 +28,19 @@ export const navbar = style({
  * fit its own width into an overflow menu, which only works if its column is allowed to shrink
  * below the natural width of the tools.
  */
-export const navGrid = style({
+export const navGrid = css({
   // The side clusters take their content width and the tools take whatever is left.
-  'gridTemplateColumns': 'auto minmax(0, 1fr) auto',
-  '@container': {
-    // A wide navbar (1800px was the viewport breakpoint, media[4], this rule used before it
-    // queried the container) centers the tools on the navbar: the side columns flex equally around
-    // a content-sized tools column. A bare `1fr` is `minmax(auto, 1fr)`, and that `auto` resolves
-    // to the side cluster's `min-width`, which ui5 Flex sets to 0. With no floor, an `auto` tools
-    // column wider than the leftover space collapses the side columns to nothing before it shrinks
-    // by a single pixel; the `max-content` floor keeps the side clusters intact so the tools
-    // column, and its overflow menu, absorb the shortfall when the tools outgrow even a wide navbar.
-    [`${navbarContainer} (min-width: 1800px)`]: {
-      gridTemplateColumns: 'minmax(max-content, 1fr) auto minmax(max-content, 1fr)',
-    },
+  gridTemplateColumns: 'auto minmax(0, 1fr) auto',
+
+  // A wide navbar (1800px was the viewport breakpoint, media[4], this rule used before it
+  // queried the container) centers the tools on the navbar: the side columns flex equally around
+  // a content-sized tools column. A bare `1fr` is `minmax(auto, 1fr)`, and that `auto` resolves
+  // to the side cluster's `min-width`, which ui5 Flex sets to 0. With no floor, an `auto` tools
+  // column wider than the leftover space collapses the side columns to nothing before it shrinks
+  // by a single pixel; the `max-content` floor keeps the side clusters intact so the tools
+  // column, and its overflow menu, absorb the shortfall when the tools outgrow even a wide navbar.
+  [`@container ${navbarContainer} (min-width: 1800px)`]: {
+    gridTemplateColumns: 'minmax(max-content, 1fr) auto minmax(max-content, 1fr)',
   },
 })
 
@@ -50,7 +49,7 @@ export const navGrid = style({
  * `overflow: hidden` keeps tools that have not yet moved into the overflow menu from spilling over
  * the side clusters.
  */
-export const navTools = style({
+export const navTools = css({
   minWidth: 0,
   overflow: 'hidden',
 })

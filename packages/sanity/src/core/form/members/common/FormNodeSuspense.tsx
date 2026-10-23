@@ -61,6 +61,11 @@ function SuspendedFormNodeWarning(props: Omit<FormNodeSuspenseProps, 'fallback' 
 
 const warned = new Set<string>()
 
+/** @internal */
+export function resetFormNodeSuspendedWarningCache(): void {
+  warned.clear()
+}
+
 /**
  * Warns once per message, in every environment. The custom components are passed along so
  * browser devtools render them as references that open their source. Production builds minify

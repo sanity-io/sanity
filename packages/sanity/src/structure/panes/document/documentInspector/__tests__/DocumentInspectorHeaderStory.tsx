@@ -1,7 +1,9 @@
+import {CommentIcon} from '@sanity/icons/Comment'
 import {Card} from '@sanity/ui'
 import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {Button} from '../../../../../ui-components/button/Button'
 import {DocumentInspectorHeader} from '../DocumentInspectorHeader'
 
 const NOOP = () => undefined
@@ -14,7 +16,9 @@ const WRAPPING_TITLE =
  * is a wrapping `<Text as="h1">` (no textOverflow), so a long title grows
  * the header taller rather than truncating. The children slot is unused
  * in-repo; covered as public API on `sanity/structure` (plugins can fill
- * it). Titles are fixtures (no live inspector).
+ * it). The actions slot renders before the close button; the disabled
+ * action covers an action the caller has made inactive. Titles are fixtures
+ * (no live inspector).
  */
 export function DocumentInspectorHeaderStory() {
   return (
@@ -39,6 +43,35 @@ export function DocumentInspectorHeaderStory() {
               closeButtonLabel="Close inspector"
               onClose={NOOP}
               title={WRAPPING_TITLE}
+            />
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
+              title and actions
+            </Text>
+            <DocumentInspectorHeader
+              actions={
+                <>
+                  <Button
+                    aria-label="Enabled action"
+                    icon={CommentIcon}
+                    mode="bleed"
+                    onClick={NOOP}
+                    tooltipProps={{content: 'Enabled action'}}
+                  />
+                  <Button
+                    aria-label="Disabled action"
+                    disabled
+                    icon={CommentIcon}
+                    mode="bleed"
+                    onClick={NOOP}
+                    tooltipProps={{content: 'Disabled action'}}
+                  />
+                </>
+              }
+              closeButtonLabel="Close inspector"
+              onClose={NOOP}
+              title="Versions"
             />
           </VStack>
           <VStack gap={2}>

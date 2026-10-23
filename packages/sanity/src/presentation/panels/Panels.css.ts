@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const panelsWrapper = style({
+export const panelsWrapper = css({
   display: 'flex',
   flexDirection: 'row',
   height: '100%',

@@ -248,6 +248,160 @@ The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with 
 
 The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
 
+### Panda CSS
+
+The static styles of the `sanity` package are [Panda CSS](https://panda-css.com) `css()` calls in
+`.css.ts` modules next to the components, imported from the generated `#styled-system/css`
+runtime (`panda codegen` writes it to the gitignored `packages/sanity/styled-system/` directory on
+`pnpm install`, through the package's `prepare` script). `packages/sanity/panda.config.ts` is the
+**only Panda project in the repository** — the `} satisfies Config)` pattern, no presets,
+content-hashed class names with the `sanity-` prefix (`sanity-HgOzd`) and `strictPropertyValues`
+— and `#styled-system` is mapped in that package's manifest alone; nothing outside `packages/sanity`
+writes Panda CSS. The `migrate-styled-components-to-panda-css` skill
+(`.agents/skills/migrate-styled-components-to-panda-css/SKILL.md`) is the authoring guide: the
+`&&` specificity trick, the cascade model, descendant selectors and dynamic values. Styles outside
+the package are CSS modules (`*.module.css`, see [CSS modules](#css-modules) below): all of
+`@sanity/vision`'s, and the test studio's (`plugins/style-outline/styleOutline.module.css`, for
+one). Shared tooling versions live in the pnpm catalog (`@pandacss/dev`, `@pandacss/vite`,
+`@sanity/pandacss-tsdown-plugin`); the Vite apps that build the package from source get their
+Panda wiring from `@repo/pandacss` (`packages/@repo/pandacss`, its README says when an app needs
+it) instead of declaring those themselves.
+
+How the CSS reaches a page:
+
+- **The published package:** `panda: {minify: false, cascadeLayers: false}` in `tsdown.config.ts`
+  (the `@sanity/pandacss-tsdown-plugin` options of `@sanity/tsdown-config`; unminified so the
+  diff between two published versions stays readable, see below for the layers) rewrites every
+  `css()` call into its class names at build time, extracts the CSS into `lib/bundle.css`,
+  injects `import 'sanity/bundle.css'` into the entry chunks and publishes the conditional
+  `./bundle.css` export (`browser`/`style` → the stylesheet, `node`/`default` → a no-op shim).
+  The published code carries no Panda runtime, which is why the manifest resets `imports`
+  under `publishConfig`. A `css()` call the build cannot resolve statically (computed values,
+  loops) makes it warn and bundle the runtime — keep the style objects literal.
+- **Vite apps that build the package from source** (the dev studios through `sanity.cli.ts`,
+  Storybook, the vitest browser suite, `dev/studio-diagnostics-viewer`) resolve the workspace
+  packages to their sources (the `monorepo` export condition), so they bundle the package's
+  `.css.ts` modules themselves and register `sanityPandaCss()` from `@repo/pandacss/vite`
+  (`packages/@repo/pandacss`): `pandacss({cwd: <packages/sanity>, transform: true})` from
+  `@pandacss/vite`, pointed at the package's Panda project (`cwd` resolves the config, its
+  `include` globs and the codegen `outdir` there), and
+  `removeCascadeLayers(['reset', 'base', 'tokens', 'recipes', 'utilities'])` from
+  `@sanity/pandacss-tsdown-plugin/vite`, which gives the generated CSS the shape of `bundle.css`
+  (below). `@pandacss/vite` appends the generated CSS to the CSS module of the build that declares
+  Panda's layers, which is the one-line `@repo/pandacss/panda.css` with the
+  `@layer reset, base, tokens, recipes, utilities;` statement — the dev counterpart of the
+  `sanity/bundle.css` import the built package carries. Storybook's `.storybook/preview.tsx` and
+  `packages/sanity/test/setup/browser.ts` import it directly; a studio's `sanity.cli.ts`
+  (`studioPandaCss()`) and the viewer's `vite.config.ts` (the `entry` option) have the import
+  injected into their entry (`.sanity/runtime/app.js`, `src/main.tsx`) by a tiny transform plugin,
+  registered for dev only. A `sanity build` (and the viewer's build) resolves the built package
+  and its `bundle.css`, so nothing Panda runs there — which is also why a studio that installs
+  `sanity` from npm needs none of this: `bundle.css` is a plain stylesheet that Vite's built-in CSS
+  support loads. The CDN bundle in `@repo/package.bundle` builds the package for publishing and
+  keeps its own `pandacss()` call, `panda.css` and import plugin (it imports the stylesheet from
+  every library entry). The jsdom suites load no stylesheet: `sanity`'s registers `@pandacss/vite`
+  directly, with the same `cwd` and `transform: true`, and `@sanity/vision`'s registers
+  `sanityPandaCss()`; no jsdom test asserts on styles.
+- **No cascade layers.** Panda writes its rules into `@layer` blocks (`reset`, `base`, `tokens`,
+  `recipes`, `utilities`), and the studio's CSS ships without them: CSS outside any layer beats
+  every layered rule regardless of specificity, so a layered stylesheet loses its hover, focus and
+  selected states to any unlayered rule that also matches — styled-components output, a reset
+  like Tailwind's preflight, the studio's own `GlobalStyle` (the splash tests and the ui5 team's
+  write-up confirmed it). `cascadeLayers: false` removes the blocks and statements after
+  Lightning CSS has run and orders the rules the way the layers did (a layer's sublayers before
+  its own rules, unlayered rules last), so every selector stays as specific as Panda wrote it and
+  the studio's rules cascade like the vanilla-extract output did: by specificity, then source
+  order. The same pass runs on the dev stylesheets and the CDN bundle through
+  `removeCascadeLayers()`, which removes the named layers (and their sublayers) from every CSS
+  module after `@pandacss/vite` has filled `@repo/pandacss/panda.css` (the CDN bundle's own
+  `panda.css`), and leaves other layers alone — which is why that file declares Panda's default
+  layer names (how `@pandacss/vite` recognizes its root stylesheet) and still ends up without a
+  single `@layer`. Panda's `polyfill` option is
+  not an alternative: it emulates the layer order with `:not(#\#…)` selector chains that inflate
+  every rule's specificity. The studio declares no `@layer` statement of its own either: with
+  `bundle.css` unlayered and `@sanity/ui` ≥ 4.4.8 (the catalog version) shipping its static styles
+  unlayered too ([ui#3235](https://github.com/sanity-io/ui/pull/3235)), the only layer left on a
+  studio page is `ui5`'s `sui`, which unlayered rules beat whatever the order, so there is nothing
+  to order it against — the same situation as before the migration. What this means when
+  authoring: the studio's rules beat `@sanity/ui`'s on the same element by specificity and order
+  alone — a plain class beats a styled-components base rule that loads later only when it is more
+  specific, which is what the `&&` doubling is for.
+- **Atomic rules are ordered by value, not by declaration.** `bundle.css` holds each distinct
+  `property: value` pair once, grouped by property with the values sorted; a modifier class that
+  must override a base class on the same element doubles itself (`css({'&&': {opacity: 0.8}})`)
+  instead of relying on being declared later, and parent-state selectors key on data attributes
+  the parent renders (`'[data-change-bar-wrapper][data-focused] &'` in
+  `ElementWithChangeBar.css.ts`), never on a class that exists only to be targeted.
+
+### CSS modules
+
+Outside `packages/sanity`, components are styled with `*.module.css` files, and no workspace uses
+vanilla-extract. `@sanity/vision` compiles them with `@tsdown/css` (Lightning CSS), through the
+`css` option of its `tsdown.config.ts`, into `lib/bundle.css`; the test studio's are compiled by
+Vite.
+
+- **Every CSS module gets a generated, gitignored `X.module.css.d.ts` under its workspace's
+  `generated/` directory**, written by [css-modules-kit](https://github.com/mizdra/css-modules-kit)'s
+  codegen (`cmk`), and the typings are never committed. `pnpm css:types` regenerates them all: it
+  runs the `generate` script of `packages/@repo/css-modules-kit`, which chains one
+  `cmk --clean --project <workspace>` script per workspace with CSS modules (`generate:vision`,
+  `generate:test-studio`). `pnpm install` generates them (the package's `prepare` script),
+  `pnpm lint` and `pnpm lint:fix` regenerate them before oxlint type-checks, and vision's `build`
+  regenerates its own first (`prebuild: pnpm --filter @repo/css-modules-kit run generate:vision`,
+  before tsdown emits declarations), so a fresh clone, the editor and CI see them without a
+  checked-in copy. Keep a workspace's `prebuild` to its own `generate:<workspace>` script:
+  `cmk --clean` wipes the output directory, so two workspaces regenerating each other's typings
+  while turbo builds them in parallel would race. A new workspace with CSS modules gets a
+  `generate:<workspace>` script there (chained into `generate`) and the `tsconfig.json` settings:
+  the `*.module.css` files in `include` (cmk finds the modules through it; TypeScript skips
+  them), `rootDirs: [".", "generated"]` so `./X.module.css` resolves to its typings, and
+  `cmkOptions` (`enabled`, `container: true` because Lightning CSS exports container names along
+  with the classes and `@keyframes`, and `namedExports: true`). A misspelled `styles.x` then fails
+  `pnpm lint` with `TS2551 … Did you mean …?`. `@repo/css-modules-kit` exists because cmk needs
+  the TypeScript compiler API, which TypeScript 7 does not ship: it pins `typescript` to
+  `@typescript/typescript6`, like `@repo/typedoc`, and cmk resolves it as its peer from there.
+- **Import a CSS module as `import * as styles from './X.module.css'` or with named imports,
+  never as a default import.** The typings have no default export (`namedExports: true`), so a
+  default import is a type error; Lightning CSS can only see which classes a module reads through
+  a namespace or named import, which keeps the door open to dropping unused ones.
+- **Keep the type checker on the generated typings.** Neither workspace declares an ambient
+  `declare module '*.module.css'`, and nothing may add one: `/// <reference types="vite/client" />`
+  does (a default export that accepts any class name), and it hides typos. Without its typings, a
+  vision import fails with TS2307. The test studio's tsconfig includes all of `dev/` like the
+  other dev apps' do, which brings in `vite/client` from those that reference it
+  (`dev/embedded-studio`, for one), so a missing typing falls back to that declaration there; its
+  module has only a default export, so `styles.x` on a namespace import still fails the type
+  check. A `.module.css` import that fails with TS2307 (or TS2339 in the test studio) outside those
+  commands just means the typings have not been generated yet: run `pnpm css:types`. cmk's
+  TypeScript plugin and VS Code extension do nothing here, since the editor runs the TypeScript 7
+  language server (`typescript.experimental.useTsgo`), which does not load plugins; the generated
+  typings are what the editor sees too. oxfmt and oxlint skip the generated files, which carry
+  cmk's own `// @ts-nocheck` and formatting.
+- **Lightning CSS scopes more than classes, per file.** `@keyframes` and container names are
+  hashed and exported alongside the classes (the `cmkOptions` mirror that, and
+  `cssModules.test.ts` checks that the typings declare exactly what Lightning CSS exports), so keep
+  a `@container` query in the module that names the container. Custom properties are not scoped:
+  namespace them (`--vision-result-code-family`) and type the inline `style` that sets them
+  through an interface extending `CSSProperties`. Third-party class names go in `:global(…)`. A
+  value the code also uses (`GRAPH_METRICS`, which positions the result graph) reaches the CSS as
+  a custom property set from that constant, not as a copy. A class that extends another one
+  `composes` it, and exports both names, as Lightning CSS, Vite and `@tsdown/css` all join them.
+- **Do not list selectors that contain `:global()`.** With browser targets, Lightning CSS wraps
+  such a selector list in `:is()`, which gives every selector the specificity of the most
+  specific one. Repeat the rule instead.
+- **Global styles go in a plain `.css` file, with an `export {}` declaration next to it**
+  (`src/styles.css` and `styles.css.d.ts`). `@tsdown/css` drops a CSS module that is only
+  imported for its side effects, styles and all, and TypeScript 7 rejects a side-effect import it
+  cannot resolve (TS2882).
+- **Class names are `[content-hash]_[local]`** (`cssModulesPattern` from `@repo/css-modules-kit`),
+  so a release that changes a file's styles gets new names for them. Every Vite build that
+  compiles vision's sources uses Lightning CSS with the same pattern (`viteCssModules`): the test
+  studio under `sanity dev`, vision's vitest config, and its CDN bundle
+  (`createDefaultConfig({styles: 'css-modules'})` in `package.bundle.ts`). They render exactly the
+  names the package build ships. The test studio's own modules compile with the same settings
+  under `sanity dev` and with Vite's defaults (PostCSS) under `sanity build`: keep them to classes
+  and `composes`, which both scope alike.
+
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
 The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
@@ -925,24 +1079,30 @@ TypeScript 6 applies the augmentation in both cases. Workaround: put the side-ef
 a vitest setup file (registered via `test.setupFiles`) instead of the test file that uses the
 matchers — see `packages/@sanity/schema/test/setup.ts` and its `vitest.config.mts`.
 
-#### Vanilla-extract in jsdom tests
+#### Panda CSS and CSS modules in jsdom tests
 
-The `sanity` and `@sanity/vision` jsdom suites import
-[`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
-(`packages/sanity/test/setup/environment.ts`, and as a direct vitest `setupFiles` entry in
-`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips injecting real stylesheets
-into jsdom. Class name identifiers still resolve, but computed styles are not available.
+The static styles of `sanity` are [Panda CSS](https://panda-css.com) `css()` calls in `.css.ts`
+modules (see [Panda CSS](#panda-css) below). The `sanity` jsdom suite registers `@pandacss/vite`
+with `transform: true` (`packages/sanity/vitest.config.mts`), which rewrites those calls to the
+class names the package build ships; no stylesheet is loaded in jsdom, so class name identifiers
+resolve but computed styles are not available. `@sanity/vision`'s suite compiles its CSS modules
+with Lightning CSS and the pattern of the package build (`viteCssModules` and `test.css` in
+`packages/@sanity/vision/vitest.config.mts`), so its class names are the ones `lib/bundle.css`
+ships, and `src/cssModules.test.ts` checks that. The config drops the stylesheet Vitest would
+inject into the document (`cssModulesWithoutStyles()`), so the suite runs without styles like the
+`sanity` one; vision's stylesheet hides parts of the trees its tests query. Its tests also resolve
+`sanity` to source, whose `.css.ts` modules are Panda, so the config registers `sanityPandaCss()`
+from `@repo/pandacss/vite` for them, the way the dev studios do.
 
 Conventions that follow from this:
 
-- **Do not assert on vanilla-extract class names or computed styles in jsdom tests.** Assert on
+- **Do not assert on generated class names or computed styles in jsdom tests.** Assert on
   `data-testid` attributes instead. Visual/style behavior belongs in the vitest browser mode
-  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit) or the Playwright e2e tests, where
-  runtime styles stay enabled.
-- **Keep `vanillaExtractPlugin()` in the vitest configs.** The plugin's transform assigns file
-  scopes to `.css.ts` modules; without it any test that (transitively) imports a `.css.ts` file
-  throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
-  injection, not the transform.
+  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit, where `test/setup/browser.ts` loads
+  the generated stylesheet) or the Playwright e2e tests.
+- **A `.css.ts` module exports class name strings, nothing else renders.** A `css()` call outside
+  a `.css.ts` file is neither extracted nor rewritten (the Panda config only `include`s those
+  files), so it evaluates to the right class names at runtime but has no CSS behind them.
 
 #### @sanity/ui overlays stay mounted when closed
 
@@ -983,7 +1143,7 @@ Visual regression runs on Chromatic via `.github/workflows/chromatic.yml` from t
 Storybook stories, and the vitest browser-mode suite captured in place by `@chromatic-com/vitest`
 (every `*.browser.test.tsx` end state becomes a snapshot, no test changes). Stories are co-located
 with their source under `packages/**/src/**/__tests__` and cover states no browser test renders:
-authored migration sentinels for `ui-components` and vanilla-extract-migrated components, plus
+authored migration sentinels for `ui-components` and Panda-migrated components, plus
 harness stories built on the same `TestWrapper` mock studio. Browser tests keep their harness
 component inline (`function FooHarness()` in the test file); every `*Story.tsx` is a Storybook
 harness owned by a `*.stories.tsx`. Do not extract a browser test's harness into a `*Story.tsx`
@@ -1392,11 +1552,11 @@ No Docker, databases, or other local services are required for unit tests, lint,
   pnpm dlx skills list
   ```
 
-- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
+- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"` (the installed version differs between VM images — check `ls ~/.nvm/versions/node/`, e.g. `v22.23.3`).
 - **`pnpm build` can fail in the VM with `unable to spawn child process: Exec format error (os error 8)`.** Turbo itself starts (it prints its version and the task graph) but cannot spawn the per-package build, so every task fails within milliseconds. Reproducible on a clean `main` and independent of the Node version, so it is an environment artifact, not your change. Build through pnpm instead — `-r run` executes in topological order, same as turbo: `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`.
 - **Every `turbo run` (`pnpm build`, `pnpm test:exports`) appends a `turborepo-agent-rules` block to `AGENTS.md` when it detects an AI agent**, even when its tasks then fail with the spawn error above. The block is not part of your change: revert it with `git checkout -- AGENTS.md`. `pnpm test:exports` fails the same way, so after building through pnpm run its two packages directly: in `packages/@repo/test-dts-exports`, `node generate.mjs && pnpm exec oxfmt "test/fixtures/**"` regenerates the d.ts fixtures (no diff means the export surface is unchanged) and `pnpm exec vitest run` checks them; in `packages/@repo/test-exports`, `pnpm test` runs the ESM/CJS checks.
-- **Edits to vanilla-extract `.css.ts` files may not reach the browser in `sanity dev` bundledDev mode.** The JS module reloads with new class hashes while the injected stylesheet keeps the old rules, so styles silently stop applying (elements carry a class no rule matches). Restart `sanity dev` after changing `.css.ts` files rather than debugging the styles.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
+- **`pnpm install` skips the `prepare` scripts when `node_modules` is already up to date**, so the generated files they write can be missing or stale after switching branches on an existing install: the CSS module typings (`packages/@sanity/vision/generated` and `dev/test-studio/generated`; oxlint then reports TS2307 for vision's `*.module.css` imports) and the Panda `styled-system` directories. Run `pnpm css:types` (which `pnpm lint` also runs) and `pnpm --filter <package> run prepare` to regenerate them.
 - **Timezone-sensitive snapshots in `@sanity/validation`.** `test/dates.test.ts` snapshots render datetimes in `America/Los_Angeles`. The package Vitest config sets that timezone for its workers, including when run through the root suite.
 - **`isUsingLegacyHttp.test.ts` fails in the VM on any branch.** The "reuses one legacy protocol probe across callers and subscriptions" case resolves `[undefined, undefined, undefined]` instead of `[false, false, false]`. It reproduces on a clean detached `main` with main's own lockfile, and the `Unit tests` job is green on the same commit in CI, so treat it as an environment artifact like the timezone snapshots above rather than a regression in your change.
 - **`pnpm lint:workflows` needs zizmor installed first.** It is not in the image and is not an npm package: `pip3 install --user zizmor`, then run it with `PATH="$HOME/.local/bin:$PATH"`. Baseline before blaming your change — a clean `main` currently reports 11 high-severity findings with zizmor 1.30.1 (CI pins an older version), so compare finding counts with and without your change rather than requiring zero.

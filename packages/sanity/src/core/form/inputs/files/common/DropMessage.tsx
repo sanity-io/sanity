@@ -1,8 +1,8 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
-import {Inline, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Inline} from '@sanity/ui'
+import {Text, Box, Icon} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {resolveUploadAssetSources} from '../../../studio/uploads/resolveUploadAssetSources'
@@ -34,23 +34,19 @@ export function DropMessage(props: Props) {
       {acceptedFiles.length > 0 ? (
         <>
           <Inline gap={2}>
-            <Text>
-              <UploadIcon />
-            </Text>
+            <Icon icon={UploadIcon} style={{margin: '-0.4375rem'}} />
             {multiple
               ? t('inputs.files.common.drop-message.drop-to-upload-multi', {
                   count: acceptedFiles.length,
                 })
               : t('inputs.files.common.drop-message.drop-to-upload')}
-            <Text />
+            <Text as="div" trim={true} />
           </Inline>
           {rejectedFilesCount > 0 && (
             <Box marginTop={4}>
               <Inline gap={2}>
-                <Text muted size={1}>
-                  <AccessDeniedIcon />
-                </Text>
-                <Text muted size={1}>
+                <Icon muted size={1} icon={AccessDeniedIcon} style={{margin: '-0.375rem'}} />
+                <Text muted size={1} as="div" trim={true}>
                   {t('inputs.files.common.drop-message.drop-to-upload.rejected-file-message', {
                     count: rejectedFilesCount,
                   })}
@@ -61,10 +57,8 @@ export function DropMessage(props: Props) {
         </>
       ) : (
         <Inline data-testid="upload-target-drop-message-not-allowed" gap={2}>
-          <Text>
-            <AccessDeniedIcon />
-          </Text>
-          <Text>
+          <Icon icon={AccessDeniedIcon} style={{margin: '-0.4375rem'}} />
+          <Text as="div" trim={true}>
             {t('inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message', {
               count: hoveringFiles.length,
             })}

@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const statusDotPlaceholder = style({
+export const statusDotPlaceholder = css({
   width: '9px',
 })

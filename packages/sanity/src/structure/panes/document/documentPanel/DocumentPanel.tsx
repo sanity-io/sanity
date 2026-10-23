@@ -30,6 +30,7 @@ import {PaneContent} from '../../../components/pane/PaneContent'
 import {usePane} from '../../../components/pane/usePane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
@@ -404,6 +405,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     () => ({documentScrollElement: documentScrollElement}),
     [documentScrollElement],
   )
+
+  const inspectorPortalElements = {
+    ...parentPortal.elements,
+    [DOCUMENT_PANEL_PORTAL_ELEMENT]: showFormView ? portalElement : parentPortal.element,
+  }
+
   return (
     <PaneContent>
       <Flex height="100%">
@@ -455,11 +462,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         </div>
         {showInspector && (
           <BoundaryElementProvider element={rootElement}>
-            <DocumentInspectorPanel
-              documentId={documentId}
-              documentType={schemaType.name}
-              flex={1}
-            />
+            <PortalProvider
+              element={parentPortal.element}
+              __unstable_elements={inspectorPortalElements}
+            >
+              <DocumentInspectorPanel
+                documentId={documentId}
+                documentType={schemaType.name}
+                flex={1}
+              />
+            </PortalProvider>
           </BoundaryElementProvider>
         )}
       </Flex>
