@@ -1,13 +1,16 @@
 import {defineType} from '@sanity/types'
 
 import {createLazyComponent} from '../../../core/components/lazy/createLazyComponent'
+import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
 import {VideoField} from '../VideoInput/VideoField'
 
 // The plugin module is bundled into every studio whether or not `mediaLibrary.enabled` is set,
 // so the video input (player, upload handling) loads when a video field first renders instead.
 // The wrapper carries its own Suspense boundary, so the schema component works wherever an
 // input is rendered, not only under the form middleware's boundary.
-const StudioVideoInput = createLazyComponent(() => import('../VideoInput/StudioVideoInput.lazy'))
+const StudioVideoInput = createLazyComponent(() => import('../VideoInput/StudioVideoInput.lazy'), {
+  fallback: <LoadingBlock />,
+})
 
 export const video = defineType({
   name: 'sanity.video',
