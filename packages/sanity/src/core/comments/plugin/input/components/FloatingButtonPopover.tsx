@@ -1,25 +1,15 @@
 import {AddCommentIcon} from '@sanity/icons/AddComment'
 import {useClickOutsideEvent} from '@sanity/ui'
-import {motion, type Variants} from 'motion/react'
 import {useRef} from 'react'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {CommentDisabledIcon} from '../../../components/icons/CommentDisabledIcon'
 import {commentsLocaleNamespace} from '../../../i18n'
-
-const MotionPopover = styled(motion.create(Popover))`
-  user-select: none;
-`
+import {popover} from './FloatingButtonPopover.css'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
-
-const VARIANTS: Variants = {
-  hidden: {opacity: 0, y: -4},
-  visible: {opacity: 1, y: 0},
-}
 
 interface FloatingButtonPopoverProps {
   disabled: boolean
@@ -52,18 +42,16 @@ export function FloatingButtonPopover(props: FloatingButtonPopoverProps) {
   )
 
   return (
-    <MotionPopover
-      animate="visible"
+    <Popover
+      className={popover}
       content={content}
       contentEditable={false}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-      initial="hidden"
       open
       padding={1}
       placement="bottom"
       portal
       referenceElement={referenceElement}
-      variants={VARIANTS}
     />
   )
 }

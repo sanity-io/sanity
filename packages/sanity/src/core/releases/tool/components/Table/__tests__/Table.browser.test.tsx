@@ -186,4 +186,48 @@ describe('Table (virtualized)', () => {
     expect(buttonRect.left).toBeGreaterThanOrEqual(containerRect.left - 1)
     expect(container!.scrollWidth).toBeLessThanOrEqual(container!.clientWidth + 1)
   })
+
+  it('points the sort arrow down for descending and up for ascending', async () => {
+    const columns: Column<Datum>[] = [
+      {
+        id: 'title',
+        width: null,
+        sorting: true,
+        header: (props) => (
+          <Flex {...props.headerProps} flexBasis="0%" flexGrow={1} paddingY={3}>
+            <Headers.SortHeaderButton {...props} text="Title" />
+          </Flex>
+        ),
+        cell: ({cellProps, datum}) => (
+          <Flex alignItems="center" flexBasis="0%" flexGrow={1} paddingX={2} {...cellProps}>
+            <Text size={1} as="div" trim={true}>
+              {datum.title}
+            </Text>
+          </Flex>
+        ),
+      },
+    ]
+
+    const screen = await render(
+      <ThemeProvider theme={theme}>
+        <Table<Datum>
+          data={data}
+          emptyState="No documents"
+          rowId="id"
+          columnDefs={columns}
+          defaultSort={{column: 'title', direction: 'desc'}}
+          scrollContainerRef={null}
+        />
+      </ThemeProvider>,
+    )
+
+    const sortButton = screen.getByRole('button', {name: 'Title'})
+    const arrowRotation = () =>
+      getComputedStyle(sortButton.element().querySelector('[data-sanity-icon="arrow-up"]')!).rotate
+
+    await expect.poll(arrowRotation).toBe('180deg')
+
+    await sortButton.click()
+    await expect.poll(arrowRotation, {timeout: 2_000}).toBe('none')
+  })
 })

@@ -1,5 +1,5 @@
 import {Card, Spinner, Text} from '@sanity/ui'
-import {motion} from 'motion/react'
+import {clsx} from 'clsx'
 import {use, useCallback, useMemo} from 'react'
 import {Flex} from 'ui5'
 
@@ -14,10 +14,8 @@ import {getTargetDocumentId} from '../form/utils'
 import {TasksList} from '../list/TasksList'
 import {TasksUpsellPanel} from '../upsell/TasksUpsellPanel'
 import {TasksListTabs} from './TasksListTabs'
-import {contentFlex, headerStack, rootCard} from './TasksSidebar.css'
+import {contentFlex, headerStack, rootCard, rootCardFadeIn} from './TasksSidebar.css'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
-
-const MotionCard = motion.create(Card)
 
 /**
  * @internal
@@ -80,14 +78,12 @@ export function TasksStudioSidebar() {
   }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode, mode, t])
 
   return (
-    <MotionCard
-      className={rootCard}
+    <Card
+      className={clsx(rootCard, rootCardFadeIn)}
       display="flex"
       height="fill"
       flex={1}
       overflow="hidden"
-      initial={{opacity: 0}}
-      animate={{opacity: 1, transition: {duration: 0.2}}}
     >
       <Flex className={headerStack} gap={3} padding={3} flexDirection="column">
         <TasksSidebarHeader items={filteredList} />
@@ -108,6 +104,6 @@ export function TasksStudioSidebar() {
       >
         {content}
       </Flex>
-    </MotionCard>
+    </Card>
   )
 }

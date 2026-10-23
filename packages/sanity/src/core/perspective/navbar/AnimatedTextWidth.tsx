@@ -1,5 +1,10 @@
-import {motion} from 'motion/react'
-import {type ReactNode, useCallback, useLayoutEffect, useRef, useState} from 'react'
+import {type ReactNode, type TransitionEvent, useLayoutEffect, useRef, useState} from 'react'
+
+import {root, text as textClassName} from './AnimatedTextWidth.css'
+
+function isOwnWidthTransition(event: TransitionEvent<HTMLDivElement>) {
+  return event.target === event.currentTarget && event.propertyName === 'width'
+}
 
 /**
  * Animates width changes when label text changes, e.g. when switching perspectives or variants.
@@ -18,35 +23,25 @@ export function AnimatedTextWidth({children, text}: {children: ReactNode; text: 
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [text])
 
-  const onAnimationStart = useCallback(() => {
-    setIsAnimating(true)
-  }, [])
-  const onAnimationComplete = useCallback(() => {
-    setIsAnimating(false)
-  }, [])
+  const handleTransitionRun = (event: TransitionEvent<HTMLDivElement>) => {
+    if (isOwnWidthTransition(event)) setIsAnimating(true)
+  }
+  const handleTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
+    if (isOwnWidthTransition(event)) setIsAnimating(false)
+  }
 
   return (
-    <motion.div
-      style={{
-        display: 'inline-block',
-        width: containerWidth === null ? 'auto' : containerWidth,
-        overflow: isAnimating ? 'hidden' : 'visible',
-      }}
-      animate={{width: containerWidth || 'auto'}}
-      transition={{type: 'spring', bounce: 0, duration: 0.3}}
-      onAnimationStart={onAnimationStart}
-      onAnimationComplete={onAnimationComplete}
+    <div
+      className={root}
+      data-animating={isAnimating ? '' : undefined}
+      onTransitionCancel={handleTransitionEnd}
+      onTransitionEnd={handleTransitionEnd}
+      onTransitionRun={handleTransitionRun}
+      style={{width: containerWidth === null ? 'auto' : containerWidth}}
     >
-      <div
-        ref={textRef}
-        style={{
-          display: 'inline-block',
-          whiteSpace: 'nowrap',
-          verticalAlign: 'middle',
-        }}
-      >
+      <div className={textClassName} ref={textRef}>
         {children}
       </div>
-    </motion.div>
+    </div>
   )
 }

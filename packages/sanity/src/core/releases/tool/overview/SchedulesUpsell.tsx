@@ -1,4 +1,3 @@
-import {motion} from 'motion/react'
 import {Suspense, use, useCallback} from 'react'
 import {type ObservablePromise} from 'react-rx'
 import {styled} from 'styled-components'
@@ -12,6 +11,7 @@ import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {type CardinalityView} from './queryParamUtils'
+import {root} from './SchedulesUpsell.css'
 
 const Panel = styled(Container)`
   width: auto;
@@ -46,11 +46,7 @@ function UpsellIllustrationPanel({
       justifyContent={'center'}
       alignItems={'center'}
     >
-      <motion.div
-        initial={{opacity: 0}}
-        animate={{opacity: 1}}
-        transition={{duration: 0.3, ease: 'easeInOut'}}
-      >
+      <div className={root}>
         <Panel size={0} padding={4} paddingY={1}>
           <Flex alignItems={'center'} flexDirection="column">
             <ReleaseIllustration />
@@ -66,7 +62,7 @@ function UpsellIllustrationPanel({
             </Box>
           </Flex>
         </Panel>
-      </motion.div>
+      </div>
     </Flex>
   )
 }

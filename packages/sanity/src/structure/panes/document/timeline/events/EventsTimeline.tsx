@@ -1,5 +1,4 @@
 import {Spinner, Text} from '@sanity/ui'
-import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
@@ -17,6 +16,7 @@ import {Flex, Box} from 'ui5'
 
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
+import {childItem, expandingLoader} from './EventsTimeline.css'
 import {EventTimelineItem} from './EventTimelineItem'
 import {PublishedEventMenu} from './PublishedEventMenu'
 
@@ -31,19 +31,6 @@ interface TimelineProps {
    * The list needs a predefined max height for the scroller to work.
    */
   listMaxHeight?: string
-}
-
-const TimelineItemWrapper = motion.create(Box)
-const CHILDREN_ITEMS_VARIANTS: Variants = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-  },
-  exit: {
-    opacity: 0,
-  },
 }
 
 const ITEM_HEIGHT = 57
@@ -167,27 +154,20 @@ export const EventsTimeline = ({
       const isLastEvent = activeIndex === events.length - 1
       if (showExpandingLoader) {
         return (
-          <TimelineItemWrapper
-            animate={{opacity: 1}}
-            initial={{opacity: 0}}
-            transition={{duration: 0.2, delay: 0.2}}
-          >
+          <Box className={expandingLoader}>
             {/* We need this item to match the same height as the rest of the list items, which is 57px */}
             <Flex alignItems="center" justifyContent="center" style={{height: ITEM_HEIGHT}}>
               <Spinner />
             </Flex>
-          </TimelineItemWrapper>
+          </Box>
         )
       }
       return (
-        <TimelineItemWrapper
+        <Box
           key={event.timestamp}
+          className={'parentId' in event ? childItem : undefined}
           paddingBottom={1}
           paddingRight={1}
-          animate="animate"
-          exit="exit"
-          initial="initial"
-          variants={'parentId' in event ? CHILDREN_ITEMS_VARIANTS : undefined}
           paddingLeft={
             (isEditDocumentVersionEvent(event) || isCreateDocumentVersionEvent(event)) &&
             event.parentId &&
@@ -204,7 +184,7 @@ export const EventsTimeline = ({
           />
 
           {isLastEvent && hasMoreEvents && <LoadingBlock />}
-        </TimelineItemWrapper>
+        </Box>
       )
     },
     [

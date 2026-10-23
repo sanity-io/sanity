@@ -1,7 +1,6 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {motion, type Variants} from 'motion/react'
 import {useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
@@ -20,16 +19,9 @@ import {useTasks} from '../../../context/tasks/useTasks'
 import {type TaskDocument, type TaskTarget} from '../../../types'
 import {TasksAddonWorkspaceProvider} from '../addonWorkspace/TasksAddOnWorkspaceProvider'
 import {getTargetValue} from '../utils'
+import {formBuilderRoot} from './TasksFormBuilder.css'
 
-const VARIANTS: Variants = {
-  hidden: {opacity: 0},
-  visible: {
-    opacity: 1,
-    transition: {duration: 0.2, delay: 0.2},
-  },
-}
-
-const FormBuilderRoot = styled(motion.div)((props) => {
+const FormBuilderRoot = styled.div((props) => {
   const theme = getTheme_v2(props.theme)
 
   return `
@@ -102,7 +94,7 @@ const TasksFormBuilderInner = ({
       {isLoading ? (
         <LoadingBlock showText />
       ) : (
-        <FormBuilderRoot id="wrapper" initial="hidden" animate="visible" variants={VARIANTS}>
+        <FormBuilderRoot id="wrapper" className={formBuilderRoot}>
           <FormBuilder
             __internal_patchChannel={patchChannel}
             id="root"

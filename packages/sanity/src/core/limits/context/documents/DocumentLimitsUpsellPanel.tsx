@@ -1,10 +1,10 @@
-import {motion} from 'motion/react'
 import {Suspense, use, useCallback} from 'react'
 import {Container, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {FallbackErrorScreen} from '../../../studio/screens/FallbackErrorScreen'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
+import {root} from './DocumentLimitsUpsellPanel.css'
 import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
 
 interface DocumentLimitsUpsellPanelProps {
@@ -46,11 +46,7 @@ function DocumentLimitsUpsellPanelContent({error, onReset}: DocumentLimitsUpsell
 
   return (
     <Flex height="100%" justifyContent="center" alignItems="center" padding={4}>
-      <motion.div
-        initial={{opacity: 0, scale: 0.95}}
-        animate={{opacity: 1, scale: 1}}
-        transition={{duration: 0.2}}
-      >
+      <div className={root}>
         <Container size={0}>
           <UpsellPanel
             data={upsellData}
@@ -58,7 +54,7 @@ function DocumentLimitsUpsellPanelContent({error, onReset}: DocumentLimitsUpsell
             onSecondaryClick={handleSecondaryButtonClick}
           />
         </Container>
-      </motion.div>
+      </div>
     </Flex>
   )
 }

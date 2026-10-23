@@ -1,4 +1,4 @@
-import {css} from '#styled-system/css'
+import {css, keyframes} from '#styled-system/css'
 
 // Card also receives `flex={1}`; both rules set the same value, and Card never sets
 // `flex-direction`, so a plain class is enough.
@@ -17,5 +17,15 @@ export const contentFlex = css({
   '&&': {
     overflowY: 'scroll',
     overflowX: 'hidden',
+  },
+})
+
+const fadeIn = keyframes({
+  from: {opacity: 0},
+})
+
+export const rootCardFadeIn = css({
+  '@media (prefers-reduced-motion: no-preference)': {
+    animation: `${fadeIn} 0.2s ease-out`,
   },
 })

@@ -4,7 +4,6 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SanityDocument} from '@sanity/types'
 import {type BadgeTone, Card} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {motion} from 'motion/react'
 import {css, styled} from 'styled-components'
 import {Text, VStack, Box, Flex, Icon} from 'ui5'
 
@@ -13,6 +12,7 @@ import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {canvasLocaleNamespace} from '../../i18n'
 import {DocumentDiff} from './DocumentDiff/DocumentDiff'
+import {root} from './LinkToCanvasDiff.css'
 
 const ChipCard = styled(Card)<{tone: BadgeTone}>((props) => {
   const {color} = getTheme_v2(props.theme)
@@ -57,12 +57,7 @@ export function LinkToCanvasDiff({
   const {t} = useTranslation(canvasLocaleNamespace)
 
   return (
-    <motion.div
-      initial={{opacity: 0}}
-      animate={{opacity: 1}}
-      exit={{opacity: 0}}
-      transition={{duration: 0.3}}
-    >
+    <div className={root}>
       <Card tone="critical" padding={2} radius={3}>
         <Flex gap={2} alignItems="flex-start">
           <Box padding={1}>
@@ -102,6 +97,6 @@ export function LinkToCanvasDiff({
           </Box>
         )}
       </Card>
-    </motion.div>
+    </div>
   )
 }

@@ -1,5 +1,4 @@
 import {Card} from '@sanity/ui'
-import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {
   getCreatableVariantTarget,
@@ -15,6 +14,7 @@ import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
+import {root} from './DocumentStatusBar.css'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentStatusLine} from './DocumentStatusLine'
 import {RevisionStatusLine} from './RevisionStatusLine'
@@ -25,8 +25,6 @@ export interface DocumentStatusBarProps {
 }
 
 const CONTAINER_BREAKPOINT = 480 // px
-
-const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
@@ -93,10 +91,9 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   }
 
   return (
-    <AnimatedCard
+    <Card
       key={showingRevision ? 'revision' : 'published'}
-      initial={{opacity: 0.2}}
-      animate={{opacity: 1, transition: {duration: 0.3}}}
+      className={root}
       tone={showingRevision ? 'caution' : undefined}
       radius={3}
       ref={setRootElement}
@@ -137,6 +134,6 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           </Flex>
         </Flex>
       )}
-    </AnimatedCard>
+    </Card>
   )
 }

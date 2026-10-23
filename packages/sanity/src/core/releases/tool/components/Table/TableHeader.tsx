@@ -1,17 +1,15 @@
 import {ArrowUpIcon} from '@sanity/icons/ArrowUp'
 import {SearchIcon} from '@sanity/icons/Search'
 import {Card, TextInput} from '@sanity/ui'
-import {motion} from 'motion/react'
 import {type CSSProperties, useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Text, Box, Flex} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {sortIcon as sortIconClassName} from './TableHeader.css'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'
-
-const MotionIcon = motion.create(ArrowUpIcon)
 
 // Column headers are semibold so the header row reads clearly as a header, distinct from the row
 // content below — especially on sparse, single-column tables. For sortable headers (rendered as a
@@ -41,10 +39,9 @@ const SortHeaderButton = ({
   const {sort, setSortColumn} = useTableContext()
   const sortIcon = useMemo(
     () => (
-      <MotionIcon
-        initial={false}
-        animate={{rotate: sort?.direction === 'asc' ? 0 : 180}}
-        transition={{duration: 0.25, ease: 'easeInOut'}}
+      <ArrowUpIcon
+        className={sortIconClassName}
+        data-direction={sort?.direction === 'asc' ? 'asc' : 'desc'}
       />
     ),
     [sort?.direction],

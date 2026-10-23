@@ -1,7 +1,6 @@
 import {diffInput, wrap} from '@sanity/diff'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, Card, Spinner, Text} from '@sanity/ui'
-import {motion} from 'motion/react'
 import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
@@ -29,7 +28,7 @@ import {Flex, Box, Grid} from 'ui5'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
-import {spinnerContainer} from './EventsInspector.css'
+import {delayedFadeIn, spinnerContainer} from './EventsInspector.css'
 import {getPublishedComparisonBase, getPublishedSiblingScopeId} from './getPublishedComparisonBase'
 import {scroller} from './Scroller.css'
 
@@ -227,18 +226,14 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
           />
         </Grid>
         {diffLoading && (
-          <motion.div
-            animate={{opacity: 1}}
-            initial={{opacity: 0}}
-            transition={{delay: 0.2, duration: 0.2}}
-          >
+          <div className={delayedFadeIn}>
             <Flex className={spinnerContainer} justifyContent="center" alignItems="center" gap={2}>
               <Text muted size={0}>
                 {t('changes.loading-changes')}
               </Text>
               <Spinner size={0} />
             </Flex>
-          </motion.div>
+          </div>
         )}
       </Box>
 
@@ -297,13 +292,9 @@ function Content({
 
   if (!documentContext.rootDiff) {
     return (
-      <motion.div
-        animate={{opacity: 1}}
-        initial={{opacity: 0}}
-        transition={{delay: 0.2, duration: 0.2}}
-      >
+      <div className={delayedFadeIn}>
         <NoChanges />
-      </motion.div>
+      </div>
     )
   }
 
@@ -319,11 +310,7 @@ function Content({
 function SameRevisionSelected() {
   const {t} = useTranslation('')
   return (
-    <motion.div
-      animate={{opacity: 1}}
-      initial={{opacity: 0}}
-      transition={{delay: 0.2, duration: 0.2}}
-    >
+    <div className={delayedFadeIn}>
       <Flex gap={3} paddingTop={2} flexDirection="column">
         <Text size={1} weight="medium" as="h3">
           {t('changes.same-revision-selected-title')}
@@ -332,6 +319,6 @@ function SameRevisionSelected() {
           <Translate i18nKey="changes.same-revision-selected-description" t={t} />
         </Text>
       </Flex>
-    </motion.div>
+    </div>
   )
 }

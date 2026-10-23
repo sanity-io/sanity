@@ -11,7 +11,6 @@ import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {dequal as isEqual} from 'dequal/lite'
 import debounce from 'lodash-es/debounce.js'
-import {AnimatePresence} from 'motion/react'
 import {
   memo,
   type PropsWithChildren,
@@ -660,16 +659,14 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
             value={nextCommentValue}
           />
         )}
-        <AnimatePresence>
-          {showFloatingButton && !showFloatingInput && (
-            <FloatingButtonPopover
-              disabled={currentSelectionIsOverlapping || Boolean(addonDatasetError)}
-              onClick={handleSelectCurrentSelection}
-              onClickOutside={resetStates}
-              referenceElement={selectionReferenceElement}
-            />
-          )}
-        </AnimatePresence>
+        {showFloatingButton && !showFloatingInput && (
+          <FloatingButtonPopover
+            disabled={currentSelectionIsOverlapping || Boolean(addonDatasetError)}
+            onClick={handleSelectCurrentSelection}
+            onClickOutside={resetStates}
+            referenceElement={selectionReferenceElement}
+          />
+        )}
       </BoundaryElementProvider>
 
       <VStack ref={setRootElement} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>

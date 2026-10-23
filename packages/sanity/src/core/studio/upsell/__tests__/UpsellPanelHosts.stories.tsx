@@ -10,7 +10,7 @@ import {UpsellPanelHostsStory} from './UpsellPanelHostsStory'
 const meta = {
   title: 'Studio/Upsell Panel Hosts',
   component: UpsellPanelHostsStory,
-  // The document-limit and releases hosts fade in through motion/react
+  // The document-limit and releases hosts fade in through CSS animations
   // (200ms and 300ms); capture after both have settled.
   parameters: {chromatic: {delay: 400}},
 } satisfies Meta<typeof UpsellPanelHostsStory>

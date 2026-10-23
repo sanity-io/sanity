@@ -1,6 +1,5 @@
 import {type Path, type PortableTextBlock} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
-import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useMemo, useState} from 'react'
 import {Text, Box, Flex, VStack} from 'ui5'
 
@@ -29,17 +28,11 @@ import {EditedAt} from './TaskActivityEditedAt'
 import {TasksActivityCommentInput} from './TasksActivityCommentInput'
 import {TasksActivityCommentItem} from './TasksActivityCommentItem'
 import {TasksActivityCreatedAt} from './TasksActivityCreatedAt'
+import {activityStack} from './TasksActivityLog.css'
 import {TasksSubscribers} from './TasksSubscribers'
 import {type TaskCommentCreate, type TaskCommentNotification, type TaskCommentReply} from './types'
 
 const EMPTY_ARRAY: [] = []
-
-const VARIANTS: Variants = {
-  hidden: {opacity: 0, x: 0},
-  visible: {opacity: 1, x: 0},
-}
-
-const MotionStack = motion.create(VStack)
 
 interface TasksActivityLogProps {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
@@ -394,48 +387,43 @@ function TasksActivityLogFeed(props: TasksActivityLogFeedProps) {
 
         {loading && <LoadingBlock showText title="Loading activity" />}
 
-        <AnimatePresence>
-          {!loading && (
-            <MotionStack animate="visible" initial="hidden" gap={4} variants={VARIANTS}>
-              {value.createdByUser && (
-                <Flex paddingBottom={1} flexDirection="column">
-                  <TasksActivityCreatedAt
-                    createdAt={value.createdByUser}
-                    authorId={value.authorId}
-                  />
-                </Flex>
-              )}
+        {!loading && (
+          <VStack className={activityStack} gap={4}>
+            {value.createdByUser && (
+              <Flex paddingBottom={1} flexDirection="column">
+                <TasksActivityCreatedAt createdAt={value.createdByUser} authorId={value.authorId} />
+              </Flex>
+            )}
 
-              {currentUser && (
-                <Flex gap={4} marginTop={1} flexDirection="column">
-                  {activity.map((item) => {
-                    if (item._type === 'activity') {
-                      return <EditedAt key={item.timestamp} activity={item.payload} />
-                    }
+            {currentUser && (
+              <Flex gap={4} marginTop={1} flexDirection="column">
+                {activity.map((item) => {
+                  if (item._type === 'activity') {
+                    return <EditedAt key={item.timestamp} activity={item.payload} />
+                  }
 
-                    return (
-                      <TasksActivityCommentItem
-                        key={item.payload.id}
-                        commentId={item.payload.id}
-                        currentUser={currentUser}
-                        mentionOptions={mentionOptions}
-                        onCreateRetry={handleCommentCreateRetry}
-                        onDelete={handleDeleteCommentStart}
-                        onReply={handleCommentReply}
-                      />
-                    )
-                  })}
+                  return (
+                    <TasksActivityCommentItem
+                      key={item.payload.id}
+                      commentId={item.payload.id}
+                      currentUser={currentUser}
+                      mentionOptions={mentionOptions}
+                      onCreateRetry={handleCommentCreateRetry}
+                      onDelete={handleDeleteCommentStart}
+                      onReply={handleCommentReply}
+                    />
+                  )
+                })}
 
-                  <TasksActivityCommentInput
-                    currentUser={currentUser}
-                    mentionOptions={mentionOptions}
-                    onSubmit={handleCommentCreate}
-                  />
-                </Flex>
-              )}
-            </MotionStack>
-          )}
-        </AnimatePresence>
+                <TasksActivityCommentInput
+                  currentUser={currentUser}
+                  mentionOptions={mentionOptions}
+                  onSubmit={handleCommentCreate}
+                />
+              </Flex>
+            )}
+          </VStack>
+        )}
       </VStack>
     </>
   )

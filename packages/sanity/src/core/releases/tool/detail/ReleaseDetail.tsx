@@ -1,6 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card} from '@sanity/ui'
-import {motion} from 'motion/react'
 import {useEffect, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {Text, Box, Flex, VStack, Icon} from 'ui5'
@@ -19,12 +18,11 @@ import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
 import {ReleaseDashboardFooter} from './ReleaseDashboardFooter'
 import {ReleaseDashboardHeader} from './ReleaseDashboardHeader'
+import {errorCard} from './ReleaseDetail.css'
 import {ReleaseSummary} from './ReleaseSummary'
 import {useReleaseDocuments} from './useReleaseDocuments'
 
 export type ReleaseInspector = 'activity'
-const MotionCard = motion.create(Card)
-
 export function ReleaseDetail() {
   const router = useRouter()
   const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
@@ -64,13 +62,7 @@ export function ReleaseDetail() {
     if (bundleDocumentsError) {
       return (
         <Box padding={3}>
-          <MotionCard
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            tone="critical"
-            padding={4}
-            radius={4}
-          >
+          <Card className={errorCard} tone="critical" padding={4} radius={4}>
             <Flex gap={3}>
               <Icon
                 size={1}
@@ -87,7 +79,7 @@ export function ReleaseDetail() {
                 </Text>
               </VStack>
             </Flex>
-          </MotionCard>
+          </Card>
         </Box>
       )
     }

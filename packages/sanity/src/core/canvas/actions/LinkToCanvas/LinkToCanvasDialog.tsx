@@ -1,7 +1,6 @@
 import {type SanityDocument} from '@sanity/client'
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {Card} from '@sanity/ui'
-import {motion} from 'motion/react'
 import {useCallback, useId} from 'react'
 import {Text, Box} from 'ui5'
 
@@ -10,6 +9,7 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
+import {errorCard} from './LinkToCanvasDialog.css'
 import {LinkToCanvasDiff} from './LinkToCanvasDiff'
 import {useLinkToCanvas} from './useLinkToCanvas'
 
@@ -73,18 +73,13 @@ export const LinkToCanvasDialog = ({
           </Box>
         )}
         {(status === 'error' || status === 'missing-document-id') && (
-          <motion.div
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            exit={{opacity: 0}}
-            transition={{duration: 0.3}}
-          >
+          <div className={errorCard}>
             <Card border tone="critical" padding={4} radius={3}>
               <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                 {error || t('dialog.link-to-canvas.error')}
               </Text>
             </Card>
-          </motion.div>
+          </div>
         )}
         {status === 'diff' && response && (
           <LinkToCanvasDiff originalDocument={document} mappedDocument={response.mappedDocument} />

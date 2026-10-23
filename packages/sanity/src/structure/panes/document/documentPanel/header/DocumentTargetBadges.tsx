@@ -1,5 +1,4 @@
 import {Card, type BadgeTone} from '@sanity/ui'
-import {motion} from 'motion/react'
 import {memo, type RefAttributes, type SVGProps} from 'react'
 import {
   ReleaseAvatarIcon,
@@ -23,6 +22,7 @@ import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {isLiveEditEnabled} from '../../../../components/paneItem/helpers'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
+import {badgeWrapper} from './DocumentTargetBadges.css'
 import {
   getBadgeSystemDocument,
   getTargetBadgePerspective,
@@ -65,10 +65,6 @@ const TargetBadge = styled(Card)`
 `
 const BadgeContainer = styled(Flex)`
   user-select: none;
-  flex: none;
-`
-
-const BadgeMotionWrapper = styled(motion.div)`
   flex: none;
 `
 
@@ -162,7 +158,6 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
     document: getBadgeSystemDocument(targetDocumentState, displayed),
   })
   const isTargetMissing = isTargetBadgeMissing({isLiveEdit, state: targetDocumentState, bundle})
-  const badgeOpacity = isTargetMissing ? 0.5 : 1
   const selectedVariantBadge = getSelectedVariantFromState(targetDocumentState, selectedVariant)
   const perspectiveBadgeTone = getPerspectiveBadgeTone(badgePerspective)
 
@@ -179,7 +174,7 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
         gap={2}
         paddingRight={1}
       >
-        <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
+        <div className={badgeWrapper} data-target-missing={isTargetMissing ? '' : undefined}>
           <TargetBadge
             tone={perspectiveBadgeTone}
             radius={4}
@@ -190,13 +185,13 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
               tone={perspectiveBadgeTone as TextProps['tone']}
             />
           </TargetBadge>
-        </BadgeMotionWrapper>
+        </div>
         {selectedVariantBadge ? (
-          <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
+          <div className={badgeWrapper} data-target-missing={isTargetMissing ? '' : undefined}>
             <TargetBadge tone="suggest" radius={4} data-ui="DocumentTargetVariantBadge">
               <VariantBadgeLabel variant={selectedVariantBadge} />
             </TargetBadge>
-          </BadgeMotionWrapper>
+          </div>
         ) : null}
       </Flex>
     </Tooltip>
