@@ -11,7 +11,7 @@ import {StudioFeedbackDialog} from '../../../../feedback/components/StudioFeedba
 import {useFeedbackAvailable} from '../../../../feedback/hooks/useFeedbackAvailable'
 import {useFeedbackTelemetry} from '../../../../feedback/hooks/useFeedbackTelemetry'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {useRenderingContext} from '../../../../store/renderingContext/useRenderingContext'
+import {useIsInDashboard} from '../../../../store/renderingContext/useIsInDashboard'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {DiagnosticsDialog} from './DiagnosticsDialog'
@@ -28,9 +28,7 @@ const StyledMenu = styled(Menu)`
 
 export function ResourcesButton() {
   const {t} = useTranslation()
-  const renderingContext = useRenderingContext()
-  const isInDashboard =
-    renderingContext?.name === 'coreUi' || renderingContext?.name === 'messageBus'
+  const isInDashboard = useIsInDashboard()
   const feedbackAvailable = useFeedbackAvailable({dsn: STUDIO_DSN, skip: isInDashboard})
   const {userApplication, isLoading: isLoadingUserApplication} = useLiveUserApplication()
 

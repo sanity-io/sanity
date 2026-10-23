@@ -2,9 +2,10 @@ import {type ReleaseDocument} from '@sanity/client'
 import {Menu} from '@sanity/ui/menu'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
+import {stubMessageBusHost} from '../../../../../test/testUtils/stubMessageBusHost'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
@@ -22,6 +23,7 @@ import {
   useReleasesPermissionsMockReturnFalse,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
+import {useAgentBundles} from '../../../store/agent/useAgentBundles'
 import {ReleasesList} from '../ReleasesList'
 
 vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
@@ -42,6 +44,12 @@ vi.mock('../ViewContentReleasesMenuItem', () => ({
 
 vi.mock('../ScheduledDraftsMenuItem', () => ({
   ScheduledDraftsMenuItem: () => null,
+}))
+
+const NO_AGENT_BUNDLES = {bundles: [], loading: false}
+
+vi.mock('../../../store/agent/useAgentBundles', () => ({
+  useAgentBundles: vi.fn(() => NO_AGENT_BUNDLES),
 }))
 
 const handleOpenBundleDialog = vi.fn()
@@ -235,6 +243,60 @@ describe('ReleasesList', () => {
       )
       await flushMicrotasksThisIsACodeSmell()
       await waitFor(() => expect(screen.getByTestId('create-new-release-button')).toBeDisabled())
+    })
+  })
+
+  describe('proposed changes from the content agent', () => {
+    const agentBundle = {id: 'agent-abc123', applicationKey: 'content-agent'}
+
+    beforeEach(() => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease],
+      })
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+      vi.mocked(useAgentBundles).mockReturnValue({bundles: [agentBundle], loading: false})
+    })
+
+    afterEach(() => {
+      vi.mocked(useAgentBundles).mockReturnValue(NO_AGENT_BUNDLES)
+    })
+
+    async function renderReleasesList() {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            isRangeVisible={false}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+          />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+    }
+
+    it('lists the active bundle when studio is hosted by a message bus host', async () => {
+      stubMessageBusHost()
+
+      await renderReleasesList()
+
+      expect(screen.getByTestId('agent-bundle-menu-section')).toBeInTheDocument()
+      expect(screen.getByText('Proposed changes')).toBeInTheDocument()
+      expect(screen.getByText('active asap Release')).toBeInTheDocument()
+    })
+
+    it('hides the bundle and its divider in a standalone studio', async () => {
+      await renderReleasesList()
+
+      expect(screen.queryByTestId('agent-bundle-menu-section')).not.toBeInTheDocument()
+      expect(screen.queryByText('Proposed changes')).not.toBeInTheDocument()
+      expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
+      expect(screen.getByText('active asap Release')).toBeInTheDocument()
     })
   })
 })

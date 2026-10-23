@@ -9,6 +9,7 @@ import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
+import {useIsInDashboard} from '../../store/renderingContext/useIsInDashboard'
 import {useWorkspace} from '../../studio/workspace'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
@@ -58,6 +59,9 @@ export function ReleasesList({
 }): JSX.Element {
   const {loading, data: allReleases} = useActiveReleases()
   const {bundles: agentBundles} = useAgentBundles()
+  // The Content Agent's proposed changes belong to the host that runs the agent (the Dashboard's
+  // Workbench), so a standalone Studio never lists them, even when the user has an active bundle.
+  const agentBundle = useIsInDashboard() ? agentBundles[0] : undefined
 
   const releases = useMemo(
     () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
@@ -142,10 +146,10 @@ export function ReleasesList({
           )}
         </VStack>
       </StickyTopCard>
-      {agentBundles[0] && (
-        <Card borderBottom padding={1}>
+      {agentBundle && (
+        <Card borderBottom padding={1} data-testid="agent-bundle-menu-section">
           <VStack gap={1}>
-            <AgentBundleMenuItem bundle={agentBundles[0]} />
+            <AgentBundleMenuItem bundle={agentBundle} />
           </VStack>
         </Card>
       )}
