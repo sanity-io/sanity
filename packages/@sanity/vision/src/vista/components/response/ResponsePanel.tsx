@@ -1,9 +1,7 @@
-import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
 import {JsonIcon} from '@sanity/icons/Json'
-import {Badge, Button, Card, Label, Tab, TabList, Text} from '@sanity/ui'
+import {Badge, Card, Label, Tab, TabList, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {useSelector} from '@xstate/react'
 import {type ReactNode, useCallback, useEffect, useMemo} from 'react'
 import {useTranslation} from 'sanity'
@@ -41,6 +39,7 @@ import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {TabDrawerPortal} from '../TabDrawerPortal'
 import * as styles from '../vista.module.css'
+import {CopyResultButton} from './CopyResultButton'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
 import {DownloadButton} from './DownloadButton'
 import {ExplainTab} from './ExplainTab'
@@ -164,7 +163,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
   )
   const copyToClipboard = useCopyToClipboard()
   const copyResult = useCallback(
-    () => void copyToClipboard(JSON.stringify(result, null, 2), t('vista.result.copied')),
+    () => copyToClipboard(JSON.stringify(result, null, 2), t('vista.result.copied')),
     [copyToClipboard, result, t],
   )
   // Text is copied as it is (an ID, a slug) and everything else as indented JSON
@@ -342,6 +341,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
       >
         <Card
           className={styles.resultContainer}
+          // The shown result stays while a newer fetch is in flight, and dims if that takes long
+          data-refreshing={hasResult && status === 'fetching'}
           data-testid="vista-result"
           tone={status === 'failed' ? 'critical' : 'default'}
         >
@@ -351,7 +352,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 {t('result.label')}
               </Label>
               {isLive && (
-                <Badge fontSize={0} tone="positive">
+                <Badge className={styles.resultEnter} fontSize={0} tone="positive">
                   {t('vista.live.active')}
                 </Badge>
               )}
@@ -387,53 +388,47 @@ export function ResponsePanel(props: ResponsePanelProps) {
                       selected={resultView === 'graph'}
                     />
                   </TabList>
-                  <Tooltip
-                    animate
-                    content={<Text size={1}>{t('vista.result.copy')}</Text>}
-                    placement="bottom"
-                    portal
-                  >
-                    <Button
-                      aria-label={t('vista.result.copy')}
-                      data-testid="vista-copy-result"
-                      fontSize={1}
-                      icon={CopyIcon}
-                      mode="bleed"
-                      onClick={copyResult}
-                      padding={2}
-                    />
-                  </Tooltip>
+                  <CopyResultButton label={t('vista.result.copy')} onCopy={copyResult} />
                 </Flex>
               )}
             </Flex>
           </Box>
           {hasResult && resultView === 'json' ? (
-            <ResultJson id="vista-result-content" value={result} />
+            <ResultJson className={styles.resultView} id="vista-result-content" value={result} />
           ) : hasResult && resultView === 'graph' ? (
-            <ResultGraph copy={copyValue} id="vista-result-content" value={result} />
+            <ResultGraph
+              className={styles.resultView}
+              copy={copyValue}
+              id="vista-result-content"
+              value={result}
+            />
           ) : (
             <Box id="vista-result-content" padding={3} paddingTop={5}>
               {status === 'fetching' && (
-                <Box marginTop={3}>
+                <Box className={styles.resultSpinner} marginTop={3}>
                   <DelayedSpinner />
                 </Box>
               )}
               {status === 'failed' && error && (
-                <QueryErrorDialog
-                  apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
-                  error={error}
-                  perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
-                  variant={
-                    failedConfig
-                      ? typeof failedConfig.variant === 'string'
-                        ? failedConfig.variant
-                        : undefined
-                      : resolved.variant
-                  }
-                />
+                <div className={styles.resultEnter}>
+                  <QueryErrorDialog
+                    apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
+                    error={error}
+                    perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
+                    variant={
+                      failedConfig
+                        ? typeof failedConfig.variant === 'string'
+                          ? failedConfig.variant
+                          : undefined
+                        : resolved.variant
+                    }
+                  />
+                </div>
               )}
               {hasResult && resultView === 'tree' && (
-                <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
+                <div className={styles.resultView}>
+                  <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
+                </div>
               )}
               {status === 'idle' && (
                 <Text muted size={1}>
