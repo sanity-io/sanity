@@ -1,4 +1,4 @@
-import {act, cleanup, fireEvent, render, screen} from '@testing-library/react'
+import {act, cleanup, fireEvent, render, renderHook, screen} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useCopyToClipboard} from './useCopyToClipboard'
@@ -92,5 +92,12 @@ describe('useCopyToClipboard', () => {
 
     expect(execCommand).toHaveBeenCalledWith('copy')
     expect(document.activeElement).toBe(document.body)
+  })
+
+  it('resolves whether the text was copied', async () => {
+    const {result} = renderHook(() => useCopyToClipboard())
+    await expect(result.current('the text', 'Copied')).resolves.toBe(true)
+    execCommand.mockReturnValue(false)
+    await expect(result.current('the text', 'Copied')).resolves.toBe(false)
   })
 })
