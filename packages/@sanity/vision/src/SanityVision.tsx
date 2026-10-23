@@ -6,8 +6,8 @@ import {VisionContainer} from './containers/VisionContainer'
 import {VisionErrorBoundary} from './containers/VisionErrorBoundary'
 import {type VisionConfig} from './types'
 
-// The redesign (`./vista`) is switched off for everyone, whatever `beta.redesign.enabled` says:
-// its `@sanity-labs/groq-wasm` dependency breaks in some browsers. Nothing outside `./vista` may
+// The redesign (`./redesign`) is switched off for everyone, whatever `beta.redesign.enabled` says:
+// its `@sanity-labs/groq-wasm` dependency breaks in some browsers. Nothing outside `./redesign` may
 // import from it, so neither the redesign nor the WebAssembly module end up in the bundle. To
 // restore it, bring back the experience switch from #14894 here and in `SanityVision.test.tsx`.
 
