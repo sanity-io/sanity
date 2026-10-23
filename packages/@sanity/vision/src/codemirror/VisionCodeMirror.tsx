@@ -1,17 +1,15 @@
+import {historyField} from '@codemirror/commands'
 import {type Extension} from '@codemirror/state'
-import {type Command} from '@codemirror/view'
+import {type Command, type EditorView} from '@codemirror/view'
 import {rem, useTheme} from '@sanity/ui'
-import CodeMirror, {
-  EditorSelection,
-  type ReactCodeMirrorProps,
-  type ReactCodeMirrorRef,
-} from '@uiw/react-codemirror'
+import CodeMirror, {EditorSelection, type ReactCodeMirrorProps} from '@uiw/react-codemirror'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
   type ReactNode,
   useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
   type RefAttributes,
@@ -72,6 +70,15 @@ export interface VisionCodeMirrorHandle {
   getVisibleColumns: (lines?: number) => number | undefined
 }
 
+/** The state fields that travel with the document and selection when a hidden view is rebuilt */
+const HIDDEN_STATE_FIELDS = {history: historyField}
+
+/** What a view that is destroyed because the tool is hidden leaves for the view that replaces it */
+interface HiddenView {
+  state: NonNullable<ReactCodeMirrorProps['initialState']>
+  scroll: ReturnType<EditorView['scrollSnapshot']>
+}
+
 export function VisionCodeMirror({
   ref,
   onChange,
@@ -110,7 +117,6 @@ export function VisionCodeMirror({
     setSeenInitialValue(initialValueProp)
     if (!hasView) setValue(initialValueProp)
   }
-  const handleCreateEditor = useCallback(() => setHasView(true), [])
   useEffect(() => {
     // The view is destroyed by the child's effect cleanups, which run along with this one
     return () => setHasView(false)
@@ -125,12 +131,43 @@ export function VisionCodeMirror({
   )
   const sanityTheme = useTheme()
   const theme = useCodemirrorTheme(sanityTheme)
-  const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
+  const viewRef = useRef<EditorView | null>(null)
+
+  // The view that replaces a hidden one gets its selection, undo history and scroll position
+  // back. The snapshot is taken in a layout effect cleanup: on hide those run before the boundary
+  // applies `display: none` and before the passive cleanup that destroys the view, so the editor
+  // is still laid out. The state goes through the library's `initialState`, which rebuilds it
+  // with the extensions current at that time (a theme or extension change while hidden applies
+  // on reveal); the scroll snapshot is dispatched once the new view exists. The snapshot only
+  // applies while it still describes the document: once `value` has moved on without a view (an
+  // `initialValue` that changed while hidden), the new view shows that document from the start.
+  const [hidden, setHidden] = useState<HiddenView | undefined>(undefined)
+  const restored = hidden?.state.json.doc === value ? hidden : undefined
+  useLayoutEffect(() => {
+    return () => {
+      const view = viewRef.current
+      if (view) {
+        setHidden({
+          state: {json: view.state.toJSON(HIDDEN_STATE_FIELDS), fields: HIDDEN_STATE_FIELDS},
+          scroll: view.scrollSnapshot(),
+        })
+        viewRef.current = null
+      }
+    }
+  }, [])
+  const handleCreateEditor = useCallback(
+    (view: EditorView) => {
+      viewRef.current = view
+      setHasView(true)
+      if (restored) view.dispatch({effects: restored.scroll})
+    },
+    [restored],
+  )
 
   const resetEditorContent = useCallback((newContent: string) => {
     // Mirrored first, so a call made while there is no view still reaches the next one
     setValue(newContent)
-    const editorView = codeMirrorRef.current?.view
+    const editorView = viewRef.current
     if (!editorView) return
 
     const currentDoc = editorView.state.doc.toString()
@@ -148,18 +185,18 @@ export function VisionCodeMirror({
 
   const applyChanges = useCallback(
     (changes: readonly {from: number; to: number; insert: string}[]) => {
-      codeMirrorRef.current?.view?.dispatch({changes: [...changes], userEvent: 'input'})
+      viewRef.current?.dispatch({changes: [...changes], userEvent: 'input'})
     },
     [],
   )
 
   const runCommand = useCallback((command: Command) => {
-    const editorView = codeMirrorRef.current?.view
+    const editorView = viewRef.current
     return editorView ? command(editorView) : false
   }, [])
 
   const selectRange = useCallback((from: number, to: number) => {
-    const editorView = codeMirrorRef.current?.view
+    const editorView = viewRef.current
     if (!editorView) return
 
     const length = editorView.state.doc.length
@@ -171,7 +208,7 @@ export function VisionCodeMirror({
   }, [])
 
   const getVisibleColumnsOfEditor = useCallback((lines?: number) => {
-    const editorView = codeMirrorRef.current?.view
+    const editorView = viewRef.current
     return editorView ? getVisibleColumns(editorView, {lines}) : undefined
   }, [])
 
@@ -190,13 +227,13 @@ export function VisionCodeMirror({
   return (
     <EditorRoot autoHeight={autoHeight} underHeader={underHeader}>
       <CodeMirror
-        ref={codeMirrorRef}
         basicSetup={false}
         theme={theme}
         extensions={extensions}
         value={value}
         onChange={handleChange}
         onCreateEditor={handleCreateEditor}
+        initialState={restored?.state}
       />
     </EditorRoot>
   )
