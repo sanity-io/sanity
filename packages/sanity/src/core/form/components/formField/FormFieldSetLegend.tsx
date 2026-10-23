@@ -2,7 +2,7 @@ import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
 import {rem, type Theme} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {focusRingStyle} from './styles'
 
@@ -92,13 +92,12 @@ export const FormFieldSetLegend = memo(function FormFieldSetLegend(props: FormFi
     <Root>
       <ToggleButton type="button" onClick={onClick}>
         <ToggleIconBox>
-          <Text muted size={1} as="div" trim={true}>
-            <ToggleArrowRightIcon
-              style={{
-                transform: `rotate(${collapsed ? '0' : '90deg'}) translate3d(0, 0, 0)`,
-              }}
-            />
-          </Text>
+          <Icon
+            muted
+            size={1}
+            icon={<ToggleArrowRightIcon />}
+            style={{transform: `rotate(${collapsed ? '0' : '90deg'}) translate3d(0, 0, 0)`}}
+          />
         </ToggleIconBox>
 
         {text}

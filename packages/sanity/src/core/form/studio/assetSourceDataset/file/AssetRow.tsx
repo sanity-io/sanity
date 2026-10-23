@@ -448,7 +448,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </CustomFlex>
         <CustomFlex alignItems="center">
           <Box>
-            <TypeText size={1} muted truncate={1} as="div" trim={true}>
+            <TypeText size={1} muted truncate={1} forwardedAs="div" trim={true}>
               {formattedMimeType}
             </TypeText>
           </Box>

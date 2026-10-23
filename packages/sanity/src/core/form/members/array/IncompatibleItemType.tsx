@@ -5,7 +5,7 @@ import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Text, VStack, Flex, Box} from 'ui5'
+import {Text, VStack, Flex, Box, Icon} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -74,7 +74,8 @@ export function IncompatibleItemType(props: Props) {
             </Text>
             <Box>
               <Text size={1} as="div" trim={true}>
-                <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
+                <Icon size={1} icon={<BulbOutlineIcon />} style={{margin: '-0.375rem'}} />{' '}
+                {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
             <VStack gap={2}>
@@ -107,9 +108,7 @@ export function IncompatibleItemType(props: Props) {
       >
         <Flex alignItems="center">
           <Box marginRight={3}>
-            <Text as="div" trim={true}>
-              <UnknownIcon />
-            </Text>
+            <Icon icon={<UnknownIcon />} style={{margin: '-0.4375rem'}} />
           </Box>
 
           <Box flexBasis="0%" flexGrow={1}>

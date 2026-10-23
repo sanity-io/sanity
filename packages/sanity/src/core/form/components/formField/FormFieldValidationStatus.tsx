@@ -1,6 +1,6 @@
 import {type FormNodeValidation} from '@sanity/types'
 import {type Placement} from '@sanity/ui'
-import {Text, Box, Flex, VStack, type TextProps} from 'ui5'
+import {Text, Box, Flex, VStack, type TextProps, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
@@ -58,9 +58,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       fallbackPlacements={['bottom', 'right', 'left']}
     >
       <div className={statusIconWrapper}>
-        <Text size={fontSize} weight="medium" as="div" trim={true}>
-          <StatusIcon status={status} />
-        </Text>
+        <Icon size={fontSize} icon={<StatusIcon status={status} />} />
       </div>
     </Tooltip>
   )
@@ -72,9 +70,11 @@ function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) 
   return (
     <Flex>
       <Box marginRight={2}>
-        <Text size={1} weight="medium" as="div" trim={true}>
-          <StatusIcon status={validation.level} />
-        </Text>
+        <Icon
+          size={1}
+          icon={<StatusIcon status={validation.level} />}
+          style={{margin: '-0.375rem'}}
+        />
       </Box>
       <Box flexBasis="0%" flexGrow={1}>
         <Text size={1} as="div" trim={true}>
