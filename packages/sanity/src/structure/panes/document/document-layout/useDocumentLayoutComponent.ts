@@ -1,6 +1,7 @@
 import {type ComponentType} from 'react'
-import {type DocumentLayoutProps, useMiddlewareComponents} from 'sanity'
 
+import {useMiddlewareComponents} from '../../../../core/config/components/useMiddlewareComponents'
+import {type DocumentLayoutProps} from '../../../../core/config/types'
 import {DocumentLayout} from './DocumentLayout'
 import {pickDocumentLayoutComponent} from './pickDocumentLayoutComponent'
 

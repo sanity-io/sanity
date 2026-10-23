@@ -1,7 +1,7 @@
 import {type PluginPayload} from '@sanity/media-library-types'
 import {useMemo} from 'react'
-import {encodeJsonParams} from 'sanity/router'
 
+import {encodeJsonParams} from '../../../../../router/utils/jsonParamsEncoding'
 import {useMediaLibraryIds} from './useMediaLibraryIds'
 import {useSanityMediaLibraryConfig} from './useSanityMediaLibraryConfig'
 

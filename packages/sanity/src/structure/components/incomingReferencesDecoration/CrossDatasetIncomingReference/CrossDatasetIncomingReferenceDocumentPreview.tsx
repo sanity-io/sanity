@@ -1,6 +1,8 @@
-import {CrossDatasetReferencePreview, DashboardLink, PreviewCard} from 'sanity'
 import {Flex, Box} from 'ui5'
 
+import {DashboardLink} from '../../../../core/components/DashboardLink'
+import {PreviewCard} from '../../../../core/components/previewCard/PreviewCard'
+import {CrossDatasetReferencePreview} from '../../../../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 import {type CrossDatasetIncomingReference} from '../types'
 import {type CrossDatasetIncomingReferenceDocument} from './getCrossDatasetIncomingReferences'
 

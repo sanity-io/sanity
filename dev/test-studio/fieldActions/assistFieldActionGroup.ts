@@ -1,6 +1,6 @@
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {useMemo} from 'react'
-import {defineDocumentFieldAction} from 'sanity'
+import {defineDocumentFieldAction} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {defineActionGroup, defineActionItem} from './define'
 import {PrivateIcon} from './PrivateIcon'
