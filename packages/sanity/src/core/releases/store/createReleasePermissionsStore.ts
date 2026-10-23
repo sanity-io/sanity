@@ -1,18 +1,7 @@
 import {type SingleActionResult} from '@sanity/client'
 
-import {isErrorWithDetails} from '../../error/types/isErrorWithDetails'
+import {isInsufficientPermissionsError} from '../../variants/store/variantActionErrors'
 import {type useReleasePermissionsValue} from './useReleasePermissions'
-
-type ReleasePermissionError = {details: {type: 'insufficientPermissionsError'}}
-
-/**
- * Checks if the error is a permission error
- *
- * @param error - the error to check
- * @returns true if the error is a permission error
- */
-const isReleasePermissionError = (error: unknown): error is ReleasePermissionError =>
-  isErrorWithDetails(error) && error.details?.type === 'insufficientPermissionsError'
 
 const DRY_RUN_OPTIONS = {dryRun: true, skipCrossDatasetReferenceValidation: true}
 
@@ -24,7 +13,7 @@ async function dryRun(
     await action(...args, DRY_RUN_OPTIONS)
     return true
   } catch (error) {
-    return !isReleasePermissionError(error)
+    return !isInsufficientPermissionsError(error)
   }
 }
 

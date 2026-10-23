@@ -3,6 +3,12 @@ import {describe, expect, it, vi} from 'vitest'
 import {createReleasePermissionsStore} from '../createReleasePermissionsStore'
 
 const permissionError = {details: {type: 'insufficientPermissionsError'}}
+const nestedPermissionError = {
+  details: {
+    type: 'mutationError',
+    items: [{index: 0, error: {type: 'insufficientPermissionsError'}}],
+  },
+}
 
 describe('useReleasePermissions', () => {
   describe('when content release feature is enabled', () => {
@@ -27,15 +33,21 @@ describe('useReleasePermissions', () => {
       expect(store.permissions).toEqual({[mockAction.name]: true})
     })
 
-    it('should return false every time for a permission error without re-running the action', async () => {
-      const mockAction = vi.fn().mockRejectedValue(permissionError)
-      const store = createReleasePermissionsStore(true)
+    it.each([
+      ['a top-level permission error', permissionError],
+      ['a nested mutation error item permission error', nestedPermissionError],
+    ])(
+      'should return false every time for %s without re-running the action',
+      async (_description, rejection) => {
+        const mockAction = vi.fn().mockRejectedValue(rejection)
+        const store = createReleasePermissionsStore(true)
 
-      expect(await store.checkWithPermissionGuard(mockAction)).toBe(false)
-      expect(await store.checkWithPermissionGuard(mockAction)).toBe(false)
-      expect(mockAction).toHaveBeenCalledTimes(1)
-      expect(store.permissions).toEqual({[mockAction.name]: false})
-    })
+        expect(await store.checkWithPermissionGuard(mockAction)).toBe(false)
+        expect(await store.checkWithPermissionGuard(mockAction)).toBe(false)
+        expect(mockAction).toHaveBeenCalledTimes(1)
+        expect(store.permissions).toEqual({[mockAction.name]: false})
+      },
+    )
 
     it('should share one dry run between concurrent calls', async () => {
       const mockAction = vi.fn().mockResolvedValue(undefined)
