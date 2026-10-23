@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const documentGroupPickerMenuPopover = style({
+export const documentGroupPickerMenuPopover = css({
   display: 'flex',
   flexDirection: 'column',
   inlineSize: 'min(calc(var(--container-0) * 1.5), calc(100vw - (var(--space-3) * 2)))',
