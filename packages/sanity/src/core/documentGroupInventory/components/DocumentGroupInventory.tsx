@@ -18,7 +18,6 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {Text, VStack} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -66,7 +65,6 @@ import {DocumentGroupSet} from './DocumentGroupSet'
 import {Footer} from './Footer'
 import {Header} from './Header'
 import {resolveManageVersionsCreateBase} from './resolveManageVersionsCreateBase'
-import {TextButton} from './TextButton'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 
@@ -463,6 +461,8 @@ const Select: ComponentType<{
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
 }> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
+  const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
+  const isLocked = useSelector(machine, (snapshot) => snapshot.matches('locked'))
 
   const hasFilterString = useSelector(
     machine,
@@ -474,60 +474,57 @@ const Select: ComponentType<{
     ({context}) => context.filterMatchingVariantIds,
   )
 
-  // Selection is refused outright in read-only mode; while a deletion is in
-  // flight the selection is only frozen, so the checkboxes stay rendered.
-  const isSelectable = useSelector(machine, ({context}) => !context.readOnly)
-
   return (
-    <VStack gap={5}>
-      {sets.map((set) => (
-        <DocumentGroupSet
-          key={set.key}
-          name={set.name}
-          headerActions={
-            isSelectable ? (
-              <TextButton
-                onClick={() => {
-                  set.variants.forEach((variant) =>
-                    machine.send({type: 'selection.add', variantId: variant.id}),
-                  )
-                }}
-              >
-                {/* These strings will be removed in the next iteration, so we've skipped internationalisation. */}
-                <Text size={1} as="div" trim={true}>{`Select all ${set.variants.length}`}</Text>
-              </TextButton>
-            ) : undefined
-          }
-        >
-          {set.variants
-            .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
-            // The version context menu is a hook, so the two rows have to be
-            // separate components rather than one row that skips the actions.
-            .map((variant) =>
-              readOnly ? (
-                <ReadOnlyVariantRow
-                  key={variant.id}
-                  variant={variant}
-                  inventoryRef={inventoryRef}
-                  onSelect={onSelect}
-                  isSelected={selectedId === variant.id}
-                />
-              ) : (
-                <ManagedVariantRow
-                  key={variant.id}
-                  variant={variant}
-                  machine={machine}
-                  inventoryRef={inventoryRef}
-                  documentType={documentType}
-                  onSelect={onSelect}
-                  isSelected={selectedId === variant.id}
-                  perspectiveList={perspectiveList}
-                />
-              ),
-            )}
-        </DocumentGroupSet>
-      ))}
-    </VStack>
+    <>
+      {sets.map((set) => {
+        const variantIds = set.variants.map(({id}) => id)
+
+        return (
+          <DocumentGroupSet
+            key={set.key}
+            name={set.name}
+            bundle={set.bundle}
+            readOnly={readOnly}
+            locked={isLocked}
+            selectedIds={selectedIds}
+            checked={variantIds.length !== 0 && variantIds.every((id) => selectedIds.has(id))}
+            onCheckedChange={(checked) =>
+              machine.send({
+                type: checked ? 'selection.addMany' : 'selection.removeMany',
+                variantIds,
+              })
+            }
+          >
+            {set.variants
+              .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
+              // The version context menu is a hook, so the two rows have to be
+              // separate components rather than one row that skips the actions.
+              .map((variant) =>
+                readOnly ? (
+                  <ReadOnlyVariantRow
+                    key={variant.id}
+                    variant={variant}
+                    inventoryRef={inventoryRef}
+                    onSelect={onSelect}
+                    isSelected={selectedId === variant.id}
+                  />
+                ) : (
+                  <ManagedVariantRow
+                    key={variant.id}
+                    variant={variant}
+                    machine={machine}
+                    inventoryRef={inventoryRef}
+                    documentType={documentType}
+                    onSelect={onSelect}
+                    isSelected={selectedId === variant.id}
+                    perspectiveList={perspectiveList}
+                  />
+                ),
+              )}
+          </DocumentGroupSet>
+        )
+      })}
+    </>
   )
 }
 
@@ -631,6 +628,7 @@ const ManagedVariantRow: ComponentType<{
         onPrimaryAction={() => onSelect(document)}
         leading={
           <VariantCheckbox
+            data-visible={selectedIds.size !== 0}
             checked={selectedIds.has(variant.id)}
             readOnly={isLocked}
             onChange={() => {

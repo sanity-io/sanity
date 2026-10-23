@@ -11,6 +11,7 @@ import {
 } from 'xstate'
 
 import {type TFunction} from '../../i18n/types'
+import {type TargetPerspective} from '../../perspective/types'
 import {type DocumentPerspectiveState} from '../../releases/hooks/useDocumentVersions'
 import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
@@ -31,9 +32,22 @@ export interface Meta {
   agentBundles: AgentBundlesState
 }
 
+/**
+ * The bundle every version in a set belongs to: the user's content agent
+ * bundle, or the perspective (`drafts`, `published` or a release document).
+ */
+export type VariantSetBundle =
+  | {type: 'agent'}
+  | {type: 'perspective'; perspective: TargetPerspective}
+
 export interface VariantSet {
   key: string
   name: string
+  /**
+   * Absent when the set's versions span several bundles, as the single set
+   * shown while Content Variants is switched off does.
+   */
+  bundle?: VariantSetBundle
   variants: Variant[]
 }
 

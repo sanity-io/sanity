@@ -1,14 +1,10 @@
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-export const Body = styled.div(({theme}) => {
-  const {space} = getThemeV2(theme)
-
+export const Body = styled.div(() => {
   return css`
     overflow-x: clip;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: calc(${space[5]}px * 0.5) calc(${space[4]}px);
 
     @property --start-mask-color {
       syntax: '<color>';
