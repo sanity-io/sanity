@@ -41,6 +41,6 @@ export const body = css({
   'maskPosition': '0% 0%',
   'maskRepeat': 'no-repeat',
   'maskSize': '100% 100%',
-  'animation': fadeMask,
+  'animationName': fadeMask,
   'animationTimeline': 'scroll(self y)',
 })
