@@ -1,8 +1,8 @@
-import {LayerProvider, Text} from '@sanity/ui'
+import {LayerProvider} from '@sanity/ui'
 import {lazy, memo, Suspense, use, useEffect, useMemo, useState} from 'react'
 import {Hotkeys, isSanityDefinedAction, usePausedScheduledDraft, usePerspective} from 'sanity'
 import {TasksModePromiseContext} from 'sanity/_singletons'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -71,7 +71,11 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 
     return (
       <Flex style={{maxWidth: 300}} alignItems="center" gap={3}>
-        {firstActionState.title && <Text size={1}>{firstActionState.title}</Text>}
+        {firstActionState.title && (
+          <Text size={1} as="div" trim={true}>
+            {firstActionState.title}
+          </Text>
+        )}
         {firstActionState.shortcut && (
           <Hotkeys
             data-testid="document-status-bar-hotkeys"

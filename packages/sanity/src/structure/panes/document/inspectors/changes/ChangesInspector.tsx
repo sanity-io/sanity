@@ -1,7 +1,7 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type ObjectDiff} from '@sanity/diff'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, Card, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {type ReactNode, useMemo, useState} from 'react'
 import {
   ChangeFieldWrapper,
@@ -16,7 +16,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {Flex, Box, Grid} from 'ui5'
+import {Text, Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TimelineError} from '../../timeline/TimelineError'
@@ -78,12 +78,12 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
           gridTemplateColumns="48px 1fr"
           style={{alignItems: 'center', gap: '0.25em'}}
         >
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {structureT('changes.from.label')}
           </Text>
 
           <TimelineMenu mode="since" chunk={sinceTime} placement="bottom-start" />
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {structureT('changes.to.label')}
           </Text>
           <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
