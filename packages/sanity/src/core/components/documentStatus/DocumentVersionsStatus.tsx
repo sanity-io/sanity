@@ -11,7 +11,12 @@ import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useWorkspace} from '../../studio/workspace'
 import {useAllVariants} from '../../variants/store/useAllVariants'
 import {DocumentVersionIcons} from './DocumentVersionIcons'
-import {titleStack, updatedAtText, versionStatusItem} from './DocumentVersionsStatus.css'
+import {
+  titleStack,
+  updatedAtText,
+  versionList,
+  versionStatusItem,
+} from './DocumentVersionsStatus.css'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
 import {
   type DocumentVersionStatusItem,
@@ -43,16 +48,14 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
 
   if (loading) {
     return (
-      <Box padding={2}>
-        <Text muted size={1}>
-          {t('common.loading')}
-        </Text>
-      </Box>
+      <Text muted size={1}>
+        {t('common.loading')}
+      </Text>
     )
   }
 
   return (
-    <VStack gap={1}>
+    <VStack className={versionList} gap={1}>
       {versionGroups.map((group, groupIndex, allGroups) => (
         <Card
           borderBottom={groupIndex < allGroups.length - 1}
@@ -85,7 +88,9 @@ function VersionStatus({version}: DocumentVersionStatusItem) {
 
   return (
     <Box className={versionStatusItem}>
-      <Flex gap={2} justifyContent="space-between" paddingY={2}>
+      {/* `flex-start` keeps the avatars on the title line: `DocumentVersionIcons` centers its own
+          content, so a stretched row would drop them between the title and the timestamp. */}
+      <Flex alignItems="flex-start" gap={2} justifyContent="space-between" paddingY={2}>
         <VStack className={titleStack} gap={2}>
           <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
             {title}
@@ -94,9 +99,7 @@ function VersionStatus({version}: DocumentVersionStatusItem) {
             {timestampLabel}
           </Text>
         </VStack>
-        <Box paddingRight={2}>
-          <DocumentVersionIcons version={version} />
-        </Box>
+        <DocumentVersionIcons version={version} />
       </Flex>
     </Box>
   )
