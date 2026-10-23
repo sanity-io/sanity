@@ -178,7 +178,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   )
 
   if (banner.kind === 'drafts') {
-    // Ported from the Design Studio's C7 option A (Figma C7 225:437): caution, with the create button.
+    // Ported from the Design Studio's C7 option A (Figma C7 225:437), with the create button. Neutral like every banner but the deleted one (Faheem, 23 Oct).
     return (
       <Banner
         action={createAction}
@@ -193,7 +193,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
           'drafts',
         )}
         icon={InfoOutlineIcon}
-        tone="caution"
+        tone="neutral"
       />
     )
   }
@@ -216,7 +216,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
           'published',
         )}
         icon={InfoOutlineIcon}
-        tone="suggest"
+        tone="neutral"
       />
     )
   }
@@ -259,8 +259,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
           'scheduled',
         )}
         icon={InfoOutlineIcon}
-        // The release's own tone (neutral), as core's banner for the base document: purple is the variants' colour.
-        tone={getReleaseTone(release ?? 'drafts')}
+        // Neutral for every release (Faheem, 23 Oct): the chips carry the colour, as core's banner for the base document.
+        tone="neutral"
       />
     )
   }
@@ -293,7 +293,9 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
         'release',
       )}
       icon={InfoOutlineIcon}
-      tone="suggest"
+      // Neutral (Faheem, 23 Oct): one grey banner for every slot and release; the chips and the button carry the colour. Only the deleted
+      // variant's banner keeps a tone (caution), as the one with a real risk.
+      tone="neutral"
     />
   )
 }
