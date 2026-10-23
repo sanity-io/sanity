@@ -55,6 +55,8 @@ import type {
   DocumentTableSelectionContext,
   EditDialogOuterBoundaryContext,
   EnhancedObjectDialogContext,
+  EnhancedObjectDialogScrollContext,
+  EnhancedObjectDialogScrollToTop,
   EventsContext,
   FeedbackContext,
   FeedbackContextValue,
@@ -316,6 +318,12 @@ describe('sanity/_singletons', () => {
   })
   test('EnhancedObjectDialogContext', () => {
     expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
+  })
+  test('EnhancedObjectDialogScrollContext', () => {
+    expectTypeOf<typeof EnhancedObjectDialogScrollContext>().not.toBeNever()
+  })
+  test('EnhancedObjectDialogScrollToTop', () => {
+    expectTypeOf<EnhancedObjectDialogScrollToTop>().not.toBeNever()
   })
   test('EventsContext', () => {
     expectTypeOf<typeof EventsContext>().not.toBeNever()
