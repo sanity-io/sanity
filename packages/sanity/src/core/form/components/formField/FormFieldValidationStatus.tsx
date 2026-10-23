@@ -58,7 +58,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       fallbackPlacements={['bottom', 'right', 'left']}
     >
       <div className={statusIconWrapper}>
-        <Icon size={fontSize} icon={<StatusIcon status={status} />} />
+        <StatusIcon size={fontSize} status={status} style={{margin: '-0.375rem'}} />
       </div>
     </Tooltip>
   )
@@ -70,11 +70,7 @@ function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) 
   return (
     <Flex>
       <Box marginRight={2}>
-        <Icon
-          size={1}
-          icon={<StatusIcon status={validation.level} />}
-          style={{margin: '-0.375rem'}}
-        />
+        <StatusIcon size={1} status={validation.level} style={{margin: '-0.375rem'}} />
       </Box>
       <Box flexBasis="0%" flexGrow={1}>
         <Text size={1} as="div" trim={true}>

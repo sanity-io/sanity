@@ -39,7 +39,12 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
             alignItems="center"
             style={{gridColumn: isImage ? 'span 2' : 'span 3'}}
           >
-            <Icon muted icon={WarningOutlineIcon} tone="caution" style={{margin: '-0.4375rem'}} />
+            <Icon
+              muted
+              icon={WarningOutlineIcon}
+              tone="caution"
+              style={{margin: '-0.4375rem', flexShrink: 0}}
+            />
             <Text size={1} as="div" trim={true} tone="caution">
               {t(`asset-source.delete-dialog.usage-list.warning-${assetType}-is-in-use`, {
                 context: asset.originalFilename ? 'named' : 'unnamed',

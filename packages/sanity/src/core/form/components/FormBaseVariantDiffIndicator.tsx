@@ -27,7 +27,7 @@ export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromB
               icon={<RhombusIcon />}
               style={
                 {
-                  '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
+                  '--icon-color': 'var(--card-badge-suggest-icon-color)',
                 } as CSSProperties
               }
             />
