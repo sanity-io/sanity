@@ -2,22 +2,19 @@ import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ObjectSchemaType} from '@sanity/types'
 import {type ComponentType, type ReactNode, useCallback} from 'react'
-import {
-  getReleaseTone,
-  isPerspectiveWriteable,
-  isReleaseDocument,
-  type PerspectiveNotWriteableReason,
-  ReleasesNav,
-  type ReleasesNavMenuItemPropsGetter,
-  ReleaseTitle,
-  type TargetPerspective,
-  Translate,
-  useTranslation,
-  useWorkspace,
-  VersionInlineBadge,
-} from 'sanity'
+import {type TargetPerspective, Translate, useTranslation, useWorkspace} from 'sanity'
 import {Text, Flex} from 'ui5'
 
+import {
+  isPerspectiveWriteable,
+  type PerspectiveNotWriteableReason,
+} from '../../../../../core/perspective/isPerspectiveWriteable'
+import {ReleasesNav} from '../../../../../core/perspective/navbar/ReleasesNav'
+import {type ReleasesNavMenuItemPropsGetter} from '../../../../../core/perspective/types'
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 

@@ -5,7 +5,9 @@ import {type LoadableState, useLoadable} from '../../../util/useLoadable'
 import {useShallowUnique} from '../../../util/useShallowUnique'
 import {useDocumentPreviewStore} from '../../datastores'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function useDocumentValues<T = Record<string, unknown>>(
   documentId: string,
   paths: string[],

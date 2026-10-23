@@ -4,11 +4,9 @@ import {useMemo, useState} from 'react'
 import {
   DocumentPane,
   type DocumentPaneNode,
-  PaneLayout,
-  PaneRouterContext,
-  type PaneRouterContextValue,
   StructureToolProvider,
-} from 'sanity/structure'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {PaneLayout, PaneRouterContext, type PaneRouterContextValue} from 'sanity/structure'
 
 import {DOCUMENT_FORM_ONLY_ID, DOCUMENT_FORM_ONLY_TYPE} from './schema'
 

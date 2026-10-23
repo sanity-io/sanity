@@ -1,14 +1,12 @@
 import {useCallback} from 'react'
-import {
-  CommandList,
-  type CommandListItemContext,
-  type GeneralPreviewLayoutKey,
-  useGetI18nText,
-  useI18nText,
-} from 'sanity'
+import {type GeneralPreviewLayoutKey} from 'sanity'
 import {styled} from 'styled-components'
 import {Text, Box} from 'ui5'
 
+import {CommandList} from '../../../core/components/commandList/CommandList'
+import {type CommandListItemContext} from '../../../core/components/commandList/types'
+import {useGetI18nText} from '../../../core/i18n/hooks/useGetI18nText'
+import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
 import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'

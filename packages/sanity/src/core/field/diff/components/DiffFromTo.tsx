@@ -26,7 +26,7 @@ const cardStyles: CSSProperties = {
   whiteSpace: 'break-spaces',
 }
 
-/** @internal */
+/** @public */
 export function DiffFromTo(props: DiffFromToProps) {
   const {
     align,

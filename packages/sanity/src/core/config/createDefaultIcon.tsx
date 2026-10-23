@@ -75,7 +75,8 @@ function DefaultIcon({title, subtitle}: {title: string; subtitle: string}): Reac
 
 /**
  * Creates an icon element based on the input title
- * @internal
+ * @hidden
+ * @public
  */
 export function createDefaultIcon(title: string, subtitle: string) {
   return <DefaultIcon title={title} subtitle={subtitle} />
