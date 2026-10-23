@@ -11,9 +11,12 @@ import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useSchedul
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 import {useWorkspace} from '../../studio/workspace'
 
-export const ScheduledDraftsMenuItem: ComponentType = () => {
-  const {t} = useTranslation()
-  const telemetry = useTelemetry()
+/**
+ * Whether the scheduled drafts menu item has anything to link to: scheduled drafts are enabled
+ * for the source, the feature is on for the project and the draft model is in use. Decided here
+ * rather than inside the item so the menu can lay out its actions section around it.
+ */
+export function useScheduledDraftsAvailable(): boolean {
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {enabled: isSingleDocReleaseEnabled} = useFeatureEnabled(FEATURES.singleDocRelease)
   const {
@@ -21,6 +24,13 @@ export const ScheduledDraftsMenuItem: ComponentType = () => {
       drafts: {enabled: isDraftModelEnabled},
     },
   } = useWorkspace()
+
+  return isScheduledDraftsEnabled && isSingleDocReleaseEnabled && isDraftModelEnabled
+}
+
+export const ScheduledDraftsMenuItem: ComponentType = () => {
+  const {t} = useTranslation()
+  const telemetry = useTelemetry()
 
   const logNavigationTelemetry = useCallback(() => {
     telemetry.log(NavigatedToScheduledDrafts, {source: 'menu'})
@@ -31,8 +41,6 @@ export const ScheduledDraftsMenuItem: ComponentType = () => {
     params: {view: 'drafts'},
     onClick: logNavigationTelemetry,
   })
-
-  if (!isScheduledDraftsEnabled || !isSingleDocReleaseEnabled || !isDraftModelEnabled) return null
 
   return (
     <MenuItem

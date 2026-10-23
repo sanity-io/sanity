@@ -51,6 +51,7 @@ vi.mock('../ViewContentReleasesMenuItem', () => ({
 
 vi.mock('../ScheduledDraftsMenuItem', () => ({
   ScheduledDraftsMenuItem: () => null,
+  useScheduledDraftsAvailable: () => false,
 }))
 
 const mockedUseWorkspace = vi.fn()

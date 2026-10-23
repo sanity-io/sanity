@@ -1,6 +1,7 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {Card, Spinner} from '@sanity/ui'
-import {type JSX, type RefObject, useMemo} from 'react'
+import {MenuDivider} from '@sanity/ui/menu'
+import {Fragment, type JSX, type RefObject, useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Flex, VStack} from 'ui5'
 
@@ -19,7 +20,7 @@ import {
   type LayerRange,
 } from './GlobalPerspectiveMenuItem'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
-import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
+import {ScheduledDraftsMenuItem, useScheduledDraftsAvailable} from './ScheduledDraftsMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
 import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
 
@@ -57,7 +58,10 @@ export function ReleasesList({
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): JSX.Element {
   const {loading, data: allReleases} = useActiveReleases()
-  const {bundles: agentBundles} = useAgentBundles()
+  const {
+    bundles: [agentBundle],
+  } = useAgentBundles()
+  const isScheduledDraftsAvailable = useScheduledDraftsAvailable()
 
   const releases = useMemo(
     () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
@@ -124,9 +128,20 @@ export function ReleasesList({
     )
   }
 
+  // The system perspectives stuck to the top, then two optional parts, each left out when empty:
+  // the scrolling sections (an agent bundle, then a section per release type with releases) and
+  // the actions stuck to the bottom. The sticky cards draw their separator as a border so it
+  // holds while the sections scroll underneath; dividers go between scrolling sections only.
+  const releaseTypesWithReleases = areReleasesEnabled
+    ? orderedReleaseTypes.filter((releaseType) => sortedReleaseTypeReleases[releaseType].length > 0)
+    : []
+  const hasAgentBundle = agentBundle !== undefined
+  const hasScrollingSections = hasAgentBundle || releaseTypesWithReleases.length > 0
+  const hasActions = isScheduledDraftsAvailable || areReleasesEnabled
+
   return (
     <Card radius={3}>
-      <StickyTopCard borderBottom padding={1}>
+      <StickyTopCard borderBottom={hasScrollingSections} padding={1}>
         <VStack gap={1}>
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
@@ -142,38 +157,40 @@ export function ReleasesList({
           )}
         </VStack>
       </StickyTopCard>
-      {agentBundles[0] && (
-        <Card borderBottom padding={1}>
-          <VStack gap={1}>
-            <AgentBundleMenuItem bundle={agentBundles[0]} />
-          </VStack>
-        </Card>
-      )}
-      {areReleasesEnabled && (
+      {hasScrollingSections && (
         <VStack ref={setScrollContainer} data-ui="scroll-wrapper">
-          {orderedReleaseTypes.map((releaseType) => (
-            <ReleaseTypeMenuSection
-              key={releaseType}
-              releaseType={releaseType}
-              releases={sortedReleaseTypeReleases[releaseType]}
-              range={range}
-              currentGlobalBundleMenuItemRef={scrollElementRef}
-              menuItemProps={menuItemProps}
-            />
+          {agentBundle && (
+            <Card padding={1}>
+              <AgentBundleMenuItem bundle={agentBundle} />
+            </Card>
+          )}
+          {releaseTypesWithReleases.map((releaseType, index) => (
+            <Fragment key={releaseType}>
+              {(hasAgentBundle || index > 0) && <MenuDivider />}
+              <ReleaseTypeMenuSection
+                releaseType={releaseType}
+                releases={sortedReleaseTypeReleases[releaseType]}
+                range={range}
+                currentGlobalBundleMenuItemRef={scrollElementRef}
+                menuItemProps={menuItemProps}
+              />
+            </Fragment>
           ))}
         </VStack>
       )}
-      <StickyBottomCard borderTop paddingY={1} paddingX={2}>
-        <VStack gap={1}>
-          <ScheduledDraftsMenuItem />
-          {areReleasesEnabled && (
-            <>
-              <ViewContentReleasesMenuItem />
-              <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
-            </>
-          )}
-        </VStack>
-      </StickyBottomCard>
+      {hasActions && (
+        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
+          <VStack gap={1}>
+            {isScheduledDraftsAvailable && <ScheduledDraftsMenuItem />}
+            {areReleasesEnabled && (
+              <>
+                <ViewContentReleasesMenuItem />
+                <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
+              </>
+            )}
+          </VStack>
+        </StickyBottomCard>
+      )}
     </Card>
   )
 }
