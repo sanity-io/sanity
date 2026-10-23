@@ -1,6 +1,5 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {map, type Observable} from 'rxjs'
@@ -22,7 +21,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {Grid, Box, Flex} from 'ui5'
+import {Text, Grid, Box, Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
@@ -159,7 +158,7 @@ export function AddIncomingReference({
   return (
     <Flex gap={2} padding={2} flexDirection="column">
       <Box paddingY={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('incoming-references-input.reference-from', {type})}
         </Text>
       </Box>

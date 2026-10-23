@@ -1,4 +1,4 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -18,7 +18,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {ellipsisText} from './VersionsPreviewList.css'
 
@@ -96,7 +96,7 @@ const VersionItemPreview = ({
         <Card border radius="full">
           <Card radius={'full'} tone={tone} style={{backgroundColor: 'transparent'}}>
             <Flex alignItems="center" gap={2} paddingY={2} paddingRight={3} paddingLeft={2}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 <ReleaseAvatarIcon
                   release={documentVariant === 'version' && release ? release : documentVariant}
                 />
@@ -107,13 +107,27 @@ const VersionItemPreview = ({
                   fallback={getVersionFromId(versionId) as string}
                 >
                   {({displayTitle}) => (
-                    <Text className={ellipsisText} size={1} weight="medium" textOverflow="ellipsis">
+                    <Text
+                      className={ellipsisText}
+                      size={1}
+                      weight="medium"
+                      truncate={1}
+                      as="div"
+                      trim={true}
+                    >
                       {displayTitle}
                     </Text>
                   )}
                 </ReleaseTitle>
               ) : (
-                <Text className={ellipsisText} size={1} weight="medium" textOverflow="ellipsis">
+                <Text
+                  className={ellipsisText}
+                  size={1}
+                  weight="medium"
+                  truncate={1}
+                  as="div"
+                  trim={true}
+                >
                   {systemTitle}
                 </Text>
               )}

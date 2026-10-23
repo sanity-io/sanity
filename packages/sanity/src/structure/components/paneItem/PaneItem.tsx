@@ -8,7 +8,7 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {Badge, type CardProps, Text} from '@sanity/ui'
+import {Badge, type CardProps} from '@sanity/ui'
 import {
   type ComponentType,
   type MouseEvent,
@@ -31,7 +31,7 @@ import {
   useNumberFormat,
   useSchema,
 } from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
@@ -121,7 +121,7 @@ export function PaneItem(props: PaneItemProps) {
               <Badge data-testid="pane-item-count">{numberFormat.format(count)}</Badge>
             )}
             <Box style={{opacity: 0.5}}>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 <ChevronRightIcon />
               </Text>
             </Box>
