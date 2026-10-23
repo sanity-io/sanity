@@ -52,7 +52,7 @@ catalog:
   get-it: ^9.6.2
   jsdom: ^29.1.1
   oxc-parser: ^0.155.0
-  oxc-transform-react: ^0.154.0
+  oxc-transform-react: ^0.155.0
   playwright: 1.64.0
   react: ^19.3.1
   react-dom: ^19.3.1
