@@ -9,6 +9,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {useAiCredits} from '../../hooks/useAiCredits'
 import {type ExplainStep} from '../../hooks/useQueryExplain'
 import {type AiCreditsClient} from '../../util/aiCredits'
+import {cx} from '../../util/cx'
 import {splitMessage} from '../../util/groqLint'
 import {
   HIGH_PERFORMANCE_GROQ_URL,
@@ -17,6 +18,7 @@ import {
 } from '../../util/planInsights'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import {AiCreditsStatus} from '../AiCreditsStatus'
+import * as motion from './responseTabs.module.css'
 
 /** What a plan insight means, as the Explain panel and the WebMCP explain tool say it */
 export function describeInsight(insight: PlanInsight, t: TFunction<'vision'>): string {
@@ -103,7 +105,14 @@ export function ExplainTab(props: ExplainTabProps) {
           </Text>
         )}
         {explanation.status === 'done' && (
-          <Card data-testid="vista-explanation" padding={3} radius={2} tone="transparent" border>
+          <Card
+            border
+            className={motion.reveal}
+            data-testid="vista-explanation"
+            padding={3}
+            radius={2}
+            tone="transparent"
+          >
             <Stack gap={4}>
               {explanation.text
                 .split(/\n+/)
@@ -129,7 +138,7 @@ export function ExplainTab(props: ExplainTabProps) {
           </Text>
         )}
         {plan.status === 'done' && insights.length > 0 && (
-          <Stack data-testid="vista-plan-insights" gap={2}>
+          <Stack className={motion.reveal} data-testid="vista-plan-insights" gap={2}>
             <Label muted size={0}>
               {t('vista.explain.insights.title')}
             </Label>
@@ -160,7 +169,11 @@ export function ExplainTab(props: ExplainTabProps) {
           </Stack>
         )}
         {plan.status === 'done' && (
-          <Stack data-testid="vista-query-plan" gap={2}>
+          <Stack
+            className={cx(motion.reveal, insights.length > 0 && motion.revealSecond)}
+            data-testid="vista-query-plan"
+            gap={2}
+          >
             <Label muted size={0}>
               {t('vista.explain.plan-title')}
             </Label>

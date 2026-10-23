@@ -109,6 +109,18 @@ describe('NetworkTab', () => {
     expect(options.arcs).toHaveLength(1)
   })
 
+  it('marks the globe ready once cobe has drawn it, so it fades in rather than popping in', async () => {
+    await renderTab({meta: meta(cdnMiss)})
+    const canvas = screen.getByTestId('vista-network-globe').querySelector('canvas')
+    expect(canvas).not.toBeNull()
+    expect(canvas?.hasAttribute('data-ready')).toBe(false)
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    })
+    expect(cobe.update).toHaveBeenCalled()
+    expect(canvas?.hasAttribute('data-ready')).toBe(true)
+  })
+
   it('shows a CDN cache hit without a way to the API', async () => {
     await renderTab({meta: meta({...cdnMiss, cacheHit: true})})
     expect(screen.getByTestId('vista-network-cache').textContent).toBe('vista.network.cache.hit')
