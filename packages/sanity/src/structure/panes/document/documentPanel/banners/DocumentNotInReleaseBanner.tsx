@@ -172,7 +172,8 @@ export function DocumentNotInReleaseBanner({
 
   return (
     <Banner
-      tone={tone}
+      // PROPOSED: release banners are neutral; the release chip and the button keep the release tone (Faheem, 23 Oct).
+      tone="neutral"
       content={
         <Text size={1}>
           <Translate

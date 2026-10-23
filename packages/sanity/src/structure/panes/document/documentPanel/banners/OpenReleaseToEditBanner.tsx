@@ -94,7 +94,8 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
 
   return (
     <Banner
-      tone={tone}
+      // PROPOSED: release banners are neutral; the release chip and the button keep the release tone (Faheem, 23 Oct).
+      tone="neutral"
       data-testid="open-release-to-edit-banner"
       content={
         <Text size={1}>
