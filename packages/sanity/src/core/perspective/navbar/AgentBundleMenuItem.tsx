@@ -9,8 +9,8 @@ import {type AgentBundle} from '../../store/agent/createAgentBundlesStore'
 import {usePerspective} from '../usePerspective'
 import {useSetPerspective} from '../useSetPerspective'
 
-const iconStyle: CSSProperties & {'--card-icon-color': string} = {
-  '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
+const iconStyle: CSSProperties & {'--icon-color': string} = {
+  '--icon-color': 'var(--card-badge-suggest-icon-color)',
   'margin': '-0.375rem',
 }
 

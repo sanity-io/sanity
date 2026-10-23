@@ -201,12 +201,13 @@ export function GlobalPerspectiveMenuItem(
               {isReleaseDocument(release) &&
                 typeof release.error !== 'undefined' &&
                 release.state === 'active' && (
-                  <Icon
-                    size={1}
-                    data-testid="release-error-icon"
-                    icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
-                    style={{margin: '-0.375rem'}}
-                  />
+                  <Box style={{margin: '-0.375rem'}}>
+                    <Icon
+                      size={1}
+                      data-testid="release-error-icon"
+                      icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                    />
+                  </Box>
                 )}
             </Flex>
             {isReleaseDocument(release) &&
@@ -235,6 +236,7 @@ export function GlobalPerspectiveMenuItem(
               <Box padding={2}>
                 <Icon
                   size={1}
+                  muted
                   data-testid="release-lock-icon"
                   icon={LockIcon}
                   style={{margin: '-0.375rem'}}
