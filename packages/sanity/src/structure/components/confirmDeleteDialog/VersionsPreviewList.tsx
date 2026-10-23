@@ -18,7 +18,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {Text, Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, type TextProps} from 'ui5'
 
 import {ellipsisText} from './VersionsPreviewList.css'
 
@@ -96,11 +96,9 @@ const VersionItemPreview = ({
         <Card border radius="full">
           <Card radius={'full'} tone={tone} style={{backgroundColor: 'transparent'}}>
             <Flex alignItems="center" gap={2} paddingY={2} paddingRight={3} paddingLeft={2}>
-              <Text size={1} as="div" trim={true}>
-                <ReleaseAvatarIcon
-                  release={documentVariant === 'version' && release ? release : documentVariant}
-                />
-              </Text>
+              <ReleaseAvatarIcon
+                release={documentVariant === 'version' && release ? release : documentVariant}
+              />
               {documentVariant === 'version' ? (
                 <ReleaseTitle
                   title={release?.metadata?.title}
@@ -114,6 +112,7 @@ const VersionItemPreview = ({
                       truncate={1}
                       as="div"
                       trim={true}
+                      tone={tone as TextProps['tone']}
                     >
                       {displayTitle}
                     </Text>
@@ -127,6 +126,7 @@ const VersionItemPreview = ({
                   truncate={1}
                   as="div"
                   trim={true}
+                  tone={tone as TextProps['tone']}
                 >
                   {systemTitle}
                 </Text>

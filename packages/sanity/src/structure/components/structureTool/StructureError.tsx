@@ -62,7 +62,7 @@ export function StructureError({error, onReload}: StructureErrorProps) {
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
             <VStack gap={2}>
-              <Text size={1} weight="medium" as="div" trim={true}>
+              <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                 {t('structure-error.structure-path.label')}
               </Text>
               <Code>
@@ -76,7 +76,7 @@ export function StructureError({error, onReload}: StructureErrorProps) {
           )}
 
           <Flex marginTop={4} gap={2} flexDirection="column">
-            <Text size={1} weight="medium" as="div" trim={true}>
+            <Text size={1} weight="medium" as="div" trim={true} tone="critical">
               {t('structure-error.error.label')}
             </Text>
             <Code>{showStack ? formatStack(stack) : error.message}</Code>
@@ -84,7 +84,7 @@ export function StructureError({error, onReload}: StructureErrorProps) {
 
           {helpId && (
             <Box marginTop={4}>
-              <Text as="div" trim={true}>
+              <Text as="div" trim={true} tone="critical">
                 <a href={generateHelpUrl(helpId)} rel="noopener noreferrer" target="_blank">
                   {t('structure-error.docs-link.text')}
                 </a>

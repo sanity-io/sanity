@@ -7,7 +7,7 @@ import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
-import {Text, Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -141,11 +141,16 @@ export function ConfirmDeleteDialogBody({
         <Card borderTop padding={1} />
         <Card padding={3} radius={2} tone="caution" flex="none">
           <Flex>
-            <Text aria-hidden="true" size={1} as="div" trim={true}>
-              <WarningOutlineIcon />
-            </Text>
+            <Icon
+              aria-hidden="true"
+              size={1}
+              muted
+              icon={WarningOutlineIcon}
+              tone="caution"
+              style={{margin: '-0.375rem'}}
+            />
             <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-              <Text size={1} as="div" trim={true}>
+              <Text size={1} as="div" trim={true} tone="caution">
                 <Translate
                   i18nKey="confirm-delete-dialog.referring-document-count.text"
                   components={{DocumentTitle}}
@@ -208,9 +213,7 @@ export function ConfirmDeleteDialogBody({
                   paddingY={1}
                 >
                   <Flex alignItems="center" gap={3} paddingX={3} paddingY={1}>
-                    <Text size={1} as="div" trim={true}>
-                      <DocumentsIcon />
-                    </Text>
+                    <Icon size={1} muted icon={DocumentsIcon} style={{margin: '-0.375rem'}} />
                     <VStack gap={2}>
                       <Text truncate={1} size={1} as="div" trim={true}>
                         {t('confirm-delete-dialog.cdr-summary.title', {
@@ -232,9 +235,7 @@ export function ConfirmDeleteDialogBody({
                       </Text>
                     </VStack>
                     <ChevronWrapper>
-                      <Text muted size={1} as="div" trim={true}>
-                        <ChevronDownIcon />
-                      </Text>
+                      <Icon muted size={1} icon={ChevronDownIcon} style={{margin: '-0.375rem'}} />
                     </ChevronWrapper>
                   </Flex>
                 </Card>

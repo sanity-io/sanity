@@ -142,7 +142,7 @@ export function RequestPermissionDialog({
             </Text>
             {hasTooManyRequests || hasBeenDenied ? (
               <Card tone={'caution'} padding={3} radius={2} shadow={1}>
-                <Text size={1} as="div" trim={true}>
+                <Text size={1} as="div" trim={true} tone="caution">
                   {hasTooManyRequests && (
                     <>{msgError ?? t('request-permission-dialog.warning.limit-reached.text')}</>
                   )}

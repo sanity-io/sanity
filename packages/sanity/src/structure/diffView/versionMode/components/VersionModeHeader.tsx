@@ -41,7 +41,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -131,9 +131,7 @@ export const VersionModeHeader: ComponentType<
           ))}
       </div>
       <Flex alignItems="center" paddingX={3}>
-        <Text size={1} as="div" trim={true}>
-          <TransferIcon />
-        </Text>
+        <Icon size={1} icon={TransferIcon} style={{margin: '-0.375rem'}} />
       </Flex>
       <div className={versionModeHeaderLayoutSection}>
         {typeof documents?.next !== 'undefined' &&
@@ -352,9 +350,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
         <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
           {isReleaseScheduledOrScheduling(release) && (
             <Box padding={2}>
-              <Text size={1} as="div" trim={true}>
-                <LockIcon />
-              </Text>
+              <Icon size={1} icon={LockIcon} style={{margin: '-0.375rem'}} />
             </Box>
           )}
         </Flex>

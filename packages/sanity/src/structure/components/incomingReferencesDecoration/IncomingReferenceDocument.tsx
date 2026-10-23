@@ -32,7 +32,7 @@ const variants: Variants = {
 const ErrorCard = ({message}: {message: string}) => (
   <Card border radius={2} padding={1} tone="critical">
     <Box paddingY={4} paddingX={3}>
-      <Text size={1} as="div" trim={true}>
+      <Text size={1} as="div" trim={true} tone="critical">
         {message}
       </Text>
     </Box>

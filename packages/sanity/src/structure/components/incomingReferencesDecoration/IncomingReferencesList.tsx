@@ -24,7 +24,7 @@ export function IncomingReferencesList({
     return (
       <Card border radius={2} padding={3} tone="critical">
         <Flex alignItems="center" justifyContent="center">
-          <Text size={1} muted as="div" trim={true}>
+          <Text size={1} muted as="div" trim={true} tone="critical">
             {t('incoming-references-input.types-not-defined')}
           </Text>
         </Flex>
