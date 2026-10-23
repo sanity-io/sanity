@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {act, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, type Mock, test, vi} from 'vitest'
 
@@ -114,6 +114,22 @@ describe('ReleaseRevertButton', () => {
     mockUseReleaseOperations.mockReturnValue(useReleaseOperationsMockReturn)
     useReleaseOperationsMockReturn.revertRelease.mockResolvedValue(undefined)
     mockUsePostPublishTransactions.mockReturnValue(false)
+  })
+
+  test('disables revert when the workspace release limit is reached', async () => {
+    const wrapper = await createTestProvider({
+      config: {releases: {limit: 0}},
+      resources: [releasesUsEnglishLocaleBundle],
+    })
+    render(<ReleaseRevertButton release={publishedASAPRelease} documents={documents} />, {wrapper})
+
+    await waitFor(() =>
+      expect(useReleasesPermissionsMockReturnTrue.checkWithPermissionGuard).toHaveBeenCalled(),
+    )
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- settles the permission check so only the limit can keep the button disabled
+    await act(async () => {})
+
+    expect(screen.getByTestId('revert-button')).toBeDisabled()
   })
 
   test('keeps confirm disabled while revert states are resolving', async () => {

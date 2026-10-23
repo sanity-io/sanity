@@ -5,9 +5,8 @@ import {from} from 'rxjs'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useWorkspace} from '../../studio/workspace'
 import {useCreateReleaseMetadata} from '../hooks/useCreateReleaseMetadata'
-import {useActiveReleases} from '../store/useActiveReleases'
+import {useWorkspaceReleaseLimit} from '../hooks/useWorkspaceReleaseLimit'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 import {useReleasePermissions} from '../store/useReleasePermissions'
 import {getReleaseDefaults} from '../util/util'
@@ -31,12 +30,8 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) =
     undefined,
   )
 
-  const activeReleases = useActiveReleases()
-  const activeReleaseCount = activeReleases.data.length
-
-  const {releases} = useWorkspace()
-  const workspaceReleaseLimit = releases?.limit ?? Infinity
-  const isWorkspaceReleaseLimitReached = activeReleaseCount >= workspaceReleaseLimit
+  const {limit: workspaceReleaseLimit, isLimitReached: isWorkspaceReleaseLimitReached} =
+    useWorkspaceReleaseLimit()
 
   const menuItemProps: Pick<ComponentProps<typeof MenuItem>, 'icon' | 'onClick' | 'text'> & {
     'data-testid': string

@@ -31,6 +31,7 @@ import {useWorkspace} from '../../../studio/workspace'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
+import {useWorkspaceReleaseLimit} from '../../hooks/useWorkspaceReleaseLimit'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
@@ -153,6 +154,8 @@ export function ReleasesOverview() {
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+  const {limit: workspaceReleaseLimit, isLimitReached: isWorkspaceReleaseLimitReached} =
+    useWorkspaceReleaseLimit()
 
   const mediaIndex = useMediaIndex()
   const isNarrowViewport = mediaIndex < 2
@@ -382,18 +385,30 @@ export function ReleasesOverview() {
     return (
       <Button
         icon={AddIcon}
-        disabled={!hasCreatePermission || isCreateReleaseDialogOpen}
+        disabled={
+          !hasCreatePermission || isWorkspaceReleaseLimitReached || isCreateReleaseDialogOpen
+        }
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
-        tooltipProps={{
-          disabled: hasCreatePermission === true,
-          content: tCore('release.action.permission.error'),
-        }}
+        tooltipProps={
+          isWorkspaceReleaseLimitReached
+            ? {
+                content: tCore('release.action.new-release.limit-reached', {
+                  count: workspaceReleaseLimit,
+                }),
+              }
+            : {
+                disabled: hasCreatePermission === true,
+                content: tCore('release.action.permission.error'),
+              }
+        }
       />
     )
   }, [
     cardinalityView,
     hasCreatePermission,
+    isWorkspaceReleaseLimitReached,
+    workspaceReleaseLimit,
     isCreateReleaseDialogOpen,
     handleOnClickCreateRelease,
     tCore,

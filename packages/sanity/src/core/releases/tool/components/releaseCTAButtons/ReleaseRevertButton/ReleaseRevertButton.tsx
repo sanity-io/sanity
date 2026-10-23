@@ -13,6 +13,7 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
+import {useWorkspaceReleaseLimit} from '../../../../hooks/useWorkspaceReleaseLimit'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
@@ -327,6 +328,8 @@ export const ReleaseRevertButton = ({
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+  const {limit: workspaceReleaseLimit, isLimitReached: isWorkspaceReleaseLimitReached} =
+    useWorkspaceReleaseLimit()
 
   const handleMoveToConfirmStatus = useCallback(async () => {
     setIsPendingGuardResponse(true)
@@ -353,17 +356,30 @@ export const ReleaseRevertButton = ({
         onClick={handleMoveToConfirmStatus}
         text={t('action.revert')}
         tone="critical"
-        tooltipProps={{
-          disabled: hasCreatePermission === true,
-          content: tCore('release.action.permission.error'),
-        }}
+        tooltipProps={
+          isWorkspaceReleaseLimitReached
+            ? {
+                content: tCore('release.action.new-release.limit-reached', {
+                  count: workspaceReleaseLimit,
+                }),
+              }
+            : {
+                disabled: hasCreatePermission === true,
+                content: tCore('release.action.permission.error'),
+              }
+        }
         /**
          * This is an immature assertion of permissions
          * The permissions needed to revert are:
          * Permissions to create a request (implemented)
          * @todo Permissions to create each schema type within the release (not implemented)
          */
-        disabled={isPendingGuardResponse || !hasCreatePermission || disabled}
+        disabled={
+          isPendingGuardResponse ||
+          !hasCreatePermission ||
+          isWorkspaceReleaseLimitReached ||
+          disabled
+        }
         data-testid="revert-button"
       />
       {revertReleaseStatus !== 'idle' && (

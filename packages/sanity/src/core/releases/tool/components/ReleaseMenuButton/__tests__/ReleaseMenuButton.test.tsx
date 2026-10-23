@@ -58,8 +58,10 @@ const renderTest = async ({
   documentsCount,
   ignoreCTA = false,
   documents = [],
-}: ReleaseMenuButtonProps) => {
+  releaseLimit,
+}: ReleaseMenuButtonProps & {releaseLimit?: number}) => {
   const wrapper = await createTestProvider({
+    config: {releases: {limit: releaseLimit}},
     resources: [releasesUsEnglishLocaleBundle],
   })
   return render(
@@ -536,6 +538,15 @@ describe('ReleaseMenuButton', () => {
         await userEvent.click(screen.getByTestId('confirm-button'))
 
         expect(duplicateReleaseMock).toHaveBeenCalled()
+      })
+
+      test('does not allow duplicating when the workspace release limit is reached', async () => {
+        await renderTest({release: activeASAPRelease, documentsCount: 1, releaseLimit: 0})
+
+        await screen.findByTestId('release-menu-button')
+        await userEvent.click(screen.getByTestId('release-menu-button'))
+
+        expect(screen.getByTestId('duplicate-release-menu-item')).toBeDisabled()
       })
 
       test.each([

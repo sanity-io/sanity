@@ -16,6 +16,7 @@ import {
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useWorkspaceReleaseLimit} from '../../../hooks/useWorkspaceReleaseLimit'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
@@ -41,6 +42,9 @@ export const ReleaseMenu = ({
 }: ReleaseMenuProps) => {
   const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
+  const {limit: workspaceReleaseLimit, isLimitReached: isWorkspaceReleaseLimitReached} =
+    useWorkspaceReleaseLimit()
   const {archive, unarchive, deleteRelease, publishRelease, schedule, createRelease} =
     useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
@@ -246,16 +250,27 @@ export const ReleaseMenu = ({
         key="duplicate"
         data-value="duplicate"
         onClick={handleOnInitiateAction}
-        disabled={releaseMenuDisabled || !hasDuplicatePermission}
+        disabled={releaseMenuDisabled || !hasDuplicatePermission || isWorkspaceReleaseLimitReached}
         icon={CopyIcon}
         text={t('action.duplicate-release')}
         data-testid="duplicate-release-menu-item"
         tooltipProps={{
-          content: !hasDuplicatePermission && t('permissions.error.duplicate'),
+          content: isWorkspaceReleaseLimitReached
+            ? tCore('release.action.new-release.limit-reached', {count: workspaceReleaseLimit})
+            : !hasDuplicatePermission && t('permissions.error.duplicate'),
         }}
       />
     )
-  }, [handleOnInitiateAction, hasDuplicatePermission, release.state, releaseMenuDisabled, t])
+  }, [
+    handleOnInitiateAction,
+    hasDuplicatePermission,
+    isWorkspaceReleaseLimitReached,
+    release.state,
+    releaseMenuDisabled,
+    t,
+    tCore,
+    workspaceReleaseLimit,
+  ])
 
   const ActionsOrder = useMemo(() => {
     if (release.metadata.releaseType === 'scheduled') {

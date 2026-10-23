@@ -345,6 +345,26 @@ describe('ReleasesOverview', () => {
     })
   })
 
+  describe('when the workspace release limit is reached', () => {
+    beforeEach(async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease],
+      })
+
+      const wrapper = await createTestProvider({
+        config: {releases: {limit: 1}},
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      return mountAndFlush(<TestComponent />, {wrapper})
+    })
+
+    it('disables the create new release button', () => {
+      expect(screen.getByText('New release').closest('button')).toBeDisabled()
+    })
+  })
+
   describe('when releases are loaded', () => {
     const releases: ReleaseDocument[] = [
       {
