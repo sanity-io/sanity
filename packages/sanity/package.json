@@ -199,7 +199,7 @@
     "@sanity/uuid": "^3.0.3",
     "@sanity/validation": "workspace:*",
     "@sentry/react": "^11.8.0",
-    "@tanstack/react-virtual": "^3.14.21",
+    "@tanstack/react-virtual": "^3.14.22",
     "@xstate/react": "^6.1.0",
     "clsx": "^2.1.1",
     "color2k": "^2.0.4",
