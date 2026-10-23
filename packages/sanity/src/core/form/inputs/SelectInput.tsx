@@ -10,7 +10,7 @@ import {
   useMemo,
   type RefAttributes,
 } from 'react'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, type TextProps} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
@@ -182,6 +182,7 @@ function RadioSelect(
               readOnly={readOnly}
               ref={index === 0 ? ref : null}
               value={value}
+              tone={tone as TextProps['tone']}
             />
           ))}
         </Flex>
@@ -207,9 +208,10 @@ function RadioSelectItem(
     onFocus: (event: FocusEvent<HTMLElement>) => void
     readOnly?: boolean
     value?: TitledListValue<string | number>
+    tone?: TextProps['tone']
   } & RefAttributes<HTMLInputElement>,
 ) {
-  const {ref, customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
+  const {ref, customValidity, inputId, item, onChange, onFocus, readOnly, value, tone} = props
 
   const handleChange = useCallback(() => {
     onChange(item)
@@ -228,7 +230,7 @@ function RadioSelectItem(
       />
 
       <Box marginLeft={2}>
-        <Text size={1} weight={checked ? 'medium' : 'regular'} as="div" trim={true}>
+        <Text size={1} weight={checked ? 'medium' : 'regular'} as="div" trim={true} tone={tone}>
           {item.title}
         </Text>
       </Box>

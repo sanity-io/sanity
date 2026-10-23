@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card} from '@sanity/ui'
 import {type CSSProperties} from 'react'
-import {Text, Flex, Grid} from 'ui5'
+import {Text, Flex, Grid, Icon} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
@@ -39,10 +39,8 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
             alignItems="center"
             style={{gridColumn: isImage ? 'span 2' : 'span 3'}}
           >
-            <Text as="div" trim={true}>
-              <WarningOutlineIcon />
-            </Text>
-            <Text size={1} as="div" trim={true}>
+            <Icon muted icon={WarningOutlineIcon} tone="caution" style={{margin: '-0.4375rem'}} />
+            <Text size={1} as="div" trim={true} tone="caution">
               {t(`asset-source.delete-dialog.usage-list.warning-${assetType}-is-in-use`, {
                 context: asset.originalFilename ? 'named' : 'unnamed',
                 filename: asset.originalFilename,

@@ -15,7 +15,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {type Subscription} from 'rxjs'
-import {Text, Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -255,10 +255,12 @@ function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<
         {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
           <Card tone="primary" padding={3} border radius={2}>
             <Flex gap={3} alignItems="center">
-              <Text size={1} as="div" trim={true}>
-                <InfoOutlineIcon />
-              </Text>
-              <Text size={1} as="div" trim={true}>
+              <Icon
+                size={1}
+                icon={InfoOutlineIcon}
+                style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
+              />
+              <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
                 <Translate
                   t={t}
                   i18nKey="asset-source.dialog.accept-message"

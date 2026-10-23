@@ -8,7 +8,7 @@ import {Details} from '../Details'
 
 const SUFFIX = (
   <Box padding={3}>
-    <Text size={1} as="div" trim={true}>
+    <Text size={1} as="div" trim={true} tone="critical">
       Reset this field
     </Text>
   </Box>
@@ -38,7 +38,7 @@ export const States: Story = {
             alert warning
           </Text>
           <Alert status="warning" title="Incompatible value">
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} tone="caution">
               Expected type string, got number.
             </Text>
           </Alert>
@@ -48,7 +48,7 @@ export const States: Story = {
             alert error with suffix
           </Text>
           <Alert status="error" suffix={SUFFIX} title="Could not resolve value">
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} tone="critical">
               The stored value does not match the schema.
             </Text>
           </Alert>

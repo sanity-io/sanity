@@ -49,7 +49,7 @@ export function MissingKeysAlert(props: Props) {
         }
         title={t('form.error.missing-keys-alert.title')}
       >
-        <Text as="p" muted size={1} trim={true}>
+        <Text as="p" muted size={1} trim={true} tone="caution">
           {t('form.error.missing-keys-alert.summary')}
         </Text>
 
@@ -59,11 +59,11 @@ export function MissingKeysAlert(props: Props) {
           title={t('form.error.missing-keys-alert.details.title')}
         >
           <VStack gap={3}>
-            <Text as="p" muted size={1} trim={true}>
+            <Text as="p" muted size={1} trim={true} tone="caution">
               <Translate t={t} i18nKey="form.error.missing-keys-alert.details.description" />
             </Text>
 
-            <Text as="p" muted size={1} trim={true}>
+            <Text as="p" muted size={1} trim={true} tone="caution">
               <Translate
                 t={t}
                 i18nKey="form.error.missing-keys-alert.details.additional-description"
