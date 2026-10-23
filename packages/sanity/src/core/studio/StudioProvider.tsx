@@ -8,7 +8,6 @@ import {LocaleProvider} from '../i18n/components/LocaleProvider'
 import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
 import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
-import {setMessageBusAppId} from '../store/messageBus/getMessageBusConnection'
 import {ResourceCacheProvider} from '../store/ResourceCacheProvider'
 import {AppIdCacheProvider} from '../store/studio-app/AppIdCacheProvider'
 import {UserApplicationCacheProvider} from '../store/userApplications'
@@ -57,11 +56,7 @@ export function StudioProvider({
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
   unstable_importMapUrl: importMapUrl,
-  unstable_appId: appId,
 }: StudioProviderProps) {
-  // Before any provider below connects to the message bus.
-  if (appId) setMessageBusAppId(appId)
-
   // Run in an effect to keep render pure; both calls are idempotent and buffer/guard
   // their own work, so StrictMode's double mount is safe.
   useEffect(() => {
