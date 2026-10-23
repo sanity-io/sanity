@@ -1367,6 +1367,7 @@ exports[`exports snapshot 1`] = `
     "DocumentTableSelectionContext": "object",
     "EditDialogOuterBoundaryContext": "object",
     "EnhancedObjectDialogContext": "object",
+    "EnhancedObjectDialogScrollContext": "object",
     "EventsContext": "object",
     "FeedbackContext": "object",
     "FieldActionsContext": "object",
