@@ -8,7 +8,6 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {styled} from 'styled-components'
 import {Text, Box, Flex, VStack} from 'ui5'
 
 import {CommandList} from '../../../components/commandList/CommandList'
@@ -17,21 +16,10 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
+import {flexWrap, root} from './MentionsMenu.css'
 import {MentionsMenuItem} from './MentionsMenuItem'
 
 const EMPTY_ARRAY: UserWithPermission[] = []
-
-const Root = styled(VStack)({
-  maxWidth: '220px', // todo: improve
-})
-
-const ITEM_HEIGHT = 41
-const LIST_PADDING = 4
-const MAX_ITEMS = 7
-
-const FlexWrap = styled(Flex)({
-  maxHeight: ITEM_HEIGHT * MAX_ITEMS + LIST_PADDING * 2 + ITEM_HEIGHT / 2,
-})
 
 export interface MentionsMenuHandle {
   setSearchTerm: (term: string) => void
@@ -103,9 +91,9 @@ export function MentionsMenu(props: MentionsMenuProps & RefAttributes<MentionsMe
 
   if (loading) {
     return (
-      <Root>
+      <VStack className={root}>
         <LoadingBlock showText />
-      </Root>
+      </VStack>
     )
   }
 
@@ -124,7 +112,13 @@ export function MentionsMenu(props: MentionsMenuProps & RefAttributes<MentionsMe
       )}
 
       {filteredOptions.length > 0 && (
-        <FlexWrap flexDirection="column" flexBasis="0%" flexGrow={1} overflow="hidden">
+        <Flex
+          className={flexWrap}
+          flexDirection="column"
+          flexBasis="0%"
+          flexGrow={1}
+          overflow="hidden"
+        >
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('mentions.user-list-aria-label')}
@@ -137,7 +131,7 @@ export function MentionsMenu(props: MentionsMenuProps & RefAttributes<MentionsMe
             ref={commandListRef}
             renderItem={renderItem}
           />
-        </FlexWrap>
+        </Flex>
       )}
     </Flex>
   )

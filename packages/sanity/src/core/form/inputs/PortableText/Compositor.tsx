@@ -33,6 +33,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
+import {clsx} from 'clsx'
 import {type ReactNode, Suspense, useCallback, useMemo, useRef, useState} from 'react'
 import {Box} from 'ui5'
 
@@ -52,6 +53,7 @@ import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMem
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
 import {Editor} from './Editor'
+import {dropIndicator} from './Editor.styles.css'
 import {useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 import {Annotation} from './object/Annotation'
@@ -781,17 +783,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
 function DropIndicator() {
   return (
-    <div
-      className="pt-drop-indicator"
-      contentEditable={false}
-      style={{
-        position: 'absolute',
-        width: '100%',
-        height: 1,
-        borderBottom: '1px solid currentColor',
-        zIndex: 5,
-      }}
-    >
+    <div className={clsx('pt-drop-indicator', dropIndicator)} contentEditable={false}>
       <span />
     </div>
   )
