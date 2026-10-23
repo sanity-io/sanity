@@ -17,8 +17,8 @@ import {
   useDocumentPreviewStore,
   useDocumentVersions,
   usePerspective,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
-import {VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Text, Box, Grid, VStack, Icon, Link} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'
