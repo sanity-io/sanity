@@ -11,10 +11,13 @@ const theme = buildTheme()
 
 const sanityMocks = vi.hoisted(() => ({
   usePerspective: vi.fn(),
+  // The workspace the tool runs in: variants on, as the lock tests need
+  workspace: {beta: {variants: {enabled: true}}},
 }))
 
 vi.mock('sanity', () => ({
   usePerspective: sanityMocks.usePerspective,
+  useWorkspace: () => sanityMocks.workspace,
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
@@ -107,6 +110,41 @@ describe('VisionGuiHeader variant lock', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     sanityMocks.usePerspective.mockReturnValue(BASE_PERSPECTIVE)
+    sanityMocks.workspace = {beta: {variants: {enabled: true}}}
+  })
+
+  it('neither locks the API version nor names a variant where the workspace has variants switched off', () => {
+    // The same flag the studio hides its own variant UI behind, the navbar's selector included
+    sanityMocks.workspace = {beta: {variants: {enabled: false}}}
+    // A variant the URL still carries for the navbar is not one the studio shows
+    renderHeader(
+      'pinnedRelease',
+      {
+        ...BASE_PERSPECTIVE,
+        selectedVariantNames: ['french'],
+        selectedVariants: [
+          {
+            _id: '_.variants.french',
+            _type: 'system.variant',
+            _rev: '1',
+            _createdAt: '2026-01-01T00:00:00.000Z',
+            _updatedAt: '2026-01-01T00:00:00.000Z',
+            name: 'french',
+            conditions: {},
+            priority: 0,
+            metadata: {title: 'French'},
+          },
+        ],
+      },
+      {apiVersion: 'v2025-02-19'},
+    )
+
+    const selector = getApiVersionSelector()
+    expect(selector.value).toBe('v2025-02-19')
+    expect(selector.disabled).toBe(false)
+    expect(screen.queryByText('settings.api-version-locked-for-variant')).toBeNull()
+    expect(screen.queryByRole('option', {name: /French/})).toBeNull()
+    expect(screen.getByRole('option', {name: /pinned-release-label/})).toBeTruthy()
   })
 
   it('locks the API version selector to vX when pinned release has a variant', () => {

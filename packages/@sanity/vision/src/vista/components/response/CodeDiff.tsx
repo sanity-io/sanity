@@ -1,7 +1,13 @@
 import {type FileContents, FileDiff} from '@pierre/diffs'
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useEffect, useMemo, useRef} from 'react'
+import {type CSSProperties, useEffect, useMemo, useRef} from 'react'
+
+/** The custom properties `@pierre/diffs` styles its markup with */
+interface DiffsStyle extends CSSProperties {
+  '--diffs-font-family': string
+  '--diffs-font-size': string
+  '--diffs-line-height': string
+}
 
 export interface CodeDiffProps {
   previous: string
@@ -48,14 +54,11 @@ export default function CodeDiff({previous, next, lang}: CodeDiffProps) {
     return () => diff.cleanUp()
   }, [newFile, oldFile, themeType])
 
-  return (
-    <div
-      ref={wrapperRef}
-      style={assignInlineVars({
-        '--diffs-font-family': font.code.family,
-        '--diffs-font-size': `${codeSize.fontSize}px`,
-        '--diffs-line-height': `${codeSize.lineHeight}px`,
-      })}
-    />
-  )
+  const style: DiffsStyle = {
+    '--diffs-font-family': font.code.family,
+    '--diffs-font-size': `${codeSize.fontSize}px`,
+    '--diffs-line-height': `${codeSize.lineHeight}px`,
+  }
+
+  return <div ref={wrapperRef} style={style} />
 }

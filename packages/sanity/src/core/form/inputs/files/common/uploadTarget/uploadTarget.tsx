@@ -1,5 +1,5 @@
 import {type AssetSource, type SchemaType} from '@sanity/types'
-import {type CardTone, Text} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import uniqBy from 'lodash-es/uniqBy.js'
 import {
@@ -13,7 +13,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {type FIXME} from '../../../../../FIXME'
 import {useClient} from '../../../../../hooks/useClient'
@@ -137,10 +137,14 @@ export function uploadTarget<Props>(
             // oxlint-disable-next-line no-array-index-key
             <Flex key={i} gap={2} padding={2}>
               <Box>
-                <Text weight="medium">{task.file.name}</Text>
+                <Text weight="medium" as="div" trim={true}>
+                  {task.file.name}
+                </Text>
               </Box>
               <Box>
-                <Text size={1}>({task.file.type})</Text>
+                <Text size={1} as="div" trim={true}>
+                  ({task.file.type})
+                </Text>
               </Box>
             </Flex>
           )),

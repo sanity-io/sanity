@@ -1,13 +1,11 @@
 import {render, screen} from '@testing-library/react'
 import {act, type ComponentType} from 'react'
-import {EMPTY} from 'rxjs'
 import {DocumentActionsStateContext, TasksModePromiseContext} from 'sanity/_singletons'
 import {beforeAll, beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {type ResolvedAction} from '../../../components/RenderActionCollectionState'
-import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentPaneContextValue} from '../DocumentPaneContext'
 import {useDocumentPane} from '../useDocumentPane'
@@ -15,12 +13,6 @@ import {DocumentStatusBarActions} from './DocumentStatusBarActions'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  DocumentGroupInventoryAction: () => (
-    <button type="button" data-testid="action-document-group-inventory">
-      Manage versions
-    </button>
-  ),
-  DocumentGroupInventory: () => null,
   usePausedScheduledDraft: vi.fn(() => ({isPaused: false, currentRelease: undefined})),
 }))
 
@@ -33,14 +25,6 @@ vi.mock('../../../components/paneRouter/usePaneRouter', () => ({
     params: {},
     setParams: vi.fn(),
   })),
-}))
-
-vi.mock('../../../hooks/useDocumentPerspectiveList', () => ({
-  useDocumentPerspectiveList: vi.fn(() => ({})),
-}))
-
-vi.mock('../../../components/confirmDeleteDialog/useReferringDocuments', () => ({
-  referringDocuments: vi.fn(() => EMPTY),
 }))
 
 // The real footer needs the tasks store and navigation providers; this test only cares about
@@ -56,9 +40,6 @@ vi.mock('../../../../core/tasks/plugin/TasksFooterOpenTasks', () => {
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
 const mockUsePaneRouter = usePaneRouter as MockedFunction<typeof usePaneRouter>
-const mockUseDocumentPerspectiveList = useDocumentPerspectiveList as MockedFunction<
-  typeof useDocumentPerspectiveList
->
 
 const PUBLISH_ACTION: ResolvedAction = {
   label: 'Publish',
@@ -74,8 +55,6 @@ function buildDocumentPaneValue(
     documentId: 'doc-123',
     documentType: 'author',
     connectionState: 'connected',
-    isDocumentGroupInventoryActive: false,
-    setIsDocumentGroupInventoryActive: vi.fn(),
     editState: {
       id: 'doc-123',
       type: 'author',
@@ -123,11 +102,6 @@ async function renderActionsWithTasksMode(
 beforeAll(async () => {
   TestProvider = await createTestProvider({
     resources: [structureUsEnglishLocaleBundle],
-    config: {
-      beta: {
-        documentGroupInventory: {enabled: true},
-      },
-    },
   })
 })
 
@@ -136,21 +110,11 @@ describe('DocumentStatusBarActions', () => {
     vi.clearAllMocks()
     mockUseDocumentPane.mockReturnValue(buildDocumentPaneValue())
     mockUsePaneRouter.mockReturnValue({params: {}, setParams: vi.fn()} as never)
-    mockUseDocumentPerspectiveList.mockReturnValue({} as never)
-  })
-
-  it('renders Manage versions when the document has no actions', () => {
-    renderActions([])
-
-    expect(screen.getByTestId('action-document-group-inventory')).toBeInTheDocument()
-    expect(screen.queryByTestId('action-publish')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('action-menu-button')).not.toBeInTheDocument()
   })
 
   it('renders the primary action when actions are present', () => {
     renderActions([PUBLISH_ACTION])
 
-    expect(screen.getByTestId('action-document-group-inventory')).toBeInTheDocument()
     expect(screen.getByTestId('action-publish')).toBeInTheDocument()
     expect(screen.queryByTestId('action-menu-button')).not.toBeInTheDocument()
   })

@@ -31,6 +31,7 @@ import {useEffectEvent} from 'use-effect-event'
 import {API_VERSIONS, DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../apiVersions'
 import {groqExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
+import {useVariantsEnabled} from '../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActivePerspective,
@@ -116,7 +117,12 @@ export function VisionGui(props: VisionGuiProps) {
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack, selectedVariantNames} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantNames)
+  const isVariantsEnabled = useVariantsEnabled()
+  // The navbar has no variant selector where the workspace has variants switched off, so a
+  // variant its URL still carries is not one the studio shows; queries then send none either
+  const selectedVariantName = isVariantsEnabled
+    ? getDefaultVariant(selectedVariantNames)
+    : undefined
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()

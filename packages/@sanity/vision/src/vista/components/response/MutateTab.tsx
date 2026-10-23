@@ -32,7 +32,7 @@ import {
 } from '../../util/mutations'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {SwitchField} from '../SwitchField'
-import {drawerScroller} from '../vista.css'
+import * as styles from '../vista.module.css'
 import {GenerateMutationsBar} from './GenerateMutationsBar'
 import {JsonEditor} from './JsonEditor'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
@@ -277,7 +277,7 @@ function PreviewResult(props: {
           {t('vista.mutate.no-documents')}
         </Text>
       ) : (
-        <Card border className={drawerScroller} radius={2}>
+        <Card border className={styles.drawerScroller} radius={2}>
           {preview.changes.map((change, index) => (
             <ChangeRow
               change={change}

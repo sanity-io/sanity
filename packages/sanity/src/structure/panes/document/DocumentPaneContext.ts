@@ -91,8 +91,6 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
    * The single source in-pane consumers should read instead of resolving the target themselves.
    */
   targetDocumentState: TargetDocumentState
-  isDocumentGroupInventoryActive: boolean
-  setIsDocumentGroupInventoryActive: (active: boolean) => void
   timelineError: Error | null
   /**
    * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.

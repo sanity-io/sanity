@@ -92,7 +92,7 @@ renders the component or an open PR is about to, so you only add what is missing
 
 Migration priority: card and tone-related components first (tones cascade through everything),
 box primitives later. Snapshot the _wrapper_ components in `packages/sanity/src/ui-components`
-and vanilla-extract-migrated components (change indicators, `DocumentLayout`) as sentinels.
+and Panda CSS-migrated components (change indicators, `DocumentLayout`) as sentinels.
 
 ## Every story is browsable
 
