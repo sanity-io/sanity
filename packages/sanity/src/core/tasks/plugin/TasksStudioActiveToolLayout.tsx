@@ -1,59 +1,15 @@
 import {Card, Layer, Spinner, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence} from 'motion/react'
 import {Suspense} from 'react'
-import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {type ActiveToolLayoutProps} from '../../config/studio/types'
 import {TasksStudioSidebar} from '../components/sidebar/TasksSidebar'
 import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
+import {rootFlex, sidebarMotionLayer} from './TasksStudioActiveToolLayout.css'
 
+// The `(max-width: 600px)` breakpoint in TasksStudioActiveToolLayout.css.ts mirrors this index.
 const FULLSCREEN_MEDIA_INDEX = 1
-const POSITION_ABSOLUTE_MEDIA_INDEX = 3
-
-const RootFlex = styled(Flex)(({theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const media = theme.sanity.media
-
-  return css`
-    min-height: 100%;
-
-    @media (max-width: ${media[POSITION_ABSOLUTE_MEDIA_INDEX]}px) {
-      position: relative;
-    }
-  `
-})
-const SidebarMotionLayer = styled(Layer)(({theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const media = theme.sanity.media
-
-  return css`
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 360px;
-    border-left: 1px solid var(--card-border-color);
-    box-sizing: border-box;
-    overflow: hidden;
-
-    box-shadow:
-      0px 6px 8px -4px var(--card-shadow-umbra-color),
-      0px 12px 17px -1px var(--card-shadow-penumbra-color);
-
-    @media (max-width: ${media[POSITION_ABSOLUTE_MEDIA_INDEX]}px) {
-      bottom: 0;
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
-
-    @media (max-width: ${media[FULLSCREEN_MEDIA_INDEX]}px) {
-      border-left: 0;
-      min-width: 100%;
-      left: 0;
-    }
-  `
-})
 
 /** The sidebar's loading treatment, shown while the feature check it reads is still pending */
 function TasksSidebarFallback() {
@@ -75,23 +31,23 @@ export default function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps
   // Lock the scroll when the sidebar is open in fullscreen mode
   const scrollLock = mediaIndex <= FULLSCREEN_MEDIA_INDEX && isOpen
   return (
-    <RootFlex height="100%">
+    <Flex className={rootFlex} height="100%">
       <Box flexBasis="0%" flexGrow={1} height="100%" overflow={scrollLock ? 'hidden' : 'auto'}>
         {props.renderDefault(props)}
       </Box>
 
       <AnimatePresence initial={false}>
         {isOpen && (
-          <SidebarMotionLayer zOffset={100} height="fill">
+          <Layer className={sidebarMotionLayer} zOffset={100} height="fill">
             {/* The sidebar reads the tasks mode, which suspends until the feature check has
                 answered; this boundary keeps that wait inside the sidebar, which can be open
                 before the check settles (a `?sidebar=tasks` link, the navbar button). */}
             <Suspense fallback={<TasksSidebarFallback />}>
               <TasksStudioSidebar />
             </Suspense>
-          </SidebarMotionLayer>
+          </Layer>
         )}
       </AnimatePresence>
-    </RootFlex>
+    </Flex>
   )
 }

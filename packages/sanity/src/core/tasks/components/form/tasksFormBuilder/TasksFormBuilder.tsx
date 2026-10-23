@@ -1,9 +1,7 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-import {rem} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
-import {useEffect, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
+import {type CSSProperties, useEffect, useMemo, useState} from 'react'
 import {Box} from 'ui5'
 
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -20,6 +18,7 @@ import {useTasks} from '../../../context/tasks/useTasks'
 import {type TaskDocument, type TaskTarget} from '../../../types'
 import {TasksAddonWorkspaceProvider} from '../addonWorkspace/TasksAddOnWorkspaceProvider'
 import {getTargetValue} from '../utils'
+import {formBuilderRoot, stackGridGapVar} from './TasksFormBuilder.css'
 
 const VARIANTS: Variants = {
   hidden: {opacity: 0},
@@ -28,17 +27,6 @@ const VARIANTS: Variants = {
     transition: {duration: 0.2, delay: 0.2},
   },
 }
-
-const FormBuilderRoot = styled(motion.div)((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return `
-    // Update spacing for the form builder
-    & > [data-ui='VStack'] {
-      grid-gap: ${rem(theme.space[4])};
-    }
-`
-})
 
 /**
  * A partial task document with the `_id` and `_type` fields.
@@ -53,6 +41,7 @@ const TasksFormBuilderInner = ({
   initialValue?: TaskDocumentInitialValue
 }) => {
   const [patchChannel] = useState(() => createPatchChannel())
+  const {space} = useThemeV2()
 
   const {
     formState,
@@ -102,7 +91,14 @@ const TasksFormBuilderInner = ({
       {isLoading ? (
         <LoadingBlock showText />
       ) : (
-        <FormBuilderRoot id="wrapper" initial="hidden" animate="visible" variants={VARIANTS}>
+        <motion.div
+          className={formBuilderRoot}
+          id="wrapper"
+          initial="hidden"
+          animate="visible"
+          style={{[stackGridGapVar]: `${rem(space[4])}`} as CSSProperties}
+          variants={VARIANTS}
+        >
           <FormBuilder
             __internal_patchChannel={patchChannel}
             id="root"
@@ -127,7 +123,7 @@ const TasksFormBuilderInner = ({
             hasUpstreamVersion={false}
             hasBaseVariant={false}
           />
-        </FormBuilderRoot>
+        </motion.div>
       )}
     </Box>
   )
