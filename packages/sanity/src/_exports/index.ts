@@ -910,6 +910,7 @@ export {sortReleases} from '../core/releases/hooks/utils'
 export {useActiveReleases} from '../core/releases/store/useActiveReleases'
 // oxlint-disable-next-line no-deprecated -- kept for sanity-plugin-netlify and friends; the deprecation points at the split hooks
 export {useColorScheme} from '../core/studio/colorScheme'
+export {useColorSchemeOptions} from '../core/studio/colorScheme'
 export {useDocumentValuePermissions} from '../core/store/grants/documentValuePermissions'
 export {useInitialValueResolverContext} from '../core/store/document/useInitialValue'
 export {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
@@ -952,7 +953,6 @@ export type {ReferenceInputOptions} from '../core/form/studio/contexts/Reference
 export type {SanityDefaultPreviewProps} from '../core/preview/components/SanityDefaultPreview'
 export type {SchemaErrorContext} from '../core/config/SchemaError'
 export type {TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
-export type {useColorSchemeOptions} from '../core/studio/colorScheme'
 export type {UserStoreOptions} from '../core/store/user/userStore'
 
 // Already deprecated before this PR, so their removal is governed by their own deprecation

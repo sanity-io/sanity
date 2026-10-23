@@ -84,6 +84,7 @@ const KEPT_FOR_COMPATIBILITY: Record<string, Readonly<Record<string, string>>> =
     sortReleases: '@sanity/vision',
     useActiveReleases: '@sanity/vision, @sanity/workflow-studio-plugin',
     useColorScheme: 'sanity-plugin-netlify, sanity-plugin-seofields, sanity-plugin-media-test-2',
+    useColorSchemeOptions: 'runtime export kept with useColorScheme',
     useDocumentValuePermissions: 'sanity-plugin-trash',
     useInitialValueResolverContext: '@sanity/workflow-studio-plugin',
     useIsReleaseActive: '@sanity/workflow-studio-plugin',
@@ -146,7 +147,6 @@ const KEPT_FOR_COMPATIBILITY: Record<string, Readonly<Record<string, string>>> =
     SchemaErrorContext: 'companion type of SchemaError',
     TextWithToneProps: 'companion type of TextWithTone',
     UserStoreOptions: 'companion type of UserStore',
-    useColorSchemeOptions: 'companion type of useColorScheme',
   },
   'sanity/router': {
     // Deprecated before this PR; see the note above.
