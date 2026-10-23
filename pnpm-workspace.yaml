@@ -31,7 +31,7 @@ catalog:
   '@pandacss/dev': ^2.2.0
   '@pandacss/vite': ^2.2.0
   '@playwright/test': 1.64.0
-  '@sanity/client': ^8.10.1
+  '@sanity/client': ^8.11.0
   '@sanity/migrate': ^8.0.5
   '@sanity/pandacss-tsdown-plugin': ^0.3.1
   '@sanity/schema-descriptor-utils': 1.3.3
