@@ -1,4 +1,4 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useState} from 'react'
 import {
@@ -8,7 +8,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {IncomingReferenceDocumentActions} from './IncomingReferenceDocumentActions'
@@ -32,7 +32,9 @@ const variants: Variants = {
 const ErrorCard = ({message}: {message: string}) => (
   <Card border radius={2} padding={1} tone="critical">
     <Box paddingY={4} paddingX={3}>
-      <Text size={1}>{message}</Text>
+      <Text size={1} as="div" trim={true} tone="critical">
+        {message}
+      </Text>
     </Box>
   </Card>
 )

@@ -8,7 +8,6 @@ import {
   // oxlint-disable-next-line no-restricted-imports -- the resolved menu button props are spread onto the `@sanity/ui` Button above
   type ButtonProps,
   type ButtonTone,
-  Text,
 } from '@sanity/ui'
 import {
   Menu,
@@ -42,7 +41,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -107,7 +106,7 @@ export const VersionModeHeader: ComponentType<
     <header className={versionModeHeaderLayout}>
       <div className={versionModeHeaderLayoutSection}>
         <Box padding={4}>
-          <Text as="h1" size={1} muted>
+          <Text as="h1" size={1} muted trim={true}>
             {t('compare-versions.title')}
           </Text>
         </Box>
@@ -132,9 +131,7 @@ export const VersionModeHeader: ComponentType<
           ))}
       </div>
       <Flex alignItems="center" paddingX={3}>
-        <Text size={1}>
-          <TransferIcon />
-        </Text>
+        <Icon size={1} icon={TransferIcon} style={{margin: '-0.375rem'}} />
       </Flex>
       <div className={versionModeHeaderLayoutSection}>
         {typeof documents?.next !== 'undefined' &&
@@ -313,7 +310,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
         <Flex gap={1}>
           <ReleaseAvatar padding={2} release={releasePerspective} />
           <Box paddingY={2}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               {tStructure(['compare-versions.status', type].join('.'))}
             </Text>
           </Box>
@@ -340,12 +337,12 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
             textProps={{size: 1, weight: 'medium'}}
           />
           {['asap', 'undecided'].includes(release.metadata.releaseType) && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {tCore(`release.type.${release.metadata.releaseType}`)}
             </Text>
           )}
           {release.metadata.releaseType === 'scheduled' && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {formatPublishDate(release)}
             </Text>
           )}
@@ -353,9 +350,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
         <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
           {isReleaseScheduledOrScheduling(release) && (
             <Box padding={2}>
-              <Text size={1}>
-                <LockIcon />
-              </Text>
+              <Icon size={1} icon={LockIcon} style={{margin: '-0.375rem'}} />
             </Box>
           )}
         </Flex>

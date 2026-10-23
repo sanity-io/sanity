@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
@@ -24,7 +24,7 @@ export function IncomingReferencesList({
     return (
       <Card border radius={2} padding={3} tone="critical">
         <Flex alignItems="center" justifyContent="center">
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true} tone="critical">
             {t('incoming-references-input.types-not-defined')}
           </Text>
         </Flex>

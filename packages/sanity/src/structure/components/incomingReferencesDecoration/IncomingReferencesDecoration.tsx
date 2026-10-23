@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {IncomingReferencesList} from './IncomingReferencesList'
 import {type IncomingReferencesOptions} from './types'
@@ -32,13 +31,13 @@ export function IncomingReferencesDecoration(
       <Box paddingY={2}>
         <VStack gap={3}>
           <Flex alignItems="center" paddingY={1}>
-            <Text as="label" weight="medium" size={1}>
+            <Text as="label" weight="medium" size={1} trim={true}>
               {title || startCase(name)}
             </Text>
           </Flex>
 
           {description && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {description}
             </Text>
           )}
