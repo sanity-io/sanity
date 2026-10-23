@@ -1,20 +1,16 @@
 import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
 import {UnknownIcon} from '@sanity/icons/Unknown'
-import {Card, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Card, useClickOutsideEvent, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
-import {type FocusEvent, useCallback, useRef, useState} from 'react'
-import {styled} from 'styled-components'
+import {type CSSProperties, type FocusEvent, useCallback, useRef, useState} from 'react'
 import {Text, Box, Flex, VStack, type TextProps, Icon} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
 import {InlineCode} from '../../../../../i18n/components/InlineCode'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
-
-const PopoverCard = styled(Card)`
-  max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-`
+import {container1Var, popoverCard} from './IncompatibleItemType.css'
 
 interface Props {
   value: unknown
@@ -29,6 +25,7 @@ export function IncompatibleItemType(props: Props) {
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const {t} = useTranslation()
+  const {container} = useThemeV2()
 
   useClickOutsideEvent(
     () => setShowDetails(false),
@@ -55,7 +52,15 @@ export function IncompatibleItemType(props: Props) {
       constrainSize
       tone="default"
       content={
-        <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
+        <Card
+          className={popoverCard}
+          style={{[container1Var]: `${container[1]}px`} as CSSProperties}
+          margin={1}
+          padding={3}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          overflow="auto"
+        >
           <VStack gap={4}>
             <Box>
               <Text weight="medium" as="div" trim={true}>
@@ -92,7 +97,7 @@ export function IncompatibleItemType(props: Props) {
               </Card>
             </VStack>
           </VStack>
-        </PopoverCard>
+        </Card>
       }
     >
       <Card
