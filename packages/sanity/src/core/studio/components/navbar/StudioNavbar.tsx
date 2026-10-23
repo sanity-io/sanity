@@ -10,7 +10,6 @@ import {
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Grid, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -38,25 +37,11 @@ import {SearchPopover} from './search/components/SearchPopover'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {SearchButton} from './search/SearchButton'
 import {SearchDialog} from './search/SearchDialog'
-import {navbar, navGrid, navTools} from './StudioNavbar.css'
+import {navbar, navGrid, navTools, rootLayer} from './StudioNavbar.css'
 import {UserMenu} from './userMenu/UserMenu'
 import {WorkspaceMenuButton} from './workspace/WorkspaceMenuButton'
 
 const EMPTY_ARRAY: [] = []
-
-const RootLayer = styled(Layer)`
-  min-height: auto;
-  position: relative;
-
-  &[data-search-open='true'] {
-    top: 0;
-    position: sticky;
-  }
-`
-
-const RootCard = styled(Card)`
-  line-height: 0;
-`
 
 /**
  * @hidden
@@ -183,8 +168,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
   return (
     <FreeTrialProvider>
-      <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
-        <RootCard
+      <Layer className={rootLayer} zOffset={100} data-search-open={searchFullscreenOpen}>
+        <Card
           className={navbar}
           tone={getReleaseTone(selectedPerspective)}
           borderBottom
@@ -293,7 +278,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
               </Flex>
             </TooltipDelayGroupProvider>
           </Grid>
-        </RootCard>
+        </Card>
 
         {!shouldRender.tools && (
           <NavDrawer
@@ -304,7 +289,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             tools={tools}
           />
         )}
-      </RootLayer>
+      </Layer>
     </FreeTrialProvider>
   )
 }
