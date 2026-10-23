@@ -1,5 +1,6 @@
 import {takeDomPropWarnings} from '@repo/test-config/vitest/failOnReactDomPropWarnings'
 import {render} from '@testing-library/react'
+// oxlint-disable-next-line no-restricted-imports -- this suite checks the guard against the styled-components warning itself, so it has to render a styled component
 import {styled} from 'styled-components'
 import {describe, expect, it, vi} from 'vitest'
 

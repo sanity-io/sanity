@@ -610,6 +610,28 @@ each dropped name before regenerating:
 Regenerating needs a full `pnpm build` first: the generator reads each package's built
 `lib/**/*.d.ts`.
 
+### Styling: Panda CSS `.css.ts`, never styled-components
+
+Component styles in `packages/sanity` live in colocated `*.css.ts` files (`css()`, `css.raw()`,
+`keyframes()` and `firstThatWorks()` from `#styled-system/css`, see [Panda CSS](#panda-css));
+dynamic values are literal custom properties the component sets through its inline `style`. Code
+outside the package uses CSS modules (see [CSS modules](#css-modules)). `eslint/no-restricted-imports`
+bans `styled-components` everywhere; the dependency only remains because `@sanity/ui@4` needs it as
+a peer and injects its own styles at runtime. That runtime sheet lands after the static
+`bundle.css`, so an override of a declaration an `@sanity/ui` primitive sets on itself must win by
+specificity (`&&`), not by order, and so must a modifier class over the base class it follows on
+the same element. Document-level rules that no component class can carry (`GlobalStyle`'s rules in
+`src/core/studio/globalStyles.ts`, the presentation iframe's view transitions, `@property`
+registrations) go in `globalCss` and `globalVars` of `packages/sanity/panda.config.ts`, and so does
+the one rule that overrides an inline style (`[data-presentation-document-list-pane] > div`): never
+write `!important` in a `css()` value, which Panda compiles to a class name the stylesheet has no
+rule for. Compose a mixin into another by spreading it, `css.raw({...mixin, zIndex: 1})`:
+`css.raw(mixin, {...})` drops every argument after the first once it is passed on to `css()`. The
+`migrate-styled-components-to-panda-css` skill
+(`.agents/skills/migrate-styled-components-to-panda-css/SKILL.md`) has the cascade model, the
+per-primitive table of self-set declarations, the theme-read to `--card-*` variable table, and the
+wrapper contract.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook

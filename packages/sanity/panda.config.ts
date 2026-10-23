@@ -1,5 +1,7 @@
 import {defineConfig, type Config} from '@pandacss/dev'
 
+import {studioGlobalCss} from './src/core/studio/globalStyles'
+
 // The static styles of the studio: `css()` calls in the `.css.ts` modules next to the
 // components, extracted at build time (`panda` in tsdown.config.ts) and shipped as
 // `sanity/bundle.css`. This is the only Panda project in the repository: the dev studios, Storybook
@@ -29,6 +31,8 @@ export default defineConfig({
   // Lets a studio verify that the static stylesheet loaded, e.g. with auto-updates
   globalCss: {
     '#sanity': {'--static-css-file-loaded-studio': 'true'},
+    // The document-level styles `GlobalStyle` (`src/core/studio/GlobalStyle.tsx`) applies
+    ...studioGlobalCss,
     // The presentation tool's iframe viewport transitions (`src/presentation/preview/IFrame.tsx`)
     'html:active-view-transition-type(sanity-iframe-viewport)': {
       'viewTransitionName': 'none',
