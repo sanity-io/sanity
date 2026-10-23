@@ -130,10 +130,15 @@ export function resolveDocumentPaneOverride(
       inspectorTabs:
         c2 === 'c' ? inspectorSwitcher === 'b' ? <PanelTitleRow /> : <InspectorTabs /> : undefined,
       headerPanels: c2 === 'c' && inspectorSwitcher === 'b' ? <HeaderPanelButtons /> : undefined,
-      // C4 E: the inventory opens at the midpoint of its 320–540px range (core seam `inspectorInitialWidth`); the limits stay.
+      // C4 E: the inventory opens at the midpoint of its 320–540px range (core seam `inspectorInitialWidth`); the limits stay. In a narrow pane
+      // (Presentation, a split pane) it opens at 45% of the pane instead, so the form keeps room (from the Handoff Studio's 0bb7bad0cf, Faheem
+      // 23 Oct); Studio's 320 px minimum holds.
       inspectorInitialWidth:
         c4 === 'e'
-          ? (name: string) => (name === 'variants-inventory' ? 430 : undefined)
+          ? (name: string, paneWidth?: number) =>
+              name === 'variants-inventory'
+                ? Math.min(430, paneWidth ? Math.round(paneWidth * 0.45) : 430)
+                : undefined
           : undefined,
       // C4 E (the Handoff Studio's T4): Compare versions' pickers list the versions with the same inventory as the Versions inspector.
       versionPicker: c4 === 'e' ? PickerInventory : undefined,

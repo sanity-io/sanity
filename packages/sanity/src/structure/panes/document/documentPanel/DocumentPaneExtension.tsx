@@ -43,7 +43,11 @@ export interface DocumentPaneExtension {
    * PROPOSED: the width an inspector opens at, by its name (undefined keeps the Studio's proportional default). The resize handle and the
    * 320 to 540 px limits are unchanged; the value is clamped to them.
    */
-  inspectorInitialWidth?: (inspectorName: string) => number | undefined
+  inspectorInitialWidth?: (
+    inspectorName: string,
+    /** The document pane's width when the inspector opens, if known. */
+    paneWidth?: number,
+  ) => number | undefined
   /**
    * PROPOSED (open beta, T4): the list inside Compare versions' two pickers. Unset, the picker shows core's `DocumentGroupInventory`. The open beta
    * sets it to the same inventory the Versions inspector shows, so one document's versions read the same in both places. When the inventory

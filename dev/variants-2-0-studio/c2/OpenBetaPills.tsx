@@ -333,9 +333,12 @@ export function OpenBetaPills({
   // Every version that sits in a release counts, base or variant.
   const releases = versions.filter((v) => v.release)
   const variants = versions.filter((v) => v.audience !== null)
-  const current = selectedPerspectiveName ?? 'drafts'
   // Live edit has no draft, and a workspace without the draft model has none either.
   const showDrafts = draftsEnabled && !schemaType?.liveEdit
+  // Without drafts the pane shows the published version under the Drafts perspective, so Published is the pill in view (Faheem, 23 Oct:
+  // "on top it shows Draft" while the pane showed Published, unselected).
+  const named = selectedPerspectiveName ?? 'drafts'
+  const current = !showDrafts && named === 'drafts' ? 'published' : named
   // The default version, where unselecting a release goes back to: Drafts, or Published where the drafts model is off.
   const defaultVersion: ReleaseId = draftsEnabled ? 'drafts' : 'published'
   const showPublished = Boolean(published) || (!showDrafts && !releases.length)

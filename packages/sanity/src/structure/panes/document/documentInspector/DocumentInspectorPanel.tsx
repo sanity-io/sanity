@@ -51,7 +51,7 @@ export function DocumentInspectorPanel(
   // PROPOSED: a host's tab row sits above the inspector, and the inspectors drop their own headers while it does.
   const extension = useDocumentPaneExtension({documentId, documentType})
   const tabs = extension?.inspectorTabs
-  const {collapsed} = usePane()
+  const {collapsed, rootElement} = usePane()
   const {closeInspector, inspector} = useDocumentPane()
   const {features} = useStructureTool()
 
@@ -84,7 +84,8 @@ export function DocumentInspectorPanel(
 
   if (features.resizablePanes) {
     const maxWidth = tabs ? DOCUMENT_INSPECTOR_TABS_MAX_WIDTH : DOCUMENT_INSPECTOR_MAX_WIDTH
-    const wanted = extension?.inspectorInitialWidth?.(inspector.name)
+    // PROPOSED: the host sees the pane's width, so it can open narrower in a narrow pane (Presentation, a split pane).
+    const wanted = extension?.inspectorInitialWidth?.(inspector.name, rootElement?.offsetWidth)
     const initialWidth =
       wanted === undefined
         ? undefined
