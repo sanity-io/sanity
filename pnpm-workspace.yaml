@@ -62,9 +62,9 @@ catalog:
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
   ui5: npm:@sanity/ui@5.0.0-alpha.17
-  tsdown: ^0.23.1
+  tsdown: ^0.23.2
   # Pins its `tsdown` peer to the exact release it ships with, so bump it together with `tsdown`
-  '@tsdown/css': ^0.23.1
+  '@tsdown/css': ^0.23.2
   typescript: ^7.0.2
   vite: ^8.3.5
   vitest: ^5.0.4
