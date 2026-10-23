@@ -5,8 +5,9 @@ import {ReferenceChromeStory} from './ReferenceChromeStory'
 /**
  * Chromatic sentinel: reference value states (unavailable, invalid type,
  * created in place), cross-dataset and global document reference previews,
- * and the cross-dataset feature-disabled warning after the ui5 Flex
- * migration. Fixture data; no preview store.
+ * the cross-dataset feature-disabled warning, and ReferenceLinkCard
+ * idle/selected/pressed after the ui5 Flex migration. Fixture data; no
+ * preview store.
  */
 const meta = {
   title: 'Inputs/Reference Chrome',
