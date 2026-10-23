@@ -5,6 +5,7 @@ import {type ReactNode, startTransition, useCallback, useEffect, useState} from 
 import {Text, VStack, Flex, Box, Icon, Link} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {reloadStudio} from '../reloadStudio'
 import {type RequestErrorClaim} from './types'
 
 /**
@@ -136,7 +137,7 @@ export function RequestErrorDialog(props: {
           ? {
               cancelButton: {
                 text: 'Reload Studio',
-                onClick: () => window.location.reload(),
+                onClick: reloadStudio,
                 tone: 'default',
               },
               confirmButton: {
@@ -148,7 +149,7 @@ export function RequestErrorDialog(props: {
           : {
               confirmButton: {
                 text: 'Reload Studio',
-                onClick: () => window.location.reload(),
+                onClick: reloadStudio,
                 tone: 'default',
               },
             }
@@ -212,7 +213,7 @@ function RateLimitedDialog(props: {
         footer={{
           confirmButton: {
             text: 'Reload Studio',
-            onClick: () => window.location.reload(),
+            onClick: reloadStudio,
             tone: 'default',
           },
         }}
