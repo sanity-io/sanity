@@ -1,7 +1,7 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Text} from '@sanity/ui'
+import {Badge} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -44,7 +44,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
     <VStack gap={3}>
       <Flex alignItems="center" paddingY={1}>
         <Flex alignItems="center">
-          <Text as="label" htmlFor={inputId} weight="medium" size={1}>
+          <Text as="label" htmlFor={inputId} weight="medium" size={1} trim={true}>
             {title || (
               <span style={{color: 'var(--card-muted-fg-color)'}}>
                 {t('form.field.untitled-field-label')}
@@ -90,7 +90,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
       )}
 
       {description && (
-        <Text muted size={1} id={createDescriptionId(inputId, description)}>
+        <Text muted size={1} id={createDescriptionId(inputId, description)} as="div" trim={true}>
           {description}
         </Text>
       )}

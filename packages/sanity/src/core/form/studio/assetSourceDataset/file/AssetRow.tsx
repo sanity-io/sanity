@@ -4,17 +4,13 @@ import {DocumentIcon} from '@sanity/icons/Document'
 import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Asset as AssetType} from '@sanity/types'
-import {
-  // oxlint-disable-next-line no-restricted-imports
-  Button,
-  Card,
-  Text,
-} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Button, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
-import {Flex, Grid, Box, VStack} from 'ui5'
+import {Text, Flex, Grid, Box, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
@@ -272,11 +268,18 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           >
             <Flex gap={2} flexBasis="0%" flexGrow={2} alignItems="center">
               <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
-                <Text muted size={2} style={STYLES_ICON_CARD}>
+                <Text muted size={2} style={STYLES_ICON_CARD} as="div" trim={true}>
                   <DocumentIcon />
                 </Text>
               </Card>
-              <Text size={1} align="left" textOverflow="ellipsis" style={STYLES_BUTTON_TEXT}>
+              <Text
+                size={1}
+                align="left"
+                truncate={1}
+                style={STYLES_BUTTON_TEXT}
+                as="div"
+                trim={true}
+              >
                 {originalFilename}
               </Text>
             </Flex>
@@ -300,26 +303,26 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           <>
             <Grid marginTop={3} gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={1}>
               <VStack gap={2}>
-                <Text size={1} muted weight="medium">
+                <Text size={1} muted weight="medium" as="div" trim={true}>
                   {t('asset-source.file.asset-list.header.size')}
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {formattedSize}
                 </Text>
               </VStack>
               <VStack gap={2}>
-                <Text size={1} muted weight="medium">
+                <Text size={1} muted weight="medium" as="div" trim={true}>
                   {t('asset-source.file.asset-list.header.type')}
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {formattedMimeType}
                 </Text>
               </VStack>
               <VStack gap={2}>
-                <Text size={1} muted weight="medium">
+                <Text size={1} muted weight="medium" as="div" trim={true}>
                   {t('asset-source.file.asset-list.header.date-added')}
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {formattedTime}
                 </Text>
               </VStack>
@@ -405,39 +408,53 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
               radius={2}
               style={STYLES_ICON_CARD}
             >
-              <Text muted size={2}>
+              <Text muted size={2} as="div" trim={true}>
                 <DocumentIcon />
               </Text>
             </Card>
             {showTooltip && (
               <Tooltip content={originalFilename}>
-                <Text size={1} align="left" textOverflow="ellipsis" style={STYLES_BUTTON_TEXT}>
+                <Text
+                  size={1}
+                  align="left"
+                  truncate={1}
+                  style={STYLES_BUTTON_TEXT}
+                  as="div"
+                  trim={true}
+                >
                   {originalFilename}
                 </Text>
               </Tooltip>
             )}
 
             {!showTooltip && (
-              <Text size={1} align="left" textOverflow="ellipsis" style={STYLES_BUTTON_TEXT}>
+              <Text
+                size={1}
+                align="left"
+                truncate={1}
+                style={STYLES_BUTTON_TEXT}
+                as="div"
+                trim={true}
+              >
                 {originalFilename}
               </Text>
             )}
           </CustomFlex>
         </RowButton>
         <CustomFlex alignItems="center">
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {formattedSize}
           </Text>
         </CustomFlex>
         <CustomFlex alignItems="center">
           <Box>
-            <TypeText size={1} muted textOverflow="ellipsis">
+            <TypeText size={1} muted truncate={1} forwardedAs="div" trim={true}>
               {formattedMimeType}
             </TypeText>
           </Box>
         </CustomFlex>
         <CustomFlex alignItems="center">
-          <Text as="time" size={1} muted dateTime={_createdAt}>
+          <Text as="time" size={1} muted dateTime={_createdAt} trim={true}>
             {formattedTime}
           </Text>
         </CustomFlex>
