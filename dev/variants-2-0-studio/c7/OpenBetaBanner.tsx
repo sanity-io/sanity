@@ -12,6 +12,7 @@ import {
   useCurrentLocale,
   usePerspective,
   useSetVariant,
+  useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -108,6 +109,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
   const {setChosen} = usePerspectiveState()
   const setVariant = useSetVariant()
   const pane = useDocumentPane()
+  // Drafts exist unless the document type is live edit or the workspace has the draft model off (the pills' rule for the Draft pill).
+  const hasDrafts = useWorkspace().document.drafts.enabled && !pane.schemaType?.liveEdit
   const {create, status} = useCreateVariantVersion(documentId)
   const banner = useBannerCase(documentId)
   const inventoryOpen = pane.inspector?.name === INVENTORY
@@ -202,6 +205,26 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
     // Faheem, 23 Oct: one click to where a version can be made. Switch to Drafts keeps the variant in view (the pills' rule: a version choice
     // keeps the variant); "an open release" stays text, since there can be several.
     const variant = typeof stickyParams.variant === 'string' ? stickyParams.variant : undefined
+    // A live-edit document (or a workspace without drafts) has no Drafts to switch to: the banner names only an open release, with no button
+    // (the pills show no Draft pill there either).
+    if (!hasDrafts) {
+      return (
+        <Banner
+          content={say(
+            <>
+              This document has no published version for the{' '}
+              <Keep>
+                variant <VariantChip title={audience} />.
+              </Keep>{' '}
+              Switch to an open release to create one.
+            </>,
+            'published',
+          )}
+          icon={InfoOutlineIcon}
+          tone="neutral"
+        />
+      )
+    }
     return (
       <Banner
         action={{
