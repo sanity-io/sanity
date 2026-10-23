@@ -127,6 +127,38 @@ describe('Lightning CSS light-dark minify', () => {
   })
 })
 
+describe('Panda --made-with-panda marker', () => {
+  const PANDA_CSS_OUTPUT =
+    ':root{--made-with-panda:"🐼"}#sanity{--static-css-file-loaded-studio:true}.sanity-HgOzd{display:flex}'
+
+  // The options Vite's CSS minifier hands Lightning CSS (`minifyCSS` spreads `css.lightningcss`)
+  function minifyLikeVite(styles: 'panda' | 'css-modules') {
+    const {css} = createDefaultConfig({version: '9.9.9-test.1', styles})
+    return transform({
+      ...css?.lightningcss,
+      filename: 'index.css',
+      code: Buffer.from(PANDA_CSS_OUTPUT),
+      minify: true,
+      targets: VITE_BASELINE_WIDELY_AVAILABLE_TARGETS,
+    }).code.toString()
+  }
+
+  it('is dropped from the CDN stylesheet of a Panda package', () => {
+    const css = minifyLikeVite('panda')
+    expect(css).not.toContain('made-with-panda')
+    expect(css).not.toContain(':root')
+    expect(css).toContain('--static-css-file-loaded-studio')
+    expect(css).toContain('.sanity-HgOzd')
+  })
+
+  it('leaves the custom properties of a CSS modules package alone', () => {
+    expect(
+      createDefaultConfig({version: '9.9.9-test.1', styles: 'css-modules'}).css?.lightningcss
+        ?.unusedSymbols,
+    ).toBeUndefined()
+  })
+})
+
 function runPlugin(bundle: Record<string, any>) {
   const plugin = cleanupCssOutputPlugin()
   // generateBundle is a Rollup hook — call it directly with a mock context
