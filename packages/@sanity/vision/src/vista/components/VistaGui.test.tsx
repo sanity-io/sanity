@@ -3,6 +3,7 @@ import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import JSON5 from 'json5'
 import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {Subject} from 'rxjs'
 import {type PerspectiveContextValue, useScheduledDraftsEnabled} from 'sanity'
@@ -646,6 +647,79 @@ describe('VistaGui', () => {
     // The editor shows what the form wrote
     fireEvent.click(document.getElementById('vista-params-view-json') as HTMLElement)
     expect(JSON.parse(paramsEditor().value)).toEqual({limit: 3, type: 'author'})
+  })
+
+  it('prefills the JSON params editor with params the query references, keeping existing values', async () => {
+    const {unmount} = renderVista()
+    const paramsEditor = () =>
+      within(screen.getByTestId('vista-params-editor')).getByTestId(
+        'codemirror-mock',
+      ) as HTMLTextAreaElement
+
+    // An existing value for one of the two params the query below references is kept untouched;
+    // the other, never seen before, is added as an empty placeholder
+    fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3\n}'}})
+    typeQuery('*[_type == $type][0...$limit]')
+
+    await waitFor(() => expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3, type: ''}), {
+      timeout: 2000,
+    })
+    // Written to the stored tab too, not just the live editor
+    await waitFor(() =>
+      expect(JSON5.parse(getStoredState().tabs[0].rawParams)).toEqual({limit: 3, type: ''}),
+    )
+
+    // A real value typed into the placeholder is never clobbered by a later prefill of the same
+    // referenced params
+    fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3,\n  "type": "author"\n}'}})
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].rawParams).toBe('{\n  "limit": 3,\n  "type": "author"\n}'),
+    )
+    typeQuery('*[_type == $type][0...$limit]{_id}')
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]{_id}'),
+    )
+    // The debounce settling afterwards finds nothing missing to add
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3, type: 'author'})
+
+    unmount()
+  })
+
+  it('leaves the JSON params editor alone while the query does not parse', async () => {
+    const {unmount} = renderVista()
+    const paramsEditor = () =>
+      within(screen.getByTestId('vista-params-editor')).getByTestId(
+        'codemirror-mock',
+      ) as HTMLTextAreaElement
+
+    typeQuery('*[_type == $type][0...$limit')
+    await waitFor(() => expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit'))
+    await new Promise((resolve) => setTimeout(resolve, 400))
+
+    expect(JSON5.parse(paramsEditor().value)).toEqual({})
+
+    unmount()
+  })
+
+  it('does not prefill the params form inferred from the query, only the JSON editor', async () => {
+    const {unmount} = renderVista()
+    const formInput = (name: string) =>
+      screen.getByTestId(`vista-params-form-${name}`).querySelector('input') as HTMLInputElement
+
+    fireEvent.click(document.getElementById('vista-params-view-form') as HTMLElement)
+    typeQuery('*[_type == $type][0...$limit]')
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]'),
+    )
+    await new Promise((resolve) => setTimeout(resolve, 400))
+
+    // The form view already lists every referenced param on its own (groq-js based) inference;
+    // paramsEditorRef is unset while it is mounted, so this feature leaves it alone
+    expect(formInput('limit').value).toBe('')
+    expect(JSON5.parse(getStoredState().tabs[0].rawParams)).toEqual({})
+
+    unmount()
   })
 
   it('fetches the raw response, shows its metadata and records the history', async () => {
