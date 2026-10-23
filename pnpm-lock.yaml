@@ -187,7 +187,7 @@ catalogs:
       specifier: ^8.0.5
       version: 8.0.5
     '@sanity/pandacss-tsdown-plugin':
-      specifier: ^0.3.0
+      specifier: ^0.3.1
       version: 0.3.1
     '@sanity/schema-descriptor-utils':
       specifier: 1.3.3
