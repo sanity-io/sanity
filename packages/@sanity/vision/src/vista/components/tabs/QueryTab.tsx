@@ -36,7 +36,13 @@ import {
 import {cx} from '../../util/cx'
 import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
-import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
+import {
+  extractQueryParams,
+  formatGroq,
+  type GroqQueryParam,
+  GroqSyntaxError,
+} from '../../util/groqWasm'
+import {addMissingParams, missingParamNames} from '../../util/paramsPrefill'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VistaShortcutId} from '../../util/shortcuts'
 import {RequestPanel} from '../request/RequestPanel'
@@ -62,6 +68,8 @@ function countLines(text: string): number {
 const DEFAULT_REQUEST_SHARE = {columns: 0.5, stacked: 0.6}
 /** Params are parsed on every change, so typing is debounced like in the classic tool */
 const PARAMS_DEBOUNCE_MS = 333
+/** How long a query goes unedited before its referenced params are prefilled into the JSON editor */
+const PARAMS_PREFILL_DEBOUNCE_MS = 333
 /**
  * A tab opened for a generated query lays out over its first frames (the split measures its
  * container), so the editor's width counts once it has stayed the same this many frames
@@ -139,6 +147,44 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     },
     [setParams, setParamsNow],
   )
+
+  // A query that stops changing for a moment has the params it references ($foo, $bar)
+  // prefilled into the JSON params editor, as empty placeholders, without touching any key
+  // already there. The form view has its own, richer inference (groq-js based, with types) and
+  // is unaffected: paramsEditorRef is only set while the JSON view is mounted
+  const prefillParams = useEffectEvent(async (query: string) => {
+    if (!paramsEditorRef.current) return
+    let referenced: GroqQueryParam[]
+    try {
+      referenced = await extractQueryParams(query)
+    } catch {
+      return // the query does not parse yet; nothing reliable to prefill from
+    }
+    if (referenced.length === 0) return
+    // The wasm module loads lazily; re-check everything that could have changed meanwhile: the
+    // query may have moved on, or the params panel may have collapsed or switched to the form.
+    // An edit still waiting in the params debounce is committed first, so a key just typed in
+    // is read rather than clobbered by a snapshot taken before it
+    if (!paramsEditorRef.current) return
+    setParams.flush()
+    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
+    if (!latest || latest.query !== query) return
+    const missing = missingParamNames(
+      referenced.map((param) => param.name),
+      latest.rawParams,
+      t,
+    )
+    if (!missing || missing.length === 0) return
+    const nextRawParams = addMissingParams(latest.rawParams, missing)
+    if (nextRawParams === latest.rawParams) return
+    paramsEditorRef.current.resetEditorContent(nextRawParams)
+    setParamsNow(nextRawParams)
+  })
+  useEffect(() => {
+    const timeoutId = setTimeout(() => void prefillParams(tab.query), PARAMS_PREFILL_DEBOUNCE_MS)
+    return () => clearTimeout(timeoutId)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
+  }, [tab.query])
 
   // The request a fetch of the tab's own query should carry right now: params typed within the
   // debounce window belong to it, so they are committed first and the request is built from what
