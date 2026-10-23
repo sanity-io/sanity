@@ -30,5 +30,7 @@ export const CodeWrapper = styled(Code)`
     text-overflow: ellipsis;
     position: relative;
     max-width: 200px;
+    color: var(--card-code-fg-color);
+    background: var(--card-code-bg-color);
   }
 `

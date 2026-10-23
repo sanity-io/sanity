@@ -1,13 +1,14 @@
 import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
 import {UnknownIcon} from '@sanity/icons/Unknown'
-import {Card, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Card, type Theme, useClickOutsideEvent} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, type TextProps, Icon, Inline} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
+import {InlineCode} from '../../../../../i18n/components/InlineCode'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
 
@@ -19,10 +20,11 @@ interface Props {
   value: unknown
   onFocus?: (event: FocusEvent) => void
   vertical?: boolean
+  tone?: TextProps['tone']
 }
 
 export function IncompatibleItemType(props: Props) {
-  const {value, onFocus, vertical, ...rest} = props
+  const {value, onFocus, vertical, tone, ...rest} = props
   const [showDetails, setShowDetails] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
@@ -56,22 +58,31 @@ export function IncompatibleItemType(props: Props) {
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
           <VStack gap={4}>
             <Box>
-              <Text weight="medium">{t('inputs.array.error.type-is-incompatible-title')}</Text>
+              <Text weight="medium" as="div" trim={true}>
+                {t('inputs.array.error.type-is-incompatible-title')}
+              </Text>
             </Box>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.current-schema-not-declare-description"
                 values={{typeName}}
+                components={{code: InlineCode}}
               />
             </Text>
             <Box>
-              <Text size={1}>
-                <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
+              <Text size={1} as="div" trim={true}>
+                <Icon
+                  size={1}
+                  muted
+                  icon={BulbOutlineIcon}
+                  style={{margin: '-0.375rem', display: 'inline'}}
+                />{' '}
+                {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
             <VStack gap={2}>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {t('inputs.array.error.json-representation-description')}
               </Text>
               <Card padding={2} overflow="auto" border>
@@ -100,17 +111,16 @@ export function IncompatibleItemType(props: Props) {
       >
         <Flex alignItems="center">
           <Box marginRight={3}>
-            <Text>
-              <UnknownIcon />
-            </Text>
+            <Icon icon={UnknownIcon} tone={tone} style={{margin: '-0.4375rem'}} />
           </Box>
 
           <Box flexBasis="0%" flexGrow={1}>
-            <Text size={1} textOverflow="ellipsis">
+            <Text size={1} truncate={1} as="div" trim={true} tone={tone}>
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.type-is-incompatible-prompt"
                 values={{typeName}}
+                components={{code: InlineCode}}
               />
             </Text>
           </Box>
