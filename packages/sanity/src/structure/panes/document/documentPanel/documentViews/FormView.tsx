@@ -1,4 +1,4 @@
-import {focusFirstDescendant, Spinner} from '@sanity/ui'
+import {Spinner} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
@@ -27,6 +27,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {useDocumentTitleField} from '../useDocumentTitleField'
+import {focusFirstFormInput} from './focusFirstFormInput'
 import {FormHeader} from './FormHeader'
 
 interface FormViewProps {
@@ -191,7 +192,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     if (hasFocusedAnyPath || !ready || formState?.focusPath.length || !formRef) {
       return undefined
     }
-    if (focusFirstDescendant(formRef)) {
+    if (focusFirstFormInput(formRef)) {
       return undefined
     }
     // Nothing focusable yet: the inputs are behind FormBuilder's Suspense boundary while a lazy
@@ -205,7 +206,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     }
     ownerDocument.addEventListener('focusin', handleFocusIn, true)
     const observer = new MutationObserver(() => {
-      if (focusMoved || focusFirstDescendant(formRef)) {
+      if (focusMoved || focusFirstFormInput(formRef)) {
         observer.disconnect()
         ownerDocument.removeEventListener('focusin', handleFocusIn, true)
       }

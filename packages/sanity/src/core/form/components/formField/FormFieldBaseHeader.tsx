@@ -243,6 +243,8 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   return (
     <Root
       alignItems="flex-end"
+      // Initial focus on open lands on the input, not on the actions above it.
+      data-skip-initial-focus=""
       justifyContent="space-between"
       $floatingCardVisible={shouldShowFloatingCard}
       $floatingCardWidth={floatingCardWidth}
