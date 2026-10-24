@@ -62,7 +62,7 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
   }, [comlink, workspace])
 
   const client = useClient(
-    // Fetching with a variant requires the `vX` API version for now
+    // Fetching with a variant requires the variants API version
     variant
       ? VARIANTS_STUDIO_CLIENT_OPTIONS
       : isReleasePerspective(perspective)

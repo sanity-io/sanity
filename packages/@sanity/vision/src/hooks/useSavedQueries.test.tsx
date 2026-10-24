@@ -35,7 +35,7 @@ const client = {
 const currentUser = {id: 'user-1'}
 
 vi.mock('sanity', () => ({
-  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
+  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
   useKeyValueStore: () => keyValueStore,
   useClient: () => client,
   useCurrentUser: () => currentUser,

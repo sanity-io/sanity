@@ -655,7 +655,7 @@ export function VisionGui(props: VisionGuiProps) {
     if (perspective !== 'pinnedRelease') {
       return
     }
-    // changeApiVersion already re-runs the query with vX.
+    // changeApiVersion already re-runs the query with the variants API version.
     changeApiVersion(VARIANTS_API_VERSION)
   })
 

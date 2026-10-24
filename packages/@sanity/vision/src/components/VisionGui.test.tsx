@@ -49,7 +49,7 @@ vi.mock('sanity', () => ({
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
+  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
   getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
   isCardinalityOneRelease: () => false,
   sortReleases: <T,>(releases: T[]) => releases,
@@ -231,7 +231,7 @@ describe('VisionGui pinned release and variant', () => {
     expect(fetchConfigs.at(-1)?.variant).toBeUndefined()
   })
 
-  it('switches to pinned release and locks vX when the navbar has a variant', async () => {
+  it('switches to pinned release and locks the variants version when the navbar has a variant', async () => {
     seedVisionStorage({apiVersion: 'v2025-02-19'})
 
     const {fetchConfigs} = renderVision({
@@ -241,26 +241,26 @@ describe('VisionGui pinned release and variant', () => {
 
     await waitFor(() => {
       expect(getPerspectiveSelector().value).toBe('pinnedRelease')
-      expect(getApiVersionSelector().value).toBe('vX')
+      expect(getApiVersionSelector().value).toBe('v2025-08-18')
       expect(getApiVersionSelector().disabled).toBe(true)
     })
 
     await waitFor(() => {
-      expect(getQueryUrl()).toContain('/vX/')
+      expect(getQueryUrl()).toContain('/v2025-08-18/')
       expect(getQueryUrlParams().get('variant')).toBe('french')
       expect(getQueryUrlParams().get('perspective')).toBe('published')
     })
 
     expect(fetchConfigs.at(-1)).toEqual(
       expect.objectContaining({
-        apiVersion: 'vX',
+        apiVersion: 'v2025-08-18',
         perspective: ['published'],
         variant: 'french',
       }),
     )
   })
 
-  it('forces vX over a stored custom API version when a navbar variant is active', async () => {
+  it('forces the variants version over a stored custom API version when a navbar variant is active', async () => {
     seedVisionStorage({
       perspective: 'pinnedRelease',
       apiVersion: 'v2022-08-08',
@@ -271,16 +271,16 @@ describe('VisionGui pinned release and variant', () => {
       selectedVariantNames: ['french'],
     })
 
-    expect(getApiVersionSelector().value).toBe('vX')
+    expect(getApiVersionSelector().value).toBe('v2025-08-18')
     expect(getApiVersionSelector().disabled).toBe(true)
     expect(screen.queryByDisplayValue('v2022-08-08')).toBeNull()
 
     await waitFor(() => {
-      expect(getQueryUrl()).toContain('/vX/')
+      expect(getQueryUrl()).toContain('/v2025-08-18/')
       expect(getQueryUrlParams().get('variant')).toBe('french')
     })
 
-    expect(fetchConfigs.at(-1)?.apiVersion).toBe('vX')
+    expect(fetchConfigs.at(-1)?.apiVersion).toBe('v2025-08-18')
   })
 
   it('does not attach a variant while Vision is on a local perspective', async () => {
