@@ -3,14 +3,11 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useEffect} from 'react'
 import {onCLS, onFCP, onINP, onLCP} from 'web-vitals'
 
-import {type Workspace} from '../../config/types'
 import {PerformanceSoftNavigationMeasured} from '../__telemetry__/performance.telemetry'
 import {useWorkspace} from '../workspace'
-import {createPreviousURLTracker, type PreviousURLTracker} from './previousURLTracker'
 import {
   createSoftNavigationReporter,
   SOFT_NAVIGATION_SAMPLE_RATE,
-  type SoftNavigationReporter,
   type SoftNavigationWorkspace,
 } from './softNavigationReporter'
 import {isDebugTelemetryEnabled} from './utils/debugLoggingStore'
@@ -19,57 +16,42 @@ const SOFT_NAVIGATION_OPTIONS = {reportSoftNavs: true}
 // Soft LCP finalises after the next click has run, when its element may already be detached.
 const SOFT_LCP_OPTIONS = {...SOFT_NAVIGATION_OPTIONS, reportAllChanges: true}
 
-function supportsSoftNavigations(): boolean {
-  return globalThis.PerformanceObserver?.supportedEntryTypes?.includes('soft-navigation') ?? false
-}
-
 // Module scope so a page load rolls once, not again on remount or workspace switch.
 const isPageLoadSampled = Math.random() < SOFT_NAVIGATION_SAMPLE_RATE
-
-function isSessionInSample(): boolean {
-  // Debug telemetry only logs to the console, so it reports every session to make soft navs testable.
-  return isDebugTelemetryEnabled() || isPageLoadSampled
-}
+const MAX_TRACKED_URLS = 50
 
 function shouldReportSoftNavigations(): boolean {
-  return supportsSoftNavigations() && isSessionInSample()
+  const supportsSoftNavigations =
+    globalThis.PerformanceObserver?.supportedEntryTypes?.includes('soft-navigation') ?? false
+  // Debug telemetry only logs to the console, so it reports every session to make soft navs testable.
+  return supportsSoftNavigations && (isDebugTelemetryEnabled() || isPageLoadSampled)
 }
 
-function toSoftNavigationWorkspace(workspace: Workspace): SoftNavigationWorkspace {
-  return {basePath: workspace.basePath, toolNames: workspace.tools.map((tool) => tool.name)}
-}
-
-function trackPreviousURLs(): PreviousURLTracker['get'] {
-  const tracker = createPreviousURLTracker()
+// Chromium emits no soft nav for some URL changes, so the previous soft nav's URL can be stale.
+function trackPreviousURLs(): (navigationURL: string) => string | undefined {
+  const previousURLs = new Map<string, string>()
   globalThis.navigation?.addEventListener('currententrychange', (event) => {
     const currentURL = globalThis.navigation.currentEntry?.url
     const previousURL = event.from.url
-    if (currentURL && previousURL) tracker.record(previousURL, currentURL)
+    // Tools such as Releases replace their URL with itself on mount, which would erase where the user came from.
+    if (currentURL && previousURL && previousURL !== currentURL) {
+      previousURLs.delete(currentURL)
+      previousURLs.set(currentURL, previousURL)
+    }
+    if (previousURLs.size > MAX_TRACKED_URLS) {
+      previousURLs.delete(previousURLs.keys().next().value ?? '')
+    }
   })
-  return tracker.get
-}
-
-function flushWhenHidden(reporter: SoftNavigationReporter): void {
-  // Registered after web-vitals' own listeners, so the metrics it finalises on hide land first.
-  addEventListener(
-    'visibilitychange',
-    () => {
-      if (document.visibilityState === 'hidden') reporter.flush()
-    },
-    {capture: true},
-  )
-  addEventListener('pagehide', reporter.flush, {capture: true})
-}
-
-interface PageSoftNavigationTelemetry {
-  telemetry?: TelemetryLogger<unknown>
-  workspace: SoftNavigationWorkspace
-  isStarted: boolean
+  return (navigationURL) => previousURLs.get(navigationURL)
 }
 
 // Studio remounts its telemetry provider on every workspace switch, and web-vitals has no
 // unsubscribe, so the page registers once and each mount only points it at its own logger.
-const page: PageSoftNavigationTelemetry = {
+const page: {
+  telemetry?: TelemetryLogger<unknown>
+  workspace: SoftNavigationWorkspace
+  isStarted: boolean
+} = {
   workspace: {basePath: '/', toolNames: []},
   isStarted: false,
 }
@@ -85,7 +67,15 @@ function startPageReporting(): void {
   onFCP(reporter.record, SOFT_NAVIGATION_OPTIONS)
   onINP(reporter.record, SOFT_NAVIGATION_OPTIONS)
   onCLS(reporter.record, SOFT_NAVIGATION_OPTIONS)
-  flushWhenHidden(reporter)
+  // Registered after web-vitals' own listeners, so the metrics it finalises on hide land first.
+  addEventListener(
+    'visibilitychange',
+    () => {
+      if (document.visibilityState === 'hidden') reporter.flush()
+    },
+    {capture: true},
+  )
+  addEventListener('pagehide', reporter.flush, {capture: true})
 }
 
 /**
@@ -103,7 +93,10 @@ export function useSoftNavigationTelemetry(): void {
 
   useEffect(() => {
     page.telemetry = telemetry
-    page.workspace = toSoftNavigationWorkspace(workspace)
+    page.workspace = {
+      basePath: workspace.basePath,
+      toolNames: workspace.tools.map((tool) => tool.name),
+    }
     if (page.isStarted) return
     page.isStarted = true
     if (shouldReportSoftNavigations()) startPageReporting()

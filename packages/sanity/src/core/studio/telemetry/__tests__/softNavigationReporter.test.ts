@@ -4,10 +4,12 @@ import {type PerformanceSoftNavigationMeasuredData} from '../../__telemetry__/pe
 import {recordStructurePaneKind, recordStructureTool} from '../paneKindRegistry'
 import {
   createSoftNavigationReporter,
-  MAX_SOFT_NAVIGATION_EVENTS,
-  SOFT_NAVIGATION_SETTLE_MS,
   type SoftNavigationMetric,
+  toLcpElementKind,
 } from '../softNavigationReporter'
+
+const SETTLE_MS = 3000
+const MAX_EVENTS = 200
 
 const ORIGIN = 'https://test-studio.sanity.dev'
 const LIST_URL = `${ORIGIN}/test/structure/book`
@@ -60,10 +62,10 @@ function startReporter() {
 beforeAll(() => {
   recordStructureTool('structure')
   recordStructureTool('cars')
-  recordStructurePaneKind('structure', 'book', 'list')
-  recordStructurePaneKind('structure', 'book;book-a', 'document')
-  recordStructurePaneKind('structure', 'book;book-b', 'document')
-  recordStructurePaneKind('cars', 'car;car-a', 'document')
+  recordStructurePaneKind('structure', 'root;book', 'list')
+  recordStructurePaneKind('structure', 'root;book;book-a', 'document')
+  recordStructurePaneKind('structure', 'root;book;book-b', 'document')
+  recordStructurePaneKind('cars', 'root;car;car-a', 'document')
 })
 
 beforeEach(() => {
@@ -84,7 +86,7 @@ describe('createSoftNavigationReporter', () => {
     reporter.record(metric('CLS', {navigationId: 1, navigationURL: DOCUMENT_URL, value: 0.01}))
     expect(events).toEqual([])
 
-    vi.advanceTimersByTime(SOFT_NAVIGATION_SETTLE_MS)
+    vi.advanceTimersByTime(SETTLE_MS)
 
     expect(events).toEqual([
       {
@@ -105,7 +107,7 @@ describe('createSoftNavigationReporter', () => {
 
     reporter.record(metric('FCP', {navigationId: 1, navigationURL: DOCUMENT_URL}))
     reporter.record(metric('FCP', {navigationId: 2, navigationURL: OTHER_DOCUMENT_URL}))
-    vi.advanceTimersByTime(SOFT_NAVIGATION_SETTLE_MS - 1)
+    vi.advanceTimersByTime(SETTLE_MS - 1)
     reporter.record(metric('INP', {navigationId: 1, navigationURL: DOCUMENT_URL, value: 64}))
     vi.advanceTimersByTime(1)
 
@@ -129,7 +131,7 @@ describe('createSoftNavigationReporter', () => {
     reporter.record(metric('FCP', {navigationId: 1, navigationURL: DOCUMENT_URL}))
     reporter.record(metric('FCP', {navigationId: 2, navigationURL: OTHER_DOCUMENT_URL}))
     reporter.flush()
-    vi.advanceTimersByTime(SOFT_NAVIGATION_SETTLE_MS - 1)
+    vi.advanceTimersByTime(SETTLE_MS - 1)
     reporter.record(metric('FCP', {navigationId: 3, navigationURL: DOCUMENT_URL}))
     reporter.record(metric('FCP', {navigationId: 4, navigationURL: OTHER_DOCUMENT_URL}))
     vi.advanceTimersByTime(1)
@@ -159,7 +161,7 @@ describe('createSoftNavigationReporter', () => {
 
     reporter.record(metric('FCP', {navigationId: 2, navigationURL: OTHER_DOCUMENT_URL}))
     reporter.record(metric('CLS', {navigationId: 1, navigationURL: DOCUMENT_URL}))
-    vi.advanceTimersByTime(SOFT_NAVIGATION_SETTLE_MS)
+    vi.advanceTimersByTime(SETTLE_MS)
 
     expect(events.map((event) => event.navigationId)).toEqual([1])
   })
@@ -282,16 +284,68 @@ describe('createSoftNavigationReporter', () => {
     expect(JSON.stringify(events)).not.toContain('book-a')
   })
 
-  it(`stops after ${MAX_SOFT_NAVIGATION_EVENTS} soft navs in a session`, () => {
+  it(`stops after ${MAX_EVENTS} soft navs in a session`, () => {
     const {events, reporter} = startReporter()
 
-    Array.from({length: MAX_SOFT_NAVIGATION_EVENTS + 5}, (_unused, index) => index + 1).forEach(
-      (navigationId) => {
-        reporter.record(metric('FCP', {navigationId, navigationURL: DOCUMENT_URL}))
-        reporter.flush()
-      },
+    Array.from({length: MAX_EVENTS + 5}, (_unused, index) => index + 1).forEach((navigationId) => {
+      reporter.record(metric('FCP', {navigationId, navigationURL: DOCUMENT_URL}))
+      reporter.flush()
+    })
+
+    expect(events).toHaveLength(MAX_EVENTS)
+  })
+})
+
+function mount(html: string, selector: string): Element | null {
+  document.body.innerHTML = html
+  return document.querySelector(selector)
+}
+
+describe('toLcpElementKind', () => {
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  it('reads the document title heading as title, although it sits inside the form', () => {
+    const element = mount(
+      '<div data-testid="form-view"><h2 data-testid="document-panel-document-title"><span id="text">Winnie</span></h2></div>',
+      '#text',
     )
 
-    expect(events).toHaveLength(MAX_SOFT_NAVIGATION_EVENTS)
+    expect(toLcpElementKind({element, url: ''})).toBe('title')
+  })
+
+  it('reads an editable title field as title', () => {
+    const element = mount(
+      '<div data-testid="form-view"><button data-testid="document-panel-document-title-field">Winnie</button></div>',
+      'button',
+    )
+
+    expect(toLcpElementKind({element, url: ''})).toBe('title')
+  })
+
+  it('reads a painted image as image', () => {
+    const element = mount(
+      '<div data-testid="form-view"><img src="https://cdn.sanity.io/bear.avif" /></div>',
+      'img',
+    )
+
+    expect(toLcpElementKind({element, url: 'https://cdn.sanity.io/bear.avif'})).toBe('image')
+  })
+
+  it('reads other form content as field', () => {
+    const element = mount('<div data-testid="form-view"><p>Long text</p></div>', 'p')
+
+    expect(toLcpElementKind({element, url: ''})).toBe('field')
+  })
+
+  it('reads anything outside the form as other', () => {
+    const element = mount('<header><h1>Books</h1></header>', 'h1')
+
+    expect(toLcpElementKind({element, url: ''})).toBe('other')
+  })
+
+  it('reads a detached element as other', () => {
+    expect(toLcpElementKind({element: null, url: ''})).toBe('other')
   })
 })
