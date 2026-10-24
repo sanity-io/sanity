@@ -54,6 +54,11 @@ function logTelemetryBatch(batch: Array<{type: string; name?: string; data?: unk
 }
 // oxlint-enable no-console
 
+/** @internal */
+export function isDebugTelemetryEnabled(): boolean {
+  return import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
+}
+
 export const debugLoggingStore: CreateBatchedStoreOptions = {
   flushInterval: 1000,
   resolveConsent: () => Promise.resolve({status: 'granted'}),
