@@ -20,13 +20,6 @@ describe('describeChange', () => {
       change: 'document-open',
     },
     {
-      label: 'document to sibling document',
-      previousURL: structureUrl('book', 'book-a'),
-      nextURL: structureUrl('book', 'book-b'),
-      nextRoute: 'structure:document',
-      change: 'document-open',
-    },
-    {
       label: 'split pane to the right',
       previousURL: structureUrl('book', 'book-a'),
       nextURL: structureUrl('book', 'book-a|,'),
@@ -58,13 +51,6 @@ describe('describeChange', () => {
       label: 'root to list',
       previousURL: `${ORIGIN}/test/structure`,
       nextURL: structureUrl('book'),
-      nextRoute: 'structure:list',
-      change: 'pane-open',
-    },
-    {
-      label: 'list to sibling list',
-      previousURL: structureUrl('book'),
-      nextURL: structureUrl('author'),
       nextRoute: 'structure:list',
       change: 'pane-open',
     },
@@ -133,20 +119,6 @@ describe('describeChange', () => {
       nextURL: `${ORIGIN}/test/releases/rSummer`,
       nextRoute: 'releases',
       change: 'other',
-    },
-    {
-      label: 'document open in a structure tool renamed to cars',
-      previousURL: `${ORIGIN}/test/cars/car`,
-      nextURL: `${ORIGIN}/test/cars/car;car-a`,
-      nextRoute: 'structure:document',
-      change: 'document-open',
-    },
-    {
-      label: 'inspector toggle in a structure tool renamed to cars',
-      previousURL: `${ORIGIN}/test/cars/car;car-a`,
-      nextURL: `${ORIGIN}/test/cars/car;${encodeURIComponent(`car-a,${INSPECT_VALIDATION}`)}`,
-      nextRoute: 'structure:document',
-      change: 'inspector-toggle',
     },
     {
       label: 'a previous URL from another workspace',

@@ -116,6 +116,3 @@ export type SoftNavigationChange =
   | 'tool-switch'
   | 'filter-change'
   | 'other'
-
-/** @internal */
-export type LcpElementKind = 'title' | 'field' | 'image' | 'other'

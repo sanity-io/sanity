@@ -1,6 +1,6 @@
 import {type SoftNavigationChange} from '../__telemetry__/performance.telemetry'
+import {toToolPathSegments} from './softNavRoute'
 
-const INSPECTOR_PARAMS = new Set(['inspect'])
 const VIEW_PARAMS = new Set(['view', 'since', 'rev'])
 
 interface DescribeChangeInput {
@@ -22,17 +22,17 @@ interface StructurePanes {
   params: string[]
 }
 
-function toStudioLocation(url: string, basePath: string): StudioLocation | undefined {
+function toSearchParams(url: string): URLSearchParams {
   try {
-    const {pathname, searchParams} = new URL(url)
-    const baseSegments = basePath.split('/').filter(Boolean)
-    const pathSegments = pathname.split('/').filter(Boolean)
-    const isInWorkspace = baseSegments.every((segment, index) => pathSegments[index] === segment)
-    const [tool = '', ...toolSegments] = pathSegments.slice(baseSegments.length)
-    return isInWorkspace ? {tool, toolSegments, search: searchParams} : undefined
+    return new URL(url).searchParams
   } catch {
-    return undefined
+    return new URLSearchParams()
   }
+}
+
+function toStudioLocation(url: string, basePath: string): StudioLocation | undefined {
+  const [tool, ...toolSegments] = toToolPathSegments(url, basePath)
+  return tool ? {tool, toolSegments, search: toSearchParams(url)} : undefined
 }
 
 function decodePanesSegment(panesSegment: string): string {
@@ -63,19 +63,11 @@ function changedKeys(previous: string[], next: string[]): string[] {
     .map((entry) => entry.slice(0, entry.indexOf('=')))
 }
 
-function hasSamePanes(previous: StructurePanes, next: StructurePanes): boolean {
-  return previous.paneIds.join('|') === next.paneIds.join('|')
-}
-
 function closesPanes(previous: StructurePanes, next: StructurePanes): boolean {
   return (
     next.paneIds.length < previous.paneIds.length &&
     next.paneIds.every((paneId, index) => previous.paneIds[index] === paneId)
   )
-}
-
-function isIntentLink(location: StudioLocation): boolean {
-  return location.tool === 'intent' || location.toolSegments[0] === 'intent'
 }
 
 function describeStructureChange(
@@ -86,9 +78,9 @@ function describeStructureChange(
   const previousPanes = toStructurePanes(previous.toolSegments[0])
   const nextPanes = toStructurePanes(next.toolSegments[0])
 
-  if (hasSamePanes(previousPanes, nextPanes)) {
+  if (previousPanes.paneIds.join('|') === nextPanes.paneIds.join('|')) {
     const keys = changedKeys(previousPanes.params, nextPanes.params)
-    if (keys.some((key) => INSPECTOR_PARAMS.has(key))) return 'inspector-toggle'
+    if (keys.includes('inspect')) return 'inspector-toggle'
     if (keys.some((key) => VIEW_PARAMS.has(key))) return 'view-change'
     return 'other'
   }
@@ -108,7 +100,8 @@ export function describeChange(input: DescribeChangeInput): SoftNavigationChange
   const next = toStudioLocation(input.nextURL, input.basePath)
   if (previous === undefined || next === undefined) return 'other'
 
-  if (input.nextRoute.startsWith('intent:') || isIntentLink(next)) return 'document-open'
+  const isIntentLink = next.tool === 'intent' || next.toolSegments[0] === 'intent'
+  if (input.nextRoute.startsWith('intent:') || isIntentLink) return 'document-open'
   if (previous.tool !== next.tool) return 'tool-switch'
   if (previous.search.get('perspective') !== next.search.get('perspective')) {
     return 'perspective-change'
