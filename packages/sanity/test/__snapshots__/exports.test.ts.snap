@@ -1162,6 +1162,8 @@ exports[`exports snapshot 1`] = `
     "prepareConfig": "function",
     "prepareForPreview": "function",
     "prepareTemplates": "function",
+    "recordStructurePaneKind": "function",
+    "recordStructureTool": "function",
     "remoteSnapshots": "function",
     "removeDupes": "function",
     "removeMissingReferences": "function",
