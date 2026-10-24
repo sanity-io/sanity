@@ -43,6 +43,7 @@ interface PendingSoftNavigation {
   navigationId: number
   navigationURL: string
   previousURL: string
+  workspace: SoftNavigationWorkspace
   lcp?: PerformanceSoftNavigationMeasuredData['lcp']
   fcp?: SoftNavigationVital
   inp?: SoftNavigationVital
@@ -116,9 +117,10 @@ export function createSoftNavigationReporter(
   const pending = new Map<number, PendingSoftNavigation>()
   const sentNavigationIds = new Set<number>()
   let latestURL = options.initialURL
+  let newestNavigationId = -1
 
   function toEvent(navigation: PendingSoftNavigation): PerformanceSoftNavigationMeasuredData {
-    const {basePath, toolNames} = options.getWorkspace()
+    const {basePath, toolNames} = navigation.workspace
     const route = toSoftNavRoute({navigationURL: navigation.navigationURL, basePath, toolNames})
     const change = describeChange({
       previousURL: navigation.previousURL,
@@ -154,20 +156,22 @@ export function createSoftNavigationReporter(
   }
 
   function sendOlderThan(navigationId: number) {
-    const navigationIds = [...pending.keys()]
-    const index = navigationIds.indexOf(navigationId)
-    send(index === -1 ? [] : navigationIds.slice(0, index))
+    send([...pending.keys()].filter((pendingId) => pendingId < navigationId))
   }
 
   function start(metric: SoftNavigationMetric): PendingSoftNavigation {
     const navigationURL = metric.navigationURL ?? ''
     const previousURL = options.getPreviousURL?.(navigationURL) ?? latestURL
-    const navigation = {navigationId: metric.navigationId, navigationURL, previousURL}
-    latestURL = navigationURL
-    if (pending.size > 0) {
-      setTimeout(() => sendOlderThan(metric.navigationId), SOFT_NAVIGATION_SETTLE_MS)
+    const workspace = {...options.getWorkspace()}
+    if (metric.navigationId > newestNavigationId) {
+      newestNavigationId = metric.navigationId
+      latestURL = navigationURL
     }
-    return navigation
+    if (pending.size > 0) {
+      const settlingBefore = newestNavigationId
+      setTimeout(() => sendOlderThan(settlingBefore), SOFT_NAVIGATION_SETTLE_MS)
+    }
+    return {navigationId: metric.navigationId, navigationURL, previousURL, workspace}
   }
 
   function acceptsMetric(metric: SoftNavigationMetric): boolean {

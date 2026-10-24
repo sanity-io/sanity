@@ -1,5 +1,6 @@
+import {type TelemetryLogger} from '@sanity/telemetry'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useEffect, useRef} from 'react'
+import {useEffect} from 'react'
 import {onCLS, onFCP, onINP, onLCP} from 'web-vitals'
 
 import {type Workspace} from '../../config/types'
@@ -61,6 +62,33 @@ function flushWhenHidden(reporter: SoftNavigationReporter) {
   addEventListener('pagehide', reporter.flush, {capture: true})
 }
 
+interface PageSoftNavigationTelemetry {
+  telemetry?: TelemetryLogger<unknown>
+  workspace: SoftNavigationWorkspace
+  isStarted: boolean
+}
+
+// Studio remounts its telemetry provider on every workspace switch, and web-vitals has no
+// unsubscribe, so the page registers once and each mount only points it at its own logger.
+const page: PageSoftNavigationTelemetry = {
+  workspace: {basePath: '/', toolNames: []},
+  isStarted: false,
+}
+
+function startPageReporting() {
+  const reporter = createSoftNavigationReporter({
+    initialURL: location.href,
+    getWorkspace: () => page.workspace,
+    getPreviousURL: trackPreviousURLs(),
+    send: (event) => page.telemetry?.log(PerformanceSoftNavigationMeasured, event),
+  })
+  onLCP(reporter.record, SOFT_LCP_OPTIONS)
+  onFCP(reporter.record, SOFT_NAVIGATION_OPTIONS)
+  onINP(reporter.record, SOFT_NAVIGATION_OPTIONS)
+  onCLS(reporter.record, SOFT_NAVIGATION_OPTIONS)
+  flushWhenHidden(reporter)
+}
+
 /**
  * Reports one `Performance Soft Navigation Measured` event per soft navigation, for a
  * sample of sessions in browsers that emit soft-navigation entries.
@@ -73,29 +101,12 @@ function flushWhenHidden(reporter: SoftNavigationReporter) {
 export function useSoftNavigationTelemetry(): void {
   const telemetry = useTelemetry()
   const workspace = useWorkspace()
-  const workspaceRef = useRef(toSoftNavigationWorkspace(workspace))
-  const hasInitialized = useRef(false)
 
   useEffect(() => {
-    workspaceRef.current = toSoftNavigationWorkspace(workspace)
-  }, [workspace])
-
-  useEffect(() => {
-    if (hasInitialized.current) return
-    hasInitialized.current = true
-
-    if (shouldReportSoftNavigations()) {
-      const reporter = createSoftNavigationReporter({
-        initialURL: location.href,
-        getWorkspace: () => workspaceRef.current,
-        getPreviousURL: trackPreviousURLs(),
-        send: (event) => telemetry.log(PerformanceSoftNavigationMeasured, event),
-      })
-      onLCP(reporter.record, SOFT_LCP_OPTIONS)
-      onFCP(reporter.record, SOFT_NAVIGATION_OPTIONS)
-      onINP(reporter.record, SOFT_NAVIGATION_OPTIONS)
-      onCLS(reporter.record, SOFT_NAVIGATION_OPTIONS)
-      flushWhenHidden(reporter)
-    }
-  }, [telemetry])
+    page.telemetry = telemetry
+    page.workspace = toSoftNavigationWorkspace(workspace)
+    if (page.isStarted) return
+    page.isStarted = true
+    if (shouldReportSoftNavigations()) startPageReporting()
+  }, [telemetry, workspace])
 }

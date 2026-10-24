@@ -151,6 +151,32 @@ describe('createSoftNavigationReporter', () => {
     expect(events.map((event) => event.change)).toEqual(['tool-switch', 'view-change'])
   })
 
+  it('settles a soft nav whose first metric arrives after a newer nav started', () => {
+    const {events, reporter} = startReporter()
+
+    reporter.record(metric('FCP', {navigationId: 2, navigationURL: OTHER_DOCUMENT_URL}))
+    reporter.record(metric('CLS', {navigationId: 1, navigationURL: DOCUMENT_URL}))
+    vi.advanceTimersByTime(SOFT_NAVIGATION_SETTLE_MS)
+
+    expect(events.map((event) => event.navigationId)).toEqual([1])
+  })
+
+  it('describes a soft nav with the workspace it started in', () => {
+    const events: PerformanceSoftNavigationMeasuredData[] = []
+    const workspace = {basePath: '/test', toolNames: ['structure']}
+    const reporter = createSoftNavigationReporter({
+      initialURL: LIST_URL,
+      getWorkspace: () => workspace,
+      send: (event) => events.push(event),
+    })
+
+    reporter.record(metric('FCP', {navigationId: 1, navigationURL: DOCUMENT_URL}))
+    workspace.basePath = '/us'
+    reporter.flush()
+
+    expect(events[0]).toMatchObject({route: 'structure:document', change: 'document-open'})
+  })
+
   it('drops metrics that arrive for a soft nav already sent', () => {
     const {events, reporter} = startReporter()
 
@@ -221,7 +247,7 @@ describe('createSoftNavigationReporter', () => {
   it(`stops after ${MAX_SOFT_NAVIGATION_EVENTS} soft navs in a session`, () => {
     const {events, reporter} = startReporter()
 
-    Array.from({length: MAX_SOFT_NAVIGATION_EVENTS + 5}, (_, index) => index + 1).forEach(
+    Array.from({length: MAX_SOFT_NAVIGATION_EVENTS + 5}, (_unused, index) => index + 1).forEach(
       (navigationId) => {
         reporter.record(metric('FCP', {navigationId, navigationURL: DOCUMENT_URL}))
         reporter.flush()
