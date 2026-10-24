@@ -21,7 +21,7 @@ import {
   submitAccessRequest,
 } from './accessRequests'
 import {deriveAccessRequestState} from './deriveAccessRequestState'
-import {defaultLabels, type RequestAccessLabels} from './labels'
+import {defaultLabels, type RequestAccessLabels, type ResolvedRequestAccessLabels} from './labels'
 import {getProviderTitle} from './providerTitle'
 import {
   type AccessRequest,
@@ -77,23 +77,18 @@ export interface RequestAccessFormProps {
 export function RequestAccessForm(props: RequestAccessFormProps) {
   const {client, resourceType = 'project', resourceId} = props
 
-  // Frozen at first render, so a new client for the same resource neither
-  // refetches nor resets the form; hosts remount with `key` to reload. `defer`
-  // keeps the requests out of render: react-rx subscribes once this component
-  // commits, so a render React discards never fetches, and one subscription is
-  // shared across StrictMode's double effects and an `<Activity>` hide/show.
-  // Both requests complete, so the hook never resubscribes the source and
-  // keeps the settled promise for the life of this instance.
-  const [load$] = useState(() =>
-    combineLatest({
-      accessRequestsHistory: defer(() => listMyAccessRequests(client)).pipe(
-        catchError(() => of(null)),
-      ),
-      accessRequestEligibilityState: defer(() =>
-        fetchAccessRequestStatus({client, resourceType, resourceId, origin: getRequestUrl()}),
-      ),
-    }),
+  const [createLoad] = useState(
+    () => () =>
+      combineLatest({
+        accessRequestsHistory: defer(() => listMyAccessRequests(client)).pipe(
+          catchError(() => of(null)),
+        ),
+        accessRequestEligibilityState: defer(() =>
+          fetchAccessRequestStatus({client, resourceType, resourceId, origin: getRequestUrl()}),
+        ),
+      }),
   )
+  const [load$, setLoad$] = useState(createLoad)
   // Read with `use()` in the child below the boundary, never here: suspending
   // this component would stop the commit that starts the fetch.
   const loadPromise = useObservablePromise(load$)
@@ -107,7 +102,11 @@ export function RequestAccessForm(props: RequestAccessFormProps) {
           </Flex>
         }
       >
-        <RequestAccessFormContent {...props} loadPromise={loadPromise} />
+        <RequestAccessFormContent
+          {...props}
+          loadPromise={loadPromise}
+          onRetry={() => setLoad$(createLoad())}
+        />
       </Suspense>
     </Card>
   )
@@ -135,7 +134,7 @@ type ViewState = {title: ReactNode; description: ReactNode | null} & (
   | {view: 'form'; expired: boolean}
   | {view: 'sent'}
   | {view: 'pending'}
-  | {view: 'blocked'; message: ReactNode}
+  | {view: 'blocked'; message: ReactNode; retryable?: boolean}
   | {view: 'sso-enforced'; message: ReactNode; redirectUrl?: string}
 )
 
@@ -145,7 +144,7 @@ type ViewState = {title: ReactNode; description: ReactNode | null} & (
  */
 function deriveServerViewState(
   status: AccessRequestEligibilityState,
-  labels: RequestAccessLabels,
+  labels: ResolvedRequestAccessLabels,
   providerTitle?: string,
   signedInWithSso?: boolean,
 ): ViewState | null {
@@ -165,16 +164,48 @@ function deriveServerViewState(
         description: null,
         message: labels.resourceNotAvailableMessage,
       }
+    case 'already-member':
+      return blockedState(labels.alreadyMemberTitle, labels.alreadyMemberMessage)
+    case 'pending':
+      return {view: 'pending', title: labels.sentTitle, description: labels.pendingMessage}
+    case 'recently-declined':
+      return blockedState(labels.deniedTitle, labels.deniedMessage({}))
+    case 'requests-disabled':
+      return blockedState(labels.requestsDisabledTitle, labels.requestsDisabledMessage)
+    case 'saml-roles-managed':
+      return {
+        view: 'sso-enforced',
+        title: labels.samlRolesManagedTitle,
+        description: null,
+        message: labels.samlRolesManagedMessage(),
+      }
+    case 'temporarily-unavailable':
+      return unavailableState(labels)
+    case 'request-limit-reached':
+      return blockedState(labels.requestLimitReachedTitle, labels.requestLimitReachedMessage)
+    case 'email-domain-blocked':
+      return blockedState(labels.emailDomainBlockedTitle, labels.emailDomainBlockedMessage)
     case 'eligible':
       return null
     default:
-      return null
+      return unavailableState(labels)
   }
+}
+
+function unavailableState(labels: ResolvedRequestAccessLabels): ViewState {
+  return {
+    ...blockedState(labels.temporarilyUnavailableTitle, labels.temporarilyUnavailableMessage),
+    retryable: true,
+  }
+}
+
+function blockedState(title: ReactNode, message: ReactNode): Extract<ViewState, {view: 'blocked'}> {
+  return {view: 'blocked', title, description: null, message}
 }
 
 // Reached on mount and after a submit 403, so the title claims neither.
 function ssoEnforcedState(options: {
-  labels: RequestAccessLabels
+  labels: ResolvedRequestAccessLabels
   providerTitle?: string
   signedInWithSso?: boolean
   redirectUrl?: string
@@ -197,7 +228,7 @@ function deriveViewState(options: {
   currentUser?: AccessUser | null
   providerTitle?: string
   signedInWithSso?: boolean
-  labels: RequestAccessLabels
+  labels: ResolvedRequestAccessLabels
 }): ViewState {
   const {
     accessRequestsHistory,
@@ -276,7 +307,10 @@ function deriveViewState(options: {
 }
 
 function RequestAccessFormContent(
-  props: RequestAccessFormProps & {loadPromise: ObservablePromise<LoadedAccessRequestData>},
+  props: RequestAccessFormProps & {
+    loadPromise: ObservablePromise<LoadedAccessRequestData>
+    onRetry: () => void
+  },
 ) {
   const {
     client,
@@ -288,10 +322,13 @@ function RequestAccessFormContent(
     preview,
     renderAction,
     loadPromise,
+    onRetry,
   } = props
   const {accessRequestsHistory, accessRequestEligibilityState} = use(loadPromise)
 
-  const labels = {...defaultLabels, ...props.labels}
+  // New labels are optional in the public type so existing complete label maps
+  // remain source-compatible; the defaults make them present at runtime.
+  const labels = {...defaultLabels, ...props.labels} as ResolvedRequestAccessLabels
   const titleId = useId()
 
   const [note, setNote] = useState('')
@@ -366,6 +403,9 @@ function RequestAccessFormContent(
                 text={labels.ssoSignInCta}
                 width="fill"
               />
+            ) : null}
+            {state.view === 'blocked' && state.retryable ? (
+              <Button mode="ghost" onClick={onRetry} text={labels.retry} width="fill" />
             ) : null}
           </VStack>
         ) : null}

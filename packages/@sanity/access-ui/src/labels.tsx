@@ -28,13 +28,47 @@ export interface RequestAccessLabels {
   ssoSignInCta: ReactNode
   resourceNotAvailableTitle: ReactNode
   resourceNotAvailableMessage: ReactNode
+  alreadyMemberTitle?: ReactNode
+  alreadyMemberMessage?: ReactNode
+  requestsDisabledTitle?: ReactNode
+  requestsDisabledMessage?: ReactNode
+  requestLimitReachedTitle?: ReactNode
+  requestLimitReachedMessage?: ReactNode
+  emailDomainBlockedTitle?: ReactNode
+  emailDomainBlockedMessage?: ReactNode
+  temporarilyUnavailableTitle?: ReactNode
+  temporarilyUnavailableMessage?: ReactNode
+  retry?: ReactNode
+  samlRolesManagedTitle?: ReactNode
+  samlRolesManagedMessage?: () => ReactNode
   submitFailedMessage: ReactNode
   wrongAccount: ReactNode
   signOut: ReactNode
 }
 
 /** @internal */
-export const defaultLabels: RequestAccessLabels = {
+export type ResolvedRequestAccessLabels = RequestAccessLabels &
+  Required<
+    Pick<
+      RequestAccessLabels,
+      | 'alreadyMemberTitle'
+      | 'alreadyMemberMessage'
+      | 'requestsDisabledTitle'
+      | 'requestsDisabledMessage'
+      | 'requestLimitReachedTitle'
+      | 'requestLimitReachedMessage'
+      | 'emailDomainBlockedTitle'
+      | 'emailDomainBlockedMessage'
+      | 'temporarilyUnavailableTitle'
+      | 'temporarilyUnavailableMessage'
+      | 'retry'
+      | 'samlRolesManagedTitle'
+      | 'samlRolesManagedMessage'
+    >
+  >
+
+/** @internal */
+export const defaultLabels: ResolvedRequestAccessLabels = {
   title: 'Request access',
   sentTitle: 'Access request sent',
   deniedTitle: 'Access request declined',
@@ -67,6 +101,25 @@ export const defaultLabels: RequestAccessLabels = {
   ssoSignInCta: 'Sign in with SSO',
   resourceNotAvailableTitle: 'Access can’t be requested',
   resourceNotAvailableMessage: 'The resource currently being requested is no longer available.',
+  alreadyMemberTitle: 'You’re already a member',
+  alreadyMemberMessage:
+    'Your account is already a member, but it may not have access to this content. Check that you’re using the right account, or contact an administrator for help.',
+  requestsDisabledTitle: 'Access requests are disabled',
+  requestsDisabledMessage:
+    'This organization does not accept access requests. Contact an administrator for help.',
+  requestLimitReachedTitle: 'Access request limit reached',
+  requestLimitReachedMessage:
+    'You’ve reached the limit for access requests. Please wait before trying again, or contact an administrator.',
+  emailDomainBlockedTitle: 'Access can’t be requested',
+  emailDomainBlockedMessage:
+    'Accounts with this email domain can’t request access. Contact an administrator for help.',
+  temporarilyUnavailableTitle: 'Access request unavailable',
+  temporarilyUnavailableMessage:
+    'We couldn’t check whether access can be requested. Please try again later.',
+  retry: 'Try again',
+  samlRolesManagedTitle: 'Access is managed through SSO',
+  samlRolesManagedMessage: () =>
+    `Your roles are managed through your organization’s SSO. Signing in through SSO again may reapply mapped roles, but it does not guarantee access. If you still can’t access this content, contact your organization’s administrator.`,
   submitFailedMessage: 'There was a problem submitting your request. Please try again.',
   wrongAccount: 'Wrong account?',
   signOut: 'Sign out',

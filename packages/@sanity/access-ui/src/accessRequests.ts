@@ -15,6 +15,7 @@ import {
 export const MAX_ACCESS_REQUEST_NOTE_LENGTH = 150
 
 const ACCESS_API_VERSION = '2024-07-01'
+const ACCESS_REQUEST_STATE_API_VERSION = '2026-10-24'
 
 /**
  * Structured 403 code thrown by the Access API when the target organization
@@ -24,6 +25,25 @@ const SAML_ENFORCEMENT_REQUIRED = 'saml_enforcement_required'
 
 function withAccessApiVersion(client: SanityClient): SanityClient {
   return client.withConfig({apiVersion: ACCESS_API_VERSION})
+}
+
+function isAccessRequestEligibilityState(value: unknown): value is AccessRequestEligibilityState {
+  if (typeof value !== 'object' || value === null) return false
+  const {state, redirectUrl} = value as {state?: unknown; redirectUrl?: unknown}
+  if (redirectUrl !== undefined && typeof redirectUrl !== 'string') return false
+  return (
+    state === 'eligible' ||
+    state === 'saml-required' ||
+    state === 'resource-not-available' ||
+    state === 'already-member' ||
+    state === 'pending' ||
+    state === 'recently-declined' ||
+    state === 'requests-disabled' ||
+    state === 'saml-roles-managed' ||
+    state === 'temporarily-unavailable' ||
+    state === 'request-limit-reached' ||
+    state === 'email-domain-blocked'
+  )
 }
 
 /**
@@ -48,8 +68,8 @@ export async function listMyAccessRequests(client: SanityClient): Promise<Access
  * pointed at SSO instead of writing a note no administrator can action.
  *
  * `origin` is carried opaquely to the login page so the user returns where they
- * started. Never throws: an unreachable or older API answers `eligible`,
- * leaving the form in place and the submit-time 403 as the backstop.
+ * started. Never throws: invalid responses and request failures fail closed so
+ * the form is not offered without a trustworthy eligibility verdict.
  *
  * @public
  */
@@ -61,16 +81,16 @@ export async function fetchAccessRequestStatus(options: {
 }): Promise<AccessRequestEligibilityState> {
   const {client, resourceType, resourceId, origin} = options
   try {
-    const status = await withAccessApiVersion(client).request<AccessRequestEligibilityState | null>(
-      {
+    const status = await client
+      .withConfig({apiVersion: ACCESS_REQUEST_STATE_API_VERSION})
+      .request<unknown>({
         url: `/access/${resourceType}/${resourceId}/requests/state`,
         tag: 'access-ui.request-state',
         query: origin ? {returnQuery: new URLSearchParams({origin}).toString()} : undefined,
-      },
-    )
-    return status ?? {state: 'eligible'}
+      })
+    return isAccessRequestEligibilityState(status) ? status : {state: 'temporarily-unavailable'}
   } catch {
-    return {state: 'eligible'}
+    return {state: 'temporarily-unavailable'}
   }
 }
 
