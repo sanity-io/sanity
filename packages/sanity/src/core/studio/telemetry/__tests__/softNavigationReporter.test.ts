@@ -134,6 +134,23 @@ describe('createSoftNavigationReporter', () => {
     expect(events.map((event) => event.navigationId)).toEqual([1, 2])
   })
 
+  it('diffs against the URL the browser left, even when the nav before it emitted no soft nav', () => {
+    const events: PerformanceSoftNavigationMeasuredData[] = []
+    const releasesURL = `${ORIGIN}/test/releases`
+    const reporter = createSoftNavigationReporter({
+      initialURL: LIST_URL,
+      getWorkspace: () => ({basePath: '/test', toolNames: ['structure', 'releases']}),
+      getPreviousURL: (navigationURL) => (navigationURL === VIEW_URL ? DOCUMENT_URL : undefined),
+      send: (event) => events.push(event),
+    })
+
+    reporter.record(metric('FCP', {navigationId: 1, navigationURL: releasesURL}))
+    reporter.record(metric('FCP', {navigationId: 2, navigationURL: VIEW_URL}))
+    reporter.flush()
+
+    expect(events.map((event) => event.change)).toEqual(['tool-switch', 'view-change'])
+  })
+
   it('drops metrics that arrive for a soft nav already sent', () => {
     const {events, reporter} = startReporter()
 
