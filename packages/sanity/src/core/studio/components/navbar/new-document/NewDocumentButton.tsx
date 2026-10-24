@@ -255,7 +255,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
           flexDirection="column"
           flexBasis="0%"
           flexGrow={1}
-          forwardedAs={ReactFocusLock}
+          as={ReactFocusLock}
           height="100%"
           returnFocus
         >
