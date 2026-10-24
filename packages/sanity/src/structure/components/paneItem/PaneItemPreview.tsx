@@ -20,6 +20,7 @@ import {
   SanityDefaultPreview,
   useDocumentVersions,
   usePerspective,
+  useShallowUnique,
 } from 'sanity'
 import {Flex} from 'ui5'
 
@@ -56,16 +57,19 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const {perspectiveStack, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
+  // Keyed on contents: a rebuilt-but-equal sort order would otherwise cascade
+  // into a new preview observable identity below.
+  const sortOrderBy = useShallowUnique(sortOrder?.by)
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
-    if (!sortOrder) return undefined
+    if (!sortOrderBy) return undefined
     return {
       ordering: {
         title: '',
         name: '',
-        by: sortOrder.by,
+        by: sortOrderBy,
       },
     }
-  }, [sortOrder])
+  }, [sortOrderBy])
   const previewStateObservable = useMemo(() => {
     return getPreviewStateObservable(
       props.documentPreviewStore,

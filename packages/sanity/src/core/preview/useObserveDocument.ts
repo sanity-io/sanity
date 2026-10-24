@@ -5,6 +5,7 @@ import {of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../store/datastores'
+import {useShallowUnique} from '../util/useShallowUnique'
 import {type ObserveDocumentAPIConfig} from './createObserveDocument'
 
 const INITIAL_STATE = {loading: true, document: null, error: null}
@@ -18,13 +19,17 @@ const INITIAL_STATE = {loading: true, document: null, error: null}
  */
 export function useUnstableObserveDocument<T extends SanityDocument>(
   documentId: string,
-  apiConfig?: ObserveDocumentAPIConfig,
+  unstableApiConfig?: ObserveDocumentAPIConfig,
 ): {
   document: T | null
   loading: boolean
   error: unknown
 } {
   const documentPreviewStore = useDocumentPreviewStore()
+  // Keyed on contents: `apiConfig` is naturally passed as an inline object
+  // literal, and its reference feeds the observable identity below — a fresh
+  // identity per render is loop-capable under react-rx v5.
+  const apiConfig = useShallowUnique(unstableApiConfig)
   const observable = useMemo(
     () =>
       documentPreviewStore.unstable_observeDocument(documentId, apiConfig).pipe(

@@ -15,6 +15,7 @@ import {
 
 import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
 import {useClient} from '../../../core/hooks/useClient'
+import {useShallowUnique} from '../../../core/util/useShallowUnique'
 import {type VideoPlaybackInfo} from './types'
 
 const POLLING_DELAY = 2_000
@@ -125,9 +126,12 @@ export type VideoPlaybackInfoLoadable =
   | {isLoading: false; result: undefined; error: undefined; retry: () => void}
 
 export function useVideoPlaybackInfo(
-  params: UseVideoPlaybackInfoParams | null,
+  unstableParams: UseVideoPlaybackInfoParams | null,
 ): VideoPlaybackInfoLoadable {
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
+  // Keyed on contents: a rebuilt-but-equal params object would otherwise mint
+  // a new observable identity below and refetch the playback info.
+  const params = useShallowUnique(unstableParams)
 
   const [retrySubject] = useState(() => new Subject<void>())
 

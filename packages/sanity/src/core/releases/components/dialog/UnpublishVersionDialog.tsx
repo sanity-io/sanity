@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type BadgeTone} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {type CSSProperties, useCallback, useEffect, useRef, useState} from 'react'
+import {type CSSProperties, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Text, Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -78,7 +78,8 @@ export function UnpublishVersionDialog(props: {
   const tone = getReleaseTone(release as ReleaseDocument)
   const schemaType = schema.get(documentType)
 
-  const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
+  const previewedValue = useMemo(() => ({_id: documentVersionId}), [documentVersionId])
+  const preview = useValuePreview({schemaType, value: previewedValue})
   const previewTitle = preview?.value?.title
 
   const event = useDocumentOperationEvent(publishedId, documentType)
