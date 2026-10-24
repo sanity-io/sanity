@@ -13,7 +13,6 @@ import {
   type SoftNavigationReporter,
   type SoftNavigationWorkspace,
 } from './softNavigationReporter'
-import {isSessionSampled} from './softNavigationSampling'
 import {isDebugTelemetryEnabled} from './utils/debugLoggingStore'
 
 const SOFT_NAVIGATION_OPTIONS = {reportSoftNavs: true}
@@ -24,9 +23,12 @@ function supportsSoftNavigations(): boolean {
   return globalThis.PerformanceObserver?.supportedEntryTypes?.includes('soft-navigation') ?? false
 }
 
+// Module scope so a page load rolls once, not again on remount or workspace switch.
+const isPageLoadSampled = Math.random() < SOFT_NAVIGATION_SAMPLE_RATE
+
 function isSessionInSample(): boolean {
   // Debug telemetry only logs to the console, so it reports every session to make soft navs testable.
-  return isDebugTelemetryEnabled() || isSessionSampled(SOFT_NAVIGATION_SAMPLE_RATE)
+  return isDebugTelemetryEnabled() || isPageLoadSampled
 }
 
 function shouldReportSoftNavigations(): boolean {
@@ -47,7 +49,7 @@ function trackPreviousURLs(): PreviousURLTracker['get'] {
   return tracker.get
 }
 
-function flushWhenHidden(reporter: SoftNavigationReporter) {
+function flushWhenHidden(reporter: SoftNavigationReporter): void {
   // Registered after web-vitals' own listeners, so the metrics it finalises on hide land first.
   addEventListener(
     'visibilitychange',
@@ -72,7 +74,7 @@ const page: PageSoftNavigationTelemetry = {
   isStarted: false,
 }
 
-function startPageReporting() {
+function startPageReporting(): void {
   const reporter = createSoftNavigationReporter({
     initialURL: location.href,
     getWorkspace: () => page.workspace,

@@ -144,7 +144,7 @@ export function createSoftNavigationReporter(
     }
   }
 
-  function send(navigationIds: number[]) {
+  function send(navigationIds: number[]): void {
     navigationIds.forEach((navigationId) => {
       const navigation = pending.get(navigationId)
       pending.delete(navigationId)
@@ -155,7 +155,7 @@ export function createSoftNavigationReporter(
     })
   }
 
-  function sendOlderThan(navigationId: number) {
+  function sendOlderThan(navigationId: number): void {
     send([...pending.keys()].filter((pendingId) => pendingId < navigationId))
   }
 
@@ -180,14 +180,14 @@ export function createSoftNavigationReporter(
     return sentNavigationIds.size < MAX_SOFT_NAVIGATION_EVENTS
   }
 
-  function record(metric: SoftNavigationMetric) {
+  function record(metric: SoftNavigationMetric): void {
     if (acceptsMetric(metric)) {
       const navigation = pending.get(metric.navigationId) ?? start(metric)
       pending.set(metric.navigationId, withMetric(navigation, metric))
     }
   }
 
-  function flush() {
+  function flush(): void {
     send([...pending.keys()])
   }
 
