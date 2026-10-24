@@ -871,9 +871,8 @@ jobs:
     needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
     outputs:
-      # Read by alert-scheduled-failure: the article soak step never fails the job
+      # Read by alert-scheduled-failure: these steps never fail the job
       article_soak_outcome: ${{ steps.article_soak.outcome }}
-      # Read by alert-scheduled-failure: the soft-navigation step never fails the job
       softnav_outcome: ${{ steps.softnav.outcome }}
       # Read by sqrl-score: a settle mismatch fails the job after the run is stored
       benchrun_store_outcome: ${{ steps.store.outcome }}
@@ -1133,24 +1132,15 @@ jobs:
               "text": ":alert-dot: Scheduled \"${{ github.workflow }}\" run failed — daily tracking or the weekly self-test is broken (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
             }
 
-      - name: Send article soak Slack notification
-        if: needs.track-main.outputs.article_soak_outcome == 'failure'
+      - name: Send soak/softnav Slack notification
+        if: >-
+          needs.track-main.outputs.article_soak_outcome == 'failure' ||
+          needs.track-main.outputs.softnav_outcome == 'failure'
         uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": ":warning: Scheduled \"${{ github.workflow }}\" run stored without the article soak — the soak failed, see the run's annotations (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
-            }
-
-      - name: Send soft-navigation Slack notification
-        if: needs.track-main.outputs.softnav_outcome == 'failure'
-        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": ":warning: Scheduled \"${{ github.workflow }}\" run stored without soft-navigation benchmarks — they failed, see the run's annotations (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
+              "text": ":warning: Scheduled \"${{ github.workflow }}\" run stored without ${{ (needs.track-main.outputs.article_soak_outcome == 'failure' && needs.track-main.outputs.softnav_outcome == 'failure' && 'the article soak and soft-navigation benchmarks') || (needs.track-main.outputs.article_soak_outcome == 'failure' && 'the article soak') || 'soft-navigation benchmarks' }} — see the run's annotations (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
             }
