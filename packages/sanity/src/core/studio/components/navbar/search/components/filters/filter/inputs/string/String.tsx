@@ -9,9 +9,7 @@ export function SearchFilterStringInput({
   onChange,
   value,
 }: OperatorInputComponentProps<number | string>) {
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
   const {t} = useTranslation()
 
   const handleChange = useCallback(

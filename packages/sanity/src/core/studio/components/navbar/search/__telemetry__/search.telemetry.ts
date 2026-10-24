@@ -10,14 +10,14 @@ export const RecentSearchClicked = defineEvent({
  * Time from a global navbar search being dispatched (post-debounce) to
  * its results arriving or failing.
  *
- * Timing origin (T0) is the `onStart` callback of the search pipeline,
- * which fires after the 300ms debounce (we want network latency, not
- * the user's typing pause). Timing end (T1) is the `onComplete` or
- * `onError` callback in the same pipeline.
+ * Timing origin (T0) is `globalSearchMachine` starting the search, after
+ * the 300ms debounce (we want network latency, not the user's typing
+ * pause). Timing end (T1) is the search's results landing or the search
+ * failing. Searches cancelled by a newer one are not measured.
  *
- * Fires only for searches with searchable terms; empty-term "searches"
- * (where the pipeline short-circuits to an empty observable) are
- * skipped to avoid noising the metric.
+ * Fires only for searches with searchable terms; requests with empty
+ * terms, which settle without searching, are skipped to avoid noising
+ * the metric.
  *
  * Not overlapping with `Document List Load Time Measured`, which
  * measures search within the structure tool's document list. This
@@ -28,7 +28,7 @@ export const RecentSearchClicked = defineEvent({
  * and `Document List Load Time Measured`).
  */
 export interface GlobalSearchLatencyMeasuredData {
-  /** ms from onStart to onComplete/onError */
+  /** ms from the search starting to its results landing or it failing */
   durationMs: number
   queryLength: number
   typeFilterCount: number
@@ -36,7 +36,7 @@ export interface GlobalSearchLatencyMeasuredData {
   resultCount: number
   /** search strategy from workspace config (e.g. 'text-search', 'groq2024') */
   strategy: string | null
-  /** true when the pipeline called onError instead of onComplete */
+  /** true when the search failed */
   errored: boolean
 }
 
