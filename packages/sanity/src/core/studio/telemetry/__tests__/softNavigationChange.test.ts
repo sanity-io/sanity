@@ -41,6 +41,20 @@ describe('describeChange', () => {
       change: 'document-open',
     },
     {
+      label: 'global search result through a tool-scoped intent link',
+      previousURL: `${ORIGIN}/test/vision`,
+      nextURL: `${ORIGIN}/test/structure/intent/edit/id=book-a;type=book`,
+      nextRoute: 'structure:other',
+      change: 'document-open',
+    },
+    {
+      label: 'sibling list that closes the deeper panes',
+      previousURL: structureUrl('book', 'book-a'),
+      nextURL: structureUrl('author'),
+      nextRoute: 'structure:list',
+      change: 'pane-open',
+    },
+    {
       label: 'root to list',
       previousURL: `${ORIGIN}/test/structure`,
       nextURL: structureUrl('book'),

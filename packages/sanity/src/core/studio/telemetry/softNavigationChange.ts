@@ -69,6 +69,17 @@ function hasSamePanes(previous: StructurePanes, next: StructurePanes): boolean {
   return previous.paneIds.join('|') === next.paneIds.join('|')
 }
 
+function closesPanes(previous: StructurePanes, next: StructurePanes): boolean {
+  return (
+    next.paneIds.length < previous.paneIds.length &&
+    next.paneIds.every((paneId, index) => previous.paneIds[index] === paneId)
+  )
+}
+
+function isIntentLink(location: StudioLocation): boolean {
+  return location.tool === 'intent' || location.toolSegments[0] === 'intent'
+}
+
 function describeStructureChange(
   previous: StudioLocation,
   next: StudioLocation,
@@ -84,7 +95,7 @@ function describeStructureChange(
     return 'other'
   }
 
-  if (nextPanes.paneIds.length < previousPanes.paneIds.length) return 'other'
+  if (closesPanes(previousPanes, nextPanes)) return 'other'
   return nextRoute === 'structure:document' ? 'document-open' : 'pane-open'
 }
 
@@ -99,7 +110,7 @@ export function describeChange(input: DescribeChangeInput): SoftNavigationChange
   const next = toStudioLocation(input.nextURL, input.basePath)
   if (previous === undefined || next === undefined) return 'other'
 
-  if (input.nextRoute.startsWith('intent:')) return 'document-open'
+  if (input.nextRoute.startsWith('intent:') || isIntentLink(next)) return 'document-open'
   if (previous.tool !== next.tool) return 'tool-switch'
   if (previous.search.get('perspective') !== next.search.get('perspective')) {
     return 'perspective-change'
