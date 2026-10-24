@@ -13,8 +13,6 @@ import {
 import {isDebugTelemetryEnabled} from './utils/debugLoggingStore'
 
 const SOFT_NAVIGATION_OPTIONS = {reportSoftNavs: true}
-// Soft LCP finalises after the next click has run, when its element may already be detached.
-const SOFT_LCP_OPTIONS = {...SOFT_NAVIGATION_OPTIONS, reportAllChanges: true}
 
 // Module scope so a page load rolls once, not again on remount or workspace switch.
 const isPageLoadSampled = Math.random() < SOFT_NAVIGATION_SAMPLE_RATE
@@ -63,7 +61,7 @@ function startPageReporting(): void {
     getPreviousURL: trackPreviousURLs(),
     send: (event) => page.telemetry?.log(PerformanceSoftNavigationMeasured, event),
   })
-  onLCP(reporter.record, SOFT_LCP_OPTIONS)
+  onLCP(reporter.record, SOFT_NAVIGATION_OPTIONS)
   onFCP(reporter.record, SOFT_NAVIGATION_OPTIONS)
   onINP(reporter.record, SOFT_NAVIGATION_OPTIONS)
   onCLS(reporter.record, SOFT_NAVIGATION_OPTIONS)

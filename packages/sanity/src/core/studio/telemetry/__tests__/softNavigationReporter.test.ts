@@ -2,11 +2,7 @@ import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest
 
 import {type PerformanceSoftNavigationMeasuredData} from '../../__telemetry__/performance.telemetry'
 import {recordStructurePaneKind, recordStructureTool} from '../paneKindRegistry'
-import {
-  createSoftNavigationReporter,
-  type SoftNavigationMetric,
-  toLcpElementKind,
-} from '../softNavigationReporter'
+import {createSoftNavigationReporter, type SoftNavigationMetric} from '../softNavigationReporter'
 
 const SETTLE_MS = 3000
 const MAX_EVENTS = 200
@@ -37,9 +33,8 @@ function metric(name: SoftNavigationMetric['name'], input: MetricInput): SoftNav
   }
 }
 
-function paintedEntry(element: Element | null, url = '') {
+function paintedEntry(url: string) {
   return {
-    element,
     url,
     name: '',
     entryType: 'largest-contentful-paint',
@@ -96,7 +91,7 @@ describe('createSoftNavigationReporter', () => {
         change: 'document-open',
         sampleRate: 0.1,
         fcp: {value: 120, rating: 'good'},
-        lcp: {value: 340, rating: 'good', elementKind: 'other'},
+        lcp: {value: 340, rating: 'good', elementKind: 'text'},
         cls: {value: 0.01, rating: 'good'},
       },
     ])
@@ -261,18 +256,30 @@ describe('createSoftNavigationReporter', () => {
     })
   })
 
-  it('tells title-led document opens apart by the LCP element', () => {
+  it('marks an LCP painted from an image URL as image', () => {
     const {events, reporter} = startReporter()
-    document.body.innerHTML = '<h2 data-testid="document-panel-document-title">Winnie</h2>'
-    const title = document.querySelector('h2')
 
     reporter.record(
-      metric('LCP', {navigationId: 1, navigationURL: DOCUMENT_URL, entries: [paintedEntry(title)]}),
+      metric('LCP', {
+        navigationId: 1,
+        navigationURL: DOCUMENT_URL,
+        entries: [paintedEntry('https://cdn.sanity.io/bear.avif')],
+      }),
     )
-    document.body.innerHTML = ''
     reporter.flush()
 
-    expect(events[0].lcp).toEqual({value: 100, rating: 'good', elementKind: 'title'})
+    expect(events[0].lcp).toEqual({value: 100, rating: 'good', elementKind: 'image'})
+  })
+
+  it('marks an LCP with no image URL as text', () => {
+    const {events, reporter} = startReporter()
+
+    reporter.record(
+      metric('LCP', {navigationId: 1, navigationURL: DOCUMENT_URL, entries: [paintedEntry('')]}),
+    )
+    reporter.flush()
+
+    expect(events[0].lcp).toEqual({value: 100, rating: 'good', elementKind: 'text'})
   })
 
   it('never sends the navigation URL, which holds document and release IDs', () => {
@@ -293,59 +300,5 @@ describe('createSoftNavigationReporter', () => {
     })
 
     expect(events).toHaveLength(MAX_EVENTS)
-  })
-})
-
-function mount(html: string, selector: string): Element | null {
-  document.body.innerHTML = html
-  return document.querySelector(selector)
-}
-
-describe('toLcpElementKind', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''
-  })
-
-  it('reads the document title heading as title, although it sits inside the form', () => {
-    const element = mount(
-      '<div data-testid="form-view"><h2 data-testid="document-panel-document-title"><span id="text">Winnie</span></h2></div>',
-      '#text',
-    )
-
-    expect(toLcpElementKind({element, url: ''})).toBe('title')
-  })
-
-  it('reads an editable title field as title', () => {
-    const element = mount(
-      '<div data-testid="form-view"><button data-testid="document-panel-document-title-field">Winnie</button></div>',
-      'button',
-    )
-
-    expect(toLcpElementKind({element, url: ''})).toBe('title')
-  })
-
-  it('reads a painted image as image', () => {
-    const element = mount(
-      '<div data-testid="form-view"><img src="https://cdn.sanity.io/bear.avif" /></div>',
-      'img',
-    )
-
-    expect(toLcpElementKind({element, url: 'https://cdn.sanity.io/bear.avif'})).toBe('image')
-  })
-
-  it('reads other form content as field', () => {
-    const element = mount('<div data-testid="form-view"><p>Long text</p></div>', 'p')
-
-    expect(toLcpElementKind({element, url: ''})).toBe('field')
-  })
-
-  it('reads anything outside the form as other', () => {
-    const element = mount('<header><h1>Books</h1></header>', 'h1')
-
-    expect(toLcpElementKind({element, url: ''})).toBe('other')
-  })
-
-  it('reads a detached element as other', () => {
-    expect(toLcpElementKind({element: null, url: ''})).toBe('other')
   })
 })

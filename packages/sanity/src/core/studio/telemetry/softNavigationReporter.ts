@@ -1,7 +1,6 @@
 import {type Metric} from 'web-vitals'
 
 import {
-  type LcpElementKind,
   type PerformanceSoftNavigationMeasuredData,
   type SoftNavigationChange,
   type SoftNavigationVital,
@@ -17,10 +16,6 @@ const MAX_SOFT_NAVIGATION_EVENTS = 200
 // web-vitals reports the previous nav's INP from an idle callback with a 1s timeout.
 const SOFT_NAVIGATION_SETTLE_MS = 3000
 
-// The structure tool owns these test ids; core can only match them in the DOM.
-const TITLE_SELECTOR = '[data-testid^="document-panel-document-title"]'
-const FORM_SELECTOR = '[data-testid="form-view"]'
-
 // No soft nav needs its paint metrics when it only changed UI state on an already painted pane.
 const CHANGES_WITHOUT_PAINT = new Set<SoftNavigationChange>([
   'view-change',
@@ -34,10 +29,8 @@ export interface SoftNavigationMetric extends Pick<
   Metric,
   'name' | 'value' | 'rating' | 'navigationType' | 'navigationId' | 'navigationURL'
 > {
-  entries: ReadonlyArray<PerformanceEntry & Partial<PaintedElement>>
+  entries: ReadonlyArray<PerformanceEntry & Partial<Pick<LargestContentfulPaint, 'url'>>>
 }
-
-type PaintedElement = Pick<LargestContentfulPaint, 'element' | 'url'>
 
 interface PendingSoftNavigation {
   navigationId: number
@@ -76,27 +69,8 @@ function toVital(metric: SoftNavigationMetric): SoftNavigationVital {
   return {value: metric.value, rating: metric.rating}
 }
 
-/**
- * Buckets a soft LCP element so image-led document opens can be split from title-led ones.
- *
- * @internal
- */
-export function toLcpElementKind({element, url}: PaintedElement): LcpElementKind {
-  if (url) return 'image'
-  if (element?.closest(TITLE_SELECTOR)) return 'title'
-  if (element?.closest(FORM_SELECTOR)) return 'field'
-  return 'other'
-}
-
 function toLcp(metric: SoftNavigationMetric): PerformanceSoftNavigationMeasuredData['lcp'] {
-  const paintedEntry = metric.entries.at(-1)
-  return {
-    ...toVital(metric),
-    elementKind: toLcpElementKind({
-      element: paintedEntry?.element ?? null,
-      url: paintedEntry?.url ?? '',
-    }),
-  }
+  return {...toVital(metric), elementKind: metric.entries.at(-1)?.url ? 'image' : 'text'}
 }
 
 function withMetric(
