@@ -24,6 +24,7 @@ import {type ResultViewCopy} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
 import {describeKeypath, getAtKeypath} from '../../../util/getAtKeypath'
 import {useContentSize} from '../../hooks/useContentSize'
+import {cx} from '../../util/cx'
 import {
   buildResultGraph,
   GRAPH_METRICS,
@@ -253,6 +254,7 @@ function GraphNodes({layout, copyLabel, onToggle, onCopy}: GraphNodesProps) {
 const GraphNodesMemo = memo(GraphNodes)
 
 export interface ResultGraphProps {
+  className?: string
   id: string
   value: unknown
   copy: ResultViewCopy
@@ -263,7 +265,7 @@ export interface ResultGraphProps {
  * collapse what a node holds. The tree and JSON views remain the way to read all of a large
  * result; the graph stops at `MAX_GRAPH_NODES` objects and arrays.
  */
-export function ResultGraph({id, value, copy}: ResultGraphProps) {
+export function ResultGraph({className, id, value, copy}: ResultGraphProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const {color, font} = useThemeV2()
   const codeSize = font.code.sizes[1]
@@ -279,21 +281,26 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
 
   const [viewport, setViewport] = useState<HTMLDivElement | null>(null)
   const size = useContentSize(viewport)
-  // A view the user moved to, for the graph it was moved on; a new result starts over
-  const [moved, setMoved] = useState<{graph: ResultGraphModel; view: View} | null>(null)
-  const view: View | null =
-    moved && moved.graph === graph ? moved.view : size ? firstView(layout, size) : null
-  const setView = (next: View) => setMoved({graph, view: next})
+  // A view the user moved to, for the graph it was moved on; a new result starts over. Only the
+  // zoom and fit buttons glide to their view: dragging, the wheel and the keys follow the input
+  const [moved, setMoved] = useState<{
+    graph: ResultGraphModel
+    view: View
+    animate: boolean
+  } | null>(null)
+  const current = moved && moved.graph === graph ? moved : null
+  const view: View | null = current ? current.view : size ? firstView(layout, size) : null
+  const setView = (next: View, animate = false) => setMoved({graph, view: next, animate})
 
   const drag = useRef<{pointerId: number; x: number; y: number; view: View} | null>(null)
   const [dragging, setDragging] = useState(false)
 
-  const zoomBy = (factor: number) => {
+  const zoomBy = (factor: number, animate = false) => {
     if (!view || !size) return
-    setView(zoomAt(view, factor, size.width / 2, size.height / 2))
+    setView(zoomAt(view, factor, size.width / 2, size.height / 2), animate)
   }
-  const fit = () => {
-    if (size) setView(fitView(layout, size))
+  const fit = (animate = false) => {
+    if (size) setView(fitView(layout, size), animate)
   }
 
   const onWheel = useEffectEvent((event: WheelEvent) => {
@@ -377,15 +384,15 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
       action: 'zoom-out',
       label: t('vista.result.graph.zoom-out'),
       icon: RemoveIcon,
-      onClick: () => zoomBy(1 / ZOOM_STEP),
+      onClick: () => zoomBy(1 / ZOOM_STEP, true),
     },
     {
       action: 'zoom-in',
       label: t('vista.result.graph.zoom-in'),
       icon: AddIcon,
-      onClick: () => zoomBy(ZOOM_STEP),
+      onClick: () => zoomBy(ZOOM_STEP, true),
     },
-    {action: 'fit', label: t('vista.result.graph.fit'), icon: ExpandIcon, onClick: fit},
+    {action: 'fit', label: t('vista.result.graph.fit'), icon: ExpandIcon, onClick: () => fit(true)},
   ]
 
   const viewportStyle: GraphViewportStyle = {
@@ -405,7 +412,7 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- role="application" is for a widget that handles its own pointer and keys (pan, zoom, fit)
     <div
       aria-label={t('vista.result.graph.label')}
-      className={styles.graphViewport}
+      className={cx(styles.graphViewport, className)}
       data-dragging={dragging}
       data-testid="vista-result-graph"
       id={id}
@@ -423,6 +430,7 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
       {view && (
         <div
           className={styles.graphCanvas}
+          data-animate={current?.animate ?? false}
           data-testid="vista-graph-canvas"
           style={{
             width: layout.width,
@@ -456,6 +464,7 @@ export function ResultGraph({id, value, copy}: ResultGraphProps) {
           >
             <Button
               aria-label={label}
+              className={styles.graphControl}
               data-testid={`vista-graph-${action}`}
               fontSize={1}
               icon={icon}
