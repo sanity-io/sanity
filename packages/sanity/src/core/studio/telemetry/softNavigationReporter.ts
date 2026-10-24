@@ -59,6 +59,8 @@ interface SoftNavigationReporterOptions {
   /** The URL before the first soft nav. */
   initialURL: string
   getWorkspace: () => SoftNavigationWorkspace
+  /** The URL the browser left for `navigationURL`, when known. */
+  getPreviousURL?: (navigationURL: string) => string | undefined
   send: (event: PerformanceSoftNavigationMeasuredData) => void
 }
 
@@ -159,7 +161,8 @@ export function createSoftNavigationReporter(
 
   function start(metric: SoftNavigationMetric): PendingSoftNavigation {
     const navigationURL = metric.navigationURL ?? ''
-    const navigation = {navigationId: metric.navigationId, navigationURL, previousURL: latestURL}
+    const previousURL = options.getPreviousURL?.(navigationURL) ?? latestURL
+    const navigation = {navigationId: metric.navigationId, navigationURL, previousURL}
     latestURL = navigationURL
     if (pending.size > 0) {
       setTimeout(() => sendOlderThan(metric.navigationId), SOFT_NAVIGATION_SETTLE_MS)
