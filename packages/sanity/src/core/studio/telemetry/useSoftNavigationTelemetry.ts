@@ -13,6 +13,8 @@ import {
 import {isDebugTelemetryEnabled} from './utils/debugLoggingStore'
 
 const SOFT_NAVIGATION_OPTIONS = {reportSoftNavs: true}
+// The last nav's LCP is only finalised on visibilitychange, which can fire after our pagehide flush.
+const SOFT_LCP_OPTIONS = {...SOFT_NAVIGATION_OPTIONS, reportAllChanges: true}
 
 // Module scope so a page load rolls once, not again on remount or workspace switch.
 const isPageLoadSampled = Math.random() < SOFT_NAVIGATION_SAMPLE_RATE
@@ -61,7 +63,7 @@ function startPageReporting(): void {
     getPreviousURL: trackPreviousURLs(),
     send: (event) => page.telemetry?.log(PerformanceSoftNavigationMeasured, event),
   })
-  onLCP(reporter.record, SOFT_NAVIGATION_OPTIONS)
+  onLCP(reporter.record, SOFT_LCP_OPTIONS)
   onFCP(reporter.record, SOFT_NAVIGATION_OPTIONS)
   onINP(reporter.record, SOFT_NAVIGATION_OPTIONS)
   onCLS(reporter.record, SOFT_NAVIGATION_OPTIONS)
