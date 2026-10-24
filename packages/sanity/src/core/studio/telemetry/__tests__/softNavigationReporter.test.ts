@@ -1,7 +1,7 @@
 import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type PerformanceSoftNavigationMeasuredData} from '../../__telemetry__/performance.telemetry'
-import {recordStructurePaneKind} from '../paneKindRegistry'
+import {recordStructurePaneKind, recordStructureTool} from '../paneKindRegistry'
 import {
   createSoftNavigationReporter,
   MAX_SOFT_NAVIGATION_EVENTS,
@@ -58,9 +58,12 @@ function startReporter() {
 }
 
 beforeAll(() => {
-  recordStructurePaneKind('book', 'list')
-  recordStructurePaneKind('book;book-a', 'document')
-  recordStructurePaneKind('book;book-b', 'document')
+  recordStructureTool('structure')
+  recordStructureTool('cars')
+  recordStructurePaneKind('structure', 'book', 'list')
+  recordStructurePaneKind('structure', 'book;book-a', 'document')
+  recordStructurePaneKind('structure', 'book;book-b', 'document')
+  recordStructurePaneKind('cars', 'car;car-a', 'document')
 })
 
 beforeEach(() => {
@@ -163,7 +166,7 @@ describe('createSoftNavigationReporter', () => {
 
   it('describes a soft nav with the workspace it started in', () => {
     const events: PerformanceSoftNavigationMeasuredData[] = []
-    const workspace = {basePath: '/test', toolNames: ['structure']}
+    let workspace = {basePath: '/test', toolNames: ['structure']}
     const reporter = createSoftNavigationReporter({
       initialURL: LIST_URL,
       getWorkspace: () => workspace,
@@ -171,10 +174,45 @@ describe('createSoftNavigationReporter', () => {
     })
 
     reporter.record(metric('FCP', {navigationId: 1, navigationURL: DOCUMENT_URL}))
-    workspace.basePath = '/us'
+    workspace = {basePath: '/us', toolNames: ['structure']}
     reporter.flush()
 
     expect(events[0]).toMatchObject({route: 'structure:document', change: 'document-open'})
+  })
+
+  it('classifies a structure tool renamed to cars like structure', () => {
+    const events: PerformanceSoftNavigationMeasuredData[] = []
+    const carURL = `${ORIGIN}/test/cars/car;car-a`
+    const inspectURL = `${ORIGIN}/test/cars/car;${encodeURIComponent(
+      `car-a,inspect=${encodeURIComponent('sanity/structure/validation')}`,
+    )}`
+    const reporter = createSoftNavigationReporter({
+      initialURL: `${ORIGIN}/test/cars/car`,
+      getWorkspace: () => ({basePath: '/test', toolNames: ['cars']}),
+      send: (event) => events.push(event),
+    })
+
+    reporter.record(metric('FCP', {navigationId: 1, navigationURL: carURL}))
+    reporter.record(metric('LCP', {navigationId: 1, navigationURL: carURL}))
+    reporter.record(metric('FCP', {navigationId: 2, navigationURL: inspectURL}))
+    reporter.record(metric('LCP', {navigationId: 2, navigationURL: inspectURL}))
+    reporter.flush()
+
+    expect(events).toEqual([
+      expect.objectContaining({
+        route: 'structure:document',
+        change: 'document-open',
+        lcp: expect.objectContaining({value: 100}),
+        fcp: {value: 100, rating: 'good'},
+      }),
+      {
+        navigationId: 2,
+        navigationType: 'soft-navigation',
+        route: 'structure:document',
+        change: 'inspector-toggle',
+        sampleRate: 0.1,
+      },
+    ])
   })
 
   it('drops metrics that arrive for a soft nav already sent', () => {
