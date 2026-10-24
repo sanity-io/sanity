@@ -25,7 +25,7 @@ use `sanity-bench`.
 
 Trends URL state, all shareable: `?range=30|90|all`, `?branches=main,<branch>`,
 `?layers=-band,-calibration` (hide layers), `?tab=<metric group>`, `?max=<series key>` (one chart maximized), `?sqrl=open` (SQRL banner expanded).
-Metric groups include a `navigation` tab (soft-navigation vitals from the `softnav` bench mode — document opens, pane/tool switches — kept out of `vitals` so they never blend into the hard-nav Web Vitals charts; soft LCP heads with document-open/document-switch, the rest render smaller as secondary).
+Metric groups include a `navigation` tab (soft-navigation vitals from the `softnav` bench mode — document opens, pane/tool switches — kept out of `vitals` so they never blend into the hard-nav Web Vitals charts; it reuses the same per-vital layout, and the soft LCP description notes that pane-open/tool-switch readings are diagnostic only).
 Releases: `?path=<test-studio path>` (the path field under the header) opens every release's Test Studio link at that path.
 Clicking a point opens the run popover: value, percentiles, host, release context, links, and
 under "Suspect a regression?" the GitHub compare of the gap, **Copy A/B vs previous run** (the

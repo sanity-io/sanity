@@ -299,11 +299,6 @@ export interface TrendSeries {
    */
   hidden?: boolean
   /**
-   * Rendered smaller below its group's headline charts: a diagnostic chart,
-   * e.g. soft LCP for a pane or tool switch, which can land on static chrome.
-   */
-  secondary?: boolean
-  /**
    * Drift windows for a series that does not tick once per commit. Absent =
    * the bench defaults (see `DEFAULT_DRIFT_WINDOWS` in drift.ts).
    */
@@ -453,9 +448,8 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
     description:
       'In-app navigations never trigger a full page load - opening a document, switching panes ' +
       "or tools - but still report the browser's own soft-navigation vitals, bucketed per " +
-      'navigation. Soft LCP heads with document-open and document-switch; LCP for pane-open ' +
-      'and tool-switch is diagnostic only, since it can land on the pane header before content ' +
-      'arrives.',
+      'navigation. Soft LCP is diagnostic only for pane-open and tool-switch, which can land ' +
+      'on the pane header before content arrives.',
   },
   {
     id: 'responsiveness',
@@ -513,14 +507,6 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
   },
 ]
 
-const NAVIGATION_HEADLINE_LCP_KINDS = new Set(['document-open', 'document-switch'])
-
-/** Whether a soft LCP label (`nav:<kind> / soft LCP time`) is for a headline nav kind. */
-function isHeadlineNavigationLcp(label: string): boolean {
-  const kind = /^nav:([a-z0-9-]+)\s*\//.exec(label)?.[1]
-  return NAVIGATION_HEADLINE_LCP_KINDS.has(kind ?? '')
-}
-
 /**
  * Plain-English description per metric so a first-time viewer can read the
  * dashboard without knowing the bench suite. Matched on the metric labels
@@ -530,7 +516,7 @@ function describeSeries(
   kind: 'interaction' | 'pageload',
   label: string,
   mode?: string | null,
-): Pick<TrendSeries, 'description' | 'goal' | 'group' | 'goodThreshold' | 'secondary'> {
+): Pick<TrendSeries, 'description' | 'goal' | 'group' | 'goodThreshold'> {
   // Style-migration rows first: the same census runs in every mode (they ride
   // along on interaction, pageload and settle reports alike), so the label
   // decides the group before any mode does. The registry in @repo/utils is
@@ -548,10 +534,10 @@ function describeSeries(
         description:
           'Soft-navigation Largest Contentful Paint: when the navigation’s largest content ' +
           'became visible. Element size and text are unreliable on soft navs, so only the ' +
-          'timing is charted.',
+          'timing is charted. Diagnostic only for pane-open and tool-switch, which can land ' +
+          'on the pane header before content arrives.',
         goal: 'lower',
         goodThreshold: 2500,
-        ...(isHeadlineNavigationLcp(label) ? {} : {secondary: true}),
       }
     }
     if (label.includes('soft FCP time')) {
@@ -1373,14 +1359,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
     unit: TrendUnit,
     meta: Pick<
       TrendSeries,
-      | 'description'
-      | 'goal'
-      | 'group'
-      | 'sourceFile'
-      | 'lineLabel'
-      | 'goodThreshold'
-      | 'hidden'
-      | 'secondary'
+      'description' | 'goal' | 'group' | 'sourceFile' | 'lineLabel' | 'goodThreshold' | 'hidden'
     >,
     run: TrendRun,
     point: Pick<
@@ -1607,59 +1586,31 @@ export interface VitalSection {
 
 const byTitle = (a: TrendSeries, b: TrendSeries) => a.title.localeCompare(b.title)
 
-export function vitalSections(list: TrendSeries[]): VitalSection[] {
+/** Nav titles end with their full metric phrase, so `NAVIGATION_METRICS` matches the same way. */
+export function vitalSections(
+  list: TrendSeries[],
+  metrics: readonly {vital: string; name?: string}[] = VITALS,
+): VitalSection[] {
   const matched = new Set<TrendSeries>()
-  const sections: VitalSection[] = VITALS.map(({vital, name}) => {
+  const sections: VitalSection[] = metrics.map(({vital, name}) => {
     const series = list.filter((entry) => entry.title.endsWith(vital)).sort(byTitle)
     for (const entry of series) matched.add(entry)
     return {vital, name, series}
   })
-  // Anything in the vitals group that isn't a known vital still renders —
+  // Anything that isn't a known metric still renders —
   // a new metric must never silently vanish from the dashboard
   const leftover = list.filter((entry) => !matched.has(entry)).sort(byTitle)
   if (leftover.length > 0) sections.push({vital: 'Other', series: leftover})
   return sections.filter((section) => section.series.length > 0)
 }
 
-/**
- * Navigation-tab layout, mirroring `vitalSections`. Matched on the full metric
- * phrase since soft-nav titles share suffixes ("time", "latency").
- */
-const NAVIGATION_METRICS = [
-  {id: 'soft LCP time', name: 'Soft LCP'},
-  {id: 'soft FCP time', name: 'Soft FCP'},
-  {id: 'soft INP latency', name: 'Soft INP'},
-  {id: 'soft CLS score', name: 'Soft CLS'},
-  {id: 'click to ready', name: 'Click to ready'},
+export const NAVIGATION_METRICS = [
+  {vital: 'soft LCP time', name: 'Soft LCP'},
+  {vital: 'soft FCP time', name: 'Soft FCP'},
+  {vital: 'soft INP latency', name: 'Soft INP'},
+  {vital: 'soft CLS score', name: 'Soft CLS'},
+  {vital: 'click to ready', name: 'Click to ready'},
 ] as const
-
-export interface NavigationMetricSection {
-  id: string
-  name: string
-  series: TrendSeries[]
-}
-
-function headlineFirst(left: TrendSeries, right: TrendSeries): number {
-  return Number(Boolean(left.secondary)) - Number(Boolean(right.secondary)) || byTitle(left, right)
-}
-
-const NAVIGATION_SECTIONS = [
-  ...NAVIGATION_METRICS.map(({id, name}) => ({id, name, compare: headlineFirst})),
-  {id: 'other', name: 'Other', compare: byTitle},
-]
-
-function navigationSectionId(entry: TrendSeries): string {
-  return NAVIGATION_METRICS.find((metric) => entry.title.includes(metric.id))?.id ?? 'other'
-}
-
-// Unmatched metrics land in 'other' so a new nav metric never silently vanishes
-export function navigationSections(list: TrendSeries[]): NavigationMetricSection[] {
-  return NAVIGATION_SECTIONS.map(({id, name, compare}) => ({
-    id,
-    name,
-    series: list.filter((entry) => navigationSectionId(entry) === id).sort(compare),
-  })).filter((section) => section.series.length > 0)
-}
 
 export interface SettleView {
   id: 'tripwire' | 'time' | 'activity' | 'renders' | 'other'

@@ -49,7 +49,7 @@ import {
   buildSeries,
   CALIBRATION_EXPLAINER,
   latestSoakCharts,
-  navigationSections,
+  NAVIGATION_METRICS,
   primaryLines,
   settleViews,
   soakSlopeSeries,
@@ -664,8 +664,6 @@ function ChartGrid(props: {
   /** Release tags for the charts' markers. */
   tags?: TrendTag[]
   onExpand?: (seriesKey: string) => void
-  /** Card height in px. */
-  cardHeight?: number
 }) {
   if (props.series.length === 0 && props.emptyMessage !== undefined) {
     return <EmptyGroup>{props.emptyMessage}</EmptyGroup>
@@ -688,7 +686,7 @@ function ChartGrid(props: {
           <SeriesCard
             key={entry.key}
             series={entry}
-            height={props.cardHeight ?? 128}
+            height={128}
             drift={entryDrift}
             silenced={entrySilenced}
             baseline={entryBaseline}
@@ -1395,7 +1393,11 @@ export function TrendsTool() {
     [series],
   )
   const navigationGroups = useMemo(
-    () => navigationSections(series.filter((entry) => entry.group === 'navigation')),
+    () =>
+      vitalSections(
+        series.filter((entry) => entry.group === 'navigation'),
+        NAVIGATION_METRICS,
+      ),
     [series],
   )
 
@@ -1454,6 +1456,7 @@ export function TrendsTool() {
     tabs.find((tab) => tab.id === tabParam) ??
     (chartParam ? tabs.find((tab) => tab.id === groupById.get(chartParam)) : undefined) ??
     tabs[0]
+  const metricSections = activeTab?.id === 'navigation' ? navigationGroups : vitalGroups
 
   // Shared drift state (feeds both the pinned feed and the per-tab badges, so
   // they can't disagree). Badge = active regressions in that group.
@@ -1789,18 +1792,18 @@ export function TrendsTool() {
                         chartKey={chartParam}
                         onLeaveChart={() => setChartParam('')}
                       />
-                    ) : activeTab.id === 'vitals' ? (
-                      vitalGroups.length === 0 ? (
+                    ) : activeTab.id === 'vitals' || activeTab.id === 'navigation' ? (
+                      // The extra top padding separates the first section
+                      // header from the tab description it would otherwise hug.
+                      metricSections.length === 0 ? (
                         <EmptyGroup>
-                          No Web Vitals data in this range — try a longer range.
+                          {activeTab.id === 'vitals'
+                            ? 'No Web Vitals data in this range — try a longer range.'
+                            : 'No soft-navigation data in this range — try a longer range.'}
                         </EmptyGroup>
                       ) : (
-                        // One section per vital, so the overview reads by metric
-                        // ("how is LCP doing, everywhere?") — see vitalSections.
-                        // The extra top padding separates the first section
-                        // header from the tab description it would otherwise hug.
                         <Flex gap={6} paddingTop={3} flexDirection="column">
-                          {vitalGroups.map((section) => (
+                          {metricSections.map((section) => (
                             <VStack key={section.vital} gap={4}>
                               <Flex alignItems="baseline" gap={2}>
                                 <Text size={1} weight="semibold">
@@ -1826,63 +1829,6 @@ export function TrendsTool() {
                               />
                             </VStack>
                           ))}
-                        </Flex>
-                      )
-                    ) : activeTab.id === 'navigation' ? (
-                      navigationGroups.length === 0 ? (
-                        <EmptyGroup>
-                          No soft-navigation data in this range — try a longer range.
-                        </EmptyGroup>
-                      ) : (
-                        <Flex gap={6} paddingTop={3} flexDirection="column">
-                          {navigationGroups.map((section) => {
-                            const headline = section.series.filter(
-                              (entry) => entry.secondary !== true,
-                            )
-                            const secondary = section.series.filter(
-                              (entry) => entry.secondary === true,
-                            )
-                            return (
-                              <VStack key={section.id} gap={4}>
-                                <Text size={1} weight="semibold">
-                                  {section.name}
-                                </Text>
-                                <ChartGrid
-                                  layers={layers}
-                                  series={headline}
-                                  driftBySeries={driftBySeries}
-                                  silencedBySeries={silencedBySeries}
-                                  baselineBySeries={baselineBySeries}
-                                  drift={drift}
-                                  focusedKey={focusedKey}
-                                  onFocusMetric={focusMetric}
-                                  tags={tags}
-                                  onExpand={expandMetric}
-                                />
-                                {secondary.length > 0 && (
-                                  <VStack gap={3}>
-                                    <Text size={1} muted>
-                                      Diagnostic only - LCP can land on the pane header before
-                                      content arrives
-                                    </Text>
-                                    <ChartGrid
-                                      layers={layers}
-                                      series={secondary}
-                                      driftBySeries={driftBySeries}
-                                      silencedBySeries={silencedBySeries}
-                                      baselineBySeries={baselineBySeries}
-                                      drift={drift}
-                                      focusedKey={focusedKey}
-                                      onFocusMetric={focusMetric}
-                                      tags={tags}
-                                      onExpand={expandMetric}
-                                      cardHeight={96}
-                                    />
-                                  </VStack>
-                                )}
-                              </VStack>
-                            )
-                          })}
                         </Flex>
                       )
                     ) : (
