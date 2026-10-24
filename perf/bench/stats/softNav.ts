@@ -1,11 +1,12 @@
 import {
+  type BenchEntries,
   type EventTimingSample,
   type InteractionContentfulPaintSample,
   type LayoutShiftSample,
-  type MeasureSample,
   type PaintedElementKind,
   type SoftNavigationSample,
 } from '../instrumentation/types'
+import {NAVIGATE_MEASURE_PREFIX, SOFT_NAVIGATION_MATCH_MS} from '../runner/session/steps'
 
 export interface SoftNavigationMeasurement {
   label: string
@@ -20,60 +21,23 @@ export interface SoftNavigationMeasurement {
   clickToReadyMs: number
 }
 
-export type SoftNavigationMetric = Exclude<
-  keyof SoftNavigationMeasurement,
-  'label' | 'lcpElement' | 'lcpElementKind'
->
-
-export const SOFT_NAVIGATION_METRICS: SoftNavigationMetric[] = [
-  'softLcpMs',
-  'softFcpMs',
-  'softInpMs',
-  'softClsScore',
-  'clickToReadyMs',
-]
-
-/** Radar classifies hard-navigation vitals by label suffix, so these never end in one. */
-const METRIC_LABELS: Record<SoftNavigationMetric, string> = {
-  softLcpMs: 'soft LCP time',
-  softFcpMs: 'soft FCP time',
-  softInpMs: 'soft INP latency',
-  softClsScore: 'soft CLS score',
-  clickToReadyMs: 'click to ready',
-}
-
-export function softNavigationMetricLabel(label: string, metric: SoftNavigationMetric): string {
-  return `nav:${label} / ${METRIC_LABELS[metric]}`
-}
-
-const NAVIGATE_MEASURE_PREFIX = 'bench:navigate:'
-/** The click's timestamp and the soft navigation's startTime differ by rounding, never by a frame. */
-const CLICK_MATCH_MS = 16
 const CLS_WINDOW_GAP_MS = 1000
 const CLS_WINDOW_MAX_MS = 5000
 
-export interface SoftNavigationEntries {
-  measures: MeasureSample[]
-  softNavigations: SoftNavigationSample[]
-  events: EventTimingSample[]
-  layoutShifts: LayoutShiftSample[]
-  interactionContentfulPaints: InteractionContentfulPaintSample[]
-}
-
-export interface SoftNavigationResult {
-  navigations: SoftNavigationMeasurement[]
-  /** URLs of soft navigations no navigate step drove. */
-  unexpected: string[]
-}
-
 /** Takes a whole session's entries: a larger paint of an interaction can land after a later drain. */
-export function measureSoftNavigations(entries: SoftNavigationEntries): SoftNavigationResult {
+export function measureSoftNavigations(
+  entries: Pick<
+    BenchEntries,
+    'measures' | 'softNavigations' | 'events' | 'layoutShifts' | 'interactionContentfulPaints'
+  >,
+): {navigations: SoftNavigationMeasurement[]; undrivenUrls: string[]} {
   const navigateMeasures = entries.measures.filter((measure) =>
     measure.name.startsWith(NAVIGATE_MEASURE_PREFIX),
   )
   const startedBy = (softNavigation: SoftNavigationSample) =>
     navigateMeasures.find(
-      (measure) => Math.abs(measure.startTime - softNavigation.startTime) <= CLICK_MATCH_MS,
+      (measure) =>
+        Math.abs(measure.startTime - softNavigation.startTime) <= SOFT_NAVIGATION_MATCH_MS,
     )
   const largestPaints = largestPaintByInteraction(entries.interactionContentfulPaints)
   const navigatingInteractions = new Map(
@@ -111,7 +75,7 @@ export function measureSoftNavigations(entries: SoftNavigationEntries): SoftNavi
 
   return {
     navigations,
-    unexpected: entries.softNavigations
+    undrivenUrls: entries.softNavigations
       .filter((softNavigation) => startedBy(softNavigation) === undefined)
       .map((softNavigation) => softNavigation.url),
   }
@@ -176,31 +140,4 @@ function cumulativeLayoutShift(layoutShifts: LayoutShiftSample[]): number {
       sessionWindow.reduce((sum, layoutShift) => sum + layoutShift.value, 0),
     ),
   )
-}
-
-const DETACHED_ELEMENT = '(detached)'
-
-/** The ready check runs on animation frames, so the paint that shows the data can trail it by up to a frame. */
-const READY_FRAME_MS = 16
-
-/** Studio swaps the title element as the form turns editable, so a detached element passes when its timing holds. */
-export function isMiscreditedDocumentOpen(navigation: SoftNavigationMeasurement): boolean {
-  if (navigation.softLcpMs === null) return true
-  const paintedBeforeData = navigation.softLcpMs + READY_FRAME_MS < navigation.clickToReadyMs
-  const landedOnChrome =
-    navigation.lcpElementKind === 'other' && navigation.lcpElement !== DETACHED_ELEMENT
-  return paintedBeforeData || landedOnChrome
-}
-
-export function softNavigationSamples(
-  navigations: SoftNavigationMeasurement[],
-  label: string,
-  metric: SoftNavigationMetric,
-): number[] {
-  return navigations
-    .filter((navigation) => navigation.label === label)
-    .flatMap((navigation) => {
-      const value = navigation[metric]
-      return value === null ? [] : [value]
-    })
 }

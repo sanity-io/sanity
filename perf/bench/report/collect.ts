@@ -13,13 +13,7 @@ import {type BenchScenario} from '../scenarios/types'
 import {type DiffInterval} from '../stats/bootstrap'
 import {type Verdict} from '../stats/gate'
 import {median, summarize} from '../stats/quantiles'
-import {
-  SOFT_NAVIGATION_METRICS,
-  type SoftNavigationMetric,
-  softNavigationMetricLabel,
-  softNavigationSamples,
-  type SoftNavigationMeasurement,
-} from '../stats/softNav'
+import {type SoftNavigationMeasurement} from '../stats/softNav'
 import {
   type BenchRunDocument,
   type MetricReport,
@@ -768,13 +762,18 @@ export function collectSettle(
   }
 }
 
-const SOFT_NAVIGATION_UNITS: Record<SoftNavigationMetric, MetricReport['unit']> = {
-  softLcpMs: 'ms',
-  softFcpMs: 'ms',
-  softInpMs: 'ms',
-  softClsScore: 'cls',
-  clickToReadyMs: 'ms',
-}
+/** Radar classifies hard-navigation vitals by label suffix, so these labels never end in one. */
+const SOFT_NAVIGATION_METRICS = {
+  softLcpMs: {label: 'soft LCP time', unit: 'ms'},
+  softFcpMs: {label: 'soft FCP time', unit: 'ms'},
+  softInpMs: {label: 'soft INP latency', unit: 'ms'},
+  softClsScore: {label: 'soft CLS score', unit: 'cls'},
+  clickToReadyMs: {label: 'click to ready', unit: 'ms'},
+} satisfies Partial<Record<keyof SoftNavigationMeasurement, Pick<MetricReport, 'label' | 'unit'>>>
+
+const SOFT_NAVIGATION_METRIC_KEYS = Object.keys(
+  SOFT_NAVIGATION_METRICS,
+) as (keyof typeof SOFT_NAVIGATION_METRICS)[]
 
 /** Each session's values stay one array so the session, not the navigation, is the bootstrap unit. */
 export function collectSoftNav(
@@ -786,16 +785,19 @@ export function collectSoftNav(
     ...new Set(sessions.flatMap((navigations) => navigations.map(({label}) => label))),
   ]
   const metrics = navigationLabels.flatMap((label) =>
-    SOFT_NAVIGATION_METRICS.flatMap((metric): MetricReport[] => {
+    SOFT_NAVIGATION_METRIC_KEYS.flatMap((metric): MetricReport[] => {
       const samples = sessions.map((navigations) =>
-        softNavigationSamples(navigations, label, metric),
+        navigations
+          .filter((navigation) => navigation.label === label)
+          .flatMap((navigation) => navigation[metric] ?? []),
       )
       const values = samples.flat()
       if (values.length === 0) return []
+      const {label: metricLabel, unit} = SOFT_NAVIGATION_METRICS[metric]
       return [
         {
-          label: softNavigationMetricLabel(label, metric),
-          unit: SOFT_NAVIGATION_UNITS[metric],
+          label: `nav:${label} / ${metricLabel}`,
+          unit,
           presentAsEfps: false,
           experiment: {sessions: samples, summary: summarize(values)},
         },

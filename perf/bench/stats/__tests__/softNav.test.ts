@@ -5,15 +5,10 @@ import {
   type InteractionContentfulPaintSample,
   type LayoutShiftSample,
   type MeasureSample,
-  type PaintedElementKind,
   type SoftNavigationSample,
 } from '../../instrumentation/types'
-import {
-  isMiscreditedDocumentOpen,
-  measureSoftNavigations,
-  softNavigationMetricLabel,
-  softNavigationSamples,
-} from '../softNav'
+import {navigateMeasureName} from '../../runner/session/steps'
+import {measureSoftNavigations} from '../softNav'
 
 const softNavigation = (
   navigationId: number,
@@ -30,7 +25,7 @@ const softNavigation = (
 })
 
 const navigateMeasure = (label: string, startTime: number, duration = 400): MeasureSample => ({
-  name: `bench:navigate:${label}`,
+  name: navigateMeasureName(label),
   startTime,
   duration,
 })
@@ -81,12 +76,12 @@ const emptyEntries = {
 
 describe('measureSoftNavigations', () => {
   it('labels each soft navigation with the navigate step whose click started it', () => {
-    const {navigations, unexpected} = measureSoftNavigations({
+    const {navigations, undrivenUrls} = measureSoftNavigations({
       ...emptyEntries,
       measures: [navigateMeasure('document-open', 1000.4, 420)],
       softNavigations: [softNavigation(2, 50, 1000, 180)],
     })
-    expect(unexpected).toEqual([])
+    expect(undrivenUrls).toEqual([])
     expect(navigations).toEqual([
       expect.objectContaining({
         label: 'document-open',
@@ -97,12 +92,12 @@ describe('measureSoftNavigations', () => {
   })
 
   it('reports soft navigations that no navigate step drove', () => {
-    const {unexpected} = measureSoftNavigations({
+    const {undrivenUrls} = measureSoftNavigations({
       ...emptyEntries,
       measures: [navigateMeasure('pane-open', 1000)],
       softNavigations: [softNavigation(2, 50, 1000), softNavigation(3, 51, 5000)],
     })
-    expect(unexpected).toEqual([softNavigation(3, 51, 5000).url])
+    expect(undrivenUrls).toEqual([softNavigation(3, 51, 5000).url])
   })
 
   it('takes soft LCP from the largest paint of the navigating interaction, across drains', () => {
@@ -195,93 +190,5 @@ describe('measureSoftNavigations', () => {
       ),
     })
     expect(navigations[0].softClsScore).toBeCloseTo(0.06)
-  })
-})
-
-describe('isMiscreditedDocumentOpen', () => {
-  const documentOpen = (
-    softLcpMs: number | null,
-    lcpElement: string | null,
-    lcpElementKind: PaintedElementKind | null,
-  ) => ({
-    label: 'document-open',
-    softLcpMs,
-    lcpElement,
-    lcpElementKind,
-    softFcpMs: 100,
-    softInpMs: 96,
-    softClsScore: 0,
-    clickToReadyMs: 300,
-  })
-
-  it('accepts a soft LCP on the document title once its data is on screen', () => {
-    expect(
-      isMiscreditedDocumentOpen(
-        documentOpen(310, 'h1 in [data-testid="document-panel-document-title"]', 'title'),
-      ),
-    ).toBe(false)
-  })
-
-  it('accepts an element Studio replaced before Chrome reported it, when it painted after the data', () => {
-    expect(isMiscreditedDocumentOpen(documentOpen(312, '(detached)', 'other'))).toBe(false)
-  })
-
-  it('rejects a soft LCP that painted before the document data was on screen', () => {
-    expect(isMiscreditedDocumentOpen(documentOpen(140, '(detached)', 'other'))).toBe(true)
-  })
-
-  it('rejects a soft LCP on pane chrome', () => {
-    expect(
-      isMiscreditedDocumentOpen(documentOpen(320, 'div in [data-testid="pane-header"]', 'other')),
-    ).toBe(true)
-  })
-
-  it('rejects a document open with no paint credited to its click', () => {
-    expect(isMiscreditedDocumentOpen(documentOpen(null, null, null))).toBe(true)
-  })
-})
-
-describe('softNavigationSamples', () => {
-  const navigation = (label: string, values: Partial<Record<string, number | null>>) => ({
-    label,
-    softLcpMs: null,
-    lcpElement: null,
-    lcpElementKind: null,
-    softFcpMs: 100,
-    softInpMs: null,
-    softClsScore: 0,
-    clickToReadyMs: 300,
-    ...values,
-  })
-  const navigations = [
-    navigation('document-open', {softLcpMs: 250, softInpMs: 96}),
-    navigation('tool-switch', {softFcpMs: 80}),
-    navigation('document-open', {softLcpMs: 270, softFcpMs: 120}),
-  ]
-
-  it('takes one metric of the navigations with one label, in order', () => {
-    expect(softNavigationSamples(navigations, 'document-open', 'softLcpMs')).toEqual([250, 270])
-    expect(softNavigationSamples(navigations, 'document-open', 'softFcpMs')).toEqual([100, 120])
-    expect(softNavigationSamples(navigations, 'tool-switch', 'softFcpMs')).toEqual([80])
-  })
-
-  it('skips navigations without a value', () => {
-    expect(softNavigationSamples(navigations, 'document-open', 'softInpMs')).toEqual([96])
-    expect(softNavigationSamples(navigations, 'tool-switch', 'softLcpMs')).toEqual([])
-  })
-})
-
-describe('softNavigationMetricLabel', () => {
-  it('labels each metric under its navigate step', () => {
-    const labels = (
-      ['softLcpMs', 'softFcpMs', 'softInpMs', 'softClsScore', 'clickToReadyMs'] as const
-    ).map((metric) => softNavigationMetricLabel('document-open', metric))
-    expect(labels).toEqual([
-      'nav:document-open / soft LCP time',
-      'nav:document-open / soft FCP time',
-      'nav:document-open / soft INP latency',
-      'nav:document-open / soft CLS score',
-      'nav:document-open / click to ready',
-    ])
   })
 })
