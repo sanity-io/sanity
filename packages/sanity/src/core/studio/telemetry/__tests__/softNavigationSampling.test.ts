@@ -1,31 +1,32 @@
-import {createSessionId} from '@sanity/telemetry'
-import {describe, expect, it} from 'vitest'
+import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import {isSessionSampled} from '../softNavigationSampling'
+async function loadSamplingWithRoll(roll: number) {
+  vi.resetModules()
+  vi.spyOn(Math, 'random').mockReturnValue(roll)
+  return import('../softNavigationSampling')
+}
 
 describe('isSessionSampled', () => {
-  it('gives the same answer for a session every time', () => {
-    const sessionId = createSessionId()
-
-    const answers = Array.from({length: 5}, () => isSessionSampled(sessionId, 0.1))
-
-    expect(new Set(answers).size).toBe(1)
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
-  it('samples close to the requested share of sessions', () => {
-    const sessionIds = Array.from({length: 20_000}, () => createSessionId())
+  it('samples a page load whose roll falls under the rate', async () => {
+    const {isSessionSampled} = await loadSamplingWithRoll(0.05)
 
-    const sampledShare =
-      sessionIds.filter((sessionId) => isSessionSampled(sessionId, 0.1)).length / sessionIds.length
-
-    expect(sampledShare).toBeGreaterThan(0.09)
-    expect(sampledShare).toBeLessThan(0.11)
+    expect(isSessionSampled(0.1)).toBe(true)
   })
 
-  it('samples every session at a rate of 1 and none at 0', () => {
-    const sessionId = createSessionId()
+  it('leaves out a page load whose roll is at or over the rate', async () => {
+    const {isSessionSampled} = await loadSamplingWithRoll(0.1)
 
-    expect(isSessionSampled(sessionId, 1)).toBe(true)
-    expect(isSessionSampled(sessionId, 0)).toBe(false)
+    expect(isSessionSampled(0.1)).toBe(false)
+  })
+
+  it('samples every page load at a rate of 1 and none at 0', async () => {
+    const {isSessionSampled} = await loadSamplingWithRoll(0)
+
+    expect(isSessionSampled(1)).toBe(true)
+    expect(isSessionSampled(0)).toBe(false)
   })
 })
