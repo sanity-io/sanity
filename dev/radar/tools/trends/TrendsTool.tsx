@@ -1862,8 +1862,8 @@ export function TrendsTool() {
                                 {secondary.length > 0 && (
                                   <VStack gap={3}>
                                     <Text size={1} muted>
-                                      Diagnostic — can land on static chrome rather than real
-                                      content, not a headline number
+                                      Diagnostic — can land on the pane header before real content
+                                      arrives, not a headline number
                                     </Text>
                                     <ChartGrid
                                       layers={layers}
