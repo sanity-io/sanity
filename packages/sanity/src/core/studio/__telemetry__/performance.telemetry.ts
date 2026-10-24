@@ -101,3 +101,53 @@ export const PerformanceINPMeasuredV2 = defineEvent<INPMetricWithAttribution>({
   description: 'Interaction to Next Paint with attribution (web-vitals)',
   maxSampleRate: 30_000, // Sample at most every 30 seconds
 })
+
+// =============================================================================
+// SOFT NAVIGATIONS (Chromium soft-navigation entries via web-vitals)
+// =============================================================================
+
+/** @internal */
+export type SoftNavigationChange =
+  | 'document-open'
+  | 'pane-open'
+  | 'view-change'
+  | 'inspector-toggle'
+  | 'perspective-change'
+  | 'tool-switch'
+  | 'filter-change'
+  | 'other'
+
+/** @internal */
+export type LcpElementKind = 'title' | 'field' | 'image' | 'other'
+
+/** @internal */
+export interface SoftNavigationVital {
+  value: number
+  rating: 'good' | 'needs-improvement' | 'poor'
+}
+
+/** @internal */
+export interface PerformanceSoftNavigationMeasuredData {
+  navigationId: number
+  navigationType: 'soft-navigation'
+  /** Tool and pane kind, never the URL: it holds document and release IDs. */
+  route: string
+  change: SoftNavigationChange
+  sampleRate: number
+  lcp?: SoftNavigationVital & {elementKind: LcpElementKind}
+  fcp?: SoftNavigationVital
+  inp?: SoftNavigationVital
+  cls?: SoftNavigationVital
+}
+
+/**
+ * One event per soft navigation, carrying every web vital measured for it.
+ * Sessions are sampled up front, so there is no `maxSampleRate`.
+ */
+export const PerformanceSoftNavigationMeasured = defineEvent<PerformanceSoftNavigationMeasuredData>(
+  {
+    name: 'Performance Soft Navigation Measured',
+    version: 1,
+    description: 'Web vitals for one soft navigation in a sampled session',
+  },
+)

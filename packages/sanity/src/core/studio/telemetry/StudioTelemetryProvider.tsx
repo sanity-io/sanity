@@ -1,10 +1,6 @@
 import portableTextEditorManifest from '@portabletext/editor/package.json' with {type: 'json'}
 import appSdkManifest from '@sanity/sdk-react/package.json' with {type: 'json'}
-import {
-  createBatchedStore,
-  type CreateBatchedStoreOptions,
-  createSessionId,
-} from '@sanity/telemetry'
+import {createBatchedStore, type CreateBatchedStoreOptions} from '@sanity/telemetry'
 import {TelemetryProvider} from '@sanity/telemetry/react'
 import {
   type ReactNode,
@@ -28,10 +24,9 @@ import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../workspace'
 import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
+import {telemetrySessionId} from './telemetrySession'
 import {type TelemetryContext} from './types'
 import {debugLoggingStore} from './utils/debugLoggingStore'
-
-const sessionId = createSessionId()
 
 /** Telemetry only runs on client */
 const isClient = typeof window !== 'undefined'
@@ -188,7 +183,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // The storeOptions callbacks access contextRef.current, but only when called
   // asynchronously (on flush), not during render. Suppress the lint warning.
   // oxlint-disable-next-line react/refs -- pre-existing violation, to be fixed in a follow-up
-  const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
+  const store = useMemo(() => createBatchedStore(telemetrySessionId, storeOptions), [storeOptions])
 
   // Per-instance guard so StrictMode's double-invoked mount effect logs StudioLoaded once.
   const studioLoadedFiredRef = useRef(false)
