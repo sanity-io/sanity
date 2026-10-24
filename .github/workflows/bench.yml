@@ -875,9 +875,9 @@ jobs:
       article_soak_outcome: ${{ steps.article_soak.outcome }}
       # Read by sqrl-score: a settle mismatch fails the job after the run is stored
       benchrun_store_outcome: ${{ steps.store.outcome }}
-    # Soak (~10m) + article soak (~11m) + INP (~10m) + settle (9 scenarios ×
-    # 4 sessions, the two red-by-design ones costing the 30s cap per session —
-    # ~20m)
+    # Soak (~10m) + article soak (~11m) + INP (~10m) + soft navigations
+    # (4 sessions, ~1m) + settle (9 scenarios × 4 sessions, the two
+    # red-by-design ones costing the 30s cap per session — ~20m)
     timeout-minutes: 60
     permissions:
       contents: read
@@ -984,6 +984,13 @@ jobs:
         run: |
           pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
+
+      # Absolute only: softnav mode rejects --reference-dist (see
+      # perf/bench/README.md "Soft-navigation mode").
+      - name: Run soft-navigation benchmarks
+        run: |
+          pnpm bench run --mode softnav --scenario softNav --sessions 4 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__softnav.json"
 
       # Settle: the render-loop detector — customization scenarios plus two
       # vanilla controls (core-surface loops show on any workspace). It runs
