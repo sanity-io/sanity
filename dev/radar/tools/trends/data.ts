@@ -1605,10 +1605,10 @@ export function vitalSections(
 }
 
 export const NAVIGATION_METRICS = [
-  {vital: 'soft LCP time', name: 'Soft LCP'},
-  {vital: 'soft FCP time', name: 'Soft FCP'},
-  {vital: 'soft INP latency', name: 'Soft INP'},
-  {vital: 'soft CLS score', name: 'Soft CLS'},
+  {vital: 'soft LCP time', name: 'Largest Contentful Paint'},
+  {vital: 'soft FCP time', name: 'First Contentful Paint'},
+  {vital: 'soft INP latency', name: 'Interaction to Next Paint'},
+  {vital: 'soft CLS score', name: 'Cumulative Layout Shift'},
   {vital: 'click to ready', name: 'Click to ready'},
 ] as const
 

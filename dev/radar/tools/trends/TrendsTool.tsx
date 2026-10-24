@@ -1793,8 +1793,6 @@ export function TrendsTool() {
                         onLeaveChart={() => setChartParam('')}
                       />
                     ) : activeTab.id === 'vitals' || activeTab.id === 'navigation' ? (
-                      // The extra top padding separates the first section
-                      // header from the tab description it would otherwise hug.
                       metricSections.length === 0 ? (
                         <EmptyGroup>
                           {activeTab.id === 'vitals'
@@ -1802,6 +1800,8 @@ export function TrendsTool() {
                             : 'No soft-navigation data in this range — try a longer range.'}
                         </EmptyGroup>
                       ) : (
+                        // The extra top padding separates the first section
+                        // header from the tab description it would otherwise hug.
                         <Flex gap={6} paddingTop={3} flexDirection="column">
                           {metricSections.map((section) => (
                             <VStack key={section.vital} gap={4}>
