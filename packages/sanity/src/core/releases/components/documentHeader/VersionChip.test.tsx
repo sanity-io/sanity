@@ -28,6 +28,7 @@ const emptyMenuAction = {
   tone: 'default' as const,
   onClick: noop,
   disabled: false,
+  tooltipProps: null,
 }
 
 function mockContextMenu(sourceReleasePerspective: typeof LATEST | typeof PUBLISHED) {
