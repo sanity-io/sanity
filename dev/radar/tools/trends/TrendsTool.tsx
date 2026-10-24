@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 import {STYLE_SYSTEMS} from '@repo/utils/style-systems'
 import {ActivityIcon} from '@sanity/icons/Activity'
+import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {BugIcon} from '@sanity/icons/Bug'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
@@ -48,6 +49,7 @@ import {
   buildSeries,
   CALIBRATION_EXPLAINER,
   latestSoakCharts,
+  navigationSections,
   primaryLines,
   settleViews,
   soakSlopeSeries,
@@ -109,6 +111,7 @@ const RANGES = [
 /** One glanceable glyph per metric-group tab; titles stay the identifier. */
 const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
   vitals: ActivityIcon,
+  navigation: ArrowRightIcon,
   responsiveness: BoltIcon,
   load: ClockIcon,
   bundle: PackageIcon,
@@ -661,6 +664,8 @@ function ChartGrid(props: {
   /** Release tags for the charts' markers. */
   tags?: TrendTag[]
   onExpand?: (seriesKey: string) => void
+  /** Card height in px. */
+  cardHeight?: number
 }) {
   if (props.series.length === 0 && props.emptyMessage !== undefined) {
     return <EmptyGroup>{props.emptyMessage}</EmptyGroup>
@@ -683,7 +688,7 @@ function ChartGrid(props: {
           <SeriesCard
             key={entry.key}
             series={entry}
-            height={128}
+            height={props.cardHeight ?? 128}
             drift={entryDrift}
             silenced={entrySilenced}
             baseline={entryBaseline}
@@ -1389,6 +1394,10 @@ export function TrendsTool() {
     () => vitalSections(series.filter((entry) => entry.group === 'vitals')),
     [series],
   )
+  const navigationGroups = useMemo(
+    () => navigationSections(series.filter((entry) => entry.group === 'navigation')),
+    [series],
+  )
 
   // Every metric group is a tab, always: a fixed layout is learnable, and a
   // group without data in the range renders a blank state saying so (see
@@ -1817,6 +1826,63 @@ export function TrendsTool() {
                               />
                             </VStack>
                           ))}
+                        </Flex>
+                      )
+                    ) : activeTab.id === 'navigation' ? (
+                      navigationGroups.length === 0 ? (
+                        <EmptyGroup>
+                          No soft-navigation data in this range — try a longer range.
+                        </EmptyGroup>
+                      ) : (
+                        <Flex gap={6} paddingTop={3} flexDirection="column">
+                          {navigationGroups.map((section) => {
+                            const headline = section.series.filter(
+                              (entry) => entry.secondary !== true,
+                            )
+                            const secondary = section.series.filter(
+                              (entry) => entry.secondary === true,
+                            )
+                            return (
+                              <VStack key={section.id} gap={4}>
+                                <Text size={1} weight="semibold">
+                                  {section.name}
+                                </Text>
+                                <ChartGrid
+                                  layers={layers}
+                                  series={headline}
+                                  driftBySeries={driftBySeries}
+                                  silencedBySeries={silencedBySeries}
+                                  baselineBySeries={baselineBySeries}
+                                  drift={drift}
+                                  focusedKey={focusedKey}
+                                  onFocusMetric={focusMetric}
+                                  tags={tags}
+                                  onExpand={expandMetric}
+                                />
+                                {secondary.length > 0 && (
+                                  <VStack gap={3}>
+                                    <Text size={1} muted>
+                                      Diagnostic — can land on static chrome rather than real
+                                      content, not a headline number
+                                    </Text>
+                                    <ChartGrid
+                                      layers={layers}
+                                      series={secondary}
+                                      driftBySeries={driftBySeries}
+                                      silencedBySeries={silencedBySeries}
+                                      baselineBySeries={baselineBySeries}
+                                      drift={drift}
+                                      focusedKey={focusedKey}
+                                      onFocusMetric={focusMetric}
+                                      tags={tags}
+                                      onExpand={expandMetric}
+                                      cardHeight={96}
+                                    />
+                                  </VStack>
+                                )}
+                              </VStack>
+                            )
+                          })}
                         </Flex>
                       )
                     ) : (

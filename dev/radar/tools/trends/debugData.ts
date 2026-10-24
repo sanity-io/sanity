@@ -201,6 +201,37 @@ function withStyleRows(
   return {...scenario, metrics: [...(scenario.metrics ?? []), ...rows.metrics], styles: rows.styles}
 }
 
+const NAVIGATION_STEP_DAY = 20
+
+/**
+ * Document opens and switches step up mid-range; pane and tool switches stay
+ * fast and flat, as an LCP landing on static chrome would.
+ */
+function navigationScenario(rng: () => number, day: number, shift: number): DemoScenario {
+  const steppedUp = day >= NAVIGATION_STEP_DAY
+  const lcpByKind: Record<string, number> = {
+    'document-open': (steppedUp ? 480 : 420) + shift,
+    'document-switch': (steppedUp ? 440 : 390) + shift,
+    'pane-open': 60 + shift,
+    'tool-switch': 300 + shift,
+    'tool-return': 190 + shift,
+  }
+  const metrics = Object.entries(lcpByKind).flatMap(([kind, lcp]) => [
+    metric(rng, `nav:${kind} / soft LCP time`, lcp),
+    metric(rng, `nav:${kind} / soft FCP time`, lcp * 0.6),
+    metric(rng, `nav:${kind} / soft INP latency`, 90 + (rng() - 0.5) * 30),
+    metric(rng, `nav:${kind} / soft CLS score`, 0.01 + rng() * 0.02, 'cls'),
+    metric(rng, `nav:${kind} / click to ready`, lcp * 1.4),
+  ])
+  return {
+    scenario: 'softnav',
+    sourceFile: 'perf/bench/scenarios/softNav.ts',
+    kind: 'interaction',
+    mode: 'softnav',
+    metrics,
+  }
+}
+
 function settleScenarios(rng: () => number, day: number): DemoScenario[] {
   const settle = (
     scenario: string,
@@ -417,6 +448,7 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
         // re-regresses at day 75 — every session loops, so 'time to settle'
         // (settled sessions only) drops out and the commit count explodes.
         ...settleScenarios(rng, day),
+        navigationScenario(rng, day, shift),
       ],
     })
   }

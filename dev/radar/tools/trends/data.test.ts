@@ -9,6 +9,7 @@ import {
   formatTick,
   formatValue,
   lineName,
+  navigationSections,
   primaryLines,
   settleViews,
   styleLabel,
@@ -330,6 +331,144 @@ test('unknown vitals fall into a catch-all section', () => {
   const sections = vitalSections([vitalStub('singleString · somethingNew')])
   expect(sections).toEqual([
     {vital: 'Other', series: [expect.objectContaining({title: 'singleString · somethingNew'})]},
+  ])
+})
+
+/** A run carrying one soft-navigation metric, as the `softnav` bench mode reports them. */
+function navRun(options: {
+  id: string
+  sha: string
+  day: number
+  label: string
+  unit?: 'ms' | 'cls'
+}): TrendRun {
+  const {id, sha, day, label, unit = 'ms'} = options
+  const value = unit === 'cls' ? 0.05 : 300
+  return {
+    _id: id,
+    startedAt: new Date(START + day * DAY).toISOString(),
+    mode: 'absolute',
+    git: {sha, branch: 'main', committedAt: new Date(START + day * DAY).toISOString()},
+    runner: {calibrationMs: 8, runId: id, runAttempt: 1},
+    bundle: null,
+    scenarios: [
+      {
+        scenario: 'softnav',
+        kind: 'interaction',
+        metrics: [{label, unit, experiment: {summary: {median: value, p75: value, p90: value}}}],
+      },
+    ],
+  }
+}
+
+test('soft-navigation metrics classify into the navigation group, never vitals', () => {
+  const labels = [
+    'nav:document-open / soft LCP time',
+    'nav:pane-open / soft LCP time',
+    'nav:document-open / soft FCP time',
+    'nav:document-open / soft INP latency',
+    'nav:document-open / soft CLS score',
+    'nav:document-open / click to ready',
+  ]
+  const series = buildSeries(
+    labels.map((label, index) =>
+      navRun({
+        id: `n${index}`,
+        sha: `sha-${index}`,
+        day: index,
+        label,
+        unit: label.includes('CLS') ? 'cls' : 'ms',
+      }),
+    ),
+  )
+  expect(series.every((entry) => entry.group === 'navigation')).toBe(true)
+  expect(vitalSections(series.filter((entry) => entry.group === 'vitals'))).toEqual([])
+})
+
+// Pane and tool switches can land their LCP on static chrome rather than real content.
+test('soft LCP headlines document kinds and keeps pane/tool kinds secondary', () => {
+  const kinds = ['document-open', 'document-switch', 'pane-open', 'tool-switch', 'tool-return']
+  const series = buildSeries(
+    kinds.map((kind, index) =>
+      navRun({
+        id: `n${index}`,
+        sha: `sha-${index}`,
+        day: index,
+        label: `nav:${kind} / soft LCP time`,
+      }),
+    ),
+  )
+  const secondaryByKind = Object.fromEntries(
+    series.map((entry) => [entry.title.match(/nav:([a-z-]+)/)?.[1], Boolean(entry.secondary)]),
+  )
+  expect(secondaryByKind).toEqual({
+    'document-open': false,
+    'document-switch': false,
+    'pane-open': true,
+    'tool-switch': true,
+    'tool-return': true,
+  })
+})
+
+test('soft-nav good thresholds mirror the web-vitals good thresholds', () => {
+  const metrics: {label: string; unit?: 'ms' | 'cls'; goodThreshold: number | undefined}[] = [
+    {label: 'nav:document-open / soft LCP time', goodThreshold: 2500},
+    {label: 'nav:document-open / soft FCP time', goodThreshold: 1800},
+    {label: 'nav:document-open / soft INP latency', goodThreshold: 200},
+    {label: 'nav:document-open / soft CLS score', unit: 'cls', goodThreshold: 0.1},
+    {label: 'nav:document-open / click to ready', goodThreshold: undefined},
+  ]
+  const series = buildSeries(
+    metrics.map((entry, index) =>
+      navRun({
+        id: `n${index}`,
+        sha: `sha-${index}`,
+        day: index,
+        label: entry.label,
+        unit: entry.unit,
+      }),
+    ),
+  )
+  expect(series.map((entry) => entry.goodThreshold)).toEqual(
+    metrics.map((entry) => entry.goodThreshold),
+  )
+})
+
+test('an unrecognized soft-nav label still renders in the navigation group', () => {
+  const series = buildSeries([
+    navRun({id: 'n0', sha: 'sha-0', day: 0, label: 'nav:document-open / something new'}),
+  ])
+  expect(series[0].group).toBe('navigation')
+  expect(series[0].description).toBe('nav:document-open / something new')
+})
+
+const navStub = (title: string, secondary = false) => ({title, secondary}) as TrendSeries
+
+test('navigation series group into per-metric sections, headline first', () => {
+  const sections = navigationSections([
+    navStub('softnav · nav:pane-open / soft LCP time', true),
+    navStub('softnav · nav:document-open / soft LCP time'),
+    navStub('softnav · nav:document-open / soft INP latency'),
+  ])
+  expect(
+    sections.map((section) => [section.id, section.series.map((entry) => entry.title)]),
+  ).toEqual([
+    [
+      'soft LCP time',
+      ['softnav · nav:document-open / soft LCP time', 'softnav · nav:pane-open / soft LCP time'],
+    ],
+    ['soft INP latency', ['softnav · nav:document-open / soft INP latency']],
+  ])
+})
+
+test('an unknown navigation metric falls into a catch-all section', () => {
+  const sections = navigationSections([navStub('softnav · nav:document-open / somethingNew')])
+  expect(sections).toEqual([
+    {
+      id: 'other',
+      name: 'Other',
+      series: [expect.objectContaining({title: 'softnav · nav:document-open / somethingNew'})],
+    },
   ])
 })
 

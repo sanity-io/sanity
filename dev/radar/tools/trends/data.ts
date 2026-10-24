@@ -299,6 +299,11 @@ export interface TrendSeries {
    */
   hidden?: boolean
   /**
+   * Rendered smaller below its group's headline charts: a diagnostic chart,
+   * e.g. soft LCP for a pane or tool switch, which can land on static chrome.
+   */
+  secondary?: boolean
+  /**
    * Drift windows for a series that does not tick once per commit. Absent =
    * the bench defaults (see `DEFAULT_DRIFT_WINDOWS` in drift.ts).
    */
@@ -340,6 +345,7 @@ export function availableBranches(runs: TrendRun[]): string[] {
 
 export type TrendGroup =
   | 'vitals'
+  | 'navigation'
   | 'responsiveness'
   | 'load'
   | 'bundle'
@@ -442,6 +448,16 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
       'Google Core Web Vitals and supporting load metrics; lower is better on all of them. Measured in a canned environment (local API mock, no external network), so vitals that would only measure that setup are left out. TTFB, for example, would just time the mock.',
   },
   {
+    id: 'navigation',
+    title: 'Soft navigations',
+    description:
+      'In-app navigations that never trigger a full page load — opening a document, switching ' +
+      "panes or tools — using the browser's own soft-navigation vitals, bucketed per " +
+      'navigation. Soft LCP heads with document-open and document-switch; LCP for pane-open ' +
+      'and tool-switch/return is shown secondary, since it can land on static chrome rather ' +
+      'than real content.',
+  },
+  {
     id: 'responsiveness',
     title: 'Editing responsiveness',
     description: 'Per-keystroke latency (keydown → paint) while typing into each scenario.',
@@ -497,6 +513,14 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
   },
 ]
 
+const NAVIGATION_HEADLINE_LCP_KINDS = new Set(['document-open', 'document-switch'])
+
+/** Whether a soft LCP label (`nav:<kind> / soft LCP time`) is for a headline nav kind. */
+function isHeadlineNavigationLcp(label: string): boolean {
+  const kind = /^nav:([a-z0-9-]+)\s*\//i.exec(label)?.[1]
+  return kind === undefined ? false : NAVIGATION_HEADLINE_LCP_KINDS.has(kind)
+}
+
 /**
  * Plain-English description per metric so a first-time viewer can read the
  * dashboard without knowing the bench suite. Matched on the metric labels
@@ -506,7 +530,7 @@ function describeSeries(
   kind: 'interaction' | 'pageload',
   label: string,
   mode?: string | null,
-): Pick<TrendSeries, 'description' | 'goal' | 'group' | 'goodThreshold'> {
+): Pick<TrendSeries, 'description' | 'goal' | 'group' | 'goodThreshold' | 'secondary'> {
   // Style-migration rows first: the same census runs in every mode (they ride
   // along on interaction, pageload and settle reports alike), so the label
   // decides the group before any mode does. The registry in @repo/utils is
@@ -624,6 +648,60 @@ function describeSeries(
         'How long the main thread was frozen during load (long animation frames). The UI is unresponsive for this time.',
       goal: 'lower',
     }
+  }
+  // Ahead of the hard-nav suffix checks below, so soft-nav labels never land
+  // in the vitals group.
+  if (label.startsWith('nav:')) {
+    if (label.includes('soft LCP time')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation Largest Contentful Paint: when the navigation’s largest content ' +
+          'became visible. Element size and text are unreliable on soft navs, so only the ' +
+          'timing is charted.',
+        goal: 'lower',
+        goodThreshold: 2500,
+        ...(isHeadlineNavigationLcp(label) ? {} : {secondary: true}),
+      }
+    }
+    if (label.includes('soft FCP time')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation First Contentful Paint: first pixels drawn after the navigation started.',
+        goal: 'lower',
+        goodThreshold: 1800,
+      }
+    }
+    if (label.includes('soft INP latency')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation Interaction to Next Paint, bucketed to this navigation by navigationId ' +
+          '(per-nav, not the page-load percentile rule).',
+        goal: 'lower',
+        goodThreshold: 200,
+      }
+    }
+    if (label.includes('soft CLS score')) {
+      return {
+        group: 'navigation',
+        description: 'Soft-navigation Cumulative Layout Shift, bucketed to this navigation.',
+        goal: 'lower',
+        goodThreshold: 0.1,
+      }
+    }
+    if (label.includes('click to ready')) {
+      return {
+        group: 'navigation',
+        description:
+          "From the bench's trusted click that started the navigation until its readiness " +
+          'selector matched.',
+        goal: 'lower',
+      }
+    }
+    // A new nav metric must never silently vanish from the dashboard
+    return {group: 'navigation', description: label, goal: 'lower'}
   }
   // goodThreshold values are the web.dev "good" recommendations
   // (https://web.dev/articles/defining-core-web-vitals-thresholds)
@@ -1288,6 +1366,18 @@ function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
   return merged.sort((a, b) => a.date.getTime() - b.date.getTime())
 }
 
+/**
+ * Commit where the bench collector gained soft-navigation observers; a step
+ * there is the harness changing, not the studio. Unset until it reaches main.
+ */
+const NAVIGATION_COLLECTOR_BREAK_SHA: string | undefined = undefined
+
+function navigationBreaks(runs: TrendRun[]): SeriesBreak[] {
+  if (NAVIGATION_COLLECTOR_BREAK_SHA === undefined) return []
+  const run = runs.find((candidate) => candidate.git?.sha === NAVIGATION_COLLECTOR_BREAK_SHA)
+  return run ? [{date: runDate(run), label: 'bench collector v2'}] : []
+}
+
 export function buildSeries(runs: TrendRun[]): TrendSeries[] {
   const series = new Map<string, TrendSeries>()
   const push = (
@@ -1296,7 +1386,14 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
     unit: TrendUnit,
     meta: Pick<
       TrendSeries,
-      'description' | 'goal' | 'group' | 'sourceFile' | 'lineLabel' | 'goodThreshold' | 'hidden'
+      | 'description'
+      | 'goal'
+      | 'group'
+      | 'sourceFile'
+      | 'lineLabel'
+      | 'goodThreshold'
+      | 'hidden'
+      | 'secondary'
     >,
     run: TrendRun,
     point: Pick<
@@ -1490,8 +1587,10 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
   // deliberately left unmerged — see mergeRunsPerCommit). Headline lines
   // before secondary ones, so a paired chart's legend and tooltip lead with
   // v5 whichever row happened to be recorded first (a pre-v5 run has only v4).
+  const navBreaks = navigationBreaks(runs)
   return [...series.values()].map((entry) => ({
     ...entry,
+    ...(entry.group === 'navigation' ? {breaks: navBreaks} : {}),
     lines: entry.lines
       .map((line) => ({...line, points: mergeRunsPerCommit(line.points)}))
       .sort((a, b) => Number(Boolean(a.secondary)) - Number(Boolean(b.secondary))),
@@ -1534,6 +1633,39 @@ export function vitalSections(list: TrendSeries[]): VitalSection[] {
   // a new metric must never silently vanish from the dashboard
   const leftover = list.filter((entry) => !matched.has(entry)).sort(byTitle)
   if (leftover.length > 0) sections.push({vital: 'Other', series: leftover})
+  return sections.filter((section) => section.series.length > 0)
+}
+
+/**
+ * Navigation-tab layout, mirroring `vitalSections`. Matched on the full metric
+ * phrase since soft-nav titles share suffixes ("time", "latency").
+ */
+const NAVIGATION_METRICS = [
+  {id: 'soft LCP time', name: 'Soft LCP'},
+  {id: 'soft FCP time', name: 'Soft FCP'},
+  {id: 'soft INP latency', name: 'Soft INP'},
+  {id: 'soft CLS score', name: 'Soft CLS'},
+  {id: 'click to ready', name: 'Click to ready'},
+] as const
+
+export interface NavigationMetricSection {
+  id: string
+  name: string
+  series: TrendSeries[]
+}
+
+export function navigationSections(list: TrendSeries[]): NavigationMetricSection[] {
+  const matched = new Set<TrendSeries>()
+  const headlineFirst = (left: TrendSeries, right: TrendSeries) =>
+    Number(Boolean(left.secondary)) - Number(Boolean(right.secondary)) || byTitle(left, right)
+  const sections: NavigationMetricSection[] = NAVIGATION_METRICS.map(({id, name}) => {
+    const series = list.filter((entry) => entry.title.includes(id)).sort(headlineFirst)
+    for (const entry of series) matched.add(entry)
+    return {id, name, series}
+  })
+  // A new nav metric must never silently vanish from the dashboard
+  const leftover = list.filter((entry) => !matched.has(entry)).sort(byTitle)
+  if (leftover.length > 0) sections.push({id: 'other', name: 'Other', series: leftover})
   return sections.filter((section) => section.series.length > 0)
 }
 
