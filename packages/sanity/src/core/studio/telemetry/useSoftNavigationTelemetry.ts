@@ -5,6 +5,7 @@ import {onCLS, onFCP, onINP, onLCP} from 'web-vitals'
 import {type Workspace} from '../../config/types'
 import {PerformanceSoftNavigationMeasured} from '../__telemetry__/performance.telemetry'
 import {useWorkspace} from '../workspace'
+import {createPreviousURLTracker, type PreviousURLTracker} from './previousURLTracker'
 import {
   createSoftNavigationReporter,
   SOFT_NAVIGATION_SAMPLE_RATE,
@@ -38,23 +39,14 @@ function toSoftNavigationWorkspace(workspace: Workspace): SoftNavigationWorkspac
   return {basePath: workspace.basePath, toolNames: workspace.tools.map((tool) => tool.name)}
 }
 
-const MAX_TRACKED_URLS = 50
-
-// Chromium skips soft-nav entries for some URL changes, so the previous soft nav's URL can be stale.
-function trackPreviousURLs(): (navigationURL: string) => string | undefined {
-  const previousURLs = new Map<string, string>()
+function trackPreviousURLs(): PreviousURLTracker['get'] {
+  const tracker = createPreviousURLTracker()
   globalThis.navigation?.addEventListener('currententrychange', (event) => {
     const currentURL = globalThis.navigation.currentEntry?.url
     const previousURL = event.from.url
-    if (currentURL && previousURL) {
-      previousURLs.delete(currentURL)
-      previousURLs.set(currentURL, previousURL)
-    }
-    if (previousURLs.size > MAX_TRACKED_URLS) {
-      previousURLs.delete(previousURLs.keys().next().value ?? '')
-    }
+    if (currentURL && previousURL) tracker.record(previousURL, currentURL)
   })
-  return (navigationURL) => previousURLs.get(navigationURL)
+  return tracker.get
 }
 
 function flushWhenHidden(reporter: SoftNavigationReporter) {
