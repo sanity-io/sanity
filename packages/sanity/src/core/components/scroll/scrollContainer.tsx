@@ -3,7 +3,7 @@ import {
   type ElementType,
   type HTMLProps,
   memo,
-  useContext,
+  use,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -29,7 +29,7 @@ function ScrollContainerComponent<T extends ElementType = 'div'>(
 
   useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
 
-  const parentContext = useContext(ScrollContext)
+  const parentContext = use(ScrollContext)
   const [childContext] = useState(() => createPubSub<Event>())
 
   useEffect(() => {

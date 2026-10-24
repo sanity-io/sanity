@@ -1,10 +1,10 @@
-import {useContext, useMemo} from 'react'
+import {use, useMemo} from 'react'
 import {usePerspective} from 'sanity'
 import {PaneRouterContext} from 'sanity/structure'
 
 export function usePresentationPerspectiveStack() {
   const {perspectiveStack} = usePerspective()
-  const paneRouter = useContext(PaneRouterContext)
+  const paneRouter = use(PaneRouterContext)
   if (!paneRouter) {
     throw new Error('PaneRouter not found')
   }

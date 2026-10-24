@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {type AddonDatasetContextValue} from './types'
@@ -8,7 +8,7 @@ import {type AddonDatasetContextValue} from './types'
  * @hidden
  */
 export function useAddonDataset(): AddonDatasetContextValue {
-  const ctx = useContext(AddonDatasetContext)
+  const ctx = use(AddonDatasetContext)
 
   if (!ctx) {
     throw new Error('useAddonDataset: missing context value')

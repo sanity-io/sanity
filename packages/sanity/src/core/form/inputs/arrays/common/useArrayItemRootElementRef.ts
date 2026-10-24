@@ -1,4 +1,4 @@
-import {type RefObject, useContext} from 'react'
+import {type RefObject, use} from 'react'
 import {ArrayItemRootElementContext} from 'sanity/_singletons'
 
 /**
@@ -12,5 +12,5 @@ import {ArrayItemRootElementContext} from 'sanity/_singletons'
  * @internal
  */
 export function useArrayItemRootElementRef(): RefObject<HTMLDivElement | null> | null {
-  return useContext(ArrayItemRootElementContext)
+  return use(ArrayItemRootElementContext)
 }

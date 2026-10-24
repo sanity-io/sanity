@@ -1,4 +1,4 @@
-import {type RefObject, useContext} from 'react'
+import {type RefObject, use} from 'react'
 import {VirtualizerScrollInstanceContext} from 'sanity/_singletons'
 
 /**
@@ -19,7 +19,7 @@ export interface VirtualizerScrollInstance {
  * @internal
  */
 export function useVirtualizerScrollInstance(): VirtualizerScrollInstance {
-  const ref = useContext(VirtualizerScrollInstanceContext)
+  const ref = use(VirtualizerScrollInstanceContext)
   if (!ref) {
     throw new Error('VirtualizerScrollInstance: missing context value')
   }
