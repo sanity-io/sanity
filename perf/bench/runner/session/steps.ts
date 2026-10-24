@@ -170,9 +170,9 @@ export function navigateMeasureName(label: string): string {
   return `bench:navigate:${label}`
 }
 
-const NAVIGATE_MEASURE_PREFIX = navigateMeasureName('')
+export const NAVIGATE_MEASURE_PREFIX = navigateMeasureName('')
 /** The click's timestamp and the soft navigation's startTime differ by rounding, never by a frame. */
-const SOFT_NAVIGATION_MATCH_MS = 16
+export const SOFT_NAVIGATION_MATCH_MS = 16
 
 /** Labels of the `navigate` steps whose click starts no soft navigation, in order. */
 export function navigationsWithoutSoftNavigation(
