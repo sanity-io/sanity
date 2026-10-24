@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-24)
+
+### Bug Fixes
+
+* **util:** keep keyed paths with periods or brackets from crashing the structure tool ([#15463](https://github.com/sanity-io/sanity/issues/15463)) ([9b447f8](https://github.com/sanity-io/sanity/commit/9b447f8f14abd1260d50e0f631cd6e4c3ceb260b))
 ## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-13)
 
 ### Bug Fixes
