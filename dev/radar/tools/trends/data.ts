@@ -451,11 +451,11 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
     id: 'navigation',
     title: 'Soft navigations',
     description:
-      'In-app navigations that never trigger a full page load — opening a document, switching ' +
-      "panes or tools — using the browser's own soft-navigation vitals, bucketed per " +
+      'In-app navigations never trigger a full page load - opening a document, switching panes ' +
+      "or tools - but still report the browser's own soft-navigation vitals, bucketed per " +
       'navigation. Soft LCP heads with document-open and document-switch; LCP for pane-open ' +
-      'and tool-switch is shown secondary, since it can land on the pane header before real ' +
-      'content arrives.',
+      'and tool-switch is diagnostic only, since it can land on the pane header before content ' +
+      'arrives.',
   },
   {
     id: 'responsiveness',
@@ -517,8 +517,8 @@ const NAVIGATION_HEADLINE_LCP_KINDS = new Set(['document-open', 'document-switch
 
 /** Whether a soft LCP label (`nav:<kind> / soft LCP time`) is for a headline nav kind. */
 function isHeadlineNavigationLcp(label: string): boolean {
-  const kind = /^nav:([a-z0-9-]+)\s*\//i.exec(label)?.[1]
-  return kind === undefined ? false : NAVIGATION_HEADLINE_LCP_KINDS.has(kind)
+  const kind = /^nav:([a-z0-9-]+)\s*\//.exec(label)?.[1]
+  return NAVIGATION_HEADLINE_LCP_KINDS.has(kind ?? '')
 }
 
 /**
@@ -539,6 +539,59 @@ function describeSeries(
   const styleMetric = styleMetricFor(label)
   if (styleMetric) {
     return {group: 'styles', description: styleMetric.description, goal: styleMetric.goal}
+  }
+  // Before any substring check, so a nav label like "tool visible" never lands in Load.
+  if (label.startsWith('nav:')) {
+    if (label.includes('soft LCP time')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation Largest Contentful Paint: when the navigation’s largest content ' +
+          'became visible. Element size and text are unreliable on soft navs, so only the ' +
+          'timing is charted.',
+        goal: 'lower',
+        goodThreshold: 2500,
+        ...(isHeadlineNavigationLcp(label) ? {} : {secondary: true}),
+      }
+    }
+    if (label.includes('soft FCP time')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation First Contentful Paint: first pixels drawn after the navigation started.',
+        goal: 'lower',
+        goodThreshold: 1800,
+      }
+    }
+    if (label.includes('soft INP latency')) {
+      return {
+        group: 'navigation',
+        description:
+          'Soft-navigation Interaction to Next Paint, bucketed to this navigation by navigationId ' +
+          '(per-nav, not the page-load percentile rule).',
+        goal: 'lower',
+        goodThreshold: 200,
+      }
+    }
+    if (label.includes('soft CLS score')) {
+      return {
+        group: 'navigation',
+        description: 'Soft-navigation Cumulative Layout Shift, bucketed to this navigation.',
+        goal: 'lower',
+        goodThreshold: 0.1,
+      }
+    }
+    if (label.includes('click to ready')) {
+      return {
+        group: 'navigation',
+        description:
+          "From the bench's trusted click that started the navigation until its readiness " +
+          'selector matched.',
+        goal: 'lower',
+      }
+    }
+    // A new nav metric must never silently vanish from the dashboard
+    return {group: 'navigation', description: label, goal: 'lower'}
   }
   if (mode === 'settle') {
     if (label === 'sessions not settled') {
@@ -648,60 +701,6 @@ function describeSeries(
         'How long the main thread was frozen during load (long animation frames). The UI is unresponsive for this time.',
       goal: 'lower',
     }
-  }
-  // Ahead of the hard-nav suffix checks below, so soft-nav labels never land
-  // in the vitals group.
-  if (label.startsWith('nav:')) {
-    if (label.includes('soft LCP time')) {
-      return {
-        group: 'navigation',
-        description:
-          'Soft-navigation Largest Contentful Paint: when the navigation’s largest content ' +
-          'became visible. Element size and text are unreliable on soft navs, so only the ' +
-          'timing is charted.',
-        goal: 'lower',
-        goodThreshold: 2500,
-        ...(isHeadlineNavigationLcp(label) ? {} : {secondary: true}),
-      }
-    }
-    if (label.includes('soft FCP time')) {
-      return {
-        group: 'navigation',
-        description:
-          'Soft-navigation First Contentful Paint: first pixels drawn after the navigation started.',
-        goal: 'lower',
-        goodThreshold: 1800,
-      }
-    }
-    if (label.includes('soft INP latency')) {
-      return {
-        group: 'navigation',
-        description:
-          'Soft-navigation Interaction to Next Paint, bucketed to this navigation by navigationId ' +
-          '(per-nav, not the page-load percentile rule).',
-        goal: 'lower',
-        goodThreshold: 200,
-      }
-    }
-    if (label.includes('soft CLS score')) {
-      return {
-        group: 'navigation',
-        description: 'Soft-navigation Cumulative Layout Shift, bucketed to this navigation.',
-        goal: 'lower',
-        goodThreshold: 0.1,
-      }
-    }
-    if (label.includes('click to ready')) {
-      return {
-        group: 'navigation',
-        description:
-          "From the bench's trusted click that started the navigation until its readiness " +
-          'selector matched.',
-        goal: 'lower',
-      }
-    }
-    // A new nav metric must never silently vanish from the dashboard
-    return {group: 'navigation', description: label, goal: 'lower'}
   }
   // goodThreshold values are the web.dev "good" recommendations
   // (https://web.dev/articles/defining-core-web-vitals-thresholds)
@@ -1366,18 +1365,6 @@ function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
   return merged.sort((a, b) => a.date.getTime() - b.date.getTime())
 }
 
-/**
- * Commit where the bench collector gained soft-navigation observers; a step
- * there is the harness changing, not the studio. Unset until it reaches main.
- */
-const NAVIGATION_COLLECTOR_BREAK_SHA: string | undefined = undefined
-
-function navigationBreaks(runs: TrendRun[]): SeriesBreak[] {
-  if (NAVIGATION_COLLECTOR_BREAK_SHA === undefined) return []
-  const run = runs.find((candidate) => candidate.git?.sha === NAVIGATION_COLLECTOR_BREAK_SHA)
-  return run ? [{date: runDate(run), label: 'bench collector v2'}] : []
-}
-
 export function buildSeries(runs: TrendRun[]): TrendSeries[] {
   const series = new Map<string, TrendSeries>()
   const push = (
@@ -1587,10 +1574,8 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
   // deliberately left unmerged — see mergeRunsPerCommit). Headline lines
   // before secondary ones, so a paired chart's legend and tooltip lead with
   // v5 whichever row happened to be recorded first (a pre-v5 run has only v4).
-  const navBreaks = navigationBreaks(runs)
   return [...series.values()].map((entry) => ({
     ...entry,
-    ...(entry.group === 'navigation' ? {breaks: navBreaks} : {}),
     lines: entry.lines
       .map((line) => ({...line, points: mergeRunsPerCommit(line.points)}))
       .sort((a, b) => Number(Boolean(a.secondary)) - Number(Boolean(b.secondary))),

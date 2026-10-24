@@ -220,9 +220,9 @@ function navigationScenario(rng: () => number, shift: number): DemoScenario {
     metric(rng, `nav:${kind} / click to ready`, lcp * 1.4),
   ])
   return {
-    scenario: 'softnav',
+    scenario: 'softNav',
     sourceFile: 'perf/bench/scenarios/softNav.ts',
-    kind: 'interaction',
+    kind: 'pageload',
     mode: 'softnav',
     metrics,
   }

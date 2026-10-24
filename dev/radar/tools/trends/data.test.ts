@@ -353,8 +353,9 @@ function navRun(options: {
     bundle: null,
     scenarios: [
       {
-        scenario: 'softnav',
-        kind: 'interaction',
+        scenario: 'softNav',
+        kind: 'pageload',
+        mode: 'softnav',
         metrics: [{label, unit, experiment: {summary: {median: value, p75: value, p90: value}}}],
       },
     ],
@@ -441,32 +442,39 @@ test('an unrecognized soft-nav label still renders in the navigation group', () 
   expect(series[0].description).toBe('nav:document-open / something new')
 })
 
+test('a nav label sharing wording with a load-step metric still classifies as navigation', () => {
+  const series = buildSeries([
+    navRun({id: 'n0', sha: 'sha-0', day: 0, label: 'nav:tool-switch / tool visible'}),
+  ])
+  expect(series[0].group).toBe('navigation')
+})
+
 const navStub = (title: string, secondary = false) => ({title, secondary}) as TrendSeries
 
 test('navigation series group into per-metric sections, headline first', () => {
   const sections = navigationSections([
-    navStub('softnav · nav:pane-open / soft LCP time', true),
-    navStub('softnav · nav:document-open / soft LCP time'),
-    navStub('softnav · nav:document-open / soft INP latency'),
+    navStub('softNav · nav:pane-open / soft LCP time', true),
+    navStub('softNav · nav:document-open / soft LCP time'),
+    navStub('softNav · nav:document-open / soft INP latency'),
   ])
   expect(
     sections.map((section) => [section.id, section.series.map((entry) => entry.title)]),
   ).toEqual([
     [
       'soft LCP time',
-      ['softnav · nav:document-open / soft LCP time', 'softnav · nav:pane-open / soft LCP time'],
+      ['softNav · nav:document-open / soft LCP time', 'softNav · nav:pane-open / soft LCP time'],
     ],
-    ['soft INP latency', ['softnav · nav:document-open / soft INP latency']],
+    ['soft INP latency', ['softNav · nav:document-open / soft INP latency']],
   ])
 })
 
 test('an unknown navigation metric falls into a catch-all section', () => {
-  const sections = navigationSections([navStub('softnav · nav:document-open / somethingNew')])
+  const sections = navigationSections([navStub('softNav · nav:document-open / somethingNew')])
   expect(sections).toEqual([
     {
       id: 'other',
       name: 'Other',
-      series: [expect.objectContaining({title: 'softnav · nav:document-open / somethingNew'})],
+      series: [expect.objectContaining({title: 'softNav · nav:document-open / somethingNew'})],
     },
   ])
 })

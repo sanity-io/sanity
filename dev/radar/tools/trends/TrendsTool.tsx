@@ -1862,8 +1862,8 @@ export function TrendsTool() {
                                 {secondary.length > 0 && (
                                   <VStack gap={3}>
                                     <Text size={1} muted>
-                                      Diagnostic — can land on the pane header before real content
-                                      arrives, not a headline number
+                                      Diagnostic only - LCP can land on the pane header before
+                                      content arrives
                                     </Text>
                                     <ChartGrid
                                       layers={layers}
