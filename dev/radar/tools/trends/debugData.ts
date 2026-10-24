@@ -201,6 +201,33 @@ function withStyleRows(
   return {...scenario, metrics: [...(scenario.metrics ?? []), ...rows.metrics], styles: rows.styles}
 }
 
+/**
+ * Pane and tool switches stay fast and flat, as an LCP landing on the pane
+ * header would.
+ */
+function navigationScenario(rng: () => number, shift: number): DemoScenario {
+  const lcpByKind: Record<string, number> = {
+    'document-open': 420 + shift,
+    'document-switch': 390 + shift,
+    'pane-open': 60 + shift,
+    'tool-switch': 300 + shift,
+  }
+  const metrics = Object.entries(lcpByKind).flatMap(([kind, lcp]) => [
+    metric(rng, `nav:${kind} / soft LCP time`, lcp),
+    metric(rng, `nav:${kind} / soft FCP time`, lcp * 0.6),
+    metric(rng, `nav:${kind} / soft INP latency`, 90 + (rng() - 0.5) * 30),
+    metric(rng, `nav:${kind} / soft CLS score`, 0.01 + rng() * 0.02, 'cls'),
+    metric(rng, `nav:${kind} / click to ready`, lcp * 1.4),
+  ])
+  return {
+    scenario: 'softNav',
+    sourceFile: 'perf/bench/scenarios/softNav.ts',
+    kind: 'pageload',
+    mode: 'softnav',
+    metrics,
+  }
+}
+
 function settleScenarios(rng: () => number, day: number): DemoScenario[] {
   const settle = (
     scenario: string,
@@ -417,6 +444,7 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
         // re-regresses at day 75 — every session loops, so 'time to settle'
         // (settled sessions only) drops out and the commit count explodes.
         ...settleScenarios(rng, day),
+        navigationScenario(rng, shift),
       ],
     })
   }
