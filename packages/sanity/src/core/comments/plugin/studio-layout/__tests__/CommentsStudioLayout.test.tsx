@@ -2,7 +2,7 @@ import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {Suspense} from 'react'
 import {preloadObservablePromise} from 'react-rx'
-import {of, Subject} from 'rxjs'
+import {Observable, of, Subject} from 'rxjs'
 import {CommentsModePromiseContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -46,25 +46,36 @@ const settledUpsellData: UpsellDataResult = {upsellData, hasError: false}
 
 let mode$: Subject<CommentsMode>
 const onChildRender = vi.fn()
-// Answers as soon as the provider commits, so the only thing the dialog could wait for is the
-// mode promise. Module-scoped like the real hook's memoized observable
-const upsellData$ = of(settledUpsellData)
+// Answers as soon as it is requested, so the only thing the dialog could wait for is the mode
+// promise, and counts its requests. Module-scoped like the real hook's memoized observable
+let upsellRequests = 0
+const upsellData$ = new Observable<UpsellDataResult>((subscriber) => {
+  upsellRequests++
+  subscriber.next(settledUpsellData)
+  subscriber.complete()
+})
+// What the test provider's own upsell providers (limits, releases) get: never counted
+const otherUpsellData$ = of<UpsellDataResult>({upsellData: null, hasError: false})
+
+// Stable like the real hook's memoized loggers, so the context value only changes with the dialog
+const telemetryLogs = {
+  dialogViewed: vi.fn(),
+  dialogDismissed: vi.fn(),
+  dialogPrimaryClicked: vi.fn(),
+  dialogSecondaryClicked: vi.fn(),
+  panelViewed: vi.fn(),
+  panelDismissed: vi.fn(),
+  panelPrimaryClicked: vi.fn(),
+  panelSecondaryClicked: vi.fn(),
+}
 
 beforeEach(() => {
   mode$ = new Subject<CommentsMode>()
-  useUpsellDataMock.mockReturnValue({
-    upsellData$,
-    telemetryLogs: {
-      dialogViewed: vi.fn(),
-      dialogDismissed: vi.fn(),
-      dialogPrimaryClicked: vi.fn(),
-      dialogSecondaryClicked: vi.fn(),
-      panelViewed: vi.fn(),
-      panelDismissed: vi.fn(),
-      panelPrimaryClicked: vi.fn(),
-      panelSecondaryClicked: vi.fn(),
-    },
-  })
+  upsellRequests = 0
+  useUpsellDataMock.mockImplementation(({dataUri}) => ({
+    upsellData$: dataUri === '/journey/comments' ? upsellData$ : otherUpsellData$,
+    telemetryLogs,
+  }))
 })
 
 // Stands in for the studio below the layout; asks for the upsell dialog the way the comments UI
@@ -174,5 +185,33 @@ describe('CommentsStudioLayout', () => {
     await settleMode('upsell')
 
     expect(await screen.findByRole('dialog')).toHaveTextContent('Comments need a bigger plan')
+  })
+
+  it('requests the upsell content only once the plan check has settled as upsell', async () => {
+    await renderLayout()
+
+    // The provider is mounted in both modes, so it waits for the plan before asking
+    expect(upsellRequests).toBe(0)
+
+    await settleMode('upsell')
+
+    expect(upsellRequests).toBe(1)
+  })
+
+  it('never requests the upsell content on a plan with comments', async () => {
+    await renderLayout()
+    await settleMode('default')
+
+    await userEvent.click(screen.getByRole('button', {name: 'open upsell'}))
+
+    expect(await screen.findByTestId('open-state')).toHaveTextContent('true')
+    expect(upsellRequests).toBe(0)
+  })
+
+  it('never requests the upsell content when the feature check failed', async () => {
+    await renderLayout()
+    await settleMode(null)
+
+    expect(upsellRequests).toBe(0)
   })
 })
