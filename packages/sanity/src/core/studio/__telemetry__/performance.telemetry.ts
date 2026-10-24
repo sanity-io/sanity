@@ -4,6 +4,7 @@ import {
   type FCPMetricWithAttribution,
   type INPMetricWithAttribution,
   type LCPMetricWithAttribution,
+  type Metric,
   type TTFBMetricWithAttribution,
 } from 'web-vitals/attribution'
 
@@ -121,10 +122,7 @@ export type SoftNavigationChange =
 export type LcpElementKind = 'title' | 'field' | 'image' | 'other'
 
 /** @internal */
-export interface SoftNavigationVital {
-  value: number
-  rating: 'good' | 'needs-improvement' | 'poor'
-}
+export type SoftNavigationVital = Pick<Metric, 'value' | 'rating'>
 
 /** @internal */
 export interface PerformanceSoftNavigationMeasuredData {

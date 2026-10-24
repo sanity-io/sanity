@@ -1,27 +1,25 @@
 import {type Metric} from 'web-vitals'
 
 import {
+  type LcpElementKind,
   type PerformanceSoftNavigationMeasuredData,
   type SoftNavigationChange,
   type SoftNavigationVital,
 } from '../__telemetry__/performance.telemetry'
-import {type PaintedElement, toLcpElementKind} from './lcpElementKind'
 import {describeChange} from './softNavigationChange'
 import {toSoftNavRoute} from './softNavRoute'
 
 /** @internal */
 export const SOFT_NAVIGATION_SAMPLE_RATE = 0.1
 
-/** @internal */
-export const MAX_SOFT_NAVIGATION_EVENTS = 200
+const MAX_SOFT_NAVIGATION_EVENTS = 200
 
-/**
- * How long a soft nav stays open after the next one starts. web-vitals reports the
- * previous nav's INP from an idle callback with a 1s timeout, so this leaves headroom.
- *
- * @internal
- */
-export const SOFT_NAVIGATION_SETTLE_MS = 3000
+// web-vitals reports the previous nav's INP from an idle callback with a 1s timeout.
+const SOFT_NAVIGATION_SETTLE_MS = 3000
+
+// The structure tool owns these test ids; core can only match them in the DOM.
+const TITLE_SELECTOR = '[data-testid^="document-panel-document-title"]'
+const FORM_SELECTOR = '[data-testid="form-view"]'
 
 // No soft nav needs its paint metrics when it only changed UI state on an already painted pane.
 const CHANGES_WITHOUT_PAINT = new Set<SoftNavigationChange>([
@@ -38,6 +36,8 @@ export interface SoftNavigationMetric extends Pick<
 > {
   entries: ReadonlyArray<PerformanceEntry & Partial<PaintedElement>>
 }
+
+type PaintedElement = Pick<LargestContentfulPaint, 'element' | 'url'>
 
 interface PendingSoftNavigation {
   navigationId: number
@@ -74,6 +74,18 @@ export interface SoftNavigationReporter {
 
 function toVital(metric: SoftNavigationMetric): SoftNavigationVital {
   return {value: metric.value, rating: metric.rating}
+}
+
+/**
+ * Buckets a soft LCP element so image-led document opens can be split from title-led ones.
+ *
+ * @internal
+ */
+export function toLcpElementKind({element, url}: PaintedElement): LcpElementKind {
+  if (url) return 'image'
+  if (element?.closest(TITLE_SELECTOR)) return 'title'
+  if (element?.closest(FORM_SELECTOR)) return 'field'
+  return 'other'
 }
 
 function toLcp(metric: SoftNavigationMetric): PerformanceSoftNavigationMeasuredData['lcp'] {
@@ -155,10 +167,6 @@ export function createSoftNavigationReporter(
     })
   }
 
-  function sendOlderThan(navigationId: number): void {
-    send([...pending.keys()].filter((pendingId) => pendingId < navigationId))
-  }
-
   function start(metric: SoftNavigationMetric): PendingSoftNavigation {
     const navigationURL = metric.navigationURL ?? ''
     const previousURL = options.getPreviousURL?.(navigationURL) ?? latestURL
@@ -169,22 +177,20 @@ export function createSoftNavigationReporter(
     }
     if (pending.size > 0) {
       const settlingBefore = newestNavigationId
-      setTimeout(() => sendOlderThan(settlingBefore), SOFT_NAVIGATION_SETTLE_MS)
+      setTimeout(
+        () => send([...pending.keys()].filter((pendingId) => pendingId < settlingBefore)),
+        SOFT_NAVIGATION_SETTLE_MS,
+      )
     }
     return {navigationId: metric.navigationId, navigationURL, previousURL, workspace}
   }
 
-  function acceptsMetric(metric: SoftNavigationMetric): boolean {
-    if (metric.navigationType !== 'soft-navigation') return false
-    if (sentNavigationIds.has(metric.navigationId)) return false
-    return sentNavigationIds.size < MAX_SOFT_NAVIGATION_EVENTS
-  }
-
   function record(metric: SoftNavigationMetric): void {
-    if (acceptsMetric(metric)) {
-      const navigation = pending.get(metric.navigationId) ?? start(metric)
-      pending.set(metric.navigationId, withMetric(navigation, metric))
-    }
+    if (metric.navigationType !== 'soft-navigation') return
+    if (sentNavigationIds.has(metric.navigationId)) return
+    if (sentNavigationIds.size >= MAX_SOFT_NAVIGATION_EVENTS) return
+    const navigation = pending.get(metric.navigationId) ?? start(metric)
+    pending.set(metric.navigationId, withMetric(navigation, metric))
   }
 
   function flush(): void {
