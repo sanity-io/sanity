@@ -697,7 +697,6 @@ import type {
   ToastParams,
   toMutationPatches,
   TooltipOfDisabled,
-  toRegistryPath,
   TrackedArea,
   TrackedChange,
   TrackerContextGetSnapshot,
@@ -2985,9 +2984,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('TooltipOfDisabled', () => {
     expectTypeOf<typeof TooltipOfDisabled>().toBeFunction()
-  })
-  test('toRegistryPath', () => {
-    expectTypeOf<typeof toRegistryPath>().toBeFunction()
   })
   test('TrackedArea', () => {
     expectTypeOf<TrackedArea>().toBeObject()

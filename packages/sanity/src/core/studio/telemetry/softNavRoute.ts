@@ -11,21 +11,16 @@ interface SoftNavRouteInput {
   toolNames: string[]
 }
 
-function parsePathname(navigationURL: string): string | undefined {
+export function toToolPathSegments(navigationURL: string, basePath: string): string[] {
+  let pathname: string
   try {
-    return new URL(navigationURL).pathname
+    pathname = new URL(navigationURL).pathname
   } catch {
-    return undefined
+    return []
   }
-}
 
-function toPathSegments(path: string): string[] {
-  return path.split('/').filter(Boolean)
-}
-
-function stripBasePath(pathname: string, basePath: string): string[] {
-  const pathSegments = toPathSegments(pathname)
-  const baseSegments = toPathSegments(basePath)
+  const pathSegments = pathname.split('/').filter(Boolean)
+  const baseSegments = basePath.split('/').filter(Boolean)
 
   const matchesBase = baseSegments.every((segment, index) => pathSegments[index] === segment)
   return matchesBase ? pathSegments.slice(baseSegments.length) : []
@@ -59,24 +54,17 @@ function toStructurePaneKind(toolName: string, paneSegment: string | undefined):
   return getStructurePaneKind(toolName, toRegistryPathFromUrl(decodedSegment)) ?? OTHER
 }
 
-function toToolRoute(toolName: string, firstToolSegment: string | undefined): string {
-  if (isStructureTool(toolName))
-    return `structure:${toStructurePaneKind(toolName, firstToolSegment)}`
-  return toolName
-}
-
 export function toSoftNavRoute(input: SoftNavRouteInput): string {
-  const pathname = parsePathname(input.navigationURL)
-  if (pathname === undefined) return OTHER
-
-  const toolSegments = stripBasePath(pathname, input.basePath)
+  const toolSegments = toToolPathSegments(input.navigationURL, input.basePath)
   if (toolSegments.length === 0) return OTHER
 
   const [toolName, firstToolSegment, secondToolSegment] = toolSegments
   if (toolName === 'intent') return toIntentRoute(firstToolSegment)
   if (input.toolNames.includes(toolName)) {
     if (firstToolSegment === 'intent') return toIntentRoute(secondToolSegment)
-    return toToolRoute(toolName, firstToolSegment)
+    if (isStructureTool(toolName))
+      return `structure:${toStructurePaneKind(toolName, firstToolSegment)}`
+    return toolName
   }
 
   return OTHER

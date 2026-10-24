@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {recordStructurePaneKind, recordStructureTool, toRegistryPath} from '../paneKindRegistry'
+import {recordStructurePaneKind, recordStructureTool} from '../paneKindRegistry'
 import {toSoftNavRoute} from '../softNavRoute'
 
 const STUDIO_ORIGIN = 'https://my-studio.sanity.studio'
@@ -19,41 +19,41 @@ function routeFor(path: string, basePath = '/'): string {
 
 describe('toSoftNavRoute', () => {
   it('classifies a list pane using the kind the structure tool recorded for that path', () => {
-    recordStructurePaneKind('structure', 'author', 'list')
+    recordStructurePaneKind('structure', 'root;author', 'list')
 
     expect(routeFor('/structure/author')).toBe('structure:list')
   })
 
   it('classifies a document pane the same way', () => {
-    recordStructurePaneKind('structure', 'author;knut', 'document')
+    recordStructurePaneKind('structure', 'root;author;knut', 'document')
 
     expect(routeFor('/structure/author;knut')).toBe('structure:document')
   })
 
   it('looks up a pane carrying params by its id chain alone, decoding the group the router encodes', () => {
-    recordStructurePaneKind('structure', 'book;book-a', 'document')
+    recordStructurePaneKind('structure', 'root;book;book-a', 'document')
 
     const encodedGroup = encodeURIComponent('book-a,inspect=sanity%2Fstructure%2Fvalidation')
     expect(routeFor(`/structure/book;${encodedGroup}`)).toBe('structure:document')
   })
 
   it('looks up a split-pane group by its first sibling, decoding the group the router encodes', () => {
-    recordStructurePaneKind('structure', 'book;book-a', 'list')
+    recordStructurePaneKind('structure', 'root;book;book-a', 'list')
 
     const encodedGroup = encodeURIComponent('book-a|,')
     expect(routeFor(`/structure/book;${encodedGroup}`)).toBe('structure:list')
   })
 
   it('classifies a nested list opened inside a list as a list', () => {
-    recordStructurePaneKind('structure', 'photos', 'list')
-    recordStructurePaneKind('structure', 'photos;featured', 'list')
+    recordStructurePaneKind('structure', 'root;photos', 'list')
+    recordStructurePaneKind('structure', 'root;photos;featured', 'list')
 
     expect(routeFor('/structure/photos;featured')).toBe('structure:list')
   })
 
   it('classifies panes the same way for a renamed structure tool, with no collision against another tool', () => {
-    recordStructurePaneKind('cars', 'book;renamed-tool-knut', 'document')
-    recordStructurePaneKind('structure', 'book;renamed-tool-knut', 'list')
+    recordStructurePaneKind('cars', 'root;book;renamed-tool-knut', 'document')
+    recordStructurePaneKind('structure', 'root;book;renamed-tool-knut', 'list')
 
     expect(routeFor('/cars/book;renamed-tool-knut')).toBe('structure:document')
     expect(routeFor('/structure/book;renamed-tool-knut')).toBe('structure:list')
@@ -83,7 +83,7 @@ describe('toSoftNavRoute', () => {
   })
 
   it('records through a root-prefixed resolver path and looks up from the real URL it maps to', () => {
-    recordStructurePaneKind('structure', toRegistryPath('root;book;knut'), 'document')
+    recordStructurePaneKind('structure', 'root;book;knut', 'document')
 
     expect(routeFor('/structure/book;knut')).toBe('structure:document')
   })
@@ -107,7 +107,7 @@ describe('toSoftNavRoute', () => {
   })
 
   it('respects a non-root workspace basePath', () => {
-    recordStructurePaneKind('structure', 'author;knut-scoped', 'document')
+    recordStructurePaneKind('structure', 'root;author;knut-scoped', 'document')
 
     expect(routeFor('/my-workspace/structure/author;knut-scoped', '/my-workspace')).toBe(
       'structure:document',
@@ -115,7 +115,7 @@ describe('toSoftNavRoute', () => {
   })
 
   it('never includes a document id, slug, or raw query string in the result', () => {
-    recordStructurePaneKind('structure', 'author;very-specific-document-id-123', 'document')
+    recordStructurePaneKind('structure', 'root;author;very-specific-document-id-123', 'document')
 
     expect(routeFor('/structure/author;very-specific-document-id-123?foo=bar')).toBe(
       'structure:document',
@@ -123,7 +123,7 @@ describe('toSoftNavRoute', () => {
   })
 
   it('derives the route from the reported navigationURL, not from a later navigation', () => {
-    recordStructurePaneKind('structure', 'author;first-opened', 'document')
+    recordStructurePaneKind('structure', 'root;author;first-opened', 'document')
 
     const firstNavRoute = routeFor('/structure/author;first-opened')
 

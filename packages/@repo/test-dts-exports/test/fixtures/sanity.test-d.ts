@@ -916,6 +916,7 @@ import type {
   isNetworkError,
   isNewDocument,
   isNonNullable,
+  isNonSelectableTerminalEvent,
   isNumberInputProps,
   isNumberSchemaType,
   isObjectInputProps,
@@ -4632,6 +4633,9 @@ describe('sanity', () => {
   })
   test('isNonNullable', () => {
     expectTypeOf<typeof isNonNullable>().toBeFunction()
+  })
+  test('isNonSelectableTerminalEvent', () => {
+    expectTypeOf<typeof isNonSelectableTerminalEvent>().not.toBeNever()
   })
   test('isNumberInputProps', () => {
     expectTypeOf<typeof isNumberInputProps>().toBeFunction()

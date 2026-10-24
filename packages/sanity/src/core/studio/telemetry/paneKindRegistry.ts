@@ -8,8 +8,8 @@ const structureToolNames = new Set<string>()
 // Caps memory in a long-running session; eviction is oldest-recorded-key-first.
 export const MAX_ENTRIES = 500
 
-function toRegistryKey(toolName: string, path: string): string {
-  return JSON.stringify([toolName, path])
+function toRegistryKey(toolName: string, registryPath: string): string {
+  return JSON.stringify([toolName, registryPath])
 }
 
 /** @internal */
@@ -22,19 +22,15 @@ export function isStructureTool(toolName: string): boolean {
   return structureToolNames.has(toolName)
 }
 
-// The resolver path leads with the root node's id, absent from the URL; drop by position as custom structures rename it.
-/** @internal */
-export function toRegistryPath(resolverPath: string): string {
-  return resolverPath.split(';').slice(1).join(';')
-}
-
 /** @internal */
 export function recordStructurePaneKind(
   toolName: string,
-  path: string,
+  resolverPath: string,
   kind: StructurePaneKind,
 ): void {
-  const key = toRegistryKey(toolName, path)
+  // The resolver path leads with the root node's id, absent from the URL; drop by position as custom structures rename it.
+  const registryPath = resolverPath.split(';').slice(1).join(';')
+  const key = toRegistryKey(toolName, registryPath)
 
   paneKindByKey.delete(key)
   paneKindByKey.set(key, kind)
@@ -48,7 +44,7 @@ export function recordStructurePaneKind(
 /** @internal */
 export function getStructurePaneKind(
   toolName: string,
-  path: string,
+  registryPath: string,
 ): StructurePaneKind | undefined {
-  return paneKindByKey.get(toRegistryKey(toolName, path))
+  return paneKindByKey.get(toRegistryKey(toolName, registryPath))
 }

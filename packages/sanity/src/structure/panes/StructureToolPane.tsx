@@ -3,7 +3,6 @@ import {lazy, memo, Suspense, useEffect} from 'react'
 import {
   recordStructurePaneKind,
   type StructurePaneKind,
-  toRegistryPath,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {PaneRouterProvider} from '../components/paneRouter/PaneRouterProvider'
@@ -81,11 +80,7 @@ export const StructureToolPane = memo(
     const PaneComponent = paneMap[pane.type] || UnknownPane
 
     useEffect(() => {
-      recordStructurePaneKind(
-        toolName,
-        toRegistryPath(path),
-        PANE_KIND_BY_PANE_TYPE[pane.type] ?? 'other',
-      )
+      recordStructurePaneKind(toolName, path, PANE_KIND_BY_PANE_TYPE[pane.type] ?? 'other')
     }, [toolName, path, pane.type])
 
     return (
