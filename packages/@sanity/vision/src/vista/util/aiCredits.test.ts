@@ -4,6 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {
   aiSpendingLimitUrl,
   aiUsageUrl,
+  canUpsellAiCredits,
   fetchAiCredits,
   readAiCredits,
   readAiCreditsLimit,
@@ -142,6 +143,43 @@ describe('readAiCreditsLimit', () => {
     ).toBeUndefined()
     expect(readAiCreditsLimit(new Error('Network error'))).toBeUndefined()
     expect(readAiCreditsLimit(undefined)).toBeUndefined()
+  })
+})
+
+describe('canUpsellAiCredits', () => {
+  it('upsells a bigger plan once the credits the plan includes are used up', () => {
+    expect(
+      canUpsellAiCredits({granted: false, reasonCode: 'plan_limit_reached', used: 100, quota: 100}),
+    ).toBe(true)
+    // The usage and the quota are beside the point: the reason is what says a bigger plan helps
+    expect(
+      canUpsellAiCredits({
+        granted: false,
+        reasonCode: 'plan_limit_reached',
+        used: undefined,
+        quota: undefined,
+      }),
+    ).toBe(true)
+  })
+
+  it('leaves a spending limit the organization set itself to Manage', () => {
+    expect(
+      canUpsellAiCredits({
+        granted: false,
+        reasonCode: 'default_budget_limit_reached',
+        used: 100,
+        quota: 100,
+      }),
+    ).toBe(false)
+  })
+
+  it('has nothing to upsell while requests go through, or for a limit without a reason', () => {
+    expect(
+      canUpsellAiCredits({granted: true, reasonCode: 'plan_limit_reached', used: 58, quota: 1000}),
+    ).toBe(false)
+    expect(
+      canUpsellAiCredits({granted: false, reasonCode: undefined, used: undefined, quota: 100}),
+    ).toBe(false)
   })
 })
 

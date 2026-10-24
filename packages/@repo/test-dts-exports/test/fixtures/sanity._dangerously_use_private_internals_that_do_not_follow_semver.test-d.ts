@@ -493,6 +493,7 @@ import type {
   NavbarContextValue,
   newDraftFrom,
   NextStateOrOptions,
+  NO_UPSELL_DATA,
   NoChanges,
   noop,
   normalizeIndexSegment,
@@ -707,12 +708,16 @@ import type {
   UpdateReadOnlyPlugin,
   UploaderDef,
   uploadSchema,
+  UpsellDataResult,
   UpsellDescriptionSerializer,
+  UpsellDialog,
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
+  UpsellDialogProps,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   UpsellDialogViewedInfo,
+  UpsellTelemetryLogs,
   useActiveReleases,
   useActiveWorkspace,
   useAgentVersionDisplay,
@@ -842,6 +847,7 @@ import type {
   useTrackerStoreReporter,
   useUnique,
   useUnstableObserveDocument,
+  useUpsellData,
   useUser,
   useUserColor,
   useUserColorManager,
@@ -2369,6 +2375,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('NextStateOrOptions', () => {
     expectTypeOf<NextStateOrOptions>().not.toBeNever()
   })
+  test('NO_UPSELL_DATA', () => {
+    expectTypeOf<typeof NO_UPSELL_DATA>().not.toBeNever()
+  })
   test('NoChanges', () => {
     expectTypeOf<typeof NoChanges>().toBeFunction()
   })
@@ -3012,14 +3021,23 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('uploadSchema', () => {
     expectTypeOf<typeof uploadSchema>().toBeFunction()
   })
+  test('UpsellDataResult', () => {
+    expectTypeOf<UpsellDataResult>().toBeObject()
+  })
   test('UpsellDescriptionSerializer', () => {
     expectTypeOf<typeof UpsellDescriptionSerializer>().toBeFunction()
+  })
+  test('UpsellDialog', () => {
+    expectTypeOf<typeof UpsellDialog>().toBeFunction()
   })
   test('UpsellDialogDismissed', () => {
     expectTypeOf<typeof UpsellDialogDismissed>().not.toBeNever()
   })
   test('UpsellDialogLearnMoreCtaClicked', () => {
     expectTypeOf<typeof UpsellDialogLearnMoreCtaClicked>().not.toBeNever()
+  })
+  test('UpsellDialogProps', () => {
+    expectTypeOf<UpsellDialogProps>().toBeObject()
   })
   test('UpsellDialogUpgradeCtaClicked', () => {
     expectTypeOf<typeof UpsellDialogUpgradeCtaClicked>().not.toBeNever()
@@ -3029,6 +3047,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('UpsellDialogViewedInfo', () => {
     expectTypeOf<UpsellDialogViewedInfo>().toBeObject()
+  })
+  test('UpsellTelemetryLogs', () => {
+    expectTypeOf<UpsellTelemetryLogs>().toBeObject()
   })
   test('useActiveReleases', () => {
     expectTypeOf<typeof useActiveReleases>().toBeFunction()
@@ -3418,6 +3439,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useUnstableObserveDocument', () => {
     expectTypeOf<typeof useUnstableObserveDocument>().toBeFunction()
+  })
+  test('useUpsellData', () => {
+    expectTypeOf<typeof useUpsellData>().not.toBeNever()
   })
   test('useUser', () => {
     expectTypeOf<typeof useUser>().toBeFunction()
