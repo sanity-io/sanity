@@ -59,10 +59,9 @@ function toStructurePanes(panesSegment: string | undefined): StructurePanes {
 function changedKeys(previous: string[], next: string[]): string[] {
   const previousEntries = new Set(previous)
   const nextEntries = new Set(next)
-  const onlyOnOneSide = [...previousEntries, ...nextEntries].filter(
-    (entry) => previousEntries.has(entry) !== nextEntries.has(entry),
-  )
-  return onlyOnOneSide.map((entry) => entry.slice(0, entry.indexOf('=')))
+  return [...previousEntries, ...nextEntries]
+    .filter((entry) => previousEntries.has(entry) !== nextEntries.has(entry))
+    .map((entry) => entry.slice(0, entry.indexOf('=')))
 }
 
 function hasSamePanes(previous: StructurePanes, next: StructurePanes): boolean {
