@@ -1,7 +1,6 @@
-import {rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
+import {Skeleton, Text, TextSkeleton} from '@sanity/ui'
 import {clsx} from 'clsx'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -10,6 +9,7 @@ import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
+import {root, subtitleSkeleton, titleSkeleton} from './DefaultPreview.css'
 
 /**
  * @hidden
@@ -36,20 +36,6 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-const Root = styled(Flex)`
-  height: ${rem(PREVIEW_SIZES.default.media.height)};
-  box-sizing: content-box;
-`
-
-const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
-  max-width: ${rem(160)};
-  width: 80%;
-`
-
-const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
-  max-width: ${rem(120)};
-  width: 60%;
-`
 const SKELETON_DELAY = 300
 /**
  * @hidden
@@ -57,7 +43,7 @@ const SKELETON_DELAY = 300
 export function DefaultPreview(props: DefaultPreviewProps) {
   const {title, subtitle, media, status, isPlaceholder, children, styles, progress} = props
   const {t} = useTranslation()
-  const rootClassName = clsx(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
+  const rootClassName = clsx(root, styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
   const isUploading = typeof progress === 'number' && progress > -1
 
   const statusNode = status && (
@@ -73,9 +59,9 @@ export function DefaultPreview(props: DefaultPreviewProps) {
     const showSubtitleSkeleton = subtitle === undefined || Boolean(subtitle)
 
     return (
-      <Root
+      <Flex
         alignItems="center"
-        className={styles?.placeholder}
+        className={clsx(root, styles?.placeholder)}
         data-testid="default-preview"
         padding={2}
         paddingLeft={media ? 2 : 3}
@@ -95,24 +81,38 @@ export function DefaultPreview(props: DefaultPreviewProps) {
           <Flex
             data-testid="default-preview__heading"
             flexBasis="0%"
+            flexDirection="column"
             flexGrow={1}
             gap={2}
-            flexDirection="column"
           >
-            <TitleSkeleton delay={SKELETON_DELAY} />
-            {showSubtitleSkeleton && <SubtitleSkeleton delay={SKELETON_DELAY} />}
+            <TextSkeleton
+              animated
+              className={titleSkeleton}
+              delay={SKELETON_DELAY}
+              radius={1}
+              size={1}
+            />
+            {showSubtitleSkeleton && (
+              <TextSkeleton
+                animated
+                className={subtitleSkeleton}
+                delay={SKELETON_DELAY}
+                radius={1}
+                size={1}
+              />
+            )}
           </Flex>
 
           <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
             {statusNode}
           </Box>
         </Flex>
-      </Root>
+      </Flex>
     )
   }
 
   return (
-    <Root
+    <Flex
       alignItems="center"
       className={rootClassName}
       data-testid="default-preview"
@@ -172,6 +172,6 @@ export function DefaultPreview(props: DefaultPreviewProps) {
 
         {children && <div className={styles?.children}>{children}</div>}
       </Flex>
-    </Root>
+    </Flex>
   )
 }
