@@ -1,4 +1,4 @@
-import {Card, Spinner} from '@sanity/ui'
+import {Card, Layer, Spinner} from '@sanity/ui'
 import {lazy, Suspense, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 import {Flex} from 'ui5'
@@ -44,18 +44,20 @@ export function VariantsStudioNavbarLayout(props: NavbarProps) {
   return (
     <Flex flexDirection="column">
       {props.renderDefault(props)}
-      <Card
-        tone={variantSelections.length > 0 ? 'suggest' : 'neutral'}
-        paddingY={2}
-        paddingX={3}
-        borderBottom
-      >
-        <Flex alignItems="center" justifyContent="center" gap={2} flexWrap="wrap">
-          <Suspense fallback={<VariantsStudioNavbarFallback />}>
-            <VariantsStudioNavbar variantSelections={variantSelections} />
-          </Suspense>
-        </Flex>
-      </Card>
+      <Layer zOffset={50}>
+        <Card
+          tone={variantSelections.length > 0 ? 'suggest' : 'neutral'}
+          paddingY={2}
+          paddingX={3}
+          shadow={1}
+        >
+          <Flex alignItems="center" justifyContent="center" gap={2} flexWrap="wrap">
+            <Suspense fallback={<VariantsStudioNavbarFallback />}>
+              <VariantsStudioNavbar variantSelections={variantSelections} />
+            </Suspense>
+          </Flex>
+        </Card>
+      </Layer>
     </Flex>
   )
 }
