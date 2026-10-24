@@ -135,6 +135,27 @@ describe('describeChange', () => {
       change: 'other',
     },
     {
+      label: 'document open in a structure tool renamed to cars',
+      previousURL: `${ORIGIN}/test/cars/car`,
+      nextURL: `${ORIGIN}/test/cars/car;car-a`,
+      nextRoute: 'structure:document',
+      change: 'document-open',
+    },
+    {
+      label: 'inspector toggle in a structure tool renamed to cars',
+      previousURL: `${ORIGIN}/test/cars/car;car-a`,
+      nextURL: `${ORIGIN}/test/cars/car;${encodeURIComponent(`car-a,${INSPECT_VALIDATION}`)}`,
+      nextRoute: 'structure:document',
+      change: 'inspector-toggle',
+    },
+    {
+      label: 'a previous URL from another workspace',
+      previousURL: `${ORIGIN}/us/structure/book`,
+      nextURL: structureUrl('book', 'book-a'),
+      nextRoute: 'structure:document',
+      change: 'other',
+    },
+    {
       label: 'an unparsable URL',
       previousURL: 'not a url',
       nextURL: structureUrl('book'),

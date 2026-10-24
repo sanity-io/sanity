@@ -26,11 +26,10 @@ function toStudioLocation(url: string, basePath: string): StudioLocation | undef
   try {
     const {pathname, searchParams} = new URL(url)
     const baseSegments = basePath.split('/').filter(Boolean)
-    const [tool = '', ...toolSegments] = pathname
-      .split('/')
-      .filter(Boolean)
-      .slice(baseSegments.length)
-    return {tool, toolSegments, search: searchParams}
+    const pathSegments = pathname.split('/').filter(Boolean)
+    const isInWorkspace = baseSegments.every((segment, index) => pathSegments[index] === segment)
+    const [tool = '', ...toolSegments] = pathSegments.slice(baseSegments.length)
+    return isInWorkspace ? {tool, toolSegments, search: searchParams} : undefined
   } catch {
     return undefined
   }
@@ -117,6 +116,8 @@ export function describeChange(input: DescribeChangeInput): SoftNavigationChange
   if (previous.toolSegments.join('/') === next.toolSegments.join('/')) {
     return previous.search.toString() === next.search.toString() ? 'other' : 'filter-change'
   }
-  if (next.tool === 'structure') return describeStructureChange(previous, next, input.nextRoute)
+  if (input.nextRoute.startsWith('structure:')) {
+    return describeStructureChange(previous, next, input.nextRoute)
+  }
   return 'other'
 }
