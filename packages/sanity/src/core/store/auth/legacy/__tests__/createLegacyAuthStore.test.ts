@@ -13,6 +13,7 @@ import {promiseWithResolvers} from '../../../../util/promiseWithResolvers'
 import {type AuthStore} from '../../types'
 import {AUTH_STATE_SETTLE_TIMEOUT_MS} from '../constants'
 import {_createLegacyAuthStore, createLegacyAuthStore} from '../createLegacyAuthStore'
+import {consumeHashToken} from '../hashToken'
 
 // Mock supportsLocalStorage to return true so createBroadcastStorage uses localStorage.
 // In jsdom/Node.js it returns false because process.versions.node is defined.
@@ -1910,6 +1911,118 @@ describe('createLegacyAuthStore: workbench OS token', () => {
 
     const state = await waitForState(store, (s) => s.authenticated)
     expect(state.authenticated).toBe(true)
+  })
+})
+
+describe('createLegacyAuthStore: hash credentials', () => {
+  const PASTED_TOKEN = 'pasted-hash-token-0123456789abcdef'
+
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    // Not `location.hash = ''`: its queued hashchange would reach the next test's store.
+    window.history.replaceState(null, '', window.location.pathname)
+    // Drains a token a cookie store left for a token store, so it can't reach the next test.
+    consumeHashToken()
+  })
+
+  it.each(['cookie', 'token', 'dual'] as const)(
+    'removes a #sid= fragment pasted into an open tab from the URL (%s, during the first probe)',
+    async (loginMethod) => {
+      const mock = createMockClientFactory()
+
+      const store = _createLegacyAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        loginMethod,
+        clientFactory: mock.factory,
+        getSessionId: () => undefined,
+        consumeHashToken: () => undefined,
+      })
+      const sub = store.state.subscribe(() => {})
+
+      try {
+        // Dispatched before any await: the initial /users/me probe is still in flight.
+        // replaceState, unlike assigning location.hash, doesn't queue jsdom's own (later)
+        // hashchange event, which would otherwise arrive after the probe settles.
+        window.history.replaceState(null, '', '#sid=12345678901234567890&keep=me')
+        window.dispatchEvent(new HashChangeEvent('hashchange'))
+
+        await vi.waitFor(() => {
+          expect(window.location.hash).toBe('#keep=me')
+        })
+      } finally {
+        sub.unsubscribe()
+      }
+    },
+  )
+
+  it('removes a #token= fragment pasted into an open tab without taking it in (cookie)', async () => {
+    const store = _createLegacyAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: createMockClientFactory().factory,
+      getSessionId: () => undefined,
+      consumeHashToken,
+    })
+    const sub = store.state.subscribe(() => {})
+
+    try {
+      window.history.replaceState(null, '', `#token=${PASTED_TOKEN}&keep=me`)
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+
+      expect(window.location.hash).toBe('#keep=me')
+      expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull()
+    } finally {
+      sub.unsubscribe()
+    }
+  })
+
+  it('leaves a #token= pasted into an open tab for a token store that a cookie store heard first', async () => {
+    const cookieStore = _createLegacyAuthStore({
+      projectId: 'cookie-project',
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: createMockClientFactory().factory,
+      getSessionId: () => undefined,
+      consumeHashToken,
+    })
+    const tokenStore = _createLegacyAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'token',
+      clientFactory: createMockClientFactory().factory,
+      getSessionId: () => undefined,
+      consumeHashToken,
+    })
+    const subscriptions = [cookieStore, tokenStore].map((store) => store.state.subscribe(() => {}))
+
+    try {
+      window.history.replaceState(null, '', `#token=${PASTED_TOKEN}`)
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+
+      expect(JSON.parse(localStorage.getItem(TOKEN_STORAGE_KEY)!)).toEqual({token: PASTED_TOKEN})
+      expect(window.location.hash).toBe('')
+    } finally {
+      subscriptions.forEach((subscription) => subscription.unsubscribe())
+    }
+  })
+
+  it('does not store a #token= present at load in a cookie store', () => {
+    _createLegacyAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'cookie',
+      clientFactory: createMockClientFactory().factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => PASTED_TOKEN,
+    })
+
+    expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull()
   })
 })
 
