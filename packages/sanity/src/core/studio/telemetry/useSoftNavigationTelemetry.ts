@@ -14,7 +14,6 @@ import {
   type SoftNavigationWorkspace,
 } from './softNavigationReporter'
 import {isSessionSampled} from './softNavigationSampling'
-import {telemetrySessionId} from './telemetrySession'
 import {isDebugTelemetryEnabled} from './utils/debugLoggingStore'
 
 const SOFT_NAVIGATION_OPTIONS = {reportSoftNavs: true}
@@ -27,9 +26,7 @@ function supportsSoftNavigations(): boolean {
 
 function isSessionInSample(): boolean {
   // Debug telemetry only logs to the console, so it reports every session to make soft navs testable.
-  return (
-    isDebugTelemetryEnabled() || isSessionSampled(telemetrySessionId, SOFT_NAVIGATION_SAMPLE_RATE)
-  )
+  return isDebugTelemetryEnabled() || isSessionSampled(SOFT_NAVIGATION_SAMPLE_RATE)
 }
 
 function shouldReportSoftNavigations(): boolean {
