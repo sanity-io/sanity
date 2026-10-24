@@ -53,11 +53,12 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
           )}
         </VStack>
       }
+      interactive
       portal
       placement={placement}
       fallbackPlacements={['bottom', 'right', 'left']}
     >
-      <div className={statusIconWrapper}>
+      <div className={statusIconWrapper} data-testid="validation-status" tabIndex={0}>
         <Text size={fontSize} weight="medium">
           <StatusIcon status={status} />
         </Text>
