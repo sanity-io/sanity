@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {recordStructurePaneKind, recordStructureTool} from '../paneKindRegistry'
-import {toSoftNavRoute} from '../softNavRoute'
+import {toSoftNavRoute, toToolPathSegments} from '../softNavRoute'
 
 const STUDIO_ORIGIN = 'https://my-studio.sanity.studio'
 const TOOL_NAMES = ['structure', 'cars', 'vision', 'media-library', 'presentation']
@@ -132,5 +132,24 @@ describe('toSoftNavRoute', () => {
 
     expect(routeFor('/structure/author;first-opened')).toBe(firstNavRoute)
     expect(firstNavRoute).toBe('structure:document')
+  })
+})
+
+describe('toToolPathSegments', () => {
+  it('returns the path segments after the workspace basePath', () => {
+    expect(toToolPathSegments(`${STUDIO_ORIGIN}/structure/author;knut`, '/')).toEqual([
+      'structure',
+      'author;knut',
+    ])
+  })
+
+  it('returns an empty array for a URL outside the workspace basePath', () => {
+    expect(
+      toToolPathSegments(`${STUDIO_ORIGIN}/other-workspace/structure`, '/my-workspace'),
+    ).toEqual([])
+  })
+
+  it('returns an empty array for an unparseable URL', () => {
+    expect(toToolPathSegments('not-a-url', '/')).toEqual([])
   })
 })
