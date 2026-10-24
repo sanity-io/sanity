@@ -95,8 +95,7 @@ export const softNav = defineScenario({
   fixture: buildPosts,
   interactions: [],
   softNav: {
-    passes: PASSES,
-    steps: navigationLoop,
+    steps: Array.from({length: PASSES}, (_, pass) => navigationLoop(pass)).flat(),
     documentOpens: ['document-open', 'document-switch'],
   },
 })

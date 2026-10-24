@@ -2,11 +2,7 @@ import {type Browser} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
 import {type BenchScenario, scenarioFixture} from '../../scenarios/types'
-import {
-  isMiscreditedDocumentOpen,
-  measureSoftNavigations,
-  type SoftNavigationMeasurement,
-} from '../../stats/softNav'
+import {measureSoftNavigations, type SoftNavigationMeasurement} from '../../stats/softNav'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
@@ -21,8 +17,6 @@ import {
 } from './interaction'
 import {awaitReadiness, gotoScenario} from './navigation'
 import {navigationsWithoutSoftNavigation, runStep} from './steps'
-
-const STEP_TIMEOUT_MS = 30_000
 
 /** Drains after each step: two clicks closer than a paint produce no soft navigation. */
 export async function runSoftNavSession(options: {
@@ -60,11 +54,10 @@ export async function runSoftNavSession(options: {
     await drainEntries(page)
 
     const interruptions: ReadOnlyInterruptions = {count: 0, totalMs: 0}
-    const steps = Array.from({length: plan.passes}, (_, pass) => plan.steps(pass)).flat()
     const drains: BenchEntries[] = []
-    for (const step of steps) {
+    for (const step of plan.steps) {
       throwOnPageErrors(session)
-      await runStep({page, running, timeoutMs: STEP_TIMEOUT_MS, interruptions, diagnostics}, step)
+      await runStep({page, running, timeoutMs: 30_000, interruptions, diagnostics}, step)
       // Ready passes once the data shows; let the form turn editable before the next click
       if (step.kind === 'navigate' && plan.documentOpens.includes(step.label)) {
         await waitUntilEditable(page, interruptions)
@@ -91,7 +84,7 @@ export async function runSoftNavSession(options: {
 
     const measures = drains.flatMap((drain) => drain.measures)
     const softNavigations = drains.flatMap((drain) => drain.softNavigations)
-    const {navigations, unexpected} = measureSoftNavigations({
+    const {navigations, undrivenUrls} = measureSoftNavigations({
       measures,
       softNavigations,
       events: drains.flatMap((drain) => drain.events),
@@ -99,12 +92,12 @@ export async function runSoftNavSession(options: {
       interactionContentfulPaints: drains.flatMap((drain) => drain.interactionContentfulPaints),
     })
     const missing = navigationsWithoutSoftNavigation(measures, softNavigations)
-    if (missing.length > 0 || unexpected.length > 0) {
+    if (missing.length > 0 || undrivenUrls.length > 0) {
       throw new SessionError(
         'sample-count-mismatch',
         `${navigations.length + missing.length} navigate steps, ${softNavigations.length} soft navigations` +
           (missing.length > 0 ? `; no soft navigation for: ${missing.join(', ')}` : '') +
-          (unexpected.length > 0 ? `; no navigate step for: ${unexpected.join(', ')}` : ''),
+          (undrivenUrls.length > 0 ? `; no navigate step for: ${undrivenUrls.join(', ')}` : ''),
       )
     }
     const misattributed = navigations.filter(
@@ -137,4 +130,18 @@ function throwOnPageErrors(session: SessionContext): void {
   if (session.consoleErrors.length > 0) {
     throw new SessionError('console-error', session.consoleErrors.join('\n'), session.httpErrors)
   }
+}
+
+const DETACHED_ELEMENT = '(detached)'
+
+/** The ready check runs on animation frames, so the paint that shows the data can trail it by up to a frame. */
+const READY_FRAME_MS = 16
+
+/** Studio swaps the title element as the form turns editable, so a detached element passes when its timing holds. */
+export function isMiscreditedDocumentOpen(navigation: SoftNavigationMeasurement): boolean {
+  if (navigation.softLcpMs === null) return true
+  const paintedBeforeData = navigation.softLcpMs + READY_FRAME_MS < navigation.clickToReadyMs
+  const landedOnChrome =
+    navigation.lcpElementKind === 'other' && navigation.lcpElement !== DETACHED_ELEMENT
+  return paintedBeforeData || landedOnChrome
 }

@@ -34,6 +34,6 @@ function describeScenario(scenario: BenchScenario): string {
   const fields = scenario.interactions.map((target) => target.label ?? target.fieldPath).join(', ')
   if (fields) return `types into: ${fields}`
   if (scenario.load) return 'pageload only (load steps)'
-  if (scenario.softNav) return `softnav only (${scenario.softNav.passes} passes of navigate steps)`
+  if (scenario.softNav) return `softnav only (${scenario.softNav.steps.length} steps)`
   return 'settle only (no typing targets)'
 }
