@@ -162,7 +162,7 @@ export function createSoftNavigationReporter(
   function start(metric: SoftNavigationMetric): PendingSoftNavigation {
     const navigationURL = metric.navigationURL ?? ''
     const previousURL = options.getPreviousURL?.(navigationURL) ?? latestURL
-    const workspace = {...options.getWorkspace()}
+    const workspace = options.getWorkspace()
     if (metric.navigationId > newestNavigationId) {
       newestNavigationId = metric.navigationId
       latestURL = navigationURL
