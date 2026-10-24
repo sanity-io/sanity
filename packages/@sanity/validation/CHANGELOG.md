@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-24)
+
+### Features
+
+* **validation:** add validateDocuments for batch validation ([#15144](https://github.com/sanity-io/sanity/issues/15144)) ([b54a6d8](https://github.com/sanity-io/sanity/commit/b54a6d87e1fb32df00636c58c8c0cfc88cc01ad2))
+* **validation:** expose document validation completeness ([#15495](https://github.com/sanity-io/sanity/issues/15495)) ([1fc5a24](https://github.com/sanity-io/sanity/commit/1fc5a2471e823291dfbb3c56b035ab06654e8f6a))
+
+### Bug Fixes
+
+* **schema:** preserve built-in validators in serialized schemas ([#15492](https://github.com/sanity-io/sanity/issues/15492)) ([7015662](https://github.com/sanity-io/sanity/commit/7015662dfc9b63e64ebd5a60d49311c655b23677))
+
+### Performance Improvements
+
+* **validation:** improve performance of document validation ([#15158](https://github.com/sanity-io/sanity/issues/15158)) ([8f95050](https://github.com/sanity-io/sanity/commit/8f950501ab94c100b34adb2bc3074a7fbeb9f117))
 ## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
 
 ### Features

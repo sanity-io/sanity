@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-24)
+
+### Features
+
+* **vision:** prefill query params from the referenced $names in the JSON editor ([#15578](https://github.com/sanity-io/sanity/issues/15578)) ([60f7c5b](https://github.com/sanity-io/sanity/commit/60f7c5ba65eea71b3fdd3948a68b8aec2fe5612f))
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#15590](https://github.com/sanity-io/sanity/issues/15590)) ([69f0921](https://github.com/sanity-io/sanity/commit/69f09215f665f3f54e326246bc70f81726c0efcb))
+* **deps:** update dependency motion to ^14.3.0 ([#15440](https://github.com/sanity-io/sanity/issues/15440)) ([e5066fc](https://github.com/sanity-io/sanity/commit/e5066fc7b5ea675fa53dfd871069e69456f46200))
+* **deps:** update dependency motion to ^14.6.0 ([#15595](https://github.com/sanity-io/sanity/issues/15595)) ([3d2966f](https://github.com/sanity-io/sanity/commit/3d2966f4e22d5dd2b6157e2e5768f34f588896d4))
+* **lint:** keep empty export in css typing stubs from being autofixed away ([#15601](https://github.com/sanity-io/sanity/issues/15601)) ([829ca0a](https://github.com/sanity-io/sanity/commit/829ca0a1a9207d1b7bb10ccb1392bcc48305e354))
+* **vision:** hide the variant option where the workspace has variants switched off ([#15459](https://github.com/sanity-io/sanity/issues/15459)) ([3b3cd7b](https://github.com/sanity-io/sanity/commit/3b3cd7b2354a09d11a0dfeeb0f857f90c86c2a9e))
+* **vision:** run pasted and linked query URLs right away and show AI credits in the redesign ([#15446](https://github.com/sanity-io/sanity/issues/15446)) ([b647163](https://github.com/sanity-io/sanity/commit/b6471631aa85acba59192cae8004c372b77caeaf))
 ## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
 
 ### Features

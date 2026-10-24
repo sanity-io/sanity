@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-24)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^9.6.2 ([#15507](https://github.com/sanity-io/sanity/issues/15507)) ([272da18](https://github.com/sanity-io/sanity/commit/272da186ea3abadb4bd35f87e24cd4e2faff7992))
+* **schema:** preserve built-in validators in serialized schemas ([#15492](https://github.com/sanity-io/sanity/issues/15492)) ([7015662](https://github.com/sanity-io/sanity/commit/7015662dfc9b63e64ebd5a60d49311c655b23677))
 ## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
 
 ### Bug Fixes
