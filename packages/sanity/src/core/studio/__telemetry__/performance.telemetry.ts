@@ -119,7 +119,7 @@ export type SoftNavigationChange =
   | 'other'
 
 /** @internal */
-export type LcpElementKind = 'title' | 'field' | 'image' | 'other'
+export type LcpElementKind = 'image' | 'text'
 
 /** @internal */
 export type SoftNavigationVital = Pick<Metric, 'value' | 'rating'>
