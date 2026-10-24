@@ -15,7 +15,7 @@ export interface PreviousURLTracker {
 export function createPreviousURLTracker(): PreviousURLTracker {
   const previousURLs = new Map<string, string>()
 
-  function record(previousURL: string, currentURL: string) {
+  function record(previousURL: string, currentURL: string): void {
     // Tools such as Releases replace their URL with itself on mount, which would erase where the user came from.
     if (previousURL === currentURL) return
     previousURLs.delete(currentURL)
