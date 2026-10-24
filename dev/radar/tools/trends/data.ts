@@ -454,8 +454,8 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
       'In-app navigations that never trigger a full page load — opening a document, switching ' +
       "panes or tools — using the browser's own soft-navigation vitals, bucketed per " +
       'navigation. Soft LCP heads with document-open and document-switch; LCP for pane-open ' +
-      'and tool-switch/return is shown secondary, since it can land on static chrome rather ' +
-      'than real content.',
+      'and tool-switch is shown secondary, since it can land on the pane header before real ' +
+      'content arrives.',
   },
   {
     id: 'responsiveness',
@@ -1654,19 +1654,26 @@ export interface NavigationMetricSection {
   series: TrendSeries[]
 }
 
+function headlineFirst(left: TrendSeries, right: TrendSeries): number {
+  return Number(Boolean(left.secondary)) - Number(Boolean(right.secondary)) || byTitle(left, right)
+}
+
+const NAVIGATION_SECTIONS = [
+  ...NAVIGATION_METRICS.map(({id, name}) => ({id, name, compare: headlineFirst})),
+  {id: 'other', name: 'Other', compare: byTitle},
+]
+
+function navigationSectionId(entry: TrendSeries): string {
+  return NAVIGATION_METRICS.find((metric) => entry.title.includes(metric.id))?.id ?? 'other'
+}
+
+// Unmatched metrics land in 'other' so a new nav metric never silently vanishes
 export function navigationSections(list: TrendSeries[]): NavigationMetricSection[] {
-  const matched = new Set<TrendSeries>()
-  const headlineFirst = (left: TrendSeries, right: TrendSeries) =>
-    Number(Boolean(left.secondary)) - Number(Boolean(right.secondary)) || byTitle(left, right)
-  const sections: NavigationMetricSection[] = NAVIGATION_METRICS.map(({id, name}) => {
-    const series = list.filter((entry) => entry.title.includes(id)).sort(headlineFirst)
-    for (const entry of series) matched.add(entry)
-    return {id, name, series}
-  })
-  // A new nav metric must never silently vanish from the dashboard
-  const leftover = list.filter((entry) => !matched.has(entry)).sort(byTitle)
-  if (leftover.length > 0) sections.push({id: 'other', name: 'Other', series: leftover})
-  return sections.filter((section) => section.series.length > 0)
+  return NAVIGATION_SECTIONS.map(({id, name, compare}) => ({
+    id,
+    name,
+    series: list.filter((entry) => navigationSectionId(entry) === id).sort(compare),
+  })).filter((section) => section.series.length > 0)
 }
 
 export interface SettleView {

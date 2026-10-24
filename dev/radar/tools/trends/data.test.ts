@@ -385,9 +385,9 @@ test('soft-navigation metrics classify into the navigation group, never vitals',
   expect(vitalSections(series.filter((entry) => entry.group === 'vitals'))).toEqual([])
 })
 
-// Pane and tool switches can land their LCP on static chrome rather than real content.
+// Pane and tool switches can land their LCP on the pane header before real content arrives.
 test('soft LCP headlines document kinds and keeps pane/tool kinds secondary', () => {
-  const kinds = ['document-open', 'document-switch', 'pane-open', 'tool-switch', 'tool-return']
+  const kinds = ['document-open', 'document-switch', 'pane-open', 'tool-switch']
   const series = buildSeries(
     kinds.map((kind, index) =>
       navRun({
@@ -406,7 +406,6 @@ test('soft LCP headlines document kinds and keeps pane/tool kinds secondary', ()
     'document-switch': false,
     'pane-open': true,
     'tool-switch': true,
-    'tool-return': true,
   })
 })
 

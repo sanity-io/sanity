@@ -201,20 +201,16 @@ function withStyleRows(
   return {...scenario, metrics: [...(scenario.metrics ?? []), ...rows.metrics], styles: rows.styles}
 }
 
-const NAVIGATION_STEP_DAY = 20
-
 /**
- * Document opens and switches step up mid-range; pane and tool switches stay
- * fast and flat, as an LCP landing on static chrome would.
+ * Pane and tool switches stay fast and flat, as an LCP landing on the pane
+ * header would.
  */
-function navigationScenario(rng: () => number, day: number, shift: number): DemoScenario {
-  const steppedUp = day >= NAVIGATION_STEP_DAY
+function navigationScenario(rng: () => number, shift: number): DemoScenario {
   const lcpByKind: Record<string, number> = {
-    'document-open': (steppedUp ? 480 : 420) + shift,
-    'document-switch': (steppedUp ? 440 : 390) + shift,
+    'document-open': 420 + shift,
+    'document-switch': 390 + shift,
     'pane-open': 60 + shift,
     'tool-switch': 300 + shift,
-    'tool-return': 190 + shift,
   }
   const metrics = Object.entries(lcpByKind).flatMap(([kind, lcp]) => [
     metric(rng, `nav:${kind} / soft LCP time`, lcp),
@@ -448,7 +444,7 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
         // re-regresses at day 75 — every session loops, so 'time to settle'
         // (settled sessions only) drops out and the commit count explodes.
         ...settleScenarios(rng, day),
-        navigationScenario(rng, day, shift),
+        navigationScenario(rng, shift),
       ],
     })
   }
