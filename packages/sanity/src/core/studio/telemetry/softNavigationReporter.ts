@@ -13,7 +13,7 @@ export const SOFT_NAVIGATION_SAMPLE_RATE = 0.1
 
 const MAX_SOFT_NAVIGATION_EVENTS = 200
 
-// web-vitals reports the previous nav's INP from an idle callback with a 1s timeout.
+// 3x web-vitals' 1s idle cap for finalising the previous nav's INP and LCP; later metrics are dropped.
 const SOFT_NAVIGATION_SETTLE_MS = 3000
 
 // No soft nav needs its paint metrics when it only changed UI state on an already painted pane.
