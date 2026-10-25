@@ -20,6 +20,8 @@ vi.mock('sanity', () => ({
   useWorkspace: () => sanityMocks.workspace,
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
+}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
   getVariantTitle: (variant: {metadata?: {title?: string}; _id: string}) => {

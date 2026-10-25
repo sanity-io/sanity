@@ -1,18 +1,15 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {useCallback, useMemo, useState} from 'react'
+import {type DocumentActionComponent, isPublishedId, useCurrentUser, useTranslation} from 'sanity'
+
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
 import {
-  type DocumentActionComponent,
   getPairTarget,
   getTargetScopeId,
   getTargetSiblings,
-  InsufficientPermissionsMessage,
-  isPublishedId,
-  useCurrentUser,
-  useDocumentOperation,
-  useDocumentPairPermissions,
-  useTranslation,
-} from 'sanity'
-
+} from '../../core/hooks/useTargetDocumentState'
+import {useDocumentPairPermissions} from '../../core/store/grants/documentPairPermissions'
 import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'

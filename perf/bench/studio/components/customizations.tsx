@@ -7,19 +7,21 @@ import {
   type InitialValueTemplateItem,
   type InputProps,
   useClient,
+  useDocumentPreviewStore,
+  useDocumentStore,
+  useFormValue,
+} from 'sanity'
+import {
   useConnectionState,
   useDocumentOperation,
   useDocumentPairPermissions,
-  useDocumentPreviewStore,
-  useDocumentStore,
   useDocumentValues,
   useEditState,
-  useFormValue,
   useLoadable,
   useSyncState,
   useTemplatePermissions,
   useValidationStatus,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {PREVIEW_PATHS, PREVIEW_TARGET_IDS} from '../../scenarios/fixtures/customizationsFixture'
 import {markRender} from './benchRenderMark'

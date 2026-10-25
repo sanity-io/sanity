@@ -1,24 +1,26 @@
 import {Card} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  DocumentGroupInventory,
-  type DocumentGroupInventoryComponents,
-  DocumentGroupInventoryFeedbackAction,
-  type DocumentGroupInventoryHandle,
   type DocumentInspectorProps,
-  getDocumentVersionVariantId,
-  getReleaseIdFromReleaseDocumentId,
-  isGoingToUnpublish,
   readVersionType,
   useClient,
   useDocumentStore,
-  useSetVariant,
   useTranslation,
-  type VersionInfoDocumentStub,
 } from 'sanity'
 import {Flex} from 'ui5'
 
+import {
+  DocumentGroupInventory,
+  type DocumentGroupInventoryHandle,
+} from '../../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {DocumentGroupInventoryFeedbackAction} from '../../../../../core/documentGroupInventory/components/DocumentGroupInventoryFeedbackAction'
+import {type DocumentGroupInventoryComponents} from '../../../../../core/documentGroupInventory/types'
+import {useSetVariant} from '../../../../../core/perspective/useSetVariant'
+import {type VersionInfoDocumentStub} from '../../../../../core/releases/store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../core/studioClient'
+import {getDocumentVersionVariantId} from '../../../../../core/util/getDocumentVersionVariant'
 import {ReferencePreviewLink} from '../../../../components/confirmDeleteDialog/ReferencePreviewLink'
 import {referringDocuments} from '../../../../components/confirmDeleteDialog/useReferringDocuments'
 import {VersionsPreviewList} from '../../../../components/confirmDeleteDialog/VersionsPreviewList'

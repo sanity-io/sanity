@@ -1,5 +1,6 @@
 import memoize from 'lodash-es/memoize.js'
-import {type DocumentActionComponent, useDocumentOperation} from 'sanity'
+import {type DocumentActionComponent} from 'sanity'
+import {useDocumentOperation} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 // It's important to wrap the created actions with `memoize`, otherwise `GetHookCollectionState` will see brand new action functions every time the `<DocumentPaneProvider>` `actions` state is resolved.
 // If a new function instance is created it leads to the action remounting, which is less performant.

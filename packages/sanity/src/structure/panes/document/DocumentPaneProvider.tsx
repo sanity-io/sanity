@@ -16,42 +16,48 @@ import {
   useState,
 } from 'react'
 import {
-  DivergencesProvider,
   type DocumentActionsContext,
   type DocumentFieldAction,
   type EditStateFor,
-  EMPTY_ARRAY,
-  getCreatableVariantTarget,
-  getDefaultVariant,
-  getDocumentVersionType,
   getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  isCardinalityOneRelease,
-  isGoingToUnpublish,
-  isPausedCardinalityOneRelease,
-  isPerspectiveWriteable,
   isVersionId,
-  ParseErrorsProvider,
   type PartialContext,
-  pathToString,
-  selectUpstreamVersion,
-  useActiveReleases,
   useCopyPaste,
-  useCreatableVariantInitialValue,
-  useDocumentDivergences,
-  useDocumentForm,
-  useDocumentIdStack,
   usePerspective,
   useSchema,
-  useSource,
-  useTargetDocumentState,
-  useUnique,
   useWorkspace,
 } from 'sanity'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 import {useEffectEvent} from 'use-effect-event'
 
+import {getDocumentVersionType} from '../../../core/config/document/useConfiguredDocumentActionIds'
+import {pathToString} from '../../../core/field/paths/helpers'
+import {
+  DivergencesProvider,
+  useDocumentDivergences,
+} from '../../../core/form/contexts/DivergencesProvider'
+import {ParseErrorsProvider} from '../../../core/form/studio/contexts/ParseErrors'
+import {useDocumentForm} from '../../../core/form/useDocumentForm'
+import {useDocumentIdStack} from '../../../core/hooks/useDocumentIdStack'
+import {
+  getCreatableVariantTarget,
+  useTargetDocumentState,
+} from '../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
+import {isPerspectiveWriteable} from '../../../core/perspective/isPerspectiveWriteable'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {isGoingToUnpublish} from '../../../core/releases/util/isGoingToUnpublish'
+import {selectUpstreamVersion} from '../../../core/store/document/selectUpstreamVersion'
+import {useSource} from '../../../core/studio/source'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
+import {
+  isCardinalityOneRelease,
+  isPausedCardinalityOneRelease,
+} from '../../../core/util/releaseUtils'
+import {useUnique} from '../../../core/util/useUnique'
+import {useCreatableVariantInitialValue} from '../../../core/variants/hooks/useCreatableVariantInitialValue'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'

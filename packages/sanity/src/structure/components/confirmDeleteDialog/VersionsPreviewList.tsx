@@ -3,23 +3,23 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
   getDocumentVariantType,
-  getPreviewStateObservable,
-  getPreviewValueWithFallback,
   getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
   ReleaseAvatarIcon,
-  ReleaseTitle,
-  SanityDefaultPreview,
   type SchemaType,
-  useActiveReleases,
   useDocumentPreviewStore,
   useSchema,
   useTranslation,
 } from 'sanity'
 import {Flex, VStack} from 'ui5'
 
+import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
+import {getPreviewStateObservable} from '../../../core/preview/utils/getPreviewStateObservable'
+import {getPreviewValueWithFallback} from '../../../core/preview/utils/getPreviewValueWithFallback'
+import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../../core/releases/util/getReleaseTone'
 import {ellipsisText} from './VersionsPreviewList.css'
 
 const VersionItemPreview = ({

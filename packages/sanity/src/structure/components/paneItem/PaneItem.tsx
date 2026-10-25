@@ -20,19 +20,19 @@ import {
   useState,
 } from 'react'
 import {
-  type FIXME,
   type GeneralPreviewLayoutKey,
   getPublishedId,
-  PreviewCard,
-  SanityDefaultPreview,
-  useDocumentPresence,
   useDocumentPreviewStore,
-  useEditState,
   useNumberFormat,
   useSchema,
 } from 'sanity'
 import {Box, Flex} from 'ui5'
 
+import {PreviewCard} from '../../../core/components/previewCard/PreviewCard'
+import {type FIXME} from '../../../core/FIXME'
+import {useEditState} from '../../../core/hooks/useEditState'
+import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
+import {useDocumentPresence} from '../../../core/store/presence/useDocumentPresence'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
