@@ -30,7 +30,12 @@ describe('useFormattedDuration', () => {
     </ThemeProvider>
   )
 
-  beforeAll(() => i18next.init())
+  beforeAll(async () => {
+    await i18next.init()
+    // The studio bundle loads on demand; `init()` resolves before it has arrived (prepareI18n
+    // already started one), so wait for the namespace explicitly
+    await i18next.loadNamespaces(i18next.options.ns as string[])
+  })
 
   describe('millisecond resolution', () => {
     const resolution = 'milliseconds'
