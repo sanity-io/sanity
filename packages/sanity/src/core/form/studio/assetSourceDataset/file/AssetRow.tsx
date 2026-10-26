@@ -90,6 +90,8 @@ const RowButton = styled(Button)<SelectableStyleProps>`
 
       ${CardIconWrapper} {
         --card-muted-fg-color: var(--card-bg-color);
+        --icon-color: var(--card-bg-color);
+        --icon-color-muted: var(--card-bg-color);
       }
 
       ${CustomFlex} {
