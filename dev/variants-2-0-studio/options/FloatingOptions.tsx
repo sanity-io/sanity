@@ -90,6 +90,10 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
   const stock = useOption('c1') === STOCK_OPTION
   // Our missing-variant banner (C7 A, B or D) replaces the stock ones: one banner, not two.
   const c7 = useOption('c7')
+  // Every C4 option but Stock has its own way into the inventory (the header's Manage versions button, option B's popover, the compact header's
+  // tabs), so core's footer "Manage versions" button, beside Publish (no seam), is hidden: one way in, not two. Stock keeps it, as shipped. From the
+  // Handoff Studio's FloatingOptions, which hides it always (the Design Studio's first port missed it; the Design-Studio-Agent found it, 26 Oct).
+  const c4 = useOption('c4')
   return (
     <VariantBannerReplacedProvider value={c7 === 'a' || c7 === 'b' || c7 === 'd'}>
       <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
@@ -111,6 +115,9 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
                       <ShapeStyles />
                       <MarkStyles />
                       <ChromeStyles />
+                      {c4 !== STOCK_OPTION ? (
+                        <style>{`[data-testid="action-document-group-inventory"] {display: none !important}`}</style>
+                      ) : null}
                       <ResultToastStyles />
                     </DocumentPaneHost>
                   </VariantDetailExtensionProvider>
