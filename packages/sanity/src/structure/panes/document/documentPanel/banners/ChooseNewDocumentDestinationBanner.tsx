@@ -17,7 +17,6 @@ import {
   useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
-import {Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -87,32 +86,32 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
       tone="caution"
       icon={WarningOutlineIcon}
       data-testid="choose-new-document-destination-banner"
+      // PROPOSED: the picker is the banner's action, at the right edge as every banner's button is, and the text is its own column, so the icon
+      // lines up with the text's first line (26 Oct, Faheem).
       content={
-        <Flex alignItems="center" gap={2}>
-          <Text size={1}>
-            {reason === 'PUBLISHED_NOT_WRITEABLE' &&
-              t('banners.choose-new-document-destination.cannot-create-published-document')}
-            {reason === 'DRAFTS_NOT_WRITEABLE' &&
-              t('banners.choose-new-document-destination.cannot-create-draft-document')}
-            {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && releaseTitle && (
-              <Translate
-                t={t}
-                i18nKey="banners.choose-new-document-destination.release-inactive"
-                values={{
-                  title: releaseTitle,
-                }}
-                components={{VersionBadge: ReleaseInactiveVersionBadge}}
-                componentProps={{
-                  fallbackTitle: tCore('release.placeholder-untitled-release'),
-                  releaseDoc,
-                }}
-              />
-            )}
-            <> {t('banners.choose-new-document-destination.choose-destination')}</>
-          </Text>
-          <ReleasesNav menuItemProps={menuItemProps} />
-        </Flex>
+        <Text size={1}>
+          {reason === 'PUBLISHED_NOT_WRITEABLE' &&
+            t('banners.choose-new-document-destination.cannot-create-published-document')}
+          {reason === 'DRAFTS_NOT_WRITEABLE' &&
+            t('banners.choose-new-document-destination.cannot-create-draft-document')}
+          {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && releaseTitle && (
+            <Translate
+              t={t}
+              i18nKey="banners.choose-new-document-destination.release-inactive"
+              values={{
+                title: releaseTitle,
+              }}
+              components={{VersionBadge: ReleaseInactiveVersionBadge}}
+              componentProps={{
+                fallbackTitle: tCore('release.placeholder-untitled-release'),
+                releaseDoc,
+              }}
+            />
+          )}
+          <> {t('banners.choose-new-document-destination.choose-destination')}</>
+        </Text>
       }
+      actionNode={<ReleasesNav menuItemProps={menuItemProps} />}
     />
   )
 }

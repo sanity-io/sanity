@@ -22,6 +22,8 @@ interface BannerProps {
     disabled?: boolean
     mode?: ButtonMode
   }
+  /** A control of the banner's own (the Choose a destination picker) in the action column, in place of a button. */
+  actionNode?: ReactNode
   content: ReactNode
   icon?: ComponentType
   tone?: CardTone
@@ -29,7 +31,15 @@ interface BannerProps {
 }
 
 export function Banner(props: BannerProps) {
-  const {action, content, icon: Icon, tone = 'transparent', paddingY = 2, ...rest} = props
+  const {
+    action,
+    actionNode,
+    content,
+    icon: Icon,
+    tone = 'transparent',
+    paddingY = 2,
+    ...rest
+  } = props
 
   return (
     <Box padding={1}>
@@ -49,9 +59,17 @@ export function Banner(props: BannerProps) {
               <div className={contentColumn}>{content}</div>
             </div>
             {/* With an action, the text and the action's column; without one, the text takes the whole banner (still capped). */}
-            {action ? (
+            {action || actionNode ? (
               <div className={actionSlot}>
-                <Button {...action} mode={action.mode || 'ghost'} tone={action.tone || 'default'} />
+                {action ? (
+                  <Button
+                    {...action}
+                    mode={action.mode || 'ghost'}
+                    tone={action.tone || 'default'}
+                  />
+                ) : (
+                  actionNode
+                )}
               </div>
             ) : null}
           </div>
