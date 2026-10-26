@@ -625,6 +625,66 @@ each dropped name before regenerating:
 Regenerating needs a full `pnpm build` first: the generator reads each package's built
 `lib/**/*.d.ts`.
 
+### The `sanity` entry's static import graph is the login page
+
+With `autoUpdates: true` the studio's import map points `sanity` and `sanity/*` at the module
+host, so the browser downloads `index.mjs` plus every chunk it statically imports before the
+login screen renders, and nothing in that graph is tree-shaken. Only dynamic `import()` keeps
+code off that path. Measure it on the CDN build, not on `sanity build` output:
+`pnpm --filter sanity build:bundle`, then compute the transitive static import closure of
+`packages/sanity/dist/index.mjs` (follow relative specifiers and `sanity/<x>` → `<x>.mjs`; the
+`.map` files attribute chunk bytes back to source modules). Rules that keep the graph small:
+
+- UI that only renders after a click or after login (dialogs, menu contents, the default layout
+  and navbar, filter inputs referenced from search operator definitions) is a `lazy()` component
+  with a `Suspense` at its render site. `prepareConfig` runs before login and statically reaches
+  every default plugin module, so a plugin's document actions, asset sources and schema
+  `components` must reference lazy components for anything heavier than the hook itself.
+- A heavy component that stays exported from `sanity` is exported as a facade from
+  `createLazyComponent` (`packages/sanity/src/core/components/lazy/createLazyComponent.tsx`): the
+  same name and props, and the implementation loaded on first render. `src/core/form/lazy.tsx` is
+  the existing group. Internal code keeps importing the implementation directly — including
+  `src/structure`, whose document form renders `FormBuilder` from its implementation module, so
+  opening a document does not wait for a chunk that used to arrive with the entry. A facade group
+  only pays off when every export reaching the same modules is covered; check with the closure,
+  not with a single export, and measure the marginal bytes per facade — below a few kB a
+  suspension costs the consumer more than the login page saves.
+- A facade's `Suspense` is opt-in (the `fallback` option), and most should not have one. A form
+  node that renders its own boundary catches a _descendant_ that suspends — lazy form middleware,
+  a lazy custom input — and unmounts the subtree around it, which wipes local state in a custom
+  input; and there is no sensible field-sized fallback, so `fallback: null` reads as the field
+  collapsing and then expanding. Without a boundary it suspends to `FormBuilder`'s or the
+  Portable Text per-block one, which is where form nodes are meant to suspend. The same applies to
+  the navbar: it suspends to `StudioLayout`'s boundary rather than painting a bar whose tone and
+  layering cannot match the real one. Give a facade a fallback only when it can be the first thing
+  to render in its subtree (`FormBuilder`, `PortableTextInput`).
+- `createLazyComponent` holds the resolved component, so only the first render of a given facade
+  can suspend. Do not reach for `React.lazy` here: it calls the loader per lazy component and
+  `import()` returns a fresh pending promise even for a module already in the registry, so every
+  facade's first render suspends even once the chunk is loaded.
+- A `lazy()` target that other modules also import statically is `import()`ed through a
+  dedicated `<Module>.lazy.ts` shim (`export {Foo as default} from './Foo'`), never as
+  `import('./Foo').then((m) => ({default: m.Foo}))`. The implementation lives in a shared chunk,
+  so the `.then` form makes rolldown synthesise a namespace object for it with the `__exportAll`
+  runtime helper, and the helper is emitted into whichever chunk needs it first. On this stack it
+  landed in a structure chunk that a core chunk then imported statically, so evaluating
+  `sanity/structure` before `sanity` (the order the CLI's `schema deploy` worker uses when it
+  evaluates `sanity.config.ts`) hit the helper in its TDZ:
+  `__exportAll is not a function`, then `defineLocaleResourceBundle is not a function`. The
+  shim's default export resolves to its own chunk and needs no namespace object.
+  `@repo/test-exports`'s `entry-evaluation-order.test.mjs` is the guard: it evaluates the built
+  entries in both orders, one fresh process each, so this cannot regress unnoticed. `grep -l
+  __exportAll packages/sanity/lib/*.js` (structure's `List-*.js` is the only expected hit) is the
+  quick manual check.
+- Code that must be fetched right after login (layout, navbar) is preloaded from
+  `PreloadStudioShell`, mounted inside `AuthBoundary`, so the fetch overlaps with workspace loading.
+  It imports the same `.lazy.ts` shims the `lazy()` components do, so the preload warms the chunks
+  they request.
+- Exporting a `memo()`-wrapped component through a facade changes `typeof` from `object` to
+  `function` in `test/__snapshots__/exports.test.ts.snap`, and the declaration it emits from a
+  `const` to a function, so the generated fixtures in `@repo/test-dts-exports` switch from
+  `not.toBeNever()` to `toBeFunction()`; regenerate both.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook

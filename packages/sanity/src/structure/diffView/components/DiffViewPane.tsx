@@ -20,7 +20,6 @@ import {
 } from 'react'
 import {
   createPatchChannel,
-  FormBuilder,
   getPublishedId,
   getVersionFromId,
   isDraftId,
@@ -38,6 +37,7 @@ import {ChangeIndicatorsTracker} from '../../../core/changeIndicators/tracker'
 import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
 import {PortalBoundaryProvider} from '../../../core/components/portalBoundary/PortalBoundaryProvider'
 import {useMiddlewareComponents} from '../../../core/config/components/useMiddlewareComponents'
+import {FormBuilder} from '../../../core/form/studio/FormBuilder'
 import {useDocumentForm} from '../../../core/form/useDocumentForm'
 import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
 import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
