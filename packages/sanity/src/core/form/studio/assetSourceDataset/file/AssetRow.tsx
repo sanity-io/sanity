@@ -90,8 +90,6 @@ const RowButton = styled(Button)<SelectableStyleProps>`
 
       ${CardIconWrapper} {
         --card-muted-fg-color: var(--card-bg-color);
-        --icon-color: var(--card-bg-color);
-        --icon-color-muted: var(--card-bg-color);
       }
 
       ${CustomFlex} {
@@ -274,7 +272,11 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
                   muted
                   size={2}
                   icon={DocumentIcon}
-                  style={{...STYLES_ICON_CARD, margin: '-0.4375rem'}}
+                  style={{
+                    ...STYLES_ICON_CARD,
+                    margin: '-0.4375rem',
+                    ...(isSelected && {color: 'var(--card-bg-color)'}),
+                  }}
                 />
               </Card>
               <Text
@@ -413,7 +415,12 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
               radius={2}
               style={STYLES_ICON_CARD}
             >
-              <Icon muted size={2} icon={DocumentIcon} style={{margin: '-0.4375rem'}} />
+              <Icon
+                muted
+                size={2}
+                icon={DocumentIcon}
+                style={{margin: '-0.4375rem', ...(isSelected && {color: 'var(--card-bg-color)'})}}
+              />
             </Card>
             {showTooltip && (
               <Tooltip content={originalFilename}>
