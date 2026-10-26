@@ -161,8 +161,6 @@ function DropdownPill(props: {
   tone?: ComponentProps<typeof Chip>['tone']
   /** With a choice in view, a cross after the pill clears it (as the navbar chips' cross does), with this accessible name. */
   clear?: {label: string; onClick: () => void}
-  /** Greyed but clickable, as the menu rows are: this document has nothing of the kind yet (26 Oct call), and the menu still creates one. */
-  muted?: boolean
   /** A line under the search that is always there while it is set, not a tooltip: what the greyed rows mean (Faheem, 26 Oct). */
   note?: string
 }) {
@@ -185,7 +183,7 @@ function DropdownPill(props: {
           radius={props.clear ? 0 : 'full'}
           selected={props.selected}
           tone={tone}
-          style={{paddingRight: props.clear ? 8 : 11.3, opacity: props.muted ? 0.55 : undefined}}
+          style={{paddingRight: props.clear ? 8 : 11.3}}
           text={props.text}
         />
       }
@@ -487,7 +485,6 @@ export function DocumentPillsV1({
           }
           items={[baseItem, ...variantItems, ...missingItems]}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
-          muted={!variants.length && !viewedTitle}
           note={variants.length ? undefined : 'No variants yet. Pick one to create it.'}
           selected={Boolean(viewedTitle)}
           testId="pills-variants"
@@ -559,7 +556,6 @@ export function DocumentPillsV1({
             )
           }
           items={[...releaseItems, ...missingReleaseItems]}
-          muted={!releases.length && !inView}
           note={releases.length ? undefined : 'Not in a release yet. Pick one to add it.'}
           // Any release in view, this document's or another (picked from the greyed rows).
           selected={current !== 'published' && current !== 'drafts'}
