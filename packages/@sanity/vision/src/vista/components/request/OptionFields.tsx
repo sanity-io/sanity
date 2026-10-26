@@ -3,14 +3,12 @@ import {PinRemovedIcon} from '@sanity/icons/PinRemoved'
 import {Button, Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ChangeEvent, useCallback, useId} from 'react'
+import {usePerspective, useTranslation, useWorkspace} from 'sanity'
 import {
   getDefaultVariant,
   getVariantTitle,
-  usePerspective,
   useScheduledDraftsEnabled,
-  useTranslation,
-  useWorkspace,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box, Flex, VisuallyHidden} from 'ui5'
 
 import {API_VERSIONS} from '../../../apiVersions'

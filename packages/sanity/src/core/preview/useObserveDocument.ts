@@ -10,7 +10,7 @@ import {type ObserveDocumentAPIConfig} from './createObserveDocument'
 const INITIAL_STATE = {loading: true, document: null, error: null}
 
 /**
- * @internal
+ * @hidden
  * @beta
  *
  * Observes a document by its ID and returns the document and loading state
@@ -50,7 +50,6 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
 /**
  * @deprecated Use `useUnstableObserveDocument` instead
  * @internal
- * @beta
  */
 export const unstable_useObserveDocument = function useObserveDocument(
   args: Parameters<typeof useUnstableObserveDocument>,

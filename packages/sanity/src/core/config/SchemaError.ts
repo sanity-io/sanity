@@ -28,7 +28,10 @@ function describeContext(context: SchemaErrorContext): string {
     : ` in workspace "${context.workspaceName}"`
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @public
+ */
 // TODO: consider removing this error in favor of the `ConfigResolutionError`
 export class SchemaError extends Error {
   public schema: Schema

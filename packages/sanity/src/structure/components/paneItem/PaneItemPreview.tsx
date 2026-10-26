@@ -7,13 +7,9 @@ import {
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
-  type DocumentPresence,
   DocumentPreviewPresence,
   type DocumentPreviewStore,
-  DocumentVersionsStatus,
-  DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
-  getDefaultVariant,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getPublishedId,
@@ -23,6 +19,10 @@ import {
 } from 'sanity'
 import {Flex} from 'ui5'
 
+import {DocumentVersionsStatus} from '../../../core/components/documentStatus/DocumentVersionsStatus'
+import {DocumentVersionsStatusIndicator} from '../../../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
+import {type DocumentPresence} from '../../../core/store/presence/types'
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
 export interface PaneItemPreviewProps {

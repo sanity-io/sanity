@@ -34,13 +34,15 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('sanity', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   useTranslation: () => ({t: (key: string) => key}),
   useDateTimeFormat: () => ({format: () => 'a date'}),
+  UserAvatar: () => null,
+}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   ContextMenuButton: (props: Record<string, unknown>) => (
     <button type="button" data-testid="query-menu" {...props} />
   ),
-  UserAvatar: () => null,
 }))
 
 const personal: QueryConfig = {

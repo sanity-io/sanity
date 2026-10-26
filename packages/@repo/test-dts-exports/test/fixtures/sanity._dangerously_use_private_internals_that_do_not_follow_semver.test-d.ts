@@ -90,6 +90,7 @@ import type {
   CommonProps,
   compileFieldPath,
   component,
+  ConcreteRuleClass,
   ConfigErrorClassification,
   ConfigErrorGate,
   ConfigPropertyError,
@@ -861,6 +862,7 @@ import type {
   ValidateWorkspaceOptions,
   validateWorkspaces,
   validation,
+  ValidationContext,
   ValueError,
   VariantConditionMap,
   VariantConditions,
@@ -1157,6 +1159,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('component', () => {
     expectTypeOf<typeof component>().not.toBeNever()
+  })
+  test('ConcreteRuleClass', () => {
+    expectTypeOf<typeof ConcreteRuleClass>().not.toBeNever()
   })
   test('ConfigErrorClassification', () => {
     expectTypeOf<ConfigErrorClassification>().not.toBeNever()
@@ -3475,6 +3480,10 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('validation', () => {
     expectTypeOf<typeof validation>().toBeFunction()
+  })
+  test('ValidationContext', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<ValidationContext>().toBeObject()
   })
   test('ValueError', () => {
     expectTypeOf<typeof ValueError>().toBeFunction()
