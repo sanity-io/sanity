@@ -480,6 +480,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       // the currently selected perspective.
       if (
         releaseId &&
+        // PROPOSED: 'published' and 'drafts' are perspectives, not releases (as the value memo above treats them); without this a
+        // live-edit document is read-only under Published, since its published id has no version.
+        !isSystemBundle(releaseId) &&
         getVersionFromId(value._id) !== releaseId &&
         isNewDocument(editState) === false
       ) {
