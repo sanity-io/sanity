@@ -4,6 +4,7 @@ import {
   type AssetSource,
   type BaseSchemaType,
   type CurrentUser,
+  type FieldDefinition,
   type ObjectSchemaType,
   type SanityDocumentLike,
   type Schema,
@@ -1245,6 +1246,14 @@ export interface Source {
      * Returns an array of actions for the release.
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
+    /**
+     * Extra metadata fields, compiled as a private object schema and edited with the studio form.
+     * Rendered on create and in the edit dialog only while `beta.variants` is enabled.
+     * Empty when no workspace or plugin configured any.
+     */
+    metadata?: {
+      fields?: FieldDefinition[]
+    }
   }
 
   /** Configuration for studio features.
@@ -1452,6 +1461,16 @@ export type DefaultPluginsWorkspaceOptions = {
      * Actions for releases.
      */
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
+    /**
+     * Field definitions stored on release metadata. The same `defineField` definitions used in
+     * Structure. Studio renders them on create and in the edit-release dialog while
+     * `beta.variants` is enabled. This is not a component slot.
+     *
+     * @beta
+     */
+    metadata?: {
+      fields?: FieldDefinition[]
+    }
   }
   mediaLibrary?: MediaLibraryConfig
 }

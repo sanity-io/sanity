@@ -4,13 +4,13 @@ import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Badge, type BadgeTone, Button, Card, Label, Stack, Text} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {Suspense, useCallback, useId, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 import {Box, Flex, Grid} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
+import {type AiCreditsClient} from '../../util/aiCredits'
 import {type GenerateMutationsClient} from '../../util/generateMutations'
 import {
   addMutation,
@@ -31,6 +31,7 @@ import {
   readMutations,
 } from '../../util/mutations'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
+import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import {SwitchField} from '../SwitchField'
 import * as styles from '../vista.module.css'
 import {GenerateMutationsBar} from './GenerateMutationsBar'
@@ -305,7 +306,7 @@ function PreviewResult(props: {
 export interface MutateTabProps {
   mutate: MutatePanel
   /** The tab's client: its dataset is where the mutations go */
-  client: GenerateMutationsClient
+  client: GenerateMutationsClient & AiCreditsClient
   dataset: string
   /** Requests are refused while the tab's API version is unfinished */
   canRequest: boolean
@@ -410,12 +411,7 @@ export function MutateTab(props: MutateTabProps) {
               actions={
                 <Flex alignItems="center" gap={1}>
                   {!generatorOpen && (
-                    <Tooltip
-                      animate
-                      content={<Text size={1}>{t('vista.mutate.generate.button')}</Text>}
-                      placement="bottom"
-                      portal
-                    >
+                    <AgentActionsTooltip title={t('vista.mutate.generate.button')}>
                       <Button
                         aria-label={t('vista.mutate.generate.button')}
                         data-testid="vista-mutate-generate"
@@ -425,7 +421,7 @@ export function MutateTab(props: MutateTabProps) {
                         onClick={() => setGeneratorOpen(true)}
                         padding={2}
                       />
-                    </Tooltip>
+                    </AgentActionsTooltip>
                   )}
                   <MenuButton
                     button={

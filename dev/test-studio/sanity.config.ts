@@ -9,7 +9,13 @@ import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
 import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin, type AuthProvider, type WorkspaceOptions} from 'sanity'
+import {
+  defineConfig,
+  defineField,
+  definePlugin,
+  type AuthProvider,
+  type WorkspaceOptions,
+} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
@@ -344,6 +350,31 @@ const defaultWorkspace = defineConfig({
       }
       return prev
     },
+    metadata: {
+      fields: [
+        defineField({
+          name: 'legalReview',
+          title: 'Legal review',
+          type: 'string',
+          initialValue: 'notReviewed',
+          options: {
+            list: [
+              {title: 'Not reviewed', value: 'notReviewed'},
+              {title: 'Reviewed', value: 'reviewed'},
+            ],
+          },
+        }),
+        defineField({
+          name: 'signOff',
+          title: 'Sign-off',
+          type: 'object',
+          fields: [
+            defineField({name: 'reviewer', title: 'Reviewer', type: 'string'}),
+            defineField({name: 'approved', title: 'Approved', type: 'boolean'}),
+          ],
+        }),
+      ],
+    },
   },
   beta: {
     variants: {
@@ -397,7 +428,24 @@ export default defineConfig([
     basePath: '/default-hidden',
     hidden: true,
   },
-  defaultWorkspace,
+  {
+    ...defaultWorkspace,
+    releases: {
+      ...defaultWorkspace.releases,
+      metadata: {
+        ...defaultWorkspace.releases?.metadata,
+        fields: [
+          ...(defaultWorkspace.releases?.metadata?.fields ?? []),
+          defineField({
+            name: 'reviewNote',
+            title: 'Review note',
+            type: 'string',
+            validation: (rule) => rule.required().min(3),
+          }),
+        ],
+      },
+    },
+  },
   {
     ...defaultWorkspace,
     title: 'Test Studio (variants disabled)',

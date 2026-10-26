@@ -246,7 +246,7 @@ The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with 
 
 ### Auto-updating studio CSS (Lightning CSS `light-dark()`)
 
-The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
+The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. For `styles: 'panda'` the same `css.lightningcss` options list `MADE_WITH_PANDA_SYMBOL` from `@sanity/pandacss-tsdown-plugin` in `unusedSymbols`, which drops the `:root {--made-with-panda: '🐼'}` marker Panda emits into every stylesheet (Panda 2 has no option to omit it, and its `cssgen:done` hook is observe-only), the way the package build's `bundle.css` drops it; `package.bundle.test.ts` guards both config options. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
 
 ### Panda CSS
 
@@ -1283,7 +1283,7 @@ pnpm add -w -D <package>
 
 Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifier, run `pnpm install` to refresh `pnpm-lock.yaml`.
 
-The workspace sets `minimumReleaseAge: 1440` (1 day) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally.
+The workspace sets `minimumReleaseAge: 1440` (1 day) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` (pnpm 12: `ERR_PNPM_NO_MATURE_MATCHING_VERSION`) for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally. `@tsdown/css` ships in lockstep with `tsdown` and is excluded beside it. `tsdown` 0.23.2 depends on `rolldown-plugin-dts@^0.29.0-beta.2`, whose `tsgo` generator needs `typescript@7.1.0-beta`; the workspace override pins `rolldown-plugin-dts` to `0.28.8` so declaration emit keeps using the TypeScript 7.0 `tsgo` CLI (`dts.generator: 'tsgo'` in `@repo/tsdown.config`).
 
 ### Testing an Unreleased Dependency Fix (pnpm patch)
 

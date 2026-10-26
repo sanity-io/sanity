@@ -23,7 +23,9 @@ const WRITE_DELAY_MS = 500
  * shared, and opens the request a URL names when it is not what the tool wrote there itself (a
  * link opened from elsewhere, a bookmark). The value is the query URL the Response panel shows,
  * read the way a pasted one is: a tab already showing the request is selected, otherwise one
- * opens for it.
+ * opens for it and runs the query right away, as a pasted URL does. A tab that already shows the
+ * request is only selected (after a reload, the address names the active tab's own request), so
+ * its last result stays as it was.
  */
 export function VistaUrlState({tab}: {tab: VistaTab}) {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -54,7 +56,7 @@ export function VistaUrlState({tab}: {tab: VistaTab}) {
       actorRef.send({type: 'tab.select', id: existing.id})
       return
     }
-    actorRef.send({type: 'tab.add', tab: parsedQueryToTabInit(parsed)})
+    actorRef.send({type: 'tab.add', tab: parsedQueryToTabInit(parsed), fetch: 'link'})
     if (!parsed.isKnownDataset) {
       toast.push({
         closable: true,

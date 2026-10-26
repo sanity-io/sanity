@@ -1,4 +1,4 @@
-import {Spinner, Text} from '@sanity/ui'
+import {Spinner} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -13,7 +13,7 @@ import {
   LoadingBlock,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
@@ -257,10 +257,10 @@ export const EventsTimeline = ({
         </ListWrapper>
       ) : (
         <Flex padding={3} gap={3} flexDirection="column">
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t('timeline.error.no-document-history-title')}
           </Text>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {t('timeline.error.no-document-history-description')}
           </Text>
         </Flex>

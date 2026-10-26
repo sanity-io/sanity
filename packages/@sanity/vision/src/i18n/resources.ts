@@ -229,6 +229,29 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.export-types.title-typescript': 'Export TypeScript',
   /** Title of the dialog exporting a Zod schema for the result */
   'vista.export-types.title-zod': 'Export Zod',
+  /** Tooltip line of every control that calls Sanity Agent Actions, which bills AI credits */
+  'vista.agent-actions.credits': 'Uses one AI credit per request',
+  /** Under an Agent Actions control: the organization's AI credits balance this month */
+  'vista.ai-credits.balance': '{{balance}} of {{quota}} AI credits left this month.',
+  /** Under an Agent Actions control: the credits used beyond the plan's monthly quota */
+  'vista.ai-credits.deficit':
+    '{{used}} AI credits used this month, {{deficit}} more than the {{quota}} included.',
+  /** Under an Agent Actions control: the credits used, on a plan without a quota */
+  'vista.ai-credits.used': '{{used}} AI credits used this month.',
+  /** Link after the AI credits note, to the organization's AI usage in Manage */
+  'vista.ai-credits.usage': 'AI usage',
+  /** Title of the card shown where the organization is out of AI credits */
+  'vista.ai-credits.limit.title': 'Out of AI credits',
+  /** Body of the out-of-credits card, with the credits used and the plan's monthly quota */
+  'vista.ai-credits.limit.description':
+    'Your organization has used {{used}} of its {{quota}} AI credits this month, so Sanity Agent Actions are paused until next month or until its spending limit is raised.',
+  /** Body of the out-of-credits card when the usage and the quota are unknown */
+  'vista.ai-credits.limit.description-unknown':
+    'Your organization has reached its AI credits spending limit, so Sanity Agent Actions are paused until next month or until the limit is raised.',
+  /** Link in the out-of-credits card to the documentation of AI credits */
+  'vista.ai-credits.limit.learn-more': 'How AI credits work',
+  /** Button in the out-of-credits card leading to the organization's spending limits in Manage */
+  'vista.ai-credits.limit.manage': 'Manage AI credits',
   /** Button in the request column's action bar naming the API version requests go out with */
   'vista.api-version.button': 'API {{version}}',
   /** The API version button while queries go through the API CDN */
@@ -255,7 +278,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Queries run against API version {{version}}, which the selected variant needs.',
   /** Explanation at the top of the Explain panel */
   'vista.explain.description':
-    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words.',
+    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words, which uses one AI credit.',
   /** Shown in the Explain panel while there is no valid query to explain */
   'vista.explain.empty': 'Write a query to explain it.',
   /** Button in the Explain panel asking Agent Actions to explain the query and its plan */
@@ -342,7 +365,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.generate.close': 'Close',
   /** Explanation under the generate query field */
   'vista.generate.description':
-    'Sanity Agent Actions write the GROQ from your description and the document types, and the Content Lake checks each attempt. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
+    'Sanity Agent Actions write the GROQ from your description and the document types, and the Content Lake checks each attempt; every attempt uses one AI credit. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
   /** Shown when no query could be generated, above the reason */
   'vista.generate.failed': 'The query could not be generated',
   /** Accessible label of the description field in the generate query bar */
@@ -400,6 +423,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.only-hidden-changed': 'Only hidden fields changed',
   /** History reason: a tab opened with a generated query fetched it */
   'vista.history.reason.generated': 'Generated query',
+  /** History reason: a link to the tool named a query URL, which opened in a tab and ran */
+  'vista.history.reason.link': 'Opened link',
   /** History reason: mutations were applied from the Mutate panel */
   'vista.history.reason.mutation': 'Mutations applied',
   /** History reason: a live event matched the query's sync tags */
@@ -411,12 +436,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    * automatically
    */
   'vista.history.reason.live-start': 'Live fetch started',
-  /** History reason: a saved or pasted query was loaded into a tab that refetches automatically */
+  /** History reason: a saved query was loaded into a tab that refetches automatically */
   'vista.history.reason.load': 'Query loaded',
   /** History reason: the fetch button was pressed */
   'vista.history.reason.manual': 'Fetch button',
   /** History reason: dataset, API version or perspective changed while refetching automatically */
   'vista.history.reason.options': 'Options changed',
+  /** History reason: a query URL was pasted into the tab, which runs it */
+  'vista.history.reason.paste': 'Pasted URL',
   /** History reason: a tab that refetches automatically was opened again, or the studio reloaded */
   'vista.history.reason.resume': 'Automatic refetching resumed',
   /** History reason: the keyboard shortcut was used */
@@ -513,7 +540,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.mutate.generate.button': 'Generate mutations',
   /** Explanation under the generate mutations field */
   'vista.mutate.generate.description':
-    'Sanity Agent Actions write the mutations from your description, the documents in the result and their types, and a dry run checks each attempt. They replace the mutations here, where undo brings these back; nothing is written until you apply them.',
+    'Sanity Agent Actions write the mutations from your description, the documents in the result and their types, and a dry run checks each attempt; every attempt uses one AI credit. They replace the mutations here, where undo brings these back; nothing is written until you apply them.',
   /** Shown when no mutations could be generated, above the reason */
   'vista.mutate.generate.failed': 'The mutations could not be generated',
   /** Accessible label of the description field in the generate mutations bar */

@@ -34,6 +34,10 @@ function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): strin
       return t('vista.history.reason.live-start')
     case 'generated':
       return t('vista.history.reason.generated')
+    case 'paste':
+      return t('vista.history.reason.paste')
+    case 'link':
+      return t('vista.history.reason.link')
     case 'mutation':
       return t('vista.history.reason.mutation')
     case 'live':

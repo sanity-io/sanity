@@ -1,6 +1,6 @@
-import {type ButtonTone, Text} from '@sanity/ui'
+import {type ButtonTone} from '@sanity/ui'
 import {TextWithTone, useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
@@ -37,7 +37,7 @@ export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
         <AnimatedStatusIcon status={status} />
       </TextWithTone>
 
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         {t(currentStatus.i18nKey)}
       </Text>
     </Flex>

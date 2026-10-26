@@ -9,7 +9,7 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {Card, type CardTone, Text} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentInspectorProps,
@@ -18,7 +18,7 @@ import {
   useParseErrors,
   useTranslation,
 } from 'sanity'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
@@ -71,7 +71,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
       <Card flex={1} overflow="auto" padding={3}>
         {isVersionGoingToUnpublish ? (
           <Box padding={2}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {t('panel.unpublish-message')}
             </Text>
           </Box>
@@ -79,7 +79,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
           <>
             {mergedValidation.length === 0 && (
               <Box padding={2}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('panel.no-errors-message')}
                 </Text>
               </Box>
@@ -129,13 +129,15 @@ function ValidationCard(props: {
     [marker, onOpen],
   )
   const [errorInfo, setErrorInfo] = useState<{error: Error; info: ErrorInfo} | null>(null)
-  const Icon = MARKER_ICON[marker.level]
+  const MarkerIcon = MARKER_ICON[marker.level]
 
   return (
     <ErrorBoundary onCatch={setErrorInfo}>
       {errorInfo && (
         <Card padding={3} radius={2} tone="critical">
-          <Text size={1}>{errorInfo.error.message}</Text>
+          <Text size={1} as="div" trim={true} tone="critical">
+            {errorInfo.error.message}
+          </Text>
         </Card>
       )}
 
@@ -151,9 +153,11 @@ function ValidationCard(props: {
         >
           <Flex alignItems="flex-start" gap={3}>
             <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-              <Text size={1}>
-                <Icon />
-              </Text>
+              <Icon
+                size={1}
+                icon={MarkerIcon}
+                style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
+              />
             </Box>
 
             <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
@@ -163,7 +167,13 @@ function ValidationCard(props: {
                 value={value}
               />
 
-              <Text muted size={1}>
+              <Text
+                muted
+                size={1}
+                as="div"
+                trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
+              >
                 {marker.message}
               </Text>
             </Flex>
@@ -193,7 +203,7 @@ function DocumentNodePathBreadcrumbs(props: {
   if (!pathTitles?.length) return null
 
   return (
-    <Text size={1}>
+    <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
       {pathTitles.map((t, i) => (
         // oxlint-disable-next-line no-array-index-key
         <Fragment key={i}>
