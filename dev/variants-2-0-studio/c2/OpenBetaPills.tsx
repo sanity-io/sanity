@@ -480,7 +480,8 @@ export function OpenBetaPills({
       style={{flex: '1 1 0%', minWidth: 0}}
       wrap="wrap"
     >
-      {variants.length ? (
+      {/* A chosen variant is named here even when this document has none of its own, so the navbar, pills and banner agree (Faheem, 23 Oct). */}
+      {variants.length || viewedTitle ? (
         <DropdownPill
           icon={<RhombusIcon />}
           clear={
