@@ -5,7 +5,7 @@ import {useEffect, useRef, useState} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {useLiveMode, useQuery} from './loader'
-import  {type Book} from './site/model'
+import {type Book} from './site/model'
 import {queryFor} from './site/queries'
 import {Site} from './site/Site'
 
@@ -190,6 +190,32 @@ function GridMain() {
   )
 }
 
+/**
+ * Opened on its own (not inside the Studio's Presentation tool), the page has no way to read the private dataset: it holds no token, and
+ * only the Studio answers its queries. It says so and links to Presentation, instead of loading forever.
+ */
+function Standalone() {
+  const studio = 'https://variants-handoff.sanity.studio/presentation'
+  return (
+    <main
+      style={{font: '15px/1.5 system-ui', margin: '0 auto', maxWidth: 560, padding: '64px 16px'}}
+    >
+      <h1 style={{fontSize: 22, margin: '0 0 8px'}}>Nordic Library preview</h1>
+      <p style={{margin: '0 0 16px'}}>
+        This page shows content only inside the Studio's Presentation tool, which supplies the data
+        with the editor's own session. On its own it has no access to the private dataset.
+      </p>
+      <a href={studio}>Open it in Presentation</a>
+    </main>
+  )
+}
+
 createRoot(document.getElementById('root') as HTMLElement).render(
-  params.get('mode') === 'grid' ? <GridMain /> : <Main />,
+  window.self === window.top ? (
+    <Standalone />
+  ) : params.get('mode') === 'grid' ? (
+    <GridMain />
+  ) : (
+    <Main />
+  ),
 )
