@@ -1,5 +1,6 @@
-import {Card, Layer, Spinner, Text} from '@sanity/ui'
+import {Card, Layer, Spinner} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Text} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 
@@ -138,7 +139,7 @@ function LoadingText({title}: {title?: string | null}) {
   const {t} = useTranslation()
 
   return (
-    <StyledText muted size={1}>
+    <StyledText muted size={1} forwardedAs="div" trim={true}>
       {title || t('common.loading')}
     </StyledText>
   )

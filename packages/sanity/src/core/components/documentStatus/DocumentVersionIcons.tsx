@@ -1,5 +1,5 @@
-import {Card, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Flex, Icon} from 'ui5'
 
 import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
@@ -33,9 +33,7 @@ export function DocumentVersionIcons({version}: {version: VersionInfoDocumentStu
     <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={1}>
       {variantsEnabled && variant ? (
         <Card className={variantIconCard} tone="suggest">
-          <Text size={2}>
-            <RhombusIcon />
-          </Text>
+          <Icon size={2} muted icon={RhombusIcon} tone="suggest" style={{margin: '-0.4375rem'}} />
         </Card>
       ) : null}
       <ReleaseAvatar

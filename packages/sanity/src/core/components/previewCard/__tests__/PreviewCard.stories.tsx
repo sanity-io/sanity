@@ -1,6 +1,7 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text} from 'ui5'
 
 import {TextWithTone} from '../../textWithTone/TextWithTone'
 import {PreviewCard} from '../PreviewCard'
@@ -17,11 +18,11 @@ const AUTHORS = ['Leo Tolstoy', 'Jane Austen', 'Fyodor Dostoevsky', 'Virginia Wo
 function Row(props: {title: string; status?: string}) {
   return (
     <Flex align="center" gap={3} padding={2}>
-      <Text muted size={1}>
+      <Text muted size={1} as="div" trim={true}>
         <DocumentIcon />
       </Text>
       <Box flex={1}>
-        <Text size={1} textOverflow="ellipsis">
+        <Text size={1} truncate={1} as="div" trim={true}>
           {props.title}
         </Text>
       </Box>
@@ -62,7 +63,7 @@ export const AllVariants: Story = {
       <Stack gap={3} style={{maxWidth: 320}}>
         {STATES.map(({label, props}) => (
           <Stack gap={2} key={label}>
-            <Text muted size={0} weight="medium">
+            <Text muted size={0} weight="medium" as="div" trim={true}>
               {label}
             </Text>
             <PreviewCard padding={1} radius={2} {...props}>

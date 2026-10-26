@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {DocumentIcon} from '@sanity/icons/Document'
 import {type DocumentSystem} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {PerspectiveContext} from 'sanity/_singletons'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {DefaultPreview} from '../../../components/previews/general/DefaultPreview'
@@ -219,7 +219,7 @@ function DocumentList({
   return (
     <PerspectiveContext.Provider value={perspective}>
       <VStack gap={1}>
-        <Text muted size={1} weight="medium">
+        <Text muted size={1} weight="medium" as="div" trim={true}>
           {heading}
         </Text>
         {documents.map((document) => (
