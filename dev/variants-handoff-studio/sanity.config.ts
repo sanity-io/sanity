@@ -46,10 +46,11 @@ const primaryButtonTheme = buildTheme({
       default: {
         primary: {
           enabled: {bg: BLACK, fg: WHITE, border: BLACK, icon: WHITE},
+          // Hover is a clearly lighter step than rest (26 Oct: it was near invisible); pressed and selected go one step further.
           hovered: {
-            bg: ['gray/800', 'gray/200'],
+            bg: ['gray/600', 'gray/400'],
             fg: WHITE,
-            border: ['gray/800', 'gray/200'],
+            border: ['gray/600', 'gray/400'],
             icon: WHITE,
           },
           pressed: {
