@@ -230,7 +230,7 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       mediaDimensions: resolvedMediaDimensions,
       status:
         hasTooltip && restProps.status && typeof restProps.status !== 'function' ? (
-          <span data-preview-tooltip-anchor="" style={{display: 'inline-flex'}}>
+          <span data-preview-tooltip-anchor="" style={{alignItems: 'center', display: 'flex'}}>
             {restProps.status}
           </span>
         ) : (

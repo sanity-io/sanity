@@ -87,7 +87,7 @@ export const ReleasesNav: ComponentType<Props> = ({
           <SingleStateControl
             data-testid="global-perspective-menu-button"
             selectedPerspective={selectedPerspective}
-            style={{...flush, paddingLeft: 14, paddingRight: 4}}
+            style={{...flush, paddingLeft: 10, paddingRight: 4}}
           />
         }
       />
