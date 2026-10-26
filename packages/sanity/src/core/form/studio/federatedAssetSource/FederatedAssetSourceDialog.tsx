@@ -15,6 +15,7 @@ import {useRootPortalElement} from '../assetSourceMediaLibrary/shared/MediaLibra
 import {FullSurfaceAppDialog} from './Dialog'
 import {FederatedViewMount} from './FederatedViewMount'
 import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
+import {useHistoryBackClose} from './useHistoryBackClose'
 
 /**
  * Hosts a brokered federated `asset_source` view for every asset-source
@@ -64,6 +65,11 @@ export function FederatedAssetSourceDialog(props: {
   const portalElement = useRootPortalElement()
 
   const [failed, setFailed] = useState(false)
+
+  // Browser back closes the open dialog instead of navigating the Studio
+  // underneath it. The headless upload mount has no visible dialog, so it
+  // must not trap back.
+  useHistoryBackClose(sourceProps.action !== 'upload', sourceProps.onClose)
 
   // The same workspace-scoped persistence partition the iframe integration
   // computes, so a picker remembers its location per hosting workspace.
