@@ -4,8 +4,8 @@ import type * as GroqWasm from '@sanity-labs/groq-wasm'
  * Lazy wrapper around `@sanity-labs/groq-wasm`: the WebAssembly build of the `groq-format`
  * formatter and the `groq-lint` rules from sanity-labs/sanity-lint. Evaluating that module fetches
  * and instantiates some 340 KB of WebAssembly, so it is only loaded when a query is first
- * formatted or linted, not with the tool. Rust reports UTF-8 byte offsets; everything returned
- * from here is converted to indices into the query string, as the editor understands them.
+ * formatted or linted, not with the tool. Parse errors carry UTF-8 byte offsets from Rust;
+ * everything returned from here is an index into the query string, as the editor understands it.
  */
 
 type GroqWasmModule = typeof GroqWasm
@@ -26,7 +26,7 @@ export interface WasmFinding {
   ruleId: string
   message: string
   severity: GroqFindingSeverity
-  /** UTF-8 byte offsets into the query; absent for findings about the query as a whole */
+  /** Indices into the query string; absent for findings about the query as a whole */
   span?: {start: {offset: number}; end: {offset: number}}
 }
 
@@ -41,6 +41,13 @@ export class GroqSyntaxError extends Error {
     this.from = from
     this.to = to
   }
+}
+
+/** A `$name` reference extracted from a query, with its locations */
+export interface GroqQueryParam {
+  name: string
+  /** Where `$name` occurs in the query; already indices into the query string */
+  references: Array<{from: number; to: number}>
 }
 
 let groqWasm: Promise<GroqWasmModule> | undefined
@@ -82,12 +89,14 @@ export function createByteOffsetConverter(text: string): (byteOffset: number) =>
   }
 }
 
-// `Format error: Parse("expected ']' at Position { start: 1, end: 14 }")` and
-// `Lint error: expected ']' at Position { start: 1, end: 14 }` are the two shapes the wasm
-// wrapper produces; the message inside `Parse("…")` is Rust debug-escaped
+// `Format error: Parse("expected ']' at Position { start: 1, end: 14 }")`,
+// `Lint error: expected ']' at Position { start: 1, end: 14 }` and
+// `Failed to parse query: Parse error: expected ']' at Position { start: 1, end: 14 }` (from
+// `extractParams`) are the shapes the wasm wrapper produces; the message inside `Parse("…")` is
+// Rust debug-escaped
 const PARSE_WRAPPER_RE = /Parse\("((?:[^"\\]|\\.)*)"\)/
 const PREFIX_RE =
-  /^(?:(?:Failed to parse query|Format failed|Lint failed|Format error|Lint error): )+/
+  /^(?:(?:Failed to parse query|Format failed|Lint failed|Format error|Lint error|Parse error): )+/
 const POSITION_RE = /\s*at Position \{ start: (\d+), end: (\d+) \}\s*$/
 
 /** Turns the wasm wrapper's parse failures into a {@link GroqSyntaxError}; anything else is rethrown */
@@ -138,12 +147,29 @@ export async function lintGroq(query: string): Promise<GroqFinding[]> {
   return toGroqFindings(findings, query)
 }
 
-/** Converts the wasm findings' byte spans into ranges of `query`; a finding without a span covers all of it */
+/** Converts the wasm findings' spans into ranges of `query`; a finding without a span covers all of it */
 export function toGroqFindings(findings: WasmFinding[], query: string): GroqFinding[] {
-  const toIndex = createByteOffsetConverter(query)
+  const clamp = (index: number) => Math.max(0, Math.min(index, query.length))
   return findings.map(({ruleId, message, severity, span}) => {
-    const from = span ? toIndex(span.start.offset) : 0
-    const to = span ? Math.max(from, toIndex(span.end.offset)) : query.length
+    const from = span ? clamp(span.start.offset) : 0
+    const to = span ? Math.max(from, clamp(span.end.offset)) : query.length
     return {ruleId, message: message.trim(), severity, from, to}
   })
+}
+
+/**
+ * Extracts every `$name` parameter a query references, with their locations. `extractParams`
+ * already returns indices into the query string, so no conversion happens here. Rejects with a
+ * {@link GroqSyntaxError} when the query does not parse.
+ */
+export async function extractQueryParams(query: string): Promise<GroqQueryParam[]> {
+  const wasm = await loadGroqWasm()
+  try {
+    return wasm.extractParams(query).map(({name, references}) => ({
+      name,
+      references: references.map(({start, end}) => ({from: start, to: end})),
+    }))
+  } catch (error) {
+    throw toSyntaxError(error, query)
+  }
 }

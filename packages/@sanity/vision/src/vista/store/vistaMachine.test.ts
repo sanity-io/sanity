@@ -263,20 +263,26 @@ describe('vistaMachine', () => {
 
   it('remembers which added or loaded tabs fetch when shown, until they have or are closed', () => {
     const harness = createHarness()
-    harness.actor.send({type: 'tab.add', tab: {id: 'generated', query: '*'}, fetch: true})
+    harness.actor.send({type: 'tab.add', tab: {id: 'generated', query: '*'}, fetch: 'generated'})
     harness.actor.send({type: 'tab.add', tab: {id: 'plain', query: '*'}})
-    harness.actor.send({type: 'tab.add', tab: {id: 'closed', query: '*'}, fetch: true})
-    expect(harness.snapshot().context.fetchOnOpen).toEqual(['generated', 'closed'])
+    harness.actor.send({type: 'tab.add', tab: {id: 'closed', query: '*'}, fetch: 'generated'})
+    expect(harness.snapshot().context.fetchOnOpen).toEqual({
+      generated: 'generated',
+      closed: 'generated',
+    })
 
     harness.actor.send({type: 'tab.fetchedOnOpen', id: 'generated'})
     harness.actor.send({type: 'tab.close', id: 'closed'})
-    expect(harness.snapshot().context.fetchOnOpen).toEqual([])
+    expect(harness.snapshot().context.fetchOnOpen).toEqual({})
 
-    // A generated query loaded into a tab that is already shown fetches the same way
-    harness.actor.send({type: 'tab.load', id: 'plain', tab: {query: '*[0]'}, fetch: true})
-    expect(harness.snapshot().context.fetchOnOpen).toEqual(['plain'])
-    harness.actor.send({type: 'tab.load', id: 'plain', tab: {query: '*[1]'}})
-    expect(harness.snapshot().context.fetchOnOpen).toEqual(['plain'])
+    // A generated query loaded into a tab that is already shown fetches the same way, and a
+    // pasted URL does too, remembered as such since it runs as pasted
+    harness.actor.send({type: 'tab.load', id: 'plain', tab: {query: '*[0]'}, fetch: 'generated'})
+    expect(harness.snapshot().context.fetchOnOpen).toEqual({plain: 'generated'})
+    harness.actor.send({type: 'tab.load', id: 'plain', tab: {query: '*[1]'}, fetch: 'paste'})
+    expect(harness.snapshot().context.fetchOnOpen).toEqual({plain: 'paste'})
+    harness.actor.send({type: 'tab.load', id: 'plain', tab: {query: '*[2]'}})
+    expect(harness.snapshot().context.fetchOnOpen).toEqual({plain: 'paste'})
     // Never persisted: a reload does not fetch again
     expect(selectPersistedState(harness.snapshot())).not.toHaveProperty('fetchOnOpen')
   })

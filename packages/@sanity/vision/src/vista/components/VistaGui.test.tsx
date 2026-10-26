@@ -3,12 +3,14 @@ import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import JSON5 from 'json5'
 import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {Subject} from 'rxjs'
 import {type PerspectiveContextValue, useScheduledDraftsEnabled} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
+import {resetAiCredits} from '../hooks/useAiCredits'
 import {
   createInitialState,
   createTab,
@@ -108,6 +110,9 @@ vi.stubGlobal(
 
 vi.mock('sanity', async () => {
   const {useSyncExternalStore} = await import('react')
+  const {of} = await import('rxjs')
+  // The project store's organization ID, stable like the real store's
+  const organizationId$ = of('org-1')
   return {
     usePerspective: () =>
       useSyncExternalStore(sanityMocks.subscribePerspective, sanityMocks.getPerspective),
@@ -115,9 +120,18 @@ vi.mock('sanity', async () => {
     useActiveReleases: vi.fn(() => ({data: [], loading: false})),
     useScheduledDraftsEnabled: vi.fn(() => false),
     useWorkspace: () => sanityMocks.workspace,
+    useProjectStore: () => ({getOrganizationId: () => organizationId$}),
+    useNumberFormat: () => new Intl.NumberFormat('en'),
     useTranslation: () => ({
-      t: (key: string, options?: {message?: string; version?: string}) => {
+      t: (
+        key: string,
+        options?: {message?: string; version?: string; quota?: string; used?: string},
+      ) => {
         if (options?.message) return `${key}:${options.message}`
+        // The AI credits notes carry numbers: shown as given, to read them back
+        if (options?.quota !== undefined || options?.used !== undefined) {
+          return `${key}:${JSON.stringify(options)}`
+        }
         return options?.version ? `${key}:${options.version}` : key
       },
     }),
@@ -252,13 +266,18 @@ interface FetchCall {
   options: Record<string, unknown>
 }
 
-function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', dataset: 'test'}) {
+function createMockClient(
+  initial: ClientConfig = {projectId: PROJECT_ID, apiVersion: 'v2025-02-19', dataset: 'test'},
+) {
   const fetchCalls: FetchCall[] = []
   const promptCalls: {config: ClientConfig; request: Record<string, unknown>}[] = []
   const promptReplies: unknown[] = []
   const requestCalls: {config: ClientConfig; options: RequestOptions}[] = []
   let nextRequestResponse: unknown
   let requestResponder: ((url: string, options: RequestOptions) => unknown) | undefined
+  // The AI credits every Agent Actions control reads when it opens, apart from the data requests
+  const aiCreditsRequests: {config: ClientConfig; options: RequestOptions}[] = []
+  let aiCreditsResponse: unknown
   // What `getDocuments` finds, by ID
   const documents = new Map<string, Record<string, unknown>>()
   const liveEvents = new Subject<LiveEvent>()
@@ -296,6 +315,10 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
         },
       },
       request: (options: RequestOptions) => {
+        if (options.url.endsWith('/resources/ai-usage')) {
+          aiCreditsRequests.push({config, options})
+          return Promise.resolve(aiCreditsResponse)
+        }
         requestCalls.push({config, options})
         return Promise.resolve(
           requestResponder ? requestResponder(options.url, options) : nextRequestResponse,
@@ -306,7 +329,8 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
         action: {
           prompt: (request: Record<string, unknown>) => {
             promptCalls.push({config, request})
-            return Promise.resolve(promptReplies.shift())
+            const reply = promptReplies.shift()
+            return reply instanceof Error ? Promise.reject(reply) : Promise.resolve(reply)
           },
         },
       },
@@ -316,9 +340,14 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
     client: create(initial),
     fetchCalls,
     promptCalls,
-    /** Replies the Agent Actions prompt gives, one per call */
+    /** Replies the Agent Actions prompt gives, one per call; an error rejects the call */
     replyToPrompts: (...replies: unknown[]) => promptReplies.push(...replies),
     requestCalls,
+    aiCreditsRequests,
+    /** What the project's `ai-usage` resource answers; a pending promise keeps a reading on its way */
+    respondToAiCredits: (response: unknown) => {
+      aiCreditsResponse = response
+    },
     documents,
     /** `client.request` answers with what `responder` gives for the URL and the request */
     respondToRequestsBy: (responder: (url: string, options: RequestOptions) => unknown) => {
@@ -429,6 +458,25 @@ function selectValue(testId: string): string {
   return (screen.getByTestId(testId) as HTMLSelectElement).value
 }
 
+/** The response Agent Actions give once the organization has used all its AI credits */
+function limitError(): ClientError {
+  return new ClientError({
+    statusCode: 429,
+    statusMessage: 'Too Many Requests',
+    headers: {},
+    body: {
+      statusCode: 429,
+      error: 'MeteringLimitReached',
+      message: 'The organization has used all its AI credits',
+      reasonCode: 'default_budget_limit_reached',
+      usageValue: 100,
+      quota: 100,
+    },
+    url: 'https://test.api.sanity.io/vX/agent/action/prompt',
+    method: 'POST',
+  })
+}
+
 describe('VistaGui', () => {
   afterEach(() => {
     cleanup()
@@ -437,6 +485,7 @@ describe('VistaGui', () => {
 
   beforeEach(() => {
     localStorage.clear()
+    resetAiCredits()
     sanityMocks.setPerspective(BASE_PERSPECTIVE)
     sanityMocks.savedQueries = {queries: [], moving: []}
     sanityMocks.router.state = {}
@@ -600,6 +649,79 @@ describe('VistaGui', () => {
     expect(JSON.parse(paramsEditor().value)).toEqual({limit: 3, type: 'author'})
   })
 
+  it('prefills the JSON params editor with params the query references, keeping existing values', async () => {
+    const {unmount} = renderVista()
+    const paramsEditor = () =>
+      within(screen.getByTestId('vista-params-editor')).getByTestId(
+        'codemirror-mock',
+      ) as HTMLTextAreaElement
+
+    // An existing value for one of the two params the query below references is kept untouched;
+    // the other, never seen before, is added as an empty placeholder
+    fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3\n}'}})
+    typeQuery('*[_type == $type][0...$limit]')
+
+    await waitFor(() => expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3, type: ''}), {
+      timeout: 2000,
+    })
+    // Written to the stored tab too, not just the live editor
+    await waitFor(() =>
+      expect(JSON5.parse(getStoredState().tabs[0].rawParams)).toEqual({limit: 3, type: ''}),
+    )
+
+    // A real value typed into the placeholder is never clobbered by a later prefill of the same
+    // referenced params
+    fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3,\n  "type": "author"\n}'}})
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].rawParams).toBe('{\n  "limit": 3,\n  "type": "author"\n}'),
+    )
+    typeQuery('*[_type == $type][0...$limit]{_id}')
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]{_id}'),
+    )
+    // The debounce settling afterwards finds nothing missing to add
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3, type: 'author'})
+
+    unmount()
+  })
+
+  it('leaves the JSON params editor alone while the query does not parse', async () => {
+    const {unmount} = renderVista()
+    const paramsEditor = () =>
+      within(screen.getByTestId('vista-params-editor')).getByTestId(
+        'codemirror-mock',
+      ) as HTMLTextAreaElement
+
+    typeQuery('*[_type == $type][0...$limit')
+    await waitFor(() => expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit'))
+    await new Promise((resolve) => setTimeout(resolve, 400))
+
+    expect(JSON5.parse(paramsEditor().value)).toEqual({})
+
+    unmount()
+  })
+
+  it('does not prefill the params form inferred from the query, only the JSON editor', async () => {
+    const {unmount} = renderVista()
+    const formInput = (name: string) =>
+      screen.getByTestId(`vista-params-form-${name}`).querySelector('input') as HTMLInputElement
+
+    fireEvent.click(document.getElementById('vista-params-view-form') as HTMLElement)
+    typeQuery('*[_type == $type][0...$limit]')
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]'),
+    )
+    await new Promise((resolve) => setTimeout(resolve, 400))
+
+    // The form view already lists every referenced param on its own (groq-js based) inference;
+    // paramsEditorRef is unset while it is mounted, so this feature leaves it alone
+    expect(formInput('limit').value).toBe('')
+    expect(JSON5.parse(getStoredState().tabs[0].rawParams)).toEqual({})
+
+    unmount()
+  })
+
   it('fetches the raw response, shows its metadata and records the history', async () => {
     const {fetchCalls} = renderVista()
 
@@ -672,7 +794,7 @@ describe('VistaGui', () => {
     expect(sanityMocks.router.navigate.mock.lastCall?.[1]).toEqual({replace: true})
   })
 
-  it('opens the request a link to the tool names, in a tab of its own', async () => {
+  it('opens the request a link to the tool names, in a tab of its own, and runs it', async () => {
     sanityMocks.router.state = {
       _searchParams: [
         [
@@ -685,7 +807,7 @@ describe('VistaGui', () => {
         ],
       ],
     }
-    renderVista()
+    const {fetchCalls} = renderVista()
 
     await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(2))
     expect(getQueryEditor().value).toBe('*[_type == "movie"]')
@@ -697,6 +819,38 @@ describe('VistaGui', () => {
       dataset: 'test',
       perspective: 'drafts',
     })
+
+    // The query runs as the link wrote it, with its params and under its dataset, API version
+    // and perspective, the way a pasted URL does
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0]).toMatchObject({
+      query: '*[_type == "movie"]',
+      params: {limit: 3},
+      config: {dataset: 'test', apiVersion: 'v2025-02-19', perspective: 'drafts'},
+    })
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    expect(text(screen.getByTestId('vista-history-entry'))).toContain('vista.history.reason.link')
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(1)
+  })
+
+  it('keeps to the tab already showing the request a link names, without running it again', async () => {
+    const first = renderVista()
+    typeQuery('*[_type == "movie"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(first.fetchCalls).toHaveLength(1))
+    const activeUrl = (screen.getByTestId('vista-query-url') as HTMLInputElement).value
+    first.unmount()
+
+    // A reload: the address still names the restored tab's own request, as a bookmark of it would
+    sanityMocks.router.state = {_searchParams: [['url', activeUrl]]}
+    const second = renderVista()
+
+    await waitFor(() => expect(getQueryEditor().value).toBe('*[_type == "movie"]'))
+    expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(second.fetchCalls).toHaveLength(0)
   })
 
   it('shows the query plan and an explanation of the query in the Explain panel', async () => {
@@ -1117,6 +1271,210 @@ describe('VistaGui', () => {
     await waitFor(() =>
       expect(document.activeElement).toBe(screen.getByTestId('vista-option-api-version-custom')),
     )
+  })
+
+  it('says at every control that calls Agent Actions that it uses AI credits', async () => {
+    renderVista()
+    // Tooltips stay mounted while closed, so the note is in the document for every control shown:
+    // Generate query over the query editor, then Explain this to me, then Generate mutations
+    const notes = () => screen.queryAllByText('vista.agent-actions.credits')
+    await waitFor(() => expect(notes()).toHaveLength(1))
+    fireEvent.click(document.getElementById('vista-response-explain-tab') as HTMLElement)
+    await waitFor(() => expect(notes()).toHaveLength(2))
+    fireEvent.click(screen.getByTestId('vista-sidebar-mutate'))
+    await waitFor(() => expect(notes()).toHaveLength(3))
+    // The icon-only controls keep their name as the tooltip's first line; the Explain button
+    // says what it does itself
+    const tooltipTexts = notes().map((note) =>
+      text(note.closest<HTMLElement>('[data-ui="Tooltip"]') as HTMLElement),
+    )
+    expect(tooltipTexts).toEqual([
+      'vista.generate.buttonvista.agent-actions.credits',
+      'vista.agent-actions.credits',
+      'vista.mutate.generate.buttonvista.agent-actions.credits',
+    ])
+  })
+
+  it('says under every Agent Actions control how many AI credits the organization has left', async () => {
+    const {aiCreditsRequests, respondToAiCredits} = renderVista()
+    respondToAiCredits({
+      granted: true,
+      reasonCode: null,
+      subscription: {resourceId: 'ai-usage', quota: 1000},
+      usage: {metric: 'ai-usage', value: 58},
+    })
+
+    fireEvent.click(screen.getByTestId('vista-generate-query'))
+    const bar = screen.getByTestId('vista-generate-bar')
+    const note = await within(bar).findByTestId('vista-ai-credits')
+    expect(text(note)).toContain('vista.ai-credits.balance:{"balance":"942","quota":"1,000"}')
+    // Read through the project, on the experimental API where the resource is
+    expect(aiCreditsRequests).toHaveLength(1)
+    expect(aiCreditsRequests[0].config.apiVersion).toBe('vX')
+    expect(aiCreditsRequests[0].options.url).toBe(
+      '/subscriptions/project/test-project/resources/ai-usage',
+    )
+    // The note leads to the organization's AI usage in Manage once the organization is known
+    await waitFor(() =>
+      expect(within(note).getByRole('link').getAttribute('href')).toBe(
+        'https://www.sanity.io/organizations/org-1/usage/ai',
+      ),
+    )
+
+    // The other controls share the reading
+    fireEvent.click(document.getElementById('vista-response-explain-tab') as HTMLElement)
+    const explainNote = await within(screen.getByTestId('vista-explain')).findByTestId(
+      'vista-ai-credits',
+    )
+    expect(text(explainNote)).toContain('"balance":"942"')
+    fireEvent.click(screen.getByTestId('vista-sidebar-mutate'))
+    fireEvent.click(screen.getByTestId('vista-mutate-generate'))
+    const mutateNote = await within(screen.getByTestId('vista-mutate-generate-bar')).findByTestId(
+      'vista-ai-credits',
+    )
+    expect(text(mutateNote)).toContain('"balance":"942"')
+    expect(aiCreditsRequests).toHaveLength(1)
+  })
+
+  it('offers more AI credits in place of a control description once the organization is out of them', async () => {
+    const {respondToAiCredits} = renderVista()
+    respondToAiCredits({
+      granted: false,
+      reasonCode: 'plan_limit_reached',
+      subscription: {resourceId: 'ai-usage', quota: 100},
+      usage: {metric: 'ai-usage', value: 100},
+    })
+
+    fireEvent.click(screen.getByTestId('vista-generate-query'))
+    const bar = screen.getByTestId('vista-generate-bar')
+    const card = await within(bar).findByTestId('vista-ai-credits-limit')
+    expect(text(card)).toContain('vista.ai-credits.limit.title')
+    expect(text(card)).toContain('vista.ai-credits.limit.description:{"used":"100","quota":"100"}')
+    expect(within(bar).queryByText('vista.generate.description')).toBeNull()
+    // The control itself stays: the API decides, and the limit may have been raised since
+    expect(isDisabled(within(bar).getByTestId('vista-generate-request'))).toBe(false)
+    await waitFor(() =>
+      expect(within(card).getByTestId('vista-ai-credits-manage').getAttribute('href')).toBe(
+        'https://www.sanity.io/organizations/org-1/settings#caps',
+      ),
+    )
+    expect(
+      within(card)
+        .getByText('vista.ai-credits.limit.learn-more')
+        .closest('a')
+        ?.getAttribute('href'),
+    ).toBe('https://www.sanity.io/docs/platform-management/how-ai-credits-work')
+  })
+
+  it('offers more AI credits, not an error, when Agent Actions turn a request down for them', async () => {
+    const {aiCreditsRequests, promptCalls, replyToPrompts, respondToAiCredits} = renderVista()
+    respondToAiCredits({
+      granted: true,
+      reasonCode: null,
+      subscription: {resourceId: 'ai-usage', quota: 100},
+      usage: {metric: 'ai-usage', value: 90},
+    })
+    replyToPrompts(limitError())
+
+    generateFrom('Ten authors')
+    const bar = screen.getByTestId('vista-generate-bar')
+    const card = await within(bar).findByTestId('vista-ai-credits-limit')
+    // The response says how the credits stand now, ahead of the metering the reading comes from
+    expect(text(card)).toContain('vista.ai-credits.limit.description:{"used":"100","quota":"100"}')
+    expect(within(bar).queryByTestId('vista-generate-error')).toBeNull()
+    expect(promptCalls).toHaveLength(1)
+
+    // Every control shows the limit from then on
+    fireEvent.click(document.getElementById('vista-response-explain-tab') as HTMLElement)
+    const explain = screen.getByTestId('vista-explain')
+    expect(within(explain).getByTestId('vista-ai-credits-limit')).toBeTruthy()
+    expect(within(explain).queryByTestId('vista-ai-credits')).toBeNull()
+
+    // A request that goes through again means the limit was raised: the credits are read again
+    respondToAiCredits({
+      granted: true,
+      reasonCode: null,
+      subscription: {resourceId: 'ai-usage', quota: 1000},
+      usage: {metric: 'ai-usage', value: 101},
+    })
+    replyToPrompts({query: '*[_type == "author"]', params: {}, title: 'Authors'})
+    fireEvent.change(within(bar).getByTestId('vista-generate-request'), {
+      target: {value: 'All authors'},
+    })
+    fireEvent.click(within(bar).getByTestId('vista-generate-submit'))
+    await waitFor(() => expect(screen.queryByTestId('vista-generate-bar')).toBeNull())
+    await waitFor(() =>
+      expect(
+        text(within(screen.getByTestId('vista-explain')).getByTestId('vista-ai-credits')),
+      ).toContain('vista.ai-credits.balance:{"balance":"899","quota":"1,000"}'),
+    )
+    expect(aiCreditsRequests).toHaveLength(2)
+  })
+
+  it('keeps the limit a request was turned down for over a reading that started before it', async () => {
+    const {replyToPrompts, respondToAiCredits} = renderVista()
+    // The reading the bar starts when it opens is still on its way when the request is turned down
+    let answer!: (response: unknown) => void
+    respondToAiCredits(
+      new Promise((resolve) => {
+        answer = resolve
+      }),
+    )
+    replyToPrompts(limitError())
+
+    generateFrom('Ten authors')
+    await within(screen.getByTestId('vista-generate-bar')).findByTestId('vista-ai-credits-limit')
+
+    // The answer is from before the request hit the limit, so it does not stand
+    await act(async () => {
+      answer({
+        granted: true,
+        reasonCode: null,
+        subscription: {resourceId: 'ai-usage', quota: 1000},
+        usage: {metric: 'ai-usage', value: 58},
+      })
+    })
+    fireEvent.click(document.getElementById('vista-response-explain-tab') as HTMLElement)
+    const explain = screen.getByTestId('vista-explain')
+    expect(within(explain).getByTestId('vista-ai-credits-limit')).toBeTruthy()
+    expect(within(explain).queryByTestId('vista-ai-credits')).toBeNull()
+  })
+
+  it('keeps showing other failures as errors, a plain rate limit among them', async () => {
+    const {replyToPrompts} = renderVista()
+    replyToPrompts(
+      new ClientError({
+        statusCode: 429,
+        statusMessage: 'Too Many Requests',
+        headers: {},
+        body: {statusCode: 429, error: 'Too Many Requests', message: 'Rate limit exceeded'},
+        url: 'https://test.api.sanity.io/vX/agent/action/prompt',
+        method: 'POST',
+      }),
+    )
+
+    generateFrom('Ten authors')
+    const error = await screen.findByTestId('vista-generate-error')
+    expect(text(error)).toContain('Rate limit exceeded')
+    expect(screen.queryByTestId('vista-ai-credits-limit')).toBeNull()
+  })
+
+  it('offers more AI credits in the Explain panel when the explanation is turned down for them', async () => {
+    const {replyToPrompts, respondToRequests} = renderVista()
+    respondToRequests({result: [], explain: 'Pipeline {}'})
+    replyToPrompts(limitError())
+
+    typeQuery('*[_type == "post"]')
+    fireEvent.click(document.getElementById('vista-response-explain-tab') as HTMLElement)
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-explain-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vista-explain-button'))
+
+    const explain = screen.getByTestId('vista-explain')
+    const card = await within(explain).findByTestId('vista-ai-credits-limit')
+    expect(text(card)).toContain('vista.ai-credits.limit.description:{"used":"100","quota":"100"}')
+    expect(within(explain).queryByTestId('vista-explain-error')).toBeNull()
+    // The plan costs nothing, so it still came
+    expect(within(explain).getByTestId('vista-query-plan')).toBeTruthy()
   })
 
   it('generates a query from a description into the empty tab, and fetches it', async () => {
@@ -1721,14 +2079,26 @@ describe('VistaGui', () => {
   })
 
   it('fetches a query loaded into a tab that refetches automatically', async () => {
+    sanityMocks.savedQueries = {
+      queries: [
+        {
+          _key: 'saved-pages',
+          shared: false,
+          title: 'Pages',
+          url: 'https://abc.api.sanity.io/v2025-02-19/data/query/staging?query=*%5B_type+%3D%3D+%22page%22%5D',
+          savedAt: '2026-01-01T00:00:00Z',
+        },
+      ],
+      moving: [],
+    }
     const {fetchCalls} = renderVista()
     typeQuery('*[_type == "author"]')
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
-    // A pasted URL loads a new query and pins its dataset in one go; live refetches replay the
-    // runner's last request, which the load clears, so the loaded query is fetched right away,
-    // once, and for the loaded options
+    // A pasted URL loads a new query and pins its dataset in one go, and runs it as pasted; live
+    // refetches replay the runner's last request, which the load clears, so it is not fetched
+    // again on top of that: once, and for the loaded options
     const url =
       'https://abc.api.sanity.io/v2025-02-19/data/query/staging?query=*%5B_type+%3D%3D+%22post%22%5D&perspective=published'
     fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
@@ -1741,18 +2111,42 @@ describe('VistaGui', () => {
     await waitFor(() => {
       const entries = screen.getAllByTestId('vista-history-entry')
       expect(entries).toHaveLength(2)
-      expect(text(entries[0])).toContain('vista.history.reason.load')
+      expect(text(entries[0])).toContain('vista.history.reason.paste')
     })
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(fetchCalls).toHaveLength(2)
 
-    // Without automatic refetching a load only replaces the query
+    // A saved query loaded into the tab has no run of its own, so the live tab fetches it in place
+    // of the runner's cleared request
+    const loadSavedQuery = async () => {
+      if (!screen.queryByTestId('vista-saved-query')) {
+        fireEvent.click(screen.getByTestId('vista-sidebar-saved'))
+      }
+      const item = await screen.findByTestId('vista-saved-query')
+      fireEvent.click(within(item).getByRole('button', {expanded: false}))
+      const load = screen
+        .getAllByRole('menuitem', {hidden: true})
+        .find((menuItem) => text(menuItem) === 'vista.saved.load-in-current-tab')
+      if (!load) throw new Error('The saved query menu has no load item')
+      fireEvent.click(load)
+    }
+    await loadSavedQuery()
+    await waitFor(() => expect(fetchCalls).toHaveLength(3))
+    expect(fetchCalls[2].query).toBe('*[_type == "page"]')
+    await waitFor(() => {
+      const entries = screen.getAllByTestId('vista-history-entry')
+      expect(entries).toHaveLength(3)
+      expect(text(entries[0])).toContain('vista.history.reason.load')
+    })
+
+    // Without automatic refetching such a load only replaces the query
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(false))
-    fireEvent.paste(document.body, {clipboardData: {getData: () => url.replace('post', 'page')}})
+    typeQuery('*[_type == "person"]')
+    await loadSavedQuery()
     await waitFor(() => expect(getQueryEditor().value).toBe('*[_type == "page"]'))
     await new Promise((resolve) => setTimeout(resolve, 50))
-    expect(fetchCalls).toHaveLength(2)
+    expect(fetchCalls).toHaveLength(3)
   })
 
   it('resumes automatic refetching with a current result when a tab is shown again', async () => {
@@ -2121,8 +2515,8 @@ describe('VistaGui', () => {
     }
   })
 
-  it('loads a pasted query URL into the active tab', async () => {
-    renderVista()
+  it('loads a pasted query URL into the active tab and runs it', async () => {
+    const {fetchCalls} = renderVista()
     const url =
       'https://abc.api.sanity.io/v2021-10-21/data/query/staging?query=*%5B_id+%3D%3D+%24id%5D&%24id=%22a%22&perspective=published'
 
@@ -2141,6 +2535,19 @@ describe('VistaGui', () => {
       }),
     )
     expect(screen.queryByText('vista.paste.unknown-dataset')).toBeNull()
+
+    // The request runs as pasted, as it does in the classic tool: the query is left as it was
+    // written, with the URL's params and under its dataset, API version and perspective
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0]).toMatchObject({
+      query: '*[_id == $id]',
+      params: {id: 'a'},
+      config: {dataset: 'staging', apiVersion: 'v2021-10-21', perspective: 'published'},
+    })
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    expect(text(screen.getByTestId('vista-history-entry'))).toContain('vista.history.reason.paste')
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(1)
   })
 
   it('puts the tab on the API default when the pasted URL has no perspective', async () => {
@@ -2155,7 +2562,6 @@ describe('VistaGui', () => {
     await waitFor(() => expect(getQueryEditor().value).toBe('*'))
     // The request ran without a perspective, so that is what the tab sends now, not the navbar's
     expect(selectValue('vista-option-perspective-select')).toBe('default')
-    fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].config.perspective).toBeUndefined()
   })

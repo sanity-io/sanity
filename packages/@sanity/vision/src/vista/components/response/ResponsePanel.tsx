@@ -213,6 +213,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
         content: (
           <ExplainTab
             canExplain={request !== null}
+            client={resolved.client}
             explanation={queryExplain.explanation}
             onExplain={() => void queryExplain.explain()}
             onShowPlan={queryExplain.showPlan}

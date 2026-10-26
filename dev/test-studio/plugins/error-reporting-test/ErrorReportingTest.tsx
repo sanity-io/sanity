@@ -16,9 +16,15 @@ function triggerCustomErrorOnEvent() {
   throw new Error('Custom error triggered')
 }
 
+// Rolldown 1.2.15 folds `import(variable)` when the variable is a string literal,
+// then fails `sanity build` on the missing module. A call keeps the specifier
+// dynamic; the demo still requests a URL that 404s.
+function missingModuleSpecifier(): string {
+  return '/does-not-exist.js'
+}
+
 function triggerImportError() {
-  const filename = '/does-not-exist.js'
-  void import(/* @vite-ignore */ filename)
+  void import(/* @vite-ignore */ missingModuleSpecifier())
 }
 
 function triggerTypeErrorOnEvent(evt: any) {
@@ -157,10 +163,7 @@ export function ErrorReportingTest() {
   )
 }
 
-const ReactLazyError = lazy(() => {
-  const name = '/does-not-exist.js'
-  return import(/* @vite-ignore */ name)
-})
+const ReactLazyError = lazy(() => import(/* @vite-ignore */ missingModuleSpecifier()))
 
 function WithRenderError({text}: any) {
   return <div>{text.toUpperCase()}</div>
