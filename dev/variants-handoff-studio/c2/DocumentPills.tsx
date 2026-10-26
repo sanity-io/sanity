@@ -5,7 +5,13 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {DotIcon} from '@sanity/icons/Dot'
 import {Box, Flex, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ComponentProps, type CSSProperties, type ReactElement, useState} from 'react'
+import {
+  type ComponentProps,
+  type CSSProperties,
+  type ReactElement,
+  type ReactNode,
+  useState,
+} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
@@ -83,54 +89,71 @@ const SHOW_VERSION_COUNT = true
 const placeWord = (v: AudienceVersion) =>
   v.state === 'published' ? 'Published' : v.state === 'draft' ? 'Draft' : (v.release ?? v.state)
 
-/** The slot at a row's right end: one 16px icon and, for a count, a fixed-width number, centred on the row's line by flex alone (26 Oct). */
+/**
+ * The slot at a row's right end (26 Oct): the number first, then the icon, so the stacked-pages icon of a count and the plus of a row to
+ * create share one right edge. The slot reserves its width inside the row's text; what is drawn is pinned to the row's right padding and
+ * centred on the row itself (the row is `position: relative`, set on the MenuItem below), so the line box the menu wraps it in cannot
+ * shift it up or down.
+ */
+const SLOT_WIDTH = 'calc(2ch + 4px + 16px)'
 const SLOT_ICON: CSSProperties = {display: 'block', flex: 'none', fontSize: 16, margin: 0}
-const SLOT: CSSProperties = {
-  alignItems: 'center',
-  color: 'var(--card-muted-fg-color)',
-  display: 'inline-flex',
-  gap: 4,
-  height: 16,
-  lineHeight: '16px',
+function RowSlot({children}: {children: ReactNode}) {
+  return (
+    <span style={{display: 'inline-block', height: 16, verticalAlign: 'middle', width: SLOT_WIDTH}}>
+      <span
+        style={{
+          alignItems: 'center',
+          color: 'var(--card-muted-fg-color)',
+          display: 'flex',
+          gap: 4,
+          height: 16,
+          justifyContent: 'flex-end',
+          lineHeight: '16px',
+          position: 'absolute',
+          right: 12,
+          top: '50%',
+          transform: 'translateY(-50%)',
+        }}
+      >
+        {children}
+      </span>
+    </span>
+  )
 }
 
 /**
- * The count at a Variants row's right end: the stacked-pages icon, then the number, both in the row's muted text. Its tooltip names the
+ * The count at a Variants row's right end: the number, then the stacked-pages icon, both in the row's muted text. Its tooltip names the
  * versions ("3 versions: Published, Draft, Black Friday").
  */
 function VersionCount({versions}: {versions: readonly AudienceVersion[]}) {
   const n = versions.length
   return (
-    <Tooltip
-      content={`${n} ${n === 1 ? 'version' : 'versions'}: ${versions.map(placeWord).join(', ')}`}
-      placement="top"
-    >
-      <span data-testid="variant-version-count" style={SLOT}>
-        <DocumentsIcon style={SLOT_ICON} />
-        {/* A fixed-width, right-aligned number: one- and two-digit counts line up down the menu. */}
+    <RowSlot>
+      <Tooltip
+        content={`${n} ${n === 1 ? 'version' : 'versions'}: ${versions.map(placeWord).join(', ')}`}
+        placement="top"
+      >
         <span
-          style={{
-            fontVariantNumeric: 'tabular-nums',
-            minWidth: '2ch',
-            textAlign: 'right',
-          }}
+          data-testid="variant-version-count"
+          style={{alignItems: 'center', display: 'flex', gap: 4, height: 16}}
         >
-          {n}
+          {/* A fixed-width, right-aligned number: one- and two-digit counts line up down the menu. */}
+          <span style={{fontVariantNumeric: 'tabular-nums', minWidth: '2ch', textAlign: 'right'}}>
+            {n}
+          </span>
+          <DocumentsIcon style={SLOT_ICON} />
         </span>
-      </span>
-    </Tooltip>
+      </Tooltip>
+    </RowSlot>
   )
 }
 
-/** A row with nothing to count yet (a variant or release this document is not in): a plus in the count's slot and width. The row's tooltip says Create. */
+/** A row with nothing to count yet (a variant or release this document is not in): a plus where the count's icon is. The row's tooltip says Create. */
 function CreateMark() {
   return (
-    <span
-      data-testid="row-create-mark"
-      style={{...SLOT, justifyContent: 'flex-end', minWidth: 'calc(16px + 4px + 2ch)'}}
-    >
-      <AddIcon style={SLOT_ICON} />
-    </span>
+    <RowSlot>
+      <AddIcon data-testid="row-create-mark" style={SLOT_ICON} />
+    </RowSlot>
   )
 }
 
@@ -235,6 +258,7 @@ function DropdownPill(props: {
                 selected={item.selected}
                 key={item.key}
                 onClick={item.onClick}
+                style={{position: 'relative'}}
                 text={item.text}
                 tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
               />
