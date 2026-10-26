@@ -13,8 +13,9 @@ import {TagIcon} from '@sanity/icons/Tag'
 import {TargetIcon} from '@sanity/icons/Target'
 import {TranslateIcon} from '@sanity/icons/Translate'
 import {UserIcon} from '@sanity/icons/User'
-import {UsersIcon} from '@sanity/icons/Users'
 import {type ComponentType} from 'react'
+
+import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 
 /**
  * Icon per common variant targeting *dimension* (the key of a condition — "audience", "location",
@@ -29,7 +30,8 @@ import {type ComponentType} from 'react'
  * @internal
  */
 const DIMENSION_ICONS: Record<string, ComponentType> = {
-  audience: UsersIcon,
+  // The variant diamond, not a people glyph: users read as the signed-in user's avatar (David, 26 Oct).
+  audience: RhombusIcon,
   segment: TargetIcon,
   cohort: TargetIcon,
   role: UserIcon,

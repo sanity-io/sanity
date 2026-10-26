@@ -3,7 +3,6 @@ import {RocketIcon} from '@sanity/icons/Rocket'
 import {StarIcon} from '@sanity/icons/Star'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {TranslateIcon} from '@sanity/icons/Translate'
-import {UsersIcon} from '@sanity/icons/Users'
 import {type ComponentType, type CSSProperties} from 'react'
 
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
@@ -13,11 +12,11 @@ import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporar
 
 /**
  * One icon per dimension. Stand-ins from the icon set until the real axis icons exist: Audience
- * users, Campaign (the fixtures call it Experiment) rocket, Channel th-large, Locale (Language)
+ * the variant diamond (a people glyph read as the signed-in user's avatar, David 26 Oct), Campaign (the fixtures call it Experiment) rocket, Channel th-large, Locale (Language)
  * translate, Market earth-globe, Plan star.
  */
 const ICONS: Record<string, ComponentType<{style?: CSSProperties}>> = {
-  audience: UsersIcon,
+  audience: RhombusIcon,
   experiment: RocketIcon,
   campaign: RocketIcon,
   channel: ThLargeIcon,
