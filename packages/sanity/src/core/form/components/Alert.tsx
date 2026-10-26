@@ -1,8 +1,8 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card} from '@sanity/ui'
-import {type ComponentProps, type ReactNode} from 'react'
-import {Text, Flex, Box, type TextProps, Icon, type IconProps} from 'ui5'
+import {Children, type ComponentProps, type ReactNode} from 'react'
+import {Text, Flex, Box, VStack, type TextProps, Icon, type IconProps} from 'ui5'
 
 import {suffixBox} from './Alert.css'
 
@@ -40,17 +40,19 @@ export function Alert(props: AlertProps) {
         </Box>
 
         <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-          <Text
-            size={1}
-            weight="medium"
-            as="div"
-            trim={true}
-            tone={STATUS_TONES[status] as TextProps['tone']}
-          >
-            {title}
-          </Text>
+          <VStack gap={3}>
+            <Text
+              size={1}
+              weight="medium"
+              as="div"
+              trim={true}
+              tone={STATUS_TONES[status] as TextProps['tone']}
+            >
+              {title}
+            </Text>
 
-          {children && <Box marginTop={3}>{children}</Box>}
+            {children && <VStack gap={0}>{children}</VStack>}
+          </VStack>
         </Box>
       </Flex>
 
