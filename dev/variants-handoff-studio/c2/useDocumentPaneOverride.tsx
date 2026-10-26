@@ -5,6 +5,7 @@ import {PickerInventory} from '../c4/inventory/PickerInventory'
 import {OpenBetaBanner} from '../c7/OpenBetaBanner'
 import {useOption} from '../options/store'
 import {DocumentPillsV1} from './DocumentPills'
+import {ManageVersionsButton} from './ManageVersionsButton'
 
 /** The studio-wide state the pane extension reads (hooks run here, once, not per document). */
 export function useDocumentPaneOverrideState() {
@@ -29,6 +30,8 @@ export function resolveDocumentPaneOverride(
         : undefined,
     // T6: the open beta banner (it replaces the stock variant banners, see VariantBannerReplacedProvider in options/FloatingOptions.tsx).
     banners: <OpenBetaBanner documentId={documentId} />,
+    // T4: the text button that opens the inventory, first in the header's right-hand group.
+    headerLead: <ManageVersionsButton />,
     // T4: Compare versions' pickers list the versions with the same inventory as the Versions inspector.
     versionPicker: PickerInventory,
     ...(state.c2 === 'a'
