@@ -35,6 +35,12 @@ export interface DocumentPaneExtension {
    */
   inspectorTabs?: ReactNode
   /**
+   * PROPOSED (open beta, T4): a control drawn first in the header's right-hand group, right after the presence avatars and before Share, in
+   * both header layouts. The open beta puts the text button "Manage versions" here, which opens the version inventory (26 Oct, Faheem: the
+   * entry to the inventory should say what it is).
+   */
+  headerLead?: ReactNode
+  /**
    * PROPOSED (open beta header): controls drawn in the compact header's right-hand group, just before the "..." menu (for example the panels as icon
    * buttons). Only drawn with `compactHeader`.
    */

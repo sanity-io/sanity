@@ -355,6 +355,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                   </>
                 )}
 
+                {paneExtension?.headerLead}
                 {!compact && <CopyDocumentActions />}
                 {menuButtonNodes.map((item) => (
                   <PaneHeaderActionButton key={item.key} node={item} />
