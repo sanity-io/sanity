@@ -4,6 +4,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {useClient} from '../../../hooks/useClient'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../../variants/store/constants'
 import {type VersionInfoDocumentStub} from '../../store/types'
 import {useCopyToDrafts} from '../useCopyToDrafts'
 import {useDocumentVersions} from '../useDocumentVersions'
@@ -111,6 +112,10 @@ describe('useCopyToDrafts', () => {
   const mockClient = {
     action: mockAction,
   } as unknown as SanityClient
+  const mockVariantsAction = vi.fn()
+  const mockVariantsClient = {
+    action: mockVariantsAction,
+  } as unknown as SanityClient
 
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const mockUseClient = useClient as unknown as Mock<typeof useClient>
@@ -121,8 +126,12 @@ describe('useCopyToDrafts', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseClient.mockReturnValue(mockClient)
+    mockUseClient.mockImplementation(((options?: {apiVersion?: string}) =>
+      options?.apiVersion === VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion
+        ? mockVariantsClient
+        : mockClient) as () => SanityClient)
     mockAction.mockResolvedValue(undefined)
+    mockVariantsAction.mockResolvedValue(undefined)
     mockUseDocumentVersions.mockReturnValue({
       data: [],
       versions: [publishedVersion, releaseVersion, opaqueAgentVersion],
@@ -297,7 +306,8 @@ describe('useCopyToDrafts', () => {
     })
 
     expect(onConfirmationRequest).not.toHaveBeenCalled()
-    expect(mockAction).toHaveBeenCalledWith(
+    expect(mockAction).not.toHaveBeenCalled()
+    expect(mockVariantsAction).toHaveBeenCalledWith(
       [
         {
           actionType: 'sanity.action.document.variant.create',
@@ -346,7 +356,8 @@ describe('useCopyToDrafts', () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: false})
     })
 
-    expect(mockAction).toHaveBeenCalledWith(
+    expect(mockAction).not.toHaveBeenCalled()
+    expect(mockVariantsAction).toHaveBeenCalledWith(
       [
         {
           actionType: 'sanity.action.document.variant.delete',
