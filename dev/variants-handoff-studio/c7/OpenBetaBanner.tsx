@@ -225,6 +225,43 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
         />
       )
     }
+    // 26 Oct call (Pedro): with no draft to switch to, Switch to Drafts then Create version was two steps. The banner is the create one: it makes
+    // the version in Drafts and takes the viewer there.
+    if (banner.createsDraft) {
+      return (
+        <Banner
+          action={{
+            disabled: busy,
+            mode: 'default',
+            onClick: () =>
+              void create({variantId: banner.variantId, perspective: 'drafts' as never}).then(
+                (created) => {
+                  if (created)
+                    setVariant({variantId: variant as never, perspective: 'drafts' as never})
+                },
+              ),
+            text: busy ? 'Creating…' : 'Create version',
+            tone: 'primary',
+          }}
+          content={say(
+            <>
+              This document has no published version for the{' '}
+              <Keep>
+                variant <VariantChip title={audience} />.
+              </Keep>{' '}
+              Create a version{' '}
+              <Keep>
+                in <DraftsChip />
+              </Keep>{' '}
+              to start editing.
+            </>,
+            'published',
+          )}
+          icon={InfoOutlineIcon}
+          tone="neutral"
+        />
+      )
+    }
     return (
       <Banner
         action={{
