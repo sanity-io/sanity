@@ -356,7 +356,28 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
               </Keep>
             </>
           ) : null}{' '}
-          It shows the base content until you create one.
+          It shows the{' '}
+          {/* A link to the base: clears the variant and keeps the version in view, as picking All users in the Variants pill does (26 Oct). */}
+          <button
+            data-testid="banner-base-link"
+            onClick={() => {
+              setVariant({variantId: undefined as never})
+              setChosen({})
+            }}
+            style={{
+              background: 'none',
+              border: 0,
+              color: 'var(--card-link-fg-color)',
+              cursor: 'pointer',
+              font: 'inherit',
+              padding: 0,
+              textDecoration: 'underline',
+            }}
+            type="button"
+          >
+            base content
+          </button>{' '}
+          until you create one.
         </>,
         'release',
       )}
