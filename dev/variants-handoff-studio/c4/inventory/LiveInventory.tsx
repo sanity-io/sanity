@@ -53,6 +53,10 @@ const HIDDEN = [
     ' [data-create-frame] {container-type: inline-size}',
     ' @container (max-width: 380px) {[data-testid="inventory-served-label-target"], [data-testid="inventory-editing-label"] {display: none !important}}',
     ' [data-add-anchor] {order: 2}',
+    // The plus (and the toolbar's Create version) sit in a block Box, and the Button's tooltip wrapper is inline-flex: on a text line it
+    // gains the line box's strut and the button lands off its box's centre, under the header's chevron (26 Oct). As flex containers there
+    // is no line box, so each box is exactly its button's height and the header centres it as it centres the chevron.
+    ' [data-add-anchor], [data-add-anchor] > * {display: flex !important; align-items: center}',
     ' [data-testid="inventory-toolbar"]:has([data-testid="add-toolbar-button"]) [data-testid="inventory-summary"] {display: none}',
     // The checkbox column is kept on every row at all times: the panel's wide layout (the one used here) hides a checkbox at rest without
     // taking its width, so a row's text never moves when selecting starts.
