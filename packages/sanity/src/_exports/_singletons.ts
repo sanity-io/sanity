@@ -77,6 +77,7 @@ export {
 export {FormBuilderContext} from '../_singletons/context/FormBuilderContext'
 export {FormCallbacksContext} from '../_singletons/context/FormCallbacksContext'
 export {FormFieldPresenceContext} from '../_singletons/context/FormFieldPresenceContext'
+export {FormRowGutterSuppressedContext} from '../_singletons/context/FormRowGutterSuppressedContext'
 export {FormValueContext} from '../_singletons/context/FormValueContext'
 export {FreeTrialContext} from '../_singletons/context/FreeTrialContext'
 export {FullscreenPTEContext} from '../_singletons/context/FullscreenPTEContext'
