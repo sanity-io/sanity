@@ -42,7 +42,7 @@ export interface CurrentUser {
   provider?: string
   sanityUserId?: string | null
   /** @deprecated use `roles` instead */
-  role?: string | undefined
+  role?: string
   roles: Role[]
   /**
    * Organization-scoped user attributes for the current project.
