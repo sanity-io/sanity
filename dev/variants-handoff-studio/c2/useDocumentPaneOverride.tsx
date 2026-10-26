@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import {type ResolveDocumentPaneExtension} from 'sanity/structure'
 
 import {PickerInventory} from '../c4/inventory/PickerInventory'
+import {NewDocumentDestination} from '../c7/NewDocumentDestination'
 import {OpenBetaBanner} from '../c7/OpenBetaBanner'
 import {useOption} from '../options/store'
 import {DocumentPillsV1} from './DocumentPills'
@@ -29,7 +30,12 @@ export function resolveDocumentPaneOverride(
         ? Math.min(430, paneWidth ? Math.round(paneWidth * 0.45) : 430)
         : undefined,
     // T6: the open beta banner (it replaces the stock variant banners, see VariantBannerReplacedProvider in options/FloatingOptions.tsx).
-    banners: <OpenBetaBanner documentId={documentId} />,
+    banners: (
+      <>
+        <NewDocumentDestination documentId={documentId} />
+        <OpenBetaBanner documentId={documentId} />
+      </>
+    ),
     // T4: the text button that opens the inventory, first in the header's right-hand group.
     headerLead: <ManageVersionsButton />,
     // T4: Compare versions' pickers list the versions with the same inventory as the Versions inspector.
