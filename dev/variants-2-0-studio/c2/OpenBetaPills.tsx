@@ -163,6 +163,8 @@ function DropdownPill(props: {
   tone?: ComponentProps<typeof Chip>['tone']
   /** With a choice in view, a cross after the pill clears it (as the navbar chips' cross does), with this accessible name. */
   clear?: {label: string; onClick: () => void}
+  /** Greyed but clickable, as the menu rows are: this document has nothing of the kind yet (26 Oct call), and the menu still creates one. */
+  muted?: boolean
 }) {
   const [query, setQuery] = useState('')
   // Search at the top, always, then the rows in a list that scrolls past 10 rows (the navbar menus' pattern, with no footer).
@@ -183,7 +185,7 @@ function DropdownPill(props: {
           radius={props.clear ? 0 : 'full'}
           selected={props.selected}
           tone={tone}
-          style={{paddingRight: props.clear ? 8 : 11.3}}
+          style={{paddingRight: props.clear ? 8 : 11.3, opacity: props.muted ? 0.55 : undefined}}
           text={props.text}
         />
       }
@@ -313,7 +315,9 @@ export function OpenBetaPills({
   const address = usePerspectiveState()
   const definitions = useVariantDefinitions()
   const schemaType = useSchema().get(documentType)
-  const draftsEnabled = useWorkspace().document.drafts.enabled
+  const workspace = useWorkspace()
+  const draftsEnabled = workspace.document.drafts.enabled
+  const releasesEnabled = !!workspace.releases?.enabled
   const {data: activeReleases} = useActiveReleases()
   // Never render nothing: the pane header's chip scroller observes this row's element.
   if (!allVersions) return <Flex data-testid="doc-pills-a" gap={1} />
@@ -480,8 +484,10 @@ export function OpenBetaPills({
       style={{flex: '1 1 0%', minWidth: 0}}
       wrap="wrap"
     >
-      {/* A chosen variant is named here even when this document has none of its own, so the navbar, pills and banner agree (Faheem, 23 Oct). */}
-      {variants.length || viewedTitle ? (
+      {/* A chosen variant is named here even when this document has none of its own, so the navbar, pills and banner agree (Faheem, 23 Oct).
+          26 Oct call (Pedro): the pill is there whenever a variant is defined, greyed while this document has none, so it is always where to
+          look and a version can be created from its menu. */}
+      {variants.length || viewedTitle || missingItems.length ? (
         <DropdownPill
           icon={<RhombusIcon />}
           clear={
@@ -491,10 +497,14 @@ export function OpenBetaPills({
           }
           items={[baseItem, ...variantItems, ...missingItems]}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
+          muted={!variants.length && !viewedTitle}
           selected={Boolean(viewedTitle)}
           testId="pills-variants"
           // With a variant of this document in view the pill names it, in purple (Faheem, 22 Oct); otherwise it counts the variants.
-          text={viewedTitle ?? `Variants · ${variantGroups.length}`}
+          text={
+            viewedTitle ??
+            (variantGroups.length ? `Variants · ${variantGroups.length}` : 'Variants')
+          }
           tone="suggest"
         />
       ) : null}
@@ -537,7 +547,8 @@ export function OpenBetaPills({
           tone={current === 'drafts' ? 'caution' : undefined}
         />
       ) : null}
-      {releases.length ? (
+      {/* As the Variants pill: with releases on and one defined, the pill is there, greyed while this document is in none (26 Oct call). */}
+      {releases.length || (releasesEnabled && missingReleaseItems.length) ? (
         <DropdownPill
           clear={
             inView
@@ -549,15 +560,19 @@ export function OpenBetaPills({
           icon={
             inViewRelease ? (
               <DotIcon />
-            ) : (
+            ) : // In none: a plain dot, as the pill is greyed.
+            releases.length ? (
               releaseDot(releases.find((v) => v.bundleId === current) ?? releases[0])
+            ) : (
+              <DotIcon />
             )
           }
           items={[...releaseItems, ...missingReleaseItems]}
+          muted={!releases.length && !inView}
           // Any release in view, this document's or another (picked from the greyed rows).
           selected={current !== 'published' && current !== 'drafts'}
           testId="pills-releases"
-          text={inView?.text ?? `Releases · ${releaseCount}`}
+          text={inView?.text ?? (releaseCount ? `Releases · ${releaseCount}` : 'Releases')}
           // The release in view's tone, as core gives it.
           tone={inViewRelease ? getReleaseTone(inViewRelease) : undefined}
         />
