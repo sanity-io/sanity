@@ -42,6 +42,6 @@ const PURPLE = {'--card-icon-color': 'var(--card-badge-suggest-icon-color)'} as 
  * foreground (`selected`): purple and muted grey wash out on the selected fill.
  */
 export function DimensionIcon(props: {name: string; selected?: boolean; style?: CSSProperties}) {
-  const Icon = ICONS[props.name] ?? RhombusIcon
+  const Icon = ICONS[props.name] ?? VariantDiamond
   return <Icon style={{...(props.selected ? undefined : PURPLE), ...props.style}} />
 }
