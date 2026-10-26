@@ -679,9 +679,23 @@ function GroupHeader({
       </Box>
       {/* A small chevron says whether the group is open (Andrej, 2026-10-15: "include a small chevron
           in the header that represents the collapsed or not collapsed state"). */}
-      <Text data-testid="inventory-chevron" muted size={1}>
-        {collapsed ? <ChevronRightIcon /> : <ChevronDownIcon />}
-      </Text>
+      {/* Not in a Text: its line box trims the glyph up by about 2px, off the plus button's centre (26 Oct). A flex box centres the icon
+          on the header's own centre, as the plus button is. */}
+      <span
+        data-testid="inventory-chevron"
+        style={{
+          alignItems: 'center',
+          color: 'var(--card-muted-fg-color)',
+          display: 'flex',
+          flex: 'none',
+        }}
+      >
+        {collapsed ? (
+          <ChevronRightIcon style={{display: 'block', fontSize: 17}} />
+        ) : (
+          <ChevronDownIcon style={{display: 'block', fontSize: 17}} />
+        )}
+      </span>
     </Flex>
   )
 }
