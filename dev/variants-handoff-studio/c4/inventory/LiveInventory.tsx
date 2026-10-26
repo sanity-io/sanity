@@ -1,5 +1,5 @@
 import {TransferIcon} from '@sanity/icons/Transfer'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState, useSyncExternalStore} from 'react'
 import {createPortal} from 'react-dom'
 import {useSetVariant, useWorkspace} from 'sanity'
@@ -225,16 +225,29 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
     >
       <style>{HIDDEN}</style>
       <Box flex={1} style={{minHeight: 0}}>
-        <InventoryConceptsProvider
-          // The panel's audience is the navbar's, so its Served label names what the chosen audience gets; a new audience starts it afresh.
-          initialVisitor={state.chosen as never}
-          key={JSON.stringify(state.chosen)}
-          initialView="publishDate"
-          selection={{currentEntryKey, onSelect}}
-          world={world}
-        >
-          <VersionInventoryPanel />
-        </InventoryConceptsProvider>
+        {world.entries.length === 0 ? (
+          // 26 Oct call (Pedro): a new document is not stored until its first change, and a deleted one has nothing left, so the list was blank.
+          // The text says why. Create version below still works: it makes the version from the pane's content.
+          <Stack data-testid="inventory-empty" gap={2} padding={4}>
+            <Text size={1} weight="medium">
+              No versions exist yet for this document.
+            </Text>
+            <Text muted size={1}>
+              They appear here once the document is saved.
+            </Text>
+          </Stack>
+        ) : (
+          <InventoryConceptsProvider
+            // The panel's audience is the navbar's, so its Served label names what the chosen audience gets; a new audience starts it afresh.
+            initialVisitor={state.chosen as never}
+            key={JSON.stringify(state.chosen)}
+            initialView="publishDate"
+            selection={{currentEntryKey, onSelect}}
+            world={world}
+          >
+            <VersionInventoryPanel />
+          </InventoryConceptsProvider>
+        )}
       </Box>
       {toolbar
         ? createPortal(
