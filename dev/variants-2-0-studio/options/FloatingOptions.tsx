@@ -1,11 +1,13 @@
 import {type ReactNode, useMemo} from 'react'
 import {
   type LayoutProps,
+  type RenderVariantDetailHeader,
   FieldSetRollupProvider,
   NavbarNeutralProvider,
   PerspectiveMenuExtensionProvider,
   ShippedPerspectiveBarProvider,
   VariantDetailExtensionProvider,
+  VariantDetailHeaderProvider,
   VariantEditNoticeProvider,
   VariantFilterAddControlProvider,
 } from 'sanity'
@@ -24,6 +26,7 @@ import {useRowOverride} from '../c3/RowOverride'
 import {EditNotice} from '../c6/EditNotice'
 import {useVariantDetailOverride} from '../c6/useVariantDetailOverride'
 import {AddressPickerHost} from '../c10/AddressPicker'
+import {TargetingHeader} from '../c11/TargetingHeader'
 import {DesignOptions} from '../design-options/DesignOptions'
 import {renderFieldSetRollup} from '../fieldmarks/E9Marks'
 import {ChromeStyles} from '../pane/ChromeStyles'
@@ -52,6 +55,9 @@ const EXTENSIONS = {
   showShippedBar: useShowShippedBar,
   variantDetail: useVariantDetailOverride,
 }
+
+/** C11 B (David, 26 Oct): the variant detail page's header block. A, and Stock, pass null: core renders the stock header. */
+const renderTargetingHeader: RenderVariantDetailHeader = (props) => <TargetingHeader {...props} />
 
 /** The perspective menu's extension is a value: this calls the hook that builds it (it reads the perspective state) and provides the result. */
 function PerspectiveMenuHost({children}: {children: ReactNode}) {
@@ -94,6 +100,7 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
   // tabs), so core's footer "Manage versions" button, beside Publish (no seam), is hidden: one way in, not two. Stock keeps it, as shipped. From the
   // Handoff Studio's FloatingOptions, which hides it always (the Design Studio's first port missed it; the Design-Studio-Agent found it, 26 Oct).
   const c4 = useOption('c4')
+  const c11 = useOption('c11')
   return (
     <VariantBannerReplacedProvider value={c7 === 'a' || c7 === 'b' || c7 === 'd'}>
       <DocumentListItemOverrideProvider value={EXTENSIONS.rowOverride}>
@@ -103,23 +110,27 @@ export function LayoutWithFloatingOptions(props: LayoutProps) {
               <ShippedPerspectiveBarProvider value={EXTENSIONS.showShippedBar}>
                 <VariantEditNoticeProvider value={EditNotice}>
                   <VariantDetailExtensionProvider value={EXTENSIONS.variantDetail}>
-                    <DocumentPaneHost>
-                      <VariantFilterAddControlProvider value={stock ? null : renderPickerAddFilter}>
-                        <FieldSetRollupProvider value={renderFieldSetRollup}>
-                          {props.renderDefault(props)}
-                        </FieldSetRollupProvider>
-                      </VariantFilterAddControlProvider>
-                      <DesignOptions />
-                      {/* C10 B: the address picker beside the navbar and list pane "+" type lists (nothing on A). */}
-                      <AddressPickerHost />
-                      <ShapeStyles />
-                      <MarkStyles />
-                      <ChromeStyles />
-                      {c4 !== STOCK_OPTION ? (
-                        <style>{`[data-testid="action-document-group-inventory"] {display: none !important}`}</style>
-                      ) : null}
-                      <ResultToastStyles />
-                    </DocumentPaneHost>
+                    <VariantDetailHeaderProvider value={c11 === 'b' ? renderTargetingHeader : null}>
+                      <DocumentPaneHost>
+                        <VariantFilterAddControlProvider
+                          value={stock ? null : renderPickerAddFilter}
+                        >
+                          <FieldSetRollupProvider value={renderFieldSetRollup}>
+                            {props.renderDefault(props)}
+                          </FieldSetRollupProvider>
+                        </VariantFilterAddControlProvider>
+                        <DesignOptions />
+                        {/* C10 B: the address picker beside the navbar and list pane "+" type lists (nothing on A). */}
+                        <AddressPickerHost />
+                        <ShapeStyles />
+                        <MarkStyles />
+                        <ChromeStyles />
+                        {c4 !== STOCK_OPTION ? (
+                          <style>{`[data-testid="action-document-group-inventory"] {display: none !important}`}</style>
+                        ) : null}
+                        <ResultToastStyles />
+                      </DocumentPaneHost>
+                    </VariantDetailHeaderProvider>
                   </VariantDetailExtensionProvider>
                 </VariantEditNoticeProvider>
               </ShippedPerspectiveBarProvider>

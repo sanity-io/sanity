@@ -13,8 +13,9 @@ import {TagIcon} from '@sanity/icons/Tag'
 import {TargetIcon} from '@sanity/icons/Target'
 import {TranslateIcon} from '@sanity/icons/Translate'
 import {UserIcon} from '@sanity/icons/User'
-import {UsersIcon} from '@sanity/icons/Users'
 import {type ComponentType} from 'react'
+
+import {AudienceDiamond} from './AudienceDiamond'
 
 /**
  * Icon per common variant targeting *dimension* (the key of a condition — "audience", "location",
@@ -29,7 +30,7 @@ import {type ComponentType} from 'react'
  * @internal
  */
 const DIMENSION_ICONS: Record<string, ComponentType> = {
-  audience: UsersIcon,
+  audience: AudienceDiamond,
   segment: TargetIcon,
   cohort: TargetIcon,
   role: UserIcon,

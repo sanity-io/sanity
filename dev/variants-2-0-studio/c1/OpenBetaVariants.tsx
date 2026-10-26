@@ -5,13 +5,12 @@ import {type MouseEvent, useState} from 'react'
 import {useSetVariant} from 'sanity'
 import {useStateLink} from 'sanity/router'
 
-import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 import {CreateVariantDialog} from '../../../packages/sanity/src/core/variants/components/dialog/CreateVariantDialog'
 import {type SystemVariant} from '../../../packages/sanity/src/core/variants/types'
 import {Button} from '../../../packages/sanity/src/ui-components/button/Button'
 import {MenuItem} from '../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {AddressChip} from './AddressRow'
-import {DimensionIcon} from './dimensionIcons'
+import {DimensionIcon, VariantDiamond} from './dimensionIcons'
 import {valueTitle} from './model'
 import {DEFAULT_TITLE, Picker} from './Picker'
 import {usePerspectiveState} from './state'
@@ -120,7 +119,7 @@ export function OpenBetaVariants({inSection = false}: {inSection?: boolean}) {
               as="a"
               data-testid="variants-view-all"
               href={viewAll.href}
-              icon={RhombusIcon}
+              icon={VariantDiamond}
               onClick={(event: MouseEvent<HTMLElement>) => {
                 setOpen(false)
                 viewAll.onClick(event)

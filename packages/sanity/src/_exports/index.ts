@@ -1805,6 +1805,12 @@ export {
   type VariantDetailExtensionArgs,
   VariantDetailExtensionProvider,
 } from '../core/variants/tool/detail/VariantDetailExtension'
+// PROPOSED: the variant detail page's header block (Variants 2.0 test studio).
+export {
+  type RenderVariantDetailHeader,
+  VariantDetailHeaderProvider,
+  type VariantDetailHeaderProps,
+} from '../core/variants/tool/detail/VariantDetailHeader'
 export {type DocumentInVariantGroup} from '../core/variants/tool/detail/types'
 export {
   ShippedPerspectiveBarProvider,

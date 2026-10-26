@@ -3,8 +3,7 @@ import {RocketIcon} from '@sanity/icons/Rocket'
 import {StarIcon} from '@sanity/icons/Star'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {TranslateIcon} from '@sanity/icons/Translate'
-import {UsersIcon} from '@sanity/icons/Users'
-import {type ComponentType, type CSSProperties} from 'react'
+import {type ComponentType, type CSSProperties, type SVGProps} from 'react'
 
 // Ported from the Storybook Variants 2.0 exploration (sanity-labs/sanity-studio-storybook, branch
 // explorations/variants-2-0, commit 2700f4cf07, lib/explorations/variants-2-0/perspective/dimensionIcons.tsx).
@@ -12,12 +11,20 @@ import {type ComponentType, type CSSProperties} from 'react'
 import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporary-icons/Rhombus'
 
 /**
+ * The variant diamond at the size of the other dimension icons: the bare RhombusIcon draws the diamond in the middle third of a
+ * 25-unit box, so the viewBox crops to it (the Handoff Studio's size). Audience, unknown dimensions and the "View all" row use it.
+ */
+export function VariantDiamond(props: SVGProps<SVGSVGElement>) {
+  return <RhombusIcon viewBox="3.5 3.5 18 18" {...props} />
+}
+
+/**
  * One icon per dimension. Stand-ins from the icon set until the real axis icons exist: Audience
- * users, Campaign (the fixtures call it Experiment) rocket, Channel th-large, Locale (Language)
+ * the variant diamond (the users glyph clashed with the user avatar), Campaign (the fixtures call it Experiment) rocket, Channel th-large, Locale (Language)
  * translate, Market earth-globe, Plan star.
  */
 const ICONS: Record<string, ComponentType<{style?: CSSProperties}>> = {
-  audience: UsersIcon,
+  audience: VariantDiamond,
   experiment: RocketIcon,
   campaign: RocketIcon,
   channel: ThLargeIcon,
@@ -35,6 +42,6 @@ const PURPLE = {'--card-icon-color': 'var(--card-badge-suggest-icon-color)'} as 
  * foreground (`selected`): purple and muted grey wash out on the selected fill.
  */
 export function DimensionIcon(props: {name: string; selected?: boolean; style?: CSSProperties}) {
-  const Icon = ICONS[props.name] ?? RhombusIcon
+  const Icon = ICONS[props.name] ?? VariantDiamond
   return <Icon style={{...(props.selected ? undefined : PURPLE), ...props.style}} />
 }

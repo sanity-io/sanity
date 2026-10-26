@@ -3,6 +3,8 @@ export {DocumentListArrangeContext} from '../_singletons/context/DocumentListArr
 export {FieldSetRollupContext} from '../_singletons/context/FieldSetRollupContext'
 export {VariantBannerReplacedContext} from '../_singletons/context/VariantBannerReplacedContext'
 export {VariantFilterAddControlContext} from '../_singletons/context/VariantFilterAddControlContext'
+// PROPOSED: the variant detail page's header block (Variants 2.0 test studio).
+export {VariantDetailHeaderContext} from '../_singletons/context/VariantDetailHeaderContext'
 export {AddonDatasetContext} from '../_singletons/context/AddonDatasetContext'
 export {AppIdCacheContext} from '../_singletons/context/AppIdCacheContext'
 export {ArrayItemRootElementContext} from '../_singletons/context/ArrayItemRootElementContext'
