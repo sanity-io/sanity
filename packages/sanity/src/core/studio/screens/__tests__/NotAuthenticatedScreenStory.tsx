@@ -16,7 +16,7 @@ const CURRENT_USER: CurrentUser = {
   name: 'Ada Lovelace',
   email: 'ada@example.com',
   provider: 'google',
-  // oxlint-disable-next-line no-deprecated -- `role` is still a required field on CurrentUser
+  // oxlint-disable-next-line no-deprecated -- `CurrentUser.role` is deprecated; use `roles`
   role: 'viewer',
   roles: [{name: 'viewer', title: 'Viewer'}],
 }

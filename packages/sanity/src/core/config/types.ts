@@ -273,10 +273,8 @@ export interface ConfigContext {
   schema: Schema
   /**
    * The current user or `null` if not authenticated.
-   *
-   * The deprecated `role` string is not part of this context. Read `roles`.
    */
-  currentUser: Omit<CurrentUser, 'role'> | null
+  currentUser: CurrentUser | null
   /**
    * A function that returns a Sanity client with the {@link SourceClientOptions | specified options}.
    */

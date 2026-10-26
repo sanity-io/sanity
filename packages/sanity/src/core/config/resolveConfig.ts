@@ -45,8 +45,7 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
 export type CreateWorkspaceFromConfigOptions =
   | SingleWorkspace
   | (SingleWorkspace & {
-      /** User for the mock auth store. The deprecated `role` string may be omitted. */
-      currentUser: Omit<CurrentUser, 'role'>
+      currentUser: CurrentUser
       getClient: (options: {apiVersion: string}) => SanityClient
       schema?: SchemaPluginOptions
     })

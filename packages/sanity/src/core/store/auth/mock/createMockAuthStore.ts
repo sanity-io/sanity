@@ -6,25 +6,8 @@ import {type AuthStore} from '../types'
 
 /** @internal */
 export interface MockAuthStoreOptions {
-  /**
-   * The deprecated `role` string may be omitted. `AuthState` still stores a
-   * {@link CurrentUser}, so a missing `role` is filled with `''`.
-   */
-  currentUser: Omit<CurrentUser, 'role'> | null
+  currentUser: CurrentUser | null
   client: SanityClient
-}
-
-function hasLegacyRole(currentUser: Omit<CurrentUser, 'role'>): currentUser is CurrentUser {
-  return 'role' in currentUser && typeof (currentUser as {role?: unknown}).role === 'string'
-}
-
-function toAuthCurrentUser(currentUser: Omit<CurrentUser, 'role'>): CurrentUser {
-  if (hasLegacyRole(currentUser)) return currentUser
-  return {
-    ...currentUser,
-    // oxlint-disable-next-line no-deprecated -- AuthState still requires CurrentUser.role
-    role: '',
-  }
 }
 
 /**
@@ -35,10 +18,6 @@ function toAuthCurrentUser(currentUser: Omit<CurrentUser, 'role'>): CurrentUser 
  */
 export function createMockAuthStore({client, currentUser = null}: MockAuthStoreOptions): AuthStore {
   return {
-    state: of({
-      authenticated: true,
-      client,
-      currentUser: currentUser ? toAuthCurrentUser(currentUser) : null,
-    }),
+    state: of({authenticated: true, client, currentUser}),
   }
 }

@@ -2,37 +2,33 @@ import {type CurrentUser} from '@sanity/types'
 import {assertType, expectTypeOf, test} from 'vitest'
 
 import {type CreateWorkspaceFromConfigOptions} from '../resolveConfig'
-import {type ConfigContext, type DocumentActionsContext} from '../types'
+import {type ConfigContext} from '../types'
 
-test('ConfigContext.currentUser omits the deprecated role', () => {
-  expectTypeOf<ConfigContext['currentUser']>().toEqualTypeOf<Omit<CurrentUser, 'role'> | null>()
-})
+const currentUser = {
+  id: 'schema-audit',
+  name: 'Schema audit',
+  email: 'schema-audit@example.com',
+  roles: [{name: 'administrator', title: 'Administrator'}],
+}
 
-test('document action context inherits the current user without role', () => {
-  expectTypeOf<DocumentActionsContext['currentUser']>().toEqualTypeOf<
-    ConfigContext['currentUser']
+test('config context keeps role as an optional string', () => {
+  expectTypeOf<NonNullable<ConfigContext['currentUser']>['role']>().toEqualTypeOf<
+    string | undefined
   >()
 })
 
-test('createWorkspaceFromConfig accepts a current user without the deprecated role', () => {
+test('createWorkspaceFromConfig accepts a current user without role', () => {
   assertType<CreateWorkspaceFromConfigOptions>({
     projectId: 'abc123',
     dataset: 'production',
     name: 'default',
-    currentUser: {
-      id: 'schema-audit',
-      name: 'Schema audit',
-      email: 'schema-audit@example.com',
-      roles: [{name: 'administrator', title: 'Administrator'}],
-    },
+    currentUser,
     getClient: () => {
       throw new Error('not called')
     },
   })
 })
 
-test('a CurrentUser value can still be passed to createWorkspaceFromConfig', () => {
-  expectTypeOf<CurrentUser>().toExtend<
-    Extract<CreateWorkspaceFromConfigOptions, {currentUser: unknown}>['currentUser']
-  >()
+test('a user without role is still a CurrentUser', () => {
+  expectTypeOf(currentUser).toExtend<CurrentUser>()
 })

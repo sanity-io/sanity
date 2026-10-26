@@ -13,7 +13,7 @@ const editor: CurrentUser = {
   id: 'jane',
   name: 'Jane Editor',
   email: 'jane@example.com',
-  // oxlint-disable-next-line no-deprecated -- `role` is still a required field on CurrentUser
+  // oxlint-disable-next-line no-deprecated -- `CurrentUser.role` is deprecated; use `roles`
   role: 'editor',
   roles: [{name: 'editor', title: 'Editor'}],
 }

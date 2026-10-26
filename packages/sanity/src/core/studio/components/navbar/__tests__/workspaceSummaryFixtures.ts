@@ -11,7 +11,7 @@ const MOCK_USER: CurrentUser = {
   id: 'doug',
   name: 'Doug',
   email: 'doug@sanity.io',
-  // oxlint-disable-next-line no-deprecated -- `CurrentUser.role` is still required by the type
+  // oxlint-disable-next-line no-deprecated -- `CurrentUser.role` is deprecated; use `roles`
   role: 'admin',
   roles: [{name: 'administrator', title: 'Administrator'}],
 }
