@@ -112,7 +112,7 @@ const StyledText = styled(Text)`
       transform: translateY(0);
     }
     to {
-      transform: translateY(15px);
+      transform: translateY(10px);
     }
   }
   animation:

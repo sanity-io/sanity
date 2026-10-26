@@ -1,7 +1,7 @@
 import {DocumentIcon} from '@sanity/icons/Document'
 import {Box, Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Text} from 'ui5'
+import {Icon, Text} from 'ui5'
 
 import {TextWithTone} from '../../textWithTone/TextWithTone'
 import {PreviewCard} from '../PreviewCard'
@@ -18,11 +18,14 @@ const AUTHORS = ['Leo Tolstoy', 'Jane Austen', 'Fyodor Dostoevsky', 'Virginia Wo
 function Row(props: {title: string; status?: string}) {
   return (
     <Flex align="center" gap={3} padding={2}>
-      <Text muted size={1} as="div" trim={true}>
-        <DocumentIcon />
-      </Text>
+      <Icon
+        muted
+        size={1}
+        icon={DocumentIcon}
+        style={{margin: '-0.375rem', color: 'var(--card-icon-color)'}}
+      />
       <Box flex={1}>
-        <Text size={1} truncate={1} as="div" trim={true}>
+        <Text size={1} truncate={1} as="div" trim={true} style={{color: 'inherit'}}>
           {props.title}
         </Text>
       </Box>

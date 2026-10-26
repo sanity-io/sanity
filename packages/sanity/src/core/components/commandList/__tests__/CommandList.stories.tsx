@@ -5,7 +5,7 @@ import {Badge, Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {type ReactNode, useMemo, useState} from 'react'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
-import {Text} from 'ui5'
+import {Icon, Text} from 'ui5'
 
 import {CommandList} from '../CommandList'
 import {type CommandListItemContext} from '../types'
@@ -55,9 +55,7 @@ function renderRow(item: Row, context: CommandListItemContext, showSelection = f
   return (
     <Card as="button" padding={3} radius={2}>
       <Flex align="center" gap={3}>
-        <Text muted size={2} as="div" trim={true}>
-          <DocumentIcon />
-        </Text>
+        <Icon muted size={2} icon={DocumentIcon} style={{margin: '-0.4375rem'}} />
         <Box flex={1}>
           <Text size={1} truncate={1} as="div" trim={true}>
             {item.title}
@@ -65,9 +63,7 @@ function renderRow(item: Row, context: CommandListItemContext, showSelection = f
         </Box>
         <Badge fontSize={0}>{item.type}</Badge>
         {showSelection && context.selected && (
-          <Text size={1} as="div" trim={true}>
-            <CheckmarkIcon />
-          </Text>
+          <Icon size={1} icon={CheckmarkIcon} style={{margin: '-0.375rem'}} />
         )}
       </Flex>
     </Card>
