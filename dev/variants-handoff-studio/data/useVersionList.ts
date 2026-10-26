@@ -32,6 +32,62 @@ const ROWS_BY_IDS_GROQ = `*[string::split(_id, ".")[-1] in $ids]{
   _id, "variant": _system.variant._ref, "bundle": _system.bundleId, _createdAt, _updatedAt
 }`
 
+/**
+ * Tells every reader of a document group when a document of that group changes: its draft, its published version, a release version or a
+ * variant version (the same documents `VERSION_ROWS_GROQ` lists). One listener per group, shared by the pills, the banner and the inventory,
+ * closed with its last reader. A burst of changes (typing) is one refetch, 800 ms after it ends: the list is rows and dates, not keystrokes.
+ * Before this the list refetched only when the window regained focus, so a document's first change (which creates its draft) never showed
+ * in the inventory (Faheem, 26 Oct: "even though it was saved, the version inventory doesn't update").
+ */
+const GROUP_FILTER = `*[_id in [$id, "drafts." + $id] || _system.group._ref == $id || _id match "versions.*." + $id]`
+const WATCH_MS = 800
+const watchers = new Map<string, {readers: Set<() => void>; stop: () => void}>()
+
+function watchGroup(client: SanityClient, key: string, id: string, onChange: () => void) {
+  let watcher = watchers.get(key)
+  if (!watcher) {
+    const readers = new Set<() => void>()
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const subscription = client
+      .listen(
+        GROUP_FILTER,
+        {id},
+        {
+          events: ['mutation'],
+          includeAllVersions: true,
+          includeResult: false,
+          tag: 'handoff.versions',
+          visibility: 'query',
+        },
+      )
+      .subscribe({
+        next: () => {
+          clearTimeout(timer)
+          timer = setTimeout(() => readers.forEach((reader) => reader()), WATCH_MS)
+        },
+        // The list still refreshes on window focus when the listener cannot connect.
+        error: () => undefined,
+      })
+    watcher = {
+      readers,
+      stop: () => {
+        clearTimeout(timer)
+        subscription.unsubscribe()
+      },
+    }
+    watchers.set(key, watcher)
+  }
+  watcher.readers.add(onChange)
+  const mine = watcher
+  return () => {
+    mine.readers.delete(onChange)
+    if (mine.readers.size === 0) {
+      mine.stop()
+      watchers.delete(key)
+    }
+  }
+}
+
 function createLoader(client: SanityClient): Loader {
   let lookup: Promise<Lookup> | undefined
   let lookupAt = 0
@@ -88,7 +144,7 @@ function createLoader(client: SanityClient): Loader {
 
 /**
  * The versions of one document group, live from the dataset (raw perspective, so drafts, release versions and
- * variant versions all show). `null` while loading. Refetches on window focus.
+ * variant versions all show). `null` while loading. Refetches on window focus, and when a document of the group changes.
  */
 export function useVersionList(documentId: string, enabled = true): AudienceVersion[] | null {
   const studioClient = useClient({apiVersion: 'X'})
@@ -122,9 +178,16 @@ export function useVersionList(documentId: string, enabled = true): AudienceVers
         .catch(() => !cancelled && setVersions([]))
     void run()
     window.addEventListener('focus', run)
+    const unwatch = watchGroup(
+      studioClient.withConfig({apiVersion: 'X', perspective: 'raw', useCdn: false}),
+      `${key}/${documentId}`,
+      documentId,
+      run,
+    )
     return () => {
       cancelled = true
       window.removeEventListener('focus', run)
+      unwatch()
     }
   }, [studioClient, documentId, enabled])
 
