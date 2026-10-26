@@ -15,8 +15,7 @@ interface CommentsEnabledProviderProps {
  * `document.comments.enabled` config. Synchronous: the plan check only decides the mode, which
  * `useCommentsMode()` hands out as a promise from the plugin's `CommentsModePromiseContext`.
  *
- * @beta
- * @hidden
+ * @internal
  */
 export const CommentsEnabledProvider = memo(function CommentsEnabledProvider(
   props: CommentsEnabledProviderProps,
