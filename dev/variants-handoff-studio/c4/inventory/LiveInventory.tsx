@@ -116,7 +116,7 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const world = live
   // A, Faheem 23 Oct: Compare versions, one click from the inventory. It is the "..." menu's item (same target: the earlier layer, else
   // Published, else Draft), so the two never disagree. Disabled while the document has a single version.
-  const {onMenuAction, schemaType} = useDocumentPane()
+  const {isDeleted, onMenuAction, schemaType} = useDocumentPane()
   // Without drafts (live edit, or the draft model off) the pane shows the published version under the Drafts perspective.
   const hasDrafts = workspace.document.drafts.enabled && !schemaType?.liveEdit
   // The count shows only once the banner case is known (with the toolbar's Create version it is hidden; see HIDDEN).
@@ -227,13 +227,20 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
       <Box flex={1} style={{minHeight: 0}}>
         {world.entries.length === 0 ? (
           // 26 Oct call (Pedro): a new document is not stored until its first change, and a deleted one has nothing left, so the list was blank.
-          // The text says why. Create version below still works: it makes the version from the pane's content.
+          // The text says why, and what to do: a new document is saved by its first change; a deleted one (core's isDeleted: no version left and not
+          // pristine) is restored, as the deleted banner offers. Create version cannot help here: the base document is made by editing it.
           <Stack data-testid="inventory-empty" gap={2} padding={4}>
             <Text size={1} weight="medium">
-              No versions exist yet for this document.
+              {isDeleted
+                ? 'This document was deleted.'
+                : 'No versions exist yet for this document.'}
             </Text>
             <Text muted size={1}>
-              They appear here once the document is saved.
+              {isDeleted
+                ? 'Restore it to bring its versions back.'
+                : hasDrafts
+                  ? 'Make a change to save a draft.'
+                  : 'Make a change to save the document.'}
             </Text>
           </Stack>
         ) : (
