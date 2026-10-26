@@ -124,8 +124,9 @@ export const inventoryInspector: DocumentInspector = {
       hidden: c4 === STOCK_OPTION || c4 === 'b' || c2 === 'c',
       icon: DocumentsIcon,
       title: 'Versions',
-      showAsAction: true,
-      // The header button, and an entry in the document's menu too (22 Oct call).
+      // An entry in the document's menu (22 Oct call). The header's button is the text button "Manage versions" (c2/ManageVersionsButton, through the
+      // pane extension's headerLead; from the Handoff Studio, 26 Oct), not an icon button.
+      showAsAction: false,
       showInMenu: true,
     }
   },

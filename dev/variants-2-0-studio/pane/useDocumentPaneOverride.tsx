@@ -4,6 +4,7 @@ import {type ResolveDocumentPaneExtension} from 'sanity/structure'
 
 import {isLockedNav} from '../c1/lockedNav'
 import {DocumentPillsV1} from '../c2/DocumentPills'
+import {ManageVersionsButton} from '../c2/ManageVersionsButton'
 import {OpenBetaPills} from '../c2/OpenBetaPills'
 import {PickerInventory} from '../c4/inventory/PickerInventory'
 import {ManageVersions} from '../c4/ManageVersions'
@@ -126,6 +127,11 @@ export function resolveDocumentPaneOverride(
     return {
       pills: headerPills,
       banners,
+      // T4 (from the Handoff Studio's 72144f57b3 and 999ddc54d4): the text button "Manage versions" is the entry to the inventory, first in the header's
+      // actions after the presence avatars, for the options that open the inspector. Not in the stock layout, not with option B (its own popover button),
+      // and not with the compact header C2 C, whose tab row carries Versions.
+      headerLead:
+        c4 !== STOCK_OPTION && c4 !== 'b' && c2 !== 'c' ? <ManageVersionsButton /> : undefined,
       compactHeader: c2 === 'c' ? true : undefined,
       inspectorTabs:
         c2 === 'c' ? inspectorSwitcher === 'b' ? <PanelTitleRow /> : <InspectorTabs /> : undefined,
