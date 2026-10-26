@@ -163,6 +163,8 @@ function DropdownPill(props: {
   clear?: {label: string; onClick: () => void}
   /** Greyed but clickable, as the menu rows are: this document has nothing of the kind yet (26 Oct call), and the menu still creates one. */
   muted?: boolean
+  /** A line under the search that is always there while it is set, not a tooltip: what the greyed rows mean (Faheem, 26 Oct). */
+  note?: string
 }) {
   const [query, setQuery] = useState('')
   // Search at the top, always, then the rows in a list that scrolls past 10 rows (the navbar menus' pattern, with no footer).
@@ -210,6 +212,13 @@ function DropdownPill(props: {
               value={query}
             />
           </Box>
+          {props.note ? (
+            <Box data-testid={`${props.testId}-note`} paddingX={3} paddingBottom={2} paddingTop={1}>
+              <Text muted size={1}>
+                {props.note}
+              </Text>
+            </Box>
+          ) : null}
           <div
             data-testid={`${props.testId}-list`}
             style={{maxHeight: LIST_MAX, overflowY: 'auto'}}
@@ -479,6 +488,7 @@ export function DocumentPillsV1({
           items={[baseItem, ...variantItems, ...missingItems]}
           // A variant of this document is in view (in whatever Published, Draft or release): marked like the Releases pill marks a release.
           muted={!variants.length && !viewedTitle}
+          note={variants.length ? undefined : 'No variants yet. Pick one to create it.'}
           selected={Boolean(viewedTitle)}
           testId="pills-variants"
           // With a variant of this document in view the pill names it, in purple (Faheem, 22 Oct); otherwise it counts the variants.
@@ -550,6 +560,7 @@ export function DocumentPillsV1({
           }
           items={[...releaseItems, ...missingReleaseItems]}
           muted={!releases.length && !inView}
+          note={releases.length ? undefined : 'Not in a release yet. Pick one to add it.'}
           // Any release in view, this document's or another (picked from the greyed rows).
           selected={current !== 'published' && current !== 'drafts'}
           testId="pills-releases"
