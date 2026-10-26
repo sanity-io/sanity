@@ -91,32 +91,28 @@ const placeWord = (v: AudienceVersion) =>
 
 /**
  * The slot at a row's right end (26 Oct): the number first, then the icon, so the stacked-pages icon of a count and the plus of a row to
- * create share one right edge. The slot reserves its width inside the row's text; what is drawn is pinned to the row's right padding and
- * centred on the row itself (the row is `position: relative`, set on the MenuItem below), so the line box the menu wraps it in cannot
- * shift it up or down.
+ * create share one right edge. It is a flex sibling of the row's content (through MenuItem's renderMenuItem), not inside the row's Text:
+ * a Text's line box moved it off the text's line, and the row centres it on the content as it centres the leading icon.
  */
 const SLOT_WIDTH = 'calc(2ch + 4px + 16px)'
 const SLOT_ICON: CSSProperties = {display: 'block', flex: 'none', fontSize: 16, margin: 0}
 function RowSlot({children}: {children: ReactNode}) {
   return (
-    <span style={{display: 'inline-block', height: 16, verticalAlign: 'middle', width: SLOT_WIDTH}}>
-      <span
-        style={{
-          alignItems: 'center',
-          color: 'var(--card-muted-fg-color)',
-          display: 'flex',
-          gap: 4,
-          height: 16,
-          justifyContent: 'flex-end',
-          lineHeight: '16px',
-          position: 'absolute',
-          right: 12,
-          top: '50%',
-          transform: 'translateY(-50%)',
-        }}
-      >
-        {children}
-      </span>
+    <span
+      style={{
+        alignItems: 'center',
+        color: 'var(--card-muted-fg-color)',
+        display: 'flex',
+        flex: 'none',
+        fontSize: 13,
+        gap: 4,
+        height: 16,
+        justifyContent: 'flex-end',
+        lineHeight: '16px',
+        width: SLOT_WIDTH,
+      }}
+    >
+      {children}
     </span>
   )
 }
@@ -253,14 +249,24 @@ function DropdownPill(props: {
                 __unstable_subtitle={reason}
                 disabled={!item.onClick}
                 icon={item.icon}
-                iconRight={item.trailing}
                 pressed={item.selected}
                 selected={item.selected}
                 key={item.key}
                 onClick={item.onClick}
-                style={{position: 'relative'}}
                 text={item.text}
                 tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
+                renderMenuItem={
+                  item.trailing
+                    ? (content) => (
+                        <Flex align="center" gap={3}>
+                          <Box flex={1} style={{minWidth: 0}}>
+                            {content}
+                          </Box>
+                          {item.trailing}
+                        </Flex>
+                      )
+                    : undefined
+                }
               />
             ))}
           </div>
