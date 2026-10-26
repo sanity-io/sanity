@@ -47,6 +47,7 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
+import {corsCheckDebug} from './plugins/cors-check-debug/plugin'
 import {documentFormOnly} from './plugins/document-form-only/plugin'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
@@ -279,6 +280,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       formBuilderReproTool(),
       errorReportingTestPlugin(),
       presenceDebug(),
+      corsCheckDebug(),
       media(),
       wave(),
       autoCloseBrackets(),
