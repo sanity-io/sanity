@@ -19,12 +19,12 @@ import {RhombusIcon} from '../../../packages/sanity/src/core/components/temporar
  * The variant diamond at the size of the other dimension icons. The temporary Rhombus draws its diamond in the middle third of a
  * 25-unit box (sized for field marks), which reads as a dot in a chip (Faheem, 26 Oct); a tighter view box draws it about half again as large.
  */
-function AudienceDiamond(props: {style?: CSSProperties}) {
+export function VariantDiamond(props: {style?: CSSProperties}) {
   return <RhombusIcon viewBox="3.5 3.5 18 18" {...props} />
 }
 
 const ICONS: Record<string, ComponentType<{style?: CSSProperties}>> = {
-  audience: AudienceDiamond,
+  audience: VariantDiamond,
   experiment: RocketIcon,
   campaign: RocketIcon,
   channel: ThLargeIcon,
