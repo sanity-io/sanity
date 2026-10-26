@@ -116,6 +116,9 @@ export function ChangeIndicator(
   return (
     <ChangeBarWrapper
       {...restProps}
+      // A host that renders the form inertly (the Compare versions view: no Review changes to open) shows no change bar: it had nothing to do
+      // there (26 Oct call), and the form's own inline changes already show what differs.
+      disabled={isInteractive === false ? true : restProps.disabled}
       path={path}
       hasFocus={hasFocus}
       isChanged={isChanged}
