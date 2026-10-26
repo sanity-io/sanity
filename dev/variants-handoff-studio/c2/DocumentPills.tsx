@@ -1,3 +1,4 @@
+import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentsIcon} from '@sanity/icons/Documents'
@@ -82,9 +83,20 @@ const SHOW_VERSION_COUNT = true
 const placeWord = (v: AudienceVersion) =>
   v.state === 'published' ? 'Published' : v.state === 'draft' ? 'Draft' : (v.release ?? v.state)
 
+/** The slot at a row's right end: one 16px icon and, for a count, a fixed-width number, centred on the row's line by flex alone (26 Oct). */
+const SLOT_ICON: CSSProperties = {display: 'block', flex: 'none', fontSize: 16, margin: 0}
+const SLOT: CSSProperties = {
+  alignItems: 'center',
+  color: 'var(--card-muted-fg-color)',
+  display: 'inline-flex',
+  gap: 4,
+  height: 16,
+  lineHeight: '16px',
+}
+
 /**
- * The count at a Variants row's right end: the stacked-pages icon, a little smaller than the row's leading icon, then the number, both in the
- * row's muted text. Its tooltip names the versions ("3 versions: Published, Draft, Black Friday").
+ * The count at a Variants row's right end: the stacked-pages icon, then the number, both in the row's muted text. Its tooltip names the
+ * versions ("3 versions: Published, Draft, Black Friday").
  */
 function VersionCount({versions}: {versions: readonly AudienceVersion[]}) {
   const n = versions.length
@@ -93,29 +105,11 @@ function VersionCount({versions}: {versions: readonly AudienceVersion[]}) {
       content={`${n} ${n === 1 ? 'version' : 'versions'}: ${versions.map(placeWord).join(', ')}`}
       placement="top"
     >
-      <span
-        data-testid="variant-version-count"
-        // Middle-aligned with a line height of 1, so the count adds no height to the row (the rows stay the menu's 33px). The offsets are
-        // measured on what paints: the number, and the icon's glyph, centre on the label's line.
-        style={{
-          alignItems: 'center',
-          color: 'var(--card-muted-fg-color)',
-          display: 'inline-flex',
-          gap: 2,
-          lineHeight: 1,
-          position: 'relative',
-          top: -1,
-          verticalAlign: 'middle',
-        }}
-      >
-        {/* Text gives an icon negative margins to sit in its line box; here they would cover the number. */}
-        <DocumentsIcon
-          style={{fontSize: '1.15em', margin: '-3.5px 0', position: 'relative', top: 1.5}}
-        />
+      <span data-testid="variant-version-count" style={SLOT}>
+        <DocumentsIcon style={SLOT_ICON} />
         {/* A fixed-width, right-aligned number: one- and two-digit counts line up down the menu. */}
         <span
           style={{
-            display: 'inline-block',
             fontVariantNumeric: 'tabular-nums',
             minWidth: '2ch',
             textAlign: 'right',
@@ -125,6 +119,18 @@ function VersionCount({versions}: {versions: readonly AudienceVersion[]}) {
         </span>
       </span>
     </Tooltip>
+  )
+}
+
+/** A row with nothing to count yet (a variant or release this document is not in): a plus in the count's slot and width. The row's tooltip says Create. */
+function CreateMark() {
+  return (
+    <span
+      data-testid="row-create-mark"
+      style={{...SLOT, justifyContent: 'flex-end', minWidth: 'calc(16px + 4px + 2ch)'}}
+    >
+      <AddIcon style={SLOT_ICON} />
+    </span>
   )
 }
 
@@ -144,9 +150,7 @@ function DropdownPill(props: {
     trailing?: ReactElement
     /** The row is what is in view (the Variants menu's "All users (Default)" with no variant chosen). */
     selected?: boolean
-    /** Greyed but clickable: a variant this document has no version of yet (picking it shows the banner's Create version). */
-    muted?: boolean
-    /** A greyed row's tooltip: why it is greyed ("Not in Black Friday yet"). */
+    /** A create row's tooltip ("Create Black Friday version", "Add to Black Friday"). */
     hint?: string
     /** What search matches an option by (the title is its text when this is left out). */
     search?: Omit<SearchFields, 'title'>
@@ -161,7 +165,7 @@ function DropdownPill(props: {
   tone?: ComponentProps<typeof Chip>['tone']
   /** With a choice in view, a cross after the pill clears it (as the navbar chips' cross does), with this accessible name. */
   clear?: {label: string; onClick: () => void}
-  /** A line under the search that is always there while it is set, not a tooltip: what the greyed rows mean (Faheem, 26 Oct). */
+  /** A line under the search that is always there while it is set, not a tooltip: what the rows with a plus mean (Faheem, 26 Oct). */
   note?: string
 }) {
   const [query, setQuery] = useState('')
@@ -231,7 +235,6 @@ function DropdownPill(props: {
                 selected={item.selected}
                 key={item.key}
                 onClick={item.onClick}
-                style={item.muted ? {opacity: 0.55} : undefined}
                 text={item.text}
                 tooltipProps={item.hint ? {content: item.hint, placement: 'left'} : null}
               />
@@ -412,8 +415,8 @@ export function DocumentPillsV1({
         text: definition.metadata?.title ?? id,
         icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
         onClick: () => goTo(current, id === currentVariant ? undefined : definition),
-        muted: true,
-        hint: `No ${definition.metadata?.title ?? id} version yet`,
+        trailing: <CreateMark />,
+        hint: `Create ${definition.metadata?.title ?? id} version`,
         selected: id === currentVariant,
         search: {id},
       }
@@ -449,8 +452,8 @@ export function DocumentPillsV1({
       }`,
       icon: <ReleaseAvatarIcon releaseType={release.metadata.releaseType} />,
       onClick: () => goTo(current === id ? defaultVersion : id, viewedDefinition),
-      muted: true,
-      hint: `Not in ${release.metadata.title || 'Untitled release'} yet`,
+      trailing: <CreateMark />,
+      hint: `Add to ${release.metadata.title || 'Untitled release'}`,
       selected: current === id,
       search: {id},
     }))
