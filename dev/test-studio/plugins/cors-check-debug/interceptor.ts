@@ -164,6 +164,8 @@ async function fetchLiveEvents(
 ): Promise<Response> {
   const tag = url.searchParams.get('tag')
   const name = tag ? `Live events (${tag})` : 'Live events'
+  // eventsource sends the id of the last event it received when it reconnects
+  const reconnecting = new Headers(init?.headers).has('last-event-id')
   let response: Response
   try {
     response = await original(input, init)
@@ -175,7 +177,7 @@ async function fetchLiveEvents(
     logEvent(`${name}: HTTP ${response.status}`, 'critical')
     return response
   }
-  logEvent(`${name}: connected`, 'positive')
+  logEvent(`${name}: ${reconnecting ? 'reconnected' : 'connected'}`, 'positive')
   return droppable(response, response.body)
 }
 
