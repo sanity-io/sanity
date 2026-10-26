@@ -2,40 +2,33 @@ import {useMemo} from 'react'
 import {definePlugin, type NavbarProps} from 'sanity'
 
 import {CorsCheckButton} from './CorsCheckButton'
-import {installCorsCheckInterceptor} from './interceptor'
 
 type NavbarActions = NonNullable<NavbarProps['__internal_actions']>
 
 const EMPTY_ACTIONS: NavbarActions = []
 
-const corsCheckAction: NavbarActions[number] = {
-  location: 'topbar',
-  name: 'cors-check-debug',
-  render: CorsCheckButton,
-}
+const corsCheckActions: NavbarActions = [
+  {location: 'topbar', name: 'cors-check-debug', render: CorsCheckButton},
+  // The topbar drops its actions on narrow viewports, e.g. with devtools docked to the side
+  {location: 'sidebar', name: 'cors-check-debug-sidebar', render: CorsCheckButton},
+]
 
 function CorsCheckNavbar(props: NavbarProps) {
   const prevActions = props.__internal_actions ?? EMPTY_ACTIONS
-  const actions = useMemo(() => [...prevActions, corsCheckAction], [prevActions])
+  const actions = useMemo(() => [...prevActions, ...corsCheckActions], [prevActions])
 
   return props.renderDefault({...props, __internal_actions: actions})
 }
 
 /**
- * Adds a "CORS" button to the navbar for reproducing the Presentation tool's `CorsOriginError`
- * after a reconnect: it calls `/check/cors`, drops the live connections the way sleep/wake does,
- * and can answer `/check/cors` the way the API answers a managed origin, so the crash reproduces
- * on localhost.
+ * Adds a "Check CORS" button to the navbar that sends the `/check/cors` request the Presentation
+ * tool's live events client sends before it reconnects
  */
-export const corsCheckDebug = definePlugin(() => {
-  installCorsCheckInterceptor()
-
-  return {
-    name: 'cors-check-debug',
-    studio: {
-      components: {
-        navbar: CorsCheckNavbar,
-      },
+export const corsCheckDebug = definePlugin({
+  name: 'cors-check-debug',
+  studio: {
+    components: {
+      navbar: CorsCheckNavbar,
     },
-  }
+  },
 })
