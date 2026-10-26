@@ -1,5 +1,6 @@
 import {useEffect} from 'react'
-import {isReleaseDocument, usePerspective} from 'sanity'
+import {isReleaseDocument, usePerspective, useWorkspace} from 'sanity'
+import {useDocumentPane} from 'sanity/structure'
 
 import {isReleaseScheduledOrScheduling} from '../../../packages/sanity/src/core/releases/util/util'
 import {usePerspectiveState} from '../c1/state'
@@ -26,7 +27,10 @@ function hasVariantHere(versions: readonly AudienceVersion[], variantId: string,
  * toolbar Create version steps aside while the banner offers its own (22 Oct call: one Create version on screen).
  * - `deleted`: the chosen variant no longer exists;
  * - `drafts`, `release`: no version of the chosen variant here, and one can be created (the banner's Create version);
- * - `published`, `scheduled`: no version here, and none can be created here;
+ * - `published`: no version here. With no draft either (`createsDraft`), the banner's Create version makes one in Drafts and takes the
+ *   viewer there in one step (26 Oct call: the old Switch to Drafts, then Create version, was two steps). With a draft, the banner's button
+ *   is Switch to Drafts; without Drafts (live edit), it has no button;
+ * - `scheduled`: no version here, and none can be created here;
  * - `base-release`: no variant chosen, an open release in view, and the base document is not in it. Core's own banner draws this one
  *   ("Not in the … release." with Add to release); it is here so the inventory's toolbar Create version steps aside for it too.
  */
@@ -36,6 +40,10 @@ export type BannerCase =
       kind: 'drafts' | 'published' | 'scheduled' | 'release'
       audience: string
       releaseTitle: string
+      /** The variant's short id: the Published banner's one-step Create version needs it. */
+      variantId: string
+      /** `published` only: the variant has no draft either, and Drafts exist, so Create version makes it in Drafts. */
+      createsDraft?: boolean
     }
   | {kind: 'base-release'}
   | null
@@ -67,6 +75,9 @@ export function useBannerCase(documentId: string): BannerCase {
   const {chosen} = usePerspectiveState()
   const definitions = useVariantDefinitions()
   const versions = useVersionList(documentId)
+  const pane = useDocumentPane()
+  // Drafts exist unless the document type is live edit or the workspace has the draft model off (the pills' rule for the Draft pill).
+  const hasDrafts = useWorkspace().document.drafts.enabled && !pane.schemaType?.liveEdit
 
   useEffect(() => {
     for (const d of definitions)
@@ -105,13 +116,28 @@ export function useBannerCase(documentId: string): BannerCase {
 
   const release = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
   const releaseTitle = release?.metadata?.title || version
-  if (version === 'drafts') return {kind: 'drafts', audience, releaseTitle}
-  if (version === 'published') return {kind: 'published', audience, releaseTitle}
+  if (version === 'drafts') return {kind: 'drafts', audience, releaseTitle, variantId}
+  if (version === 'published') {
+    const hasDraft = versions.some((v) => v.variantId === variantId && v.state === 'draft')
+    return {
+      kind: 'published',
+      audience,
+      releaseTitle,
+      variantId,
+      createsDraft: hasDrafts && !hasDraft,
+    }
+  }
   if (release && isReleaseScheduledOrScheduling(release))
-    return {kind: 'scheduled', audience, releaseTitle}
-  return {kind: 'release', audience, releaseTitle}
+    return {kind: 'scheduled', audience, releaseTitle, variantId}
+  return {kind: 'release', audience, releaseTitle, variantId}
 }
 
-/** A banner shows a create button: Create version (Drafts, or an open release) or core's Add to release (the base document). */
+/**
+ * A banner shows a create button: Create version (Drafts, an open release, or Published with no draft to switch to) or core's Add to
+ * release (the base document).
+ */
 export const bannerOffersCreate = (c: BannerCase) =>
-  c?.kind === 'drafts' || c?.kind === 'release' || c?.kind === 'base-release'
+  c?.kind === 'drafts' ||
+  c?.kind === 'release' ||
+  c?.kind === 'base-release' ||
+  (c?.kind === 'published' && Boolean(c.createsDraft))
