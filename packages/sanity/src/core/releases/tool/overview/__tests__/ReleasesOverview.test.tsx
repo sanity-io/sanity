@@ -575,7 +575,7 @@ describe('ReleasesOverview', () => {
         const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
           'day-tile-today',
         )
-        expect(todayTile.firstChild).toHaveStyle('font-weight: 700')
+        expect(todayTile.firstElementChild!.firstElementChild).toHaveStyle({fontWeight: '700'})
       })
 
       describe('selecting a release date', () => {
