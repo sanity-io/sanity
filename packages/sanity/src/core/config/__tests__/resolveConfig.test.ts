@@ -427,6 +427,36 @@ describe('createWorkspaceFromConfig', () => {
         },
       ],
     })
+    // A caller that still passes `role` keeps that same user object.
+    expect(workspace.currentUser).toBe(currentUser)
+  })
+
+  it('accepts a currentUser that omits the deprecated role', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const getClient = () =>
+      createClient({
+        projectId,
+        apiVersion: '2021-06-07',
+        dataset,
+        useCdn: false,
+      })
+    const currentUser = {
+      id: 'schema-audit',
+      name: 'Schema audit',
+      email: 'schema-audit@example.com',
+      roles: [{name: 'administrator', title: 'Administrator'}],
+    }
+
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      name: 'default',
+      getClient,
+      currentUser,
+    })
+
+    expect(workspace.currentUser).toMatchObject(currentUser)
   })
 })
 
