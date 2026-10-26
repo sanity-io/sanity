@@ -12,6 +12,7 @@ import {useVariantDefinitions} from '../c1/world'
 import {inOpenBeta} from '../data/versions'
 import {useOptionState} from '../options/store'
 import {CreateVersion, type VariantChoice} from './inventory/CreateVersion'
+import {EmptyVersions} from './inventory/EmptyVersions'
 import {type InventoryEntry} from './inventory/fixtures'
 import {InventoryConceptsProvider} from './inventory/model'
 import {useLiveWorld} from './inventory/useLiveWorld'
@@ -95,7 +96,7 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
   const [frame, setFrame] = useState<HTMLElement | null>(null)
   // A, Faheem 23 Oct: Compare versions, one click from the inventory. It is the "..." menu's item (same target: the earlier layer, else
   // Published, else Draft), so the two never disagree. Disabled while the document has a single version.
-  const {onMenuAction, schemaType} = useDocumentPane()
+  const {isDeleted, onMenuAction, schemaType} = useDocumentPane()
   // Without drafts (live edit, or the draft model off) the pane shows the published version under the Drafts perspective.
   const hasDrafts = workspace.document.drafts.enabled && !schemaType?.liveEdit
 
@@ -221,9 +222,13 @@ export function CreateVersionInventory({documentId, title}: {documentId: string;
     >
       <style>{HIDDEN}</style>
       <Box flex={1} style={{minHeight: 0}}>
-        <InventoryConceptsProvider selection={{currentEntryKey, onSelect}} world={world}>
-          <VersionInventoryPanel />
-        </InventoryConceptsProvider>
+        {world.entries.length === 0 ? (
+          <EmptyVersions hasDrafts={hasDrafts} isDeleted={isDeleted} />
+        ) : (
+          <InventoryConceptsProvider selection={{currentEntryKey, onSelect}} world={world}>
+            <VersionInventoryPanel />
+          </InventoryConceptsProvider>
+        )}
       </Box>
       {toolbar
         ? createPortal(

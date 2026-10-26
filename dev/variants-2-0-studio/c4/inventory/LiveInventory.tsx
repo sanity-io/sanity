@@ -1,6 +1,7 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {useSetVariant} from 'sanity'
+import {useSetVariant, useWorkspace} from 'sanity'
+import {useDocumentPane} from 'sanity/structure'
 
 import {usePerspectiveState} from '../../c1/state'
 import {useVariantDefinitions} from '../../c1/world'
@@ -9,6 +10,7 @@ import {useOption} from '../../design-options/store'
 import {useLocalBar} from '../../pane/localBar'
 import {usePaneAddress} from '../../pane/usePaneAddress'
 import {HidePriorityView, VisitorLensLine, VisitorLensPanel} from '../VisitorLens'
+import {EmptyVersions} from './EmptyVersions'
 import {type InventoryEntry} from './fixtures'
 import {InventoryConceptsProvider} from './model'
 import {useLiveWorld} from './useLiveWorld'
@@ -44,6 +46,9 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
   const paneMode = useOption('c2') === 'c'
   const pane = usePaneAddress()
   const [, setBarOpen] = useLocalBar()
+  // The empty state's words depend on whether Drafts exist (not live edit, drafts on) and whether the document was deleted.
+  const {isDeleted, schemaType} = useDocumentPane()
+  const hasDrafts = useWorkspace().document.drafts.enabled && !schemaType?.liveEdit
 
   const variantFor = useCallback(
     (variantId: string | undefined) => variants.find((v) => shortId(v._id) === variantId),
@@ -126,9 +131,13 @@ export function LiveInventory({documentId, title}: {documentId: string; title: s
         </Box>
       ) : null}
       <Box flex={1} style={{display: lensOpen ? 'none' : undefined, minHeight: 0}}>
-        <InventoryConceptsProvider selection={{currentEntryKey, onSelect}} world={world}>
-          <VersionInventoryPanel />
-        </InventoryConceptsProvider>
+        {world.entries.length === 0 ? (
+          <EmptyVersions hasDrafts={hasDrafts} isDeleted={isDeleted} />
+        ) : (
+          <InventoryConceptsProvider selection={{currentEntryKey, onSelect}} world={world}>
+            <VersionInventoryPanel />
+          </InventoryConceptsProvider>
+        )}
       </Box>
     </Flex>
   )
