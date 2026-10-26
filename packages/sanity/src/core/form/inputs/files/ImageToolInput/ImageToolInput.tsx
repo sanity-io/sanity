@@ -165,7 +165,10 @@ export function ImageToolInput(props: ImageToolInputProps) {
               <Text size={1} as="div" trim={true} tone="caution">
                 {t('inputs.imagetool.vector-warning.title')}
               </Text>
-              <Details title={t('inputs.imagetool.vector-warning.expand-developer-info')}>
+              <Details
+                title={t('inputs.imagetool.vector-warning.expand-developer-info')}
+                tone="caution"
+              >
                 <Text size={1} as="div" trim={true} tone="caution">
                   <Translate
                     t={t}

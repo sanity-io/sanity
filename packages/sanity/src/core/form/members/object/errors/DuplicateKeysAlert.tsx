@@ -61,6 +61,7 @@ export function DuplicateKeysAlert(props: Props) {
           marginTop={4}
           open={isDev}
           title={t('form.error.duplicate-keys-alert.details.title')}
+          tone="caution"
         >
           <VStack gap={3}>
             <Text as="p" muted size={1} trim={true} tone="caution">

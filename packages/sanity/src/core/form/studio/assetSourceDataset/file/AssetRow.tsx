@@ -10,7 +10,7 @@ import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
-import {Text, Flex, Grid, Box, VStack} from 'ui5'
+import {Text, Flex, Grid, Box, VStack, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
@@ -268,9 +268,12 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           >
             <Flex gap={2} flexBasis="0%" flexGrow={2} alignItems="center">
               <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
-                <Text muted size={2} style={STYLES_ICON_CARD} as="div" trim={true}>
-                  <DocumentIcon />
-                </Text>
+                <Icon
+                  muted
+                  size={2}
+                  icon={DocumentIcon}
+                  style={{...STYLES_ICON_CARD, margin: '-0.4375rem'}}
+                />
               </Card>
               <Text
                 size={1}
@@ -408,9 +411,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
               radius={2}
               style={STYLES_ICON_CARD}
             >
-              <Text muted size={2} as="div" trim={true}>
-                <DocumentIcon />
-              </Text>
+              <Icon muted size={2} icon={DocumentIcon} style={{margin: '-0.4375rem'}} />
             </Card>
             {showTooltip && (
               <Tooltip content={originalFilename}>

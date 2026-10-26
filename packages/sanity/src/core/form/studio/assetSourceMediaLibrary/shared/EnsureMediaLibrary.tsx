@@ -33,7 +33,7 @@ export function EnsureMediaLibrary(props: {
             muted
             icon={ErrorOutlineIcon}
             tone="caution"
-            style={{margin: '-0.375rem'}}
+            style={{margin: '-0.375rem', flexShrink: 0}}
           />
           <Text size={1} weight="semibold" as="div" trim={true} tone="caution">
             {t('asset-sources.media-library.error.no-media-library-provisioned')}
@@ -53,7 +53,7 @@ export function EnsureMediaLibrary(props: {
             muted
             icon={ErrorOutlineIcon}
             tone="critical"
-            style={{margin: '-0.375rem'}}
+            style={{margin: '-0.375rem', flexShrink: 0}}
           />
           <VStack gap={4} data-testid={errorCodeTestId}>
             <Text size={1} weight="semibold" as="div" trim={true} tone="critical">

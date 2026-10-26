@@ -29,7 +29,7 @@ export function Alert(props: AlertProps) {
       data-testid={`alert-${status}`}
     >
       <Flex padding={4}>
-        <Box>
+        <Box flexShrink={0}>
           <Icon
             size={1}
             muted

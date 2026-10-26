@@ -258,7 +258,7 @@ function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<
               <Icon
                 size={1}
                 icon={InfoOutlineIcon}
-                style={{color: 'var(--card-icon-color)', margin: '-0.375rem'}}
+                style={{color: 'var(--card-icon-color)', margin: '-0.375rem', flexShrink: 0}}
               />
               <Text size={1} as="div" trim={true} style={{color: 'var(--card-fg-color)'}}>
                 <Translate

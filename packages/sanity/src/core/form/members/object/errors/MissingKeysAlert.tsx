@@ -57,6 +57,7 @@ export function MissingKeysAlert(props: Props) {
           marginTop={4}
           open={isDev}
           title={t('form.error.missing-keys-alert.details.title')}
+          tone="caution"
         >
           <VStack gap={3}>
             <Text as="p" muted size={1} trim={true} tone="caution">

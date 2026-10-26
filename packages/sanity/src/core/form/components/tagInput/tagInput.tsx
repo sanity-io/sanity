@@ -141,7 +141,10 @@ const Placeholder = styled(Box)((props: {theme: Theme}) => {
     left: 0;
     right: 0;
     pointer-events: none;
-    --card-fg-color: ${color.default.enabled.placeholder};
+
+    [data-ui='Text'] {
+      --card-fg-color: ${color.default.enabled.placeholder};
+    }
   `
 })
 
