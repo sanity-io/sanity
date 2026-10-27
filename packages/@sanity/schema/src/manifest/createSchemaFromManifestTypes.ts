@@ -5,7 +5,6 @@ import {
   type RuleTypeConstraint,
   type UriValidationOptions,
 } from '@sanity/types'
-import cloneDeep from 'lodash-es/cloneDeep.js'
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
@@ -48,7 +47,7 @@ export function createSchemaFromManifestTypes(schemaDef: {name: string; types: u
 // converting a json normalized rule into an actual '@sanity/schema' Rule.
 function coerceType(obj: unknown) {
   if (!isObject(obj)) return undefined
-  const typ = cloneDeep(obj)
+  const typ = structuredClone(obj)
   traverse(typ)
   return typ
 }
