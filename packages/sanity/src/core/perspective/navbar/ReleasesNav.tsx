@@ -87,7 +87,8 @@ export const ReleasesNav: ComponentType<Props> = ({
           <SingleStateControl
             data-testid="global-perspective-menu-button"
             selectedPerspective={selectedPerspective}
-            style={{...flush, paddingLeft: 10, paddingRight: 4}}
+            // PROPOSED: the left edge to the state icon's ink is 14px, as the chevron's ink to the right edge is (it was 19px).
+            style={{...flush, paddingLeft: 5, paddingRight: 4}}
           />
         }
       />
