@@ -1,4 +1,4 @@
-import {type HotkeysProps, Text} from '@sanity/ui'
+import {type HotkeysProps} from '@sanity/ui'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Tooltip as UITooltip,
@@ -6,7 +6,7 @@ import {
   type TooltipProps as UITooltipProps,
 } from '@sanity/ui/tooltip'
 import {type RefAttributes} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {TOOLTIP_DELAY_PROPS} from './constants'
@@ -48,7 +48,9 @@ export function Tooltip(props: TooltipProps & RefAttributes<HTMLDivElement>) {
           <Flex alignItems="center">
             {content && (
               <Box flexBasis="0%" flexGrow={1} padding={1}>
-                <Text size={1}>{content}</Text>
+                <Text size={1} as="div" trim={true}>
+                  {content}
+                </Text>
               </Box>
             )}
             {hotkeys && (
