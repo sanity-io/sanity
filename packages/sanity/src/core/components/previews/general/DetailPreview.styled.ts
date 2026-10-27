@@ -40,7 +40,7 @@ export const DescriptionText = styled(Text)(({theme}) => {
   const maxHeight = textSize1.lineHeight * maxLines
 
   return css`
-    color: var(--card-fg-color);
+    color: var(--card-muted-fg-color);
     max-height: ${rem(maxHeight)};
   `
 })
