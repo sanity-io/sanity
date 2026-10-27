@@ -135,6 +135,7 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
             : {
                 text: 'Back to All users',
                 mode: 'default',
+                tone: 'primary',
                 onClick: () => {
                   setVariant({variantId: undefined as never})
                   setChosen({})
@@ -171,7 +172,8 @@ export function OpenBetaBanner({documentId}: {documentId: string}) {
     mode: 'default' as const,
     onClick: () => void create(),
     text: busy ? 'Creating…' : 'Create version',
-    tone: banner.kind === 'drafts' ? ('primary' as const) : ('suggest' as const),
+    // Primary in every banner (27 Oct, Faheem): black in this studio, as the inventory's Create version is. The variant chip carries the purple.
+    tone: 'primary' as const,
   }
 
   const say = (body: React.ReactNode, state: string) => (

@@ -98,7 +98,6 @@ export function DocumentNotInReleaseBanner({
   currentRelease: Exclude<TargetPerspective, SystemBundle>
   isScheduledRelease?: boolean
 }) {
-  const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
 
@@ -220,7 +219,8 @@ export function DocumentNotInReleaseBanner({
               text: isAgentBundleName(currentRelease)
                 ? t('banners.release.action.add-to-bundle')
                 : t('banners.release.action.add-to-release'),
-              tone: tone,
+              // PROPOSED: a banner's filled button is the primary tone in every banner, whatever the release's tone (the chip carries that).
+              tone: 'primary',
               disabled: Boolean(versionCreateState),
               // PROPOSED: the button says it is working until the version arrives and the banner goes.
               ...(versionCreateState ? {text: t('banners.release.action.adding')} : {}),

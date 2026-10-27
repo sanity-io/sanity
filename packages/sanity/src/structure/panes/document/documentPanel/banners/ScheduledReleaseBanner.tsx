@@ -83,7 +83,8 @@ export function ScheduledReleaseBanner({
               onClick: pauseToEdit,
               disabled: isPausing,
               mode: 'default',
-              tone: tone,
+              // PROPOSED: a banner's filled button is the primary tone in every banner, whatever the release's tone (the chip carries that).
+              tone: 'primary',
             }
           : undefined
       }

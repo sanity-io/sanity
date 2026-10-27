@@ -2,7 +2,6 @@ import {Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
   isCardinalityOneRelease,
   isVersionId,
@@ -59,10 +58,6 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
   const {data: activeReleases} = useActiveReleases()
   const setPerspective = useSetPerspective()
   const releaseId = getVersionFromId(documentId) ?? ''
-  const currentVersion = useMemo(
-    () => activeReleases.find((version) => version._id.includes(releaseId)),
-    [activeReleases, releaseId],
-  )
   const {t: tCore} = useTranslation()
 
   const {data: documentVersions} = useDocumentVersions({documentId})
@@ -78,7 +73,6 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
       }),
     [activeReleases, documentVersions],
   )
-  const tone = currentVersion && getReleaseTone(currentVersion)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleGoToEdit = useCallback(async () => {
@@ -127,7 +121,8 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
         documentVersionReleases.length > 0
           ? {
               text: t('banners.release.action.open-to-edit'),
-              tone: tone,
+              // PROPOSED: a banner's filled button is the primary tone in every banner, whatever the release's tone (the chip carries that).
+              tone: 'primary',
               onClick: handleGoToEdit,
               mode: 'default',
             }
