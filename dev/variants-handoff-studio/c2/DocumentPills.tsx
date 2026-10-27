@@ -1,4 +1,3 @@
-import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentsIcon} from '@sanity/icons/Documents'
@@ -90,8 +89,8 @@ const placeWord = (v: AudienceVersion) =>
   v.state === 'published' ? 'Published' : v.state === 'draft' ? 'Draft' : (v.release ?? v.state)
 
 /**
- * The slot at a row's right end (26 Oct): the number first, then the icon, so the stacked-pages icon of a count and the plus of a row to
- * create share one right edge. It is a flex sibling of the row's content (through MenuItem's renderMenuItem), not inside the row's Text:
+ * The slot at a row's right end (26 Oct): the number first, then the icon. A row with no version yet has no slot: no plus (27 Oct, Faheem:
+ * the menus are for moving between versions; the create action is the banner's and the inventory's). It is a flex sibling of the row's content (through MenuItem's renderMenuItem), not inside the row's Text:
  * a Text's line box moved it off the text's line, and the row centres it on the content as it centres the leading icon.
  */
 const SLOT_WIDTH = 'calc(2ch + 4px + 16px)'
@@ -144,15 +143,6 @@ function VersionCount({versions}: {versions: readonly AudienceVersion[]}) {
   )
 }
 
-/** A row with nothing to count yet (a variant or release this document is not in): a plus where the count's icon is. The row's tooltip says Create. */
-function CreateMark() {
-  return (
-    <RowSlot>
-      <AddIcon data-testid="row-create-mark" style={SLOT_ICON} />
-    </RowSlot>
-  )
-}
-
 const isVariantId = (id: string): id is SystemVariant['_id'] => id.startsWith('_.variants.')
 
 /** The menus show 10 rows before they scroll, as the navbar's menus do (the same count of rows); rows are the 33px MenuItem. */
@@ -184,7 +174,7 @@ function DropdownPill(props: {
   tone?: ComponentProps<typeof Chip>['tone']
   /** With a choice in view, a cross after the pill clears it (as the navbar chips' cross does), with this accessible name. */
   clear?: {label: string; onClick: () => void}
-  /** A line under the search that is always there while it is set, not a tooltip: what the rows with a plus mean (Faheem, 26 Oct). */
+  /** A line under the search that is always there while it is set, not a tooltip: what the greyed rows mean (Faheem, 26 Oct). */
   note?: string
 }) {
   const [query, setQuery] = useState('')
@@ -445,7 +435,6 @@ export function DocumentPillsV1({
         text: definition.metadata?.title ?? id,
         icon: <DimensionIcon name={name ?? address.dimensions[0]?.name ?? ''} />,
         onClick: () => goTo(current, id === currentVariant ? undefined : definition),
-        trailing: <CreateMark />,
         hint: `Create ${definition.metadata?.title ?? id} version`,
         selected: id === currentVariant,
         search: {id},
@@ -482,7 +471,6 @@ export function DocumentPillsV1({
       }`,
       icon: <ReleaseAvatarIcon releaseType={release.metadata.releaseType} />,
       onClick: () => goTo(current === id ? defaultVersion : id, viewedDefinition),
-      trailing: <CreateMark />,
       hint: `Add to ${release.metadata.title || 'Untitled release'}`,
       selected: current === id,
       search: {id},
