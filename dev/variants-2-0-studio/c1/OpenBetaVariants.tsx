@@ -20,8 +20,9 @@ import {reloadVariantDefinitions, useVariantDefinitions} from './world'
 const NAVBAR_HEIGHT = 33
 /** The chips inside the grey section (4 px of base around them). */
 const SECTION_HEIGHT = 25
-/** Padding between the icons and the pill's edges, so it is as roomy as the stock pill; the chevron stays at the right end. */
-const PADDING_X = 14
+/** The room before the icon: the left edge to the diamond's ink is 14px, as the chevron's ink to the right edge is (27 Oct, Faheem: the
+ * pill was 22px on the left and 14px on the right, measured on screen). */
+const PADDING_X = 6
 const CHEVRON_INSET = 4
 /** The icon's own margin is -6px each side; a little less on the right gives the label more room. */
 const ICON_STYLE = {marginRight: -2} as const

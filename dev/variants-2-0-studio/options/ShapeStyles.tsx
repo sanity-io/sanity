@@ -17,11 +17,11 @@ const RULES = `
 [data-testid="variants-button"],
 [data-testid^="doc-pills-"] button { border-radius: ${R} !important; }
 
-/* A rounded clip cuts the icon at the left edge, so the icon gets its own safe padding (12px, 8px less on the 3px Box). */
+/* A rounded clip cuts the icon at the left edge, so the icon gets its own safe padding (12px, 8px less on the 3px Box). Not the navbar's
+   Variants button: its own 6px puts the diamond's ink 14px from the edge, as the chevron's ink is from the other (27 Oct, Faheem). */
 [data-testid^="chip-"]:not([data-testid$="-remove"]) > div > button:first-child,
 [data-testid="row-version"],
-[data-testid="row-choose"],
-[data-testid="variants-button"] { padding-left: var(--v2-pill-icon-pad, 12px) !important; }
+[data-testid="row-choose"] { padding-left: var(--v2-pill-icon-pad, 12px) !important; }
 `
 
 export function ShapeStyles() {
