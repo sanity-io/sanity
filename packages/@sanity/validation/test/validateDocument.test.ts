@@ -8,7 +8,6 @@ import {
   type ValidationContext,
   type ValidationMarker,
 } from '@sanity/types'
-import {Observable, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {
@@ -42,11 +41,11 @@ function createDocument(value: Record<string, unknown>): SanityDocument {
 
 function createMockClient(omitted: {id: string; reason: 'existence' | 'permission'}[] = []) {
   const fetch = vi.fn(async (): Promise<unknown> => null)
-  const request = vi.fn(() => of({omitted}))
+  const request = vi.fn(async () => ({omitted}))
   const client = {
     fetch,
     getDataUrl: vi.fn(() => '/doc'),
-    observable: {request},
+    request,
     withConfig: vi.fn(() => client),
   } as unknown as SanityClient
 
@@ -206,7 +205,7 @@ describe('validateDocument', () => {
     const client = {
       fetch,
       getDataUrl: () => '/doc',
-      observable: {request: vi.fn(() => of({omitted: []}))},
+      request: vi.fn(async () => ({omitted: []})),
       withConfig: vi.fn(() => client),
     } as unknown as SanityClient
     const schema = createSchema([
@@ -320,20 +319,27 @@ describe('validateDocument', () => {
     )
   })
 
-  it('aborts and unsubscribes active reference availability requests', async () => {
+  it('aborts active reference availability requests', async () => {
     const controller = new AbortController()
     const reason = new Error('cancelled')
-    const teardown = vi.fn()
+    const aborted = vi.fn()
     const request = vi.fn(
-      () =>
-        new Observable(() => {
-          return teardown
+      ({signal}: {signal?: AbortSignal}) =>
+        new Promise((_resolve, reject) => {
+          signal?.addEventListener(
+            'abort',
+            () => {
+              aborted()
+              reject(signal.reason)
+            },
+            {once: true},
+          )
         }),
     )
     const client = {
       fetch: vi.fn(async () => null),
       getDataUrl: () => '/data/doc',
-      observable: {request},
+      request,
       withConfig: () => client,
     } as unknown as SanityClient
     const schema = createSchema([
@@ -359,7 +365,7 @@ describe('validateDocument', () => {
     controller.abort(reason)
 
     await expect(validation).rejects.toBe(reason)
-    expect(teardown).toHaveBeenCalledOnce()
+    expect(aborted).toHaveBeenCalledOnce()
   })
 
   it('reports findings independently of completeness', async () => {

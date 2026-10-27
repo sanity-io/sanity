@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {builtinTypes} from '@sanity/schema/_internal'
 import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity/types'
-import {BehaviorSubject, lastValueFrom, of} from 'rxjs'
+import {BehaviorSubject, lastValueFrom} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {validationMarkerCodes} from './codes'
@@ -81,7 +81,7 @@ function createMockClient() {
   const client = {
     fetch: vi.fn(async (): Promise<unknown> => null),
     getDataUrl: vi.fn(() => '/doc'),
-    observable: {request: vi.fn(() => of({omitted: []}))},
+    request: vi.fn(async () => ({omitted: []})),
     withConfig: vi.fn(() => client),
   } as unknown as SanityClient
   return client
