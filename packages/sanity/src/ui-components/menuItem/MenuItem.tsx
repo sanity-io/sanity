@@ -92,7 +92,7 @@ export function MenuItem<E extends ElementType = 'button'>({
             <Icon
               size={FONT_SIZE}
               icon={IconComponent as IconProps['icon']}
-              style={{margin: '-0.375rem'}}
+              style={{margin: '-0.375rem', color: 'var(--card-icon-color)'}}
             />
           </Box>
         )}
@@ -103,7 +103,14 @@ export function MenuItem<E extends ElementType = 'button'>({
             gap={__unstable_subtitle ? 1 : 2}
             flexDirection="column"
           >
-            <Text size={FONT_SIZE} truncate={1} weight="medium" as="div" trim={true}>
+            <Text
+              size={FONT_SIZE}
+              truncate={1}
+              weight="medium"
+              as="div"
+              trim={true}
+              style={{color: 'var(--card-fg-color)'}}
+            >
               {text}
             </Text>
             {__unstable_subtitle && (
@@ -115,6 +122,7 @@ export function MenuItem<E extends ElementType = 'button'>({
                 muted
                 as="div"
                 trim={true}
+                style={{color: 'var(--card-muted-fg-color)'}}
               >
                 {__unstable_subtitle}
               </Text>
@@ -135,7 +143,7 @@ export function MenuItem<E extends ElementType = 'button'>({
               <Icon
                 size={FONT_SIZE}
                 icon={IconRightComponent as IconProps['icon']}
-                style={{margin: '-0.375rem'}}
+                style={{margin: '-0.375rem', color: 'var(--card-icon-color)'}}
               />
             )}
           </Flex>
