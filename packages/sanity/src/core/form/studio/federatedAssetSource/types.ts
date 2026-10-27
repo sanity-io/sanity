@@ -181,4 +181,10 @@ export interface FederatedAssetSourceView extends FederatedAssetSourceRef {
   name: string
   /** Human-readable view title. */
   title: string
+  /**
+   * Whether the publishing application is served by a local dev server. Local
+   * views shadow a deployed application's views of the same name during
+   * discovery.
+   */
+  local: boolean
 }
