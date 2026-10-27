@@ -1,8 +1,8 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
+import {Text} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
@@ -75,7 +75,11 @@ export function OpenPreviewButton(
   return (
     <Tooltip
       animate
-      content={<Text size={1}>{t('share-url.menu-item.open.text')}</Text>}
+      content={
+        <Text size={1} as="div" trim={true}>
+          {t('share-url.menu-item.open.text')}
+        </Text>
+      }
       fallbackPlacements={['bottom-start']}
       placement="bottom"
       portal
