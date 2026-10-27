@@ -4,7 +4,7 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ButtonTone, Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Text} from 'ui5'
+import {Icon, Text} from 'ui5'
 
 import {TextWithTone} from '../TextWithTone'
 
@@ -94,10 +94,10 @@ export const AllVariants: Story = {
       </Card>
       <Card padding={3} radius={2} shadow={1} style={{maxWidth: 360}}>
         <Stack gap={3}>
-          {STATUS_ROWS.map(({tone, icon: Icon, text}) => (
+          {STATUS_ROWS.map(({tone, icon: ComponentIcon, text}) => (
             <Flex align="center" gap={2} key={tone}>
               <TextWithTone size={1} tone={tone}>
-                <Icon />
+                <Icon icon={ComponentIcon} size={1} style={{margin: '-0.375rem'}} />
               </TextWithTone>
               <TextWithTone size={1} tone={tone}>
                 {text}

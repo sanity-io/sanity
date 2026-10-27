@@ -13,19 +13,19 @@ export type TextWithToneProps = Omit<TextProps<'div'>, 'tone' | 'as'> & {
 const TextWithToneStyle = styled(Text)`
   &:not([data-muted]) {
     &[data-tone='default'] {
-      --card-fg-color: var(--card-badge-default-fg-color);
+      --text-color: var(--card-badge-default-fg-color);
     }
     &[data-tone='primary'] {
-      --card-fg-color: var(--card-badge-primary-fg-color);
+      --text-color: var(--card-badge-primary-fg-color);
     }
     &[data-tone='positive'] {
-      --card-fg-color: var(--card-badge-positive-fg-color);
+      --text-color: var(--card-badge-positive-fg-color);
     }
     &[data-tone='caution'] {
-      --card-fg-color: var(--card-badge-caution-fg-color);
+      --text-color: var(--card-badge-caution-fg-color);
     }
     &[data-tone='critical'] {
-      --card-fg-color: var(--card-badge-critical-fg-color);
+      --text-color: var(--card-badge-critical-fg-color);
     }
   }
 

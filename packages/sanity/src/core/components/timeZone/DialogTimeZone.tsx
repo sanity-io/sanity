@@ -3,7 +3,7 @@ import {Card, Inline, type Theme} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
-import {Text, Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Link} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
@@ -161,9 +161,13 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             </Inline>
             {!isLocalTzSelected && (
               <Text size={1} weight="medium" as="div" trim={true}>
-                <a onClick={handleTimeZoneSelectLocal} style={{cursor: 'pointer'}}>
+                <Link
+                  onClick={handleTimeZoneSelectLocal}
+                  style={{cursor: 'pointer', color: 'var(--card-link-color)'}}
+                  underlined={false}
+                >
                   {t('time-zone.action.select-local-time-zone')}
-                </a>
+                </Link>
               </Text>
             )}
           </Flex>
