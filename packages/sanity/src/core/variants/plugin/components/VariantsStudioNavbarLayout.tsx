@@ -1,4 +1,4 @@
-import {Card, Spinner} from '@sanity/ui'
+import {Spinner} from '@sanity/ui'
 import {lazy, Suspense, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 import {Flex} from 'ui5'
@@ -32,7 +32,7 @@ export function VariantsStudioNavbarFallback() {
  * `Suspense` here, so the bar itself paints with the navbar.
  * @internal
  */
-export function VariantsStudioNavbarLayout(props: NavbarProps) {
+export function VariantsStudioNavbarLayout() {
   const router = useRouter()
   const variantSelections = useMemo(
     () =>
@@ -42,20 +42,8 @@ export function VariantsStudioNavbarLayout(props: NavbarProps) {
     [router.stickyParams.variant],
   )
   return (
-    <Flex flexDirection="column">
-      {props.renderDefault(props)}
-      <Card
-        tone={variantSelections.length > 0 ? 'suggest' : 'neutral'}
-        paddingY={2}
-        paddingX={3}
-        borderBottom
-      >
-        <Flex alignItems="center" justifyContent="center" gap={2} flexWrap="wrap">
-          <Suspense fallback={<VariantsStudioNavbarFallback />}>
-            <VariantsStudioNavbar variantSelections={variantSelections} />
-          </Suspense>
-        </Flex>
-      </Card>
-    </Flex>
+    <Suspense fallback={<VariantsStudioNavbarFallback />}>
+      <VariantsStudioNavbar variantSelections={variantSelections} />
+    </Suspense>
   )
 }

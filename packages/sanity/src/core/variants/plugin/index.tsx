@@ -24,11 +24,6 @@ const VARIANTS_TOOL_NAME = 'variants'
  */
 export const variants = definePlugin({
   name: VARIANTS_NAME,
-  studio: {
-    components: {
-      navbar: VariantsStudioNavbarLayout,
-    },
-  },
   tools: [
     {
       name: VARIANTS_TOOL_NAME,
