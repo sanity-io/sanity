@@ -82,6 +82,48 @@ describe('useHistoryBackClose', () => {
     expect(markerOnTop()).toBe(false)
   })
 
+  it('does not close a new dialog mounted before the previous unmount pop settles', async () => {
+    // Close-then-reopen (or switching asset sources) in the same turn: the
+    // old instance's cleanup `history.back()` settles only after the new
+    // instance has mounted. The leftover pop must not read as a user back.
+    const onCloseA = vi.fn()
+    const {unmount: unmountFirst} = render(<Dialog onClose={onCloseA} />)
+    expect(markerOnTop()).toBe(true)
+
+    unmountFirst()
+    // No settling in between — mount the next dialog while the pop is pending.
+    const onCloseB = vi.fn()
+    render(<Dialog onClose={onCloseB} />)
+    await settleHistory()
+
+    expect(onCloseB).not.toHaveBeenCalled()
+    expect(markerOnTop()).toBe(true)
+
+    // The entry still works: one back press closes the new dialog.
+    window.history.back()
+    await settleHistory()
+    expect(onCloseB).toHaveBeenCalledTimes(1)
+    expect(markerOnTop()).toBe(false)
+  })
+
+  it("does not let a settled unmount pop swallow a later dialog's first back press", async () => {
+    const onCloseA = vi.fn()
+    const {unmount: unmountFirst} = render(<Dialog onClose={onCloseA} />)
+    unmountFirst()
+    // The pop settles with no dialog mounted.
+    await settleHistory()
+    expect(markerOnTop()).toBe(false)
+
+    const onCloseB = vi.fn()
+    render(<Dialog onClose={onCloseB} />)
+    expect(markerOnTop()).toBe(true)
+
+    window.history.back()
+    await settleHistory()
+    expect(onCloseB).toHaveBeenCalledTimes(1)
+    expect(markerOnTop()).toBe(false)
+  })
+
   it('keeps the dialog open while the view handles back internally', async () => {
     const onClose = vi.fn()
     // The view has two internal steps to unwind before the dialog may close.

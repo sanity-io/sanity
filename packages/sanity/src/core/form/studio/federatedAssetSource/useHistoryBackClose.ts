@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, type RefObject} from 'react'
 
 /**
  * Marks the dialog's own history entry. Lives on `history.state` rather than
@@ -16,6 +16,67 @@ function pushMarkerEntry(): void {
   // (the `history` package's `{usr, key, idx}` shape) stays readable while
   // the dialog's entry is on top of the stack.
   window.history.pushState({...window.history.state, [HISTORY_MARKER]: true}, '')
+}
+
+interface ActiveDialog {
+  onClose: RefObject<() => void>
+  onBackRequest: RefObject<(() => boolean) | undefined>
+}
+
+/**
+ * The marker entry is global (there is one session history), so the state
+ * that interprets pops of that entry must be global too. Were it per hook
+ * instance, an unmounting dialog's programmatic `history.back()` could settle
+ * after a new dialog instance mounted, and the new instance would mistake the
+ * leftover popstate for the user pressing back and close itself.
+ */
+let activeDialog: ActiveDialog | null = null
+
+/**
+ * Counts our own programmatic `history.back()` calls (the unmount cleanup
+ * removing the dialog's entry) so their popstate is not mistaken for the user
+ * pressing back — regardless of which dialog instance (or none) is mounted
+ * when the traversal settles.
+ */
+let suppressedPops = 0
+
+let listening = false
+
+function handlePopState(): void {
+  if (suppressedPops > 0) {
+    suppressedPops -= 1
+    // Our own pop while a dialog is (still or again) open — restore the
+    // entry. With no dialog mounted the entry's removal was the point.
+    if (activeDialog && !hasMarker()) pushMarkerEntry()
+    stopListeningWhenIdle()
+    return
+  }
+  if (!activeDialog) return
+  // The view handled the press internally (stepped back inside the picker):
+  // restore the dialog's entry — which also truncates any forward entries —
+  // and keep the dialog open.
+  if (activeDialog.onBackRequest.current?.()) {
+    if (!hasMarker()) pushMarkerEntry()
+    return
+  }
+  activeDialog.onClose.current()
+}
+
+function startListening(): void {
+  if (listening) return
+  window.addEventListener('popstate', handlePopState)
+  listening = true
+}
+
+/**
+ * Keeps listening past unmount while a programmatic pop is pending, so the
+ * pop is consumed when it settles instead of leaving a stale count that would
+ * swallow a later dialog's first genuine back press.
+ */
+function stopListeningWhenIdle(): void {
+  if (!listening || activeDialog || suppressedPops > 0) return
+  window.removeEventListener('popstate', handlePopState)
+  listening = false
 }
 
 /**
@@ -49,45 +110,28 @@ export function useHistoryBackClose(
     onBackRequestRef.current = onBackRequest
   })
 
-  // Counts our own programmatic `history.back()` calls (the unmount cleanup
-  // removing the dialog's entry) so their popstate is not mistaken for the
-  // user pressing back. Shared across effect runs so a StrictMode remount
-  // consumes the cleanup's pending pop and restores the entry instead of
-  // closing the freshly opened dialog.
-  const suppressedPopsRef = useRef(0)
-
   useEffect(() => {
     if (!enabled) return undefined
 
+    const dialog: ActiveDialog = {onClose: onCloseRef, onBackRequest: onBackRequestRef}
+    activeDialog = dialog
+    startListening()
+
+    // A pending programmatic pop from a just-unmounted instance restores the
+    // entry itself when it settles (see handlePopState), so only push when
+    // the entry is genuinely absent.
     if (!hasMarker()) pushMarkerEntry()
 
-    const handlePopState = () => {
-      if (suppressedPopsRef.current > 0) {
-        suppressedPopsRef.current -= 1
-        // Our own pop while the dialog is still open — restore the entry.
-        if (!hasMarker()) pushMarkerEntry()
-        return
-      }
-      // The view handled the press internally (stepped back inside the
-      // picker): restore the dialog's entry — which also truncates any
-      // forward entries — and keep the dialog open.
-      if (onBackRequestRef.current?.()) {
-        if (!hasMarker()) pushMarkerEntry()
-        return
-      }
-      onCloseRef.current()
-    }
-
-    window.addEventListener('popstate', handlePopState)
     return () => {
-      window.removeEventListener('popstate', handlePopState)
+      if (activeDialog === dialog) activeDialog = null
       // Closed by other means than back: remove the dialog's entry so a later
       // back press doesn't no-op. When back itself closed the dialog the
       // entry is already gone.
       if (hasMarker()) {
-        suppressedPopsRef.current += 1
+        suppressedPops += 1
         window.history.back()
       }
+      stopListeningWhenIdle()
     }
   }, [enabled])
 }
