@@ -1,10 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {DocumentIcon} from '@sanity/icons/Document'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Badge, Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {type ReactNode, useMemo, useState} from 'react'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
+import {Icon, Text} from 'ui5'
 
 import {CommandList} from '../CommandList'
 import {type CommandListItemContext} from '../types'
@@ -54,19 +55,15 @@ function renderRow(item: Row, context: CommandListItemContext, showSelection = f
   return (
     <Card as="button" padding={3} radius={2}>
       <Flex align="center" gap={3}>
-        <Text muted size={2}>
-          <DocumentIcon />
-        </Text>
+        <Icon muted size={2} icon={DocumentIcon} style={{margin: '-0.4375rem'}} />
         <Box flex={1}>
-          <Text size={1} textOverflow="ellipsis">
+          <Text size={1} truncate={1} as="div" trim={true}>
             {item.title}
           </Text>
         </Box>
         <Badge fontSize={0}>{item.type}</Badge>
         {showSelection && context.selected && (
-          <Text size={1}>
-            <CheckmarkIcon />
-          </Text>
+          <Icon size={1} icon={CheckmarkIcon} style={{margin: '-0.375rem'}} />
         )}
       </Flex>
     </Card>
@@ -114,7 +111,7 @@ function ComboboxStory() {
           />
         ) : (
           <Flex align="center" height="fill" justify="center" padding={4}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               No results for “{query}”
             </Text>
           </Flex>

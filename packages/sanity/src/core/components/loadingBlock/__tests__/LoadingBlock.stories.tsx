@@ -1,6 +1,7 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {type ReactNode} from 'react'
+import {Text} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {LoadingBlock} from '../LoadingBlock'
@@ -51,7 +52,7 @@ export const AllVariants: Story = {
     <Stack gap={4}>
       <Flex gap={4} wrap="wrap">
         <Stack gap={2}>
-          <Text muted size={0}>
+          <Text muted size={0} as="div" trim={true}>
             spinner only
           </Text>
           <Region>
@@ -59,7 +60,7 @@ export const AllVariants: Story = {
           </Region>
         </Stack>
         <Stack gap={2}>
-          <Text muted size={0}>
+          <Text muted size={0} as="div" trim={true}>
             showText
           </Text>
           <Region>
@@ -67,7 +68,7 @@ export const AllVariants: Story = {
           </Region>
         </Stack>
         <Stack gap={2}>
-          <Text muted size={0}>
+          <Text muted size={0} as="div" trim={true}>
             custom title
           </Text>
           <Region>
@@ -76,7 +77,7 @@ export const AllVariants: Story = {
         </Stack>
       </Flex>
       <Stack gap={2}>
-        <Text muted size={0}>
+        <Text muted size={0} as="div" trim={true}>
           fill
         </Text>
         <Card border overflow="hidden" radius={2} style={{width: 320}}>
@@ -87,10 +88,10 @@ export const AllVariants: Story = {
             style={{borderBottom: '1px solid var(--card-border-color)'}}
           >
             <Stack gap={2}>
-              <Text size={1} weight="semibold">
+              <Text size={1} weight="semibold" as="div" trim={true}>
                 Anna Karenina
               </Text>
-              <Text muted size={0}>
+              <Text muted size={0} as="div" trim={true}>
                 Book · Draft
               </Text>
             </Stack>
