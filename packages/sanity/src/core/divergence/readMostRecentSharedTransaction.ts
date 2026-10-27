@@ -24,6 +24,7 @@ import {
 } from 'rxjs'
 
 import {getTransactionsLogs as defaultGetTransactionsLogs} from '../store/translog/getTransactionsLogs'
+import {isInvalidSessionError} from '../util/apiErrors'
 
 type SourceTransaction = [source: 'a' | 'b', transaction: TransactionLogEventWithEffects]
 
@@ -124,6 +125,10 @@ export function readMostRecentSharedTransaction({
     }),
     catchError((error) => {
       cache?.delete(cacheKey)
+      // `useSyncObservable` rethrows stream errors during render,
+      // so we complete empty to let the forced logout replace this tree
+      // with the login screen.
+      if (isInvalidSessionError(error) && client.config().requestHandler) return EMPTY
       throw error
     }),
   )

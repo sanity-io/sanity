@@ -246,6 +246,17 @@ describe('isInvalidSessionError', () => {
     expect(isInvalidSessionError(err)).toBe(true)
   })
 
+  it('matches a 401 whose body is Content Lake unauthenticatedError (no credentials)', () => {
+    // `/data/history` answers a request with no token and no cookie as
+    // `{error: {description: "Authentication required", type: "unauthenticatedError"}}`,
+    // with no errorCode. That is "there is no session".
+    const err = clientErrorWith({
+      statusCode: 401,
+      body: {error: {description: 'Authentication required', type: 'unauthenticatedError'}},
+    })
+    expect(isInvalidSessionError(err)).toBe(true)
+  })
+
   it('rejects a 401 without the code (resource-level denial)', () => {
     expect(isInvalidSessionError(clientErrorWith({statusCode: 401}))).toBe(false)
     expect(
@@ -426,6 +437,23 @@ describe('createRequestErrorChannel', () => {
           clientErrorWith({
             statusCode: 401,
             body: {error: 'Unauthorized', errorCode: 'SIO-401-ANF', message: 'Session not found'},
+          }),
+        ),
+      )
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(await latestClaim(channel)).toMatchObject({
+        type: 'unauthorized',
+        projectId: 'abc123',
+      })
+    })
+
+    it('claims a no-credentials 401 (unauthenticatedError) as unauthorized', async () => {
+      const channel = createRequestErrorChannel()
+      void channel.attempt(() =>
+        Promise.reject(
+          clientErrorWith({
+            statusCode: 401,
+            body: {error: {description: 'Authentication required', type: 'unauthenticatedError'}},
           }),
         ),
       )

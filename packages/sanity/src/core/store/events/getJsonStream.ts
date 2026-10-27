@@ -1,10 +1,11 @@
-import {ClientError, ServerError} from '@sanity/client'
+import {ClientError, ServerError, type RequestHandler} from '@sanity/client'
 import {
   type TransactionLogEventWithMutations,
   type TransactionLogEventWithEffects,
 } from '@sanity/types'
 
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../studioClient'
+import {isInvalidSessionError} from '../../util/apiErrors'
 
 type StreamResult =
   | (TransactionLogEventWithEffects & TransactionLogEventWithMutations)
@@ -13,13 +14,32 @@ type StreamResult =
 export async function getJsonStream(
   url: string,
   token: string | undefined,
+  /**
+   * The studio client request handler, when this fetch runs inside a Studio.
+   * History is loaded with `fetch` (NDJSON), so it never passes through that
+   * handler on its own. An invalid-session 401 — including Content Lake's
+   * no-credentials `unauthenticatedError` — is handed to it so the studio
+   * logs the user out and shows the login screen.
+   */
+  requestHandler?: RequestHandler,
 ): Promise<ReadableStream<StreamResult>> {
   const options: RequestInit = token
     ? {headers: {...DEFAULT_STUDIO_CLIENT_HEADERS, Authorization: `Bearer ${token}`}}
     : {credentials: 'include', headers: DEFAULT_STUDIO_CLIENT_HEADERS}
   const response = await fetch(url, options)
   if (!response.ok) {
-    throw await toHttpError(response, url)
+    const error = await toHttpError(response, url)
+    if (requestHandler && isInvalidSessionError(error)) {
+      // The handler claims the 401 and parks its own promise (forced logout).
+      // This call stays fire-and-forget so the throw below still unwinds the
+      // caller; a handler that rejects with the same error is ignored.
+      void requestHandler({url, method: 'GET'}, () => Promise.reject(error)).catch(
+        (handlerError) => {
+          if (handlerError !== error) console.error(handlerError)
+        },
+      )
+    }
+    throw error
   }
   return getStream(response)
 }
