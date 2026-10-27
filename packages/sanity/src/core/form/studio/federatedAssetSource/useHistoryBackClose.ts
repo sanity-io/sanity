@@ -23,9 +23,11 @@ function pushMarkerEntry(): void {
  * underneath it (the standard modal-history pattern).
  *
  * While enabled, one same-URL history entry represents "the dialog is open".
- * Popping it (the user pressing back) calls `onClose`; closing through any
- * other path removes the entry again on unmount, leaving the session history
- * as it was before the dialog opened.
+ * Popping it (the user pressing back) first offers the press to
+ * `onBackRequest` — the mounted view stepping back through its own internal
+ * history — and only calls `onClose` when the view has nothing to step back
+ * to. Closing through any other path removes the entry again on unmount,
+ * leaving the session history as it was before the dialog opened.
  *
  * This is only reliable because the federated picker shares the window and
  * runs on a memory-history router: nothing interleaves entries after the
@@ -35,10 +37,16 @@ function pushMarkerEntry(): void {
  *
  * @internal
  */
-export function useHistoryBackClose(enabled: boolean, onClose: () => void): void {
+export function useHistoryBackClose(
+  enabled: boolean,
+  onClose: () => void,
+  onBackRequest?: () => boolean,
+): void {
   const onCloseRef = useRef(onClose)
+  const onBackRequestRef = useRef(onBackRequest)
   useEffect(() => {
     onCloseRef.current = onClose
+    onBackRequestRef.current = onBackRequest
   })
 
   // Counts our own programmatic `history.back()` calls (the unmount cleanup
@@ -57,6 +65,13 @@ export function useHistoryBackClose(enabled: boolean, onClose: () => void): void
       if (suppressedPopsRef.current > 0) {
         suppressedPopsRef.current -= 1
         // Our own pop while the dialog is still open — restore the entry.
+        if (!hasMarker()) pushMarkerEntry()
+        return
+      }
+      // The view handled the press internally (stepped back inside the
+      // picker): restore the dialog's entry — which also truncates any
+      // forward entries — and keep the dialog open.
+      if (onBackRequestRef.current?.()) {
         if (!hasMarker()) pushMarkerEntry()
         return
       }

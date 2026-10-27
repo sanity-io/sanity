@@ -102,6 +102,14 @@ export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps
    * host-side validation applies.
    */
   validateCandidate?: (selection: AssetFromSource[]) => Promise<ValidationMarker[]>
+  /**
+   * Lets the view take over browser-back presses while the hosting dialog is
+   * open. The view registers a handler that attempts one internal back step
+   * (e.g. returning from a folder) and reports whether it did; `false` —
+   * or no registered handler — lets the host close the dialog instead.
+   * The view should register `null` when it unmounts.
+   */
+  registerBackHandler?: (handler: (() => boolean) | null) => void
 }
 
 /**
