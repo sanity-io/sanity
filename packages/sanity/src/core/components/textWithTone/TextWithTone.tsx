@@ -1,12 +1,13 @@
-import {type ButtonTone, Text, type TextProps} from '@sanity/ui'
-import {type Ref, type RefAttributes} from 'react'
+import {type ButtonTone} from '@sanity/ui'
+import {type ComponentPropsWithRef, type Ref, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
+import {Text, type TextProps} from 'ui5'
 
 /** @internal */
-export type TextWithToneProps = TextProps & {
+export type TextWithToneProps = Omit<TextProps<'div'>, 'tone' | 'as'> & {
   tone: ButtonTone
   dimmed?: boolean
-}
+} & Omit<ComponentPropsWithRef<'div'>, keyof TextProps<'div'> | 'tone' | 'as'>
 
 /** @internal */
 const TextWithToneStyle = styled(Text)`
@@ -46,6 +47,8 @@ export function TextWithTone(props: TextWithToneProps & RefAttributes<HTMLDivEle
       muted={muted}
       ref={ref}
       {...rest}
+      forwardedAs="div"
+      trim={true}
     />
   )
 }

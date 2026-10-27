@@ -2,8 +2,9 @@ import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {type ButtonTone, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text} from 'ui5'
 
 import {TextWithTone} from '../TextWithTone'
 
@@ -50,7 +51,7 @@ export const AllVariants: Story = {
               <TextWithTone size={1} tone={tone}>
                 The quick brown fox
               </TextWithTone>
-              <Text muted size={0}>
+              <Text muted size={0} as="div" trim={true}>
                 {tone}
               </Text>
             </Flex>
@@ -77,7 +78,7 @@ export const AllVariants: Story = {
             <TextWithTone size={1} tone="critical">
               Toned critical
             </TextWithTone>
-            <Text muted size={0}>
+            <Text muted size={0} as="div" trim={true}>
               tone applies
             </Text>
           </Flex>
@@ -85,7 +86,7 @@ export const AllVariants: Story = {
             <TextWithTone muted size={1} tone="critical">
               Muted critical
             </TextWithTone>
-            <Text muted size={0}>
+            <Text muted size={0} as="div" trim={true}>
               tone suppressed by muted
             </Text>
           </Flex>
