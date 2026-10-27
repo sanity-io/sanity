@@ -1,5 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {useCallback, useMemo} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
@@ -31,7 +32,7 @@ function VariantTypeFilter(props: {
   typeKey: string
   variants: SystemVariant[]
 }) {
-  const {label, selectedId, typeKey, variants} = props
+  const {selectedId, typeKey, variants} = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const setVariant = useSetVariant()
   const selectedVariant = selectedId
@@ -45,30 +46,22 @@ function VariantTypeFilter(props: {
   }, [setVariant, typeKey])
 
   return (
-    <PerspectiveFilter
-      prefix={label}
-      tone={selectedId ? 'suggest' : 'default'}
-      onRemove={selectedId ? handleClear : undefined}
-      removeLabel={t('navbar.variant.clear')}
-      label={variantLabel}
-    >
-      <VariantsMenu
-        typeKey={typeKey}
-        trigger={
-          <Button
-            data-testid={
-              typeKey === DEFAULT_VARIANT_TYPE_KEY
-                ? 'variants-nav-menu-button'
-                : `variants-nav-menu-button-${typeKey}`
-            }
-            icon={RhombusIcon}
-            iconRight={ChevronDownIcon}
-            mode="bleed"
-            text={variantLabel}
-          />
-        }
-      />
-    </PerspectiveFilter>
+    <VariantsMenu
+      typeKey={typeKey}
+      trigger={
+        <Button
+          data-testid={
+            typeKey === DEFAULT_VARIANT_TYPE_KEY
+              ? 'variants-nav-menu-button'
+              : `variants-nav-menu-button-${typeKey}`
+          }
+          icon={RhombusIcon}
+          iconRight={ChevronDownIcon}
+          mode="bleed"
+          text={variantLabel}
+        />
+      }
+    />
   )
 }
 
@@ -105,42 +98,13 @@ export default function VariantsStudioNavbar({
       ? resolvedTypes
       : [{key: DEFAULT_VARIANT_TYPE_KEY, label: t('navbar.variant')}]
 
-  return (
-    <>
-      <PerspectiveFilter
-        prefix={t('navbar.version')}
-        tone={getReleaseTone(selectedPerspective)}
-        onRemove={hasVersionSelection ? handleClearVersion : undefined}
-        removeLabel={t('navbar.version.clear')}
-        label={versionTitle.displayTitle}
-      >
-        <GlobalPerspectiveMenu
-          selectedPerspectiveName={selectedPerspectiveName}
-          areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
-          trigger={
-            <Button
-              data-testid="global-perspective-menu-button"
-              icon={<ReleaseAvatarIcon release={selectedPerspective} />}
-              iconRight={ChevronDownIcon}
-              mode="bleed"
-              text={versionTitle.displayTitle}
-              tooltipProps={
-                versionTitle.isTruncated ? {content: versionTitle.fullTitle} : undefined
-              }
-            />
-          }
-        />
-      </PerspectiveFilter>
-
-      {navbarTypes.map((type) => (
-        <VariantTypeFilter
-          key={type.key}
-          label={type.label}
-          selectedId={variantSelections.find((selection) => selection.type === type.key)?.name}
-          typeKey={type.key}
-          variants={variants}
-        />
-      ))}
-    </>
-  )
+  return navbarTypes.map((type) => (
+    <VariantTypeFilter
+      key={type.key}
+      label={type.label}
+      selectedId={variantSelections.find((selection) => selection.type === type.key)?.name}
+      typeKey={type.key}
+      variants={variants}
+    />
+  ))
 }
