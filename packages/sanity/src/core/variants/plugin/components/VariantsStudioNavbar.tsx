@@ -1,20 +1,9 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {useCallback, useMemo} from 'react'
-import {Flex} from 'ui5'
+import {CSSProperties, useCallback} from 'react'
 
-import {Button} from '../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {GlobalPerspectiveMenu} from '../../../perspective/navbar/GlobalPerspectiveMenu'
-import {useGetDefaultPerspective} from '../../../perspective/useGetDefaultPerspective'
-import {usePerspective} from '../../../perspective/usePerspective'
-import {useSetPerspective} from '../../../perspective/useSetPerspective'
+import {GlobalPerspectiveButton} from '../../../perspective/navbar/GlobalPerspectiveButton'
 import {useSetVariant} from '../../../perspective/useSetVariant'
-import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
-import {getReleaseTone} from '../../../releases/util/getReleaseTone'
-import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
-import {useAgentBundles} from '../../../store/agent/useAgentBundles'
-import {useWorkspace} from '../../../studio/workspace'
 import {useVariantTypes} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -22,12 +11,10 @@ import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
 import {type VariantSelection} from '../../util/variantSelection'
 import {DEFAULT_VARIANT_TYPE_KEY} from '../../util/variantType'
-import {getVersionFilterLabel} from './getVersionFilterLabel'
-import {PerspectiveFilter} from './PerspectiveFilter'
 import {VariantsMenu} from './VariantsMenu'
+import {suggestIconColor} from './VariantsNav.css'
 
 function VariantTypeFilter(props: {
-  label: string
   selectedId: string | undefined
   typeKey: string
   variants: SystemVariant[]
@@ -49,15 +36,14 @@ function VariantTypeFilter(props: {
     <VariantsMenu
       typeKey={typeKey}
       trigger={
-        <Button
+        <GlobalPerspectiveButton
           data-testid={
             typeKey === DEFAULT_VARIANT_TYPE_KEY
               ? 'variants-nav-menu-button'
               : `variants-nav-menu-button-${typeKey}`
           }
-          icon={RhombusIcon}
-          iconRight={ChevronDownIcon}
-          mode="bleed"
+          handleClearPerspective={selectedId ? handleClear : undefined}
+          icon={<RhombusIcon className={suggestIconColor} />}
           text={variantLabel}
         />
       }
@@ -71,37 +57,15 @@ export default function VariantsStudioNavbar({
 }: {
   variantSelections: VariantSelection[]
 }) {
-  const {t} = useTranslation(variantsLocaleNamespace)
-  const {t: coreT} = useTranslation()
-  const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   const {data: variants} = useAllVariants()
-  const releasesToolAvailable = useReleasesToolAvailable()
-  const isReleasesEnabled = !!useWorkspace().releases?.enabled
-  const setPerspective = useSetPerspective()
   const variantTypes = useVariantTypes()
-  const defaultPerspective = useGetDefaultPerspective()
-  const hasVersionSelection = selectedPerspective !== defaultPerspective
-  const {bundles} = useAgentBundles()
-
-  const versionTitle = useMemo(
-    () => getVersionFilterLabel(selectedPerspective, coreT, bundles),
-    [selectedPerspective, coreT, bundles],
-  )
-
-  const handleClearVersion = useCallback(() => {
-    setPerspective(undefined)
-  }, [setPerspective])
 
   const resolvedTypes = variantTypes.status === 'ready' ? variantTypes.types : []
-  const navbarTypes =
-    resolvedTypes.length > 0
-      ? resolvedTypes
-      : [{key: DEFAULT_VARIANT_TYPE_KEY, label: t('navbar.variant')}]
+  const navbarTypes = resolvedTypes.length > 0 ? resolvedTypes : [{key: DEFAULT_VARIANT_TYPE_KEY}]
 
   return navbarTypes.map((type) => (
     <VariantTypeFilter
       key={type.key}
-      label={type.label}
       selectedId={variantSelections.find((selection) => selection.type === type.key)?.name}
       typeKey={type.key}
       variants={variants}

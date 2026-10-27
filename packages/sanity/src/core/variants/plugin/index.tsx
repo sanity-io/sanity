@@ -3,7 +3,6 @@ import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
 import {variantsUsEnglishLocaleBundle} from '../i18n'
-import {VariantsStudioNavbarLayout} from './components/VariantsStudioNavbarLayout'
 
 const VariantsTool = lazy(() => import('../tool/VariantsTool'))
 
