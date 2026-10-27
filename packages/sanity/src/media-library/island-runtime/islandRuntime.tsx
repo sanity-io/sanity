@@ -23,7 +23,6 @@ import {
   LayerProvider,
   Select,
   Stack,
-  Text,
   TextArea,
   TextInput,
   ThemeProvider,
@@ -48,6 +47,7 @@ import {
   LocaleContext,
   type LocaleContextValue,
 } from 'sanity/_singletons'
+import {Text} from 'ui5'
 
 /** Module-level so every mount shares one theme object (hosts push `scheme` as plain data). */
 const islandTheme = buildTheme()
@@ -407,10 +407,10 @@ function CrashedFieldCard({error, onRetry}: {error: Error; onRetry: () => void})
   return (
     <Card padding={3} radius={2} tone="critical" border>
       <Stack gap={3}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true} tone="critical">
           This field couldn&apos;t be loaded
         </Text>
-        <Text size={1} muted textOverflow="ellipsis">
+        <Text size={1} muted truncate={1} as="div" trim={true} tone="critical">
           {String(error.message || error)}
         </Text>
         {/* oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- islands have no
