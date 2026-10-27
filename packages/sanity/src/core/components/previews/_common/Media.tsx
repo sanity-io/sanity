@@ -1,6 +1,6 @@
-import {Text} from '@sanity/ui'
 import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
+import {Text} from 'ui5'
 
 import {type PreviewLayoutKey, type PreviewMediaDimensions, type PreviewProps} from '../types'
 import {MediaWrapper} from './Media.styled'
@@ -49,7 +49,13 @@ function renderMedia(props: {
 
   if (typeof media === 'string') {
     return (
-      <Text as="span" className={styles?.mediaString} size={1}>
+      <Text
+        as="span"
+        className={styles?.mediaString}
+        size={1}
+        trim={true}
+        style={{color: 'var(--card-fg-color)'}}
+      >
         {media}
       </Text>
     )

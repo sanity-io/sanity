@@ -1,7 +1,7 @@
-import {rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Skeleton, TextSkeleton} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -146,8 +146,10 @@ export function DefaultPreview(props: DefaultPreviewProps) {
                 className={styles?.title}
                 size={1}
                 style={{color: 'inherit'}}
-                textOverflow="ellipsis"
+                truncate={1}
                 weight="medium"
+                as="div"
+                trim={true}
               >
                 {title && renderPreviewNode(title, 'default')}
                 {!title && (
@@ -158,7 +160,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
               </Text>
 
               {subtitle && (
-                <Text muted size={1} textOverflow="ellipsis" className={styles?.subtitle}>
+                <Text muted size={1} truncate={1} className={styles?.subtitle} as="div" trim={true}>
                   {renderPreviewNode(subtitle, 'default')}
                 </Text>
               )}
