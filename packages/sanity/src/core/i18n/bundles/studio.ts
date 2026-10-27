@@ -1599,6 +1599,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Release title used in the document preview presence tooltip when the release has no title */
   'presence.tooltip.untitled-release': 'Untitled',
 
+  /** Accessible name and tooltip for the button that clears the selected global perspective */
+  'perspective.action.clear': 'Clear selection',
+
   /** Fallback title shown when a preview does not provide a title */
   'preview.default.title-fallback': 'Untitled',
   /** Fallback preview value for types that have "no value" (eg null, undefined) */
