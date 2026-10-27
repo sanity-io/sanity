@@ -54,6 +54,7 @@ import {MenuButton} from '../../../../packages/sanity/src/ui-components/menuButt
 import {MenuItem} from '../../../../packages/sanity/src/ui-components/menuItem/MenuItem'
 import {Popover} from '../../../../packages/sanity/src/ui-components/popover/Popover'
 import {Tooltip} from '../../../../packages/sanity/src/ui-components/tooltip/Tooltip'
+import {useDiscardVersions} from '../../data/useDiscardVersions'
 import {CreateVariantForm} from './CreateVariantForm'
 import {CreateVariantIcon} from './CreateVariantIcon'
 import {DateSpanPicker} from './DateSpanPicker'
@@ -496,20 +497,35 @@ function FilterBar({narrow}: {narrow: boolean}) {
 /**
  * Delete asks first, in Studio's small dialog, as Discard version does. When the selection holds the
  * version this visitor is served, the dialog says what the visitor gets instead (Andrej, 2026-10-20:
- * "that information of the fallback needs to go into the delete dialog"). The prototype deletes
- * nothing: Delete closes the dialog and clears the selection.
+ * "that information of the fallback needs to go into the delete dialog").
+ * HANDOFF (27 Oct, Faheem): Delete really deletes. The prototype deleted nothing; here each selected draft or release version is discarded
+ * as core's Discard version does (data/useDiscardVersions). A published version is not deleted here (that is an unpublish), and the dialog
+ * says so. The selection clears once the delete is done; on an error a toast says so and the dialog stays.
  */
 function DeleteVersionsDialog({onClose}: {onClose: () => void}) {
   const {world, visitor, release, selectedKeys, clearSelection} = useInventoryConcepts()
   const count = selectedKeys.size
   const fallback = deleteFallbackText(world, visitor, release, selectedKeys)
-  const confirm = () => {
+  const {deleting, discard, resolve} = useDiscardVersions()
+  const targets = world.entries
+    .filter((entry) => selectedKeys.has(entry.key))
+    .map((entry) => ({group: entry.group, variantId: entry.variantId}))
+  const {ids, skipped} = resolve(targets)
+  const confirm = async () => {
+    if (!(await discard(targets))) return
     clearSelection()
     onClose()
   }
   return (
     <Dialog
-      footer={{confirmButton: {onClick: confirm, text: 'Delete', tone: 'critical'}}}
+      footer={{
+        confirmButton: {
+          disabled: deleting || ids.length === 0,
+          onClick: () => void confirm(),
+          text: deleting ? 'Deleting…' : 'Delete',
+          tone: 'critical',
+        },
+      }}
       header={count === 1 ? 'Delete version?' : `Delete ${count} versions?`}
       id="inventory-delete-versions-dialog"
       onClose={onClose}
@@ -524,6 +540,13 @@ function DeleteVersionsDialog({onClose}: {onClose: () => void}) {
         {fallback && (
           <Text data-testid="inventory-delete-fallback" size={1}>
             {fallback}
+          </Text>
+        )}
+        {skipped > 0 && (
+          <Text data-testid="inventory-delete-skipped" muted size={1}>
+            {skipped === 1
+              ? 'The published version is not deleted here. Unpublish it from the document instead.'
+              : `${skipped} published versions are not deleted here. Unpublish them from the document instead.`}
           </Text>
         )}
       </Stack>
