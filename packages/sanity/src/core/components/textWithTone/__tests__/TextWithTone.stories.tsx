@@ -94,10 +94,10 @@ export const AllVariants: Story = {
       </Card>
       <Card padding={3} radius={2} shadow={1} style={{maxWidth: 360}}>
         <Stack gap={3}>
-          {STATUS_ROWS.map(({tone, icon: ComponentIcon, text}) => (
+          {STATUS_ROWS.map(({tone, icon: IconComponent, text}) => (
             <Flex align="center" gap={2} key={tone}>
               <TextWithTone size={1} tone={tone}>
-                <Icon icon={ComponentIcon} size={1} style={{margin: '-0.375rem'}} />
+                <Icon icon={IconComponent} size={1} style={{margin: '-0.375rem'}} />
               </TextWithTone>
               <TextWithTone size={1} tone={tone}>
                 {text}
