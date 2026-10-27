@@ -4,6 +4,7 @@ import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
 import {NavbarWithVariants} from './c1/NavbarWithVariants'
+import {AddVariantAction} from './c4/AddVariantAction'
 import {inventoryInspector} from './c4/InventoryInspector'
 import {LayoutWithFloatingOptions} from './options/FloatingOptions'
 import {schemaTypesFor} from './schemas'
@@ -23,8 +24,10 @@ const previewPath = previewOrigin.endsWith(':3456') ? '/' : '/variants-preview.h
 
 const variantsHandoffOptions = definePlugin({
   name: 'variants-handoff-studio',
-  // The stock Studio's document actions and inspectors stay as they ship; the Versions inspector is the one addition (C4 option D).
+  // The stock Studio's document actions and inspectors stay as they ship, with two additions: the Versions inspector (C4 option D), and Add variant
+  // in the action menu right after Publish, the first action (27 Oct, Faheem).
   document: {
+    actions: (prev) => [...prev.slice(0, 1), AddVariantAction, ...prev.slice(1)],
     inspectors: (prev) => [...prev, inventoryInspector],
   },
   studio: {

@@ -120,6 +120,61 @@ export function requestCreateVersion(documentId: string, preset: CreatePreset) {
   requests.set(documentId, preset)
 }
 
+const modeRequests = new Set<string>()
+/**
+ * Asks the inventory of a document to open in Create version mode, as its toolbar's Create version opens it (the document menu's Add variant,
+ * 27 Oct, Faheem). It is read when the inventory mounts, which is once the document's versions are known; it never creates.
+ */
+export function requestCreateMode(documentId: string) {
+  modeRequests.add(documentId)
+}
+
+/** The releases a new version can go in or not (archived and published ones, and scheduled drafts, are left out), and the open destinations. */
+function destinationsOf(world: InventoryWorld, draftsEnabled: boolean) {
+  const listed = world.releases.filter(
+    (r) =>
+      !['archived', 'archiving', 'published', 'publishing'].includes(r.state ?? '') &&
+      !isCardinalityOneRelease(r),
+  )
+  const openReleases: Dest[] = listed
+    .filter((r) => !isReleaseScheduledOrScheduling(r))
+    .map(releaseDest)
+  const lockedReleases: Dest[] = listed.filter(isReleaseScheduledOrScheduling).map(releaseDest)
+  const destinations: Dest[] = [...(draftsEnabled ? [DRAFTS] : []), ...openReleases]
+  return {openReleases, lockedReleases, destinations}
+}
+
+/**
+ * Where the block starts. From the toolbar (nothing fixed), with a variant chosen that this document has no version of in the Drafts or open
+ * release in view: on that address, so Create version is one click (Faheem, 22 Oct). Otherwise Base in the first destination.
+ */
+function startDraft(
+  fixed: Fixed,
+  at: {
+    world: InventoryWorld
+    variants: readonly VariantChoice[]
+    destinations: Dest[]
+    viewedVariant: string | undefined
+    viewedGroup: string
+  },
+): Draft {
+  const {world, variants, destinations, viewedVariant, viewedGroup} = at
+  const viewedDest = destinations.find((d) => destGroup(d) === viewedGroup)
+  const startsOnView =
+    !fixed.variantId &&
+    !fixed.dest &&
+    viewedVariant !== undefined &&
+    viewedDest !== undefined &&
+    variants.some((v) => v.id === viewedVariant) &&
+    !world.entries.some((e) => e.group === viewedGroup && e.variantId === viewedVariant)
+  return {
+    variantId: startsOnView ? viewedVariant : fixed.variantId,
+    dest: startsOnView ? viewedDest : (fixed.dest ?? destinations[0] ?? DRAFTS),
+    source: 'nearest',
+    picked: false,
+  }
+}
+
 /** Collapses every open group to its header and counts its rows; returns the counts and the groups it closed. */
 function collapseGroups(frame: HTMLElement | null) {
   const counts: Record<string, number> = {}
@@ -460,10 +515,19 @@ export function CreateVersion(props: {
   const [toolbar, setToolbar] = useState<HTMLElement | null>(null)
   const [slot, setSlot] = useState<HTMLElement | null>(null)
   const [headers, setHeaders] = useState<HTMLElement[]>([])
-  // A banner's "Create version" opens the inventory with the block already open and prefilled (presets, not locks).
+  // Bundles a new version can go in: open releases. A scheduled release is locked, as the Studio locks it: listed in the menu, not a target.
+  const {openReleases, lockedReleases, destinations} = destinationsOf(world, draftsEnabled)
+  // A banner's "Create version" opens the inventory with the block already open and prefilled (presets, not locks). The document menu's Add
+  // variant opens it as the toolbar's Create version does.
   const [mode, setMode] = useState<{fixed: Fixed; draft: Draft} | null>(() => {
     const preset = requests.get(props.documentId)
-    if (!preset) return null
+    if (!preset) {
+      if (!modeRequests.has(props.documentId)) return null
+      return {
+        fixed: {},
+        draft: startDraft({}, {world, variants, destinations, viewedVariant, viewedGroup}),
+      }
+    }
     const release = world.releases.find((r) => r.name === preset.bundle)
     const dest: Dest = release ? releaseDest(release) : DRAFTS
     return {fixed: {}, draft: {variantId: preset.variantId, dest, source: 'nearest', picked: false}}
@@ -472,6 +536,7 @@ export function CreateVersion(props: {
   const collapseOnScan = useRef(mode !== null)
   useEffect(() => {
     requests.delete(props.documentId)
+    modeRequests.delete(props.documentId)
   }, [props.documentId])
   const [menuOpen, setMenuOpen] = useState(false)
   const [counts, setCounts] = useState<Record<string, number>>({})
@@ -480,19 +545,6 @@ export function CreateVersion(props: {
   const [previewHost] = useState(() => document.createElement('div'))
   const pendingGroup = useRef<string | undefined>(props.received)
   const [currentGroup, setCurrentGroup] = useState<string | undefined>(props.received)
-
-  // Bundles a new version can go in: open releases. Archived and published releases are left out, and so are scheduled drafts (single-document
-  // bundles). A scheduled release is locked, as the Studio locks it: listed in the menu, not a target.
-  const toDest = releaseDest
-  const listed = world.releases.filter(
-    (r) =>
-      !['archived', 'archiving', 'published', 'publishing'].includes(r.state ?? '') &&
-      !isCardinalityOneRelease(r),
-  )
-  const openReleases: Dest[] = listed.filter((r) => !isReleaseScheduledOrScheduling(r)).map(toDest)
-  const lockedReleases: Dest[] = listed.filter(isReleaseScheduledOrScheduling).map(toDest)
-  const destinations: Dest[] = [...(draftsEnabled ? [DRAFTS] : []), ...openReleases]
-  const startDest = destinations[0] ?? DRAFTS
 
   // His toolbar, list and group headers are his own DOM: find them and put the controls in by portal. The block goes in a container placed just above
   // his list, where the toolbar row's content is hidden while the mode is on.
@@ -686,24 +738,9 @@ export function CreateVersion(props: {
     collapsedByMode.current = closed
     setCounts(next)
     setCurrentGroup(undefined)
-    // From the toolbar (nothing fixed), with a variant chosen that this document has no version of in the Drafts or open release in view:
-    // the block starts on that address, so Create version is one click (Faheem, 22 Oct). Otherwise Base in the first destination, as before.
-    const viewedDest = destinations.find((d) => destGroup(d) === viewedGroup)
-    const startsOnView =
-      !fixed.variantId &&
-      !fixed.dest &&
-      viewedVariant !== undefined &&
-      viewedDest !== undefined &&
-      variants.some((v) => v.id === viewedVariant) &&
-      !world.entries.some((e) => e.group === viewedGroup && e.variantId === viewedVariant)
     setMode({
       fixed,
-      draft: {
-        variantId: startsOnView ? viewedVariant : fixed.variantId,
-        dest: startsOnView ? viewedDest : (fixed.dest ?? startDest),
-        source: 'nearest',
-        picked: false,
-      },
+      draft: startDraft(fixed, {world, variants, destinations, viewedVariant, viewedGroup}),
     })
     // No menu opens by itself (Faheem, 22 Oct): the steps show, and the editor chooses. When the default address already exists, the disabled
     // Create version says why in its tooltip.
